@@ -271,6 +271,7 @@ public class CubaScrollTableWidget extends VScrollTable implements TableWidget {
     protected void updateAggregationRow(UIDL uidl) {
         if (_delegate.aggregationRow == null) {
             _delegate.aggregationRow = createAggregationRow();
+            _delegate.aggregationRow.setTotalAggregationInputHandler(_delegate.totalAggregationInputHandler);
             insert(_delegate.aggregationRow, getWidgetIndex(scrollBodyPanel));
         }
         _delegate.aggregationRow.updateFromUIDL(uidl);

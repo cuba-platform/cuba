@@ -63,6 +63,9 @@ public class TableWidgetDelegate {
     public Set<String> clickableColumns;
     public TableCellClickListener cellClickListener;
 
+    public TotalAggregationInputListener totalAggregationInputHandler;
+    public GroupAggregationInputListener groupAggregationInputHandler;
+
     public VOverlay customPopupOverlay;
     public Widget customPopupWidget;
     public boolean customPopupAutoClose = false;

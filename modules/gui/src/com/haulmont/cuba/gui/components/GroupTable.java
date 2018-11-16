@@ -22,6 +22,7 @@ import com.haulmont.cuba.gui.data.GroupDatasource;
 import com.haulmont.cuba.gui.data.GroupInfo;
 
 import javax.annotation.Nullable;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -148,6 +149,22 @@ public interface GroupTable<E extends Entity> extends Table<E> {
 
         public String getFormattedValue() {
             return formattedValue;
+        }
+    }
+
+    class GroupAggregationDistributionContext<V> extends AggregationDistributionContext<V> {
+
+        protected GroupInfo groupInfo;
+
+        public GroupAggregationDistributionContext(Column column, Object value, Collection<V> scope,
+                                                   GroupInfo groupInfo, boolean isTotalAggregation) {
+            super(column, value, scope, isTotalAggregation);
+
+            this.groupInfo = groupInfo;
+        }
+
+        public GroupInfo getGroupInfo() {
+            return groupInfo;
         }
     }
 }

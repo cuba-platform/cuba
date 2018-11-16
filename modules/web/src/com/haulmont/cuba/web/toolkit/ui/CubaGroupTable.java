@@ -19,6 +19,7 @@ package com.haulmont.cuba.web.toolkit.ui;
 
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.gui.data.GroupInfo;
+import com.haulmont.cuba.web.gui.components.WebAbstractTable.AggregationInputValueChangeContext;
 import com.haulmont.cuba.web.gui.data.PropertyValueStringify;
 import com.haulmont.cuba.web.toolkit.data.AggregationContainer;
 import com.haulmont.cuba.web.toolkit.data.GroupTableContainer;
@@ -137,7 +138,7 @@ public class CubaGroupTable extends CubaTable implements GroupTableContainer {
         if (hasGroups() && hasAggregation) {
             target.startTag("groupRows");
             for (Object itemId : getVisibleItemIds()) {
-                if (isExpanded(itemId) && isAggregatedValuesChanged(itemId)) {
+                if (isAggregatedValuesChanged(itemId)) {
                     target.startTag("tr");
 
                     target.addAttribute("groupKey", groupIdMap.key(itemId));
@@ -148,6 +149,9 @@ public class CubaGroupTable extends CubaTable implements GroupTableContainer {
                     isAddedToCache = true;
                 }
             }
+
+            addEditableAggregationColumns(target);
+
             target.endTag("groupRows");
         }
 
@@ -412,6 +416,8 @@ public class CubaGroupTable extends CubaTable implements GroupTableContainer {
                 if (hasAggregation) {
                     paintGroupAggregation(target, itemId,
                             ((AggregationContainer) items).aggregate(new GroupAggregationContext(this, itemId)));
+
+                    addEditableAggregationColumns(target);
                 }
             }
         }
@@ -707,6 +713,23 @@ public class CubaGroupTable extends CubaTable implements GroupTableContainer {
     }
 
     @Override
+    protected void handleAggregationGroupInputChange(String columnKey, String groupKey, String value) {
+        if (aggregationDistributionProvider != null) {
+            Object columnId = columnIdMap.get(columnKey);
+
+            Object groupColumnId = groupIdMap.get(groupKey);
+
+            GroupAggregationInputValueChangeContext context
+                    = new GroupAggregationInputValueChangeContext(columnId, value, false, groupColumnId);
+            if (!aggregationDistributionProvider.apply(context)) {
+                // clear cache to update aggregated values
+                cachedAggregatedValues.clear();
+                markAsDirty();
+            }
+        }
+    }
+
+    @Override
     protected void updateClickableColumnKeys() {
         if (cellClickListeners != null) {
             Collection<?> groupProperties = getGroupProperties();
@@ -753,6 +776,20 @@ public class CubaGroupTable extends CubaTable implements GroupTableContainer {
 
         public Object getGroupId() {
             return groupId;
+        }
+    }
+
+    public static class GroupAggregationInputValueChangeContext extends AggregationInputValueChangeContext {
+        protected Object groupInfo;
+
+        public GroupAggregationInputValueChangeContext(Object columnId, String value, boolean isTotalAggregation,
+                                                       Object groupInfo) {
+            super(columnId, value, isTotalAggregation);
+            this.groupInfo = groupInfo;
+        }
+
+        public Object getGroupInfo() {
+            return groupInfo;
         }
     }
 }

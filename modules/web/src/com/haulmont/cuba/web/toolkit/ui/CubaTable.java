@@ -20,6 +20,7 @@ package com.haulmont.cuba.web.toolkit.ui;
 import com.google.common.collect.Iterables;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.web.AppUI;
+import com.haulmont.cuba.web.gui.components.WebAbstractTable.AggregationInputValueChangeContext;
 import com.haulmont.cuba.web.gui.components.presentations.TablePresentations;
 import com.haulmont.cuba.web.gui.data.PropertyValueStringify;
 import com.haulmont.cuba.web.toolkit.ShortcutActionManager;
@@ -41,15 +42,19 @@ import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Field;
 import com.vaadin.ui.Layout;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.*;
+import java.util.function.Function;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public class CubaTable extends com.vaadin.ui.Table implements TableContainer, CubaEnhancedTable {
 
     protected LinkedList<Object> editableColumns;
+
+    protected List<Object> aggregationEditableColumns;
 
     /**
      * Keeps track of the ShortcutListeners added to this component, and manages the painting and handling as well.
@@ -75,6 +80,8 @@ public class CubaTable extends com.vaadin.ui.Table implements TableContainer, Cu
     protected Object focusItem;
     protected Runnable beforePaintListener;
 
+    protected Function<AggregationInputValueChangeContext, Boolean> aggregationDistributionProvider;
+
     public CubaTable() {
         registerRpc(new CubaTableServerRpc() {
             @Override
@@ -89,6 +96,24 @@ public class CubaTable extends com.vaadin.ui.Table implements TableContainer, Cu
                         cellClickListener.onClick(itemId, columnId);
                     }
                 }
+            }
+
+            @Override
+            public void onAggregationTotalInputChange(String columnKey, String value) {
+                if (aggregationDistributionProvider != null) {
+                    Object columnId = columnIdMap.get(columnKey);
+
+                    AggregationInputValueChangeContext event =
+                            new AggregationInputValueChangeContext(columnId, value, true);
+                    if (!aggregationDistributionProvider.apply(event)) {
+                        markAsDirty();
+                    }
+                }
+            }
+
+            @Override
+            public void onAggregationGroupInputChange(String columnKey, String groupKey, String value) {
+                handleAggregationGroupInputChange(columnKey, groupKey, value);
             }
         });
     }
@@ -582,7 +607,43 @@ public class CubaTable extends com.vaadin.ui.Table implements TableContainer, Cu
             String value = (String) aggregations.get(columnId);
             target.addText(value);
         }
+        addEditableAggregationColumns(target);
+
         target.endTag("arow");
+    }
+
+    protected void addEditableAggregationColumns(PaintTarget target) throws PaintException {
+        target.startTag("editableAggregationColumns");
+        for (final Object columnId : visibleColumns) {
+            if (CollectionUtils.isNotEmpty(aggregationEditableColumns)
+                    && aggregationEditableColumns.contains(columnId)) {
+                target.addText(columnIdMap.key(columnId));
+            }
+        }
+        target.endTag("editableAggregationColumns");
+    }
+
+    @Override
+    public void addAggregationEditableColumn(Object columnId) {
+        if (aggregationEditableColumns == null) {
+            aggregationEditableColumns = new ArrayList<>();
+        }
+
+        aggregationEditableColumns.add(columnId);
+    }
+
+    @Override
+    public void setAggregationDistributionProvider(Function<AggregationInputValueChangeContext, Boolean> distributionProvider) {
+        this.aggregationDistributionProvider = distributionProvider;
+    }
+
+    @Override
+    public Function<AggregationInputValueChangeContext, Boolean> getAggregationDistributionProvider() {
+        return aggregationDistributionProvider;
+    }
+
+    // used by CubaGroupTable
+    protected void handleAggregationGroupInputChange(String columnKey, String groupKey, String value) {
     }
 
     @Override

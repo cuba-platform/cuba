@@ -22,14 +22,13 @@ import com.google.gwt.dom.client.*;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Widget;
+import com.haulmont.cuba.web.toolkit.ui.client.aggregation.AggregationInputFieldInfo;
 import com.haulmont.cuba.web.toolkit.ui.client.aggregation.TableAggregationRow;
 import com.haulmont.cuba.web.toolkit.ui.client.table.CubaScrollTableWidget;
 import com.vaadin.client.*;
 import com.vaadin.shared.ui.table.TableConstants;
 
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.*;
 
 public class CubaGroupTableWidget extends CubaScrollTableWidget {
 
@@ -259,10 +258,15 @@ public class CubaGroupTableWidget extends CubaScrollTableWidget {
     @Override
     protected TableAggregationRow createAggregationRow() {
         return new TableAggregationRow(this) {
+            protected boolean isDividerAdded = false;
+            protected int dividerColumnIndex;
+
             @Override
             protected boolean addSpecificCell(String columnId, int colIndex) {
                 if (GROUP_DIVIDER_COLUMN_KEY.equals(columnId)) {
                     addCell("", aligns[colIndex], CLASSNAME + "-group-divider", false);
+                    this.isDividerAdded = true;
+                    this.dividerColumnIndex = colIndex;
                     return true;
                 }
                 if (showRowHeaders && colIndex == 0) {
@@ -273,6 +277,16 @@ public class CubaGroupTableWidget extends CubaScrollTableWidget {
                 }
 
                 return super.addSpecificCell(columnId, colIndex);
+            }
+
+            @Override
+            protected boolean isAggregationEditable(UIDL uidl, int colIndex) {
+                // we shouldn't create cell with field if it is group column
+                if (isDividerAdded && colIndex <= dividerColumnIndex) {
+                    return false;
+                }
+
+                return super.isAggregationEditable(uidl, colIndex) && this.isDividerAdded;
             }
         };
     }
@@ -359,10 +373,34 @@ public class CubaGroupTableWidget extends CubaScrollTableWidget {
                     }
 
                     Element divWrapper = list.getItem(columnIndex).getFirstChildElement();
-                    divWrapper.setInnerText(updateUIDL.getChildString(updInd));
+                    // check for input in column
+                    if (divWrapper.getChildCount() != 0) {
+                        if (isAggregationEditable(uidl, columnIndex)) {
+                            InputElement inputElement = divWrapper.getChild(0).cast();
+                            inputElement.setValue(updateUIDL.getChildString(updInd));
+                        } else {
+                            divWrapper.setInnerText(updateUIDL.getChildString(updInd));
+                        }
+                    }
                 }
             }
         }
+    }
+
+    protected boolean isAggregationEditable(UIDL uidl, int colIndex) {
+        UIDL colUidl = uidl.getChildByTagName("editableAggregationColumns");
+        if (colUidl == null) {
+            return false;
+        }
+        String colKey = getColKeyByIndex(colIndex);
+        Iterator iterator = colUidl.getChildIterator();
+        while (iterator.hasNext()) {
+            Object uidlKey = iterator.next();
+            if (uidlKey.equals(colKey)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     protected class GroupTableHead extends CubaScrollTableHead {
@@ -418,6 +456,7 @@ public class CubaGroupTableWidget extends CubaScrollTableWidget {
 
         protected class CubaGroupTableRow extends CubaScrollTableRow {
             protected TableCellElement groupDividerCell;
+            protected boolean isDividerAdded = false;
 
             public CubaGroupTableRow(UIDL uidl, char[] aligns) {
                 super(uidl, aligns);
@@ -438,6 +477,7 @@ public class CubaGroupTableWidget extends CubaScrollTableWidget {
                 this.groupDividerCell = td;
                 initCellWithText("", align, "", false, false, null, td);
                 td.addClassName(CLASSNAME + "-group-divider");
+                this.isDividerAdded = true;
             }
 
             @Override
@@ -462,6 +502,8 @@ public class CubaGroupTableWidget extends CubaScrollTableWidget {
             protected boolean expanded;
             protected Boolean hasCells;
             protected Element expander;
+
+            protected List<AggregationInputFieldInfo> inputsList;
 
             public CubaGroupTableGroupRow(UIDL uidl, char[] aligns) {
                 super(uidl, aligns);
@@ -527,7 +569,10 @@ public class CubaGroupTableWidget extends CubaScrollTableWidget {
                             }
 
                             boolean sorted = tHead.getHeaderCell(currentColIndex).isSorted();
-                            if (cell instanceof String) {
+
+                            if (isAggregationEditable(uidl, currentColIndex) && isDividerAdded) {
+                                addCellWithField((String) cell, ALIGN_LEFT, currentColIndex);
+                            } else if (cell instanceof String) {
                                 addCell(uidl, cell.toString(), aligns[currentColIndex], style,
                                         isRenderHtmlInCells(), sorted, description);
                             } else {
@@ -671,6 +716,30 @@ public class CubaGroupTableWidget extends CubaScrollTableWidget {
                 DOM.appendChild(container, contentDiv);
             }
 
+            protected void addCellWithField(String text, char align, int colIndex) {
+                final TableCellElement td = DOM.createTD().cast();
+                initCellWithText(text, align, "", false, true, null, td);
+
+                // Enhance DOM for table cell
+                Element container = (Element) td.getChild(0);
+                container.setInnerHTML("");
+
+                InputElement inputElement = DOM.createInputText().cast();
+                inputElement.setValue(text);
+                inputElement.addClassName("v-textfield v-widget");
+                inputElement.addClassName("c-group-aggregation-textfield");
+                Style elemStyle = inputElement.getStyle();
+                elemStyle.setWidth(100, Style.Unit.PCT);
+                DOM.appendChild(container, inputElement);
+
+                if (inputsList == null) {
+                    inputsList = new ArrayList<>();
+                }
+                inputsList.add(new AggregationInputFieldInfo(text, getColKeyByIndex(colIndex), inputElement));
+
+                DOM.sinkEvents(inputElement, Event.ONCHANGE);
+            }
+
             @Override
             public void onBrowserEvent(Event event) {
                 final Element targetElement = DOM.eventGetTarget(event);
@@ -681,6 +750,13 @@ public class CubaGroupTableWidget extends CubaScrollTableWidget {
                             scrollBodyPanel.setFocus(true);
                         }
                         setRowFocus(this);
+
+                        // we shouldn't do expand or collapse by click on input field
+                        Element inputElement = Element.as(event.getEventTarget());
+                        String colKey = getColumnKeyByInput(inputElement);
+                        if (colKey != null) {
+                            break;
+                        }
 
                         if ((event.getCtrlKey() || event.getMetaKey())
                                 && !event.getAltKey() && !event.getShiftKey()) {
@@ -694,9 +770,32 @@ public class CubaGroupTableWidget extends CubaScrollTableWidget {
                             handleRowClick(event);
                         }
                         break;
+                    case Event.ONCHANGE:
+                        if (_delegate.groupAggregationInputHandler != null) {
+                            Element element = Element.as(event.getEventTarget());
+                            String columnKey = getColumnKeyByInput(element);
+                            if (columnKey != null) {
+                                InputElement input = element.cast();
+                                _delegate.groupAggregationInputHandler.onInputChange(columnKey, getGroupKey(), input.getValue());
+                            }
+                        }
+                        break;
                     default:
                         break;
                 }
+            }
+
+            protected String getColumnKeyByInput(Element input) {
+                if (inputsList == null) {
+                    return null;
+                }
+
+                for (AggregationInputFieldInfo info : inputsList) {
+                    if (info.getInputElement().isOrHasChild(input)) {
+                        return info.getColumnKey();
+                    }
+                }
+                return null;
             }
 
             protected void handleRowCtrlClick(Event event) {

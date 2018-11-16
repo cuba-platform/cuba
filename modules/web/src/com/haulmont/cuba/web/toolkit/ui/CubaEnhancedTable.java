@@ -18,10 +18,13 @@
 package com.haulmont.cuba.web.toolkit.ui;
 
 import com.haulmont.cuba.gui.components.Table;
+import com.haulmont.cuba.web.gui.components.WebAbstractTable.AggregationInputValueChangeContext;
 import com.haulmont.cuba.web.gui.components.presentations.TablePresentations;
 import com.haulmont.cuba.web.toolkit.data.AggregationContainer;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Layout;
+
+import java.util.function.Function;
 
 /**
  * Interface to generalize additional functionality in {@link CubaTable}, {@link CubaGroupTable} and {@link CubaTreeTable}
@@ -92,6 +95,11 @@ public interface CubaEnhancedTable extends AggregationContainer {
     void setColumnSortable(Object columnId, boolean sortable);
 
     void requestFocus(Object itemId, Object columnId);
+
+    void addAggregationEditableColumn(Object columnId);
+
+    void setAggregationDistributionProvider(Function<AggregationInputValueChangeContext, Boolean> distributionProvider);
+    Function<AggregationInputValueChangeContext, Boolean> getAggregationDistributionProvider();
 
     interface CellClickListener {
         void onClick(Object itemId, Object columnId);

@@ -27,6 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -439,6 +440,18 @@ public interface Table<E extends Entity>
     }
 
     /**
+     *
+     * @param distributionProvider
+     */
+    void setAggregationDistributionProvider(AggregationDistributionProvider<E> distributionProvider);
+
+    /**
+     *
+     * @return
+     */
+    AggregationDistributionProvider<E> getAggregationDistributionProvider();
+
+    /**
      * Show popup inside of Table, relative to last cell click event.<br>
      * Call this method from {@link com.haulmont.cuba.gui.components.Table.CellClickListener} implementation.
      *
@@ -746,6 +759,10 @@ public interface Table<E extends Entity>
             this.element = element;
         }
 
+        public boolean isAggregationEditable() {
+            return aggregation != null && aggregation.isEditable();
+        }
+
         @Override
         public String toString() {
             return id == null ? super.toString() : id.toString();
@@ -910,6 +927,48 @@ public interface Table<E extends Entity>
         @Override
         public <X> X unwrapComposition(Class<X> internalCompositionClass) {
             return null;
+        }
+    }
+
+    /**
+     *
+     */
+    interface AggregationDistributionProvider<E> {
+
+        void onDistribution(AggregationDistributionContext<E> context);
+    }
+
+    /**
+     *
+     */
+    class AggregationDistributionContext<E> {
+        protected Column column;
+        protected Object value;
+        protected Collection<E> scope;
+        protected boolean isTotalAggregation;
+
+        public AggregationDistributionContext(Column column, Object value, Collection<E> scope,
+                                              boolean isTotalAggregation) {
+            this.column = column;
+            this.value = value;
+            this.scope = scope;
+            this.isTotalAggregation = isTotalAggregation;
+        }
+
+        public Column getColumn() {
+            return column;
+        }
+
+        public Object getValue() {
+            return value;
+        }
+
+        public Collection<E> getScope() {
+            return scope;
+        }
+
+        public boolean isTotalAggregation() {
+            return isTotalAggregation;
         }
     }
 }

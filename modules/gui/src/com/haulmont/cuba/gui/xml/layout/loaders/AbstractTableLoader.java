@@ -436,6 +436,11 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
                 aggregation.setType(AggregationInfo.Type.valueOf(aggregationType));
             }
 
+            String aggregationEditable = aggregationElement.attributeValue("editable");
+            if (StringUtils.isNotEmpty("editable")) {
+                aggregation.setEditable(Boolean.valueOf(aggregationEditable));
+            }
+
             String valueDescription = aggregationElement.attributeValue("valueDescription");
             if (StringUtils.isNotEmpty(valueDescription)) {
                 column.setValueDescription(loadResourceString(valueDescription));

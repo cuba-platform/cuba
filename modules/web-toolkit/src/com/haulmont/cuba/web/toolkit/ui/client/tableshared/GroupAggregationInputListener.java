@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2016 Haulmont.
+ * Copyright (c) 2008-2018 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,18 +12,10 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
-package com.haulmont.cuba.web.toolkit.ui.client.table;
+package com.haulmont.cuba.web.toolkit.ui.client.tableshared;
 
-import com.vaadin.shared.communication.ServerRpc;
-
-public interface CubaTableServerRpc extends ServerRpc {
-
-    void onClick(String columnKey, String rowKey);
-
-    void onAggregationTotalInputChange(String columnKey, String value);
-
-    void onAggregationGroupInputChange(String columnKey, String groupKey, String value);
+public interface GroupAggregationInputListener {
+    void onInputChange(String columnKey, String groupKey, String value);
 }
