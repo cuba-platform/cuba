@@ -156,6 +156,7 @@ public class FragmentLoader extends ContainerLoader<Fragment> implements Compone
         ScreenDataXmlLoader screenDataXmlLoader = beanLocator.get(ScreenDataXmlLoader.class);
         ScreenData screenData = UiControllerUtils.getScreenData(resultComponent.getFrameOwner());
         screenDataXmlLoader.load(screenData, dataEl, hostScreenData);
+        ((ComponentLoaderContext) context).setScreenData(screenData);
     }
 
     protected void loadDsContext(@Nullable Element dsContextElement) {
