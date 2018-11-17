@@ -28,10 +28,7 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.Notifications;
-import com.haulmont.cuba.gui.components.Action;
-import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.ValidationErrors;
-import com.haulmont.cuba.gui.components.Window;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.BaseAction;
 import com.haulmont.cuba.gui.model.*;
 import com.haulmont.cuba.gui.util.OperationResult;
@@ -133,6 +130,9 @@ public abstract class StandardEditor<T extends Entity> extends Screen implements
     }
 
     protected void setupEntityToEdit() {
+        if (getScreenData().getDataContext() == null) {
+            throw new IllegalStateException("No DataContext defined. Make sure the editor screen XML descriptor has <data> element");
+        }
         if (getEntityStates().isNew(entityToEdit) || doNotReloadEditedEntity()) {
             T mergedEntity = getScreenData().getDataContext().merge(entityToEdit);
 
@@ -294,8 +294,23 @@ public abstract class StandardEditor<T extends Entity> extends Screen implements
                     String.format("StandardEditor %s does not declare @EditedEntityContainer", getClass())
             );
         }
-
-        return getScreenData().getContainer(annotation.value());
+        String[] parts = annotation.value().split("\\.");
+        ScreenData screenData;
+        if (parts.length == 1) {
+            screenData = getScreenData();
+        } else {
+            Frame frame = getWindow();
+            for (int i = 0; i < parts.length - 1; i++) {
+                String part = parts[i];
+                Component component = frame.getComponent(part);
+                if (!(component instanceof Frame)) {
+                    throw new IllegalStateException("Path to EditedEntityContainer must include frames only");
+                }
+                frame = (Frame) component;
+            }
+            screenData = UiControllerUtils.getScreenData(frame.getFrameOwner());
+        }
+        return screenData.getContainer(parts[parts.length - 1]);
     }
 
     @SuppressWarnings("unchecked")
