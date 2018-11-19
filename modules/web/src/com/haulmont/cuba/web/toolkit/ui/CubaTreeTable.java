@@ -84,6 +84,8 @@ public class CubaTreeTable extends com.vaadin.ui.TreeTable implements TreeTableC
     protected Object focusItem;
     protected Runnable beforePaintListener;
 
+    protected String focusTotalAggregationInputColumnKey;
+
     protected Function<AggregationInputValueChangeContext, Boolean> aggregationDistributionProvider;
 
     public CubaTreeTable() {
@@ -105,6 +107,8 @@ public class CubaTreeTable extends com.vaadin.ui.TreeTable implements TreeTableC
             public void onAggregationTotalInputChange(String columnKey, String value, boolean isFocused) {
                 if (aggregationDistributionProvider != null) {
                     Object columnId = columnIdMap.get(columnKey);
+
+                    focusTotalAggregationInputColumnKey = isFocused ? columnKey : null;
 
                     AggregationInputValueChangeContext event =
                             new AggregationInputValueChangeContext(columnId, value, true);
@@ -691,6 +695,11 @@ public class CubaTreeTable extends com.vaadin.ui.TreeTable implements TreeTableC
 
             String value = (String) aggregations.get(columnId);
             target.addText(value);
+        }
+
+        if (focusTotalAggregationInputColumnKey != null) {
+            target.addAttribute("focusInput", focusTotalAggregationInputColumnKey);
+            focusTotalAggregationInputColumnKey = null;
         }
 
         target.startTag("editableAggregationColumns");

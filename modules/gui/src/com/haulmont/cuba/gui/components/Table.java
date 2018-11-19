@@ -440,7 +440,8 @@ public interface Table<E extends Entity>
     }
 
     /**
-     * Set aggregation distribution provider to handle distribution of data on rows.
+     * Set aggregation distribution provider to handle distribution of data on rows. Supports only TOP
+     * aggregation style.
      *
      * @param distributionProvider distribution provider
      */
