@@ -19,6 +19,7 @@ package com.haulmont.cuba.gui;
 
 import com.haulmont.cuba.gui.components.mainwindow.AppWorkArea;
 import com.haulmont.cuba.gui.screen.FrameOwner;
+import com.haulmont.cuba.gui.screen.OpenMode;
 import com.haulmont.cuba.gui.screen.Screen;
 import com.haulmont.cuba.gui.screen.ScreenOptions;
 
@@ -33,6 +34,17 @@ import java.util.Collection;
  * @see LookupScreens
  */
 public interface Screens {
+
+    /**
+     * Creates a screen by its controller class.
+     * <p>
+     * By default, the screen will be opened in the current tab of the main window ({@link OpenMode#THIS_TAB}).
+     *
+     * @param screenClass screen controller class
+     */
+    default <T extends Screen> T create(Class<T> screenClass) {
+        return create(screenClass, OpenMode.THIS_TAB, FrameOwner.NO_OPTIONS);
+    }
 
     /**
      * Creates a screen by its controller class.
