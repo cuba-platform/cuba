@@ -17,5 +17,5 @@
 package com.haulmont.cuba.web.toolkit.ui.client.tableshared;
 
 public interface GroupAggregationInputListener {
-    void onInputChange(String columnKey, String groupKey, String value);
+    void onInputChange(String columnKey, String groupKey, String value, boolean isFocused);
 }

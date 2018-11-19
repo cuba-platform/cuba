@@ -102,7 +102,7 @@ public class CubaTreeTable extends com.vaadin.ui.TreeTable implements TreeTableC
             }
 
             @Override
-            public void onAggregationTotalInputChange(String columnKey, String value) {
+            public void onAggregationTotalInputChange(String columnKey, String value, boolean isFocused) {
                 if (aggregationDistributionProvider != null) {
                     Object columnId = columnIdMap.get(columnKey);
 
@@ -115,7 +115,7 @@ public class CubaTreeTable extends com.vaadin.ui.TreeTable implements TreeTableC
             }
 
             @Override
-            public void onAggregationGroupInputChange(String columnKey, String groupKey, String value) {
+            public void onAggregationGroupInputChange(String columnKey, String groupKey, String value, boolean isFocused) {
                 // is used by CubaGroupTable
             }
         });

@@ -80,6 +80,8 @@ public class CubaTable extends com.vaadin.ui.Table implements TableContainer, Cu
     protected Object focusItem;
     protected Runnable beforePaintListener;
 
+    protected String focusTotalAggregationInputColumnKey;
+
     protected Function<AggregationInputValueChangeContext, Boolean> aggregationDistributionProvider;
 
     public CubaTable() {
@@ -99,9 +101,10 @@ public class CubaTable extends com.vaadin.ui.Table implements TableContainer, Cu
             }
 
             @Override
-            public void onAggregationTotalInputChange(String columnKey, String value) {
+            public void onAggregationTotalInputChange(String columnKey, String value, boolean isFocused) {
                 if (aggregationDistributionProvider != null) {
                     Object columnId = columnIdMap.get(columnKey);
+                    focusTotalAggregationInputColumnKey = isFocused ? columnKey : null;
 
                     AggregationInputValueChangeContext event =
                             new AggregationInputValueChangeContext(columnId, value, true);
@@ -112,8 +115,8 @@ public class CubaTable extends com.vaadin.ui.Table implements TableContainer, Cu
             }
 
             @Override
-            public void onAggregationGroupInputChange(String columnKey, String groupKey, String value) {
-                handleAggregationGroupInputChange(columnKey, groupKey, value);
+            public void onAggregationGroupInputChange(String columnKey, String groupKey, String value, boolean isFocused) {
+                handleAggregationGroupInputChange(columnKey, groupKey, value, isFocused);
             }
         });
     }
@@ -608,6 +611,10 @@ public class CubaTable extends com.vaadin.ui.Table implements TableContainer, Cu
             target.addText(value);
         }
         addEditableAggregationColumns(target);
+        if (focusTotalAggregationInputColumnKey != null) {
+            target.addAttribute("focusInput", focusTotalAggregationInputColumnKey);
+            focusTotalAggregationInputColumnKey = null;
+        }
 
         target.endTag("arow");
     }
@@ -643,7 +650,7 @@ public class CubaTable extends com.vaadin.ui.Table implements TableContainer, Cu
     }
 
     // used by CubaGroupTable
-    protected void handleAggregationGroupInputChange(String columnKey, String groupKey, String value) {
+    protected void handleAggregationGroupInputChange(String columnKey, String groupKey, String value, boolean isFocused) {
     }
 
     @Override

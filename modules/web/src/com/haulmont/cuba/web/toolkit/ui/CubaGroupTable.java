@@ -53,6 +53,8 @@ public class CubaGroupTable extends CubaTable implements GroupTableContainer {
 
     protected boolean shouldPaintWithAggregations = true;
 
+    protected String focusGroupAggregationInputColumnKey;
+
     /**
      * Attention: this method is copied from the parent class: {@link Table#setColumnOrder(java.lang.Object[])}
      */
@@ -418,6 +420,11 @@ public class CubaGroupTable extends CubaTable implements GroupTableContainer {
                             ((AggregationContainer) items).aggregate(new GroupAggregationContext(this, itemId)));
 
                     addEditableAggregationColumns(target);
+
+                    if (focusGroupAggregationInputColumnKey != null) {
+                        target.addAttribute("focusInput", focusGroupAggregationInputColumnKey);
+                        focusGroupAggregationInputColumnKey = null;
+                    }
                 }
             }
         }
@@ -713,11 +720,12 @@ public class CubaGroupTable extends CubaTable implements GroupTableContainer {
     }
 
     @Override
-    protected void handleAggregationGroupInputChange(String columnKey, String groupKey, String value) {
+    protected void handleAggregationGroupInputChange(String columnKey, String groupKey, String value, boolean isFocused) {
         if (aggregationDistributionProvider != null) {
             Object columnId = columnIdMap.get(columnKey);
-
             Object groupColumnId = groupIdMap.get(groupKey);
+
+            focusGroupAggregationInputColumnKey = isFocused ? columnKey : null;
 
             GroupAggregationInputValueChangeContext context
                     = new GroupAggregationInputValueChangeContext(columnId, value, false, groupColumnId);

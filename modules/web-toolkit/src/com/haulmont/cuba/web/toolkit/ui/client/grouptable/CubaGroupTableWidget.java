@@ -19,6 +19,7 @@ package com.haulmont.cuba.web.toolkit.ui.client.grouptable;
 
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.*;
+import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Widget;
@@ -267,6 +268,8 @@ public class CubaGroupTableWidget extends CubaScrollTableWidget {
                     addCell("", aligns[colIndex], CLASSNAME + "-group-divider", false);
                     this.isDividerAdded = true;
                     this.dividerColumnIndex = colIndex;
+                    int w = CubaGroupTableWidget.this.getColWidth(getColKeyByIndex(colIndex));
+                    super.setCellWidth(colIndex, w);
                     return true;
                 }
                 if (showRowHeaders && colIndex == 0) {
@@ -593,6 +596,17 @@ public class CubaGroupTableWidget extends CubaScrollTableWidget {
                     td.setColSpan(colSpan);
                     hasCells = false;
                 }
+
+                // set focus to input if we pressed `ENTER`
+                String focusColumnKey = uidl.getStringAttribute("focusInput");
+                if (focusColumnKey != null && inputsList != null) {
+                    for (AggregationInputFieldInfo info : inputsList) {
+                        if (info.getColumnKey().equals(focusColumnKey)) {
+                            info.getInputElement().focus();
+                            break;
+                        }
+                    }
+                }
             }
 
             @Override
@@ -737,7 +751,7 @@ public class CubaGroupTableWidget extends CubaScrollTableWidget {
                 }
                 inputsList.add(new AggregationInputFieldInfo(text, getColKeyByIndex(colIndex), inputElement));
 
-                DOM.sinkEvents(inputElement, Event.ONCHANGE);
+                DOM.sinkEvents(inputElement, Event.ONCHANGE | Event.ONKEYDOWN);
             }
 
             @Override
@@ -753,8 +767,8 @@ public class CubaGroupTableWidget extends CubaScrollTableWidget {
 
                         // we shouldn't do expand or collapse by click on input field
                         Element inputElement = Element.as(event.getEventTarget());
-                        String colKey = getColumnKeyByInput(inputElement);
-                        if (colKey != null) {
+                        AggregationInputFieldInfo inputInfo = getAggregationInputInfo(inputElement);
+                        if (inputInfo != null && inputInfo.getColumnKey() != null) {
                             break;
                         }
 
@@ -770,13 +784,38 @@ public class CubaGroupTableWidget extends CubaScrollTableWidget {
                             handleRowClick(event);
                         }
                         break;
+                    case Event.ONKEYDOWN:
+                        if (event.getKeyCode() == KeyCodes.KEY_ENTER &&
+                                _delegate.groupAggregationInputHandler != null) {
+                            Element sourceElement = Element.as(event.getEventTarget());
+                            AggregationInputFieldInfo info = getAggregationInputInfo(sourceElement);
+                            if (info != null) {
+                                String columnKey = info.getColumnKey();
+                                String value = info.getInputElement().getValue();
+                                info.setFocused(true);
+
+                                if (columnKey != null) {
+                                    _delegate.groupAggregationInputHandler.onInputChange(columnKey, getGroupKey(), value, true);
+                                }
+                            }
+                        }
+                        break;
                     case Event.ONCHANGE:
                         if (_delegate.groupAggregationInputHandler != null) {
-                            Element element = Element.as(event.getEventTarget());
-                            String columnKey = getColumnKeyByInput(element);
-                            if (columnKey != null) {
-                                InputElement input = element.cast();
-                                _delegate.groupAggregationInputHandler.onInputChange(columnKey, getGroupKey(), input.getValue());
+                            Element sourceElement = Element.as(event.getEventTarget());
+                            AggregationInputFieldInfo info = getAggregationInputInfo(sourceElement);
+                            if (info != null) {
+                                String columnKey = info.getColumnKey();
+                                String value = info.getInputElement().getValue();
+                                // do not send event, cause it was sent with `ENTER` key event
+                                if (info.isFocused()) {
+                                    info.setFocused(false);
+                                    return;
+                                }
+
+                                if (columnKey != null) {
+                                    _delegate.groupAggregationInputHandler.onInputChange(columnKey, getGroupKey(), value, false);
+                                }
                             }
                         }
                         break;
@@ -785,14 +824,14 @@ public class CubaGroupTableWidget extends CubaScrollTableWidget {
                 }
             }
 
-            protected String getColumnKeyByInput(Element input) {
+            protected AggregationInputFieldInfo getAggregationInputInfo(Element input) {
                 if (inputsList == null) {
                     return null;
                 }
 
                 for (AggregationInputFieldInfo info : inputsList) {
                     if (info.getInputElement().isOrHasChild(input)) {
-                        return info.getColumnKey();
+                        return info;
                     }
                 }
                 return null;

@@ -88,8 +88,8 @@ public class CubaGroupTableConnector extends CubaScrollTableConnector {
     protected void init() {
         super.init();
 
-        getWidget()._delegate.groupAggregationInputHandler = (columnKey, groupKey, value) -> {
-            getRpcProxy(CubaTableServerRpc.class).onAggregationGroupInputChange(columnKey, groupKey, value);
+        getWidget()._delegate.groupAggregationInputHandler = (columnKey, groupKey, value, isFocused) -> {
+            getRpcProxy(CubaTableServerRpc.class).onAggregationGroupInputChange(columnKey, groupKey, value, isFocused);
         };
     }
 

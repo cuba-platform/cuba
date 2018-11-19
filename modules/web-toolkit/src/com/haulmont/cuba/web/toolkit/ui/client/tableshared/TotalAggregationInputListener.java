@@ -17,5 +17,5 @@
 package com.haulmont.cuba.web.toolkit.ui.client.tableshared;
 
 public interface TotalAggregationInputListener {
-    void onInputChange(String columnKey, String value);
+    void onInputChange(String columnKey, String value, boolean isFocused);
 }

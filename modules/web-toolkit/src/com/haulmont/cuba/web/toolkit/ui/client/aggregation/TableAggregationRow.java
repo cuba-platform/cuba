@@ -19,6 +19,7 @@ package com.haulmont.cuba.web.toolkit.ui.client.aggregation;
 
 import com.google.gwt.dom.client.*;
 import com.google.gwt.dom.client.Style.Overflow;
+import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Panel;
@@ -94,6 +95,17 @@ public class TableAggregationRow extends Panel {
             tBody.appendChild(tr);
             table.appendChild(tBody);
             getElement().appendChild(table);
+
+            // set focus to input if we pressed `ENTER`
+            String focusColumnKey = uidl.getStringAttribute("focusInput");
+            if (focusColumnKey != null && inputsList != null) {
+                for (AggregationInputFieldInfo info : inputsList) {
+                    if (info.getColumnKey().equals(focusColumnKey)) {
+                        info.getInputElement().focus();
+                        break;
+                    }
+                }
+            }
         }
 
         initialized = getElement().hasChildNodes();
@@ -177,7 +189,7 @@ public class TableAggregationRow extends Panel {
         }
         inputsList.add(new AggregationInputFieldInfo(text, tableWidget.getColKeyByIndex(colIndex), inputElement));
 
-        DOM.sinkEvents(inputElement, Event.ONCHANGE);
+        DOM.sinkEvents(inputElement, Event.ONCHANGE | Event.ONKEYDOWN);
 
         td.setClassName(tableWidget.getStylePrimaryName() + "-cell-content");
         td.addClassName(tableWidget.getStylePrimaryName() + "-aggregation-cell");
@@ -280,10 +292,14 @@ public class TableAggregationRow extends Panel {
         this.totalAggregationInputHandler = totalAggregationInputHandler;
     }
 
-    protected String getColumnKeyByInput(Element input) {
+    protected AggregationInputFieldInfo getAggregationInputInfo(Element input) {
+        if (inputsList == null) {
+            return null;
+        }
+
         for (AggregationInputFieldInfo info : inputsList) {
             if (info.getInputElement().isOrHasChild(input)) {
-                return info.getColumnKey();
+                return info;
             }
         }
         return null;
@@ -294,12 +310,37 @@ public class TableAggregationRow extends Panel {
         super.onBrowserEvent(event);
 
         final int type = DOM.eventGetType(event);
+        Element sourceElement = Element.as(event.getEventTarget());
+
+        if (type == Event.ONKEYDOWN
+                && (event.getKeyCode() == KeyCodes.KEY_ENTER)) {
+            AggregationInputFieldInfo info = getAggregationInputInfo(sourceElement);
+            if (info != null) {
+                String columnKey = info.getColumnKey();
+                String value = info.getInputElement().getValue();
+                info.setFocused(true);
+
+                if (columnKey != null) {
+                    totalAggregationInputHandler.onInputChange(columnKey, value, true);
+                }
+            }
+        }
+
+
         if (type == Event.ONCHANGE && totalAggregationInputHandler != null) {
-            Element element = Element.as(event.getEventTarget());
-            String columnKey = getColumnKeyByInput(element);
-            if (columnKey != null) {
-                InputElement input = element.cast();
-                totalAggregationInputHandler.onInputChange(columnKey, input.getValue());
+            AggregationInputFieldInfo info = getAggregationInputInfo(sourceElement);
+            if (info != null) {
+                String columnKey = info.getColumnKey();
+                String value = info.getInputElement().getValue();
+                // do not send event, cause it was sent with `ENTER` key event
+                if (info.isFocused()) {
+                    info.setFocused(false);
+                    return;
+                }
+
+                if (columnKey != null) {
+                    totalAggregationInputHandler.onInputChange(columnKey, value, false);
+                }
             }
         }
     }

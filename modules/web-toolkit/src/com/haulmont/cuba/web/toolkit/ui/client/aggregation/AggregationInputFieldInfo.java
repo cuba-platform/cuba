@@ -23,6 +23,7 @@ public class AggregationInputFieldInfo {
     protected String oldValue;
     protected String columnKey;
     protected InputElement inputElement;
+    protected boolean isFocused = false;
 
     public AggregationInputFieldInfo(String oldValue, String columnKey, InputElement inputElement) {
         this.oldValue = oldValue;
@@ -52,5 +53,13 @@ public class AggregationInputFieldInfo {
 
     public void setColumnKey(String columnKey) {
         this.columnKey = columnKey;
+    }
+
+    public boolean isFocused() {
+        return isFocused;
+    }
+
+    public void setFocused(boolean focused) {
+        this.isFocused = focused;
     }
 }
