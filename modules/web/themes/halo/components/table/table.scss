@@ -26,21 +26,31 @@ $cuba-table-header-font-weight: $v-font-weight !default;
  */
 $cuba-table-highlight-hover-row: false !default;
 
+/**
+ * Defines default background color of table total aggregation row. Calculated automatically.
+ * @group table
+ */
+$cuba-table-aggregation-background-color-default: rgba(255,255,255, 1);
+@if is-dark-color($v-app-background-color) {
+  $cuba-table-aggregation-background-color-default: scale-color($v-app-background-color, $lightness: 10%, $saturation: 80%);
+} @else {
+  $cuba-table-aggregation-background-color-default: scale-color($v-app-background-color, $lightness: -10%, $saturation: 80%);
+}
+
+/**
+ * Defines background color of table total aggregation row.
+ * @group table
+ */
+$cuba-table-aggregation-background-color: $cuba-table-aggregation-background-color-default !default;
+
 @mixin halo-table($primary-stylename: v-table) {
   $background-color: $v-table-background-color or valo-table-background-color();
   $border-color: $v-table-border-color or first-color(valo-border($color: $background-color, $strength: 0.8));
 
-  $aggregation-background-color: white;
-  @if is-dark-color($v-app-background-color) {
-    $aggregation-background-color: scale-color($v-app-background-color, $lightness: 10%, $saturation: 80%);
-  } @else {
-    $aggregation-background-color: scale-color($v-app-background-color, $lightness: -10%, $saturation: 80%);
-  }
-
   .#{$primary-stylename}-arow {
     @include box-defaults;
 
-    @include valo-gradient($aggregation-background-color);
+    @include valo-gradient($cuba-table-aggregation-background-color);
     border-top: first-number($v-border) solid $border-color;
     border-left: first-number($v-border) solid $border-color;
     border-right: first-number($v-border) solid $border-color;
@@ -52,7 +62,7 @@ $cuba-table-highlight-hover-row: false !default;
     height: $v-table-row-height;
 
     border-right: first-number($v-border) solid $border-color;
-    color: valo-font-color($arow-background-color, 0.9);
+    color: valo-font-color($cuba-table-aggregation-background-color, 0.9);
   }
 
   .#{$primary-stylename}-arow-row > .#{$primary-stylename}-cell-content {
@@ -60,7 +70,7 @@ $cuba-table-highlight-hover-row: false !default;
   }
 
   .#{$primary-stylename}-footer {
-    @include valo-gradient($aggregation-background-color);
+    @include valo-gradient($cuba-table-aggregation-background-color);
   }
 
   .#{$primary-stylename},
@@ -379,7 +389,7 @@ $cuba-table-highlight-hover-row: false !default;
     }
 
     .#{$primary-stylename}-row.v-selected:hover,
-    .#{$primary-stylename}-row-odd.v-selected:hover  {
+    .#{$primary-stylename}-row-odd.v-selected:hover {
       @include valo-gradient($v-selection-color);
       background-origin: border-box;
       color: valo-font-color($v-selection-color, 0.9);
