@@ -47,6 +47,9 @@ public class LocalDateTimeEntity extends StandardEntity {
     @Column(name = "LOCAL_DATE_TIME")
     protected LocalDateTime localDateTime;
 
+    @Column(name = "NOW_DATE")
+    protected Date nowDate;
+
     public void setOffsetDateTime(OffsetDateTime offsetDateTime) {
         this.offsetDateTime = offsetDateTime;
     }
@@ -93,5 +96,13 @@ public class LocalDateTimeEntity extends StandardEntity {
 
     public LocalTime getLocalTime() {
         return localTime;
+    }
+
+    public Date getNowDate() {
+        return nowDate;
+    }
+
+    public void setNowDate(Date date) {
+        this.nowDate = date;
     }
 }

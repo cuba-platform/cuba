@@ -291,13 +291,13 @@ date_between_macro_expression
     : '@BETWEEN' '(' path_expression ',' 'NOW' (('+' | '-') numeric_literal)? ',' 'NOW' (('+' | '-') numeric_literal)? ',' ('YEAR' | 'MONTH' | 'DAY' | 'HOUR' |'MINUTE' | 'SECOND') (',' 'USER_TIMEZONE')? ')';
 
 date_before_macro_expression
-    : '@DATEBEFORE' '(' path_expression ',' (path_expression | input_parameter) (',' 'USER_TIMEZONE')? ')';
+    : '@DATEBEFORE' '(' path_expression ',' (path_expression | input_parameter | 'NOW' (('+' | '-') numeric_literal)? ) (',' 'USER_TIMEZONE')? ')';
 
 date_after_macro_expression
-    : '@DATEAFTER' '(' path_expression ',' (path_expression | input_parameter) (',' 'USER_TIMEZONE')? ')';
+    : '@DATEAFTER' '(' path_expression ',' (path_expression | input_parameter | 'NOW' (('+' | '-') numeric_literal)? ) (',' 'USER_TIMEZONE')? ')';
 
 date_equals_macro_expression
-    : '@DATEEQUALS' '(' path_expression ',' (path_expression | input_parameter) (',' 'USER_TIMEZONE')? ')';
+    : '@DATEEQUALS' '(' path_expression ',' (path_expression | input_parameter | 'NOW' (('+' | '-') numeric_literal)? ) (',' 'USER_TIMEZONE')? ')';
 
 date_today_macro_expression
     : '@TODAY' '(' path_expression (',' 'USER_TIMEZONE')? ')';
