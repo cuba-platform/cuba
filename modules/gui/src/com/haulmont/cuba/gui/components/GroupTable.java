@@ -171,5 +171,9 @@ public interface GroupTable<E extends Entity> extends Table<E> {
         public GroupInfo getGroupInfo() {
             return groupInfo;
         }
+
+        public String getGroupPropertyPath() {
+            return groupInfo.getProperty().toString();
+        }
     }
 }

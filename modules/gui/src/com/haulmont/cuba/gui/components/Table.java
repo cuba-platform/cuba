@@ -581,6 +581,28 @@ public interface Table<E extends Entity>
             return id;
         }
 
+        @Nullable
+        public MetaPropertyPath getMetaPropertyPath() {
+            if (id instanceof MetaPropertyPath) {
+                return (MetaPropertyPath) id;
+            }
+            return null;
+        }
+
+        public MetaPropertyPath getMetaPropertyPathNN() {
+            if (id instanceof MetaPropertyPath) {
+                return (MetaPropertyPath) id;
+            }
+            throw new IllegalStateException("Column is not bound to meta property " + id);
+        }
+
+        public String getIdString() {
+            if (id instanceof MetaPropertyPath) {
+                return id.toString();
+            }
+            return String.valueOf(id);
+        }
+
         @Override
         public String getCaption() {
             return caption;
@@ -710,10 +732,12 @@ public interface Table<E extends Entity>
             }
         }
 
+        @Deprecated
         public boolean isCalculatable() {
             return calculatable;
         }
 
+        @Deprecated
         public void setCalculatable(boolean calculatable) {
             this.calculatable = calculatable;
         }
@@ -964,6 +988,10 @@ public interface Table<E extends Entity>
 
         public Column getColumn() {
             return column;
+        }
+
+        public String getColumnId() {
+            return column.getIdString();
         }
 
         public Object getValue() {
