@@ -47,13 +47,13 @@ import java.util.Map;
 
 public class PortalConnection implements Connection {
 
+    private static final Logger log = LoggerFactory.getLogger(Connection.class);
+
     protected final List<ConnectionListener> listeners = new ArrayList<>();
 
     protected volatile boolean connected;
 
     protected volatile PortalSession session;
-
-    private static final Logger log = LoggerFactory.getLogger(Connection.class);
 
     @Inject
     protected Configuration configuration;
@@ -175,12 +175,12 @@ public class PortalConnection implements Connection {
 
         try {
             internalLogin();
-        } catch (LoginException | RuntimeException e) {
+        } catch (LoginException e) {
             internalLogout();
             throw e;
         } catch (Exception e) {
             internalLogout();
-            throw new RuntimeException(e);
+            throw new RuntimeException("Unable to perform internal login", e);
         }
     }
 

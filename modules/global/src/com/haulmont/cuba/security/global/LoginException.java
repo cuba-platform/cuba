@@ -24,7 +24,7 @@ import com.haulmont.cuba.core.global.SupportedByClient;
  */
 @SupportedByClient
 @Logging(Logging.Type.BRIEF)
-public class LoginException extends Exception {
+public class LoginException extends RuntimeException {
 
     private static final long serialVersionUID = 6144194102176774627L;
 

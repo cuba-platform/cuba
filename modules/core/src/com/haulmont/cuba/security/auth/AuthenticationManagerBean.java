@@ -38,7 +38,6 @@ import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import javax.persistence.NoResultException;
 import java.io.Serializable;
-import java.lang.reflect.UndeclaredThrowableException;
 import java.util.*;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
@@ -322,54 +321,25 @@ public class AuthenticationManagerBean implements AuthenticationManager {
     }
 
     protected void publishBeforeLoginEvent(Credentials credentials) throws LoginException {
-        try {
-            events.publish(new BeforeLoginEvent(credentials));
-        } catch (UndeclaredThrowableException e) {
-            rethrowLoginException(e);
-        }
+        events.publish(new BeforeLoginEvent(credentials));
     }
 
     protected void publishBeforeAuthenticationEvent(Credentials credentials) throws LoginException {
-        try {
-            events.publish(new BeforeAuthenticationEvent(credentials));
-        } catch (UndeclaredThrowableException e) {
-            rethrowLoginException(e);
-        }
-    }
-
-    protected void rethrowLoginException(RuntimeException e) throws LoginException {
-        Throwable cause = e.getCause();
-        if (cause instanceof LoginException) {
-            throw (LoginException) cause;
-        } else {
-            throw e;
-        }
+        events.publish(new BeforeAuthenticationEvent(credentials));
     }
 
     protected void publishAfterAuthenticationEvent(Credentials credentials, AuthenticationDetails authenticationDetails)
             throws LoginException {
-        try {
-            events.publish(new AfterAuthenticationEvent(credentials, authenticationDetails));
-        } catch (UndeclaredThrowableException e) {
-            rethrowLoginException(e);
-        }
+        events.publish(new AfterAuthenticationEvent(credentials, authenticationDetails));
     }
 
     protected void publishAuthenticationFailed(Credentials credentials, AuthenticationProvider provider,
                                                LoginException e) throws LoginException {
-        try {
-            events.publish(new AuthenticationFailureEvent(credentials, provider, e));
-        } catch (UndeclaredThrowableException re) {
-            rethrowLoginException(re);
-        }
+        events.publish(new AuthenticationFailureEvent(credentials, provider, e));
     }
 
     protected void publishAuthenticationSuccess(AuthenticationDetails details, Credentials credentials) throws LoginException {
-        try {
-            events.publish(new AuthenticationSuccessEvent(credentials, details));
-        } catch (UndeclaredThrowableException re) {
-            rethrowLoginException(re);
-        }
+        events.publish(new AuthenticationSuccessEvent(credentials, details));
     }
 
     protected void publishUserLoggedOut(UserSession session) {
