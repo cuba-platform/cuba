@@ -24,10 +24,10 @@ import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.LookupPickerField;
 import com.haulmont.cuba.gui.components.OptionsStyleProvider;
 import com.haulmont.cuba.gui.components.SecuredActionsHolder;
+import com.haulmont.cuba.gui.components.data.Options;
 import com.haulmont.cuba.gui.components.data.meta.EntityOptions;
 import com.haulmont.cuba.gui.components.data.meta.EntityValueSource;
 import com.haulmont.cuba.gui.components.data.meta.OptionsBinding;
-import com.haulmont.cuba.gui.components.data.Options;
 import com.haulmont.cuba.gui.components.data.options.OptionsBinder;
 import com.haulmont.cuba.web.gui.components.util.ShortcutListenerDelegate;
 import com.haulmont.cuba.web.gui.icons.IconResolver;
@@ -70,9 +70,6 @@ public class WebLookupPickerField<V extends Entity> extends WebPickerField<V>
     protected Locale locale;
 
     public WebLookupPickerField() {
-        super();
-
-        setNewOptionAllowed(false);
     }
 
     @Override
@@ -177,15 +174,27 @@ public class WebLookupPickerField<V extends Entity> extends WebPickerField<V>
 
     @Override
     public boolean isNewOptionAllowed() {
-        return false;
-        // VAADIN8: gg, implement
-//        return component.isNewItemsAllowed();
+        return getComponent().getNewItemHandler() != null;
     }
 
     @Override
-    public void setNewOptionAllowed(boolean newOptionAllowed) {
-        // VAADIN8: gg, implement
-//        component.setNewItemsAllowed(newItemAllowed);
+    public void setNewOptionAllowed(boolean newItemAllowed) {
+        if (newItemAllowed
+                && getComponent().getNewItemHandler() == null) {
+            getComponent().setNewItemHandler(this::onNewItemEntered);
+        }
+
+        if (!newItemAllowed
+                && getComponent().getNewItemHandler() != null) {
+            getComponent().setNewItemHandler(null);
+        }
+    }
+
+    protected void onNewItemEntered(String newItemCaption) {
+        if (newOptionHandler == null) {
+            throw new IllegalStateException("New item handler cannot be NULL");
+        }
+        newOptionHandler.accept(newItemCaption);
     }
 
     @Override
@@ -216,6 +225,16 @@ public class WebLookupPickerField<V extends Entity> extends WebPickerField<V>
     @Override
     public void setNewOptionHandler(Consumer<String> newOptionHandler) {
         this.newOptionHandler = newOptionHandler;
+
+        if (newOptionHandler != null
+                && getComponent().getNewItemHandler() == null) {
+            getComponent().setNewItemHandler(this::onNewItemEntered);
+        }
+
+        if (newOptionHandler == null
+                && getComponent().getNewItemHandler() != null) {
+            getComponent().setNewItemHandler(null);
+        }
     }
 
     @Override

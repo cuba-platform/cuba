@@ -147,4 +147,12 @@ public class CubaComboBoxPickerField<T> extends CubaPickerField<T> {
     public void setItemCaptionGenerator(ItemCaptionGenerator<T> itemCaptionGenerator) {
         getFieldInternal().setItemCaptionGenerator(itemCaptionGenerator);
     }
+
+    public ComboBox.NewItemHandler getNewItemHandler() {
+        return getFieldInternal().getNewItemHandler();
+    }
+
+    public void setNewItemHandler(ComboBox.NewItemHandler newItemHandler) {
+        getFieldInternal().setNewItemHandler(newItemHandler);
+    }
 }

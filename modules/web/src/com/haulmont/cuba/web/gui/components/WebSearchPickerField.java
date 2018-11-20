@@ -60,8 +60,6 @@ public class WebSearchPickerField<V extends Entity> extends WebPickerField<V>
     // just stub
     protected FilterPredicate filterPredicate;
 
-    protected Consumer<String> newOptionHandler;
-
     protected OptionsStyleProvider optionsStyleProvider;
     protected Function<? super V, String> optionIconProvider;
     protected Function<? super V, String> optionCaptionProvider;
@@ -339,12 +337,14 @@ public class WebSearchPickerField<V extends Entity> extends WebPickerField<V>
 
     @Override
     public Consumer<String> getNewOptionHandler() {
-        return newOptionHandler;
+        return null;
     }
 
     @Override
     public void setNewOptionHandler(Consumer<String> newOptionHandler) {
-        this.newOptionHandler = newOptionHandler;
+        if (newOptionHandler != null) {
+            throw new UnsupportedOperationException("New options are not allowed for SearchPickerField");
+        }
     }
 
     @Override

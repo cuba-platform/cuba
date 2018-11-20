@@ -70,13 +70,16 @@ public interface LookupField<V> extends OptionsField<V, V>, HasInputPrompt, Buff
      * @return true if the component handles new options entered by user.
      * @see #setNewOptionHandler(Consumer)
      */
+    @Deprecated
     boolean isNewOptionAllowed();
     /**
      * vaadin8 deprecate
      *
      * Makes the component handle new options entered by user.
      * @see #setNewOptionHandler(Consumer)
+     * @deprecated setting the new option handler enables new options
      */
+    @Deprecated
     void setNewOptionAllowed(boolean newOptionAllowed);
 
     /**
@@ -93,8 +96,10 @@ public interface LookupField<V> extends OptionsField<V, V>, HasInputPrompt, Buff
      * @return current handler
      */
     Consumer<String> getNewOptionHandler();
+
     /**
-     * Set handler.
+     * Sets the handler that is called when user types a new item.
+     *
      * @param newOptionHandler handler instance
      */
     void setNewOptionHandler(Consumer<String> newOptionHandler);
