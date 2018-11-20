@@ -140,7 +140,7 @@ public class CubaGroupTable extends CubaTable implements GroupTableContainer {
         if (hasGroups() && hasAggregation) {
             target.startTag("groupRows");
             for (Object itemId : getVisibleItemIds()) {
-                if (isAggregatedValuesChanged(itemId)) {
+                if (isGroup(itemId) && isAggregatedValuesChanged(itemId)) {
                     target.startTag("tr");
 
                     target.addAttribute("groupKey", groupIdMap.key(itemId));
