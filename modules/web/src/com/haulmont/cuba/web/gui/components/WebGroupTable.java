@@ -443,10 +443,13 @@ public class WebGroupTable<E extends Entity> extends WebAbstractTable<CubaGroupT
                 Collection<?> itemIds = containerDatasource.hasGroups()
                         ? containerDatasource.getItemIds(false)
                         : containerDatasource.getItemIds();
-                // Filter items that don't exist in the datasource, e.g. GroupInfo
-                itemIds = itemIds.stream()
-                        .filter(id -> datasource.containsItem(id))
-                        .collect(Collectors.toList());
+                if (!itemIds.isEmpty()) {
+                    // Filter items that don't exist in the datasource, e.g. GroupInfo
+                    //noinspection unchecked
+                    itemIds = itemIds.stream()
+                            .filter(id -> datasource.containsItem(id))
+                            .collect(Collectors.toList());
+                }
 
                 component.setValue(itemIds);
                 return;
