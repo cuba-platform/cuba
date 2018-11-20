@@ -165,11 +165,11 @@ public class RemoveAction extends SecuredListAction {
     protected void commitIfNeeded(CollectionContainer container, ScreenData screenData) {
         boolean needCommit = true;
         if (container instanceof Nested) {
-            InstanceContainer parentContainer = ((Nested) container).getParent();
+            InstanceContainer masterContainer = ((Nested) container).getMaster();
             String property = ((Nested) container).getProperty();
 
-            MetaClass parentMetaClass = parentContainer.getEntityMetaClass();
-            MetaProperty metaProperty = parentMetaClass.getPropertyNN(property);
+            MetaClass masterMetaClass = masterContainer.getEntityMetaClass();
+            MetaProperty metaProperty = masterMetaClass.getPropertyNN(property);
 
             needCommit = metaProperty.getType() != MetaProperty.Type.COMPOSITION;
         }

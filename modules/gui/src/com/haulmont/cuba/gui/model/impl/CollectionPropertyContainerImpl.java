@@ -31,19 +31,19 @@ import java.util.List;
 public class CollectionPropertyContainerImpl<E extends Entity>
         extends CollectionContainerImpl<E> implements CollectionPropertyContainer<E> {
 
-    protected InstanceContainer parent;
+    protected InstanceContainer master;
     protected String property;
 
-    public CollectionPropertyContainerImpl(MetaClass metaClass, InstanceContainer parent, String property) {
+    public CollectionPropertyContainerImpl(MetaClass metaClass, InstanceContainer master, String property) {
         super(metaClass);
-        this.parent = parent;
+        this.master = master;
         this.property = property;
         sorter = new CollectionPropertyContainerSorter(this);
     }
 
     @Override
-    public InstanceContainer getParent() {
-        return parent;
+    public InstanceContainer getMaster() {
+        return master;
     }
 
     @Override
@@ -66,7 +66,7 @@ public class CollectionPropertyContainerImpl<E extends Entity>
         return new ObservableList<>(collection, (changeType, changes) -> {
             buildIdMap();
             clearItemIfNotExists();
-            updateParent();
+            updateMaster();
             fireCollectionChanged(changeType, changes);
         });
     }
@@ -74,49 +74,49 @@ public class CollectionPropertyContainerImpl<E extends Entity>
     @Override
     public void setItems(@Nullable Collection<E> entities) {
         super.setItems(entities);
-        Entity parentItem = parent.getItemOrNull();
-        if (parentItem != null) {
-            MetaProperty parentProperty = getParentProperty();
-            Collection parentCollection = parentItem.getValue(parentProperty.getName());
-            if (parentCollection != entities) {
-                updateParentCollection(parentProperty, parentCollection, entities);
+        Entity masterItem = master.getItemOrNull();
+        if (masterItem != null) {
+            MetaProperty masterProperty = getMasterProperty();
+            Collection masterCollection = masterItem.getValue(masterProperty.getName());
+            if (masterCollection != entities) {
+                updateMasterCollection(masterProperty, masterCollection, entities);
             }
         }
     }
 
     @SuppressWarnings("unchecked")
-    protected void updateParent() {
-        MetaProperty parentProperty = getParentProperty();
-        Collection parentCollection = parent.getItem().getValue(parentProperty.getName());
-        updateParentCollection(parentProperty, parentCollection, this.collection);
+    protected void updateMaster() {
+        MetaProperty masterProperty = getMasterProperty();
+        Collection masterCollection = master.getItem().getValue(masterProperty.getName());
+        updateMasterCollection(masterProperty, masterCollection, this.collection);
     }
 
-    protected MetaProperty getParentProperty() {
-        MetaClass parentMetaClass = parent.getEntityMetaClass();
-        MetaProperty parentProperty = parentMetaClass.getPropertyNN(property);
-        if (!parentProperty.getRange().getCardinality().isMany()) {
+    protected MetaProperty getMasterProperty() {
+        MetaClass masterMetaClass = master.getEntityMetaClass();
+        MetaProperty masterProperty = masterMetaClass.getPropertyNN(property);
+        if (!masterProperty.getRange().getCardinality().isMany()) {
             throw new IllegalStateException(String.format("Property '%s' is not a collection", property));
         }
-        return parentProperty;
+        return masterProperty;
     }
 
     @SuppressWarnings("unchecked")
-    private void updateParentCollection(MetaProperty metaProperty,
-                                        @Nullable Collection parentCollection,
+    private void updateMasterCollection(MetaProperty metaProperty,
+                                        @Nullable Collection masterCollection,
                                         @Nullable Collection<E> newCollection) {
         if (newCollection == null) {
-            parent.getItem().setValue(metaProperty.getName(), null);
+            master.getItem().setValue(metaProperty.getName(), null);
         } else {
-            if (parentCollection == null) {
+            if (masterCollection == null) {
                 if (List.class.isAssignableFrom(metaProperty.getJavaType())) {
-                    parentCollection = new ArrayList(newCollection);
+                    masterCollection = new ArrayList(newCollection);
                 } else {
-                    parentCollection = new LinkedHashSet(newCollection);
+                    masterCollection = new LinkedHashSet(newCollection);
                 }
-                parent.getItem().setValue(metaProperty.getName(), parentCollection);
+                master.getItem().setValue(metaProperty.getName(), masterCollection);
             } else {
-                parentCollection.clear();
-                parentCollection.addAll(newCollection);
+                masterCollection.clear();
+                masterCollection.addAll(newCollection);
             }
         }
     }

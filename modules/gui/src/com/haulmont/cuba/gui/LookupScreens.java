@@ -212,17 +212,17 @@ public class LookupScreens {
         }
 
         boolean initializeMasterReference = false;
-        Entity holderItem = null;
+        Entity masterItem = null;
         MetaProperty inverseMetaProperty = null;
 
         // update holder reference if needed
         if (collectionDc instanceof Nested) {
-            InstanceContainer holderDc = ((Nested) collectionDc).getParent();
+            InstanceContainer masterDc = ((Nested) collectionDc).getMaster();
 
             String property = ((Nested) collectionDc).getProperty();
-            holderItem = holderDc.getItem();
+            masterItem = masterDc.getItem();
 
-            MetaProperty metaProperty = holderItem.getMetaClass().getPropertyNN(property);
+            MetaProperty metaProperty = masterItem.getMetaClass().getPropertyNN(property);
             inverseMetaProperty = metaProperty.getInverse();
 
             if (inverseMetaProperty != null
@@ -244,7 +244,7 @@ public class LookupScreens {
                 E mergedItem = dataContext.merge(item);
                 if (initializeMasterReference) {
                     // change reference, now it will be marked as modified
-                    mergedItem.setValue(inverseMetaProperty.getName(), holderItem);
+                    mergedItem.setValue(inverseMetaProperty.getName(), masterItem);
                 }
                 mergedItems.add(mergedItem);
             }

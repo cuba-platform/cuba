@@ -22,12 +22,12 @@ package com.haulmont.cuba.gui.model;
 public interface Nested {
 
     /**
-     * Returns the container holding the parent entity.
+     * Returns the container holding the master entity.
      */
-    InstanceContainer getParent();
+    InstanceContainer getMaster();
 
     /**
-     * Returns the name of the parent entity property.
+     * Returns the name of the master entity property.
      */
     String getProperty();
 }

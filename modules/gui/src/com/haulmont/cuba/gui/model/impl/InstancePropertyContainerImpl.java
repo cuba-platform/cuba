@@ -24,18 +24,18 @@ import com.haulmont.cuba.gui.model.InstancePropertyContainer;
 public class InstancePropertyContainerImpl<E extends Entity>
         extends InstanceContainerImpl<E> implements InstancePropertyContainer<E> {
 
-    protected InstanceContainer parent;
+    protected InstanceContainer master;
     protected String property;
 
-    public InstancePropertyContainerImpl(MetaClass metaClass, InstanceContainer parent, String property) {
+    public InstancePropertyContainerImpl(MetaClass metaClass, InstanceContainer master, String property) {
         super(metaClass);
-        this.parent = parent;
+        this.master = master;
         this.property = property;
     }
 
     @Override
-    public InstanceContainer getParent() {
-        return parent;
+    public InstanceContainer getMaster() {
+        return master;
     }
 
     @Override

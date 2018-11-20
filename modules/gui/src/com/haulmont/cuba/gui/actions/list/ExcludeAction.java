@@ -86,10 +86,10 @@ public class ExcludeAction extends SecuredListAction {
         if (dataUnit instanceof Nested) {
             Nested nestedContainer = (Nested) dataUnit;
 
-            MetaClass holderMetaClass = nestedContainer.getParent().getEntityMetaClass();
-            MetaProperty metaProperty = holderMetaClass.getPropertyNN(nestedContainer.getProperty());
+            MetaClass masterMetaClass = nestedContainer.getMaster().getEntityMetaClass();
+            MetaProperty metaProperty = masterMetaClass.getPropertyNN(nestedContainer.getProperty());
 
-            boolean attrPermitted = security.isEntityAttrUpdatePermitted(holderMetaClass, metaProperty.getName());
+            boolean attrPermitted = security.isEntityAttrUpdatePermitted(masterMetaClass, metaProperty.getName());
             if (!attrPermitted) {
                 return false;
             }
@@ -113,12 +113,12 @@ public class ExcludeAction extends SecuredListAction {
 
             if (!selectedItems.isEmpty()) {
                 if (collectionDc instanceof Nested) {
-                    InstanceContainer holderDc = ((Nested) collectionDc).getParent();
+                    InstanceContainer masterDc = ((Nested) collectionDc).getMaster();
 
                     String property = ((Nested) collectionDc).getProperty();
-                    Entity holderItem = holderDc.getItem();
+                    Entity masterItem = masterDc.getItem();
 
-                    MetaProperty metaProperty = holderItem.getMetaClass().getPropertyNN(property);
+                    MetaProperty metaProperty = masterItem.getMetaClass().getPropertyNN(property);
                     MetaProperty inverseMetaProperty = metaProperty.getInverse();
 
                     if (inverseMetaProperty != null

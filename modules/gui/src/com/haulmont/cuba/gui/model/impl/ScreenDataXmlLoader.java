@@ -178,7 +178,7 @@ public class ScreenDataXmlLoader {
     }
 
     @SuppressWarnings("unchecked")
-    protected void loadNestedContainer(ScreenData screenData, Element element, InstanceContainer<Entity> parentContainer,
+    protected void loadNestedContainer(ScreenData screenData, Element element, InstanceContainer<Entity> masterContainer,
                                        @Nullable ScreenData hostScreenData) {
         if (!element.getName().equals("collection") && !element.getName().equals("instance"))
             return;
@@ -186,7 +186,7 @@ public class ScreenDataXmlLoader {
         String containerId = getRequiredAttr(element, "id");
 
         String property = getRequiredAttr(element, "property");
-        MetaProperty metaProperty = parentContainer.getEntityMetaClass().getPropertyNN(property);
+        MetaProperty metaProperty = masterContainer.getEntityMetaClass().getPropertyNN(property);
 
         InstanceContainer nestedContainer = null;
 
@@ -200,14 +200,14 @@ public class ScreenDataXmlLoader {
                             "Cannot bind collection container '%s' to a non-collection property '%s'", containerId, property));
                 }
                 CollectionPropertyContainer<Entity> container = factory.createCollectionContainer(
-                        metaProperty.getRange().asClass().getJavaClass(), parentContainer, property);
+                        metaProperty.getRange().asClass().getJavaClass(), masterContainer, property);
 
-                parentContainer.addItemChangeListener(e -> {
-                    Entity item = parentContainer.getItemOrNull();
+                masterContainer.addItemChangeListener(e -> {
+                    Entity item = masterContainer.getItemOrNull();
                     container.setItems(item != null ? item.getValue(property) : null);
                 });
 
-                parentContainer.addItemPropertyChangeListener(e -> {
+                masterContainer.addItemPropertyChangeListener(e -> {
                     if (e.getProperty().equals(property)) {
                         container.setDisconnectedItems((Collection<Entity>) e.getValue());
                     }
@@ -221,14 +221,14 @@ public class ScreenDataXmlLoader {
                             "Cannot bind instance container '%s' to a non-reference property '%s'", containerId, property));
                 }
                 InstanceContainer<Entity> container = factory.createInstanceContainer(
-                        metaProperty.getRange().asClass().getJavaClass(), parentContainer, property);
+                        metaProperty.getRange().asClass().getJavaClass(), masterContainer, property);
 
-                parentContainer.addItemChangeListener(e -> {
-                    Entity item = parentContainer.getItemOrNull();
+                masterContainer.addItemChangeListener(e -> {
+                    Entity item = masterContainer.getItemOrNull();
                     container.setItem(item != null ? item.getValue(property) : null);
                 });
 
-                parentContainer.addItemPropertyChangeListener(e -> {
+                masterContainer.addItemPropertyChangeListener(e -> {
                     if (e.getProperty().equals(property)) {
                         container.setItem((Entity) e.getValue());
                     }

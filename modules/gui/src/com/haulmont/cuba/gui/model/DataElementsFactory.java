@@ -61,8 +61,8 @@ public class DataElementsFactory implements ApplicationContextAware {
      * Creates {@code InstancePropertyContainer}.
      */
     public <E extends Entity> InstancePropertyContainer<E> createInstanceContainer(Class<E> entityClass,
-                                                                                   InstanceContainer parent, String property) {
-        return new InstancePropertyContainerImpl<>(metadata.getClassNN(entityClass), parent, property);
+                                                                                   InstanceContainer master, String property) {
+        return new InstancePropertyContainerImpl<>(metadata.getClassNN(entityClass), master, property);
     }
 
     /**
@@ -76,8 +76,8 @@ public class DataElementsFactory implements ApplicationContextAware {
      * Creates {@code CollectionPropertyContainer}.
      */
     public <E extends Entity> CollectionPropertyContainer<E> createCollectionContainer(Class<E> entityClass,
-                                                                                       InstanceContainer parent, String property) {
-        return new CollectionPropertyContainerImpl<>(metadata.getClassNN(entityClass), parent, property);
+                                                                                       InstanceContainer master, String property) {
+        return new CollectionPropertyContainerImpl<>(metadata.getClassNN(entityClass), master, property);
     }
 
     /**

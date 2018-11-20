@@ -83,10 +83,10 @@ public class AddAction extends ListAction {
         if (dataUnit instanceof Nested) {
             Nested nestedContainer = (Nested) dataUnit;
 
-            MetaClass holderMetaClass = nestedContainer.getParent().getEntityMetaClass();
-            MetaProperty metaProperty = holderMetaClass.getPropertyNN(nestedContainer.getProperty());
+            MetaClass masterMetaClass = nestedContainer.getMaster().getEntityMetaClass();
+            MetaProperty metaProperty = masterMetaClass.getPropertyNN(nestedContainer.getProperty());
 
-            boolean attrPermitted = security.isEntityAttrUpdatePermitted(holderMetaClass, metaProperty.getName());
+            boolean attrPermitted = security.isEntityAttrUpdatePermitted(masterMetaClass, metaProperty.getName());
             if (!attrPermitted) {
                 return false;
             }
