@@ -18,11 +18,14 @@
 package com.haulmont.cuba.gui.components.filter;
 
 import com.google.common.base.Strings;
+import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.gui.WindowParam;
 import com.haulmont.cuba.gui.components.AbstractWindow;
 import com.haulmont.cuba.gui.components.TextField;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
+import com.haulmont.cuba.security.entity.FilterEntity;
 
 import javax.inject.Inject;
 import java.util.List;
@@ -38,6 +41,9 @@ public class SaveFilterWindow extends AbstractWindow {
     @Inject
     protected ThemeConstants theme;
 
+    @Inject
+    protected Metadata metadata;
+
     @WindowParam(name = "existingNames")
     protected List<String> existingNames;
 
@@ -49,6 +55,12 @@ public class SaveFilterWindow extends AbstractWindow {
         String filterNameParam = (String) params.get("filterName");
         if (!Strings.isNullOrEmpty(filterNameParam)) {
             filterName.setValue(filterNameParam);
+        }
+        MetaProperty property = metadata.getClassNN(FilterEntity.class).getPropertyNN("name");
+        Map<String, Object> annotations = property.getAnnotations();
+        Integer maxLength = (Integer) annotations.get("length");
+        if (maxLength != null) {
+            filterName.setMaxLength(maxLength);
         }
     }
 
