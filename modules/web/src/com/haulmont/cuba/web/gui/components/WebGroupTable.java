@@ -562,6 +562,11 @@ public class WebGroupTable<E extends Entity> extends WebAbstractTable<CubaGroupT
                 Collection<?> itemIds = tableSource.hasGroups()
                         ? getAllItemIds(tableSource)
                         : tableSource.getItemIds();
+                // Filter items that don't exist in the datasource, e.g. GroupInfo
+                itemIds = itemIds.stream()
+                        .filter(tableSource::containsId)
+                        .collect(Collectors.toList());
+
                 component.setValue(itemIds);
                 return;
             }
