@@ -562,10 +562,13 @@ public class WebGroupTable<E extends Entity> extends WebAbstractTable<CubaGroupT
                 Collection<?> itemIds = tableSource.hasGroups()
                         ? getAllItemIds(tableSource)
                         : tableSource.getItemIds();
-                // Filter items that don't exist in the datasource, e.g. GroupInfo
-                itemIds = itemIds.stream()
-                        .filter(tableSource::containsId)
-                        .collect(Collectors.toList());
+
+                if (!itemIds.isEmpty()) {
+                    // Filter items that don't exist in the datasource, e.g. GroupInfo
+                    itemIds = itemIds.stream()
+                            .filter(tableSource::containsId)
+                            .collect(Collectors.toList());
+                }
 
                 component.setValue(itemIds);
                 return;
@@ -574,9 +577,9 @@ public class WebGroupTable<E extends Entity> extends WebAbstractTable<CubaGroupT
         super.selectAll();
     }
 
-    protected LinkedList<Object> getAllItemIds(GroupTableItems<E> tableSource) {
+    protected List<Object> getAllItemIds(GroupTableItems<E> tableSource) {
         List<GroupInfo> roots = tableSource.rootGroups();
-        final LinkedList<Object> result = new LinkedList<>();
+        List<Object> result = new ArrayList<>();
         for (final GroupInfo root : roots) {
             result.add(root);
             collectItemIds(root, result);
