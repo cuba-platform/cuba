@@ -129,10 +129,7 @@ public class StandardKeyValueCollectionLoader implements KeyValueCollectionLoade
     @Override
     public void setContainer(KeyValueCollectionContainer container) {
         this.container = container;
-        if (container instanceof HasLoader) {
-            ((HasLoader) container).setLoader(this);
-        }
-        container.setSorter(new CollectionContainerSorter(this));
+        container.setSorter(new CollectionContainerSorter(container, this));
     }
 
     @Override

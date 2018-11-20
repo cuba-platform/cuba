@@ -199,7 +199,7 @@ public class ScreenDataXmlLoader {
                     throw new IllegalStateException(String.format(
                             "Cannot bind collection container '%s' to a non-collection property '%s'", containerId, property));
                 }
-                CollectionContainer<Entity> container = factory.createCollectionContainer(
+                CollectionPropertyContainer<Entity> container = factory.createCollectionContainer(
                         metaProperty.getRange().asClass().getJavaClass(), parentContainer, property);
 
                 parentContainer.addItemChangeListener(e -> {
@@ -209,7 +209,7 @@ public class ScreenDataXmlLoader {
 
                 parentContainer.addItemPropertyChangeListener(e -> {
                     if (e.getProperty().equals(property)) {
-                        container.setItems((Collection<Entity>) e.getValue());
+                        container.setDisconnectedItems((Collection<Entity>) e.getValue());
                     }
                 });
 

@@ -91,4 +91,24 @@ class CollectionPropertyContainerTest extends WebSpec {
         order.orderLines.containsAll(orderLine3, orderLine4)
     }
 
+    def "property does not reflect changes if new collection is set using setDisconnectedItems"() {
+
+        orderCt.setItem(order)
+        linesCt.setItems(order.orderLines)
+
+        def orderLine3 = new OrderLine(order: this.order, quantity: 3)
+        def orderLine4 = new OrderLine(order: this.order, quantity: 4)
+        def otherLines = [orderLine3, orderLine4]
+
+        when:
+
+        linesCt.setDisconnectedItems(otherLines)
+
+        then:
+
+        order.orderLines.containsAll(orderLine1, orderLine2)
+        !order.orderLines.contains(orderLine3)
+        !order.orderLines.contains(orderLine4)
+    }
+
 }

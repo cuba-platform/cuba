@@ -147,7 +147,7 @@ public class StandardCollectionLoader<E extends Entity> implements CollectionLoa
         if (container instanceof HasLoader) {
             ((HasLoader) container).setLoader(this);
         }
-        container.setSorter(new CollectionContainerSorter(this));
+        container.setSorter(new CollectionContainerSorter(container, this));
     }
 
     @Override

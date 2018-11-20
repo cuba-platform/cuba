@@ -38,6 +38,7 @@ public class CollectionPropertyContainerImpl<E extends Entity>
         super(metaClass);
         this.parent = parent;
         this.property = property;
+        sorter = new CollectionPropertyContainerSorter(this);
     }
 
     @Override
@@ -53,6 +54,11 @@ public class CollectionPropertyContainerImpl<E extends Entity>
     @Override
     public List<E> getDisconnectedItems() {
         return super.getMutableItems();
+    }
+
+    @Override
+    public void setDisconnectedItems(@Nullable Collection<E> entities) {
+        super.setItems(entities);
     }
 
     @Override

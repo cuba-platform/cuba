@@ -27,6 +27,8 @@ import com.haulmont.cuba.gui.components.data.DataGridItems;
 import com.haulmont.cuba.gui.components.data.meta.ContainerDataUnit;
 import com.haulmont.cuba.gui.components.data.meta.EntityDataGridItems;
 import com.haulmont.cuba.gui.model.CollectionContainer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -36,6 +38,8 @@ import java.util.stream.Stream;
 
 public class ContainerDataGridItems<E extends Entity>
         implements EntityDataGridItems<E>, DataGridItems.Sortable<E>, ContainerDataUnit<E> {
+
+    private static final Logger log = LoggerFactory.getLogger(ContainerDataGridItems.class);
 
     protected CollectionContainer<E> container;
 
@@ -155,7 +159,11 @@ public class ContainerDataGridItems<E extends Entity>
 
     @Override
     public void sort(Object[] propertyId, boolean[] ascending) {
-        container.getSorter().sort(createSort(propertyId, ascending));
+        if (container.getSorter() != null) {
+            container.getSorter().sort(createSort(propertyId, ascending));
+        } else {
+            log.debug("Container {} sorter is null", container);
+        }
     }
 
     protected Sort createSort(Object[] propertyId, boolean[] ascending) {
@@ -175,6 +183,10 @@ public class ContainerDataGridItems<E extends Entity>
 
     @Override
     public void resetSortOrder() {
-        container.getSorter().sort(Sort.UNSORTED);
+        if (container.getSorter() != null) {
+            container.getSorter().sort(Sort.UNSORTED);
+        } else {
+            log.debug("Container {} sorter is null", container);
+        }
     }
 }

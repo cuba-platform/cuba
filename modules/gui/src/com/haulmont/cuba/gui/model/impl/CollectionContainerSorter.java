@@ -16,74 +16,54 @@
 
 package com.haulmont.cuba.gui.model.impl;
 
-import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.chile.core.model.MetaPropertyPath;
-import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.Sort;
-import com.haulmont.cuba.gui.data.impl.EntityComparator;
 import com.haulmont.cuba.gui.model.BaseCollectionLoader;
 import com.haulmont.cuba.gui.model.CollectionContainer;
-import com.haulmont.cuba.gui.model.Sorter;
 
-import java.util.ArrayList;
-import java.util.Comparator;
+import javax.annotation.Nullable;
 import java.util.List;
 
 /**
  * Standard implementation of sorting {@link CollectionContainer}s.
  */
-public class CollectionContainerSorter implements Sorter {
+public class CollectionContainerSorter extends BaseContainerSorter {
 
-    private final CollectionContainer<Entity> container;
     private final BaseCollectionLoader loader;
 
-    @SuppressWarnings("unchecked")
-    public CollectionContainerSorter(BaseCollectionLoader loader) {
-        this.container = loader.getContainer();
-        if (this.container == null) {
-            throw new IllegalStateException("Container is not set for the loader");
-        }
+    public CollectionContainerSorter(CollectionContainer container, @Nullable BaseCollectionLoader loader) {
+        super(container);
         this.loader = loader;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    protected void setItemsToContainer(List list) {
+        getContainer().setItems(list);
     }
 
     @Override
     public void sort(Sort sort) {
-        List<? extends Entity> items = container.getItems();
+        List items = getContainer().getItems();
         if (items.isEmpty()) {
             return;
         }
-        if (loader.getFirstResult() == 0
-                && container.getItems().size() < loader.getMaxResults()) {
+        if (loader == null) {
             sortInMemory(sort);
         } else {
-            reloadWithSort(sort);
+            if (loader.getFirstResult() == 0
+                    && getContainer().getItems().size() < loader.getMaxResults()) {
+                sortInMemory(sort);
+            } else {
+                reloadWithSort(sort);
+            }
         }
-    }
-
-    protected void sortInMemory(Sort sort) {
-        if (sort.getOrders().isEmpty()) {
-            return;
-        }
-        List<Entity> list = new ArrayList<>(container.getItems());
-        list.sort(createComparator(sort, container.getEntityMetaClass()));
-        container.setItems(list);
     }
 
     protected void reloadWithSort(Sort sort) {
+        if (loader == null)
+            return;
+
         loader.setSort(sort);
         loader.load();
     }
-
-    protected Comparator<Entity> createComparator(Sort sort, MetaClass metaClass) {
-        if (sort.getOrders().size() > 1) {
-            throw new UnsupportedOperationException("Sort by multiple properties is not supported");
-        }
-        MetaPropertyPath propertyPath = metaClass.getPropertyPath(sort.getOrders().get(0).getProperty());
-        if (propertyPath == null) {
-            throw new IllegalArgumentException("Property " + sort.getOrders().get(0).getProperty() + " is invalid");
-        }
-        boolean asc = sort.getOrders().get(0).getDirection() == Sort.Direction.ASC;
-        return new EntityComparator<>(propertyPath, asc);
-    }
-
 }

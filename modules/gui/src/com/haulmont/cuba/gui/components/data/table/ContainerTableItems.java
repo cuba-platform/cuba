@@ -244,7 +244,11 @@ public class ContainerTableItems<E extends Entity> implements EntityTableItems<E
 
     @Override
     public void resetSortOrder() {
-        container.getSorter().sort(Sort.UNSORTED);
+        if (container.getSorter() != null) {
+            container.getSorter().sort(Sort.UNSORTED);
+        } else {
+            log.debug("Container {} sorter is null", container);
+        }
     }
 
 

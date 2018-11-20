@@ -18,6 +18,8 @@ package com.haulmont.cuba.gui.model;
 
 import com.haulmont.cuba.core.entity.Entity;
 
+import javax.annotation.Nullable;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -35,4 +37,9 @@ public interface CollectionPropertyContainer<E extends Entity> extends Collectio
      * Same as {@link #getMutableItems()} but changes in the list are <b>not</b> reflected in the underlying property.
      */
     List<E> getDisconnectedItems();
+
+    /**
+     * Same as {@link #setItems(Collection)} but does <b>not</b> affect the underlying property.
+     */
+    void setDisconnectedItems(@Nullable Collection<E> entities);
 }
