@@ -56,7 +56,7 @@ public class SaveFilterWindow extends AbstractWindow {
         if (!Strings.isNullOrEmpty(filterNameParam)) {
             filterName.setValue(filterNameParam);
         }
-        MetaProperty property = metadata.getClassNN(FilterEntity.class).getProperty("name");
+        MetaProperty property = metadata.getClassNN(FilterEntity.class).getPropertyNN("name");
         if (property != null) {
             Map<String, Object> annotations = property.getAnnotations();
             Integer maxLength = (Integer) annotations.get("length");
