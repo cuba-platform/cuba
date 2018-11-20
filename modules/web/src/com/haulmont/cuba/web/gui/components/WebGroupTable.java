@@ -440,9 +440,14 @@ public class WebGroupTable<E extends Entity> extends WebAbstractTable<CubaGroupT
             if (containerDatasource instanceof WebGroupTable.GroupTableDsWrapper) {
                 //noinspection unchecked
                 GroupTableDsWrapper containerDatasource = (GroupTableDsWrapper) this.containerDatasource;
-                Collection itemIds = containerDatasource.hasGroups()
+                Collection<?> itemIds = containerDatasource.hasGroups()
                         ? containerDatasource.getItemIds(false)
                         : containerDatasource.getItemIds();
+                // Filter items that don't exist in the datasource, e.g. GroupInfo
+                itemIds = itemIds.stream()
+                        .filter(id -> datasource.containsItem(id))
+                        .collect(Collectors.toList());
+
                 component.setValue(itemIds);
                 return;
             }
