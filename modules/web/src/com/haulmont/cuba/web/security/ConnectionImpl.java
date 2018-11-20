@@ -48,7 +48,6 @@ import org.springframework.stereotype.Component;
 import javax.annotation.Nullable;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
-import java.lang.reflect.UndeclaredThrowableException;
 import java.util.List;
 import java.util.TimeZone;
 import java.util.function.Consumer;
@@ -239,11 +238,7 @@ public class ConnectionImpl implements Connection {
     }
 
     protected void publishBeforeLoginEvent(Credentials credentials) throws LoginException {
-        try {
-            events.publish(new BeforeLoginEvent(credentials));
-        } catch (UndeclaredThrowableException e) {
-            rethrowLoginException(e);
-        }
+        events.publish(new BeforeLoginEvent(credentials));
     }
 
     protected void publishAfterLoginEvent(Credentials credentials, AuthenticationDetails authenticationDetails) {
@@ -252,24 +247,11 @@ public class ConnectionImpl implements Connection {
 
     protected void publishLoginFailed(Credentials credentials, LoginProvider provider, LoginException e)
             throws LoginException {
-        try {
-            events.publish(new LoginFailureEvent(credentials, provider, e));
-        } catch (UndeclaredThrowableException re) {
-            rethrowLoginException(re);
-        }
+        events.publish(new LoginFailureEvent(credentials, provider, e));
     }
 
     protected void publishUserSessionStartedEvent(Credentials credentials, AuthenticationDetails authenticationDetails) {
         events.publish(new UserSessionStartedEvent(this, credentials, authenticationDetails));
-    }
-
-    protected void rethrowLoginException(RuntimeException e) throws LoginException {
-        Throwable cause = e.getCause();
-        if (cause instanceof LoginException) {
-            throw (LoginException) cause;
-        } else {
-            throw e;
-        }
     }
 
     protected ClientUserSession getSessionInternal() {
