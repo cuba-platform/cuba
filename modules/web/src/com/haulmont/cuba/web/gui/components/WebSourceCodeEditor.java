@@ -231,7 +231,8 @@ public class WebSourceCodeEditor extends WebV8AbstractField<CubaSourceCodeEditor
                     suggester.getSuggestions(getAutoCompleteSupport(), text, cursor);
             List<Suggestion> vSuggestions = new ArrayList<>();
             for (com.haulmont.cuba.gui.components.autocomplete.Suggestion s : suggestions) {
-                vSuggestions.add(new Suggestion(s.getDisplayText(), "", s.getValueText()));
+                vSuggestions.add(new Suggestion(s.getDisplayText(), "", s.getValueText(),
+                        s.getStartPosition(), s.getEndPosition()));
             }
 
             return vSuggestions;
@@ -240,6 +241,10 @@ public class WebSourceCodeEditor extends WebV8AbstractField<CubaSourceCodeEditor
         @Override
         public String applySuggestion(Suggestion suggestion, String text, int cursor) {
             String suggestionText = suggestion.getSuggestionText();
+
+            if (suggestion.getStartPosition() > 0)
+                return StringUtils.substring(text, 0, suggestion.getStartPosition()) + suggestionText
+                        + StringUtils.substring(text, cursor);
             return StringUtils.substring(text, 0, cursor) + suggestionText + StringUtils.substring(text, cursor);
         }
     }

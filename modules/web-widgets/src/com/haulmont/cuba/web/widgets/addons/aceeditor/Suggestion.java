@@ -9,9 +9,11 @@ import com.haulmont.cuba.web.widgets.client.addons.aceeditor.TransportSuggestion
  */
 public class Suggestion {
 
-	private final String displayText;
-	private final String descriptionText;
-	private final String suggestionText;
+	protected final String displayText;
+	protected final String descriptionText;
+	protected final String suggestionText;
+	protected final int startPosition;
+	protected final int endPosition;
 
 	/**
 	 * 
@@ -41,6 +43,17 @@ public class Suggestion {
 		this.displayText = displayText;
 		this.descriptionText = descriptionText;
 		this.suggestionText = suggestionText;
+		this.startPosition = -1;
+		this.endPosition = -1;
+	}
+
+	public Suggestion(String displayText, String descriptionText, String suggestionText,
+					  int startPosition, int endPosition) {
+		this.displayText = displayText;
+		this.descriptionText = descriptionText;
+		this.suggestionText = suggestionText;
+		this.startPosition = startPosition;
+		this.endPosition = endPosition;
 	}
 	
 	public TransportSuggestion asTransport(int index) {
@@ -63,6 +76,12 @@ public class Suggestion {
 	public String getSuggestionText() {
 		return suggestionText;
 	}
-	
-	
+
+	public int getStartPosition() {
+		return startPosition;
+	}
+
+	public int getEndPosition() {
+		return endPosition;
+	}
 }
