@@ -111,6 +111,7 @@ public class DataAwareComponentsTools {
     public void setupDateRange(HasRange component, EntityValueSource valueSource) {
         MetaProperty metaProperty = valueSource.getMetaPropertyPath().getMetaProperty();
         Class javaType = metaProperty.getRange().asDatatype().getJavaClass();
+        TemporalType temporalType = getTemporalType(metaProperty, javaType);
 
         if (metaProperty.getAnnotations().get(Past.class.getName()) != null) {
             LocalDateTime dateTime = LocalDateTime.of(LocalDate.now(), LocalTime.MAX);
@@ -118,7 +119,12 @@ public class DataAwareComponentsTools {
             //noinspection unchecked
             component.setRangeEnd(dateTimeTransformations.transformFromZDT(zonedDateTime, javaType));
         } else if (metaProperty.getAnnotations().get(Future.class.getName()) != null) {
-            LocalDateTime dateTime = LocalDateTime.of(LocalDate.now(), LocalTime.MIN).plusDays(1);
+            LocalDateTime dateTime = LocalDateTime.of(LocalDate.now(), LocalTime.MIN);
+            // In case of date and time we can select the current date with future time,
+            // so we start from the next day only if the time isn't displayed
+            if (temporalType == TemporalType.DATE) {
+                dateTime = dateTime.plusDays(1);
+            }
             ZonedDateTime zonedDateTime = ZonedDateTime.of(dateTime, ZoneId.systemDefault());
             //noinspection unchecked
             component.setRangeStart(dateTimeTransformations.transformFromZDT(zonedDateTime, javaType));
@@ -143,13 +149,7 @@ public class DataAwareComponentsTools {
         MetaProperty metaProperty = valueSource.getMetaPropertyPath().getMetaProperty();
         Class javaType = metaProperty.getRange().asDatatype().getJavaClass();
 
-        TemporalType temporalType = null;
-
-        if (java.sql.Date.class.equals(javaType) || LocalDate.class.equals(javaType)) {
-            temporalType = TemporalType.DATE;
-        } else if (metaProperty.getAnnotations() != null) {
-            temporalType = (TemporalType) metaProperty.getAnnotations().get(MetadataTools.TEMPORAL_ANN_NAME);
-        }
+        TemporalType temporalType = getTemporalType(metaProperty, javaType);
 
         component.setResolution(temporalType == TemporalType.DATE
                 ? DateField.Resolution.DAY
@@ -157,5 +157,16 @@ public class DataAwareComponentsTools {
 
         String formatStr = messageTools.getDefaultDateFormat(temporalType);
         component.setDateFormat(formatStr);
+    }
+
+    protected TemporalType getTemporalType(MetaProperty metaProperty, Class javaType) {
+        TemporalType temporalType = null;
+
+        if (java.sql.Date.class.equals(javaType) || LocalDate.class.equals(javaType)) {
+            temporalType = TemporalType.DATE;
+        } else if (metaProperty.getAnnotations() != null) {
+            temporalType = (TemporalType) metaProperty.getAnnotations().get(MetadataTools.TEMPORAL_ANN_NAME);
+        }
+        return temporalType;
     }
 }

@@ -670,4 +670,21 @@ public class WebDateField<V extends Comparable<V>>
             }
         }
     }
+
+    @Override
+    protected boolean hasValidationError() {
+        return dateField.getComponentError() instanceof UserError;
+    }
+
+    @Override
+    protected void setValidationError(String errorMessage) {
+        if (errorMessage == null) {
+            dateField.setComponentError(null);
+            timeField.setComponentError(null);
+        } else {
+            UserError userError = new UserError(errorMessage);
+            dateField.setComponentError(userError);
+            timeField.setComponentError(userError);
+        }
+    }
 }
