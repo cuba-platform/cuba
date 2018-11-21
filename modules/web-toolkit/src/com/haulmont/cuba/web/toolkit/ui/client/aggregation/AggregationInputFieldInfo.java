@@ -17,6 +17,7 @@
 package com.haulmont.cuba.web.toolkit.ui.client.aggregation;
 
 import com.google.gwt.dom.client.InputElement;
+import com.google.gwt.dom.client.TableCellElement;
 
 public class AggregationInputFieldInfo {
 
@@ -24,6 +25,13 @@ public class AggregationInputFieldInfo {
     protected String columnKey;
     protected InputElement inputElement;
     protected boolean isFocused = false;
+
+    protected TableCellElement td;
+
+    public AggregationInputFieldInfo(String oldValue, String columnKey, InputElement inputElement, TableCellElement td) {
+        this(oldValue, columnKey, inputElement);
+        this.td = td;
+    }
 
     public AggregationInputFieldInfo(String oldValue, String columnKey, InputElement inputElement) {
         this.oldValue = oldValue;
@@ -61,5 +69,13 @@ public class AggregationInputFieldInfo {
 
     public void setFocused(boolean focused) {
         this.isFocused = focused;
+    }
+
+    public TableCellElement getTd() {
+        return td;
+    }
+
+    public void setTd(TableCellElement td) {
+        this.td = td;
     }
 }

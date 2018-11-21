@@ -152,7 +152,7 @@ public class CubaGroupTable extends CubaTable implements GroupTableContainer {
                 }
             }
 
-            addEditableAggregationColumns(target);
+            paintEditableAggregationColumns(target);
 
             target.endTag("groupRows");
         }
@@ -419,7 +419,7 @@ public class CubaGroupTable extends CubaTable implements GroupTableContainer {
                     paintGroupAggregation(target, itemId,
                             ((AggregationContainer) items).aggregate(new GroupAggregationContext(this, itemId)));
 
-                    addEditableAggregationColumns(target);
+                    paintEditableAggregationColumns(target);
 
                     if (focusGroupAggregationInputColumnKey != null) {
                         target.addAttribute("focusInput", focusGroupAggregationInputColumnKey);

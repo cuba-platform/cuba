@@ -153,6 +153,14 @@ public class CubaScrollTableWidget extends VScrollTable implements TableWidget {
     }
 
     @Override
+    protected boolean isAggregationEditable() {
+        if (_delegate.aggregationRow != null) {
+            return _delegate.aggregationRow.isAggregationRowEditable();
+        }
+        return false;
+    }
+
+    @Override
     protected int getDynamicBodyHeight() {
         if (totalRows <= 0) {
             return (int) Math.round(scrollBody.getRowHeight(true));

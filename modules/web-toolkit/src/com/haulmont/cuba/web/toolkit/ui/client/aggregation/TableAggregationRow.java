@@ -305,6 +305,10 @@ public class TableAggregationRow extends Panel {
         return null;
     }
 
+    public boolean isAggregationRowEditable() {
+        return inputsList != null && !inputsList.isEmpty();
+    }
+
     @Override
     public void onBrowserEvent(Event event) {
         super.onBrowserEvent(event);

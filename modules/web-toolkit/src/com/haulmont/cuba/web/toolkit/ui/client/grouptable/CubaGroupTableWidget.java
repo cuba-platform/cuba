@@ -23,6 +23,7 @@ import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Widget;
+import com.haulmont.cuba.web.toolkit.ui.client.Tools;
 import com.haulmont.cuba.web.toolkit.ui.client.aggregation.AggregationInputFieldInfo;
 import com.haulmont.cuba.web.toolkit.ui.client.aggregation.TableAggregationRow;
 import com.haulmont.cuba.web.toolkit.ui.client.table.CubaScrollTableWidget;
@@ -37,6 +38,8 @@ public class CubaGroupTableWidget extends CubaScrollTableWidget {
     public static final String GROUP_DIVIDER_COLUMN_KEY = "-1";
 
     protected Set<String> groupColumns;
+
+    protected boolean isAggregationEditable = false;
 
     public CubaGroupTableWidget() {
         addStyleName("c-grouptable");
@@ -102,6 +105,18 @@ public class CubaGroupTableWidget extends CubaScrollTableWidget {
             visibleColOrder[colIndex] = GROUP_DIVIDER_COLUMN_KEY;
             tHead.enableColumn(GROUP_DIVIDER_COLUMN_KEY, colIndex);
         }
+    }
+
+    @Override
+    protected boolean isAggregationEditable() {
+        return isAggregationEditable || super.isAggregationEditable();
+    }
+
+    @Override
+    public void updateBody(UIDL uidl, int firstRow, int reqRows) {
+        isAggregationEditable = false;
+
+        super.updateBody(uidl, firstRow, reqRows);
     }
 
     @Override
@@ -327,7 +342,7 @@ public class CubaGroupTableWidget extends CubaScrollTableWidget {
 
     public CubaGroupTableBody.CubaGroupTableGroupRow getRenderedGroupRowByKey(String key) {
         if (scrollBody != null) {
-            final Iterator<Widget> it = scrollBody.iterator();
+            Iterator<Widget> it = scrollBody.iterator();
             CubaGroupTableBody.CubaGroupTableGroupRow row;
             while (it.hasNext()) {
                 Widget widget = it.next();
@@ -345,6 +360,30 @@ public class CubaGroupTableWidget extends CubaScrollTableWidget {
     @Override
     protected boolean isColumnCollapsingEnabled() {
         return visibleColOrder.length > 2; // +1 for divider column
+    }
+
+    @Override
+    public void updateTextSelection() {
+        super.updateTextSelection();
+
+        if (scrollBody != null) {
+            Iterator<Widget> it = scrollBody.iterator();
+            CubaGroupTableBody.CubaGroupTableGroupRow row;
+
+            while (it.hasNext()) {
+                Widget widget = it.next();
+
+                if (widget instanceof CubaGroupTableBody.CubaGroupTableGroupRow) {
+                    row = (CubaGroupTableBody.CubaGroupTableGroupRow) widget;
+
+                    if (row.isAggregationInputEditable()) {
+                        for (AggregationInputFieldInfo info : row.getInputsList()) {
+                            Tools.textSelectionEnable(info.getTd(), true);
+                        }
+                    }
+                }
+            }
+        }
     }
 
     public void updateGroupRowsWithAggregation(UIDL uidl) {
@@ -627,6 +666,17 @@ public class CubaGroupTableWidget extends CubaScrollTableWidget {
                 }
             }
 
+            public boolean isAggregationInputEditable() {
+                if (inputsList == null) {
+                    return false;
+                }
+                return !inputsList.isEmpty();
+            }
+
+            public List<AggregationInputFieldInfo> getInputsList() {
+                return inputsList;
+            }
+
             private void setSpannedRowWidthAfterDOMFullyInited() {
                 // Defer setting width on spanned columns to make sure that
                 // they are added to the DOM before trying to calculate
@@ -731,6 +781,8 @@ public class CubaGroupTableWidget extends CubaScrollTableWidget {
             }
 
             protected void addCellWithField(String text, char align, int colIndex) {
+                isAggregationEditable = true;
+
                 final TableCellElement td = DOM.createTD().cast();
                 initCellWithText(text, align, "", false, true, null, td);
 
@@ -749,9 +801,11 @@ public class CubaGroupTableWidget extends CubaScrollTableWidget {
                 if (inputsList == null) {
                     inputsList = new ArrayList<>();
                 }
-                inputsList.add(new AggregationInputFieldInfo(text, getColKeyByIndex(colIndex), inputElement));
+                inputsList.add(new AggregationInputFieldInfo(text, getColKeyByIndex(colIndex), inputElement, td));
 
                 DOM.sinkEvents(inputElement, Event.ONCHANGE | Event.ONKEYDOWN);
+
+                Tools.textSelectionEnable(td, true);
             }
 
             @Override

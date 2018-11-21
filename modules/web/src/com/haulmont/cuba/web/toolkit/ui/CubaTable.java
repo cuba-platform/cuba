@@ -610,7 +610,7 @@ public class CubaTable extends com.vaadin.ui.Table implements TableContainer, Cu
             String value = (String) aggregations.get(columnId);
             target.addText(value);
         }
-        addEditableAggregationColumns(target);
+        paintEditableAggregationColumns(target);
         if (focusTotalAggregationInputColumnKey != null) {
             target.addAttribute("focusInput", focusTotalAggregationInputColumnKey);
             focusTotalAggregationInputColumnKey = null;
@@ -619,7 +619,7 @@ public class CubaTable extends com.vaadin.ui.Table implements TableContainer, Cu
         target.endTag("arow");
     }
 
-    protected void addEditableAggregationColumns(PaintTarget target) throws PaintException {
+    protected void paintEditableAggregationColumns(PaintTarget target) throws PaintException {
         target.startTag("editableAggregationColumns");
         for (final Object columnId : visibleColumns) {
             if (CollectionUtils.isNotEmpty(aggregationEditableColumns)
