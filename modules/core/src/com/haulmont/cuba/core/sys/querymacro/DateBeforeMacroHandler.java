@@ -16,15 +16,21 @@
  */
 package com.haulmont.cuba.core.sys.querymacro;
 
-import com.haulmont.bali.datastruct.Pair;
+import com.google.common.base.Strings;
 import com.haulmont.cuba.core.global.DateTimeTransformations;
+import com.haulmont.cuba.core.global.Scripting;
+import com.haulmont.cuba.core.global.TimeSource;
+import groovy.lang.Binding;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.TimeZone;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Component("cuba_DateBeforeQueryMacroHandler")
@@ -32,12 +38,20 @@ import java.util.regex.Pattern;
 public class DateBeforeMacroHandler extends AbstractQueryMacroHandler {
 
     protected static final Pattern MACRO_PATTERN = Pattern.compile("@dateBefore\\s*\\(([^)]+)\\)");
+    protected static final Pattern NOW_PARAM_PATTERN = Pattern.compile("(now)\\s*([\\d\\s+-]*)");
 
     @Inject
     protected DateTimeTransformations transformations;
+    @Inject
+    protected Scripting scripting;
+    @Inject
+    protected TimeSource timeSource;
 
     protected Map<String, Object> namedParameters;
-    protected List<Pair<String, TimeZone>> paramNames = new ArrayList<>();
+    protected boolean isNow = false;
+    protected TimeZone timeZone;
+    protected String paramName;
+    protected int offset = 0;
 
     public DateBeforeMacroHandler() {
         super(MACRO_PATTERN);
@@ -51,11 +65,26 @@ public class DateBeforeMacroHandler extends AbstractQueryMacroHandler {
             throw new RuntimeException("Invalid macro: " + macro);
 
         String field = args[0].trim();
-        String param = args[1].trim().substring(1);
-        TimeZone timeZone = getTimeZoneFromArgs(args, 2);
-        paramNames.add(new Pair<>(param, timeZone));
+        String param = args[1].trim();
+        timeZone = getTimeZoneFromArgs(args, 2);
 
-        return String.format("(%s < :%s)", field, param);
+        Matcher matcher = NOW_PARAM_PATTERN.matcher(param);
+        if (matcher.find()) {
+            isNow = true;
+            try {
+                String expr = matcher.group(2);
+                if (!Strings.isNullOrEmpty(expr)) {
+                    offset = scripting.evaluateGroovy(expr, new Binding());
+                }
+            } catch (NumberFormatException e) {
+                throw new RuntimeException("Invalid macro argument: " + param, e);
+            }
+            paramName = args[0].trim().replace(".", "_") + "_" + count + "_" + 1;
+        } else {
+            paramName = param.substring(1);
+        }
+
+        return String.format("(%s < :%s)", field, paramName);
     }
 
     @Override
@@ -66,22 +95,30 @@ public class DateBeforeMacroHandler extends AbstractQueryMacroHandler {
     @Override
     public Map<String, Object> getParams() {
         Map<String, Object> params = new HashMap<>();
-        for (Pair<String, TimeZone> pair : paramNames) {
-            String paramName = pair.getFirst();
-            TimeZone timeZone = pair.getSecond() == null ? TimeZone.getDefault() : pair.getSecond();
+        Class javaType;
+        ZonedDateTime zonedDateTime;
+        if (paramName == null)
+            return params;
+        if (timeZone == null)
+            timeZone = TimeZone.getDefault();
+        if (isNow) {
+            zonedDateTime = timeSource.now();
+            javaType = expandedParamTypes.get(paramName);
+            if (javaType == null)
+                throw new RuntimeException(String.format("Type of parameter %s not resolved", paramName));
+        } else {
             Object date = namedParameters.get(paramName);
             if (date == null)
                 throw new RuntimeException(String.format("Parameter %s not found for macro", paramName));
-            Class javaType = date.getClass();
-            ZonedDateTime zonedDateTime = transformations.transformToZDT(date);
-            if (transformations.isDateTypeSupportsTimeZones(javaType)) {
-                zonedDateTime = zonedDateTime.withZoneSameInstant(timeZone.toZoneId());
-            }
-            zonedDateTime = zonedDateTime.truncatedTo(ChronoUnit.DAYS);
-
-            Object paramValue = transformations.transformFromZDT(zonedDateTime, javaType);
-            params.put(paramName, paramValue);
+            javaType = date.getClass();
+            zonedDateTime = transformations.transformToZDT(date);
         }
+        if (transformations.isDateTypeSupportsTimeZones(javaType)) {
+            zonedDateTime = zonedDateTime.withZoneSameInstant(timeZone.toZoneId());
+        }
+        zonedDateTime = zonedDateTime.plusDays(offset).truncatedTo(ChronoUnit.DAYS);
+        Object paramValue = transformations.transformFromZDT(zonedDateTime, javaType);
+        params.put(paramName, paramValue);
         return params;
     }
 

@@ -47,6 +47,7 @@ class LocalDateTimeMacroTest extends Specification {
     private LocalDate localDate
     private LocalDateTime localDateTime
     private OffsetDateTime offsetDateTime
+    private Date nowDate
 
     void setup() {
         persistence.runInTransaction({ em ->
@@ -60,6 +61,9 @@ class LocalDateTimeMacroTest extends Specification {
 
             offsetDateTime = OffsetDateTime.now()
             entity.offsetDateTime = offsetDateTime
+
+            nowDate = new Date()
+            entity.nowDate = nowDate
 
             em.persist(entity)
         })
@@ -343,6 +347,38 @@ class LocalDateTimeMacroTest extends Specification {
         e == null
     }
 
+    def "@dateBefore with now"() {
+        when:
+        def e = dataManager.load(LocalDateTimeEntity)
+                .query('select e from test_LocalDateTimeEntity e where @dateBefore(e.nowDate, now)')
+                .view(View.LOCAL).optional().orElse(null)
+        then:
+        e == null
+
+        when:
+        e = dataManager.load(LocalDateTimeEntity)
+                .query('select e from test_LocalDateTimeEntity e where @dateBefore(e.nowDate, now+1)')
+                .view(View.LOCAL).optional().orElse(null)
+        then:
+        e == entity
+    }
+
+    def "@dateAfter with now"() {
+        when:
+        def e = dataManager.load(LocalDateTimeEntity)
+                .query('select e from test_LocalDateTimeEntity e where @dateAfter(e.nowDate, now)')
+                .view(View.LOCAL).optional().orElse(null)
+        then:
+        e == entity
+
+        when:
+        e = dataManager.load(LocalDateTimeEntity)
+                .query('select e from test_LocalDateTimeEntity e where @dateAfter(e.nowDate, now+1)')
+                .view(View.LOCAL).optional().orElse(null)
+        then:
+        e == null
+    }
+
     //----------@dateEquals--------
 
     def "@dateEquals for DateTime"() {
@@ -395,6 +431,22 @@ class LocalDateTimeMacroTest extends Specification {
         e = dataManager.load(LocalDateTimeEntity)
                 .query('select e from test_LocalDateTimeEntity e where @dateEquals(e.offsetDateTime, :param)')
                 .parameter('param', OffsetDateTime.now().plusDays(1))
+                .view(View.LOCAL).optional().orElse(null)
+        then:
+        e == null
+    }
+
+    def "@dateEquals for now"() {
+        when:
+        def e = dataManager.load(LocalDateTimeEntity)
+                .query('select e from test_LocalDateTimeEntity e where @dateEquals(e.nowDate, now)')
+                .view(View.LOCAL).optional().orElse(null)
+        then:
+        e == entity
+
+        when:
+        e = dataManager.load(LocalDateTimeEntity)
+                .query('select e from test_LocalDateTimeEntity e where @dateEquals(e.nowDate, now+1)')
                 .view(View.LOCAL).optional().orElse(null)
         then:
         e == null

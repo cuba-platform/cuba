@@ -1041,6 +1041,7 @@ create table TEST_LOCAL_DATE_TIME_ENTITY (
     LOCAL_DATE date,
     LOCAL_TIME time,
     LOCAL_DATE_TIME timestamp,
+    NOW_DATE date,
     --
     primary key (ID)
 )^
