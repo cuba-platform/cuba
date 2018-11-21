@@ -571,7 +571,7 @@ public class EntityLog implements EntityLogAPI {
             String value = stringify(entity.getValueEx(name), entity.getMetaClass().getProperty(name));
             attr.setValue(value);
 
-            Object valueId = getValueId(value);
+            Object valueId = getValueId(entity.getValueEx(name));
             if (valueId != null)
                 attr.setValueId(valueId.toString());
 
