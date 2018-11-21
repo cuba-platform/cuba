@@ -41,10 +41,10 @@ class KeyValueContainersTest extends WebSpec {
 
     def "load collection"() {
 
-        KeyValueCollectionContainer container = dataElementsFactory.createKeyValueCollectionContainer()
+        KeyValueCollectionContainer container = dataComponents.createKeyValueCollectionContainer()
         container.addProperty('custName').addProperty('amount')
 
-        KeyValueCollectionLoader loader = dataElementsFactory.createKeyValueCollectionLoader()
+        KeyValueCollectionLoader loader = dataComponents.createKeyValueCollectionLoader()
         loader.setContainer(container)
         loader.setQuery('select o.customer.name, sum(o.amount) from test$Order o group by o.customer.name')
 
@@ -72,7 +72,7 @@ class KeyValueContainersTest extends WebSpec {
 
     def "binding"() {
 
-        KeyValueContainer container = dataElementsFactory.createKeyValueContainer()
+        KeyValueContainer container = dataComponents.createKeyValueContainer()
         container.addProperty('custName').addProperty('amount')
 
         TextField field1 = componentsFactory.createComponent(TextField)

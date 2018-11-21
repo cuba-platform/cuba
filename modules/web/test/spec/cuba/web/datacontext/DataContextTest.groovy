@@ -25,7 +25,7 @@ import com.haulmont.cuba.core.global.EntityStates
 import com.haulmont.cuba.core.global.Metadata
 import com.haulmont.cuba.core.sys.persistence.CubaEntityFetchGroup
 import com.haulmont.cuba.gui.model.DataContext
-import com.haulmont.cuba.gui.model.DataElementsFactory
+import com.haulmont.cuba.gui.model.DataComponents
 import com.haulmont.cuba.gui.model.impl.DataContextAccessor
 import com.haulmont.cuba.gui.model.impl.NoopDataContext
 import com.haulmont.cuba.security.entity.Role
@@ -46,12 +46,12 @@ class DataContextTest extends Specification {
     @Shared @ClassRule
     public TestContainer cont = TestContainer.Common.INSTANCE
 
-    private DataElementsFactory factory
+    private DataComponents factory
     private EntityStates entityStates
     private Metadata metadata
 
     void setup() {
-        factory = cont.getBean(DataElementsFactory)
+        factory = cont.getBean(DataComponents)
         metadata = cont.getBean(Metadata)
         entityStates = cont.getBean(EntityStates)
     }

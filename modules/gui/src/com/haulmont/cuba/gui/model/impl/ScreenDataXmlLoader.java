@@ -50,7 +50,7 @@ public class ScreenDataXmlLoader {
     protected MetadataTools metadataTools;
 
     @Inject
-    protected DataElementsFactory factory;
+    protected DataComponents factory;
 
     @Inject
     protected ConditionXmlLoader conditionXmlLoader;

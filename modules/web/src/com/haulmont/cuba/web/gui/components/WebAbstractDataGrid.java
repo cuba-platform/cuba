@@ -45,7 +45,7 @@ import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsBuilder;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import com.haulmont.cuba.gui.model.CollectionContainer;
-import com.haulmont.cuba.gui.model.DataElementsFactory;
+import com.haulmont.cuba.gui.model.DataComponents;
 import com.haulmont.cuba.gui.model.InstanceContainer;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
@@ -1259,7 +1259,7 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
 
     protected ValueSourceProvider createValueSourceProvider(E item) {
         EntityDataGridItems<E> items = getEntityDataGridItemsNN();
-        DataElementsFactory factory = beanLocator.get(DataElementsFactory.class);
+        DataComponents factory = beanLocator.get(DataComponents.class);
         ViewRepository viewRepository = beanLocator.get(ViewRepository.NAME);
         MetaClass metaClass = items.getEntityMetaClass();
 

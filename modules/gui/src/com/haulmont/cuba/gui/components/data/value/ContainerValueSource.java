@@ -27,7 +27,7 @@ import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.core.sys.BeanLocatorAware;
 import com.haulmont.cuba.gui.components.data.BindingState;
 import com.haulmont.cuba.gui.components.data.meta.EntityValueSource;
-import com.haulmont.cuba.gui.model.DataElementsFactory;
+import com.haulmont.cuba.gui.model.DataComponents;
 import com.haulmont.cuba.gui.model.InstanceContainer;
 
 import java.util.Arrays;
@@ -78,7 +78,7 @@ public class ContainerValueSource<E extends Entity, V> implements EntityValueSou
             String pathToTarget = Joiner.on('.').join(
                     Arrays.copyOfRange(this.metaPropertyPath.getPath(), i, this.metaPropertyPath.length()));
 
-            InstanceContainer propertyCont = beanLocator.get(DataElementsFactory.class).createInstanceContainer(
+            InstanceContainer propertyCont = beanLocator.get(DataComponents.class).createInstanceContainer(
                     intermediatePath.getRangeJavaClass());
 
             parentCont.addItemChangeListener(e -> {

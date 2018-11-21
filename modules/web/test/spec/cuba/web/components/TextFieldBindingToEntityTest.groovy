@@ -40,8 +40,8 @@ class TextFieldBindingToEntityTest extends WebSpec {
         orderLine1 = new OrderLine(order: order, quantity: 1)
         orderLine2 = new OrderLine(order: order, quantity: 2)
         order.orderLines = [orderLine1, orderLine2]
-        customerCt = dataElementsFactory.createInstanceContainer(Customer)
-        orderCt = dataElementsFactory.createInstanceContainer(Order)
+        customerCt = dataComponents.createInstanceContainer(Customer)
+        orderCt = dataComponents.createInstanceContainer(Order)
     }
 
     def "single reference is displayed as its InstanceName"() {

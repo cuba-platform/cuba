@@ -20,7 +20,7 @@ import com.haulmont.cuba.core.app.ConfigStorageService
 import com.haulmont.cuba.core.app.PersistenceManagerService
 import com.haulmont.cuba.core.global.*
 import com.haulmont.cuba.gui.UiComponents
-import com.haulmont.cuba.gui.model.DataElementsFactory
+import com.haulmont.cuba.gui.model.DataComponents
 import com.haulmont.cuba.gui.theme.ThemeConstants
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory
 import com.haulmont.cuba.web.App
@@ -47,7 +47,7 @@ class WebSpec extends Specification {
     ViewRepository viewRepository
     EntityStates entityStates
     DataManager dataManager
-    DataElementsFactory dataElementsFactory
+    DataComponents dataComponents
     ComponentsFactory componentsFactory
     UiComponents uiComponents
 
@@ -60,7 +60,7 @@ class WebSpec extends Specification {
         viewRepository = cont.getBean(ViewRepository)
         entityStates = cont.getBean(EntityStates)
         dataManager = cont.getBean(DataManager)
-        dataElementsFactory = cont.getBean(DataElementsFactory)
+        dataComponents = cont.getBean(DataComponents)
         componentsFactory = cont.getBean(ComponentsFactory)
         uiComponents = cont.getBean(UiComponents)
 

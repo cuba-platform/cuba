@@ -28,7 +28,7 @@ import spec.cuba.web.WebSpec
 class ContainerBindingTest extends WebSpec {
 
     def "fields with one instance container"() {
-        InstanceContainer<Foo> container = dataElementsFactory.createInstanceContainer(Foo)
+        InstanceContainer<Foo> container = dataComponents.createInstanceContainer(Foo)
 
         TextField field1 = componentsFactory.createComponent(TextField)
         field1.setValueSource(new ContainerValueSource(container, 'name'))
@@ -59,7 +59,7 @@ class ContainerBindingTest extends WebSpec {
 
     def "field and table with collection container"() throws Exception {
 
-        CollectionContainer<Foo> container = dataElementsFactory.createCollectionContainer(Foo)
+        CollectionContainer<Foo> container = dataComponents.createCollectionContainer(Foo)
 
         Table<Foo> table = componentsFactory.createComponent(Table)
         table.addColumn(new Table.Column(metadata.getClassNN(Foo).getPropertyPath("name")))

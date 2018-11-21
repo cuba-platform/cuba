@@ -28,10 +28,10 @@ import javax.annotation.Nonnull;
 import javax.inject.Inject;
 
 /**
- * Factory bean for data API elements.
+ * Factory bean for data API components.
  */
-@Component("cuba_DataElementsFactory")
-public class DataElementsFactory implements ApplicationContextAware {
+@Component("cuba_DataComponents")
+public class DataComponents implements ApplicationContextAware {
 
     @Inject
     protected Metadata metadata;

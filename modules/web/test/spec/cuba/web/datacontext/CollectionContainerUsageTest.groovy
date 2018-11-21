@@ -29,7 +29,7 @@ class CollectionContainerUsageTest extends WebSpec {
     private Table<Foo> table
 
     void setup() {
-        container = dataElementsFactory.createCollectionContainer(Foo)
+        container = dataComponents.createCollectionContainer(Foo)
 
         table = componentsFactory.createComponent(Table)
         table.addColumn(new Table.Column(metadata.getClassNN(Foo).getPropertyPath('name')))
@@ -152,7 +152,7 @@ class CollectionContainerUsageTest extends WebSpec {
     def "add item in memory only"() {
 
         def modified = []
-        DataContext context = dataElementsFactory.createDataContext()
+        DataContext context = dataComponents.createDataContext()
         context.addPreCommitListener({e ->
             modified.addAll(e.modifiedInstances)
         })
@@ -185,7 +185,7 @@ class CollectionContainerUsageTest extends WebSpec {
     def "add item and save it"() {
 
         def modified = []
-        DataContext context = dataElementsFactory.createDataContext()
+        DataContext context = dataComponents.createDataContext()
         context.addPreCommitListener({e ->
             modified.addAll(e.modifiedInstances)
         })
@@ -219,7 +219,7 @@ class CollectionContainerUsageTest extends WebSpec {
     def "remove item and save it"() {
 
         def modified = []
-        DataContext context = dataElementsFactory.createDataContext()
+        DataContext context = dataComponents.createDataContext()
         context.addPreCommitListener({e ->
             modified.addAll(e.removedInstances)
         })
@@ -250,7 +250,7 @@ class CollectionContainerUsageTest extends WebSpec {
     def "remove item in memory only"() {
 
         def modified = []
-        DataContext context = dataElementsFactory.createDataContext()
+        DataContext context = dataComponents.createDataContext()
         context.addPreCommitListener({e ->
             modified.addAll(e.removedInstances)
         })

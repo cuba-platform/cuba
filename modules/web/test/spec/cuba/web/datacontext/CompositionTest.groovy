@@ -48,14 +48,14 @@ class CompositionTest extends WebSpec {
         def open(Order order) {
             mockLoad(order)
 
-            dataContext = dataElementsFactory.createDataContext()
-            orderCnt = dataElementsFactory.createInstanceContainer(Order)
-            linesCnt = dataElementsFactory.createCollectionContainer(OrderLine)
+            dataContext = dataComponents.createDataContext()
+            orderCnt = dataComponents.createInstanceContainer(Order)
+            linesCnt = dataComponents.createCollectionContainer(OrderLine)
             orderCnt.addItemChangeListener { e ->
                 linesCnt.setItems(e.item.orderLines)
             }
 
-            InstanceLoader orderLdr = dataElementsFactory.createInstanceLoader()
+            InstanceLoader orderLdr = dataComponents.createInstanceLoader()
             orderLdr.setContainer(orderCnt)
             orderLdr.setDataContext(dataContext)
 
@@ -73,13 +73,13 @@ class CompositionTest extends WebSpec {
         def open(OrderLine orderLine, DataContext parentContext) {
             mockLoad(orderLine)
 
-            dataContext = dataElementsFactory.createDataContext()
+            dataContext = dataComponents.createDataContext()
             if (parentContext != null)
                 dataContext.setParent(parentContext)
-            lineCnt = dataElementsFactory.createInstanceContainer(OrderLine)
+            lineCnt = dataComponents.createInstanceContainer(OrderLine)
 
             if (!dataContext.contains(orderLine)) {
-                InstanceLoader loader = dataElementsFactory.createInstanceLoader()
+                InstanceLoader loader = dataComponents.createInstanceLoader()
                 loader.setContainer(lineCnt)
                 loader.setDataContext(dataContext)
                 loader.setEntityId(orderLine.id)
@@ -99,13 +99,13 @@ class CompositionTest extends WebSpec {
         def open(Product product, DataContext parentContext) {
             mockLoad(product)
 
-            dataContext = dataElementsFactory.createDataContext()
+            dataContext = dataComponents.createDataContext()
             if (parentContext != null)
                 dataContext.setParent(parentContext)
-            productCnt = dataElementsFactory.createInstanceContainer(Product)
+            productCnt = dataComponents.createInstanceContainer(Product)
 
             if (!dataContext.contains(product)) {
-                InstanceLoader loader = dataElementsFactory.createInstanceLoader()
+                InstanceLoader loader = dataComponents.createInstanceLoader()
                 loader.setContainer(productCnt)
                 loader.setDataContext(dataContext)
                 loader.setEntityId(product.id)

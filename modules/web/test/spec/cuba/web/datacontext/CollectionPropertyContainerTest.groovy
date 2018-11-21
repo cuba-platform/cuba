@@ -33,8 +33,8 @@ class CollectionPropertyContainerTest extends WebSpec {
 
     @Override
     void setup() {
-        orderCt = dataElementsFactory.createInstanceContainer(Order)
-        linesCt = dataElementsFactory.createCollectionContainer(OrderLine, orderCt, 'orderLines')
+        orderCt = dataComponents.createInstanceContainer(Order)
+        linesCt = dataComponents.createCollectionContainer(OrderLine, orderCt, 'orderLines')
 
         order = new Order(number: '111', orderLines: [])
         orderLine1 = new OrderLine(order: this.order, quantity: 1)
