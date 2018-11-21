@@ -81,6 +81,7 @@
 @import "components/scrollbox/scrollbox";
 @import "components/calendar/calendar";
 @import "components/colorpicker/colorpicker";
+@import "components/suggestionfield/suggestionfield";
 @import "components/image/image";
 @import "components/capslockindicator/capslockindicator";
 
@@ -168,6 +169,7 @@
   @include havana-cuba-fieldgrouplayout;
   @include havana-cuba-resizabletextarea;
   @include havana-cuba-fileupload-wrapper;
+  @include havana-cuba-suggestionfield;
   @include havana-cuba-image;
   @include havana-cuba-capslockindicator;
 

@@ -1,0 +1,77 @@
+/**
+ * The background color of suggestion field input that is applied while a user entering value.
+ * @group suggestionfield
+ */
+$cuba-suggestionfield-edit-color: #dceeff !default;
+
+@mixin havana-cuba-suggestionfield($primary-stylename: c-suggestionfield) {
+  .#{$primary-stylename} {
+    border: 1px solid $cuba-field-border-color;
+    height: 25px;
+    width: 150px;
+
+    &.modified {
+      background-color: $cuba-suggestionfield-edit-color;
+    }
+  }
+
+  .#{$primary-stylename}:focus {
+    border-color: $cuba-field-focused-border-color;
+    outline: 0;
+  }
+
+  .#{$primary-stylename}.v-readonly {
+    background: transparent;
+    border: $cuba-field-readonly-border-color 1px solid;
+    color: transparent;
+  }
+
+  .#{$primary-stylename}.v-disabled {
+    background: transparent;
+  }
+
+  .#{$primary-stylename}-popup {
+    min-width: 200px;
+    max-width: 400px;
+    overflow-y: auto;
+    outline: 0;
+
+    &.c-has-width {
+      min-width: auto;
+      max-width: none;
+    }
+  }
+
+  .#{$primary-stylename}-item {
+    cursor: pointer;
+    line-height: $v-selection-item-height;
+    overflow: hidden;
+    padding: 1px 6px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .#{$primary-stylename}-item-selected {
+    background: #4d7ab2;
+    color: #fff;
+  }
+
+  .#{$primary-stylename}.v-disabled,
+  .#{$primary-stylename}.v-readonly {
+    &::-webkit-input-placeholder {
+       color:transparent;
+    }
+
+    &:-moz-placeholder {
+       color:transparent;
+    }
+
+    &::-moz-placeholder {
+       color:transparent;
+    }
+
+    &:-ms-input-placeholder {
+       color:transparent;
+    }
+  }
+}
