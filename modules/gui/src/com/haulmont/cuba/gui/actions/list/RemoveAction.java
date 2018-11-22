@@ -21,6 +21,7 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.core.global.DataManager;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.Dialogs;
@@ -51,6 +52,9 @@ public class RemoveAction extends SecuredListAction {
     public static final String ID = "remove";
 
     protected Messages messages;
+
+    @Inject
+    protected DataManager dataManager;
 
     public RemoveAction() {
         super(ID);
@@ -143,8 +147,7 @@ public class RemoveAction extends SecuredListAction {
                     .withActions(
                             new DialogAction(Type.YES).withHandler(e -> {
                                 container.getMutableItems().remove(entityToRemove);
-                                screenData.getDataContext().remove(entityToRemove);
-                                commitIfNeeded(container, screenData);
+                                commitIfNeeded(entityToRemove, container, screenData);
 
                                 if (target instanceof Component.Focusable) {
                                     ((Component.Focusable) target).focus();
@@ -162,7 +165,7 @@ public class RemoveAction extends SecuredListAction {
         }
     }
 
-    protected void commitIfNeeded(CollectionContainer container, ScreenData screenData) {
+    protected void commitIfNeeded(Entity entityToRemove, CollectionContainer container, ScreenData screenData) {
         boolean needCommit = true;
         if (container instanceof Nested) {
             InstanceContainer masterContainer = ((Nested) container).getMaster();
@@ -174,7 +177,10 @@ public class RemoveAction extends SecuredListAction {
             needCommit = metaProperty.getType() != MetaProperty.Type.COMPOSITION;
         }
         if (needCommit) {
-            screenData.getDataContext().commit();
+            screenData.getDataContext().evict(entityToRemove);
+            dataManager.remove(entityToRemove);
+        } else {
+            screenData.getDataContext().remove(entityToRemove);
         }
     }
 }
