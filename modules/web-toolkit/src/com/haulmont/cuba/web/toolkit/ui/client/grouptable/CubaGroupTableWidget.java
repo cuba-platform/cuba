@@ -366,15 +366,15 @@ public class CubaGroupTableWidget extends CubaScrollTableWidget {
     public void updateTextSelection() {
         super.updateTextSelection();
 
-        if (scrollBody != null) {
+        if (isAggregationEditable && scrollBody != null) {
             Iterator<Widget> it = scrollBody.iterator();
-            CubaGroupTableBody.CubaGroupTableGroupRow row;
 
             while (it.hasNext()) {
                 Widget widget = it.next();
 
                 if (widget instanceof CubaGroupTableBody.CubaGroupTableGroupRow) {
-                    row = (CubaGroupTableBody.CubaGroupTableGroupRow) widget;
+                    CubaGroupTableBody.CubaGroupTableGroupRow row =
+                            (CubaGroupTableBody.CubaGroupTableGroupRow) widget;
 
                     if (row.isAggregationInputEditable()) {
                         for (AggregationInputFieldInfo info : row.getInputsList()) {
