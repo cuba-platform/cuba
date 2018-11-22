@@ -37,6 +37,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.Collections;
 import java.util.List;
@@ -158,13 +159,10 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
         if (container instanceof HasLoader) {
             loader = ((HasLoader) container).getLoader();
         }
-        if (loader == null) {
-            throw new IllegalStateException(String.format("Loader for container %s not found", container));
-        }
-        if (!(loader instanceof BaseCollectionLoader)) {
+        if (loader != null && !(loader instanceof BaseCollectionLoader)) {
             throw new IllegalStateException("RowsCount component currently supports only BaseCollectionLoader");
         }
-        return new LoaderAdapter((BaseCollectionLoader) loader);
+        return new LoaderAdapter(container, (BaseCollectionLoader) loader);
     }
 
     protected Adapter createDatasourceAdapter(CollectionDatasource datasource) {
@@ -432,12 +430,13 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
     protected class LoaderAdapter implements Adapter {
 
         private CollectionContainer container;
-        private BaseCollectionLoader loader;
+
+        @Nullable private BaseCollectionLoader loader;
 
         @SuppressWarnings("unchecked")
-        public LoaderAdapter(BaseCollectionLoader loader) {
+        public LoaderAdapter(CollectionContainer container, @Nullable BaseCollectionLoader loader) {
+            this.container = container;
             this.loader = loader;
-            container = loader.getContainer();
 
             containerCollectionChangeListener = e -> {
                 samePage = CollectionChangeType.REFRESH != e.getChangeType();
@@ -457,27 +456,32 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
 
         @Override
         public int getFirstResult() {
-            return loader.getFirstResult();
+            return loader != null ? loader.getFirstResult() : 0;
         }
 
         @Override
         public int getMaxResults() {
-            return loader.getMaxResults();
+            return loader != null ? loader.getMaxResults() : Integer.MAX_VALUE;
         }
 
         @Override
         public void setFirstResult(int startPosition) {
-            loader.setFirstResult(startPosition);
+            if (loader != null)
+                loader.setFirstResult(startPosition);
         }
 
         @Override
         public void setMaxResults(int maxResults) {
-            loader.setMaxResults(maxResults);
+            if (loader != null)
+                loader.setMaxResults(maxResults);
         }
 
         @SuppressWarnings("unchecked")
         @Override
         public int getCount() {
+            if (loader == null) {
+                return container.getItems().size();
+            }
             if (loader instanceof CollectionLoader) {
                 return (int) dataManager.getCount(((CollectionLoader) loader).createLoadContext());
             } else if (loader instanceof KeyValueCollectionLoader) {
@@ -503,7 +507,8 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
 
         @Override
         public void refresh() {
-            loader.load();
+            if (loader != null)
+                loader.load();
         }
     }
 
