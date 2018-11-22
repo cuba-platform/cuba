@@ -18,7 +18,6 @@
 <menu-config xmlns="http://schemas.haulmont.com/cuba/menu.xsd">
 
     <menu id="administration">
-        <item id="demo"/>
         <item id="sec$User.browse"/>
         <item id="sec$Group.browse"/>
         <item id="sec$Role.browse"/>
