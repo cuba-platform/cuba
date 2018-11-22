@@ -18,18 +18,20 @@ package com.haulmont.cuba.gui.components.listeditor;
 
 import com.haulmont.bali.events.Subscription;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.data.Options;
 
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
  * The implementation of this class contains a logic for creation the {@link ListEditor} component, that is used by
  * components in client and desktop client. They delegate many invocations to the {@link ListEditorDelegate}.
  */
-public interface ListEditorDelegate {
+public interface ListEditorDelegate<V> {
     String NAME = "cuba_ListEditorDelegate";
 
     void setActualField(Field actualField);
@@ -38,8 +40,8 @@ public interface ListEditorDelegate {
 
     TextField getDisplayValuesField();
 
-    List getValue();
-    void setValue(List newValue);
+    List<V> getValue();
+    void setValue(List<V> newValue);
 
     ListEditor.ItemType getItemType();
 
@@ -53,12 +55,6 @@ public interface ListEditorDelegate {
 
     boolean isUseLookupField();
     void setUseLookupField(boolean useLookupField);
-
-    List<?> getOptionsList();
-    void setOptionsList(List<?> optionsList);
-
-    Map<String, Object> getOptionsMap();
-    void setOptionsMap(Map<String, Object> optionsMap);
 
     Class<? extends Enum> getEnumClass();
     void setEnumClass(Class<? extends Enum> enumClass);
@@ -90,4 +86,16 @@ public interface ListEditorDelegate {
 
     void setTimeZone(TimeZone timeZone);
     TimeZone getTimeZone();
+
+    void setOptions(Options<V> options);
+    Options<V> getOptions();
+
+    void setOptionCaptionProvider(Function<? super V, String> captionProvider);
+    Function<? super V, String> getOptionCaptionProvider();
+
+    void setCaptionProperty(String captionProvider);
+    String getCaptionProperty();
+
+    void setCaptionMode(CaptionMode captionMode);
+    CaptionMode getCaptionMode();
 }

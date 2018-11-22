@@ -26,15 +26,26 @@ import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.ListEditor;
 import com.haulmont.cuba.security.global.UserSession;
 
+import javax.annotation.Nullable;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.TimeZone;
+import java.util.function.Function;
 
 import static com.haulmont.cuba.gui.components.ListEditor.ItemType.*;
 
 /**
  */
 public class ListEditorHelper {
+
+    public static String getValueCaption(Object v, ListEditor.ItemType itemType, TimeZone timeZone,
+                                         @Nullable Function<Object, String> captionProvider) {
+        if (captionProvider == null) {
+            return getValueCaption(v, itemType, timeZone);
+        } else {
+            return captionProvider.apply(v);
+        }
+    }
 
     public static String getValueCaption(Object v, ListEditor.ItemType itemType, TimeZone timeZone) {
         if (v == null)

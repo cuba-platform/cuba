@@ -18,32 +18,54 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.bali.events.Subscription;
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.gui.components.CaptionMode;
 import com.haulmont.cuba.gui.components.HBoxLayout;
 import com.haulmont.cuba.gui.components.ListEditor;
+import com.haulmont.cuba.gui.components.data.Options;
 import com.haulmont.cuba.gui.components.listeditor.ListEditorDelegate;
 import com.vaadin.ui.Component;
-import com.vaadin.v7.ui.CustomField;
+import com.vaadin.ui.CustomField;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.InitializingBean;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.TimeZone;
+import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
-public class WebListEditor<V> extends WebAbstractField<WebListEditor.CubaListEditor, List<V>> implements ListEditor<V> {
+public class WebListEditor<V> extends WebV8AbstractField<WebListEditor.CubaListEditor<V>, List<V>, List<V>>
+        implements ListEditor<V>, InitializingBean {
 
     protected static final String LISTEDITOR_STYLENAME = "c-listeditor";
 
-    protected ListEditorDelegate delegate;
+    protected ListEditorDelegate<V> delegate;
 
     public WebListEditor() {
-        delegate = AppBeans.get(ListEditorDelegate.class);
+        initDelegate();
+        component = createComponent();
+    }
+
+    @Override
+    public void afterPropertiesSet() {
+        initComponent(component);
+    }
+
+    protected CubaListEditor<V> createComponent() {
+        return new CubaListEditor<>(delegate.getLayout());
+    }
+
+    protected void initComponent(Component component) {
+        component.setStyleName(LISTEDITOR_STYLENAME);
+    }
+
+    protected void initDelegate() {
+        delegate = createDelegate();
         delegate.setActualField(this);
-        component = new CubaListEditor(delegate.getLayout());
-        setStyleName(LISTEDITOR_STYLENAME);
+    }
+
+    protected ListEditorDelegate<V> createDelegate() {
+        return AppBeans.get(ListEditorDelegate.NAME);
     }
 
     @Override
@@ -89,26 +111,6 @@ public class WebListEditor<V> extends WebAbstractField<WebListEditor.CubaListEdi
     @Override
     public void setEntityName(String entityName) {
         delegate.setEntityName(entityName);
-    }
-
-    @Override
-    public List<?> getOptionsList() {
-        return delegate.getOptionsList();
-    }
-
-    @Override
-    public void setOptionsList(List<?> optionsList) {
-        delegate.setOptionsList(optionsList);
-    }
-
-    @Override
-    public Map<String, Object> getOptionsMap() {
-        return delegate.getOptionsMap();
-    }
-
-    @Override
-    public void setOptionsMap(Map<String, Object> optionsMap) {
-        delegate.setOptionsMap(optionsMap);
     }
 
     @Override
@@ -186,7 +188,7 @@ public class WebListEditor<V> extends WebAbstractField<WebListEditor.CubaListEdi
         delegate.getDisplayValuesField().setTabIndex(tabIndex);
     }
 
-    public static class CubaListEditor extends CustomField<List> {
+    public static class CubaListEditor<V> extends CustomField<List<V>> {
         private final Component content;
 
         public CubaListEditor(HBoxLayout mainLayout) {
@@ -199,13 +201,19 @@ public class WebListEditor<V> extends WebAbstractField<WebListEditor.CubaListEdi
         }
 
         @Override
-        public Class<List> getType() {
-            return List.class;
+        public boolean isEmpty() {
+            return super.isEmpty() || CollectionUtils.isEmpty(getValue());
         }
 
         @Override
-        public boolean isEmpty() {
-            return super.isEmpty() || CollectionUtils.isEmpty(getValue());
+        protected void doSetValue(List<V> value) {
+            // delegated to ListEditorDelegate
+        }
+
+        @Override
+        public List<V> getValue() {
+            // delegated to ListEditorDelegate
+            return null;
         }
     }
 
@@ -259,5 +267,45 @@ public class WebListEditor<V> extends WebAbstractField<WebListEditor.CubaListEdi
     @Override
     public TimeZone getTimeZone() {
         return delegate.getTimeZone();
+    }
+
+    @Override
+    public void setOptions(Options<V> options) {
+        delegate.setOptions(options);
+    }
+
+    @Override
+    public Options<V> getOptions() {
+        return delegate.getOptions();
+    }
+
+    @Override
+    public void setOptionCaptionProvider(Function<? super V, String> captionProvider) {
+        delegate.setOptionCaptionProvider(captionProvider);
+    }
+
+    @Override
+    public Function<? super V, String> getOptionCaptionProvider() {
+        return delegate.getOptionCaptionProvider();
+    }
+
+    @Override
+    public CaptionMode getCaptionMode() {
+        return delegate.getCaptionMode();
+    }
+
+    @Override
+    public void setCaptionMode(CaptionMode captionMode) {
+        delegate.setCaptionMode(captionMode);
+    }
+
+    @Override
+    public String getCaptionProperty() {
+        return delegate.getCaptionProperty();
+    }
+
+    @Override
+    public void setCaptionProperty(String captionProperty) {
+        delegate.setCaptionProperty(captionProperty);
     }
 }

@@ -19,13 +19,14 @@ package com.haulmont.cuba.gui.components.listeditor;
 import com.google.common.base.Joiner;
 import com.haulmont.bali.events.EventHub;
 import com.haulmont.bali.events.Subscription;
-import com.haulmont.cuba.gui.WindowManager;
-import com.haulmont.cuba.gui.WindowManagerProvider;
+import com.haulmont.cuba.core.global.BeanLocator;
+import com.haulmont.cuba.gui.*;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.BaseAction;
+import com.haulmont.cuba.gui.components.data.Options;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.icons.CubaIcon;
-import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
+import com.haulmont.cuba.gui.screen.*;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -34,26 +35,27 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 @Component(ListEditorDelegate.NAME)
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
-public class ListEditorDelegateImpl implements ListEditorDelegate {
-
-    @Inject
-    protected ComponentsFactory componentsFactory;
-
-    @Inject
-    protected WindowManagerProvider windowManagerProvider;
-
-    @Inject
+public class ListEditorDelegateImpl<V> implements ListEditorDelegate<V> {
+    /* Beans */
+    protected UiComponents uiComponents;
+    protected BeanLocator beanLocator;
     protected WindowConfig windowConfig;
 
     protected Field actualField;
 
-    protected List value;
-    protected List prevValue;
+    protected List<V> value;
+    protected List<V> prevValue;
+
+    protected Options<V> options;
+    protected Function<? super V, String> captionProvider;
+    protected String captionProperty;
+    protected CaptionMode captionMode;
 
     protected Supplier<Map<String, Object>> editorParamsSupplier;
     protected String editorWindowId = "list-editor-popup";
@@ -62,14 +64,13 @@ public class ListEditorDelegateImpl implements ListEditorDelegate {
     protected String entityName;
     protected String lookupScreen;
     protected boolean useLookupField;
-    protected List<?> optionsList;
-    protected Map<String, Object> optionsMap;
+    protected Map<String, V> optionsMap;
     protected String entityJoinClause;
     protected String entityWhereClause;
     protected Class<? extends Enum> enumClass;
     protected TimeZone timeZone;
 
-    protected TextField displayValuesField;
+    protected TextField<String> displayValuesField;
     protected HBoxLayout layout;
     protected Button clearBtn;
 
@@ -79,18 +80,31 @@ public class ListEditorDelegateImpl implements ListEditorDelegate {
 
     private EventHub eventHub;
 
+    @Inject
+    public void setUiComponents(UiComponents uiComponents) {
+        this.uiComponents = uiComponents;
+    }
+
+    @Inject
+    public void setBeanLocator(BeanLocator beanLocator) {
+        this.beanLocator = beanLocator;
+    }
+
+    @Inject
+    public void setWindowConfig(WindowConfig windowConfig) {
+        this.windowConfig = windowConfig;
+    }
+
     @PostConstruct
     public void init() {
-        WindowManager windowManager = windowManagerProvider.get();
-
-        layout = componentsFactory.createComponent(HBoxLayout.class);
+        layout = uiComponents.create(HBoxLayout.class);
         layout.setStyleName("c-listeditor-layout");
         layout.setWidth("100%");
 
-        displayValuesField = componentsFactory.createComponent(TextField.class);
+        displayValuesField = uiComponents.create(TextField.class);
         displayValuesField.setStyleName("c-listeditor-text");
         displayValuesField.setEditable(false);
-        Button openEditorBtn = componentsFactory.createComponent(Button.class);
+        Button openEditorBtn = uiComponents.create(Button.class);
         openEditorBtn.setIconFromSet(CubaIcon.PICKERFIELD_LOOKUP);
         openEditorBtn.setStyleName("c-listeditor-button");
         openEditorBtn.setCaption("");
@@ -102,8 +116,10 @@ public class ListEditorDelegateImpl implements ListEditorDelegate {
                 params.put("itemType", itemType);
                 params.put("entityName", entityName);
                 params.put("useLookupField", useLookupField);
-                params.put("optionsList", optionsList);
-                params.put("optionsMap", optionsMap);
+                params.put("options", options);
+                params.put("captionProvider", captionProvider);
+                params.put("captionProperty", captionProperty);
+                params.put("captionMode", captionMode);
                 params.put("enumClass", enumClass);
                 params.put("lookupScreen", lookupScreen);
                 params.put("entityJoinClause", entityJoinClause);
@@ -119,17 +135,17 @@ public class ListEditorDelegateImpl implements ListEditorDelegate {
                     }
                 }
 
-                ListEditorWindowController listEditorPopup = (ListEditorWindowController) windowManager
-                        .openWindow(windowConfig.getWindowInfo(editorWindowId), WindowManager.OpenType.DIALOG, params);
-                listEditorPopup.addCloseListener(actionId -> {
-                    if (Window.COMMIT_ACTION_ID.equals(actionId)) {
-                        actualField.setValue(listEditorPopup.getValue());
-                    }
+                ScreenContext screenContext = ComponentsHelper.getScreenContext(actualField);
 
-                    ListEditor.EditorCloseEvent editorCloseEvent =
-                            new ListEditor.EditorCloseEvent(actionId, listEditorPopup);
-                    getEventHub().publish(ListEditor.EditorCloseEvent.class, editorCloseEvent);
+                Screen screen = screenContext.getScreens().create(editorWindowId, OpenMode.DIALOG, new MapScreenOptions(params));
+                screen.addAfterCloseListener(event -> {
+                    CloseAction closeAction = event.getCloseAction();
+                    if (closeAction instanceof StandardCloseAction
+                            && ((StandardCloseAction) closeAction).getActionId().equals(Window.COMMIT_ACTION_ID)) {
+                        actualField.setValue(((ListEditorWindowController) screen).getValue());
+                    }
                 });
+                screen.show();
             }
         });
 
@@ -156,26 +172,27 @@ public class ListEditorDelegateImpl implements ListEditorDelegate {
     }
 
     @Override
-    public List getValue() {
+    public List<V> getValue() {
         return value;
     }
 
     @Override
-    public void setValue(List newValue) {
+    public void setValue(List<V> newValue) {
         this.value = newValue;
         String strValue = null;
         if (newValue != null) {
             List<String> captions;
             if (optionsMap != null) {
                 captions = new ArrayList<>();
-                for (Map.Entry<String, Object> entry : optionsMap.entrySet()) {
+                for (Map.Entry<String, V> entry : optionsMap.entrySet()) {
                     if (newValue.indexOf(entry.getValue()) != -1) {
                         captions.add(entry.getKey());
                     }
                 }
             } else {
-                captions = ((List<Object>) newValue).stream()
-                        .map(o -> ListEditorHelper.getValueCaption(o, itemType, timeZone))
+                //noinspection unchecked
+                captions = newValue.stream()
+                        .map(o -> ListEditorHelper.getValueCaption(o, itemType, timeZone, (Function<Object, String>) captionProvider))
                         .collect(Collectors.toList());
             }
             strValue = Joiner.on(", ").join(captions);
@@ -224,26 +241,6 @@ public class ListEditorDelegateImpl implements ListEditorDelegate {
     @Override
     public void setUseLookupField(boolean useLookupField) {
         this.useLookupField = useLookupField;
-    }
-
-    @Override
-    public List<?> getOptionsList() {
-        return optionsList;
-    }
-
-    @Override
-    public void setOptionsList(List<?> optionsList) {
-        this.optionsList = optionsList;
-    }
-
-    @Override
-    public Map<String, Object> getOptionsMap() {
-        return optionsMap;
-    }
-
-    @Override
-    public void setOptionsMap(Map<String, Object> optionsMap) {
-        this.optionsMap = optionsMap;
     }
 
     @Override
@@ -319,7 +316,7 @@ public class ListEditorDelegateImpl implements ListEditorDelegate {
     }
 
     protected void addClearBtn() {
-        clearBtn = componentsFactory.createComponent(Button.class);
+        clearBtn = uiComponents.create(Button.class);
         clearBtn.setIconFromSet(CubaIcon.PICKERFIELD_CLEAR);
         clearBtn.setStyleName("c-listeditor-button");
         clearBtn.setCaption("");
@@ -370,5 +367,45 @@ public class ListEditorDelegateImpl implements ListEditorDelegate {
     @Override
     public TimeZone getTimeZone() {
         return timeZone;
+    }
+
+    @Override
+    public void setOptions(Options<V> options) {
+        this.options = options;
+    }
+
+    @Override
+    public Options<V> getOptions() {
+        return options;
+    }
+
+    @Override
+    public void setOptionCaptionProvider(Function<? super V, String> captionProvider) {
+        this.captionProvider = captionProvider;
+    }
+
+    @Override
+    public Function<? super V, String> getOptionCaptionProvider() {
+        return captionProvider;
+    }
+
+    @Override
+    public void setCaptionProperty(String captionProperty) {
+        this.captionProperty = captionProperty;
+    }
+
+    @Override
+    public String getCaptionProperty() {
+        return captionProperty;
+    }
+
+    @Override
+    public void setCaptionMode(CaptionMode captionMode) {
+        this.captionMode = captionMode;
+    }
+
+    @Override
+    public CaptionMode getCaptionMode() {
+        return captionMode;
     }
 }

@@ -17,6 +17,8 @@
 package com.haulmont.cuba.gui.components;
 
 import com.haulmont.bali.events.Subscription;
+import com.haulmont.cuba.gui.components.data.Options;
+import com.haulmont.cuba.gui.components.data.options.EnumOptions;
 
 import java.util.List;
 import java.util.Map;
@@ -29,7 +31,7 @@ import java.util.function.Supplier;
  *
  * WARNING: for internal use only!
  */
-public interface ListEditor<V> extends Field<List<V>>, Component.Focusable {
+public interface ListEditor<V> extends OptionsField<List<V>, V>, Component.Focusable {
 
     String NAME = "listEditor";
 
@@ -54,17 +56,6 @@ public interface ListEditor<V> extends Field<List<V>>, Component.Focusable {
      */
     void setEntityName(String entityName);
 
-    List<?> getOptionsList();
-
-    /**
-     * Set the list of available collection items values
-     */
-    void setOptionsList(List<?> optionsList);
-
-    Map<String, Object> getOptionsMap();
-
-    void setOptionsMap(Map<String, Object> optionsMap);
-
     String getEntityJoinClause();
 
     void setEntityJoinClause(String entityJoinClause);
@@ -73,8 +64,19 @@ public interface ListEditor<V> extends Field<List<V>>, Component.Focusable {
 
     void setEntityWhereClause(String entityWhereClause);
 
+    /**
+     * @return enum class if it's set
+     * @see EnumOptions
+     * @deprecated if you want to use enums as options for field, use {@link #setOptions(Options)}
+     */
+    @Deprecated
     Class<? extends Enum> getEnumClass();
 
+    /**
+     * @see EnumOptions
+     * @deprecated use {@link #setOptions(Options)}
+     */
+    @Deprecated
     void setEnumClass(Class<? extends Enum> enumClass);
 
     void setClearButtonVisible(boolean visible);

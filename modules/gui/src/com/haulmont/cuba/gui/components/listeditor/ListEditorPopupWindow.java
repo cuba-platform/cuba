@@ -27,6 +27,9 @@ import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.WindowParam;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.data.Options;
+import com.haulmont.cuba.gui.components.data.options.EnumOptions;
+import com.haulmont.cuba.gui.components.data.options.MapOptions;
 import com.haulmont.cuba.gui.components.filter.FilterHelper;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.DsBuilder;
@@ -40,7 +43,6 @@ import java.math.BigDecimal;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * A dialog that is used for editing values of the {@link ListEditor} component.
@@ -78,13 +80,19 @@ public class ListEditorPopupWindow extends AbstractWindow implements ListEditorW
     protected List<Object> values;
 
     @WindowParam
-    protected List<Object> optionsList;
-
-    @WindowParam
-    protected Map<String, Object> optionsMap;
+    protected Options options;
 
     @WindowParam
     protected Class<? extends Enum> enumClass;
+
+    @WindowParam
+    protected Function<Object, String> captionProvider;
+
+    @WindowParam
+    protected String captionProperty;
+
+    @WindowParam
+    protected CaptionMode captionMode;
 
     @WindowParam
     protected Boolean editable;
@@ -141,7 +149,8 @@ public class ListEditorPopupWindow extends AbstractWindow implements ListEditorW
         }
 
         valuesMap = values.stream()
-                .collect(Collectors.toMap(Function.identity(), o -> ListEditorHelper.getValueCaption(o, itemType, timeZone)));
+                .collect(Collectors.toMap(Function.identity(), o -> ListEditorHelper.getValueCaption(o, itemType,
+                        timeZone, captionProvider)));
 
         for (Map.Entry<Object, String> entry : valuesMap.entrySet()) {
             addValueToLayout(entry.getKey(), entry.getValue());
@@ -152,14 +161,10 @@ public class ListEditorPopupWindow extends AbstractWindow implements ListEditorW
         addItemLayout.removeAll();
         final Field componentForAdding;
 
-        if (optionsMap != null) {
+        if (options != null) {
             componentForAdding = createLookupField();
-            ((LookupField)componentForAdding).setOptionsMap(optionsMap);
-            addItemLayout.add(componentForAdding);
-            addItemLayout.expand(componentForAdding);
-        } else if (optionsList != null) {
-            componentForAdding = createLookupField();
-            ((LookupField)componentForAdding).setOptionsList(optionsList);
+            //noinspection unchecked
+            ((LookupField) componentForAdding).setOptions(options);
             addItemLayout.add(componentForAdding);
             addItemLayout.expand(componentForAdding);
         } else {
@@ -229,7 +234,7 @@ public class ListEditorPopupWindow extends AbstractWindow implements ListEditorW
         if (value != null) {
             componentForAdding.setValue(null);
             if (!valueExists(value)) {
-                addValueToLayout(value, ListEditorHelper.getValueCaption(value, itemType, timeZone));
+                addValueToLayout(value, ListEditorHelper.getValueCaption(value, itemType, timeZone, captionProvider));
             }
         }
     }
@@ -293,12 +298,14 @@ public class ListEditorPopupWindow extends AbstractWindow implements ListEditorW
                 optionsDs.refresh();
             }
             lookupField.setOptionsDatasource(optionsDs);
+            lookupField.setOptionCaptionProvider(captionProvider);
             componentForEntity = lookupField;
 
             componentForEntity.addValueChangeListener(e -> {
                 Entity selectedEntity = (Entity) e.getValue();
                 if (selectedEntity != null && !valueExists(selectedEntity)) {
-                    this.addValueToLayout(selectedEntity, ListEditorHelper.getValueCaption(selectedEntity, itemType, timeZone));
+                    this.addValueToLayout(selectedEntity, ListEditorHelper.getValueCaption(selectedEntity, itemType,
+                            timeZone, captionProvider));
                 }
                 componentForEntity.setValue(null);
             });
@@ -320,10 +327,18 @@ public class ListEditorPopupWindow extends AbstractWindow implements ListEditorW
         lookupField.addValueChangeListener(e -> {
             Object selectedValue = e.getValue();
             if (selectedValue != null) {
-                this.addValueToLayout(selectedValue, ListEditorHelper.getValueCaption(selectedValue, itemType, timeZone));
+                this.addValueToLayout(selectedValue, ListEditorHelper.getValueCaption(selectedValue, itemType,
+                        timeZone, captionProvider));
             }
             lookupField.setValue(null);
         });
+        if (captionProperty != null) {
+            lookupField.setCaptionProperty(captionProperty);
+        }
+        if (captionMode != null) {
+            lookupField.setCaptionMode(captionMode);
+        }
+        lookupField.setOptionCaptionProvider(captionProvider);
 
         return lookupField;
     }
@@ -333,10 +348,8 @@ public class ListEditorPopupWindow extends AbstractWindow implements ListEditorW
             throw new IllegalStateException("EnumClass parameter is not defined");
         }
         LookupField lookupField = createLookupField();
-        Enum[] enumConstants = enumClass.getEnumConstants();
-        Map<String, Enum> enumValuesMap = Stream.of(enumConstants)
-                .collect(Collectors.toMap(o -> messages.getMessage(o), Function.identity()));
-        lookupField.setOptionsMap(enumValuesMap);
+        //noinspection unchecked
+        lookupField.setOptions(new EnumOptions(enumClass));
         return lookupField;
     }
 
@@ -345,7 +358,9 @@ public class ListEditorPopupWindow extends AbstractWindow implements ListEditorW
         itemLayout.setSpacing(true);
 
         Label itemLab = componentsFactory.createComponent(Label.class);
-        if (optionsMap != null) {
+        if (options instanceof MapOptions) {
+            //noinspection unchecked
+            Map<String, Object> optionsMap = ((MapOptions) options).getItemsCollection();
             str = optionsMap.entrySet()
                     .stream()
                     .filter(entry -> Objects.equals(entry.getValue(), value))
