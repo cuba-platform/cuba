@@ -20,6 +20,7 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.CommitContext;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.DataManager;
 import com.haulmont.cuba.core.global.Messages;
@@ -42,6 +43,8 @@ import com.haulmont.cuba.gui.screen.ScreenContext;
 import com.haulmont.cuba.security.entity.EntityOp;
 
 import javax.inject.Inject;
+
+import java.util.Collection;
 
 import static com.haulmont.cuba.gui.screen.UiControllerUtils.getScreenContext;
 import static com.haulmont.cuba.gui.screen.UiControllerUtils.getScreenData;
@@ -110,6 +113,7 @@ public class RemoveAction extends SecuredListAction {
         return true;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void actionPerform(Component component) {
         if (!hasSubscriptions(ActionPerformedEvent.class)) {
@@ -130,9 +134,9 @@ public class RemoveAction extends SecuredListAction {
                 throw new IllegalStateException("Target is not bound to entity");
             }
 
-            Entity entityToRemove = target.getSingleSelected();
-            if (entityToRemove == null) {
-                throw new IllegalStateException("There is not selected item in EditAction target");
+            Collection<Entity> entitiesToRemove = target.getSelected();
+            if (entitiesToRemove.isEmpty()) {
+                throw new IllegalStateException("There are no selected items in EditAction target");
             }
 
             Window window = ComponentsHelper.getWindowNN(target);
@@ -146,8 +150,8 @@ public class RemoveAction extends SecuredListAction {
                     .withMessage(messages.getMainMessage("dialogs.Confirmation.Remove"))
                     .withActions(
                             new DialogAction(Type.YES).withHandler(e -> {
-                                container.getMutableItems().remove(entityToRemove);
-                                commitIfNeeded(entityToRemove, container, screenData);
+                                container.getMutableItems().removeAll(entitiesToRemove);
+                                commitIfNeeded(entitiesToRemove, container, screenData);
 
                                 if (target instanceof Component.Focusable) {
                                     ((Component.Focusable) target).focus();
@@ -165,7 +169,7 @@ public class RemoveAction extends SecuredListAction {
         }
     }
 
-    protected void commitIfNeeded(Entity entityToRemove, CollectionContainer container, ScreenData screenData) {
+    protected void commitIfNeeded(Collection<Entity> entitiesToRemove, CollectionContainer container, ScreenData screenData) {
         boolean needCommit = true;
         if (container instanceof Nested) {
             InstanceContainer masterContainer = ((Nested) container).getMaster();
@@ -177,10 +181,16 @@ public class RemoveAction extends SecuredListAction {
             needCommit = metaProperty.getType() != MetaProperty.Type.COMPOSITION;
         }
         if (needCommit) {
-            screenData.getDataContext().evict(entityToRemove);
-            dataManager.remove(entityToRemove);
+            CommitContext commitContext = new CommitContext();
+            for (Entity entity : entitiesToRemove) {
+                screenData.getDataContext().evict(entity);
+                commitContext.addInstanceToRemove(entity);
+            }
+            dataManager.commit(commitContext);
         } else {
-            screenData.getDataContext().remove(entityToRemove);
+            for (Entity entity : entitiesToRemove) {
+                screenData.getDataContext().remove(entity);
+            }
         }
     }
 }
