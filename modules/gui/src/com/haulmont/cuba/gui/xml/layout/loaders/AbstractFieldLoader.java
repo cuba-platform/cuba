@@ -17,11 +17,13 @@
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.google.common.base.Strings;
+import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.Buffered;
 import com.haulmont.cuba.gui.components.Field;
+import com.haulmont.cuba.gui.components.HasDatatype;
 import com.haulmont.cuba.gui.components.data.value.ContainerValueSource;
 import com.haulmont.cuba.gui.model.InstanceContainer;
 import com.haulmont.cuba.gui.model.ScreenData;
@@ -146,6 +148,14 @@ public abstract class AbstractFieldLoader<T extends Field> extends AbstractDatas
         String buffered = element.attributeValue("buffered");
         if (StringUtils.isNotEmpty(buffered)) {
             component.setBuffered(Boolean.parseBoolean(buffered));
+        }
+    }
+
+    protected void loadDatatype(HasDatatype component, Element element) {
+        String datatypeAttribute = element.attributeValue("datatype");
+        if (StringUtils.isNotEmpty(datatypeAttribute)) {
+            //noinspection unchecked
+            component.setDatatype(Datatypes.get(datatypeAttribute));
         }
     }
 }

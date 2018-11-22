@@ -18,13 +18,17 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.bali.events.Subscription;
+import com.haulmont.chile.core.datatypes.Datatype;
+import com.haulmont.chile.core.model.Range;
 import com.haulmont.cuba.gui.components.MaskedField;
 import com.haulmont.cuba.gui.components.data.ConversionException;
+import com.haulmont.cuba.gui.components.data.meta.EntityValueSource;
 import com.haulmont.cuba.web.gui.components.util.ShortcutListenerDelegate;
 import com.haulmont.cuba.web.widgets.CubaMaskedTextField;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.event.ShortcutListener;
 
+import java.text.ParseException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -33,7 +37,7 @@ import java.util.function.Consumer;
 import static com.google.common.base.Strings.emptyToNull;
 import static com.google.common.base.Strings.nullToEmpty;
 
-public class WebMaskedField extends WebV8AbstractField<CubaMaskedTextField, String, String> implements MaskedField {
+public class WebMaskedField<V> extends WebV8AbstractField<CubaMaskedTextField, String, V> implements MaskedField<V> {
 
     protected static final char PLACE_HOLDER = '_';
 
@@ -42,6 +46,8 @@ public class WebMaskedField extends WebV8AbstractField<CubaMaskedTextField, Stri
 
     protected ShortcutListener enterShortcutListener;
     protected String nullRepresentation;
+
+    protected Datatype<V> datatype;
 
     public WebMaskedField() {
         this.component = createTextFieldImpl();
@@ -113,13 +119,59 @@ public class WebMaskedField extends WebV8AbstractField<CubaMaskedTextField, Stri
     }
 
     @Override
-    protected String convertToPresentation(String modelValue) throws ConversionException {
-        return nullToEmpty(modelValue);
+    public Datatype<V> getDatatype() {
+        return datatype;
     }
 
     @Override
-    protected String convertToModel(String componentRawValue) throws ConversionException {
+    public void setDatatype(Datatype<V> datatype) {
+        this.datatype = datatype;
+    }
+
+    @Override
+    protected String convertToPresentation(V modelValue) throws ConversionException {
+        if (datatype != null) {
+            return nullToEmpty(datatype.format(modelValue));
+        }
+
+        if (valueBinding != null
+                && valueBinding.getSource() instanceof EntityValueSource) {
+            EntityValueSource entityValueSource = (EntityValueSource) valueBinding.getSource();
+            Range range = entityValueSource.getMetaPropertyPath().getRange();
+            if (range.isDatatype()) {
+                Datatype<V> propertyDataType = range.asDatatype();
+                return nullToEmpty(propertyDataType.format(modelValue));
+            }
+        }
+
+        return nullToEmpty(super.convertToPresentation(modelValue));
+    }
+
+    @Override
+    protected V convertToModel(String componentRawValue) throws ConversionException {
         String value = emptyToNull(componentRawValue);
+
+        if (datatype != null) {
+            try {
+                return datatype.parse(value);
+            } catch (ParseException e) {
+                // vaadin8 localized message
+                throw new ConversionException("Unable to convert value", e);
+            }
+        }
+
+        if (valueBinding != null
+                && valueBinding.getSource() instanceof EntityValueSource) {
+            EntityValueSource entityValueSource = (EntityValueSource) valueBinding.getSource();
+            Datatype<V> propertyDataType = entityValueSource.getMetaPropertyPath().getRange().asDatatype();
+            try {
+                return propertyDataType.parse(value);
+            } catch (ParseException e) {
+                // vaadin8 localized message
+                throw new ConversionException("Unable to convert value", e);
+            }
+        }
+
         return super.convertToModel(value);
     }
 

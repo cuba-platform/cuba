@@ -51,11 +51,7 @@ public class TextAreaLoader extends AbstractTextFieldLoader<TextArea> {
 
         loadWordWrap();
 
-        String datatypeAttribute = element.attributeValue("datatype");
-        if (StringUtils.isNotEmpty(datatypeAttribute)) {
-            Datatype datatype = Datatypes.get(datatypeAttribute);
-            resultComponent.setDatatype(datatype);
-        }
+        loadDatatype(resultComponent, element);
     }
 
     protected void loadWordWrap() {

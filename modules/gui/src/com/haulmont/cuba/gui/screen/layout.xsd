@@ -1436,6 +1436,7 @@
                 <xs:attribute name="valueMode" type="maskedFieldValueMode"/>
 
                 <xs:attributeGroup ref="hasBuffered"/>
+                <xs:attributeGroup ref="hasDatatype"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>

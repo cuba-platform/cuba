@@ -16,11 +16,8 @@
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
-import com.haulmont.chile.core.datatypes.Datatype;
-import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.cuba.gui.components.TextField;
 import com.haulmont.cuba.gui.components.TextInputField;
-import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
 
 public class TextFieldLoader extends AbstractTextFieldLoader<TextField> {
@@ -31,11 +28,7 @@ public class TextFieldLoader extends AbstractTextFieldLoader<TextField> {
         loadMaxLength(resultComponent, element);
         loadTrimming(resultComponent, element);
 
-        String datatypeAttribute = element.attributeValue("datatype");
-        if (StringUtils.isNotEmpty(datatypeAttribute)) {
-            Datatype datatype = Datatypes.get(datatypeAttribute);
-            resultComponent.setDatatype(datatype);
-        }
+        loadDatatype(resultComponent, element);
 
         resultComponent.setFormatter(loadFormatter(element));
 

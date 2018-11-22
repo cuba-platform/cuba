@@ -31,9 +31,10 @@ package com.haulmont.cuba.gui.components;
  * </ul>
  * Any other symbols in format will be treated as mask literals.
  */
-public interface MaskedField
+public interface MaskedField<V>
         extends
-            TextInputField<String>,
+            TextInputField<V>,
+            HasDatatype<V>,
             TextInputField.TextSelectionSupported,
             TextInputField.CursorPositionSupported,
             TextInputField.EnterPressNotifier {

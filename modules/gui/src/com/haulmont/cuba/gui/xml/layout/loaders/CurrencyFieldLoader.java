@@ -65,13 +65,6 @@ public class CurrencyFieldLoader extends AbstractFieldLoader<CurrencyField> {
         }
     }
 
-    protected void loadDatatype(CurrencyField resultComponent, Element element) {
-        String datatype = element.attributeValue("datatype");
-        if (StringUtils.isNotEmpty(datatype)) {
-            resultComponent.setDatatype(Datatypes.get(datatype));
-        }
-    }
-
     @Override
     protected void loadDatasource(DatasourceComponent component, Element element) {
         super.loadDatasource(component, element);

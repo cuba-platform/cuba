@@ -40,5 +40,7 @@ public class MaskedFieldLoader extends AbstractTextFieldLoader<MaskedField> {
         if (StringUtils.isNotEmpty(valueModeStr)) {
             resultComponent.setValueMode(ValueMode.valueOf(valueModeStr.toUpperCase()));
         }
+
+        loadDatatype(resultComponent, element);
     }
 }
