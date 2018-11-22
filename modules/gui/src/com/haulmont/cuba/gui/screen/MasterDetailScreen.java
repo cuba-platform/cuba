@@ -264,7 +264,7 @@ public abstract class MasterDetailScreen<T extends Entity> extends StandardLooku
         this.editing = true;
         this.creating = creating;
         initEditComponents(true);
-        getForm().requestFocus();
+        getForm().focusFirstComponent();
     }
 
     /**
