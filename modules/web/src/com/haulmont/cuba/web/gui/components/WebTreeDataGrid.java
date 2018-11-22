@@ -1,5 +1,6 @@
 package com.haulmont.cuba.web.gui.components;
 
+import com.google.common.base.Strings;
 import com.haulmont.bali.events.Subscription;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.TreeDataGrid;
@@ -13,6 +14,7 @@ import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.TreeDataProvider;
 import com.vaadin.shared.Registration;
 import com.vaadin.ui.Grid;
+import org.dom4j.Element;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
@@ -30,9 +32,25 @@ public class WebTreeDataGrid<E extends Entity> extends WebAbstractDataGrid<CubaT
     protected Registration expandListener;
     protected Registration collapseListener;
 
+    protected Column<E> hierarchyColumn;
+
     @Override
     protected CubaTreeGrid<E> createComponent() {
         return new CubaTreeGrid<>();
+    }
+
+    @Override
+    protected void onColumnReorder(Grid.ColumnReorderEvent e) {
+        super.onColumnReorder(e);
+
+        String[] columnOrder = getColumnOrder();
+        // if the hierarchy column isn't set explicitly,
+        // we set the first column as the hierarchy column
+        if (getHierarchyColumn() == null
+                && columnOrder.length > 0) {
+            String columnId = columnOrder[0];
+            component.setHierarchyColumn(columnId);
+        }
     }
 
     @Nullable
@@ -86,8 +104,7 @@ public class WebTreeDataGrid<E extends Entity> extends WebAbstractDataGrid<CubaT
     @Nullable
     @Override
     public Column<E> getHierarchyColumn() {
-        Grid.Column<E, ?> hierarchyColumn = component.getHierarchyColumn();
-        return hierarchyColumn != null ? getColumnByGridColumn(hierarchyColumn) : null;
+        return hierarchyColumn;
     }
 
     @Override
@@ -98,6 +115,8 @@ public class WebTreeDataGrid<E extends Entity> extends WebAbstractDataGrid<CubaT
     @Override
     public void setHierarchyColumn(Column<E> column) {
         checkNotNullArgument(column);
+
+        hierarchyColumn = column;
 
         Grid.Column<E, ?> gridColumn = ((ColumnImpl<E>) column).getGridColumn();
         component.setHierarchyColumn(gridColumn);
@@ -172,5 +191,38 @@ public class WebTreeDataGrid<E extends Entity> extends WebAbstractDataGrid<CubaT
         CollapseEvent<E> event = new CollapseEvent<>(WebTreeDataGrid.this,
                 e.getCollapsedItem(), e.isUserOriginated());
         publish(CollapseEvent.class, event);
+    }
+
+    @Override
+    public void applySettings(Element element) {
+        super.applySettings(element);
+
+        if (!isSettingsEnabled()) {
+            return;
+        }
+
+        String hierarchyColumn = element.attributeValue("hierarchyColumn");
+        if (!Strings.isNullOrEmpty(hierarchyColumn)
+                && getColumn(hierarchyColumn) != null) {
+            setHierarchyColumn(hierarchyColumn);
+        }
+    }
+
+    @Override
+    public boolean saveSettings(Element element) {
+        boolean settingsChanged = super.saveSettings(element);
+
+        if (!isSettingsEnabled()) {
+            return false;
+        }
+
+        Column<E> hierarchyColumn = getHierarchyColumn();
+        if (hierarchyColumn != null
+                && !hierarchyColumn.getId().equals(element.attributeValue("hierarchyColumn"))) {
+            element.addAttribute("hierarchyColumn", hierarchyColumn.getId());
+            settingsChanged = true;
+        }
+
+        return settingsChanged;
     }
 }
