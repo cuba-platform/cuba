@@ -21,10 +21,8 @@ import com.haulmont.bali.events.Subscription;
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.DatatypeRegistry;
-import com.haulmont.chile.core.model.Instance;
-import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.chile.core.model.MetaProperty;
-import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.chile.core.datatypes.Datatypes;
+import com.haulmont.chile.core.model.*;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.client.sys.PersistenceManagerClient;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesTools;
@@ -70,6 +68,7 @@ import com.haulmont.cuba.web.gui.components.util.ShortcutListenerDelegate;
 import com.haulmont.cuba.web.gui.icons.IconResolver;
 import com.haulmont.cuba.web.widgets.CubaButton;
 import com.haulmont.cuba.web.widgets.CubaEnhancedTable;
+import com.haulmont.cuba.web.widgets.CubaEnhancedTable.AggregationInputValueChangeContext;
 import com.haulmont.cuba.web.widgets.CubaUI;
 import com.haulmont.cuba.web.widgets.compatibility.CubaValueChangeEvent;
 import com.haulmont.cuba.web.widgets.data.AggregationContainer;
@@ -99,6 +98,7 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.text.ParseException;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -170,6 +170,8 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
     protected Document defaultSettings;
 
     protected com.vaadin.v7.ui.Table.ColumnCollapseListener columnCollapseListener;
+
+    protected AggregationDistributionProvider distributionProvider;
 
     // Map column id to Printable representation
     // todo this functionality should be moved to Excel action
@@ -453,6 +455,10 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
                     && !persistenceManagerClient.supportsLobSortingAndFiltering(storeName)) {
                 component.setColumnSortable(columnId, false);
             }
+        }
+
+        if (column.isAggregationEditable()) {
+            component.addAggregationEditableColumn(columnId);
         }
     }
 
@@ -2926,6 +2932,37 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
     }
 
     @Override
+    public void setAggregationDistributionProvider(AggregationDistributionProvider distributionProvider) {
+        this.distributionProvider = distributionProvider;
+
+        component.setAggregationDistributionProvider(this::distributeAggregation);
+    }
+
+    protected boolean distributeAggregation(AggregationInputValueChangeContext context) {
+        if (distributionProvider != null) {
+            String value = context.getValue();
+            Object columnId = context.getColumnId();
+            try {
+                Object parsedValue = getParsedAggregationValue(value, columnId);
+                //noinspection unchecked
+                AggregationDistributionContext<E> distributionContext =
+                        new AggregationDistributionContext<E>(getColumn(columnId.toString()),
+                                parsedValue, getDatasource().getItems(), context.isTotalAggregation());
+                distributionProvider.onDistribution(distributionContext);
+            } catch (ParseException e) {
+                showParseErrorNotification();
+                return false; // rollback to previous value
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public AggregationDistributionProvider getAggregationDistributionProvider() {
+        return distributionProvider;
+    }
+
+    @Override
     public void requestFocus(E item, String columnId) {
         Preconditions.checkNotNullArgument(item);
         Preconditions.checkNotNullArgument(columnId);
@@ -3053,5 +3090,56 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
                     ", method=" + method +
                     '}';
         }
+    }
+
+    protected Object getParsedAggregationValue(String value, Object columnId) throws ParseException {
+        Object parsedValue = value;
+
+        for (Column column : getColumns()) {
+            if (column.getId().equals(columnId)) {
+                AggregationInfo aggregationInfo = column.getAggregation();
+                if (aggregationInfo == null || aggregationInfo.getFormatter() != null) {
+                    return parsedValue;
+                }
+
+                MetaPropertyPath propertyPath = aggregationInfo.getPropertyPath();
+                Class resultClass;
+                Range range = propertyPath != null ? propertyPath.getRange() : null;
+                if (range != null && range.isDatatype()) {
+                    if (aggregationInfo.getType() == AggregationInfo.Type.COUNT) {
+                        return parsedValue;
+                    }
+
+                    if (aggregationInfo.getStrategy() == null) {
+                        Class rangeJavaClass = propertyPath.getRangeJavaClass();
+                        Aggregation aggregation = Aggregations.get(rangeJavaClass);
+                        resultClass = aggregation.getResultClass();
+                    } else {
+                        resultClass = aggregationInfo.getStrategy().getResultClass();
+                    }
+
+                } else if (aggregationInfo.getStrategy() == null) {
+                    return parsedValue;
+                } else {
+                    resultClass = aggregationInfo.getStrategy().getResultClass();
+                }
+
+                UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.NAME);
+                Locale locale = userSessionSource.getLocale();
+                parsedValue = Datatypes.getNN(resultClass).parse(value, locale);
+
+                break;
+            }
+        }
+        return parsedValue;
+    }
+
+    protected void showParseErrorNotification() {
+        Messages messages = AppBeans.get(Messages.NAME);
+
+        getFrame().showNotification(
+                messages.getMainMessage("validationFail.caption"),
+                messages.getMainMessage("validationFail"),
+                Frame.NotificationType.TRAY);
     }
 }

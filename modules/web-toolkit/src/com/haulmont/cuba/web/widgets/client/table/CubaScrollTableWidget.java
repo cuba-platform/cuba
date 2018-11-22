@@ -155,6 +155,14 @@ public class CubaScrollTableWidget extends VScrollTable implements TableWidget {
     }
 
     @Override
+    protected boolean isAggregationEditable() {
+        if (_delegate.aggregationRow != null) {
+            return _delegate.aggregationRow.isAggregationRowEditable();
+        }
+        return false;
+    }
+
+    @Override
     protected int getDynamicBodyHeight() {
         if (totalRows <= 0) {
             return (int) Math.round(scrollBody.getRowHeight(true));
@@ -273,6 +281,7 @@ public class CubaScrollTableWidget extends VScrollTable implements TableWidget {
     protected void updateAggregationRow(UIDL uidl) {
         if (_delegate.aggregationRow == null) {
             _delegate.aggregationRow = createAggregationRow();
+            _delegate.aggregationRow.setTotalAggregationInputHandler(_delegate.totalAggregationInputHandler);
             insert(_delegate.aggregationRow, getWidgetIndex(scrollBodyPanel));
         }
         _delegate.aggregationRow.updateFromUIDL(uidl);

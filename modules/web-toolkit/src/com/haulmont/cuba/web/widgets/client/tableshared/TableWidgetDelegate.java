@@ -68,6 +68,9 @@ public class TableWidgetDelegate {
     public Set<String> htmlCaptionColumns;
     public TableCellClickListener cellClickListener;
 
+    public TotalAggregationInputListener totalAggregationInputHandler;
+    public GroupAggregationInputListener groupAggregationInputHandler;
+
     public VOverlay customPopupOverlay;
     public Widget customPopupWidget;
     public boolean customPopupAutoClose = false;

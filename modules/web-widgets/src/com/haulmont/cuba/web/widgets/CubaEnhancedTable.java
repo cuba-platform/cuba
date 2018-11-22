@@ -105,6 +105,11 @@ public interface CubaEnhancedTable extends AggregationContainer {
         boolean handleSpecificVariables(Map<String, Object> variables);
     }
 
+    void addAggregationEditableColumn(Object columnId);
+
+    void setAggregationDistributionProvider(Function<AggregationInputValueChangeContext, Boolean> distributionProvider);
+    Function<AggregationInputValueChangeContext, Boolean> getAggregationDistributionProvider();
+
     interface CellClickListener {
         void onClick(Object itemId, Object columnId);
     }
@@ -143,5 +148,29 @@ public interface CubaEnhancedTable extends AggregationContainer {
 
     interface CellValueFormatter {
         String getFormattedValue(Object rowId, Object colId, Property<?> property);
+    }
+
+    class AggregationInputValueChangeContext {
+        protected Object columnId;
+        protected String value;
+        protected boolean isTotalAggregation;
+
+        public AggregationInputValueChangeContext(Object columnId, String value, boolean isTotalAggregation) {
+            this.columnId = columnId;
+            this.value = value;
+            this.isTotalAggregation = isTotalAggregation;
+        }
+
+        public Object getColumnId() {
+            return columnId;
+        }
+
+        public String getValue() {
+            return value;
+        }
+
+        public boolean isTotalAggregation() {
+            return isTotalAggregation;
+        }
     }
 }

@@ -36,10 +36,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.EventObject;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -642,6 +639,19 @@ public interface Table<E extends Entity>
     }
 
     /**
+     * Set aggregation distribution provider to handle distribution of data on rows. Supports only TOP
+     * aggregation style.
+     *
+     * @param distributionProvider distribution provider
+     */
+    void setAggregationDistributionProvider(AggregationDistributionProvider<E> distributionProvider);
+
+    /**
+     * @return aggregation distribution provider
+     */
+    AggregationDistributionProvider<E> getAggregationDistributionProvider();
+
+    /**
      * Show popup inside of Table, relative to last cell click event.<br>
      * Call this method from {@link com.haulmont.cuba.gui.components.Table.CellClickListener} implementation.
      *
@@ -874,6 +884,28 @@ public interface Table<E extends Entity>
             this.valueProvider = valueProvider;
         }
 
+        @Nullable
+        public MetaPropertyPath getMetaPropertyPath() {
+            if (id instanceof MetaPropertyPath) {
+                return (MetaPropertyPath) id;
+            }
+            return null;
+        }
+
+        public MetaPropertyPath getMetaPropertyPathNN() {
+            if (id instanceof MetaPropertyPath) {
+                return (MetaPropertyPath) id;
+            }
+            throw new IllegalStateException("Column is not bound to meta property " + id);
+        }
+
+        public String getIdString() {
+            if (id instanceof MetaPropertyPath) {
+                return id.toString();
+            }
+            return String.valueOf(id);
+        }
+
         @Override
         public String getCaption() {
             return caption;
@@ -1003,10 +1035,12 @@ public interface Table<E extends Entity>
             }
         }
 
+        @Deprecated
         public boolean isCalculatable() {
             return calculatable;
         }
 
+        @Deprecated
         public void setCalculatable(boolean calculatable) {
             this.calculatable = calculatable;
         }
@@ -1050,6 +1084,10 @@ public interface Table<E extends Entity>
         @Override
         public void setXmlDescriptor(Element element) {
             this.element = element;
+        }
+
+        public boolean isAggregationEditable() {
+            return aggregation != null && aggregation.isEditable();
         }
 
         @Override
@@ -1221,6 +1259,59 @@ public interface Table<E extends Entity>
         @Override
         public <X> X unwrapComposition(Class<X> internalCompositionClass) {
             return null;
+        }
+    }
+
+    /**
+     * Allows to handle a group or total aggregation value changes.
+     */
+    interface AggregationDistributionProvider<E> {
+
+        /**
+         * Invoked when a group or total aggregation value is changed.
+         *
+         * @param context context
+         */
+        void onDistribution(AggregationDistributionContext<E> context);
+    }
+
+    /**
+     * Object that contains information about aggregation distribution.
+     *
+     * @param <E> entity type
+     */
+    class AggregationDistributionContext<E> {
+        protected Column column;
+        protected Object value;
+        protected Collection<E> scope;
+        protected boolean isTotalAggregation;
+
+        public AggregationDistributionContext(Column column, Object value, Collection<E> scope,
+                                              boolean isTotalAggregation) {
+            this.column = column;
+            this.value = value;
+            this.scope = scope;
+            this.isTotalAggregation = isTotalAggregation;
+        }
+
+        public Column getColumn() {
+            return column;
+        }
+
+        public String getColumnId() {
+            return column.getIdString();
+        }
+
+        public Object getValue() {
+            return value;
+        }
+
+        public Collection<E> getScope() {
+            return scope;
+        }
+
+        public boolean isTotalAggregation() {
+            return isTotalAggregation;
         }
     }
 }

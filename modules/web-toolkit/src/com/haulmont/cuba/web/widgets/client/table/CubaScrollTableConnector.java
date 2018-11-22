@@ -259,6 +259,9 @@ public class CubaScrollTableConnector extends TableConnector {
                 }
             }
         });
+        getWidget()._delegate.totalAggregationInputHandler = (columnKey, value, isFocused) -> {
+            getRpcProxy(CubaTableServerRpc.class).onAggregationTotalInputChange(columnKey, value, isFocused);
+        };
     }
 
     @Override

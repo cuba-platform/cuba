@@ -2078,6 +2078,7 @@
                         <xs:element name="formatter" minOccurs="0" type="formatterType"/>
                     </xs:sequence>
                     <xs:attribute name="type" type="aggregation"/>
+                    <xs:attribute name="editable" type="xs:boolean"/>
                     <xs:attribute name="strategyClass" type="xs:string"/>
                     <xs:attribute name="valueDescription" type="resourceString"/>
                 </xs:complexType>

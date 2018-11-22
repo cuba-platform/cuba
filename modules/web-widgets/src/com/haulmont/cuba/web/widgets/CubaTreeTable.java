@@ -42,6 +42,7 @@ import com.vaadin.v7.data.util.ContainerOrderedWrapper;
 import com.vaadin.v7.data.util.HierarchicalContainer;
 import com.vaadin.v7.data.util.IndexedContainer;
 import com.vaadin.v7.ui.Field;
+import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.*;
 import java.util.function.Function;
@@ -52,6 +53,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class CubaTreeTable extends com.vaadin.v7.ui.TreeTable implements TreeTableContainer, CubaEnhancedTable {
 
     protected LinkedList<Object> editableColumns = null;
+
+    protected List<Object> aggregationEditableColumns;
 
     /**
      * Keeps track of the ShortcutListeners added to this component, and manages the painting and handling as well.
@@ -83,6 +86,10 @@ public class CubaTreeTable extends com.vaadin.v7.ui.TreeTable implements TreeTab
 
     protected CellValueFormatter customCellValueFormatter;
 
+    protected String focusTotalAggregationInputColumnKey;
+
+    protected Function<AggregationInputValueChangeContext, Boolean> aggregationDistributionProvider;
+
     public CubaTreeTable() {
         //noinspection Convert2Lambda
         registerRpc(new CubaTableServerRpc() {
@@ -97,6 +104,26 @@ public class CubaTreeTable extends com.vaadin.v7.ui.TreeTable implements TreeTab
                         cellClickListener.onClick(itemId, columnId);
                     }
                 }
+            }
+
+            @Override
+            public void onAggregationTotalInputChange(String columnKey, String value, boolean isFocused) {
+                if (aggregationDistributionProvider != null) {
+                    Object columnId = _columnIdMap().get(columnKey);
+
+                    focusTotalAggregationInputColumnKey = isFocused ? columnKey : null;
+
+                    AggregationInputValueChangeContext event =
+                            new AggregationInputValueChangeContext(columnId, value, true);
+                    if (!aggregationDistributionProvider.apply(event)) {
+                        markAsDirty();
+                    }
+                }
+            }
+
+            @Override
+            public void onAggregationGroupInputChange(String columnKey, String groupKey, String value, boolean isFocused) {
+                // is used by CubaGroupTable
             }
         });
     }
@@ -667,6 +694,20 @@ public class CubaTreeTable extends com.vaadin.v7.ui.TreeTable implements TreeTab
             String value = (String) aggregations.get(columnId);
             target.addText(value);
         }
+
+        if (focusTotalAggregationInputColumnKey != null) {
+            target.addAttribute("focusInput", focusTotalAggregationInputColumnKey);
+            focusTotalAggregationInputColumnKey = null;
+        }
+
+        target.startTag("editableAggregationColumns");
+        for (final Object columnId : _visibleColumns()) {
+            if (CollectionUtils.isNotEmpty(aggregationEditableColumns)
+                    && aggregationEditableColumns.contains(columnId)) {
+                target.addText(_columnIdMap().key(columnId));
+            }
+        }
+        target.endTag("editableAggregationColumns");
         target.endTag("arow");
     }
 
@@ -973,6 +1014,25 @@ public class CubaTreeTable extends com.vaadin.v7.ui.TreeTable implements TreeTab
         }
 
         super.paintContent(target);
+    }
+
+    @Override
+    public void addAggregationEditableColumn(Object columnId) {
+        if (aggregationEditableColumns == null) {
+            aggregationEditableColumns = new ArrayList<>();
+        }
+
+        aggregationEditableColumns.add(columnId);
+    }
+
+    @Override
+    public void setAggregationDistributionProvider(Function<AggregationInputValueChangeContext, Boolean> distributionProvider) {
+        this.aggregationDistributionProvider = distributionProvider;
+    }
+
+    @Override
+    public Function<AggregationInputValueChangeContext, Boolean> getAggregationDistributionProvider() {
+        return aggregationDistributionProvider;
     }
 
     public void expandAllHierarchical(List<Object> collapsedItemIds, List<Object> preOrder, List<Object> openItems) {

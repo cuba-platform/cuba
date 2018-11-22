@@ -274,6 +274,9 @@ public class CubaTreeTableConnector extends TreeTableConnector {
                 }
             }
         });
+        getWidget()._delegate.totalAggregationInputHandler = (columnKey, value, isFocused) -> {
+            getRpcProxy(CubaTableServerRpc.class).onAggregationTotalInputChange(columnKey, value, isFocused);
+        };
     }
 
     @Override

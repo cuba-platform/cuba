@@ -38,6 +38,7 @@ import com.vaadin.v7.data.Container;
 import com.vaadin.v7.data.Property;
 import com.vaadin.v7.data.util.ContainerOrderedWrapper;
 import com.vaadin.v7.ui.Field;
+import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.*;
 import java.util.function.Function;
@@ -47,6 +48,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class CubaTable extends com.vaadin.v7.ui.Table implements TableSortableContainer, CubaEnhancedTable {
 
     protected List<Object> editableColumns;
+
+    protected List<Object> aggregationEditableColumns;
 
     /**
      * Keeps track of the ShortcutListeners added to this component, and manages the painting and handling as well.
@@ -78,6 +81,10 @@ public class CubaTable extends com.vaadin.v7.ui.Table implements TableSortableCo
     protected java.util.function.Function<Object, Resource> iconProvider = null;
     protected SpecificVariablesHandler specificVariablesHandler;
 
+    protected String focusTotalAggregationInputColumnKey;
+
+    protected Function<AggregationInputValueChangeContext, Boolean> aggregationDistributionProvider;
+
     public CubaTable() {
         //noinspection Convert2Lambda
         registerRpc(new CubaTableServerRpc() {
@@ -93,6 +100,25 @@ public class CubaTable extends com.vaadin.v7.ui.Table implements TableSortableCo
                         cellClickListener.onClick(itemId, columnId);
                     }
                 }
+            }
+
+            @Override
+            public void onAggregationTotalInputChange(String columnKey, String value, boolean isFocused) {
+                if (aggregationDistributionProvider != null) {
+                    Object columnId = _columnIdMap().get(columnKey);
+                    focusTotalAggregationInputColumnKey = isFocused ? columnKey : null;
+
+                    AggregationInputValueChangeContext event =
+                            new AggregationInputValueChangeContext(columnId, value, true);
+                    if (!aggregationDistributionProvider.apply(event)) {
+                        markAsDirty();
+                    }
+                }
+            }
+
+            @Override
+            public void onAggregationGroupInputChange(String columnKey, String groupKey, String value, boolean isFocused) {
+                handleAggregationGroupInputChange(columnKey, groupKey, value, isFocused);
             }
         });
     }
@@ -664,7 +690,47 @@ public class CubaTable extends com.vaadin.v7.ui.Table implements TableSortableCo
             String value = (String) aggregations.get(columnId);
             target.addText(value);
         }
+        paintEditableAggregationColumns(target);
+        if (focusTotalAggregationInputColumnKey != null) {
+            target.addAttribute("focusInput", focusTotalAggregationInputColumnKey);
+            focusTotalAggregationInputColumnKey = null;
+        }
+
         target.endTag("arow");
+    }
+
+    protected void paintEditableAggregationColumns(PaintTarget target) throws PaintException {
+        target.startTag("editableAggregationColumns");
+        for (final Object columnId : _visibleColumns()) {
+            if (CollectionUtils.isNotEmpty(aggregationEditableColumns)
+                    && aggregationEditableColumns.contains(columnId)) {
+                target.addText(_columnIdMap().key(columnId));
+            }
+        }
+        target.endTag("editableAggregationColumns");
+    }
+
+    @Override
+    public void addAggregationEditableColumn(Object columnId) {
+        if (aggregationEditableColumns == null) {
+            aggregationEditableColumns = new ArrayList<>();
+        }
+
+        aggregationEditableColumns.add(columnId);
+    }
+
+    @Override
+    public void setAggregationDistributionProvider(Function<AggregationInputValueChangeContext, Boolean> distributionProvider) {
+        this.aggregationDistributionProvider = distributionProvider;
+    }
+
+    @Override
+    public Function<AggregationInputValueChangeContext, Boolean> getAggregationDistributionProvider() {
+        return aggregationDistributionProvider;
+    }
+
+    // used by CubaGroupTable
+    protected void handleAggregationGroupInputChange(String columnKey, String groupKey, String value, boolean isFocused) {
     }
 
     @Override

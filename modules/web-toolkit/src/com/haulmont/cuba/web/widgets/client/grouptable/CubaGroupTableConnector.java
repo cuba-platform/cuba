@@ -20,6 +20,7 @@ package com.haulmont.cuba.web.widgets.client.grouptable;
 import com.google.gwt.dom.client.Element;
 import com.haulmont.cuba.web.widgets.CubaGroupTable;
 import com.haulmont.cuba.web.widgets.client.table.CubaScrollTableConnector;
+import com.haulmont.cuba.web.widgets.client.table.CubaTableServerRpc;
 import com.vaadin.client.ApplicationConnection;
 import com.vaadin.client.TooltipInfo;
 import com.vaadin.client.UIDL;
@@ -81,6 +82,15 @@ public class CubaGroupTableConnector extends CubaScrollTableConnector {
         }
 
         return super.getTooltipInfo(element);
+    }
+
+    @Override
+    protected void init() {
+        super.init();
+
+        getWidget()._delegate.groupAggregationInputHandler = (columnKey, groupKey, value, isFocused) -> {
+            getRpcProxy(CubaTableServerRpc.class).onAggregationGroupInputChange(columnKey, groupKey, value, isFocused);
+        };
     }
 
     @Override

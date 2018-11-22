@@ -40,6 +40,7 @@ public class AggregationInfo {
     private Type type;
     private Function<Object, String> formatter;
     private AggregationStrategy strategy;
+    protected boolean editable = false;
 
     public MetaPropertyPath getPropertyPath() {
         return propertyPath;
@@ -74,5 +75,13 @@ public class AggregationInfo {
             setType(Type.CUSTOM);
         }
         this.strategy = strategy;
+    }
+
+    public boolean isEditable() {
+        return editable;
+    }
+
+    public void setEditable(boolean editable) {
+        this.editable = editable;
     }
 }

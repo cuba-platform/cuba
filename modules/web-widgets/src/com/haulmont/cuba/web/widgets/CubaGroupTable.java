@@ -49,6 +49,8 @@ public class CubaGroupTable extends CubaTable implements GroupTableContainer {
 
     protected boolean shouldPaintWithAggregations = true;
 
+    protected String focusGroupAggregationInputColumnKey;
+
     /**
      * Attention: this method is copied from the parent class: {@link Table#setColumnOrder(java.lang.Object[])}
      */
@@ -129,7 +131,7 @@ public class CubaGroupTable extends CubaTable implements GroupTableContainer {
         if (hasGroups() && hasAggregation) {
             target.startTag("groupRows");
             for (Object itemId : getVisibleItemIds()) {
-                if (isExpanded(itemId) && isAggregatedValuesChanged(itemId)) {
+                if (isGroup(itemId) && isAggregatedValuesChanged(itemId)) {
                     target.startTag("tr");
 
                     target.addAttribute("groupKey", groupIdMap.key(itemId));
@@ -140,6 +142,9 @@ public class CubaGroupTable extends CubaTable implements GroupTableContainer {
                     isAddedToCache = true;
                 }
             }
+
+            paintEditableAggregationColumns(target);
+
             target.endTag("groupRows");
         }
 
@@ -411,6 +416,13 @@ public class CubaGroupTable extends CubaTable implements GroupTableContainer {
                 if (hasAggregation) {
                     paintGroupAggregation(target, itemId,
                             ((AggregationContainer) items).aggregate(new GroupAggregationContext(this, itemId)));
+
+                    paintEditableAggregationColumns(target);
+
+                    if (focusGroupAggregationInputColumnKey != null) {
+                        target.addAttribute("focusInput", focusGroupAggregationInputColumnKey);
+                        focusGroupAggregationInputColumnKey = null;
+                    }
                 }
             }
         }
@@ -693,6 +705,24 @@ public class CubaGroupTable extends CubaTable implements GroupTableContainer {
     }
 
     @Override
+    protected void handleAggregationGroupInputChange(String columnKey, String groupKey, String value, boolean isFocused) {
+        if (aggregationDistributionProvider != null) {
+            Object columnId = _columnIdMap().get(columnKey);
+            Object groupColumnId = groupIdMap.get(groupKey);
+
+            focusGroupAggregationInputColumnKey = isFocused ? columnKey : null;
+
+            GroupAggregationInputValueChangeContext context
+                    = new GroupAggregationInputValueChangeContext(columnId, value, false, groupColumnId);
+            if (!aggregationDistributionProvider.apply(context)) {
+                // clear cache to update aggregated values
+                cachedAggregatedValues.clear();
+                markAsDirty();
+            }
+        }
+    }
+
+    @Override
     protected void updateClickableColumnKeys() {
         if (cellClickListeners != null) {
             Collection<?> groupProperties = getGroupProperties();
@@ -739,6 +769,20 @@ public class CubaGroupTable extends CubaTable implements GroupTableContainer {
 
         public Object getGroupId() {
             return groupId;
+        }
+    }
+
+    public static class GroupAggregationInputValueChangeContext extends AggregationInputValueChangeContext {
+        protected Object groupInfo;
+
+        public GroupAggregationInputValueChangeContext(Object columnId, String value, boolean isTotalAggregation,
+                                                       Object groupInfo) {
+            super(columnId, value, isTotalAggregation);
+            this.groupInfo = groupInfo;
+        }
+
+        public Object getGroupInfo() {
+            return groupInfo;
         }
     }
 }

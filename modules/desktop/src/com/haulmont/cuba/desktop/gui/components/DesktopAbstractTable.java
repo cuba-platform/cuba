@@ -80,6 +80,7 @@ import java.awt.Component;
 import java.awt.event.*;
 import java.util.*;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import static com.google.common.base.Preconditions.checkArgument;
@@ -163,6 +164,8 @@ public abstract class DesktopAbstractTable<C extends JXTable, E extends Entity>
     protected List<LookupSelectionChangeListener> lookupSelectionChangeListeners = new ArrayList<>();
 
     protected Set<Object> htmlCaptionColumnIds; // lazily initialized set
+
+    protected AggregationDistributionProvider distributionProvider; // stub
 
     protected DesktopAbstractTable() {
         shortcutsDelegate.setAllowEnterShortcut(false);
@@ -2705,5 +2708,15 @@ public abstract class DesktopAbstractTable<C extends JXTable, E extends Entity>
                 table.setRowHeight(row, maxH);
             }
         }
+    }
+
+    @Override
+    public void setAggregationDistributionProvider(AggregationDistributionProvider distributionProvider) {
+        this.distributionProvider = distributionProvider;
+    }
+
+    @Override
+    public AggregationDistributionProvider getAggregationDistributionProvider() {
+        return distributionProvider;
     }
 }
