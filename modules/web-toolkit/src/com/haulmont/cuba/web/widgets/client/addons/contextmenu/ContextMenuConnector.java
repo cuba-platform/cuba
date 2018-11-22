@@ -69,8 +69,9 @@ public class ContextMenuConnector extends AbstractExtensionConnector {
         contextMenuWidget = new MyVMenuBar(true, dummyRootMenuBar);
         item.setSubMenu(contextMenuWidget);
 
+        // FIXME: gg, just a quick compilation fix. Will be replaced during add-on update
         // application connection that is used for all our overlays
-        MyVOverlay.setApplicationConnection(this.getConnection());
+//        MyVOverlay.setApplicationConnection(this.getConnection());
 
         registerRpc(ContextMenuClientRpc.class, new ContextMenuClientRpc() {
             @Override

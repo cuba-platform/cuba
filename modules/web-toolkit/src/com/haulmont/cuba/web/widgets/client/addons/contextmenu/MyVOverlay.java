@@ -34,7 +34,8 @@ public class MyVOverlay extends VOverlay {
         super();
     }
 
-    public static void setApplicationConnection(ApplicationConnection ac) {
+    // FIXME: gg, just a quick compilation fix. Will be replaced during add-on update
+    public void setApplicationConnection(ApplicationConnection ac) {
         // this.ac = ac;
         ac_static = ac;
     }

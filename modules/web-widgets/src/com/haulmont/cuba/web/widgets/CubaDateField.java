@@ -96,14 +96,14 @@ public class CubaDateField extends com.vaadin.ui.DateField implements Action.Con
                 newDate = reconstructDateFromFields(resolutions, oldDate);
             }
 
-            boolean parseErrorWasSet = currentParseErrorMessage != null;
+            boolean parseErrorWasSet = currentErrorMessage != null;
             boolean hasChanges = !Objects.equals(dateString, newDateString)
                     || !Objects.equals(oldDate, newDate)
                     || parseErrorWasSet;
 
             if (hasChanges) {
                 dateString = newDateString;
-                currentParseErrorMessage = null;
+                currentErrorMessage = null;
                 if (newDateString == null || newDateString.isEmpty()) {
                     boolean valueChanged = setValue(newDate, true);
                     if (!valueChanged && parseErrorWasSet) {
@@ -117,7 +117,7 @@ public class CubaDateField extends com.vaadin.ui.DateField implements Action.Con
                         parsedDate.ifOk(v -> setValue(v, true));
                         if (parsedDate.isError()) {
                             dateString = null;
-                            currentParseErrorMessage = parsedDate
+                            currentErrorMessage = parsedDate
                                     .getMessage().orElse("Parsing error");
 
                             if (!isDifferentValue(null)) {
