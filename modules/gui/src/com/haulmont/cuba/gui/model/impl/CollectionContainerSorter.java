@@ -50,20 +50,13 @@ public class CollectionContainerSorter extends BaseContainerSorter {
         if (loader == null) {
             sortInMemory(sort);
         } else {
+            loader.setSort(sort);
             if (loader.getFirstResult() == 0
                     && getContainer().getItems().size() < loader.getMaxResults()) {
                 sortInMemory(sort);
             } else {
-                reloadWithSort(sort);
+                loader.load();
             }
         }
-    }
-
-    protected void reloadWithSort(Sort sort) {
-        if (loader == null)
-            return;
-
-        loader.setSort(sort);
-        loader.load();
     }
 }
