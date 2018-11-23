@@ -602,12 +602,21 @@ public class MetadataTools {
     }
 
     /**
-     * Determine whether the given metaclass is embeddable.
+     * Determine whether the given meta-class is persistent embeddable.
      */
     public boolean isEmbeddable(MetaClass metaClass) {
         checkNotNullArgument(metaClass, "metaClass is null");
         return Boolean.TRUE.equals(metaClass.getAnnotations().get(PERSISTENT_ANN_NAME))
                 && metaClass.getJavaClass().isAnnotationPresent(javax.persistence.Embeddable.class);
+    }
+
+    /**
+     * Determine whether the given entity class is persistent embeddable.
+     */
+    public boolean isEmbeddable(Class aClass) {
+        checkNotNullArgument(aClass, "Class is null");
+        return Boolean.TRUE.equals(metadata.getClassNN(aClass).getAnnotations().get(PERSISTENT_ANN_NAME))
+                && aClass.isAnnotationPresent(javax.persistence.Embeddable.class);
     }
 
     public boolean isCacheable(MetaClass metaClass) {

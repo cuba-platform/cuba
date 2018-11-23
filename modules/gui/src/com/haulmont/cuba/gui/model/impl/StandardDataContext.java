@@ -42,6 +42,7 @@ import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * Standard implementation of {@link DataContext} which commits data to {@link DataManager}.
@@ -65,6 +66,8 @@ public class StandardDataContext implements DataContext {
     protected StandardDataContext parentContext;
 
     protected Function<CommitContext, Set<Entity>> commitDelegate;
+
+    protected Map<Entity, Map<String, EmbeddedPropertyChangeListener>> embeddedPropertyListeners = new WeakHashMap<>();
 
     public StandardDataContext(ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
@@ -199,6 +202,11 @@ public class StandardDataContext implements DataContext {
                     Entity srcRef = (Entity) value;
                     Entity dstRef = internalMerge(srcRef);
                     ((AbstractInstance) dstEntity).setValue(propertyName, dstRef, false);
+                    if (getMetadataTools().isEmbedded(property)) {
+                        EmbeddedPropertyChangeListener listener = new EmbeddedPropertyChangeListener(dstEntity);
+                        dstRef.addPropertyChangeListener(listener);
+                        embeddedPropertyListeners.computeIfAbsent(dstEntity, e -> new HashMap<>()).put(propertyName, listener);
+                    }
                 }
             }
         }
@@ -220,6 +228,11 @@ public class StandardDataContext implements DataContext {
                 Entity srcRef = (Entity) value;
                 Entity dstRef = internalMerge(srcRef);
                 ((AbstractInstance) entity).setValue(propertyName, dstRef, false);
+                if (getMetadataTools().isEmbedded(property)) {
+                    EmbeddedPropertyChangeListener listener = new EmbeddedPropertyChangeListener(entity);
+                    dstRef.addPropertyChangeListener(listener);
+                    embeddedPropertyListeners.computeIfAbsent(entity, e -> new HashMap<>()).put(propertyName, listener);
+                }
             }
         }
     }
@@ -424,7 +437,7 @@ public class StandardDataContext implements DataContext {
                 modifiedInstances.remove(entity);
                 removedInstances.add(entity);
                 entityMap.remove(entity.getId());
-                entity.removePropertyChangeListener(propertyChangeListener);
+                removeListeners(entity);
                 fireChangeListener(entity);
                 removeFromCollections(mergedEntity);
             }
@@ -460,10 +473,25 @@ public class StandardDataContext implements DataContext {
             Entity mergedEntity = entityMap.get(entity.getId());
             if (mergedEntity != null) {
                 entityMap.remove(entity.getId());
-                entity.removePropertyChangeListener(propertyChangeListener);
+                removeListeners(entity);
             }
             modifiedInstances.remove(entity);
             removedInstances.remove(entity);
+        }
+    }
+
+    protected void removeListeners(Entity entity) {
+        entity.removePropertyChangeListener(propertyChangeListener);
+        Map<String, EmbeddedPropertyChangeListener> listenerMap = embeddedPropertyListeners.get(entity);
+        if (listenerMap != null) {
+            for (Map.Entry<String, EmbeddedPropertyChangeListener> entry : listenerMap.entrySet()) {
+                Entity embedded = entity.getValue(entry.getKey());
+                if (embedded != null) {
+                    embedded.removePropertyChangeListener(entry.getValue());
+                    embedded.removePropertyChangeListener(propertyChangeListener);
+                }
+            }
+            embeddedPropertyListeners.remove(entity);
         }
     }
 
@@ -531,12 +559,20 @@ public class StandardDataContext implements DataContext {
     }
 
     protected Set<Entity> commitToDataManager() {
-        CommitContext commitContext = new CommitContext(modifiedInstances, removedInstances);
+        CommitContext commitContext = new CommitContext(
+                filterCommittedInstances(modifiedInstances),
+                filterCommittedInstances(removedInstances));
         if (commitDelegate == null) {
             return getDataManager().commit(commitContext);
         } else {
             return commitDelegate.apply(commitContext);
         }
+    }
+
+    protected Collection filterCommittedInstances(Set<Entity> instances) {
+        return instances.stream()
+                .filter(entity -> !getMetadataTools().isEmbeddable(entity.getClass()))
+                .collect(Collectors.toList());
     }
 
     protected Set<Entity> commitToParentContext() {
@@ -627,6 +663,23 @@ public class StandardDataContext implements DataContext {
             if (!disableListeners) {
                 modifiedInstances.add((Entity) e.getItem());
                 fireChangeListener((Entity) e.getItem());
+            }
+        }
+    }
+
+    protected class EmbeddedPropertyChangeListener implements Instance.PropertyChangeListener {
+
+        private final Entity entity;
+
+        public EmbeddedPropertyChangeListener(Entity entity) {
+            this.entity = entity;
+        }
+
+        @Override
+        public void propertyChanged(Instance.PropertyChangeEvent e) {
+            if (!disableListeners) {
+                modifiedInstances.add(entity);
+                StandardDataContext.this.fireChangeListener(entity);
             }
         }
     }

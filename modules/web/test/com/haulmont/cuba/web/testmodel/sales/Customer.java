@@ -19,10 +19,9 @@ package com.haulmont.cuba.web.testmodel.sales;
 import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.chile.core.datatypes.impl.EnumUtils;
 import com.haulmont.cuba.core.entity.StandardEntity;
+import com.haulmont.cuba.core.entity.annotation.EmbeddedParameters;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity(name = "test$Customer")
 @Table(name = "TEST_CUSTOMER")
@@ -34,6 +33,14 @@ public class Customer extends StandardEntity {
 
     @Column(name = "STATUS")
     private String status;
+
+    @Embedded
+    @EmbeddedParameters(nullAllowed = false)
+    @AttributeOverrides({
+            @AttributeOverride(name = "city", column = @Column(name = "ADDRESS_CITY")),
+            @AttributeOverride(name = "zip", column = @Column(name = "ADDRESS_ZIP"))
+    })
+    protected Address address;
 
     public String getName() {
         return name;
@@ -49,6 +56,14 @@ public class Customer extends StandardEntity {
 
     public void setStatus(Status status) {
         this.status = status.getId();
+    }
+
+    public Address getAddress() {
+        return address;
+    }
+
+    public void setAddress(Address address) {
+        this.address = address;
     }
 
     @Override

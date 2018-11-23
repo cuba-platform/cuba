@@ -31,6 +31,8 @@ import com.haulmont.cuba.gui.model.impl.NoopDataContext
 import com.haulmont.cuba.security.entity.Role
 import com.haulmont.cuba.security.entity.User
 import com.haulmont.cuba.security.entity.UserRole
+import com.haulmont.cuba.web.testmodel.sales.Address
+import com.haulmont.cuba.web.testmodel.sales.Customer
 import com.haulmont.cuba.web.testmodel.sales.Order
 import com.haulmont.cuba.web.testmodel.sales.OrderLine
 import com.haulmont.cuba.web.testmodel.sales.Product
@@ -860,6 +862,79 @@ class DataContextTest extends Specification {
         order.is(order1)
         !dataContext.hasChanges()
         !dataContext.isModified(order1)
+    }
+
+    def "change of embedded entity makes host entity changed"() {
+        Address address1 = new Address(city: "Samara", zip: "111")
+        Customer customer1 = new Customer(name: "cust1", address: address1)
+        makeDetached(customer1)
+
+        def dataContext = factory.createDataContext()
+
+        when:
+
+        Customer customer = dataContext.merge(customer1)
+
+        then:
+
+        !dataContext.hasChanges()
+
+        when:
+
+        customer.address.zip = '222'
+
+        then:
+
+        dataContext.isModified(customer.address)
+        dataContext.isModified(customer)
+    }
+
+    def "evicted embedded entity has no PropertyChangeListener"() {
+        Address address1 = new Address(city: "Samara", zip: "111")
+        Customer customer1 = new Customer(name: "cust1", address: address1)
+        makeDetached(customer1)
+
+        def dataContext = factory.createDataContext()
+
+        when:
+
+        Customer customer = dataContext.merge(customer1)
+
+        then:
+
+        !customer.address.__propertyChangeListeners.isEmpty()
+
+        when:
+
+        dataContext.evict(customer)
+
+        then:
+
+        customer.address.__propertyChangeListeners.isEmpty()
+    }
+
+    def "removed embedded entity has no PropertyChangeListener"() {
+        Address address1 = new Address(city: "Samara", zip: "111")
+        Customer customer1 = new Customer(name: "cust1", address: address1)
+        makeDetached(customer1)
+
+        def dataContext = factory.createDataContext()
+
+        when:
+
+        Customer customer = dataContext.merge(customer1)
+
+        then:
+
+        !customer.address.__propertyChangeListeners.isEmpty()
+
+        when:
+
+        dataContext.remove(customer)
+
+        then:
+
+        customer.address.__propertyChangeListeners.isEmpty()
     }
 
     private <T> T createDetached(Class<T> entityClass) {
