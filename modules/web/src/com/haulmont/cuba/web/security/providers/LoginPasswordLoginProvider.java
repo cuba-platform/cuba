@@ -16,41 +16,104 @@
 
 package com.haulmont.cuba.web.security.providers;
 
+import com.google.common.base.Strings;
+import com.haulmont.cuba.client.sys.UsersRepository;
+import com.haulmont.cuba.core.global.ClientType;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.PasswordEncryption;
-import com.haulmont.cuba.security.auth.AuthenticationDetails;
-import com.haulmont.cuba.security.auth.AuthenticationService;
-import com.haulmont.cuba.security.auth.Credentials;
-import com.haulmont.cuba.security.auth.LoginPasswordCredentials;
+import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.core.sys.SecurityContext;
+import com.haulmont.cuba.security.app.TrustedClientService;
+import com.haulmont.cuba.security.auth.*;
+import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.LoginException;
+import com.haulmont.cuba.security.global.UserSession;
+import com.haulmont.cuba.web.auth.WebAuthConfig;
 import com.haulmont.cuba.web.security.LoginProvider;
 import org.springframework.core.Ordered;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
+import java.util.Locale;
 
 @Component("cuba_LoginPasswordLoginProvider")
 public class LoginPasswordLoginProvider implements LoginProvider, Ordered {
     @Inject
     protected AuthenticationService authenticationService;
     @Inject
+    protected Messages messages;
+    @Inject
+    protected UsersRepository usersRepository;
+    @Inject
     protected PasswordEncryption passwordEncryption;
+    @Inject
+    protected TrustedClientService trustedClientService;
+    @Inject
+    protected WebAuthConfig webAuthConfig;
+
+    protected static final String MSG_PACK = "com.haulmont.cuba.security";
 
     @Nullable
     @Override
     public AuthenticationDetails login(Credentials credentials) throws LoginException {
         LoginPasswordCredentials loginPasswordCredentials = (LoginPasswordCredentials) credentials;
-
-        if (loginPasswordCredentials.getPassword() != null) {
-            String hashedPassword = passwordEncryption.getPlainHash(loginPasswordCredentials.getPassword());
-            loginPasswordCredentials.setPassword(hashedPassword);
+        if (webAuthConfig.getClientAuthentication()) {
+            return loginClient(loginPasswordCredentials);
+        } else {
+            return loginMiddleware(loginPasswordCredentials);
         }
-
-        return loginMiddleware(loginPasswordCredentials);
     }
 
     protected AuthenticationDetails loginMiddleware(LoginPasswordCredentials credentials) throws LoginException {
         return authenticationService.login(credentials);
+    }
+
+    protected AuthenticationDetails loginClient(LoginPasswordCredentials credentials) {
+        String login = credentials.getLogin();
+
+        Locale credentialsLocale = credentials.getLocale() == null ?
+                messages.getTools().getDefaultLocale() : credentials.getLocale();
+
+        if (Strings.isNullOrEmpty(login)) {
+            // empty login is not valid
+            throw new LoginException(getInvalidCredentialsMessage(login, credentialsLocale));
+        }
+
+        UserSession systemSession = trustedClientService.getSystemSession(webAuthConfig.getTrustedClientPassword());
+        User user = AppContext.withSecurityContext(new SecurityContext(systemSession), () -> usersRepository.findUserByLogin(login));
+
+        if (user == null) {
+            throw new LoginException(getInvalidCredentialsMessage(login, credentialsLocale));
+        }
+
+        if (!passwordEncryption.checkPassword(user, credentials.getPassword())) {
+            throw new LoginException(getInvalidCredentialsMessage(login, credentialsLocale));
+        }
+
+        return authenticationService.login(createTrustedCredentials(credentials));
+    }
+
+    protected TrustedClientCredentials createTrustedCredentials(LoginPasswordCredentials credentials) {
+        TrustedClientCredentials tcCredentials = new TrustedClientCredentials(
+                credentials.getLogin(),
+                webAuthConfig.getTrustedClientPassword(),
+                credentials.getLocale(),
+                credentials.getParams()
+        );
+
+        tcCredentials.setClientInfo(credentials.getClientInfo());
+        tcCredentials.setClientType(ClientType.WEB);
+        tcCredentials.setIpAddress(credentials.getIpAddress());
+        tcCredentials.setOverrideLocale(credentials.isOverrideLocale());
+        tcCredentials.setSyncNewUserSessionReplication(credentials.isSyncNewUserSessionReplication());
+        tcCredentials.setSessionAttributes(credentials.getSessionAttributes());
+
+        return tcCredentials;
+    }
+
+    protected String getInvalidCredentialsMessage(String login, Locale locale) {
+        return messages.formatMessage(MSG_PACK, "LoginException.InvalidLoginOrPassword", locale, login);
     }
 
     @Override

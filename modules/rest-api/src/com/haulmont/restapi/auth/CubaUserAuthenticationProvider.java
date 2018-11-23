@@ -16,14 +16,17 @@
 
 package com.haulmont.restapi.auth;
 
-import com.haulmont.cuba.core.global.ClientType;
-import com.haulmont.cuba.core.global.Configuration;
-import com.haulmont.cuba.core.global.GlobalConfig;
-import com.haulmont.cuba.core.global.PasswordEncryption;
+import com.google.common.base.Strings;
+import com.haulmont.cuba.client.sys.UsersRepository;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
+import com.haulmont.cuba.security.app.TrustedClientService;
+import com.haulmont.cuba.security.auth.AuthenticationDetails;
 import com.haulmont.cuba.security.auth.AuthenticationService;
 import com.haulmont.cuba.security.auth.LoginPasswordCredentials;
+import com.haulmont.cuba.security.auth.TrustedClientCredentials;
+import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.AccountLockedException;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.RestApiAccessDeniedException;
@@ -65,10 +68,24 @@ public class CubaUserAuthenticationProvider implements AuthenticationProvider {
     protected PasswordEncryption passwordEncryption;
 
     @Inject
-    protected Configuration configuration;
+    protected Messages messages;
+
+    @Inject
+    protected UsersRepository usersRepository;
+
+    @Inject
+    protected TrustedClientService trustedClientService;
 
     @Inject
     protected RestAuthUtils restAuthUtils;
+
+    @Inject
+    protected RestApiConfig restApiConfig;
+
+    @Inject
+    protected GlobalConfig globalConfig;
+
+    protected static final String MSG_PACK = "com.haulmont.restapi.auth";
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
@@ -78,8 +95,7 @@ public class CubaUserAuthenticationProvider implements AuthenticationProvider {
         String ipAddress = request.getRemoteAddr();
 
         if (authentication instanceof UsernamePasswordAuthenticationToken) {
-            RestApiConfig config = configuration.getConfig(RestApiConfig.class);
-            if (!config.getStandardAuthenticationEnabled()) {
+            if (!restApiConfig.getStandardAuthenticationEnabled()) {
                 log.debug("Standard authentication is disabled. Property cuba.rest.standardAuthenticationEnabled is false");
 
                 throw new InvalidGrantException("Authentication disabled");
@@ -91,9 +107,7 @@ public class CubaUserAuthenticationProvider implements AuthenticationProvider {
 
             UserSession session;
             try {
-                String passwordHash = passwordEncryption.getPlainHash((String) token.getCredentials());
-
-                LoginPasswordCredentials credentials = new LoginPasswordCredentials(login, passwordHash);
+                LoginPasswordCredentials credentials = new LoginPasswordCredentials(login, (String) token.getCredentials());
                 credentials.setIpAddress(ipAddress);
                 credentials.setClientType(ClientType.REST_API);
                 credentials.setClientInfo(makeClientInfo(request.getHeader(HttpHeaders.USER_AGENT)));
@@ -108,7 +122,12 @@ public class CubaUserAuthenticationProvider implements AuthenticationProvider {
                     credentials.setOverrideLocale(false);
                 }
 
-                session = authenticationService.login(credentials).getSession();
+                if (restApiConfig.getClientAuthentication()) {
+                    session = loginClient(credentials).getSession();
+                } else {
+                    session = loginMiddleware(credentials).getSession();
+                }
+
             } catch (AccountLockedException le) {
                 log.info("Blocked user login attempt: login={}, ip={}", login, ipAddress);
                 throw new LockedException("User temporarily blocked");
@@ -134,9 +153,58 @@ public class CubaUserAuthenticationProvider implements AuthenticationProvider {
         return null;
     }
 
-    protected String makeClientInfo(String userAgent) {
-        GlobalConfig globalConfig = configuration.getConfig(GlobalConfig.class);
+    protected AuthenticationDetails loginMiddleware(LoginPasswordCredentials credentials) throws LoginException {
+        return authenticationService.login(credentials);
+    }
 
+    protected AuthenticationDetails loginClient(LoginPasswordCredentials credentials) {
+        String login = credentials.getLogin();
+
+        Locale credentialsLocale = credentials.getLocale() == null ?
+                messages.getTools().getDefaultLocale() : credentials.getLocale();
+
+        if (Strings.isNullOrEmpty(login)) {
+            // empty login is not valid
+            throw new LoginException(getInvalidCredentialsMessage(login, credentialsLocale));
+        }
+
+        UserSession systemSession = trustedClientService.getSystemSession(restApiConfig.getTrustedClientPassword());
+        User user = AppContext.withSecurityContext(new SecurityContext(systemSession), () -> usersRepository.findUserByLogin(login));
+
+        if (user == null) {
+            throw new LoginException(getInvalidCredentialsMessage(login, credentialsLocale));
+        }
+
+        if (!passwordEncryption.checkPassword(user, credentials.getPassword())) {
+            throw new LoginException(getInvalidCredentialsMessage(login, credentialsLocale));
+        }
+
+        return authenticationService.login(createTrustedCredentials(credentials));
+    }
+
+    protected TrustedClientCredentials createTrustedCredentials(LoginPasswordCredentials credentials) {
+        TrustedClientCredentials tcCredentials = new TrustedClientCredentials(
+                credentials.getLogin(),
+                restApiConfig.getTrustedClientPassword(),
+                credentials.getLocale(),
+                credentials.getParams()
+        );
+
+        tcCredentials.setClientInfo(credentials.getClientInfo());
+        tcCredentials.setClientType(ClientType.REST_API);
+        tcCredentials.setIpAddress(credentials.getIpAddress());
+        tcCredentials.setOverrideLocale(credentials.isOverrideLocale());
+        tcCredentials.setSyncNewUserSessionReplication(credentials.isSyncNewUserSessionReplication());
+        tcCredentials.setSessionAttributes(credentials.getSessionAttributes());
+
+        return tcCredentials;
+    }
+
+    protected String getInvalidCredentialsMessage(String login, Locale locale) {
+        return messages.formatMessage(MSG_PACK, "LoginException.InvalidLoginOrPassword", locale, login);
+    }
+
+    protected String makeClientInfo(String userAgent) {
         //noinspection UnnecessaryLocalVariable
         String serverInfo = String.format("REST API (%s:%s/%s) %s",
                 globalConfig.getWebHostName(),

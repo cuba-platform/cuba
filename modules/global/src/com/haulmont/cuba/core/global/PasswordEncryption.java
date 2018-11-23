@@ -72,6 +72,7 @@ public interface PasswordEncryption {
      * @param content content for hashing
      * @return hash
      */
+    @Deprecated
     String getPlainHash(String content);
 
     /**
@@ -79,8 +80,8 @@ public interface PasswordEncryption {
      * This method is used on the middleware to compare password passed from a client with the one stored in the DB.
      *
      * @param user      user
-     * @param password  password to check. It must be previously encrypted with {@link #getPlainHash(String)} method.
+     * @param rawPassword  password to check.
      * @return true if the password is valid
      */
-    boolean checkPassword(User user, String password);
+    boolean checkPassword(User user, String rawPassword);
 }

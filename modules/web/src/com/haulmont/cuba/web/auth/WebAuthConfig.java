@@ -83,4 +83,12 @@ public interface WebAuthConfig extends Config {
     @Property("cuba.trustedClientPassword")
     @DefaultString("")
     String getTrustedClientPassword();
+
+    /**
+     * @return Whether to use an login/password authentication on client
+     * instead of login/password authentication on middleware.
+     */
+    @Property("cuba.clientAuthentication")
+    @DefaultBoolean(false)
+    boolean getClientAuthentication();
 }

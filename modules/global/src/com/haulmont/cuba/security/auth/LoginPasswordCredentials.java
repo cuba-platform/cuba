@@ -24,7 +24,6 @@ import java.util.Map;
 
 /**
  * Simple login and password credentials.
- * Password should be pre-hashed in clients with {@link PasswordEncryption#getPlainHash(String)}.
  */
 public class LoginPasswordCredentials extends AbstractClientCredentials {
 

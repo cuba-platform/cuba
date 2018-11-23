@@ -18,7 +18,6 @@
 package com.haulmont.cuba.portal.security;
 
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.PasswordEncryption;
 import com.haulmont.cuba.portal.Connection;
 import com.haulmont.cuba.portal.sys.security.RoleGrantedAuthority;
 import com.haulmont.cuba.security.global.AccountLockedException;
@@ -67,12 +66,8 @@ public class PortalAuthenticationProvider implements AuthenticationProvider, Ser
                 if (connection == null || connection.getSession() == null || !connection.isConnected()) {
                     connection = AppBeans.get(Connection.NAME);
                 }
-
-                PasswordEncryption passwordEncryption = AppBeans.get(PasswordEncryption.NAME);
-
-                connection.login(login,
-                        passwordEncryption.getPlainHash((String) token.getCredentials()),
-                        request.getLocale(), ipAddress, request.getHeader("User-Agent"));
+                String password = (String) token.getCredentials();
+                connection.login(login, password, request.getLocale(), ipAddress, request.getHeader("User-Agent"));
 
                 httpSession.setAttribute(Connection.NAME, connection);
 

@@ -330,6 +330,7 @@ configure(globalModule) {
         compile(bom['com.google.code.gson:gson'])
         compile(bom['org.hibernate.validator:hibernate-validator'])
         compile(bom['org.glassfish:javax.el'])
+        compile(bom['org.mindrot:jbcrypt'])
 
         compileOnly(bom['javax.servlet:javax.servlet-api'])
     }

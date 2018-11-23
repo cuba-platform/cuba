@@ -146,7 +146,7 @@ public class ParentClassConstraintTest {
 
         LoginWorker lw = AppBeans.get(LoginWorker.NAME);
 
-        UserSession userSession = lw.login("constraintUser1", passwordEncryption.getPlainHash(PASSWORD), Locale.getDefault());
+        UserSession userSession = lw.login("constraintUser1", PASSWORD, Locale.getDefault());
         assertNotNull(userSession);
 
         UserSessionSource uss = AppBeans.get(UserSessionSource.class);
@@ -174,7 +174,7 @@ public class ParentClassConstraintTest {
 
         LoginWorker lw = AppBeans.get(LoginWorker.NAME);
 
-        UserSession userSession = lw.login("constraintUser2", passwordEncryption.getPlainHash(PASSWORD), Locale.getDefault());
+        UserSession userSession = lw.login("constraintUser2", PASSWORD, Locale.getDefault());
         assertNotNull(userSession);
 
         UserSessionSource uss = AppBeans.get(UserSessionSource.class);
@@ -202,7 +202,7 @@ public class ParentClassConstraintTest {
 
         LoginWorker lw = AppBeans.get(LoginWorker.NAME);
 
-        UserSession userSession = lw.login("constraintUser3", passwordEncryption.getPlainHash(PASSWORD), Locale.getDefault());
+        UserSession userSession = lw.login("constraintUser3", PASSWORD, Locale.getDefault());
         assertNotNull(userSession);
 
         UserSessionSource uss = AppBeans.get(UserSessionSource.class);

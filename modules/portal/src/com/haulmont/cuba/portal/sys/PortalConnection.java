@@ -17,20 +17,22 @@
 
 package com.haulmont.cuba.portal.sys;
 
+import com.google.common.base.Strings;
 import com.haulmont.bali.util.ParamsMap;
-import com.haulmont.cuba.core.global.ClientType;
-import com.haulmont.cuba.core.global.Configuration;
-import com.haulmont.cuba.core.global.GlobalConfig;
+import com.haulmont.cuba.client.sys.UsersRepository;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.core.sys.SecurityContext;
 import com.haulmont.cuba.portal.App;
 import com.haulmont.cuba.portal.Connection;
 import com.haulmont.cuba.portal.ConnectionListener;
+import com.haulmont.cuba.portal.config.PortalConfig;
 import com.haulmont.cuba.portal.security.PortalSession;
 import com.haulmont.cuba.portal.sys.security.PortalSecurityContext;
 import com.haulmont.cuba.portal.sys.security.PortalSessionFactory;
-import com.haulmont.cuba.security.auth.AbstractClientCredentials;
-import com.haulmont.cuba.security.auth.AuthenticationService;
-import com.haulmont.cuba.security.auth.LoginPasswordCredentials;
+import com.haulmont.cuba.security.app.TrustedClientService;
+import com.haulmont.cuba.security.auth.*;
+import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.SessionParams;
 import com.haulmont.cuba.security.global.UserSession;
@@ -40,10 +42,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 
 public class PortalConnection implements Connection {
 
@@ -56,11 +55,23 @@ public class PortalConnection implements Connection {
     protected volatile PortalSession session;
 
     @Inject
+    protected PortalConfig portalConfig;
+    @Inject
     protected Configuration configuration;
     @Inject
     protected AuthenticationService authenticationService;
     @Inject
     protected PortalSessionFactory portalSessionFactory;
+    @Inject
+    protected Messages messages;
+    @Inject
+    protected UsersRepository usersRepository;
+    @Inject
+    protected PasswordEncryption passwordEncryption;
+    @Inject
+    protected TrustedClientService trustedClientService;
+
+    protected static final String MSG_PACK = "com.haulmont.cuba.portal.security";
 
     @Override
     public synchronized void login(String login, String password, Locale locale,
@@ -96,13 +107,68 @@ public class PortalConnection implements Connection {
      */
     protected UserSession doLogin(String login, String password, Locale locale, String ipAddress, String clientInfo,
                                   Map<String, Object> params) throws LoginException {
-        AbstractClientCredentials credentials = new LoginPasswordCredentials(login, password, locale);
+        LoginPasswordCredentials credentials = new LoginPasswordCredentials(login, password, locale);
         credentials.setParams(params);
         credentials.setClientType(ClientType.PORTAL);
         credentials.setIpAddress(ipAddress);
         credentials.setClientInfo(clientInfo);
 
-        return authenticationService.login(credentials).getSession();
+        if (portalConfig.getClientAuthentication()) {
+            return loginClient(credentials).getSession();
+        } else {
+            return loginMiddleware(credentials).getSession();
+        }
+    }
+
+    protected AuthenticationDetails loginMiddleware(LoginPasswordCredentials credentials) throws LoginException {
+        return authenticationService.login(credentials);
+    }
+
+    protected AuthenticationDetails loginClient(LoginPasswordCredentials credentials) {
+        String login = credentials.getLogin();
+
+        Locale credentialsLocale = credentials.getLocale() == null ?
+                messages.getTools().getDefaultLocale() : credentials.getLocale();
+
+        if (Strings.isNullOrEmpty(login)) {
+            // empty login is not valid
+            throw new LoginException(getInvalidCredentialsMessage(login, credentialsLocale));
+        }
+
+        UserSession systemSession = trustedClientService.getSystemSession(portalConfig.getTrustedClientPassword());
+        User user = AppContext.withSecurityContext(new SecurityContext(systemSession), () -> usersRepository.findUserByLogin(login));
+
+        if (user == null) {
+            throw new LoginException(getInvalidCredentialsMessage(login, credentialsLocale));
+        }
+
+        if (!passwordEncryption.checkPassword(user, credentials.getPassword())) {
+            throw new LoginException(getInvalidCredentialsMessage(login, credentialsLocale));
+        }
+
+        return authenticationService.login(createTrustedCredentials(credentials));
+    }
+
+    protected TrustedClientCredentials createTrustedCredentials(LoginPasswordCredentials credentials) {
+        TrustedClientCredentials tcCredentials = new TrustedClientCredentials(
+                credentials.getLogin(),
+                portalConfig.getTrustedClientPassword(),
+                credentials.getLocale(),
+                credentials.getParams()
+        );
+
+        tcCredentials.setClientInfo(credentials.getClientInfo());
+        tcCredentials.setClientType(ClientType.PORTAL);
+        tcCredentials.setIpAddress(credentials.getIpAddress());
+        tcCredentials.setOverrideLocale(credentials.isOverrideLocale());
+        tcCredentials.setSyncNewUserSessionReplication(credentials.isSyncNewUserSessionReplication());
+        tcCredentials.setSessionAttributes(credentials.getSessionAttributes());
+
+        return tcCredentials;
+    }
+
+    protected String getInvalidCredentialsMessage(String login, Locale locale) {
+        return messages.formatMessage(MSG_PACK, "LoginException.InvalidLoginOrPassword", locale, login);
     }
 
     protected Map<String, Object> getSessionParams(String ipAddress, String clientInfo) {

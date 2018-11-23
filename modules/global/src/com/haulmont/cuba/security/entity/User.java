@@ -259,6 +259,7 @@ public class User extends StandardEntity {
     }
 
     @Transient
+    @Deprecated
     public String getSalt() {
         return id != null ? id.toString() : "";
     }

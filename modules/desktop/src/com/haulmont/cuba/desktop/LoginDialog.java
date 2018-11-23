@@ -48,7 +48,6 @@ public class LoginDialog extends JDialog {
     protected Locale resolvedLocale;
     protected Map<String, Locale> locales;
     protected Messages messages = AppBeans.get(Messages.NAME);
-    protected PasswordEncryption passwordEncryption = AppBeans.get(PasswordEncryption.NAME);
 
     protected JTextField nameField;
     protected JTextField passwordField;
@@ -157,7 +156,7 @@ public class LoginDialog extends JDialog {
         String selectedItem = (String) localeCombo.getSelectedItem();
         Locale locale = locales.get(selectedItem);
         try {
-            connection.login(name, passwordEncryption.getPlainHash(password), locale);
+            connection.login(name, password, locale);
             setVisible(false);
             loginProperties.save(name, messages.getTools().localeToString(locale));
             DesktopComponentsHelper.getTopLevelFrame(this).activate();

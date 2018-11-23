@@ -107,7 +107,7 @@ public class LoginTest {
     @Test
     public void testUserSubstitution() throws Exception {
         // Log in
-        UserSession session1 = loginWorker.login("user1", passwordEncryption.getPlainHash("1"), Locale.forLanguageTag("en"));
+        UserSession session1 = loginWorker.login("user1", "1", Locale.forLanguageTag("en"));
         userSessionSource.setUserSession(session1);
 
         // Substitute a user that is not in our substitutions list - fail
@@ -170,7 +170,7 @@ public class LoginTest {
         });
 
         // Log in
-        UserSession session1 = loginWorker.login("user1", passwordEncryption.getPlainHash("1"), Locale.forLanguageTag("en"));
+        UserSession session1 = loginWorker.login("user1", "1", Locale.forLanguageTag("en"));
         userSessionSource.setUserSession(session1);
 
         // Try to substitute - fail

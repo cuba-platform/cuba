@@ -244,7 +244,7 @@ public class NonEntityQueryTest {
     @Test
     public void testDeniedAttribute() throws Exception {
         LoginWorker lw = AppBeans.get(LoginWorker.NAME);
-        UserSession userSession = lw.login(USER_NAME_1, passwordEncryption.getPlainHash(USER_PASSWORD), Locale.getDefault());
+        UserSession userSession = lw.login(USER_NAME_1, USER_PASSWORD, Locale.getDefault());
         assertNotNull(userSession);
 
         UserSessionSource uss = AppBeans.get(UserSessionSource.class);
@@ -306,7 +306,7 @@ public class NonEntityQueryTest {
     @Test
     public void testConstraints() throws Exception {
         LoginWorker lw = AppBeans.get(LoginWorker.NAME);
-        UserSession userSession = lw.login(USER_NAME_2, passwordEncryption.getPlainHash(USER_PASSWORD), Locale.getDefault());
+        UserSession userSession = lw.login(USER_NAME_2, USER_PASSWORD, Locale.getDefault());
         assertNotNull(userSession);
 
         UserSessionSource uss = AppBeans.get(UserSessionSource.class);
@@ -330,7 +330,7 @@ public class NonEntityQueryTest {
         configStorageService.setDbProperty("cuba.disableLoadValuesIfConstraints", "false");
 
         LoginWorker lw = AppBeans.get(LoginWorker.NAME);
-        UserSession userSession = lw.login(USER_NAME_2, passwordEncryption.getPlainHash(USER_PASSWORD), Locale.getDefault());
+        UserSession userSession = lw.login(USER_NAME_2, USER_PASSWORD, Locale.getDefault());
         assertNotNull(userSession);
 
         UserSessionSource uss = AppBeans.get(UserSessionSource.class);
@@ -362,7 +362,7 @@ public class NonEntityQueryTest {
         configStorageService.setDbProperty("cuba.disableLoadValuesIfConstraints", "true");
 
         LoginWorker lw = AppBeans.get(LoginWorker.NAME);
-        UserSession userSession = lw.login(USER_NAME_2, passwordEncryption.getPlainHash(USER_PASSWORD), Locale.getDefault());
+        UserSession userSession = lw.login(USER_NAME_2, USER_PASSWORD, Locale.getDefault());
         assertNotNull(userSession);
 
         UserSessionSource uss = AppBeans.get(UserSessionSource.class);
@@ -399,7 +399,7 @@ public class NonEntityQueryTest {
         configStorageService.setDbProperty("cuba.disableLoadValuesIfConstraints", "true");
 
         LoginWorker lw = AppBeans.get(LoginWorker.NAME);
-        UserSession userSession = lw.login(USER_NAME_1, passwordEncryption.getPlainHash(USER_PASSWORD), Locale.getDefault());
+        UserSession userSession = lw.login(USER_NAME_1, USER_PASSWORD, Locale.getDefault());
         assertNotNull(userSession);
 
         UserSessionSource uss = AppBeans.get(UserSessionSource.class);
@@ -424,7 +424,7 @@ public class NonEntityQueryTest {
         configStorageService.setDbProperty("cuba.disableLoadValuesIfConstraints", "true");
 
         LoginWorker lw = AppBeans.get(LoginWorker.NAME);
-        UserSession userSession = lw.login(USER_NAME_1, passwordEncryption.getPlainHash(USER_PASSWORD), Locale.getDefault());
+        UserSession userSession = lw.login(USER_NAME_1, USER_PASSWORD, Locale.getDefault());
         assertNotNull(userSession);
 
         UserSessionSource uss = AppBeans.get(UserSessionSource.class);

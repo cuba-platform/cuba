@@ -160,7 +160,7 @@ public class PermissionTest {
     public void test() throws LoginException {
         LoginWorker lw = AppBeans.get(LoginWorker.NAME);
 
-        UserSession userSession = lw.login(USER_NAME, passwordEncryption.getPlainHash(USER_PASSW), Locale.getDefault());
+        UserSession userSession = lw.login(USER_NAME, USER_PASSW, Locale.getDefault());
         assertNotNull(userSession);
 
         boolean permitted = userSession.isPermitted(PermissionType.SCREEN, PERM_TARGET_SCREEN);
@@ -180,7 +180,7 @@ public class PermissionTest {
     public void testNullPermissionsOnUser() throws LoginException {
         LoginWorker lw = AppBeans.get(LoginWorker.NAME);
 
-        UserSession userSession = lw.login(USER_NAME, passwordEncryption.getPlainHash(USER_PASSW), Locale.getDefault());
+        UserSession userSession = lw.login(USER_NAME, USER_PASSW, Locale.getDefault());
         assertNotNull(userSession);
 
         //permission is empty on user

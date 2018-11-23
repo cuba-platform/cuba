@@ -34,7 +34,7 @@
         <property name="cuba.dataDir" value="${catalina.base}/work/${cuba.webContextName}"/>
         <property name="cuba.classpath.directories" value="${catalina.base}/lib;${catalina.base}/shared/classes;${catalina.base}/shared/lib;${catalina.base}/webapps/${cuba.webContextName}/WEB-INF/classes;${catalina.base}/webapps/${cuba.webContextName}/WEB-INF/lib"/>
 
-        <property name="cuba.passwordEncryptionModule" value="cuba_Sha1EncryptionModule"/>
+        <property name="cuba.passwordEncryptionModule" value="cuba_BCryptEncryptionModule"/>
         <property name="cuba.groovyEvaluatorImport" value="com.haulmont.cuba.core.global.PersistenceHelper"/>
         <property name="cuba.trustedClientPassword" value="MLdWm1Ik4NmM"/>
         <property name="cuba.anonymousSessionId" value="9c91dbdf-3e73-428e-9088-d586da2434c5"/>

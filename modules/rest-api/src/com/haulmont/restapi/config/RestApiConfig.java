@@ -72,4 +72,13 @@ public interface RestApiConfig extends Config {
     @Property("cuba.rest.optimisticLockingEnabled")
     @DefaultBoolean(false)
     boolean getOptimisticLockingEnabled();
+
+
+    /**
+     * @return Whether to use an login/password authentication on client
+     * instead of login/password authentication on middleware.
+     */
+    @Property("cuba.clientAuthentication")
+    @DefaultBoolean(false)
+    boolean getClientAuthentication();
 }

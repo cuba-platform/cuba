@@ -45,6 +45,14 @@ public interface PortalConfig extends Config {
     @Property("cuba.trustedClientPassword")
     String getTrustedClientPassword();
 
+    /**
+     * @return Whether to use an login/password authentication on client
+     * instead of login/password authentication on middleware.
+     */
+    @Property("cuba.clientAuthentication")
+    @DefaultBoolean(false)
+    boolean getClientAuthentication();
+
     @Property("cuba.portal.theme")
     @DefaultString("default")
     String getTheme();

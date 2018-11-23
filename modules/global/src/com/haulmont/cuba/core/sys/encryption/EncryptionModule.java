@@ -36,7 +36,8 @@ public interface EncryptionModule {
 
     String getHash(String content, String salt);
 
+    @Deprecated
     String getPlainHash(String content);
 
-    boolean checkPassword(User user, String givenPassword);
+    boolean checkPassword(User user, String rawPassword);
 }

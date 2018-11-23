@@ -82,6 +82,7 @@ public class PasswordEncryptionImpl implements PasswordEncryption {
     }
 
     @Override
+    @Deprecated
     public String getPlainHash(String content) {
         checkNotNullArgument(content);
 

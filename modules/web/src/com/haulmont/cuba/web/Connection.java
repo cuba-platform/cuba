@@ -183,8 +183,7 @@ public interface Connection extends ExternallyAuthenticatedConnection {
      */
     @Deprecated
     default void login(String login, String password, Locale locale) throws LoginException {
-        PasswordEncryption passwordEncryption = AppBeans.get(PasswordEncryption.class);
-        login(new LoginPasswordCredentials(login, passwordEncryption.getPlainHash(password), locale));
+        login(new LoginPasswordCredentials(login, password, locale));
     }
 
     /**

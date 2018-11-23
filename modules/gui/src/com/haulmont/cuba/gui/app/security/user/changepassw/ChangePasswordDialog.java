@@ -137,15 +137,14 @@ public class ChangePasswordDialog extends AbstractWindow {
             }
 
             if (currentPasswordRequired
-                    && !userManagementService.checkPassword(targetUserId, passwordEncryption.getPlainHash(currentPassword))) {
+                    && !userManagementService.checkPassword(targetUserId, currentPassword)) {
                 errors.add(currentPasswordField, getMessage("wrongCurrentPassword"));
 
-            } else if (userManagementService.checkPassword(targetUserId, passwordEncryption.getPlainHash(password))) {
+            } else if (userManagementService.checkPassword(targetUserId, password)) {
                 errors.add(passwField, getMessage("currentPasswordWarning"));
 
             } else if (!Objects.equals(password, passwordConfirmation)) {
                 errors.add(confirmPasswField, getMessage("passwordsDoNotMatch"));
-
             } else {
                 if (clientConfig.getPasswordPolicyEnabled()) {
                     String regExp = clientConfig.getPasswordPolicyRegExp();

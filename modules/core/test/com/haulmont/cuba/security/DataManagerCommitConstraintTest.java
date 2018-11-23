@@ -189,7 +189,7 @@ public class DataManagerCommitConstraintTest {
     public void testUpdateConstraintNotPassed() throws LoginException {
         LoginWorker lw = AppBeans.get(LoginWorker.NAME);
         DataManager dataManager = AppBeans.get(DataManager.NAME);
-        UserSession userSession = lw.login("constraintuserupdate", passwordEncryption.getPlainHash(PASSWORD), Locale.getDefault());
+        UserSession userSession = lw.login("constraintuserupdate", PASSWORD, Locale.getDefault());
         assertNotNull(userSession);
 
         UserSessionSource uss = AppBeans.get(UserSessionSource.class);
@@ -218,7 +218,7 @@ public class DataManagerCommitConstraintTest {
     public void testUpdateConstraintPassed() throws LoginException {
         LoginWorker lw = AppBeans.get(LoginWorker.NAME);
         DataManager dataManager = AppBeans.get(DataManager.NAME);
-        UserSession userSession = lw.login("constraintuserupdate", passwordEncryption.getPlainHash(PASSWORD), Locale.getDefault());
+        UserSession userSession = lw.login("constraintuserupdate", PASSWORD, Locale.getDefault());
         assertNotNull(userSession);
 
         UserSessionSource uss = AppBeans.get(UserSessionSource.class);
@@ -255,7 +255,7 @@ public class DataManagerCommitConstraintTest {
     public void testDeleteConstraintNotPassed() throws LoginException {
         LoginWorker lw = AppBeans.get(LoginWorker.NAME);
         DataManager dataManager = AppBeans.get(DataManager.NAME);
-        UserSession userSession = lw.login("constraintuserupdate", passwordEncryption.getPlainHash(PASSWORD), Locale.getDefault());
+        UserSession userSession = lw.login("constraintuserupdate", PASSWORD, Locale.getDefault());
         assertNotNull(userSession);
 
         UserSessionSource uss = AppBeans.get(UserSessionSource.class);
@@ -281,7 +281,7 @@ public class DataManagerCommitConstraintTest {
     public void testDeleteConstraintPassed() throws LoginException {
         LoginWorker lw = AppBeans.get(LoginWorker.NAME);
         DataManager dataManager = AppBeans.get(DataManager.NAME);
-        UserSession userSession = lw.login("constraintuserupdate", passwordEncryption.getPlainHash(PASSWORD), Locale.getDefault());
+        UserSession userSession = lw.login("constraintuserupdate", PASSWORD, Locale.getDefault());
         assertNotNull(userSession);
 
         UserSessionSource uss = AppBeans.get(UserSessionSource.class);
@@ -306,7 +306,7 @@ public class DataManagerCommitConstraintTest {
     public void testCreateConstraintNotPassed() throws LoginException {
         LoginWorker lw = AppBeans.get(LoginWorker.NAME);
         DataManager dataManager = AppBeans.get(DataManager.NAME);
-        UserSession userSession = lw.login("constraintusercreate", passwordEncryption.getPlainHash(PASSWORD), Locale.getDefault());
+        UserSession userSession = lw.login("constraintusercreate", PASSWORD, Locale.getDefault());
         assertNotNull(userSession);
 
         UserSessionSource uss = AppBeans.get(UserSessionSource.class);

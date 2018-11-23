@@ -142,7 +142,7 @@ public class LoginServiceController {
 
         AuthenticationService authenticationService = AppBeans.get(AuthenticationService.NAME);
         try {
-            AbstractClientCredentials credentials = new LoginPasswordCredentials(username, passwordEncryption.getPlainHash(password), locale);
+            AbstractClientCredentials credentials = new LoginPasswordCredentials(username, password, locale);
             UserSession userSession = authenticationService.login(credentials).getSession();
 
             if (!userSession.isSpecificPermitted(Authentication.PERMISSION_NAME)) {

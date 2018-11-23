@@ -155,7 +155,7 @@ public class InMemoryConstraintTest {
     public void testConstraintsOnMiddlePage() throws LoginException {
         LoginWorker lw = AppBeans.get(LoginWorker.NAME);
 
-        UserSession userSession = lw.login("constraintUser1", passwordEncryption.getPlainHash(PASSWORD), Locale.getDefault());
+        UserSession userSession = lw.login("constraintUser1", PASSWORD, Locale.getDefault());
         assertNotNull(userSession);
 
         UserSessionSource uss = AppBeans.get(UserSessionSource.class);
@@ -180,7 +180,7 @@ public class InMemoryConstraintTest {
     public void testConstraintsOnFirst() throws LoginException {
         LoginWorker lw = AppBeans.get(LoginWorker.NAME);
 
-        UserSession userSession = lw.login("constraintUser2", passwordEncryption.getPlainHash(PASSWORD), Locale.getDefault());
+        UserSession userSession = lw.login("constraintUser2", PASSWORD, Locale.getDefault());
         assertNotNull(userSession);
 
         UserSessionSource uss = AppBeans.get(UserSessionSource.class);
@@ -205,7 +205,7 @@ public class InMemoryConstraintTest {
     public void testConstraintsOnFirstForNotSecureDataManager() throws LoginException {
         LoginWorker lw = AppBeans.get(LoginWorker.NAME);
 
-        UserSession userSession = lw.login("constraintUser2", passwordEncryption.getPlainHash(PASSWORD), Locale.getDefault());
+        UserSession userSession = lw.login("constraintUser2", PASSWORD, Locale.getDefault());
         assertNotNull(userSession);
 
         UserSessionSource uss = AppBeans.get(UserSessionSource.class);
@@ -230,7 +230,7 @@ public class InMemoryConstraintTest {
     public void testConstraintsOnEnd() throws LoginException {
         LoginWorker lw = AppBeans.get(LoginWorker.NAME);
 
-        UserSession userSession = lw.login("constraintUser2", passwordEncryption.getPlainHash(PASSWORD), Locale.getDefault());
+        UserSession userSession = lw.login("constraintUser2", PASSWORD, Locale.getDefault());
         assertNotNull(userSession);
 
         UserSessionSource uss = AppBeans.get(UserSessionSource.class);
@@ -255,7 +255,7 @@ public class InMemoryConstraintTest {
     public void testConstraintsOnMoreThanOnePage() throws LoginException {
         LoginWorker lw = AppBeans.get(LoginWorker.NAME);
 
-        UserSession userSession = lw.login("constraintUser3", passwordEncryption.getPlainHash(PASSWORD), Locale.getDefault());
+        UserSession userSession = lw.login("constraintUser3", PASSWORD, Locale.getDefault());
         assertNotNull(userSession);
 
         UserSessionSource uss = AppBeans.get(UserSessionSource.class);
@@ -280,7 +280,7 @@ public class InMemoryConstraintTest {
     public void testLoadingLastPage() throws LoginException {
         LoginWorker lw = AppBeans.get(LoginWorker.NAME);
 
-        UserSession userSession = lw.login("constraintUser3", passwordEncryption.getPlainHash(PASSWORD), Locale.getDefault());
+        UserSession userSession = lw.login("constraintUser3", PASSWORD, Locale.getDefault());
         assertNotNull(userSession);
 
         UserSessionSource uss = AppBeans.get(UserSessionSource.class);
@@ -307,7 +307,7 @@ public class InMemoryConstraintTest {
     public void testConstraintByAttributeNotInView() throws LoginException {
         LoginWorker lw = AppBeans.get(LoginWorker.NAME);
 
-        UserSession userSession = lw.login("constraintUser4", passwordEncryption.getPlainHash(PASSWORD), Locale.getDefault());
+        UserSession userSession = lw.login("constraintUser4", PASSWORD, Locale.getDefault());
         assertNotNull(userSession);
 
         UserSessionSource uss = AppBeans.get(UserSessionSource.class);
@@ -333,7 +333,7 @@ public class InMemoryConstraintTest {
     public void testConstraintByAttributeNotInViewForNotSecureDataManager() throws LoginException {
         LoginWorker lw = AppBeans.get(LoginWorker.NAME);
 
-        UserSession userSession = lw.login("constraintUser4", passwordEncryption.getPlainHash(PASSWORD), Locale.getDefault());
+        UserSession userSession = lw.login("constraintUser4", PASSWORD, Locale.getDefault());
         assertNotNull(userSession);
 
         UserSessionSource uss = AppBeans.get(UserSessionSource.class);

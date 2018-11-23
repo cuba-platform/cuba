@@ -48,6 +48,7 @@ public interface PasswordEncryptionSupportMBean {
     @ManagedOperationParameters({
             @ManagedOperationParameter(name = "content", description = "String for hash")
     })
+    @Deprecated
     String getPlainHash(String content);
 
     @ManagedOperation(description = "Get hash and salt for password")
@@ -85,5 +86,6 @@ public interface PasswordEncryptionSupportMBean {
             @ManagedOperationParameter(name = "content", description = "String for hash"),
             @ManagedOperationParameter(name = "method", description = "Hash method")
     })
+    @Deprecated
     String getSpecificPlainHash(String content, String method);
 }
