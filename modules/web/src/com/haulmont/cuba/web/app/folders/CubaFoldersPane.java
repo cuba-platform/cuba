@@ -456,6 +456,8 @@ public class CubaFoldersPane extends VerticalLayout {
     }
 
     protected Component createAppFoldersPane() {
+        if (!webConfig.getFoldersPaneEnabled())
+            return null;
         List<AppFolder> appFolders = foldersService.loadAppFolders();
         if (appFolders.isEmpty())
             return null;
@@ -514,6 +516,8 @@ public class CubaFoldersPane extends VerticalLayout {
     }
 
     protected Component createSearchFoldersPane() {
+        if (!webConfig.getFoldersPaneEnabled())
+            return null;
         searchFoldersTree = new CubaTree();
         searchFoldersTree.setCubaId("searchFoldersTree");
         searchFoldersTree.setSelectable(true);
