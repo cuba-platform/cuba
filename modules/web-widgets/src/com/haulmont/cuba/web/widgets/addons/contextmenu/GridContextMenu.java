@@ -13,10 +13,8 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.haulmont.cuba.web.widgets.addons.contextmenu;
 
-import java.io.Serializable;
-import java.util.EventListener;
+package com.haulmont.cuba.web.widgets.addons.contextmenu;
 
 import com.haulmont.cuba.web.widgets.addons.contextmenu.ContextMenu.ContextMenuOpenListener.ContextMenuOpenEvent;
 import com.vaadin.shared.ui.grid.GridConstants.Section;
@@ -35,14 +33,13 @@ public class GridContextMenu<T> extends ContextMenu {
             final GridContextMenuOpenListener<T> listener) {
         addContextMenuOpenListener((final ContextMenuOpenEvent event) -> {
             if (event
-                    .getContextClickEvent() instanceof GridContextClickEvent) {
+                    .getContextClickEvent() instanceof Grid.GridContextClickEvent) {
                 @SuppressWarnings("unchecked")
                 GridContextClickEvent<T> gridEvent = (GridContextClickEvent<T>) event
                         .getContextClickEvent();
                 if (gridEvent.getSection() == section) {
-                    listener.onContextMenuOpen(
-                            new GridContextMenuOpenListener.GridContextMenuOpenEvent<>(
-                                    GridContextMenu.this, gridEvent));
+                    listener.onContextMenuOpen(new GridContextMenuOpenListener.GridContextMenuOpenEvent<>(
+                            GridContextMenu.this, gridEvent));
                 }
             }
         });
@@ -64,7 +61,7 @@ public class GridContextMenu<T> extends ContextMenu {
     }
 
     public interface GridContextMenuOpenListener<T>
-            extends EventListener, Serializable {
+            extends java.util.EventListener, java.io.Serializable {
 
         public void onContextMenuOpen(GridContextMenuOpenEvent<T> event);
 

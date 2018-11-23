@@ -13,6 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
+
 package com.haulmont.cuba.web.widgets.client.addons.contextmenu;
 
 import com.vaadin.shared.communication.ClientRpc;
@@ -20,9 +21,10 @@ import com.vaadin.shared.communication.ClientRpc;
 public interface ContextMenuClientRpc extends ClientRpc {
     /**
      * Sends request to client widget to open context menu to given position.
-     * 
+     *
      * @param x
      * @param y
      */
     public void showContextMenu(int x, int y);
+
 }

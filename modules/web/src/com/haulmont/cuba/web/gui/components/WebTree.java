@@ -29,6 +29,8 @@ import com.haulmont.cuba.core.global.Security;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.LookupComponent.LookupSelectionChangeNotifier;
+import com.haulmont.cuba.gui.components.Tree;
+import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.actions.BaseAction;
 import com.haulmont.cuba.gui.components.data.BindingState;
 import com.haulmont.cuba.gui.components.data.TreeItems;
@@ -46,8 +48,7 @@ import com.haulmont.cuba.web.gui.icons.IconResolver;
 import com.haulmont.cuba.web.widgets.CubaCssActionsLayout;
 import com.haulmont.cuba.web.widgets.CubaTree;
 import com.haulmont.cuba.web.widgets.CubaUI;
-import com.haulmont.cuba.web.widgets.addons.contextmenu.MenuItem;
-import com.haulmont.cuba.web.widgets.grid.CubaGridContextMenu;
+import com.haulmont.cuba.web.widgets.addons.contextmenu.TreeContextMenu;
 import com.haulmont.cuba.web.widgets.grid.CubaMultiSelectionModel;
 import com.haulmont.cuba.web.widgets.grid.CubaSingleSelectionModel;
 import com.haulmont.cuba.web.widgets.tree.EnhancedTreeDataProvider;
@@ -60,10 +61,8 @@ import com.vaadin.server.Resource;
 import com.vaadin.server.Sizeable;
 import com.vaadin.shared.Registration;
 import com.vaadin.shared.ui.grid.HeightMode;
-import com.vaadin.ui.AbstractComponent;
-import com.vaadin.ui.Grid;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.StyleGenerator;
+import com.vaadin.ui.*;
+import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.components.grid.MultiSelectionModel;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -93,7 +92,7 @@ public class WebTree<E extends Entity>
     protected List<Function<? super E, String>> styleProviders; // lazily initialized List
     protected StyleGenerator<E> styleGenerator;    // lazily initialized field
 
-    protected CubaGridContextMenu<E> contextMenu;
+    protected TreeContextMenu<E> contextMenu;
     protected final List<WebAbstractDataGrid.ActionMenuItemWrapper> contextMenuItems = new ArrayList<>();
 
     protected ButtonsPanel buttonsPanel;
@@ -241,9 +240,9 @@ public class WebTree<E extends Entity>
     }
 
     protected void initContextMenu() {
-        contextMenu = new CubaGridContextMenu<>(component.getCompositionRoot());
+        contextMenu = new TreeContextMenu<>(component);
 
-        contextMenu.addGridBodyContextMenuListener(event -> {
+        contextMenu.addTreeContextMenuListener(event -> {
             if (!component.getSelectedItems().contains(event.getItem())) {
                 // In the multi select model 'setSelected' adds item to selected set,
                 // but, in case of context click, we want to have a single selected item,

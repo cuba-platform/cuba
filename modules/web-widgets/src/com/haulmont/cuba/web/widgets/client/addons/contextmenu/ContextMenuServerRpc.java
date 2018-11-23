@@ -13,10 +13,11 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
+
 package com.haulmont.cuba.web.widgets.client.addons.contextmenu;
 
 import com.vaadin.shared.communication.ServerRpc;
 
 public interface ContextMenuServerRpc extends ServerRpc {
-    void itemClicked(int itemId, boolean menuClosed);
+    void itemClicked(int itemId);
 }

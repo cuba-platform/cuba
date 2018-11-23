@@ -62,8 +62,6 @@ import com.haulmont.cuba.web.widgets.CubaCssActionsLayout;
 import com.haulmont.cuba.web.widgets.CubaEnhancedGrid;
 import com.haulmont.cuba.web.widgets.CubaGridEditorFieldFactory;
 import com.haulmont.cuba.web.widgets.CubaUI;
-import com.haulmont.cuba.web.widgets.addons.contextmenu.Menu;
-import com.haulmont.cuba.web.widgets.addons.contextmenu.MenuItem;
 import com.haulmont.cuba.web.widgets.data.SortableDataProvider;
 import com.haulmont.cuba.web.widgets.grid.*;
 import com.vaadin.data.HasValue;
@@ -81,6 +79,7 @@ import com.vaadin.shared.ui.grid.HeightMode;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.DescriptionGenerator;
 import com.vaadin.ui.*;
+import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.components.grid.*;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -3678,7 +3677,7 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
             this.menuItem = menuItem;
             this.showIconsForPopupMenuActions = showIconsForPopupMenuActions;
 
-            this.menuItem.setCommand((Menu.Command) selectedItem -> {
+            this.menuItem.setCommand((MenuBar.Command) selectedItem -> {
                 if (action != null) {
                     performAction(action);
                 }

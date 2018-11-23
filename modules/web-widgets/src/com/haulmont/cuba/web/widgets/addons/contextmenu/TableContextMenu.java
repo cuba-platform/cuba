@@ -13,6 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
+
 package com.haulmont.cuba.web.widgets.addons.contextmenu;
 
 import com.vaadin.event.ContextClickEvent;
@@ -30,7 +31,10 @@ import com.vaadin.v7.ui.TreeTable;
  * <p>
  * This compatibility version exists to fix #29 using context menu in table &
  * tree table with item click listener.
+ *
+ * @deprecated To use only for compatibility v7.Table
  */
+@Deprecated
 public class TableContextMenu extends ContextMenu {
 
     /**

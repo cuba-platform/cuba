@@ -51,8 +51,6 @@ import com.haulmont.cuba.web.gui.icons.IconResolver;
 import com.haulmont.cuba.web.widgets.CubaTimer;
 import com.haulmont.cuba.web.widgets.CubaTree;
 import com.haulmont.cuba.web.widgets.CubaVerticalActionsLayout;
-import com.haulmont.cuba.web.widgets.addons.contextmenu.Menu;
-import com.haulmont.cuba.web.widgets.addons.contextmenu.MenuItem;
 import com.haulmont.cuba.web.widgets.grid.CubaGridContextMenu;
 import com.haulmont.cuba.web.widgets.grid.CubaSingleSelectionModel;
 import com.haulmont.cuba.web.widgets.tree.EnhancedTreeDataProvider;
@@ -67,6 +65,8 @@ import com.vaadin.server.SerializableFunction;
 import com.vaadin.shared.MouseEventDetails;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.*;
+import com.vaadin.ui.MenuBar.Command;
+import com.vaadin.ui.MenuBar.MenuItem;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -1171,7 +1171,7 @@ public class CubaFoldersPane extends VerticalLayout {
         }
     }
 
-    protected static class CommandFolderActionAdapter implements Menu.Command {
+    protected static class CommandFolderActionAdapter implements Command {
 
         protected final FolderAction action;
         protected final Supplier<Folder> selectedFolderProvider;

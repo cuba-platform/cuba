@@ -13,27 +13,20 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
+
 package com.haulmont.cuba.web.widgets.client.addons.contextmenu;
 
-import java.util.logging.Logger;
+import com.vaadin.shared.AbstractComponentState;
 
-import com.vaadin.client.ui.VMenuBar.CustomMenuItem;
+import java.util.List;
 
-public class VMenuItem extends CustomMenuItem {
-
-    public VMenuItem() {
-        Logger.getLogger("VMenuItem").info("VMenuItem constructor");
+public class ContextMenuState extends AbstractComponentState {
+    {
+        primaryStyleName = "v-context-menubar";
     }
 
-    public void setSeparator(boolean separator) {
-        isSeparator = separator;
-        updateStyleNames();
-        if (!separator) {
-            setEnabled(enabled);
-        }
-    }
+    public boolean htmlContentAllowed;
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
+    public List<ContextMenuItemState> menuItems;
+
 }

@@ -26,11 +26,10 @@ import com.haulmont.cuba.gui.app.core.dev.LayoutTip;
 import com.haulmont.cuba.gui.components.AbstractWindow;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Frame.NotificationType;
-import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.dev.LayoutAnalyzerContextMenuProvider;
 import com.haulmont.cuba.web.widgets.addons.contextmenu.ContextMenu;
-import com.haulmont.cuba.web.widgets.addons.contextmenu.MenuItem;
 import com.vaadin.ui.AbstractComponent;
+import com.vaadin.ui.MenuBar.MenuItem;
 
 import javax.inject.Inject;
 import java.util.List;
