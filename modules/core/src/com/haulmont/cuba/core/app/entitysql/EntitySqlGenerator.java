@@ -58,7 +58,7 @@ public class EntitySqlGenerator {
     protected SimpleDateFormat dateFormat = new SimpleDateFormat("''yyyy-MM-dd''");
     protected SimpleDateFormat timeFormat = new SimpleDateFormat("''HH:mm:ss''");
     protected String insertTemplate = "insert into %s \n(%s) \nvalues (%s);";
-    protected String updateTemplate = "update %s \nset %s \nwhere %s=%s;";
+    protected String updateTemplate = "update %s \nset %s \nwhere %s%s;";
     protected String selectTemplate = "select %s from %s where %s";
 
     protected Class clazz;
@@ -127,26 +127,51 @@ public class EntitySqlGenerator {
 
         String tableAlias = null;
         String tableIdColumn = null;
+        boolean isEmbeddedId = false;
         for (int i = 0; i < tables.size(); i++) {
             Table table = tables.get(i);
             tableIdColumn = table.fieldToColumnMapping.get(ID);
             tableAlias = format("t%s", valueOf(i));
+            isEmbeddedId = table.isEmbeddedId;
             String parentAlias = format("t%s", valueOf(i - 1));
             tableNames.add(table.name + " " + tableAlias);
 
             for (String columnName : table.fieldToColumnMapping.values()) {
+                if (isEmbeddedId && columnName.equalsIgnoreCase(ID))
+                    continue;
                 columns.add(tableAlias + "." + columnName);
             }
 
+            if (isEmbeddedId)
+                for (String columnName : table.embeddedIdFieldsMapping.values()) {
+                    columns.add(tableAlias + "." + columnName);
+                }
+
             if (table.parent != null) {
+                if (isEmbeddedId) {
+                    for (String key : table.embeddedIdFieldsMapping.keySet()) {
+                        where.add(format("%s.%s = %s.%s", tableAlias, table.embeddedIdFieldsMapping.get(key),
+                                parentAlias, table.parent.embeddedIdFieldsMapping.get(key)));
+                    }
+                    continue;
+                }
                 String parentIdColumn = table.parent.fieldToColumnMapping.get(ID);
                 where.add(format("%s.%s = %s.%s", tableAlias, tableIdColumn, parentAlias, parentIdColumn));
             }
         }
 
-        where.add(tableAlias + "." + tableIdColumn + " = " + convertValue(entity, ID, entity.getId()));
-        return format(selectTemplate,
-                convertList(columns), convertList(tableNames), convertList(where).replaceAll(",", " and "));
+        if (isEmbeddedId) {
+            Table lastTable = tables.get(tables.size() - 1);
+            for (Map.Entry<String, String> entry : lastTable.embeddedIdFieldsMapping.entrySet()) {
+                String fieldName = entry.getKey();
+                String columnName = entry.getValue();
+                where.add(tableAlias + "." + columnName + " = " + convertValue(entity, fieldName, entity.getValueEx(fieldName)));
+            }
+        } else {
+            where.add(tableAlias + "." + tableIdColumn + " = " + convertValue(entity, ID, entity.getId()));
+        }
+        return format(selectTemplate, convertList(columns), convertList(tableNames),
+                convertList(where).replaceAll(",", " and "));
     }
 
     protected String convertValue(Entity entity, String fieldName, @Nullable Object value) {
@@ -230,9 +255,11 @@ public class EntitySqlGenerator {
         protected Table parent;
         protected String name;
         protected String idColumn;
+        protected boolean isEmbeddedId = false;
         protected String discriminatorColumn;
         protected DiscriminatorType discriminatorType;
         protected Map<String, String> fieldToColumnMapping = new LinkedHashMap<>();
+        protected Map<String, String> embeddedIdFieldsMapping = new LinkedHashMap<>();
 
         public Table(String name) {
             this.name = name;
@@ -251,11 +278,21 @@ public class EntitySqlGenerator {
             for (Map.Entry<String, String> entry : fieldToColumnMapping.entrySet()) {
                 String fieldName = entry.getKey();
                 String columnName = entry.getValue();
+                if (isEmbeddedId && fieldName.equalsIgnoreCase(ID))
+                    continue;
                 Object value = entity.getValueEx(fieldName);
                 valuesStr.add(convertValue(entity, fieldName, value));
                 columnNames.add(columnName);
             }
-
+            if (isEmbeddedId) {
+                for (Map.Entry<String, String> entry : embeddedIdFieldsMapping.entrySet()) {
+                    String fieldName = entry.getKey();
+                    String columnName = entry.getValue();
+                    Object value = entity.getValueEx(fieldName);
+                    valuesStr.add(convertValue(entity, fieldName, value));
+                    columnNames.add(columnName);
+                }
+            }
             return format(insertTemplate, name, convertList(columnNames), convertList(valuesStr));
         }
 
@@ -269,8 +306,19 @@ public class EntitySqlGenerator {
                     valuesStr.add(format("%s=%s", columnName, convertValue(entity, fieldName, value)));
                 }
             }
-
-            return format(updateTemplate, name, convertList(valuesStr), fieldToColumnMapping.get(ID), convertValue(entity, ID, entity.getId()));
+            if (isEmbeddedId) {
+                List<String> embeddedIdValuesStr = new ArrayList<>();
+                for (Map.Entry<String, String> entry : embeddedIdFieldsMapping.entrySet()) {
+                    String fieldName = entry.getKey();
+                    String columnName = entry.getValue();
+                    if (!fieldName.equalsIgnoreCase(ID)) {
+                        Object value = entity.getValueEx(fieldName);
+                        embeddedIdValuesStr.add(format("%s=%s", columnName, convertValue(entity, fieldName, value)));
+                    }
+                }
+                return format(updateTemplate, name, convertList(valuesStr), "", convertList(embeddedIdValuesStr).replaceAll(",", " and "));
+            }
+            return format(updateTemplate, name, convertList(valuesStr), fieldToColumnMapping.get(ID) + "=", convertValue(entity, ID, entity.getId()));
         }
 
 
@@ -343,8 +391,9 @@ public class EntitySqlGenerator {
                 AssociationOverrides associationOverrides = field.getAnnotation(AssociationOverrides.class);
                 Column columnAnnotation = field.getAnnotation(Column.class);
                 JoinColumn joinColumnAnnotation = field.getAnnotation(JoinColumn.class);
+                EmbeddedId embeddedIdAnnotation = field.getAnnotation(EmbeddedId.class);
 
-                if (embedded != null) {
+                if (embedded != null || embeddedIdAnnotation != null) {
                     Class<?> embeddedObjectType = field.getType();
                     Map<String, String> embeddedFields = collectFields(embeddedObjectType);
 
@@ -356,8 +405,17 @@ public class EntitySqlGenerator {
                         overrideAssociations(associationOverrides, embeddedFields);
                     }
 
-                    for (Map.Entry<String, String> entry : embeddedFields.entrySet()) {
-                        result.put(field.getName() + "." + entry.getKey(), entry.getValue());
+                    if (embeddedIdAnnotation == null) {
+                        for (Map.Entry<String, String> entry : embeddedFields.entrySet()) {
+                            result.put(field.getName() + "." + entry.getKey(), entry.getValue());
+                        }
+                    } else {
+                        isEmbeddedId = true;
+                        Map<String, String> embeddedIdResult = new LinkedHashMap<>();
+                        for (Map.Entry<String, String> entry : embeddedFields.entrySet()) {
+                            embeddedIdResult.put(field.getName() + "." + entry.getKey(), entry.getValue());
+                        }
+                        embeddedIdFieldsMapping.putAll(embeddedIdResult);
                     }
                 } else if (columnAnnotation != null) {
                     result.put(field.getName(), columnAnnotation.name());
