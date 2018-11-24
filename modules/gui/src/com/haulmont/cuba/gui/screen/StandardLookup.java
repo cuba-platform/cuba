@@ -17,6 +17,8 @@
 package com.haulmont.cuba.gui.screen;
 
 import com.google.common.base.Strings;
+import com.haulmont.bali.events.Subscription;
+import com.haulmont.bali.events.TriggerOnce;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.Configuration;
@@ -32,6 +34,7 @@ import com.haulmont.cuba.gui.util.OperationResult;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
+import java.util.EventObject;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
@@ -81,7 +84,16 @@ public class StandardLookup<T extends Entity> extends Screen implements LookupSc
         setupCommitShortcut();
     }
 
+    /**
+     * Triggers all data loaders before showing the screen.
+     * <p>
+     * Use {@link BeforeLoadDataEvent} to provide parameters to loaders if needed.
+     * <p>
+     * Override this method if you don't want to load all data at once, for example if some loader depends on data
+     * loaded by another loader.
+     */
     protected void loadData() {
+        fireEvent(BeforeLoadDataEvent.class, new BeforeLoadDataEvent(this));
         getScreenData().loadAll();
     }
 
@@ -169,6 +181,51 @@ public class StandardLookup<T extends Entity> extends Screen implements LookupSc
             if (selectHandler != null) {
                 result.then(() -> selectHandler.accept(items));
             }
+        }
+    }
+
+    /**
+     * Adds a listener to {@link BeforeLoadDataEvent}.
+     *
+     * @param listener listener
+     * @return subscription
+     */
+    protected Subscription addBeforeLoadDataListener(Consumer<BeforeLoadDataEvent> listener) {
+        return getEventHub().subscribe(BeforeLoadDataEvent.class, listener);
+    }
+
+    /**
+     * Event sent before the screen triggers all data loaders in {@link #loadData()} method. It can be used to specify
+     * parameters needed for initial loading.
+     * <p>
+     * For example:
+     * <pre>{@code
+     *     @Inject
+     *     private CollectionLoader<Customer> customersDl;
+     *
+     *     private String email;
+     *
+     *     @Subscribe
+     *     protected void onBeforeLoadData(BeforeLoadDataEvent event) {
+     *         if (email != null) {
+     *             customersDl.setQuery("select e from sales_Customer e where e.email = :email");
+     *             customersDl.setParameter("email", email);
+     *         }
+     *     }
+     * }</pre>
+     *
+     * @see #addBeforeLoadDataListener(Consumer)
+     */
+    @TriggerOnce
+    public static class BeforeLoadDataEvent extends EventObject {
+
+        public BeforeLoadDataEvent(Screen source) {
+            super(source);
+        }
+
+        @Override
+        public Screen getSource() {
+            return (Screen) super.getSource();
         }
     }
 }

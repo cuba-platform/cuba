@@ -148,7 +148,16 @@ public abstract class StandardEditor<T extends Entity> extends Screen implements
         }
     }
 
+    /**
+     * Triggers all data loaders before showing the screen.
+     * <p>
+     * Use {@link BeforeLoadDataEvent} to provide parameters to loaders if needed.
+     * <p>
+     * Override this method if you don't want to load all data at once, for example if some loader depends on data
+     * loaded by another loader.
+     */
     protected void loadData() {
+        fireEvent(BeforeLoadDataEvent.class, new BeforeLoadDataEvent<>(this, entityToEdit));
         getScreenData().loadAll();
     }
 
@@ -446,8 +455,19 @@ public abstract class StandardEditor<T extends Entity> extends Screen implements
     }
 
     /**
-     * Event sent befire the new entity instance is set to edited entity container.
-     * Used for default values initialization for entity instance. <br>
+     * Adds a listener to {@link BeforeLoadDataEvent}.
+     *
+     * @param listener listener
+     * @return subscription
+     */
+    @SuppressWarnings("unchecked")
+    protected Subscription addBeforeLoadDataListener(Consumer<BeforeLoadDataEvent<T>> listener) {
+        return getEventHub().subscribe(BeforeLoadDataEvent.class, (Consumer) listener);
+    }
+
+    /**
+     * Event sent before the new entity instance is set to edited entity container.
+     * Used for initialization of default values in the entity instance. <br>
      * There are two ways to add an event handler:
      * <br>
      * 1. Programmatically:
@@ -484,6 +504,52 @@ public abstract class StandardEditor<T extends Entity> extends Screen implements
 
         public E getEntity() {
             return entity;
+        }
+    }
+
+    /**
+     * Event sent before the screen triggers all data loaders in {@link #loadData()} method. It can be used to specify
+     * parameters needed for initial loading.
+     * <p>
+     * Do not use {@link #getEditedEntity()} method here as the entity is not reloaded yet and this method returns null.
+     * Instead, get the passed instence from the event if needed, for example:
+     * <pre>{@code
+     *     @Inject
+     *     private CollectionLoader<Order> ordersDl;
+     *
+     *     @Subscribe
+     *     protected void onBeforeLoadData(BeforeLoadDataEvent<Customer> event) {
+     *         ordersDl.setParameter("customer", event.getEntityToEdit());
+     *     }
+     * }</pre>
+     *
+     * @param <E> type of edited entity
+     * @see #getEntityToEdit()
+     * @see #addBeforeLoadDataListener(Consumer)
+     */
+    @TriggerOnce
+    public static class BeforeLoadDataEvent<E> extends EventObject {
+
+        private final E entityToEdit;
+
+        public BeforeLoadDataEvent(Screen source, E entityToEdit) {
+            super(source);
+            this.entityToEdit = entityToEdit;
+        }
+
+        @Override
+        public Screen getSource() {
+            return (Screen) super.getSource();
+        }
+
+        /**
+         * Returns an entity instance passed to the editor screen.
+         * <p>
+         * Note that it's not the same instance as available via {@link StandardEditor#getEditedEntity()}.
+         * The latter one is reloaded later.
+         */
+        public E getEntityToEdit() {
+            return entityToEdit;
         }
     }
 }
