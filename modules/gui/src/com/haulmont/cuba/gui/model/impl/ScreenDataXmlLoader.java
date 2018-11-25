@@ -36,7 +36,6 @@ import org.springframework.stereotype.Component;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.text.ParseException;
-import java.util.Collection;
 
 @Component(ScreenDataXmlLoader.NAME)
 public class ScreenDataXmlLoader {
@@ -199,42 +198,16 @@ public class ScreenDataXmlLoader {
                     throw new IllegalStateException(String.format(
                             "Cannot bind collection container '%s' to a non-collection property '%s'", containerId, property));
                 }
-                CollectionPropertyContainer<Entity> container = factory.createCollectionContainer(
+                nestedContainer = factory.createCollectionContainer(
                         metaProperty.getRange().asClass().getJavaClass(), masterContainer, property);
-
-                masterContainer.addItemChangeListener(e -> {
-                    Entity item = masterContainer.getItemOrNull();
-                    container.setItems(item != null ? item.getValue(property) : null);
-                });
-
-                masterContainer.addItemPropertyChangeListener(e -> {
-                    if (e.getProperty().equals(property)) {
-                        container.setDisconnectedItems((Collection<Entity>) e.getValue());
-                    }
-                });
-
-                nestedContainer = container;
 
             } else if (element.getName().equals("instance")) {
                 if (!metaProperty.getRange().isClass() || metaProperty.getRange().getCardinality().isMany()) {
                     throw new IllegalStateException(String.format(
                             "Cannot bind instance container '%s' to a non-reference property '%s'", containerId, property));
                 }
-                InstanceContainer<Entity> container = factory.createInstanceContainer(
+                nestedContainer = factory.createInstanceContainer(
                         metaProperty.getRange().asClass().getJavaClass(), masterContainer, property);
-
-                masterContainer.addItemChangeListener(e -> {
-                    Entity item = masterContainer.getItemOrNull();
-                    container.setItem(item != null ? item.getValue(property) : null);
-                });
-
-                masterContainer.addItemPropertyChangeListener(e -> {
-                    if (e.getProperty().equals(property)) {
-                        container.setItem((Entity) e.getValue());
-                    }
-                });
-
-                nestedContainer = container;
             }
         }
 

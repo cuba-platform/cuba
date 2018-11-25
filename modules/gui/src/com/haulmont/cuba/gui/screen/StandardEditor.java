@@ -140,7 +140,7 @@ public abstract class StandardEditor<T extends Entity> extends Screen implements
 
             fireEvent(InitEntityEvent.class, new InitEntityEvent<>(this, mergedEntity));
 
-            InstanceContainer<Entity> container = getEditedEntityContainer();
+            InstanceContainer<T> container = getEditedEntityContainer();
             container.setItem(mergedEntity);
         } else {
             InstanceLoader loader = getEditedEntityLoader();
@@ -162,7 +162,7 @@ public abstract class StandardEditor<T extends Entity> extends Screen implements
     }
 
     protected void setupLock() {
-        InstanceContainer<Entity> container = getEditedEntityContainer();
+        InstanceContainer<T> container = getEditedEntityContainer();
         Security security = getBeanLocator().get(Security.class);
 
         if (!getEntityStates().isNew(entityToEdit)
@@ -216,7 +216,7 @@ public abstract class StandardEditor<T extends Entity> extends Screen implements
     }
 
     protected String getLockName() {
-        InstanceContainer<Entity> container = getEditedEntityContainer();
+        InstanceContainer<T> container = getEditedEntityContainer();
         return getBeanLocator().get(ExtendedEntities.class)
                 .getOriginalOrThisMetaClass(container.getEntityMetaClass())
                 .getName();
@@ -224,7 +224,7 @@ public abstract class StandardEditor<T extends Entity> extends Screen implements
 
     protected boolean doNotReloadEditedEntity() {
         if (isEntityModifiedInParentContext()) {
-            InstanceContainer<Entity> container = getEditedEntityContainer();
+            InstanceContainer<T> container = getEditedEntityContainer();
             if (getEntityStates().isLoadedWithView(entityToEdit, container.getView())) {
                 return true;
             }
@@ -275,7 +275,7 @@ public abstract class StandardEditor<T extends Entity> extends Screen implements
     }
 
     protected InstanceLoader getEditedEntityLoader() {
-        InstanceContainer<Entity> container = getEditedEntityContainer();
+        InstanceContainer<T> container = getEditedEntityContainer();
         if (container == null) {
             throw new IllegalStateException("Edited entity container not defined");
         }
@@ -293,7 +293,7 @@ public abstract class StandardEditor<T extends Entity> extends Screen implements
         return (InstanceLoader) loader;
     }
 
-    protected InstanceContainer<Entity> getEditedEntityContainer() {
+    protected InstanceContainer<T> getEditedEntityContainer() {
         EditedEntityContainer annotation = getClass().getAnnotation(EditedEntityContainer.class);
         if (annotation == null || Strings.isNullOrEmpty(annotation.value())) {
             throw new IllegalStateException(

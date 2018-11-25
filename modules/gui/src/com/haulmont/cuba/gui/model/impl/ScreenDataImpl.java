@@ -38,6 +38,7 @@ public class ScreenDataImpl implements ScreenData {
         return dataContext;
     }
 
+    @Override
     public void setDataContext(DataContext dataContext) {
         this.dataContext = dataContext;
     }

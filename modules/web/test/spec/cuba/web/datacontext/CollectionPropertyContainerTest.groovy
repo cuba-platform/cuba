@@ -45,7 +45,6 @@ class CollectionPropertyContainerTest extends WebSpec {
     def "property reflects changes when using getMutableItems"() {
 
         orderCt.setItem(order)
-        linesCt.setItems(order.orderLines)
 
         when:
 
@@ -60,7 +59,6 @@ class CollectionPropertyContainerTest extends WebSpec {
     def "property does not reflect changes when using getDisconnectedItems"() {
 
         orderCt.setItem(order)
-        linesCt.setItems(order.orderLines)
 
         when:
 
@@ -74,7 +72,6 @@ class CollectionPropertyContainerTest extends WebSpec {
     def "property reflects changes if new collection is set using setItems"() {
 
         orderCt.setItem(order)
-        linesCt.setItems(order.orderLines)
 
         def orderLine3 = new OrderLine(order: this.order, quantity: 3)
         def orderLine4 = new OrderLine(order: this.order, quantity: 4)
@@ -94,7 +91,6 @@ class CollectionPropertyContainerTest extends WebSpec {
     def "property does not reflect changes if new collection is set using setDisconnectedItems"() {
 
         orderCt.setItem(order)
-        linesCt.setItems(order.orderLines)
 
         def orderLine3 = new OrderLine(order: this.order, quantity: 3)
         def orderLine4 = new OrderLine(order: this.order, quantity: 4)

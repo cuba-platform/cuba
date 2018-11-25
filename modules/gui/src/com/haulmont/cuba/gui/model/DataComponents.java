@@ -26,6 +26,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
+import java.util.Collection;
 
 /**
  * Factory bean for data API components.
@@ -60,9 +61,25 @@ public class DataComponents implements ApplicationContextAware {
     /**
      * Creates {@code InstancePropertyContainer}.
      */
+    @SuppressWarnings("unchecked")
     public <E extends Entity> InstancePropertyContainer<E> createInstanceContainer(Class<E> entityClass,
-                                                                                   InstanceContainer master, String property) {
-        return new InstancePropertyContainerImpl<>(metadata.getClassNN(entityClass), master, property);
+                                                                                   InstanceContainer<? extends Entity> masterContainer,
+                                                                                   String property) {
+        InstancePropertyContainerImpl<E> container = new InstancePropertyContainerImpl<>(
+                metadata.getClassNN(entityClass), masterContainer, property);
+
+        masterContainer.addItemChangeListener(e -> {
+            Entity item = masterContainer.getItemOrNull();
+            container.setItem(item != null ? item.getValue(property) : null);
+        });
+
+        masterContainer.addItemPropertyChangeListener(e -> {
+            if (e.getProperty().equals(property)) {
+                container.setItem((E) e.getValue());
+            }
+        });
+
+        return container;
     }
 
     /**
@@ -75,9 +92,25 @@ public class DataComponents implements ApplicationContextAware {
     /**
      * Creates {@code CollectionPropertyContainer}.
      */
+    @SuppressWarnings("unchecked")
     public <E extends Entity> CollectionPropertyContainer<E> createCollectionContainer(Class<E> entityClass,
-                                                                                       InstanceContainer master, String property) {
-        return new CollectionPropertyContainerImpl<>(metadata.getClassNN(entityClass), master, property);
+                                                                                       InstanceContainer<? extends Entity> masterContainer,
+                                                                                       String property) {
+        CollectionPropertyContainerImpl<E> container = new CollectionPropertyContainerImpl<>(
+                metadata.getClassNN(entityClass), masterContainer, property);
+
+        masterContainer.addItemChangeListener(e -> {
+            Entity item = masterContainer.getItemOrNull();
+            container.setItems(item != null ? item.getValue(property) : null);
+        });
+
+        masterContainer.addItemPropertyChangeListener(e -> {
+            if (e.getProperty().equals(property)) {
+                container.setDisconnectedItems((Collection<E>) e.getValue());
+            }
+        });
+
+        return container;
     }
 
     /**

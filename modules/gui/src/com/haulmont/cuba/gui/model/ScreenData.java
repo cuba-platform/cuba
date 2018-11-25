@@ -33,6 +33,11 @@ public interface ScreenData {
     DataContext getDataContext();
 
     /**
+     * Sets {@code DataContext} instance for the screen.
+     */
+    void setDataContext(DataContext dataContext);
+
+    /**
      * Performs {@link DataLoader#load()} for all loaders registered in the screen.
      */
     void loadAll();
