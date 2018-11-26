@@ -21,6 +21,7 @@ import com.haulmont.cuba.core.global.DateTimeTransformations;
 import com.haulmont.cuba.core.global.Scripting;
 import com.haulmont.cuba.core.global.TimeSource;
 import com.haulmont.cuba.core.global.UserSessionSource;
+import com.haulmont.cuba.core.sys.querymacro.macroargs.MacroArgsDateEquals;
 import groovy.lang.Binding;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -48,10 +49,7 @@ public class DateEqualsMacroHandler extends AbstractQueryMacroHandler {
 
     protected Map<String, Object> namedParameters;
 
-    protected List<String> paramNames = new ArrayList<>();
-    protected boolean isNow = false;
-    protected TimeZone timeZone;
-    protected int offset = 0;
+    protected List<MacroArgsDateEquals> paramArgs = new ArrayList<>();
 
     @Inject
     protected UserSessionSource userSessionSource;
@@ -75,11 +73,11 @@ public class DateEqualsMacroHandler extends AbstractQueryMacroHandler {
         String field = args[0].trim();
         String param1 = args[1].trim();
         String param2;
-        timeZone = getTimeZoneFromArgs(args, 2);
+        TimeZone timeZone = getTimeZoneFromArgs(args, 2);
 
         Matcher matcher = NOW_PARAM_PATTERN.matcher(param1);
         if (matcher.find()) {
-            isNow = true;
+            int offset = 0;
             try {
                 String expr = matcher.group(2);
                 if (!Strings.isNullOrEmpty(expr)) {
@@ -90,12 +88,12 @@ public class DateEqualsMacroHandler extends AbstractQueryMacroHandler {
             }
             param1 = args[0].trim().replace(".", "_") + "_" + count + "_" + 1;
             param2 = args[0].trim().replace(".", "_") + "_" + count + "_" + 2;
+            paramArgs.add(new MacroArgsDateEquals(param1, param2, timeZone, offset, true));
         } else {
             param1 = param1.substring(1);
             param2 = field.replace(".", "_") + "_" + count;
+            paramArgs.add(new MacroArgsDateEquals(param1, param2, timeZone));
         }
-        paramNames.add(param1);
-        paramNames.add(param2);
 
         return String.format("(%s >= :%s and %s < :%s)", field, param1, field, param2);
     }
@@ -103,32 +101,35 @@ public class DateEqualsMacroHandler extends AbstractQueryMacroHandler {
     @Override
     public Map<String, Object> getParams() {
         Map<String, Object> params = new HashMap<>();
-        Class javaType;
-        ZonedDateTime zonedDateTime;
-        if (paramNames.isEmpty())
-            return params;
-        if (timeZone == null)
-            timeZone = TimeZone.getDefault();
-        if (isNow) {
-            zonedDateTime = timeSource.now();
-            javaType = expandedParamTypes.get(paramNames.get(0));
-            if (javaType == null)
-                throw new RuntimeException(String.format("Type of parameter %s not resolved", paramNames.get(0)));
-        } else {
-            Object date = namedParameters.get(paramNames.get(0));
-            if (date == null)
-                throw new RuntimeException(String.format("Parameter %s not found for macro", paramNames.get(0)));
-            javaType = date.getClass();
-            zonedDateTime = transformations.transformToZDT(date);
+        for (MacroArgsDateEquals paramArg : paramArgs) {
+            Class javaType;
+            ZonedDateTime zonedDateTime;
+            String firstparamName = paramArg.getParamName();
+            String secondParamName = paramArg.getSecondParamName();
+            TimeZone timeZone = paramArg.getTimeZone();
+            if (timeZone == null)
+                timeZone = TimeZone.getDefault();
+            if (paramArg.isNow()) {
+                zonedDateTime = timeSource.now();
+                javaType = expandedParamTypes.get(firstparamName);
+                if (javaType == null)
+                    throw new RuntimeException(String.format("Type of parameter %s not resolved", firstparamName));
+            } else {
+                Object date = namedParameters.get(firstparamName);
+                if (date == null)
+                    throw new RuntimeException(String.format("Parameter %s not found for macro", firstparamName));
+                javaType = date.getClass();
+                zonedDateTime = transformations.transformToZDT(date);
+            }
+            if (transformations.isDateTypeSupportsTimeZones(javaType)) {
+                zonedDateTime = zonedDateTime.withZoneSameInstant(timeZone.toZoneId());
+            }
+            zonedDateTime = zonedDateTime.plusDays(paramArg.getOffset()).truncatedTo(ChronoUnit.DAYS);
+            ZonedDateTime firstZonedDateTime = zonedDateTime.truncatedTo(ChronoUnit.DAYS);
+            ZonedDateTime secondZonedDateTime = firstZonedDateTime.plusDays(1);
+            params.put(firstparamName, transformations.transformFromZDT(firstZonedDateTime, javaType));
+            params.put(secondParamName, transformations.transformFromZDT(secondZonedDateTime, javaType));
         }
-        if (transformations.isDateTypeSupportsTimeZones(javaType)) {
-            zonedDateTime = zonedDateTime.withZoneSameInstant(timeZone.toZoneId());
-        }
-        zonedDateTime = zonedDateTime.plusDays(offset).truncatedTo(ChronoUnit.DAYS);
-        ZonedDateTime firstZonedDateTime = zonedDateTime.truncatedTo(ChronoUnit.DAYS);
-        ZonedDateTime secondZonedDateTime = firstZonedDateTime.plusDays(1);
-        params.put(paramNames.get(0), transformations.transformFromZDT(firstZonedDateTime, javaType));
-        params.put(paramNames.get(1), transformations.transformFromZDT(secondZonedDateTime, javaType));
         return params;
     }
 
