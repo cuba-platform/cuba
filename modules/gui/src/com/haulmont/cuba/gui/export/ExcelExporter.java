@@ -22,6 +22,7 @@ import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.chile.core.model.Range;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.IdProxy;
@@ -40,6 +41,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.DataFormat;
 import org.apache.poi.ss.usermodel.VerticalAlignment;
 import org.apache.poi.util.LocaleUtil;
 import org.dom4j.Element;
@@ -412,8 +414,9 @@ public class ExcelExporter {
         integerFormatCellStyle = wb.createCellStyle();
         integerFormatCellStyle.setDataFormat(HSSFDataFormat.getBuiltinFormat("#,##0"));
 
+        DataFormat format = wb.createDataFormat();
         doubleFormatCellStyle = wb.createCellStyle();
-        doubleFormatCellStyle.setDataFormat(HSSFDataFormat.getBuiltinFormat("#,##0.00"));
+        doubleFormatCellStyle.setDataFormat(format.getFormat("#,##0.################"));
     }
 
     @SuppressWarnings("unchecked")
@@ -689,9 +692,19 @@ public class ExcelExporter {
 
         if (cellValue instanceof Number) {
             Number n = (Number) cellValue;
-            final Datatype datatype = Datatypes.getNN(n.getClass());
+            Datatype datatype = null;
+            if (metaPropertyPath != null) {
+                Range range = metaPropertyPath.getMetaProperty().getRange();
+                if (range.isDatatype()) {
+                    datatype = range.asDatatype();
+                }
+            }
+
+            datatype = datatype == null ? Datatypes.getNN(n.getClass()) : datatype;
             String str;
-            if (sizersIndex == 0) {
+            // level is used for TreeTable, so level with 0 doesn't create spacing
+            // and we should skip it
+            if (sizersIndex == 0 && level > 0) {
                 str = createSpaceString(level) + datatype.format(n);
                 cell.setCellValue(str);
             } else {
