@@ -85,14 +85,13 @@ def restApiModule = project(':cuba-rest-api')
 def webWidgetsModule = project(':cuba-web-widgets')
 def webToolkitModule = project(':cuba-web-toolkit')
 def webModule = project(':cuba-web')
-def uberJarModule = project(':cuba-uberjar')
 def frontModule = project(':cuba-front')
 
 def coreTestsModule = project(':cuba-core-tests')
 def clientTestsModule = project(':cuba-client-tests')
 
 configure([sharedLibModule, globalModule, coreModule, clientModule, guiModule,
-           webModule, desktopModule, portalModule, restApiModule, uberJarModule, frontModule]) {
+           webModule, desktopModule, portalModule, restApiModule, frontModule]) {
     apply(plugin: 'java')
     apply(plugin: 'groovy')
     apply(plugin: 'maven')
@@ -949,25 +948,6 @@ configure(portalModule) {
     task deploy(dependsOn: assemble, type: CubaDeployment) {
         appName = 'cuba-portal'
         appJars('cuba-global', 'cuba-client', 'cuba-portal', 'cuba-rest-api')
-    }
-}
-
-configure(uberJarModule) {
-    dependencies {
-        compile(bom['org.eclipse.jetty:jetty-server'])
-        compile(bom['org.eclipse.jetty:jetty-webapp'])
-        compile(bom['org.eclipse.jetty:jetty-plus'])
-        compile(bom['org.eclipse.jetty:jetty-jndi'])
-        compile(bom['org.eclipse.jetty:jetty-continuation'])
-        compile(bom['org.eclipse.jetty.websocket:websocket-server'])
-        compile(bom['org.eclipse.jetty.websocket:javax-websocket-server-impl'])
-
-        compile(bom['commons-cli:commons-cli'])
-        compile(bom['commons-io:commons-io'])
-        compile(bom['org.apache.commons:commons-dbcp2'])
-        compile(bom['ch.qos.logback:logback-classic'])
-        compile(bom['org.slf4j:log4j-over-slf4j'])
-        compile(bom['org.perf4j:perf4j'])
     }
 }
 
