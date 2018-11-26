@@ -40,6 +40,10 @@ $c-main-menu-popup-text-color: white !default;
     }
   }
 
+  .#{$primary-stylename}-separator {
+    outline: none;
+  }
+
   .#{$primary-stylename}-submenu .#{$primary-stylename}-separator span {
     background: $cuba-menubar-text-color;
     border-top: 3px solid $cuba-menubar-background-color;

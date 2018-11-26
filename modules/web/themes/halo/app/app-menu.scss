@@ -188,6 +188,7 @@ $cuba-menubar-submenu-item-font-weight: $v-font-weight !default;
     .v-menubar-separator {
       font-size: 0;
       display: table-row;
+      outline: none;
 
       span {
         box-sizing: content-box;
