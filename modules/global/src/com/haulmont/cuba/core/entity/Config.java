@@ -18,10 +18,8 @@ package com.haulmont.cuba.core.entity;
 
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 
-import javax.persistence.Column;
+import javax.persistence.*;
 import javax.persistence.Entity;
-import javax.persistence.Table;
-import javax.persistence.Version;
 import java.util.Date;
 
 /**
@@ -53,6 +51,7 @@ public class Config extends BaseUuidEntity implements Versioned, Creatable, Upda
     @Column(name = "NAME", nullable = false)
     private String name;
 
+    @Lob
     @Column(name = "VALUE_", nullable = false)
     private String value;
 
