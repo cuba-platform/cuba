@@ -117,6 +117,8 @@ public class UiPermissionsFrame extends AbstractFrame {
 
         companion.initPermissionsColoredColumns(uiPermissionsTable);
 
+        componentsTree.removeAction("showSystemInfo");
+
         uiPermissionTargetsDs.addItemChangeListener(e -> {
             if (!selectedComponentPanel.isVisible() && (e.getItem() != null)) {
                 selectedComponentPanel.setVisible(true);
@@ -308,5 +310,17 @@ public class UiPermissionsFrame extends AbstractFrame {
 
     public void expandTree() {
         componentsTree.expandTree();
+    }
+
+    public void addComponentIdToComponentTextField() {
+        ScreenComponentDescriptor component = componentsTree.getSingleSelected();
+        if (component != null) {
+            String componentId = component.getElement().attributeValue("id");
+            if (componentId != null) {
+                componentTextField.setValue(componentTextField.getRawValue() + componentId);
+            } else {
+                showNotification(getMessage("componentHasNotId"), NotificationType.TRAY_HTML);
+            }
+        }
     }
 }
