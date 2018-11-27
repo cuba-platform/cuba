@@ -85,13 +85,12 @@ def restApiModule = project(':cuba-rest-api')
 def webWidgetsModule = project(':cuba-web-widgets')
 def webToolkitModule = project(':cuba-web-toolkit')
 def webModule = project(':cuba-web')
-def frontModule = project(':cuba-front')
 
 def coreTestsModule = project(':cuba-core-tests')
 def clientTestsModule = project(':cuba-client-tests')
 
 configure([sharedLibModule, globalModule, coreModule, clientModule, guiModule,
-           webModule, desktopModule, portalModule, restApiModule, frontModule]) {
+           webModule, desktopModule, portalModule, restApiModule]) {
     apply(plugin: 'java')
     apply(plugin: 'groovy')
     apply(plugin: 'maven')
@@ -948,14 +947,6 @@ configure(portalModule) {
     task deploy(dependsOn: assemble, type: CubaDeployment) {
         appName = 'cuba-portal'
         appJars('cuba-global', 'cuba-client', 'cuba-portal', 'cuba-rest-api')
-    }
-}
-
-configure(frontModule) {
-    dependencies {
-        compile(bom['org.springframework:spring-webmvc'])
-        compile(bom['org.springframework:spring-context-support'])
-        compileOnly(bom['javax.servlet:javax.servlet-api'])
     }
 }
 

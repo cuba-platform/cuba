@@ -30,7 +30,6 @@
     <!-- Annotation-based beans -->
 
     <context:component-scan base-package="com.haulmont.cuba">
-        <context:exclude-filter type="regex" expression="com\.haulmont\.cuba\.web\.sys\.AppFront*"/>
         <context:exclude-filter type="regex" expression="com\.haulmont\.cuba\.web\.widgets\..*"/>
         <!--exclude dispatcher-->
         <context:exclude-filter type="regex" expression="com\.haulmont\.cuba\.web\.controllers\..*"/>
