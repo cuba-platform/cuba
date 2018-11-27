@@ -128,6 +128,16 @@
     </xs:complexType>
 
     <xs:complexType name="conditionType">
-            <!-- todo -->
+        <xs:choice>
+            <xs:element name="and" type="logicalConditionType"/>
+            <xs:element name="or" type="logicalConditionType"/>
+            <xs:any namespace="##other" minOccurs="1" maxOccurs="unbounded"/>
+        </xs:choice>
+    </xs:complexType>
+
+    <xs:complexType name="logicalConditionType">
+        <xs:sequence>
+            <xs:any namespace="##other" minOccurs="1" maxOccurs="unbounded"/>
+        </xs:sequence>
     </xs:complexType>
 </xs:schema>
