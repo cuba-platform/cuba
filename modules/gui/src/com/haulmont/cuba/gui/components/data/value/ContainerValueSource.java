@@ -140,8 +140,7 @@ public class ContainerValueSource<E extends Entity, V> implements EntityValueSou
     public V getValue() {
         E item = container.getItemOrNull();
         if (item != null) {
-            // todo implement getValueEx with metaPropertyPath
-            return item.getValueEx(metaPropertyPath.toPathString());
+            return item.getValueEx(metaPropertyPath);
         }
         return null;
     }
@@ -150,8 +149,7 @@ public class ContainerValueSource<E extends Entity, V> implements EntityValueSou
     public void setValue(V value) {
         E item = container.getItemOrNull();
         if (item != null) {
-            // todo implement setValueEx with metaPropertyPath
-            item.setValueEx(metaPropertyPath.toPathString(), value);
+            item.setValueEx(metaPropertyPath, value);
         }
     }
 

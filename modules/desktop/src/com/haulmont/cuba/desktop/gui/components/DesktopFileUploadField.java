@@ -643,7 +643,7 @@ public class DesktopFileUploadField extends DesktopAbstractUploadField<CubaFileU
         updatingInstance = true;
         try {
             if (datasource != null && metaProperty != null && datasource.getItem() != null) {
-                datasource.getItem().setValueEx(metaPropertyPath.toString(), value);
+                datasource.getItem().setValueEx(metaPropertyPath, value);
             }
         } finally {
             updatingInstance = false;

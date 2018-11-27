@@ -22,6 +22,7 @@ import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.chile.core.model.utils.MethodsCache;
 import com.haulmont.cuba.core.global.MetadataTools;
 
+import javax.annotation.Nullable;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -132,8 +133,19 @@ public abstract class AbstractInstance implements Instance {
         return InstanceUtils.getValueEx(this, name);
     }
 
+    @Nullable
+    @Override
+    public <T> T getValueEx(BeanPropertyPath propertyPath) {
+        return InstanceUtils.getValueEx(this, propertyPath);
+    }
+
     @Override
     public void setValueEx(String name, Object value) {
         InstanceUtils.setValueEx(this, name, value);
+    }
+
+    @Override
+    public void setValueEx(BeanPropertyPath propertyPath, Object value) {
+        InstanceUtils.setValueEx(this, propertyPath, value);
     }
 }

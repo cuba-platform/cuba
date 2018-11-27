@@ -24,6 +24,7 @@ import com.haulmont.cuba.core.entity.CategoryAttributeValue;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.UuidProvider;
 
+import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -33,7 +34,6 @@ import java.util.UUID;
  * Specific entity, delegating all calls to internal BaseGenericIdEntity.
  *
  * Obsolete. Will be removed in future releases.
- *
  */
 public class DynamicAttributesEntity implements Entity {
     private static final long serialVersionUID = -8091230910619941201L;
@@ -110,6 +110,18 @@ public class DynamicAttributesEntity implements Entity {
 
     @Override
     public void setValueEx(String propertyPath, Object value) {
+        mainItem.setValueEx(propertyPath, value);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Nullable
+    @Override
+    public <T> T getValueEx(BeanPropertyPath propertyPath) {
+        return (T) mainItem.getValueEx(propertyPath);
+    }
+
+    @Override
+    public void setValueEx(BeanPropertyPath propertyPath, Object value) {
         mainItem.setValueEx(propertyPath, value);
     }
 }

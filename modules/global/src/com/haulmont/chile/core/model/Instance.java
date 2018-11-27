@@ -73,6 +73,19 @@ public interface Instance extends Serializable {
     <T> T getValueEx(String propertyPath);
 
     /**
+     * Get an attribute value. Locates the attribute by the given path in object graph starting from this instance.
+     * <br>
+     * The path must consist of attribute names according to JavaBeans notation, separated by dots, e.g.
+     * {@code car.driver.name}.
+     *
+     * @param propertyPath path to an attribute
+     * @return attribute value. If any traversing attribute value is null or is not an {@link Instance}, this method
+     * stops here and returns this value.
+     */
+    @Nullable
+    <T> T getValueEx(BeanPropertyPath propertyPath);
+
+    /**
      * Set an attribute value. Locates the attribute by the given path in object graph starting from this instance.
      * <br> The path must consist of attribute names according to JavaBeans notation, separated by dots, e.g.
      * {@code car.driver.name}.
@@ -86,6 +99,21 @@ public interface Instance extends Serializable {
      * @param value        attribute value
      */
     void setValueEx(String propertyPath, Object value);
+
+    /**
+     * Set an attribute value. Locates the attribute by the given path in object graph starting from this instance.
+     * <br> The path must consist of attribute names according to JavaBeans notation, separated by dots, e.g.
+     * {@code car.driver.name}.
+     * <br> In the example above this method first gets value of {@code car.driver} attribute, and if it is not
+     * null and is an {@link Instance}, sets value of {@code name} attribute in it.
+     * <br> An implementor should first read a current value of the attribute, and then call an appropriate setter
+     * method only if the new value differs. This ensures triggering of {@link PropertyChangeListener}s only if the attribute
+     * was actually changed.
+     *
+     * @param propertyPath path to an attribute
+     * @param value        attribute value
+     */
+    void setValueEx(BeanPropertyPath propertyPath, Object value);
 
     /**
      * Add listener to track attributes changes.
@@ -162,5 +190,25 @@ public interface Instance extends Serializable {
          * @param e event object
          */
         void propertyChanged(PropertyChangeEvent e);
+    }
+
+    /**
+     * Property path descriptor.
+     */
+    interface BeanPropertyPath {
+        /**
+         * @return names of properties
+         */
+        String[] getPropertyNames();
+
+        /**
+         * @return first property name
+         */
+        String getFirstPropertyName();
+
+        /**
+         * @return true if property path represents single property name
+         */
+        boolean isDirectProperty();
     }
 }

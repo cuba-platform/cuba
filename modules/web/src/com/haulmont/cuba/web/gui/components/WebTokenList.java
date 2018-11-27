@@ -637,8 +637,9 @@ public class WebTokenList<V> extends WebV8AbstractField<WebTokenList.CubaTokenLi
             return "";
         }
         if (captionProperty != null) {
-            if (instance.getMetaClass().getPropertyPath(captionProperty) != null) {
-                Object o = instance.getValueEx(captionProperty);
+            MetaPropertyPath propertyPath = instance.getMetaClass().getPropertyPath(captionProperty);
+            if (propertyPath != null) {
+                Object o = instance.getValueEx(propertyPath);
                 return o != null ? o.toString() : " ";
             }
 

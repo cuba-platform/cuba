@@ -54,7 +54,7 @@ public class EntityComparator<T extends Entity> extends AbstractComparator<T> {
         if (property != null) {
             value = instance.getValue(property.getName());
         } else {
-            value = instance.getValueEx(propertyPath.toString());
+            value = instance.getValueEx(propertyPath);
         }
 
         if (!(value == null || value instanceof Comparable || value instanceof Instance)) {

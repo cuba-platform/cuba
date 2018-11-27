@@ -957,10 +957,6 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
 
     protected Object getItemValue(MetaPropertyPath property, K itemId) {
         Instance instance = getItemNN(itemId);
-        if (property.getMetaProperties().length == 1) {
-            return instance.getValue(property.getMetaProperty().getName());
-        } else {
-            return instance.getValueEx(property.toString());
-        }
+        return instance.getValueEx(property);
     }
 }

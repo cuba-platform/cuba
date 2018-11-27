@@ -87,8 +87,9 @@ public final class InstanceUtils {
      * @return value path as string or empty string if the input is null
      */
     public static String formatValuePath(String[] path) {
-        if (path == null)
+        if (path == null) {
             return "";
+        }
 
         StringBuilder buffer = new StringBuilder();
         int i = 1;
@@ -106,13 +107,29 @@ public final class InstanceUtils {
 
     /**
      * Get value of an attribute according to the rules described in {@link Instance#getValueEx(String)}.
-     * @param instance      instance
-     * @param propertyPath  attribute path
-     * @return              attribute value
+     *
+     * @param instance     instance
+     * @param propertyPath attribute path
+     * @return attribute value
      */
     public static <T> T getValueEx(Instance instance, String propertyPath) {
         String[] properties = parseValuePath(propertyPath);
-        //noinspection unchecked
+        return getValueEx(instance, properties);
+    }
+
+    /**
+     * Get value of an attribute according to the rules described in {@link Instance#getValueEx(String)}.
+     *
+     * @param instance     instance
+     * @param propertyPath attribute path
+     * @return attribute value
+     */
+    public static <T> T getValueEx(Instance instance, Instance.BeanPropertyPath propertyPath) {
+        if (propertyPath.isDirectProperty()) {
+            return instance.getValue(propertyPath.getFirstPropertyName());
+        }
+
+        String[] properties = propertyPath.getPropertyNames();
         return getValueEx(instance, properties);
     }
 
@@ -123,8 +140,9 @@ public final class InstanceUtils {
      * @return              attribute value
      */
     public static <T> T getValueEx(Instance instance, String[] properties) {
-        if (properties == null)
+        if (properties == null) {
             return null;
+        }
 
         Object currentValue = null;
         Instance currentInstance = instance;
@@ -138,14 +156,16 @@ public final class InstanceUtils {
 
             currentInstance = currentValue instanceof Instance ? (Instance) currentValue : null;
         }
+        //noinspection unchecked
         return (T) currentValue;
     }
 
     /**
      * Set value of an attribute according to the rules described in {@link Instance#setValueEx(String, Object)}.
-     * @param instance      instance
-     * @param propertyPath  path to the attribute
-     * @param value         attribute value
+     *
+     * @param instance     instance
+     * @param propertyPath path to the attribute
+     * @param value        attribute value
      */
     public static void setValueEx(Instance instance, String propertyPath, Object value) {
         String[] properties = parseValuePath(propertyPath);
@@ -154,16 +174,37 @@ public final class InstanceUtils {
 
     /**
      * Set value of an attribute according to the rules described in {@link Instance#setValueEx(String, Object)}.
-     * @param instance      instance
-     * @param properties    path to the attribute
-     * @param value         attribute value
+     *
+     * @param instance     instance
+     * @param propertyPath path to the attribute
+     * @param value        attribute value
+     */
+    public static void setValueEx(Instance instance, Instance.BeanPropertyPath propertyPath, Object value) {
+        if (propertyPath.isDirectProperty()) {
+            instance.setValue(propertyPath.getFirstPropertyName(), value);
+        } else {
+            String[] properties = propertyPath.getPropertyNames();
+            setValueEx(instance, properties, value);
+        }
+    }
+
+    /**
+     * Set value of an attribute according to the rules described in {@link Instance#setValueEx(String, Object)}.
+     *
+     * @param instance   instance
+     * @param properties path to the attribute
+     * @param value      attribute value
      */
     public static void setValueEx(Instance instance, String[] properties, Object value) {
         if (properties.length > 1) {
-            String[] subarray = ArrayUtils.subarray(properties, 0, properties.length - 1);
-            String intermediatePath = formatValuePath(subarray);
 
-            instance = instance.getValueEx(intermediatePath);
+            if (properties.length == 2) {
+                instance = instance.getValue(properties[0]);
+            } else {
+                String[] subarray = ArrayUtils.subarray(properties, 0, properties.length - 1);
+                String intermediatePath = formatValuePath(subarray);
+                instance = instance.getValueEx(intermediatePath);
+            }
 
             if (instance != null) {
                 String property = properties[properties.length - 1];

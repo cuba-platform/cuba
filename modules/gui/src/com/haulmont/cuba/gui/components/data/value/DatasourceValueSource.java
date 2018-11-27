@@ -44,7 +44,6 @@ public class DatasourceValueSource<E extends Entity, V> implements EntityValueSo
 
     protected EventHub events = new EventHub();
 
-    @SuppressWarnings("unchecked")
     public DatasourceValueSource(Datasource<E> datasource, String property) {
         checkNotNullArgument(datasource);
         checkNotNullArgument(property);
@@ -104,8 +103,7 @@ public class DatasourceValueSource<E extends Entity, V> implements EntityValueSo
     public V getValue() {
         E item = datasource.getItem();
         if (item != null) {
-            // todo implement getValueEx with metaPropertyPath
-            return item.getValueEx(metaPropertyPath.toPathString());
+            return item.getValueEx(metaPropertyPath);
         }
         return null;
     }
@@ -114,8 +112,7 @@ public class DatasourceValueSource<E extends Entity, V> implements EntityValueSo
     public void setValue(Object value) {
         E item = datasource.getItem();
         if (item != null) {
-            // todo implement setValueEx with metaPropertyPath
-            item.setValueEx(metaPropertyPath.toPathString(), value);
+            item.setValueEx(metaPropertyPath, value);
         }
     }
 

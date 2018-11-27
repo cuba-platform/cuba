@@ -25,7 +25,7 @@ import java.util.Arrays;
 /**
  * Object representing a relative path to a property from certain MetaClass
  */
-public class MetaPropertyPath implements Serializable {
+public class MetaPropertyPath implements Serializable, Instance.BeanPropertyPath {
 
     private static final long serialVersionUID = -3149651267513333787L;
 
@@ -165,5 +165,20 @@ public class MetaPropertyPath implements Serializable {
     @Override
     public String toString() {
         return pathString;
+    }
+
+    @Override
+    public String[] getPropertyNames() {
+        return path;
+    }
+
+    @Override
+    public String getFirstPropertyName() {
+        return path[0];
+    }
+
+    @Override
+    public boolean isDirectProperty() {
+        return path.length == 1;
     }
 }

@@ -116,7 +116,7 @@ public class DatasourceTableItems<E extends Entity<K>, K>
     @Override
     public Object getItemValue(Object itemId, Object propertyId) {
         MetaPropertyPath propertyPath = (MetaPropertyPath) propertyId;
-        return datasource.getItemNN(itemId).getValueEx(propertyPath.toPathString());
+        return datasource.getItemNN(itemId).getValueEx(propertyPath);
     }
 
     @Override

@@ -112,7 +112,7 @@ public class WebSuggestionPickerField<V extends Entity> extends WebPickerField<V
                 throw new IllegalArgumentException(String.format("Can't find property for given caption property: %s", captionProperty));
             }
 
-            return metadataTools.format(value.getValueEx(captionProperty), propertyPath.getMetaProperty());
+            return metadataTools.format(value.getValueEx(propertyPath), propertyPath.getMetaProperty());
         }
 
         log.warn("Using StringToEntityConverter to get entity text presentation. Caption property is not defined " +

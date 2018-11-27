@@ -29,8 +29,6 @@ import com.haulmont.cuba.core.global.Security;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.LookupComponent.LookupSelectionChangeNotifier;
-import com.haulmont.cuba.gui.components.Tree;
-import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.actions.BaseAction;
 import com.haulmont.cuba.gui.components.data.BindingState;
 import com.haulmont.cuba.gui.components.data.TreeItems;
@@ -61,8 +59,11 @@ import com.vaadin.server.Resource;
 import com.vaadin.server.Sizeable;
 import com.vaadin.shared.Registration;
 import com.vaadin.shared.ui.grid.HeightMode;
-import com.vaadin.ui.*;
+import com.vaadin.ui.AbstractComponent;
+import com.vaadin.ui.Grid;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.MenuBar.MenuItem;
+import com.vaadin.ui.StyleGenerator;
 import com.vaadin.ui.components.grid.MultiSelectionModel;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -227,7 +228,7 @@ public class WebTree<E extends Entity>
                     MetaPropertyPath metaPropertyPath =
                             metadataTools.resolveMetaPropertyPathNN(metaClass, captionProperty);
                     MetaProperty property = metaPropertyPath.getMetaProperty();
-                    Object propertyValue = item.getValueEx(metaPropertyPath.toPathString());
+                    Object propertyValue = item.getValueEx(metaPropertyPath);
 
                     return metadataTools.format(propertyValue, property);
 

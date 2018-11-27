@@ -112,7 +112,7 @@ public class ContainerTableItems<E extends Entity> implements EntityTableItems<E
     @Override
     public Object getItemValue(Object itemId, Object propertyId) {
         MetaPropertyPath propertyPath = (MetaPropertyPath) propertyId;
-        return container.getItem(itemId).getValueEx(propertyPath.toPathString());
+        return container.getItem(itemId).getValueEx(propertyPath);
     }
 
     @Override

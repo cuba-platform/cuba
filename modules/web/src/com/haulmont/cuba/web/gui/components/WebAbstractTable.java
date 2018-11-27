@@ -2859,10 +2859,10 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
 
                     E item = entityTableSource.getItemNN(itemId);
 
-                    Object value = item.getValueEx(stringPropertyId);
+                    Object value = item.getValueEx(propertyPath);
                     String stringValue;
                     if (value instanceof String) {
-                        stringValue = item.getValueEx(stringPropertyId);
+                        stringValue = item.getValueEx(propertyPath);
                     } else {
                         if (DynamicAttributesUtils.isDynamicAttribute(propertyPath.getMetaProperty())) {
                             stringValue = dynamicAttributesTools.getDynamicAttributeValueAsString(propertyPath.getMetaProperty(), value);
@@ -2888,7 +2888,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
                 && dataBinding != null) {
             Entity item = dataBinding.getTableItems().getItem(itemId);
             if (item != null) {
-                Boolean value = item.getValueEx(stringPropertyId);
+                Boolean value = item.getValueEx(propertyPath);
                 if (BooleanUtils.isTrue(value)) {
                     style = "boolean-cell boolean-cell-true";
                 } else {

@@ -189,11 +189,7 @@ public class ContainerGroupTableItems<E extends Entity<K>, K>
     protected Object getValueByProperty(E item, MetaPropertyPath property) {
         Preconditions.checkNotNullArgument(item);
 
-        if (property.getMetaProperties().length == 1) {
-            return item.getValue(property.getMetaProperty().getName());
-        } else {
-            return item.getValueEx(property.toString());
-        }
+        return item.getValueEx(property.toString());
     }
 
     @Override
@@ -406,7 +402,7 @@ public class ContainerGroupTableItems<E extends Entity<K>, K>
             if (property != null) {
                 value = instance.getValue(property.getName());
             } else {
-                value = instance.getValueEx(propertyPath.toString());
+                value = instance.getValueEx(propertyPath);
             }
 
             if (!(value == null || value instanceof Comparable)) {

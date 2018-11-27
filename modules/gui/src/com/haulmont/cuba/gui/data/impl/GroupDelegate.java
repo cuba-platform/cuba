@@ -275,7 +275,7 @@ public abstract class GroupDelegate<T extends Entity<K>, K> {
         if (property.getMetaProperties().length == 1) {
             return item.getValue(property.getMetaProperty().getName());
         } else {
-            return item.getValueEx(property.toString());
+            return item.getValueEx(property);
         }
     }
 
