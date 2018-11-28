@@ -18,6 +18,7 @@
 package com.haulmont.cuba.gui.components.filter.edit;
 
 import com.haulmont.bali.datastruct.Node;
+import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
@@ -117,6 +118,9 @@ public class FilterEditor extends AbstractWindow {
     @Inject
     protected Companion companion;
 
+    @Inject
+    private Metadata metadata;
+
     protected ConditionsTree conditions;
 
     protected AddConditionHelper addConditionHelper;
@@ -174,6 +178,13 @@ public class FilterEditor extends AbstractWindow {
         conditions = paramConditions.createCopy();
         refreshConditionsDs();
         conditionsTree.expandTree();
+
+        MetaProperty property = metadata.getClassNN(FilterEntity.class).getPropertyNN("name");
+        Map<String, Object> annotations = property.getAnnotations();
+        Integer maxLength = (Integer) annotations.get("length");
+        if (maxLength != null) {
+            filterName.setMaxLength(maxLength);
+        }
 
         if (!messages.getMainMessage("filter.adHocFilter").equals(filterEntity.getName())) {
             filterName.setValue(filterEntity.getName());
