@@ -206,14 +206,18 @@ public class WebUrlRouting implements UrlRouting {
 
         String parentPrefix = getScreenParentPrefix(screen);
         if (StringUtils.isEmpty(parentPrefix)) {
-            return screenRoute;
+            return nullToEmpty(screenRoute);
         }
 
         if (Objects.equals(prevSubRoute, parentPrefix)) {
-            return screenRoute.replace(parentPrefix + "/", "");
+            return nullToEmpty(screenRoute.replace(parentPrefix + "/", ""));
         } else {
-            return screenRoute;
+            return nullToEmpty(screenRoute);
         }
+    }
+
+    protected String nullToEmpty(String s) {
+        return s == null ? "" : s;
     }
 
     protected String getScreenParentPrefix(Screen screen) {
