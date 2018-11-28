@@ -26,6 +26,7 @@ import com.haulmont.cuba.gui.Screens;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.sys.WindowImplementation;
 import com.haulmont.cuba.gui.model.ScreenData;
+import com.haulmont.cuba.gui.navigation.UrlParamsChangedEvent;
 import com.haulmont.cuba.gui.settings.Settings;
 import com.haulmont.cuba.gui.util.OperationResult;
 import org.springframework.context.ApplicationListener;
@@ -221,6 +222,16 @@ public abstract class Screen implements FrameOwner {
      */
     protected Subscription addAfterDetachListener(Consumer<AfterDetachEvent> listener) {
         return eventHub.subscribe(AfterDetachEvent.class, listener);
+    }
+
+    /**
+     * Adds {@link UrlParamsChangedEvent} listener.
+     *
+     * @param listener listener
+     * @return subscription
+     */
+    protected Subscription addUrlParamsChangeListener(Consumer<UrlParamsChangedEvent> listener) {
+        return eventHub.subscribe(UrlParamsChangedEvent.class, listener);
     }
 
     /**

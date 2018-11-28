@@ -20,17 +20,19 @@ import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.Route;
 import com.haulmont.cuba.gui.UiComponents;
 import com.haulmont.cuba.gui.WindowParam;
-import com.haulmont.cuba.gui.components.AbstractWindow;
+import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Label;
+import com.haulmont.cuba.gui.components.Window;
+import com.haulmont.cuba.gui.screen.Screen;
+import com.haulmont.cuba.gui.screen.Subscribe;
 import com.haulmont.cuba.gui.screen.UiController;
 import com.haulmont.cuba.web.theme.HaloTheme;
 
 import javax.inject.Inject;
-import java.util.Map;
 
-@Route("404")
+@Route("not-found")
 @UiController(NotFoundScreen.ID)
-public class NotFoundScreen extends AbstractWindow {
+public class NotFoundScreen extends Screen {
 
     public static final String ID = "404 Not Found";
 
@@ -43,23 +45,17 @@ public class NotFoundScreen extends AbstractWindow {
     @Inject
     protected Messages messages;
 
-    @Override
-    public void init(Map<String, Object> params) {
-        super.init(params);
+    @Subscribe
+    protected void onInit(InitEvent event) {
+        Window window = getWindow();
 
-        String labelMsg = messages.formatMessage(NotFoundScreen.class, "notAssociatedRoute", requestedRoute);
+        Label<String> msgLabel = uiComponents.create(Label.TYPE_STRING);
+        msgLabel.setAlignment(Component.Alignment.TOP_CENTER);
+        msgLabel.addStyleName(HaloTheme.LABEL_H1);
+        msgLabel.setValue(messages.formatMessage(NotFoundScreen.class, "notAssociatedRoute", requestedRoute));
 
-        Label<String> label = uiComponents.create(Label.TYPE_STRING);
-        label.addStyleName(HaloTheme.LABEL_H2);
-        label.setValue(labelMsg);
+        window.add(msgLabel);
 
-        add(label);
-
-        setCaption(messages.formatMessage(NotFoundScreen.class, "tabCaption", requestedRoute));
-    }
-
-    @Override
-    public String getCaption() {
-        return messages.getMessage(NotFoundScreen.class, "screenCaption");
+        window.setCaption(messages.formatMessage(NotFoundScreen.class, "tabCaption", requestedRoute));
     }
 }

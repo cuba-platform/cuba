@@ -39,13 +39,11 @@ public interface History {
      *
      * @return previous history entry
      */
-    @Nullable
     NavigationState backward();
 
     /**
      * @return current history entry
      */
-    @Nullable
     NavigationState getNow();
 
     /**

@@ -348,7 +348,7 @@ public class AppUI extends CubaUI
         autowireContext(urlChangeHandler, applicationContext);
         setUrlChangeHandler(urlChangeHandler);
 
-        getPage().addPopStateListener(urlChangeHandler::handleUriChange);
+        getPage().addPopStateListener(urlChangeHandler::handleUrlChange);
 
         History history = new WebHistory(this);
         autowireContext(history, applicationContext);

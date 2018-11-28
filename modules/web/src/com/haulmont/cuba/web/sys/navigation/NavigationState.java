@@ -104,4 +104,17 @@ public class NavigationState {
     public int hashCode() {
         return Objects.hash(root, stateMark, nestedRoute, params);
     }
+
+    @Override
+    public String toString() {
+        return "NavigationState{" +
+                "root='" + root + '\'' +
+                (StringUtils.isEmpty(stateMark) ? ""
+                        : ", stateMark='" + stateMark + '\'') +
+                (StringUtils.isEmpty(nestedRoute) ? ""
+                        : ", nestedRoute='" + nestedRoute + '\'') +
+                (MapUtils.isEmpty(params) ? ""
+                        : ", params=(" + getParamsString() + ')') +
+                "}";
+    }
 }

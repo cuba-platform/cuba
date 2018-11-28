@@ -51,13 +51,7 @@ public class WebHistory implements History {
         if (checkNotNativeUrlHandlingMode()) {
             return;
         }
-
         Preconditions.checkNotNullArgument(navigationState);
-
-        NavigationState state = ui.getUrlRouting().getState();
-        if (!navigationState.equals(state)) {
-            throw new IllegalStateException("New history entry doesn't match with actual state");
-        }
 
         if (navigationState.equals(getNow())) {
             return;
@@ -74,13 +68,17 @@ public class WebHistory implements History {
             return NavigationState.empty();
         }
 
-        NavigationState prevState = history.get(now - 1);
         NavigationState state = ui.getUrlRouting().getState();
-        if (now - 1 > 0 && !prevState.equals(state)) {
-            throw new IllegalStateException("Previous history entry doesn't match with actual state");
+        if (!searchBackward(state)) {
+            log.debug("History doesn't contain state '{}'. History backward will not be performed", state);
+            return NavigationState.empty();
         }
 
-        return now - 1 >= 0 ? history.get(--now) : null;
+        do {
+            now--;
+        } while (!Objects.equals(state, history.get(now)));
+
+        return history.get(now);
     }
 
     @Override

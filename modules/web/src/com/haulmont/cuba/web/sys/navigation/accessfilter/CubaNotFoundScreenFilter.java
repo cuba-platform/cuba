@@ -16,9 +16,8 @@
 
 package com.haulmont.cuba.web.sys.navigation.accessfilter;
 
-import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.config.WindowConfig;
-import com.haulmont.cuba.web.App;
+import com.haulmont.cuba.web.app.ui.navigation.notfoundwindow.NotFoundScreen;
 import com.haulmont.cuba.web.sys.navigation.NavigationState;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
@@ -27,26 +26,18 @@ import javax.inject.Inject;
 import java.util.Objects;
 
 @Component
-@Order(NavigationFilter.LOWEST_PLATFORM_PRECEDENCE)
-public class CubaLoginScreenFilter implements NavigationFilter {
-
-    @Inject
-    protected Messages messages;
+@Order(NavigationFilter.LOWEST_PLATFORM_PRECEDENCE - 10)
+public class CubaNotFoundScreenFilter implements NavigationFilter {
 
     @Inject
     protected WindowConfig windowConfig;
 
     @Override
     public AccessCheckResult allowed(NavigationState fromState, NavigationState toState) {
-        String loginWindowRoute = windowConfig.findRoute("loginWindow");
-        if (!Objects.equals(loginWindowRoute, toState.getRoot())) {
-            return AccessCheckResult.allowed();
-        }
+        String notFoundScreenRoute = windowConfig.findRoute(NotFoundScreen.ID);
 
-        boolean authenticated = App.getInstance().getConnection().isAuthenticated();
-
-        return authenticated
-                ? AccessCheckResult.rejected(messages.getMainMessage("navigation.unableToGoToLogin"))
+        return Objects.equals(notFoundScreenRoute, toState.getNestedRoute())
+                ? AccessCheckResult.rejected()
                 : AccessCheckResult.allowed();
     }
 }

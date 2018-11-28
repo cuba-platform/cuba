@@ -17,6 +17,8 @@
 package com.haulmont.cuba.gui.config;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
@@ -70,7 +72,8 @@ public class WindowConfig {
     private final Logger log = LoggerFactory.getLogger(WindowConfig.class);
 
     protected Map<String, WindowInfo> screens = new HashMap<>();
-    protected Map<String, String> routes = new HashMap<>();
+    // route -> screen id
+    protected BiMap<String, String> routes = HashBiMap.create();
 
     protected Map<Class, WindowInfo> primaryEditors = new HashMap<>();
     protected Map<Class, WindowInfo> primaryLookups = new HashMap<>();
@@ -311,14 +314,36 @@ public class WindowConfig {
     }
 
     protected RouteDefinition loadRouteDefinition(Element screenElement) {
-        String routeAttr = screenElement.attributeValue("route");
-        if (routeAttr == null || routeAttr.isEmpty()) {
-            return null;
-        }
-
+        String screenId = screenElement.attributeValue("id");
+        String route = screenElement.attributeValue("route");
         String parentPrefix = screenElement.attributeValue("routeParentPrefix");
 
-        return new RouteDefinition(routeAttr, parentPrefix);
+        RouteDefinition routeDefinition;
+
+        WindowInfo superScreen = screens.get(screenId);
+        RouteDefinition superScreenRouteDefinition = superScreen != null
+                ? superScreen.getRouteDefinition()
+                : null;
+
+        if (route != null && !route.isEmpty()) {
+            if (superScreenRouteDefinition != null) {
+                String superScreenRoute = superScreenRouteDefinition.getPath();
+                String superScreenParentPrefix = superScreenRouteDefinition.getParentPrefix();
+
+                if (!route.equals(superScreenRoute)) {
+                    routes.remove(superScreenRoute);
+                }
+
+                if (parentPrefix == null || parentPrefix.isEmpty()) {
+                    parentPrefix = superScreenParentPrefix;
+                }
+            }
+            routeDefinition = new RouteDefinition(route, parentPrefix);
+        } else {
+            routeDefinition = superScreenRouteDefinition;
+        }
+
+        return routeDefinition;
     }
 
     protected void registerScreen(String id, WindowInfo windowInfo) {
@@ -444,6 +469,17 @@ public class WindowConfig {
         return screenId != null
                 ? findWindowInfo(screenId)
                 : null;
+    }
+
+    /**
+     * Find route by screen id.
+     *
+     * @param id screen id
+     * @return registered route or null if no route for screen
+     */
+    @Nullable
+    public String findRoute(String id) {
+        return routes.inverse().get(id);
     }
 
     /**

@@ -78,6 +78,10 @@ public interface NavigationFilter {
             return allowed;
         }
 
+        public boolean isRejected() {
+            return !isAllowed();
+        }
+
         public String getMessage() {
             return message;
         }

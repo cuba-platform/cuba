@@ -27,6 +27,7 @@ import com.haulmont.cuba.gui.components.CloseOriginType;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
+import com.haulmont.cuba.gui.navigation.UrlParamsChangedEvent;
 import com.haulmont.cuba.gui.screen.*;
 import com.haulmont.cuba.gui.screen.compatibility.LegacyFrame;
 import com.haulmont.cuba.gui.util.OperationResult;
@@ -39,7 +40,6 @@ import com.haulmont.cuba.web.app.ui.navigation.notfoundwindow.NotFoundScreen;
 import com.haulmont.cuba.web.controllers.ControllerUtils;
 import com.haulmont.cuba.web.gui.UrlHandlingMode;
 import com.haulmont.cuba.web.gui.WebWindow;
-import com.haulmont.cuba.web.navigation.UrlParamsChangedEvent;
 import com.haulmont.cuba.web.sys.RedirectHandler;
 import com.haulmont.cuba.web.sys.navigation.accessfilter.NavigationFilter;
 import com.haulmont.cuba.web.sys.navigation.accessfilter.NavigationFilter.AccessCheckResult;
@@ -90,12 +90,16 @@ public class UrlChangeHandler {
         this.ui = ui;
     }
 
-    public void handleUriChange(@SuppressWarnings("unused") Page.PopStateEvent event) {
+    public void handleUrlChange(Page.PopStateEvent event) {
         if (notSuitableUrlHandlingMode()) {
             return;
         }
 
-        NavigationState requestedState = ui.getUrlRouting().getState();
+        int hashIdx = event.getUri().indexOf("#");
+        NavigationState requestedState = hashIdx < 0
+                ? NavigationState.empty()
+                : UrlTools.parseState(event.getUri().substring(hashIdx + 1));
+
         if (requestedState == null) {
             log.debug("Unable to handle requested state: \"{}\"", Page.getCurrent().getUriFragment());
             reloadApp();
@@ -107,43 +111,42 @@ public class UrlChangeHandler {
             return;
         }
 
-        handleUriChange(requestedState);
+        __handleUrlChange(requestedState);
     }
 
-    protected void handleUriChange(NavigationState requestedState) {
-        if (historyNavigation(requestedState)) {
-            handleHistoryNavigation(requestedState);
-        } else {
+    protected void __handleUrlChange(NavigationState requestedState) {
+        boolean historyNavHandled = handleHistoryNavigation(requestedState);
+        if (!historyNavHandled) {
             handleScreenNavigation(requestedState);
         }
     }
 
-    protected boolean historyNavigation(NavigationState requestedState) {
-        return Objects.equals(requestedState, getHistory().getPrevious()) || Objects.equals(requestedState, getHistory().getNext());
-    }
+    protected boolean handleHistoryNavigation(NavigationState requestedState) {
+        boolean backward = getHistory().searchBackward(requestedState)
+                || (getHistory().searchBackward(requestedState) && findActiveScreenByState(requestedState) != null);
+        boolean forward = getHistory().searchForward(requestedState);
 
-    protected void handleHistoryNavigation(NavigationState requestedState) {
-        if (Objects.equals(requestedState, getHistory().getPrevious())) {
-            handleHistoryBackward();
-        } else {
+        if (backward) {
+            handleHistoryBackward(requestedState);
+        } else if (forward) {
             handleHistoryForward();
         }
+
+        return backward || forward;
     }
 
-    protected void handleHistoryBackward() {
-        NavigationState prevState = getHistory().getPrevious();
-        AccessCheckResult accessCheckResult = navigationAllowed(prevState);
-        if (!accessCheckResult.isAllowed()) {
+    protected void handleHistoryBackward(NavigationState requestedState) {
+        AccessCheckResult accessCheckResult = navigationAllowed(requestedState);
+        if (accessCheckResult.isRejected()) {
             showNotification(accessCheckResult.getMessage());
             revertNavigationState();
             return;
         }
 
-        Screen prevScreen = findScreenByState(prevState);
-        //noinspection ConstantConditions
-        if (prevScreen == null && StringUtils.isNotEmpty(prevState.getStateMark())) {
-            revertNavigationState();
+        Screen prevScreen = findScreenByState(requestedState);
+        if (prevScreen == null && StringUtils.isNotEmpty(requestedState.getStateMark())) {
             showNotification(messages.getMainMessage("navigation.unableToGoBackward"));
+            revertNavigationState();
             return;
         }
 
@@ -152,22 +155,21 @@ public class UrlChangeHandler {
             OperationResult screenCloseResult = lastOpenedScreen
                     .getWindow().getFrameOwner()
                     .close(FrameOwner.WINDOW_CLOSE_ACTION)
-                    .then(this::proceedHistoryBackward);
+                    .then(() -> proceedHistoryBackward(requestedState));
 
             if (OperationResult.Status.FAIL == screenCloseResult.getStatus()
                     || OperationResult.Status.UNKNOWN == screenCloseResult.getStatus()) {
                 revertNavigationState();
             }
         } else {
-            proceedHistoryBackward();
+            proceedHistoryBackward(requestedState);
         }
     }
 
-    protected void proceedHistoryBackward() {
-        NavigationState prevState = getHistory().backward();
-        selectScreen(findActiveScreenByState(prevState));
-        //noinspection ConstantConditions
-        replaceState(prevState.asRoute());
+    protected void proceedHistoryBackward(NavigationState requestedState) {
+        getHistory().backward();
+        selectScreen(findActiveScreenByState(requestedState));
+        replaceState(requestedState.asRoute());
     }
 
     protected void handleHistoryForward() {
@@ -225,7 +227,7 @@ public class UrlChangeHandler {
         }
 
         AccessCheckResult result = navigationAllowed(requestedState);
-        if (!result.isAllowed()) {
+        if (result.isRejected()) {
             showNotification(result.getMessage());
             revertNavigationState();
             return true;
@@ -252,16 +254,33 @@ public class UrlChangeHandler {
         }
 
         WindowInfo windowInfo = windowConfig.findWindowInfoByRoute(requestedState.getNestedRoute());
-
         if (windowInfo == null) {
+            if (StringUtils.isEmpty(requestedState.getNestedRoute())) {
+                log.debug("Screen change detected but no parsed from state: {}", requestedState);
+                revertNavigationState();
+                return true;
+            }
+
             handle404(requestedState);
-            return false;
+            return true;
         }
 
         boolean screenPermitted = security.isScreenPermitted(windowInfo.getId());
         if (!screenPermitted) {
             revertNavigationState();
             throw new AccessDeniedException(PermissionType.SCREEN, windowInfo.getId());
+        }
+
+        AccessCheckResult accessCheckResult = navigationAllowed(requestedState);
+        if (accessCheckResult.isRejected()) {
+            revertNavigationState();
+
+            String msg = accessCheckResult.getMessage();
+            if (msg != null && !msg.isEmpty()) {
+                showNotification(msg);
+            }
+
+            return true;
         }
 
         Screen screen;
@@ -276,6 +295,9 @@ public class UrlChangeHandler {
         } else {
             screen = getScreens().create(windowInfo.getId(), OpenMode.NEW_TAB);
         }
+
+        UiControllerUtils.fireEvent(screen, UrlParamsChangedEvent.class,
+                new UrlParamsChangedEvent(screen, requestedState.getParams()));
 
         getScreens().show(screen);
 
@@ -478,7 +500,7 @@ public class UrlChangeHandler {
     protected AccessCheckResult navigationAllowed(NavigationState requestedState) {
         for (NavigationFilter filter : accessFilters) {
             AccessCheckResult result = filter.allowed(getHistory().getNow(), requestedState);
-            if (!result.isAllowed()) {
+            if (result.isRejected()) {
                 return result;
             }
         }
@@ -553,6 +575,6 @@ public class UrlChangeHandler {
         if (notSuitableUrlHandlingMode()) {
             return;
         }
-        handleUriChange(requestedState);
+        __handleUrlChange(requestedState);
     }
 }

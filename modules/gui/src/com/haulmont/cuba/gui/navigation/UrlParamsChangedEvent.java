@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.web.navigation;
+package com.haulmont.cuba.gui.navigation;
 
 import com.haulmont.cuba.gui.screen.Screen;
 
@@ -25,6 +25,8 @@ import java.util.Map;
  * An event that is fired every time opened screen URL params have been changed.
  * <p>
  * Enables handling of client-side URL parameter change event.
+ * <p>
+ * Supported only for the web client.
  */
 public class UrlParamsChangedEvent extends EventObject {
 

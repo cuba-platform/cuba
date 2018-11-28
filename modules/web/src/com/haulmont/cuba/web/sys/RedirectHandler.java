@@ -19,8 +19,11 @@ package com.haulmont.cuba.web.sys;
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.core.global.Events;
 import com.haulmont.cuba.gui.components.RootWindow;
+import com.haulmont.cuba.gui.config.WindowConfig;
+import com.haulmont.cuba.gui.sys.RouteDefinition;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.WebConfig;
+import com.haulmont.cuba.web.app.ui.navigation.notfoundwindow.NotFoundScreen;
 import com.haulmont.cuba.web.gui.UrlHandlingMode;
 import com.haulmont.cuba.web.sys.navigation.NavigationState;
 import org.apache.commons.collections4.MapUtils;
@@ -33,6 +36,7 @@ import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 @Component(RedirectHandler.NAME)
 @Scope("prototype")
@@ -50,6 +54,9 @@ public class RedirectHandler {
     @Inject
     protected WebConfig webConfig;
 
+    @Inject
+    protected WindowConfig windowConfig;
+
     protected AppUI ui;
 
     protected NavigationState redirect;
@@ -66,6 +73,11 @@ public class RedirectHandler {
         }
 
         Preconditions.checkNotNullArgument(redirect);
+
+        RouteDefinition notFoundScreenRouteDef = windowConfig.getWindowInfo(NotFoundScreen.ID).getRouteDefinition();
+        if (Objects.equals(notFoundScreenRouteDef.getPath(), redirect.getNestedRoute())) {
+            return;
+        }
 
         this.redirect = redirect;
 
