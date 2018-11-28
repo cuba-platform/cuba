@@ -49,4 +49,10 @@ public interface CachingStrategy {
      * Indicate whether cached object should be refreshed or not
      */
     boolean needToReload();
+
+    /**
+     * Method for clearing cache
+     */
+    default void clearCache() {
+    }
 }

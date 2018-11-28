@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2016 Haulmont.
+ * Copyright (c) 2008-2018 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,27 +15,20 @@
  *
  */
 
-package com.haulmont.cuba.web.jmx;
+package com.haulmont.cuba.portal.jmx;
 
-public interface CachingFacadeMBean {
+import com.haulmont.cuba.client.sys.cache.ClientCacheManager;
+import org.springframework.stereotype.Component;
 
-    int getMessagesCacheSize();
+import javax.inject.Inject;
 
-    void clearGroovyCache();
+@Component("cuba_CachingFacadeMBean")
+public class CachingFacade implements CachingFacadeMBean {
+    @Inject
+    private ClientCacheManager clientCacheManager;
 
-    void clearMessagesCache();
-
-    void clearPersistenceManagerClientCache();
-
-    void clearViewRepositoryCache();
-
-    void clearWindowConfig();
-
-    void clearMenuConfig();
-
-    void clearDynamicAttributesCache();
-
-    void clearSystemPropertiesCache();
-
-    void clearConfigCache();
+    @Override
+    public void clearConfigCache() {
+        clientCacheManager.clearCache();
+    }
 }

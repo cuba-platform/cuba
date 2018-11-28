@@ -55,6 +55,7 @@ public class ConfigCacheStrategy implements CachingStrategy {
     protected volatile long lastUsedTs = 0;
 
     protected volatile boolean backgroundUpdateTriggered = false;
+    protected volatile  boolean cacheCleared = false;
 
     protected ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
 
@@ -70,6 +71,7 @@ public class ConfigCacheStrategy implements CachingStrategy {
 
             cachedProperties = cachedPropertiesFromServer;
             lastUsedTs = System.currentTimeMillis();
+            cacheCleared = false;
 
             cachedProperties = cachedPropertiesFromServer;
         } else {
@@ -100,6 +102,7 @@ public class ConfigCacheStrategy implements CachingStrategy {
             try {
                 cachedProperties = cachedPropertiesFromServer;
                 lastUsedTs = System.currentTimeMillis();
+                cacheCleared = false;
             } finally {
                 readWriteLock.writeLock().unlock();
             }
@@ -121,7 +124,7 @@ public class ConfigCacheStrategy implements CachingStrategy {
 
     @Override
     public boolean needToReload() {
-        return System.currentTimeMillis() - lastUsedTs > updateIntervalMs;
+        return cacheCleared || System.currentTimeMillis() - lastUsedTs > updateIntervalMs;
     }
 
     public long getUpdateIntervalMs() {
@@ -138,5 +141,20 @@ public class ConfigCacheStrategy implements CachingStrategy {
 
     public void setUpdateSynchronously(boolean updateSynchronously) {
         this.updateSynchronously = updateSynchronously;
+    }
+
+    @Override
+    public void clearCache() {
+        try {
+            readWriteLock.writeLock().lock();
+            readWriteLock.readLock().lock();
+            cacheCleared = true;
+            cachedProperties = null;
+        } catch (Exception e) {
+            log.error("Unable to clear config storage cache", e);
+        } finally {
+            readWriteLock.writeLock().unlock();
+            readWriteLock.readLock().unlock();
+        }
     }
 }

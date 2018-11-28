@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2016 Haulmont.
+ * Copyright (c) 2008-2018 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,27 +15,8 @@
  *
  */
 
-package com.haulmont.cuba.web.jmx;
+package com.haulmont.cuba.portal.jmx;
 
 public interface CachingFacadeMBean {
-
-    int getMessagesCacheSize();
-
-    void clearGroovyCache();
-
-    void clearMessagesCache();
-
-    void clearPersistenceManagerClientCache();
-
-    void clearViewRepositoryCache();
-
-    void clearWindowConfig();
-
-    void clearMenuConfig();
-
-    void clearDynamicAttributesCache();
-
-    void clearSystemPropertiesCache();
-
     void clearConfigCache();
 }
