@@ -24,20 +24,23 @@ import com.haulmont.cuba.web.widgets.CubaResizableTextAreaWrapper;
 import com.haulmont.cuba.web.widgets.CubaTextArea;
 import com.vaadin.server.ErrorMessage;
 import com.vaadin.server.UserError;
+import com.vaadin.shared.ui.ValueChangeMode;
 import com.vaadin.ui.Component;
 import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
+import org.springframework.beans.factory.InitializingBean;
 
 import java.util.function.Consumer;
 
-public class WebResizableTextArea<V> extends WebAbstractTextArea<CubaTextArea, V> implements ResizableTextArea<V> {
+public class WebResizableTextArea<V> extends WebAbstractTextArea<CubaTextArea, V>
+        implements ResizableTextArea<V>, InitializingBean {
 
     protected CubaResizableTextAreaWrapper wrapper;
     protected boolean settingsEnabled = true;
     protected boolean settingsChanged = false;
 
     public WebResizableTextArea() {
-        component = createTextFieldImpl();
+        component = createComponent();
         attachValueChangeListener(component);
 
         wrapper = new CubaResizableTextAreaWrapper(component);
@@ -56,7 +59,7 @@ public class WebResizableTextArea<V> extends WebAbstractTextArea<CubaTextArea, V
         super.componentValueChanged(prevComponentValue, newComponentValue, isUserOriginated);
     }
 
-    protected CubaTextArea createTextFieldImpl() {
+    protected CubaTextArea createComponent() {
         return new CubaTextArea() {
             @Override
             public void setComponentError(ErrorMessage componentError) {
@@ -67,6 +70,15 @@ public class WebResizableTextArea<V> extends WebAbstractTextArea<CubaTextArea, V
                 }
             }
         };
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        initComponent(component);
+    }
+
+    protected void initComponent(CubaTextArea component) {
+        component.setValueChangeMode(ValueChangeMode.BLUR);
     }
 
     @Override

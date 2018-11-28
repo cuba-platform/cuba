@@ -22,6 +22,8 @@ import com.haulmont.cuba.gui.components.RichTextArea;
 import com.haulmont.cuba.gui.components.data.ConversionException;
 import com.haulmont.cuba.web.widgets.CubaRichTextArea;
 import com.haulmont.cuba.web.widgets.client.richtextarea.CubaRichTextAreaState;
+import com.vaadin.shared.ui.ValueChangeMode;
+import org.springframework.beans.factory.InitializingBean;
 
 import javax.inject.Inject;
 import java.util.Arrays;
@@ -32,11 +34,26 @@ import java.util.Map;
 import static com.google.common.base.Strings.emptyToNull;
 import static com.google.common.base.Strings.nullToEmpty;
 
-public class WebRichTextArea extends WebV8AbstractField<CubaRichTextArea, String, String> implements RichTextArea {
+public class WebRichTextArea extends WebV8AbstractField<CubaRichTextArea, String, String>
+        implements RichTextArea, InitializingBean {
 
     public WebRichTextArea() {
-        component = new CubaRichTextArea();
+        component = createComponent();
+
         attachValueChangeListener(this.component);
+    }
+
+    protected CubaRichTextArea createComponent() {
+        return new CubaRichTextArea();
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        initComponent(component);
+    }
+
+    protected void initComponent(CubaRichTextArea component) {
+        component.setValueChangeMode(ValueChangeMode.BLUR);
     }
 
     @Inject

@@ -19,20 +19,29 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.components.TextArea;
 import com.haulmont.cuba.web.widgets.CubaTextArea;
+import com.vaadin.shared.ui.ValueChangeMode;
+import org.springframework.beans.factory.InitializingBean;
 
 public class WebTextArea<V> extends WebAbstractTextArea<CubaTextArea, V>
-        implements TextArea<V> {
+        implements TextArea<V>, InitializingBean {
 
     public WebTextArea() {
-        this.component = createTextFieldImpl();
+        this.component = createComponent();
 
         attachValueChangeListener(component);
     }
 
-    //    vaadin8
-//    @Override
-    protected CubaTextArea createTextFieldImpl() {
+    protected CubaTextArea createComponent() {
         return new CubaTextArea();
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        initComponent(component);
+    }
+
+    protected void initComponent(CubaTextArea component) {
+        component.setValueChangeMode(ValueChangeMode.BLUR);
     }
 
     @Override

@@ -25,16 +25,19 @@ import com.haulmont.cuba.gui.components.data.DataAwareComponentsTools;
 import com.haulmont.cuba.gui.components.data.meta.EntityValueSource;
 import com.haulmont.cuba.gui.components.data.ValueSource;
 import com.haulmont.cuba.web.widgets.CubaPasswordField;
+import com.vaadin.shared.ui.ValueChangeMode;
+import org.springframework.beans.factory.InitializingBean;
 
 import static com.google.common.base.Strings.emptyToNull;
 import static com.google.common.base.Strings.nullToEmpty;
 
-public class WebPasswordField extends WebV8AbstractField<CubaPasswordField, String, String> implements PasswordField {
+public class WebPasswordField extends WebV8AbstractField<CubaPasswordField, String, String>
+        implements PasswordField, InitializingBean {
 
     protected CapsLockIndicator capsLockIndicator;
 
     public WebPasswordField() {
-        this.component = createTextFieldImpl();
+        this.component = createComponent();
 
         attachValueChangeListener(component);
     }
@@ -51,8 +54,17 @@ public class WebPasswordField extends WebV8AbstractField<CubaPasswordField, Stri
         }
     }
 
-    protected CubaPasswordField createTextFieldImpl() {
+    protected CubaPasswordField createComponent() {
         return new CubaPasswordField();
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        initComponent(component);
+    }
+
+    protected void initComponent(CubaPasswordField component) {
+        component.setValueChangeMode(ValueChangeMode.BLUR);
     }
 
     @Override

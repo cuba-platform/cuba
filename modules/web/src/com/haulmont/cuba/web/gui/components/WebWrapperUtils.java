@@ -190,6 +190,8 @@ public final class WebWrapperUtils {
         }
 
         switch (mode) {
+            case BLUR:
+                return TextInputField.TextChangeEventMode.BLUR;
             case EAGER:
                 return TextInputField.TextChangeEventMode.EAGER;
             case LAZY:
@@ -225,6 +227,9 @@ public final class WebWrapperUtils {
 
         ValueChangeMode vMode;
         switch (mode) {
+            case BLUR:
+                vMode = ValueChangeMode.BLUR;
+                break;
             case EAGER:
                 vMode = ValueChangeMode.EAGER;
                 break;

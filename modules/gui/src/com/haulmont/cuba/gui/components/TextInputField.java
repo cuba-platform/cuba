@@ -69,27 +69,35 @@ public interface TextInputField<V> extends Field<V>, Buffered, Component.Focusab
         void setSelectionRange(int pos, int length);
     }
 
-    // vaadin8 - unsupported in Vaadin 8 text fields
+    /**
+     * An interface for UI components that provide additional methods for text change handling.
+     */
     interface TextChangeNotifier {
 
+        /**
+         * Adds a listener that is fired when the component value is changed.
+         *
+         * @param listener a listener to add
+         * @return a {@link Subscription} object
+         */
         Subscription addTextChangeListener(Consumer<TextChangeEvent> listener);
 
         /**
          * @param listener a listener to remove
          * @deprecated Use {@link Subscription} instead
          */
-
         @Deprecated
         void removeTextChangeListener(Consumer<TextChangeEvent> listener);
 
         /**
-         * Gets the timeout used to fire {@link TextChangeEvent}s when the
+         * Gets the timeout used to fire {@link TextChangeEvent}s and {@link ValueChangeEvent}s when the
          * {@link #getTextChangeEventMode()} is {@link TextChangeEventMode#LAZY} or
          * {@link TextChangeEventMode#TIMEOUT}.
          *
          * @return timeout in milliseconds
          */
         int getTextChangeTimeout();
+
         /**
          * The text change timeout modifies how often text change events are
          * communicated to the application when {@link #getTextChangeEventMode()} is
@@ -100,11 +108,12 @@ public interface TextInputField<V> extends Field<V>, Buffered, Component.Focusab
         void setTextChangeTimeout(int timeout);
 
         /**
-         * @return the mode used to trigger {@link TextChangeEvent}s.
+         * @return the mode used to trigger {@link TextChangeEvent}s and {@link ValueChangeEvent}s.
          */
         TextChangeEventMode getTextChangeEventMode();
+
         /**
-         * Sets the mode how the TextField triggers {@link TextChangeEvent}s.
+         * Sets the mode how the TextField triggers {@link TextChangeEvent}s and {@link ValueChangeEvent}s.
          *
          * @param mode the new mode
          */
@@ -127,16 +136,10 @@ public interface TextInputField<V> extends Field<V>, Buffered, Component.Focusab
     }
 
     /**
-     * TextChangeEvents are fired when the user is editing the text content of a field. Most commonly text change events
-     * are triggered by typing text with keyboard, but e.g. pasting content from clip board to a text field also
-     * triggers an event.
+     * TextChangeEvents are fired at the same time when {@link ValueChangeEvent}s are fired.
      * <p>
-     * vaadin8 - it is not supported anymore
-     *
-     * TextChangeEvents differ from {@link ValueChangeEvent}s so that they are triggered repeatedly while the end user
-     * is filling the field. ValueChangeEvents are not fired until the user for example hits enter or focuses another
-     * field. Also note the difference that TextChangeEvents are only fired if the change is triggered from the user,
-     * while ValueChangeEvents are also fired if the field value is set by the application code.
+     * TextChangeEvents differ from {@link ValueChangeEvent}s only by event attributes,
+     * e.g. text representation of the value (instead of converted to the model type) and cursor position.
      */
     class TextChangeEvent extends EventObject {
         private final String text;
@@ -167,6 +170,11 @@ public interface TextInputField<V> extends Field<V>, Buffered, Component.Focusab
      * Different modes how the TextField can trigger {@link TextChangeEvent}s.
      */
     enum TextChangeEventMode {
+
+        /**
+         * Fires a server-side event when the field loses focus.
+         */
+        BLUR,
         /**
          * An event is triggered on each text content change, most commonly key
          * press events.

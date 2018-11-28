@@ -27,6 +27,8 @@ import com.haulmont.cuba.web.gui.components.util.ShortcutListenerDelegate;
 import com.haulmont.cuba.web.widgets.CubaMaskedTextField;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.event.ShortcutListener;
+import com.vaadin.shared.ui.ValueChangeMode;
+import org.springframework.beans.factory.InitializingBean;
 
 import java.text.ParseException;
 import java.util.Arrays;
@@ -37,7 +39,8 @@ import java.util.function.Consumer;
 import static com.google.common.base.Strings.emptyToNull;
 import static com.google.common.base.Strings.nullToEmpty;
 
-public class WebMaskedField<V> extends WebV8AbstractField<CubaMaskedTextField, String, V> implements MaskedField<V> {
+public class WebMaskedField<V> extends WebV8AbstractField<CubaMaskedTextField, String, V>
+        implements MaskedField<V>, InitializingBean {
 
     protected static final char PLACE_HOLDER = '_';
 
@@ -50,7 +53,7 @@ public class WebMaskedField<V> extends WebV8AbstractField<CubaMaskedTextField, S
     protected Datatype<V> datatype;
 
     public WebMaskedField() {
-        this.component = createTextFieldImpl();
+        this.component = createComponent();
 
         attachValueChangeListener(component);
     }
@@ -175,10 +178,17 @@ public class WebMaskedField<V> extends WebV8AbstractField<CubaMaskedTextField, S
         return super.convertToModel(value);
     }
 
-//    vaadin8
-//    @Override
-    protected CubaMaskedTextField createTextFieldImpl() {
+    protected CubaMaskedTextField createComponent() {
         return new CubaMaskedTextField();
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        initComponent(component);
+    }
+
+    protected void initComponent(CubaMaskedTextField component) {
+        component.setValueChangeMode(ValueChangeMode.BLUR);
     }
 
     @Override

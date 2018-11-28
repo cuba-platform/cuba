@@ -33,7 +33,9 @@ import com.haulmont.cuba.web.gui.components.util.ShortcutListenerDelegate;
 import com.haulmont.cuba.web.widgets.CubaTextField;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.event.ShortcutListener;
+import com.vaadin.shared.ui.ValueChangeMode;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.InitializingBean;
 
 import javax.inject.Inject;
 import java.text.ParseException;
@@ -46,7 +48,8 @@ import java.util.stream.Collectors;
 import static com.google.common.base.Strings.emptyToNull;
 import static com.google.common.base.Strings.nullToEmpty;
 
-public class WebTextField<V> extends WebV8AbstractField<CubaTextField, String, V> implements TextField<V> {
+public class WebTextField<V> extends WebV8AbstractField<CubaTextField, String, V>
+        implements TextField<V>, InitializingBean {
 
     protected Datatype<V> datatype;
     protected Function<? super V, String> formatter;
@@ -58,7 +61,7 @@ public class WebTextField<V> extends WebV8AbstractField<CubaTextField, String, V
     protected Locale locale;
 
     public WebTextField() {
-        this.component = createTextFieldImpl();
+        this.component = createComponent();
 
         attachValueChangeListener(this.component);
     }
@@ -68,11 +71,17 @@ public class WebTextField<V> extends WebV8AbstractField<CubaTextField, String, V
         this.locale = userSessionSource.getLocale();
     }
 
-//    vaadin8
-//    @Override
-    // vaadin8 introduce convention for implementation factory methods
-    protected CubaTextField createTextFieldImpl() {
+    protected CubaTextField createComponent() {
         return new CubaTextField();
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        initComponent(component);
+    }
+
+    protected void initComponent(CubaTextField component) {
+        component.setValueChangeMode(ValueChangeMode.BLUR);
     }
 
     @Override
