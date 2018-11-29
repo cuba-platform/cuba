@@ -145,16 +145,14 @@ public class ConfigCacheStrategy implements CachingStrategy {
 
     @Override
     public void clearCache() {
+        readWriteLock.writeLock().lock();
         try {
-            readWriteLock.writeLock().lock();
-            readWriteLock.readLock().lock();
             cacheCleared = true;
             cachedProperties = null;
         } catch (Exception e) {
             log.error("Unable to clear config storage cache", e);
         } finally {
             readWriteLock.writeLock().unlock();
-            readWriteLock.readLock().unlock();
         }
     }
 }

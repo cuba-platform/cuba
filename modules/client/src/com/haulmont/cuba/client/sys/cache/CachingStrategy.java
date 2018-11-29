@@ -51,7 +51,7 @@ public interface CachingStrategy {
     boolean needToReload();
 
     /**
-     * Method for clearing cache
+     * Clears cache strategy data if supported by implementation.
      */
     default void clearCache() {
     }
