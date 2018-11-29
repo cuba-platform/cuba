@@ -29,17 +29,17 @@ import java.util.List;
 import java.util.function.Consumer;
 
 /**
- * Base class for Vaadin8 based input components.
+ * Base class for Vaadin 8 based input components.
  *
  * @param <T> type of underlying Vaadin component
- * @param <P> type of value of presentation
- * @param <V> type of value of model
+ * @param <P> type of presentation value
+ * @param <V> type of model value
  */
 public abstract class WebV8AbstractField<T extends com.vaadin.ui.Component & com.vaadin.data.HasValue<P>, P, V>
         extends WebAbstractValueComponent<T, P, V> implements Field<V> {
 
     protected static final int VALIDATORS_LIST_INITIAL_CAPACITY = 2;
-    protected List<Consumer> validators; // lazily initialized list
+    protected List<Consumer<V>> validators; // lazily initialized list
 
     protected boolean editable = true;
 
@@ -142,13 +142,15 @@ public abstract class WebV8AbstractField<T extends com.vaadin.ui.Component & com
         );
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void addValidator(Consumer<? super V> validator) {
         if (validators == null) {
             validators = new ArrayList<>(VALIDATORS_LIST_INITIAL_CAPACITY);
         }
+        //noinspection SuspiciousMethodCalls
         if (!validators.contains(validator)) {
-            validators.add(validator);
+            validators.add((Consumer<V>) validator);
         }
     }
 
@@ -216,7 +218,7 @@ public abstract class WebV8AbstractField<T extends com.vaadin.ui.Component & com
     protected void triggerValidators(V value) throws ValidationFailedException {
         if (validators != null) {
             try {
-                for (Consumer validator : validators) {
+                for (Consumer<V> validator : validators) {
                     validator.accept(value);
                 }
             } catch (ValidationException e) {

@@ -16,7 +16,6 @@
 
 package com.haulmont.cuba.web.widgets;
 
-import com.haulmont.cuba.web.widgets.client.appui.CubaUIClientRpc;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.UI;
@@ -73,12 +72,5 @@ public class CubaUI extends UI {
 
         // we cannot reliably check if access is permitted
         return true;
-    }
-
-    /**
-     * INTERNAL.
-     */
-    public void discardAccumulatedEvents() {
-        getRpcProxy(CubaUIClientRpc.class).discardAccumulatedEvents();
     }
 }

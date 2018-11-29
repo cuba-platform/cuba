@@ -53,7 +53,11 @@ public interface TextArea<V> extends TextInputField<V>,
     int getRows();
     void setRows(int rows);
 
+    // vaadin8
+    @Deprecated
     int getColumns();
+    // vaadin8
+    @Deprecated
     void setColumns(int columns);
 
     /**

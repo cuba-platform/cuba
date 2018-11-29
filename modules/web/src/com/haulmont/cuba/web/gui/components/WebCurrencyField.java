@@ -22,6 +22,7 @@ import com.haulmont.chile.core.datatypes.DatatypeRegistry;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.entity.annotation.CurrencyValue;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.CurrencyField;
 import com.haulmont.cuba.gui.components.data.ConversionException;
@@ -82,7 +83,7 @@ public class WebCurrencyField<V extends Number> extends WebV8AbstractField<CubaC
                 && valueBinding.getSource() instanceof EntityValueSource) {
             EntityValueSource entityValueSource = (EntityValueSource) valueBinding.getSource();
             Datatype<V> propertyDataType = entityValueSource.getMetaPropertyPath().getRange().asDatatype();
-            return nullToEmpty(propertyDataType.format(modelValue));
+            return nullToEmpty(propertyDataType.format(modelValue, locale));
         }
 
         return nullToEmpty(super.convertToPresentation(modelValue));
@@ -97,8 +98,7 @@ public class WebCurrencyField<V extends Number> extends WebV8AbstractField<CubaC
             try {
                 return datatype.parse(value, locale);
             } catch (ParseException e) {
-                // vaadin8 localized message
-                throw new ConversionException("Unable to convert value", e);
+                throw new ConversionException(getConversionErrorMessage(), e);
             }
         }
 
@@ -107,14 +107,18 @@ public class WebCurrencyField<V extends Number> extends WebV8AbstractField<CubaC
             EntityValueSource entityValueSource = (EntityValueSource) valueBinding.getSource();
             Datatype<V> propertyDataType = entityValueSource.getMetaPropertyPath().getRange().asDatatype();
             try {
-                return propertyDataType.parse(componentRawValue);
+                return propertyDataType.parse(componentRawValue, locale);
             } catch (ParseException e) {
-                // vaadin8 localized message
-                throw new ConversionException("Unable to convert value", e);
+                throw new ConversionException(getConversionErrorMessage(), e);
             }
         }
 
         return super.convertToModel(componentRawValue);
+    }
+
+    protected String getConversionErrorMessage() {
+        Messages messages = beanLocator.get(Messages.NAME);
+        return messages.getMainMessage("databinding.conversion.error");
     }
 
     @Override

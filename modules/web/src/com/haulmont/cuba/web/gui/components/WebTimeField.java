@@ -16,16 +16,15 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
-import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.datatypes.Datatype;
-import com.haulmont.chile.core.datatypes.Datatypes;
+import com.haulmont.chile.core.datatypes.FormatStringsRegistry;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.global.DateTimeTransformations;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.TimeField;
 import com.haulmont.cuba.gui.components.data.ConversionException;
-import com.haulmont.cuba.gui.components.data.meta.EntityValueSource;
 import com.haulmont.cuba.gui.components.data.ValueSource;
+import com.haulmont.cuba.gui.components.data.meta.EntityValueSource;
 import com.haulmont.cuba.web.widgets.CubaTimeField;
 import com.haulmont.cuba.web.widgets.client.timefield.TimeResolution;
 import org.springframework.beans.factory.InitializingBean;
@@ -33,6 +32,8 @@ import org.springframework.beans.factory.InitializingBean;
 import javax.inject.Inject;
 import java.time.LocalTime;
 import java.util.Date;
+
+import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
 public class WebTimeField<V> extends WebV8AbstractField<CubaTimeField, LocalTime, V>
         implements TimeField<V>, InitializingBean {
@@ -52,7 +53,8 @@ public class WebTimeField<V> extends WebV8AbstractField<CubaTimeField, LocalTime
     @Override
     public void afterPropertiesSet() {
         UserSessionSource userSessionSource = beanLocator.get(UserSessionSource.NAME);
-        String timeFormat = Datatypes.getFormatStringsNN(userSessionSource.getLocale()).getTimeFormat();
+        FormatStringsRegistry formatStringsRegistry = beanLocator.get(FormatStringsRegistry.NAME);
+        String timeFormat = formatStringsRegistry.getFormatStringsNN(userSessionSource.getLocale()).getTimeFormat();
         setFormat(timeFormat);
     }
 
@@ -99,7 +101,7 @@ public class WebTimeField<V> extends WebV8AbstractField<CubaTimeField, LocalTime
 
     @Override
     public void setResolution(Resolution resolution) {
-        Preconditions.checkNotNullArgument(resolution);
+        checkNotNullArgument(resolution);
 
         this.resolution = resolution;
         TimeResolution vResolution = WebWrapperUtils.convertTimeResolution(resolution);

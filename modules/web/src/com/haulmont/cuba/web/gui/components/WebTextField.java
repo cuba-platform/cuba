@@ -53,12 +53,11 @@ public class WebTextField<V> extends WebV8AbstractField<CubaTextField, String, V
 
     protected Datatype<V> datatype;
     protected Function<? super V, String> formatter;
+    protected Locale locale;
 
     protected boolean trimming = true;
 
     protected ShortcutListener enterShortcutListener;
-
-    protected Locale locale;
 
     public WebTextField() {
         this.component = createComponent();
@@ -76,7 +75,7 @@ public class WebTextField<V> extends WebV8AbstractField<CubaTextField, String, V
     }
 
     @Override
-    public void afterPropertiesSet() throws Exception {
+    public void afterPropertiesSet() {
         initComponent(component);
     }
 
@@ -116,7 +115,7 @@ public class WebTextField<V> extends WebV8AbstractField<CubaTextField, String, V
             Range range = entityValueSource.getMetaPropertyPath().getRange();
             if (range.isDatatype()) {
                 Datatype<V> propertyDataType = range.asDatatype();
-                return nullToEmpty(propertyDataType.format(modelValue));
+                return nullToEmpty(propertyDataType.format(modelValue, locale));
             } else {
                 setEditable(false);
                 if (modelValue == null)
@@ -153,8 +152,7 @@ public class WebTextField<V> extends WebV8AbstractField<CubaTextField, String, V
             try {
                 return datatype.parse(value, locale);
             } catch (ParseException e) {
-                // vaadin8 localized message
-                throw new ConversionException("Unable to convert value", e);
+                throw new ConversionException(getConversionErrorMessage(), e);
             }
         }
 
@@ -163,14 +161,18 @@ public class WebTextField<V> extends WebV8AbstractField<CubaTextField, String, V
             EntityValueSource entityValueSource = (EntityValueSource) valueBinding.getSource();
             Datatype<V> propertyDataType = entityValueSource.getMetaPropertyPath().getRange().asDatatype();
             try {
-                return propertyDataType.parse(value);
+                return propertyDataType.parse(value, locale);
             } catch (ParseException e) {
-                // vaadin8 localized message
-                throw new ConversionException("Unable to convert value", e);
+                throw new ConversionException(getConversionErrorMessage(), e);
             }
         }
 
         return super.convertToModel(value);
+    }
+
+    protected String getConversionErrorMessage() {
+        Messages messages = beanLocator.get(Messages.NAME);
+        return messages.getMainMessage("databinding.conversion.error");
     }
 
     @Override
@@ -202,17 +204,14 @@ public class WebTextField<V> extends WebV8AbstractField<CubaTextField, String, V
 
     @Override
     public CaseConversion getCaseConversion() {
-        return CaseConversion.NONE;
-//        vaadin8
-//        return CaseConversion.valueOf(component.getCaseConversion().name());
+        return CaseConversion.valueOf(component.getCaseConversion().name());
     }
 
     @Override
     public void setCaseConversion(CaseConversion caseConversion) {
-//        vaadin8
-//        com.haulmont.cuba.web.widgets.CaseConversion widgetCaseConversion =
-//                com.haulmont.cuba.web.widgets.CaseConversion.valueOf(caseConversion.name());
-//        component.setCaseConversion(widgetCaseConversion);
+        com.haulmont.cuba.web.widgets.CaseConversion widgetCaseConversion =
+                com.haulmont.cuba.web.widgets.CaseConversion.valueOf(caseConversion.name());
+        component.setCaseConversion(widgetCaseConversion);
     }
 
     @SuppressWarnings("unchecked")

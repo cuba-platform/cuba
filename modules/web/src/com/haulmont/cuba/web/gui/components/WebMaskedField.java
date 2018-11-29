@@ -20,6 +20,8 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.bali.events.Subscription;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.model.Range;
+import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.MaskedField;
 import com.haulmont.cuba.gui.components.data.ConversionException;
 import com.haulmont.cuba.gui.components.data.meta.EntityValueSource;
@@ -30,9 +32,11 @@ import com.vaadin.event.ShortcutListener;
 import com.vaadin.shared.ui.ValueChangeMode;
 import org.springframework.beans.factory.InitializingBean;
 
+import javax.inject.Inject;
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.function.Consumer;
 
@@ -51,11 +55,17 @@ public class WebMaskedField<V> extends WebV8AbstractField<CubaMaskedTextField, S
     protected String nullRepresentation;
 
     protected Datatype<V> datatype;
+    protected Locale locale;
 
     public WebMaskedField() {
         this.component = createComponent();
 
         attachValueChangeListener(component);
+    }
+
+    @Inject
+    public void setUserSessionSource(UserSessionSource userSessionSource) {
+        this.locale = userSessionSource.getLocale();
     }
 
     @Override
@@ -134,7 +144,7 @@ public class WebMaskedField<V> extends WebV8AbstractField<CubaMaskedTextField, S
     @Override
     protected String convertToPresentation(V modelValue) throws ConversionException {
         if (datatype != null) {
-            return nullToEmpty(datatype.format(modelValue));
+            return nullToEmpty(datatype.format(modelValue, locale));
         }
 
         if (valueBinding != null
@@ -143,7 +153,7 @@ public class WebMaskedField<V> extends WebV8AbstractField<CubaMaskedTextField, S
             Range range = entityValueSource.getMetaPropertyPath().getRange();
             if (range.isDatatype()) {
                 Datatype<V> propertyDataType = range.asDatatype();
-                return nullToEmpty(propertyDataType.format(modelValue));
+                return nullToEmpty(propertyDataType.format(modelValue, locale));
             }
         }
 
@@ -156,10 +166,9 @@ public class WebMaskedField<V> extends WebV8AbstractField<CubaMaskedTextField, S
 
         if (datatype != null) {
             try {
-                return datatype.parse(value);
+                return datatype.parse(value, locale);
             } catch (ParseException e) {
-                // vaadin8 localized message
-                throw new ConversionException("Unable to convert value", e);
+                throw new ConversionException(getConversionErrorMessage(), e);
             }
         }
 
@@ -168,14 +177,18 @@ public class WebMaskedField<V> extends WebV8AbstractField<CubaMaskedTextField, S
             EntityValueSource entityValueSource = (EntityValueSource) valueBinding.getSource();
             Datatype<V> propertyDataType = entityValueSource.getMetaPropertyPath().getRange().asDatatype();
             try {
-                return propertyDataType.parse(value);
+                return propertyDataType.parse(value, locale);
             } catch (ParseException e) {
-                // vaadin8 localized message
-                throw new ConversionException("Unable to convert value", e);
+                throw new ConversionException(getConversionErrorMessage(), e);
             }
         }
 
         return super.convertToModel(value);
+    }
+
+    protected String getConversionErrorMessage() {
+        Messages messages = beanLocator.get(Messages.NAME);
+        return messages.getMainMessage("databinding.conversion.error");
     }
 
     protected CubaMaskedTextField createComponent() {
@@ -183,7 +196,7 @@ public class WebMaskedField<V> extends WebV8AbstractField<CubaMaskedTextField, S
     }
 
     @Override
-    public void afterPropertiesSet() throws Exception {
+    public void afterPropertiesSet() {
         initComponent(component);
     }
 

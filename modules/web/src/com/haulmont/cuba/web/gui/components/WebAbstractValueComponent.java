@@ -59,7 +59,7 @@ public abstract class WebAbstractValueComponent<T extends com.vaadin.ui.Componen
         // hook
     }
 
-    protected void valueBindingActivated(ValueSource<V> valueSource) {
+    protected void valueBindingActivated(@SuppressWarnings("unused") ValueSource<V> valueSource) {
         // hook
     }
 
@@ -73,7 +73,6 @@ public abstract class WebAbstractValueComponent<T extends com.vaadin.ui.Componen
         return internalValue;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public void setValue(V value) {
         setValueToPresentation(convertToPresentation(value));
@@ -122,6 +121,9 @@ public abstract class WebAbstractValueComponent<T extends com.vaadin.ui.Componen
                 LoggerFactory.getLogger(getClass()).trace("Unable to convert presentation value to model", ce);
 
                 setValidationError(ce.getLocalizedMessage());
+
+                // todo show notification here ?
+
                 return;
             }
 

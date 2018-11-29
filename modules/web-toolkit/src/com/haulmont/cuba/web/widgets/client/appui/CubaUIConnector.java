@@ -35,55 +35,5 @@ public class CubaUIConnector extends UIConnector {
 
     public CubaUIConnector() {
         VNotification.setRelativeZIndex(true);
-
-        //noinspection Convert2Lambda
-        registerRpc(CubaUIClientRpc.class, new CubaUIClientRpc() {
-            @Override
-            public void discardAccumulatedEvents() {
-                // silent time
-                ValidationErrorHolder.onValidationError();
-
-                // vaadin8 - get rid of this mechanism
-                ApplicationConnection.MethodInvocationFilter filter = mi -> {
-                    // use blacklist of invocations
-                    // do not discard all
-
-                    // button click
-                    if (ButtonServerRpc.class.getName().equals(mi.getInterfaceName())
-                            && "click".equals(mi.getMethodName())) {
-                        return true;
-                    }
-
-                    // tabsheet close
-                    if (TabsheetServerRpc.class.getName().equals(mi.getInterfaceName())
-                            && "closeTab".equals(mi.getMethodName())) {
-                        return true;
-                    }
-
-                    // shortcuts && window close
-                    //noinspection RedundantIfStatement
-                    if (mi instanceof LegacyChangeVariablesInvocation) {
-                        LegacyChangeVariablesInvocation invocation = (LegacyChangeVariablesInvocation) mi;
-                        if (invocation.getVariableChanges().containsKey("action")
-                                || invocation.getVariableChanges().containsKey("actiontarget")
-                                || invocation.getVariableChanges().containsKey("close")) {
-                            return true;
-                        }
-                    }
-
-                    return false;
-                };
-
-                RemoveMethodInvocationCallback callback = mi -> {
-                    ConnectorMap connectorMap = getConnection().getConnectorMap();
-                    ServerConnector connector = connectorMap.getConnector(mi.getConnectorId());
-                    if (connector instanceof CubaButtonConnector) {
-                        ((CubaButtonConnector) connector).stopResponsePending();
-                    }
-                };
-
-                getConnection().removePendingInvocationsAndBursts(filter, callback);
-            }
-        });
     }
 }

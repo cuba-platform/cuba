@@ -22,6 +22,7 @@ import com.haulmont.chile.core.datatypes.DatatypeRegistry;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.ComponentContainer;
 import com.haulmont.cuba.gui.components.UploadField;
 
@@ -76,7 +77,9 @@ public abstract class WebAbstractUploadField<T extends com.vaadin.v7.ui.Abstract
                 DatatypeRegistry datatypeRegistry = beanLocator.get(DatatypeRegistry.NAME);
                 Datatype<Double> doubleDatatype = datatypeRegistry.getNN(Double.class);
                 double fileSizeInMb = fileSizeLimit / ((double) BYTES_IN_MEGABYTE);
-                fileSizeLimitString = doubleDatatype.format(fileSizeInMb);
+
+                UserSessionSource userSessionSource = beanLocator.get(UserSessionSource.NAME);
+                fileSizeLimitString = doubleDatatype.format(fileSizeInMb, userSessionSource.getLocale());
             }
         } else {
             Configuration configuration = beanLocator.get(Configuration.NAME);

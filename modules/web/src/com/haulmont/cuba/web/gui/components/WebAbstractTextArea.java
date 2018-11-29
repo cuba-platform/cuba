@@ -20,12 +20,13 @@ package com.haulmont.cuba.web.gui.components;
 import com.google.common.base.Strings;
 import com.haulmont.bali.events.Subscription;
 import com.haulmont.chile.core.datatypes.Datatype;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.TextArea;
 import com.haulmont.cuba.gui.components.data.ConversionException;
 import com.haulmont.cuba.gui.components.data.DataAwareComponentsTools;
-import com.haulmont.cuba.gui.components.data.meta.EntityValueSource;
 import com.haulmont.cuba.gui.components.data.ValueSource;
+import com.haulmont.cuba.gui.components.data.meta.EntityValueSource;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.inject.Inject;
@@ -79,8 +80,7 @@ public abstract class WebAbstractTextArea<T extends com.vaadin.ui.TextArea, V>
             try {
                 return datatype.parse(value, locale);
             } catch (ParseException e) {
-                // vaadin8 localized message
-                throw new ConversionException("Unable to convert value", e);
+                throw new ConversionException(getConversionErrorMessage(), e);
             }
         }
 
@@ -89,14 +89,18 @@ public abstract class WebAbstractTextArea<T extends com.vaadin.ui.TextArea, V>
             EntityValueSource entityValueSource = (EntityValueSource) valueBinding.getSource();
             Datatype<V> propertyDataType = entityValueSource.getMetaPropertyPath().getRange().asDatatype();
             try {
-                return propertyDataType.parse(value);
+                return propertyDataType.parse(value, locale);
             } catch (ParseException e) {
-                // vaadin8 localized message
-                throw new ConversionException("Unable to convert value", e);
+                throw new ConversionException(getConversionErrorMessage(), e);
             }
         }
 
         return super.convertToModel(value);
+    }
+
+    protected String getConversionErrorMessage() {
+        Messages messages = beanLocator.get(Messages.NAME);
+        return messages.getMainMessage("databinding.conversion.error");
     }
 
     @Override
@@ -251,16 +255,6 @@ public abstract class WebAbstractTextArea<T extends com.vaadin.ui.TextArea, V>
     @Override
     public void setCursorPosition(int position) {
         component.setCursorPosition(position);
-    }
-
-    @Override
-    public CaseConversion getCaseConversion() {
-        return CaseConversion.NONE; // vaadin8
-    }
-
-    @Override
-    public void setCaseConversion(CaseConversion caseConversion) {
-        // vaadin8
     }
 
     @Override
