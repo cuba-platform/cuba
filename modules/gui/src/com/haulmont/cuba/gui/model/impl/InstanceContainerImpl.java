@@ -163,7 +163,7 @@ public class InstanceContainerImpl<E extends Entity> implements InstanceContaine
     }
 
     @SuppressWarnings("unchecked")
-    public void itemPropertyChanged(Instance.PropertyChangeEvent e) {
+    protected void itemPropertyChanged(Instance.PropertyChangeEvent e) {
         if (!listenersEnabled) {
             return;
         }
