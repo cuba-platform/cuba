@@ -178,11 +178,11 @@ public class InstanceContainerImpl<E extends Entity> implements InstanceContaine
 
     @Override
     public void mute() {
-        this.listenersEnabled = true;
+        this.listenersEnabled = false;
     }
 
     @Override
     public void unmute() {
-        this.listenersEnabled = false;
+        this.listenersEnabled = true;
     }
 }

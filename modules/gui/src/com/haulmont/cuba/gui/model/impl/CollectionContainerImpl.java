@@ -170,7 +170,7 @@ public class CollectionContainerImpl<E extends Entity>
 
     @Override
     public void unmute(UnmuteEventsMode mode) {
-        this.listenersEnabled = false;
+        this.listenersEnabled = true;
 
         if (mode ==  UnmuteEventsMode.FIRE_REFRESH_EVENT) {
             fireCollectionChanged(CollectionChangeType.REFRESH, Collections.emptyList());
