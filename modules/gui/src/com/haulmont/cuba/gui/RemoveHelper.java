@@ -24,8 +24,10 @@ import com.haulmont.cuba.core.global.DataManager;
 import com.haulmont.cuba.core.global.ExtendedEntities;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.components.Component.Focusable;
+import com.haulmont.cuba.gui.components.DataGrid;
 import com.haulmont.cuba.gui.components.DialogAction;
 import com.haulmont.cuba.gui.components.ListComponent;
+import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.components.data.DataUnit;
 import com.haulmont.cuba.gui.components.data.meta.ContainerDataUnit;
 import com.haulmont.cuba.gui.config.WindowConfig;
@@ -46,7 +48,7 @@ import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 import static com.haulmont.cuba.gui.screen.UiControllerUtils.getScreenContext;
 
 /**
- * Class that provides fluent interface removing entity instances. <br>
+ * Class that provides fluent interface for removing entity instances. <br>
  * Inject the class into your screen controller and use {@link #builder(Class, FrameOwner)} method as an entry point.
  */
 @Component(RemoveHelper.NAME)
@@ -78,7 +80,7 @@ public class RemoveHelper {
     }
 
     /**
-     * Creates a remove builder.
+     * Creates a remove builder using list component, e.g. {@link Table} or {@link DataGrid}.
      *
      * @param listComponent list component
      * @param <E>           type of entity
