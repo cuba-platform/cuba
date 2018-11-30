@@ -22,11 +22,9 @@ import java.util.EventObject;
 import java.util.Map;
 
 /**
- * An event that is fired every time opened screen URL params have been changed.
- * <p>
- * Enables handling of client-side URL parameter change event.
- * <p>
- * Supported only for the web client.
+ * Event sent when browser URL parameters of the opened screen are changed.
+ *
+ * @see #getParams()
  */
 public class UrlParamsChangedEvent extends EventObject {
 
@@ -42,6 +40,9 @@ public class UrlParamsChangedEvent extends EventObject {
         return (Screen) super.getSource();
     }
 
+    /**
+     * @return current URL parameters
+     */
     public Map<String, String> getParams() {
         return params;
     }

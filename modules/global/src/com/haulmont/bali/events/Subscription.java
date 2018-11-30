@@ -18,6 +18,8 @@ package com.haulmont.bali.events;
 
 /**
  * A registration object for removing an event listener added to a source.
+ *
+ * @see #remove()
  */
 public interface Subscription {
     /**
