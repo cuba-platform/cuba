@@ -17,11 +17,20 @@
 package com.haulmont.cuba.gui.components.data;
 
 /**
- * vaadin8 document
+ * Data-aware component that supports data binding with {@link ValueSource}.
  *
- * @param <V>
+ * @param <V> value type
  */
 public interface HasValueSource<V> {
+    /**
+     * Sets value source for component.
+     *
+     * @param valueSource value source
+     */
     void setValueSource(ValueSource<V> valueSource);
+
+    /**
+     * @return currently bound value source
+     */
     ValueSource<V> getValueSource();
 }

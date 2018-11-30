@@ -18,11 +18,12 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.bali.events.Subscription;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
-import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.data.ValueSource;
 import com.haulmont.cuba.gui.components.data.meta.ValueBinding;
 import com.haulmont.cuba.gui.components.data.value.ValueBinder;
+import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.widgets.compatibility.CubaValueChangeEvent;
 
 import java.util.ArrayList;
@@ -60,8 +61,7 @@ public abstract class WebAbstractField<T extends com.vaadin.v7.ui.AbstractField,
         }
 
         if (valueSource != null) {
-            // todo use ApplicationContextAware and lookup
-            ValueBinder binder = AppBeans.get(ValueBinder.class);
+            ValueBinder binder = beanLocator.get(ValueBinder.class);
 
             this.valueBinding = binder.bind(this, valueSource);
 
@@ -70,6 +70,21 @@ public abstract class WebAbstractField<T extends com.vaadin.v7.ui.AbstractField,
             this.valueBinding.activate();
 
             valueBindingActivated(valueSource);
+
+            setUiTestId(valueSource);
+        }
+    }
+
+    protected void setUiTestId(ValueSource<V> valueSource) {
+        AppUI ui = AppUI.getCurrent();
+
+        if (ui != null && ui.isTestMode()
+                && getComponent().getCubaId() == null) {
+
+            String testId = ComponentsHelper.getInferredTestId(valueSource);
+            if (testId != null) {
+                getComponent().setCubaId(testId);
+            }
         }
     }
 
@@ -317,56 +332,4 @@ public abstract class WebAbstractField<T extends com.vaadin.v7.ui.AbstractField,
     protected boolean isEmpty(Object value) {
         return value == null;
     }
-
-    /*@Override
-    public String getContextHelpText() {
-        return component.getContextHelpText();
-    }
-
-    @Override
-    public void setContextHelpText(String contextHelpText) {
-        component.setContextHelpText(contextHelpText);
-    }
-
-    @Override
-    public boolean isContextHelpTextHtmlEnabled() {
-        return component.isContextHelpTextHtmlEnabled();
-    }
-
-    @Override
-    public void setContextHelpTextHtmlEnabled(boolean enabled) {
-        component.setContextHelpTextHtmlEnabled(enabled);
-    }*/
-
-    /*@Override
-    public Consumer<ContextHelpIconClickEvent> getContextHelpIconClickHandler() {
-        return contextHelpIconClickHandler;
-    }
-
-    @Override
-    public void setContextHelpIconClickHandler(Consumer<ContextHelpIconClickEvent> handler) {
-        if (!Objects.equals(this.contextHelpIconClickHandler, handler)) {
-            this.contextHelpIconClickHandler = handler;
-
-            if (handler == null) {
-//                todo vaadin8
-                component.removeContextHelpIconClickListener(contextHelpIconClickListener);
-                contextHelpIconClickListener = null;
-            } else {
-                if (contextHelpIconClickListener == null) {
-                    contextHelpIconClickListener = (ContextHelpIconClickListener) e -> {
-                        ContextHelpIconClickEvent event = new ContextHelpIconClickEvent(WebAbstractField.this);
-                        fireContextHelpIconClick(event);
-                    };
-                    component.addContextHelpIconClickListener(contextHelpIconClickListener);
-                }
-            }
-        }
-    }
-
-    protected void fireContextHelpIconClick(ContextHelpIconClickEvent event) {
-        if (contextHelpIconClickHandler != null) {
-            contextHelpIconClickHandler.accept(event);
-        }
-    }*/
 }

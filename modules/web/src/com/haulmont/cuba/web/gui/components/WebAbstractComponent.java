@@ -345,7 +345,7 @@ public abstract class WebAbstractComponent<T extends com.vaadin.ui.Component>
     }
 
     @Override
-    public com.vaadin.ui.Component getComponent() {
+    public T getComponent() {
         return component;
     }
 

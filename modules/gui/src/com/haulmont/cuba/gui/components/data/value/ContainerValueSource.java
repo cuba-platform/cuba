@@ -300,4 +300,8 @@ public class ContainerValueSource<E extends Entity, V> implements EntityValueSou
 
         return mpp.getMetaProperty().getInverse();
     }
+
+    public InstanceContainer<E> getContainer() {
+        return container;
+    }
 }

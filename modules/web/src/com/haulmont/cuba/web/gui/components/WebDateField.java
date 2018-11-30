@@ -455,7 +455,7 @@ public class WebDateField<V extends Comparable<V>>
 
         if (id != null) {
             TestIdManager testIdManager = AppUI.getCurrent().getTestIdManager();
-            timeField.setDebugId(testIdManager.getTestId(id + "_time"));
+            timeField.setId(testIdManager.getTestId(id + "_time"));
             dateField.setId(testIdManager.getTestId(id + "_date"));
         }
     }

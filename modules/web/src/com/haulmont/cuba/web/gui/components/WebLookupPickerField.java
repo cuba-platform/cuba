@@ -81,7 +81,6 @@ public class WebLookupPickerField<V extends Entity> extends WebPickerField<V>
 
     @Override
     public CubaComboBoxPickerField<V> getComponent() {
-        //noinspection unchecked
         return (CubaComboBoxPickerField<V>) super.getComponent();
     }
 

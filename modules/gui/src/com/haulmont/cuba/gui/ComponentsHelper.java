@@ -26,6 +26,9 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.*;
+import com.haulmont.cuba.gui.components.data.ValueSource;
+import com.haulmont.cuba.gui.components.data.value.ContainerValueSource;
+import com.haulmont.cuba.gui.components.data.value.DatasourceValueSource;
 import com.haulmont.cuba.gui.components.mainwindow.AppWorkArea;
 import com.haulmont.cuba.gui.components.sys.FrameImplementation;
 import com.haulmont.cuba.gui.components.sys.ValuePathHelper;
@@ -45,9 +48,6 @@ import static com.haulmont.cuba.core.entity.BaseEntityInternalAccess.getFiltered
  * Utility class working with GenericUI components.
  */
 public abstract class ComponentsHelper {
-    @Deprecated
-    public static final String[] UNIT_SYMBOLS = {"px", "pt", "pc", "em", "ex", "mm", "cm", "in", "%"};
-
     /**
      * Returns the collection of components within the specified container and all of its children.
      *
@@ -528,6 +528,7 @@ public abstract class ComponentsHelper {
      *
      * @param owner List, Table or Tree component
      */
+    @Deprecated
     public static void createActions(ListComponent owner) {
         createActions(owner, EnumSet.of(ListActionType.CREATE, ListActionType.EDIT, ListActionType.REMOVE));
     }
@@ -538,6 +539,7 @@ public abstract class ComponentsHelper {
      * @param owner   List, Table or Tree component
      * @param actions set of actions to create
      */
+    @Deprecated
     public static void createActions(ListComponent owner, EnumSet<ListActionType> actions) {
         if (actions.contains(ListActionType.CREATE)) {
             owner.addAction(CreateAction.create(owner));
@@ -775,6 +777,21 @@ public abstract class ComponentsHelper {
                 }
             }
         }
+        return null;
+    }
+
+    @Nullable
+    public static String getInferredTestId(ValueSource<?> valueSource) {
+        if (valueSource instanceof DatasourceValueSource) {
+            DatasourceValueSource dsValueSource = (DatasourceValueSource) valueSource;
+
+            return StringUtils.join(dsValueSource.getMetaPropertyPath().getPropertyNames(), "_");
+        } else if (valueSource instanceof ContainerValueSource) {
+            ContainerValueSource dcValueSource = (ContainerValueSource) valueSource;
+
+            return StringUtils.join(dcValueSource.getMetaPropertyPath().getPropertyNames(), "_");
+        }
+
         return null;
     }
 }

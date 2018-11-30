@@ -70,7 +70,6 @@ public class WebSuggestionPickerField<V extends Entity> extends WebPickerField<V
 
     @Override
     public CubaSuggestionPickerField<V> getComponent() {
-        //noinspection unchecked
         return (CubaSuggestionPickerField<V>) super.getComponent();
     }
 
