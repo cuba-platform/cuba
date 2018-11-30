@@ -125,7 +125,7 @@ public class DatasourceValueSource<E extends Entity, V> implements EntityValueSo
     @SuppressWarnings("unchecked")
     @Override
     public Class<V> getType() {
-        return metaPropertyPath.getRangeJavaClass();
+        return (Class<V>) metaPropertyPath.getMetaProperty().getJavaType();
     }
 
     @Override

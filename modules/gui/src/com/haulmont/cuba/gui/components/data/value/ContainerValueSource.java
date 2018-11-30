@@ -162,7 +162,7 @@ public class ContainerValueSource<E extends Entity, V> implements EntityValueSou
     @SuppressWarnings("unchecked")
     @Override
     public Class<V> getType() {
-        return metaPropertyPath.getRangeJavaClass();
+        return (Class<V>) metaPropertyPath.getMetaProperty().getJavaType();
     }
 
     @Override
