@@ -347,7 +347,8 @@ public class ConstraintEditor extends AbstractEditor<Constraint> {
         Constraint constraint = getItem();
         String entityName = constraint.getEntityName();
         if (validateAll()) {
-            if (!Strings.isNullOrEmpty(constraint.getWhereClause())) {
+            if (!Strings.isNullOrEmpty(constraint.getWhereClause())
+                    && whereClause.isVisible()) {
                 String baseQueryString = "select e from " + entityName + " e";
                 try {
                     QueryTransformer transformer = QueryTransformerFactory.createTransformer(baseQueryString);
@@ -389,7 +390,8 @@ public class ConstraintEditor extends AbstractEditor<Constraint> {
                 }
             }
 
-            if (!Strings.isNullOrEmpty(constraint.getGroovyScript())) {
+            if (!Strings.isNullOrEmpty(constraint.getGroovyScript())
+                    && groovyScript.isVisible()) {
                 try {
                     security.evaluateConstraintScript(metadata.create(entityName), constraint.getGroovyScript());
                 } catch (CompilationFailedException e) {
