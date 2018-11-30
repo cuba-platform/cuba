@@ -46,6 +46,9 @@ import java.util.function.Predicate;
  * Represents an independent screen opened inside the main application window.
  */
 public interface Window extends Frame, Component.HasCaption, Component.HasIcon {
+    @Deprecated
+    String NAME = "window";
+
     /**
      * Constant that should be passed to {@link #close(String)} and {@link #close(String, boolean)} methods when
      * the screen is closed after commit of changes. Propagated to {@link CloseListener#windowClosed}.

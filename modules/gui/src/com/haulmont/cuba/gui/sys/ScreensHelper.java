@@ -18,6 +18,8 @@
 package com.haulmont.cuba.gui.sys;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.global.*;
@@ -39,6 +41,8 @@ import javax.inject.Inject;
 import java.io.FileNotFoundException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+
+import static java.util.Collections.emptyMap;
 
 @Component(ScreensHelper.NAME)
 public class ScreensHelper {
@@ -71,7 +75,7 @@ public class ScreensHelper {
     protected BeanLocator beanLocator;
 
     protected Map<String, String> captionCache = new ConcurrentHashMap<>();
-    protected Map<String, Map<String, Object>> availableScreensCache = new ConcurrentHashMap<>();
+    protected Map<String, Map<String, String>> availableScreensCache = new ConcurrentHashMap<>();
     protected Map<String, List<ScreenComponentDescriptor>> screenComponentsCache = new ConcurrentHashMap<>();
 
     /**
@@ -112,7 +116,7 @@ public class ScreensHelper {
     }
 
     public List<ScreenComponentDescriptor> getScreenComponents(String screenId) {
-        String key = getScreenComponentsCacheKey(screenId, getUserLocale());
+        String key = getScreenComponentsCacheKey(screenId, userSessionSource.getLocale());
         List<ScreenComponentDescriptor> screenComponents = screenComponentsCache.get(key);
         if (screenComponents != null) {
             return screenComponents;
@@ -133,14 +137,15 @@ public class ScreensHelper {
             }
         }
 
-        components = Collections.unmodifiableList(components);
+        components = ImmutableList.copyOf(components);
+
         cacheScreenComponents(key, components);
         return components;
     }
 
     public void findScreenComponents(List<ScreenComponentDescriptor> components,
                                      @Nullable ScreenComponentDescriptor parent, Element root) {
-        List<Element> elements = isFrame(root) ? getFrameElements(root) : Dom4j.elements(root);
+        List<Element> elements = isFrame(root) ? getFrameElements(root) : root.elements();
         for (Element element : elements) {
             if (isComponentElement(element)) {
                 //noinspection IncorrectCreateEntity
@@ -164,7 +169,7 @@ public class ScreensHelper {
             try {
                 Element layoutElement = getRootLayoutElement(src);
                 if (layoutElement != null) {
-                    return Dom4j.elements(layoutElement);
+                    return layoutElement.elements();
                 }
             } catch (FileNotFoundException e) {
                 log.error(e.getMessage());
@@ -174,7 +179,8 @@ public class ScreensHelper {
     }
 
     protected boolean isFrame(Element element) {
-        return Frame.NAME.equals(element.getName());
+        return Frame.NAME.equals(element.getName())
+                || Fragment.NAME.equals(element.getName());
     }
 
     protected boolean isComponentElement(Element element) {
@@ -228,17 +234,17 @@ public class ScreensHelper {
         BROWSER, EDITOR, ALL
     }
 
-    public Map<String, Object> getAvailableBrowserScreens(Class entityClass) {
+    public Map<String, String> getAvailableBrowserScreens(Class entityClass) {
         return getAvailableScreensMap(entityClass, ScreenType.BROWSER);
     }
 
-    public Map<String, Object> getAvailableScreens(Class entityClass) {
+    public Map<String, String> getAvailableScreens(Class entityClass) {
         return getAvailableScreensMap(entityClass, ScreenType.ALL);
     }
 
-    protected Map<String, Object> getAvailableScreensMap(Class entityClass, ScreenType filterScreenType) {
-        String key = getScreensCacheKey(entityClass.getName(), getUserLocale(), filterScreenType);
-        Map<String, Object> screensMap = availableScreensCache.get(key);
+    protected Map<String, String> getAvailableScreensMap(Class entityClass, ScreenType filterScreenType) {
+        String key = getScreensCacheKey(entityClass.getName(), userSessionSource.getLocale(), filterScreenType);
+        Map<String, String> screensMap = availableScreensCache.get(key);
         if (screensMap != null) {
             return screensMap;
         }
@@ -276,7 +282,9 @@ public class ScreensHelper {
 
             visitedWindowIds.add(windowId);
         }
-        screensMap = Collections.unmodifiableMap(screensMap);
+
+        screensMap = ImmutableMap.copyOf(screensMap);
+
         cacheScreens(key, screensMap);
         return screensMap;
     }
@@ -339,7 +347,7 @@ public class ScreensHelper {
             if (StringUtils.isNotBlank(datasource)) {
                 return datasource;
             }
-            for (Element element : Dom4j.elements(lookupElement)) {
+            for (Element element : lookupElement.elements()) {
                 datasource = element.attributeValue("datasource");
                 if (StringUtils.isNotBlank(datasource)) {
                     return datasource;
@@ -352,7 +360,7 @@ public class ScreensHelper {
 
     @Nullable
     protected Element elementByID(Element root, String elementId) {
-        for (Element element : Dom4j.elements(root)) {
+        for (Element element : root.elements()) {
             String id = element.attributeValue("id");
             if (StringUtils.isNotEmpty(id) && elementId.equals(id)) {
                 return element;
@@ -372,11 +380,12 @@ public class ScreensHelper {
         if (StringUtils.isNotEmpty(text)) {
             try {
                 Document document = Dom4j.readDocument(text);
-                XmlInheritanceProcessor processor = beanLocator.getPrototype(XmlInheritanceProcessor.NAME,
-                        document, Collections.emptyMap());
+                XmlInheritanceProcessor processor =
+                        beanLocator.getPrototype(XmlInheritanceProcessor.NAME, document, emptyMap());
                 Element root = processor.getResultRoot();
-                if (root.getName().equals(Window.NAME))
+                if (root.getName().equals(Window.NAME)) {
                     return root;
+                }
             } catch (RuntimeException e) {
                 log.error("Can't parse screen file: ", src);
             }
@@ -398,7 +407,7 @@ public class ScreensHelper {
 
     @Nullable
     public String getScreenCaption(WindowInfo windowInfo) throws FileNotFoundException {
-        return getScreenCaption(windowInfo, getUserLocale());
+        return getScreenCaption(windowInfo, userSessionSource.getLocale());
     }
 
     @Nullable
@@ -407,23 +416,22 @@ public class ScreensHelper {
         if (StringUtils.isNotEmpty(src)) {
             String key = getCaptionCacheKey(src, locale);
             String caption = captionCache.get(key);
-            if (caption != null)
+            if (caption != null) {
                 return caption;
+            }
 
             Element window = getWindowElement(src);
-            if (window != null)
+            if (window != null) {
                 return getScreenCaption(window, src);
+            }
         }
 
         Class screenClass = windowInfo.getControllerClass();
-        if (screenClass != null)
-            return screenClass.getSimpleName();
-
-        return null;
+        return screenClass.getSimpleName();
     }
 
     protected String getScreenCaption(Element window, String src) {
-        return getScreenCaption(window, src, getUserLocale());
+        return getScreenCaption(window, src, userSessionSource.getLocale());
     }
 
     protected String getScreenCaption(Element window, String src, Locale locale) {
@@ -455,7 +463,7 @@ public class ScreensHelper {
     }
 
     public String getDetailedScreenCaption(WindowInfo windowInfo) throws FileNotFoundException {
-        return getDetailedScreenCaption(windowInfo, getUserLocale());
+        return getDetailedScreenCaption(windowInfo, userSessionSource.getLocale());
     }
 
     public String getDetailedScreenCaption(WindowInfo windowInfo, Locale locale) throws FileNotFoundException {
@@ -481,23 +489,22 @@ public class ScreensHelper {
         return screenPackage;
     }
 
-    protected Locale getUserLocale() {
-        return userSessionSource.getUserSession().getLocale();
-    }
-
     protected void cacheCaption(String key, String value) {
-        if (!captionCache.containsKey(key))
+        if (!captionCache.containsKey(key)) {
             captionCache.put(key, value);
+        }
     }
 
-    protected void cacheScreens(String key, Map<String, Object> value) {
-        if (!availableScreensCache.containsKey(key))
+    protected void cacheScreens(String key, Map<String, String> value) {
+        if (!availableScreensCache.containsKey(key)) {
             availableScreensCache.put(key, value);
+        }
     }
 
     protected void cacheScreenComponents(String key, List<ScreenComponentDescriptor> value) {
-        if (!screenComponentsCache.containsKey(key))
+        if (!screenComponentsCache.containsKey(key)) {
             screenComponentsCache.put(key, value);
+        }
     }
 
     protected String getCaptionCacheKey(String src, Locale locale) {
