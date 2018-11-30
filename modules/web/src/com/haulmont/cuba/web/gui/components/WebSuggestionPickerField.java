@@ -27,7 +27,6 @@ import com.haulmont.cuba.gui.executors.BackgroundTask;
 import com.haulmont.cuba.gui.executors.BackgroundTaskHandler;
 import com.haulmont.cuba.gui.executors.BackgroundWorker;
 import com.haulmont.cuba.gui.executors.TaskLifeCycle;
-import com.haulmont.cuba.web.gui.components.converters.StringToEntityConverter;
 import com.haulmont.cuba.web.widgets.CubaPickerField;
 import com.haulmont.cuba.web.widgets.CubaSuggestionPickerField;
 import org.slf4j.Logger;
@@ -41,12 +40,13 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+import static com.haulmont.cuba.web.gui.components.WebLookupField.NULL_STYLE_GENERATOR;
+
 public class WebSuggestionPickerField<V extends Entity> extends WebPickerField<V>
         implements SuggestionPickerField<V>, SecuredActionsHolder {
 
     private static final Logger log = LoggerFactory.getLogger(WebSuggestionPickerField.class);
 
-    /* Beans */
     protected BackgroundWorker backgroundWorker;
 
     protected BackgroundTaskHandler<List<V>> handler;
@@ -56,9 +56,8 @@ public class WebSuggestionPickerField<V extends Entity> extends WebPickerField<V
     protected EnterActionHandler enterActionHandler;
     protected ArrowDownActionHandler arrowDownActionHandler;
 
-    protected OptionsStyleProvider optionsStyleProvider;
+    protected Function<? super V, String> optionStyleProvider;
 
-    protected StringToEntityConverter entityConverter = new StringToEntityConverter();
     protected Locale locale;
 
     public WebSuggestionPickerField() {
@@ -103,7 +102,7 @@ public class WebSuggestionPickerField<V extends Entity> extends WebPickerField<V
         }
 
         if (captionMode == CaptionMode.ITEM) {
-            return entityConverter.convertToPresentation(value, String.class, locale);
+            return metadataTools.getInstanceName(value);
         }
 
         if (captionProperty != null && !"".equals(captionProperty)) {
@@ -118,7 +117,7 @@ public class WebSuggestionPickerField<V extends Entity> extends WebPickerField<V
         log.warn("Using StringToEntityConverter to get entity text presentation. Caption property is not defined " +
                 "while caption mode is \"PROPERTY\"");
 
-        return entityConverter.convertToPresentation(value, String.class, locale);
+        return metadataTools.getInstanceName(value);
     }
 
     protected void cancelSearch() {
@@ -194,7 +193,6 @@ public class WebSuggestionPickerField<V extends Entity> extends WebPickerField<V
 
         List<V> searchResultItems;
         if (searchExecutor instanceof ParametrizedSearchExecutor) {
-            //noinspection unchecked
             ParametrizedSearchExecutor<V> pSearchExecutor = (ParametrizedSearchExecutor<V>) searchExecutor;
             searchResultItems = pSearchExecutor.search(searchString, params);
         } else {
@@ -206,6 +204,15 @@ public class WebSuggestionPickerField<V extends Entity> extends WebPickerField<V
 
     protected void handleSearchResult(List<V> results) {
         showSuggestions(results);
+    }
+
+    @SuppressWarnings("unchecked")
+    protected String generateItemStylename(Object item) {
+        if (optionStyleProvider == null) {
+            return null;
+        }
+
+        return this.optionStyleProvider.apply((V)item);
     }
 
     @Override
@@ -305,33 +312,23 @@ public class WebSuggestionPickerField<V extends Entity> extends WebPickerField<V
         getComponent().setInputPrompt(inputPrompt);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public void setOptionsStyleProvider(OptionsStyleProvider optionsStyleProvider) {
-        this.optionsStyleProvider = optionsStyleProvider;
+    public void setOptionStyleProvider(Function<? super V, String> optionStyleProvider) {
+        if (this.optionStyleProvider != optionStyleProvider) {
+            this.optionStyleProvider = optionStyleProvider;
 
-        if (optionsStyleProvider != null) {
-            getComponent().setOptionsStyleProvider(item ->
-                    optionsStyleProvider.getItemStyleName(this, item));
-        } else {
-            getComponent().setOptionsStyleProvider(null);
+            if (optionStyleProvider != null) {
+                getComponent().setOptionsStyleProvider(this::generateItemStylename);
+            } else {
+                getComponent().setOptionsStyleProvider(NULL_STYLE_GENERATOR);
+            }
         }
     }
 
     @Override
-    public OptionsStyleProvider getOptionsStyleProvider() {
-        return optionsStyleProvider;
-    }
-
-    @Override
-    public void setOptionStyleProvider(Function<? super V, String> optionStyleProvider) {
-        // todo
-    }
-
-    @Override
     public Function<? super V, String> getOptionStyleProvider() {
-        // todo
-
-        return null;
+        return optionStyleProvider;
     }
 
     @Override

@@ -20,6 +20,8 @@ import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.icons.Icons;
 import org.dom4j.Element;
 
+import java.util.function.Function;
+
 /**
  * Root of the GenericUI components hierarchy.
  */
@@ -430,11 +432,11 @@ public interface Component {
      * An object that returns stylename for the given {@code item} (option) that is displayed by the given
      * {@code component}.
      *
-     * @deprecated todo
+     * @deprecated Use {@link HasOptionsStyleProvider#setOptionStyleProvider(Function)} instead.
      */
     @FunctionalInterface
     @Deprecated
-    interface OptionsStyleProvider<I> {
-        String getItemStyleName(Component component, I item);
+    interface OptionsStyleProvider {
+        String getItemStyleName(Component component, Object item);
     }
 }

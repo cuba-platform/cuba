@@ -26,7 +26,6 @@ import com.haulmont.cuba.gui.executors.BackgroundTask;
 import com.haulmont.cuba.gui.executors.BackgroundTaskHandler;
 import com.haulmont.cuba.gui.executors.BackgroundWorker;
 import com.haulmont.cuba.gui.executors.TaskLifeCycle;
-import com.haulmont.cuba.web.gui.components.converters.StringToEntityConverter;
 import com.haulmont.cuba.web.widgets.CubaSuggestionField;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,8 +51,6 @@ public class WebSuggestionField<V> extends WebV8AbstractField<CubaSuggestionFiel
 
     protected EnterActionHandler enterActionHandler;
     protected ArrowDownActionHandler arrowDownActionHandler;
-
-    protected StringToEntityConverter entityConverter = new StringToEntityConverter();
 
     protected CaptionMode captionMode = CaptionMode.ITEM; // todo remove
     protected String captionProperty; // todo remove
@@ -116,6 +113,7 @@ public class WebSuggestionField<V> extends WebV8AbstractField<CubaSuggestionFiel
                 : value;
     }
 
+    @SuppressWarnings("unchecked")
     protected String generateItemStylename(Object item) {
         if (optionStyleProvider == null) {
             return null;
@@ -136,7 +134,7 @@ public class WebSuggestionField<V> extends WebV8AbstractField<CubaSuggestionFiel
         if (value instanceof Entity) {
             Entity entity = (Entity) value;
             if (captionMode == CaptionMode.ITEM) {
-                return entityConverter.convertToPresentation(entity, String.class, locale);
+                return metadataTools.getInstanceName(entity);
             }
 
             if (captionProperty != null && !"".equals(captionProperty)) {
@@ -150,7 +148,7 @@ public class WebSuggestionField<V> extends WebV8AbstractField<CubaSuggestionFiel
 
             log.warn("Using StringToEntityConverter to get entity text presentation. Caption property is not defined " +
                     "while caption mode is \"PROPERTY\"");
-            return entityConverter.convertToPresentation(entity, String.class, locale);
+            return metadataTools.getInstanceName(entity);
         }
 
         return metadataTools.format(value);
@@ -252,7 +250,6 @@ public class WebSuggestionField<V> extends WebV8AbstractField<CubaSuggestionFiel
 
         List<V> searchResultItems;
         if (searchExecutor instanceof ParametrizedSearchExecutor) {
-            //noinspection unchecked
             ParametrizedSearchExecutor<V> pSearchExecutor = (ParametrizedSearchExecutor<V>) searchExecutor;
             searchResultItems = pSearchExecutor.search(searchString, params);
         } else {
