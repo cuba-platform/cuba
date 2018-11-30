@@ -51,8 +51,8 @@ import static com.haulmont.cuba.gui.screen.UiControllerUtils.getScreenContext;
  * Class that provides fluent interface for removing entity instances. <br>
  * Inject the class into your screen controller and use {@link #builder(Class, FrameOwner)} method as an entry point.
  */
-@Component(RemoveHelper.NAME)
-public class RemoveHelper {
+@Component(RemoveOperation.NAME)
+public class RemoveOperation {
 
     public static final String NAME = "cuba_RemoveHelper";
 

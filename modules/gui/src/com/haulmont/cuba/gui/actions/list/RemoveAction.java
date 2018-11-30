@@ -21,7 +21,7 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Messages;
-import com.haulmont.cuba.gui.RemoveHelper;
+import com.haulmont.cuba.gui.RemoveOperation;
 import com.haulmont.cuba.gui.components.ActionType;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.data.meta.ContainerDataUnit;
@@ -40,7 +40,7 @@ public class RemoveAction extends SecuredListAction {
     public static final String ID = "remove";
 
     @Inject
-    protected RemoveHelper removeHelper;
+    protected RemoveOperation removeOperation;
 
     public RemoveAction() {
         super(ID);
@@ -120,7 +120,7 @@ public class RemoveAction extends SecuredListAction {
                 throw new IllegalStateException("RemoveAction target is not bound to CollectionContainer");
             }
 
-            removeHelper.removeSelected(target);
+            removeOperation.removeSelected(target);
         } else {
             super.actionPerform(component);
         }

@@ -22,7 +22,7 @@ import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.Security;
-import com.haulmont.cuba.gui.RemoveHelper;
+import com.haulmont.cuba.gui.RemoveOperation;
 import com.haulmont.cuba.gui.components.ActionType;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.data.meta.ContainerDataUnit;
@@ -42,7 +42,7 @@ public class ExcludeAction extends SecuredListAction {
     @Inject
     protected Security security;
     @Inject
-    protected RemoveHelper removeHelper;
+    protected RemoveOperation removeOperation;
 
     public ExcludeAction() {
         super(ID);
@@ -110,7 +110,7 @@ public class ExcludeAction extends SecuredListAction {
                 throw new IllegalStateException("ExcludeAction target is not bound to CollectionContainer");
             }
 
-            removeHelper.excludeSelected(target);
+            removeOperation.excludeSelected(target);
         } else {
             super.actionPerform(component);
         }
