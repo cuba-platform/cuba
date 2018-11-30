@@ -186,9 +186,6 @@ public class UserEditor extends AbstractEditor<User> {
                 publishPasswordChangedEvent(getItem(), passwField.getValue());
             }
         });
-
-        User item = (User) WindowParams.ITEM.getEntity(params);
-        activeField.setEnabled(!userManagementService.isAnonymousUser(item.getLogin()));
     }
 
     protected void updateSessionSubstitutions(Set<Entity> committedEntities) {
@@ -214,6 +211,8 @@ public class UserEditor extends AbstractEditor<User> {
 
     @Override
     protected void postInit() {
+        activeField.setEnabled(!userManagementService.isAnonymousUser(getItem().getLogin()));
+
         setCaption(PersistenceHelper.isNew(getItem()) ?
                 getMessage("createCaption") : formatMessage("editCaption", getItem().getLogin()));
 
