@@ -206,13 +206,18 @@ public class UserSettingServiceBean implements UserSettingService {
         Map<UUID, Presentation> presentationMap = new HashMap<>();
         try (Transaction tx = persistence.createTransaction()) {
             EntityManager em = persistence.getEntityManager();
-            Query delete = em.createQuery("delete from sec$Presentation p where p.user.id=?1");
-            delete.setParameter(1, toUser);
+
+            // delete existing
+            Query delete = em.createQuery("delete from sec$Presentation p where p.user.id = ?1");
+            delete.setParameter(1, toUser.getId());
             delete.executeUpdate();
-            TypedQuery<Presentation> selectQuery = em.createQuery("select p from sec$Presentation p where p.user.id = ?1",
-                    Presentation.class);
+
+            // copy settings
+            TypedQuery<Presentation> selectQuery = em.createQuery(
+                    "select p from sec$Presentation p where p.user.id = ?1", Presentation.class);
             selectQuery.setParameter(1, fromUser.getId());
             List<Presentation> presentations = selectQuery.getResultList();
+
             for (Presentation presentation : presentations) {
                 Presentation newPresentation = metadata.create(Presentation.class);
                 newPresentation.setUser(toUser);
