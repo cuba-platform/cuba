@@ -752,4 +752,9 @@ public class UserManagementServiceBean implements UserManagementService {
     public boolean isUsersRemovingAllowed(Collection<String> userLogins) {
         return !userLogins.contains(serverConfig.getJmxUserLogin()) && !userLogins.contains(serverConfig.getAnonymousLogin());
     }
+
+    @Override
+    public boolean isAnonymousUser(String userLogin) {
+        return serverConfig.getAnonymousLogin().equalsIgnoreCase(userLogin);
+    }
 }
