@@ -20,6 +20,7 @@ import com.google.common.base.Joiner;
 import com.haulmont.bali.events.EventHub;
 import com.haulmont.bali.events.Subscription;
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.BeanLocator;
@@ -27,11 +28,10 @@ import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.core.sys.BeanLocatorAware;
 import com.haulmont.cuba.gui.components.data.BindingState;
 import com.haulmont.cuba.gui.components.data.meta.EntityValueSource;
-import com.haulmont.cuba.gui.model.DataComponents;
-import com.haulmont.cuba.gui.model.InstanceContainer;
+import com.haulmont.cuba.gui.model.*;
+import org.apache.commons.collections4.CollectionUtils;
 
-import java.util.Arrays;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Consumer;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
@@ -149,7 +149,11 @@ public class ContainerValueSource<E extends Entity, V> implements EntityValueSou
     public void setValue(V value) {
         E item = container.getItemOrNull();
         if (item != null) {
-            item.setValueEx(metaPropertyPath, value);
+            if (canUpdateMasterRefs()) {
+                updateMasterRefs(value);
+            } else {
+                item.setValueEx(metaPropertyPath.toPathString(), value);
+            }
         }
     }
 
@@ -210,7 +214,90 @@ public class ContainerValueSource<E extends Entity, V> implements EntityValueSou
     @SuppressWarnings("unchecked")
     protected void containerItemPropertyChanged(InstanceContainer.ItemPropertyChangeEvent e) {
         if (Objects.equals(e.getProperty(), metaPropertyPath.toPathString())) {
-            events.publish(ValueChangeEvent.class, new ValueChangeEvent<>(this, (V)e.getPrevValue(), (V)e.getValue()));
+            events.publish(ValueChangeEvent.class, new ValueChangeEvent<>(this, (V) e.getPrevValue(), (V) e.getValue()));
         }
+    }
+
+    protected boolean canUpdateMasterRefs() {
+        MetaPropertyPath mpp = getEntityMetaClass().getPropertyPath(metaPropertyPath.toPathString());
+        if (mpp == null) {
+            return false;
+        }
+
+        if (!mpp.getMetaProperty().getRange().getCardinality().isMany()) {
+            return false;
+        }
+
+        MetaProperty inverseProperty = mpp.getMetaProperty().getInverse();
+
+        return inverseProperty != null
+                && inverseProperty.getType() == MetaProperty.Type.ASSOCIATION
+                && !inverseProperty.getRange().getCardinality().isMany();
+    }
+
+    protected void updateMasterRefs(V value) {
+        DataContext dataContext = getDataContext();
+        if (dataContext == null) {
+            return;
+        }
+
+        MetaProperty inverseProperty = getInverseProperty();
+        if (inverseProperty == null) {
+            return;
+        }
+
+        if (!(value instanceof Collection)) {
+            return;
+        }
+        //noinspection unchecked
+        Collection<V> newValue = (Collection<V>) value;
+
+        Collection<? extends V> itemValue = getItem().getValueEx(metaPropertyPath.toPathString());
+        Collection<V> oldValue = itemValue != null ? new ArrayList<>(itemValue) : null;
+
+        getItem().setValueEx(metaPropertyPath.toPathString(), value);
+
+        container.mute();
+
+        if (CollectionUtils.isNotEmpty(newValue)) {
+            for (V v : newValue) {
+                if (CollectionUtils.isEmpty(oldValue) || !oldValue.contains(v)) {
+                    Entity entity = (Entity) v;
+                    dataContext.merge(entity)
+                            .setValue(inverseProperty.getName(), getItem());
+                }
+            }
+        }
+
+        if (CollectionUtils.isNotEmpty(oldValue)) {
+            for (V v : oldValue) {
+                if (CollectionUtils.isEmpty(newValue) || !newValue.contains(v)) {
+                    Entity entity = (Entity) v;
+                    dataContext.merge(entity)
+                            .setValue(inverseProperty.getName(), null);
+                }
+            }
+        }
+
+        container.unmute();
+    }
+
+    protected DataContext getDataContext() {
+        DataLoader loader = container instanceof HasLoader
+                ? ((HasLoader) container).getLoader()
+                : null;
+
+        return loader != null
+                ? loader.getDataContext()
+                : null;
+    }
+
+    protected MetaProperty getInverseProperty() {
+        MetaPropertyPath mpp = getEntityMetaClass().getPropertyPath(metaPropertyPath.toPathString());
+        if (mpp == null) {
+            return null;
+        }
+
+        return mpp.getMetaProperty().getInverse();
     }
 }

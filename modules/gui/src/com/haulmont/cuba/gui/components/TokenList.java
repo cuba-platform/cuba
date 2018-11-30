@@ -14,57 +14,98 @@
  * limitations under the License.
  *
  */
+
 package com.haulmont.cuba.gui.components;
 
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.WindowManager.OpenType;
+import com.haulmont.cuba.gui.components.data.HasValueSource;
+import com.haulmont.cuba.gui.components.data.Options;
+import com.haulmont.cuba.gui.components.data.ValueSource;
+import com.haulmont.cuba.gui.components.data.options.DatasourceOptions;
+import com.haulmont.cuba.gui.components.data.options.ListOptions;
+import com.haulmont.cuba.gui.components.data.options.MapOptions;
+import com.haulmont.cuba.gui.components.data.value.LegacyCollectionDsValueSource;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.screen.LookupScreen;
+import com.haulmont.cuba.gui.screen.Screen;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
-public interface TokenList<V> extends Field<Collection<V>>,
+public interface TokenList<V extends Entity> extends Field<Collection<V>>,
         Component.BelongToFrame, Component.HasCaption, Component.Editable, Component.Focusable {
 
     String NAME = "tokenList";
 
     /**
-     * @return a property that is used for caption generation
-     */
-    String getCaptionProperty();
-
-    /**
-     * Sets a property that will be used for item caption generation when {@link CaptionMode#PROPERTY} is used.
-     *
-     * @param captionProperty property
-     */
-    void setCaptionProperty(String captionProperty);
-
-    /**
-     * @return item caption mode generation
-     */
-    CaptionMode getCaptionMode();
-
-    /**
-     * Sets how item caption should be generated.
-     *
-     * @param captionMode mode
-     */
-    void setCaptionMode(CaptionMode captionMode);
-
-    /**
-     * @return bound {@link CollectionDatasource} instance
-     */
-    @Override
-    CollectionDatasource getDatasource();
-
-    /**
      * Binds the given {@code datasource} with field.
      *
      * @param datasource {@link CollectionDatasource} instance
+     *
+     * @deprecated use {@link HasValueSource#setValueSource(ValueSource)} instead
      */
-    void setDatasource(CollectionDatasource datasource);
+    @Deprecated
+    default void setDatasource(CollectionDatasource datasource) {
+        setValueSource(datasource == null ? null : new LegacyCollectionDsValueSource<>(datasource));
+    }
+
+    /**
+     * @return bound {@link CollectionDatasource} instance
+     *
+     * @deprecated use {@link HasValueSource#getValueSource()} instead
+     */
+    @Deprecated
+    @Override
+    default CollectionDatasource getDatasource() {
+        ValueSource<Collection<V>> valueSource = getValueSource();
+        return valueSource instanceof LegacyCollectionDsValueSource
+                ? ((LegacyCollectionDsValueSource) valueSource).getDatasource()
+                : null;
+    }
+
+    /**
+     * Sets field options.
+     *
+     * @param options field options
+     */
+    void setOptions(Options<V> options);
+
+    /**
+     * @return field options
+     */
+    Options<V> getOptions();
+
+    /**
+     * Sets the given {@code datasource} as options datasource.
+     *
+     * @param datasource options datasource
+     *
+     * @deprecated use {@link TokenList#setOptions(Options)} instead
+     */
+    @SuppressWarnings("unchecked")
+    @Deprecated
+    default void setOptionsDatasource(CollectionDatasource datasource) {
+        setOptions(datasource == null ? null : new DatasourceOptions(datasource));
+    }
+
+    /**
+     * @return {@link CollectionDatasource} instance that stores field options
+     *
+     * @deprecated use {@link TokenList#getOptions()} instead
+     */
+    @Deprecated
+    default CollectionDatasource getOptionsDatasource() {
+        Options<V> options = getOptions();
+        if (options instanceof DatasourceOptions) {
+            return ((DatasourceOptions) options).getDatasource();
+        }
+        return null;
+    }
 
     /**
      * @return options filter mode
@@ -79,20 +120,33 @@ public interface TokenList<V> extends Field<Collection<V>>,
     void setFilterMode(LookupField.FilterMode mode);
 
     /**
-     * @return a property that is used for option captions generation
+     * @return item caption mode generation
      */
-    String getOptionsCaptionProperty();
+    CaptionMode getCaptionMode();
 
     /**
-     * Sets a property that will be used for option captions generation when {@link CaptionMode#PROPERTY} is used.
+     * Sets how item caption should be generated.
+     *
+     * @param captionMode mode
+     */
+    void setCaptionMode(CaptionMode captionMode);
+
+    /**
+     * @return a property that is used for caption generation
+     */
+    String getCaptionProperty();
+
+    /**
+     * Sets a property that will be used for item caption generation when {@link CaptionMode#PROPERTY} is used.
      *
      * @param captionProperty property
      */
-    void setOptionsCaptionProperty(String captionProperty);
+    void setCaptionProperty(String captionProperty);
 
     /**
      * @return option captions mode generation
      */
+    @Deprecated
     CaptionMode getOptionsCaptionMode();
 
     /**
@@ -100,19 +154,22 @@ public interface TokenList<V> extends Field<Collection<V>>,
      *
      * @param captionMode mode
      */
+    @Deprecated
     void setOptionsCaptionMode(CaptionMode captionMode);
 
     /**
-     * @return {@link CollectionDatasource} instance that stores field options
+     * @return a property that is used for option captions generation
      */
-    CollectionDatasource getOptionsDatasource();
+    @Deprecated
+    String getOptionsCaptionProperty();
 
     /**
-     * Sets the given {@code datasource} as options datasource.
+     * Sets a property that will be used for option captions generation when {@link CaptionMode#PROPERTY} is used.
      *
-     * @param datasource options datasource
+     * @param captionProperty property
      */
-    void setOptionsDatasource(CollectionDatasource datasource);
+    @Deprecated
+    void setOptionsCaptionProperty(String captionProperty);
 
     /**
      * Sets whether options should be refreshed after lookup window closing.
@@ -124,11 +181,50 @@ public interface TokenList<V> extends Field<Collection<V>>,
      */
     boolean isRefreshOptionsOnLookupClose();
 
-    java.util.List getOptionsList();
-    void setOptionsList(java.util.List optionsList);
+    /**
+     * @return options list
+     *
+     * @deprecated use {@link TokenList#getOptions()} instead
+     */
+    @Deprecated
+    default List getOptionsList() {
+        Options<V> options = getOptions();
+        if (options instanceof ListOptions) {
+            return (List) ((ListOptions<V>) options).getItemsCollection();
+        }
+        return null;
+    }
 
-    Map<String, ?> getOptionsMap();
-    void setOptionsMap(Map<String, ?> map);
+    /**
+     * @param optionsList options list
+     */
+    @SuppressWarnings("unchecked")
+    default void setOptionsList(List optionsList) {
+        setOptions(new ListOptions<>(optionsList));
+    }
+
+    /**
+     * @return options map
+     *
+     * @deprecated use {@link TokenList#getOptions()} instead
+     */
+    @SuppressWarnings("unchecked")
+    @Deprecated
+    default Map<String, ?> getOptionsMap() {
+        Options options = getOptions();
+        if (options instanceof MapOptions) {
+            return ((MapOptions) options).getItemsCollection();
+        }
+        return null;
+    }
+
+    /**
+     * @param optionsMap options map
+     */
+    @SuppressWarnings("unchecked")
+    default void setOptionsMap(Map<String, ?> optionsMap) {
+        setOptions(new MapOptions(optionsMap));
+    }
 
     /**
      * @return whether inner LookupPickerField component has lookup action
@@ -136,36 +232,76 @@ public interface TokenList<V> extends Field<Collection<V>>,
     boolean isLookup();
 
     /**
-     * Sets whether inner LookupPickerField component should have lookup action
+     * Sets whether inner LookupPickerField component should have lookup action.
      *
      * @param lookup enable lookup action
      */
     void setLookup(boolean lookup);
 
     /**
+     * Sets a lookup screen provider that is used when {@link TokenList#isLookup()} enabled.
+     * <p>
+     * Provided screen should implement {@link LookupScreen} interface.
+     *
+     * @param lookupProvider lookup screen provider
+     */
+    void setLookupProvider(Supplier<Screen> lookupProvider);
+
+    /**
+     * @return lookup screen provider
+     */
+    Supplier<Screen> getLookupProvider();
+
+    /**
      * @return lookup screen alias
      */
+    @Deprecated
     String getLookupScreen();
 
     /**
      * Sets lookup screen alias.
      *
      * @param lookupScreen screen alias
+     *
+     * @deprecated use {@link TokenList#setLookupProvider(Supplier)} instead
      */
+    @Deprecated
     void setLookupScreen(String lookupScreen);
 
     /**
      * Sets params that will be passed to lookup screen.
      *
      * @param params params
+     *
+     * @deprecated use {@link TokenList#setLookupProvider(Supplier)} instead
      */
+    @Deprecated
     void setLookupScreenParams(Map<String, Object> params);
 
     /**
      * @return params that will be passed to lookup screen
      */
     @Nullable
+    @Deprecated
     Map<String, Object> getLookupScreenParams();
+
+    /**
+     * @return lookup screen open mode
+     */
+    @Deprecated
+    OpenType getLookupOpenMode();
+
+    /**
+     * Sets lookup screen open mode.
+     * <p>
+     * {@link OpenType#THIS_TAB} is the default.
+     *
+     * @param lookupOpenMode open mode
+     *
+     * @deprecated use {@link TokenList#setLookupProvider(Supplier)} instead
+     */
+    @Deprecated
+    void setLookupOpenMode(OpenType lookupOpenMode);
 
     /**
      * @return clear button is enabled
@@ -217,20 +353,6 @@ public interface TokenList<V> extends Field<Collection<V>>,
      * @param position editor position
      */
     void setPosition(Position position);
-
-    /**
-     * @return lookup screen open mode
-     */
-    OpenType getLookupOpenMode();
-
-    /**
-     * Sets lookup screen open mode.
-     * <p>
-     * {@link OpenType#THIS_TAB} is the default.
-     *
-     * @param lookupOpenMode open mode
-     */
-    void setLookupOpenMode(OpenType lookupOpenMode);
 
     /**
      * @return whether inline tokens mode should be used
@@ -318,26 +440,38 @@ public interface TokenList<V> extends Field<Collection<V>>,
 
     /**
      * @return handler that is invoked after lookup screen closing
+     *
+     * @deprecated use {@link TokenList#setLookupProvider(Supplier)} instead
      */
+    @Deprecated
     AfterLookupCloseHandler getAfterLookupCloseHandler();
 
     /**
      * Sets handler that is invoked after lookup screen closing.
      *
      * @param handler handler
+     *
+     * @deprecated use {@link TokenList#setLookupProvider(Supplier)} instead
      */
+    @Deprecated
     void setAfterLookupCloseHandler(AfterLookupCloseHandler handler);
 
     /**
      * @return handler that is invoked when an item is selected in lookup screen
+     *
+     * @deprecated use {@link TokenList#setLookupProvider(Supplier)} instead
      */
+    @Deprecated
     AfterLookupSelectionHandler getAfterLookupSelectionHandler();
 
     /**
      * Sets handler that is invoked when an item is selected in lookup screen.
      *
      * @param handler handler
+     *
+     * @deprecated use {@link TokenList#setLookupProvider(Supplier)} instead
      */
+    @Deprecated
     void setAfterLookupSelectionHandler(AfterLookupSelectionHandler handler);
 
     @Deprecated
@@ -411,7 +545,10 @@ public interface TokenList<V> extends Field<Collection<V>>,
 
     /**
      * Enables to handle lookup screen closing.
+     *
+     * @deprecated use {@link TokenList#setLookupProvider(Supplier)} instead
      */
+    @Deprecated
     @FunctionalInterface
     interface AfterLookupCloseHandler {
 
@@ -426,7 +563,10 @@ public interface TokenList<V> extends Field<Collection<V>>,
 
     /**
      * Enables to handle item selection in lookup screen.
+     *
+     * @deprecated use {@link TokenList#setLookupProvider(Supplier)} instead
      */
+    @Deprecated
     @FunctionalInterface
     interface AfterLookupSelectionHandler {
 

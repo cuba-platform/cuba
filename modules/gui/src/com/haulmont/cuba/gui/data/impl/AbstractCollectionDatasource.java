@@ -428,6 +428,20 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
     }
 
     @Override
+    public void mute() {
+        listenersSuspended = true;
+    }
+
+    @Override
+    public void unmute(UnmuteEventsMode mode) {
+        listenersSuspended = false;
+
+        if (mode ==  UnmuteEventsMode.FIRE_REFRESH_EVENT) {
+            fireCollectionChanged(Operation.REFRESH, Collections.emptyList());
+        }
+    }
+
+    @Override
     public boolean isSoftDeletion() {
         return softDeletion;
     }

@@ -57,7 +57,7 @@ public class DatasourceOptions<E extends Entity<K>, K> implements Options<E>, En
 
     @SuppressWarnings("unchecked")
     protected void datasourceItemPropertyChanged(Datasource.ItemPropertyChangeEvent<E> e) {
-        events.publish(ValueChangeEvent.class, new ValueChangeEvent(this, e.getPrevValue(), e.getValue()));
+        events.publish(OptionsChangeEvent.class, new OptionsChangeEvent<>(this));
     }
 
     protected void datasourceStateChanged(Datasource.StateChangeEvent<E> e) {

@@ -18,27 +18,25 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.bali.events.Subscription;
-import com.haulmont.bali.events.sys.VoidSubscription;
-import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.Instance;
-import com.haulmont.chile.core.model.MetaProperty;
-import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.ExtendedEntities;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.Metadata;
+import com.haulmont.cuba.gui.LookupScreens;
 import com.haulmont.cuba.gui.UiComponents;
-import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.WindowParams;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.actions.BaseAction;
+import com.haulmont.cuba.gui.components.data.BindingState;
+import com.haulmont.cuba.gui.components.data.Options;
+import com.haulmont.cuba.gui.components.data.ValueSource;
+import com.haulmont.cuba.gui.components.data.meta.EntityOptions;
+import com.haulmont.cuba.gui.components.data.meta.EntityValueSource;
+import com.haulmont.cuba.gui.components.data.value.LegacyCollectionDsValueSource;
 import com.haulmont.cuba.gui.config.WindowConfig;
-import com.haulmont.cuba.gui.config.WindowInfo;
-import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.NestedDatasource;
-import com.haulmont.cuba.gui.data.impl.WeakCollectionChangeListener;
-import com.haulmont.cuba.gui.screen.StandardCloseAction;
-import com.haulmont.cuba.web.App;
+import com.haulmont.cuba.gui.icons.CubaIcon;
+import com.haulmont.cuba.gui.icons.Icons;
+import com.haulmont.cuba.gui.screen.*;
 import com.haulmont.cuba.web.widgets.CubaScrollBoxLayout;
 import com.haulmont.cuba.web.widgets.CubaTokenListLabel;
 import com.vaadin.shared.ui.MarginInfo;
@@ -46,6 +44,9 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomField;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -55,14 +56,14 @@ import javax.inject.Inject;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 import static com.haulmont.cuba.gui.WindowManager.OpenType;
 
-public class WebTokenList<V> extends WebV8AbstractField<WebTokenList.CubaTokenList<V>, V, Collection<V>> implements TokenList<V>,
-        InitializingBean {
+public class WebTokenList<V extends Entity> extends WebV8AbstractField<WebTokenList.CubaTokenList<V>, V, Collection<V>>
+        implements TokenList<V>, InitializingBean {
 
-    protected CollectionDatasource datasource;
-    protected CollectionDatasource.CollectionChangeListener collectionChangeListener;
+    private static final Logger log = LoggerFactory.getLogger(WebTokenList.class);
 
     protected String captionProperty;
     protected CaptionMode captionMode;
@@ -76,11 +77,11 @@ public class WebTokenList<V> extends WebV8AbstractField<WebTokenList.CubaTokenLi
     protected Button addButton;
     protected Button clearButton;
 
-    protected LookupPickerField<Entity> lookupPickerField;
-    protected PickerField.LookupAction lookupAction;
+    protected LookupPickerField<V> lookupPickerField;
+    protected Action lookupAction;
     protected String lookupScreen;
     protected Map<String, Object> lookupScreenParams;
-    protected OpenType lookupOpenMode = OpenType.THIS_TAB;
+    protected OpenType lookupOpenMode;
 
     protected Position position = Position.TOP;
     protected boolean inline;
@@ -93,14 +94,18 @@ public class WebTokenList<V> extends WebV8AbstractField<WebTokenList.CubaTokenLi
     protected Messages messages;
     protected Metadata metadata;
     protected WindowConfig windowConfig;
+    protected LookupScreens lookupScreens;
+    protected Icons icons;
 
     protected Function<Object, String> tokenStyleGenerator;
 
-    protected final Consumer<ValueChangeEvent<Entity>> lookupSelectListener = e -> {
+    protected final Consumer<ValueChangeEvent<V>> lookupSelectListener = e -> {
         if (isEditable()) {
             addValueFromLookupPickerField();
         }
     };
+
+    protected Supplier<Screen> lookupProvider;
 
     public WebTokenList() {
         component = new CubaTokenList<>(this);
@@ -126,15 +131,27 @@ public class WebTokenList<V> extends WebV8AbstractField<WebTokenList.CubaTokenLi
         this.windowConfig = windowConfig;
     }
 
+    @Inject
+    public void setLookupScreens(LookupScreens lookupScreens) {
+        this.lookupScreens = lookupScreens;
+    }
+
+    @Inject
+    public void setIcons(Icons icons) {
+        this.icons = icons;
+    }
+
     @Override
     public void afterPropertiesSet() {
         createComponents();
-        initComponentsCaptions();
     }
 
     protected void createComponents() {
         addButton = uiComponents.create(Button.class);
+        addButton.setCaption(messages.getMainMessage("actions.Add"));
+
         clearButton = uiComponents.create(Button.class);
+        clearButton.setCaption(messages.getMainMessage("actions.Clear"));
 
         //noinspection unchecked
         lookupPickerField = uiComponents.create(LookupPickerField.class);
@@ -143,44 +160,16 @@ public class WebTokenList<V> extends WebV8AbstractField<WebTokenList.CubaTokenLi
         setMultiSelect(false);
     }
 
-    protected void initComponentsCaptions() {
-        addButton.setCaption(messages.getMessage(TokenList.class, "actions.Add"));
-        clearButton.setCaption(messages.getMessage(TokenList.class, "actions.Clear"));
-    }
-
     @Override
-    public CollectionDatasource getDatasource() {
-        return datasource;
-    }
+    public void setValueSource(ValueSource<Collection<V>> valueSource) {
+        super.setValueSource(valueSource);
 
-    @Override
-    public void setDatasource(CollectionDatasource datasource) {
-        Preconditions.checkNotNullArgument(datasource, "Datasource is null");
-
-        if (this.datasource != null) {
-            throw new UnsupportedOperationException("Changing datasource is not supported by the TokenList component");
+        if (valueSource != null) {
+            valueSource.addValueChangeListener(e -> {
+                component.refreshComponent();
+                component.refreshClickListeners(itemClickListener);
+            });
         }
-
-        this.datasource = datasource;
-
-        collectionChangeListener = e -> {
-            if (lookupPickerField != null) {
-                if (isLookup()) {
-                    if (getLookupScreen() != null) {
-                        lookupAction.setLookupScreen(getLookupScreen());
-                    } else {
-                        lookupAction.setLookupScreen(null);
-                    }
-
-                    lookupAction.setLookupScreenOpenType(lookupOpenMode);
-                    lookupAction.setLookupScreenParams(lookupScreenParams);
-                }
-            }
-            component.refreshComponent();
-            component.refreshClickListeners(itemClickListener);
-        };
-        //noinspection unchecked
-        datasource.addCollectionChangeListener(new WeakCollectionChangeListener(datasource, collectionChangeListener));
     }
 
     @Override
@@ -250,16 +239,6 @@ public class WebTokenList<V> extends WebV8AbstractField<WebTokenList.CubaTokenLi
     }
 
     @Override
-    public CollectionDatasource getOptionsDatasource() {
-        return lookupPickerField.getOptionsDatasource();
-    }
-
-    @Override
-    public void setOptionsDatasource(CollectionDatasource datasource) {
-        lookupPickerField.setOptionsDatasource(datasource);
-    }
-
-    @Override
     public void setRefreshOptionsOnLookupClose(boolean refresh) {
         lookupPickerField.setRefreshOptionsOnLookupClose(refresh);
     }
@@ -270,67 +249,17 @@ public class WebTokenList<V> extends WebV8AbstractField<WebTokenList.CubaTokenLi
     }
 
     @Override
-    public void setDatasource(Datasource datasource, String property) {
-        throw new UnsupportedOperationException("TokenList does not support datasource with property");
+    public void setOptions(Options<V> options) {
+        if (options != null
+                && !(options instanceof EntityOptions)) {
+            throw new IllegalArgumentException("TokenList supports only EntityOptions");
+        }
+        lookupPickerField.setOptions(options);
     }
 
     @Override
-    public MetaProperty getMetaProperty() {
-        return null;
-    }
-
-    @Override
-    public MetaPropertyPath getMetaPropertyPath() {
-        return null;
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    public Collection<V> getValue() {
-        if (datasource != null) {
-            List<Object> items = new ArrayList(datasource.getItems());
-            return (Collection<V>) items;
-        } else
-            return Collections.emptyList();
-    }
-
-    @Override
-    public void setValue(Collection<V> value) {
-        throw new UnsupportedOperationException("Setting value to TokenList is not supported");
-    }
-
-    @Override
-    public Subscription addValueChangeListener(Consumer listener) {
-        LoggerFactory.getLogger(WebTokenList.class)
-                .warn("addValueChangeListener not implemented for TokenList");
-
-        return VoidSubscription.INSTANCE;
-    }
-
-    @Override
-    public void removeValueChangeListener(Consumer listener) {
-        LoggerFactory.getLogger(WebTokenList.class)
-                .warn("removeValueChangeListener not implemented for TokenList");
-    }
-
-    @Override
-    public List getOptionsList() {
-        return lookupPickerField.getOptionsList();
-    }
-
-    @Override
-    public void setOptionsList(List optionsList) {
-        lookupPickerField.setOptionsList(optionsList);
-    }
-
-    @Override
-    public Map<String, ?> getOptionsMap() {
-        return lookupPickerField.getOptionsMap();
-    }
-
-    @Override
-    public void setOptionsMap(Map<String, ?> map) {
-        lookupPickerField.setOptionsMap((Map<String, Entity>) map);
+    public Options<V> getOptions() {
+        return lookupPickerField.getOptions();
     }
 
     @Override
@@ -356,101 +285,230 @@ public class WebTokenList<V> extends WebV8AbstractField<WebTokenList.CubaTokenLi
     public void setLookup(boolean lookup) {
         if (this.lookup != lookup) {
             if (lookup) {
-                lookupAction = new PickerField.LookupAction(lookupPickerField) {
-                    @Nonnull
-                    @Override
-                    protected Map<String, Object> prepareScreenParams() {
-                        Map<String, Object> screenParams = super.prepareScreenParams();
-                        if (isMultiSelect()) {
-                            screenParams = new HashMap<>(screenParams);
-                            WindowParams.MULTI_SELECT.set(screenParams, true);
-                            // for backward compatibility
-                            screenParams.put("multiSelect", "true");
-                        }
-
-                        return screenParams;
-                    }
-
-                    @SuppressWarnings("unchecked")
-                    @Override
-                    protected void handleLookupWindowSelection(Collection items) {
-                        if (items.isEmpty()) {
-                            return;
-                        }
-
-                        @SuppressWarnings("unchecked")
-                        Collection<Entity> selected = items;
-
-                        CollectionDatasource optionsDatasource = lookupPickerField.getOptionsDatasource();
-                        if (optionsDatasource != null
-                                && lookupPickerField.isRefreshOptionsOnLookupClose()) {
-                            optionsDatasource.refresh();
-
-                            if (datasource != null) {
-                                for (Object obj : getDatasource().getItems()) {
-                                    Entity entity = (Entity) obj;
-                                    if (getOptionsDatasource().containsItem(entity.getId())) {
-                                        datasource.updateItem(getOptionsDatasource().getItem(entity.getId()));
-                                    }
-                                }
-                            }
-                        }
-
-                        // add all selected items to tokens
-                        if (itemChangeHandler != null) {
-                            for (Entity newItem : selected) {
-                                itemChangeHandler.addItem(newItem);
-                            }
-                        } else if (datasource != null) {
-                            // get master entity and inverse attribute in case of nested datasource
-                            Entity masterEntity = getMasterEntity(datasource);
-                            MetaProperty inverseProp = getInverseProperty(datasource);
-
-                            for (Entity newItem : selected) {
-                                if (!datasource.containsItem(newItem.getId())) {
-                                    // Initialize reference to master entity
-                                    if (inverseProp != null && isInitializeMasterReference(inverseProp)) {
-                                        newItem.setValue(inverseProp.getName(), masterEntity);
-                                    }
-
-                                    datasource.addItem(newItem);
-                                }
-                            }
-                        }
-
-                        afterSelect(items);
-                        if (afterLookupSelectionHandler != null) {
-                            afterLookupSelectionHandler.onSelect(items);
-                        }
-                    }
-                };
+                lookupAction = createLookupAction();
                 lookupPickerField.addAction(lookupAction);
-
-                if (getLookupScreen() != null) {
-                    lookupAction.setLookupScreen(getLookupScreen());
-                }
-                lookupAction.setLookupScreenOpenType(lookupOpenMode);
-                lookupAction.setLookupScreenParams(lookupScreenParams);
             } else {
                 lookupPickerField.removeAction(lookupAction);
             }
-
-            lookupAction.setAfterLookupCloseHandler((window, actionId) -> {
-                if (afterLookupCloseHandler != null) {
-                    afterLookupCloseHandler.onClose(window, actionId);
-                }
-            });
-
-
-            lookupAction.setAfterLookupSelectionHandler(items -> {
-                if (afterLookupSelectionHandler != null) {
-                    afterLookupSelectionHandler.onSelect(items);
-                }
-            });
-
         }
         this.lookup = lookup;
         component.refreshComponent();
+    }
+
+    protected Action createLookupAction() {
+        return new BaseAction("")
+                .withIcon(icons.get(CubaIcon.PICKERFIELD_LOOKUP))
+                .withHandler(e -> openLookup(null));
+    }
+
+    protected void openLookup(@Nullable Runnable afterLookupSelect) {
+        Screen lookupScreen;
+
+        if (lookupProvider == null) {
+            lookupScreen = createLookupScreen(afterLookupSelect);
+        } else {
+            lookupScreen = lookupProvider.get();
+            if (!(LookupScreen.class.isAssignableFrom(lookupScreen.getClass()))) {
+                log.info("Not suitable screen is returned from LookupScreen provider. Default implementation will be used");
+
+                lookupScreen = createLookupScreen(afterLookupSelect);
+            }
+
+            //noinspection unchecked
+            ((LookupScreen<V>) lookupScreen).setSelectHandler(selected -> {
+                handleLookupSelection(selected);
+                if (afterLookupSelect != null) {
+                    afterLookupSelect.run();
+                }
+            });
+        }
+
+        lookupScreen.show();
+
+        if (afterLookupCloseHandler != null) {
+            lookupScreen.addAfterCloseListener(event -> {
+                String actionId = ((StandardCloseAction) event.getCloseAction()).getActionId();
+                afterLookupCloseHandler.onClose(event.getScreen().getWindow(), actionId);
+            });
+        }
+    }
+
+    protected Screen createLookupScreen(Runnable afterLookupSelect) {
+        Class<V> entityClass = getLookupEntityClass();
+        OpenMode openMode = lookupOpenMode != null
+                ? lookupOpenMode.getOpenMode()
+                : OpenMode.DIALOG;
+
+        Screen lookupScreen = lookupScreens.builder(entityClass, getFrame().getFrameOwner())
+                .withScreen(getLookupScreenInternal())
+                .withLaunchMode(openMode)
+                .withOptions(new MapScreenOptions(getLookupScreenParamsInternal()))
+                .withSelectHandler(selected -> {
+                    handleLookupSelection(selected);
+                    if (afterLookupSelect != null) {
+                        afterLookupSelect.run();
+                    }
+                })
+                .build();
+
+        if (lookupOpenMode != null) {
+            applyOpenTypeParameters(lookupScreen.getWindow(), lookupOpenMode);
+        }
+
+        return lookupScreen;
+    }
+
+    protected String getLookupScreenInternal() {
+        return StringUtils.isNotEmpty(getLookupScreen())
+                ? getLookupScreen()
+                : windowConfig.getLookupScreen(getLookupEntityClass()).getId();
+    }
+
+    protected Class<V> getLookupEntityClass() {
+        Class<V> entityClass;
+
+        ValueSource<Collection<V>> valueSource = getValueSource();
+        if (valueSource != null) {
+            if (valueSource instanceof EntityValueSource) {
+                //noinspection unchecked
+                entityClass = ((EntityValueSource) valueSource).getMetaPropertyPath().getRangeJavaClass();
+            } else {
+                entityClass = ((LegacyCollectionDsValueSource<V>) valueSource).getDatasource().getMetaClass().getJavaClass();
+            }
+        } else if (getOptions() instanceof EntityOptions) {
+            entityClass = ((EntityOptions<V>) getOptions()).getEntityMetaClass().getJavaClass();
+        } else {
+            throw new RuntimeException("Unable to determine entity class to open lookup");
+        }
+
+        return entityClass;
+    }
+
+    protected Map<String, Object> getLookupScreenParamsInternal() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("windowOpener", getFrame().getId());
+        if (isMultiSelect()) {
+            WindowParams.MULTI_SELECT.set(params, true);
+            // for backward compatibility
+            params.put("multiSelect", "true");
+        }
+        if (lookupScreenParams != null) {
+            params.putAll(lookupScreenParams);
+        }
+        return params;
+    }
+
+    @Deprecated
+    protected void applyOpenTypeParameters(Window window, OpenType openType) {
+        if (window instanceof DialogWindow) {
+            DialogWindow dialogWindow = (DialogWindow) window;
+
+            if (openType.getCloseOnClickOutside() != null) {
+                dialogWindow.setCloseOnClickOutside(openType.getCloseOnClickOutside());
+            }
+            if (openType.getMaximized() != null) {
+                dialogWindow.setWindowMode(openType.getMaximized() ? DialogWindow.WindowMode.MAXIMIZED : DialogWindow.WindowMode.NORMAL);
+            }
+            if (openType.getModal() != null) {
+                dialogWindow.setModal(openType.getModal());
+            }
+            if (openType.getResizable() != null) {
+                dialogWindow.setResizable(openType.getResizable());
+            }
+            if (openType.getWidth() != null) {
+                dialogWindow.setDialogWidth(openType.getWidth() + openType.getWidthUnit().getSymbol());
+            }
+            if (openType.getHeight() != null) {
+                dialogWindow.setDialogHeight(openType.getHeight() + openType.getHeightUnit().getSymbol());
+            }
+        }
+
+        if (openType.getCloseable() != null) {
+            window.setCloseable(openType.getCloseable());
+        }
+    }
+
+    protected void handleLookupSelection(Collection<V> selectedEntities) {
+        if (CollectionUtils.isEmpty(selectedEntities)) {
+            return;
+        }
+
+        handleSelection(selectedEntities);
+
+        if (afterLookupSelectionHandler != null) {
+            afterLookupSelectionHandler.onSelect(selectedEntities);
+        }
+    }
+
+    protected void handleSelection(Collection<V> selected) {
+        if (itemChangeHandler != null) {
+            selected.forEach(itemChangeHandler::addItem);
+        } else {
+            ValueSource<Collection<V>> valueSource = getValueSource();
+            if (valueSource != null) {
+                Collection<V> modelValue = refreshValueIfNeeded();
+
+                for (V newItem : selected) {
+                    if (!modelValue.contains(newItem)) {
+                        modelValue.add(newItem);
+                    }
+                }
+
+                valueSource.setValue(modelValue);
+            }
+        }
+    }
+
+    protected Collection<V> refreshValueIfNeeded() {
+        EntityOptions<V> options = (EntityOptions<V>) getOptions();
+        Collection<V> valueSourceValue = getValueSourceValue();
+
+        if (options == null || !isRefreshOptionsOnLookupClose()) {
+            return valueSourceValue;
+        }
+
+        options.refresh();
+
+        for (V value : valueSourceValue) {
+            options.getOptions()
+                    .filter(option -> Objects.equals(option.getId(), value.getId()))
+                    .findFirst()
+                    .ifPresent(option -> {
+                        valueSourceValue.remove(value);
+                        valueSourceValue.add(option);
+                    });
+        }
+
+        return valueSourceValue;
+    }
+
+    @Nonnull
+    protected Collection<V> getValueSourceValue() {
+        ValueSource<Collection<V>> valueSource = getValueSource();
+        if (valueSource == null) {
+            return Collections.emptyList();
+        }
+
+        Collection<V> modelValue;
+
+        if (valueSource instanceof EntityValueSource) {
+            Class<?> modelCollectionType = ((EntityValueSource) valueSource)
+                    .getMetaPropertyPath().getMetaProperty().getJavaType();
+
+            Collection<V> valueSourceValue = valueSource.getValue() == null
+                    ? Collections.emptyList()
+                    : valueSource.getValue();
+
+            if (Set.class.isAssignableFrom(modelCollectionType)) {
+                modelValue = new LinkedHashSet<>(valueSourceValue);
+            } else {
+                modelValue = new ArrayList<>(valueSourceValue);
+            }
+        } else {
+            modelValue = new ArrayList<>(valueSource.getValue());
+        }
+
+        return modelValue;
     }
 
     @Override
@@ -461,17 +519,11 @@ public class WebTokenList<V> extends WebV8AbstractField<WebTokenList.CubaTokenLi
     @Override
     public void setLookupScreen(String lookupScreen) {
         this.lookupScreen = lookupScreen;
-        if (lookupAction != null) {
-            lookupAction.setLookupScreen(lookupScreen);
-        }
     }
 
     @Override
     public void setLookupScreenParams(Map<String, Object> params) {
         this.lookupScreenParams = params;
-        if (lookupAction != null) {
-            lookupAction.setLookupScreenParams(params);
-        }
     }
 
     @Override
@@ -579,7 +631,6 @@ public class WebTokenList<V> extends WebV8AbstractField<WebTokenList.CubaTokenLi
     @Override
     public void setPosition(Position position) {
         this.position = position;
-
         component.refreshComponent();
     }
 
@@ -591,7 +642,6 @@ public class WebTokenList<V> extends WebV8AbstractField<WebTokenList.CubaTokenLi
     @Override
     public void setInline(boolean inline) {
         this.inline = inline;
-
         component.refreshComponent();
     }
 
@@ -636,14 +686,14 @@ public class WebTokenList<V> extends WebV8AbstractField<WebTokenList.CubaTokenLi
         if (instance == null) {
             return "";
         }
+
         if (captionProperty != null) {
-            MetaPropertyPath propertyPath = instance.getMetaClass().getPropertyPath(captionProperty);
-            if (propertyPath != null) {
-                Object o = instance.getValueEx(propertyPath);
-                return o != null ? o.toString() : " ";
+            if (instance.getMetaClass().getPropertyPath(captionProperty) == null) {
+                throw new IllegalArgumentException(String.format("Couldn't find property with name '%s'", captionProperty));
             }
 
-            throw new IllegalArgumentException(String.format("Couldn't find property with name '%s'", captionProperty));
+            Object o = instance.getValueEx(captionProperty);
+            return o != null ? o.toString() : " ";
         } else {
             return metadata.getTools().getInstanceName(instance);
         }
@@ -659,80 +709,22 @@ public class WebTokenList<V> extends WebV8AbstractField<WebTokenList.CubaTokenLi
         component.setTabIndex(tabIndex);
     }
 
-    @SuppressWarnings("unchecked")
     protected void addValueFromLookupPickerField() {
-        final Entity newItem = lookupPickerField.getValue();
-        if (newItem == null) return;
-        if (itemChangeHandler != null) {
-            itemChangeHandler.addItem(newItem);
-        } else {
-            if (datasource != null) {
-                // get master entity and inverse attribute in case of nested datasource
-                Entity masterEntity = getMasterEntity(datasource);
-                MetaProperty inverseProp = getInverseProperty(datasource);
-
-                if (!datasource.containsItem(newItem.getId())) {
-                    // Initialize reference to master entity
-                    if (inverseProp != null && isInitializeMasterReference(inverseProp)) {
-                        newItem.setValue(inverseProp.getName(), masterEntity);
-                    }
-
-                    datasource.addItem(newItem);
-                }
-            }
+        V newItem = lookupPickerField.getValue();
+        if (newItem == null) {
+            return;
         }
+
+        handleSelection(Collections.singleton(newItem));
+
         lookupPickerField.setValue(null);
         lookupPickerField.focus();
-
-        if (lookupPickerField.isRefreshOptionsOnLookupClose()) {
-            for (Object obj : getDatasource().getItems()) {
-                Entity entity = (Entity) obj;
-                if (getOptionsDatasource().containsItem(entity.getId())) {
-                    datasource.updateItem(getOptionsDatasource().getItem(entity.getId()));
-                }
-            }
-        }
-    }
-
-    @Nullable
-    protected Entity getMasterEntity(CollectionDatasource datasource) {
-        if (datasource instanceof NestedDatasource) {
-            Datasource masterDs = ((NestedDatasource) datasource).getMaster();
-            com.google.common.base.Preconditions.checkState(masterDs != null);
-            return masterDs.getItem();
-        }
-        return null;
-    }
-
-    @Nullable
-    protected MetaProperty getInverseProperty(CollectionDatasource datasource) {
-        if (datasource instanceof NestedDatasource) {
-            MetaProperty metaProperty = ((NestedDatasource) datasource).getProperty();
-            com.google.common.base.Preconditions.checkState(metaProperty != null);
-            return metaProperty.getInverse();
-        }
-        return null;
-    }
-
-    protected boolean isInitializeMasterReference(MetaProperty inverseProp) {
-        return !inverseProp.getRange().getCardinality().isMany()
-                && isInversePropertyAssignableFromDsClass(inverseProp);
-
-    }
-
-    protected boolean isInversePropertyAssignableFromDsClass(MetaProperty inverseProp) {
-        ExtendedEntities extendedEntities = metadata.getExtendedEntities();
-
-        Class inversePropClass = extendedEntities.getEffectiveClass(inverseProp.getDomain());
-        Class dsClass = extendedEntities.getEffectiveClass(datasource.getMetaClass());
-
-        //noinspection unchecked
-        return inversePropClass.isAssignableFrom(dsClass);
     }
 
     @Override
     protected boolean isEmpty(Object value) {
-        return super.isEmpty(value) || (value instanceof Collection && ((Collection) value).isEmpty());
+        return super.isEmpty(value)
+                || (value instanceof Collection && ((Collection) value).isEmpty());
     }
 
     @Override
@@ -742,6 +734,16 @@ public class WebTokenList<V> extends WebV8AbstractField<WebTokenList.CubaTokenLi
         } else {
             lookupPickerField.focus();
         }
+    }
+
+    @Override
+    public void setLookupProvider(Supplier<Screen> lookupProvider) {
+        this.lookupProvider = lookupProvider;
+    }
+
+    @Override
+    public Supplier<Screen> getLookupProvider() {
+        return lookupProvider;
     }
 
     public static class CubaTokenList<T> extends CustomField<T> {
@@ -784,21 +786,18 @@ public class WebTokenList<V> extends WebV8AbstractField<WebTokenList.CubaTokenLi
 
         @Override
         public T getValue() {
-            // do nothing
             return null;
         }
 
         @Override
         protected void doSetValue(T value) {
-            // do nothing
         }
 
         @Override
         public boolean isEmpty() {
-            if (owner.datasource != null) {
-                return owner.datasource.getItems().isEmpty();
-            }
-            return super.isEmpty();
+            return owner.getValueSource() != null
+                    ? owner.getValueSourceValue().isEmpty()
+                    : super.isEmpty();
         }
 
         @Override
@@ -875,56 +874,8 @@ public class WebTokenList<V> extends WebV8AbstractField<WebTokenList.CubaTokenLi
                     owner.addButton.focus();
                 });
             } else {
-                addButtonSub = owner.addButton.addClickListener(e -> {
-                    String windowAlias;
-                    if (owner.getLookupScreen() != null) {
-                        windowAlias = owner.getLookupScreen();
-                    } else if (owner.getOptionsDatasource() != null) {
-                        windowAlias = owner.windowConfig.getBrowseScreenId(owner.getOptionsDatasource().getMetaClass());
-                    } else {
-                        windowAlias = owner.windowConfig.getBrowseScreenId(owner.getDatasource().getMetaClass());
-                    }
-
-                    WindowInfo windowInfo = owner.windowConfig.getWindowInfo(windowAlias);
-
-                    Map<String, Object> params = new HashMap<>();
-                    params.put("windowOpener", owner.getFrame().getId());
-                    if (owner.isMultiSelect()) {
-                        WindowParams.MULTI_SELECT.set(params, true);
-                        // for backward compatibility
-                        params.put("multiSelect", "true");
-                    }
-                    if (owner.lookupScreenParams != null) {
-                        //noinspection unchecked
-                        params.putAll(owner.lookupScreenParams);
-                    }
-
-                    WindowManager wm = App.getInstance().getWindowManager();
-
-                    AbstractLookup lookupWindow = (AbstractLookup) wm.openLookup(windowInfo, items -> {
-                        if (owner.lookupPickerField.isRefreshOptionsOnLookupClose()) {
-                            owner.lookupPickerField.getOptionsDatasource().refresh();
-                        }
-
-                        if (owner.isEditable()) {
-                            if (items == null || items.isEmpty()) return;
-
-                            handleLookupInternal(items);
-
-                            if (owner.afterLookupSelectionHandler != null) {
-                                owner.afterLookupSelectionHandler.onSelect(items);
-                            }
-                        }
-                        owner.addButton.focus();
-                    }, owner.lookupOpenMode, params);
-
-                    if (owner.afterLookupCloseHandler != null) {
-                        lookupWindow.addAfterCloseListener(event -> {
-                            String actionId = ((StandardCloseAction) event.getCloseAction()).getActionId();
-                            owner.afterLookupCloseHandler.onClose(lookupWindow, actionId);
-                        });
-                    }
-                });
+                addButtonSub = owner.addButton.addClickListener(e ->
+                        owner.openLookup(() -> owner.addButton.focus()));
             }
             editor.addComponent(owner.addButton.unwrap(com.vaadin.ui.Button.class));
 
@@ -939,37 +890,12 @@ public class WebTokenList<V> extends WebV8AbstractField<WebTokenList.CubaTokenLi
 
             com.vaadin.ui.Button vClearButton = owner.clearButton.unwrap(com.vaadin.ui.Button.class);
             if (owner.isSimple()) {
-                final HorizontalLayout clearLayout = new HorizontalLayout();
+                HorizontalLayout clearLayout = new HorizontalLayout();
                 clearLayout.addComponent(vClearButton);
                 editor.addComponent(clearLayout);
                 editor.setExpandRatio(clearLayout, 1);
             } else {
                 editor.addComponent(vClearButton);
-            }
-        }
-
-        @SuppressWarnings("unchecked")
-        protected void handleLookupInternal(Collection items) {
-            // get master entity and inverse attribute in case of nested datasource
-            Entity masterEntity = owner.getMasterEntity(owner.datasource);
-            MetaProperty inverseProp = owner.getInverseProperty(owner.datasource);
-            boolean initializeMasterReference = inverseProp != null && owner.isInitializeMasterReference(inverseProp);
-
-            for (final Object item : items) {
-                if (owner.itemChangeHandler != null) {
-                    owner.itemChangeHandler.addItem(item);
-                } else {
-                    if (item instanceof Entity) {
-                        Entity entity = (Entity) item;
-                        if (owner.datasource != null && !owner.datasource.containsItem(entity.getId())) {
-                            // Initialize reference to master entity
-                            if (initializeMasterReference) {
-                                entity.setValue(inverseProp.getName(), masterEntity);
-                            }
-                            owner.datasource.addItem(entity);
-                        }
-                    }
-                }
             }
         }
 
@@ -1002,26 +928,27 @@ public class WebTokenList<V> extends WebV8AbstractField<WebTokenList.CubaTokenLi
 
             tokenContainer.removeAllComponents();
 
-            if (owner.datasource != null) {
+            //noinspection unchecked
+            ValueSource<Collection<Entity>> valueSource = owner.getValueSource();
+
+            if (valueSource != null && CollectionUtils.isNotEmpty(valueSource.getValue())) {
                 List<Instance> usedItems = new ArrayList<>();
 
                 // New tokens
-                for (final Object itemId : owner.datasource.getItemIds()) {
-                    //noinspection unchecked
-                    final Instance item = owner.datasource.getItem(itemId);
-                    CubaTokenListLabel f = itemComponents.get(item);
+                for (Entity entity : valueSource.getValue()) {
+                    CubaTokenListLabel f = itemComponents.get(entity);
                     if (f == null) {
                         f = createToken();
-                        itemComponents.put(item, f);
-                        componentItems.put(f, item);
+                        itemComponents.put(entity, f);
+                        componentItems.put(f, entity);
                     }
                     f.setEditable(owner.isEditable());
-                    f.setText(owner.instanceCaption(item));
+                    f.setText(owner.instanceCaption(entity));
                     f.setWidthUndefined();
 
-                    setTokenStyle(f, itemId);
+                    setTokenStyle(f, entity.getId());
                     tokenContainer.addComponent(f);
-                    usedItems.add(item);
+                    usedItems.add(entity);
                 }
 
                 // Remove obsolete items
@@ -1087,11 +1014,14 @@ public class WebTokenList<V> extends WebV8AbstractField<WebTokenList.CubaTokenLi
         }
 
         public void refreshClickListeners(ItemClickListener listener) {
-            if (owner.datasource != null && CollectionDatasource.State.VALID.equals(owner.datasource.getState())) {
-                for (Object id : owner.datasource.getItemIds()) {
-                    //noinspection unchecked
-                    Instance item = owner.datasource.getItem(id);
-                    final CubaTokenListLabel label = itemComponents.get(item);
+            //noinspection unchecked
+            ValueSource<Collection<Entity>> valueSource = owner.getValueSource();
+            if (valueSource != null
+                    && CollectionUtils.isNotEmpty(valueSource.getValue())
+                    && BindingState.ACTIVE == valueSource.getState()) {
+
+                for (Entity entity : valueSource.getValue()) {
+                    CubaTokenListLabel label = itemComponents.get(entity);
                     if (label != null) {
                         if (listener != null) {
                             label.setClickListener(source ->
@@ -1105,7 +1035,7 @@ public class WebTokenList<V> extends WebV8AbstractField<WebTokenList.CubaTokenLi
         }
 
         protected CubaTokenListLabel createToken() {
-            final CubaTokenListLabel label = new CubaTokenListLabel();
+            CubaTokenListLabel label = new CubaTokenListLabel();
             label.setWidth("100%");
             label.addListener((CubaTokenListLabel.RemoveTokenListener) source -> {
                 if (owner.isEditable()) {
@@ -1125,18 +1055,13 @@ public class WebTokenList<V> extends WebV8AbstractField<WebTokenList.CubaTokenLi
                 if (owner.itemChangeHandler != null) {
                     owner.itemChangeHandler.removeItem(item);
                 } else {
-                    if (owner.datasource != null) {
-                        // get inverse attribute in case of nested datasource
-                        MetaProperty inverseProp = owner.getInverseProperty(owner.datasource);
-                        boolean initializeMasterReference = inverseProp != null
-                                && owner.isInitializeMasterReference(inverseProp);
+                    ValueSource<Collection<? extends Entity>> valueSource = owner.getValueSource();
+                    if (valueSource != null) {
+                        Collection<? extends Entity> value = owner.getValueSourceValue();
 
-                        if (initializeMasterReference) {
-                            item.setValue(inverseProp.getName(), null);
-                            owner.datasource.excludeItem((Entity) item);
-                        } else {
-                            owner.datasource.removeItem((Entity) item);
-                        }
+                        value.remove((Entity) item);
+
+                        valueSource.setValue(value);
                     }
                 }
             }
@@ -1155,7 +1080,7 @@ public class WebTokenList<V> extends WebV8AbstractField<WebTokenList.CubaTokenLi
             if (owner.tokenStyleGenerator != null) {
                 //noinspection unchecked
                 String styleName = ((Function<Object, String>) owner.getTokenStyleGenerator()).apply(itemId);
-                if (styleName != null && !styleName.equals("")) {
+                if (styleName != null && !styleName.isEmpty()) {
                     label.setStyleName(styleName);
                 }
             }

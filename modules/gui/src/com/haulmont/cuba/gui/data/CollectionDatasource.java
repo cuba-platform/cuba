@@ -20,6 +20,8 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.gui.components.AggregationInfo;
 import com.haulmont.cuba.core.global.filter.QueryFilter;
+import com.haulmont.cuba.gui.model.CollectionChangeType;
+import com.haulmont.cuba.gui.model.CollectionContainer;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
@@ -135,6 +137,18 @@ public interface CollectionDatasource<T extends Entity<K>, K> extends Datasource
     void resumeListeners();
 
     /**
+     * Disables all event listeners on datasource data change.
+     * <br>
+     * Can be used with {@link #unmute(UnmuteEventsMode)} for bulk data modification as a performance optimization.
+     */
+    void mute();
+
+    /**
+     * Enables all event listeners. No events are fired on this call.
+     */
+    void unmute(UnmuteEventsMode mode);
+
+    /**
      * @return true if this datasource is in Soft Delete mode.
      */
     boolean isSoftDeletion();
@@ -239,6 +253,18 @@ public interface CollectionDatasource<T extends Entity<K>, K> extends Datasource
      * (through {@code component$} parameter)
      */
     void setRefreshOnComponentValueChange(boolean refresh);
+
+    enum UnmuteEventsMode {
+        /**
+         * No events are raised on unmute.
+         */
+        SILENT,
+
+        /**
+         * Fire a {@link CollectionContainer.CollectionChangeEvent} with {@link CollectionChangeType#REFRESH} type on unmute.
+         */
+        FIRE_REFRESH_EVENT
+    }
 
     /**
      * CollectionDatasource which underlying collection is ordered.

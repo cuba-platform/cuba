@@ -68,7 +68,7 @@ public class ContainerOptions<E extends Entity<K>, K> implements Options<E>, Ent
 
     @SuppressWarnings("unchecked")
     protected void containerItemPropertyChanged(CollectionContainer.ItemPropertyChangeEvent<E> e) {
-        events.publish(ValueChangeEvent.class, new ValueChangeEvent(this, e.getPrevValue(), e.getValue()));
+        events.publish(OptionsChangeEvent.class, new OptionsChangeEvent(this));
     }
 
     @Override
