@@ -44,6 +44,7 @@ import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import com.haulmont.cuba.gui.model.CollectionContainer;
 import com.haulmont.cuba.gui.model.DataComponents;
 import com.haulmont.cuba.gui.model.InstanceContainer;
+import com.haulmont.cuba.gui.sys.UiTestIds;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
 import com.haulmont.cuba.web.App;
@@ -820,6 +821,22 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
             }
 
             refreshActionsState();
+
+            setUiTestId(dataGridItems);
+        }
+    }
+
+    protected void setUiTestId(DataGridItems<E> items) {
+        AppUI ui = AppUI.getCurrent();
+
+        if (ui != null && ui.isTestMode()
+                && getComponent().getCubaId() == null) {
+
+            String testId = UiTestIds.getInferredTestId(items, "DataGrid");
+            if (testId != null) {
+                getComponent().setCubaId(testId);
+                componentComposition.setCubaId(testId + "_composition");
+            }
         }
     }
 

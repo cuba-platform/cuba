@@ -16,7 +16,6 @@
 
 package com.haulmont.cuba.web.widgets;
 
-import com.google.common.base.Preconditions;
 import com.haulmont.cuba.web.widgets.tree.EnhancedTreeDataProvider;
 import com.vaadin.data.SelectionModel;
 import com.vaadin.data.provider.DataProvider;
@@ -37,11 +36,20 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static com.google.common.base.Preconditions.checkArgument;
+
 public class CubaTree<T> extends Tree<T> implements Action.ShortcutNotifier {
 
     @Override
     protected TreeGrid<T> createTreeGrid() {
         return new CubaTreeGrid<>();
+    }
+
+    @Override
+    public void setCubaId(String cubaId) {
+        super.setCubaId(cubaId);
+
+        getCompositionRoot().setCubaId(cubaId);
     }
 
     @SuppressWarnings("unchecked")
@@ -79,7 +87,8 @@ public class CubaTree<T> extends Tree<T> implements Action.ShortcutNotifier {
     }
 
     public Collection<T> getChildren(T item) {
-        return getDataProvider().fetchChildren(new HierarchicalQuery<>(null, item))
+        return getDataProvider()
+                .fetchChildren(new HierarchicalQuery<>(null, item))
                 .collect(Collectors.toList());
     }
 
@@ -122,7 +131,7 @@ public class CubaTree<T> extends Tree<T> implements Action.ShortcutNotifier {
     }
 
     public void expandUpTo(int level) {
-        Preconditions.checkArgument(level > 0, "level should be greater than 0");
+        checkArgument(level > 0, "level should be greater than 0");
 
         Collection<T> rootItems = getChildren(null);
         expandRecursively(rootItems, level - 1);

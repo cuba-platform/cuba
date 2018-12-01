@@ -18,11 +18,11 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.bali.events.Subscription;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
-import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.data.ValueSource;
 import com.haulmont.cuba.gui.components.data.meta.ValueBinding;
 import com.haulmont.cuba.gui.components.data.value.ValueBinder;
+import com.haulmont.cuba.gui.sys.UiTestIds;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.widgets.compatibility.CubaValueChangeEvent;
 
@@ -33,7 +33,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 public abstract class WebAbstractField<T extends com.vaadin.v7.ui.AbstractField, V>
-        extends WebAbstractComponent<T> implements Field<V> /* todo ds: move to Field */ {
+        extends WebAbstractComponent<T> implements Field<V> {
 
     protected static final int VALIDATORS_LIST_INITIAL_CAPACITY = 4;
 
@@ -81,7 +81,7 @@ public abstract class WebAbstractField<T extends com.vaadin.v7.ui.AbstractField,
         if (ui != null && ui.isTestMode()
                 && getComponent().getCubaId() == null) {
 
-            String testId = ComponentsHelper.getInferredTestId(valueSource);
+            String testId = UiTestIds.getInferredTestId(valueSource);
             if (testId != null) {
                 getComponent().setCubaId(testId);
             }

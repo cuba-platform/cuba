@@ -26,9 +26,6 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.*;
-import com.haulmont.cuba.gui.components.data.ValueSource;
-import com.haulmont.cuba.gui.components.data.value.ContainerValueSource;
-import com.haulmont.cuba.gui.components.data.value.DatasourceValueSource;
 import com.haulmont.cuba.gui.components.mainwindow.AppWorkArea;
 import com.haulmont.cuba.gui.components.sys.FrameImplementation;
 import com.haulmont.cuba.gui.components.sys.ValuePathHelper;
@@ -777,21 +774,6 @@ public abstract class ComponentsHelper {
                 }
             }
         }
-        return null;
-    }
-
-    @Nullable
-    public static String getInferredTestId(ValueSource<?> valueSource) {
-        if (valueSource instanceof DatasourceValueSource) {
-            DatasourceValueSource dsValueSource = (DatasourceValueSource) valueSource;
-
-            return StringUtils.join(dsValueSource.getMetaPropertyPath().getPropertyNames(), "_");
-        } else if (valueSource instanceof ContainerValueSource) {
-            ContainerValueSource dcValueSource = (ContainerValueSource) valueSource;
-
-            return StringUtils.join(dcValueSource.getMetaPropertyPath().getPropertyNames(), "_");
-        }
-
         return null;
     }
 }

@@ -57,6 +57,7 @@ import com.haulmont.cuba.gui.presentations.Presentations;
 import com.haulmont.cuba.gui.presentations.PresentationsImpl;
 import com.haulmont.cuba.gui.screen.FrameOwner;
 import com.haulmont.cuba.gui.screen.InstallTargetHandler;
+import com.haulmont.cuba.gui.sys.UiTestIds;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
 import com.haulmont.cuba.security.entity.Presentation;
@@ -1272,6 +1273,22 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
             }
 
             refreshActionsState();
+
+            setUiTestId(tableItems);
+        }
+    }
+
+    protected void setUiTestId(TableItems<E> items) {
+        AppUI ui = AppUI.getCurrent();
+
+        if (ui != null && ui.isTestMode()
+                && getComponent().getCubaId() == null) {
+
+            String testId = UiTestIds.getInferredTestId(items, "Table");
+            if (testId != null) {
+                getComponent().setCubaId(testId);
+                componentComposition.setCubaId(testId + "_composition");
+            }
         }
     }
 

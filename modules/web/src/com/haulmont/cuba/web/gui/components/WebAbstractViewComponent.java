@@ -19,13 +19,13 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.bali.events.Subscription;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.global.BeanLocator;
-import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.HasValue;
 import com.haulmont.cuba.gui.components.data.ConversionException;
 import com.haulmont.cuba.gui.components.data.HasValueSource;
 import com.haulmont.cuba.gui.components.data.ValueSource;
 import com.haulmont.cuba.gui.components.data.meta.ValueBinding;
 import com.haulmont.cuba.gui.components.data.value.ValueBinder;
+import com.haulmont.cuba.gui.sys.UiTestIds;
 import com.haulmont.cuba.web.AppUI;
 
 import javax.inject.Inject;
@@ -74,7 +74,7 @@ public abstract class WebAbstractViewComponent<T extends com.vaadin.ui.Component
         if (ui != null && ui.isTestMode()
                 && getComponent().getCubaId() == null) {
 
-            String testId = ComponentsHelper.getInferredTestId(valueSource);
+            String testId = UiTestIds.getInferredTestId(valueSource);
             if (testId != null) {
                 getComponent().setCubaId(testId);
             }

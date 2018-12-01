@@ -37,8 +37,10 @@ import com.haulmont.cuba.gui.components.data.tree.DatasourceTreeItems;
 import com.haulmont.cuba.gui.components.security.ActionsPermissions;
 import com.haulmont.cuba.gui.components.sys.ShortcutsDelegate;
 import com.haulmont.cuba.gui.components.sys.ShowInfoAction;
+import com.haulmont.cuba.gui.sys.UiTestIds;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
+import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.gui.components.tree.TreeDataProvider;
 import com.haulmont.cuba.web.gui.components.tree.TreeSourceEventsDelegate;
 import com.haulmont.cuba.web.gui.components.util.ShortcutListenerDelegate;
@@ -305,6 +307,34 @@ public class WebTree<E extends Entity>
 
             initShowInfoAction();
             refreshActionsState();
+
+            setUiTestId(treeItems);
+        }
+    }
+
+    protected void setUiTestId(TreeItems<E> items) {
+        AppUI ui = AppUI.getCurrent();
+
+        if (ui != null && ui.isTestMode()
+                && getComponent().getCubaId() == null) {
+
+            String testId = UiTestIds.getInferredTestId(items, "Tree");
+            if (testId != null) {
+                getComponent().setCubaId(testId);
+                componentComposition.setCubaId(testId + "_composition");
+            }
+        }
+    }
+
+    @Override
+    public void setId(String id) {
+        super.setId(id);
+
+        AppUI ui = AppUI.getCurrent();
+        if (id != null
+                && ui != null
+                && ui.isTestMode()) {
+            componentComposition.setCubaId(id + "_composition");
         }
     }
 
@@ -766,7 +796,7 @@ public class WebTree<E extends Entity>
     }
 
     @Override
-    public Collection getLookupSelectedItems() {
+    public Collection<E> getLookupSelectedItems() {
         return getSelected();
     }
 
