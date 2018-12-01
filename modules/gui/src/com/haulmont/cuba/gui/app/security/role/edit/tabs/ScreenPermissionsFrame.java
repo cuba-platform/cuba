@@ -187,9 +187,10 @@ public class ScreenPermissionsFrame extends AbstractFrame {
 
     public void loadPermissions() {
         screenPermissionsDs.refresh();
-        screenPermissionsTreeDs.setPermissionDs(screenPermissionsDs);
 
-        screenPermissionsDs.refresh();
+        screenPermissionsTreeDs.setPermissionDs(screenPermissionsDs);
+        screenPermissionsTreeDs.refresh();
+
         screenPermissionsTree.expandAll();
         screenPermissionsTree.collapse("root:others");
     }
