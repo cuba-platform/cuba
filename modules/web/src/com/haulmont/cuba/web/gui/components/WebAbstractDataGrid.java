@@ -398,7 +398,13 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
             }
 
             E newItem = selected.iterator().next();
+            E dsItem = dataGridItems.getSelectedItem();
             dataGridItems.setSelectedItem(newItem);
+
+            if (Objects.equals(dsItem, newItem)) {
+                // in this case item change event will not be generated
+                refreshActionsState();
+            }
         }
 
         LookupSelectionChangeEvent<E> selectionChangeEvent = new LookupSelectionChangeEvent<>(this);

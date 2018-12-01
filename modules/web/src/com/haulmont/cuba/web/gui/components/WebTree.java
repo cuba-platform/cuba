@@ -976,20 +976,28 @@ public class WebTree<E extends Entity>
 
         Set<E> selected = getSelected();
         if (treeItems instanceof EntityTreeItems) {
+            EntityTreeItems<E> entityTreeItems = (EntityTreeItems<E>) treeItems;
+
             if (selected.isEmpty()) {
-                ((EntityTreeItems<E>) treeItems).setSelectedItem(null);
+                entityTreeItems.setSelectedItem(null);
             } else {
                 // reset selection and select new item
                 if (isMultiSelect()) {
-                    ((EntityTreeItems<E>) treeItems).setSelectedItem(null);
+                    entityTreeItems.setSelectedItem(null);
                 }
 
                 E newItem = selected.iterator().next();
-                ((EntityTreeItems<E>) treeItems).setSelectedItem(newItem);
+                E dsItem = entityTreeItems.getSelectedItem();
+                entityTreeItems.setSelectedItem(newItem);
+
+                if (Objects.equals(dsItem, newItem)) {
+                    // in this case item change event will not be generated
+                    refreshActionsState();
+                }
             }
         }
 
-        LookupSelectionChangeEvent selectionChangeEvent = new LookupSelectionChangeEvent(this);
+        LookupSelectionChangeEvent<E> selectionChangeEvent = new LookupSelectionChangeEvent<>(this);
         publish(LookupSelectionChangeEvent.class, selectionChangeEvent);
 
         // todo implement selection change events
@@ -1010,7 +1018,7 @@ public class WebTree<E extends Entity>
     @Nullable
     @Override
     public E getSingleSelected() {
-        final Set<E> selectedItems = component.getSelectedItems();
+        Set<E> selectedItems = component.getSelectedItems();
         return CollectionUtils.isNotEmpty(selectedItems)
                 ? selectedItems.iterator().next()
                 : null;
@@ -1018,7 +1026,7 @@ public class WebTree<E extends Entity>
 
     @Override
     public Set<E> getSelected() {
-        final Set<E> selectedItems = component.getSelectedItems();
+        Set<E> selectedItems = component.getSelectedItems();
         return selectedItems != null
                 ? selectedItems
                 : Collections.emptySet();

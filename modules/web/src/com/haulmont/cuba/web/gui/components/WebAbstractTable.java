@@ -998,10 +998,16 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
             }
 
             E newItem = selected.iterator().next();
+            E dsItem = entityTableSource.getSelectedItem();
             entityTableSource.setSelectedItem(newItem);
+
+            if (Objects.equals(dsItem, newItem)) {
+                // in this case item change event will not be generated
+                refreshActionsState();
+            }
         }
 
-        LookupSelectionChangeEvent selectionChangeEvent = new LookupSelectionChangeEvent(this);
+        LookupSelectionChangeEvent<E> selectionChangeEvent = new LookupSelectionChangeEvent<>(this);
         publish(LookupSelectionChangeEvent.class, selectionChangeEvent);
 
         fireSelectionEvent(event);
