@@ -254,6 +254,11 @@ public class WebPickerField<V extends Entity> extends WebV8AbstractField<CubaPic
             setPickerButtonIcon(button, action.getIcon());
         }
 
+        AppUI ui = AppUI.getCurrent();
+        if (ui != null && ui.isTestMode()) {
+            button.setCubaId(action.getId());
+        }
+
         action.addPropertyChangeListener(actionPropertyChangeListener);
         button.setClickHandler(event -> {
             this.focus();
