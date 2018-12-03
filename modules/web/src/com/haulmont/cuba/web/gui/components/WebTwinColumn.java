@@ -16,167 +16,187 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
-import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.google.common.base.Strings;
+import com.google.common.collect.BiMap;
+import com.google.common.collect.ImmutableBiMap;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.MetadataTools;
+import com.haulmont.cuba.gui.components.CaptionMode;
 import com.haulmont.cuba.gui.components.TwinColumn;
+import com.haulmont.cuba.gui.components.data.ConversionException;
 import com.haulmont.cuba.gui.components.data.Options;
-import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.web.gui.components.converters.ObjectToObjectConverter;
-import com.haulmont.cuba.web.gui.data.PropertyWrapper;
+import com.haulmont.cuba.gui.components.data.meta.EntityOptions;
+import com.haulmont.cuba.gui.components.data.meta.EntityValueSource;
+import com.haulmont.cuba.gui.components.data.meta.OptionsBinding;
+import com.haulmont.cuba.gui.components.data.options.MapOptions;
+import com.haulmont.cuba.gui.components.data.options.OptionsBinder;
 import com.haulmont.cuba.web.gui.icons.IconResolver;
 import com.haulmont.cuba.web.widgets.CubaTwinColSelect;
-import com.vaadin.server.Resource;
-import com.vaadin.v7.data.Property;
-import com.vaadin.v7.data.util.converter.Converter;
-import com.vaadin.v7.ui.AbstractSelect;
+import org.apache.commons.collections4.CollectionUtils;
+import org.springframework.beans.factory.InitializingBean;
 
+import javax.inject.Inject;
 import java.util.*;
 import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-public class WebTwinColumn<V, I> extends WebAbstractOptionsField<CubaTwinColSelect, V, I> implements TwinColumn<V, I> {
+public class WebTwinColumn<V> extends WebV8AbstractField<CubaTwinColSelect<V>, Set<V>, Collection<V>>
+        implements TwinColumn<V>, InitializingBean {
 
-    protected StyleProvider styleProvider;
+    protected OptionsBinding<V> optionsBinding;
+
+    protected Function<? super V, String> optionCaptionProvider;
+    protected OptionStyleProvider<V> optionStyleProvider;
+
+    protected int columns;
+
+    protected MetadataTools metadataTools;
 
     protected IconResolver iconResolver = AppBeans.get(IconResolver.class);
 
+    protected String captionProperty;
+    protected CaptionMode captionMode;
+
     public WebTwinColumn() {
-        component = new CubaTwinColSelect() {
-            @Override
-            public void setPropertyDataSource(Property newDataSource) {
-                super.setPropertyDataSource(new PropertyAdapter(newDataSource) {
-                    @Override
-                    public Object getValue() {
-                        final Object o = itemProperty.getValue();
-                        return getKeyFromValue(o);
-                    }
+        component = createComponent();
+        attachValueChangeListener(component);
+    }
 
-                    @Override
-                    public void setValue(Object newValue) throws ReadOnlyException, Converter.ConversionException {
-                        final Object v = getValueFromKey(newValue);
-                        itemProperty.setValue(v);
-                    }
-                });
-            }
-
-            @Override
-            public Resource getItemIcon(Object itemId) {
-                if (styleProvider != null) {
-                    @SuppressWarnings({"unchecked"})
-                    Entity item = optionsDatasource.getItem(itemId);
-                    String resURL = styleProvider.getItemIcon(item, isSelected(itemId));
-
-                    return iconResolver.getIconResource(resURL);
-                } else {
-                    return null;
-                }
-            }
-        };
-        attachListener(component);
-        component.setItemCaptionMode(AbstractSelect.ItemCaptionMode.ITEM);
-        component.setMultiSelect(true);
-        component.setInvalidAllowed(false);
-        component.setInvalidCommitted(true);
+    protected CubaTwinColSelect<V> createComponent() {
+        return new CubaTwinColSelect<>();
     }
 
     @Override
-    public void setOptions(Options<I> options) {
-        // todo
+    public void afterPropertiesSet() {
+        initComponent(component);
+    }
+
+    protected void initComponent(CubaTwinColSelect<V> component) {
+        component.setItemCaptionGenerator(this::generateItemCaption);
+    }
+
+    @Inject
+    protected void setMetadataTools(MetadataTools metadataTools) {
+        this.metadataTools = metadataTools;
     }
 
     @Override
-    public Options<I> getOptions() {
-        // todo
-        return null;
-    }
-
-    @Override
-    public void setOptionCaptionProvider(Function<? super I, String> captionProvider) {
-        // todo
-    }
-
-    @Override
-    public Function<? super I, String> getOptionCaptionProvider() {
-        // todo
-        return null;
-    }
-
-    public static class CollectionPropertyWrapper extends PropertyWrapper {
-
-        public CollectionPropertyWrapper(Object item, MetaPropertyPath propertyPath) {
-            super(item, propertyPath);
+    public void setOptions(Options<V> options) {
+        if (this.optionsBinding != null) {
+            this.optionsBinding.unbind();
+            this.optionsBinding = null;
         }
 
-        @Override
-        public void setValue(Object newValue) throws ReadOnlyException, Converter.ConversionException {
-            Class propertyType = propertyPath.getMetaProperty().getJavaType();
-            if (Set.class.isAssignableFrom(propertyType)) {
-                if (newValue == null) {
-                    newValue = new HashSet();
-                } else {
-                    if (newValue instanceof Collection) {
-                        newValue = new HashSet<>((Collection<?>) newValue);
-                    } else {
-                        newValue = Collections.singleton(newValue);
-                    }
-                }
-            } else if (List.class.isAssignableFrom(propertyType)) {
-                if (newValue == null) {
-                    newValue = new ArrayList();
-                } else {
-                    if (newValue instanceof Collection) {
-                        newValue = new ArrayList<>((Collection<?>) newValue);
-                    } else {
-                        newValue = Collections.singletonList(newValue);
-                    }
-                }
-            }
-            super.setValue(newValue);
+        if (options != null) {
+            OptionsBinder optionsBinder = beanLocator.get(OptionsBinder.NAME);
+            this.optionsBinding = optionsBinder.bind(options, this, this::setItemsToPresentation);
+            this.optionsBinding.activate();
         }
 
-        @Override
-        public Object getValue() {
-            Object value = super.getValue();
-            if (value instanceof Collection) {
-                Class propertyType = propertyPath.getMetaProperty().getJavaType();
-                if (Set.class.isAssignableFrom(propertyType)) {
-                    value = new HashSet<>((Collection<?>) value);
-                } else if (List.class.isAssignableFrom(propertyType)) {
-                    value = new LinkedHashSet<>((Collection<?>) value);
-                }
-            }
-            return value;
-        }
-
-        @Override
-        public Class getType() {
-            return Object.class;
-        }
-    }
-
-    @Override
-    public V getValue() {
-        if (optionsDatasource != null) {
-            final Object key = super.getValue();
-            return getValueFromKey(key);
+        if (options instanceof MapOptions) {
+            setCaptionMode(CaptionMode.MAP_ENTRY);
         } else {
-            return wrapAsCollection(super.getValue());
+            setCaptionMode(CaptionMode.ITEM);
+        }
+    }
+
+    protected void setItemsToPresentation(Stream<V> options) {
+        component.setItems(options);
+
+        // set value to Vaadin component as it removes value after setItems
+        Collection<V> optionValues = getValue();
+        if (CollectionUtils.isNotEmpty(optionValues)) {
+            List<V> items = getOptions().getOptions().collect(Collectors.toList());
+
+            Set<V> values = new HashSet<>();
+            for (V value : optionValues) {
+                if (items.contains(value)) {
+                    values.add(value);
+                }
+            }
+
+            component.setValue(values);
         }
     }
 
     @Override
-    public void setValue(V value) {
-        super.setValue((V) getKeyFromValue(value));
+    protected Set<V> convertToPresentation(Collection<V> modelValue) throws ConversionException {
+        if (modelValue instanceof Set) {
+            return (Set<V>) modelValue;
+        }
+
+        return modelValue == null ?
+                new LinkedHashSet<>() : new LinkedHashSet<>(modelValue);
+    }
+
+    @Override
+    protected Collection<V> convertToModel(Set<V> componentRawValue) throws ConversionException {
+        Stream<V> items = optionsBinding == null ? Stream.empty()
+                : optionsBinding.getSource().getOptions().filter(componentRawValue::contains);
+
+        if (valueBinding != null) {
+            Class<?> targetType = valueBinding.getSource().getType();
+
+            if (List.class.isAssignableFrom(targetType)) {
+                return items.collect(Collectors.toList());
+            } else if (Set.class.isAssignableFrom(targetType)) {
+                return items.collect(Collectors.toCollection(LinkedHashSet::new));
+            }
+        }
+
+        return items.collect(Collectors.toCollection(LinkedHashSet::new));
+    }
+
+    @Override
+    public Options<V> getOptions() {
+        return optionsBinding != null ? optionsBinding.getSource() : null;
+    }
+
+    @Override
+    public void setOptionCaptionProvider(Function<? super V, String> captionProvider) {
+        this.optionCaptionProvider = captionProvider;
+
+        component.setItemCaptionGenerator(this::generateItemCaption);
+    }
+
+    protected String generateItemCaption(V item) {
+        if (item == null) {
+            return null;
+        }
+
+        if (optionCaptionProvider != null) {
+            return optionCaptionProvider.apply(item);
+        }
+
+        return generateDefaultItemCaption(item);
+    }
+
+    protected String generateDefaultItemCaption(V item) {
+        if (valueBinding != null && valueBinding.getSource() instanceof EntityValueSource) {
+            EntityValueSource entityValueSource = (EntityValueSource) valueBinding.getSource();
+            return metadataTools.format(item, entityValueSource.getMetaPropertyPath().getMetaProperty());
+        }
+
+        return metadataTools.format(item);
+    }
+
+    @Override
+    public Function<? super V, String> getOptionCaptionProvider() {
+        return optionCaptionProvider;
     }
 
     @Override
     public int getColumns() {
-        return component.getColumns();
+        return columns;
     }
 
     @Override
     public void setColumns(int columns) {
-        component.setColumns(columns);
+        this.columns = columns;
+        // see javaDoc Vaadin 7 com.vaadin.ui.TwinColSelect#setColumns(int) for formula
+        component.setWidth((columns * 2 + 4) + columns + "em");
     }
 
     @Override
@@ -190,22 +210,19 @@ public class WebTwinColumn<V, I> extends WebAbstractOptionsField<CubaTwinColSele
     }
 
     @Override
-    public void setDatasource(Datasource datasource, String property) {
-        super.setDatasource(datasource, property);
-        component.setConverter(new ObjectToObjectConverter());
+    public void setOptionStyleProvider(OptionStyleProvider<V> optionStyleProvider) {
+        this.optionStyleProvider = optionStyleProvider;
+
+        if (optionStyleProvider != null) {
+            component.setOptionStyleProvider(optionStyleProvider::getStyleName);
+        } else {
+            component.setOptionStyleProvider(null);
+        }
     }
 
     @Override
-    public void setStyleProvider(final StyleProvider styleProvider) {
-        this.styleProvider = styleProvider;
-        if (styleProvider != null) {
-            component.setStyleGenerator((source, itemId, selected) -> {
-                final Entity item = optionsDatasource.getItem(itemId);
-                return styleProvider.getStyleName(item, itemId, component.isSelected(itemId));
-            });
-        } else {
-            component.setStyleGenerator(null);
-        }
+    public OptionStyleProvider<V> getOptionStyleProvider() {
+        return optionStyleProvider;
     }
 
     @Override
@@ -238,59 +255,60 @@ public class WebTwinColumn<V, I> extends WebAbstractOptionsField<CubaTwinColSele
         return component.getRightColumnCaption();
     }
 
-    protected <T> T getValueFromKey(Object key) {
-        if (key instanceof Collection) {
-            final Set<Object> set = new LinkedHashSet<>();
-            for (Object o : (Collection) key) {
-                Object t = getValue(o);
-                set.add(t);
+    @Override
+    public CaptionMode getCaptionMode() {
+        return captionMode;
+    }
+
+    @Override
+    public void setCaptionMode(CaptionMode captionMode) {
+        if (this.captionMode != captionMode) {
+            switch (captionMode) {
+                case PROPERTY:
+                    if (Strings.isNullOrEmpty(getCaptionProperty())) {
+                        throw new IllegalStateException("Can't set CaptionMode = " + captionMode +
+                                " if the captionProperty is null");
+                    }
+
+                    if (!EntityOptions.class.isAssignableFrom(optionsBinding.getSource().getClass())) {
+                        throw new IllegalStateException("Can't set CaptionMode = " + captionMode +
+                                " for non EntityOptions class");
+                    }
+
+                    setOptionCaptionProvider(this::generateOptionPropertyCaption);
+                    break;
+                case MAP_ENTRY:
+                    if (!MapOptions.class.isAssignableFrom(optionsBinding.getSource().getClass())) {
+                        throw new IllegalStateException("Can't set CaptionMode = " + captionMode +
+                                " for non MapOptions class");
+                    }
+
+                    Map<String, V> optionsMap = ((MapOptions<V>) getOptions()).getItemsCollection();
+                    BiMap<String, V> biMap = ImmutableBiMap.copyOf(optionsMap);
+                    setOptionCaptionProvider(v -> biMap.inverse().get(v));
+                    break;
+                case ITEM:
+                default:
+                    // set null to use default behaviour
+                    setOptionCaptionProvider(null);
             }
-            return (T) set;
-        } else {
-            final Object o = getValue(key);
-            return (T) wrapAsCollection(o);
+            this.captionMode = captionMode;
         }
     }
 
-    protected Object getValue(Object o) {
-        Object t;
-        if (o instanceof Enum) {
-            t = o;
-        } else if (o instanceof Entity) {
-            t = o;
-        } else {
-            t = optionsDatasource.getItem(o);
-        }
-        return t;
+    protected String generateOptionPropertyCaption(V item) {
+        return ((Entity) item).getValueEx(captionProperty);
     }
 
-    protected Object getKeyFromValue(Object value) {
-        if (value == null) {
-            return null;
-        }
-        final Set<Object> set = new HashSet<>();
-        if (value instanceof Collection) {
-            for (Object o : (Collection) value) {
-                Object t = getKey(o);
-                set.add(t);
-            }
-
-        } else {
-            getKey(value);
-            set.add(getKey(value));
-        }
-        return set;
+    @Override
+    public String getCaptionProperty() {
+        return captionProperty;
     }
 
-    protected Object getKey(Object o) {
-        Object t;
-        if (o instanceof Entity) {
-            t = ((Entity) o).getId();
-        } /*else if (o instanceof Enum) {
-            t = o;
-        }*/ else {
-            t = o;
-        }
-        return t;
+    @Override
+    public void setCaptionProperty(String captionProperty) {
+        this.captionProperty = captionProperty;
+
+        setCaptionMode(CaptionMode.PROPERTY);
     }
 }

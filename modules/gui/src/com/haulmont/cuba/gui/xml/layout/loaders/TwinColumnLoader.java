@@ -16,11 +16,18 @@
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
+import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.CaptionMode;
 import com.haulmont.cuba.gui.components.DatasourceComponent;
 import com.haulmont.cuba.gui.components.TwinColumn;
+import com.haulmont.cuba.gui.components.data.options.ContainerOptions;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.model.CollectionContainer;
+import com.haulmont.cuba.gui.model.InstanceContainer;
+import com.haulmont.cuba.gui.model.ScreenData;
+import com.haulmont.cuba.gui.screen.FrameOwner;
+import com.haulmont.cuba.gui.screen.UiControllerUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
 
@@ -34,6 +41,7 @@ public class TwinColumnLoader extends AbstractFieldLoader<TwinColumn> {
     @Override
     public void loadComponent() {
         super.loadComponent();
+        loadOptionsContainer(resultComponent, element);
 
         String captionProperty = element.attributeValue("captionProperty");
         if (!StringUtils.isEmpty(captionProperty)) {
@@ -84,5 +92,19 @@ public class TwinColumnLoader extends AbstractFieldLoader<TwinColumn> {
         }
 
         super.loadDatasource(component, element);
+    }
+
+    protected void loadOptionsContainer(TwinColumn component, Element element) {
+        String containerId = element.attributeValue("optionsContainer");
+        if (containerId != null) {
+            FrameOwner frameOwner = context.getFrame().getFrameOwner();
+            ScreenData screenData = UiControllerUtils.getScreenData(frameOwner);
+            InstanceContainer container = screenData.getContainer(containerId);
+            if (!(container instanceof CollectionContainer)) {
+                throw new GuiDevelopmentException("Not a CollectionContainer: " + containerId, context.getCurrentFrameId());
+            }
+            //noinspection unchecked
+            component.setOptions(new ContainerOptions((CollectionContainer) container));
+        }
     }
 }

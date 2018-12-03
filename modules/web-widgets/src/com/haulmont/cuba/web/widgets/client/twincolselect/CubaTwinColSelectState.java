@@ -17,7 +17,7 @@
 
 package com.haulmont.cuba.web.widgets.client.twincolselect;
 
-import com.vaadin.v7.shared.ui.twincolselect.TwinColSelectState;
+import com.vaadin.shared.ui.twincolselect.TwinColSelectState;
 
 public class CubaTwinColSelectState extends TwinColSelectState {
 

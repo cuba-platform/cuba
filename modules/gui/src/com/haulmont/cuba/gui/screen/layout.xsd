@@ -2470,6 +2470,7 @@
                 </xs:sequence>
 
                 <xs:attributeGroup ref="hasDatasource"/>
+                <xs:attributeGroup ref="hasDataContainer"/>
                 <xs:attributeGroup ref="hasOptions"/>
                 <xs:attributeGroup ref="hasCaptionSource"/>
                 <xs:attributeGroup ref="hasRequirements"/>
