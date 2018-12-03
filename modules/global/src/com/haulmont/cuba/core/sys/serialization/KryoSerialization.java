@@ -24,6 +24,7 @@ import com.esotericsoftware.kryo.io.Output;
 import com.esotericsoftware.kryo.serializers.CollectionSerializer;
 import com.esotericsoftware.kryo.serializers.FieldSerializer;
 import com.esotericsoftware.kryo.serializers.JavaSerializer;
+import com.esotericsoftware.kryo.util.DefaultClassResolver;
 import com.esotericsoftware.kryo.util.ObjectMap;
 import com.esotericsoftware.kryo.util.Util;
 import com.esotericsoftware.reflectasm.ConstructorAccess;
@@ -87,7 +88,7 @@ public class KryoSerialization implements Serialization {
     }
 
     protected Kryo newKryoInstance() {
-        Kryo kryo = new Kryo();
+        Kryo kryo = new Kryo(new DefaultClassResolver(), new CubaMapReferenceResolver());
         kryo.setInstantiatorStrategy(new CubaInstantiatorStrategy());
         if (onlySerializable) {
             kryo.setDefaultSerializer(CubaFieldSerializer.class);
