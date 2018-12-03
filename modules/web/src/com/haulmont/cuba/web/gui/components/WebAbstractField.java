@@ -18,6 +18,7 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.bali.events.Subscription;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.data.ValueSource;
 import com.haulmont.cuba.gui.components.data.meta.ValueBinding;
@@ -290,7 +291,12 @@ public abstract class WebAbstractField<T extends com.vaadin.v7.ui.AbstractField,
         Object value = getValue();
         if (isEmpty(value)) {
             if (isRequired()) {
-                throw new RequiredValueMissingException(getRequiredMessage(), this);
+                String requiredMessage = getRequiredMessage();
+                if (requiredMessage == null) {
+                    Messages messages = beanLocator.get(Messages.NAME);
+                    requiredMessage = messages.getMainMessage("validationFail.defaultRequiredMessage");
+                }
+                throw new RequiredValueMissingException(requiredMessage, this);
             } else {
                 return;
             }

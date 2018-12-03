@@ -649,7 +649,12 @@ public class WebDateField<V extends Comparable<V>>
 
         if (isEmpty()) {
             if (isRequired()) {
-                throw new RequiredValueMissingException(getRequiredMessage(), this);
+                String requiredMessage = getRequiredMessage();
+                if (requiredMessage == null) {
+                    Messages messages = beanLocator.get(Messages.NAME);
+                    requiredMessage = messages.getMainMessage("validationFail.defaultRequiredMessage");
+                }
+                throw new RequiredValueMissingException(requiredMessage, this);
             } else {
                 // vaadin8 rework this PL-10701
                 return;

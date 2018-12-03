@@ -15,6 +15,7 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.data.ConversionException;
 import com.vaadin.server.ErrorMessage;
@@ -204,7 +205,12 @@ public abstract class WebV8AbstractField<T extends com.vaadin.ui.Component & com
 
         if (isEmpty()) {
             if (isRequired()) {
-                throw new RequiredValueMissingException(getRequiredMessage(), this);
+                String requiredMessage = getRequiredMessage();
+                if (requiredMessage == null) {
+                    Messages messages = beanLocator.get(Messages.NAME);
+                    requiredMessage = messages.getMainMessage("validationFail.defaultRequiredMessage");
+                }
+                throw new RequiredValueMissingException(requiredMessage, this);
             } else {
                 // vaadin8 rework this PL-10701
                 return;
