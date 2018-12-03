@@ -155,4 +155,11 @@ public interface UserManagementService {
      * @param newParentId id of new parent group
      */
     void changeGroupParent(UUID groupId, UUID newParentId);
+
+    /**
+     * Checks if user is anonymous user.
+     *
+     * @param userLogin user login
+     */
+    boolean isAnonymousUser(String userLogin);
 }
