@@ -41,12 +41,14 @@ import com.haulmont.cuba.gui.icons.CubaIcon;
 import com.haulmont.cuba.gui.icons.Icons;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
+import com.haulmont.cuba.security.app.UserManagementService;
 import com.haulmont.cuba.security.entity.*;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import java.util.*;
 
 import static com.haulmont.cuba.gui.components.PickerField.LookupAction;
@@ -61,6 +63,9 @@ public class UserEditor extends AbstractEditor<User> {
 
     @Inject
     protected Datasource<User> userDs;
+
+    @Inject
+    protected UserManagementService userManagementService;
 
     @Inject
     protected CollectionDatasource<UserRole, UUID> rolesDs;
@@ -117,6 +122,9 @@ public class UserEditor extends AbstractEditor<User> {
 
     @WindowParam(name = "initCopy")
     protected Boolean initCopy;
+
+    @Named("fieldGroupRight.active")
+    private CheckBox activeField;
 
     public interface Companion {
         void initPasswordField(PasswordField passwordField);
@@ -203,6 +211,8 @@ public class UserEditor extends AbstractEditor<User> {
 
     @Override
     protected void postInit() {
+        activeField.setEnabled(!userManagementService.isAnonymousUser(getItem().getLogin()));
+
         setCaption(PersistenceHelper.isNew(getItem()) ?
                 getMessage("createCaption") : formatMessage("editCaption", getItem().getLogin()));
 
