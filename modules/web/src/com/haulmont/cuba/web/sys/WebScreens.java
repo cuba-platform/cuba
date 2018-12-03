@@ -420,9 +420,9 @@ public class WebScreens implements Screens, WindowManager {
 
         afterShowWindow(screen);
 
-        fireEvent(screen, AfterShowEvent.class, new AfterShowEvent(screen));
-
         ui.getUrlRouting().pushState(screen);
+
+        fireEvent(screen, AfterShowEvent.class, new AfterShowEvent(screen));
     }
 
     protected void checkNotYetOpened(Screen screen) {

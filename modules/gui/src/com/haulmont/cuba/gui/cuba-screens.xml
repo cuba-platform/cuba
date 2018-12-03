@@ -27,8 +27,7 @@
             template="/com/haulmont/cuba/gui/app/security/user/browse/user-browse.xml"
             route="users"/>
     <screen id="sec$User.lookup"
-            template="/com/haulmont/cuba/gui/app/security/user/browse/user-lookup.xml"
-            route="users"/>
+            template="/com/haulmont/cuba/gui/app/security/user/browse/user-lookup.xml"/>
 
     <screen id="sec$User.edit"
             template="/com/haulmont/cuba/gui/app/security/user/edit/user-edit.xml"
@@ -58,15 +57,13 @@
             route="groups"/>
 
     <screen id="sec$Group.lookup"
-            template="/com/haulmont/cuba/gui/app/security/group/lookup/group-lookup.xml"
-            route="groups"/>
+            template="/com/haulmont/cuba/gui/app/security/group/lookup/group-lookup.xml"/>
 
     <screen id="sec$Role.browse"
             template="/com/haulmont/cuba/gui/app/security/role/browse/role-browse.xml"
             route="roles"/>
     <screen id="sec$Role.lookup"
-            template="/com/haulmont/cuba/gui/app/security/role/browse/role-browse.xml"
-            route="roles"/>
+            template="/com/haulmont/cuba/gui/app/security/role/browse/role-browse.xml"/>
     <screen id="sec$Role.edit"
             template="/com/haulmont/cuba/gui/app/security/role/edit/role-edit.xml"
             route="roles/edit" routeParentPrefix="roles"/>

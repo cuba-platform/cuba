@@ -86,22 +86,26 @@ public class UrlTools {
         Object deserialized = null;
         String decoded = URLEncodeUtils.decodeUtf8(base64Id);
 
-        if (String.class == idClass) {
-            deserialized = decoded;
+        try {
+            if (String.class == idClass) {
+                deserialized = decoded;
 
-        } else if (Integer.class == idClass) {
-            deserialized = Integer.valueOf(decoded);
+            } else if (Integer.class == idClass) {
+                deserialized = Integer.valueOf(decoded);
 
-        } else if (Long.class == idClass) {
-            deserialized = Long.valueOf(decoded);
+            } else if (Long.class == idClass) {
+                deserialized = Long.valueOf(decoded);
 
-        } else if (UUID.class == idClass) {
-            byte[] bytes = Base64.getDecoder().decode(decoded);
-            ByteBuffer bb = ByteBuffer.wrap(bytes);
-            deserialized = new UUID(bb.getLong(), bb.getLong());
+            } else if (UUID.class == idClass) {
+                byte[] bytes = Base64.getDecoder().decode(decoded);
+                ByteBuffer bb = ByteBuffer.wrap(bytes);
+                deserialized = new UUID(bb.getLong(), bb.getLong());
 
-        } else {
-            log.info("Unable to deserialize base64 id '{}' of type '{}'", base64Id, idClass);
+            } else {
+                log.info("Unable to deserialize base64 id '{}' of type '{}'", base64Id, idClass);
+            }
+        } catch (Exception e) {
+            log.info("An error occurred while deserializing base64 id: '{}' of type '{}'", base64Id, idClass, e);
         }
 
         return deserialized;
