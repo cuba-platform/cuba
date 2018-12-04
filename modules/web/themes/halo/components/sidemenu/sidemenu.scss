@@ -194,7 +194,7 @@ $cuba-sidemenu-top-height: $v-unit-size + 2 * $cuba-sidemenu-top-offset;
 $cuba-sidemenu-userindicator-font-weight: $v-font-weight !default;
 
 @mixin halo-cuba-sidemenu($primary-stylename: c-sidemenu) {
-  $bg: $cuba-sidemenu-background-color;
+  $bg: $v-app-background-color;
 
   .#{$primary-stylename}-user {
     background: transparent;
@@ -220,7 +220,7 @@ $cuba-sidemenu-userindicator-font-weight: $v-font-weight !default;
   }
 
   .#{$primary-stylename}-title {
-    $font-color: valo-font-color($bg, 0.9);
+    $font-color: valo-font-color($cuba-sidemenu-background-color, 0.9);
     @if $cuba-sidemenu-title-gradient {
       @include valo-gradient($color: $v-selection-color);
       border-bottom: valo-border($color: $v-selection-color);
@@ -246,6 +246,8 @@ $cuba-sidemenu-userindicator-font-weight: $v-font-weight !default;
     font-size: round($v-font-size * 0.9);
     line-height: round($v-unit-size * 0.8);
     white-space: nowrap;
+
+    font-size: $v-font-size;
   }
 
   .#{$primary-stylename}.v-has-height {
@@ -492,7 +494,9 @@ $cuba-sidemenu-userindicator-font-weight: $v-font-weight !default;
   }
 
   .#{$primary-stylename}-panel {
-    @include valo-menu-style($bg: $cuba-sidemenu-background-color);
+    @include valo-menu-style($cuba-sidemenu-background-color);
+
+    $bg: $cuba-sidemenu-background-color;
 
     .#{$primary-stylename} {
       background: transparent none;
@@ -566,6 +570,15 @@ $cuba-sidemenu-userindicator-font-weight: $v-font-weight !default;
 
     .#{$primary-stylename}-item-header {
       color: valo-font-color($bg, 0.5);
+
+      @if $cuba-sidemenu-separate-items {
+        border-bottom: valo-border(
+                $color: $bg,
+                $strength: 0.5,
+                $border: first-number($v-border) solid v-tone);
+      } @else {
+        border-bottom: none;
+      }
     }
 
     .#{$primary-stylename}-item-focused {
