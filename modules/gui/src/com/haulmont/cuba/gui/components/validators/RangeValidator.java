@@ -84,6 +84,11 @@ public class RangeValidator implements Field.Validator {
 
     @Override
     public void validate(Object value) throws ValidationException {
+        if (value == null) {
+            // ingore nulls
+            return;
+        }
+
         boolean result = false;
 
         if (type.isAssignableFrom(value.getClass())) {
@@ -97,9 +102,14 @@ public class RangeValidator implements Field.Validator {
         }
 
         if (!result) {
-            String msg = message != null
-                    ? messages.getTools().loadString(messagesPack, message)
-                    : "Value '%s' is not included in the range from '%s' to '%s'";
+            String msg = null;
+            if (message != null) {
+                msg = messages.getTools().loadString(messagesPack, message);
+            }
+            if (msg == null) {
+                msg = "Value '%s' is not included in the range from '%s' to '%s'";
+            }
+
             throw new ValidationException(String.format(msg, value, minValue, maxValue));
         }
     }

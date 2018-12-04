@@ -23,6 +23,10 @@ import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.ValidationException;
 import org.dom4j.Element;
 
+/**
+ * @deprecated Does not make any sense in typed UI component API.
+ */
+@Deprecated
 public class StringValidator implements Field.Validator {
 
     protected String message;

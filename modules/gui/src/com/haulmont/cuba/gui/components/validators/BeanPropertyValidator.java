@@ -27,7 +27,7 @@ import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 
 /**
- * Validator that applies JSR303 rules for {@link HasValue} instance using {@link BeanValidation}. <br>
+ * Validator that applies JSR 303 rules for {@link HasValue} instance using {@link BeanValidation}. <br>
  * Automatically added on data binding if property enclosing class has {@link BeanValidation} constraints.
  */
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)

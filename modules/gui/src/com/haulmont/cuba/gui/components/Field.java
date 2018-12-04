@@ -18,6 +18,7 @@ package com.haulmont.cuba.gui.components;
 
 import com.haulmont.cuba.gui.components.data.HasValueSource;
 
+import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.function.Consumer;
 
@@ -65,7 +66,7 @@ public interface Field<V> extends DatasourceComponent<V>, HasValueSource<V>, Com
          * @param value field value to validate
          * @throws ValidationException this exception must be thrown by the validator if the value is not valid
          */
-        void validate(Object value) throws ValidationException;
+        void validate(@Nullable Object value) throws ValidationException;
 
         @Override
         default void accept(T t) {

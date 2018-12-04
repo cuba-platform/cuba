@@ -55,6 +55,10 @@ public class IntegerValidator implements Field.Validator {
 
     @Override
     public void validate(Object value) throws ValidationException {
+        if (value == null) {
+            return;
+        }
+
         boolean result;
         if (value instanceof String) {
             try {
