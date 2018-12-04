@@ -58,9 +58,7 @@ import javax.annotation.Nullable;
 import javax.persistence.TemporalType;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
+import java.time.*;
 import java.util.*;
 
 @org.springframework.stereotype.Component(Param.NAME)
@@ -83,8 +81,9 @@ public class Param {
     public static final String NAME = "cuba_FilterParam";
     public static final String NULL = "NULL";
 
-    protected static final List<Class> dateTimeClasses = Lists.newArrayList(LocalDate.class, LocalDateTime.class,
+    protected static final List<Class> dateTimeClasses = Lists.newArrayList(Date.class, LocalDate.class, LocalDateTime.class,
             OffsetDateTime.class);
+    protected static final List<Class> timeClasses = Lists.newArrayList(LocalTime.class, OffsetTime.class);
 
     protected String name;
     protected Type type;
@@ -548,8 +547,10 @@ public class Param {
 
         if (String.class.equals(javaClass)) {
             component = createTextField(valueProperty);
-        } else if (Date.class.isAssignableFrom(javaClass) || dateTimeClasses.contains(javaClass)) {
+        } else if (dateTimeClasses.contains(javaClass)) {
             component = createDateField(javaClass, valueProperty);
+        } else if (timeClasses.contains(javaClass)) {
+            component = createTimeField(javaClass, valueProperty);
         } else if (Number.class.isAssignableFrom(javaClass)) {
             component = createNumberField(datatype, valueProperty);
         } else if (Boolean.class.isAssignableFrom(javaClass)) {
@@ -682,6 +683,17 @@ public class Param {
 
         dateField.setValue((Date) _getValue(valueProperty));
         return dateField;
+    }
+
+    protected Component createTimeField(Class javaClass, final ValueProperty valueProperty) {
+        TimeField<Object> timeField = componentsFactory.createComponent(TimeField.NAME);
+        timeField.setDatatype(datatypeRegistry.get(javaClass));
+        String formatStr = messages.getMainMessage("timeFormat");
+        timeField.setFormat(formatStr);
+        timeField.addValueChangeListener(e -> _setValue(e.getValue(), valueProperty));
+        timeField.setValue(_getValue(valueProperty));
+        timeField.setWidth(theme.get("cuba.gui.filter.Param.timeComponent.width"));
+        return timeField;
     }
 
     protected Component createNumberField(final Datatype datatype, final ValueProperty valueProperty) {

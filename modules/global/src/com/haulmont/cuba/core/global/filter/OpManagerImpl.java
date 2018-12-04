@@ -45,19 +45,20 @@ public class OpManagerImpl implements OpManager {
     @Inject
     protected Metadata metadata;
 
-    protected static final List<Class> dateTimeClasses = Lists.newArrayList(LocalDate.class, LocalDateTime.class,
-            OffsetDateTime.class, LocalTime.class, OffsetTime.class);
+    protected static final List<Class> dateTimeClasses = Lists.newArrayList(Date.class, LocalDate.class, LocalDateTime.class,
+            OffsetDateTime.class);
+    protected static final List<Class> timeClasses = Lists.newArrayList(LocalTime.class, OffsetTime.class);
 
     @Override
     public EnumSet<Op> availableOps(Class javaClass) {
         if (String.class.equals(javaClass))
             return EnumSet.of(EQUAL, IN, NOT_IN, NOT_EQUAL, CONTAINS, DOES_NOT_CONTAIN, NOT_EMPTY, STARTS_WITH, ENDS_WITH);
 
-        else if (Date.class.isAssignableFrom(javaClass))
-            return EnumSet.of(EQUAL, IN, NOT_IN, NOT_EQUAL, GREATER, GREATER_OR_EQUAL, LESSER, LESSER_OR_EQUAL, NOT_EMPTY, DATE_INTERVAL);
-
         else if (dateTimeClasses.contains(javaClass))
             return EnumSet.of(EQUAL, IN, NOT_IN, NOT_EQUAL, GREATER, GREATER_OR_EQUAL, LESSER, LESSER_OR_EQUAL, NOT_EMPTY, DATE_INTERVAL);
+
+        else if (timeClasses.contains(javaClass))
+            return EnumSet.of(EQUAL, NOT_EQUAL, GREATER, GREATER_OR_EQUAL, LESSER, LESSER_OR_EQUAL, NOT_EMPTY, DATE_INTERVAL);
 
         else if (Number.class.isAssignableFrom(javaClass))
             return EnumSet.of(EQUAL, IN, NOT_IN, NOT_EQUAL, GREATER, GREATER_OR_EQUAL, LESSER, LESSER_OR_EQUAL, NOT_EMPTY);
