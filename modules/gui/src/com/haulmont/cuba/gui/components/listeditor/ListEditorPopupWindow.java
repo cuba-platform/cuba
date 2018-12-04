@@ -22,9 +22,9 @@ import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.View;
+import com.haulmont.cuba.gui.UiComponents;
 import com.haulmont.cuba.gui.WindowParam;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.data.Options;
@@ -35,7 +35,6 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.DsBuilder;
 import com.haulmont.cuba.gui.dynamicattributes.DynamicAttributesGuiTools;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
-import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import org.apache.commons.lang3.BooleanUtils;
 
 import javax.inject.Inject;
@@ -56,7 +55,7 @@ public class ListEditorPopupWindow extends AbstractWindow implements ListEditorW
     protected ScrollBoxLayout valuesLayout;
 
     @Inject
-    protected ComponentsFactory componentsFactory;
+    protected UiComponents uiComponents;
 
     @WindowParam
     protected String entityName;
@@ -107,14 +106,17 @@ public class ListEditorPopupWindow extends AbstractWindow implements ListEditorW
     protected ThemeConstants theme;
 
     @Inject
-    protected DynamicAttributesGuiTools dynamicAttributesGuiTools;
+    protected FilterHelper filterHelper;
 
-    protected Map<Object, String> valuesMap;
+    @Inject
+    protected DynamicAttributesGuiTools dynamicAttributesGuiTools;
 
     @Inject
     private Action commit;
     @Inject
     private Button commitBtn;
+
+    protected Map<Object, String> valuesMap;
 
     @Override
     public void init(Map<String, Object> params) {
@@ -139,6 +141,7 @@ public class ListEditorPopupWindow extends AbstractWindow implements ListEditorW
         }
     }
 
+    @Override
     public List<Object> getValue() {
         return new ArrayList<>(valuesMap.keySet());
     }
@@ -159,7 +162,7 @@ public class ListEditorPopupWindow extends AbstractWindow implements ListEditorW
 
     protected void initAddComponentLayout() {
         addItemLayout.removeAll();
-        final Field componentForAdding;
+        Field componentForAdding;
 
         if (options != null) {
             componentForAdding = createLookupField();
@@ -168,7 +171,6 @@ public class ListEditorPopupWindow extends AbstractWindow implements ListEditorW
             addItemLayout.add(componentForAdding);
             addItemLayout.expand(componentForAdding);
         } else {
-            componentsFactory.createComponent(HBoxLayout.class);
             switch (itemType) {
                 case ENTITY:
                     componentForAdding = createComponentForEntity();
@@ -204,6 +206,8 @@ public class ListEditorPopupWindow extends AbstractWindow implements ListEditorW
                     throw new IllegalStateException("Cannot process the itemType " + itemType);
             }
 
+            componentForAdding.setId("listValueField");
+
             addItemLayout.add(componentForAdding);
             addItemLayout.expand(componentForAdding);
 
@@ -215,14 +219,11 @@ public class ListEditorPopupWindow extends AbstractWindow implements ListEditorW
             }
 
             if (itemType != ListEditor.ItemType.ENTITY) {
-                Button addBtn = componentsFactory.createComponent(Button.class);
-                addBtn.setAction(new AbstractAction("add") {
-                    @Override
-                    public void actionPerform(Component component) {
-                        _addValue(componentForAdding);
-                    }
-                });
+                Button addBtn = uiComponents.create(Button.class);
                 addBtn.setCaption(getMessage("actions.Add"));
+                addBtn.addClickListener(e ->
+                        _addValue(componentForAdding)
+                );
                 addItemLayout.add(addBtn);
                 addBtn.setEnabled(editable);
             }
@@ -239,8 +240,9 @@ public class ListEditorPopupWindow extends AbstractWindow implements ListEditorW
         }
     }
 
+    @SuppressWarnings("unchecked")
     protected TextField createTextField(Datatype datatype) {
-        TextField textField = componentsFactory.createComponent(TextField.class);
+        TextField textField = uiComponents.create(TextField.class);
         textField.setDatatype(datatype);
 
         if (!BooleanUtils.isFalse(editable)) {
@@ -250,7 +252,7 @@ public class ListEditorPopupWindow extends AbstractWindow implements ListEditorW
                     _addValue(textField);
                 }
             };
-            AppBeans.get(FilterHelper.class).addShortcutListener(textField, shortcutListener);
+            filterHelper.addShortcutListener(textField, shortcutListener);
         }
         return textField;
     }
@@ -260,7 +262,7 @@ public class ListEditorPopupWindow extends AbstractWindow implements ListEditorW
         MetaClass metaClass = metadata.getClassNN(entityName);
         Field<?> componentForEntity;
         if (BooleanUtils.isNotTrue(useLookupField)) {
-            PickerField pickerField = componentsFactory.createComponent(PickerField.class);
+            PickerField pickerField = uiComponents.create(PickerField.class);
             pickerField.setMetaClass(metaClass);
 
             PickerField.LookupAction lookupAction;
@@ -286,7 +288,7 @@ public class ListEditorPopupWindow extends AbstractWindow implements ListEditorW
                 componentForEntity.setValue(null);
             });
         } else {
-            LookupField lookupField = componentsFactory.createComponent(LookupField.class);
+            LookupField lookupField = uiComponents.create(LookupField.class);
             CollectionDatasource optionsDs;
             if (!Strings.isNullOrEmpty(entityJoinClause) || !Strings.isNullOrEmpty(entityWhereClause)) {
                 optionsDs = dynamicAttributesGuiTools.createOptionsDatasourceForLookup(metaClass, entityJoinClause, entityWhereClause);
@@ -314,7 +316,7 @@ public class ListEditorPopupWindow extends AbstractWindow implements ListEditorW
     }
 
     protected DateField createComponentForDate(DateField.Resolution resolution) {
-        DateField dateField = componentsFactory.createComponent(DateField.class);
+        DateField dateField = uiComponents.create(DateField.class);
         dateField.setResolution(resolution);
         if (timeZone != null) {
             dateField.setTimeZone(timeZone);
@@ -323,7 +325,7 @@ public class ListEditorPopupWindow extends AbstractWindow implements ListEditorW
     }
 
     protected LookupField createLookupField() {
-        LookupField<?> lookupField = componentsFactory.createComponent(LookupField.class);
+        LookupField<?> lookupField = uiComponents.create(LookupField.class);
         lookupField.addValueChangeListener(e -> {
             Object selectedValue = e.getValue();
             if (selectedValue != null) {
@@ -354,10 +356,11 @@ public class ListEditorPopupWindow extends AbstractWindow implements ListEditorW
     }
 
     protected void addValueToLayout(final Object value, String str) {
-        final BoxLayout itemLayout = componentsFactory.createComponent(HBoxLayout.class);
+        BoxLayout itemLayout = uiComponents.create(HBoxLayout.class);
+        itemLayout.setId("itemLayout");
         itemLayout.setSpacing(true);
 
-        Label itemLab = componentsFactory.createComponent(Label.class);
+        Label<String> itemLab = uiComponents.create(Label.NAME);
         if (options instanceof MapOptions) {
             //noinspection unchecked
             Map<String, Object> optionsMap = ((MapOptions) options).getItemsCollection();
@@ -371,15 +374,13 @@ public class ListEditorPopupWindow extends AbstractWindow implements ListEditorW
         itemLayout.add(itemLab);
         itemLab.setAlignment(Alignment.MIDDLE_LEFT);
 
-        LinkButton delItemBtn = componentsFactory.createComponent(LinkButton.class);
+        LinkButton delItemBtn = uiComponents.create(LinkButton.class);
         delItemBtn.setIcon("icons/item-remove.png");
-        delItemBtn.setAction(new AbstractAction("") {
-            @Override
-            public void actionPerform(Component component) {
-                valuesMap.remove(value);
-                valuesLayout.remove(itemLayout);
-            }
+        delItemBtn.addClickListener(e -> {
+            valuesMap.remove(value);
+            valuesLayout.remove(itemLayout);
         });
+
         itemLayout.add(delItemBtn);
 
         if (BooleanUtils.isFalse(editable)) {
