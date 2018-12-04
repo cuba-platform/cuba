@@ -56,11 +56,15 @@ public class WebFilter extends WebAbstractComponent<com.vaadin.ui.Component> imp
 
         ComponentContainer layout = delegate.getLayout();
 
+        layout.setParent(this);
+
         component = layout.unwrapComposition(com.vaadin.ui.Component.class);
         component.setWidth(100, Sizeable.Unit.PERCENTAGE);
         component.addStyleName(FILTER_STYLENAME);
 
-        delegate.setExpandedStateChangeListener(e -> fireExpandStateChange(e.isExpanded(), e.isUserOriginated()));
+        delegate.setExpandedStateChangeListener(e ->
+                fireExpandStateChange(e.isExpanded(), e.isUserOriginated())
+        );
         delegate.setCaptionChangedListener(this::updateCaptions);
     }
 
@@ -374,8 +378,9 @@ public class WebFilter extends WebAbstractComponent<com.vaadin.ui.Component> imp
 
     @Override
     public void setBorderVisible(boolean visible) {
-        if (delegate.isBorderVisible() == visible)
+        if (delegate.isBorderVisible() == visible) {
             return;
+        }
         delegate.setBorderVisible(visible);
 
         String caption = visible ? component.getCaption() : delegate.getCaption();
@@ -391,6 +396,11 @@ public class WebFilter extends WebAbstractComponent<com.vaadin.ui.Component> imp
     public void setFrame(Frame frame) {
         super.setFrame(frame);
 
+        ComponentContainer layout = delegate.getLayout();
+        if (layout instanceof BelongToFrame) {
+            ((BelongToFrame) layout).setFrame(frame);
+        }
+
         if (frame != null && frame.getId() == null) {
             LoggerFactory.getLogger(WebFilter.class).warn("Filter is embedded in a frame without ID");
         }
@@ -404,38 +414,5 @@ public class WebFilter extends WebAbstractComponent<com.vaadin.ui.Component> imp
     @Override
     public PropertiesFilterPredicate getPropertiesFilterPredicate() {
         return propertiesFilterPredicate;
-    }
-
-    @Override
-    public String getContextHelpText() {
-        // do nothing
-        return null;
-    }
-
-    @Override
-    public void setContextHelpText(String contextHelpText) {
-        // do nothing
-    }
-
-    @Override
-    public boolean isContextHelpTextHtmlEnabled() {
-        // do nothing
-        return false;
-    }
-
-    @Override
-    public void setContextHelpTextHtmlEnabled(boolean enabled) {
-        // do nothing
-    }
-
-    @Override
-    public Consumer<ContextHelpIconClickEvent> getContextHelpIconClickHandler() {
-        // do nothing
-        return null;
-    }
-
-    @Override
-    public void setContextHelpIconClickHandler(Consumer<ContextHelpIconClickEvent> handler) {
-        // do nothing
     }
 }

@@ -19,6 +19,7 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.bali.events.Subscription;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.gui.components.CaptionMode;
+import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.HBoxLayout;
 import com.haulmont.cuba.gui.components.ListEditor;
 import com.haulmont.cuba.gui.components.data.Options;
@@ -49,6 +50,15 @@ public class WebListEditor<V> extends WebV8AbstractField<WebListEditor.CubaListE
     @Override
     public void afterPropertiesSet() {
         initComponent(component);
+
+        delegate.getLayout().setParent(this);
+    }
+
+    @Override
+    public void setFrame(Frame frame) {
+        super.setFrame(frame);
+
+        delegate.getLayout().setFrame(frame);
     }
 
     protected CubaListEditor<V> createComponent() {
