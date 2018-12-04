@@ -122,7 +122,7 @@ public class GlobalPersistentAttributesLoadChecker implements PersistentAttribut
         if (entity instanceof FetchGroupTracker) {
             FetchGroup fetchGroup = ((FetchGroupTracker) entity)._persistence_getFetchGroup();
             if (fetchGroup != null) {
-                boolean inFetchGroup = fetchGroup.getAttributeNames().contains(property);
+                boolean inFetchGroup = fetchGroup.containsAttributeInternal(property);
                 if (!inFetchGroup) {
                     // definitely not loaded
                     return PropertyLoadedState.NO;
