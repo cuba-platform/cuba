@@ -25,7 +25,7 @@ import com.haulmont.cuba.gui.components.AggregationInfo;
 import com.haulmont.cuba.gui.components.data.BindingState;
 import com.haulmont.cuba.gui.components.data.AggregatableTableItems;
 import com.haulmont.cuba.gui.components.data.meta.EntityTableItems;
-import com.haulmont.cuba.gui.components.data.meta.LegacyDataUnit;
+import com.haulmont.cuba.gui.components.data.meta.DatasourceDataUnit;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDsHelper;
@@ -37,7 +37,7 @@ import java.util.function.Consumer;
 
 @SuppressWarnings("unchecked")
 public class DatasourceTableItems<E extends Entity<K>, K>
-        implements EntityTableItems<E>, LegacyDataUnit<E>, AggregatableTableItems<E> {
+        implements EntityTableItems<E>, DatasourceDataUnit, AggregatableTableItems<E> {
 
     protected CollectionDatasource datasource;
     protected EventHub events = new EventHub();

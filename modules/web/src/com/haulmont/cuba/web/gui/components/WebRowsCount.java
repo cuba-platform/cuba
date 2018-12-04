@@ -22,7 +22,7 @@ import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.data.DataUnit;
 import com.haulmont.cuba.gui.components.data.meta.ContainerDataUnit;
-import com.haulmont.cuba.gui.components.data.meta.LegacyDataUnit;
+import com.haulmont.cuba.gui.components.data.meta.DatasourceDataUnit;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.CollectionDatasource.Operation;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -65,12 +65,6 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
     protected int size;
     protected boolean samePage;
 
-    protected CollectionDatasource.CollectionChangeListener datasourceCollectionChangeListener;
-    protected WeakCollectionChangeListener weakDatasourceCollectionChangeListener;
-
-    protected Consumer<CollectionContainer.CollectionChangeEvent> containerCollectionChangeListener;
-    protected com.haulmont.cuba.gui.model.impl.WeakCollectionChangeListener weakContainerCollectionChangeListener;
-
     protected RowsCountTarget target;
 
     public WebRowsCount() {
@@ -107,7 +101,7 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
         checkNotNullArgument(datasource, "datasource is null");
 
         if (adapter != null) {
-            adapter.cleanup();
+            adapter.unbind();
         }
         adapter = createDatasourceAdapter(datasource);
 
@@ -140,16 +134,16 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
     protected Adapter createAdapter(RowsCountTarget target) {
         if (target instanceof ListComponent) {
             DataUnit items = ((ListComponent) target).getItems();
-            if (items instanceof LegacyDataUnit) {
-                return createDatasourceAdapter(((LegacyDataUnit) items).getDatasource());
+            if (items instanceof DatasourceDataUnit) {
+                return createDatasourceAdapter(((DatasourceDataUnit) items).getDatasource());
             } else if (items instanceof ContainerDataUnit) {
                 return createLoaderAdapter(((ContainerDataUnit) items).getContainer());
-            } else {
-                throw new IllegalStateException("Unsupported data unit type: " + items);
             }
-        } else {
-            throw new UnsupportedOperationException("Unsupported RowsCountTarget: " + target);
+
+            throw new IllegalStateException("Unsupported data unit type: " + items);
         }
+
+        throw new UnsupportedOperationException("Unsupported RowsCountTarget: " + target);
     }
 
     protected Adapter createLoaderAdapter(CollectionContainer container) {
@@ -177,7 +171,7 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
         this.target = target;
 
         if (adapter != null) {
-            adapter.cleanup();
+            adapter.unbind();
         }
         adapter = createAdapter(target);
 
@@ -414,8 +408,9 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
         unsubscribe(VisibilityChangeEvent.class, listener);
     }
 
-    interface Adapter {
-        void cleanup();
+    public interface Adapter {
+        void unbind();
+
         int getFirstResult();
         int getMaxResults();
         void setFirstResult(int startPosition);
@@ -427,9 +422,13 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
 
     protected class LoaderAdapter implements Adapter {
 
-        private CollectionContainer container;
+        protected CollectionContainer container;
 
-        @Nullable private BaseCollectionLoader loader;
+        protected Consumer<CollectionContainer.CollectionChangeEvent> containerCollectionChangeListener;
+        protected com.haulmont.cuba.gui.model.impl.WeakCollectionChangeListener weakContainerCollectionChangeListener;
+
+        @Nullable
+        protected BaseCollectionLoader loader;
 
         @SuppressWarnings("unchecked")
         public LoaderAdapter(CollectionContainer container, @Nullable BaseCollectionLoader loader) {
@@ -448,7 +447,7 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
         }
 
         @Override
-        public void cleanup() {
+        public void unbind() {
             weakContainerCollectionChangeListener.removeItself();
         }
 
@@ -480,6 +479,7 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
             if (loader == null) {
                 return container.getItems().size();
             }
+
             if (loader instanceof CollectionLoader) {
                 return (int) dataManager.getCount(((CollectionLoader) loader).createLoadContext());
             } else if (loader instanceof KeyValueCollectionLoader) {
@@ -512,7 +512,10 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
 
     protected class DatasourceAdapter implements Adapter {
 
-        private CollectionDatasource.SupportsPaging datasource;
+        protected CollectionDatasource.SupportsPaging datasource;
+
+        protected CollectionDatasource.CollectionChangeListener datasourceCollectionChangeListener;
+        protected WeakCollectionChangeListener weakDatasourceCollectionChangeListener;
 
         public DatasourceAdapter(CollectionDatasource.SupportsPaging datasource) {
             this.datasource = datasource;
@@ -533,7 +536,7 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
         }
 
         @Override
-        public void cleanup() {
+        public void unbind() {
             //noinspection unchecked
             datasource.removeCollectionChangeListener(weakDatasourceCollectionChangeListener);
             weakDatasourceCollectionChangeListener = null;

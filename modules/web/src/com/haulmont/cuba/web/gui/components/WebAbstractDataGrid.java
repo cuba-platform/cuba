@@ -32,7 +32,7 @@ import com.haulmont.cuba.gui.components.data.DataGridItems;
 import com.haulmont.cuba.gui.components.data.ValueSourceProvider;
 import com.haulmont.cuba.gui.components.data.meta.ContainerDataUnit;
 import com.haulmont.cuba.gui.components.data.meta.EntityDataGridItems;
-import com.haulmont.cuba.gui.components.data.meta.LegacyDataUnit;
+import com.haulmont.cuba.gui.components.data.meta.DatasourceDataUnit;
 import com.haulmont.cuba.gui.components.data.value.ContainerValueSourceProvider;
 import com.haulmont.cuba.gui.components.formatters.CollectionFormatter;
 import com.haulmont.cuba.gui.components.security.ActionsPermissions;
@@ -891,8 +891,8 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
                     metadataTools.getPropertyPaths(container.getEntityMetaClass());
         }
 
-        if (entityTableSource instanceof LegacyDataUnit) {
-            CollectionDatasource datasource = ((LegacyDataUnit) entityTableSource).getDatasource();
+        if (entityTableSource instanceof DatasourceDataUnit) {
+            CollectionDatasource datasource = ((DatasourceDataUnit) entityTableSource).getDatasource();
 
             return datasource.getView() != null ?
                     // if a view is specified - use view properties

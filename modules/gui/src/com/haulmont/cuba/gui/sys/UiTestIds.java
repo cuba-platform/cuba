@@ -20,7 +20,7 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.gui.components.data.DataUnit;
 import com.haulmont.cuba.gui.components.data.ValueSource;
 import com.haulmont.cuba.gui.components.data.meta.ContainerDataUnit;
-import com.haulmont.cuba.gui.components.data.meta.LegacyDataUnit;
+import com.haulmont.cuba.gui.components.data.meta.DatasourceDataUnit;
 import com.haulmont.cuba.gui.components.data.value.ContainerValueSource;
 import com.haulmont.cuba.gui.components.data.value.DatasourceValueSource;
 import org.apache.commons.lang3.StringUtils;
@@ -55,8 +55,8 @@ public final class UiTestIds {
             MetaClass entityMetaClass = dcDataUnit.getEntityMetaClass();
 
             return entityMetaClass.getName() + suffix;
-        } else if (dataUnit instanceof LegacyDataUnit) {
-            LegacyDataUnit dsDataUnit = (LegacyDataUnit) dataUnit;
+        } else if (dataUnit instanceof DatasourceDataUnit) {
+            DatasourceDataUnit dsDataUnit = (DatasourceDataUnit) dataUnit;
 
             MetaClass entityMetaClass = dsDataUnit.getDatasource().getMetaClass();
 

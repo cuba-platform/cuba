@@ -23,6 +23,7 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.data.BindingState;
 import com.haulmont.cuba.gui.components.data.meta.EntityDataGridItems;
+import com.haulmont.cuba.gui.components.data.meta.DatasourceDataUnit;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDsHelper;
@@ -33,7 +34,7 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class DatasourceDataGridItems<E extends Entity<K>, K> implements EntityDataGridItems<E> {
+public class DatasourceDataGridItems<E extends Entity<K>, K> implements EntityDataGridItems<E>, DatasourceDataUnit {
 
     protected CollectionDatasource.Indexed<E, K> datasource;
     protected EventHub events = new EventHub();
@@ -83,6 +84,7 @@ public class DatasourceDataGridItems<E extends Entity<K>, K> implements EntityDa
         }
     }
 
+    @Override
     public CollectionDatasource<E, K> getDatasource() {
         return datasource;
     }
@@ -162,7 +164,6 @@ public class DatasourceDataGridItems<E extends Entity<K>, K> implements EntityDa
         datasource.setItem(item);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public Subscription addStateChangeListener(Consumer<StateChangeEvent> listener) {
         return events.subscribe(StateChangeEvent.class, listener);

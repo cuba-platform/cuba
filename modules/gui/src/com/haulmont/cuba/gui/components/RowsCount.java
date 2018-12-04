@@ -53,9 +53,7 @@ public interface RowsCount extends Component.BelongToFrame {
     RowsCountTarget getRowsCountTarget();
     void setRowsCountTarget(RowsCountTarget target);
 
-    // vaadin8 extract RowsCountTarget interface
     interface RowsCountTarget {
-        // todo
     }
 
     /**
