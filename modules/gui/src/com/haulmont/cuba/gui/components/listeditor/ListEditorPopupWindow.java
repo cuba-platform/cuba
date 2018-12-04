@@ -220,6 +220,7 @@ public class ListEditorPopupWindow extends AbstractWindow implements ListEditorW
 
             if (itemType != ListEditor.ItemType.ENTITY) {
                 Button addBtn = uiComponents.create(Button.class);
+                addBtn.setId("add");
                 addBtn.setCaption(getMessage("actions.Add"));
                 addBtn.addClickListener(e ->
                         _addValue(componentForAdding)
