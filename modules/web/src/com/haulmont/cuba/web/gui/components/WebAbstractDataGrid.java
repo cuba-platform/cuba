@@ -22,6 +22,7 @@ import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.cuba.client.sys.PersistenceManagerClient;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.components.*;
@@ -116,6 +117,7 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
     protected Security security;
     protected Messages messages;
     protected MessageTools messageTools;
+    protected PersistenceManagerClient persistenceManagerClient;
 
     // Style names used by grid itself
     protected final List<String> internalStyles = new ArrayList<>(2);
@@ -275,6 +277,11 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
     public void setThemeConstantsManager(ThemeConstantsManager themeConstantsManager) {
         ThemeConstants theme = themeConstantsManager.getConstants();
         this.showIconsForPopupMenuActions = theme.getBoolean("cuba.gui.showIconsForPopupMenuActions", false);
+    }
+
+    @Inject
+    public void setPersistenceManagerClient(PersistenceManagerClient persistenceManagerClient) {
+        this.persistenceManagerClient = persistenceManagerClient;
     }
 
     protected void initComponent(Grid<E> component) {
@@ -648,6 +655,17 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
 
         if (column.getOwner() == null) {
             column.setOwner(this);
+        }
+
+        MetaPropertyPath propertyPath = column.getPropertyPath();
+        if (propertyPath != null) {
+            MetaProperty metaProperty = propertyPath.getMetaProperty();
+            MetaClass propertyMetaClass = metadataTools.getPropertyEnclosingMetaClass(propertyPath);
+            String storeName = metadataTools.getStoreName(propertyMetaClass);
+            if (metadataTools.isLob(metaProperty)
+                    && !persistenceManagerClient.supportsLobSortingAndFiltering(storeName)) {
+                column.setSortable(false);
+            }
         }
 
         setupGridColumnProperties(gridColumn, column);
