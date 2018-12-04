@@ -18,6 +18,7 @@
 package com.haulmont.cuba.web.jmx;
 
 import com.haulmont.cuba.client.sys.PersistenceManagerClient;
+import com.haulmont.cuba.client.sys.cache.ClientCacheManager;
 import com.haulmont.cuba.client.sys.cache.DynamicAttributesCacheStrategy;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.Scripting;
@@ -69,6 +70,9 @@ public class CachingFacade implements CachingFacadeMBean {
     @Inject
     protected DynamicAttributesCacheStrategy dynamicAttributesCacheStrategy;
 
+    @Inject
+    private ClientCacheManager clientCacheManager;
+
     @Override
     public int getMessagesCacheSize() {
         return messages.getCacheSize();
@@ -118,5 +122,10 @@ public class CachingFacade implements CachingFacadeMBean {
         } catch (LoginException e) {
             log.error("Login exception", e);
         }
+    }
+
+    @Override
+    public void clearConfigCache() {
+        clientCacheManager.clearCache();
     }
 }

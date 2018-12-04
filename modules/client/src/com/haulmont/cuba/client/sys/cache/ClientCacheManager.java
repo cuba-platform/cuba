@@ -128,6 +128,12 @@ public class ClientCacheManager {
         }
     }
 
+    public void clearCache() {
+        for (CachingStrategy cachingStrategy : cache.values()) {
+            cachingStrategy.clearCache();
+        }
+    }
+
     /**
      * Add new cached object (described in cachingStrategy)
      */
