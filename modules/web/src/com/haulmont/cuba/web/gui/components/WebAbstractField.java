@@ -289,17 +289,13 @@ public abstract class WebAbstractField<T extends com.vaadin.v7.ui.AbstractField,
         }
 
         Object value = getValue();
-        if (isEmpty(value)) {
-            if (isRequired()) {
-                String requiredMessage = getRequiredMessage();
-                if (requiredMessage == null) {
-                    Messages messages = beanLocator.get(Messages.NAME);
-                    requiredMessage = messages.getMainMessage("validationFail.defaultRequiredMessage");
-                }
-                throw new RequiredValueMissingException(requiredMessage, this);
-            } else {
-                return;
+        if (isEmpty(value) && isRequired()) {
+            String requiredMessage = getRequiredMessage();
+            if (requiredMessage == null) {
+                Messages messages = beanLocator.get(Messages.NAME);
+                requiredMessage = messages.getMainMessage("validationFail.defaultRequiredMessage");
             }
+            throw new RequiredValueMissingException(requiredMessage, this);
         }
 
         if (validators != null) {

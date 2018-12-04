@@ -203,18 +203,13 @@ public abstract class WebV8AbstractField<T extends com.vaadin.ui.Component & com
             throw new ValidationException(ce.getLocalizedMessage());
         }
 
-        if (isEmpty()) {
-            if (isRequired()) {
-                String requiredMessage = getRequiredMessage();
-                if (requiredMessage == null) {
-                    Messages messages = beanLocator.get(Messages.NAME);
-                    requiredMessage = messages.getMainMessage("validationFail.defaultRequiredMessage");
-                }
-                throw new RequiredValueMissingException(requiredMessage, this);
-            } else {
-                // vaadin8 rework this PL-10701
-                return;
+        if (isEmpty() && isRequired()) {
+            String requiredMessage = getRequiredMessage();
+            if (requiredMessage == null) {
+                Messages messages = beanLocator.get(Messages.NAME);
+                requiredMessage = messages.getMainMessage("validationFail.defaultRequiredMessage");
             }
+            throw new RequiredValueMissingException(requiredMessage, this);
         }
 
         V value = getValue();
