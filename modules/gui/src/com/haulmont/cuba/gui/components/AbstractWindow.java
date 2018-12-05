@@ -19,7 +19,6 @@ package com.haulmont.cuba.gui.components;
 import com.haulmont.bali.events.Subscription;
 import com.haulmont.cuba.core.global.Events;
 import com.haulmont.cuba.core.global.Messages;
-import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.DialogOptions;
 import com.haulmont.cuba.gui.WindowContext;
 import com.haulmont.cuba.gui.WindowManager;
@@ -39,6 +38,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 /**
  * Base class for simple screen controllers.
@@ -270,6 +270,11 @@ public class AbstractWindow extends Screen implements Window, LegacyFrame, Compo
     @Override
     public Collection<Component> getOwnComponents() {
         return frame.getOwnComponents();
+    }
+
+    @Override
+    public Stream<Component> getOwnComponentsStream() {
+        return frame.getOwnComponentsStream();
     }
 
     @Override
@@ -736,10 +741,8 @@ public class AbstractWindow extends Screen implements Window, LegacyFrame, Compo
      */
     @Override
     public boolean validateAll() {
-        Collection<Component> components = ComponentsHelper.getComponents(getWindow());
-
         ScreenValidation screenValidation = getBeanLocator().get(ScreenValidation.NAME);
-        ValidationErrors errors = screenValidation.validateUiComponents(components);
+        ValidationErrors errors = screenValidation.validateUiComponents(getWindow());
 
         validateAdditionalRules(errors);
 

@@ -44,6 +44,7 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkState;
@@ -145,6 +146,14 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout> im
                 .filter(FieldConfig::isBound)
                 .map(FieldConfig::getComponent)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public Stream<Component> getOwnComponentsStream() {
+        return columnFieldMapping.stream()
+                .flatMap(List::stream)
+                .filter(FieldConfig::isBound)
+                .map(FieldConfig::getComponent);
     }
 
     @Override

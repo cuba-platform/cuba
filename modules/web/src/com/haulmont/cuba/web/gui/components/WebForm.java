@@ -38,6 +38,7 @@ import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
@@ -248,6 +249,12 @@ public class WebForm extends WebAbstractComponent<CubaFieldGroupLayout> implemen
         return columnComponentMapping.stream()
                 .flatMap(List::stream)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public Stream<Component> getOwnComponentsStream() {
+        return columnComponentMapping.stream()
+                .flatMap(List::stream);
     }
 
     @Override

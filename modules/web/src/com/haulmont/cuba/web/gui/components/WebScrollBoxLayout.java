@@ -33,6 +33,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Nullable;
 import java.util.*;
+import java.util.stream.Stream;
 
 public class WebScrollBoxLayout extends WebAbstractComponent<CubaScrollBoxLayout> implements ScrollBoxLayout {
 
@@ -204,6 +205,11 @@ public class WebScrollBoxLayout extends WebAbstractComponent<CubaScrollBoxLayout
     @Override
     public Collection<Component> getOwnComponents() {
         return Collections.unmodifiableCollection(ownComponents);
+    }
+
+    @Override
+    public Stream<Component> getOwnComponentsStream() {
+        return ownComponents.stream();
     }
 
     @Override

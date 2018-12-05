@@ -68,27 +68,47 @@ public class ScreenValidation {
      */
     public ValidationErrors validateUiComponents(Collection<com.haulmont.cuba.gui.components.Component> components) {
         ValidationErrors errors = new ValidationErrors();
+
         for (com.haulmont.cuba.gui.components.Component component : components) {
             if (component instanceof Validatable) {
                 Validatable validatable = (Validatable) component;
                 if (validatable.isValidateOnCommit()) {
-                    try {
-                        validatable.validate();
-                    } catch (ValidationException e) {
-                        Logger log = LoggerFactory.getLogger(Screen.class);
-
-                        if (log.isTraceEnabled()) {
-                            log.trace("Validation failed", e);
-                        } else if (log.isDebugEnabled()) {
-                            log.debug("Validation failed: " + e);
-                        }
-
-                        ComponentsHelper.fillErrorMessages(validatable, e, errors);
-                    }
+                    validate(validatable, errors);
                 }
             }
         }
         return errors;
+    }
+
+    /**
+     * Validates UI components by invoking their {@link Validatable#validate()}.
+     *
+     * @param container components container
+     * @return validation errors
+     */
+    public ValidationErrors validateUiComponents(ComponentContainer container) {
+        ValidationErrors errors = new ValidationErrors();
+
+        ComponentsHelper.traverseValidatable(container,
+                v -> validate(v, errors)
+        );
+        return errors;
+    }
+
+    protected void validate(Validatable validatable, ValidationErrors errors) {
+        try {
+            validatable.validate();
+        } catch (ValidationException e) {
+            Logger log = LoggerFactory.getLogger(Screen.class);
+
+            if (log.isTraceEnabled()) {
+                log.trace("Validation failed", e);
+            } else if (log.isDebugEnabled()) {
+                log.debug("Validation failed: " + e);
+            }
+
+            ComponentsHelper.fillErrorMessages(validatable, e, errors);
+        }
     }
 
     /**

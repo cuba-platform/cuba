@@ -35,6 +35,7 @@ import org.dom4j.Element;
 import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 public class WebGroupBox extends WebAbstractComponent<CubaGroupBox> implements GroupBoxLayout {
 
@@ -194,6 +195,11 @@ public class WebGroupBox extends WebAbstractComponent<CubaGroupBox> implements G
     @Override
     public Collection<Component> getOwnComponents() {
         return Collections.unmodifiableCollection(ownComponents);
+    }
+
+    @Override
+    public Stream<Component> getOwnComponentsStream() {
+        return ownComponents.stream();
     }
 
     @Override

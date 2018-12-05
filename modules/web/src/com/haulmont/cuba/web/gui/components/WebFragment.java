@@ -109,15 +109,7 @@ public class WebFragment extends WebVBoxLayout implements Fragment, FragmentImpl
 
     @Override
     public void validate() throws ValidationException {
-        Collection<Component> components = ComponentsHelper.getComponents(this);
-        for (Component component : components) {
-            if (component instanceof Validatable) {
-                Validatable validatable = (Validatable) component;
-                if (validatable.isValidateOnCommit()) {
-                    validatable.validate();
-                }
-            }
-        }
+        ComponentsHelper.traverseValidatable(this, Validatable::validate);
     }
 
     @Override
@@ -144,24 +136,18 @@ public class WebFragment extends WebVBoxLayout implements Fragment, FragmentImpl
     public boolean validateAll() {
         ValidationErrors errors = new ValidationErrors();
 
-        Collection<Component> components = ComponentsHelper.getComponents(this);
-        for (Component component : components) {
-            if (component instanceof Validatable) {
-                Validatable validatable = (Validatable) component;
-                if (validatable.isValidateOnCommit()) {
-                    try {
-                        validatable.validate();
-                    } catch (ValidationException e) {
-                        if (log.isTraceEnabled())
-                            log.trace("Validation failed", e);
-                        else if (log.isDebugEnabled())
-                            log.debug("Validation failed: " + e);
-
-                        ComponentsHelper.fillErrorMessages(validatable, e, errors);
-                    }
+        ComponentsHelper.traverseValidatable(this, v -> {
+            try {
+                v.validate();
+            } catch (ValidationException e) {
+                if (log.isTraceEnabled()) {
+                    log.trace("Validation failed", e);
+                } else if (log.isDebugEnabled()) {
+                    log.debug("Validation failed: " + e);
                 }
+                ComponentsHelper.fillErrorMessages(v, e, errors);
             }
-        }
+        });
 
         return handleValidationErrors(errors);
     }

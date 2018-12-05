@@ -37,6 +37,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Nullable;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import static com.haulmont.cuba.core.entity.BaseEntityInternalAccess.getFilteredAttributes;
@@ -62,6 +63,37 @@ public abstract class ComponentsHelper {
         }
 
         return Collections.unmodifiableCollection(res);
+    }
+
+    /**
+     * Visit all components below the specified container.
+     *
+     * @param container container to start from
+     * @param visitor   visitor instance
+     */
+    public static void traverseComponents(ComponentContainer container, Consumer<Component> visitor) {
+        container.getOwnComponentsStream()
+                .forEach(c -> {
+                    visitor.accept(c);
+
+                    if (c instanceof ComponentContainer) {
+                        traverseComponents((ComponentContainer) c, visitor);
+                    }
+                });
+    }
+
+    /**
+     * Visit all {@link Validatable} components below the specified container.
+     *
+     * @param container container to start from
+     * @param visitor   visitor instance
+     */
+    public static void traverseValidatable(ComponentContainer container, Consumer<Validatable> visitor) {
+        traverseComponents(container, c -> {
+            if (c instanceof Validatable && ((Validatable) c).isValidateOnCommit()) {
+                visitor.accept((Validatable) c);
+            }
+        });
     }
 
     @Nullable

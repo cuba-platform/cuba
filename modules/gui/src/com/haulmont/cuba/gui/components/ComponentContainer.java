@@ -21,6 +21,7 @@ import com.haulmont.cuba.gui.ComponentsHelper;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Collection;
+import java.util.stream.Stream;
 
 /**
  * Component which can contain other components.
@@ -97,6 +98,9 @@ public interface ComponentContainer extends Component {
 
     /** Get all components directly owned by this container */
     Collection<Component> getOwnComponents();
+
+    /** Get stream of components directly owned by this container */
+    Stream<Component> getOwnComponentsStream();
 
     /** Get all components belonging to the whole components tree below this container */
     Collection<Component> getComponents();

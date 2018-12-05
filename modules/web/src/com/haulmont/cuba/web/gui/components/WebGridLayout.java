@@ -29,6 +29,7 @@ import com.vaadin.shared.ui.MarginInfo;
 import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 import static com.haulmont.cuba.web.gui.components.WebWrapperUtils.toVaadinAlignment;
 
@@ -170,7 +171,7 @@ public class WebGridLayout extends WebAbstractComponent<CubaGridLayout> implemen
     public void removeAll() {
         component.removeAllComponents();
 
-        Component[] components = ownComponents.toArray(new Component[ownComponents.size()]);
+        Component[] components = ownComponents.toArray(new Component[0]);
         ownComponents.clear();
 
         for (Component childComponent : components) {
@@ -211,6 +212,11 @@ public class WebGridLayout extends WebAbstractComponent<CubaGridLayout> implemen
     @Override
     public Collection<Component> getOwnComponents() {
         return Collections.unmodifiableCollection(ownComponents);
+    }
+
+    @Override
+    public Stream<Component> getOwnComponentsStream() {
+        return ownComponents.stream();
     }
 
     @Override

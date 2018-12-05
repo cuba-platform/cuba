@@ -36,6 +36,7 @@ import org.dom4j.Element;
 import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 public class WebSplitPanel extends WebAbstractComponent<AbstractSplitPanel> implements SplitPanel {
 
@@ -169,6 +170,11 @@ public class WebSplitPanel extends WebAbstractComponent<AbstractSplitPanel> impl
     @Override
     public Collection<Component> getOwnComponents() {
         return Collections.unmodifiableCollection(ownComponents);
+    }
+
+    @Override
+    public Stream<Component> getOwnComponentsStream() {
+        return ownComponents.stream();
     }
 
     @Override

@@ -29,6 +29,7 @@ import com.vaadin.ui.AbstractComponent;
 import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 public class WebAbstractOrderedLayout<T extends com.vaadin.ui.CssLayout> extends WebAbstractComponent<T>
         implements OrderedContainer, Component.BelongToFrame, Component.HasCaption, Component.HasIcon,
@@ -144,6 +145,11 @@ public class WebAbstractOrderedLayout<T extends com.vaadin.ui.CssLayout> extends
     @Override
     public Collection<Component> getOwnComponents() {
         return Collections.unmodifiableCollection(ownComponents);
+    }
+
+    @Override
+    public Stream<Component> getOwnComponentsStream() {
+        return ownComponents.stream();
     }
 
     @Override

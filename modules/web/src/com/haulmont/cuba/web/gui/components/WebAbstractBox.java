@@ -30,6 +30,7 @@ import com.vaadin.ui.AbstractOrderedLayout;
 import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 import static com.haulmont.cuba.web.gui.components.WebWrapperUtils.toVaadinAlignment;
 
@@ -150,6 +151,11 @@ public abstract class WebAbstractBox<T extends AbstractOrderedLayout>
     @Override
     public Collection<Component> getOwnComponents() {
         return Collections.unmodifiableCollection(ownComponents);
+    }
+
+    @Override
+    public Stream<Component> getOwnComponentsStream() {
+        return ownComponents.stream();
     }
 
     @Override

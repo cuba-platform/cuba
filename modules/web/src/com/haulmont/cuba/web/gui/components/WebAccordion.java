@@ -45,6 +45,7 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 import static com.haulmont.cuba.gui.ComponentsHelper.walkComponents;
@@ -116,6 +117,12 @@ public class WebAccordion extends WebAbstractComponent<CubaAccordion>
             componentList.add(cd.component);
         }
         return componentList;
+    }
+
+    @Override
+    public Stream<Component> getOwnComponentsStream() {
+        return tabMapping.values().stream()
+                .map(ComponentDescriptor::getComponent);
     }
 
     @Override

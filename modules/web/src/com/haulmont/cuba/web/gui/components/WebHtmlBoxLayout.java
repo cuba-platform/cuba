@@ -26,6 +26,7 @@ import com.vaadin.ui.CustomLayout;
 
 import javax.annotation.Nullable;
 import java.util.*;
+import java.util.stream.Stream;
 
 public class WebHtmlBoxLayout extends WebAbstractComponent<CustomLayout> implements HtmlBoxLayout {
 
@@ -141,6 +142,11 @@ public class WebHtmlBoxLayout extends WebAbstractComponent<CustomLayout> impleme
     @Override
     public Collection<Component> getOwnComponents() {
         return Collections.unmodifiableCollection(ownComponents);
+    }
+
+    @Override
+    public Stream<Component> getOwnComponentsStream() {
+        return ownComponents.stream();
     }
 
     @Override

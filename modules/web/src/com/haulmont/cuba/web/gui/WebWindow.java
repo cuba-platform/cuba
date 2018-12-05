@@ -20,8 +20,8 @@ import com.haulmont.bali.events.EventHub;
 import com.haulmont.bali.events.Subscription;
 import com.haulmont.cuba.gui.*;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.HtmlAttributes.CSS;
 import com.haulmont.cuba.gui.components.Timer;
+import com.haulmont.cuba.gui.components.HtmlAttributes.CSS;
 import com.haulmont.cuba.gui.components.security.ActionsPermissions;
 import com.haulmont.cuba.gui.components.sys.FrameImplementation;
 import com.haulmont.cuba.gui.components.sys.WindowImplementation;
@@ -53,6 +53,7 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
@@ -361,15 +362,7 @@ public abstract class WebWindow implements Window, Component.Wrapper,
 
     @Override
     public void validate() throws ValidationException {
-        Collection<Component> components = ComponentsHelper.getComponents(this);
-        for (Component component : components) {
-            if (component instanceof Validatable) {
-                Validatable validatable = (Validatable) component;
-                if (validatable.isValidateOnCommit()) {
-                    validatable.validate();
-                }
-            }
-        }
+        ComponentsHelper.traverseValidatable(this, Validatable::validate);
     }
 
     @Override
@@ -396,24 +389,18 @@ public abstract class WebWindow implements Window, Component.Wrapper,
     public boolean validateAll() {
         ValidationErrors errors = new ValidationErrors();
 
-        Collection<Component> components = ComponentsHelper.getComponents(this);
-        for (Component component : components) {
-            if (component instanceof Validatable) {
-                Validatable validatable = (Validatable) component;
-                if (validatable.isValidateOnCommit()) {
-                    try {
-                        validatable.validate();
-                    } catch (ValidationException e) {
-                        if (log.isTraceEnabled()) {
-                            log.trace("Validation failed", e);
-                        } else if (log.isDebugEnabled()) {
-                            log.debug("Validation failed: " + e);
-                        }
-                        ComponentsHelper.fillErrorMessages(validatable, e, errors);
-                    }
+        ComponentsHelper.traverseValidatable(this, v -> {
+            try {
+                v.validate();
+            } catch (ValidationException e) {
+                if (log.isTraceEnabled()) {
+                    log.trace("Validation failed", e);
+                } else if (log.isDebugEnabled()) {
+                    log.debug("Validation failed: " + e);
                 }
+                ComponentsHelper.fillErrorMessages(v, e, errors);
             }
-        }
+        });
 
         return handleValidationErrors(errors);
     }
@@ -726,6 +713,11 @@ public abstract class WebWindow implements Window, Component.Wrapper,
     }
 
     @Override
+    public Stream<Component> getOwnComponentsStream() {
+        return ownComponents.stream();
+    }
+
+    @Override
     public Collection<Component> getComponents() {
         return ComponentsHelper.getComponents(this);
     }
@@ -860,12 +852,8 @@ public abstract class WebWindow implements Window, Component.Wrapper,
 
     @Override
     public void expand(Component component, String height, String width) {
-        final com.vaadin.ui.Component expandedComponent = component.unwrapComposition(com.vaadin.ui.Component.class);;
-        if (getContainer() instanceof AbstractOrderedLayout) {
-            WebComponentsHelper.expand((AbstractOrderedLayout) getContainer(), expandedComponent, height, width);
-        } else {
-            throw new UnsupportedOperationException();
-        }
+        com.vaadin.ui.Component expandedComponent = component.unwrapComposition(com.vaadin.ui.Component.class);
+        WebComponentsHelper.expand((AbstractOrderedLayout) getContainer(), expandedComponent, height, width);
     }
 
     @Override

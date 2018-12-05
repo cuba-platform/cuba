@@ -24,7 +24,6 @@ import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.app.LockService;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.Notifications.NotificationType;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.BaseAction;
@@ -381,10 +380,8 @@ public abstract class StandardEditor<T extends Entity> extends Screen implements
      * @return validation errors
      */
     protected ValidationErrors validateUiComponents() {
-        Collection<Component> components = ComponentsHelper.getComponents(getWindow());
-
         ScreenValidation screenValidation = getBeanLocator().get(ScreenValidation.NAME);
-        return screenValidation.validateUiComponents(components);
+        return screenValidation.validateUiComponents(getWindow());
     }
 
     protected void validateAdditionalRules(ValidationErrors errors) {

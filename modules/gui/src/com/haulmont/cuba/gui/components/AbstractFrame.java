@@ -33,6 +33,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 /**
  * Base class for frame controllers.
@@ -261,6 +262,11 @@ public class AbstractFrame extends ScreenFragment implements Frame, Frame.Wrappe
     @Override
     public Collection<Component> getOwnComponents() {
         return frame.getOwnComponents();
+    }
+
+    @Override
+    public Stream<Component> getOwnComponentsStream() {
+        return frame.getOwnComponentsStream();
     }
 
     @Override
