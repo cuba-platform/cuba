@@ -292,7 +292,7 @@ public class PersistenceTools {
         if (entity instanceof FetchGroupTracker) {
             FetchGroup fetchGroup = ((FetchGroupTracker) entity)._persistence_getFetchGroup();
             if (fetchGroup != null) {
-                if (!fetchGroup.getAttributeNames().contains(property))
+                if (!fetchGroup.containsAttributeInternal(property))
                     return RefId.createNotLoaded(property);
                 else {
                     Entity refEntity = (Entity) entity.getValue(property);
