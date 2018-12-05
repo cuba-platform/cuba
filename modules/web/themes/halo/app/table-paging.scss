@@ -16,9 +16,20 @@
  */
 
 @mixin cuba-table-paging {
-  .c-paging,
+  .c-table-rows-count {
+    text-align: right;
+    padding-left: round($v-layout-spacing-horizontal/2);
+  }
+
+  .c-table-rows-count,
   .c-paging-wrap {
     height: $v-unit-size;
+  }
+
+  .c-paging-wrap > * {
+    vertical-align: middle;
+    margin-right: round($v-layout-spacing-horizontal/2);
+    margin-bottom: round($v-layout-spacing-vertical/2);
   }
 
   .v-button.c-paging-change-page {

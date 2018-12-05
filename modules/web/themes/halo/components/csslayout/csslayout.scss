@@ -15,8 +15,12 @@
  */
 
 @mixin halo-csslayout($primary-stylename: v-csslayout) {
-
   .#{$primary-stylename} {
     outline: none;
+  }
+
+  .#{$primary-stylename}-spacing > * {
+    margin-right: $v-layout-spacing-horizontal;
+    margin-bottom: $v-layout-spacing-vertical;
   }
 }

@@ -16,10 +16,12 @@
 package com.haulmont.cuba.web.widgets;
 
 import com.vaadin.shared.ui.MarginInfo;
-import com.vaadin.ui.*;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.ComponentContainer;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.themes.ValoTheme;
 
-public class CubaRowsCount extends CustomComponent { // vaadin8 inherit from CssLayout
+public class CubaRowsCount extends CubaCssActionsLayout {
 
     protected Button prevButton;
     protected Button nextButton;
@@ -29,49 +31,34 @@ public class CubaRowsCount extends CustomComponent { // vaadin8 inherit from Css
     protected Button countButton;
 
     public CubaRowsCount() {
-        HorizontalLayout layout = new HorizontalLayout(); // vaadin8 use CssLayout instead
-        layout.setStyleName("c-paging");
-        layout.setSpacing(false);
-        layout.setMargin(new MarginInfo(false, false, false, true));
+        setStyleName("c-paging");
+        setMargin(new MarginInfo(false, false, false, true));
 
-        setCompositionRoot(layout);
+        ComponentContainer contentLayout = createContentLayout();
+        addComponent(contentLayout);
 
-        CubaPlaceHolder expander = new CubaPlaceHolder();
-        expander.setWidth(100, Unit.PERCENTAGE);
-        layout.addComponent(expander);
-        layout.setExpandRatio(expander, 1);
-
-        AbstractOrderedLayout contentLayout = createContentLayout();
-        layout.addComponent(contentLayout);
-
-        layout.setWidth(100, Unit.PERCENTAGE);
         setWidth(100, Unit.PERCENTAGE);
     }
 
-    protected AbstractOrderedLayout createContentLayout() {
-        HorizontalLayout contentLayout = new HorizontalLayout(); // vaadin8 use CssLayout instead
+    protected ComponentContainer createContentLayout() {
+        CubaCssActionsLayout contentLayout = new CubaCssActionsLayout();
         contentLayout.setStyleName("c-paging-wrap");
         contentLayout.setSpacing(true);
-        contentLayout.setMargin(false);
 
         firstButton = new CubaButton();
         firstButton.setStyleName("c-paging-change-page");
         firstButton.addStyleName("c-paging-first");
         contentLayout.addComponent(firstButton);
 
-        contentLayout.setComponentAlignment(firstButton, Alignment.MIDDLE_CENTER);
-
         prevButton = new CubaButton();
         prevButton.setStyleName("c-paging-change-page");
         prevButton.addStyleName("c-paging-prev");
         contentLayout.addComponent(prevButton);
-        contentLayout.setComponentAlignment(prevButton, Alignment.MIDDLE_CENTER);
 
         label = new Label();
         label.setWidthUndefined();
         label.setStyleName("c-paging-status");
         contentLayout.addComponent(label);
-        contentLayout.setComponentAlignment(label, Alignment.MIDDLE_CENTER);
 
         countButton = new CubaButton("[?]");
         countButton.setWidthUndefined();
@@ -79,19 +66,16 @@ public class CubaRowsCount extends CustomComponent { // vaadin8 inherit from Css
         countButton.addStyleName("c-paging-count");
         countButton.setTabIndex(-1);
         contentLayout.addComponent(countButton);
-        contentLayout.setComponentAlignment(countButton, Alignment.MIDDLE_CENTER);
 
         nextButton = new CubaButton();
         nextButton.setStyleName("c-paging-change-page");
         nextButton.addStyleName("c-paging-next");
         contentLayout.addComponent(nextButton);
-        contentLayout.setComponentAlignment(nextButton, Alignment.MIDDLE_CENTER);
 
         lastButton = new CubaButton();
         lastButton.setStyleName("c-paging-change-page");
         lastButton.addStyleName("c-paging-last");
         contentLayout.addComponent(lastButton);
-        contentLayout.setComponentAlignment(lastButton, Alignment.MIDDLE_CENTER);
 
         return contentLayout;
     }
