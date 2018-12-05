@@ -126,11 +126,6 @@
                 </hbox>
                 <tree id="componentsTree"
                       width="100%">
-                    <actions>
-                        <action id="addComponentIdToComponentTextField"
-                                caption="msg://actions.addComponentIdToComponentTextField"
-                                invoke="addComponentIdToComponentTextField"/>
-                    </actions>
                     <treechildren captionProperty="caption"
                                   datasource="componentDescriptorsDs"/>
                 </tree>

@@ -17,7 +17,9 @@
 
 package com.haulmont.cuba.gui.app.security.role.edit.tabs;
 
+import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.Security;
 import com.haulmont.cuba.gui.AppConfig;
@@ -28,10 +30,13 @@ import com.haulmont.cuba.gui.app.security.entity.UiPermissionTarget;
 import com.haulmont.cuba.gui.app.security.entity.UiPermissionVariant;
 import com.haulmont.cuba.gui.app.security.role.edit.PermissionUiHelper;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.actions.BaseAction;
 import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.icons.CubaIcon;
+import com.haulmont.cuba.gui.icons.Icons;
 import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.entity.Permission;
 import com.haulmont.cuba.security.entity.PermissionType;
@@ -107,6 +112,12 @@ public class UiPermissionsFrame extends AbstractFrame {
     @Inject
     protected ScreenComponentsTreeDatasource componentDescriptorsDs;
 
+    @Inject
+    protected Configuration configuration;
+
+    @Inject
+    protected Icons icons;
+
     protected boolean itemChanging = false;
 
     @Override
@@ -117,7 +128,10 @@ public class UiPermissionsFrame extends AbstractFrame {
 
         companion.initPermissionsColoredColumns(uiPermissionsTable);
 
+        // Remove useless information about screen component descriptors
         componentsTree.removeAction("showSystemInfo");
+
+        componentsTree.addAction(new CopyComponentIdAction("pasteComponentId"));
 
         uiPermissionTargetsDs.addItemChangeListener(e -> {
             if (!selectedComponentPanel.isVisible() && (e.getItem() != null)) {
@@ -312,15 +326,39 @@ public class UiPermissionsFrame extends AbstractFrame {
         componentsTree.expandTree();
     }
 
-    public void addComponentIdToComponentTextField() {
-        ScreenComponentDescriptor component = componentsTree.getSingleSelected();
-        if (component != null) {
-            String componentId = component.getElement().attributeValue("id");
-            if (componentId != null) {
-                componentTextField.setValue(componentTextField.getRawValue() + componentId);
-            } else {
-                showNotification(getMessage("componentHasNotId"), NotificationType.TRAY_HTML);
+    /**
+     * Copies an id attribute of {@link #componentsTree} selected component to {@link #componentTextField}.
+     * Disabled if no id is set.
+     */
+    protected class CopyComponentIdAction extends BaseAction {
+
+        protected String selectedComponentId;
+
+        private CopyComponentIdAction(String id) {
+            super(id);
+            icon = icons.get(CubaIcon.COPY);
+            caption = getMessage("actions.copyComponentId");
+            ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
+            shortcut = KeyCombination.create(clientConfig.getCopyComponentIdShortcut());
+        }
+
+        @Override
+        public void refreshState() {
+            ScreenComponentDescriptor selectedComponent = componentsTree.getSingleSelected();
+            if (selectedComponent != null) {
+                selectedComponentId = selectedComponent.getElement().attributeValue("id");
             }
+            super.refreshState();
+        }
+
+        @Override
+        protected boolean isApplicable() {
+            return selectedComponentId != null;
+        }
+
+        @Override
+        public void actionPerform(Component component) {
+            componentTextField.setValue(componentTextField.getRawValue() + selectedComponentId);
         }
     }
 }

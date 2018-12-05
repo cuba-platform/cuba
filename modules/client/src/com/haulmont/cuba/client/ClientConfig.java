@@ -301,6 +301,11 @@ public interface ClientConfig extends Config {
     @DefaultString("CTRL-ALT-C")
     String getPickerClearShortcut();
 
+    @Property("cuba.gui.uiPermissionsFrame.copyComponentId")
+    @Source(type = SourceType.DATABASE)
+    @DefaultString("CTRL-C")
+    String getCopyComponentIdShortcut();
+
     @Property("cuba.gui.useSaveConfirmation")
     @Source(type = SourceType.DATABASE)
     @DefaultBoolean(true)
