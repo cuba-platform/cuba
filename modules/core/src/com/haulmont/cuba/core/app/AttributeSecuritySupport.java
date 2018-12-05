@@ -156,6 +156,9 @@ public class AttributeSecuritySupport {
      */
     public void afterPersist(Entity entity, View view) {
         if (entity instanceof BaseGenericIdEntity) {
+            if (!isAttributeAccessEnabled()) {
+                return;
+            }
             BaseGenericIdEntity genericIdEntity = (BaseGenericIdEntity) entity;
             setupAttributeAccess(genericIdEntity);
             if (view != null) {
@@ -193,6 +196,9 @@ public class AttributeSecuritySupport {
      */
     public void afterMerge(Entity entity) {
         if (entity instanceof BaseGenericIdEntity) {
+            if (!isAttributeAccessEnabled()) {
+                return;
+            }
             BaseGenericIdEntity genericIdEntity = (BaseGenericIdEntity) entity;
             setupAttributeAccess(genericIdEntity);
             metadataTools.traverseAttributes(genericIdEntity, new AttributeAccessVisitor(Sets.newHashSet(entity)));
@@ -215,6 +221,9 @@ public class AttributeSecuritySupport {
 
     public void onLoad(Collection<? extends Entity> entities, View view) {
         Preconditions.checkNotNullArgument(entities, "entities list is null");
+        if (!isAttributeAccessEnabled()) {
+            return;
+        }
 
         for (Entity entity : entities) {
             onLoad(entity, view);
@@ -223,6 +232,9 @@ public class AttributeSecuritySupport {
 
     public void onLoad(Entity entity, View view) {
         if (entity instanceof BaseGenericIdEntity) {
+            if (!isAttributeAccessEnabled()) {
+                return;
+            }
             BaseGenericIdEntity genericIdEntity = (BaseGenericIdEntity) entity;
             setupAttributeAccess(genericIdEntity);
             metadataTools.traverseLoadedAttributesByView(view, genericIdEntity, new AttributeAccessVisitor(Sets.newHashSet(entity)));
@@ -282,6 +294,14 @@ public class AttributeSecuritySupport {
             }
         }
         return false;
+    }
+
+    /**
+     * Checks if attribute access enabled (if SetupAttributeAccessHandlers exist)
+     */
+    public boolean isAttributeAccessEnabled() {
+        Map<String, SetupAttributeAccessHandler> handlers = AppBeans.getAll(SetupAttributeAccessHandler.class);
+        return handlers != null && !handlers.isEmpty();
     }
 
     protected void checkRequiredAttributes(Entity entity) {
