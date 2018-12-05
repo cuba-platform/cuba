@@ -1605,20 +1605,12 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
         }
     }
 
-    @Override
-    protected String getAlternativeDebugId() {
-        if (id != null) {
-            return id;
-        }
-
-        return getClass().getSimpleName();
-    }
-
     protected String getColumnCaption(Object columnId) {
-        if (columnId instanceof MetaPropertyPath)
+        if (columnId instanceof MetaPropertyPath) {
             return ((MetaPropertyPath) columnId).getMetaProperty().getName();
-        else
+        } else {
             return columnId.toString();
+        }
     }
 
     protected String getColumnCaption(Object columnId, Column column) {

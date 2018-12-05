@@ -17,7 +17,6 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.bali.events.Subscription;
-import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Frame;
@@ -37,6 +36,8 @@ import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
+
+import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
 public class WebSplitPanel extends WebAbstractComponent<AbstractSplitPanel> implements SplitPanel {
 
@@ -58,13 +59,8 @@ public class WebSplitPanel extends WebAbstractComponent<AbstractSplitPanel> impl
         if (component == null) {
             createComponentImpl();
         }
-        if (getId() != null) {
-            component.setCubaId(getId());
-        } else {
-            component.setCubaId(getAlternativeDebugId());
-        }
 
-        com.vaadin.ui.Component vComponent = WebComponentsHelper.getComposition(childComponent);
+        com.vaadin.ui.Component vComponent = childComponent.unwrapComposition(com.vaadin.ui.Component.class);
 
         component.addComponent(vComponent);
 
@@ -119,7 +115,9 @@ public class WebSplitPanel extends WebAbstractComponent<AbstractSplitPanel> impl
 
     @Override
     public void remove(Component childComponent) {
-        component.removeComponent(WebComponentsHelper.getComposition(childComponent));
+        checkNotNullArgument(childComponent);
+
+        component.removeComponent(childComponent.unwrapComposition(com.vaadin.ui.Component.class));
         ownComponents.remove(childComponent);
 
         childComponent.setParent(null);
@@ -129,7 +127,7 @@ public class WebSplitPanel extends WebAbstractComponent<AbstractSplitPanel> impl
     public void removeAll() {
         component.removeAllComponents();
 
-        Component[] components = ownComponents.toArray(new Component[ownComponents.size()]);
+        Component[] components = ownComponents.toArray(new Component[0]);
         ownComponents.clear();
 
         for (Component childComponent : components) {
@@ -153,7 +151,7 @@ public class WebSplitPanel extends WebAbstractComponent<AbstractSplitPanel> impl
 
     @Override
     public Component getOwnComponent(String id) {
-        Preconditions.checkNotNullArgument(id);
+        checkNotNullArgument(id);
 
         return ownComponents.stream()
                 .filter(component -> Objects.equals(id, component.getId()))

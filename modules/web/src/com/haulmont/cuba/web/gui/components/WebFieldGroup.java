@@ -732,26 +732,14 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout> im
     }
 
     @Override
-    protected String getAlternativeDebugId() {
-        if (id != null) {
-            return id;
-        }
-        if (datasource != null && StringUtils.isNotEmpty(datasource.getId())) {
-            return "fieldGroup_" + datasource.getId();
-        }
-
-        return getClass().getSimpleName();
-    }
-
-    @Override
     public void applyPermission(UiPermissionDescriptor permissionDescriptor) {
         checkNotNullArgument(permissionDescriptor);
 
-        final Logger log = LoggerFactory.getLogger(WebFieldGroup.class);
+        Logger log = LoggerFactory.getLogger(WebFieldGroup.class);
 
-        final String subComponentId = permissionDescriptor.getSubComponentId();
-        final UiPermissionValue permissionValue = permissionDescriptor.getPermissionValue();
-        final String screenId = permissionDescriptor.getScreenId();
+        String subComponentId = permissionDescriptor.getSubComponentId();
+        UiPermissionValue permissionValue = permissionDescriptor.getPermissionValue();
+        String screenId = permissionDescriptor.getScreenId();
 
         if (subComponentId != null) {
             final FieldGroup.FieldConfig field = getField(subComponentId);
@@ -765,7 +753,7 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout> im
                 log.info("Couldn't find suitable component {} in window {} for UI security rule", subComponentId, screenId);
             }
         } else {
-            final String actionHolderComponentId = permissionDescriptor.getActionHolderComponentId();
+            String actionHolderComponentId = permissionDescriptor.getActionHolderComponentId();
             FieldConfig fieldConfig = getField(actionHolderComponentId);
             if (fieldConfig == null
                     || fieldConfig.getComponent() == null

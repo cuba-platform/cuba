@@ -26,9 +26,9 @@ public class LabelLoader extends AbstractDatasourceComponentLoader<Label> {
         loadId(resultComponent, element);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void loadComponent() {
-        assignFrame(resultComponent);
         assignXmlDescriptor(resultComponent, element);
 
         loadDatasource(resultComponent, element);

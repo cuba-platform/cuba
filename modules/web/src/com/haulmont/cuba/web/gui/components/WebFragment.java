@@ -21,6 +21,7 @@ import com.haulmont.cuba.gui.FrameContext;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.sys.FragmentImplementation;
+import com.haulmont.cuba.gui.components.sys.FrameImplementation;
 import com.haulmont.cuba.gui.events.sys.UiEventsMulticaster;
 import com.haulmont.cuba.gui.screen.ScreenFragment;
 import com.haulmont.cuba.gui.screen.UiControllerUtils;
@@ -36,6 +37,7 @@ import java.util.List;
 import java.util.Map;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
+import static com.haulmont.cuba.web.gui.components.WebWrapperUtils.toVaadinAlignment;
 
 public class WebFragment extends WebVBoxLayout implements Fragment, FragmentImplementation {
 
@@ -51,6 +53,54 @@ public class WebFragment extends WebVBoxLayout implements Fragment, FragmentImpl
 
     public WebFragment() {
         component.addActionHandler(actionsHolder);
+    }
+
+    @Override
+    public void add(Component childComponent, int index) {
+        if (childComponent.getParent() != null && childComponent.getParent() != this) {
+            throw new IllegalStateException("Component already has parent");
+        }
+
+        com.vaadin.ui.Component vComponent = childComponent.unwrapComposition(com.vaadin.ui.Component.class);
+        if (ownComponents.contains(childComponent)) {
+            int existingIndex = component.getComponentIndex(vComponent);
+            if (index > existingIndex) {
+                index--;
+            }
+
+            remove(childComponent);
+        }
+
+        component.addComponent(vComponent, index);
+        component.setComponentAlignment(vComponent, toVaadinAlignment(childComponent.getAlignment()));
+
+        if (frame != null) {
+            if (childComponent instanceof BelongToFrame
+                    && ((BelongToFrame) childComponent).getFrame() == null) {
+
+                // CAUTION here we set this as fragment for nested components
+                ((BelongToFrame) childComponent).setFrame(this);
+            } else {
+                attachToFrame(childComponent);
+            }
+        }
+
+        if (index == ownComponents.size()) {
+            ownComponents.add(childComponent);
+        } else {
+            ownComponents.add(index, childComponent);
+        }
+
+        childComponent.setParent(this);
+    }
+
+    @Override
+    public void setFrame(Frame frame) {
+        this.frame = frame;
+
+        if (frame instanceof FrameImplementation) {
+            ((FrameImplementation) frame).registerComponent(this);
+        }
     }
 
     @Override

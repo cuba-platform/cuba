@@ -168,18 +168,6 @@ public class WebButton extends WebAbstractComponent<CubaButton> implements Butto
     }
 
     @Override
-    protected String getAlternativeDebugId() {
-        if (StringUtils.isNotEmpty(id)) {
-            return id;
-        }
-        if (action != null && StringUtils.isNotEmpty(action.getId())) {
-            return action.getId();
-        }
-
-        return getClass().getSimpleName();
-    }
-
-    @Override
     public void focus() {
         component.focus();
     }

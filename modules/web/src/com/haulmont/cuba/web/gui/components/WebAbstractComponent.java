@@ -121,17 +121,6 @@ public abstract class WebAbstractComponent<T extends com.vaadin.ui.Component>
         }
     }
 
-    /**
-     * @return id that is suitable for auto debug id
-     */
-    protected String getAlternativeDebugId() {
-        if (id != null) {
-            return id;
-        }
-
-        return getClass().getSimpleName();
-    }
-
     @Override
     public String getId() {
         return id;
