@@ -88,6 +88,19 @@ public class CubaManagedTabSheet extends CubaTabSheetCssLayout
             protected Component getActionTarget(Tab tab) {
                 return getContentTab(tab.getComponent()).getComponent();
             }
+
+            @Override
+            public void setTabPosition(Tab tab, int position) {
+                super.setTabPosition(tab, position);
+
+                TabImpl tabImpl = (TabImpl) tabToContentMap.get(tab.getComponent());
+                if (tabImpl != null) {
+                    Component tabComponent = tabImpl.getComponent();
+
+                    tabComponents.remove(tabComponent);
+                    tabComponents.add(position, tabComponent);
+                }
+            }
         };
         tabbedHeader.setVisible(false);
         tabbedHeader.addStyleName("framed padded-tabbar");
@@ -680,7 +693,9 @@ public class CubaManagedTabSheet extends CubaTabSheetCssLayout
 
         @Override
         public Component getSelectedTab() {
-            return ((TabImpl) tabSheet.selected).getComponent();
+            return tabSheet.selected != null ?
+                    ((TabImpl) tabSheet.selected).getComponent()
+                    : null;
         }
 
         @Override
