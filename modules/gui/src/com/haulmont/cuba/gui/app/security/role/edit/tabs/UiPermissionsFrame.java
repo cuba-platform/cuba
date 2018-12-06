@@ -17,9 +17,7 @@
 
 package com.haulmont.cuba.gui.app.security.role.edit.tabs;
 
-import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.Security;
 import com.haulmont.cuba.gui.AppConfig;
@@ -113,9 +111,6 @@ public class UiPermissionsFrame extends AbstractFrame {
     protected ScreenComponentsTreeDatasource componentDescriptorsDs;
 
     @Inject
-    protected Configuration configuration;
-
-    @Inject
     protected Icons icons;
 
     protected boolean itemChanging = false;
@@ -131,7 +126,7 @@ public class UiPermissionsFrame extends AbstractFrame {
         // Remove useless information about screen component descriptors
         componentsTree.removeAction("showSystemInfo");
 
-        componentsTree.addAction(new CopyComponentIdAction("pasteComponentId"));
+        componentsTree.addAction(new CopyComponentIdAction("copyComponentId"));
 
         uiPermissionTargetsDs.addItemChangeListener(e -> {
             if (!selectedComponentPanel.isVisible() && (e.getItem() != null)) {
@@ -336,10 +331,9 @@ public class UiPermissionsFrame extends AbstractFrame {
 
         private CopyComponentIdAction(String id) {
             super(id);
-            icon = icons.get(CubaIcon.COPY);
-            caption = getMessage("actions.copyComponentId");
-            ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
-            shortcut = KeyCombination.create(clientConfig.getCopyComponentIdShortcut());
+            setShortcut("CTRL-C");
+            setIcon(icons.get(CubaIcon.COPY));
+            setCaption(getMessage("actions.copyComponentId"));
         }
 
         @Override
