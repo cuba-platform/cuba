@@ -22,23 +22,32 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.function.Function;
 
 /**
- * A component that is marked with this interface allows to manage caption for options displayed
- * by this component.
+ * A component that is marked with this interface allows to manage caption for component item.
  *
- * @deprecated use {@link HasOptionCaptionProvider} instead
+ * @param <I> component value type
  */
-@SuppressWarnings("unchecked")
-@Deprecated
-public interface HasCaptionMode {
+public interface HasItemCaptionProvider<I> extends Component {
 
     /**
-     * @return options caption mode
+     * Sets function that provides caption for component item.
      *
-     * @deprecated use {@link HasOptionCaptionProvider#getOptionCaptionProvider()} instead
+     * @param itemCaptionProvider caption provider for item
+     */
+    void setItemCaptionProvider(Function<? super I, String> itemCaptionProvider);
+
+    /**
+     * @return caption provider for item
+     */
+    Function<? super I, String> getItemCaptionProvider();
+
+    /**
+     * @return caption mode
+     *
+     * @deprecated use {@link HasItemCaptionProvider#getItemCaptionProvider} instead
      */
     @Deprecated
     default CaptionMode getCaptionMode() {
-        Function provider = ((HasOptionCaptionProvider) this).getOptionCaptionProvider();
+        Function provider = ((HasItemCaptionProvider) this).getItemCaptionProvider();
 
         if (provider instanceof LegacyCaptionAdapter) {
             return ((LegacyCaptionAdapter) provider).getCaptionMode();
@@ -48,15 +57,15 @@ public interface HasCaptionMode {
     }
 
     /**
-     * Sets options caption mode.
+     * Sets caption mode.
      *
      * @param captionMode caption mode
      *
-     * @deprecated use {@link HasOptionCaptionProvider#setOptionCaptionProvider(Function)} instead
+     * @deprecated use {@link HasItemCaptionProvider#setItemCaptionProvider(Function)} instead
      */
     @Deprecated
     default void setCaptionMode(CaptionMode captionMode) {
-        Function provider = ((HasOptionCaptionProvider) this).getOptionCaptionProvider();
+        Function provider = ((HasItemCaptionProvider) this).getItemCaptionProvider();
 
         String captionProperty = null;
         if (provider instanceof LegacyCaptionAdapter) {
@@ -68,17 +77,17 @@ public interface HasCaptionMode {
                         ? new LegacyCaptionAdapter(captionMode, captionProperty)
                         : null;
 
-        ((HasOptionCaptionProvider) this).setOptionCaptionProvider(adapter);
+        setItemCaptionProvider(adapter);
     }
 
     /**
-     * @return options caption property
+     * @return caption property
      *
-     * @deprecated use {@link HasOptionCaptionProvider#getOptionCaptionProvider()} instead
+     * @deprecated use {@link HasItemCaptionProvider#getItemCaptionProvider} instead
      */
     @Deprecated
     default String getCaptionProperty() {
-        Function provider = ((HasOptionCaptionProvider) this).getOptionCaptionProvider();
+        Function provider = ((HasItemCaptionProvider) this).getItemCaptionProvider();
 
         if (provider instanceof LegacyCaptionAdapter) {
             return ((LegacyCaptionAdapter) provider).getCaptionProperty();
@@ -88,17 +97,17 @@ public interface HasCaptionMode {
     }
 
     /**
-     * Sets options caption property.
+     * Sets caption property.
      *
      * @param captionProperty caption property
      *
-     * @deprecated use {@link HasOptionCaptionProvider#setOptionCaptionProvider(Function)} instead
+     * @deprecated use {@link HasItemCaptionProvider#setItemCaptionProvider(Function)} instead
      */
     @Deprecated
     default void setCaptionProperty(String captionProperty) {
         CaptionMode captionMode = null;
 
-        Function provider = ((HasOptionCaptionProvider) this).getOptionCaptionProvider();
+        Function provider = ((HasItemCaptionProvider) this).getItemCaptionProvider();
 
         if (provider instanceof LegacyCaptionAdapter) {
             captionMode = ((LegacyCaptionAdapter) provider).getCaptionMode();
@@ -109,6 +118,6 @@ public interface HasCaptionMode {
                         ? new LegacyCaptionAdapter(captionMode, captionProperty)
                         : null;
 
-        ((HasOptionCaptionProvider) this).setOptionCaptionProvider(adapter);
+        setItemCaptionProvider(adapter);
     }
 }

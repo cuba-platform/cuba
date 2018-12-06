@@ -90,12 +90,6 @@ public interface ListEditorDelegate<V> {
     void setOptions(Options<V> options);
     Options<V> getOptions();
 
-    void setOptionCaptionProvider(Function<? super V, String> captionProvider);
+    void setOptionCaptionProvider(Function<? super V, String> optionCaptionProvider);
     Function<? super V, String> getOptionCaptionProvider();
-
-    void setCaptionProperty(String captionProvider);
-    String getCaptionProperty();
-
-    void setCaptionMode(CaptionMode captionMode);
-    CaptionMode getCaptionMode();
 }

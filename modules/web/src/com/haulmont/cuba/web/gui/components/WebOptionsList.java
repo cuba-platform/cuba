@@ -17,19 +17,15 @@
 
 package com.haulmont.cuba.web.gui.components;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.BiMap;
-import com.google.common.collect.ImmutableBiMap;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.gui.components.CaptionMode;
 import com.haulmont.cuba.gui.components.OptionsList;
-import com.haulmont.cuba.gui.components.data.meta.EntityOptions;
+import com.haulmont.cuba.gui.components.data.Options;
 import com.haulmont.cuba.gui.components.data.meta.EntityValueSource;
 import com.haulmont.cuba.gui.components.data.meta.OptionsBinding;
-import com.haulmont.cuba.gui.components.data.Options;
-import com.haulmont.cuba.gui.components.data.options.MapOptions;
 import com.haulmont.cuba.gui.components.data.options.ContainerOptions;
+import com.haulmont.cuba.gui.components.data.options.MapOptions;
 import com.haulmont.cuba.gui.components.data.options.OptionsBinder;
 import com.haulmont.cuba.gui.model.CollectionContainer;
 import com.haulmont.cuba.web.widgets.CubaListSelect;
@@ -38,7 +34,10 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 
 import javax.inject.Inject;
-import java.util.*;
+import java.util.Collection;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -263,57 +262,6 @@ public class WebOptionsList<V, I> extends WebAbstractField<CubaListSelect, V>
     @Override
     public Function<? super I, String> getOptionCaptionProvider() {
         return optionCaptionProvider;
-    }
-
-    @Override
-    public CaptionMode getCaptionMode() {
-        return WebWrapperUtils.toCaptionMode(component.getItemCaptionMode());
-    }
-
-    @Override
-    public void setCaptionMode(CaptionMode captionMode) {
-        if (this.getCaptionMode() != captionMode) {
-            switch (captionMode) {
-                case PROPERTY:
-                    if (Strings.isNullOrEmpty(getCaptionProperty())) {
-                        throw new IllegalStateException("Can't set CaptionMode = " + captionMode +
-                                " if the captionProperty is null");
-                    }
-
-                    if (!EntityOptions.class.isAssignableFrom(optionsBinding.getSource().getClass())) {
-                        throw new IllegalStateException("Can't set CaptionMode = " + captionMode +
-                                " for non EntityOptions class");
-                    }
-
-                    setOptionCaptionProvider(this::generateOptionPropertyCaption);
-                    break;
-                case MAP_ENTRY:
-                    if (!MapOptions.class.isAssignableFrom(optionsBinding.getSource().getClass())) {
-                        throw new IllegalStateException("Can't set CaptionMode = " + captionMode +
-                                " for non MapOptions class");
-                    }
-
-                    Map<String, I> optionsMap = ((MapOptions<I>) getOptions()).getItemsCollection();
-                    BiMap<String, I> biMap = ImmutableBiMap.copyOf(optionsMap);
-                    setOptionCaptionProvider(v -> biMap.inverse().get(v));
-                    break;
-                case ITEM:
-                default:
-                    // set null to use default behaviour
-                    setOptionCaptionProvider(null);
-            }
-            component.setItemCaptionMode(WebWrapperUtils.toVaadinCaptionMode(captionMode));
-        }
-    }
-
-    @Override
-    public String getCaptionProperty() {
-        return captionProperty;
-    }
-
-    @Override
-    public void setCaptionProperty(String captionProperty) {
-        this.captionProperty = captionProperty;
     }
 
     @Override

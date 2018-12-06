@@ -46,6 +46,7 @@ import javax.inject.Inject;
 import java.beans.PropertyChangeEvent;
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 import static com.haulmont.cuba.gui.ComponentsHelper.findActionById;
@@ -57,9 +58,6 @@ public class WebPickerField<V extends Entity> extends WebV8AbstractField<CubaPic
     protected Metadata metadata;
     protected MetadataTools metadataTools;
 
-    protected CaptionMode captionMode = CaptionMode.ITEM;
-    protected String captionProperty;
-
     protected MetaClass metaClass;
 
     protected List<Action> actions = new ArrayList<>(4);
@@ -70,6 +68,7 @@ public class WebPickerField<V extends Entity> extends WebV8AbstractField<CubaPic
     protected WebPickerFieldActionHandler actionHandler;
 
     protected Consumer<PropertyChangeEvent> actionPropertyChangeListener = this::actionPropertyChanged;
+    protected Function<? super V, String> optionCaptionProvider;
 
     public WebPickerField() {
         component = createComponent();
@@ -110,15 +109,8 @@ public class WebPickerField<V extends Entity> extends WebV8AbstractField<CubaPic
         return new EntityNameValueProvider<V>(metadataTools) {
             @Override
             public String apply(V entity) {
-                if (captionMode == CaptionMode.PROPERTY
-                        && StringUtils.isNotEmpty(captionProperty)
-                        && (entity != null)) {
-
-                    Object propertyValue = entity.getValue(captionProperty);
-
-                    MetaClass metaClass = metadata.getClassNN(entity.getClass());
-                    MetaProperty property = metaClass.getProperty(captionProperty);
-                    return metadata.getTools().format(propertyValue, property);
+                if (optionCaptionProvider != null) {
+                    return optionCaptionProvider.apply(entity);
                 }
 
                 return super.apply(entity);
@@ -171,23 +163,13 @@ public class WebPickerField<V extends Entity> extends WebV8AbstractField<CubaPic
     }
 
     @Override
-    public CaptionMode getCaptionMode() {
-        return captionMode;
+    public void setOptionCaptionProvider(Function<? super V, String> optionCaptionProvider) {
+        this.optionCaptionProvider = optionCaptionProvider;
     }
 
     @Override
-    public void setCaptionMode(CaptionMode captionMode) {
-        this.captionMode = captionMode;
-    }
-
-    @Override
-    public String getCaptionProperty() {
-        return captionProperty;
-    }
-
-    @Override
-    public void setCaptionProperty(String captionProperty) {
-        this.captionProperty = captionProperty;
+    public Function<? super V, String> getOptionCaptionProvider() {
+        return optionCaptionProvider;
     }
 
     @Override

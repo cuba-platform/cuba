@@ -17,10 +17,8 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.bali.events.Subscription;
-import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.UserSessionSource;
-import com.haulmont.cuba.gui.components.CaptionMode;
 import com.haulmont.cuba.gui.components.SecuredActionsHolder;
 import com.haulmont.cuba.gui.components.SuggestionPickerField;
 import com.haulmont.cuba.gui.executors.BackgroundTask;
@@ -59,6 +57,8 @@ public class WebSuggestionPickerField<V extends Entity> extends WebPickerField<V
     protected Function<? super V, String> optionStyleProvider;
 
     protected Locale locale;
+
+    protected Function<? super V, String> optionCaptionProvider;
 
     public WebSuggestionPickerField() {
     }
@@ -100,23 +100,21 @@ public class WebSuggestionPickerField<V extends Entity> extends WebPickerField<V
             return "";
         }
 
-        if (captionMode == CaptionMode.ITEM) {
-            return metadataTools.getInstanceName(value);
+        if (optionCaptionProvider != null) {
+            return optionCaptionProvider.apply(value);
         }
-
-        if (captionProperty != null && !"".equals(captionProperty)) {
-            MetaPropertyPath propertyPath = value.getMetaClass().getPropertyPath(captionProperty);
-            if (propertyPath == null) {
-                throw new IllegalArgumentException(String.format("Can't find property for given caption property: %s", captionProperty));
-            }
-
-            return metadataTools.format(value.getValueEx(propertyPath), propertyPath.getMetaProperty());
-        }
-
-        log.warn("Using StringToEntityConverter to get entity text presentation. Caption property is not defined " +
-                "while caption mode is \"PROPERTY\"");
 
         return metadataTools.getInstanceName(value);
+    }
+
+    @Override
+    public void setOptionCaptionProvider(Function<? super V, String> optionCaptionProvider) {
+        this.optionCaptionProvider = optionCaptionProvider;
+    }
+
+    @Override
+    public Function<? super V, String> getOptionCaptionProvider() {
+        return optionCaptionProvider;
     }
 
     protected void cancelSearch() {

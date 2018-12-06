@@ -17,11 +17,7 @@
 
 package com.haulmont.cuba.web.gui.components;
 
-import com.google.common.base.Strings;
 import com.haulmont.bali.events.Subscription;
-import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.chile.core.model.MetaProperty;
-import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.MetadataTools;
@@ -111,9 +107,6 @@ public class WebTree<E extends Entity>
 
     protected SelectionMode selectionMode;
 
-    protected CaptionMode captionMode = CaptionMode.ITEM;
-    protected String captionProperty;
-
     protected Action doubleClickAction;
     protected Registration itemClickListener;
 
@@ -126,6 +119,7 @@ public class WebTree<E extends Entity>
 
     protected String hierarchyProperty;
     protected TreeDataProvider<E> dataBinding;
+    protected Function<? super E, String> itemCaptionProvider;
 
     public WebTree() {
         component = createComponent();
@@ -220,25 +214,11 @@ public class WebTree<E extends Entity>
     }
 
     protected String generateItemCaption(E item) {
-        if (item != null) {
-            switch (captionMode) {
-                case ITEM:
-                    return metadataTools.getInstanceName(item);
-                case PROPERTY:
-                    MetaClass metaClass = metadata.getClassNN(item.getClass());
-                    MetaPropertyPath metaPropertyPath =
-                            metadataTools.resolveMetaPropertyPathNN(metaClass, captionProperty);
-                    MetaProperty property = metaPropertyPath.getMetaProperty();
-                    Object propertyValue = item.getValueEx(metaPropertyPath);
-
-                    return metadataTools.format(propertyValue, property);
-
-                default:
-                    throw new UnsupportedOperationException("'" + captionMode + "' mode is not supported");
-            }
+        if (itemCaptionProvider != null) {
+            return itemCaptionProvider.apply(item);
         }
 
-        return "";
+        return metadata.getTools().getInstanceName(item);
     }
 
     protected void initContextMenu() {
@@ -391,42 +371,17 @@ public class WebTree<E extends Entity>
     }
 
     @Override
-    public CaptionMode getCaptionMode() {
-        return captionMode;
-    }
+    public void setItemCaptionProvider(Function<? super E, String> itemCaptionProvider) {
+        if (this.itemCaptionProvider != itemCaptionProvider) {
+            this.itemCaptionProvider = itemCaptionProvider;
 
-    @Override
-    public void setCaptionMode(CaptionMode captionMode) {
-        if (this.captionMode != captionMode) {
-            switch (captionMode) {
-                case PROPERTY:
-                    if (Strings.isNullOrEmpty(getCaptionProperty())) {
-                        throw new IllegalStateException("Can't set CaptionMode = " + captionMode +
-                                " if the captionProperty is null");
-                    }
-                case ITEM:
-                    this.captionMode = captionMode;
-                    component.repaint();
-                    break;
-                default:
-                    throw new UnsupportedOperationException("'" + captionMode + "' mode is not supported");
-            }
+            component.setItemCaptionGenerator(this::generateItemCaption);
         }
     }
 
     @Override
-    public String getCaptionProperty() {
-        return captionProperty;
-    }
-
-    @Override
-    public void setCaptionProperty(String captionProperty) {
-        if (StringUtils.isEmpty(captionProperty)) {
-            setCaptionMode(CaptionMode.ITEM);
-        } else {
-            this.captionProperty = captionProperty;
-            setCaptionMode(CaptionMode.PROPERTY);
-        }
+    public Function<? super E, String> getItemCaptionProvider() {
+        return itemCaptionProvider;
     }
 
     protected void initShowInfoAction() {

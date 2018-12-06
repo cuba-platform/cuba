@@ -18,7 +18,6 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.bali.events.Subscription;
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.gui.components.CaptionMode;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.HBoxLayout;
 import com.haulmont.cuba.gui.components.ListEditor;
@@ -30,7 +29,10 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.InitializingBean;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.TimeZone;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -290,32 +292,12 @@ public class WebListEditor<V> extends WebV8AbstractField<WebListEditor.CubaListE
     }
 
     @Override
-    public void setOptionCaptionProvider(Function<? super V, String> captionProvider) {
-        delegate.setOptionCaptionProvider(captionProvider);
+    public void setOptionCaptionProvider(Function<? super V, String> optionCaptionProvider) {
+        delegate.setOptionCaptionProvider(optionCaptionProvider);
     }
 
     @Override
     public Function<? super V, String> getOptionCaptionProvider() {
         return delegate.getOptionCaptionProvider();
-    }
-
-    @Override
-    public CaptionMode getCaptionMode() {
-        return delegate.getCaptionMode();
-    }
-
-    @Override
-    public void setCaptionMode(CaptionMode captionMode) {
-        delegate.setCaptionMode(captionMode);
-    }
-
-    @Override
-    public String getCaptionProperty() {
-        return delegate.getCaptionProperty();
-    }
-
-    @Override
-    public void setCaptionProperty(String captionProperty) {
-        delegate.setCaptionProperty(captionProperty);
     }
 }

@@ -38,7 +38,8 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 public interface TokenList<V extends Entity> extends Field<Collection<V>>,
-        Component.BelongToFrame, Component.HasCaption, Component.Editable, Component.Focusable {
+        Component.BelongToFrame, Component.HasCaption, Component.Editable, Component.Focusable, HasCaptionMode,
+        HasOptionCaptionProvider<V> {
 
     String NAME = "tokenList";
 
@@ -120,56 +121,52 @@ public interface TokenList<V extends Entity> extends Field<Collection<V>>,
     void setFilterMode(LookupField.FilterMode mode);
 
     /**
-     * @return item caption mode generation
-     */
-    CaptionMode getCaptionMode();
-
-    /**
-     * Sets how item caption should be generated.
+     * Sets function that provides caption for LookupField options.
      *
-     * @param captionMode mode
+     * @param optionsCaptionProvider caption provider for options
      */
-    void setCaptionMode(CaptionMode captionMode);
+    void setLookupFieldOptionsCaptionProvider(Function<? super V, String> optionsCaptionProvider);
 
     /**
-     * @return a property that is used for caption generation
+     * @return caption provider for LookupField options
      */
-    String getCaptionProperty();
-
-    /**
-     * Sets a property that will be used for item caption generation when {@link CaptionMode#PROPERTY} is used.
-     *
-     * @param captionProperty property
-     */
-    void setCaptionProperty(String captionProperty);
+    Function<? super V, String> getLookupFieldOptionsCaptionProvider();
 
     /**
      * @return option captions mode generation
+     *
+     * @deprecated use {@link TokenList#getLookupFieldOptionsCaptionProvider()}
      */
     @Deprecated
     CaptionMode getOptionsCaptionMode();
 
     /**
-     * Sets how option captions should be generated.
+     * Sets how LookupField option captions should be generated.
      *
-     * @param captionMode mode
+     * @param optionsCaptionMode mode
+     *
+     * @deprecated use {@link TokenList#setLookupFieldOptionsCaptionProvider(Function)} instead
      */
     @Deprecated
-    void setOptionsCaptionMode(CaptionMode captionMode);
+    void setOptionsCaptionMode(CaptionMode optionsCaptionMode);
 
     /**
-     * @return a property that is used for option captions generation
+     * @return a property that is used for LookupField option captions generation
+     *
+     * @deprecated use {@link TokenList#getLookupFieldOptionsCaptionProvider()} instead
      */
     @Deprecated
     String getOptionsCaptionProperty();
 
     /**
-     * Sets a property that will be used for option captions generation when {@link CaptionMode#PROPERTY} is used.
+     * Sets a property that will be used for LookupField option captions generation when {@link CaptionMode#PROPERTY} is used.
      *
-     * @param captionProperty property
+     * @param optionsCaptionProperty property
+     *
+     * @deprecated use {@link TokenList#setLookupFieldOptionsCaptionProvider(Function)} instead
      */
     @Deprecated
-    void setOptionsCaptionProperty(String captionProperty);
+    void setOptionsCaptionProperty(String optionsCaptionProperty);
 
     /**
      * Sets whether options should be refreshed after lookup window closing.

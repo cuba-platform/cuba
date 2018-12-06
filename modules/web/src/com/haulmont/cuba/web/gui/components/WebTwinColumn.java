@@ -16,17 +16,12 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.BiMap;
-import com.google.common.collect.ImmutableBiMap;
-import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.gui.components.CaptionMode;
 import com.haulmont.cuba.gui.components.TwinColumn;
 import com.haulmont.cuba.gui.components.data.ConversionException;
 import com.haulmont.cuba.gui.components.data.Options;
-import com.haulmont.cuba.gui.components.data.meta.EntityOptions;
 import com.haulmont.cuba.gui.components.data.meta.EntityValueSource;
 import com.haulmont.cuba.gui.components.data.meta.OptionsBinding;
 import com.haulmont.cuba.gui.components.data.options.MapOptions;
@@ -55,9 +50,6 @@ public class WebTwinColumn<V> extends WebV8AbstractField<CubaTwinColSelect<V>, S
     protected MetadataTools metadataTools;
 
     protected IconResolver iconResolver = AppBeans.get(IconResolver.class);
-
-    protected String captionProperty;
-    protected CaptionMode captionMode;
 
     public WebTwinColumn() {
         component = createComponent();
@@ -156,9 +148,11 @@ public class WebTwinColumn<V> extends WebV8AbstractField<CubaTwinColSelect<V>, S
 
     @Override
     public void setOptionCaptionProvider(Function<? super V, String> captionProvider) {
-        this.optionCaptionProvider = captionProvider;
+        if (this.optionCaptionProvider != captionProvider) {
+            this.optionCaptionProvider = captionProvider;
 
-        component.setItemCaptionGenerator(this::generateItemCaption);
+            component.setItemCaptionGenerator(this::generateItemCaption);
+        }
     }
 
     protected String generateItemCaption(V item) {
@@ -253,62 +247,5 @@ public class WebTwinColumn<V> extends WebV8AbstractField<CubaTwinColSelect<V>, S
     @Override
     public String getRightColumnCaption() {
         return component.getRightColumnCaption();
-    }
-
-    @Override
-    public CaptionMode getCaptionMode() {
-        return captionMode;
-    }
-
-    @Override
-    public void setCaptionMode(CaptionMode captionMode) {
-        if (this.captionMode != captionMode) {
-            switch (captionMode) {
-                case PROPERTY:
-                    if (Strings.isNullOrEmpty(getCaptionProperty())) {
-                        throw new IllegalStateException("Can't set CaptionMode = " + captionMode +
-                                " if the captionProperty is null");
-                    }
-
-                    if (!EntityOptions.class.isAssignableFrom(optionsBinding.getSource().getClass())) {
-                        throw new IllegalStateException("Can't set CaptionMode = " + captionMode +
-                                " for non EntityOptions class");
-                    }
-
-                    setOptionCaptionProvider(this::generateOptionPropertyCaption);
-                    break;
-                case MAP_ENTRY:
-                    if (!MapOptions.class.isAssignableFrom(optionsBinding.getSource().getClass())) {
-                        throw new IllegalStateException("Can't set CaptionMode = " + captionMode +
-                                " for non MapOptions class");
-                    }
-
-                    Map<String, V> optionsMap = ((MapOptions<V>) getOptions()).getItemsCollection();
-                    BiMap<String, V> biMap = ImmutableBiMap.copyOf(optionsMap);
-                    setOptionCaptionProvider(v -> biMap.inverse().get(v));
-                    break;
-                case ITEM:
-                default:
-                    // set null to use default behaviour
-                    setOptionCaptionProvider(null);
-            }
-            this.captionMode = captionMode;
-        }
-    }
-
-    protected String generateOptionPropertyCaption(V item) {
-        return ((Entity) item).getValueEx(captionProperty);
-    }
-
-    @Override
-    public String getCaptionProperty() {
-        return captionProperty;
-    }
-
-    @Override
-    public void setCaptionProperty(String captionProperty) {
-        this.captionProperty = captionProperty;
-
-        setCaptionMode(CaptionMode.PROPERTY);
     }
 }

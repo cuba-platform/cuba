@@ -23,7 +23,8 @@ import com.haulmont.bali.util.Preconditions;
 import java.util.List;
 import java.util.Map;
 
-public interface SuggestionField<V> extends Field<V>, Component.Focusable, HasInputPrompt, HasOptionsStyleProvider<V> {
+public interface SuggestionField<V> extends Field<V>, Component.Focusable, HasInputPrompt, HasOptionsStyleProvider<V>,
+        HasOptionCaptionProvider<V>, HasCaptionMode {
 
     String NAME = "suggestionField";
 
@@ -188,30 +189,6 @@ public interface SuggestionField<V> extends Field<V>, Component.Focusable, HasIn
      * @return component popup width
      */
     String getPopupWidth();
-
-    /**
-     * @return option captions mode generation
-     */
-    CaptionMode getCaptionMode();
-
-    /**
-     * Sets how option captions should be generated.
-     *
-     * @param captionMode mode
-     */
-    void setCaptionMode(CaptionMode captionMode);
-
-    /**
-     * @return a property that is used for caption generation
-     */
-    String getCaptionProperty();
-
-    /**
-     * Sets a property that will be used for option caption generation when {@link CaptionMode#PROPERTY} is used.
-     *
-     * @param captionProperty property
-     */
-    void setCaptionProperty(String captionProperty);
 
     /**
      * Represents a value and its string representation.

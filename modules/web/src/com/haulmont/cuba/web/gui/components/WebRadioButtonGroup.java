@@ -1,7 +1,6 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.core.global.MetadataTools;
-import com.haulmont.cuba.gui.components.CaptionMode;
 import com.haulmont.cuba.gui.components.RadioButtonGroup;
 import com.haulmont.cuba.gui.components.data.Options;
 import com.haulmont.cuba.gui.components.data.meta.EntityValueSource;
@@ -159,28 +158,6 @@ public class WebRadioButtonGroup<V> extends WebV8AbstractField<CubaRadioButtonGr
     @Override
     public Function<? super V, String> getOptionCaptionProvider() {
         return optionCaptionProvider;
-    }
-
-    @Override
-    public CaptionMode getCaptionMode() {
-        // VAADIN8: gg, implement
-        return CaptionMode.ITEM;
-    }
-
-    @Override
-    public void setCaptionMode(CaptionMode captionMode) {
-        // VAADIN8: gg, implement
-    }
-
-    @Override
-    public String getCaptionProperty() {
-        // VAADIN8: gg, implement
-        return null;
-    }
-
-    @Override
-    public void setCaptionProperty(String captionProperty) {
-        // VAADIN8: gg, implement
     }
 
     @SuppressWarnings("unchecked")

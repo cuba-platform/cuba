@@ -16,12 +16,10 @@
 
 package com.haulmont.cuba.web.gui.components;
 
-import com.haulmont.chile.core.model.MetaPropertyPath;
-import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.core.global.UserSessionSource;
-import com.haulmont.cuba.gui.components.CaptionMode;
 import com.haulmont.cuba.gui.components.SuggestionField;
+import com.haulmont.cuba.gui.components.data.meta.EntityValueSource;
 import com.haulmont.cuba.gui.executors.BackgroundTask;
 import com.haulmont.cuba.gui.executors.BackgroundTaskHandler;
 import com.haulmont.cuba.gui.executors.BackgroundWorker;
@@ -51,9 +49,6 @@ public class WebSuggestionField<V> extends WebV8AbstractField<CubaSuggestionFiel
 
     protected EnterActionHandler enterActionHandler;
     protected ArrowDownActionHandler arrowDownActionHandler;
-
-    protected CaptionMode captionMode = CaptionMode.ITEM; // todo remove
-    protected String captionProperty; // todo remove
 
     protected Function<? super V, String> optionCaptionProvider;
     protected Function<? super V, String> optionStyleProvider;
@@ -108,6 +103,7 @@ public class WebSuggestionField<V> extends WebV8AbstractField<CubaSuggestionFiel
         V value = super.getValue();
 
         // todo rework OptionWrapper compatibility
+        //noinspection unchecked
         return value instanceof OptionWrapper
                 ? (V) ((OptionWrapper) value).getValue()
                 : value;
@@ -131,53 +127,28 @@ public class WebSuggestionField<V> extends WebV8AbstractField<CubaSuggestionFiel
             return optionCaptionProvider.apply(value);
         }
 
-        if (value instanceof Entity) {
-            Entity entity = (Entity) value;
-            if (captionMode == CaptionMode.ITEM) {
-                return metadataTools.getInstanceName(entity);
-            }
+        return generateDefaultItemCaption(value);
+    }
 
-            if (captionProperty != null && !"".equals(captionProperty)) {
-                MetaPropertyPath propertyPath = entity.getMetaClass().getPropertyPath(captionProperty);
-                if (propertyPath == null) {
-                    throw new IllegalArgumentException(String.format("Can't find property for given caption property: %s", captionProperty));
-                }
-
-                return metadataTools.format(entity.getValueEx(propertyPath), propertyPath.getMetaProperty());
-            }
-
-            log.warn("Using StringToEntityConverter to get entity text presentation. Caption property is not defined " +
-                    "while caption mode is \"PROPERTY\"");
-            return metadataTools.getInstanceName(entity);
+    protected String generateDefaultItemCaption(V item) {
+        if (valueBinding != null && valueBinding.getSource() instanceof EntityValueSource) {
+            EntityValueSource entityValueSource = (EntityValueSource) valueBinding.getSource();
+            return metadataTools.format(item, entityValueSource.getMetaPropertyPath().getMetaProperty());
         }
 
-        return metadataTools.format(value);
+        return metadataTools.format(item);
     }
 
     @Override
-    public CaptionMode getCaptionMode() {
-        return captionMode;
-    }
-
-    @Override
-    public void setCaptionMode(CaptionMode captionMode) {
-        this.captionMode = captionMode;
-    }
-
-    @Override
-    public String getCaptionProperty() {
-        return captionProperty;
-    }
-
-    @Override
-    public void setCaptionProperty(String captionProperty) {
-        this.captionProperty = captionProperty;
-
-        if (captionProperty != null && !"".equals(captionProperty)) {
-            captionMode = CaptionMode.PROPERTY;
-        } else {
-            captionMode = CaptionMode.ITEM;
+    public void setOptionCaptionProvider(Function<? super V, String> optionCaptionProvider) {
+        if (this.optionCaptionProvider != optionCaptionProvider) {
+            this.optionCaptionProvider = optionCaptionProvider;
         }
+    }
+
+    @Override
+    public Function<? super V, String> getOptionCaptionProvider() {
+        return optionCaptionProvider;
     }
 
     protected void cancelSearch() {

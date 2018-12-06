@@ -85,13 +85,7 @@ public class ListEditorPopupWindow extends AbstractWindow implements ListEditorW
     protected Class<? extends Enum> enumClass;
 
     @WindowParam
-    protected Function<Object, String> captionProvider;
-
-    @WindowParam
-    protected String captionProperty;
-
-    @WindowParam
-    protected CaptionMode captionMode;
+    protected Function<Object, String> optionCaptionProvider;
 
     @WindowParam
     protected Boolean editable;
@@ -153,7 +147,7 @@ public class ListEditorPopupWindow extends AbstractWindow implements ListEditorW
 
         valuesMap = values.stream()
                 .collect(Collectors.toMap(Function.identity(), o -> ListEditorHelper.getValueCaption(o, itemType,
-                        timeZone, captionProvider)));
+                        timeZone, optionCaptionProvider)));
 
         for (Map.Entry<Object, String> entry : valuesMap.entrySet()) {
             addValueToLayout(entry.getKey(), entry.getValue());
@@ -236,7 +230,7 @@ public class ListEditorPopupWindow extends AbstractWindow implements ListEditorW
         if (value != null) {
             componentForAdding.setValue(null);
             if (!valueExists(value)) {
-                addValueToLayout(value, ListEditorHelper.getValueCaption(value, itemType, timeZone, captionProvider));
+                addValueToLayout(value, ListEditorHelper.getValueCaption(value, itemType, timeZone, optionCaptionProvider));
             }
         }
     }
@@ -301,14 +295,14 @@ public class ListEditorPopupWindow extends AbstractWindow implements ListEditorW
                 optionsDs.refresh();
             }
             lookupField.setOptionsDatasource(optionsDs);
-            lookupField.setOptionCaptionProvider(captionProvider);
+            lookupField.setOptionCaptionProvider(optionCaptionProvider);
             componentForEntity = lookupField;
 
             componentForEntity.addValueChangeListener(e -> {
                 Entity selectedEntity = (Entity) e.getValue();
                 if (selectedEntity != null && !valueExists(selectedEntity)) {
                     this.addValueToLayout(selectedEntity, ListEditorHelper.getValueCaption(selectedEntity, itemType,
-                            timeZone, captionProvider));
+                            timeZone, optionCaptionProvider));
                 }
                 componentForEntity.setValue(null);
             });
@@ -331,17 +325,11 @@ public class ListEditorPopupWindow extends AbstractWindow implements ListEditorW
             Object selectedValue = e.getValue();
             if (selectedValue != null) {
                 this.addValueToLayout(selectedValue, ListEditorHelper.getValueCaption(selectedValue, itemType,
-                        timeZone, captionProvider));
+                        timeZone, optionCaptionProvider));
             }
             lookupField.setValue(null);
         });
-        if (captionProperty != null) {
-            lookupField.setCaptionProperty(captionProperty);
-        }
-        if (captionMode != null) {
-            lookupField.setCaptionMode(captionMode);
-        }
-        lookupField.setOptionCaptionProvider(captionProvider);
+        lookupField.setOptionCaptionProvider(optionCaptionProvider);
 
         return lookupField;
     }

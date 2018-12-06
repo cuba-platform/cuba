@@ -65,19 +65,13 @@ import java.util.function.Supplier;
  * @see LookupPickerField
  */
 public interface PickerField<V extends Entity> extends Field<V>, ActionsHolder, Buffered,
-        LookupComponent, Component.Focusable {
+        LookupComponent, Component.Focusable, HasOptionCaptionProvider<V>, HasCaptionMode {
 
     String NAME = "pickerField";
 
     static <T extends Entity> TypeToken<PickerField<T>> of(Class<T> valueClass) {
         return new TypeToken<PickerField<T>>() {};
     }
-
-    CaptionMode getCaptionMode();
-    void setCaptionMode(CaptionMode captionMode);
-
-    String getCaptionProperty();
-    void setCaptionProperty(String captionProperty);
 
     MetaClass getMetaClass();
     void setMetaClass(MetaClass metaClass);

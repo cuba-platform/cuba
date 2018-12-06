@@ -65,9 +65,6 @@ public class WebTokenList<V extends Entity> extends WebV8AbstractField<WebTokenL
 
     private static final Logger log = LoggerFactory.getLogger(WebTokenList.class);
 
-    protected String captionProperty;
-    protected CaptionMode captionMode;
-
     protected ItemChangeHandler itemChangeHandler;
     protected ItemClickListener itemClickListener;
 
@@ -106,6 +103,7 @@ public class WebTokenList<V extends Entity> extends WebV8AbstractField<WebTokenL
     };
 
     protected Supplier<Screen> lookupProvider;
+    protected Function<? super V, String> optionCaptionProvider;
 
     public WebTokenList() {
         component = new CubaTokenList<>(this);
@@ -179,16 +177,6 @@ public class WebTokenList<V extends Entity> extends WebV8AbstractField<WebTokenL
     }
 
     @Override
-    public String getCaptionProperty() {
-        return captionProperty;
-    }
-
-    @Override
-    public void setCaptionProperty(String captionProperty) {
-        this.captionProperty = captionProperty;
-    }
-
-    @Override
     public OpenType getLookupOpenMode() {
         return lookupOpenMode;
     }
@@ -196,16 +184,6 @@ public class WebTokenList<V extends Entity> extends WebV8AbstractField<WebTokenL
     @Override
     public void setLookupOpenMode(OpenType lookupOpenMode) {
         this.lookupOpenMode = lookupOpenMode;
-    }
-
-    @Override
-    public CaptionMode getCaptionMode() {
-        return captionMode;
-    }
-
-    @Override
-    public void setCaptionMode(CaptionMode captionMode) {
-        this.captionMode = captionMode;
     }
 
     @Override
@@ -219,13 +197,23 @@ public class WebTokenList<V extends Entity> extends WebV8AbstractField<WebTokenL
     }
 
     @Override
+    public void setLookupFieldOptionsCaptionProvider(Function<? super V, String> optionsCaptionProvider) {
+        lookupPickerField.setOptionCaptionProvider(optionCaptionProvider);
+    }
+
+    @Override
+    public Function<? super V, String> getLookupFieldOptionsCaptionProvider() {
+        return lookupPickerField.getOptionCaptionProvider();
+    }
+
+    @Override
     public String getOptionsCaptionProperty() {
         return lookupPickerField.getCaptionProperty();
     }
 
     @Override
-    public void setOptionsCaptionProperty(String captionProperty) {
-        lookupPickerField.setCaptionProperty(captionProperty);
+    public void setOptionsCaptionProperty(String optionsCaptionProperty) {
+        lookupPickerField.setCaptionProperty(optionsCaptionProperty);
     }
 
     @Override
@@ -234,8 +222,8 @@ public class WebTokenList<V extends Entity> extends WebV8AbstractField<WebTokenL
     }
 
     @Override
-    public void setOptionsCaptionMode(CaptionMode captionMode) {
-        lookupPickerField.setCaptionMode(captionMode);
+    public void setOptionsCaptionMode(CaptionMode optionsCaptionMode) {
+        lookupPickerField.setCaptionMode(optionsCaptionMode);
     }
 
     @Override
@@ -683,21 +671,26 @@ public class WebTokenList<V extends Entity> extends WebV8AbstractField<WebTokenL
         this.lookupPickerField.setInputPrompt(inputPrompt);
     }
 
-    protected String instanceCaption(Instance instance) {
+    protected String instanceCaption(V instance) {
         if (instance == null) {
             return "";
         }
 
-        if (captionProperty != null) {
-            if (instance.getMetaClass().getPropertyPath(captionProperty) == null) {
-                throw new IllegalArgumentException(String.format("Couldn't find property with name '%s'", captionProperty));
-            }
-
-            Object o = instance.getValueEx(captionProperty);
-            return o != null ? o.toString() : " ";
-        } else {
-            return metadata.getTools().getInstanceName(instance);
+        if (optionCaptionProvider != null) {
+            return optionCaptionProvider.apply(instance);
         }
+
+        return metadata.getTools().getInstanceName(instance);
+    }
+
+    @Override
+    public void setOptionCaptionProvider(Function<? super V, String> optionCaptionProvider) {
+        this.optionCaptionProvider = optionCaptionProvider;
+    }
+
+    @Override
+    public Function<? super V, String> getOptionCaptionProvider() {
+        return optionCaptionProvider;
     }
 
     @Override

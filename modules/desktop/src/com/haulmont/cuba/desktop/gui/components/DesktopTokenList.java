@@ -222,8 +222,8 @@ public class DesktopTokenList extends DesktopAbstractField<JPanel> implements To
     }
 
     @Override
-    public void setOptionsCaptionProperty(String captionProperty) {
-        lookupPickerField.setCaptionProperty(captionProperty);
+    public void setOptionsCaptionProperty(String optionsCaptionProperty) {
+        lookupPickerField.setCaptionProperty(optionsCaptionProperty);
     }
 
     @Override
@@ -232,8 +232,8 @@ public class DesktopTokenList extends DesktopAbstractField<JPanel> implements To
     }
 
     @Override
-    public void setOptionsCaptionMode(CaptionMode captionMode) {
-        lookupPickerField.setCaptionMode(captionMode);
+    public void setOptionsCaptionMode(CaptionMode optionsCaptionMode) {
+        lookupPickerField.setCaptionMode(optionsCaptionMode);
     }
 
     @Override

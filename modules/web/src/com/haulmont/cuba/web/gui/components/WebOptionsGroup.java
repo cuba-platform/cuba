@@ -17,7 +17,6 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.core.global.MetadataTools;
-import com.haulmont.cuba.gui.components.CaptionMode;
 import com.haulmont.cuba.gui.components.OptionsGroup;
 import com.haulmont.cuba.gui.components.data.meta.EntityValueSource;
 import com.haulmont.cuba.gui.components.data.meta.OptionsBinding;
@@ -220,28 +219,6 @@ public class WebOptionsGroup<V, I> extends WebAbstractField<CubaOptionGroup, V> 
     @Override
     public Function<? super I, String> getOptionCaptionProvider() {
         return optionCaptionProvider;
-    }
-
-    @Override
-    public CaptionMode getCaptionMode() {
-        // vaadin8
-        return CaptionMode.ITEM;
-    }
-
-    @Override
-    public void setCaptionMode(CaptionMode captionMode) {
-        // vaadin8
-    }
-
-    @Override
-    public String getCaptionProperty() {
-        // vaadin8
-        return null;
-    }
-
-    @Override
-    public void setCaptionProperty(String captionProperty) {
-        // vaadin8
     }
 
     @Override

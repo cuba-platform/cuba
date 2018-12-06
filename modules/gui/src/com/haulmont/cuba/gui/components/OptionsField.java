@@ -28,7 +28,6 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
@@ -38,7 +37,7 @@ import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
  * @param <V> type of value
  * @param <I> type of option items
  */
-public interface OptionsField<V, I> extends Field<V>, HasCaptionMode {
+public interface OptionsField<V, I> extends Field<V>, HasOptionCaptionProvider<I>, HasCaptionMode {
 
     /**
      * Sets options for UI component.
@@ -51,17 +50,6 @@ public interface OptionsField<V, I> extends Field<V>, HasCaptionMode {
      * @return options object
      */
     Options<I> getOptions();
-
-    /**
-     * Sets function that provides caption for option items.
-     *
-     * @param optionCaptionProvider caption provider for options
-     */
-    void setOptionCaptionProvider(Function<? super I, String> optionCaptionProvider);
-    /**
-     * @return caption provider for options
-     */
-    Function<? super I, String> getOptionCaptionProvider();
 
     /**
      * Sets options from the passed list.

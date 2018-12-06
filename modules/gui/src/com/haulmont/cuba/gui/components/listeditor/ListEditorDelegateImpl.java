@@ -53,9 +53,7 @@ public class ListEditorDelegateImpl<V> implements ListEditorDelegate<V> {
     protected List<V> prevValue;
 
     protected Options<V> options;
-    protected Function<? super V, String> captionProvider;
-    protected String captionProperty;
-    protected CaptionMode captionMode;
+    protected Function<? super V, String> optionCaptionProvider;
 
     protected Supplier<Map<String, Object>> editorParamsSupplier;
     protected String editorWindowId = "list-editor-popup";
@@ -117,9 +115,7 @@ public class ListEditorDelegateImpl<V> implements ListEditorDelegate<V> {
                 params.put("entityName", entityName);
                 params.put("useLookupField", useLookupField);
                 params.put("options", options);
-                params.put("captionProvider", captionProvider);
-                params.put("captionProperty", captionProperty);
-                params.put("captionMode", captionMode);
+                params.put("optionCaptionProvider", optionCaptionProvider);
                 params.put("enumClass", enumClass);
                 params.put("lookupScreen", lookupScreen);
                 params.put("entityJoinClause", entityJoinClause);
@@ -192,7 +188,7 @@ public class ListEditorDelegateImpl<V> implements ListEditorDelegate<V> {
             } else {
                 //noinspection unchecked
                 captions = newValue.stream()
-                        .map(o -> ListEditorHelper.getValueCaption(o, itemType, timeZone, (Function<Object, String>) captionProvider))
+                        .map(o -> ListEditorHelper.getValueCaption(o, itemType, timeZone, (Function<Object, String>) optionCaptionProvider))
                         .collect(Collectors.toList());
             }
             strValue = Joiner.on(", ").join(captions);
@@ -380,32 +376,12 @@ public class ListEditorDelegateImpl<V> implements ListEditorDelegate<V> {
     }
 
     @Override
-    public void setOptionCaptionProvider(Function<? super V, String> captionProvider) {
-        this.captionProvider = captionProvider;
+    public void setOptionCaptionProvider(Function<? super V, String> optionCaptionProvider) {
+        this.optionCaptionProvider = optionCaptionProvider;
     }
 
     @Override
     public Function<? super V, String> getOptionCaptionProvider() {
-        return captionProvider;
-    }
-
-    @Override
-    public void setCaptionProperty(String captionProperty) {
-        this.captionProperty = captionProperty;
-    }
-
-    @Override
-    public String getCaptionProperty() {
-        return captionProperty;
-    }
-
-    @Override
-    public void setCaptionMode(CaptionMode captionMode) {
-        this.captionMode = captionMode;
-    }
-
-    @Override
-    public CaptionMode getCaptionMode() {
-        return captionMode;
+        return optionCaptionProvider;
     }
 }

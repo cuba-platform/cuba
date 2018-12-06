@@ -27,7 +27,7 @@ import java.util.function.Function;
 
 public interface Tree<E extends Entity> extends ListComponent<E>, HasButtonsPanel,
                                                 Component.HasCaption, Component.HasIcon, LookupComponent<E>,
-                                                Component.Focusable, HasContextHelp, HasCaptionMode {
+                                                Component.Focusable, HasContextHelp, HasItemCaptionProvider<E> {
 
     String NAME = "tree";
 

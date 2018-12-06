@@ -25,7 +25,6 @@ import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.core.global.UserSessionSource;
-import com.haulmont.cuba.gui.components.CaptionMode;
 import com.haulmont.cuba.gui.components.LookupField;
 import com.haulmont.cuba.gui.components.data.Options;
 import com.haulmont.cuba.gui.components.data.ValueSource;
@@ -45,10 +44,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 
 import javax.inject.Inject;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -272,12 +268,6 @@ public class WebLookupField<V> extends WebV8AbstractField<CubaComboBox<V>, V, V>
     }
 
     @Override
-    public void setCaptionProperty(String captionProperty) {
-//        vaadin8
-//        this.captionProperty = captionProperty;
-    }
-
-    @Override
     public Options<V> getOptions() {
         return optionsBinding != null ? optionsBinding.getSource() : null;
     }
@@ -313,24 +303,6 @@ public class WebLookupField<V> extends WebV8AbstractField<CubaComboBox<V>, V, V>
     @Override
     public Function<? super V, String> getOptionCaptionProvider() {
         return optionCaptionProvider;
-    }
-
-    @Override
-    public CaptionMode getCaptionMode() {
-        // vaadin8
-        return CaptionMode.ITEM;
-    }
-
-    @Override
-    public void setCaptionMode(CaptionMode captionMode) {
-//        vaadin8
-//        super.setCaptionMode(captionMode);
-    }
-
-    @Override
-    public String getCaptionProperty() {
-//        vaadin8
-        return null;
     }
 
     @Override
