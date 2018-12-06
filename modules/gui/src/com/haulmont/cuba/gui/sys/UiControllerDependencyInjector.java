@@ -293,7 +293,6 @@ public class UiControllerDependencyInjector {
         }
     }
 
-    @SuppressWarnings("unchecked")
     protected void initSubscribeListeners(FrameOwner frameOwner) {
         Class<? extends FrameOwner> clazz = frameOwner.getClass();
 
@@ -519,8 +518,13 @@ public class UiControllerDependencyInjector {
                         type, name, declaringClass.getCanonicalName(), frameClass.getCanonicalName());
             }
 
-            Logger log = LoggerFactory.getLogger(UiControllerDependencyInjector.class);
-            log.warn(msg);
+            if (!(frameOwner instanceof LegacyFrame)) {
+
+                throw new IllegalStateException(msg);
+            } else {
+                Logger log = LoggerFactory.getLogger(UiControllerDependencyInjector.class);
+                log.warn(msg);
+            }
         }
     }
 
@@ -552,6 +556,13 @@ public class UiControllerDependencyInjector {
                 if (type.isAssignableFrom(frameOwner.getClass())) {
                     return frameOwner;
                 }
+            }
+
+            // for legacy screens only
+            if (component == null
+                    && frameOwner instanceof LegacyFrame) {
+                // try to find using slow iteration
+                component = ComponentsHelper.getComponent(frame, name);
             }
 
             // Injecting a UI component

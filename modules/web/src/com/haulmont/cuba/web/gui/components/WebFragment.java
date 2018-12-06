@@ -74,15 +74,12 @@ public class WebFragment extends WebVBoxLayout implements Fragment, FragmentImpl
         component.addComponent(vComponent, index);
         component.setComponentAlignment(vComponent, toVaadinAlignment(childComponent.getAlignment()));
 
-        if (frame != null) {
-            if (childComponent instanceof BelongToFrame
-                    && ((BelongToFrame) childComponent).getFrame() == null) {
-
-                // CAUTION here we set this as fragment for nested components
-                ((BelongToFrame) childComponent).setFrame(this);
-            } else {
-                attachToFrame(childComponent);
-            }
+        // CAUTION here we set this as fragment for nested components
+        if (childComponent instanceof BelongToFrame
+                && ((BelongToFrame) childComponent).getFrame() == null) {
+            ((BelongToFrame) childComponent).setFrame(this);
+        } else {
+            attachToFrame(childComponent);
         }
 
         if (index == ownComponents.size()) {
@@ -92,6 +89,11 @@ public class WebFragment extends WebVBoxLayout implements Fragment, FragmentImpl
         }
 
         childComponent.setParent(this);
+    }
+
+    @Override
+    protected void attachToFrame(Component childComponent) {
+        this.registerComponent(childComponent);
     }
 
     @Override
@@ -273,10 +275,12 @@ public class WebFragment extends WebVBoxLayout implements Fragment, FragmentImpl
         List<ApplicationListener> uiEventListeners = UiControllerUtils.getUiEventListeners(frameOwner);
         if (uiEventListeners != null) {
             AppUI ui = AppUI.getCurrent();
-            UiEventsMulticaster multicaster = ui.getUiEventsMulticaster();
+            if (ui != null) {
+                UiEventsMulticaster multicaster = ui.getUiEventsMulticaster();
 
-            for (ApplicationListener listener : uiEventListeners) {
-                multicaster.removeApplicationListener(listener);
+                for (ApplicationListener listener : uiEventListeners) {
+                    multicaster.removeApplicationListener(listener);
+                }
             }
         }
     }
@@ -285,10 +289,12 @@ public class WebFragment extends WebVBoxLayout implements Fragment, FragmentImpl
         List<ApplicationListener> uiEventListeners = UiControllerUtils.getUiEventListeners(frameOwner);
         if (uiEventListeners != null) {
             AppUI ui = AppUI.getCurrent();
-            UiEventsMulticaster multicaster = ui.getUiEventsMulticaster();
+            if (ui != null) {
+                UiEventsMulticaster multicaster = ui.getUiEventsMulticaster();
 
-            for (ApplicationListener listener : uiEventListeners) {
-                multicaster.addApplicationListener(listener);
+                for (ApplicationListener listener : uiEventListeners) {
+                    multicaster.addApplicationListener(listener);
+                }
             }
         }
     }
