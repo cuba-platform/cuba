@@ -49,6 +49,8 @@ public class EditorBuilder<E extends Entity> {
     protected DataContext parentDataContext;
     protected EditMode mode = EditMode.CREATE;
 
+    protected Boolean addFirst;
+
     protected EditorBuilder(EditorBuilder<E> builder) {
         this.origin = builder.origin;
         this.entityClass = builder.entityClass;
@@ -143,6 +145,15 @@ public class EditorBuilder<E extends Entity> {
         checkNotNullArgument(launchMode);
 
         this.launchMode = launchMode;
+        return this;
+    }
+
+    /**
+     * Defines whether a new item will be added to the beginning or to the end of collection. Affects only standalone
+     * containers, for nested containers new items are always added to the end.
+     */
+    public EditorBuilder<E> withAddFirst(boolean addFirst) {
+        this.addFirst = addFirst;
         return this;
     }
 
@@ -278,6 +289,14 @@ public class EditorBuilder<E extends Entity> {
      */
     public ScreenOptions getOptions() {
         return options;
+    }
+
+    /**
+     * Returns if a new item will be added to the beginning or to the end of collection. Affects only standalone
+     * containers, for nested containers new items are always added to the end.
+     */
+    public Boolean getAddFirst() {
+        return addFirst;
     }
 
     /**

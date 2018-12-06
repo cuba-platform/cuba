@@ -73,6 +73,12 @@ public class EditorClassBuilder<E extends Entity, S extends Screen & EditorScree
     }
 
     @Override
+    public EditorClassBuilder<E, S> withAddFirst(boolean addFirst) {
+        super.withAddFirst(addFirst);
+        return this;
+    }
+
+    @Override
     public EditorClassBuilder<E, S> withLaunchMode(Screens.LaunchMode launchMode) {
         super.withLaunchMode(launchMode);
         return this;

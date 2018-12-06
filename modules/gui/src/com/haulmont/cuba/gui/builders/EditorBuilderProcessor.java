@@ -37,9 +37,9 @@ import com.haulmont.cuba.gui.screen.compatibility.LegacyFrame;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
+import java.util.HashMap;
 
 import static com.haulmont.cuba.gui.screen.UiControllerUtils.getScreenContext;
-import static java.util.Collections.singletonMap;
 
 @Component("cuba_EditorBuilderProcessor")
 public class EditorBuilderProcessor {
@@ -94,7 +94,18 @@ public class EditorBuilderProcessor {
                 CloseAction closeAction = event.getCloseAction();
                 if (isCommitCloseAction(closeAction)) {
                     if (builder.getMode() == EditMode.CREATE) {
-                        if (ct instanceof Nested || !clientConfig.getCreateActionAddsFirst()) {
+                        boolean addsFirst;
+
+                        if (!(ct instanceof Nested)) {
+                            addsFirst = clientConfig.getCreateActionAddsFirst();
+                            if (builder.getAddFirst() != null) {
+                                addsFirst = builder.getAddFirst();
+                            }
+                        } else {
+                            addsFirst = false;
+                        }
+
+                        if (ct instanceof Nested || !addsFirst) {
                             ct.getMutableItems().add(editorScreen.getEditedEntity());
                         } else {
                             ct.getMutableItems().add(0, editorScreen.getEditedEntity());
@@ -181,7 +192,9 @@ public class EditorBuilderProcessor {
 
             if (LegacyFrame.class.isAssignableFrom(windowInfo.getControllerClass())
                     && options == FrameOwner.NO_OPTIONS) {
-                options = new MapScreenOptions(singletonMap(WindowParams.ITEM.name(), entity));
+                HashMap<String, Object> paramsMap = new HashMap<>();
+                paramsMap.put(WindowParams.ITEM.name(), entity);
+                options = new MapScreenOptions(paramsMap);
             }
 
             screen = screens.create(editorScreenId, builder.getLaunchMode(), options);

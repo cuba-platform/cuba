@@ -251,6 +251,8 @@ public class ScreenBuilders {
      * @param origin invoking screen
      */
     public ScreenBuilder screen(FrameOwner origin) {
+        checkNotNullArgument(origin);
+
         return new ScreenBuilder(origin, screenBuilderProcessor::buildScreen);
     }
 }
