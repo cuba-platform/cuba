@@ -20,7 +20,7 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.DevelopmentException;
-import com.haulmont.cuba.gui.LookupScreens;
+import com.haulmont.cuba.gui.ScreenBuilders;
 import com.haulmont.cuba.gui.components.ActionType;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.PickerField;
@@ -38,7 +38,8 @@ public class LookupAction extends BaseAction implements PickerField.PickerFieldA
 
     protected PickerField pickerField;
 
-    protected LookupScreens lookupScreens;
+    @Inject
+    protected ScreenBuilders screenBuilders;
     protected Icons icons;
 
     protected boolean editable = true;
@@ -80,11 +81,6 @@ public class LookupAction extends BaseAction implements PickerField.PickerFieldA
     }
 
     @Inject
-    protected void setLookupScreens(LookupScreens lookupScreens) {
-        this.lookupScreens = lookupScreens;
-    }
-
-    @Inject
     protected void setIcons(Icons icons) {
         this.icons = icons;
 
@@ -108,7 +104,7 @@ public class LookupAction extends BaseAction implements PickerField.PickerFieldA
                         "for the PickerField", "action ID", getId());
             }
 
-            Screen lookupScreen = lookupScreens.builder(pickerField)
+            Screen lookupScreen = screenBuilders.lookup(pickerField)
                     .build();
             lookupScreen.show();
         } else {

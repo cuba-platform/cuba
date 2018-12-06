@@ -22,9 +22,9 @@ import com.haulmont.cuba.core.entity.SoftDelete;
 import com.haulmont.cuba.core.global.DevelopmentException;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.ComponentsHelper;
-import com.haulmont.cuba.gui.EditorScreens;
 import com.haulmont.cuba.gui.Notifications;
 import com.haulmont.cuba.gui.Notifications.NotificationType;
+import com.haulmont.cuba.gui.ScreenBuilders;
 import com.haulmont.cuba.gui.components.ActionType;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.PickerField;
@@ -45,7 +45,8 @@ public class OpenAction extends BaseAction implements PickerField.PickerFieldAct
     protected Icons icons;
 
     protected Messages messages;
-    protected EditorScreens editorScreens;
+    @Inject
+    protected ScreenBuilders screenBuilders;
 
     protected boolean editable = true;
 
@@ -98,11 +99,6 @@ public class OpenAction extends BaseAction implements PickerField.PickerFieldAct
         this.messages = messages;
     }
 
-    @Inject
-    protected void setEditorScreens(EditorScreens editorScreens) {
-        this.editorScreens = editorScreens;
-    }
-
     @Override
     public void actionPerform(Component component) {
         // if standard behaviour
@@ -129,7 +125,7 @@ public class OpenAction extends BaseAction implements PickerField.PickerFieldAct
                         "for the PickerField", "action ID", getId());
             }
 
-            Screen editorScreen = editorScreens.builder(pickerField)
+            Screen editorScreen = screenBuilders.editor(pickerField)
                     .build();
 
             editorScreen.show();

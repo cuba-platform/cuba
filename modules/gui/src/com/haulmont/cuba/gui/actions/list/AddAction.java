@@ -20,7 +20,7 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.Security;
-import com.haulmont.cuba.gui.LookupScreens;
+import com.haulmont.cuba.gui.ScreenBuilders;
 import com.haulmont.cuba.gui.components.ActionType;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.actions.ListAction;
@@ -37,8 +37,10 @@ public class AddAction extends ListAction {
 
     public static final String ID = "add";
 
+    @Inject
     protected Security security;
-    protected LookupScreens lookupScreens;
+    @Inject
+    protected ScreenBuilders screenBuilders;
 
     public AddAction() {
         super(ID);
@@ -46,16 +48,6 @@ public class AddAction extends ListAction {
 
     public AddAction(String id) {
         super(id);
-    }
-
-    @Inject
-    protected void setSecurity(Security security) {
-        this.security = security;
-    }
-
-    @Inject
-    protected void setLookupScreens(LookupScreens lookupScreens) {
-        this.lookupScreens = lookupScreens;
     }
 
     @Inject
@@ -100,10 +92,8 @@ public class AddAction extends ListAction {
     public void actionPerform(Component component) {
         // if standard behaviour
         if (!hasSubscriptions(ActionPerformedEvent.class)) {
-            Screen lookupScreen = lookupScreens.builder(target)
-                    .withListComponent(target)
+            Screen lookupScreen = screenBuilders.lookup(target)
                     .build();
-
             lookupScreen.show();
         } else {
             super.actionPerform(component);

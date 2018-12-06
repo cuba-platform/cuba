@@ -22,7 +22,7 @@ import com.haulmont.chile.core.model.Instance;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.Metadata;
-import com.haulmont.cuba.gui.LookupScreens;
+import com.haulmont.cuba.gui.ScreenBuilders;
 import com.haulmont.cuba.gui.UiComponents;
 import com.haulmont.cuba.gui.WindowParams;
 import com.haulmont.cuba.gui.components.*;
@@ -94,7 +94,7 @@ public class WebTokenList<V extends Entity> extends WebV8AbstractField<WebTokenL
     protected Messages messages;
     protected Metadata metadata;
     protected WindowConfig windowConfig;
-    protected LookupScreens lookupScreens;
+    protected ScreenBuilders screenBuilders;
     protected Icons icons;
 
     protected Function<Object, String> tokenStyleGenerator;
@@ -109,6 +109,11 @@ public class WebTokenList<V extends Entity> extends WebV8AbstractField<WebTokenL
 
     public WebTokenList() {
         component = new CubaTokenList<>(this);
+    }
+
+    @Inject
+    public void setScreenBuilders(ScreenBuilders screenBuilders) {
+        this.screenBuilders = screenBuilders;
     }
 
     @Inject
@@ -129,11 +134,6 @@ public class WebTokenList<V extends Entity> extends WebV8AbstractField<WebTokenL
     @Inject
     public void setWindowConfig(WindowConfig windowConfig) {
         this.windowConfig = windowConfig;
-    }
-
-    @Inject
-    public void setLookupScreens(LookupScreens lookupScreens) {
-        this.lookupScreens = lookupScreens;
     }
 
     @Inject
@@ -339,7 +339,7 @@ public class WebTokenList<V extends Entity> extends WebV8AbstractField<WebTokenL
                 ? lookupOpenMode.getOpenMode()
                 : OpenMode.DIALOG;
 
-        Screen lookupScreen = lookupScreens.builder(entityClass, getFrame().getFrameOwner())
+        Screen lookupScreen = screenBuilders.lookup(entityClass, getFrame().getFrameOwner())
                 .withScreen(getLookupScreenInternal())
                 .withLaunchMode(openMode)
                 .withOptions(new MapScreenOptions(getLookupScreenParamsInternal()))

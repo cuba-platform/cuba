@@ -30,8 +30,7 @@ import java.util.Collection;
 /**
  * Interface defining methods for creation and displaying of UI screens.
  *
- * @see EditorScreens
- * @see LookupScreens
+ * @see ScreenBuilders
  */
 public interface Screens {
 

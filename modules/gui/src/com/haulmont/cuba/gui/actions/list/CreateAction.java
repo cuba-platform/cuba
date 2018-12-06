@@ -18,15 +18,12 @@ package com.haulmont.cuba.gui.actions.list;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.client.ClientConfig;
-import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.Security;
-import com.haulmont.cuba.gui.ComponentsHelper;
-import com.haulmont.cuba.gui.EditorScreens;
+import com.haulmont.cuba.gui.ScreenBuilders;
 import com.haulmont.cuba.gui.components.ActionType;
 import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.actions.ListAction;
 import com.haulmont.cuba.gui.components.data.meta.EntityDataUnit;
 import com.haulmont.cuba.gui.icons.CubaIcon;
@@ -41,8 +38,10 @@ public class CreateAction extends ListAction {
 
     public static final String ID = "create";
 
+    @Inject
+    protected ScreenBuilders screenBuilders;
+    @Inject
     protected Security security;
-    protected EditorScreens editorScreens;
 
     public CreateAction() {
         super(ID);
@@ -50,11 +49,6 @@ public class CreateAction extends ListAction {
 
     public CreateAction(String id) {
         super(id);
-    }
-
-    @Inject
-    protected void setSecurity(Security security) {
-        this.security = security;
     }
 
     @Inject
@@ -71,11 +65,6 @@ public class CreateAction extends ListAction {
     protected void setConfiguration(Configuration configuration) {
         ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
         setShortcut(clientConfig.getTableInsertShortcut());
-    }
-
-    @Inject
-    protected void setEditorScreens(EditorScreens editorScreens) {
-        this.editorScreens = editorScreens;
     }
 
     @Override
@@ -111,12 +100,8 @@ public class CreateAction extends ListAction {
                 throw new IllegalStateException("Target is not bound to entity");
             }
 
-            Window window = ComponentsHelper.getWindowNN(target);
-            Class<Entity> entityClass = metaClass.getJavaClass();
-
-            Screen editor = editorScreens.builder(entityClass, window.getFrameOwner())
+            Screen editor = screenBuilders.editor(target)
                     .newEntity()
-                    .withListComponent(target)
                     .build();
             editor.show();
         } else {

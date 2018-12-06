@@ -1,0 +1,113 @@
+/*
+ * Copyright (c) 2008-2018 Haulmont.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.haulmont.cuba.gui.builders;
+
+import com.haulmont.cuba.gui.Screens;
+import com.haulmont.cuba.gui.screen.FrameOwner;
+import com.haulmont.cuba.gui.screen.OpenMode;
+import com.haulmont.cuba.gui.screen.Screen;
+import com.haulmont.cuba.gui.screen.ScreenOptions;
+
+import java.util.function.Function;
+
+import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
+
+public class ScreenBuilder {
+
+    protected final FrameOwner origin;
+    protected final Function<ScreenBuilder, Screen> handler;
+
+    protected Screens.LaunchMode launchMode = OpenMode.THIS_TAB;
+    protected ScreenOptions options = FrameOwner.NO_OPTIONS;
+    protected String screenId;
+
+    public ScreenBuilder(ScreenBuilder builder) {
+        this.origin = builder.origin;
+        this.handler = builder.handler;
+
+        this.options = builder.options;
+        this.launchMode = builder.launchMode;
+        this.screenId = builder.screenId;
+    }
+
+    public ScreenBuilder(FrameOwner origin, Function<ScreenBuilder, Screen> handler) {
+        this.origin = origin;
+        this.handler = handler;
+    }
+
+    /**
+     * Sets {@link Screens.LaunchMode} for the editor screen and returns the builder for chaining.
+     * <p>For example: {@code builder.withLaunchMode(OpenMode.DIALOG).build();}
+     */
+    public ScreenBuilder withLaunchMode(Screens.LaunchMode launchMode) {
+        checkNotNullArgument(launchMode);
+
+        this.launchMode = launchMode;
+        return this;
+    }
+
+    /**
+     * Sets screen id and returns the builder for chaining.
+     *
+     * @param screenId identifier of the editor screen as specified in the {@code UiController} annotation
+     *                 or {@code screens.xml}.
+     */
+    public ScreenBuilder withScreen(String screenId) {
+        this.screenId = screenId;
+        return this;
+    }
+
+    /**
+     * Sets {@link ScreenOptions} for the editor screen and returns the builder for chaining.
+     */
+    public ScreenBuilder withOptions(ScreenOptions options) {
+        this.options = options;
+        return this;
+    }
+
+    /**
+     * Sets screen class and returns the {@link EditorClassBuilder} for chaining.
+     *
+     * @param screenClass class of the screen controller
+     */
+    public <S extends Screen> ScreenClassBuilder<S> withScreen(Class<S> screenClass) {
+        return new ScreenClassBuilder<>(this, screenClass);
+    }
+
+    public FrameOwner getOrigin() {
+        return origin;
+    }
+
+    public Screens.LaunchMode getLaunchMode() {
+        return launchMode;
+    }
+
+    public ScreenOptions getOptions() {
+        return options;
+    }
+
+    public String getScreenId() {
+        return screenId;
+    }
+
+    /**
+     * Builds the screen.
+     */
+    public Screen build() {
+        return handler.apply(this);
+    }
+}

@@ -21,9 +21,9 @@ import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Messages;
-import com.haulmont.cuba.gui.ComponentsHelper;
-import com.haulmont.cuba.gui.EditorScreens;
-import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.ScreenBuilders;
+import com.haulmont.cuba.gui.components.ActionType;
+import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.data.meta.EntityDataUnit;
 import com.haulmont.cuba.gui.icons.CubaIcon;
 import com.haulmont.cuba.gui.icons.Icons;
@@ -37,7 +37,8 @@ public class EditAction extends SecuredListAction {
 
     public static final String ID = "edit";
 
-    protected EditorScreens editorScreens;
+    @Inject
+    protected ScreenBuilders screenBuilders;
 
     // Set default caption only once
     protected boolean captionInitialized = false;
@@ -66,11 +67,6 @@ public class EditAction extends SecuredListAction {
     protected void setConfiguration(Configuration configuration) {
         ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
         setShortcut(clientConfig.getTableEditShortcut());
-    }
-
-    @Inject
-    protected void setEditorScreens(EditorScreens editorScreens) {
-        this.editorScreens = editorScreens;
     }
 
     @Override
@@ -138,12 +134,8 @@ public class EditAction extends SecuredListAction {
                 throw new IllegalStateException("There is not selected item in EditAction target");
             }
 
-            Window window = ComponentsHelper.getWindowNN(target);
-            Class<Entity> entityClass = metaClass.getJavaClass();
-
-            Screen editor = editorScreens.builder(entityClass, window.getFrameOwner())
+            Screen editor = screenBuilders.editor(target)
                     .editEntity(editedEntity)
-                    .withListComponent(target)
                     .build();
             editor.show();
         } else {
