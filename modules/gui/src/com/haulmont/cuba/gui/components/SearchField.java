@@ -17,11 +17,17 @@
 
 package com.haulmont.cuba.gui.components;
 
+import com.google.common.reflect.TypeToken;
+
 public interface SearchField<V> extends LookupField<V> {
 
     String NAME = "searchField";
 
     String SEARCH_STRING_PARAM = "searchString";
+
+    static <T> TypeToken<SearchField<T>> of(Class<T> valueClass) {
+        return new TypeToken<SearchField<T>>() {};
+    }
 
     /**
      * Sets minimal required search string length.

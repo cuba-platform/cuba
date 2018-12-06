@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.gui.components;
 
+import com.google.common.reflect.TypeToken;
 import com.haulmont.cuba.core.entity.Entity;
 
 /**
@@ -25,6 +26,10 @@ import com.haulmont.cuba.core.entity.Entity;
 public interface LookupPickerField<V extends Entity> extends LookupField<V>, PickerField<V> {
 
     String NAME = "lookupPickerField";
+
+    static <T extends Entity> TypeToken<LookupPickerField<T>> of(Class<T> valueClass) {
+        return new TypeToken<LookupPickerField<T>>() {};
+    }
 
     /**
      * Use this method to enable items refreshing in component after closing lookup window.

@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.gui.components;
 
+import com.google.common.reflect.TypeToken;
 import com.haulmont.cuba.core.entity.Entity;
 
 /**
@@ -25,4 +26,8 @@ import com.haulmont.cuba.core.entity.Entity;
 public interface SearchPickerField<V extends Entity> extends SearchField<V>, PickerField<V> {
 
     String NAME = "searchPickerField";
+
+    static <T extends Entity> TypeToken<SearchPickerField<T>> of(Class<T> valueClass) {
+        return new TypeToken<SearchPickerField<T>>() {};
+    }
 }

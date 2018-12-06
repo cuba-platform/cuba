@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.gui.components;
 
+import com.google.common.reflect.TypeToken;
 import com.haulmont.bali.util.Preconditions;
 
 import java.util.List;
@@ -25,6 +26,10 @@ import java.util.Map;
 public interface SuggestionField<V> extends Field<V>, Component.Focusable, HasInputPrompt, HasOptionsStyleProvider<V> {
 
     String NAME = "suggestionField";
+
+    static <T> TypeToken<SuggestionField<T>> of(Class<T> valueClass) {
+        return new TypeToken<SuggestionField<T>>() {};
+    }
 
     /**
      * Custom suggestions search action interface.

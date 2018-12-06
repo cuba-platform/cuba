@@ -17,9 +17,14 @@
 
 package com.haulmont.cuba.gui.components;
 
+import com.google.common.reflect.TypeToken;
 import com.haulmont.cuba.core.entity.Entity;
 
 public interface SuggestionPickerField<V extends Entity> extends SuggestionField<V>, PickerField<V> {
 
     String NAME = "suggestionPickerField";
+
+    static <T extends Entity> TypeToken<SuggestionPickerField<T>> of(Class<T> valueClass) {
+        return new TypeToken<SuggestionPickerField<T>>() {};
+    }
 }
