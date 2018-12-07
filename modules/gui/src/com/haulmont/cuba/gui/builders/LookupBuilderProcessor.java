@@ -86,7 +86,7 @@ public class LookupBuilderProcessor {
         LookupScreen<E> lookupScreen = (LookupScreen) screen;
 
         if (builder.getField() != null) {
-            com.haulmont.cuba.gui.components.Component field = builder.getField();
+            HasValue<E> field = builder.getField();
 
             if (field instanceof com.haulmont.cuba.gui.components.Component.Focusable) {
                 screen.addAfterCloseListener(event -> {
@@ -95,7 +95,7 @@ public class LookupBuilderProcessor {
                 });
             }
             lookupScreen.setSelectHandler(items ->
-                    handleSelectionWithField(builder, (HasValue<E>) field, items)
+                    handleSelectionWithField(builder, field, items)
             );
         }
 

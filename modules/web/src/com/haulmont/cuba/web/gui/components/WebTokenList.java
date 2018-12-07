@@ -340,7 +340,7 @@ public class WebTokenList<V extends Entity> extends WebV8AbstractField<WebTokenL
                 : OpenMode.DIALOG;
 
         Screen lookupScreen = screenBuilders.lookup(entityClass, getFrame().getFrameOwner())
-                .withScreen(getLookupScreenInternal())
+                .withScreenId(getLookupScreenInternal())
                 .withLaunchMode(openMode)
                 .withOptions(new MapScreenOptions(getLookupScreenParamsInternal()))
                 .withSelectHandler(selected -> {
@@ -385,6 +385,7 @@ public class WebTokenList<V extends Entity> extends WebV8AbstractField<WebTokenL
     }
 
     protected Map<String, Object> getLookupScreenParamsInternal() {
+        // we create mutable map only for compatibilty with legacy code
         Map<String, Object> params = new HashMap<>();
         params.put("windowOpener", getFrame().getId());
         if (isMultiSelect()) {

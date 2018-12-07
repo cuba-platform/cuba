@@ -120,14 +120,14 @@ public class EditorBuilderProcessor {
             });
         }
 
-        com.haulmont.cuba.gui.components.Component field = builder.getField();
+        HasValue<E> field = builder.getField();
         if (field != null) {
             screen.addAfterCloseListener(event -> {
                 CloseAction closeAction = event.getCloseAction();
                 if (isCommitCloseAction(closeAction)) {
                     // todo do we need to remove listeners from entity here ?
                     // todo composition support
-                    ((HasValue) field).setValue(editorScreen.getEditedEntity());
+                    field.setValue(editorScreen.getEditedEntity());
                 }
 
                 if (field instanceof com.haulmont.cuba.gui.components.Component.Focusable) {

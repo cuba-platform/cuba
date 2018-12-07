@@ -50,7 +50,7 @@ public class ScreenBuilder {
     }
 
     /**
-     * Sets {@link Screens.LaunchMode} for the editor screen and returns the builder for chaining.
+     * Sets {@link Screens.LaunchMode} for the screen and returns the builder for chaining.
      * <p>For example: {@code builder.withLaunchMode(OpenMode.DIALOG).build();}
      */
     public ScreenBuilder withLaunchMode(Screens.LaunchMode launchMode) {
@@ -61,18 +61,29 @@ public class ScreenBuilder {
     }
 
     /**
+     * Sets {@link Screens.LaunchMode} for the screen and returns the builder for chaining.
+     * <p>For example: {@code builder.withOpenMode(OpenMode.DIALOG).build();}
+     */
+    public ScreenBuilder withOpenMode(OpenMode openMode) {
+        checkNotNullArgument(openMode);
+
+        this.launchMode = openMode;
+        return this;
+    }
+
+    /**
      * Sets screen id and returns the builder for chaining.
      *
-     * @param screenId identifier of the editor screen as specified in the {@code UiController} annotation
+     * @param screenId identifier of the screen as specified in the {@code UiController} annotation
      *                 or {@code screens.xml}.
      */
-    public ScreenBuilder withScreen(String screenId) {
+    public ScreenBuilder withScreenId(String screenId) {
         this.screenId = screenId;
         return this;
     }
 
     /**
-     * Sets {@link ScreenOptions} for the editor screen and returns the builder for chaining.
+     * Sets {@link ScreenOptions} for the screen and returns the builder for chaining.
      */
     public ScreenBuilder withOptions(ScreenOptions options) {
         this.options = options;
@@ -84,7 +95,7 @@ public class ScreenBuilder {
      *
      * @param screenClass class of the screen controller
      */
-    public <S extends Screen> ScreenClassBuilder<S> withScreen(Class<S> screenClass) {
+    public <S extends Screen> ScreenClassBuilder<S> withScreenClass(Class<S> screenClass) {
         return new ScreenClassBuilder<>(this, screenClass);
     }
 
@@ -92,14 +103,23 @@ public class ScreenBuilder {
         return origin;
     }
 
+    /**
+     * Returns launch mode set by {@link #withLaunchMode(Screens.LaunchMode)}.
+     */
     public Screens.LaunchMode getLaunchMode() {
         return launchMode;
     }
 
+    /**
+     * Returns screen options set by {@link #withOptions(ScreenOptions)}.
+     */
     public ScreenOptions getOptions() {
         return options;
     }
 
+    /**
+     * Returns screen id set by {@link #withScreenId(String)}.
+     */
     public String getScreenId() {
         return screenId;
     }

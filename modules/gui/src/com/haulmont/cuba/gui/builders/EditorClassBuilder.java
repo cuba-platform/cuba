@@ -23,6 +23,7 @@ import com.haulmont.cuba.gui.components.ListComponent;
 import com.haulmont.cuba.gui.model.CollectionContainer;
 import com.haulmont.cuba.gui.model.DataContext;
 import com.haulmont.cuba.gui.screen.EditorScreen;
+import com.haulmont.cuba.gui.screen.OpenMode;
 import com.haulmont.cuba.gui.screen.Screen;
 import com.haulmont.cuba.gui.screen.ScreenOptions;
 
@@ -31,8 +32,7 @@ import java.util.function.Consumer;
 /**
  * Builder that knows the concrete screen class. It's {@link #build()} method returns that class.
  */
-public class EditorClassBuilder<E extends Entity, S extends Screen & EditorScreen<E>>
-        extends EditorBuilder<E> {
+public class EditorClassBuilder<E extends Entity, S extends Screen & EditorScreen<E>> extends EditorBuilder<E> {
 
     protected Class<S> screenClass;
 
@@ -85,6 +85,12 @@ public class EditorClassBuilder<E extends Entity, S extends Screen & EditorScree
     }
 
     @Override
+    public EditorClassBuilder<E, S> withOpenMode(OpenMode openMode) {
+        super.withOpenMode(openMode);
+        return this;
+    }
+
+    @Override
     public EditorClassBuilder<E, S> withParentDataContext(DataContext parentDataContext) {
         super.withParentDataContext(parentDataContext);
         return this;
@@ -103,12 +109,12 @@ public class EditorClassBuilder<E extends Entity, S extends Screen & EditorScree
     }
 
     @Override
-    public EditorBuilder<E> withScreen(String screenId) {
+    public EditorBuilder<E> withScreenId(String screenId) {
         throw new IllegalStateException("EditorClassBuilder does not support screenId");
     }
 
     @Override
-    public <T extends com.haulmont.cuba.gui.components.Component & HasValue<E>> EditorClassBuilder<E, S> withField(T field) {
+    public <T extends HasValue<E>> EditorClassBuilder<E, S> withField(T field) {
         super.withField(field);
         return this;
     }

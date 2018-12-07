@@ -17,9 +17,13 @@
 package com.haulmont.cuba.gui.builders;
 
 import com.haulmont.cuba.gui.Screens;
+import com.haulmont.cuba.gui.screen.OpenMode;
 import com.haulmont.cuba.gui.screen.Screen;
 import com.haulmont.cuba.gui.screen.ScreenOptions;
 
+/**
+ * Builder that knows the concrete screen class. It's {@link #build()} method returns that class.
+ */
 public class ScreenClassBuilder<S extends Screen> extends ScreenBuilder {
     protected Class<S> screenClass;
 
@@ -36,16 +40,25 @@ public class ScreenClassBuilder<S extends Screen> extends ScreenBuilder {
     }
 
     @Override
+    public ScreenClassBuilder<S> withOpenMode(OpenMode openMode) {
+        super.withOpenMode(openMode);
+        return this;
+    }
+
+    @Override
     public ScreenBuilder withOptions(ScreenOptions options) {
         super.withOptions(options);
         return this;
     }
 
     @Override
-    public ScreenClassBuilder<S> withScreen(String screenId) {
+    public ScreenClassBuilder<S> withScreenId(String screenId) {
         throw new IllegalStateException("ScreenClassBuilder does not support screenId");
     }
 
+    /**
+     * Returns screen class.
+     */
     public Class<S> getScreenClass() {
         return screenClass;
     }

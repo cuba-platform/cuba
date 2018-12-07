@@ -43,7 +43,7 @@ public class EditorBuilder<E extends Entity> {
     protected Screens.LaunchMode launchMode = OpenMode.THIS_TAB;
     protected ScreenOptions options = FrameOwner.NO_OPTIONS;
     protected ListComponent<E> listComponent;
-    protected com.haulmont.cuba.gui.components.Component field;
+    protected HasValue<E> field;
 
     protected String screenId;
     protected DataContext parentDataContext;
@@ -149,6 +149,17 @@ public class EditorBuilder<E extends Entity> {
     }
 
     /**
+     * Sets {@link OpenMode} for the editor screen and returns the builder for chaining.
+     * <p>For example: {@code builder.withOpenMode(OpenMode.DIALOG).build();}
+     */
+    public EditorBuilder<E> withOpenMode(OpenMode openMode) {
+        checkNotNullArgument(openMode);
+
+        this.launchMode = openMode;
+        return this;
+    }
+
+    /**
      * Defines whether a new item will be added to the beginning or to the end of collection. Affects only standalone
      * containers, for nested containers new items are always added to the end.
      */
@@ -191,7 +202,7 @@ public class EditorBuilder<E extends Entity> {
      * @param screenId identifier of the editor screen as specified in the {@code UiController} annotation
      *                 or {@code screens.xml}.
      */
-    public EditorBuilder<E> withScreen(String screenId) {
+    public EditorBuilder<E> withScreenId(String screenId) {
         this.screenId = screenId;
         return this;
     }
@@ -201,7 +212,7 @@ public class EditorBuilder<E extends Entity> {
      *
      * @param screenClass class of the screen controller
      */
-    public <S extends Screen & EditorScreen<E>> EditorClassBuilder<E, S> withScreen(Class<S> screenClass) {
+    public <S extends Screen & EditorScreen<E>> EditorClassBuilder<E, S> withScreenClass(Class<S> screenClass) {
         return new EditorClassBuilder<>(this, screenClass);
     }
 
@@ -209,20 +220,20 @@ public class EditorBuilder<E extends Entity> {
      * Sets the field component and returns the builder for chaining.
      * <p>If the field is set, the framework sets the committed entity to the field after successful editor commit.
      */
-    public <T extends com.haulmont.cuba.gui.components.Component & HasValue<E>> EditorBuilder<E> withField(T field) {
+    public <T extends HasValue<E>> EditorBuilder<E> withField(T field) {
         this.field = field;
         return this;
     }
 
     /**
-     * Returns the field component set by {@link #withField(com.haulmont.cuba.gui.components.Component)}.
+     * Returns the field component set by {@link #withField(com.haulmont.cuba.gui.components.HasValue)}.
      */
-    public com.haulmont.cuba.gui.components.Component getField() {
+    public HasValue<E> getField() {
         return field;
     }
 
     /**
-     * Returns screen id set by {@link #withScreen(String)}.
+     * Returns screen id set by {@link #withScreenId(String)}.
      */
     public String getScreenId() {
         return screenId;

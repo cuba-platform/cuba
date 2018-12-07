@@ -49,7 +49,7 @@ public class LookupBuilder<E extends Entity> {
 
     protected String screenId;
     protected ListComponent<E> listComponent;
-    protected com.haulmont.cuba.gui.components.Component field;
+    protected HasValue<E> field;
 
     public LookupBuilder(LookupBuilder<E> builder) {
         this.entityClass = builder.entityClass;
@@ -84,6 +84,17 @@ public class LookupBuilder<E extends Entity> {
     }
 
     /**
+     * Sets {@link OpenMode} for the lookup screen and returns the builder for chaining.
+     * <p>For example: {@code builder.withOpenMode(OpenMode.DIALOG).build();}
+     */
+    public LookupBuilder<E> withOpenMode(OpenMode openMode) {
+        checkNotNullArgument(openMode);
+
+        this.launchMode = openMode;
+        return this;
+    }
+
+    /**
      * Sets {@link ScreenOptions} for the lookup screen and returns the builder for chaining.
      */
     public LookupBuilder<E> withOptions(ScreenOptions options) {
@@ -111,7 +122,7 @@ public class LookupBuilder<E extends Entity> {
      * Sets the field component and returns the builder for chaining.
      * <p>If the field is set, the framework sets the selected entity to the field after successful lookup.
      */
-    public <T extends com.haulmont.cuba.gui.components.Component & HasValue<E>> LookupBuilder<E> withField(T field) {
+    public <T extends HasValue<E>> LookupBuilder<E> withField(T field) {
         this.field = field;
         return this;
     }
@@ -121,7 +132,7 @@ public class LookupBuilder<E extends Entity> {
      *
      * @param screenClass class of the screen controller
      */
-    public <S extends Screen & LookupScreen<E>> LookupClassBuilder<E, S> withScreen(Class<S> screenClass) {
+    public <S extends Screen & LookupScreen<E>> LookupClassBuilder<E, S> withScreenClass(Class<S> screenClass) {
         return new LookupClassBuilder<>(this, screenClass);
     }
 
@@ -131,7 +142,7 @@ public class LookupBuilder<E extends Entity> {
      * @param screenId  identifier of the lookup screen as specified in the {@code UiController} annotation
      *                  or {@code screens.xml}.
      */
-    public LookupBuilder<E> withScreen(String screenId) {
+    public LookupBuilder<E> withScreenId(String screenId) {
         this.screenId = screenId;
         return this;
     }
@@ -159,7 +170,7 @@ public class LookupBuilder<E extends Entity> {
     }
 
     /**
-     * Returns screen id set by {@link #withScreen(String)}.
+     * Returns screen id set by {@link #withScreenId(String)}.
      */
     public String getScreenId() {
         return screenId;
@@ -209,9 +220,9 @@ public class LookupBuilder<E extends Entity> {
     }
 
     /**
-     * Returns the field component set by {@link #withField(com.haulmont.cuba.gui.components.Component)}.
+     * Returns the field component set by {@link #withField(HasValue)}.
      */
-    public com.haulmont.cuba.gui.components.Component getField() {
+    public HasValue<E> getField() {
         return field;
     }
 

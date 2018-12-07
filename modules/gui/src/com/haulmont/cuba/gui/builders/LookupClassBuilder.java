@@ -22,6 +22,7 @@ import com.haulmont.cuba.gui.components.HasValue;
 import com.haulmont.cuba.gui.components.ListComponent;
 import com.haulmont.cuba.gui.model.CollectionContainer;
 import com.haulmont.cuba.gui.screen.LookupScreen;
+import com.haulmont.cuba.gui.screen.OpenMode;
 import com.haulmont.cuba.gui.screen.Screen;
 import com.haulmont.cuba.gui.screen.ScreenOptions;
 
@@ -56,6 +57,12 @@ public class LookupClassBuilder<E extends Entity, S extends Screen & LookupScree
     }
 
     @Override
+    public LookupClassBuilder<E, S> withOpenMode(OpenMode openMode) {
+        super.withOpenMode(openMode);
+        return this;
+    }
+
+    @Override
     public LookupClassBuilder<E, S> withOptions(ScreenOptions options) {
         super.withOptions(options);
         return this;
@@ -74,13 +81,13 @@ public class LookupClassBuilder<E extends Entity, S extends Screen & LookupScree
     }
 
     @Override
-    public <T extends com.haulmont.cuba.gui.components.Component & HasValue<E>> LookupClassBuilder<E, S> withField(T field) {
+    public <T extends HasValue<E>> LookupClassBuilder<E, S> withField(T field) {
         super.withField(field);
         return this;
     }
 
     @Override
-    public LookupBuilder<E> withScreen(String screenId) {
+    public LookupBuilder<E> withScreenId(String screenId) {
         throw new IllegalStateException("LookupClassBuilder does not support screenId");
     }
 
