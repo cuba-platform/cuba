@@ -383,7 +383,7 @@ $cuba-sidemenu-userindicator-font-weight: $v-font-weight !default;
     }
 
     .c-app-icon {
-      margin: $v-layout-spacing-vertical 0;
+      margin: $v-layout-spacing-vertical auto;
     }
 
     .c-userindicator > .v-label {
