@@ -23,6 +23,9 @@ public interface ButtonsPanel extends BoxLayout {
 
     String NAME = "buttonsPanel";
 
+    void setAlwaysVisible(boolean alwaysVisible);
+    boolean isAlwaysVisible();
+
     /**
      * @deprecated will be removed in release 7.1
      */

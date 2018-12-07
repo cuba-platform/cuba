@@ -653,9 +653,6 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
                                           Collection<MetaPropertyPath> propertyIds) {
         setEditableColumns(Collections.emptyList());
 
-        Window window = ComponentsHelper.getWindow(this);
-        boolean isLookup = window != null && window.getFrameOwner() instanceof LookupScreen;
-
         // restore generators for some type of attributes
         for (MetaPropertyPath propertyId : propertyIds) {
             Column column = columns.get(propertyId);
@@ -665,11 +662,11 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
 
                 if (component.getColumnGenerator(column.getId()) == null) {
                     if (propertyId.getRange().isClass()) {
-                        if (!isLookup && StringUtils.isNotEmpty(isLink)) {
+                        if (StringUtils.isNotEmpty(isLink)) {
                             setClickListener(propertyId.toString(), new LinkCellClickListener(this, applicationContext));
                         }
                     } else if (propertyId.getRange().isDatatype()) {
-                        if (!isLookup && !StringUtils.isEmpty(isLink)) {
+                        if (StringUtils.isNotEmpty(isLink)) {
                             setClickListener(propertyId.toString(), new LinkCellClickListener(this, applicationContext));
                         } else {
                             if (column.getMaxTextLength() != null) {
@@ -1165,6 +1162,19 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
                 new BaseAction(Window.Lookup.LOOKUP_ITEM_CLICK_ACTION_ID)
                         .withHandler(actionHandler)
         );
+
+        if (isEditable()) {
+            EntityTableItems<E> entityTableSource = (EntityTableItems<E>) getItems();
+            com.vaadin.v7.data.Container ds = component.getContainerDataSource();
+            @SuppressWarnings("unchecked")
+            Collection<MetaPropertyPath> propertyIds = (Collection<MetaPropertyPath>) ds.getContainerPropertyIds();
+
+            disableEditableColumns(entityTableSource, propertyIds);
+        }
+
+        if (buttonsPanel != null && !buttonsPanel.isAlwaysVisible()) {
+            buttonsPanel.setVisible(false);
+        }
     }
 
     @Override

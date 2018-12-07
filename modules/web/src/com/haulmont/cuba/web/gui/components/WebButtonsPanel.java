@@ -26,6 +26,8 @@ import java.util.function.Consumer;
 public class WebButtonsPanel extends WebHBoxLayout implements ButtonsPanel, VisibilityChangeNotifier {
     public static final String BUTTONS_PANEL_STYLENAME = "c-buttons-panel";
 
+    protected boolean alwaysVisible = false;
+
     public WebButtonsPanel() {
         setSpacing(true);
         setMargin(false);
@@ -61,5 +63,15 @@ public class WebButtonsPanel extends WebHBoxLayout implements ButtonsPanel, Visi
     @Override
     public void removeVisibilityChangeListener(Consumer<VisibilityChangeEvent> listener) {
         unsubscribe(VisibilityChangeEvent.class, listener);
+    }
+
+    @Override
+    public void setAlwaysVisible(boolean alwaysVisible) {
+        this.alwaysVisible = alwaysVisible;
+    }
+
+    @Override
+    public boolean isAlwaysVisible() {
+        return alwaysVisible;
     }
 }

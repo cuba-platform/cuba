@@ -297,9 +297,10 @@ public abstract class AbstractDataGridLoader<T extends DataGrid> extends Actions
             buttonsPanelLoader.loadComponent();
             ButtonsPanel panel = (ButtonsPanel) buttonsPanelLoader.getResultComponent();
 
-            Window window = ComponentsHelper.getWindowNN(component);
             String alwaysVisible = panelElement.attributeValue("alwaysVisible");
-            panel.setVisible(!(window.getFrameOwner() instanceof LookupScreen) || "true".equals(alwaysVisible));
+            if (alwaysVisible != null) {
+                panel.setAlwaysVisible(Boolean.parseBoolean(alwaysVisible));
+            }
         }
     }
 

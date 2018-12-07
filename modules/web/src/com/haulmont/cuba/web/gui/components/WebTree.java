@@ -776,6 +776,10 @@ public class WebTree<E extends Entity>
         setItemClickAction(new BaseAction(Window.Lookup.LOOKUP_ITEM_CLICK_ACTION_ID)
                 .withHandler(actionHandler)
         );
+
+        if (buttonsPanel != null && !buttonsPanel.isAlwaysVisible()) {
+            buttonsPanel.setVisible(false);
+        }
     }
 
     @Override

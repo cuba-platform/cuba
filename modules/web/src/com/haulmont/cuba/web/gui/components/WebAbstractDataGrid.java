@@ -566,6 +566,10 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
 
         setItemClickAction(new BaseAction(LOOKUP_ITEM_CLICK_ACTION_ID)
                 .withHandler(actionHandler));
+
+        if (buttonsPanel != null && !buttonsPanel.isAlwaysVisible()) {
+            buttonsPanel.setVisible(false);
+        }
     }
 
     @Override

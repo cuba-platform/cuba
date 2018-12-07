@@ -147,9 +147,10 @@ public class TreeLoader extends ActionsHolderLoader<Tree> {
             buttonsPanelLoader.loadComponent();
             ButtonsPanel panel = (ButtonsPanel) buttonsPanelLoader.getResultComponent();
 
-            Window window = ComponentsHelper.getWindowNN(component);
             String alwaysVisible = buttonsPanelElement.attributeValue("alwaysVisible");
-            panel.setVisible(!(window.getFrameOwner() instanceof LookupScreen) || "true".equals(alwaysVisible));
+            if (alwaysVisible != null) {
+                panel.setAlwaysVisible(Boolean.parseBoolean(alwaysVisible));
+            }
         }
     }
 
