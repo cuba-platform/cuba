@@ -23,10 +23,12 @@ import com.vaadin.server.ClientConnector;
 import com.vaadin.server.LegacyCommunicationManager;
 import com.vaadin.server.communication.UidlWriter;
 import com.vaadin.ui.Dependency;
+import com.vaadin.ui.HasDependencies;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nullable;
 import javax.servlet.ServletContext;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -44,6 +46,8 @@ public class CubaUidlWriter extends UidlWriter {
     protected static final Pattern NEW_WEBJAR_IDENTIFIER = Pattern.compile("(.+):(.+)");
 
     protected static final Pattern WEB_JAR_PROPERTY_DEFAULT_VALUE_PATTERN = Pattern.compile("\\?:");
+
+    protected static final String WEB_JAR_PREFIX = "webjar://";
 
     protected final ServletContext servletContext;
 
@@ -78,6 +82,50 @@ public class CubaUidlWriter extends UidlWriter {
                 }
             }
         }
+    }
+
+    @Override
+    protected void addAdditionalDependencies(List<HasDependencies.ClientDependency> allDependencies,
+                                             List<HasDependencies.ClientDependency> dependenciesToAdd) {
+        if (!dependenciesToAdd.isEmpty()) {
+            allDependencies.addAll(dependenciesToAdd);
+        }
+    }
+
+    @Override
+    protected void handleAdditionalDependencies(List<HasDependencies.ClientDependency> dependenciesToAdd,
+                                                List<Dependency> dependencies, LegacyCommunicationManager manager) {
+        for (HasDependencies.ClientDependency dependency : dependenciesToAdd) {
+            String resourcePath;
+            String dependencyPath = dependency.getPath();
+            if (dependencyPath.startsWith(WEB_JAR_PREFIX)) {
+                String resourceUri = processResourceUri(dependencyPath.replace(WEB_JAR_PREFIX, ""));
+                resourcePath = getResourceActualPath(resourceUri, "");
+            } else {
+                resourcePath = dependencyPath;
+            }
+
+            Dependency.Type type = dependency.getType() != null
+                    ? dependency.getType()
+                    : resolveTypeFromPath(dependencyPath);
+            // If we can't resolve dependency type, i.e. it might have unsupported type,
+            // then we don't add such dependency
+            if (type != null) {
+                String url = manager.registerDependency(resourcePath, CubaUidlWriter.class);
+                dependencies.add(new Dependency(type, url));
+            }
+        }
+    }
+
+    @Nullable
+    protected Dependency.Type resolveTypeFromPath(String path) {
+        if (path.endsWith(JAVASCRIPT_EXTENSION)) {
+            return Dependency.Type.JAVASCRIPT;
+        }
+        if (path.endsWith(CSS_EXTENSION)) {
+            return Dependency.Type.STYLESHEET;
+        }
+        return null;
     }
 
     protected String getResourceActualPath(String uri, String overridePath) {

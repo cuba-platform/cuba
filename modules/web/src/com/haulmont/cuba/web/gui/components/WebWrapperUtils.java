@@ -32,6 +32,7 @@ import com.haulmont.cuba.gui.components.ResizableTextArea;
 import com.haulmont.cuba.gui.components.SizeUnit;
 import com.haulmont.cuba.gui.components.TextInputField;
 import com.haulmont.cuba.gui.components.TimeField;
+import com.haulmont.cuba.web.gui.components.JavaScriptComponent.DependencyType;
 import com.haulmont.cuba.web.widgets.client.resizabletextarea.ResizeDirection;
 import com.haulmont.cuba.web.widgets.client.timefield.TimeResolution;
 import com.haulmont.cuba.web.widgets.data.AggregationContainer;
@@ -44,8 +45,11 @@ import com.vaadin.shared.ui.datefield.DateResolution;
 import com.vaadin.shared.ui.grid.ColumnResizeMode;
 import com.vaadin.shared.ui.grid.GridStaticCellType;
 import com.vaadin.shared.ui.grid.ScrollDestination;
+import com.vaadin.ui.Dependency;
 import com.vaadin.v7.shared.ui.combobox.FilteringMode;
 import com.vaadin.v7.ui.AbstractSelect;
+
+import javax.annotation.Nullable;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 import static com.vaadin.v7.ui.AbstractTextField.TextChangeEventMode;
@@ -603,6 +607,38 @@ public final class WebWrapperUtils {
                 return Orientation.HORIZONTAL;
             default:
                 throw new IllegalArgumentException("Can't be converted to Orientation: " + orientation);
+        }
+    }
+
+    @Nullable
+    public static DependencyType toDependencyType(Dependency.Type type) {
+        if (type == null) {
+            return null;
+        }
+
+        switch (type) {
+            case JAVASCRIPT:
+                return DependencyType.JAVASCRIPT;
+            case STYLESHEET:
+                return DependencyType.STYLESHEET;
+            default:
+                throw new IllegalArgumentException("Can't be converted to DependencyType: " + type);
+        }
+    }
+
+    @Nullable
+    public static Dependency.Type toVaadinDependencyType(DependencyType type) {
+        if (type == null) {
+            return null;
+        }
+
+        switch (type) {
+            case JAVASCRIPT:
+                return Dependency.Type.JAVASCRIPT;
+            case STYLESHEET:
+                return Dependency.Type.STYLESHEET;
+            default:
+                throw new IllegalArgumentException("Can't be converted to Dependency.Type: " + type);
         }
     }
 }

@@ -602,6 +602,7 @@ configure(webWidgetsModule) {
         compile(bom['org.apache.commons:commons-lang3'])
         compile(bom['com.google.guava:guava'])
         compile(bom['com.google.code.findbugs:jsr305'])
+        compile(bom['com.google.code.gson:gson'])
         compile(bom['org.apache.commons:commons-collections4'])
         compile(bom['org.slf4j:slf4j-api'])
 

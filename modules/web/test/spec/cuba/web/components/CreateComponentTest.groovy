@@ -18,6 +18,7 @@ package spec.cuba.web.components
 
 import com.haulmont.cuba.gui.components.*
 import com.haulmont.cuba.gui.components.mainwindow.*
+import com.haulmont.cuba.web.gui.components.JavaScriptComponent
 import spec.cuba.web.WebSpec
 
 @SuppressWarnings("GroovyAccessibility")
@@ -116,7 +117,9 @@ class CreateComponentTest extends WebSpec {
                 TimeZoneIndicator.NAME,
                 SideMenu.NAME,
 
-                Timer.NAME
+                Timer.NAME,
+
+                JavaScriptComponent.NAME
         ]
     }
 }

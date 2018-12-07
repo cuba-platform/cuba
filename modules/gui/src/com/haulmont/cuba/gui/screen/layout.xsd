@@ -408,6 +408,13 @@
         </xs:restriction>
     </xs:simpleType>
 
+    <xs:simpleType name="dependencyType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="STYLESHEET"/>
+            <xs:enumeration value="JAVASCRIPT"/>
+        </xs:restriction>
+    </xs:simpleType>
+
     <!-- Style names -->
 
     <xs:simpleType name="labelStylename">
@@ -1180,6 +1187,19 @@
                 <xs:attribute name="escapeValueForLike" type="xs:boolean"/>
             </xs:extension>
         </xs:simpleContent>
+    </xs:complexType>
+
+    <xs:complexType name="dependencies">
+        <xs:sequence>
+            <xs:choice minOccurs="0">
+                <xs:element name="dependency" type="dependency"/>
+            </xs:choice>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="dependency">
+        <xs:attribute name="path" type="xs:string" use="required"/>
+        <xs:attribute name="type" type="dependencyType"/>
     </xs:complexType>
 
     <!-- Components -->
@@ -2830,6 +2850,22 @@
         </xs:complexContent>
     </xs:complexType>
 
+    <!-- JavaScriptComponent -->
+    <xs:complexType name="javaScriptComponent">
+        <xs:complexContent>
+            <xs:extension base="baseComponent">
+                <xs:all>
+                    <xs:element name="dependencies" minOccurs="0" type="dependencies"/>
+                </xs:all>
+
+                <xs:attribute name="initFunctionName" type="xs:string"/>
+                <xs:attribute name="requiredIndicatorVisible" type="xs:boolean"/>
+
+                <xs:attributeGroup ref="hasContextHelp"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
     <!-- CapsLockIndicator Component-->
     <xs:complexType name="capsLockIndicatorComponent">
         <xs:attributeGroup ref="hasId"/>
@@ -3042,6 +3078,8 @@
                 <xs:element name="form" type="formComponent"/>
 
                 <xs:element name="capsLockIndicator" type="capsLockIndicatorComponent"/>
+
+                <xs:element name="jsComponent" type="javaScriptComponent"/>
 
                 <!-- Main window -->
 

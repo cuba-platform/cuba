@@ -95,7 +95,7 @@
         <property name="cuba.menuConfig" value="com/haulmont/cuba/web-menu.xml"/>
         <property name="cuba.permissionConfig" value="com/haulmont/cuba/web-permissions.xml"/>
         <property name="cuba.web.widgetSet" value="com.haulmont.cuba.web.widgets.WidgetSet"/>
-        <property name="cuba.web.componentsConfig" value=""/>
+        <property name="cuba.web.componentsConfig" value="+com/haulmont/cuba/cuba-web-components.xml"/>
         <property name="cuba.themeConfig" value="com/haulmont/cuba/havana-theme.properties com/haulmont/cuba/halo-theme.properties com/haulmont/cuba/hover-theme.properties"/>
 
         <property name="cuba.dispatcherBaseUrl" value="http://${cuba.webHostName}:${cuba.webPort}/${cuba.webContextName}/dispatch"/>
