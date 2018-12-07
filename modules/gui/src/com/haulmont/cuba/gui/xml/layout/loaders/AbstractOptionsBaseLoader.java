@@ -41,8 +41,8 @@ public abstract class AbstractOptionsBaseLoader<T extends OptionsField> extends 
     protected void loadCaptionProperty(T component, Element element) {
         String captionProperty = element.attributeValue("captionProperty");
         if (!StringUtils.isEmpty(captionProperty)) {
-            component.setCaptionMode(CaptionMode.PROPERTY);
             component.setCaptionProperty(captionProperty);
+            component.setCaptionMode(CaptionMode.PROPERTY);
         }
     }
 

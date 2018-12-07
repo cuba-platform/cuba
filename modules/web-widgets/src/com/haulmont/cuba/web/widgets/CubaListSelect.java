@@ -16,6 +16,7 @@
 
 package com.haulmont.cuba.web.widgets;
 
+import com.haulmont.cuba.web.widgets.compatibility.CubaValueChangeEvent;
 import com.vaadin.server.AbstractErrorMessage;
 import com.vaadin.server.CompositeErrorMessage;
 import com.vaadin.server.ErrorMessage;
@@ -61,5 +62,13 @@ public class CubaListSelect extends ListSelect {
             }
         }
         return superError;
+    }
+
+    @Override
+    protected void fireValueChange(boolean repaintIsNotNeeded) {
+        fireEvent(new CubaValueChangeEvent(this, repaintIsNotNeeded));
+        if (!repaintIsNotNeeded) {
+            markAsDirty();
+        }
     }
 }
