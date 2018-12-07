@@ -38,6 +38,7 @@ import com.haulmont.cuba.web.toolkit.ui.client.tableshared.TableWidget;
 import com.haulmont.cuba.web.toolkit.ui.client.tableshared.TableWidgetDelegate;
 import com.vaadin.client.*;
 import com.vaadin.client.ui.*;
+import com.vaadin.shared.ui.table.TableConstants;
 
 import java.util.*;
 
@@ -898,6 +899,20 @@ public class CubaScrollTableWidget extends VScrollTable implements TableWidget {
             } catch (Exception e) {
                 VConsole.error("Unable to init cuba-ids for columns " + e.getMessage());
             }
+        }
+    }
+
+    @Override
+    protected void reOrderColumn(String columnKey, int newIndex) {
+        if (_delegate.aggregationRow != null) {
+            client.updateVariable(paintableId, "updateAggregationRow", true, false);
+        }
+
+        super.reOrderColumn(columnKey, newIndex);
+
+        if (!client.hasEventListeners(this, TableConstants.COLUMN_REORDER_EVENT_ID)
+                && _delegate.aggregationRow != null) {
+            client.sendPendingVariableChanges();
         }
     }
 }
