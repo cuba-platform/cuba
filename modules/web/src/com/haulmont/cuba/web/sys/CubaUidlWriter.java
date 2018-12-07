@@ -71,14 +71,16 @@ public class CubaUidlWriter extends UidlWriter {
                 String resourceUri = processResourceUri(uri);
                 String resourcePath = getResourceActualPath(resourceUri, overridePath);
 
-                if (resourcePath.endsWith(JAVASCRIPT_EXTENSION)) {
-                    String url = manager.registerDependency(resourcePath, connectorClass);
-                    dependencies.add(new Dependency(Dependency.Type.JAVASCRIPT, url));
-                }
+                if (!manager.getDependencies().containsKey(resourcePath)) {
+                    if (resourcePath.endsWith(JAVASCRIPT_EXTENSION)) {
+                        String url = manager.registerDependency(resourcePath, connectorClass);
+                        dependencies.add(new Dependency(Dependency.Type.JAVASCRIPT, url));
+                    }
 
-                if (resourcePath.endsWith(CSS_EXTENSION)) {
-                    String url = manager.registerDependency(resourcePath, connectorClass);
-                    dependencies.add(new Dependency(Dependency.Type.STYLESHEET, url));
+                    if (resourcePath.endsWith(CSS_EXTENSION)) {
+                        String url = manager.registerDependency(resourcePath, connectorClass);
+                        dependencies.add(new Dependency(Dependency.Type.STYLESHEET, url));
+                    }
                 }
             }
         }
