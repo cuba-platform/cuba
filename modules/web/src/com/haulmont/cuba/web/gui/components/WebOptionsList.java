@@ -160,11 +160,12 @@ public class WebOptionsList<V, I> extends WebAbstractField<CubaListSelect, V>
         V oldValue = internalValue;
         internalValue = value;
 
-        //noinspection unchecked
-        if (isMultiSelect()
-                && isCollectionValuesChanged((Collection<I>) value, (Collection<I>) oldValue)) {
-            ValueChangeEvent<V> event = new ValueChangeEvent<>(this, oldValue, value, false);
-            publish(ValueChangeEvent.class, event);
+        if (isMultiSelect()) {
+            //noinspection unchecked
+            if (isCollectionValuesChanged((Collection<I>) value, (Collection<I>) oldValue)) {
+                ValueChangeEvent<V> event = new ValueChangeEvent<>(this, oldValue, value, false);
+                publish(ValueChangeEvent.class, event);
+            }
         } else if (!fieldValueEquals(value, oldValue)) {
             ValueChangeEvent<V> event = new ValueChangeEvent<>(this, oldValue, value, false);
             publish(ValueChangeEvent.class, event);
