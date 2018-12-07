@@ -28,10 +28,13 @@ import com.haulmont.cuba.gui.app.security.entity.UiPermissionTarget;
 import com.haulmont.cuba.gui.app.security.entity.UiPermissionVariant;
 import com.haulmont.cuba.gui.app.security.role.edit.PermissionUiHelper;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.actions.BaseAction;
 import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.icons.CubaIcon;
+import com.haulmont.cuba.gui.icons.Icons;
 import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.entity.Permission;
 import com.haulmont.cuba.security.entity.PermissionType;
@@ -107,6 +110,9 @@ public class UiPermissionsFrame extends AbstractFrame {
     @Inject
     protected ScreenComponentsTreeDatasource componentDescriptorsDs;
 
+    @Inject
+    protected Icons icons;
+
     protected boolean itemChanging = false;
 
     @Override
@@ -116,6 +122,11 @@ public class UiPermissionsFrame extends AbstractFrame {
         initScreenFilter();
 
         companion.initPermissionsColoredColumns(uiPermissionsTable);
+
+        // Remove useless information about screen component descriptors
+        componentsTree.removeAction("showSystemInfo");
+
+        componentsTree.addAction(new CopyComponentIdAction("copyComponentId"));
 
         uiPermissionTargetsDs.addItemChangeListener(e -> {
             if (!selectedComponentPanel.isVisible() && (e.getItem() != null)) {
@@ -308,5 +319,40 @@ public class UiPermissionsFrame extends AbstractFrame {
 
     public void expandTree() {
         componentsTree.expandTree();
+    }
+
+    /**
+     * Copies an id attribute of {@link #componentsTree} selected component to {@link #componentTextField}.
+     * Disabled if no id is set.
+     */
+    protected class CopyComponentIdAction extends BaseAction {
+
+        protected String selectedComponentId;
+
+        private CopyComponentIdAction(String id) {
+            super(id);
+            setShortcut("CTRL-C");
+            setIcon(icons.get(CubaIcon.COPY));
+            setCaption(getMessage("actions.copyComponentId"));
+        }
+
+        @Override
+        public void refreshState() {
+            ScreenComponentDescriptor selectedComponent = componentsTree.getSingleSelected();
+            if (selectedComponent != null) {
+                selectedComponentId = selectedComponent.getElement().attributeValue("id");
+            }
+            super.refreshState();
+        }
+
+        @Override
+        protected boolean isApplicable() {
+            return selectedComponentId != null;
+        }
+
+        @Override
+        public void actionPerform(Component component) {
+            componentTextField.setValue(componentTextField.getRawValue() + selectedComponentId);
+        }
     }
 }
