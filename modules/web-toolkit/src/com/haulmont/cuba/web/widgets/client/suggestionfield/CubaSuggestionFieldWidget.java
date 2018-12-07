@@ -150,6 +150,11 @@ public class CubaSuggestionFieldWidget extends Composite implements HasEnabled, 
 
     protected void scheduleQuery(final String query) {
         suggestionTimer.cancel();
+
+        if (textField.isReadOnly()) {
+            return;
+        }
+
         if (query != null && query.equals(textField.getText())) {
             suggestionTimer.setQuery(query);
             suggestionTimer.schedule(asyncSearchDelayMs);
