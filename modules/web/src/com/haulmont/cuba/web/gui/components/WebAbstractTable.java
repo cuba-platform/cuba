@@ -653,8 +653,8 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
                                           Collection<MetaPropertyPath> propertyIds) {
         setEditableColumns(Collections.emptyList());
 
-        Window window = ComponentsHelper.getWindowNN(this);
-        boolean isLookup = window.getFrameOwner() instanceof LookupScreen;
+        Window window = ComponentsHelper.getWindow(this);
+        boolean isLookup = window != null && window.getFrameOwner() instanceof LookupScreen;
 
         // restore generators for some type of attributes
         for (MetaPropertyPath propertyId : propertyIds) {
@@ -1189,8 +1189,8 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
         @SuppressWarnings("unchecked")
         Collection<MetaPropertyPath> properties = (Collection<MetaPropertyPath>) ds.getContainerPropertyIds();
 
-        Window window = ComponentsHelper.getWindowNN(this);
-        boolean isLookup = window.getFrameOwner() instanceof LookupScreen;
+        Window window = ComponentsHelper.getWindow(this);
+        boolean isLookup = window != null && window.getFrameOwner() instanceof LookupScreen;
 
         for (MetaPropertyPath propertyPath : properties) {
             Table.Column column = columns.get(propertyPath);
