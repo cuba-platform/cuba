@@ -28,10 +28,8 @@ import java.util.function.Consumer;
 
 /**
  * A JavaScript wrapper.
- *
- * @param <T> type of the state object
  */
-public interface JavaScriptComponent<T> extends Component,
+public interface JavaScriptComponent extends Component,
         Component.HasCaption, Component.HasDescription, Component.HasIcon, Component.BelongToFrame, HasContextHelp {
 
     String NAME = "jsComponent";
@@ -98,7 +96,7 @@ public interface JavaScriptComponent<T> extends Component,
     /**
      * @return Returns a state object
      */
-    T getState();
+    Object getState();
 
     /**
      * Sets a state object that can be used in the client-side JS connector
@@ -121,7 +119,7 @@ public interface JavaScriptComponent<T> extends Component,
      *
      * @param state a state object to set
      */
-    void setState(T state);
+    void setState(Object state);
 
     /**
      * Register a {@link Consumer} that can be called from the

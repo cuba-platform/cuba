@@ -27,19 +27,19 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 
-public class WebJavaScriptComponent<T> extends WebAbstractComponent<CubaJavaScriptComponent<T>>
-        implements JavaScriptComponent<T> {
+public class WebJavaScriptComponent extends WebAbstractComponent<CubaJavaScriptComponent>
+        implements JavaScriptComponent {
 
     public WebJavaScriptComponent() {
         component = createComponent();
         initComponent(component);
     }
 
-    protected CubaJavaScriptComponent<T> createComponent() {
-        return new CubaJavaScriptComponent<>();
+    protected CubaJavaScriptComponent createComponent() {
+        return new CubaJavaScriptComponent();
     }
 
-    protected void initComponent(CubaJavaScriptComponent<T> component) {
+    protected void initComponent(CubaJavaScriptComponent component) {
     }
 
     @Override
@@ -94,12 +94,12 @@ public class WebJavaScriptComponent<T> extends WebAbstractComponent<CubaJavaScri
     }
 
     @Override
-    public T getState() {
+    public Object getState() {
         return component.getStateData();
     }
 
     @Override
-    public void setState(T state) {
+    public void setState(Object state) {
         component.setStateData(state);
     }
 

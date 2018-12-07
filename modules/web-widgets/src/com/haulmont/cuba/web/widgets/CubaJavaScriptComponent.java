@@ -35,7 +35,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
-public class CubaJavaScriptComponent<T> extends AbstractJavaScriptComponent implements HasDependencies {
+public class CubaJavaScriptComponent extends AbstractJavaScriptComponent implements HasDependencies {
 
     protected final static Gson sharedGson;
 
@@ -68,7 +68,7 @@ public class CubaJavaScriptComponent<T> extends AbstractJavaScriptComponent impl
     }
 
     protected List<ClientDependency> dependencies;
-    protected T stateData;
+    protected Object stateData;
 
     protected Gson gson;
     protected boolean dirty = false;
@@ -120,11 +120,11 @@ public class CubaJavaScriptComponent<T> extends AbstractJavaScriptComponent impl
         }
     }
 
-    public T getStateData() {
+    public Object getStateData() {
         return stateData;
     }
 
-    public void setStateData(T data) {
+    public void setStateData(Object data) {
         this.stateData = data;
         forceStateChange();
     }
