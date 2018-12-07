@@ -41,6 +41,7 @@ import com.vaadin.client.ui.VEmbedded;
 import com.vaadin.v7.client.ui.VLabel;
 import com.vaadin.v7.client.ui.VScrollTable;
 import com.vaadin.v7.client.ui.VTextField;
+import com.vaadin.v7.shared.ui.table.TableConstants;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -886,6 +887,20 @@ public class CubaScrollTableWidget extends VScrollTable implements TableWidget {
                 Logger.getLogger("CubaScrollTableWidget").log(Level.SEVERE,
                         "Unable to init cuba-ids for columns " + e.getMessage());
             }
+        }
+    }
+
+    @Override
+    protected void reOrderColumn(String columnKey, int newIndex) {
+        if (_delegate.aggregationRow != null) {
+            client.updateVariable(paintableId, "updateAggregationRow", true, false);
+        }
+
+        super.reOrderColumn(columnKey, newIndex);
+
+        if (!client.hasEventListeners(this, TableConstants.COLUMN_REORDER_EVENT_ID)
+                && _delegate.aggregationRow != null) {
+            client.sendPendingVariableChanges();
         }
     }
 }

@@ -302,6 +302,13 @@ public class CubaTable extends com.vaadin.v7.ui.Table implements TableSortableCo
         if (shortcutActionManager != null) {
             shortcutActionManager.handleActions(variables, this);
         }
+
+        if (variables.containsKey("updateAggregationRow")) {
+            Boolean updateAggregationRow = (Boolean) variables.get("updateAggregationRow");
+            if (updateAggregationRow) {
+                markAsDirty();
+            }
+        }
     }
 
     @Override
