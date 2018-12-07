@@ -47,6 +47,7 @@
 
     <xs:simpleType name="textChangeEventMode">
         <xs:restriction base="xs:string">
+            <xs:enumeration value="BLUR"/>
             <xs:enumeration value="LAZY"/>
             <xs:enumeration value="TIMEOUT"/>
             <xs:enumeration value="EAGER"/>
