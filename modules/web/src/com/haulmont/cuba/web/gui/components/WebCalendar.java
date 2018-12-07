@@ -19,11 +19,14 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.bali.events.Subscription;
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.Calendar;
-import com.haulmont.cuba.gui.components.calendar.*;
+import com.haulmont.cuba.gui.components.calendar.CalendarEvent;
+import com.haulmont.cuba.gui.components.calendar.CalendarEventProvider;
+import com.haulmont.cuba.gui.components.calendar.EntityCalendarEvent;
+import com.haulmont.cuba.gui.components.calendar.ListCalendarEventProvider;
+import com.haulmont.cuba.gui.components.data.calendar.EntityCalendarEventProvider;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDsHelper;
 import com.haulmont.cuba.web.gui.components.calendar.CalendarEventProviderWrapper;
@@ -31,15 +34,17 @@ import com.haulmont.cuba.web.gui.components.calendar.CalendarEventWrapper;
 import com.haulmont.cuba.web.widgets.CubaCalendar;
 import com.vaadin.v7.ui.components.calendar.CalendarComponentEvents;
 import org.apache.commons.collections4.CollectionUtils;
+import org.springframework.beans.factory.InitializingBean;
 
+import javax.annotation.Nullable;
 import java.time.DayOfWeek;
 import java.time.Month;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-public class WebCalendar extends WebAbstractComponent<CubaCalendar> implements Calendar {
-    private CollectionDatasource datasource;
+public class WebCalendar<T> extends WebAbstractComponent<CubaCalendar>
+        implements Calendar<T>, InitializingBean {
 
     protected final String TIME_FORMAT_12H = "12H";
     protected final String TIME_FORMAT_24H = "24H";
@@ -49,8 +54,20 @@ public class WebCalendar extends WebAbstractComponent<CubaCalendar> implements C
 
     public WebCalendar() {
         component = createComponent();
+    }
 
-        Messages messages = AppBeans.get(Messages.NAME);
+    protected CubaCalendar createComponent() {
+        return new CubaCalendar();
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        initComponent(component);
+        initDefaultEventProvider(component);
+    }
+
+    protected void initComponent(CubaCalendar component) {
+        Messages messages = beanLocator.get(Messages.NAME);
         String[] monthNamesShort = new String[12];
         monthNamesShort[0] = messages.getMainMessage("calendar.januaryCaption");
         monthNamesShort[1] = messages.getMainMessage("calendar.februaryCaption");
@@ -85,21 +102,20 @@ public class WebCalendar extends WebAbstractComponent<CubaCalendar> implements C
                     String.format("Can't set time format '%s'", messages.getMainMessage("calendar.timeFormat")));
         }
 
-        UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.NAME);
+        UserSessionSource userSessionSource = beanLocator.get(UserSessionSource.NAME);
         TimeZone userTimeZone = userSessionSource.getUserSession().getTimeZone();
         if (userTimeZone != null) {
             setTimeZone(userTimeZone);
         }
 
+        setNavigationButtonsStyle(navigationButtonsVisible);
+    }
+
+    protected void initDefaultEventProvider(CubaCalendar component) {
         calendarEventProvider = new ListCalendarEventProvider();
         calendarEventProvider.setCalendar(this);
 
         component.setEventProvider(new CalendarEventProviderWrapper(calendarEventProvider));
-        setNavigationButtonsStyle(navigationButtonsVisible);
-    }
-
-    protected CubaCalendar createComponent() {
-        return new CubaCalendar();
     }
 
     @Override
@@ -134,19 +150,21 @@ public class WebCalendar extends WebAbstractComponent<CubaCalendar> implements C
 
     @Override
     public void setDatasource(CollectionDatasource datasource) {
-        this.datasource = datasource;
-
         if (datasource == null) {
             setEventProvider(null);
         } else {
             CollectionDsHelper.autoRefreshInvalid(datasource, true);
-            setEventProvider(new EntityCalendarEventProvider(datasource));
+            setEventProvider(new com.haulmont.cuba.gui.components.calendar.EntityCalendarEventProvider(datasource));
         }
     }
 
+    @Nullable
     @Override
     public CollectionDatasource getDatasource() {
-        return datasource;
+        return (calendarEventProvider instanceof com.haulmont.cuba.gui.components.calendar.EntityCalendarEventProvider)
+                ? ((com.haulmont.cuba.gui.components.calendar.EntityCalendarEventProvider) calendarEventProvider)
+                .getDatasource()
+                : null;
     }
 
     @Override
@@ -220,7 +238,7 @@ public class WebCalendar extends WebAbstractComponent<CubaCalendar> implements C
     @Override
     public void setEventProvider(CalendarEventProvider calendarEventProvider) {
         if (this.calendarEventProvider instanceof EntityCalendarEventProvider) {
-            ((EntityCalendarEventProvider) this.calendarEventProvider).unbind();
+            ((EntityCalendarEventProvider ) this.calendarEventProvider).unbind();
         }
 
         this.calendarEventProvider = calendarEventProvider;
@@ -228,7 +246,7 @@ public class WebCalendar extends WebAbstractComponent<CubaCalendar> implements C
             calendarEventProvider.setCalendar(this);
             component.setEventProvider(new CalendarEventProviderWrapper(calendarEventProvider));
         } else {
-            component.setEventProvider(null);
+            component.setEventProvider(new CalendarEventProviderWrapper(new ListCalendarEventProvider()));
         }
     }
 

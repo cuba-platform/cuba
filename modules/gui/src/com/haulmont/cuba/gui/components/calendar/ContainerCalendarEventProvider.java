@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2016 Haulmont.
+ * Copyright (c) 2008-2018 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,19 +20,23 @@ import com.haulmont.bali.events.EventHub;
 import com.haulmont.bali.events.Subscription;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.Calendar;
-import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.components.data.calendar.EntityCalendarEventProvider;
+import com.haulmont.cuba.gui.model.CollectionContainer;
+import com.haulmont.cuba.gui.model.CollectionContainer.CollectionChangeEvent;
+import com.haulmont.cuba.gui.model.InstanceContainer;
 
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 
-public class EntityCalendarEventProvider implements CalendarEventProvider,
-        com.haulmont.cuba.gui.components.data.calendar.EntityCalendarEventProvider  {
+public class ContainerCalendarEventProvider<E extends Entity>
+        implements CalendarEventProvider, EntityCalendarEventProvider {
 
     protected List<CalendarEvent> itemsCache;
-    protected CollectionDatasource datasource;
+
+    protected CollectionContainer<E> container;
+
     protected Calendar calendar;
 
     protected String startDateProperty;
@@ -44,59 +48,53 @@ public class EntityCalendarEventProvider implements CalendarEventProvider,
 
     protected EventHub events = new EventHub();
 
-    protected CollectionDatasource.CollectionChangeListener collectionChangeListener;
-    protected Datasource.ItemPropertyChangeListener itemPropertyChangeListener;
+    protected Subscription collectionChangeListener;
+    protected Subscription propertyChangeListener;
 
-    public EntityCalendarEventProvider (CollectionDatasource datasource) {
-        this.datasource = datasource;
+    public ContainerCalendarEventProvider(CollectionContainer<E> container) {
+        this.container = container;
 
-        collectionChangeListener = createCollectionChangeListener();
-        itemPropertyChangeListener = createItemPropertyChangeListener();
-
-        datasource.addCollectionChangeListener(collectionChangeListener);
-        datasource.addItemPropertyChangeListener(itemPropertyChangeListener);
+        collectionChangeListener = this.container.addCollectionChangeListener(this::onCollectionChanged);
+        propertyChangeListener = this.container.addItemPropertyChangeListener(this::onItemPropertyChanged);
     }
 
-    protected CollectionDatasource.CollectionChangeListener createCollectionChangeListener() {
-        return e -> {
+    protected void onCollectionChanged(CollectionChangeEvent<E> event) {
+        itemsCache = null;
+        events.publish(EventSetChangeEvent.class, new EventSetChangeEvent(this));
+    }
+
+    protected void onItemPropertyChanged(InstanceContainer.ItemPropertyChangeEvent<E> event) {
+        if (event.getProperty().equals(startDateProperty)
+                || event.getProperty().equals(endDateProperty)
+                || event.getProperty().equals(captionProperty)
+                || event.getProperty().equals(descriptionProperty)
+                || event.getProperty().equals(styleNameProperty)
+                || event.getProperty().equals(allDayProperty)) {
             itemsCache = null;
             events.publish(EventSetChangeEvent.class, new EventSetChangeEvent(this));
-        };
+        }
     }
 
-    protected Datasource.ItemPropertyChangeListener createItemPropertyChangeListener() {
-        return e -> {
-            if (e.getProperty() != null) {
-                if (e.getProperty().equals(startDateProperty)
-                        || e.getProperty().equals(endDateProperty)
-                        || e.getProperty().equals(captionProperty)
-                        || e.getProperty().equals(descriptionProperty)
-                        || e.getProperty().equals(styleNameProperty)
-                        || e.getProperty().equals(allDayProperty)) {
-                    itemsCache = null;
-                    events.publish(EventSetChangeEvent.class, new EventSetChangeEvent(this));
-                }
-            }
-        };
-    }
-
-    public CollectionDatasource getDatasource() {
-        return datasource;
+    public CollectionContainer<E> getContainer() {
+        return container;
     }
 
     @Override
     public void addEvent(CalendarEvent event) {
-        throw new UnsupportedOperationException("Use datasource for changing data items of EntityCalendarEventProvider");
+        throw new UnsupportedOperationException("Use container for changing data items of " +
+                "ContainerCalendarEventProvider");
     }
 
     @Override
     public void removeEvent(CalendarEvent event) {
-        throw new UnsupportedOperationException("Use datasource for changing data items of EntityCalendarEventProvider");
+        throw new UnsupportedOperationException("Use container for changing data items of " +
+                "ContainerCalendarEventProvider");
     }
 
     @Override
     public void removeAllEvents() {
-        throw new UnsupportedOperationException("Use datasource for changing data items of EntityCalendarEventProvider");
+        throw new UnsupportedOperationException("Use container for changing data items of " +
+                "ContainerCalendarEventProvider");
     }
 
     @Override
@@ -116,14 +114,16 @@ public class EntityCalendarEventProvider implements CalendarEventProvider,
 
     @Override
     public List<CalendarEvent> getEvents() {
-        if (startDateProperty == null || endDateProperty == null || captionProperty == null) {
-            return new ArrayList<>();
+        if (startDateProperty == null
+                || endDateProperty == null
+                || captionProperty == null) {
+            return Collections.emptyList();
         }
 
         if (itemsCache == null) {
             itemsCache = new ArrayList<>();
-            for (Entity entity : (Collection<Entity>) datasource.getItems()) {
-                itemsCache.add(new EntityCalendarEvent<>(entity, this));
+            for (E item : container.getItems()) {
+                itemsCache.add(new EntityCalendarEvent<>(item, this));
             }
             return itemsCache;
         } else {
@@ -193,7 +193,12 @@ public class EntityCalendarEventProvider implements CalendarEventProvider,
 
     @Override
     public void unbind() {
-        datasource.removeCollectionChangeListener(collectionChangeListener);
-        datasource.removeItemPropertyChangeListener(itemPropertyChangeListener);
+        if (collectionChangeListener != null) {
+            collectionChangeListener.remove();
+        }
+
+        if (propertyChangeListener != null) {
+            propertyChangeListener.remove();
+        }
     }
 }

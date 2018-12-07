@@ -16,28 +16,28 @@
 
 package com.haulmont.cuba.gui.components.calendar;
 
+import com.haulmont.bali.events.EventHub;
+import com.haulmont.bali.events.Subscription;
 import com.haulmont.cuba.gui.components.Calendar;
+import com.haulmont.cuba.gui.components.calendar.CalendarEvent.EventChangeEvent;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class ListCalendarEventProvider implements CalendarEventProvider {
 
     protected List<CalendarEvent> eventList = new ArrayList<>();
-    protected List<EventSetChangeListener> listeners;
+
     protected Calendar calendar;
-    protected CalendarEvent.EventChangeListener eventChangeListener =
-            (CalendarEvent.EventChangeListener) eventChangeEvent ->
-                    fireEventSetChange();
+
+    protected Consumer<EventChangeEvent> eventChangeListener = eventChangeEvent ->
+            fireEventSetChange();
+
+    protected EventHub events = new EventHub();
 
     protected void fireEventSetChange() {
-        if (listeners != null) {
-            EventSetChangeEvent eventSetChangeEvent = new EventSetChangeEvent(this);
-
-            for (EventSetChangeListener eventSetChangeListener : listeners) {
-                eventSetChangeListener.eventSetChange(eventSetChangeEvent);
-            }
-        }
+        events.publish(EventSetChangeEvent.class, new EventSetChangeEvent(this));
     }
 
     @Override
@@ -66,7 +66,6 @@ public class ListCalendarEventProvider implements CalendarEventProvider {
         }
 
         eventList.clear();
-
         fireEventSetChange();
     }
 
@@ -76,20 +75,12 @@ public class ListCalendarEventProvider implements CalendarEventProvider {
     }
 
     @Override
-    public void addEventSetChangeListener(EventSetChangeListener listener) {
-        if (listeners == null) {
-            listeners = new ArrayList<>();
-        }
-
-        if (!listeners.contains(listener)) {
-            listeners.add(listener);
-        }
+    public Subscription addEventSetChangeListener(Consumer<EventSetChangeEvent> listener) {
+        return events.subscribe(EventSetChangeEvent.class, listener);
     }
 
     @Override
-    public void removeEventSetChangeListener(EventSetChangeListener listener) {
-        if (listeners != null) {
-            listeners.remove(listener);
-        }
+    public void removeEventSetChangeListener(Consumer<EventSetChangeEvent> listener) {
+        events.unsubscribe(EventSetChangeEvent.class, listener);
     }
 }

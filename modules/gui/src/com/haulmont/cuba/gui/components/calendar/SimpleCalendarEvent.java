@@ -16,11 +16,14 @@
 
 package com.haulmont.cuba.gui.components.calendar;
 
-import java.util.ArrayList;
+import com.haulmont.bali.events.EventHub;
+import com.haulmont.bali.events.Subscription;
+
 import java.util.Date;
-import java.util.List;
+import java.util.function.Consumer;
 
 public class SimpleCalendarEvent implements CalendarEvent {
+
     protected Date start;
     protected Date end;
     protected String caption;
@@ -28,15 +31,10 @@ public class SimpleCalendarEvent implements CalendarEvent {
     protected String styleName;
     protected boolean isAllDay;
 
-    protected List<EventChangeListener> eventChangeListeners;
+    protected EventHub events = new EventHub();
 
     protected void fireDataChanged() {
-        if (eventChangeListeners != null) {
-            EventChangeEvent eventChangeEvent = new EventChangeEvent(this);
-            for (EventChangeListener eventChangeListener : eventChangeListeners) {
-                eventChangeListener.eventChange(eventChangeEvent);
-            }
-        }
+        events.publish(EventChangeEvent.class, new EventChangeEvent(this));
     }
 
     @Override
@@ -106,24 +104,12 @@ public class SimpleCalendarEvent implements CalendarEvent {
     }
 
     @Override
-    public void addEventChangeListener(EventChangeListener listener) {
-        if (eventChangeListeners == null) {
-            eventChangeListeners = new ArrayList<>();
-        }
-
-        if (!eventChangeListeners.contains(listener)) {
-            eventChangeListeners.add(listener);
-        }
+    public Subscription addEventChangeListener(Consumer<EventChangeEvent> listener) {
+        return events.subscribe(EventChangeEvent.class, listener);
     }
 
     @Override
-    public void removeEventChangeListener(EventChangeListener listener) {
-        if (eventChangeListeners != null) {
-            eventChangeListeners.remove(listener);
-
-            if (eventChangeListeners.isEmpty()) {
-                eventChangeListeners = null;
-            }
-        }
+    public void removeEventChangeListener(Consumer<EventChangeEvent> listener) {
+        events.unsubscribe(EventChangeEvent.class, listener);
     }
 }

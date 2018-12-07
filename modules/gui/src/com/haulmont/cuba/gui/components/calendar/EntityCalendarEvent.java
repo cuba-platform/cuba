@@ -16,37 +16,36 @@
 
 package com.haulmont.cuba.gui.components.calendar;
 
+import com.haulmont.bali.events.EventHub;
+import com.haulmont.bali.events.Subscription;
+import com.haulmont.chile.core.model.Instance;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.gui.components.data.calendar.EntityCalendarEventProvider;
 import org.apache.commons.lang3.BooleanUtils;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
+import java.util.function.Consumer;
 
-public class EntityCalendarEvent implements CalendarEvent {
+public class EntityCalendarEvent<E extends Entity> implements CalendarEvent {
 
-    protected final Entity entity;
+    protected final E entity;
     protected final EntityCalendarEventProvider provider;
-    protected List<EventChangeListener> eventChangeListeners;
 
-    public EntityCalendarEvent(Entity entity, EntityCalendarEventProvider provider) {
+    protected EventHub events = new EventHub();
+
+    public EntityCalendarEvent(E entity, EntityCalendarEventProvider provider) {
         this.entity = entity;
         this.provider = provider;
 
         // todo bad practice, use datasource listener instead
-        this.entity.addPropertyChangeListener(e -> fireEventChanged());
+        this.entity.addPropertyChangeListener(this::onPropertyChanged);
     }
 
-    protected void fireEventChanged() {
-        if (eventChangeListeners != null) {
-            EventChangeEvent eventChangeEvent = new EventChangeEvent(this);
-            for (EventChangeListener listener : eventChangeListeners) {
-                listener.eventChange(eventChangeEvent);
-            }
-        }
+    protected void onPropertyChanged(Instance.PropertyChangeEvent event) {
+        events.publish(EventChangeEvent.class, new EventChangeEvent(this));
     }
 
-    public Entity getEntity() {
+    public E getEntity() {
         return entity;
     }
 
@@ -135,24 +134,12 @@ public class EntityCalendarEvent implements CalendarEvent {
     }
 
     @Override
-    public void addEventChangeListener(EventChangeListener listener) {
-        if (eventChangeListeners == null) {
-            eventChangeListeners = new ArrayList<>();
-        }
-
-        if (!eventChangeListeners.contains(listener)) {
-            eventChangeListeners.add(listener);
-        }
+    public Subscription addEventChangeListener(Consumer<EventChangeEvent> listener) {
+        return events.subscribe(EventChangeEvent.class, listener);
     }
 
     @Override
-    public void removeEventChangeListener(EventChangeListener listener) {
-        if (eventChangeListeners != null) {
-            eventChangeListeners.remove(listener);
-
-            if (eventChangeListeners.isEmpty()) {
-                eventChangeListeners = null;
-            }
-        }
+    public void removeEventChangeListener(Consumer<EventChangeEvent> listener) {
+        events.unsubscribe(EventChangeEvent.class, listener);
     }
 }

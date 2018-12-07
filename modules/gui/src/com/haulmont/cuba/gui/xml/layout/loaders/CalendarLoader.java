@@ -16,11 +16,18 @@
 
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
+import com.google.common.base.Strings;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.Calendar;
-import com.haulmont.cuba.gui.components.calendar.EntityCalendarEventProvider;
+import com.haulmont.cuba.gui.components.calendar.ContainerCalendarEventProvider;
+import com.haulmont.cuba.gui.components.data.calendar.EntityCalendarEventProvider;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.model.CollectionContainer;
+import com.haulmont.cuba.gui.model.InstanceContainer;
+import com.haulmont.cuba.gui.model.ScreenData;
+import com.haulmont.cuba.gui.screen.FrameOwner;
+import com.haulmont.cuba.gui.screen.UiControllerUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
 
@@ -60,8 +67,9 @@ public class CalendarLoader extends AbstractComponentLoader<Calendar> {
         loadStyleName(resultComponent, element);
         loadIcon(resultComponent, element);
 
+        loadData(resultComponent, element);
+
         loadEditable(resultComponent, element);
-        loadDatasource(resultComponent, element);
         loadTimeFormat(resultComponent, element);
         loadEndDate(resultComponent, element);
         loadStartDate(resultComponent, element);
@@ -79,49 +87,76 @@ public class CalendarLoader extends AbstractComponentLoader<Calendar> {
         loadMonthNames(resultComponent, element);
     }
 
+    protected void loadData(Calendar component, Element element) {
+        String containerId = element.attributeValue("dataContainer");
+        String datasource = element.attributeValue("datasource");
+
+        if (!Strings.isNullOrEmpty(containerId)) {
+            loadDataContainer(component, element);
+        } else if (!Strings.isNullOrEmpty(datasource)) {
+            loadDatasource(component, element);
+        }
+
+        loadEventProviderRelatedProperties(component, element);
+    }
+
+    protected void loadDataContainer(Calendar component, Element element) {
+        String containerId = element.attributeValue("dataContainer");
+        FrameOwner frameOwner = context.getFrame().getFrameOwner();
+        ScreenData screenData = UiControllerUtils.getScreenData(frameOwner);
+        InstanceContainer container = screenData.getContainer(containerId);
+
+        if (!(container instanceof CollectionContainer)) {
+            throw new GuiDevelopmentException("Not a CollectionContainer: " +
+                    containerId, context.getCurrentFrameId());
+        }
+
+        component.setEventProvider(new ContainerCalendarEventProvider<>(((CollectionContainer) container)));
+    }
+
     protected void loadDatasource(Calendar component, Element element) {
         final String datasource = element.attributeValue("datasource");
-        if (!StringUtils.isEmpty(datasource)) {
-            CollectionDatasource ds = (CollectionDatasource) context.getDsContext().get(datasource);
-            if (ds == null) {
-                throw new GuiDevelopmentException(String.format("Datasource '%s' is not defined", datasource),
-                        getContext().getFullFrameId(), "Component ID", component.getId());
+        CollectionDatasource ds = (CollectionDatasource) context.getDsContext().get(datasource);
+        if (ds == null) {
+            throw new GuiDevelopmentException(String.format("Datasource '%s' is not defined", datasource),
+                    getContext().getFullFrameId(), "Component ID", component.getId());
+        }
+
+        component.setDatasource(ds);
+    }
+
+    protected void loadEventProviderRelatedProperties(Calendar component, Element element) {
+        if (component.getEventProvider() instanceof EntityCalendarEventProvider) {
+            EntityCalendarEventProvider eventProvider = (EntityCalendarEventProvider) component.getEventProvider();
+
+            String startDateProperty = element.attributeValue("startDateProperty");
+            if (StringUtils.isNotEmpty(startDateProperty)) {
+                eventProvider.setStartDateProperty(startDateProperty);
             }
 
-            component.setDatasource(ds);
+            String endDateProperty = element.attributeValue("endDateProperty");
+            if (StringUtils.isNotEmpty(endDateProperty)) {
+                eventProvider.setEndDateProperty(endDateProperty);
+            }
 
-            if (component.getEventProvider() instanceof EntityCalendarEventProvider) {
-                EntityCalendarEventProvider eventProvider = (EntityCalendarEventProvider) component.getEventProvider();
+            String captionProperty = element.attributeValue("captionProperty");
+            if (StringUtils.isNotEmpty(captionProperty)) {
+                eventProvider.setCaptionProperty(captionProperty);
+            }
 
-                String startDateProperty = element.attributeValue("startDateProperty");
-                if (StringUtils.isNotEmpty(startDateProperty)) {
-                    eventProvider.setStartDateProperty(startDateProperty);
-                }
+            String descriptionProperty = element.attributeValue("descriptionProperty");
+            if (StringUtils.isNotEmpty(descriptionProperty)) {
+                eventProvider.setDescriptionProperty(descriptionProperty);
+            }
 
-                String endDateProperty = element.attributeValue("endDateProperty");
-                if (StringUtils.isNotEmpty(endDateProperty)) {
-                    eventProvider.setEndDateProperty(endDateProperty);
-                }
+            String styleNameProperty = element.attributeValue("stylenameProperty");
+            if (StringUtils.isNotEmpty(styleNameProperty)) {
+                eventProvider.setStyleNameProperty(styleNameProperty);
+            }
 
-                String captionProperty = element.attributeValue("captionProperty");
-                if (StringUtils.isNotEmpty(captionProperty)) {
-                    eventProvider.setCaptionProperty(captionProperty);
-                }
-
-                String descriptionProperty = element.attributeValue("descriptionProperty");
-                if (StringUtils.isNotEmpty(descriptionProperty)) {
-                    eventProvider.setDescriptionProperty(descriptionProperty);
-                }
-
-                String styleNameProperty = element.attributeValue("stylenameProperty");
-                if (StringUtils.isNotEmpty(styleNameProperty)) {
-                    eventProvider.setStyleNameProperty(styleNameProperty);
-                }
-
-                String allDayProperty = element.attributeValue("isAllDayProperty");
-                if (StringUtils.isNotEmpty(allDayProperty)) {
-                    eventProvider.setAllDayProperty(allDayProperty);
-                }
+            String allDayProperty = element.attributeValue("isAllDayProperty");
+            if (StringUtils.isNotEmpty(allDayProperty)) {
+                eventProvider.setAllDayProperty(allDayProperty);
             }
         }
     }

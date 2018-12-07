@@ -16,8 +16,12 @@
 
 package com.haulmont.cuba.gui.components.calendar;
 
+import com.haulmont.bali.events.Subscription;
+
 import java.io.Serializable;
 import java.util.Date;
+import java.util.EventObject;
+import java.util.function.Consumer;
 
 public interface CalendarEvent extends Serializable {
     Date getStart();
@@ -38,23 +42,41 @@ public interface CalendarEvent extends Serializable {
     boolean isAllDay();
     void setAllDay(boolean isAllDay);
 
-    void addEventChangeListener(EventChangeListener listener);
-    void removeEventChangeListener(EventChangeListener listener);
+    Subscription addEventChangeListener(Consumer<EventChangeEvent> listener);
 
-    class EventChangeEvent implements Serializable {
+    /**
+     * @param listener a listener to remove
+     * @deprecated Use {@link Subscription} object instead
+     */
+    @Deprecated
+    void removeEventChangeListener(Consumer<EventChangeEvent> listener);
 
-        private CalendarEvent source;
+    class EventChangeEvent extends EventObject {
 
         public EventChangeEvent(CalendarEvent source) {
-            this.source = source;
+            super(source);
+        }
+
+        @Override
+        public CalendarEvent getSource() {
+            return (CalendarEvent) super.getSource();
         }
 
         public CalendarEvent getCalendarEvent() {
-            return source;
+            return getSource();
         }
     }
 
-    interface EventChangeListener extends Serializable {
+    /**
+     * @deprecated Use {@link Consumer} instead
+     */
+    @Deprecated
+    interface EventChangeListener extends Consumer<EventChangeEvent> {
+
+        @Override
+        default void accept(EventChangeEvent eventChangeEvent) {
+            eventChange(eventChangeEvent);
+        }
 
         void eventChange(EventChangeEvent eventChangeEvent);
     }

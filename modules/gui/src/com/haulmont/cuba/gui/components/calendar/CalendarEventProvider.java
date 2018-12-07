@@ -16,10 +16,13 @@
 
 package com.haulmont.cuba.gui.components.calendar;
 
+import com.haulmont.bali.events.Subscription;
 import com.haulmont.cuba.gui.components.Calendar;
 
 import java.io.Serializable;
+import java.util.EventObject;
 import java.util.List;
+import java.util.function.Consumer;
 
 public interface CalendarEventProvider {
 
@@ -50,24 +53,43 @@ public interface CalendarEventProvider {
 
     void setCalendar(Calendar calendar);
 
-    void addEventSetChangeListener(EventSetChangeListener listener);
-    void removeEventSetChangeListener(EventSetChangeListener listener);
+    Subscription addEventSetChangeListener(Consumer<EventSetChangeEvent> listener);
+
+    /**
+     * @param listener a listener to remove
+     * @deprecated Use {@link Subscription} onject instead
+     */
+    @Deprecated
+    void removeEventSetChangeListener(Consumer<EventSetChangeEvent> listener);
 
     List<CalendarEvent> getEvents();
 
-    class EventSetChangeEvent implements Serializable {
-        private CalendarEventProvider source;
+    class EventSetChangeEvent extends EventObject {
 
         public EventSetChangeEvent(CalendarEventProvider source) {
-            this.source = source;
+            super(source);
+        }
+
+        @Override
+        public CalendarEventProvider getSource() {
+            return (CalendarEventProvider) super.getSource();
         }
 
         public CalendarEventProvider getProvider() {
-            return source;
+            return getSource();
         }
     }
 
-    interface EventSetChangeListener extends Serializable {
+    /**
+     * @deprecated Use {@link Consumer} instead
+     */
+    @Deprecated
+    interface EventSetChangeListener extends Consumer<EventSetChangeEvent> {
+
+        @Override
+        default void accept(EventSetChangeEvent event) {
+            eventSetChange(event);
+        }
 
         void eventSetChange(EventSetChangeEvent changeEvent);
     }

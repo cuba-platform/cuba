@@ -1334,6 +1334,7 @@
                 <xs:attributeGroup ref="hasContextHelp"/>
 
                 <xs:attribute name="datasource" type="xs:string"/>
+                <xs:attribute name="dataContainer" type="xs:string"/>
 
                 <xs:attribute name="startDate" type="xs:string"/>
                 <xs:attribute name="endDate" type="xs:string"/>
