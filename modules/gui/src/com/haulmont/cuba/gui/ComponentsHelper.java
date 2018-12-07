@@ -35,6 +35,7 @@ import org.apache.commons.collections4.iterators.ReverseListIterator;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.Consumer;
@@ -383,6 +384,7 @@ public abstract class ComponentsHelper {
         return null;
     }
 
+    @Nonnull
     public static Window getWindowNN(Component.BelongToFrame component) {
         Window window = getWindow(component);
 

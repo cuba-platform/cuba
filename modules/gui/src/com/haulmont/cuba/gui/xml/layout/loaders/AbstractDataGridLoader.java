@@ -22,7 +22,6 @@ import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.entity.LocaleHelper;
-import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
@@ -35,6 +34,7 @@ import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.dynamicattributes.DynamicAttributesGuiTools;
 import com.haulmont.cuba.gui.model.*;
 import com.haulmont.cuba.gui.screen.FrameOwner;
+import com.haulmont.cuba.gui.screen.LookupScreen;
 import com.haulmont.cuba.gui.screen.UiControllerUtils;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import org.apache.commons.collections4.CollectionUtils;
@@ -294,13 +294,12 @@ public abstract class AbstractDataGridLoader<T extends DataGrid> extends Actions
 
     protected void loadButtonsPanel(DataGrid component) {
         if (buttonsPanelLoader != null) {
-            //noinspection unchecked
             buttonsPanelLoader.loadComponent();
             ButtonsPanel panel = (ButtonsPanel) buttonsPanelLoader.getResultComponent();
 
-            Window window = ComponentsHelper.getWindowImplementation(component);
+            Window window = ComponentsHelper.getWindowNN(component);
             String alwaysVisible = panelElement.attributeValue("alwaysVisible");
-            panel.setVisible(!(window instanceof Window.Lookup) || "true".equals(alwaysVisible));
+            panel.setVisible(!(window.getFrameOwner() instanceof LookupScreen) || "true".equals(alwaysVisible));
         }
     }
 
@@ -308,15 +307,16 @@ public abstract class AbstractDataGridLoader<T extends DataGrid> extends Actions
         Element rowsCountElement = element.element("rowsCount");
         if (rowsCountElement != null) {
             RowsCount rowsCount = factory.create(RowsCount.class);
-            rowsCount.setOwner(component);
+            rowsCount.setRowsCountTarget(component);
             component.setRowsCount(rowsCount);
         }
     }
 
     protected List<Column> loadColumns(DataGrid component, Element columnsElement, MetaClass metaClass) {
-        List<Column> columns = new ArrayList<>();
-        //noinspection unchecked
-        for (Element columnElement : columnsElement.elements("column")) {
+        List<Element> columnElements = columnsElement.elements("column");
+
+        List<Column> columns = new ArrayList<>(columnElements.size());
+        for (Element columnElement : columnElements) {
             columns.add(loadColumn(component, columnElement, metaClass));
         }
         return columns;
@@ -337,8 +337,7 @@ public abstract class AbstractDataGridLoader<T extends DataGrid> extends Actions
 
         Column column;
         if (property != null) {
-            MetaPropertyPath metaPropertyPath = AppBeans.get(MetadataTools.NAME, MetadataTools.class)
-                    .resolveMetaPropertyPath(metaClass, property);
+            MetaPropertyPath metaPropertyPath = getMetadataTools().resolveMetaPropertyPath(metaClass, property);
             column = component.addColumn(id, metaPropertyPath);
         } else {
             column = component.addColumn(id, null);

@@ -26,7 +26,6 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.core.global.Security;
-import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.LookupComponent.LookupSelectionChangeNotifier;
 import com.haulmont.cuba.gui.components.actions.BaseAction;
@@ -763,23 +762,7 @@ public class WebTree<E extends Entity>
         }
 
         if (action != null && action.isEnabled()) {
-            Window window = ComponentsHelper.getWindowImplementation(WebTree.this);
-            if (window instanceof Window.Wrapper) {
-                window = ((Window.Wrapper) window).getWrappedWindow();
-            }
-
-            if (!(window instanceof Window.Lookup)) {
-                action.actionPerform(WebTree.this);
-            } else {
-                Window.Lookup lookup = (Window.Lookup) window;
-
-                com.haulmont.cuba.gui.components.Component lookupComponent = lookup.getLookupComponent();
-                if (lookupComponent != this)
-                    action.actionPerform(WebTree.this);
-                else if (action.getId().equals(Window.Lookup.LOOKUP_ITEM_CLICK_ACTION_ID)) {
-                    action.actionPerform(WebTree.this);
-                }
-            }
+            action.actionPerform(this);
         }
     }
 

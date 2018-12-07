@@ -263,7 +263,7 @@ public interface Window extends Frame, Component.HasCaption, Component.HasIcon {
     /**
      * INTERNAL. Don't call from application code.
      *
-     * todo deprecate and use "Promise close()" method instead.
+     * @deprecated Use {@link #getFrameOwner()} and trigger {@link Screen#close(CloseAction)} instead.
      */
     @Deprecated
     default void closeAndRun(String actionId, Runnable runnable) {

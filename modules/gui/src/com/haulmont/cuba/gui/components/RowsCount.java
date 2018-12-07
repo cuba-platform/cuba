@@ -35,10 +35,14 @@ public interface RowsCount extends Component.BelongToFrame {
 
     String NAME = "rowsCount";
 
-    // todo JavaDoc
+    /**
+     * @deprecated assign {@link RowsCountTarget} instead.
+     */
     @Deprecated
     CollectionDatasource getDatasource();
-    // todo JavaDoc
+    /**
+     * @deprecated assign {@link RowsCountTarget} instead.
+     */
     @Deprecated
     void setDatasource(CollectionDatasource datasource);
 
@@ -47,9 +51,15 @@ public interface RowsCount extends Component.BelongToFrame {
      */
     @Deprecated
     ListComponent getOwner();
+    /**
+     * @deprecated Use {@link #setRowsCountTarget(RowsCountTarget)} instead.
+     */
     @Deprecated
     void setOwner(ListComponent owner);
 
+    /**
+     * @return a component that displays data, usually a {@link Table}. Can be null.
+     */
     RowsCountTarget getRowsCountTarget();
     void setRowsCountTarget(RowsCountTarget target);
 

@@ -57,6 +57,7 @@ import com.haulmont.cuba.gui.presentations.Presentations;
 import com.haulmont.cuba.gui.presentations.PresentationsImpl;
 import com.haulmont.cuba.gui.screen.FrameOwner;
 import com.haulmont.cuba.gui.screen.InstallTargetHandler;
+import com.haulmont.cuba.gui.screen.LookupScreen;
 import com.haulmont.cuba.gui.sys.UiTestIds;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
@@ -652,8 +653,8 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
                                           Collection<MetaPropertyPath> propertyIds) {
         setEditableColumns(Collections.emptyList());
 
-        Window window = ComponentsHelper.getWindowImplementation(this);
-        boolean isLookup = window instanceof Window.Lookup;
+        Window window = ComponentsHelper.getWindowNN(this);
+        boolean isLookup = window.getFrameOwner() instanceof LookupScreen;
 
         // restore generators for some type of attributes
         for (MetaPropertyPath propertyId : propertyIds) {
@@ -1128,7 +1129,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
 
     @Override
     protected void beforeContextMenuButtonHandlerPerformed() {
-        WebAbstractTable.this.component.hideContextMenuPopup();
+        this.component.hideContextMenuPopup();
     }
 
     protected void handleClickAction() {
@@ -1144,7 +1145,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
         }
 
         if (action != null && action.isEnabled()) {
-            action.actionPerform(WebAbstractTable.this);
+            action.actionPerform(this);
         }
     }
 
@@ -1188,8 +1189,8 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
         @SuppressWarnings("unchecked")
         Collection<MetaPropertyPath> properties = (Collection<MetaPropertyPath>) ds.getContainerPropertyIds();
 
-        Window window = ComponentsHelper.getWindowImplementation(this);
-        boolean isLookup = window instanceof Window.Lookup;
+        Window window = ComponentsHelper.getWindowNN(this);
+        boolean isLookup = window.getFrameOwner() instanceof LookupScreen;
 
         for (MetaPropertyPath propertyPath : properties) {
             Table.Column column = columns.get(propertyPath);

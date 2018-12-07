@@ -29,6 +29,7 @@ import com.haulmont.cuba.gui.model.CollectionContainer;
 import com.haulmont.cuba.gui.model.InstanceContainer;
 import com.haulmont.cuba.gui.model.ScreenData;
 import com.haulmont.cuba.gui.screen.FrameOwner;
+import com.haulmont.cuba.gui.screen.LookupScreen;
 import com.haulmont.cuba.gui.screen.UiControllerUtils;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import org.apache.commons.lang3.StringUtils;
@@ -143,13 +144,12 @@ public class TreeLoader extends ActionsHolderLoader<Tree> {
 
     protected void loadButtonsPanel(Tree component) {
         if (buttonsPanelLoader != null) {
-            //noinspection unchecked
             buttonsPanelLoader.loadComponent();
             ButtonsPanel panel = (ButtonsPanel) buttonsPanelLoader.getResultComponent();
 
-            Window window = ComponentsHelper.getWindowImplementation(component);
+            Window window = ComponentsHelper.getWindowNN(component);
             String alwaysVisible = buttonsPanelElement.attributeValue("alwaysVisible");
-            panel.setVisible(!(window instanceof Window.Lookup) || "true".equals(alwaysVisible));
+            panel.setVisible(!(window.getFrameOwner() instanceof LookupScreen) || "true".equals(alwaysVisible));
         }
     }
 

@@ -35,6 +35,7 @@ import com.haulmont.cuba.gui.data.aggregation.AggregationStrategy;
 import com.haulmont.cuba.gui.dynamicattributes.DynamicAttributesGuiTools;
 import com.haulmont.cuba.gui.model.*;
 import com.haulmont.cuba.gui.screen.FrameOwner;
+import com.haulmont.cuba.gui.screen.LookupScreen;
 import com.haulmont.cuba.gui.screen.UiControllerUtils;
 import com.haulmont.cuba.gui.xml.DeclarativeColumnGenerator;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
@@ -294,15 +295,16 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
         Element rowsCountElement = element.element("rowsCount");
         if (rowsCountElement != null) {
             RowsCount rowsCount = factory.create(RowsCount.class);
-            rowsCount.setOwner(table);
+            rowsCount.setRowsCountTarget(table);
             table.setRowsCount(rowsCount);
         }
     }
 
     protected List<Table.Column> loadColumns(Table component, Element columnsElement, MetaClass metaClass) {
-        List<Table.Column> columns = new ArrayList<>();
-        //noinspection unchecked
-        for (Element columnElement : columnsElement.elements("column")) {
+        List<Element> columnElements = columnsElement.elements("column");
+
+        List<Table.Column> columns = new ArrayList<>(columnElements.size());
+        for (Element columnElement : columnElements) {
             String visible = columnElement.attributeValue("visible");
             if (StringUtils.isEmpty(visible) || Boolean.parseBoolean(visible)) {
                 columns.add(loadColumn(columnElement, metaClass));
@@ -353,13 +355,12 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
 
     protected void loadButtonsPanel(T component) {
         if (buttonsPanelLoader != null) {
-            //noinspection unchecked
             buttonsPanelLoader.loadComponent();
             ButtonsPanel panel = (ButtonsPanel) buttonsPanelLoader.getResultComponent();
 
-            Window window = ComponentsHelper.getWindowImplementation(component);
+            Window window = ComponentsHelper.getWindowNN(component);
             String alwaysVisible = panelElement.attributeValue("alwaysVisible");
-            panel.setVisible(!(window instanceof Window.Lookup) || "true".equals(alwaysVisible));
+            panel.setVisible(!(window.getFrameOwner() instanceof LookupScreen) || "true".equals(alwaysVisible));
         }
     }
 
@@ -374,7 +375,6 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
     }
 
     protected void loadValidators(Table component, Table.Column column) {
-        @SuppressWarnings("unchecked")
         List<Element> validatorElements = column.getXmlDescriptor().elements("validator");
 
         if (!validatorElements.isEmpty()) {
@@ -551,7 +551,6 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
     }
 
     protected void loadValidators(Table component, Element element) {
-        @SuppressWarnings("unchecked")
         List<Element> validatorElements = element.elements("validator");
 
         for (Element validatorElement : validatorElements) {

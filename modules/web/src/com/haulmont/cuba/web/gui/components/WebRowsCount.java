@@ -51,8 +51,6 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
 
     protected Messages messages;
 
-    protected ListComponent owner;
-
     protected Adapter adapter;
 
     @Inject
@@ -118,12 +116,17 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
 
     @Override
     public ListComponent getOwner() {
-        return owner;
+        if (target instanceof ListComponent) {
+            return (ListComponent) target;
+        }
+        return null;
     }
 
     @Override
     public void setOwner(ListComponent owner) {
-        this.owner = owner;
+        if (owner instanceof RowsCountTarget) {
+            this.target = (RowsCountTarget) owner;
+        }
     }
 
     @Override
@@ -168,12 +171,19 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
     @Override
     public void setRowsCountTarget(RowsCountTarget target) {
         checkNotNullArgument(target, "target is null");
+
+        if (!(target instanceof ListComponent)) {
+            throw new UnsupportedOperationException("Unsupported RowsCountTarget: " + target);
+        }
+
         this.target = target;
 
-        if (adapter != null) {
-            adapter.unbind();
+        if (((ListComponent) target).getItems() != null) {
+            if (adapter != null) {
+                adapter.unbind();
+            }
+            adapter = createAdapter(target);
         }
-        adapter = createAdapter(target);
 
         initButtonListeners();
     }
@@ -193,8 +203,8 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
         int newStart = adapter.getFirstResult() - adapter.getMaxResults();
         adapter.setFirstResult(newStart < 0 ? 0 : newStart);
         if (refreshData()) {
-            if (owner instanceof WebAbstractTable) {
-                resetCurrentDataPage((Table) owner);
+            if (target instanceof WebAbstractTable) {
+                resetCurrentDataPage((Table) target);
             }
         } else {
             adapter.setFirstResult(firstResult);
@@ -212,8 +222,8 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
                 refreshData();
                 adapter.setMaxResults(maxResults);
             }
-            if (owner instanceof WebAbstractTable) {
-                resetCurrentDataPage((Table) owner);
+            if (target instanceof WebAbstractTable) {
+                resetCurrentDataPage((Table) target);
             }
         } else {
             adapter.setFirstResult(firstResult);
@@ -224,8 +234,8 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
         int firstResult = adapter.getFirstResult();
         adapter.setFirstResult(0);
         if (refreshData()) {
-            if (owner instanceof WebAbstractTable) {
-                resetCurrentDataPage((Table) owner);
+            if (target instanceof WebAbstractTable) {
+                resetCurrentDataPage((Table) target);
             }
         } else {
             adapter.setFirstResult(firstResult);
@@ -240,8 +250,8 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
         int firstResult = adapter.getFirstResult();
         adapter.setFirstResult(count - itemsToDisplay);
         if (refreshData()) {
-            if (owner instanceof WebAbstractTable) {
-                resetCurrentDataPage((Table) owner);
+            if (target instanceof WebAbstractTable) {
+                resetCurrentDataPage((Table) target);
             }
         } else {
             adapter.setFirstResult(firstResult);

@@ -18,6 +18,7 @@ package com.haulmont.cuba.gui.commonlookup;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.gui.UiComponents;
 import com.haulmont.cuba.gui.WindowParam;
 import com.haulmont.cuba.gui.WindowParams;
 import com.haulmont.cuba.gui.components.*;
@@ -25,7 +26,6 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.DsBuilder;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
-import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 
 import javax.inject.Inject;
 import java.util.Map;
@@ -35,7 +35,7 @@ public class CommonLookupController extends AbstractLookup {
     @Inject
     protected MessageTools messageTools;
     @Inject
-    protected ComponentsFactory componentsFactory;
+    protected UiComponents uiComponents;
     @Inject
     protected ViewRepository viewRepository;
     @Inject
@@ -90,7 +90,7 @@ public class CommonLookupController extends AbstractLookup {
     }
 
     protected void initFilter() {
-        filter = componentsFactory.createComponent(Filter.class);
+        filter = uiComponents.create(Filter.class);
         filter.setFrame(frame);
         filter.setId("filter");
         filter.setApplyTo(entitiesTable);
@@ -105,7 +105,7 @@ public class CommonLookupController extends AbstractLookup {
     }
 
     protected void initTable() {
-        entitiesTable = componentsFactory.createComponent(Table.class);
+        entitiesTable = uiComponents.create(Table.class);
         entitiesTable.setId("table");
         entitiesTable.setDatasource(entitiesDs);
         entitiesTable.setSizeFull();
@@ -113,15 +113,13 @@ public class CommonLookupController extends AbstractLookup {
         Boolean multiSelect = WindowParams.MULTI_SELECT.get(getContext());
         entitiesTable.setMultiSelect(multiSelect != null ? multiSelect : true);
 
-        RowsCount rowsCount = componentsFactory.createComponent(RowsCount.class);
-        rowsCount.setDatasource(entitiesDs);
-        rowsCount.setOwner(entitiesTable);
+        RowsCount rowsCount = uiComponents.create(RowsCount.class);
+        rowsCount.setRowsCountTarget(entitiesTable);
         entitiesTable.setRowsCount(rowsCount);
 
         entitiesTable.focus();
     }
 
-    @SuppressWarnings("unchecked")
     protected void initView() {
         View localView = viewRepository.getView(metaClass, View.LOCAL);
         View minimalView = viewRepository.getView(metaClass, View.MINIMAL);
