@@ -114,6 +114,7 @@
                 <entry key="cuba_ConstraintLocalizationService" value="com.haulmont.cuba.core.app.ConstraintLocalizationService"/>
                 <entry key="cuba_AttributeAccessService" value="com.haulmont.cuba.core.app.AttributeAccessService"/>
                 <entry key="cuba_ExceptionReportService" value="com.haulmont.cuba.core.app.ExceptionReportService"/>
+                <entry key="cuba_BulkEditorDataService" value="com.haulmont.cuba.core.app.BulkEditorDataService"/>
             </map>
         </property>
     </bean>

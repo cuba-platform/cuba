@@ -20,6 +20,8 @@ package com.haulmont.cuba.gui.app.core.bulk;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.cuba.core.app.BulkEditorDataService;
+import com.haulmont.cuba.core.app.BulkEditorDataService.LoadDescriptor;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributes;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
@@ -50,7 +52,6 @@ import org.slf4j.LoggerFactory;
 import javax.inject.Inject;
 import java.util.*;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
@@ -75,6 +76,9 @@ public class BulkEditorWindow extends AbstractWindow {
 
     @Inject
     protected Security security;
+
+    @Inject
+    protected BulkEditorDataService bulkEditorDataService;
 
     @Inject
     protected DynamicAttributes dynamicAttributes;
@@ -132,15 +136,15 @@ public class BulkEditorWindow extends AbstractWindow {
     public void init(Map<String, Object> params) {
         super.init(params);
 
+        checkNotNullArgument(metaClass);
+        checkNotNullArgument(selected);
+
         String width = themeConstants.get("cuba.gui.BulkEditorWindow.width");
         String height = themeConstants.get("cuba.gui.BulkEditorWindow.height");
 
         getDialogOptions()
                 .setWidth(width)
                 .setHeight(height);
-
-        checkNotNullArgument(metaClass);
-        checkNotNullArgument(selected);
 
         if (StringUtils.isNotBlank(exclude)) {
             excludeRegex = Pattern.compile(exclude);
@@ -643,21 +647,8 @@ public class BulkEditorWindow extends AbstractWindow {
     }
 
     protected List<Entity> loadItems(View view) {
-        LoadContext.Query query = new LoadContext.Query(String.format("select e from %s e where e.%s in :ids", metaClass,
-                metadataTools.getPrimaryKeyName(metaClass)));
-
-        List<Object> ids = selected.stream()
-                .map(Entity::getId)
-                .collect(Collectors.toList());
-        query.setParameter("ids", ids);
-
-        LoadContext<Entity> lc = new LoadContext<>(metaClass);
-        lc.setSoftDeletion(false);
-        lc.setQuery(query);
-        lc.setView(view);
-        lc.setLoadDynamicAttributes(loadDynamicAttributes);
-
-        return dataSupplier.loadList(lc);
+        LoadDescriptor ld = new LoadDescriptor(selected, metaClass, view, loadDynamicAttributes);
+        return bulkEditorDataService.reload(ld);
     }
 
     protected void commitBulkChanges() {
