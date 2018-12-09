@@ -2,6 +2,7 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.gui.components.CheckBoxGroup;
+import com.haulmont.cuba.gui.components.data.ConversionException;
 import com.haulmont.cuba.gui.components.data.Options;
 import com.haulmont.cuba.gui.components.data.meta.EntityValueSource;
 import com.haulmont.cuba.gui.components.data.meta.OptionsBinding;
@@ -9,13 +10,12 @@ import com.haulmont.cuba.gui.components.data.options.OptionsBinder;
 import com.haulmont.cuba.web.gui.icons.IconResolver;
 import com.haulmont.cuba.web.widgets.CubaCheckBoxGroup;
 import com.vaadin.server.Resource;
+import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 
 import javax.inject.Inject;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -23,7 +23,7 @@ import java.util.stream.Stream;
 
 import static com.haulmont.cuba.web.gui.components.WebLookupField.NULL_ITEM_ICON_GENERATOR;
 
-public class WebCheckBoxGroup<V> extends WebV8AbstractField<CubaCheckBoxGroup<V>, Set<V>, Set<V>>
+public class WebCheckBoxGroup<V> extends WebV8AbstractField<CubaCheckBoxGroup<V>, Set<V>, Collection<V>>
         implements CheckBoxGroup<V>, InitializingBean {
 
     /* Beans */
@@ -117,10 +117,38 @@ public class WebCheckBoxGroup<V> extends WebV8AbstractField<CubaCheckBoxGroup<V>
     }
 
     @Override
+    protected Set<V> convertToPresentation(Collection<V> modelValue) throws ConversionException {
+        return new LinkedHashSet<>(CollectionUtils.isNotEmpty(modelValue)
+                ? modelValue
+                : Collections.emptySet());
+    }
+
+    @Override
+    protected Collection<V> convertToModel(Set<V> componentRawValue) throws ConversionException {
+        if (valueBinding != null) {
+            Class<?> targetType = valueBinding.getSource().getType();
+
+            if (List.class.isAssignableFrom(targetType)) {
+                return new ArrayList<>(componentRawValue != null
+                        ? componentRawValue
+                        : Collections.emptyList());
+            } else if (Set.class.isAssignableFrom(targetType)) {
+                return new LinkedHashSet<>(componentRawValue != null
+                        ? componentRawValue
+                        : Collections.emptySet());
+            }
+        }
+
+        return new LinkedHashSet<>(componentRawValue != null
+                ? componentRawValue
+                : Collections.emptySet());
+    }
+
+    @Override
     public Collection getLookupSelectedItems() {
-        Set<V> value = getValue();
+        Collection<V> value = getValue();
         return value != null
-                ? Collections.unmodifiableSet(value)
+                ? Collections.unmodifiableSet(new LinkedHashSet<>(value))
                 : Collections.emptySet();
     }
 
@@ -144,7 +172,16 @@ public class WebCheckBoxGroup<V> extends WebV8AbstractField<CubaCheckBoxGroup<V>
     }
 
     protected void setItemsToPresentation(Stream<V> options) {
-        component.setItems(options.collect(Collectors.toList()));
+        Set<V> oldValue = component.getValue();
+
+        List<V> newOptions = options.collect(Collectors.toList());
+        component.setItems(newOptions);
+
+        Set<V> newValue = newOptions.stream()
+                .filter(oldValue::contains)
+                .collect(Collectors.toCollection(LinkedHashSet::new));
+
+        component.setValue(newValue);
     }
 
     @Override

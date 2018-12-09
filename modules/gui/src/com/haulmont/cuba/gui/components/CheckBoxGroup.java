@@ -18,7 +18,7 @@ package com.haulmont.cuba.gui.components;
 
 import com.haulmont.cuba.gui.components.data.Options;
 
-import java.util.Set;
+import java.util.Collection;
 import java.util.function.Function;
 
 /**
@@ -26,7 +26,7 @@ import java.util.function.Function;
  *
  * @param <I> item type
  */
-public interface CheckBoxGroup<I> extends OptionsField<Set<I>, I>, LookupComponent, Component.Focusable, HasOrientation {
+public interface CheckBoxGroup<I> extends OptionsField<Collection<I>, I>, LookupComponent, Component.Focusable, HasOrientation {
 
     String NAME = "checkBoxGroup";
 
