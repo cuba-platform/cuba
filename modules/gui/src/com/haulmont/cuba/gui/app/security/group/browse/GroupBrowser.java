@@ -369,11 +369,6 @@ public class GroupBrowser extends AbstractWindow {
         return new EntityImportView(Group.class)
                 .addLocalProperties()
                 .addManyToOneProperty("parent", ReferenceImportBehaviour.ERROR_ON_MISSING)
-                .addOneToManyProperty("hierarchyList",
-                        new EntityImportView(GroupHierarchy.class)
-                                .addLocalProperties()
-                                .addManyToOneProperty("parent", ReferenceImportBehaviour.ERROR_ON_MISSING),
-                        CollectionImportPolicy.REMOVE_ABSENT_ITEMS)
                 .addOneToManyProperty("sessionAttributes",
                         new EntityImportView(SessionAttribute.class).addLocalProperties(),
                         CollectionImportPolicy.REMOVE_ABSENT_ITEMS)
