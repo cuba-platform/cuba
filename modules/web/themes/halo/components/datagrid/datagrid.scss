@@ -62,6 +62,10 @@ $cuba-datagrid-highlight-hover-row: false !default;
     & > * {
       font-size: $v-font-size;
     }
+
+    &:focus {
+      outline: none;
+    }
   }
 
   .c-data-grid-composition.has-top-panel {

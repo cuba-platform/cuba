@@ -30,6 +30,10 @@
     & > * {
       font-size: $v-font-size;
     }
+
+    &:focus {
+      outline: none;
+    }
   }
 
   .c-tree-composition.has-top-panel {
