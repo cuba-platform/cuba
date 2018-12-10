@@ -768,6 +768,8 @@ public class WebTokenList<V extends Entity> extends WebV8AbstractField<WebTokenL
 
             composition = new VerticalLayout();
             composition.setWidthUndefined();
+            composition.setSpacing(false);
+            composition.setMargin(false);
 
             tokenContainer = new CubaScrollBoxLayout();
             tokenContainer.setStyleName(TOKENLIST_SCROLLBOX_STYLENAME);
