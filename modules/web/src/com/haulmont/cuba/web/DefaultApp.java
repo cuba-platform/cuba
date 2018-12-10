@@ -70,7 +70,7 @@ public class DefaultApp extends App {
                 connection.isConnected(), connection.isAuthenticated());
 
         cleanupBackgroundTasks();
-        closeAllWindows();
+        removeAllWindows();
         clearSettingsCache();
 
         if (connection.isConnected()) {
@@ -118,7 +118,7 @@ public class DefaultApp extends App {
     protected void userSubstituted(UserSubstitutedEvent event) {
         cleanupBackgroundTasks();
         clearSettingsCache();
-        closeAllWindows();
+        removeAllWindows();
 
         initializeUi();
     }
@@ -245,7 +245,7 @@ public class DefaultApp extends App {
     public void navigateTo(String topLevelWindowId) {
         cleanupBackgroundTasks();
         clearSettingsCache();
-        closeAllWindows();
+        removeAllWindows();
 
         super.navigateTo(topLevelWindowId);
     }

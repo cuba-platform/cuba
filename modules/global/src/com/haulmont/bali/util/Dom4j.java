@@ -17,7 +17,7 @@
 package com.haulmont.bali.util;
 
 import org.apache.commons.compress.utils.IOUtils;
-import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.dom4j.Attribute;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
@@ -33,6 +33,8 @@ import javax.xml.parsers.SAXParserFactory;
 import java.io.*;
 import java.util.List;
 import java.util.Map;
+
+import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
 /**
  * Helper class for XML parsing.
@@ -148,7 +150,6 @@ public final class Dom4j {
      * @deprecated Use Dom4j API.
      */
     @Deprecated
-    @SuppressWarnings("unchecked")
     public static List<Element> elements(Element element) {
         return element.elements();
     }
@@ -157,7 +158,6 @@ public final class Dom4j {
      * @deprecated Use Dom4j API.
      */
     @Deprecated
-    @SuppressWarnings("unchecked")
     public static List<Element> elements(Element element, String name) {
         return element.elements(name);
     }
@@ -166,7 +166,6 @@ public final class Dom4j {
      * @deprecated Use Dom4j API.
      */
     @Deprecated
-    @SuppressWarnings("unchecked")
     public static List<Attribute> attributes(Element element) {
         return element.attributes();
     }
@@ -182,16 +181,16 @@ public final class Dom4j {
             entryElem.addAttribute("key", entry.getKey());
             Element valueElem = entryElem.addElement("value");
             if (entry.getValue() != null) {
-                String value = StringEscapeUtils.escapeXml(entry.getValue());
+                String value = StringEscapeUtils.escapeXml11(entry.getValue());
                 valueElem.setText(value);
             }
         }
     }
 
     public static void loadMap(Element mapElement, Map<String, String> map) {
-        Preconditions.checkNotNullArgument(map, "map is null");
+        checkNotNullArgument(map, "map is null");
 
-        for (Element entryElem : elements(mapElement, "entry")) {
+        for (Element entryElem : mapElement.elements("entry")) {
             String key = entryElem.attributeValue("key");
             if (key == null) {
                 throw new IllegalStateException("No 'key' attribute");
@@ -210,13 +209,13 @@ public final class Dom4j {
     public static void walkAttributesRecursive(Element element, ElementAttributeVisitor visitor) {
         walkAttributes(element, visitor);
 
-        for (Element childElement : elements(element)) {
+        for (Element childElement : element.elements()) {
             walkAttributesRecursive(childElement, visitor);
         }
     }
 
     public static void walkAttributes(Element element, ElementAttributeVisitor visitor) {
-        for (Attribute attribute : attributes(element)) {
+        for (Attribute attribute : element.attributes()) {
             visitor.onVisit(element, attribute);
         }
     }

@@ -27,7 +27,6 @@ import java.util.*;
 
 /**
  * Utility class to simplify work with Java reflection.
- *
  */
 public final class ReflectionHelper {
 
@@ -82,17 +81,17 @@ public final class ReflectionHelper {
      * @return          created object instance
      * @throws NoSuchMethodException    if the class has no constructor matching the given arguments
      */
-    @SuppressWarnings("unchecked")
     public static <T> T newInstance(Class<T> cls, Object... params) throws NoSuchMethodException {
         Class[] paramTypes = getParamTypes(params);
 
         Constructor<T> constructor = ConstructorUtils.getMatchingAccessibleConstructor(cls, paramTypes);
         if (constructor == null)
-            throw new NoSuchMethodException("Cannot find a matching constructor for " + cls.getName() + " and given parameters");
+            throw new NoSuchMethodException(
+                    String.format("Cannot find a matching constructor for %s and given parameters", cls.getName()));
         try {
             return constructor.newInstance(params);
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Cannot create instance of " + cls, e);
         }
     }
 
@@ -150,7 +149,7 @@ public final class ReflectionHelper {
             //noinspection unchecked
             return (T) method.invoke(obj, params);
         } catch (IllegalAccessException | InvocationTargetException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Unable to invoke method " + name, e);
         }
     }
 
@@ -178,6 +177,6 @@ public final class ReflectionHelper {
                 paramClasses.add(aClass);
             }
         }
-        return paramClasses.toArray(new Class<?>[paramClasses.size()]);
+        return paramClasses.toArray(new Class<?>[0]);
     }
 }

@@ -69,12 +69,12 @@ public class WebUserIndicator extends WebAbstractComponent<com.vaadin.ui.CssLayo
         UserSessionSource uss = beanLocator.get(UserSessionSource.NAME);
         List<UserSubstitution> substitutions = getUserSubstitutions();
 
-        User user = uss.getUserSession().getUser();
+        User user = uss.getUserSession().getCurrentOrSubstitutedUser();
         AppUI ui = AppUI.getCurrent();
 
-        String substitutedUserCaption = getSubstitutedUserCaption(user);
-
         if (substitutions.isEmpty()) {
+            String substitutedUserCaption = getSubstitutedUserCaption(user);
+
             userComboBox = null;
 
             userNameLabel = new Label(substitutedUserCaption);
@@ -113,8 +113,7 @@ public class WebUserIndicator extends WebAbstractComponent<com.vaadin.ui.CssLayo
 
             userComboBox.setItems(options);
 
-            UserSession session = uss.getUserSession();
-            userComboBox.setValue(session.getSubstitutedUser() == null ? session.getUser() : session.getSubstitutedUser());
+            userComboBox.setValue(user);
             userComboBox.addValueChangeListener(this::substitutedUserChanged);
 
             component.addComponent(userComboBox);

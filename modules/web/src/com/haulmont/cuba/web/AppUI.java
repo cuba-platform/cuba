@@ -24,6 +24,7 @@ import com.haulmont.cuba.gui.components.RootWindow;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.events.sys.UiEventsMulticaster;
 import com.haulmont.cuba.gui.exception.UiExceptionHandler;
+import com.haulmont.cuba.gui.screen.Screen;
 import com.haulmont.cuba.gui.sys.TestIdManager;
 import com.haulmont.cuba.gui.theme.ThemeConstantsRepository;
 import com.haulmont.cuba.security.app.UserSessionService;
@@ -47,7 +48,10 @@ import com.haulmont.cuba.web.sys.navigation.WebHistory;
 import com.haulmont.cuba.web.widgets.*;
 import com.vaadin.annotations.PreserveOnRefresh;
 import com.vaadin.annotations.Push;
-import com.vaadin.server.*;
+import com.vaadin.server.ErrorHandler;
+import com.vaadin.server.Resource;
+import com.vaadin.server.VaadinRequest;
+import com.vaadin.server.WrappedSession;
 import com.vaadin.shared.ui.ui.Transport;
 import com.vaadin.ui.*;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -60,9 +64,14 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Scope;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.*;
+import java.util.stream.Collectors;
+
+import static com.haulmont.cuba.gui.screen.UiControllerUtils.getScreenContext;
+import static com.haulmont.cuba.gui.screen.UiControllerUtils.saveSettings;
 
 /**
  * Single window / page of web application. Root component of Vaadin layout.
@@ -71,8 +80,7 @@ import java.util.*;
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
 @Push(transport = Transport.WEBSOCKET_XHR)
 @PreserveOnRefresh
-public class AppUI extends CubaUI
-        implements ErrorHandler, EnhancedUI, CubaHistoryControl.HistoryBackHandler, UiExceptionHandler.UiContext {
+public class AppUI extends CubaUI implements ErrorHandler, EnhancedUI, UiExceptionHandler.UiContext {
 
     public static final String NAME = "cuba_AppUI";
 
@@ -119,11 +127,7 @@ public class AppUI extends CubaUI
     protected boolean testMode = false;
     protected boolean performanceTestMode = false;
 
-    protected CubaClientManager clientManager;
-
     protected CubaFileDownloader fileDownloader;
-
-    protected CubaHistoryControl historyControl;
 
     protected RootWindow topLevelWindow;
 
@@ -132,6 +136,7 @@ public class AppUI extends CubaUI
     protected Dialogs dialogs;
     protected Notifications notifications;
     protected WebBrowserTools webBrowserTools;
+
     protected UrlChangeHandler urlChangeHandler;
     protected UrlRouting urlRouting;
     protected History history;
@@ -173,15 +178,12 @@ public class AppUI extends CubaUI
     }
 
     protected void initInternalComponents() {
-        clientManager = new CubaClientManager();
-        clientManager.extend(this);
-
         fileDownloader = new CubaFileDownloader();
         fileDownloader.extend(this);
 
         if (UrlHandlingMode.BACK_ONLY == webConfig.getUrlHandlingMode()) {
-            historyControl = new CubaHistoryControl();
-            historyControl.extend(this, this);
+            CubaHistoryControl historyControl = new CubaHistoryControl();
+            historyControl.extend(this, this::onHistoryBackPerformed);
         }
     }
 
@@ -510,6 +512,15 @@ public class AppUI extends CubaUI
         return topLevelWindow;
     }
 
+    @Nonnull
+    public RootWindow getTopLevelWindowNN() {
+        if (topLevelWindow == null) {
+            throw new IllegalStateException("UI yopLevelWindow is null");
+        }
+
+        return topLevelWindow;
+    }
+
     /**
      * INTERNAL.
      * Set currently displayed top-level window.
@@ -547,14 +558,13 @@ public class AppUI extends CubaUI
             app.getExceptionHandlers().handle(event);
             app.getAppLog().log(event);
         } catch (Throwable e) {
-            //noinspection ThrowableResultOfMethodCallIgnored
             log.error("Error handling exception\nOriginal exception:\n{}\nException in handlers:\n{}",
                     ExceptionUtils.getStackTrace(event.getThrowable()),
                     ExceptionUtils.getStackTrace(e));
         }
     }
 
-    public void processExternalLink(VaadinRequest request, NavigationState requestedState) {
+    protected void processExternalLink(VaadinRequest request, NavigationState requestedState) {
         if (isLinkHandlerRequest(request)) {
             processLinkHandlerRequest(request);
         } else {
@@ -614,7 +624,7 @@ public class AppUI extends CubaUI
     }
 
     protected void updateClientSystemMessages(Locale locale) {
-        CubaClientManager.SystemMessages msgs = new CubaClientManager.SystemMessages();
+        SystemMessages msgs = new SystemMessages();
 
         msgs.communicationErrorCaption = messages.getMainMessage("communicationErrorCaption", locale);
         msgs.communicationErrorMessage = messages.getMainMessage("communicationErrorMessage", locale);
@@ -625,7 +635,7 @@ public class AppUI extends CubaUI
         msgs.authorizationErrorCaption = messages.getMainMessage("authorizationErrorCaption", locale);
         msgs.authorizationErrorMessage = messages.getMainMessage("authorizationErrorMessage", locale);
 
-        clientManager.updateSystemMessagesLocale(msgs);
+        updateSystemMessagesLocale(msgs);
 
         ReconnectDialogConfiguration reconnectDialogConfiguration = getReconnectDialogConfiguration();
 
@@ -633,8 +643,7 @@ public class AppUI extends CubaUI
         reconnectDialogConfiguration.setDialogTextGaveUp(messages.getMainMessage("reconnectDialogTextGaveUp", locale));
     }
 
-    @Override
-    public void onHistoryBackPerformed() {
+    protected void onHistoryBackPerformed() {
         Window topLevelWindow = getTopLevelWindow();
         if (topLevelWindow instanceof CubaHistoryControl.HistoryBackHandler) {
             ((CubaHistoryControl.HistoryBackHandler) topLevelWindow).onHistoryBackPerformed();
@@ -652,13 +661,10 @@ public class AppUI extends CubaUI
     public List<CubaTimer> getTimers() {
         AbstractComponent timersHolder = getTopLevelWindowComposition();
 
-        List<CubaTimer> timers = new ArrayList<>();
-        for (Extension extension : timersHolder.getExtensions()) {
-            if (extension instanceof CubaTimer) {
-                timers.add((CubaTimer) extension);
-            }
-        }
-        return timers;
+        return timersHolder.getExtensions().stream()
+                .filter(extension -> extension instanceof CubaTimer)
+                .map(extension -> (CubaTimer) extension)
+                .collect(Collectors.toList());
     }
 
     public void addTimer(CubaTimer timer) {

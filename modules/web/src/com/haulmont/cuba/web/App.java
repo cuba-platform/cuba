@@ -47,11 +47,7 @@ import com.haulmont.cuba.web.exception.ExceptionHandlers;
 import com.haulmont.cuba.web.log.AppLog;
 import com.haulmont.cuba.web.security.events.SessionHeartbeatEvent;
 import com.haulmont.cuba.web.settings.WebSettingsClient;
-import com.haulmont.cuba.web.sys.AppCookies;
-import com.haulmont.cuba.web.sys.BackgroundTaskManager;
-import com.haulmont.cuba.web.sys.LinkHandler;
-import com.haulmont.cuba.web.sys.RedirectHandler;
-import com.haulmont.cuba.web.sys.WebScreens;
+import com.haulmont.cuba.web.sys.*;
 import com.vaadin.server.AbstractClientConnector;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.UI;
@@ -488,7 +484,7 @@ public abstract class App {
     /**
      * Removes all windows from all UIs.
      */
-    public void closeAllWindows() {
+    public void removeAllWindows() {
         log.debug("Closing all windows in all UIs");
         try {
             for (AppUI ui : getAppUIs()) {
@@ -540,18 +536,15 @@ public abstract class App {
      * @return operation result object
      */
     public OperationResult logout() {
-        AppUI ui = getAppUI();
+        AppUI ui = AppUI.getCurrent();
 
         try {
             RootWindow topLevelWindow = ui != null ? ui.getTopLevelWindow() : null;
             if (topLevelWindow != null) {
-                // todo save settings for all active/opened screens ?
-                topLevelWindow.saveSettings();
-
                 Screens screens = ui.getScreens();
 
                 if (!screens.hasUnsavedChanges()) {
-                    forceLogout();
+                    performStandardLogout(ui);
 
                     return OperationResult.success();
                 }
@@ -571,7 +564,7 @@ public abstract class App {
                                         .withCaption(messages.getMainMessage("closeApplication"))
                                         .withIcon(icons.get(CubaIcon.DIALOG_OK))
                                         .withHandler(event -> {
-                                            forceLogout();
+                                            performStandardLogout(ui);
 
                                             result.success();
                                         }),
@@ -600,8 +593,16 @@ public abstract class App {
         }
     }
 
+    protected void performStandardLogout(AppUI ui) {
+        ((WebScreens) ui.getScreens()).saveScreenHistory();
+
+        ((WebScreens) ui.getScreens()).saveScreenSettings();
+
+        forceLogout();
+    }
+
     protected void forceLogout() {
-        closeAllWindows();
+        removeAllWindows();
 
         Connection connection = getConnection();
         connection.logout();

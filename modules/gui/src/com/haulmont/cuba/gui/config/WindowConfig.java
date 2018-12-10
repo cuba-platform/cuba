@@ -192,7 +192,6 @@ public class WindowConfig {
         throw new IllegalStateException("Neither screen class nor descriptor is set for WindowInfo");
     }
 
-    @SuppressWarnings("unchecked")
     @Nullable
     protected String extractWindowTemplate(WindowInfo windowInfo) {
         if (windowInfo.getDescriptor() != null) {
@@ -286,7 +285,6 @@ public class WindowConfig {
         }
     }
 
-    @SuppressWarnings("unchecked")
     protected void loadConfig(Element rootElem) {
         for (Element element : rootElem.elements("include")) {
             String fileName = element.attributeValue("file");

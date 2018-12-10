@@ -20,46 +20,58 @@ package com.haulmont.cuba.gui.sys;
 import com.haulmont.bali.util.URLEncodeUtils;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.client.ClientConfig;
-import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.annotation.TrackEditScreenHistory;
 import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.gui.components.Frame;
+import com.haulmont.cuba.core.sys.events.AppContextInitializedEvent;
+import com.haulmont.cuba.gui.WindowContext;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.config.WindowConfig;
+import com.haulmont.cuba.gui.screen.EditorScreen;
 import com.haulmont.cuba.gui.screen.OpenMode;
+import com.haulmont.cuba.gui.screen.Screen;
 import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.entity.ScreenHistoryEntity;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.context.event.EventListener;
+import org.springframework.core.annotation.Order;
+import org.springframework.stereotype.Component;
 
+import javax.inject.Inject;
 import java.util.*;
 
 /**
- * Class that encapsulates screen opening history functionality. It is used by WindowManagerImpl and should not be invoked
- * from application code.
- *
- * todo convert to bean
- * todo implement new screen history for web
+ * Encapsulates screen opening history functionality. Should not be invoked from application code.
  */
+@Component(ScreenHistorySupport.NAME)
 public class ScreenHistorySupport {
 
-    protected Set<String> screenIds = new HashSet<>();
+    public static final String NAME = "cuba_ScreenHistorySupport";
 
+    protected final Set<String> screenIds = new HashSet<>();
+
+    @Inject
     protected Metadata metadata;
+    @Inject
     protected Messages messages;
+    @Inject
     protected Configuration configuration;
+    @Inject
+    protected Security security;
+    @Inject
+    protected DataManager dataManager;
+    @Inject
+    protected WindowConfig windowConfig;
 
-    public ScreenHistorySupport() {
-        metadata = AppBeans.get(Metadata.NAME);
-        messages = AppBeans.get(Messages.NAME);
-        configuration = AppBeans.get(Configuration.NAME);
-
-        String property = configuration.getConfig(ClientConfig.class).getScreenIdsToSaveHistory();
+    @EventListener(AppContextInitializedEvent.class)
+    @Order(Events.HIGHEST_PLATFORM_PRECEDENCE + 300)
+    protected void init() {
+        ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
+        String property = clientConfig.getScreenIdsToSaveHistory();
         if (StringUtils.isNotBlank(property)) {
             screenIds.addAll(Arrays.asList(StringUtils.split(property, ',')));
         }
 
-        WindowConfig windowConfig = AppBeans.get(WindowConfig.NAME);
         for (MetaClass metaClass : metadata.getTools().getAllPersistentMetaClasses()) {
             Map<String, Object> attributes = metadata.getTools().getMetaAnnotationAttributes(metaClass.getAnnotations(),
                     TrackEditScreenHistory.class);
@@ -69,39 +81,38 @@ public class ScreenHistorySupport {
         }
     }
 
-    public void saveScreenHistory(Window window, OpenMode openMode) {
-        Security security = AppBeans.get(Security.NAME);
+    public void saveScreenHistory(Screen frameOwner) {
+        WindowContext windowContext = frameOwner.getWindow().getContext();
+
         if (security.isEntityOpPermitted(ScreenHistoryEntity.class, EntityOp.CREATE)
-                && window.getFrame() != null // todo rewrite with Screen instead
-                && (window.getFrame() instanceof Window.Editor)
-                && openMode != OpenMode.DIALOG
-                && (screenIds == null || screenIds.contains(window.getId())))
+                && (frameOwner instanceof EditorScreen)
+                && windowContext.getLaunchMode() != OpenMode.DIALOG
+                && (screenIds.contains(frameOwner.getId())))
         {
-            String caption = window.getCaption();
+            String caption = frameOwner.getWindow().getCaption();
             UUID entityId = null;
-            Frame frame = window.getFrame();
-            Entity entity = null;
-            if (frame instanceof Window.Editor) {
-                entity = ((Window.Editor) frame).getItem();
-                if (entity != null) {
-                    if (PersistenceHelper.isNew(entity)) {
-                        return;
-                    }
-                    if (StringUtils.isBlank(caption))
-                        caption = messages.getTools().getEntityCaption(entity.getMetaClass()) + " " +
-                                metadata.getTools().getInstanceName(entity);
-                    entityId = (UUID) entity.getId();
+
+            Entity entity = ((EditorScreen) frameOwner).getEditedEntity();
+            if (entity != null) {
+                if (PersistenceHelper.isNew(entity)) {
+                    return;
                 }
+
+                if (StringUtils.isBlank(caption)) {
+                    caption = messages.getTools().getEntityCaption(entity.getMetaClass()) + " " +
+                            metadata.getTools().getInstanceName(entity);
+                }
+                entityId = (UUID) entity.getId();
             }
+
             ScreenHistoryEntity screenHistoryEntity = metadata.create(ScreenHistoryEntity.class);
             screenHistoryEntity.setCaption(StringUtils.abbreviate(caption, 255));
-            screenHistoryEntity.setUrl(makeLink(window));
+            screenHistoryEntity.setUrl(makeLink(frameOwner));
             screenHistoryEntity.setEntityId(entityId);
             addAdditionalFields(screenHistoryEntity, entity);
 
             CommitContext cc = new CommitContext(Collections.singleton(screenHistoryEntity));
-            DataService dataService = AppBeans.get(DataService.NAME);
-            dataService.commit(cc);
+            dataManager.commit(cc);
         }
     }
 
@@ -109,15 +120,21 @@ public class ScreenHistorySupport {
 
     }
 
-    protected String makeLink(Window window) {
+    protected String makeLink(Screen frameOwner) {
+        Window window = frameOwner.getWindow();
+
         Entity entity = null;
-        if (window.getFrame() instanceof Window.Editor)
-            entity = ((Window.Editor) window.getFrame()).getItem();
-        String url = configuration.getConfig(GlobalConfig.class).getWebAppUrl() + "/open?" +
-                "screen=" + window.getFrame().getId();
+        if (window.getFrameOwner() instanceof EditorScreen) {
+            entity = ((EditorScreen) frameOwner).getEditedEntity();
+        }
+
+        GlobalConfig globalConfig = configuration.getConfig(GlobalConfig.class);
+        String url = String.format("%s/open?screen=%s", globalConfig.getWebAppUrl(), frameOwner.getId());
+
         if (entity != null) {
-            String item = metadata.getSession().getClassNN(entity.getClass()).getName() + "-" + entity.getId();
-            url += "&" + "item=" + item + "&" + "params=item:" + item;
+            String item = metadata.getClassNN(entity.getClass()).getName() + "-" + entity.getId();
+
+            url += String.format("&item=%s&params=item:%s", item, item);
         }
         Map<String, Object> params = getWindowParams(window);
         StringBuilder sb = new StringBuilder();

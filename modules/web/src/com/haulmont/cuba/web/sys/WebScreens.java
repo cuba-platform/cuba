@@ -28,6 +28,7 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Component.Disposable;
 import com.haulmont.cuba.gui.components.DialogWindow.WindowMode;
 import com.haulmont.cuba.gui.components.Window.HasWorkArea;
+import com.haulmont.cuba.gui.components.actions.BaseAction;
 import com.haulmont.cuba.gui.components.compatibility.SelectHandlerAdapter;
 import com.haulmont.cuba.gui.components.mainwindow.AppWorkArea;
 import com.haulmont.cuba.gui.components.mainwindow.AppWorkArea.Mode;
@@ -42,6 +43,8 @@ import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import com.haulmont.cuba.gui.data.impl.DsContextImplementation;
 import com.haulmont.cuba.gui.data.impl.GenericDataSupplier;
+import com.haulmont.cuba.gui.icons.CubaIcon;
+import com.haulmont.cuba.gui.icons.Icons;
 import com.haulmont.cuba.gui.logging.UIPerformanceLogger.LifeCycle;
 import com.haulmont.cuba.gui.model.impl.ScreenDataImpl;
 import com.haulmont.cuba.gui.screen.*;
@@ -52,6 +55,7 @@ import com.haulmont.cuba.gui.settings.SettingsImpl;
 import com.haulmont.cuba.gui.sys.*;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.util.OperationResult;
+import com.haulmont.cuba.gui.util.UnknownOperationResult;
 import com.haulmont.cuba.gui.xml.data.DsContextLoader;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoader;
@@ -113,9 +117,13 @@ public class WebScreens implements Screens, WindowManager {
     @Inject
     protected Messages messages;
     @Inject
+    protected Icons icons;
+    @Inject
     protected WindowCreationHelper windowCreationHelper;
     @Inject
     protected AttributeAccessSupport attributeAccessSupport;
+    @Inject
+    protected ScreenHistorySupport screenHistorySupport;
 
     @Inject
     protected ScreenViewsLoader screenViewsLoader;
@@ -1325,14 +1333,67 @@ public class WebScreens implements Screens, WindowManager {
     }
 
     /**
-     * todo
+     * Check modifications and close all screens in all main windows excluding root screens.
      *
      * @return operation result
      */
     public OperationResult checkModificationsAndCloseAll() {
-        // todo
+        if (hasUnsavedChanges()) {
+            UnknownOperationResult result = new UnknownOperationResult();
 
-        throw new UnsupportedOperationException("TODO");
+            ui.getDialogs().createOptionDialog()
+                    .withCaption(messages.getMainMessage("closeUnsaved.caption"))
+                    .withMessage(messages.getMainMessage("discardChangesOnClose"))
+                    .withActions(
+                            new BaseAction("closeApplication")
+                                    .withCaption(messages.getMainMessage("closeApplication"))
+                                    .withIcon(icons.get(CubaIcon.DIALOG_OK))
+                                    .withHandler(event -> {
+                                        closeWindowsInternal();
+
+                                        result.success();
+                                    }),
+                            new DialogAction(DialogAction.Type.CANCEL, Action.Status.PRIMARY)
+                                    .withHandler(event -> {
+
+                                        result.fail();
+                                    })
+                    )
+                    .show();
+
+            return result;
+        } else {
+            closeWindowsInternal();
+
+            return OperationResult.success();
+        }
+    }
+
+    protected void closeWindowsInternal() {
+        saveScreenSettings();
+        saveScreenHistory();
+
+        ui.getApp().removeAllWindows();
+    }
+
+    public void saveScreenHistory() {
+        getOpenedWorkAreaScreensStream().forEach(s ->
+                screenHistorySupport.saveScreenHistory(s)
+        );
+
+        getDialogScreensStream().forEach(s ->
+                screenHistorySupport.saveScreenHistory(s)
+        );
+    }
+
+    public void saveScreenSettings() {
+        Screen rootScreen = getOpenedScreens().getRootScreen();
+
+        saveSettings(rootScreen);
+
+        getOpenedWorkAreaScreensStream().forEach(UiControllerUtils::saveSettings);
+
+        getDialogScreensStream().forEach(UiControllerUtils::saveSettings);
     }
 
     /**
@@ -1342,7 +1403,7 @@ public class WebScreens implements Screens, WindowManager {
      */
     @Deprecated
     public void closeAllWindows() {
-        ui.getApp().closeAllWindows();
+        ui.getApp().removeAllWindows();
     }
 
     /**

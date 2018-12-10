@@ -92,7 +92,7 @@ public class AppLog {
         log(new LogItem(timeSource.currentTimestamp(), LogLevel.ERROR, message, null));
     }
 
-    @SuppressWarnings({"ThrowableResultOfMethodCallIgnored", "unchecked"})
+    @SuppressWarnings({"ThrowableResultOfMethodCallIgnored"})
     public void log(ErrorEvent event) {
         Throwable t = event.getThrowable();
 
@@ -131,20 +131,23 @@ public class AppLog {
         }
 
         Throwable rootCause = ExceptionUtils.getRootCause(t);
-        if (rootCause == null)
+        if (rootCause == null) {
             rootCause = t;
+        }
         Logging annotation = rootCause.getClass().getAnnotation(Logging.class);
         Logging.Type loggingType = annotation == null ? Logging.Type.FULL : annotation.value();
-        if (loggingType == Logging.Type.NONE)
+        if (loggingType == Logging.Type.NONE) {
             return;
+        }
 
         // Finds the original source of the error/exception
         AbstractComponent component = DefaultErrorHandler.findAbstractComponent(event);
 
         StringBuilder msg = new StringBuilder();
         msg.append("Exception");
-        if (component != null)
+        if (component != null) {
             msg.append(" in ").append(component.getClass().getName());
+        }
         msg.append(": ");
 
         if (loggingType == Logging.Type.BRIEF) {

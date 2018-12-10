@@ -28,6 +28,7 @@ import com.haulmont.cuba.gui.components.sys.WindowImplementation;
 import com.haulmont.cuba.gui.model.ScreenData;
 import com.haulmont.cuba.gui.navigation.UrlParamsChangedEvent;
 import com.haulmont.cuba.gui.settings.Settings;
+import com.haulmont.cuba.gui.sys.ScreenHistorySupport;
 import com.haulmont.cuba.gui.util.OperationResult;
 import org.springframework.context.ApplicationListener;
 
@@ -330,12 +331,21 @@ public abstract class Screen implements FrameOwner {
             saveSettings();
         }
 
+        if (isSaveScreenHistoryOnClose(action)) {
+            ScreenHistorySupport screenHistorySupport = beanLocator.get(ScreenHistorySupport.NAME);
+            screenHistorySupport.saveScreenHistory(this);
+        }
+
         screenContext.getScreens().remove(this);
 
         AfterCloseEvent afterCloseEvent = new AfterCloseEvent(this, action);
         fireEvent(AfterCloseEvent.class, afterCloseEvent);
 
         return OperationResult.success();
+    }
+
+    protected boolean isSaveScreenHistoryOnClose(@SuppressWarnings("unused") CloseAction action) {
+        return true;
     }
 
     protected boolean isSaveSettingsOnClose(@SuppressWarnings("unused") CloseAction action) {

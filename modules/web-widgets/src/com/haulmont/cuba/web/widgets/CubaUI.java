@@ -16,19 +16,16 @@
 
 package com.haulmont.cuba.web.widgets;
 
-import com.vaadin.server.VaadinRequest;
+import com.haulmont.cuba.web.widgets.client.clientmanager.CubaUIClientRpc;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
-public class CubaUI extends UI {
-    @Override
-    protected void init(VaadinRequest request) {
-
-    }
-
+public abstract class CubaUI extends UI {
     /**
      * Check if users can interact with the component - there are no modal windows that prevent user action.
      *
@@ -72,5 +69,31 @@ public class CubaUI extends UI {
 
         // we cannot reliably check if access is permitted
         return true;
+    }
+
+    public void updateSystemMessagesLocale(SystemMessages msgs) {
+        Map<String, String> localeMap = new HashMap<>(8);
+
+        localeMap.put(CubaUIClientRpc.COMMUNICATION_ERROR_CAPTION_KEY, msgs.communicationErrorCaption);
+        localeMap.put(CubaUIClientRpc.COMMUNICATION_ERROR_MESSAGE_KEY, msgs.communicationErrorMessage);
+
+        localeMap.put(CubaUIClientRpc.SESSION_EXPIRED_ERROR_CAPTION_KEY, msgs.sessionExpiredErrorCaption);
+        localeMap.put(CubaUIClientRpc.SESSION_EXPIRED_ERROR_MESSAGE_KEY, msgs.sessionExpiredErrorMessage);
+
+        localeMap.put(CubaUIClientRpc.AUTHORIZATION_ERROR_CAPTION_KEY, msgs.authorizationErrorCaption);
+        localeMap.put(CubaUIClientRpc.AUTHORIZATION_ERROR_MESSAGE_KEY, msgs.authorizationErrorMessage);
+
+        getRpcProxy(CubaUIClientRpc.class).updateSystemMessagesLocale(localeMap);
+    }
+
+    public static class SystemMessages {
+        public String communicationErrorCaption;
+        public String communicationErrorMessage;
+
+        public String authorizationErrorCaption;
+        public String authorizationErrorMessage;
+
+        public String sessionExpiredErrorCaption;
+        public String sessionExpiredErrorMessage;
     }
 }
