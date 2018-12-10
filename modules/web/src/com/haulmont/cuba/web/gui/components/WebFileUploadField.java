@@ -142,6 +142,7 @@ public class WebFileUploadField extends WebAbstractUploadField<CubaFileUploadWra
             }
         });
         component.setClearButtonListener(this::clearButtonClicked);
+        component.setRequiredError(null);
     }
 
     protected void internalValueChanged(Object newValue) {

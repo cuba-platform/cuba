@@ -71,6 +71,7 @@ public class WebOptionsList<V, I> extends WebAbstractField<CubaListSelect, V>
     protected void initComponent(CubaListSelect component) {
         component.setContainerDataSource(new IndexedContainer());
         component.setItemCaptionGenerator(this::generateItemCaption);
+        component.setRequiredError(null);
 
         attachListener(component);
     }

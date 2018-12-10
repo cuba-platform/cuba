@@ -50,6 +50,7 @@ public class WebOptionsGroup<V, I> extends WebAbstractField<CubaOptionGroup, V> 
         component = createComponent();
         component.setContainerDataSource(new IndexedContainer());
         component.setItemCaptionGenerator(o -> generateItemCaption((I) o));
+        component.setRequiredError(null);
 
         attachListener(component);
     }
