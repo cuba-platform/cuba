@@ -149,10 +149,6 @@
         <property name="parent" view="_minimal"/>
         <property name="constraints" view="_local"/>
         <property name="sessionAttributes" view="_local"/>
-        <property name="hierarchyList" view="_local">
-            <property name="parent" view="_minimal"/>
-            <property name="group" view="_minimal"/>
-        </property>
     </view>
 
 
