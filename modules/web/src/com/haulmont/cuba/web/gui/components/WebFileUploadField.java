@@ -102,7 +102,7 @@ public class WebFileUploadField extends WebAbstractUploadField<CubaFileUploadWra
         initUploadButton(uploadButton);
 
         initComponent();
-        attachListener(component);
+        attachValueChangeListener(component);
     }
 
     @Inject

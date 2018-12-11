@@ -28,11 +28,11 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.themes.ValoTheme;
-import com.vaadin.v7.ui.CustomField;
+import com.vaadin.ui.CustomField;
 import org.apache.commons.lang3.StringUtils;
 
 // todo CssLayout
-public class CubaFileUploadWrapper extends CustomField {
+public class CubaFileUploadWrapper extends CustomField<FileDescriptor> {
     protected static final String FILE_UPLOAD_WRAPPER_STYLENAME = "c-fileupload-wrapper";
     protected static final String EMPTY_VALUE_STYLENAME = "c-fileupload-empty";
 
@@ -46,14 +46,12 @@ public class CubaFileUploadWrapper extends CustomField {
 
     protected String fileName;
     protected String fileNotSelectedMessage = "";
+
+    protected FileDescriptor value;
+
     @Override
     protected Component initContent() {
         return container;
-    }
-
-    @Override
-    public Class getType() {
-        return FileDescriptor.class;
     }
 
     public String getFileNotSelectedMessage() {
@@ -65,18 +63,17 @@ public class CubaFileUploadWrapper extends CustomField {
     }
 
     @Override
-    protected void setInternalValue(Object newValue) {
-        //noinspection unchecked
-        super.setInternalValue(newValue);
+    protected void doSetValue(FileDescriptor fileDescriptor) {
+        this.value = fileDescriptor;
 
-        if (newValue != null) {
-            FileDescriptor fileDescriptor = (FileDescriptor) newValue;
-            setFileNameButtonCaption(fileDescriptor.getName());
-        } else {
-            setFileNameButtonCaption(null);
-        }
+        setFileNameButtonCaption(fileDescriptor == null ? null : fileDescriptor.getName());
 
-        onSetInternalValue(newValue);
+        onSetInternalValue(fileDescriptor);
+    }
+
+    @Override
+    public FileDescriptor getValue() {
+        return value;
     }
 
     protected void onSetInternalValue(Object newValue) {
@@ -96,7 +93,7 @@ public class CubaFileUploadWrapper extends CustomField {
             } else {
                 container.setExpandRatio(fileNameButton, 0);
                 fileNameButton.setWidthUndefined();
-                if (isShowClearButton() && !isRequired()) {
+                if (isShowClearButton() && !isRequiredIndicatorVisible()) {
                     uploadButton.setWidth(100, Unit.PERCENTAGE);
                     clearButton.setWidth(100, Unit.PERCENTAGE);
                 } else {
@@ -151,8 +148,8 @@ public class CubaFileUploadWrapper extends CustomField {
     }
 
     @Override
-    public void setRequired(boolean required) {
-        super.setRequired(required);
+    public void setRequiredIndicatorVisible(boolean visible) {
+        super.setRequiredIndicatorVisible(visible);
 
         updateButtonsVisibility();
         updateComponentWidth();
@@ -169,7 +166,7 @@ public class CubaFileUploadWrapper extends CustomField {
     protected void updateButtonsVisibility() {
         uploadButton.setVisible(!isReadOnly());
 
-        if (!isReadOnly() && !isRequired() && showClearButton) {
+        if (!isReadOnly() && !isRequiredIndicatorVisible() && showClearButton) {
             clearButton.setVisible(true);
         } else {
             clearButton.setVisible(false);
@@ -179,8 +176,6 @@ public class CubaFileUploadWrapper extends CustomField {
     public CubaFileUploadWrapper(UploadComponent uploadButton) {
         setPrimaryStyleName(FILE_UPLOAD_WRAPPER_STYLENAME);
         initLayout(uploadButton);
-
-        setValidationVisible(false);
     }
 
     protected void initLayout(UploadComponent uploadComponent) {
@@ -310,7 +305,7 @@ public class CubaFileUploadWrapper extends CustomField {
     @Override
     public ErrorMessage getErrorMessage() {
         ErrorMessage superError = super.getErrorMessage();
-        if (!isReadOnly() && isRequired() && isEmpty()) {
+        if (!isReadOnly() && isRequiredIndicatorVisible() && isEmpty()) {
             ErrorMessage error = AbstractErrorMessage.getErrorMessageForException(
                     new com.vaadin.v7.data.Validator.EmptyValueException(getRequiredError()));
             if (error != null) {

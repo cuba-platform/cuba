@@ -33,6 +33,11 @@ public class FileUploadFieldLoader extends AbstractFieldLoader<FileUploadField> 
     public void loadComponent() {
         assignFrame(resultComponent);
 
+        loadContainer(resultComponent, element);
+        if (resultComponent.getValueSource() == null) {
+            loadDatasource(resultComponent, element);
+        }
+
         loadEnable(resultComponent, element);
         loadEditable(resultComponent, element);
         loadRequired(resultComponent, element);
@@ -61,7 +66,6 @@ public class FileUploadFieldLoader extends AbstractFieldLoader<FileUploadField> 
 
         loadFileSizeLimit();
 
-        loadDatasource(resultComponent, element);
         loadMode(resultComponent, element);
         loadShowFileName(resultComponent, element);
 
