@@ -122,7 +122,7 @@ public class CubaUserAuthenticationProvider implements AuthenticationProvider {
                     credentials.setOverrideLocale(false);
                 }
 
-                if (restApiConfig.getClientAuthentication()) {
+                if (restApiConfig.getCheckPasswordOnClient()) {
                     session = loginClient(credentials).getSession();
                 } else {
                     session = loginMiddleware(credentials).getSession();

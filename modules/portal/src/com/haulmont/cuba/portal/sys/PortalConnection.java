@@ -113,7 +113,7 @@ public class PortalConnection implements Connection {
         credentials.setIpAddress(ipAddress);
         credentials.setClientInfo(clientInfo);
 
-        if (portalConfig.getClientAuthentication()) {
+        if (portalConfig.getCheckPasswordOnClient()) {
             return loginClient(credentials).getSession();
         } else {
             return loginMiddleware(credentials).getSession();

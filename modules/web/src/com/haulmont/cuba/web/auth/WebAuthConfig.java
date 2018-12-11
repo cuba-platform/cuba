@@ -88,7 +88,7 @@ public interface WebAuthConfig extends Config {
      * @return Whether to use an login/password authentication on client
      * instead of login/password authentication on middleware.
      */
-    @Property("cuba.clientAuthentication")
+    @Property("cuba.checkPasswordOnClient")
     @DefaultBoolean(false)
-    boolean getClientAuthentication();
+    boolean getCheckPasswordOnClient();
 }

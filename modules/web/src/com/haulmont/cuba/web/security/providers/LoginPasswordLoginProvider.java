@@ -58,7 +58,7 @@ public class LoginPasswordLoginProvider implements LoginProvider, Ordered {
     @Override
     public AuthenticationDetails login(Credentials credentials) throws LoginException {
         LoginPasswordCredentials loginPasswordCredentials = (LoginPasswordCredentials) credentials;
-        if (webAuthConfig.getClientAuthentication()) {
+        if (webAuthConfig.getCheckPasswordOnClient()) {
             return loginClient(loginPasswordCredentials);
         } else {
             return loginMiddleware(loginPasswordCredentials);
