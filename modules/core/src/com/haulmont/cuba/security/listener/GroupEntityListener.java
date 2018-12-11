@@ -69,13 +69,15 @@ public class GroupEntityListener implements
             parent = em.find(Group.class, parent.getId()); // refresh parent in case of detached
 
         int level = 0;
-        for (GroupHierarchy hierarchy : parent.getHierarchyList()) {
-            GroupHierarchy h = metadata.create(GroupHierarchy.class);
-            h.setGroup(entity);
-            h.setParent(hierarchy.getParent());
-            h.setLevel(level++);
-            em.persist(h);
-            entity.getHierarchyList().add(h);
+        if (parent.getHierarchyList() != null) {
+            for (GroupHierarchy hierarchy : parent.getHierarchyList()) {
+                GroupHierarchy h = metadata.create(GroupHierarchy.class);
+                h.setGroup(entity);
+                h.setParent(hierarchy.getParent());
+                h.setLevel(level++);
+                em.persist(h);
+                entity.getHierarchyList().add(h);
+            }
         }
         GroupHierarchy h = metadata.create(GroupHierarchy.class);
         h.setGroup(entity);
