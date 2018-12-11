@@ -93,6 +93,11 @@ public abstract class ContainerLoader<T extends Component> extends AbstractCompo
         if (StringUtils.isNotEmpty(expand)) {
             if (!expand.contains(";")) {
                 Component componentToExpand = layout.getOwnComponent(expand);
+                if (componentToExpand == null) {
+                    throw new GuiDevelopmentException(
+                            String.format("There is no component with id '%s' to expand", expand),
+                            context.getFullFrameId());
+                }
                 layout.expand(componentToExpand);
             } else {
                 // legacy behaviour
