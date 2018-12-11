@@ -600,6 +600,8 @@ public class UserManagementServiceBean implements UserManagementService {
                 if (generatePassword) {
                     password = passwordEncryption.generateRandomPassword();
 
+                    user.setPasswordEncryption(passwordEncryption.getHashMethod());
+
                     String passwordHash = passwordEncryption.getPasswordHash(user.getId(), password);
                     user.setPassword(passwordHash);
                 }

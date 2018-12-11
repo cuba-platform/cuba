@@ -20,6 +20,7 @@ import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.PersistenceTools;
 import com.haulmont.cuba.core.global.Events;
 import com.haulmont.cuba.core.global.Metadata;
+import com.haulmont.cuba.core.global.PasswordEncryption;
 import com.haulmont.cuba.core.listener.AfterDeleteEntityListener;
 import com.haulmont.cuba.core.listener.BeforeInsertEntityListener;
 import com.haulmont.cuba.core.listener.BeforeUpdateEntityListener;
@@ -48,9 +49,13 @@ public class UserEntityListener implements BeforeInsertEntityListener<User>, Bef
     @Inject
     protected Metadata metadata;
 
+    @Inject
+    protected PasswordEncryption passwordEncryption;
+
     @Override
     public void onBeforeInsert(User entity, EntityManager entityManager) {
         addDefaultRoles(entity, entityManager);
+        updatePasswordEncryption(entity);
         updateLoginLowerCase(entity);
     }
 
@@ -87,6 +92,12 @@ public class UserEntityListener implements BeforeInsertEntityListener<User>, Bef
 
     protected void updateLoginLowerCase(User user) {
         user.setLoginLowerCase(user.getLogin() != null ? user.getLogin().toLowerCase() : null);
+    }
+
+    protected void updatePasswordEncryption(User user) {
+        if (user.getPasswordEncryption() == null) {
+            user.setPasswordEncryption(passwordEncryption.getHashMethod());
+        }
     }
 
     @Override

@@ -17,16 +17,21 @@
 
 package com.haulmont.cuba.core.sys;
 
+import com.google.common.base.Strings;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.HashDescriptor;
 import com.haulmont.cuba.core.global.PasswordEncryption;
 import com.haulmont.cuba.core.sys.encryption.EncryptionModule;
+import com.haulmont.cuba.core.sys.encryption.UnsupportedHashMethodException;
 import com.haulmont.cuba.security.entity.User;
 import org.apache.commons.codec.binary.Base64;
-
 import org.springframework.stereotype.Component;
+
 import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
@@ -34,10 +39,15 @@ import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 @Component(PasswordEncryption.NAME)
 public class PasswordEncryptionImpl implements PasswordEncryption {
 
-    private EncryptionModule encryptionModule;
+    protected EncryptionModule encryptionModule;
+    protected EncryptionModule legacyEncryptionModule;
 
     public void setEncryptionModule(EncryptionModule encryptionModule) {
         this.encryptionModule = encryptionModule;
+    }
+
+    public void setLegacyEncryptionModule(EncryptionModule legacyEncryptionModule) {
+        this.legacyEncryptionModule = legacyEncryptionModule;
     }
 
     @Override
@@ -94,6 +104,23 @@ public class PasswordEncryptionImpl implements PasswordEncryption {
         checkNotNullArgument(user);
         checkNotNullArgument(password);
 
-        return encryptionModule.checkPassword(user, password);
+        String passwordEncryption = user.getPasswordEncryption();
+
+        EncryptionModule currentEncryptionModule;
+        if (Strings.isNullOrEmpty(passwordEncryption)) {
+            currentEncryptionModule = legacyEncryptionModule;
+        } else {
+            currentEncryptionModule = getEncryptionModule(passwordEncryption);
+        }
+
+        return currentEncryptionModule.checkPassword(user, password);
+    }
+
+    protected EncryptionModule getEncryptionModule(String encryptionMethod) {
+        Map<String, EncryptionModule> encryptionModules = AppBeans.getAll(EncryptionModule.class);
+        return encryptionModules.values().stream()
+                .filter(module -> Objects.equals(module.getHashMethod(), encryptionMethod))
+                .findFirst()
+                .orElseThrow(UnsupportedHashMethodException::new);
     }
 }

@@ -41,6 +41,7 @@
 
     <bean id="cuba_PasswordEncryption" class="com.haulmont.cuba.core.sys.PasswordEncryptionImpl">
         <property name="encryptionModule" ref="${cuba.passwordEncryptionModule}"/>
+        <property name="legacyEncryptionModule" ref="${cuba.legacyPasswordEncryptionModule}"/>
     </bean>
 
     <bean id="cuba_TimeSource" class="com.haulmont.cuba.desktop.sys.DesktopTimeSource"/>

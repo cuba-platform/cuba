@@ -51,6 +51,10 @@ public class User extends StandardEntity {
     @Column(name = "PASSWORD", length = 255)
     protected String password;
 
+    @SystemLevel
+    @Column(name = "PASSWORD_ENCRYPTION", length = 50)
+    protected String passwordEncryption;
+
     @Column(name = "NAME", length = 255)
     protected String name;
 
@@ -124,6 +128,14 @@ public class User extends StandardEntity {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getPasswordEncryption() {
+        return passwordEncryption;
+    }
+
+    public void setPasswordEncryption(String passwordEncryption) {
+        this.passwordEncryption = passwordEncryption;
     }
 
     public String getName() {

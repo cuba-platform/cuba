@@ -1,0 +1,1 @@
+alter table SEC_USER add PASSWORD_ENCRYPTION varchar2(50)^

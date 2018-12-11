@@ -233,6 +233,7 @@ create table SEC_USER (
     LOGIN varchar(50) not null,
     LOGIN_LC varchar(50) not null,
     PASSWORD varchar(255),
+    PASSWORD_ENCRYPTION varchar(50),
     NAME varchar(255),
     FIRST_NAME varchar(255),
     LAST_NAME varchar(255),
@@ -980,9 +981,9 @@ return replace(uuid(), '-', '')^
 insert into SEC_GROUP (ID, CREATE_TS, VERSION, NAME, PARENT_ID)
 values ('0fa2b1a51d684d699fbddff348347f93', current_timestamp, 0, 'Company', null)^
 
-insert into SEC_USER (ID, CREATE_TS, VERSION, LOGIN, LOGIN_LC, PASSWORD, NAME, GROUP_ID, ACTIVE)
+insert into SEC_USER (ID, CREATE_TS, VERSION, LOGIN, LOGIN_LC, PASSWORD, PASSWORD_ENCRYPTION, NAME, GROUP_ID, ACTIVE)
 values ('608859871b61424794c7dff348347f93', current_timestamp, 0, 'admin', 'admin',
-'$2a$10$vQx8b8B7jzZ0rQmtuK4YDOKp7nkmUCFjPx6DMT.voPtetNHFOsaOu',
+'$2a$10$vQx8b8B7jzZ0rQmtuK4YDOKp7nkmUCFjPx6DMT.voPtetNHFOsaOu', 'bcrypt',
 'Administrator', '0fa2b1a51d684d699fbddff348347f93', 1)^
 
 insert into SEC_USER (ID, CREATE_TS, VERSION, LOGIN, LOGIN_LC, PASSWORD, NAME, GROUP_ID, ACTIVE)
