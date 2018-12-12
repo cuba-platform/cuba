@@ -159,12 +159,12 @@ public abstract class Screen implements FrameOwner {
      * Adds {@link InitEvent} listener.
      * <p>
      * You can also add an event listener declaratively using a controller method annotated with {@link Subscribe}:
-     * <pre>{@code
-     *    @Subscribe
+     * <pre>
+     *    &#64;Subscribe
      *    protected void onInit(InitEvent event) {
      *       // handle event here
      *    }
-     * }</pre>
+     * </pre>
      *
      * @param listener listener
      * @return subscription
@@ -177,12 +177,12 @@ public abstract class Screen implements FrameOwner {
      * Adds {@link AfterInitEvent} listener.
      * <p>
      * You can also add an event listener declaratively using a controller method annotated with {@link Subscribe}:
-     * <pre>{@code
-     *    @Subscribe
+     * <pre>
+     *    &#64;Subscribe
      *    protected void onAfterInit(AfterInitEvent event) {
      *       // handle event here
      *    }
-     * }</pre>
+     * </pre>
      *
      * @param listener listener
      * @return subscription
@@ -195,12 +195,12 @@ public abstract class Screen implements FrameOwner {
      * Adds {@link BeforeCloseEvent} listener.
      * <p>
      * You can also add an event listener declaratively using a controller method annotated with {@link Subscribe}:
-     * <pre>{@code
-     *    @Subscribe
+     * <pre>
+     *    &#64;Subscribe
      *    protected void onBeforeClose(BeforeCloseEvent event) {
      *       // handle event here
      *    }
-     * }</pre>
+     * </pre>
      *
      * @param listener listener
      * @return subscription
@@ -213,12 +213,12 @@ public abstract class Screen implements FrameOwner {
      * Adds {@link BeforeShowEvent} listener.
      * <p>
      * You can also add an event listener declaratively using a controller method annotated with {@link Subscribe}:
-     * <pre>{@code
-     *    @Subscribe
+     * <pre>
+     *    &#64;Subscribe
      *    protected void onBeforeShow(BeforeShowEvent event) {
      *       // handle event here
      *    }
-     * }</pre>
+     * </pre>
      *
      * @param listener listener
      * @return subscription
@@ -249,12 +249,12 @@ public abstract class Screen implements FrameOwner {
      * Adds {@link AfterCloseEvent} listener.
      * <p>
      * You can also add an event listener declaratively using a controller method annotated with {@link Subscribe}:
-     * <pre>{@code
-     *    @Subscribe
+     * <pre>
+     *    &#64;Subscribe
      *    protected void onAfterClose(AfterCloseEvent event) {
      *       // handle event here
      *    }
-     * }</pre>
+     * </pre>
      *
      * @param listener listener
      * @return subscription
@@ -267,12 +267,12 @@ public abstract class Screen implements FrameOwner {
      * Adds {@link AfterDetachEvent} listener.
      * <p>
      * You can also add an event listener declaratively using a controller method annotated with {@link Subscribe}:
-     * <pre>{@code
-     *    @Subscribe
+     * <pre>
+     *    &#64;Subscribe
      *    protected void onAfterDetach(AfterDetachEvent event) {
      *       // handle event here
      *    }
-     * }</pre>
+     * </pre>
      *
      * @param listener listener
      * @return subscription
@@ -285,12 +285,12 @@ public abstract class Screen implements FrameOwner {
      * Adds {@link UrlParamsChangedEvent} listener.
      * <p>
      * You can also add an event listener declaratively using a controller method annotated with {@link Subscribe}:
-     * <pre>{@code
-     *    @Subscribe
+     * <pre>
+     *    &#64;Subscribe
      *    protected void onUrlParamsChanged(UrlParamsChangedEvent event) {
      *       // handle event here
      *    }
-     * }</pre>
+     * </pre>
      *
      * @param listener listener
      * @return subscription
@@ -397,14 +397,14 @@ public abstract class Screen implements FrameOwner {
      * initialized, for example buttons are not linked with actions.
      * <p>
      * In this event listener, you can create visual and data components, for example:
-     * <pre>{@code
-     *     @Subscribe
+     * <pre>
+     *     &#64;Subscribe
      *     protected void onInit(InitEvent event) {
-     *         Label<String> label = uiComponents.create(Label.TYPE_STRING);
+     *         Label&lt;String&gt; label = uiComponents.create(Label.TYPE_STRING);
      *         label.setValue("Hello World");
      *         getWindow().add(label);
      *     }
-     * }</pre>
+     * </pre>
      *
      * @see #addInitListener(Consumer)
      */
@@ -462,12 +462,12 @@ public abstract class Screen implements FrameOwner {
      * are applied to UI components. Saved component settings are not yet applied to UI components.
      * <p>
      * In this event listener, you can load data, check permissions and modify UI components. For example:
-     * <pre>{@code
-     *     @Subscribe
+     * <pre>
+     *     &#64;Subscribe
      *     protected void onBeforeShow(BeforeShowEvent event) {
      *         customersDl.load();
      *     }
-     * }</pre>
+     * </pre>
      *
      * You can abort the process of opening the screen by throwing an exception. Note that if you have created
      * notifications in this listener before the exception, they will still be shown even though the screen will not.
@@ -491,12 +491,12 @@ public abstract class Screen implements FrameOwner {
      * Saved component settings are applied to UI components.
      * <p>
      * In this event listener, you can show notifications, dialogs or other screens. For example:
-     * <pre>{@code
-     *     @Subscribe
+     * <pre>
+     *     &#64;Subscribe
      *     protected void onAfterShow(AfterShowEvent event) {
      *         notifications.create().withCaption("Just opened").show();
      *     }
-     * }</pre>
+     * </pre>
      *
      * @see #addAfterShowListener(Consumer)
      */
@@ -518,15 +518,15 @@ public abstract class Screen implements FrameOwner {
      * <p>
      * In this event listener, you can check any conditions and prevent screen closing using the
      * {@link #preventWindowClose()} method of the event, for example:
-     * <pre>{@code
-     *     @Subscribe
+     * <pre>
+     *     &#64;Subscribe
      *     protected void onBeforeClose(BeforeCloseEvent event) {
      *         if (Strings.isNullOrEmpty(textField.getValue())) {
      *             notifications.create().withCaption("Input required").show();
      *             event.preventWindowClose();
      *         }
      *     }
-     * }</pre>
+     * </pre>
      *
      * @see #addBeforeCloseListener(Consumer)
      */
@@ -596,12 +596,12 @@ public abstract class Screen implements FrameOwner {
      * Component settings are saved.
      * <p>
      * In this event listener, you can show notifications or dialogs after closing the screen, for example:
-     * <pre>{@code
-     *     @Subscribe
+     * <pre>
+     *     &#64;Subscribe
      *     protected void onAfterClose(AfterCloseEvent event) {
      *         notifications.create().withCaption("Just closed").show();
      *     }
-     * }</pre>
+     * </pre>
      *
      * @see #addAfterCloseListener(Consumer)
      */

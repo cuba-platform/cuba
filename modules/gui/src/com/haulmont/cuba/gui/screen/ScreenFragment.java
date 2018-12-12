@@ -204,19 +204,19 @@ public abstract class ScreenFragment implements FrameOwner {
      * There are two ways to add an event handler:
      * <p>
      * 1. Programmatically from a class constructor:
-     * <pre>{@code
-     *    addInitListener(event -> {
+     * <pre>
+     *    addInitListener(event -&gt; {
      *       // handle event here
      *    });
-     * }</pre>
+     * </pre>
      * <p>
      * 2. Declaratively using method with {@link Subscribe} annotation: <br>
-     * <pre>{@code
-     *    @Subscribe
+     * <pre>
+     *    &#64;Subscribe
      *    protected void onInit(InitEvent event) {
      *       // handle event here
      *    }
-     * }</pre>
+     * </pre>
      *
      * @see #addInitListener(Consumer)
      */
@@ -246,19 +246,19 @@ public abstract class ScreenFragment implements FrameOwner {
      * There are two ways to add an event handler:
      * <p>
      * 1. Programmatically from the class constructor:
-     * <pre>{@code
-     *    addAfterInitListener(event -> {
+     * <pre>
+     *    addAfterInitListener(event -&gt; {
      *       // handle event here
      *    });
-     * }</pre>
+     * </pre>
      * <p>
      * 2. Declaratively using method with {@link Subscribe} annotation: <br>
-     * <pre>{@code
-     *    @Subscribe
+     * <pre>
+     *    &#64;Subscribe
      *    protected void onAfterInit(AfterInitEvent event) {
      *       // handle event here
      *    }
-     * }</pre>
+     * </pre>
      *
      * @see #addAfterInitListener(Consumer)
      */

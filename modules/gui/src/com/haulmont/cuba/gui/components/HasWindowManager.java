@@ -82,7 +82,7 @@ public interface HasWindowManager {
      * @param openType    how to open the screen
      * @return created window
      *
-     * @deprecated Use {@link EditorScreens} bean instead.
+     * @deprecated Use {@link ScreenBuilders} bean instead.
      */
     @Deprecated
     default AbstractEditor openEditor(Entity item, WindowManager.OpenType openType) {
@@ -99,7 +99,7 @@ public interface HasWindowManager {
      * @param params      parameters to pass to {@code init()} method of the screen's controller
      * @return created window
      *
-     * @deprecated Use {@link EditorScreens} bean instead.
+     * @deprecated Use {@link ScreenBuilders} bean instead.
      */
     @Deprecated
     default AbstractEditor openEditor(Entity item, WindowManager.OpenType openType,
@@ -119,7 +119,7 @@ public interface HasWindowManager {
      *                    datasource instead of directly to database
      * @return created window
      *
-     * @deprecated Use {@link EditorScreens} bean instead.
+     * @deprecated Use {@link ScreenBuilders} bean instead.
      */
     @Deprecated
     default AbstractEditor openEditor(Entity item, WindowManager.OpenType openType,
@@ -140,7 +140,7 @@ public interface HasWindowManager {
      *                    datasource instead of directly to database
      * @return created window
      *
-     * @deprecated Use {@link EditorScreens} bean instead.
+     * @deprecated Use {@link ScreenBuilders} bean instead.
      */
     @Deprecated
     default AbstractEditor openEditor(String windowAlias, Entity item, WindowManager.OpenType openType,
@@ -159,7 +159,7 @@ public interface HasWindowManager {
      * @param params      parameters to pass to {@code init()} method of the screen's controller
      * @return created window
      *
-     * @deprecated Use {@link EditorScreens} bean instead.
+     * @deprecated Use {@link ScreenBuilders} bean instead.
      */
     @Deprecated
     default AbstractEditor openEditor(String windowAlias, Entity item, WindowManager.OpenType openType,
@@ -179,7 +179,7 @@ public interface HasWindowManager {
      *                    datasource instead of directly to database
      * @return created window
      *
-     * @deprecated Use {@link EditorScreens} bean instead.
+     * @deprecated Use {@link ScreenBuilders} bean instead.
      */
     @Deprecated
     default AbstractEditor openEditor(String windowAlias, Entity item, WindowManager.OpenType openType,
@@ -197,7 +197,7 @@ public interface HasWindowManager {
      * @param openType    how to open the screen
      * @return created window
      *
-     * @deprecated Use {@link EditorScreens} bean instead.
+     * @deprecated Use {@link ScreenBuilders} bean instead.
      */
     @Deprecated
     default AbstractEditor openEditor(String windowAlias, Entity item, WindowManager.OpenType openType) {
@@ -214,7 +214,7 @@ public interface HasWindowManager {
      * @param openType    how to open the screen
      * @return created window
      *
-     * @deprecated Use {@link LookupScreens} bean instead.
+     * @deprecated Use {@link ScreenBuilders} bean instead.
      */
     @Deprecated
     default AbstractLookup openLookup(Class<? extends Entity> entityClass, Window.Lookup.Handler handler,
@@ -233,7 +233,7 @@ public interface HasWindowManager {
      * @param params      parameters to pass to {@code init()} method of the screen's controller
      * @return created window
      *
-     * @deprecated Use {@link LookupScreens} bean instead.
+     * @deprecated Use {@link ScreenBuilders} bean instead.
      */
     @Deprecated
     default AbstractLookup openLookup(Class<? extends Entity> entityClass, Window.Lookup.Handler handler,
@@ -252,7 +252,7 @@ public interface HasWindowManager {
      * @param params      parameters to pass to {@code init()} method of the screen's controller
      * @return created window
      *
-     * @deprecated Use {@link LookupScreens} bean instead.
+     * @deprecated Use {@link ScreenBuilders} bean instead.
      */
     @Deprecated
     default AbstractLookup openLookup(String windowAlias, Window.Lookup.Handler handler,
@@ -270,7 +270,7 @@ public interface HasWindowManager {
      * @param openType    how to open the screen
      * @return created window
      *
-     * @deprecated Use {@link LookupScreens} bean instead.
+     * @deprecated Use {@link ScreenBuilders} bean instead.
      */
     @Deprecated
     default AbstractLookup openLookup(String windowAlias, Window.Lookup.Handler handler,

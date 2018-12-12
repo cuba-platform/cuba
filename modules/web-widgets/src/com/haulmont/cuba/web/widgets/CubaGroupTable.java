@@ -52,7 +52,7 @@ public class CubaGroupTable extends CubaTable implements GroupTableContainer {
     protected String focusGroupAggregationInputColumnKey;
 
     /**
-     * Attention: this method is copied from the parent class: {@link Table#setColumnOrder(java.lang.Object[])}
+     * Attention: this method is copied from the parent class: Table.setColumnOrder(Object[])
      */
     public void setColumnOrder(Object[] columnOrder) {
         if (columnOrder == null || !isColumnReorderingAllowed()) {

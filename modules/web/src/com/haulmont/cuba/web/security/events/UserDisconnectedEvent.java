@@ -22,7 +22,7 @@ import org.springframework.context.ApplicationEvent;
 
 /**
  * Event that is fired after {@link Connection} is disconnected from middleware right before firing
- * {@link Connection.StateChangeListener} listeners.
+ * {@link Connection.StateChangeEvent} listeners.
  */
 public class UserDisconnectedEvent extends ApplicationEvent {
 

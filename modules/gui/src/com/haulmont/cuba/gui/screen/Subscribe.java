@@ -27,12 +27,12 @@ import java.lang.annotation.RetentionPolicy;
  * Annotation for declarative event handler methods in UI controllers.
  * <br>
  * Example:
- * <pre>{@code
- *    @Subscribe("demoButton")
+ * <pre>
+ *    &#64;Subscribe("demoButton")
  *    protected void onDemoButtonClick(Button.ClickEvent event) {
  *        // handle button click
  *    }
- * }</pre>
+ * </pre>
  *
  * @see Screen
  * @see ScreenFragment

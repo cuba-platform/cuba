@@ -16,14 +16,10 @@
 
 package com.haulmont.cuba.gui.model;
 
-import com.haulmont.cuba.gui.screen.Screen;
-
 import java.util.Set;
 
 /**
  * Interface defining methods for interacting with data API elements of a screen.
- *
- * @see Screen#getScreenData()
  */
 public interface ScreenData {
 

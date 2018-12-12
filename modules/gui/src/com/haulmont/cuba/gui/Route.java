@@ -45,13 +45,13 @@ import java.lang.annotation.*;
  * <p><br>
  *
  * Example. Let two screens exist:
- * <pre>{@code
- *   @Route("orders")
+ * <pre>
+ *   &#64;Route("orders")
  *   public class OrderBrowse { ... }
  *
- *   @Route(route = "orders/edit", parentPrefix = "orders")
+ *   &#64;Route(route = "orders/edit", parentPrefix = "orders")
  *   public class OrderEdit { ... }
- * }</pre>
+ * </pre>
  *
  * When OrderEdit screen is opened after OrderBrowse screen resulting address will be "{@code app/{rootRoute}/users/edit}".
  * <p><br>

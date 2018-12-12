@@ -131,13 +131,13 @@ public interface DataContext {
      * Event sent when the context detects changes in an entity, a new instance is merged or an entity is removed.
      * <p>
      * In this event listener, you can react to changes of tracked entities, for example:
-     * <pre>{@code
-     *     @Subscribe(target = Target.DATA_CONTEXT)
+     * <pre>
+     *     &#64;Subscribe(target = Target.DATA_CONTEXT)
      *     protected void onChange(DataContext.ChangeEvent event) {
      *         log.debug("Changed entity: " + event.getEntity());
      *         indicatorLabel.setValue("Changed");
      *     }
-     * }</pre>
+     * </pre>
      */
     class ChangeEvent extends EventObject {
 
@@ -174,22 +174,22 @@ public interface DataContext {
      * <p>
      * In this event listener, you can add arbitrary entity instances to the committed collections returned by
      * {@link #getModifiedInstances()} and {@link #getRemovedInstances()} methods, for example:
-     * <pre>{@code
-     *     @Subscribe(target = Target.DATA_CONTEXT)
+     * <pre>
+     *     &#64;Subscribe(target = Target.DATA_CONTEXT)
      *     protected void onPreCommit(DataContext.PreCommitEvent event) {
      *         event.getModifiedInstances().add(customer);
      *     }
-     * }</pre>
+     * </pre>
      *
      * You can also prevent commit using the {@link #preventCommit()} method of the event, for example:
-     * <pre>{@code
-     *     @Subscribe(target = Target.DATA_CONTEXT)
+     * <pre>
+     *     &#64;Subscribe(target = Target.DATA_CONTEXT)
      *     protected void onPreCommit(DataContext.PreCommitEvent event) {
      *         if (doNotCommit()) {
      *             event.preventCommit();
      *         }
      *     }
-     * }</pre>
+     * </pre>
      *
      * @see #addPreCommitListener(Consumer)
      */
@@ -246,12 +246,12 @@ public interface DataContext {
      * Adds a listener to {@link PreCommitEvent}.
      * <p>
      * You can also add an event listener declaratively using a controller method annotated with {@link Subscribe}:
-     * <pre>{@code
-     *    @Subscribe(target = Target.DATA_CONTEXT)
+     * <pre>
+     *    &#64;Subscribe(target = Target.DATA_CONTEXT)
      *    protected void onPreCommit(DataContext.PreCommitEvent event) {
      *       // handle event here
      *    }
-     * }</pre>
+     * </pre>
      *
      * @param listener listener
      * @return subscription
@@ -262,12 +262,12 @@ public interface DataContext {
      * Event sent after committing changes.
      * <p>
      * In this event listener, you can get the collection of committed entities returned from the middle tier, for example:
-     * <pre>{@code
-     *     @Subscribe(target = Target.DATA_CONTEXT)
+     * <pre>
+     *     &#64;Subscribe(target = Target.DATA_CONTEXT)
      *     protected void onPostCommit(DataContext.PostCommitEvent event) {
      *         log.debug("Committed: " + event.getCommittedInstances());
      *     }
-     * }</pre>
+     * </pre>
      *
      * @see #addPostCommitListener(Consumer)
      */
@@ -300,12 +300,12 @@ public interface DataContext {
      * Adds a listener to {@link PostCommitEvent}.
      * <p>
      * You can also add an event listener declaratively using a controller method annotated with {@link Subscribe}:
-     * <pre>{@code
-     *    @Subscribe(target = Target.DATA_CONTEXT)
+     * <pre>
+     *    &#64;Subscribe(target = Target.DATA_CONTEXT)
      *    protected void onPostCommit(DataContext.PostCommitEvent event) {
      *       // handle event here
      *    }
-     * }</pre>
+     * </pre>
      *
      * @param listener listener
      * @return subscription
@@ -321,5 +321,4 @@ public interface DataContext {
      * Sets a function which will be used to commit data instead of standard implementation.
      */
     void setCommitDelegate(Function<CommitContext, Set<Entity>> delegate);
-
 }

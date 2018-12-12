@@ -55,7 +55,7 @@ public interface AuthenticationManager {
      * <br>
      * This method replaces an active UserSession with the new one, which is returned.
      *
-     * @param substitutedUser a user to substitute. Must be in the current users' {@link User#substitutions} list.
+     * @param substitutedUser a user to substitute. Must be in the current users' {@link User#getSubstitutions()} list.
      * @return new UserSession instance that contains: <ul>
      * <li> id - the previously active user session id </li>
      * <li> user - the logged in user </li>

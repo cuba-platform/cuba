@@ -438,12 +438,12 @@ public abstract class StandardEditor<T extends Entity> extends Screen implements
      * Adds a listener to {@link InitEntityEvent}.
      * <p>
      * You can also add an event listener declaratively using a controller method annotated with {@link Subscribe}:
-     * <pre>{@code
-     *    @Subscribe
+     * <pre>
+     *    &#64;Subscribe
      *    protected void onInitEntity(InitEntityEvent event) {
      *       // handle event here
      *    }
-     * }</pre>
+     * </pre>
      *
      * @param listener listener
      * @return subscription
@@ -457,12 +457,12 @@ public abstract class StandardEditor<T extends Entity> extends Screen implements
      * Event sent before the new entity instance is set to edited entity container.
      * <p>
      * Use this event listener to initialize default values in the new entity instance, for example:
-     * <pre>{@code
-     *     @Subscribe
-     *     protected void onInitEntity(InitEntityEvent<Foo> event) {
+     * <pre>
+     *     &#64;Subscribe
+     *     protected void onInitEntity(InitEntityEvent&lt;Foo&gt; event) {
      *         event.getEntity().setStatus(Status.ACTIVE);
      *     }
-     * }</pre>
+     * </pre>
      *
      * @param <E> type of entity
      * @see #addInitEntityListener(Consumer)
