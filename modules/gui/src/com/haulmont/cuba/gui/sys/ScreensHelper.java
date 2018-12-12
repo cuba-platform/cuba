@@ -29,6 +29,7 @@ import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.core.global.Resources;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.FieldGroup;
+import com.haulmont.cuba.gui.components.Form;
 import com.haulmont.cuba.gui.components.Fragment;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.RowsCount;
@@ -214,6 +215,7 @@ public class ScreensHelper {
                         || isRow(element)
                         || isField(element)
                         || isFieldGroupColumn(element)
+                        || isFormColumn(element)
                 );
     }
 
@@ -239,6 +241,12 @@ public class ScreensHelper {
         return "column".equals(element.getName())
                 && element.getParent() != null
                 && FieldGroup.NAME.equals(element.getParent().getName());
+    }
+
+    protected boolean isFormColumn(Element element) {
+        return "column".equals(element.getName())
+                && element.getParent() != null
+                && Form.NAME.equals(element.getParent().getName());
     }
 
     protected boolean isExclusion(Element element) {
