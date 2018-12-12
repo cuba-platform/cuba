@@ -18,7 +18,7 @@
 @mixin halo-cuba-tokenlist($primary-stylename: c-tokenlist) {
   .#{$primary-stylename} .c-tokenlist-label.v-widget {
     clear: both;
-    margin: 0 round($v-layout-margin-right/2) round($v-layout-margin-bottom/2) 0;
+    margin: 0 round($v-layout-margin-right/2) 0 0;
     height: $v-unit-size;
     cursor: pointer;
     display: table;
