@@ -22,10 +22,24 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.core.global.BeanLocator;
+import com.haulmont.cuba.core.global.MessageTools;
+import com.haulmont.cuba.core.global.Metadata;
+import com.haulmont.cuba.core.global.MetadataTools;
+import com.haulmont.cuba.core.global.Resources;
+import com.haulmont.cuba.core.global.UserSessionSource;
+import com.haulmont.cuba.gui.components.FieldGroup;
+import com.haulmont.cuba.gui.components.Fragment;
+import com.haulmont.cuba.gui.components.Frame;
+import com.haulmont.cuba.gui.components.RowsCount;
+import com.haulmont.cuba.gui.components.ScreenComponentDescriptor;
+import com.haulmont.cuba.gui.components.Table;
+import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
+import com.haulmont.cuba.gui.screen.EditedEntityContainer;
+import com.haulmont.cuba.gui.screen.FrameOwner;
+import com.haulmont.cuba.gui.screen.LookupComponent;
 import com.haulmont.cuba.gui.xml.XmlInheritanceProcessor;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
@@ -39,7 +53,15 @@ import org.springframework.stereotype.Component;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.io.FileNotFoundException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static java.util.Collections.emptyMap;
@@ -267,7 +289,8 @@ public class ScreensHelper {
                 try {
                     Element windowElement = getWindowElement(src);
                     if (windowElement != null) {
-                        if (isEntityAvailable(windowElement, entityClass, filterScreenType)) {
+                        if (isEntityAvailable(windowElement,
+                                windowInfo.getControllerClass(), entityClass, filterScreenType)) {
                             String caption = getScreenCaption(windowElement, src);
                             caption = getDetailedScreenCaption(caption, windowId);
                             screensMap.put(caption, windowId);
@@ -289,7 +312,28 @@ public class ScreensHelper {
         return screensMap;
     }
 
-    protected boolean isEntityAvailable(Element window, Class entityClass, ScreenType filterScreenType) {
+    protected boolean isEntityAvailable(Element window, Class<? extends FrameOwner> controllerClass,
+                                        Class entityClass, ScreenType filterScreenType) {
+        return isEntityAvailableInDataContainer(window, controllerClass, entityClass, filterScreenType)
+                || isEntityAvailableInDatasource(window, entityClass, filterScreenType);
+    }
+
+    protected boolean isEntityAvailableInDataContainer(Element window, Class<? extends FrameOwner> controllerClass,
+                                                       Class entityClass, ScreenType filterScreenType) {
+        Element data = window.element("data");
+        if (data == null) {
+            return false;
+        }
+
+        String containerId = getDataContainerId(window, controllerClass, filterScreenType);
+        if (Strings.isNullOrEmpty(containerId)) {
+            return false;
+        }
+
+        return isEntityAvailableInDataElement(entityClass, data, containerId);
+    }
+
+    protected boolean isEntityAvailableInDatasource(Element window, Class entityClass, ScreenType filterScreenType) {
         Element dsContext = window.element("dsContext");
         if (dsContext == null) {
             return false;
@@ -300,7 +344,11 @@ public class ScreensHelper {
             return false;
         }
 
-        Element datasource = elementByID(dsContext, datasourceId);
+        return isEntityAvailableInDataElement(entityClass, dsContext, datasourceId);
+    }
+
+    protected boolean isEntityAvailableInDataElement(Class entityClass, Element dataElement, String datasourceId) {
+        Element datasource = elementByID(dataElement, datasourceId);
         if (datasource == null) {
             return false;
         }
@@ -321,6 +369,32 @@ public class ScreensHelper {
         return isAvailable;
     }
 
+
+    @Nullable
+    protected String getDataContainerId(Element window,
+                                        Class<? extends FrameOwner> controllerClass, ScreenType filterScreenType) {
+        String windowDc = resolveEditedEntityContainerId(controllerClass);
+        String lookupDc = resolveLookupDataContainer(window, controllerClass);
+
+        if (filterScreenType == ScreenType.ALL) {
+            return windowDc != null ? windowDc : lookupDc;
+        } else {
+            return filterScreenType == ScreenType.BROWSER ? lookupDc : windowDc;
+        }
+    }
+
+    @Nullable
+    protected String resolveEditedEntityContainerId(Class<? extends FrameOwner> controllerClass) {
+        EditedEntityContainer annotation = controllerClass.getAnnotation(EditedEntityContainer.class);
+        return annotation != null ? annotation.value() : null;
+    }
+
+    @Nullable
+    protected String resolveLookupComponentId(Class<? extends FrameOwner> controllerClass) {
+        LookupComponent annotation = controllerClass.getAnnotation(LookupComponent.class);
+        return annotation != null ? annotation.value() : null;
+    }
+
     @Nullable
     protected String getDatasourceId(Element window, ScreenType filterScreenType) {
         String windowDatasource = window.attributeValue("datasource");
@@ -335,6 +409,19 @@ public class ScreensHelper {
     }
 
     @Nullable
+    protected String resolveLookupDataContainer(Element window, Class<? extends FrameOwner> controllerClass) {
+        String lookupId = resolveLookupComponentId(controllerClass);
+        if (Strings.isNullOrEmpty(lookupId)) {
+            return null;
+        }
+
+        Element lookupElement = elementByID(window, lookupId);
+        return lookupElement != null
+                ? findLookupElementDataAttributeId(lookupElement, "dataContainer")
+                : null;
+    }
+
+    @Nullable
     protected String resolveLookupDatasource(Element window) {
         String lookupId = window.attributeValue("lookupComponent");
         Element lookupElement = null;
@@ -342,16 +429,21 @@ public class ScreensHelper {
             lookupElement = elementByID(window, lookupId);
         }
 
-        if (lookupElement != null) {
-            String datasource = lookupElement.attributeValue("datasource");
+        return lookupElement != null
+                ? findLookupElementDataAttributeId(lookupElement, "datasource")
+                : null;
+    }
+
+    @Nullable
+    protected String findLookupElementDataAttributeId(Element lookupElement, String dataAttribute) {
+        String datasource = lookupElement.attributeValue(dataAttribute);
+        if (StringUtils.isNotBlank(datasource)) {
+            return datasource;
+        }
+        for (Element element : lookupElement.elements()) {
+            datasource = element.attributeValue(dataAttribute);
             if (StringUtils.isNotBlank(datasource)) {
                 return datasource;
-            }
-            for (Element element : lookupElement.elements()) {
-                datasource = element.attributeValue("datasource");
-                if (StringUtils.isNotBlank(datasource)) {
-                    return datasource;
-                }
             }
         }
 
