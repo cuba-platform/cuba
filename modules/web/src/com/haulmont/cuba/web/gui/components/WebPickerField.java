@@ -52,7 +52,7 @@ import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 import static com.haulmont.cuba.gui.ComponentsHelper.findActionById;
 
 public class WebPickerField<V extends Entity> extends WebV8AbstractField<CubaPickerField<V>, V, V>
-        implements PickerField<V>, SecuredActionsHolder, InitializingBean {
+        implements PickerField<V>, SecuredActionsHolder, InitializingBean, SupportsUserAction<V> {
 
     /* Beans */
     protected Metadata metadata;
@@ -84,6 +84,19 @@ public class WebPickerField<V extends Entity> extends WebV8AbstractField<CubaPic
     protected void setConfiguration(Configuration configuration) {
         actionHandler = new WebPickerFieldActionHandler(configuration);
         component.addActionHandler(actionHandler);
+    }
+
+    @Override
+    public void setValueFromUser(V value) {
+        setValueToPresentation(convertToPresentation(value));
+
+        V oldValue = internalValue;
+        this.internalValue = value;
+
+        if (!fieldValueEquals(value, oldValue)) {
+            ValueChangeEvent<V> event = new ValueChangeEvent<>(this, oldValue, value, true);
+            publish(ValueChangeEvent.class, event);
+        }
     }
 
     @Inject

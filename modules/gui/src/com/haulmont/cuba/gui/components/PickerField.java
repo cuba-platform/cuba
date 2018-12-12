@@ -463,7 +463,8 @@ public interface PickerField<V extends Entity> extends Field<V>, ActionsHolder, 
                 }
             }
 
-            pickerField.setValue(newValue);
+            // Set the value as if the user had set it
+            ((SupportsUserAction) pickerField).setValueFromUser(newValue);
 
             afterSelect(items);
             if (afterLookupSelectionHandler != null) {
@@ -554,7 +555,6 @@ public interface PickerField<V extends Entity> extends Field<V>, ActionsHolder, 
                 if (value != null
                         && entityValueSource.getMetaPropertyPath() != null
                         && entityValueSource.getMetaPropertyPath().getMetaProperty().getType() == MetaProperty.Type.COMPOSITION) {
-                    // TODO: gg, use value source
                     Datasource propertyDatasource = getPropertyDatasource();
                     if (propertyDatasource != null) {
                         for (Datasource datasource : propertyDatasource.getDsContext().getAll()) {
@@ -573,7 +573,8 @@ public interface PickerField<V extends Entity> extends Field<V>, ActionsHolder, 
                     }
                 }
 
-                pickerField.setValue(null);
+                // Set the value as if the user had set it
+                ((SupportsUserAction) pickerField).setValueFromUser(pickerField.getEmptyValue());
             }
         }
     }

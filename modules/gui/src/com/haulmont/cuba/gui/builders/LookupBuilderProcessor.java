@@ -20,6 +20,7 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.ExtendedEntities;
 import com.haulmont.cuba.gui.Screens;
+import com.haulmont.cuba.gui.components.SupportsUserAction;
 import com.haulmont.cuba.gui.components.HasValue;
 import com.haulmont.cuba.gui.components.ListComponent;
 import com.haulmont.cuba.gui.components.data.meta.ContainerDataUnit;
@@ -144,7 +145,12 @@ public class LookupBuilderProcessor {
                                                                HasValue<E> field, Collection<E> selectedItems) {
         if (!selectedItems.isEmpty()) {
             Entity newValue = selectedItems.iterator().next();
-            field.setValue((E) newValue);
+            // In case of PickerField set the value as if the user had set it
+            if (field instanceof SupportsUserAction) {
+                ((SupportsUserAction<E>) field).setValueFromUser((E) newValue);
+            } else {
+                field.setValue((E) newValue);
+            }
         }
     }
 
