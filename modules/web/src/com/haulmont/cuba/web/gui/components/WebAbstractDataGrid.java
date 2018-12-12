@@ -2153,7 +2153,14 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
 
     protected boolean isCommonDataGridSettingsChanged(Element columnsElem) {
         if (columnsElem == null) {
-            return isDefaultDataGridSettingsChanged();
+            if (defaultSettings != null) {
+                columnsElem = defaultSettings.getRootElement().element("columns");
+                if (columnsElem == null) {
+                    return true;
+                }
+            } else {
+                return false;
+            }
         }
 
         List<Element> settingsColumnList = columnsElem.elements("columns");
@@ -2187,19 +2194,6 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
         }
 
         return false;
-    }
-
-    protected boolean isDefaultDataGridSettingsChanged() {
-        Element columnsElement = null;
-
-        if (defaultSettings != null) {
-            columnsElement = defaultSettings.getRootElement().element("columns");
-            if (columnsElement == null) {
-                return true;
-            }
-        }
-
-        return isCommonDataGridSettingsChanged(columnsElement);
     }
 
     protected boolean isSortPropertySettingsChanged(String settingsSortColumnId, String settingsSortDirection) {
