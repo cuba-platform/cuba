@@ -94,6 +94,9 @@ public class UserManagementServiceBean implements UserManagementService {
     @Inject
     private DataManager dataManager;
 
+    @Inject
+    protected TimeSource timeSource;
+
     protected void checkUpdatePermission(Class entityClass) {
         checkPermission(entityClass, EntityOp.UPDATE);
     }
@@ -758,5 +761,18 @@ public class UserManagementServiceBean implements UserManagementService {
     @Override
     public boolean isAnonymousUser(String userLogin) {
         return serverConfig.getAnonymousLogin().equalsIgnoreCase(userLogin);
+    }
+
+    @Override
+    public List<UserSubstitution> getSubstitutedUsers(UUID userId) {
+        LoadContext<UserSubstitution> ctx = new LoadContext<>(UserSubstitution.class);
+        LoadContext.Query query = ctx.setQueryString("select us from sec$UserSubstitution us " +
+                "where us.user.id = :userId and (us.endDate is null or us.endDate >= :currentDate) " +
+                "and (us.startDate is null or us.startDate <= :currentDate) " +
+                "and (us.substitutedUser.active = true or us.substitutedUser.active is null) order by us.substitutedUser.name");
+        query.setParameter("userId", userId);
+        query.setParameter("currentDate", timeSource.currentTimestamp());
+        ctx.setView("app");
+        return dataManager.loadList(ctx);
     }
 }

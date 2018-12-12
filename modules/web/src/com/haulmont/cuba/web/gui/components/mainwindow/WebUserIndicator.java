@@ -17,10 +17,10 @@
 
 package com.haulmont.cuba.web.gui.components.mainwindow;
 
-import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.Dialogs;
 import com.haulmont.cuba.gui.components.mainwindow.UserIndicator;
+import com.haulmont.cuba.security.app.UserManagementService;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.entity.UserSubstitution;
 import com.haulmont.cuba.security.global.UserSession;
@@ -106,7 +106,8 @@ public class WebUserIndicator extends WebAbstractComponent<com.vaadin.ui.CssLayo
                 }
             }
             List<User> options = new ArrayList<>();
-            options.add(user);
+            User sessionUser = uss.getUserSession().getUser();
+            options.add(sessionUser);
 
             for (UserSubstitution substitution : substitutions) {
                 User substitutedUser = substitution.getSubstitutedUser();
@@ -177,19 +178,10 @@ public class WebUserIndicator extends WebAbstractComponent<com.vaadin.ui.CssLayo
     }
 
     protected List<UserSubstitution> getUserSubstitutions() {
-        TimeSource timeSource = beanLocator.get(TimeSource.NAME);
-        DataService dataService = beanLocator.get(DataService.NAME);
+        UserManagementService userManagementService = beanLocator.get(UserManagementService.NAME);
         UserSessionSource uss = beanLocator.get(UserSessionSource.NAME);
 
-        LoadContext<UserSubstitution> ctx = new LoadContext<>(UserSubstitution.class);
-        LoadContext.Query query = ctx.setQueryString("select us from sec$UserSubstitution us " +
-                "where us.user.id = :userId and (us.endDate is null or us.endDate >= :currentDate) " +
-                "and (us.startDate is null or us.startDate <= :currentDate) " +
-                "and (us.substitutedUser.active = true or us.substitutedUser.active is null) order by us.substitutedUser.name");
-        query.setParameter("userId", uss.getUserSession().getUser().getId());
-        query.setParameter("currentDate", timeSource.currentTimestamp());
-        ctx.setView("app");
-        return dataService.loadList(ctx);
+        return userManagementService.getSubstitutedUsers(uss.getUserSession().getUser().getId());
     }
 
     protected void revertToCurrentUser() {

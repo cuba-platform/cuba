@@ -19,6 +19,7 @@ package com.haulmont.cuba.security.app;
 
 import com.haulmont.cuba.security.entity.Group;
 import com.haulmont.cuba.security.entity.Role;
+import com.haulmont.cuba.security.entity.UserSubstitution;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
@@ -162,4 +163,12 @@ public interface UserManagementService {
      * @param userLogin user login
      */
     boolean isAnonymousUser(String userLogin);
+
+    /**
+     * Get list of substituted users by user id.
+     *
+     * @param userId user id
+     * @return list of substituted users
+     */
+    List<UserSubstitution> getSubstitutedUsers(UUID userId);
 }
