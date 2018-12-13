@@ -138,8 +138,14 @@ public class StandardDataContext implements DataContext {
         return merge(entity, true);
     }
 
+    /**
+     * Merge the given entity into the context.
+     *
+     * @param deep if true, the whole object graph with all references will be merged. Otherwise, only the passed entity
+     *             is merged.
+     * @return the instance which is tracked by the context
+     */
     @SuppressWarnings("unchecked")
-    @Override
     public <T extends Entity> T merge(T entity, boolean deep) {
         Preconditions.checkNotNullArgument(entity, "entity is null");
 

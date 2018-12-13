@@ -63,20 +63,6 @@ public interface DataContext {
     <T extends Entity> T merge(T entity);
 
     /**
-     * Merge the given entity into the context.
-     * <p>
-     * If an entity with the same identifier already exists in the context, the passed entity state is copied into
-     * it and the existing instance is returned. Otherwise, the passed instance is registered in the context and returned.
-     * <p>
-     * It's very important to continue work with the returned value because it can be a different object instance.
-     *
-     * @param deep if true, the whole object graph with all references will be merged. Otherwise, only the passed entity
-     *             is merged.
-     * @return the instance which is tracked by the context
-     */
-    <T extends Entity> T merge(T entity, boolean deep);
-
-    /**
      * Removes the entity from the context and registers it as deleted. The entity will be removed from the data store
      * upon subsequent call to {@link #commit()}.
      * <p>
