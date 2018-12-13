@@ -43,8 +43,8 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-public class WebCalendar<T> extends WebAbstractComponent<CubaCalendar>
-        implements Calendar<T>, InitializingBean {
+public class WebCalendar extends WebAbstractComponent<CubaCalendar>
+        implements Calendar, InitializingBean {
 
     protected final String TIME_FORMAT_12H = "12H";
     protected final String TIME_FORMAT_24H = "24H";

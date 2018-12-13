@@ -33,7 +33,7 @@ import java.util.Map;
 import java.util.TimeZone;
 import java.util.function.Consumer;
 
-public interface Calendar<T>
+public interface Calendar
         extends Component.BelongToFrame, Component.HasCaption, Component.HasIcon, HasContextHelp {
 
     String NAME = "calendar";
@@ -259,11 +259,11 @@ public interface Calendar<T>
         FORMAT_12H, FORMAT_24H
     }
 
-    class CalendarEventMoveEvent<E extends Entity> extends EventObject {
+    class CalendarEventMoveEvent extends EventObject {
         protected CalendarEvent calendarEvent;
         protected Date newStart;
 
-        public CalendarEventMoveEvent(Calendar<E> calendar, CalendarEvent calendarEvent, Date newStart) {
+        public CalendarEventMoveEvent(Calendar calendar, CalendarEvent calendarEvent, Date newStart) {
             super(calendar);
 
             this.calendarEvent = calendarEvent;
@@ -272,8 +272,8 @@ public interface Calendar<T>
 
         @SuppressWarnings("unchecked")
         @Override
-        public Calendar<E> getSource() {
-            return (Calendar<E>) super.getSource();
+        public Calendar getSource() {
+            return (Calendar) super.getSource();
         }
 
         /**
@@ -281,7 +281,7 @@ public interface Calendar<T>
          * @deprecated Use {@link #getSource()} instead
          */
         @Deprecated
-        public Calendar<E> getCalendar() {
+        public Calendar getCalendar() {
             return getSource();
         }
 
@@ -294,16 +294,16 @@ public interface Calendar<T>
         }
     }
 
-    class CalendarBackwardClickEvent<E extends Entity> extends EventObject {
+    class CalendarBackwardClickEvent extends EventObject {
 
-        public CalendarBackwardClickEvent(Calendar<E> calendar) {
+        public CalendarBackwardClickEvent(Calendar calendar) {
             super(calendar);
         }
 
         @SuppressWarnings("unchecked")
         @Override
-        public Calendar<E> getSource() {
-            return (Calendar<E>) super.getSource();
+        public Calendar getSource() {
+            return (Calendar) super.getSource();
         }
 
         /**
@@ -311,15 +311,15 @@ public interface Calendar<T>
          * @deprecated Use {@link #getSource()} instead
          */
         @Deprecated
-        public Calendar<E> getCalendar() {
+        public Calendar getCalendar() {
             return getSource();
         }
     }
 
-    class CalendarDateClickEvent<E extends Entity> extends EventObject {
+    class CalendarDateClickEvent extends EventObject {
         protected Date date;
 
-        public CalendarDateClickEvent(Calendar<E> calendar, Date date) {
+        public CalendarDateClickEvent(Calendar calendar, Date date) {
             super(calendar);
 
             this.date = date;
@@ -331,8 +331,8 @@ public interface Calendar<T>
 
         @SuppressWarnings("unchecked")
         @Override
-        public Calendar<E> getSource() {
-            return (Calendar<E>) super.getSource();
+        public Calendar getSource() {
+            return (Calendar) super.getSource();
         }
 
         /**
@@ -340,23 +340,23 @@ public interface Calendar<T>
          * @deprecated Use {@link #getSource()} instead
          */
         @Deprecated
-        public Calendar<E> getCalendar() {
+        public Calendar getCalendar() {
             return getSource();
         }
     }
 
-    class CalendarEventClickEvent<E extends Entity> extends EventObject {
+    class CalendarEventClickEvent extends EventObject {
         protected CalendarEvent calendarEvent;
-        protected E entity;
+        protected Entity entity;
 
-        public CalendarEventClickEvent(Calendar<E> calendar, CalendarEvent calendarEvent, @Nullable E entity) {
+        public CalendarEventClickEvent(Calendar calendar, CalendarEvent calendarEvent, @Nullable Entity entity) {
             super(calendar);
 
             this.calendarEvent = calendarEvent;
             this.entity = entity;
         }
 
-        public E getEntity() {
+        public Entity getEntity() {
             return entity;
         }
 
@@ -366,8 +366,8 @@ public interface Calendar<T>
 
         @SuppressWarnings("unchecked")
         @Override
-        public Calendar<E> getSource() {
-            return (Calendar<E>) super.getSource();
+        public Calendar getSource() {
+            return (Calendar) super.getSource();
         }
 
         /**
@@ -375,7 +375,7 @@ public interface Calendar<T>
          * @deprecated Use {@link #getSource()} instead
          */
         @Deprecated
-        public Calendar<E> getCalendar() {
+        public Calendar getCalendar() {
             return getSource();
         }
     }
@@ -392,13 +392,13 @@ public interface Calendar<T>
         }
     }
 
-    class CalendarEventResizeEvent<E extends Entity> extends EventObject {
+    class CalendarEventResizeEvent extends EventObject {
         protected CalendarEvent calendarEvent;
         protected Date newStart;
         protected Date newEnd;
         protected Entity entity;
 
-        public CalendarEventResizeEvent(Calendar<E> calendar, CalendarEvent calendarEvent, Date newStart,
+        public CalendarEventResizeEvent(Calendar calendar, CalendarEvent calendarEvent, Date newStart,
                                         Date newEnd, @Nullable Entity entity) {
             super(calendar);
 
@@ -408,6 +408,7 @@ public interface Calendar<T>
             this.entity = entity;
         }
 
+        @Nullable
         public Entity getEntity() {
             return entity;
         }
@@ -418,8 +419,8 @@ public interface Calendar<T>
 
         @SuppressWarnings("unchecked")
         @Override
-        public Calendar<E> getSource() {
-            return (Calendar<E>) super.getSource();
+        public Calendar getSource() {
+            return (Calendar) super.getSource();
         }
 
         /**
@@ -427,7 +428,7 @@ public interface Calendar<T>
          * @deprecated Use {@link #getSource()} instead
          */
         @Deprecated
-        public Calendar<E> getCalendar() {
+        public Calendar getCalendar() {
             return getSource();
         }
 
@@ -440,11 +441,11 @@ public interface Calendar<T>
         }
     }
 
-    class CalendarWeekClickEvent<E extends Entity> extends EventObject {
+    class CalendarWeekClickEvent extends EventObject {
         protected int week;
         protected int year;
 
-        public CalendarWeekClickEvent(Calendar<E> calendar, int week, int year) {
+        public CalendarWeekClickEvent(Calendar calendar, int week, int year) {
             super(calendar);
 
             this.week = week;
@@ -453,8 +454,8 @@ public interface Calendar<T>
 
         @SuppressWarnings("unchecked")
         @Override
-        public Calendar<E> getSource() {
-            return (Calendar<E>) super.getSource();
+        public Calendar getSource() {
+            return (Calendar) super.getSource();
         }
 
         /**
@@ -462,7 +463,7 @@ public interface Calendar<T>
          * @deprecated Use {@link #getSource()} instead
          */
         @Deprecated
-        public Calendar<E> getCalendar() {
+        public Calendar getCalendar() {
             return getSource();
         }
 
@@ -475,11 +476,11 @@ public interface Calendar<T>
         }
     }
 
-    class CalendarRangeSelectEvent<E extends Entity> extends EventObject {
+    class CalendarRangeSelectEvent extends EventObject {
         protected Date start;
         protected Date end;
 
-        public CalendarRangeSelectEvent(Calendar<E> calendar, Date start, Date end) {
+        public CalendarRangeSelectEvent(Calendar calendar, Date start, Date end) {
             super(calendar);
 
             this.start = start;
@@ -488,8 +489,8 @@ public interface Calendar<T>
 
         @SuppressWarnings("unchecked")
         @Override
-        public Calendar<E> getSource() {
-            return (Calendar<E>) super.getSource();
+        public Calendar getSource() {
+            return (Calendar) super.getSource();
         }
 
         /**
@@ -497,7 +498,7 @@ public interface Calendar<T>
          * @deprecated Use {@link #getSource()} instead
          */
         @Deprecated
-        public Calendar<E> getCalendar() {
+        public Calendar getCalendar() {
             return getSource();
         }
 
