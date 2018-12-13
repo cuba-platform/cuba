@@ -521,7 +521,7 @@ public class WebFileUploadField extends WebAbstractUploadField<CubaFileUploadWra
     @Override
     public void setShowFileName(boolean showFileName) {
         component.setShowFileName(showFileName);
-        if (showFileName && StringUtils.isNotEmpty(fileName)) {
+        if (showFileName) {
             component.setFileNameButtonCaption(fileName);
         }
     }
