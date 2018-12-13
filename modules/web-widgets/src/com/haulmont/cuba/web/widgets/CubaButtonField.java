@@ -16,14 +16,16 @@
 
 package com.haulmont.cuba.web.widgets;
 
-import com.vaadin.v7.data.util.converter.Converter;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
-import com.vaadin.v7.ui.CustomField;
+import com.vaadin.ui.CustomField;
 import com.vaadin.v7.ui.themes.BaseTheme;
 
-public class CubaButtonField extends CustomField {
-    protected Converter captionFormatter;
+import java.util.Locale;
+
+public class CubaButtonField<V> extends CustomField<V> {
+    protected CaptionFormatter<V> captionFormatter;
+    protected V value;
 
     public CubaButtonField() {
         setPrimaryStyleName("c-buttonfield");
@@ -42,29 +44,27 @@ public class CubaButtonField extends CustomField {
     }
 
     @Override
-    public Class getType() {
-        return Object.class;
-    }
-
-    @Override
-    protected void setInternalValue(Object newValue) {
-        //noinspection unchecked
-        super.setInternalValue(newValue);
+    protected void doSetValue(V newValue) {
+        this.value = newValue;
 
         if (captionFormatter == null) {
             getContent().setCaption(newValue == null ? "" : newValue.toString());
         } else {
-            //noinspection unchecked
-            String caption = (String) captionFormatter.convertToPresentation(newValue, String.class, getLocale());
+            String caption = captionFormatter.convertToPresentation(newValue, getLocale());
             getContent().setCaption(caption);
         }
     }
 
-    public Converter getCaptionFormatter() {
+    @Override
+    public V getValue() {
+        return value;
+    }
+
+    public CaptionFormatter<V> getCaptionFormatter() {
         return captionFormatter;
     }
 
-    public void setCaptionFormatter(Converter captionFormatter) {
+    public void setCaptionFormatter(CaptionFormatter<V> captionFormatter) {
         this.captionFormatter = captionFormatter;
     }
 
@@ -74,5 +74,9 @@ public class CubaButtonField extends CustomField {
 
     public void removeClickListener(Button.ClickListener listener) {
         getContent().removeClickListener(listener);
+    }
+
+    public interface CaptionFormatter<V> {
+        String convertToPresentation(V value, Locale locale);
     }
 }

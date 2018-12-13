@@ -30,6 +30,7 @@ import com.haulmont.cuba.gui.components.data.TableItems;
 import com.haulmont.cuba.gui.components.data.table.DatasourceTableItems;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.model.InstanceContainer;
 import org.dom4j.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -470,13 +471,32 @@ public interface Table<E extends Entity>
      * );
      * }</pre>
      *
-     * todo document deprecation
-     *
      * @param item entity item
      * @return datasource containing the item
+     * @deprecated Use {@link #getInstanceContainer(Entity)} instead.
      */
     @Deprecated
     Datasource getItemDatasource(Entity item);
+
+    /**
+     * This method returns the InstanceContainer which contains the provided item. It can be used in data-aware components,
+     * created in generated columns. <br>
+     *
+     * <b>Do not save to final variables, just get it from table when you need.</b>
+     *
+     * <pre>{@code
+     * carsTable.addGeneratedColumn("name", car -> {
+     *     TextField<String> textField = uiComponents.create(TextField.NAME);
+     *     textField.setValueSource(new ContainerValueSource<>(carsTable.getInstanceContainer(car),"name"));
+     *     textField.setValue(car.getName());
+     *     return textField;
+     * });
+     * }</pre>
+     *
+     * @param item entity item
+     * @return InstanceContainer containing the item
+     */
+    InstanceContainer<E> getInstanceContainer(E item);
 
     /**
      * Allows rendering of an arbitrary {@link Component} inside a table cell.

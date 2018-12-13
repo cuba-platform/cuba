@@ -41,6 +41,7 @@ import com.haulmont.cuba.gui.components.data.TableItems;
 import com.haulmont.cuba.gui.components.data.meta.ContainerDataUnit;
 import com.haulmont.cuba.gui.components.data.meta.EntityTableItems;
 import com.haulmont.cuba.gui.components.data.meta.DatasourceDataUnit;
+import com.haulmont.cuba.gui.components.data.table.ContainerTableItems;
 import com.haulmont.cuba.gui.components.data.table.DatasourceTableItems;
 import com.haulmont.cuba.gui.components.data.table.SortableDatasourceTableItems;
 import com.haulmont.cuba.gui.components.sys.ShowInfoAction;
@@ -51,6 +52,8 @@ import com.haulmont.cuba.gui.data.aggregation.Aggregation;
 import com.haulmont.cuba.gui.data.aggregation.Aggregations;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import com.haulmont.cuba.gui.model.CollectionContainer;
+import com.haulmont.cuba.gui.model.DataComponents;
+import com.haulmont.cuba.gui.model.InstanceContainer;
 import com.haulmont.cuba.gui.presentations.Presentations;
 import com.haulmont.cuba.gui.presentations.PresentationsImpl;
 import com.haulmont.cuba.gui.screen.FrameOwner;
@@ -135,6 +138,8 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
     protected PersistenceManagerClient persistenceManagerClient;
     protected DatatypeRegistry datatypeRegistry;
     protected DynamicAttributesTools dynamicAttributesTools;
+    protected DataComponents dataComponents;
+    protected ViewRepository viewRepository;
 
     protected Locale locale;
 
@@ -153,7 +158,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
 
     protected Map<Table.Column, String> requiredColumns; // lazily initialized Map
 
-    protected Map<Entity, Datasource> fieldDatasources; // lazily initialized WeakHashMap;
+    protected Map<Entity, Object> fieldDatasources; // lazily initialized WeakHashMap;
 
     protected TableComposition componentComposition;
 
@@ -247,6 +252,16 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
     @Inject
     public void setDynamicAttributesTools(DynamicAttributesTools dynamicAttributesTools) {
         this.dynamicAttributesTools = dynamicAttributesTools;
+    }
+
+    @Inject
+    public void setDataComponents(DataComponents dataComponents) {
+        this.dataComponents = dataComponents;
+    }
+
+    @Inject
+    public void setViewRepository(ViewRepository viewRepository) {
+        this.viewRepository = viewRepository;
     }
 
     @Override
@@ -516,7 +531,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
             fieldDatasources = new WeakHashMap<>();
         }
 
-        Datasource fieldDatasource = fieldDatasources.get(item);
+        Datasource fieldDatasource = (Datasource) fieldDatasources.get(item);
 
         if (fieldDatasource == null) {
             fieldDatasource = DsBuilder.create()
@@ -533,6 +548,29 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
         }
 
         return fieldDatasource;
+    }
+
+    @Override
+    public InstanceContainer<E> getInstanceContainer(E item) {
+        if (fieldDatasources == null) {
+            fieldDatasources = new WeakHashMap<>();
+        }
+
+        //noinspection unchecked
+        InstanceContainer<E> instanceContainer = (InstanceContainer<E>) fieldDatasources.get(item);
+
+        if (instanceContainer == null) {
+            ContainerTableItems containerTableItems = (ContainerTableItems) getItems();
+
+            instanceContainer = dataComponents.createInstanceContainer(containerTableItems.getEntityMetaClass().getJavaClass());
+            View view = viewRepository.getView(containerTableItems.getEntityMetaClass(), "_local");
+            instanceContainer.setView(view);
+            instanceContainer.setItem(item);
+
+            fieldDatasources.put(item, instanceContainer);
+        }
+
+        return instanceContainer;
     }
 
     protected void addGeneratedColumnInternal(Object id, com.vaadin.v7.ui.Table.ColumnGenerator generator) {
