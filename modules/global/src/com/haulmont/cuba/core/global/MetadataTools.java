@@ -22,13 +22,12 @@ import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.DatatypeRegistry;
 import com.haulmont.chile.core.datatypes.TimeZoneAwareDatatype;
-import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import com.haulmont.chile.core.model.*;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesTools;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.app.dynamicattributes.PropertyType;
-import com.haulmont.cuba.core.entity.*;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.entity.*;
 import com.haulmont.cuba.core.entity.annotation.IgnoreUserTimeZone;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import org.apache.commons.lang3.StringUtils;
@@ -170,7 +169,7 @@ public class MetadataTools {
             return "";
         } else if (value instanceof Instance) {
             return getInstanceName((Instance) value);
-        } else if (value instanceof EnumClass && value instanceof Enum) {
+        } else if (value instanceof Enum) {
             return messages.getMessage((Enum) value, userSessionSource.getLocale());
         } else if (value instanceof Collection) {
             //noinspection unchecked
