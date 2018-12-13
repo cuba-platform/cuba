@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2017 Haulmont.
+ * Copyright (c) 2008-2018 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,18 +28,17 @@ import com.haulmont.chile.core.model.impl.AbstractInstance;
 import com.haulmont.cuba.core.entity.*;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.persistence.FetchGroupUtils;
-import com.haulmont.cuba.gui.model.CollectionChangeType;
 import com.haulmont.cuba.gui.model.DataContext;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.persistence.queries.FetchGroup;
 import org.eclipse.persistence.queries.FetchGroupTracker;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 
 import javax.annotation.Nullable;
-import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -48,6 +47,8 @@ import java.util.stream.Collectors;
  * Standard implementation of {@link DataContext} which commits data to {@link DataManager}.
  */
 public class StandardDataContext implements DataContext {
+
+    private static final Logger log = LoggerFactory.getLogger(StandardDataContext.class);
 
     private ApplicationContext applicationContext;
 
@@ -89,6 +90,7 @@ public class StandardDataContext implements DataContext {
         return applicationContext.getBean(DataManager.NAME, DataManager.class);
     }
 
+    @Nullable
     @Override
     public DataContext getParent() {
         return parentContext;
@@ -100,11 +102,6 @@ public class StandardDataContext implements DataContext {
         if (!(parentContext instanceof StandardDataContext))
             throw new IllegalArgumentException("Unsupported DataContext type: " + parentContext.getClass().getName());
         this.parentContext = (StandardDataContext) parentContext;
-
-        for (Entity entity : this.parentContext.getAll()) {
-            Entity copy = copyGraph(entity, new HashMap<>());
-            merge(copy);
-        }
     }
 
     @Override
@@ -127,120 +124,99 @@ public class StandardDataContext implements DataContext {
     }
 
     @SuppressWarnings("unchecked")
+    @Nullable
+    @Override
+    public <T extends Entity> T find(T entity) {
+        Preconditions.checkNotNullArgument(entity, "entity is null");
+        return (T) find(entity.getClass(), entity.getId());
+    }
+
+    @SuppressWarnings("unchecked")
     @Override
     public boolean contains(Entity entity) {
         Preconditions.checkNotNullArgument(entity, "entity is null");
         return find(entity.getClass(), entity.getId()) != null;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <T extends Entity> T merge(T entity) {
-        return merge(entity, true);
-    }
-
-    /**
-     * Merge the given entity into the context.
-     *
-     * @param deep if true, the whole object graph with all references will be merged. Otherwise, only the passed entity
-     *             is merged.
-     * @return the instance which is tracked by the context
-     */
-    @SuppressWarnings("unchecked")
-    public <T extends Entity> T merge(T entity, boolean deep) {
         Preconditions.checkNotNullArgument(entity, "entity is null");
 
         disableListeners = true;
         T result;
         try {
-            result = (T) internalMerge(entity);
-            if (deep) {
-                getMetadataTools().traverseAttributes(entity, new MergingAttributeVisitor());
-            }
+            Set<Entity> merged = Sets.newIdentityHashSet();
+            result = (T) internalMerge(entity, merged);
         } finally {
             disableListeners = false;
         }
         return result;
     }
 
-    protected Entity internalMerge(Entity entity) {
+    @Override
+    public EntitySet merge(Collection<? extends Entity> entities) {
+        Preconditions.checkNotNullArgument(entities, "entity collection is null");
+
+        List<Entity> managedList = new ArrayList<>(entities.size());
+        disableListeners = true;
+        try {
+            Set<Entity> merged = Sets.newIdentityHashSet();
+
+            for (Entity entity : entities) {
+                Entity managed = internalMerge(entity, merged);
+                managedList.add(managed);
+            }
+        } finally {
+            disableListeners = false;
+        }
+        return EntitySet.of(managedList);
+    }
+
+    protected Entity internalMerge(Entity entity, Set<Entity> mergedSet) {
         Map<Object, Entity> entityMap = content.computeIfAbsent(entity.getClass(), aClass -> new HashMap<>());
-        Entity managedInstance = entityMap.get(entity.getId());
+        Entity managed = entityMap.get(entity.getId());
 
-        if (managedInstance != null) {
-            if (managedInstance != entity) {
-                copyState(entity, managedInstance);
-                copyReferences(entity, managedInstance);
+        if (mergedSet.contains(entity)) {
+            if (managed != null) {
+                return managed;
+            } else {
+                // should never happen
+                log.debug("Instance was merged but managed instance is null: {}", entity);
             }
-            return managedInstance;
+        }
+        mergedSet.add(entity);
 
+        if (managed == null) {
+            managed = copyEntity(entity);
+            entityMap.put(managed.getId(), managed);
+
+            mergeState(entity, managed, mergedSet);
+
+            managed.addPropertyChangeListener(propertyChangeListener);
+
+            if (getEntityStates().isNew(managed)) {
+                modifiedInstances.add(managed);
+                fireChangeListener(managed);
+            }
+            return managed;
         } else {
-            mergeReferences(entity);
-
-            entityMap.put(entity.getId(), entity);
-
-            entity.addPropertyChangeListener(propertyChangeListener);
-
-            if (getEntityStates().isNew(entity)) {
-                modifiedInstances.add(entity);
-                fireChangeListener(entity);
+            if (managed != entity) {
+                mergeState(entity, managed, mergedSet);
             }
-            return entity;
+            return managed;
         }
     }
 
-    protected void copyReferences(Entity srcEntity, Entity dstEntity) {
-        EntityStates entityStates = getEntityStates();
-
-        for (MetaProperty property : getMetadata().getClassNN(srcEntity.getClass()).getProperties()) {
-            String propertyName = property.getName();
-            if (!property.getRange().isClass()
-                    || property.getRange().getCardinality().isMany()
-                    || property.isReadOnly()
-                    || !entityStates.isLoaded(srcEntity, propertyName)
-                    || !entityStates.isLoaded(dstEntity, propertyName)) {
-                continue;
-            }
-            Object value = srcEntity.getValue(propertyName);
-            if (!entityStates.isNew(srcEntity) || value != null) {
-                if (value == null) {
-                    dstEntity.setValue(propertyName, null);
-                } else {
-                    Entity srcRef = (Entity) value;
-                    Entity dstRef = internalMerge(srcRef);
-                    ((AbstractInstance) dstEntity).setValue(propertyName, dstRef, false);
-                    if (getMetadataTools().isEmbedded(property)) {
-                        EmbeddedPropertyChangeListener listener = new EmbeddedPropertyChangeListener(dstEntity);
-                        dstRef.addPropertyChangeListener(listener);
-                        embeddedPropertyListeners.computeIfAbsent(dstEntity, e -> new HashMap<>()).put(propertyName, listener);
-                    }
-                }
-            }
+    protected Entity copyEntity(Entity srcEntity) {
+        Entity dstEntity;
+        try {
+            dstEntity = srcEntity.getClass().getDeclaredConstructor().newInstance();
+        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
+            throw new RuntimeException("Cannot create an instance of " + srcEntity.getClass(), e);
         }
-    }
-
-    protected void mergeReferences(Entity entity) {
-        EntityStates entityStates = getEntityStates();
-
-        for (MetaProperty property : getMetadata().getClassNN(entity.getClass()).getProperties()) {
-            String propertyName = property.getName();
-            if (!property.getRange().isClass()
-                    || property.getRange().getCardinality().isMany()
-                    || property.isReadOnly()
-                    || !entityStates.isLoaded(entity, propertyName)) {
-                continue;
-            }
-            Object value = entity.getValue(propertyName);
-            if (value != null) {
-                Entity srcRef = (Entity) value;
-                Entity dstRef = internalMerge(srcRef);
-                ((AbstractInstance) entity).setValue(propertyName, dstRef, false);
-                if (getMetadataTools().isEmbedded(property)) {
-                    EmbeddedPropertyChangeListener listener = new EmbeddedPropertyChangeListener(entity);
-                    dstRef.addPropertyChangeListener(listener);
-                    embeddedPropertyListeners.computeIfAbsent(entity, e -> new HashMap<>()).put(propertyName, listener);
-                }
-            }
-        }
+        copySystemState(srcEntity, dstEntity);
+        return dstEntity;
     }
 
     /*
@@ -250,7 +226,7 @@ public class StandardDataContext implements DataContext {
      * (4) src.det -> dst.det : if src.version >= dst.version, copy all loaded      - normal situation after commit (and in setParent?)
      *                          if src.version < dst.version, do nothing            - should not happen
      */
-    protected void copyState(Entity srcEntity, Entity dstEntity) {
+    protected void mergeState(Entity srcEntity, Entity dstEntity, Set<Entity> mergedSet) {
         EntityStates entityStates = getEntityStates();
 
         boolean srcNew = entityStates.isNew(srcEntity);
@@ -258,6 +234,9 @@ public class StandardDataContext implements DataContext {
         if (srcNew && !dstNew) {
             return;
         }
+
+        boolean replaceCollections = dstNew && !srcNew;
+
         if (!srcNew && !dstNew) {
             if (srcEntity instanceof Versioned) {
                 int srcVer = Numbers.nullToZero(((Versioned) srcEntity).getVersion());
@@ -265,131 +244,106 @@ public class StandardDataContext implements DataContext {
                 if (srcVer < dstVer) {
                     return;
                 }
+                replaceCollections = srcVer > dstVer;
             }
         }
-        for (MetaProperty property : getMetadata().getClassNN(srcEntity.getClass()).getProperties()) {
-            String name = property.getName();
-            if ((!property.getRange().isClass() || property.getRange().getCardinality().isMany()) // local and collections
-                    && !property.isReadOnly()                                                     // read-write
-                    && (srcNew || entityStates.isLoaded(srcEntity, name))                         // loaded src
-                    && (dstNew || entityStates.isLoaded(dstEntity, name))) {                      // loaded dst
-                Object value = srcEntity.getValue(name);
+
+        mergeSystemState(srcEntity, dstEntity);
+
+        MetaClass metaClass = getMetadata().getClassNN(srcEntity.getClass());
+
+        for (MetaProperty property : metaClass.getProperties()) {
+            String propertyName = property.getName();
+            if (!property.getRange().isClass()                                             // local
+                    && !property.isReadOnly()                                              // read-write
+                    && (srcNew || entityStates.isLoaded(srcEntity, propertyName))          // loaded src
+                    && (dstNew || entityStates.isLoaded(dstEntity, propertyName))) {       // loaded dst
+
+                Object value = srcEntity.getValue(propertyName);
 
                 // ignore null values in new source entities
                 if (srcNew && value == null) {
                     continue;
                 }
 
-                // copy only non-null collections
-                if (property.getRange().getCardinality().isMany()) {
-                    if (value != null) {
-                        Collection copy = createObservableCollection((Collection) value, dstEntity.getValue(name), dstEntity);
-                        dstEntity.setValue(name, copy);
-                    }
+                dstEntity.setValue(propertyName, value);
+            }
+        }
+
+        for (MetaProperty property : metaClass.getProperties()) {
+            String propertyName = property.getName();
+            if (property.getRange().isClass()                                              // refs and collections
+                    && !property.isReadOnly()                                              // read-write
+                    && (srcNew || entityStates.isLoaded(srcEntity, propertyName))          // loaded src
+                    && (dstNew || entityStates.isLoaded(dstEntity, propertyName))) {       // loaded dst
+
+                Object value = srcEntity.getValue(propertyName);
+
+                // ignore null values in new source entities
+                if (srcNew && value == null) {
                     continue;
                 }
 
-                // all other cases
-                dstEntity.setValue(name, value);
-            }
-        }
-        copySystemState(srcEntity, dstEntity);
-    }
+                if (value == null) {
+                    dstEntity.setValue(propertyName, null);
+                    continue;
+                }
 
-    @SuppressWarnings("unchecked")
-    protected Collection createObservableCollection(Collection srcCollection, Collection dstCollection, Entity dstEntity) {
-        Collection newDstCollection = srcCollection instanceof List ? new ArrayList() : new LinkedHashSet();
-        if (dstCollection == null) {
-            newDstCollection.addAll(srcCollection);
-        } else {
-            newDstCollection.addAll(dstCollection);
-            for (Object o : srcCollection) {
-                if (!newDstCollection.contains(o))
-                    newDstCollection.add(o);
-            }
-        }
-        BiConsumer<CollectionChangeType, Collection> onChanged = (changeType, changed) -> modified(dstEntity);
-        return newDstCollection instanceof List ?
-                new ObservableList(((List) newDstCollection), onChanged) :
-                new ObservableSet(((Set) newDstCollection), onChanged);
-    }
-
-    /**
-     * Creates a deep copy of the given graph.
-     *
-     * @param srcEntity source entity
-     * @param copied    map of already copied instances to their copies
-     * @return          copy of the given graph
-     */
-    @SuppressWarnings("unchecked")
-    protected Entity copyGraph(Entity srcEntity, Map<Entity, Entity> copied) {
-        Entity existingCopy = copied.get(srcEntity);
-        if (existingCopy != null)
-            return existingCopy;
-
-        EntityStates entityStates = getEntityStates();
-        boolean srcNew = entityStates.isNew(srcEntity);
-
-        Entity dstEntity;
-        try {
-            dstEntity = srcEntity.getClass().newInstance();
-        } catch (InstantiationException | IllegalAccessException e) {
-            throw new RuntimeException("Cannot create an instance of " + srcEntity.getClass(), e);
-        }
-        copyIdAndVersion(srcEntity, dstEntity);
-
-        copied.put(srcEntity, dstEntity);
-
-        for (MetaProperty property : getMetadata().getClassNN(srcEntity.getClass()).getProperties()) {
-            String name = property.getName();
-            if (!property.isReadOnly()
-                    && (srcNew || entityStates.isLoaded(srcEntity, name))) {
-                AnnotatedElement annotatedElement = property.getAnnotatedElement();
-                if (annotatedElement instanceof Field) {
-                    Field field = (Field) annotatedElement;
-                    field.setAccessible(true);
-                    try {
-                        Object value = field.get(srcEntity);
-                        Object newValue;
-                        if (value != null) {
-                            if (!property.getRange().isClass()) {
-                                newValue = value;
-                            } else if (!property.getRange().getCardinality().isMany()) {
-                                newValue = copyGraph((Entity) value, copied);
-                            } else {
-                                Collection dstCollection = value instanceof List ? new ArrayList() : new LinkedHashSet();
-                                for (Object item : (Collection) value) {
-                                    dstCollection.add(copyGraph((Entity) item, copied));
-                                }
-                                newValue = dstCollection;
-                            }
-                            if (newValue != null) {
-                                field.set(dstEntity, newValue);
-                            }
+                if (value instanceof Collection) {
+                    if (value instanceof List) {
+                        mergeList((List) value, dstEntity, property.getName(), replaceCollections, mergedSet);
+                    } else if (value instanceof Set) {
+                        mergeSet((Set) value, dstEntity, property.getName(), replaceCollections, mergedSet);
+                    } else {
+                        throw new UnsupportedOperationException("Unsupported collection type: " + value.getClass().getName());
+                    }
+                } else {
+                    Entity srcRef = (Entity) value;
+                    if (!mergedSet.contains(srcRef)) {
+                        Entity managedRef = internalMerge(srcRef, mergedSet);
+                        ((AbstractInstance) dstEntity).setValue(propertyName, managedRef, false);
+                        if (getMetadataTools().isEmbedded(property)) {
+                            EmbeddedPropertyChangeListener listener = new EmbeddedPropertyChangeListener(dstEntity);
+                            managedRef.addPropertyChangeListener(listener);
+                            embeddedPropertyListeners.computeIfAbsent(dstEntity, e -> new HashMap<>()).put(propertyName, listener);
                         }
-                    } catch (IllegalAccessException e) {
-                        throw new RuntimeException("Error copying state of attribute " + name, e);
+                    } else {
+                        Entity managedRef = find(srcRef.getClass(), srcRef.getId());
+                        if (managedRef != null) {
+                            ((AbstractInstance) dstEntity).setValue(propertyName, managedRef, false);
+                        } else {
+                            // should never happen
+                            log.debug("Instance was merged but managed instance is null: {}", srcRef);
+                        }
                     }
                 }
             }
         }
-        copySystemState(srcEntity, dstEntity);
-        return dstEntity;
     }
 
     @SuppressWarnings("unchecked")
-    protected void copyIdAndVersion(Entity srcEntity, Entity dstEntity) {
-        if (dstEntity instanceof BaseGenericIdEntity)
+    protected void copySystemState(Entity srcEntity, Entity dstEntity) {
+        if (dstEntity instanceof BaseGenericIdEntity) {
             ((BaseGenericIdEntity) dstEntity).setId(srcEntity.getId());
-        else if (dstEntity instanceof AbstractNotPersistentEntity)
+
+            BaseEntityInternalAccess.copySystemState((BaseGenericIdEntity) srcEntity, (BaseGenericIdEntity) dstEntity);
+
+            if (srcEntity instanceof FetchGroupTracker && dstEntity instanceof FetchGroupTracker) {
+                FetchGroup srcFetchGroup = ((FetchGroupTracker) srcEntity)._persistence_getFetchGroup();
+                ((FetchGroupTracker) dstEntity)._persistence_setFetchGroup(srcFetchGroup);
+            }
+
+        } else if (dstEntity instanceof AbstractNotPersistentEntity) {
             ((AbstractNotPersistentEntity) dstEntity).setId((UUID) srcEntity.getId());
+            BaseEntityInternalAccess.setNew((AbstractNotPersistentEntity) dstEntity, BaseEntityInternalAccess.isNew((BaseGenericIdEntity) srcEntity));
+        }
 
         if (dstEntity instanceof Versioned) {
             ((Versioned) dstEntity).setVersion(((Versioned) srcEntity).getVersion());
         }
     }
 
-    protected void copySystemState(Entity srcEntity, Entity dstEntity) {
+    protected void mergeSystemState(Entity srcEntity, Entity dstEntity) {
         if (dstEntity instanceof BaseGenericIdEntity) {
             BaseEntityInternalAccess.copySystemState((BaseGenericIdEntity) srcEntity, (BaseGenericIdEntity) dstEntity);
 
@@ -407,32 +361,84 @@ public class StandardDataContext implements DataContext {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    protected void copyValue(Object dstObject, Field field, Object srcValue) throws IllegalAccessException {
-        if (srcValue instanceof Collection) {
-            Collection srcCollection = (Collection) srcValue;
-            Collection dstCollection = (Collection) field.get(dstObject);
-            Collection newDstCollection = srcValue instanceof List ? new ArrayList() : new LinkedHashSet();
-            if (dstCollection == null) {
-                newDstCollection.addAll(srcCollection);
+    protected void mergeList(List<Entity> list, Entity managedEntity, String propertyName, boolean replace,
+                             Set<Entity> mergedSet) {
+        if (replace) {
+            List<Entity> managedRefs = new ArrayList<>(list.size());
+            for (Entity entity : list) {
+                Entity managedRef = internalMerge(entity, mergedSet);
+                managedRefs.add(managedRef);
+            }
+            List<Entity> dstList = createObservableList(managedRefs, managedEntity);
+            managedEntity.setValue(propertyName, dstList);
+
+        } else {
+            List<Entity> dstList = managedEntity.getValue(propertyName);
+            if (dstList == null) {
+                dstList = createObservableList(managedEntity);
+                managedEntity.setValue(propertyName, dstList);
+            }
+            if (dstList.size() == 0) {
+                for (Entity srcRef : list) {
+                    dstList.add(internalMerge(srcRef, mergedSet));
+                }
             } else {
-                newDstCollection.addAll(dstCollection);
-                for (Object o : srcCollection) {
-                    if (!newDstCollection.contains(o))
-                        newDstCollection.add(o);
+                for (Entity srcRef : list) {
+                    Entity managedRef = internalMerge(srcRef, mergedSet);
+                    if (!dstList.contains(managedRef)) {
+                        dstList.add(managedRef);
+                    }
                 }
             }
-            BiConsumer<CollectionChangeType, Collection> onChanged = (changeType, changed) -> modified((Entity) dstObject);
-            Collection observable = newDstCollection instanceof List ?
-                    new ObservableList(((List) newDstCollection), onChanged) :
-                    new ObservableSet(((Set) newDstCollection), onChanged);
-            field.set(dstObject, observable);
-        } else {
-            field.set(dstObject, srcValue);
         }
     }
 
-    @SuppressWarnings("unchecked")
+    protected void mergeSet(Set<Entity> set, Entity managedEntity, String propertyName, boolean replace,
+                            Set<Entity> mergedSet) {
+        if (replace) {
+            Set<Entity> managedRefs = new LinkedHashSet<>(set.size());
+            for (Entity entity : set) {
+                Entity managedRef = internalMerge(entity, mergedSet);
+                managedRefs.add(managedRef);
+            }
+            Set<Entity> dstList = createObservableSet(managedRefs, managedEntity);
+            managedEntity.setValue(propertyName, dstList);
+
+        } else {
+            Set<Entity> dstSet = managedEntity.getValue(propertyName);
+            if (dstSet == null) {
+                dstSet = createObservableSet(managedEntity);
+                managedEntity.setValue(propertyName, dstSet);
+            }
+            if (dstSet.size() == 0) {
+                for (Entity srcRef : set) {
+                    dstSet.add(internalMerge(srcRef, mergedSet));
+                }
+            } else {
+                for (Entity srcRef : set) {
+                    Entity managedRef = internalMerge(srcRef, mergedSet);
+                    dstSet.add(managedRef);
+                }
+            }
+        }
+    }
+
+    protected List<Entity> createObservableList(Entity notifiedEntity) {
+        return createObservableList(new ArrayList<>(), notifiedEntity);
+    }
+
+    protected List<Entity> createObservableList(List<Entity> list, Entity notifiedEntity) {
+        return new ObservableList<>(list, (changeType, changes) -> modified(notifiedEntity));
+    }
+
+    protected Set<Entity> createObservableSet(Entity notifiedEntity) {
+        return createObservableSet(new LinkedHashSet<>(), notifiedEntity);
+    }
+
+    protected ObservableSet<Entity> createObservableSet(Set<Entity> set, Entity notifiedEntity) {
+        return new ObservableSet<>(set, (changeType, changes) -> modified(notifiedEntity));
+    }
+
     @Override
     public void remove(Entity entity) {
         Preconditions.checkNotNullArgument(entity, "entity is null");
@@ -584,7 +590,7 @@ public class StandardDataContext implements DataContext {
     protected Set<Entity> commitToParentContext() {
         HashSet<Entity> committedEntities = new HashSet<>();
         for (Entity entity : modifiedInstances) {
-            Entity merged = parentContext.merge(entity, false);
+            Entity merged = parentContext.merge(entity);
             parentContext.modifiedInstances.add(merged);
             committedEntities.add(merged);
         }
@@ -595,14 +601,19 @@ public class StandardDataContext implements DataContext {
     }
 
     protected void mergeCommitted(Set<Entity> committed) {
+        // transform into sorted collection to have reproducible behavior
+        List<Entity> entitiesToMerge = new ArrayList<>();
         for (Entity entity : committed) {
             if (contains(entity)) {
-                merge(entity, false);
+                entitiesToMerge.add(entity);
             }
         }
+        entitiesToMerge.sort(Comparator.comparing(Object::hashCode));
+
+        merge(entitiesToMerge);
     }
 
-    protected Collection<Entity> getAll() {
+    public Collection<Entity> getAll() {
         List<Entity> resultList = new ArrayList<>();
         for (Map<Object, Entity> entityMap : content.values()) {
             resultList.addAll(entityMap.values());
@@ -685,72 +696,7 @@ public class StandardDataContext implements DataContext {
         public void propertyChanged(Instance.PropertyChangeEvent e) {
             if (!disableListeners) {
                 modifiedInstances.add(entity);
-                StandardDataContext.this.fireChangeListener(entity);
-            }
-        }
-    }
-
-    protected class MergingAttributeVisitor implements EntityAttributeVisitor {
-
-        @Override
-        public boolean skip(MetaProperty property) {
-            return !property.getRange().isClass() || property.isReadOnly();
-        }
-
-        @Override
-        public void visit(Entity e, MetaProperty property) {
-            if (!getEntityStates().isLoaded(e, property.getName()))
-                return;
-            Object value = e.getValue(property.getName());
-            if (value != null) {
-                if (value instanceof Collection) {
-                    if (value instanceof List) {
-                        mergeList((List) value, e, property.getName());
-                    } else if (value instanceof Set) {
-                        mergeSet((Set) value, e, property.getName());
-                    } else {
-                        throw new UnsupportedOperationException("Unsupported collection type: " + value.getClass().getName());
-                    }
-                } else {
-                    mergeInstance((Entity) value, e, property.getName());
-                }
-            }
-        }
-
-        @SuppressWarnings("unchecked")
-        protected void mergeList(List list, Entity owningEntity, String propertyName) {
-            for (ListIterator<Entity> it = list.listIterator(); it.hasNext();) {
-                Entity entity = it.next();
-                Entity managed = internalMerge(entity);
-                if (managed != entity) {
-                    it.set(managed);
-                }
-            }
-            if (!(list instanceof ObservableList)) {
-                ObservableList observableList = new ObservableList<>(list, (changeType, changes) -> modified(owningEntity));
-                ((AbstractInstance) owningEntity).setValue(propertyName, observableList, false);
-            }
-        }
-
-        @SuppressWarnings("unchecked")
-        protected void mergeSet(Set set, Entity owningEntity, String propertyName) {
-            for (Entity entity : new ArrayList<Entity>(set)) {
-                Entity managed = internalMerge(entity);
-                if (managed != entity) {
-                    set.remove(entity);
-                    set.add(managed);
-                }
-            }
-            if (!(set instanceof ObservableList)) {
-                ObservableSet observableSet = new ObservableSet<>(set, (changeType, changes) -> modified(owningEntity));
-                ((AbstractInstance) owningEntity).setValue(propertyName, observableSet, false);
-            }
-        }
-
-        protected void mergeInstance(Entity entity, Entity owningEntity, String propertyName) {
-            Entity managed = internalMerge(entity);
-            if (managed != entity) {
-                ((AbstractInstance) owningEntity).setValue(propertyName, managed, false);
+                fireChangeListener(entity);
             }
         }
     }

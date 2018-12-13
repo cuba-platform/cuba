@@ -45,6 +45,8 @@
 
     <logger name="com.haulmont.cuba.web.sys.remoting.WebRemoteProxyBeanCreator" level="INFO"/>
 
+    <logger name="com.haulmont.cuba.gui.model.impl" level="DEBUG"/>
+
     <!-- End CUBA -->
 
     <logger name="com.vaadin" level="WARN"/>

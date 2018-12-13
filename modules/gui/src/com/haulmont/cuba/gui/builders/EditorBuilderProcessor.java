@@ -37,6 +37,7 @@ import com.haulmont.cuba.gui.screen.*;
 import com.haulmont.cuba.gui.screen.compatibility.LegacyFrame;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.HashMap;
 import java.util.function.Consumer;
@@ -83,12 +84,8 @@ public class EditorBuilderProcessor {
         EditorScreen<E> editorScreen = (EditorScreen<E>) screen;
         editorScreen.setEntityToEdit(entity);
 
-        DataContext parentDataContext = builder.getParentDataContext();
-        if (parentDataContext != null) {
-            UiControllerUtils.getScreenData(screen).getDataContext().setParent(parentDataContext);
-        } else if (container instanceof Nested) {
-            setupParentDataContextForComposition(origin, screen, (Nested) container);
-        }
+        DataContext parentDataContext = setupParentDataContext(
+                origin, screen, container, builder.getParentDataContext());
 
         if (container != null) {
             CollectionContainer<E> ct = container;
@@ -108,12 +105,12 @@ public class EditorBuilderProcessor {
                         }
 
                         if (ct instanceof Nested || !addsFirst) {
-                            ct.getMutableItems().add(editorScreen.getEditedEntity());
+                            ct.getMutableItems().add(getCommittedEntity(editorScreen, parentDataContext));
                         } else {
-                            ct.getMutableItems().add(0, editorScreen.getEditedEntity());
+                            ct.getMutableItems().add(0, getCommittedEntity(editorScreen, parentDataContext));
                         }
                     } else {
-                        ct.replaceItem(editorScreen.getEditedEntity());
+                        ct.replaceItem(getCommittedEntity(editorScreen, parentDataContext));
                     }
                 }
                 if (listComponent instanceof com.haulmont.cuba.gui.components.Component.Focusable) {
@@ -151,6 +148,16 @@ public class EditorBuilderProcessor {
         }
 
         return (S) screen;
+    }
+
+    protected <E extends Entity> E getCommittedEntity(EditorScreen<E> editorScreen, @Nullable DataContext parentDataContext) {
+        E editedEntity = editorScreen.getEditedEntity();
+        if (parentDataContext != null) {
+            E trackedEntity = parentDataContext.find(editedEntity);
+            if (trackedEntity != null) // makes sense for NoopDataContext
+                return trackedEntity;
+        }
+        return editedEntity;
     }
 
     protected <E extends Entity> E initEntity(EditorBuilder<E> builder, CollectionContainer<E> container) {
@@ -239,17 +246,24 @@ public class EditorBuilderProcessor {
         }
     }
 
-    protected void setupParentDataContextForComposition(FrameOwner origin, Screen screen, Nested container) {
-        InstanceContainer masterContainer = container.getMaster();
-        String property = container.getProperty();
+    @Nullable
+    protected DataContext setupParentDataContext(FrameOwner origin, Screen screen, InstanceContainer container, DataContext parentContext) {
+        DataContext dataContext = parentContext;
+        if (dataContext == null && container instanceof Nested) {
+            InstanceContainer masterContainer = ((Nested) container).getMaster();
+            String property = ((Nested) container).getProperty();
 
-        MetaClass masterMetaClass = masterContainer.getEntityMetaClass();
-        MetaProperty metaProperty = masterMetaClass.getPropertyNN(property);
+            MetaClass masterMetaClass = masterContainer.getEntityMetaClass();
+            MetaProperty metaProperty = masterMetaClass.getPropertyNN(property);
 
-        if (metaProperty.getType() == MetaProperty.Type.COMPOSITION) {
-            ScreenData screenData = UiControllerUtils.getScreenData(origin);
-            UiControllerUtils.getScreenData(screen).getDataContext().setParent(screenData.getDataContext());
+            if (metaProperty.getType() == MetaProperty.Type.COMPOSITION) {
+                dataContext = UiControllerUtils.getScreenData(origin).getDataContext();
+            }
         }
+        if (dataContext != null) {
+            UiControllerUtils.getScreenData(screen).getDataContext().setParent(dataContext);
+        }
+        return dataContext;
     }
 
     protected boolean isCommitCloseAction(CloseAction closeAction) {

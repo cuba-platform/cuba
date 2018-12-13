@@ -16,6 +16,7 @@
 
 package spec.cuba.web.datacontext
 
+
 import com.haulmont.cuba.client.testsupport.TestSupport
 import com.haulmont.cuba.core.app.DataService
 import com.haulmont.cuba.core.entity.BaseEntityInternalAccess
@@ -24,20 +25,16 @@ import com.haulmont.cuba.core.global.CommitContext
 import com.haulmont.cuba.core.global.EntityStates
 import com.haulmont.cuba.core.global.Metadata
 import com.haulmont.cuba.core.sys.persistence.CubaEntityFetchGroup
-import com.haulmont.cuba.gui.model.DataContext
 import com.haulmont.cuba.gui.model.DataComponents
-import com.haulmont.cuba.gui.model.impl.DataContextAccessor
+import com.haulmont.cuba.gui.model.DataContext
 import com.haulmont.cuba.gui.model.impl.NoopDataContext
 import com.haulmont.cuba.security.entity.Role
 import com.haulmont.cuba.security.entity.User
 import com.haulmont.cuba.security.entity.UserRole
-import com.haulmont.cuba.web.testmodel.sales.Address
-import com.haulmont.cuba.web.testmodel.sales.Customer
-import com.haulmont.cuba.web.testmodel.sales.Order
-import com.haulmont.cuba.web.testmodel.sales.OrderLine
-import com.haulmont.cuba.web.testmodel.sales.Product
+import com.haulmont.cuba.web.testmodel.sales.*
 import com.haulmont.cuba.web.testsupport.TestContainer
 import com.haulmont.cuba.web.testsupport.TestServiceProxy
+import org.eclipse.persistence.internal.queries.EntityFetchGroup
 import org.eclipse.persistence.queries.FetchGroupTracker
 import org.junit.ClassRule
 import spock.lang.Shared
@@ -73,10 +70,11 @@ class DataContextTest extends Specification {
 
         User entityInContext = context.find(User, user1.getId())
 
-        then: "returned the same instance"
+        then: "returned another instance"
 
+        entityInContext == mergedUser1
         entityInContext.is(mergedUser1)
-        entityInContext.is(user1)
+        !entityInContext.is(user1)
 
         when: "merging another instance with the same id"
 
@@ -87,7 +85,6 @@ class DataContextTest extends Specification {
         then: "returned instance which was already in context"
 
         mergedUser11.is(mergedUser1)
-        mergedUser11.is(user1)
         !mergedUser11.is(user11)
     }
 
@@ -98,18 +95,18 @@ class DataContextTest extends Specification {
 
         // an object being merged
         User user1 = new User(login: 'u1', name: 'User 1', userRoles: [])
-        makeDetached(user1)
+        makeDetached(user1, ['login', 'name', 'userRoles'])
         Role role1 = new Role(name: 'Role1')
-        makeDetached(role1)
+        makeDetached(role1, ['name'])
         UserRole user1Role1 = new UserRole(user: user1, role: role1)
-        makeDetached(user1Role1)
+        makeDetached(user1Role1, ['user', 'role'])
         user1.userRoles.add(user1Role1)
 
         // somewhere in the object graph another object with the same id
         User user11 = new User(id: user1.id, login: 'u11', name: 'User 11')
-        makeDetached(user11)
+        makeDetached(user11, ['login', 'name'])
         UserRole user11Role1 = new UserRole(user: user11, role: role1)
-        makeDetached(user11Role1)
+        makeDetached(user11Role1, ['user', 'role'])
         user1.getUserRoles().add(user11Role1)
 
         //  user1
@@ -123,7 +120,7 @@ class DataContextTest extends Specification {
 
         then: "context contains first merged instance"
 
-        mergedUser1.is(user1)
+        !mergedUser1.is(user1)
         context.find(User, user1.id).is(mergedUser1)
 
         and: "merged instance has local attributes of the second object"
@@ -133,9 +130,14 @@ class DataContextTest extends Specification {
 
         and:
 
-        context.find(UserRole, user1Role1.id).is(user1Role1)
-        context.find(UserRole, user11Role1.id).is(user11Role1)
-        context.find(Role, role1.id).is(role1)
+        context.find(UserRole, user1Role1.id) == user1Role1
+        !context.find(UserRole, user1Role1.id).is(user1Role1)
+
+        context.find(UserRole, user11Role1.id) == user11Role1
+        !context.find(UserRole, user11Role1.id).is(user11Role1)
+
+        context.find(Role, role1.id) == role1
+        !context.find(Role, role1.id).is(role1)
 
         and: "second object in the graph is now the same instance"
 
@@ -180,7 +182,7 @@ class DataContextTest extends Specification {
 
         then: "context contains first instance"
 
-        mergedUser1.is(user1)
+        mergedUser1 == user1
         mergedUser11.is(mergedUser1)
         context.find(User, user1.id).is(mergedUser1)
 
@@ -196,11 +198,9 @@ class DataContextTest extends Specification {
 
         and:
 
-        context.find(UserRole, user11Role1.id).is(user11Role1)
-        context.find(Role, role1.id).is(role1)
+        context.find(UserRole, user11Role1.id) == user11Role1
+        context.find(Role, role1.id) == role1
     }
-
-
 
     def "merge new"() throws Exception {
         DataContext context = factory.createDataContext()
@@ -270,32 +270,26 @@ class DataContextTest extends Specification {
 
         when: "merge graph then modify and remove some instances"
 
-        User user1 = createDetached(User)
-        user1.login = "u1"
-        user1.name = "User 1"
-        user1.userRoles = new ArrayList<>()
+        User user1 = new User(login: 'u1', name: 'User 1', userRoles: [])
+        makeDetached(user1)
 
-        Role role1 = createDetached(Role)
-        role1.name = "Role 1"
+        Role role1 = new Role(name: 'Role 1')
+        makeDetached(role1)
 
-        Role role2 = createDetached(Role)
-        role1.name = "Role 2"
+        Role role2 = new Role(name: 'Role 2')
+        makeDetached(role2)
 
-        UserRole user1Role1 = createDetached(UserRole)
-        user1Role1.user = user1
-        user1Role1.role = role1
-
+        UserRole user1Role1 = new UserRole(user: user1, role: role1)
+        makeDetached(user1Role1)
         user1.userRoles.add(user1Role1)
 
-        UserRole user1Role2 = createDetached(UserRole)
-        user1Role2.user = user1
-        user1Role2.role = role2
-
+        UserRole user1Role2 = new UserRole(user: user1, role: role2)
+        makeDetached(user1Role2)
         user1.userRoles.add(user1Role2)
 
         context.merge(user1)
 
-        role1.name = "Role 1 modified"
+        context.find(Role, role1.id).name = 'Role 1 modified'
 
         user1.userRoles.remove(user1Role2)
         context.remove(user1Role2)
@@ -318,334 +312,6 @@ class DataContextTest extends Specification {
 
         removed.size() == 1
         removed.contains(user1Role2)
-    }
-
-    def "copy state"() throws Exception {
-
-        DataContext context = factory.createDataContext()
-
-        User src, dst
-
-        when: "(1) src.new > dst.new : copy all non-null"
-
-        src = new User()
-        src.setLogin("u-src")
-
-        dst = new User()
-        dst.id = src.id
-        dst.login = "u-dst"
-        dst.name = "Dest User"
-        dst.userRoles = new ArrayList<>()
-
-        DataContextAccessor.copyState(context, src, dst)
-
-        then:
-
-        entityStates.isNew(dst)
-        dst.getVersion() == null
-        dst.login == "u-src"
-        dst.name == "Dest User"
-        dst.userRoles != null
-
-        when: "(2) src.new -> dst.det : do nothing"
-
-        src = new User()
-        src.login = "u-src"
-
-        dst = new User()
-        dst.id = src.id
-        dst.version = 1
-        dst.login = "u-dst"
-        dst.name = "Dest User"
-        dst.userRoles = new ArrayList<>()
-        entityStates.makeDetached(dst)
-
-        DataContextAccessor.copyState(context, src, dst)
-
-        then:
-
-        entityStates.isDetached(dst)
-        dst.getVersion() != null
-        dst.login == "u-dst"
-        dst.name == "Dest User"
-        dst.userRoles != null
-
-        when: "(3) src.det -> dst.new : copy all loaded, make detached"
-
-        src = new User()
-        src.version = 1
-        src.login = "u-src"
-        entityStates.makeDetached(src)
-
-        dst = new User()
-        dst.id = src.id
-        dst.login = "u-dst"
-        dst.name = "Dest User"
-        dst.userRoles = new ArrayList<>()
-
-        DataContextAccessor.copyState(context, src, dst)
-
-        then:
-
-        entityStates.isDetached(dst)
-        dst.version == 1
-        dst.login == "u-src"
-        dst.name == null
-        dst.userRoles != null
-
-        when: "(4) src.det -> dst.det : if src.version >= dst.version, copy all loaded"
-
-        src = new User()
-        src.version = 2
-        src.login = "u-src"
-        entityStates.makeDetached(src)
-
-        dst = new User()
-        dst.id = src.id
-        dst.version = 1
-        dst.login = "u-dst"
-        dst.name = "Dest User"
-        dst.userRoles = new ArrayList<>()
-        entityStates.makeDetached(dst)
-
-        DataContextAccessor.copyState(context, src, dst)
-
-        then:
-
-        entityStates.isDetached(dst)
-        dst.version == 2
-        dst.login == "u-src"
-        dst.name == null
-        dst.userRoles != null
-
-        when: "(4) src.det -> dst.det : if src.version < dst.version, do nothing"
-
-        src = new User()
-        src.version = 1
-        src.login = "u-src"
-        entityStates.makeDetached(src)
-
-        dst = new User()
-        dst.id = src.id
-        dst.version = 2
-        dst.login = "u-dst"
-        dst.name = "Dest User"
-        dst.userRoles = new ArrayList<>()
-        entityStates.makeDetached(dst)
-
-        DataContextAccessor.copyState(context, src, dst)
-
-        then:
-
-        entityStates.isDetached(dst)
-        dst.version == 2
-        dst.login == "u-dst"
-        dst.name == "Dest User"
-        dst.userRoles != null
-    }
-
-    def "child context has correct object graph"() throws Exception {
-
-        DataContext context = factory.createDataContext()
-
-        TestServiceProxy.mock(DataService, Mock(DataService) {
-            commit(_) >> Collections.emptySet()
-        })
-
-        when: "merge instance into parent context"
-
-        User user1 = makeSaved(new User(login: 'u1', name: 'User 1', userRoles: []))
-        Role role1 = makeSaved(new Role(name: 'Role 1'))
-        UserRole user1Role1 = makeSaved(new UserRole(user: user1, role: role1))
-        user1.userRoles.add(user1Role1)
-
-        context.merge(user1)
-
-        then:
-
-        !context.hasChanges()
-
-        when:
-
-        DataContext childContext = factory.createDataContext()
-        childContext.setParent(context)
-
-        def childUser = childContext.find(User, user1.id)
-        def childRole = childContext.find(Role, role1.id)
-        def childUserRole = childContext.find(UserRole, user1Role1.id)
-
-        then:
-
-        childUser == user1
-        !childUser.is(user1)
-        childUser.userRoles[0] == childUserRole
-
-        childRole == role1
-        !childRole.is(role1)
-
-        childUserRole == user1Role1
-        !childUserRole.is(user1Role1)
-
-        childUserRole.user?.is(childUser)
-        childUserRole.role?.is(childRole)
-
-        !context.hasChanges()
-        !childContext.hasChanges()
-    }
-
-    def "parent context"() throws Exception {
-
-        DataContext ctx1 = factory.createDataContext()
-
-        TestServiceProxy.mock(DataService, Mock(DataService) {
-            commit(_) >> Collections.emptySet()
-        })
-
-        when: "merge instance into parent context"
-
-        User user1_ctx1 = ctx1.merge(new User(login: 'u1', name: 'User1'))
-
-        DataContext ctx2 = factory.createDataContext()
-
-        ctx2.setParent(ctx1)
-
-        then: "it exists in child context too, but as a different instance"
-
-        User user1_ctx2 = ctx2.find(User, user1_ctx1.id)
-        user1_ctx2 != null
-        !user1_ctx2.is(user1_ctx1)
-
-        when: "add detail instance to collection of the master object in child context and commit it"
-
-        UserRole ur1_ctx2 = ctx2.merge(new UserRole(user: user1_ctx2))
-
-        user1_ctx2.userRoles = []
-        user1_ctx2.userRoles.add(ur1_ctx2)
-
-        def modified = []
-        ctx2.addPreCommitListener({ e ->
-            modified.addAll(e.modifiedInstances)
-        })
-
-        ctx2.commit()
-
-        then: "child context commits both detail and master instances to parent context"
-
-        modified.size() == 2
-        modified.contains(user1_ctx2)
-        modified.contains(ur1_ctx2)
-
-        user1_ctx1.userRoles != null
-        user1_ctx1.userRoles.size() == 1
-
-        UserRole ur1_ctx1 = ctx1.find(UserRole, ur1_ctx2.id)
-        user1_ctx1.userRoles[0].is(ur1_ctx1)
-
-        when: "committing parent context"
-
-        modified.clear()
-
-        ctx1.addPreCommitListener({ e ->
-            modified.addAll(e.modifiedInstances)
-        })
-
-        ctx1.commit()
-
-        then: "parent context commits both detail and master instances"
-
-        modified.size() == 2
-        modified.contains(user1_ctx1)
-        modified.contains(ur1_ctx1)
-    }
-
-    def "parent context with new instances"() throws Exception {
-
-        DataContext ctx1 = factory.createDataContext()
-
-        TestServiceProxy.mock(DataService, Mock(DataService) {
-            commit(_) >> Collections.emptySet()
-        })
-
-        when: "merge instance into parent context"
-
-        User user1_ctx1 = ctx1.merge(new User(login: 'u1', name: 'User 1'))
-
-        DataContext ctx2 = factory.createDataContext()
-        ctx2.setParent(ctx1)
-
-        then:
-
-        User user1_ctx2 = ctx2.find(User, user1_ctx1.id)
-        user1_ctx2 != null
-        !user1_ctx2.is(user1_ctx1)
-        isNew(user1_ctx2)
-
-        when:
-
-        UserRole ur1_ctx2 = ctx2.merge(new UserRole(user: user1_ctx2))
-
-        Role r1_ctx2 = ctx2.merge(new Role(name: 'r1'))
-        ur1_ctx2.role = r1_ctx2
-
-        ctx2.commit()
-
-        then:
-
-        User user1 = ctx1.find(User, user1_ctx1.id)
-        user1.is(user1_ctx1)
-
-        UserRole ur1 = ctx1.find(UserRole, ur1_ctx2.id)
-        ur1.user.is(user1_ctx1)
-
-        Role r1 = ctx1.find(Role, r1_ctx2.id)
-        ur1.role.is(r1)
-    }
-
-    def "parent context - collections"() throws Exception {
-
-        DataContext ctx1 = factory.createDataContext()
-
-        TestServiceProxy.mock(DataService, Mock(DataService) {
-            commit(_) >> Collections.emptySet()
-        })
-
-        when: "merge instance into parent context"
-
-        User user1_ctx1 = ctx1.merge(new User(login: 'u1', name: 'User 1'))
-
-        DataContext ctx2 = factory.createDataContext()
-        ctx2.setParent(ctx1)
-
-        then:
-
-        User user1_ctx2 = ctx2.find(User, user1_ctx1.id)
-        user1_ctx2 != null
-        !user1_ctx2.is(user1_ctx1)
-        isNew(user1_ctx2)
-
-        when:
-
-        UserRole ur1_ctx2 = ctx2.merge(new UserRole(user: user1_ctx2))
-
-        Role r1_ctx2 = ctx2.merge(new Role(name: 'r1'))
-        ur1_ctx2.role = r1_ctx2
-
-        ctx2.commit()
-
-        then:
-
-        User user1 = ctx1.find(User, user1_ctx1.id)
-        user1.is(user1_ctx1)
-
-        UserRole ur1 = ctx1.find(UserRole, ur1_ctx2.id)
-        ur1.user.is(user1_ctx1)
-
-        Role r1 = ctx1.find(Role, r1_ctx2.id)
-        ur1.role.is(r1)
-    }
-
-    boolean isNew(def entity) {
-        BaseEntityInternalAccess.isNew(entity)
     }
 
     def "remove"() {
@@ -707,7 +373,7 @@ class DataContextTest extends Specification {
         Product product2 = new Product(name: "p2", price: 200)
         OrderLine line = new OrderLine(quantity: 10, product: product1)
         makeDetached(product1, product2, line)
-        context.merge(line)
+        def line1 = context.merge(line)
 
         Collection committed = []
         TestServiceProxy.mock(DataService, Mock(DataService) {
@@ -721,14 +387,14 @@ class DataContextTest extends Specification {
 
         when:
 
-        line.quantity = 20
+        line1.quantity = 20
         context.commit()
 
         then:
 
-        def line1 = context.find(OrderLine, line.id)
-        line1.quantity == 20
-        line1.product == product2
+        def line2 = context.find(OrderLine, line.id)
+        line2.quantity == 20
+        line2.product == product2
 
     }
 
@@ -810,10 +476,9 @@ class DataContextTest extends Specification {
         ((FetchGroupTracker) order1)._persistence_setFetchGroup(new CubaEntityFetchGroup(['id', 'version', 'number']))
 
         Order order2 = makeSaved(new Order(id: order1.id, number: "111", orderLines: []))
-        OrderLine orderLine21 = makeSaved(new OrderLine(quantity: 10))
-        orderLine21.order = order2
-        order2.orderLines.add(orderLine21)
         ((FetchGroupTracker) order2)._persistence_setFetchGroup(new CubaEntityFetchGroup(['id', 'version', 'number', 'orderLines']))
+        OrderLine orderLine21 = makeSaved(new OrderLine(quantity: 10, order: order2))
+        order2.orderLines.add(orderLine21)
 
         when:
 
@@ -822,7 +487,7 @@ class DataContextTest extends Specification {
 
         then:
 
-        order2_1.is(order1)
+        order2_1 == order1
         order2_1.orderLines.size() == 1
         ((FetchGroupTracker) order2_1)._persistence_getFetchGroup().attributeNames.containsAll(['id', 'version', 'number', 'orderLines'])
 
@@ -837,11 +502,11 @@ class DataContextTest extends Specification {
             [makeSaved(new Order(id: order1.id, number: 'committed through delegate'))].toSet()
         }
 
-        dataContext.merge(order1)
+        def order2 = dataContext.merge(order1)
 
         when:
 
-        order1.number = '222'
+        order2.number = '222'
         dataContext.commit()
 
         then:
@@ -937,14 +602,15 @@ class DataContextTest extends Specification {
         customer.address.__propertyChangeListeners.isEmpty()
     }
 
-    private <T> T createDetached(Class<T> entityClass) {
-        def entity = metadata.create(entityClass)
-        entityStates.makeDetached(entity)
-        entity
-    }
-
     private void makeDetached(def entity) {
         entityStates.makeDetached(entity)
+    }
+
+    private void makeDetached(def entity, List<String> attributes) {
+        entityStates.makeDetached(entity)
+        ((FetchGroupTracker) entity)._persistence_setFetchGroup(
+                new EntityFetchGroup(['id', 'version', 'deleteTs'] + attributes))
+
     }
 
     private void makeDetached(Entity... entities) {

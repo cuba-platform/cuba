@@ -19,6 +19,7 @@ package com.haulmont.cuba.gui.model;
 import com.haulmont.bali.events.Subscription;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.CommitContext;
+import com.haulmont.cuba.core.global.EntitySet;
 import com.haulmont.cuba.gui.screen.InstallSubject;
 import com.haulmont.cuba.gui.screen.Subscribe;
 
@@ -46,6 +47,13 @@ public interface DataContext {
     <T extends Entity<K>, K> T find(Class<T> entityClass, K entityId);
 
     /**
+     * Returns the instance of entity with the same id if it exists in this context.
+     * @return entity instance or null if there is no such entity in the context
+     */
+    @Nullable
+    <T extends Entity> T find(T entity);
+
+    /**
      * Returns true if the context contains the given entity (distinguished by its class and id).
      */
     boolean contains(Entity entity);
@@ -54,13 +62,33 @@ public interface DataContext {
      * Merge the given entity into the context. The whole object graph with all references will be merged.
      * <p>
      * If an entity with the same identifier already exists in the context, the passed entity state is copied into
-     * it and the existing instance is returned. Otherwise, the passed instance is registered in the context and returned.
+     * it and the existing instance is returned. Otherwise, a copy of the passed instance is registered in the context
+     * and returned.
      * <p>
-     * It's very important to continue work with the returned value because it can be a different object instance.
+     * WARNING: It's very important to continue work with the returned value because it is always a different object instance.
+     * The only case when you get the same instance is if it was previously returned from the same context as a
+     * result of {@link #find(Class, Object)} or {@code merge()}.
      *
      * @return the instance which is tracked by the context
      */
     <T extends Entity> T merge(T entity);
+
+    /**
+     * Merge the given entities into the context. The whole object graph for each element of the collection with all
+     * references will be merged.
+     * <p>
+     * For each element, if an entity with the same identifier already exists in the context, the passed entity state is
+     * copied into it and the existing instance is added to the returned set. Otherwise, a copy of the passed instance
+     * is registered in the context and added to the returned set.
+     * <p>
+     * WARNING: It's very important to continue work with instances from the returned set because they are always different
+     * object instances. The only case when you get the same instance is if it was previously returned from the same
+     * context as a result of {@link #find(Class, Object)} or {@code merge()}.
+     *
+     * @return set of instances tracked by the context
+     * @see #merge(Entity)
+     */
+    EntitySet merge(Collection<? extends Entity> entities);
 
     /**
      * Removes the entity from the context and registers it as deleted. The entity will be removed from the data store

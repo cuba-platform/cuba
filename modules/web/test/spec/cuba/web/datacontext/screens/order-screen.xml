@@ -1,0 +1,15 @@
+<window xmlns="http://schemas.haulmont.com/cuba/screen/window.xsd">
+    <data>
+        <instance id="orderDc"
+                  class="com.haulmont.cuba.web.testmodel.sales.Order">
+            <collection id="linesDc" property="orderLines"/>
+        </instance>
+    </data>
+    <layout>
+        <table id="itemsTable" dataContainer="linesDc">
+            <columns>
+                <column id="quantity"/>
+            </columns>
+        </table>
+    </layout>
+</window>
