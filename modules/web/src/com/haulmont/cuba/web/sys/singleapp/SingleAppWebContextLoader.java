@@ -190,7 +190,7 @@ public class SingleAppWebContextLoader extends WebAppContextLoader {
             }
             DispatcherServlet frontServlet;
             try {
-                Class frontServletClass = ReflectionHelper.getClass("com.haulmont.cuba.web.sys.AppFrontServlet");
+                Class frontServletClass = ReflectionHelper.getClass("com.haulmont.frontservlet.AppFrontServlet");
                 frontServlet = (DispatcherServlet) ReflectionHelper.newInstance(frontServletClass,
                         FRONT_CONTEXT_NAME, (Supplier<ApplicationContext>) AppContext::getApplicationContext);
             } catch (NoSuchMethodException e) {
