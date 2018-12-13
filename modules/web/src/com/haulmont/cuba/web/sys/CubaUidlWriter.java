@@ -33,6 +33,7 @@ import javax.servlet.ServletContext;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -71,7 +72,9 @@ public class CubaUidlWriter extends UidlWriter {
                 String resourceUri = processResourceUri(uri);
                 String resourcePath = getResourceActualPath(resourceUri, overridePath);
 
-                if (!manager.getDependencies().containsKey(resourcePath)) {
+                Class<?> registeredConnector = manager.getDependencies().get(resourcePath);
+                if (registeredConnector == null
+                        || Objects.equals(registeredConnector, connectorClass)) {
                     if (resourcePath.endsWith(JAVASCRIPT_EXTENSION)) {
                         String url = manager.registerDependency(resourcePath, connectorClass);
                         dependencies.add(new Dependency(Dependency.Type.JAVASCRIPT, url));
