@@ -65,7 +65,7 @@ import java.util.function.Supplier;
  * @see LookupPickerField
  */
 public interface PickerField<V extends Entity> extends Field<V>, ActionsHolder, Buffered,
-        LookupComponent, Component.Focusable, HasOptionCaptionProvider<V>, HasCaptionMode {
+        LookupComponent, Component.Focusable, HasOptionCaptionProvider<V>, SupportsUserAction<V>, HasCaptionMode {
 
     String NAME = "pickerField";
 
@@ -464,7 +464,7 @@ public interface PickerField<V extends Entity> extends Field<V>, ActionsHolder, 
             }
 
             // Set the value as if the user had set it
-            ((SupportsUserAction) pickerField).setValueFromUser(newValue);
+            pickerField.setValueFromUser(newValue);
 
             afterSelect(items);
             if (afterLookupSelectionHandler != null) {
@@ -574,7 +574,7 @@ public interface PickerField<V extends Entity> extends Field<V>, ActionsHolder, 
                 }
 
                 // Set the value as if the user had set it
-                ((SupportsUserAction) pickerField).setValueFromUser(pickerField.getEmptyValue());
+                pickerField.setValueFromUser(pickerField.getEmptyValue());
             }
         }
     }

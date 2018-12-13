@@ -52,7 +52,7 @@ import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 import static com.haulmont.cuba.gui.ComponentsHelper.findActionById;
 
 public class WebPickerField<V extends Entity> extends WebV8AbstractField<CubaPickerField<V>, V, V>
-        implements PickerField<V>, SecuredActionsHolder, InitializingBean, SupportsUserAction<V> {
+        implements PickerField<V>, SecuredActionsHolder, InitializingBean {
 
     /* Beans */
     protected Metadata metadata;
