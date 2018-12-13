@@ -588,12 +588,20 @@ public class UiControllerDependencyInjector {
             return ((LegacyFrame) frame.getFrameOwner()).getDsContext().get(name);
 
         } else if (DsContext.class.isAssignableFrom(type)) {
-            // Injecting the DsContext
-            return ((LegacyFrame) frame.getFrameOwner()).getDsContext();
+            if (frame.getFrameOwner() instanceof LegacyFrame) {
+                // Injecting the DsContext
+                return ((LegacyFrame) frame.getFrameOwner()).getDsContext();
+            } else {
+                throw new IllegalStateException("CDI - DsContext can be injected only into LegacyFrame inheritors");
+            }
 
         } else if (DataSupplier.class.isAssignableFrom(type)) {
-            // Injecting the DataSupplier
-            return ((LegacyFrame) frame.getFrameOwner()).getDsContext().getDataSupplier();
+            if (frame.getFrameOwner() instanceof LegacyFrame) {
+                // Injecting the DataSupplier
+                return ((LegacyFrame) frame.getFrameOwner()).getDsContext().getDataSupplier();
+            } else {
+                throw new IllegalStateException("CDI - DataSupplier can be injected only into LegacyFrame inheritors");
+            }
 
         } else if (FrameContext.class.isAssignableFrom(type)) {
             // Injecting the FrameContext
