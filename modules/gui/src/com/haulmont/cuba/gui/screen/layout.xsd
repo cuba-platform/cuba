@@ -1486,6 +1486,7 @@
         </xs:complexContent>
     </xs:complexType>
 
+    <!-- PasswordField -->
     <xs:complexType name="passwordFieldComponent">
         <xs:complexContent>
             <xs:extension base="baseTextComponent">
@@ -1626,14 +1627,20 @@
     <!-- SearchField-->
     <xs:complexType name="searchFieldComponent">
         <xs:complexContent>
-            <xs:extension base="baseFieldComponent">
+            <xs:extension base="baseComponent">
                 <xs:sequence>
                     <xs:element name="validator" minOccurs="0" type="validatorType"/>
                 </xs:sequence>
 
                 <xs:attributeGroup ref="hasBuffered"/>
-                <xs:attributeGroup ref="hasOptions"/>
                 <xs:attributeGroup ref="hasCaptionSource"/>
+                <xs:attributeGroup ref="hasContextHelp"/>
+                <xs:attributeGroup ref="hasDatasource"/>
+                <xs:attributeGroup ref="hasEditable"/>
+                <xs:attributeGroup ref="hasRequirements"/>
+                <xs:attributeGroup ref="hasTabIndex"/>
+
+                <xs:attribute name="optionsDatasource" type="xs:string"/>
 
                 <xs:attribute name="nullName" type="resourceString"/>
                 <xs:attribute name="inputPrompt" type="resourceString"/>
@@ -1641,8 +1648,6 @@
                 <xs:attribute name="minSearchStringLength" type="xs:integer"/>
                 <xs:attribute name="mode" type="searchMode"/>
                 <xs:attribute name="escapeValueForLike" type="xs:boolean"/>
-
-                <xs:attributeGroup ref="hasTabIndex"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
