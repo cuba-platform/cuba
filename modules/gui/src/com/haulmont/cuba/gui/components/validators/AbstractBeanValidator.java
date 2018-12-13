@@ -31,7 +31,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
 
-public class AbstractBeanValidator implements Consumer<Object> {
+public class AbstractBeanValidator implements Consumer {
 
     protected Class beanClass;
     protected String beanProperty;
