@@ -416,6 +416,14 @@
         </xs:restriction>
     </xs:simpleType>
 
+    <xs:simpleType name="contentMode">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="TEXT"/>
+            <xs:enumeration value="PREFORMATTED"/>
+            <xs:enumeration value="HTML"/>
+        </xs:restriction>
+    </xs:simpleType>
+
     <!-- Style names -->
 
     <xs:simpleType name="labelStylename">
@@ -957,6 +965,16 @@
         <xs:attribute name="description" type="resourceString"/>
     </xs:attributeGroup>
 
+    <xs:attributeGroup name="hasHtmlCaption">
+        <xs:attributeGroup ref="hasHtmlCaptionProp"/>
+        <xs:attributeGroup ref="hasHtmlDescription"/>
+    </xs:attributeGroup>
+
+    <xs:attributeGroup name="hasHtmlDescription">
+        <xs:attribute name="description" type="resourceString"/>
+        <xs:attribute name="descriptionAsHtml" type="xs:boolean"/>
+    </xs:attributeGroup>
+
     <xs:attributeGroup name="hasContextHelp">
         <xs:attribute name="contextHelpText" type="resourceString"/>
         <xs:attribute name="contextHelpTextHtmlEnabled" type="xs:boolean"/>
@@ -964,6 +982,11 @@
 
     <xs:attributeGroup name="hasCaptionProp">
         <xs:attribute name="caption" type="resourceString"/>
+    </xs:attributeGroup>
+
+    <xs:attributeGroup name="hasHtmlCaptionProp">
+        <xs:attribute name="caption" type="resourceString"/>
+        <xs:attribute name="captionAsHtml" type="xs:boolean"/>
     </xs:attributeGroup>
 
     <xs:attributeGroup name="hasRequirements">
@@ -1034,14 +1057,14 @@
     <xs:complexType name="baseMainElement">
         <xs:attribute name="id" type="xs:string"/>
         <xs:attribute name="icon" type="xs:string"/>
-        <xs:attribute name="caption" type="xs:string"/>
-        <xs:attribute name="description" type="xs:string"/>
         <xs:attribute name="width" type="componentSize"/>
         <xs:attribute name="height" type="componentSize"/>
         <xs:attribute name="align" type="align"/>
         <xs:attribute name="stylename" type="xs:string"/>
         <xs:attribute name="enable" type="xs:boolean"/>
         <xs:attribute name="visible" type="xs:boolean"/>
+
+        <xs:attributeGroup ref="hasHtmlCaption"/>
     </xs:complexType>
 
     <!-- Utils -->
@@ -1219,12 +1242,12 @@
         <xs:attributeGroup ref="hasDatasource"/>
         <xs:attributeGroup ref="hasDataContainer"/>
         <xs:attributeGroup ref="hasContextHelp"/>
+        <xs:attributeGroup ref="hasHtmlDescription"/>
 
         <xs:attributeGroup ref="hasCss"/>
 
         <xs:attribute name="stylename" type="labelStylename"/>
         <xs:attribute name="value" type="resourceString"/>
-        <xs:attribute name="description" type="resourceString"/>
         <xs:attribute name="htmlEnabled" type="xs:boolean"/>
     </xs:complexType>
 
@@ -1283,7 +1306,7 @@
     <!-- BaseComponent -->
     <xs:complexType name="baseComponent">
         <xs:attributeGroup ref="hasId"/>
-        <xs:attributeGroup ref="hasCaption"/>
+        <xs:attributeGroup ref="hasHtmlCaption"/>
         <xs:attributeGroup ref="hasIcon"/>
         <xs:attributeGroup ref="hasSize"/>
         <xs:attributeGroup ref="hasStyle"/>
@@ -2329,7 +2352,7 @@
 
         <xs:attribute name="inlineAttachMode" type="fieldGroupFieldInlineMode"/>
 
-        <xs:attributeGroup ref="hasCaption"/>
+        <xs:attributeGroup ref="hasHtmlCaption"/>
         <xs:attributeGroup ref="hasEditState"/>
         <xs:attributeGroup ref="hasVisibility"/>
         <xs:attributeGroup ref="hasTabIndex"/>
@@ -2973,23 +2996,13 @@
 
     <xs:complexType name="newWindowButtonComponent">
         <xs:complexContent>
-            <xs:extension base="baseMainElement">
-
-                <xs:attribute name="icon" type="xs:string"/>
-                <xs:attribute name="caption" type="xs:string"/>
-                <xs:attribute name="description" type="xs:string"/>
-            </xs:extension>
+            <xs:extension base="baseMainElement"/>
         </xs:complexContent>
     </xs:complexType>
 
     <xs:complexType name="logoutButtonComponent">
         <xs:complexContent>
-            <xs:extension base="baseMainElement">
-
-                <xs:attribute name="icon" type="xs:string"/>
-                <xs:attribute name="caption" type="xs:string"/>
-                <xs:attribute name="description" type="xs:string"/>
-            </xs:extension>
+            <xs:extension base="baseMainElement"/>
         </xs:complexContent>
     </xs:complexType>
 

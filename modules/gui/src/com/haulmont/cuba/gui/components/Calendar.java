@@ -33,8 +33,8 @@ import java.util.Map;
 import java.util.TimeZone;
 import java.util.function.Consumer;
 
-public interface Calendar
-        extends Component.BelongToFrame, Component.HasCaption, Component.HasIcon, HasContextHelp {
+public interface Calendar extends Component.BelongToFrame, Component.HasCaption, Component.HasIcon,
+        HasContextHelp, HasHtmlCaption, HasHtmlDescription {
 
     String NAME = "calendar";
 

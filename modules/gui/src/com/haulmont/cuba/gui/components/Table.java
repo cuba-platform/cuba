@@ -52,7 +52,7 @@ public interface Table<E extends Entity>
             ListComponent<E>, Component.Editable, HasSettings,
             HasButtonsPanel, HasPresentations, Component.HasCaption, HasContextHelp,
             Component.HasIcon, HasRowsCount, LookupComponent<E>, Component.Focusable,
-            RowsCount.RowsCountTarget, HasSubParts {
+            RowsCount.RowsCountTarget, HasSubParts, HasHtmlCaption, HasHtmlDescription {
 
     enum ColumnAlignment {
         LEFT,
@@ -779,7 +779,7 @@ public interface Table<E extends Entity>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    class Column<T extends Entity> implements HasXmlDescriptor, HasCaption, HasFormatter {
+    class Column<T extends Entity> implements HasXmlDescriptor, HasCaption, HasHtmlCaption, HasFormatter {
 
         private static final Logger log = LoggerFactory.getLogger(Table.class);
 
@@ -1100,6 +1100,7 @@ public interface Table<E extends Entity>
          *
          * @param captionAsHtml interpret caption as HTML
          */
+        @Override
         public void setCaptionAsHtml(boolean captionAsHtml) {
             this.captionAsHtml = captionAsHtml;
             if (owner != null) {
@@ -1109,8 +1110,15 @@ public interface Table<E extends Entity>
 
         /**
          * @return whether column caption should be interpreted as HTML or not
+         * @deprecated Use {@link #isCaptionAsHtml()} instead
          */
+        @Deprecated
         public boolean getCaptionAsHtml() {
+            return isCaptionAsHtml();
+        }
+
+        @Override
+        public boolean isCaptionAsHtml() {
             return captionAsHtml;
         }
     }

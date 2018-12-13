@@ -22,7 +22,7 @@ import java.util.EventObject;
 import java.util.function.Consumer;
 
 public interface Button extends Component, Component.HasCaption, Component.BelongToFrame, ActionOwner,
-                                Component.HasIcon, Component.Focusable {
+                                Component.HasIcon, Component.Focusable, HasHtmlCaption, HasHtmlDescription {
     String NAME = "button";
 
     /**

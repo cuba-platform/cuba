@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Map;
 
 public interface BulkEditor extends Component, Component.HasCaption, Component.BelongToFrame, Component.HasIcon,
-                                    Component.Focusable {
+                                    Component.Focusable, HasHtmlCaption, HasHtmlDescription {
 
     String NAME = "bulkEditor";
     String PERMISSION = "cuba.gui.bulkEdit";

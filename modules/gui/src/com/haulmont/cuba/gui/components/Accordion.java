@@ -30,7 +30,8 @@ import java.util.function.Consumer;
  * presented between tabs.
  */
 public interface Accordion extends ComponentContainer, Component.BelongToFrame, Component.HasCaption,
-                                   Component.HasIcon, Component.Focusable, HasContextHelp {
+                                   Component.HasIcon, Component.Focusable, HasContextHelp,
+                                   HasHtmlCaption, HasHtmlDescription {
     String NAME = "accordion";
 
     /**

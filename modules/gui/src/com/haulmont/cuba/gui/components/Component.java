@@ -326,7 +326,17 @@ public interface Component {
      * Object having a description.
      */
     interface HasDescription {
+
+        /**
+         * @return the components description, used in tooltips
+         */
         String getDescription();
+
+        /**
+         * Sets the component's description.
+         *
+         * @param description the new description to set
+         */
         void setDescription(String description);
     }
 
@@ -334,7 +344,16 @@ public interface Component {
      * Object having a caption.
      */
     interface HasCaption extends HasDescription {
+        /**
+         * @return the caption of the component
+         */
         String getCaption();
+
+        /**
+         * Sets the component's caption.
+         *
+         * @param caption the new component's caption
+         */
         void setCaption(String caption);
     }
 

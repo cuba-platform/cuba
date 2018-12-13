@@ -26,7 +26,7 @@ import java.util.function.Consumer;
  * A {@link Button} with a popup. The popup can contain actions.
  */
 public interface PopupButton extends ActionsHolder, Component.HasCaption, Component.BelongToFrame,
-        Component.HasIcon, Component.Focusable {
+        Component.HasIcon, Component.Focusable, HasHtmlCaption, HasHtmlDescription {
 
     String NAME = "popupButton";
 

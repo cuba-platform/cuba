@@ -22,7 +22,7 @@ import com.haulmont.cuba.gui.WindowManager;
 import javax.annotation.Nullable;
 
 public interface RelatedEntities extends Component, Component.HasCaption, Component.BelongToFrame, Component.HasIcon,
-                                         Component.Focusable {
+                                         Component.Focusable, HasHtmlCaption, HasHtmlDescription {
 
     String NAME = "relatedEntities";
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2016 Haulmont.
+ * Copyright (c) 2008-2018 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,14 +12,23 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
 package com.haulmont.cuba.gui.components;
 
-public interface FlowBoxLayout extends OrderedContainer, Component.BelongToFrame, HasMargin,
-        HasSpacing, Component.HasCaption, Component.HasIcon, HasContextHelp,
-        LayoutClickNotifier, ShortcutNotifier, HasHtmlCaption, HasHtmlDescription {
+public interface HasHtmlCaption extends Component.HasCaption {
+    /**
+     * @return {@code true} if the caption is rendered as HTML,
+     * {@code false} if rendered as plain text
+     */
+    boolean isCaptionAsHtml();
 
-    String NAME = "flowBox";
+    /**
+     * Sets whether the caption is rendered as HTML.
+     *
+     * @param captionAsHtml {@code true} if the caption is rendered as HTML,
+     *                      {@code false} if rendered as plain text
+     * @see #setCaption(String)
+     */
+    void setCaptionAsHtml(boolean captionAsHtml);
 }

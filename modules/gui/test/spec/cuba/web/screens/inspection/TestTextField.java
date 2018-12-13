@@ -204,12 +204,32 @@ public class TestTextField implements TextField<String> {
     }
 
     @Override
+    public boolean isDescriptionAsHtml() {
+        return false;
+    }
+
+    @Override
+    public void setDescriptionAsHtml(boolean descriptionAsHtml) {
+
+    }
+
+    @Override
     public String getCaption() {
         return null;
     }
 
     @Override
     public void setCaption(String caption) {
+
+    }
+
+    @Override
+    public boolean isCaptionAsHtml() {
+        return false;
+    }
+
+    @Override
+    public void setCaptionAsHtml(boolean captionAsHtml) {
 
     }
 

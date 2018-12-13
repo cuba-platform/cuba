@@ -25,7 +25,7 @@ import java.util.Collection;
  */
 public interface Form extends Component, Component.BelongToFrame, Component.HasCaption, Component.HasIcon,
         ComponentContainer, Component.Editable, EditableChangeNotifier, HasContextHelp, ChildEditableController,
-        HasValueSourceProvider {
+        HasValueSourceProvider, HasHtmlCaption, HasHtmlDescription {
 
     String NAME = "form";
 

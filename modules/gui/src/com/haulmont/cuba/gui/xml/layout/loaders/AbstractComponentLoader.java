@@ -256,6 +256,17 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
 
             caption = loadResourceString(caption);
             component.setCaption(caption);
+
+            if (component instanceof HasHtmlCaption) {
+                loadCaptionAsHtml((HasHtmlCaption) component, element);
+            }
+        }
+    }
+
+    protected void loadCaptionAsHtml(HasHtmlCaption component, Element element) {
+        String captionAsHtml = element.attributeValue("captionAsHtml");
+        if (!Strings.isNullOrEmpty(captionAsHtml)) {
+            component.setCaptionAsHtml(Boolean.parseBoolean(captionAsHtml));
         }
     }
 
@@ -265,6 +276,17 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
 
             description = loadResourceString(description);
             component.setDescription(description);
+
+            if (component instanceof HasHtmlDescription) {
+                loadDescriptionAsHtml((HasHtmlDescription) component, element);
+            }
+        }
+    }
+
+    protected void loadDescriptionAsHtml(HasHtmlDescription component, Element element) {
+        String descriptionAsHtml = element.attributeValue("descriptionAsHtml");
+        if (!Strings.isNullOrEmpty(descriptionAsHtml)) {
+            component.setDescriptionAsHtml(Boolean.parseBoolean(descriptionAsHtml));
         }
     }
 
