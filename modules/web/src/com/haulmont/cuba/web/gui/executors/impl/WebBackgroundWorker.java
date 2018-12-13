@@ -63,10 +63,8 @@ public class WebBackgroundWorker implements BackgroundWorker {
 
     @Inject
     protected WatchDog watchDog;
-
     @Inject
     protected UserSessionSource userSessionSource;
-
     @Inject
     protected Events events;
 
@@ -107,7 +105,7 @@ public class WebBackgroundWorker implements BackgroundWorker {
     }
 
     @Override
-    public <T, V> BackgroundTaskHandler<V> handle(final BackgroundTask<T, V> task) {
+    public <T, V> BackgroundTaskHandler<V> handle(BackgroundTask<T, V> task) {
         checkNotNull(task);
         checkUIAccess();
 
@@ -119,8 +117,10 @@ public class WebBackgroundWorker implements BackgroundWorker {
             throw ex;
         }
 
+        AppUI ui = AppUI.getCurrent();
+
         // create task executor
-        final WebTaskExecutor<T, V> taskExecutor = new WebTaskExecutor<>(appInstance.getAppUI(), task);
+        WebTaskExecutor<T, V> taskExecutor = new WebTaskExecutor<>(ui, task);
 
         // add thread to taskSet
         appInstance.addBackgroundTask(taskExecutor.getFuture());

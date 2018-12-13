@@ -17,20 +17,21 @@
 
 package com.haulmont.cuba.gui.executors.impl;
 
+import com.haulmont.bali.events.Subscription;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Events;
 import com.haulmont.cuba.core.global.TimeSource;
 import com.haulmont.cuba.core.global.UserSessionSource;
-import com.haulmont.cuba.gui.ComponentsHelper;
-import com.haulmont.cuba.gui.components.Frame;
-import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.event.BackgroundTaskTimeoutEvent;
 import com.haulmont.cuba.gui.executors.*;
+import com.haulmont.cuba.gui.screen.FrameOwner;
+import com.haulmont.cuba.gui.screen.Screen;
 import com.haulmont.cuba.security.global.UserSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static com.google.common.base.Preconditions.checkState;
+import static com.haulmont.cuba.gui.screen.UiControllerUtils.addAfterDetachListener;
 
 public class TaskHandlerImpl<T, V> implements BackgroundTaskHandler<V> {
 
@@ -46,9 +47,10 @@ public class TaskHandlerImpl<T, V> implements BackgroundTaskHandler<V> {
 
     private long startTimeStamp;
     private UserSession userSession;
-    private Window.CloseListener closeListener;
 
-    public TaskHandlerImpl(UIAccessor uiAccessor, final TaskExecutor<T, V> taskExecutor, WatchDog watchDog) {
+    private Subscription afterDetachSubscription;
+
+    public TaskHandlerImpl(UIAccessor uiAccessor, TaskExecutor<T, V> taskExecutor, WatchDog watchDog) {
         this.uiAccessor = uiAccessor;
         this.taskExecutor = taskExecutor;
         this.watchDog = watchDog;
@@ -58,36 +60,26 @@ public class TaskHandlerImpl<T, V> implements BackgroundTaskHandler<V> {
         this.userSession = sessionSource.getUserSession();
 
         BackgroundTask<T, V> task = taskExecutor.getTask();
-        if (task.getOwnerFrame() != null) {
-            Frame ownerFrame = task.getOwnerFrame();
-            if (ownerFrame.getFrame() != null) {
-                closeListener = actionId -> ownerWindowClosed();
+        if (task.getOwnerScreen() != null) {
+            Screen ownerFrame = task.getOwnerScreen();
 
-                Window ownerWindow = ComponentsHelper.getWindowImplementation(ownerFrame);
+            afterDetachSubscription = addAfterDetachListener(ownerFrame, e -> ownerWindowRemoved(e.getSource()));
 
-                if (ownerWindow != null) {
-                    ownerWindow.addCloseListener(closeListener);
-                } else {
-                    log.warn("Unable to find window for task owner frame");
-                }
-            }
+            // remove close listener on done
+            taskExecutor.setFinalizer(() -> {
+                log.trace("Start task finalizer. Task: {}", taskExecutor.getTask());
+
+                removeAfterDetachListener();
+
+                log.trace("Finish task finalizer. Task: {}", taskExecutor.getTask());
+            });
         }
-
-        // remove close listener on done
-        taskExecutor.setFinalizer(() -> {
-            log.trace("Start task finalizer. Task: {}", taskExecutor.getTask());
-
-            detachCloseListener();
-
-            log.trace("Finish task finalizer. Task: {}", taskExecutor.getTask());
-        });
     }
 
-    private void ownerWindowClosed() {
+    protected void ownerWindowRemoved(FrameOwner frameOwner) {
         if (log.isTraceEnabled()) {
-            Frame ownerFrame = getTask().getOwnerFrame();
-            String windowClass = ownerFrame.getClass().getCanonicalName();
-            log.trace("Window closed. User: {}. Window: {}", getUserSession().getId(), windowClass);
+            String windowClass = frameOwner.getClass().getCanonicalName();
+            log.trace("Window removed. User: {}. Window: {}", getUserSession().getId(), windowClass);
         }
 
         taskExecutor.cancelExecution();
@@ -115,7 +107,7 @@ public class TaskHandlerImpl<T, V> implements BackgroundTaskHandler<V> {
 
         boolean canceled = taskExecutor.cancelExecution();
         if (canceled) {
-            detachCloseListener();
+            removeAfterDetachListener();
 
             BackgroundTask<T, V> task = taskExecutor.getTask();
             task.canceled();
@@ -126,7 +118,7 @@ public class TaskHandlerImpl<T, V> implements BackgroundTaskHandler<V> {
             }
 
             if (log.isTraceEnabled()) {
-                Frame ownerFrame = getTask().getOwnerFrame();
+                Screen ownerFrame = getTask().getOwnerScreen();
                 if (ownerFrame != null) {
                     String windowClass = ownerFrame.getClass().getCanonicalName();
 
@@ -142,29 +134,17 @@ public class TaskHandlerImpl<T, V> implements BackgroundTaskHandler<V> {
         return canceled;
     }
 
-    private void detachCloseListener() {
-        // force remove close listener
-        Frame ownerFrame = getTask().getOwnerFrame();
-        if (ownerFrame != null) {
-            Window ownerWindow = ComponentsHelper.getWindowImplementation(ownerFrame);
-            if (ownerWindow != null) {
-                ownerWindow.removeCloseListener(closeListener);
-
-                String windowClass = ownerFrame.getClass().getCanonicalName();
-                log.trace("Resources were disposed. Task: {}. Frame: {}", taskExecutor.getTask(), windowClass);
-            } else {
-                log.trace("Empty ownerWindow. Resources were not disposed. Task: {}", taskExecutor.getTask());
-            }
-        } else {
-            log.trace("Empty ownerFrame. Resources were not disposed. Task: {}", taskExecutor.getTask());
+    protected void removeAfterDetachListener() {
+        if (afterDetachSubscription != null) {
+            afterDetachSubscription.remove();
+            afterDetachSubscription = null;
         }
-        closeListener = null;
     }
 
     /**
      * Join task thread to current <br>
      * <b>Caution!</b> Call this method only from synchronous gui action
-     *
+     *;
      * @return Task result
      */
     @Override
@@ -187,9 +167,9 @@ public class TaskHandlerImpl<T, V> implements BackgroundTaskHandler<V> {
      */
     public final void kill() {
         uiAccessor.access(() -> {
-            Frame ownerFrame = getTask().getOwnerFrame();
+            Screen ownerFrame = getTask().getOwnerScreen();
 
-            detachCloseListener();
+            removeAfterDetachListener();
 
             if (log.isTraceEnabled()) {
                 if (ownerFrame != null) {
@@ -209,7 +189,7 @@ public class TaskHandlerImpl<T, V> implements BackgroundTaskHandler<V> {
      */
     public final void timeoutExceeded() {
         uiAccessor.access(() -> {
-            Frame ownerFrame = getTask().getOwnerFrame();
+            Screen ownerFrame = getTask().getOwnerScreen();
             if (log.isTraceEnabled()) {
                 if (ownerFrame != null) {
                     String windowClass = ownerFrame.getClass().getCanonicalName();
@@ -223,7 +203,7 @@ public class TaskHandlerImpl<T, V> implements BackgroundTaskHandler<V> {
 
             boolean canceled = taskExecutor.cancelExecution();
             if (canceled || timeoutHappens) {
-                detachCloseListener();
+                removeAfterDetachListener();
 
                 BackgroundTask<T, V> task = taskExecutor.getTask();
                 boolean handled = task.handleTimeoutException();

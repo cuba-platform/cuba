@@ -605,6 +605,7 @@ public abstract class Screen implements FrameOwner {
      *
      * @see #addAfterCloseListener(Consumer)
      */
+    @TriggerOnce
     public static class AfterCloseEvent extends EventObject {
 
         protected final CloseAction closeAction;
@@ -639,6 +640,7 @@ public abstract class Screen implements FrameOwner {
      *
      * @see #addAfterDetachListener(Consumer)
      */
+    @TriggerOnce
     public static class AfterDetachEvent extends EventObject {
 
         public AfterDetachEvent(Screen source) {

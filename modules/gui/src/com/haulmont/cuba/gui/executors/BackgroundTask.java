@@ -17,7 +17,7 @@
 
 package com.haulmont.cuba.gui.executors;
 
-import com.haulmont.cuba.gui.components.Frame;
+import com.haulmont.cuba.gui.screen.Screen;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -52,7 +52,7 @@ import java.util.concurrent.TimeUnit;
 @SuppressWarnings("unused")
 public abstract class BackgroundTask<T, V> {
 
-    private final Frame ownerFrame;
+    private final Screen ownerFrame;
 
     private final long timeoutMilliseconds;
 
@@ -63,10 +63,10 @@ public abstract class BackgroundTask<T, V> {
      *
      * @param timeout     timeout
      * @param timeUnit    timeout time unit
-     * @param ownerFrame  owner frame
+     * @param screen  owner frame
      */
-    protected BackgroundTask(long timeout, TimeUnit timeUnit, Frame ownerFrame) {
-        this.ownerFrame = ownerFrame;
+    protected BackgroundTask(long timeout, TimeUnit timeUnit, Screen screen) {
+        this.ownerFrame = screen;
         this.timeoutMilliseconds = timeUnit.toMillis(timeout);
     }
 
@@ -97,10 +97,10 @@ public abstract class BackgroundTask<T, V> {
      * Create a task with timeout in default SECONDS unit.
      *
      * @param timeoutSeconds timeout in seconds
-     * @param ownerFrame     owner frame
+     * @param screen     owner frame
      */
-    protected BackgroundTask(long timeoutSeconds, Frame ownerFrame) {
-        this.ownerFrame = ownerFrame;
+    protected BackgroundTask(long timeoutSeconds, Screen screen) {
+        this.ownerFrame = screen;
         this.timeoutMilliseconds = TimeUnit.SECONDS.toMillis(timeoutSeconds);
     }
 
@@ -176,10 +176,20 @@ public abstract class BackgroundTask<T, V> {
     }
 
     /**
-     * @return owner window
+     * @return owner screen
+     * @deprecated Use {@link #getOwnerScreen()}
      */
     @Nullable
-    public final Frame getOwnerFrame() {
+    @Deprecated
+    public final Screen getOwnerFrame() {
+        return ownerFrame;
+    }
+
+    /**
+     * @return owner screen
+     */
+    @Nullable
+    public final Screen getOwnerScreen() {
         return ownerFrame;
     }
 

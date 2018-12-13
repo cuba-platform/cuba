@@ -19,13 +19,15 @@ package com.haulmont.cuba.gui.backgroundwork;
 
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
-import com.haulmont.cuba.gui.components.Frame;
-import com.haulmont.cuba.gui.components.Frame.NotificationType;
-import com.haulmont.cuba.gui.components.Window;
+import com.haulmont.cuba.gui.Dialogs;
+import com.haulmont.cuba.gui.Notifications;
+import com.haulmont.cuba.gui.Screens;
 import com.haulmont.cuba.gui.executors.BackgroundTask;
 import com.haulmont.cuba.gui.executors.BackgroundWorker;
 import com.haulmont.cuba.gui.executors.TaskLifeCycle;
-import com.haulmont.cuba.gui.screen.compatibility.LegacyFrame;
+import com.haulmont.cuba.gui.screen.Screen;
+import com.haulmont.cuba.gui.screen.ScreenContext;
+import com.haulmont.cuba.gui.screen.UiControllerUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,12 +39,12 @@ public class LocalizedTaskWrapper<T, V> extends BackgroundTask<T, V> {
     private static final Logger log = LoggerFactory.getLogger(BackgroundWorker.class);
 
     protected BackgroundTask<T, V> wrappedTask;
-    protected Window window;
+    protected Screen screen;
 
-    protected LocalizedTaskWrapper(BackgroundTask<T, V> wrappedTask, Window window) {
-        super(wrappedTask.getTimeoutSeconds(), window);
+    protected LocalizedTaskWrapper(BackgroundTask<T, V> wrappedTask, Screen screen) {
+        super(wrappedTask.getTimeoutSeconds(), screen);
         this.wrappedTask = wrappedTask;
-        this.window = window;
+        this.screen = screen;
     }
 
     @Override
@@ -59,12 +61,14 @@ public class LocalizedTaskWrapper<T, V> extends BackgroundTask<T, V> {
     public boolean handleException(Exception ex) {
         boolean handled = wrappedTask.handleException(ex);
 
-        if (handled || wrappedTask.getOwnerFrame() == null) {
-            window.close("", true);
+        if (handled || wrappedTask.getOwnerScreen() == null) {
+            Screens screens = getScreenContext().getScreens();
+            screens.remove(screen);
         } else {
-            window.closeAndRun("close", () ->
-                    showExecutionError(ex)
-            );
+            Screens screens = getScreenContext().getScreens();
+            screens.remove(screen);
+
+            showExecutionError(ex);
 
             log.error("Exception occurred in background task", ex);
 
@@ -76,17 +80,21 @@ public class LocalizedTaskWrapper<T, V> extends BackgroundTask<T, V> {
     @Override
     public boolean handleTimeoutException() {
         boolean handled = wrappedTask.handleTimeoutException();
-        if (handled || wrappedTask.getOwnerFrame() == null) {
-            window.close("", true);
+        if (handled || wrappedTask.getOwnerScreen() == null) {
+            Screens screens = getScreenContext().getScreens();
+            screens.remove(screen);
         } else {
-            window.closeAndRun("close", () -> {
-                Messages messages = AppBeans.get(Messages.NAME);
+            Screens screens = getScreenContext().getScreens();
+            screens.remove(screen);
 
-                ((LegacyFrame) wrappedTask.getOwnerFrame()).showNotification(
-                        messages.getMessage(LocalizedTaskWrapper.class, "backgroundWorkProgress.timeout"),
-                        messages.getMessage(LocalizedTaskWrapper.class, "backgroundWorkProgress.timeoutMessage"),
-                        NotificationType.WARNING);
-            });
+            Notifications notifications = getScreenContext().getNotifications();
+            Messages messages = AppBeans.get(Messages.NAME);
+
+            notifications.create(Notifications.NotificationType.WARNING)
+                    .withCaption(messages.getMessage(LocalizedTaskWrapper.class, "backgroundWorkProgress.timeout"))
+                    .withDescription(messages.getMessage(LocalizedTaskWrapper.class, "backgroundWorkProgress.timeoutMessage"))
+                    .show();
+
             handled = true;
         }
         return handled;
@@ -94,7 +102,8 @@ public class LocalizedTaskWrapper<T, V> extends BackgroundTask<T, V> {
 
     @Override
     public void done(V result) {
-        window.close("", true);
+        Screens screens = getScreenContext().getScreens();
+        screens.remove(screen);
 
         try {
             wrappedTask.done(result);
@@ -119,13 +128,22 @@ public class LocalizedTaskWrapper<T, V> extends BackgroundTask<T, V> {
         wrappedTask.progress(changes);
     }
 
+    protected ScreenContext getScreenContext() {
+        return UiControllerUtils.getScreenContext(screen);
+    }
+
     protected void showExecutionError(Exception ex) {
-        Frame ownerFrame = wrappedTask.getOwnerFrame();
+        Screen ownerFrame = wrappedTask.getOwnerScreen();
         if (ownerFrame != null) {
-            window.getWindowManager().showExceptionDialog(
-                    ex,
-                    AppBeans.get(Messages.class).getMessage(LocalizedTaskWrapper.class, "backgroundWorkProgress.executionError"),
-                    ex.getLocalizedMessage());
+            Dialogs dialogs = getScreenContext().getDialogs();
+
+            Messages messages = AppBeans.get(Messages.class);
+
+            dialogs.createExceptionDialog()
+                    .withThrowable(ex)
+                    .withCaption(messages.getMessage(LocalizedTaskWrapper.class, "backgroundWorkProgress.executionError"))
+                    .withMessage(ex.getLocalizedMessage())
+                    .show();
         }
     }
 }

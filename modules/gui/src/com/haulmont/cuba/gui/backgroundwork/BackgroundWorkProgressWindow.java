@@ -17,15 +17,20 @@
 
 package com.haulmont.cuba.gui.backgroundwork;
 
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.gui.Screens;
+import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.components.AbstractWindow;
 import com.haulmont.cuba.gui.components.Button;
 import com.haulmont.cuba.gui.components.Label;
 import com.haulmont.cuba.gui.components.ProgressBar;
+import com.haulmont.cuba.gui.config.WindowConfig;
+import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.executors.BackgroundTask;
 import com.haulmont.cuba.gui.executors.BackgroundTaskHandler;
 import com.haulmont.cuba.gui.executors.BackgroundWorker;
-import com.haulmont.cuba.gui.screen.compatibility.LegacyFrame;
+import com.haulmont.cuba.gui.screen.UiControllerUtils;
 import org.apache.commons.lang3.BooleanUtils;
 
 import javax.annotation.Nullable;
@@ -85,7 +90,7 @@ public class BackgroundWorkProgressWindow<T extends Number, V> extends AbstractW
      */
     public static <T extends Number, V> void show(BackgroundTask<T, V> task, @Nullable String title, @Nullable String message,
                                                   Number total, boolean cancelAllowed, boolean percentProgress) {
-        if (task.getOwnerFrame() == null) {
+        if (task.getOwnerScreen() == null) {
             throw new IllegalArgumentException("Task without owner cannot be run");
         }
 
@@ -97,7 +102,9 @@ public class BackgroundWorkProgressWindow<T extends Number, V> extends AbstractW
         params.put("cancelAllowed", cancelAllowed);
         params.put("percentProgress", percentProgress);
 
-        ((LegacyFrame) task.getOwnerFrame()).openWindow("backgroundWorkProgressWindow", OpenType.DIALOG, params);
+        Screens screens = UiControllerUtils.getScreenContext(task.getOwnerScreen()).getScreens();
+        WindowInfo windowInfo = AppBeans.get(WindowConfig.class).getWindowInfo("backgroundWorkProgressWindow");
+        ((WindowManager)screens).openWindow(windowInfo, OpenType.DIALOG, params);
     }
 
     /**

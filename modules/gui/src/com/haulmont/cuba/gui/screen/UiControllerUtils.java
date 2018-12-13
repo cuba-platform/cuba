@@ -17,6 +17,7 @@
 package com.haulmont.cuba.gui.screen;
 
 import com.haulmont.bali.events.EventHub;
+import com.haulmont.bali.events.Subscription;
 import com.haulmont.cuba.gui.components.Fragment;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.Window;
@@ -24,8 +25,10 @@ import com.haulmont.cuba.gui.model.ScreenData;
 import com.haulmont.cuba.gui.settings.Settings;
 import org.springframework.context.ApplicationListener;
 
+import javax.annotation.Nonnull;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * Internal methods used in Screens and Fragments implementations.
@@ -154,5 +157,25 @@ public final class UiControllerUtils {
 
     public static void setHostController(ScreenFragment fragment, FrameOwner hostController) {
         fragment.setHostController(hostController);
+    }
+
+    public static Subscription addAfterDetachListener(Screen screen, Consumer<Screen.AfterDetachEvent> listener) {
+        return screen.addAfterDetachListener(listener);
+    }
+
+    @Nonnull
+    public static Screen getHostScreen(ScreenFragment fragment) {
+        return fragment.getHostScreen();
+    }
+
+    @Nonnull
+    public static Screen getScreen(FrameOwner screen) {
+        Screen hostScreen;
+        if (screen instanceof Screen) {
+            hostScreen = (Screen) screen;
+        } else {
+            hostScreen = UiControllerUtils.getHostScreen((ScreenFragment) screen);
+        }
+        return hostScreen;
     }
 }
