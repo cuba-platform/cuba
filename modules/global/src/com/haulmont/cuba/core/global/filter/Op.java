@@ -17,10 +17,11 @@
 
 package com.haulmont.cuba.core.global.filter;
 
+import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 
-public enum Op {
+public enum Op implements EnumClass<String> {
     CONTAINS("like", "contains", false),
     EQUAL("=", "==", false),
     IN("in", "in", false),
@@ -76,5 +77,10 @@ public enum Op {
 
     public String getLocCaption() {
         return AppBeans.get(Messages.class).getMainMessage("Op." + this.name());
+    }
+
+    @Override
+    public String getId() {
+        return name();
     }
 }
