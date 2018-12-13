@@ -21,6 +21,7 @@ import com.haulmont.cuba.core.entity.FileDescriptor;
 
 import javax.annotation.Nullable;
 import java.io.InputStream;
+import java.util.EventObject;
 import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -50,10 +51,11 @@ public interface FileUploadField extends UploadField, Field<FileDescriptor>, Com
     String getFileName();
 
     /**
-     * JavaDoc
+     * Return FileDescriptor instance of uploaded file. Can be null.
      *
-     * @return
+     * @return FileDescriptor instance or null
      */
+    @Nullable
     FileDescriptor getFileDescriptor();
 
     /**
@@ -65,19 +67,19 @@ public interface FileUploadField extends UploadField, Field<FileDescriptor>, Com
     byte[] getBytes();
 
     /**
-     * JavaDoc
+     * Describes file upload succeeded event when the uploads are successfully finished.
      */
     class FileUploadSucceedEvent extends FileUploadEvent {
-        public FileUploadSucceedEvent(String fileName, long contentLength) {
-            super(fileName, contentLength);
+        public FileUploadSucceedEvent(UploadField source, String fileName, long contentLength) {
+            super(source, fileName, contentLength);
         }
     }
 
     /**
-     * JavaDoc
+     * Adds file upload succeed listener. It is invoked when the uploads are successfully finished.
      *
-     * @param listener
-     * @return
+     * @param listener a listener to add
+     * @return subscription
      */
     Subscription addFileUploadSucceedListener(Consumer<FileUploadSucceedEvent> listener);
 
@@ -166,11 +168,15 @@ public interface FileUploadField extends UploadField, Field<FileDescriptor>, Com
      */
     String getClearButtonDescription();
 
-    class BeforeValueClearEvent {
+    /**
+     * Describes before value clear event. Event is invoked before value clearing when user use clear button.
+     */
+    class BeforeValueClearEvent extends EventObject {
         private FileUploadField target;
         private boolean clearPrevented = false;
 
         public BeforeValueClearEvent(FileUploadField target) {
+            super(target);
             this.target = target;
         }
 
@@ -182,8 +188,17 @@ public interface FileUploadField extends UploadField, Field<FileDescriptor>, Com
             this.clearPrevented = true;
         }
 
+        /**
+         * @deprecated Use {@link #getSource()} instead.
+         */
+        @Deprecated
         public FileUploadField getTarget() {
             return target;
+        }
+
+        @Override
+        public FileUploadField getSource() {
+            return (FileUploadField) super.getSource();
         }
     }
 
@@ -205,21 +220,33 @@ public interface FileUploadField extends UploadField, Field<FileDescriptor>, Com
     @Deprecated
     void removeBeforeValueClearListener(Consumer<BeforeValueClearEvent> listener);
 
-    class AfterValueClearEvent {
+    /**
+     * Describes after value clear event.
+     */
+    class AfterValueClearEvent extends EventObject {
         private FileUploadField target;
         private boolean valueCleared;
 
         public AfterValueClearEvent(FileUploadField target, boolean valueCleared) {
+            super(target);
             this.target = target;
             this.valueCleared = valueCleared;
         }
 
+        /**
+         * @deprecated Use {@link #getSource()} instead.
+         */
         public FileUploadField getTarget() {
             return target;
         }
 
         public boolean isValueCleared() {
             return valueCleared;
+        }
+
+        @Override
+        public FileUploadField getSource() {
+            return (FileUploadField) super.getSource();
         }
     }
 

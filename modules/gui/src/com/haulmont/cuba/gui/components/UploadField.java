@@ -19,17 +19,22 @@ package com.haulmont.cuba.gui.components;
 
 import com.haulmont.bali.events.Subscription;
 
+import java.util.EventObject;
 import java.util.Set;
 import java.util.function.Consumer;
 
 public interface UploadField extends Component, Component.HasCaption, Component.BelongToFrame, Component.HasIcon,
                                      Component.Focusable {
 
-    abstract class FileUploadEvent {
+    /**
+     * Base class for UploadField events.
+     */
+    abstract class FileUploadEvent extends EventObject {
         private final String fileName;
         private final long contentLength;
 
-        protected FileUploadEvent(String fileName, long contentLength) {
+        protected FileUploadEvent(UploadField source, String fileName, long contentLength) {
+            super(source);
             this.fileName = fileName;
             this.contentLength = contentLength;
         }
@@ -41,26 +46,40 @@ public interface UploadField extends Component, Component.HasCaption, Component.
         public String getFileName() {
             return fileName;
         }
+
+        @Override
+        public UploadField getSource() {
+            return (UploadField) super.getSource();
+        }
     }
 
+    /**
+     * Describes file upload start event.
+     */
     class FileUploadStartEvent extends FileUploadEvent {
-        public FileUploadStartEvent(String fileName, long contentLength) {
-            super(fileName, contentLength);
+        public FileUploadStartEvent(UploadField source, String fileName, long contentLength) {
+            super(source, fileName, contentLength);
         }
     }
 
+    /**
+     * Describes file upload finish event.
+     */
     class FileUploadFinishEvent extends FileUploadEvent {
-        public FileUploadFinishEvent(String fileName, long contentLength) {
-            super(fileName, contentLength);
+        public FileUploadFinishEvent(UploadField source, String fileName, long contentLength) {
+            super(source, fileName, contentLength);
         }
     }
 
+    /**
+     * Describes file upload error event. When the uploads are finished, but unsuccessful.
+     */
     class FileUploadErrorEvent extends FileUploadEvent {
 
         private final Exception cause;
 
-        public FileUploadErrorEvent(String fileName, long contentLength, Exception cause) {
-            super(fileName, contentLength);
+        public FileUploadErrorEvent(UploadField source, String fileName, long contentLength, Exception cause) {
+            super(source, fileName, contentLength);
 
             this.cause = cause;
         }
@@ -70,6 +89,12 @@ public interface UploadField extends Component, Component.HasCaption, Component.
         }
     }
 
+    /**
+     * Adds file upload start listener. It is invoked when start uploading the file.
+     *
+     * @param listener a listener to add
+     * @return subscription
+     */
     Subscription addFileUploadStartListener(Consumer<FileUploadStartEvent> listener);
 
     /**
@@ -78,6 +103,12 @@ public interface UploadField extends Component, Component.HasCaption, Component.
     @Deprecated
     void removeFileUploadStartListener(Consumer<FileUploadStartEvent> listener);
 
+    /**
+     * Adds file upload finish listener. It is invoked when file is uploaded.
+     *
+     * @param listener a listener to add
+     * @return subscription
+     */
     Subscription addFileUploadFinishListener(Consumer<FileUploadFinishEvent> listener);
 
     /**
@@ -86,6 +117,12 @@ public interface UploadField extends Component, Component.HasCaption, Component.
     @Deprecated
     void removeFileUploadFinishListener(Consumer<FileUploadFinishEvent> listener);
 
+    /**
+     * Adds file upload error listener. It is invoked when the uploads are finished, but unsuccessful.
+     *
+     * @param listener a listener to add
+     * @return subscription
+     */
     Subscription addFileUploadErrorListener(Consumer<FileUploadErrorEvent> listener);
 
     /**

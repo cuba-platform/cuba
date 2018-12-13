@@ -19,7 +19,7 @@ public class FileMultiUploadFieldQueueUploadCompleteListener
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        TableCellClickListenerWrapper that = (TableCellClickListenerWrapper) o;
+        FileMultiUploadFieldQueueUploadCompleteListener that = (FileMultiUploadFieldQueueUploadCompleteListener) o;
 
         return listener.equals(that.listener);
     }

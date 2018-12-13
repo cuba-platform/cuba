@@ -40,6 +40,10 @@ public interface FileMultiUploadField extends UploadField {
      */
     void clearUploads();
 
+    /**
+     * @see QueueUploadCompleteEvent
+     * @deprecated Use {@link #addQueueUploadCompleteListener(Consumer)} instead.
+     */
     @Deprecated
     @FunctionalInterface
     interface QueueUploadCompleteListener {
@@ -62,6 +66,12 @@ public interface FileMultiUploadField extends UploadField {
         removeQueueUploadCompleteListener(new FileMultiUploadFieldQueueUploadCompleteListener(listener));
     }
 
+    /**
+     * Adds queue upload complete listener. It is invoked when all selected files are uploaded to the temporary storage.
+     *
+     * @param listener a listener to add
+     * @return subscription
+     */
     Subscription addQueueUploadCompleteListener(Consumer<QueueUploadCompleteEvent> listener);
 
     /**
@@ -71,6 +81,9 @@ public interface FileMultiUploadField extends UploadField {
     @Deprecated
     void removeQueueUploadCompleteListener(Consumer<QueueUploadCompleteEvent> listener);
 
+    /**
+     *  Describes queue upload complete event.
+     */
     class QueueUploadCompleteEvent extends EventObject {
 
         public QueueUploadCompleteEvent(FileMultiUploadField source) {

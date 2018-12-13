@@ -400,19 +400,19 @@ public class WebFileUploadField extends WebAbstractUploadField<CubaFileUploadWra
     }
 
     protected void fireFileUploadStart(String fileName, long contentLength) {
-        publish(FileUploadStartEvent.class, new FileUploadStartEvent(fileName, contentLength));
+        publish(FileUploadStartEvent.class, new FileUploadStartEvent(this, fileName, contentLength));
     }
 
     protected void fireFileUploadFinish(String fileName, long contentLength) {
-        publish(FileUploadFinishEvent.class, new FileUploadFinishEvent(fileName, contentLength));
+        publish(FileUploadFinishEvent.class, new FileUploadFinishEvent(this, fileName, contentLength));
     }
 
     protected void fireFileUploadError(String fileName, long contentLength, Exception cause) {
-        publish(FileUploadErrorEvent.class, new FileUploadErrorEvent(fileName, contentLength, cause));
+        publish(FileUploadErrorEvent.class, new FileUploadErrorEvent(this, fileName, contentLength, cause));
     }
 
     protected void fireFileUploadSucceed(String fileName, long contentLength) {
-        publish(FileUploadSucceedEvent.class, new FileUploadSucceedEvent(fileName, contentLength));
+        publish(FileUploadSucceedEvent.class, new FileUploadSucceedEvent(this, fileName, contentLength));
     }
 
     @Override
