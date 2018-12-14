@@ -263,7 +263,10 @@ public abstract class ComponentsHelper {
                     if (comp != null) {
                         return comp;
                     } else {
-                        return findComponent((Frame) c, id);
+                        Component nestedComponent = findComponent((Frame) c, id);
+                        if (nestedComponent != null) {
+                            return nestedComponent;
+                        }
                     }
                 }
             }
