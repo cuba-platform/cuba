@@ -17,15 +17,20 @@
 
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
+import com.haulmont.cuba.core.app.dynamicattributes.PropertyType;
+import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.MetadataTools;
-import com.haulmont.cuba.gui.components.CaptionMode;
 import com.haulmont.cuba.gui.components.OptionsList;
 import com.haulmont.cuba.gui.components.data.Options;
+import com.haulmont.cuba.gui.components.data.ValueSource;
 import com.haulmont.cuba.gui.components.data.meta.EntityValueSource;
 import com.haulmont.cuba.gui.components.data.meta.OptionsBinding;
 import com.haulmont.cuba.gui.components.data.options.ContainerOptions;
-import com.haulmont.cuba.gui.components.data.options.MapOptions;
+import com.haulmont.cuba.gui.components.data.options.EnumOptions;
 import com.haulmont.cuba.gui.components.data.options.OptionsBinder;
 import com.haulmont.cuba.gui.model.CollectionContainer;
 import com.haulmont.cuba.web.widgets.CubaListSelect;
@@ -34,10 +39,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 
 import javax.inject.Inject;
-import java.util.Collection;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -225,11 +227,31 @@ public class WebOptionsList<V, I> extends WebAbstractField<CubaListSelect, V>
             this.optionsBinding = optionsBinder.bind(options, this, this::setItemsToPresentation);
             this.optionsBinding.activate();
         }
+    }
 
-        if (options instanceof MapOptions) {
-            setCaptionMode(CaptionMode.MAP_ENTRY);
-        } else {
-            setCaptionMode(CaptionMode.ITEM);
+    @SuppressWarnings("unchecked")
+    @Override
+    protected void valueBindingConnected(ValueSource<V> valueSource) {
+        super.valueBindingConnected(valueSource);
+
+        if (valueSource instanceof EntityValueSource) {
+            MetaPropertyPath propertyPath = ((EntityValueSource) valueSource).getMetaPropertyPath();
+            MetaProperty metaProperty = propertyPath.getMetaProperty();
+
+            if (metaProperty.getRange().isEnum()) {
+                //noinspection unchecked
+                setOptions(new EnumOptions(metaProperty.getJavaType()));
+            }
+
+            if (DynamicAttributesUtils.isDynamicAttribute(metaProperty)) {
+                CategoryAttribute categoryAttribute = DynamicAttributesUtils.getCategoryAttribute(metaProperty);
+
+                if (categoryAttribute != null
+                        && categoryAttribute.getDataType() == PropertyType.ENUMERATION) {
+
+                    setOptionsMap((Map<String, I>) categoryAttribute.getLocalizedEnumerationMap());
+                }
+            }
         }
     }
 

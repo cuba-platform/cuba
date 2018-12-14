@@ -16,11 +16,18 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
+import com.haulmont.cuba.core.app.dynamicattributes.PropertyType;
+import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.gui.components.OptionsGroup;
+import com.haulmont.cuba.gui.components.data.ValueSource;
 import com.haulmont.cuba.gui.components.data.meta.EntityValueSource;
 import com.haulmont.cuba.gui.components.data.meta.OptionsBinding;
 import com.haulmont.cuba.gui.components.data.Options;
+import com.haulmont.cuba.gui.components.data.options.EnumOptions;
 import com.haulmont.cuba.gui.components.data.options.OptionsBinder;
 import com.haulmont.cuba.web.widgets.CubaOptionGroup;
 import com.haulmont.cuba.web.widgets.client.optiongroup.OptionGroupOrientation;
@@ -199,6 +206,32 @@ public class WebOptionsGroup<V, I> extends WebAbstractField<CubaOptionGroup, V> 
             OptionsBinder optionsBinder = applicationContext.getBean(OptionsBinder.NAME, OptionsBinder.class);
             this.optionsBinding = optionsBinder.bind(options, this, this::setItemsToPresentation);
             this.optionsBinding.activate();
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    protected void valueBindingConnected(ValueSource<V> valueSource) {
+        super.valueBindingConnected(valueSource);
+
+        if (valueSource instanceof EntityValueSource) {
+            MetaPropertyPath propertyPath = ((EntityValueSource) valueSource).getMetaPropertyPath();
+            MetaProperty metaProperty = propertyPath.getMetaProperty();
+
+            if (metaProperty.getRange().isEnum()) {
+                //noinspection unchecked
+                setOptions(new EnumOptions(metaProperty.getJavaType()));
+            }
+
+            if (DynamicAttributesUtils.isDynamicAttribute(metaProperty)) {
+                CategoryAttribute categoryAttribute = DynamicAttributesUtils.getCategoryAttribute(metaProperty);
+
+                if (categoryAttribute != null
+                        && categoryAttribute.getDataType() == PropertyType.ENUMERATION) {
+
+                    setOptionsMap((Map<String, I>) categoryAttribute.getLocalizedEnumerationMap());
+                }
+            }
         }
     }
 
