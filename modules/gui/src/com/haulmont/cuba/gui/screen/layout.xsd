@@ -1754,17 +1754,21 @@
     <!-- SearchPickerField -->
     <xs:complexType name="searchPickerFieldComponent">
         <xs:complexContent>
-            <xs:extension base="baseFieldComponent">
+            <xs:extension base="baseComponent">
                 <xs:sequence>
                     <xs:element name="validator" minOccurs="0" type="validatorType"/>
                     <xs:element name="actions" minOccurs="0" type="componentActions"/>
                 </xs:sequence>
 
                 <xs:attributeGroup ref="hasBuffered"/>
-                <xs:attributeGroup ref="hasOptions"/>
                 <xs:attributeGroup ref="hasCaptionSource"/>
+                <xs:attributeGroup ref="hasContextHelp"/>
+                <xs:attributeGroup ref="hasDatasource"/>
+                <xs:attributeGroup ref="hasEditable"/>
+                <xs:attributeGroup ref="hasRequirements"/>
                 <xs:attributeGroup ref="hasTabIndex"/>
 
+                <xs:attribute name="optionsDatasource" type="xs:string"/>
                 <xs:attribute name="metaClass" type="xs:string"/>
 
                 <xs:attribute name="nullName" type="resourceString"/>
