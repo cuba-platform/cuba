@@ -101,10 +101,6 @@ public class LegacyCollectionDsValueSource<V extends Entity> implements ValueSou
     }
 
     protected void collectionChanged(CollectionDatasource.CollectionChangeEvent e) {
-        if (e.getOperation() == CollectionDatasource.Operation.REFRESH) {
-            return;
-        }
-
         events.publish(ValueChangeEvent.class, new ValueChangeEvent(this, null, datasource.getItems()));
     }
 
@@ -156,6 +152,10 @@ public class LegacyCollectionDsValueSource<V extends Entity> implements ValueSou
         Collection<V> oldValue = itemValue == null
                 ? null
                 : new ArrayList<>(itemValue);
+
+        if (equalCollections(oldValue, value)) {
+            return;
+        }
 
         updateMasterCollection(metaPropertyPath.getMetaProperty(), value);
 
