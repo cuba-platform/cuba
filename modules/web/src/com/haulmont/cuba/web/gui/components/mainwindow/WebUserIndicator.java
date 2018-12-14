@@ -31,6 +31,7 @@ import com.haulmont.cuba.web.gui.components.WebAbstractComponent;
 import com.haulmont.cuba.web.widgets.CubaComboBox;
 import com.vaadin.data.HasValue.ValueChangeEvent;
 import com.vaadin.ui.Label;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.inject.Inject;
@@ -72,7 +73,7 @@ public class WebUserIndicator extends WebAbstractComponent<com.vaadin.ui.CssLayo
         AppUI ui = AppUI.getCurrent();
 
         User currentOrSubstitutedUser = uss.getUserSession().getCurrentOrSubstitutedUser();
-        if (substitutions.isEmpty()) {
+        if (CollectionUtils.isEmpty(substitutions)) {
             String substitutedUserCaption = getSubstitutedUserCaption(currentOrSubstitutedUser);
 
             userComboBox = null;
