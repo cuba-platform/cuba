@@ -25,7 +25,6 @@ import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.core.global.MetadataTools;
-import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.data.HasValueSource;
@@ -199,7 +198,8 @@ public class FormLoader extends AbstractComponentLoader<Form> {
         if (provider instanceof ContainerValueSourceProvider
                 && getMetadataTools().isPersistent(
                 ((ContainerValueSourceProvider) provider).getContainer().getEntityMetaClass())) {
-            String windowId = ComponentsHelper.getWindowNN(resultComponent).getId();
+            String windowId = getWindowId(context);
+
             InstanceContainer instanceContainer = ((ContainerValueSourceProvider) provider).getContainer();
             MetaClass metaClass = instanceContainer.getEntityMetaClass();
 

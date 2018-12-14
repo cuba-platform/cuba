@@ -27,7 +27,6 @@ import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.core.global.Security;
-import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.FieldGroup.CustomFieldGenerator;
@@ -221,7 +220,7 @@ public class FieldGroupLoader extends AbstractComponentLoader<FieldGroup> {
 
     protected List<FieldGroup.FieldConfig> loadDynamicAttributeFields(Datasource ds) {
         if (ds != null && getMetadataTools().isPersistent(ds.getMetaClass())) {
-            String windowId = ComponentsHelper.getWindow(resultComponent).getId();
+            String windowId = getWindowId(context);
 
             Set<CategoryAttribute> attributesToShow =
                     getDynamicAttributesGuiTools().getAttributesToShowOnTheScreen(ds.getMetaClass(),

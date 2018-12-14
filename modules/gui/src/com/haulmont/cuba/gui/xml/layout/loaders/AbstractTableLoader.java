@@ -25,7 +25,6 @@ import com.haulmont.cuba.core.app.dynamicattributes.PropertyType;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.entity.LocaleHelper;
 import com.haulmont.cuba.core.global.MetadataTools;
-import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.data.table.ContainerTableItems;
@@ -35,7 +34,6 @@ import com.haulmont.cuba.gui.data.aggregation.AggregationStrategy;
 import com.haulmont.cuba.gui.dynamicattributes.DynamicAttributesGuiTools;
 import com.haulmont.cuba.gui.model.*;
 import com.haulmont.cuba.gui.screen.FrameOwner;
-import com.haulmont.cuba.gui.screen.LookupScreen;
 import com.haulmont.cuba.gui.screen.UiControllerUtils;
 import com.haulmont.cuba.gui.xml.DeclarativeColumnGenerator;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
@@ -233,8 +231,11 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
     protected void addDynamicAttributes(Table component, MetaClass metaClass, Datasource ds, CollectionLoader collectionLoader,
                                         List<Table.Column> availableColumns) {
         if (getMetadataTools().isPersistent(metaClass)) {
+            String windowId = getWindowId(context);
+
             Set<CategoryAttribute> attributesToShow =
-                    getDynamicAttributesGuiTools().getAttributesToShowOnTheScreen(metaClass, context.getFullFrameId(), component.getId());
+                    getDynamicAttributesGuiTools().getAttributesToShowOnTheScreen(metaClass,
+                            windowId, component.getId());
             if (CollectionUtils.isNotEmpty(attributesToShow)) {
                 if (collectionLoader != null) {
                     collectionLoader.setLoadDynamicAttributes(true);

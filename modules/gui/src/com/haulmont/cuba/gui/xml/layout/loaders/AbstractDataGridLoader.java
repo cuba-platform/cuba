@@ -23,7 +23,6 @@ import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.entity.LocaleHelper;
 import com.haulmont.cuba.core.global.MetadataTools;
-import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.DataGrid.Column;
@@ -34,7 +33,6 @@ import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.dynamicattributes.DynamicAttributesGuiTools;
 import com.haulmont.cuba.gui.model.*;
 import com.haulmont.cuba.gui.screen.FrameOwner;
-import com.haulmont.cuba.gui.screen.LookupScreen;
 import com.haulmont.cuba.gui.screen.UiControllerUtils;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import org.apache.commons.collections4.CollectionUtils;
@@ -478,9 +476,11 @@ public abstract class AbstractDataGridLoader<T extends DataGrid> extends Actions
                                         Datasource ds, CollectionLoader collectionLoader,
                                         List<Column> availableColumns) {
         if (getMetadataTools().isPersistent(metaClass)) {
+            String windowId = getWindowId(context);
+
             Set<CategoryAttribute> attributesToShow =
                     getDynamicAttributesGuiTools().getAttributesToShowOnTheScreen(metaClass,
-                            context.getFullFrameId(), component.getId());
+                            windowId, component.getId());
             if (CollectionUtils.isNotEmpty(attributesToShow)) {
                 if (collectionLoader != null) {
                     collectionLoader.setLoadDynamicAttributes(true);

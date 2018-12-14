@@ -36,6 +36,8 @@ import com.haulmont.cuba.gui.components.actions.BaseAction;
 import com.haulmont.cuba.gui.components.actions.ItemTrackingAction;
 import com.haulmont.cuba.gui.components.validators.*;
 import com.haulmont.cuba.gui.icons.Icons;
+import com.haulmont.cuba.gui.screen.Screen;
+import com.haulmont.cuba.gui.screen.UiControllerUtils;
 import com.haulmont.cuba.gui.screen.compatibility.LegacyFrame;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
@@ -979,5 +981,11 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
         if (StringUtils.isNotBlank(focusable)) {
             component.setFocusable(Boolean.parseBoolean(focusable));
         }
+    }
+
+    protected String getWindowId(Context context) {
+        Frame frame = context.getFrame();
+        Screen screen = UiControllerUtils.getScreen(frame.getFrameOwner());
+        return screen.getId();
     }
 }
