@@ -240,7 +240,7 @@ public class WebOptionsList<V, I> extends WebAbstractField<CubaListSelect, V>
 
             if (metaProperty.getRange().isEnum()) {
                 //noinspection unchecked
-                setOptions(new EnumOptions(metaProperty.getJavaType()));
+                setOptions(new EnumOptions(metaProperty.getRange().asEnumeration().getJavaClass()));
             }
 
             if (DynamicAttributesUtils.isDynamicAttribute(metaProperty)) {

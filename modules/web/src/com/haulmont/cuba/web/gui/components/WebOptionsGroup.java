@@ -220,7 +220,7 @@ public class WebOptionsGroup<V, I> extends WebAbstractField<CubaOptionGroup, V> 
 
             if (metaProperty.getRange().isEnum()) {
                 //noinspection unchecked
-                setOptions(new EnumOptions(metaProperty.getJavaType()));
+                setOptions(new EnumOptions(metaProperty.getRange().asEnumeration().getJavaClass()));
             }
 
             if (DynamicAttributesUtils.isDynamicAttribute(metaProperty)) {
