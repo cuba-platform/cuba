@@ -14,20 +14,34 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.web.navigation;
+package com.haulmont.cuba.gui;
 
+import com.haulmont.cuba.gui.navigation.NavigationState;
 import com.haulmont.cuba.gui.screen.Screen;
-import com.haulmont.cuba.web.sys.navigation.NavigationState;
 
 import java.util.Collections;
 import java.util.Map;
 
 /**
  * Interface defining methods for reflecting app state to URL based on currently opened screen.
- * <p>
- * It can be used either for creating new browser history entry or replacing current state.
- * <p>
+ * <br>
  * Passed params map enables to reflect inner screen state to URL to use it later.
+ * <br>
+ * Can be used only Web client.
+ * <br>
+ * Usage example (this - Screen controller):
+ * <pre>
+ *     &#64;Inject
+ *     private UrlRouting urlRouting;
+ *
+ *     private void changeUrl() {
+ *         Map&lt;String, String&gt; params = ParamsMap.of(
+ *                 "param1", "value1",
+ *                 "param2", "value2");
+ *
+ *         urlRouting.pushState(this, params);
+ *     }
+ * </pre>
  */
 public interface UrlRouting {
 

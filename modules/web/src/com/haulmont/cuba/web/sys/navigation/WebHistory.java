@@ -17,6 +17,7 @@
 package com.haulmont.cuba.web.sys.navigation;
 
 import com.haulmont.bali.util.Preconditions;
+import com.haulmont.cuba.gui.navigation.NavigationState;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.gui.UrlHandlingMode;
@@ -65,13 +66,13 @@ public class WebHistory implements History {
     @Override
     public NavigationState backward() {
         if (checkNotNativeUrlHandlingMode()) {
-            return NavigationState.empty();
+            return NavigationState.EMPTY;
         }
 
         NavigationState state = ui.getUrlRouting().getState();
         if (!searchBackward(state)) {
             log.debug("History doesn't contain state '{}'. History backward will not be performed", state);
-            return NavigationState.empty();
+            return NavigationState.EMPTY;
         }
 
         do {
@@ -84,7 +85,7 @@ public class WebHistory implements History {
     @Override
     public NavigationState getNow() {
         if (checkNotNativeUrlHandlingMode()) {
-            return NavigationState.empty();
+            return NavigationState.EMPTY;
         }
 
         return now >= 0 ? history.get(now) : null;
@@ -93,7 +94,7 @@ public class WebHistory implements History {
     @Override
     public NavigationState getPrevious() {
         if (checkNotNativeUrlHandlingMode()) {
-            return NavigationState.empty();
+            return NavigationState.EMPTY;
         }
 
         return now - 1 >= 0 ? history.get(now - 1) : null;
@@ -102,7 +103,7 @@ public class WebHistory implements History {
     @Override
     public NavigationState getNext() {
         if (checkNotNativeUrlHandlingMode()) {
-            return NavigationState.empty();
+            return NavigationState.EMPTY;
         }
 
         return now + 1 < history.size() ? history.get(now + 1) : null;

@@ -91,7 +91,8 @@ public class RuntimePropertiesFrameLoader extends ContainerLoader<Frame> {
                         hostScreenContext.getScreens(),
                         hostScreenContext.getDialogs(),
                         hostScreenContext.getNotifications(),
-                        hostScreenContext.getFragments())
+                        hostScreenContext.getFragments(),
+                        hostScreenContext.getUrlRouting())
         );
         setScreenData(controller, new ScreenDataImpl());
 

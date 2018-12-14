@@ -16,7 +16,7 @@
 
 package com.haulmont.cuba.web.sys.navigation.accessfilter;
 
-import com.haulmont.cuba.web.sys.navigation.NavigationState;
+import com.haulmont.cuba.gui.navigation.NavigationState;
 
 /**
  * Marker interface for beans that manage whether some route is allowed navigate to or not.

@@ -106,7 +106,8 @@ public class FragmentComponentLoader extends ContainerLoader<Fragment> {
                         hostScreenContext.getScreens(),
                         hostScreenContext.getDialogs(),
                         hostScreenContext.getNotifications(),
-                        hostScreenContext.getFragments())
+                        hostScreenContext.getFragments(),
+                        hostScreenContext.getUrlRouting())
         );
         setScreenData(controller, new ScreenDataImpl());
 

@@ -16,10 +16,9 @@
 
 package com.haulmont.cuba.web.sys.navigation.accessfilter;
 
-import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.web.App;
-import com.haulmont.cuba.web.sys.navigation.NavigationState;
+import com.haulmont.cuba.gui.navigation.NavigationState;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
@@ -29,9 +28,6 @@ import java.util.Objects;
 @Component
 @Order(NavigationFilter.LOWEST_PLATFORM_PRECEDENCE)
 public class CubaLoginScreenFilter implements NavigationFilter {
-
-    @Inject
-    protected Messages messages;
 
     @Inject
     protected WindowConfig windowConfig;
@@ -46,7 +42,7 @@ public class CubaLoginScreenFilter implements NavigationFilter {
         boolean authenticated = App.getInstance().getConnection().isAuthenticated();
 
         return authenticated
-                ? AccessCheckResult.rejected(messages.getMainMessage("navigation.unableToGoToLogin"))
+                ? AccessCheckResult.rejected()
                 : AccessCheckResult.allowed();
     }
 }

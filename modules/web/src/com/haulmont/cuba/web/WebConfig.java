@@ -171,7 +171,7 @@ public interface WebConfig extends Config {
      * @deprecated use {@link WebConfig#getUrlHandlingMode()} instead
      */
     @Property("cuba.web.allowHandleBrowserHistoryBack")
-    @DefaultBoolean(true)
+    @DefaultBoolean(false)
     @Deprecated
     boolean getAllowHandleBrowserHistoryBack();
 

@@ -20,6 +20,7 @@ import com.haulmont.cuba.gui.Dialogs;
 import com.haulmont.cuba.gui.Fragments;
 import com.haulmont.cuba.gui.Notifications;
 import com.haulmont.cuba.gui.Screens;
+import com.haulmont.cuba.gui.UrlRouting;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.screen.ScreenContext;
 import com.haulmont.cuba.gui.screen.ScreenOptions;
@@ -33,9 +34,14 @@ public class ScreenContextImpl implements ScreenContext {
     protected final Dialogs dialogs;
     protected final Notifications notifications;
     protected final Fragments fragments;
+    protected final UrlRouting urlRouting;
 
     public ScreenContextImpl(WindowInfo windowInfo, ScreenOptions options,
-                             Screens screens, Dialogs dialogs, Notifications notifications, Fragments fragments) {
+                             Screens screens,
+                             Dialogs dialogs,
+                             Notifications notifications,
+                             Fragments fragments,
+                             UrlRouting urlRouting) {
         this.windowInfo = windowInfo;
         this.options = options;
 
@@ -43,6 +49,7 @@ public class ScreenContextImpl implements ScreenContext {
         this.dialogs = dialogs;
         this.notifications = notifications;
         this.fragments = fragments;
+        this.urlRouting = urlRouting;
     }
 
     @Override
@@ -73,5 +80,10 @@ public class ScreenContextImpl implements ScreenContext {
     @Override
     public Fragments getFragments() {
         return fragments;
+    }
+
+    @Override
+    public UrlRouting getUrlRouting() {
+        return urlRouting;
     }
 }

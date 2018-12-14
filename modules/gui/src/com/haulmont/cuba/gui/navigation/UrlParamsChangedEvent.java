@@ -20,11 +20,24 @@ import com.haulmont.cuba.gui.screen.Screen;
 
 import java.util.EventObject;
 import java.util.Map;
+import java.util.function.Consumer;
 
 /**
- * Event sent when browser URL parameters of the opened screen are changed.
+ * Event sent when browser URL parameters corresponding to opened screen are changed.
+ * <br>
+ * Event is fired before screen is shown that enables to do some preparatory work.
+ * <br>
+ * In this event listener, you can load some data or change screen controls state depending on new params:
+ * <pre>
+ *     &#64;Subscribe
+ *     protected void onUrlParamsChanged(UrlParamsChangedEvent event) {
+ *         Map&lt;String, String&gt; params = event.getParams();
  *
- * @see #getParams()
+ *         // handle new params
+ *     }
+ * </pre>
+ *
+ * @see Screen#addUrlParamsChangeListener(Consumer)
  */
 public class UrlParamsChangedEvent extends EventObject {
 

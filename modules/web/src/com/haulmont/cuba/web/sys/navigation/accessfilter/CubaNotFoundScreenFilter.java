@@ -18,7 +18,7 @@ package com.haulmont.cuba.web.sys.navigation.accessfilter;
 
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.web.app.ui.navigation.notfoundwindow.NotFoundScreen;
-import com.haulmont.cuba.web.sys.navigation.NavigationState;
+import com.haulmont.cuba.gui.navigation.NavigationState;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 

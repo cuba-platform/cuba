@@ -24,7 +24,6 @@ import com.haulmont.cuba.gui.components.RootWindow;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.events.sys.UiEventsMulticaster;
 import com.haulmont.cuba.gui.exception.UiExceptionHandler;
-import com.haulmont.cuba.gui.screen.Screen;
 import com.haulmont.cuba.gui.sys.TestIdManager;
 import com.haulmont.cuba.gui.theme.ThemeConstantsRepository;
 import com.haulmont.cuba.security.app.UserSessionService;
@@ -36,13 +35,12 @@ import com.haulmont.cuba.web.controllers.ControllerUtils;
 import com.haulmont.cuba.web.events.UIRefreshEvent;
 import com.haulmont.cuba.web.gui.UrlHandlingMode;
 import com.haulmont.cuba.web.gui.icons.IconResolver;
-import com.haulmont.cuba.web.navigation.UrlRouting;
-import com.haulmont.cuba.web.navigation.WebUrlRouting;
+import com.haulmont.cuba.gui.UrlRouting;
 import com.haulmont.cuba.web.security.events.AppInitializedEvent;
 import com.haulmont.cuba.web.security.events.SessionHeartbeatEvent;
 import com.haulmont.cuba.web.sys.*;
 import com.haulmont.cuba.web.sys.navigation.History;
-import com.haulmont.cuba.web.sys.navigation.NavigationState;
+import com.haulmont.cuba.gui.navigation.NavigationState;
 import com.haulmont.cuba.web.sys.navigation.UrlChangeHandler;
 import com.haulmont.cuba.web.sys.navigation.WebHistory;
 import com.haulmont.cuba.web.widgets.*;
@@ -69,9 +67,6 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.*;
 import java.util.stream.Collectors;
-
-import static com.haulmont.cuba.gui.screen.UiControllerUtils.getScreenContext;
-import static com.haulmont.cuba.gui.screen.UiControllerUtils.saveSettings;
 
 /**
  * Single window / page of web application. Root component of Vaadin layout.
@@ -181,7 +176,20 @@ public class AppUI extends CubaUI implements ErrorHandler, EnhancedUI, UiExcepti
         fileDownloader = new CubaFileDownloader();
         fileDownloader.extend(this);
 
-        if (UrlHandlingMode.BACK_ONLY == webConfig.getUrlHandlingMode()) {
+        initHistoryBackControl();
+    }
+
+    protected void initHistoryBackControl() {
+        boolean allowHistoryBack = webConfig.getAllowHandleBrowserHistoryBack();
+        UrlHandlingMode urlHandlingMode = webConfig.getUrlHandlingMode();
+
+        if (allowHistoryBack
+                && UrlHandlingMode.BACK_ONLY != urlHandlingMode) {
+            log.info("Deprecated 'WebConfig#getAllowHandleBrowserHistoryBack' config use is ignored. " +
+                    "Please use new 'WebConfig#getUrlHandlingMode' to enable this feature.");
+        }
+
+        if (UrlHandlingMode.BACK_ONLY == urlHandlingMode) {
             CubaHistoryControl historyControl = new CubaHistoryControl();
             historyControl.extend(this, this::onHistoryBackPerformed);
         }

@@ -17,7 +17,9 @@
 package com.haulmont.cuba.web.sys.navigation;
 
 import com.haulmont.bali.util.URLEncodeUtils;
+import com.haulmont.cuba.gui.navigation.NavigationState;
 import com.vaadin.server.Page;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,7 +30,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static com.haulmont.bali.util.Preconditions.checkNotEmptyString;
-import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
 public class UrlTools {
 
@@ -49,7 +50,9 @@ public class UrlTools {
 
     @Nullable
     public static String serializeId(Object id) {
-        checkNotNullArgument(id, "Unable to serialize null id");
+        if (id == null) {
+            return null;
+        }
 
         String serialized = null;
         Class<?> idClass = id.getClass();
@@ -80,8 +83,9 @@ public class UrlTools {
 
     @Nullable
     public static Object deserializeId(Class idClass, String base64Id) {
-        checkNotNullArgument(idClass, "Unable to deserialize id without its type");
-        checkNotEmptyString("Unable to deserialize empty string");
+        if (idClass == null || StringUtils.isEmpty(base64Id)) {
+            return null;
+        }
 
         Object deserialized = null;
         String decoded = URLEncodeUtils.decodeUtf8(base64Id);
@@ -139,7 +143,7 @@ public class UrlTools {
 
     public static NavigationState parseState(String uriFragment) {
         if (uriFragment == null || uriFragment.isEmpty()) {
-            return NavigationState.empty();
+            return NavigationState.EMPTY;
         }
 
         NavigationState navigationState = parseRootRoute(uriFragment);
@@ -154,7 +158,7 @@ public class UrlTools {
 
         if (navigationState == null) {
             log.info("Unable to determine navigation state for the given fragment: \"{}\"", uriFragment);
-            return NavigationState.empty();
+            return NavigationState.EMPTY;
         }
 
         return navigationState;

@@ -41,7 +41,7 @@ import com.haulmont.cuba.web.gui.components.WebAbstractComponent;
 import com.haulmont.cuba.web.gui.components.util.ShortcutListenerDelegate;
 import com.haulmont.cuba.web.sys.TabWindowContainer;
 import com.haulmont.cuba.web.sys.WindowBreadCrumbs;
-import com.haulmont.cuba.web.sys.navigation.NavigationState;
+import com.haulmont.cuba.gui.navigation.NavigationState;
 import com.haulmont.cuba.web.sys.navigation.UrlTools;
 import com.haulmont.cuba.web.widgets.*;
 import com.haulmont.cuba.web.widgets.addons.dragdroplayouts.drophandlers.DefaultTabSheetDropHandler;

@@ -358,6 +358,14 @@ public class WindowConfig {
 
         RouteDefinition routeDef = windowInfo.getRouteDefinition();
         if (routeDef != null) {
+            String anotherScreenId = routes.get(routeDef.getPath());
+            if (anotherScreenId != null
+                    && !Objects.equals(id, anotherScreenId)) {
+                log.debug("Multiple use of the route '{}' for different screens is detected: '{}' and '{}'. " +
+                                "The screen '{}' will be opened during navigation as the last registered screen",
+                        routeDef.getPath(), id, anotherScreenId, id);
+            }
+
             routes.put(routeDef.getPath(), id);
         }
     }

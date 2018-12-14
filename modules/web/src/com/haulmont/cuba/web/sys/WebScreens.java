@@ -70,6 +70,7 @@ import com.haulmont.cuba.web.gui.components.WebDialogWindow.GuiDialogWindow;
 import com.haulmont.cuba.web.gui.components.WebTabWindow;
 import com.haulmont.cuba.web.gui.components.mainwindow.WebAppWorkArea;
 import com.haulmont.cuba.web.gui.icons.IconResolver;
+import com.haulmont.cuba.gui.navigation.NavigationState;
 import com.haulmont.cuba.web.sys.navigation.UrlTools;
 import com.haulmont.cuba.web.widgets.*;
 import com.vaadin.ui.CssLayout;
@@ -192,7 +193,7 @@ public class WebScreens implements Screens, WindowManager {
         setFrame(controller, window);
         setScreenContext(controller,
                 new ScreenContextImpl(windowInfo, options, this,
-                        ui.getDialogs(), ui.getNotifications(), ui.getFragments())
+                        ui.getDialogs(), ui.getNotifications(), ui.getFragments(), ui.getUrlRouting())
         );
         setScreenData(controller, new ScreenDataImpl());
 
@@ -428,9 +429,18 @@ public class WebScreens implements Screens, WindowManager {
 
         afterShowWindow(screen);
 
-        ui.getUrlRouting().pushState(screen);
+        changeUrl(screen);
 
         fireEvent(screen, AfterShowEvent.class, new AfterShowEvent(screen));
+    }
+
+    protected void changeUrl(Screen screen) {
+        WebWindow webWindow = (WebWindow) screen.getWindow();
+        Map<String, String> params = webWindow.getResolvedState() != null
+                ? webWindow.getResolvedState().getParams()
+                : Collections.emptyMap();
+
+        ui.getUrlRouting().pushState(screen, params);
     }
 
     protected void checkNotYetOpened(Screen screen) {
@@ -527,8 +537,11 @@ public class WebScreens implements Screens, WindowManager {
 
         Screen currentScreen = getAnyCurrentScreen();
         if (currentScreen != null) {
-            String currentScreenRoute = ((WebWindow) currentScreen.getWindow()).getResolvedState().asRoute();
-            UrlTools.replaceState(currentScreenRoute);
+            NavigationState resolvedState = ((WebWindow) currentScreen.getWindow()).getResolvedState();
+            if (resolvedState != null) {
+                String currentScreenRoute = resolvedState.asRoute();
+                UrlTools.replaceState(currentScreenRoute);
+            }
         }
     }
 

@@ -17,7 +17,7 @@
 package com.haulmont.cuba.web.gui;
 
 import com.haulmont.cuba.web.WebConfig;
-import com.haulmont.cuba.web.navigation.UrlRouting;
+import com.haulmont.cuba.gui.UrlRouting;
 import com.haulmont.cuba.web.sys.navigation.History;
 import com.haulmont.cuba.web.sys.navigation.UrlChangeHandler;
 import com.haulmont.cuba.web.widgets.CubaHistoryControl;

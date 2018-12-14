@@ -129,7 +129,8 @@ public class WebFragments implements Fragments {
                         ui.getScreens(),
                         ui.getDialogs(),
                         ui.getNotifications(),
-                        this)
+                        this,
+                        ui.getUrlRouting())
         );
         setScreenData(controller, new ScreenDataImpl());
 

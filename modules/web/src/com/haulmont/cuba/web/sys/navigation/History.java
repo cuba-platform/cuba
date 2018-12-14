@@ -16,6 +16,8 @@
 
 package com.haulmont.cuba.web.sys.navigation;
 
+import com.haulmont.cuba.gui.navigation.NavigationState;
+
 import javax.annotation.Nullable;
 
 /**

@@ -642,6 +642,10 @@ public class UiControllerDependencyInjector {
             // injecting fragments
             return UiControllerUtils.getScreenContext(frameOwner).getFragments();
 
+        } else if (UrlRouting.class.isAssignableFrom(type)) {
+            // injecting urlRouting
+            return UiControllerUtils.getScreenContext(frameOwner).getUrlRouting();
+
         } else if (MessageBundle.class == type) {
             return createMessageBundle(element, frame);
 

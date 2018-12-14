@@ -14,20 +14,23 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.web.navigation;
+package com.haulmont.cuba.web.sys;
 
 import com.haulmont.cuba.core.global.Events;
 import com.haulmont.cuba.gui.Route;
+import com.haulmont.cuba.gui.Screens;
+import com.haulmont.cuba.gui.UrlRouting;
 import com.haulmont.cuba.gui.components.DialogWindow;
 import com.haulmont.cuba.gui.components.RootWindow;
 import com.haulmont.cuba.gui.screen.EditorScreen;
+import com.haulmont.cuba.gui.screen.OpenMode;
 import com.haulmont.cuba.gui.screen.Screen;
 import com.haulmont.cuba.gui.sys.RouteDefinition;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.gui.UrlHandlingMode;
 import com.haulmont.cuba.web.gui.WebWindow;
-import com.haulmont.cuba.web.sys.navigation.NavigationState;
+import com.haulmont.cuba.gui.navigation.NavigationState;
 import com.haulmont.cuba.web.sys.navigation.UrlTools;
 import com.vaadin.server.Page;
 import org.apache.commons.collections4.MapUtils;
@@ -38,17 +41,19 @@ import org.slf4j.LoggerFactory;
 import javax.inject.Inject;
 import java.util.*;
 
+import static com.google.common.base.Strings.nullToEmpty;
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 import static com.haulmont.cuba.gui.screen.UiControllerUtils.getScreenContext;
 
 public class WebUrlRouting implements UrlRouting {
 
-    protected static final int MAX_NESTED_ROUTES = 2;
+    protected static final int MAX_NESTING = 2;
 
     private static final Logger log = LoggerFactory.getLogger(WebUrlRouting.class);
 
     @Inject
     protected Events events;
+
     @Inject
     protected WebConfig webConfig;
 
@@ -60,15 +65,7 @@ public class WebUrlRouting implements UrlRouting {
 
     @Override
     public void pushState(Screen screen, Map<String, String> urlParams) {
-        if (notSuitableUrlHandlingMode()) {
-            return;
-        }
-
-        checkNotNullArgument(screen);
-        checkNotNullArgument(urlParams);
-
-        if (isNotAttachedToUi(screen)) {
-            log.info("Pushing state for screen not attached to UI is not permitted");
+        if (!checkConditions(screen, urlParams)) {
             return;
         }
 
@@ -77,27 +74,38 @@ public class WebUrlRouting implements UrlRouting {
 
     @Override
     public void replaceState(Screen screen, Map<String, String> urlParams) {
-        if (notSuitableUrlHandlingMode()) {
-            return;
-        }
-
-        checkNotNullArgument(screen);
-        checkNotNullArgument(urlParams);
-
-        if (isNotAttachedToUi(screen)) {
-            log.info("Replacing state for screen not attached to UI is not permitted");
+        if (!checkConditions(screen, urlParams)) {
             return;
         }
 
         updateState(screen, urlParams, false);
     }
 
+    @Override
+    public NavigationState getState() {
+        if (UrlHandlingMode.URL_ROUTES != webConfig.getUrlHandlingMode()) {
+            log.debug("UrlRouting is disabled for '{}' URL handling mode", webConfig.getUrlHandlingMode());
+            return NavigationState.EMPTY;
+        }
+
+        if (UrlTools.headless()) {
+            log.debug("Unable to resolve navigation state in headless mode");
+            return NavigationState.EMPTY;
+        }
+
+        return UrlTools.parseState(Page.getCurrent().getLocation().getRawFragment());
+    }
+
     protected void updateState(Screen screen, Map<String, String> urlParams, boolean pushState) {
-        NavigationState oldNavState = getState();
+        NavigationState currentState = getState();
         NavigationState newState = buildNavState(screen, urlParams);
 
+        if (complexRouteNavigation(currentState, newState)) {
+            return;
+        }
+
         // do not push copy-pasted requested state to avoid double state pushing into browser history
-        if (!pushState || externalNavigation(oldNavState, newState)) {
+        if (!pushState || externalNavigation(currentState, newState)) {
             UrlTools.replaceState(newState.asRoute());
         } else {
             UrlTools.pushState(newState.asRoute());
@@ -110,21 +118,6 @@ public class WebUrlRouting implements UrlRouting {
         }
     }
 
-    @Override
-    public NavigationState getState() {
-        if (notSuitableUrlHandlingMode()) {
-            return NavigationState.empty();
-        }
-
-        if (UrlTools.headless()) {
-            log.trace("Unable to resolve navigation state in headless mode");
-            return NavigationState.empty();
-        }
-
-        String uriFragment = Page.getCurrent().getLocation().getRawFragment();
-        return UrlTools.parseState(uriFragment);
-    }
-
     protected NavigationState buildNavState(Screen screen, Map<String, String> urlParams) {
         NavigationState state;
 
@@ -133,14 +126,9 @@ public class WebUrlRouting implements UrlRouting {
         } else {
             String rootRoute = getRoute(ui.getScreens().getOpenedScreens().getRootScreen());
             String stateMark = getStateMark(screen);
-            String nestedRoute = buildNestedRoute(screen);
-            Map<String, String> params = processParams(screen, urlParams);
 
-            NavigationState currentState = ui.getHistory().getNow();
-            if (Objects.equals(nestedRoute, currentState.getNestedRoute())) {
-                // change only the state mark if the nesting limit has been reached
-                return new NavigationState(rootRoute, stateMark, nestedRoute, currentState.getParams());
-            }
+            String nestedRoute = buildNestedRoute(screen);
+            Map<String, String> params = buildParams(screen, urlParams);
 
             state = new NavigationState(rootRoute, stateMark, nestedRoute, params);
         }
@@ -149,62 +137,74 @@ public class WebUrlRouting implements UrlRouting {
     }
 
     protected String buildNestedRoute(Screen screen) {
-        if (screen.getWindow() instanceof DialogWindow) {
-            return buildDialogRoute(screen);
-        } else {
-            return buildCurrentScreenRoute();
-        }
+        return screen.getWindow() instanceof DialogWindow
+                ? buildDialogRoute(screen)
+                : buildScreenRoute(screen);
     }
 
     protected String buildDialogRoute(Screen dialog) {
-        RouteDefinition routeDef = getRouteDef(dialog);
-        String currentScreenRoute = buildCurrentScreenRoute();
+        RouteDefinition dialogRouteDefinition = getRouteDef(dialog);
 
-        if (routeDef == null) {
+        Iterator<Screen> currentTabScreens = ui.getScreens().getOpenedScreens().getCurrentBreadcrumbs().iterator();
+        Screen currentScreen = currentTabScreens.hasNext()
+                ? currentTabScreens.next()
+                : null;
+        String currentScreenRoute = currentScreen != null
+                ? buildScreenRoute(currentScreen)
+                : "";
+
+        if (dialogRouteDefinition == null) {
             return currentScreenRoute;
         }
-
-        String dialogRoute = routeDef.getPath();
+        String dialogRoute = dialogRouteDefinition.getPath();
         if (dialogRoute == null || dialogRoute.isEmpty()) {
             return currentScreenRoute;
         }
 
-        String parentPrefix = routeDef.getParentPrefix();
+        String parentPrefix = dialogRouteDefinition.getParentPrefix();
         if (StringUtils.isNotEmpty(parentPrefix)
+                && dialogRoute.startsWith(parentPrefix + '/')
                 && currentScreenRoute.endsWith(parentPrefix)) {
             dialogRoute = dialogRoute.substring(parentPrefix.length() + 1);
         }
 
-        return StringUtils.isEmpty(currentScreenRoute)
+        return currentScreenRoute == null || currentScreenRoute.isEmpty()
                 ? dialogRoute
                 : currentScreenRoute + '/' + dialogRoute;
     }
 
-    protected String buildCurrentScreenRoute() {
+    protected String buildScreenRoute(Screen screen) {
         List<Screen> screens = new ArrayList<>(ui.getScreens().getOpenedScreens().getCurrentBreadcrumbs());
+        if (screens.isEmpty()
+                || screens.get(0) != screen) {
+            log.debug("Current breadcrumbs doesn't contain the given screen '{}'", screen.getId());
+            return "";
+        }
+
         Collections.reverse(screens);
 
-        String prevSubRoute = null;
         StringBuilder state = new StringBuilder();
+        String prevSubRoute = null;
 
-        for (int i = 0; i < screens.size() && i < MAX_NESTED_ROUTES; i++) {
-            String route = buildRoutePart(prevSubRoute, screens.get(i));
+        for (int i = 0; i < screens.size() && i < MAX_NESTING; i++) {
+            String subRoute = buildSubRoute(prevSubRoute, screens.get(i));
 
-            if (StringUtils.isNotEmpty(state) && StringUtils.isNotEmpty(route)) {
+            if (StringUtils.isNotEmpty(state)
+                    && StringUtils.isNotEmpty(subRoute)) {
                 state.append('/');
             }
-            state.append(route);
+            state.append(subRoute);
 
-            prevSubRoute = route;
+            prevSubRoute = subRoute;
         }
 
         return state.toString();
     }
 
-    protected String buildRoutePart(String prevSubRoute, Screen screen) {
+    protected String buildSubRoute(String prevSubRoute, Screen screen) {
         String screenRoute = getRoute(screen);
 
-        String parentPrefix = getScreenParentPrefix(screen);
+        String parentPrefix = getParentPrefix(screen);
         if (StringUtils.isEmpty(parentPrefix)) {
             return nullToEmpty(screenRoute);
         }
@@ -216,11 +216,37 @@ public class WebUrlRouting implements UrlRouting {
         }
     }
 
-    protected String nullToEmpty(String s) {
-        return s == null ? "" : s;
+    protected Map<String, String> buildParams(Screen screen, Map<String, String> urlParams) {
+        String route = getRoute(screen);
+
+        if (StringUtils.isEmpty(route)
+                && (isEditor(screen) || MapUtils.isNotEmpty(urlParams))) {
+            log.debug("There's no route for screen \"{}\". URL params will be ignored", screen.getId());
+            return Collections.emptyMap();
+        }
+
+        if (omitParams(screen)) {
+            return Collections.emptyMap();
+        }
+
+        Map<String, String> params = new LinkedHashMap<>();
+
+        if (isEditor(screen)) {
+            Object entityId = ((EditorScreen) screen).getEditedEntity().getId();
+            String base64Id = UrlTools.serializeId(entityId);
+            if (base64Id != null && !"".equals(base64Id)) {
+                params.put("id", base64Id);
+            }
+        }
+
+        params.putAll(urlParams != null
+                ? urlParams
+                : Collections.emptyMap());
+
+        return params;
     }
 
-    protected String getScreenParentPrefix(Screen screen) {
+    protected String getParentPrefix(Screen screen) {
         String parentPrefix = null;
 
         Route routeAnnotation = screen.getClass().getAnnotation(Route.class);
@@ -238,29 +264,13 @@ public class WebUrlRouting implements UrlRouting {
         return parentPrefix;
     }
 
-    protected Map<String, String> processParams(Screen screen, Map<String, String> urlParams) {
-        String route = getRoute(screen);
-
-        if (StringUtils.isEmpty(route)
-                && (isEditor(screen) || MapUtils.isNotEmpty(urlParams))) {
-            log.debug("There's no route for screen \"{}\". URL params will be ignored", screen.getId());
-            return Collections.emptyMap();
+    protected boolean omitParams(Screen screen) {
+        Screens.LaunchMode launchMode = screen.getWindow().getContext().getLaunchMode();
+        if (OpenMode.THIS_TAB != launchMode) {
+            return false;
         }
 
-        Map<String, String> params = new LinkedHashMap<>();
-
-        if (isEditor(screen)) {
-            Object entityId = ((EditorScreen) screen).getEditedEntity().getId();
-            String base64Id = UrlTools.serializeId(entityId);
-
-            params.put("id", base64Id);
-        }
-
-        params.putAll(urlParams != null
-                ? urlParams
-                : Collections.emptyMap());
-
-        return params;
+        return ui.getScreens().getOpenedScreens().getCurrentBreadcrumbs().size() > MAX_NESTING;
     }
 
     protected boolean isEditor(Screen screen) {
@@ -269,9 +279,7 @@ public class WebUrlRouting implements UrlRouting {
 
     protected String getRoute(Screen screen) {
         RouteDefinition routeDef = getRouteDef(screen);
-        return routeDef == null
-                ? null
-                : routeDef.getPath();
+        return routeDef == null ? null : routeDef.getPath();
     }
 
     protected RouteDefinition getRouteDef(Screen screen) {
@@ -285,42 +293,61 @@ public class WebUrlRouting implements UrlRouting {
         return String.valueOf(window.getUrlStateMark());
     }
 
-    protected boolean externalNavigation(NavigationState requestedState, NavigationState newNavigationState) {
-        if (requestedState == null) {
+    protected boolean complexRouteNavigation(NavigationState currentState, NavigationState newState) {
+        if (currentState == null
+                || newState == null
+                || currentState.getNestedRoute() == null
+                || !currentState.getNestedRoute().contains("/")) {
             return false;
         }
 
-        boolean notInHistory = !ui.getHistory().has(requestedState);
+        return !currentState.getNestedRoute().endsWith(newState.getNestedRoute());
+    }
 
-        boolean sameRoot = Objects.equals(requestedState.getRoot(), newNavigationState.getRoot());
-        boolean sameNestedRoute = Objects.equals(requestedState.getNestedRoute(), newNavigationState.getNestedRoute());
-        boolean sameParams = Objects.equals(requestedState.getParamsString(), newNavigationState.getParamsString());
+    protected boolean externalNavigation(NavigationState currentState, NavigationState newState) {
+        if (currentState == null) {
+            return false;
+        }
+
+        boolean notInHistory = !ui.getHistory().has(currentState);
+
+        boolean sameRoot = Objects.equals(currentState.getRoot(), newState.getRoot());
+        boolean sameNestedRoute = Objects.equals(currentState.getNestedRoute(), newState.getNestedRoute());
+        boolean sameParams = Objects.equals(currentState.getParamsString(), newState.getParamsString());
 
         return notInHistory && sameRoot && sameNestedRoute && sameParams;
     }
 
-    protected boolean notSuitableUrlHandlingMode() {
+    protected boolean checkConditions(Screen screen, Map<String, String> urlParams) {
         if (UrlHandlingMode.URL_ROUTES != webConfig.getUrlHandlingMode()) {
-            log.debug("UrlRouting bean invocations are ignored for {} URL handling mode", webConfig.getUrlHandlingMode());
-            return true;
+            log.debug("UrlRouting is disabled for '{}' URL handling mode", webConfig.getUrlHandlingMode());
+            return false;
         }
-        return false;
+
+        checkNotNullArgument(screen, "Screen cannot be null");
+        checkNotNullArgument(urlParams, "Parameters cannot be null");
+
+        if (notAttachedToUi(screen)) {
+            log.info("Ignore changing of URL for not attached screen '{}'", screen.getId());
+            return false;
+        }
+
+        return true;
     }
 
-    protected boolean isNotAttachedToUi(Screen screen) {
+    protected boolean notAttachedToUi(Screen screen) {
         boolean notAttached;
 
+        Screens.OpenedScreens openedScreens = ui.getScreens().getOpenedScreens();
+
         if (screen.getWindow() instanceof RootWindow) {
-            Screen rootScreen = ui.getScreens().getOpenedScreens()
-                    .getRootScreenOrNull();
+            Screen rootScreen = openedScreens.getRootScreenOrNull();
             notAttached = rootScreen == null || rootScreen != screen;
         } else if (screen.getWindow() instanceof DialogWindow) {
-            notAttached = !ui.getScreens().getOpenedScreens()
-                    .getDialogScreens()
+            notAttached = !openedScreens.getDialogScreens()
                     .contains(screen);
         } else {
-            notAttached = !ui.getScreens().getOpenedScreens()
-                    .getActiveScreens()
+            notAttached = !openedScreens.getActiveScreens()
                     .contains(screen);
         }
 

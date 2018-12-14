@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.web.sys.navigation;
+package com.haulmont.cuba.gui.navigation;
 
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -26,6 +26,9 @@ import java.util.stream.Collectors;
 
 public class NavigationState {
 
+    public static final NavigationState EMPTY =
+            new NavigationState("", "", "", Collections.emptyMap());
+
     protected final String root;
     protected final String stateMark;
     protected final String nestedRoute;
@@ -36,10 +39,6 @@ public class NavigationState {
         this.stateMark = stateMark;
         this.nestedRoute = nestedRoute;
         this.params = params;
-    }
-
-    public static NavigationState empty() {
-        return new NavigationState("", "", "", Collections.emptyMap());
     }
 
     public String getRoot() {
