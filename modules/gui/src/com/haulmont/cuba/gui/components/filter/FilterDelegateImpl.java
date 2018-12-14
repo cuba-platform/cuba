@@ -1574,7 +1574,7 @@ public class FilterDelegateImpl implements FilterDelegate {
         if (datasource == null) {
             throw new DevelopmentException("Filter datasource is not set");
         }
-        if (this.maxResults != -1) {
+        if (this.maxResults != -1 && !useMaxResults) {
             datasource.setMaxResults(maxResults);
         } else if (maxResultsAddedToLayout && useMaxResults) {
             Integer maxResults = maxResultsField.getValue();
