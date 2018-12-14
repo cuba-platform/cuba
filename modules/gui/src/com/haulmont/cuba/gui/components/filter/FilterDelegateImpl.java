@@ -1661,7 +1661,7 @@ public class FilterDelegateImpl implements FilterDelegate {
     protected void initDatasourceMaxResults() {
         checkState();
 
-        if (this.maxResults != -1) {
+        if (this.maxResults != -1  && !useMaxResults) {
             adapter.setMaxResults(maxResults);
         } else if (maxResultsAddedToLayout && useMaxResults) {
             Integer maxResults = maxResultsField.getValue();
