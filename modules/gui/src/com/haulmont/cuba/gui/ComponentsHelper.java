@@ -259,14 +259,9 @@ public abstract class ComponentsHelper {
         } else {
             for (Component c : frame.getComponents()) {
                 if (c instanceof Frame) {
-                    Component comp = ((Frame) c).getComponent(id);
-                    if (comp != null) {
-                        return comp;
-                    } else {
-                        Component nestedComponent = findComponent((Frame) c, id);
-                        if (nestedComponent != null) {
-                            return nestedComponent;
-                        }
+                    Component nestedComponent = findComponent((Frame) c, id);
+                    if (nestedComponent != null) {
+                        return nestedComponent;
                     }
                 }
             }
