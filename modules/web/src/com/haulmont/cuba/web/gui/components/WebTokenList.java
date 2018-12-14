@@ -78,7 +78,7 @@ public class WebTokenList<V extends Entity> extends WebV8AbstractField<WebTokenL
     protected Action lookupAction;
     protected String lookupScreen;
     protected Map<String, Object> lookupScreenParams;
-    protected OpenType lookupOpenMode;
+    protected OpenType lookupOpenMode = OpenType.THIS_TAB;
 
     protected Position position = Position.TOP;
     protected boolean inline;
