@@ -20,6 +20,7 @@ import com.haulmont.cuba.core.app.DataService
 import com.haulmont.cuba.core.global.LoadContext
 import com.haulmont.cuba.gui.app.security.user.browse.UserBrowser
 import com.haulmont.cuba.gui.screen.OpenMode
+import com.haulmont.cuba.security.app.UserManagementService
 import com.haulmont.cuba.security.entity.Group
 import com.haulmont.cuba.security.entity.User
 import com.haulmont.cuba.web.testsupport.TestServiceProxy
@@ -46,6 +47,14 @@ class UserBrowseTest extends UiScreenSpec {
                 return []
             }
         })
+
+        TestServiceProxy.mock(UserManagementService, Mock(UserManagementService) {
+            getSubstitutedUsers(_) >> Collections.emptyList()
+        })
+    }
+
+    def cleanup() {
+        TestServiceProxy.clear()
     }
 
     def "open UserBrowser"() {
