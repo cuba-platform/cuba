@@ -51,6 +51,7 @@ public class CubaColorPickerWrapper extends CustomField<Color> {
             fireEvent(createValueChange(event.getOldValue(), event.isUserOriginated()));
         });
         field.setCaption(null);
+        field.setModal(true);
     }
 
     @Override
