@@ -41,14 +41,15 @@ public class DateFieldLoader extends AbstractFieldLoader<DateField> {
 
         loadTabIndex(resultComponent, element);
 
-        final String resolution = element.attributeValue("resolution");
+        final String resolutionStr = element.attributeValue("resolution");
         String dateFormat = element.attributeValue("dateFormat");
         String mainDateFormat = null;
-        if (StringUtils.isNotEmpty(resolution)) {
-            DateField.Resolution res = DateField.Resolution.valueOf(resolution);
-            resultComponent.setResolution(res);
+        DateField.Resolution resolution = null;
+        if (StringUtils.isNotEmpty(resolutionStr)) {
+            // We use resolution to get possible date time format
+            resolution = DateField.Resolution.valueOf(resolutionStr);
             if (dateFormat == null) {
-                switch (res) {
+                switch (resolution) {
                     case YEAR:
                     case MONTH:
                     case DAY:
@@ -71,6 +72,11 @@ public class DateFieldLoader extends AbstractFieldLoader<DateField> {
         }
         if (StringUtils.isNotEmpty(formatStr)) {
             resultComponent.setDateFormat(formatStr);
+        }
+
+        // Resolution must be set after date format to prevent overriding the time field mask
+        if (resolution != null) {
+            resultComponent.setResolution(resolution);
         }
 
         loadBuffered(resultComponent, element);
