@@ -35,7 +35,6 @@ public class ScreenWithInjection extends Screen {
     @Named("fieldGroup.name")
     private TextField<String> nameField;
 
-    // is not supported by screen injector
     @Autowired
     private Resources resources;
 

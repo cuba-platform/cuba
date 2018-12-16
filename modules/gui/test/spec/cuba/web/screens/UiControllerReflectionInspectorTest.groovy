@@ -36,22 +36,19 @@ class UiControllerReflectionInspectorTest extends Specification {
 
         then:
 
-        elements.size() == 5
+        elements.size() == 6
 
         elements.find({ it.element.name == 'label' }).element.class == Field
         elements.find({ it.element.name == 'nameField' }).element.class == Field
         elements.find({ it.element.name == 'scripting' }).element.class == Field
+        elements.find({ it.element.name == 'resources' }).element.class == Field
 
         elements.find({ it.element.name == 'setMessages' }).element.class == Method
         elements.find({ it.element.name == 'setBeanLocator' }).element.class == Method
 
-        then: "@Autowired is not supported by screen injector"
-
-        elements.find({ it.element.name == 'resources' }) == null
-
         then: "all elements are accessible"
 
-        elements.findAll({ it.element.isAccessible() }).size() == 5
+        elements.findAll({ it.element.isAccessible() }).size() == 6
     }
 
     def "Get annotated @EventListener methods"() {
