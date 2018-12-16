@@ -215,11 +215,14 @@ class UiControllerDependencyInjectorTest extends Specification {
         def tree = Mock(Tree)
         def textField1 = Mock(TextField)
 
+        def dataGrid = Mock(DataGrid)
+
         window.getComponent("label1") >> label1
         window.getComponent("usersTable") >> usersTable
         window.getComponent("groupTable") >> groupTable
         window.getComponent("tree") >> tree
         window.getComponent("textField1") >> textField1
+        window.getComponent("dataGrid") >> dataGrid
 
         screen.window = window
 
@@ -241,6 +244,9 @@ class UiControllerDependencyInjectorTest extends Specification {
         1 * groupTable.addStyleProvider(_)
         1 * tree.setIconProvider(_)
         1 * textField1.addValidator(_)
+        1 * dataGrid.setCellDescriptionProvider({
+            it != null && it.getDescription(null, null) == 'OK'
+        })
     }
 
     private interface TestWindow extends Window, WindowImplementation {

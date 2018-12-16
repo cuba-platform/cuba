@@ -52,4 +52,9 @@ public class ScreenBindInstall extends Screen {
             throw new ValidationException("Incorrect length");
         }
     }
+
+    @Install(to = "dataGrid", subject = "cellDescriptionProvider")
+    protected String dataGridCellDescriptionProvider(User user, String columnId) {
+        return "OK";
+    }
 }

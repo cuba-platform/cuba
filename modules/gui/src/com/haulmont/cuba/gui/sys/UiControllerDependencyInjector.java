@@ -895,8 +895,7 @@ public class UiControllerDependencyInjector {
                 return this.hashCode();
             }
 
-            if (invokedMethod.getName().equals(method.getName())
-                    && invokedMethod.getParameterCount() == method.getParameterCount()) {
+            if (invokedMethod.getParameterCount() == method.getParameterCount()) {
                 try {
                     return this.method.invoke(frameOwner, args);
                 } catch (InvocationTargetException e) {
@@ -908,7 +907,9 @@ public class UiControllerDependencyInjector {
                 }
             }
 
-            throw new UnsupportedOperationException("InstalledProxyHandler does not support method " + invokedMethod);
+            throw new UnsupportedOperationException(
+                    String.format("InstalledProxyHandler does not support method %s. Check types and number of parameters",
+                            invokedMethod));
         }
 
         @Override
