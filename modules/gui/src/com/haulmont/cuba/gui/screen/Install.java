@@ -21,6 +21,21 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
+/**
+ * Annotation for declarative handler methods in UI controllers.
+ * <br>
+ * Example:
+ * <pre>
+ *    &#64;Install(to = "label", subject = "formatter")
+ *    protected String formatValue(Integer value) {
+ *        // the method used as Label formatter
+ *        return "1.0";
+ *    }
+ * </pre>
+ *
+ * @see Screen
+ * @see ScreenFragment
+ */
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @java.lang.annotation.Target(ElementType.METHOD)
@@ -32,4 +47,6 @@ public @interface Install {
     String subject() default "";
 
     String to() default "";
+
+    boolean required() default true;
 }

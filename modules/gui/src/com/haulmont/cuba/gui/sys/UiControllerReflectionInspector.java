@@ -36,6 +36,7 @@ import com.haulmont.cuba.gui.screen.Subscribe;
 import org.apache.commons.lang3.ClassUtils;
 import org.apache.commons.lang3.reflect.TypeUtils;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
@@ -229,7 +230,6 @@ public class UiControllerReflectionInspector {
     protected List<InjectElement> getAnnotatedInjectElementsNotCached(Class<?> clazz) {
         Map<AnnotatedElement, Class> toInject = Collections.emptyMap(); // lazily initialized
 
-        @SuppressWarnings("unchecked")
         List<Class<?>> classes = ClassUtils.getAllSuperclasses(clazz);
         classes.add(0, clazz);
         Collections.reverse(classes);
@@ -288,6 +288,10 @@ public class UiControllerReflectionInspector {
 
         if (element.isAnnotationPresent(Inject.class)) {
             return Inject.class;
+        }
+
+        if (element.isAnnotationPresent(Autowired.class)) {
+            return Autowired.class;
         }
 
         if (element.isAnnotationPresent(WindowParam.class)) {

@@ -32,11 +32,7 @@ import com.haulmont.cuba.gui.screen.ScreenContext
 import com.haulmont.cuba.gui.screen.impl.MessageBundleImpl
 import com.haulmont.cuba.gui.sys.UiControllerDependencyInjector
 import com.haulmont.cuba.gui.sys.UiControllerReflectionInspector
-import spec.cuba.web.screens.injection.ScreenBindEventListener
-import spec.cuba.web.screens.injection.ScreenBindInstall
-import spec.cuba.web.screens.injection.ScreenBindSubscribe
-import spec.cuba.web.screens.injection.ScreenInjectToFields
-import spec.cuba.web.screens.injection.ScreenInjectToSetters
+import spec.cuba.web.screens.injection.*
 import spock.lang.Specification
 
 @SuppressWarnings("GroovyAccessibility")
@@ -237,8 +233,6 @@ class UiControllerDependencyInjectorTest extends Specification {
 
         then:
 
-        screen != null
-
         1 * label1.setFormatter(_)
         1 * usersTable.addStyleProvider(_)
         1 * groupTable.addStyleProvider(_)
@@ -247,6 +241,30 @@ class UiControllerDependencyInjectorTest extends Specification {
         1 * dataGrid.setCellDescriptionProvider({
             it != null && it.getDescription(null, null) == 'OK'
         })
+    }
+
+    def "Injector supports non-required dependencies"() {
+        def screen = new ScreenOptionalDependencies()
+
+        def injector = new UiControllerDependencyInjector(screen, FrameOwner.NO_OPTIONS)
+        def inspector = new UiControllerReflectionInspector()
+        def beanLocator = Mock(BeanLocator)
+        def window = Mock(TestWindow)
+
+        screen.window = window
+
+        beanLocator.getAll(BeanLocator) >> ImmutableMap.of("beanLocator", beanLocator)
+
+        injector.reflectionInspector = inspector
+        injector.beanLocator = beanLocator
+
+        when:
+
+        injector.inject()
+
+        then:
+
+        screen.textField == null
     }
 
     private interface TestWindow extends Window, WindowImplementation {

@@ -16,25 +16,25 @@
 
 package spec.cuba.web.screens.injection;
 
-import com.haulmont.cuba.core.global.Messages;
-import com.haulmont.cuba.gui.components.Button;
+import com.haulmont.cuba.gui.components.TextField;
+import com.haulmont.cuba.gui.components.TextInputField;
+import com.haulmont.cuba.gui.screen.Install;
 import com.haulmont.cuba.gui.screen.Screen;
+import com.haulmont.cuba.gui.screen.Subscribe;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.inject.Inject;
+public class ScreenOptionalDependencies extends Screen {
 
-public class ScreenInjectToSetters extends Screen {
+    @Autowired(required = false)
+    protected TextField<String> textField;
 
-    private Button button;
-    private Messages messages;
+    @Subscribe(id = "textField", required = false)
+    protected void onTextChange(TextInputField.TextChangeEvent event) {
 
-    @Inject
-    public void setButton(Button button) {
-        this.button = button;
     }
 
-    @Autowired
-    public void setMessages(Messages messages) {
-        this.messages = messages;
+    @Install(to = "label", subject = "formatter", required = false)
+    protected String formatValue(Integer value) {
+        return "";
     }
 }

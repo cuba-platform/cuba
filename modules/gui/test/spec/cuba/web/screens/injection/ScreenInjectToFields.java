@@ -20,11 +20,15 @@ import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.Dialogs;
 import com.haulmont.cuba.gui.Notifications;
 import com.haulmont.cuba.gui.Screens;
-import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.Action;
+import com.haulmont.cuba.gui.components.Button;
+import com.haulmont.cuba.gui.components.TextField;
 import com.haulmont.cuba.gui.screen.MessageBundle;
 import com.haulmont.cuba.gui.screen.Screen;
 import org.slf4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.annotation.Resource;
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -34,7 +38,7 @@ public class ScreenInjectToFields extends Screen {
 
     @Inject
     private Button button;
-    @Inject
+    @Autowired
     private Messages messages;
 
     @Named("commit")
@@ -46,7 +50,7 @@ public class ScreenInjectToFields extends Screen {
     @Named("usersTable.create")
     private Action createAction;
 
-    @Inject
+    @Resource
     private Notifications notifications;
     @Inject
     private Screens screens;

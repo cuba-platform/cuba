@@ -47,6 +47,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Scope;
@@ -57,8 +58,8 @@ import javax.annotation.Resource;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.lang.invoke.MethodHandle;
-import java.lang.reflect.*;
 import java.lang.reflect.Field;
+import java.lang.reflect.*;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiFunction;
@@ -76,6 +77,8 @@ import static org.springframework.core.annotation.AnnotatedElementUtils.findMerg
 @org.springframework.stereotype.Component(UiControllerDependencyInjector.NAME)
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
 public class UiControllerDependencyInjector {
+
+    private static final Logger log = LoggerFactory.getLogger(UiControllerDependencyInjector.class);
 
     public static final String NAME = "cuba_UiControllerDependencyInjector";
 
@@ -121,6 +124,19 @@ public class UiControllerDependencyInjector {
             Frame frame = UiControllerUtils.getFrame(frameOwner);
 
             Object targetInstance = getInstallTargetInstance(frameOwner, annotation, frame);
+
+            if (targetInstance == null) {
+                if (annotation.required()) {
+                    throw new DevelopmentException(
+                            String.format("Unable to find @Install target for method %s in %s",
+                                    annotatedMethod.getMethod(), frameOwner.getClass()));
+                }
+
+                log.trace("Skip @Install method {} of {} : it is not required and target not found",
+                        annotatedMethod.getMethod().getName(), frameOwner.getClass());
+
+                continue;
+            }
 
             Class<?> instanceClass = targetInstance.getClass();
             Method installMethod = annotatedMethod.getMethod();
@@ -184,6 +200,7 @@ public class UiControllerDependencyInjector {
         return targetSetterMethod;
     }
 
+    @Nullable
     protected Object getInstallTargetInstance(FrameOwner frameOwner, Install annotation, Frame frame) {
         Object targetInstance;
         String target = UiDescriptorUtils.getInferredProvideId(annotation);
@@ -221,15 +238,11 @@ public class UiControllerDependencyInjector {
             targetInstance = UiControllerUtils.getScreenData(frameOwner).getLoader(target);
         } else {
             targetInstance = findInstallTarget(target, frame);
-
-            if (targetInstance == null) {
-                throw new DevelopmentException(
-                        String.format("Unable to find @Install target %s in %s", target, frame.getId()));
-            }
         }
         return targetInstance;
     }
 
+    @Nullable
     protected Object findInstallTarget(String target, Frame frame) {
         String[] elements = ValuePathHelper.parse(target);
         if (elements.length == 1) {
@@ -257,15 +270,12 @@ public class UiControllerDependencyInjector {
                 }
 
                 if (component instanceof ComponentContainer) {
-                    Component childComponent = ((ComponentContainer) component).getComponent(id);
-                    if (childComponent != null) {
-                        return childComponent;
-                    }
+                    return ((ComponentContainer) component).getComponent(id);
                 }
             }
         }
 
-        throw new DevelopmentException(String.format("Unable to find @Install target %s in %s", target, frame.getId()));
+        return null;
     }
 
     protected Object createInstallHandler(FrameOwner frameOwner, Method method, Class<?> targetObjectType) {
@@ -366,9 +376,12 @@ public class UiControllerDependencyInjector {
             }
 
             if (eventTarget == null) {
-                if (!annotation.optional()) {
+                if (annotation.required()) {
                     throw new DevelopmentException(String.format("Unable to find @Subscribe target %s in %s", target, frame.getId()));
                 }
+
+                log.trace("Skip @Subscribe method {} of {} : it is not required and target not found",
+                        annotatedMethod.getMethod().getName(), frameOwner.getClass());
 
                 continue;
             }
@@ -474,6 +487,8 @@ public class UiControllerDependencyInjector {
         boolean required = true;
         if (element.isAnnotationPresent(WindowParam.class)) {
             required = element.getAnnotation(WindowParam.class).required();
+        } else if (element.isAnnotationPresent(Autowired.class)) {
+            required = element.getAnnotation(Autowired.class).required();
         }
 
         if (element instanceof Field) {
@@ -510,24 +525,27 @@ public class UiControllerDependencyInjector {
             String msg;
             if (frameClass == declaringClass) {
                 msg = String.format(
-                        "CDI - Unable to find an instance of type '%s' named '%s' for instance of '%s'",
+                        "Unable to find an instance of type '%s' named '%s' for instance of '%s'",
                         type, name, frameClass.getCanonicalName());
             } else {
                 msg = String.format(
-                        "CDI - Unable to find an instance of type '%s' named '%s' declared in '%s' for instance of '%s'",
+                        "Unable to find an instance of type '%s' named '%s' declared in '%s' for instance of '%s'",
                         type, name, declaringClass.getCanonicalName(), frameClass.getCanonicalName());
             }
 
             if (!(frameOwner instanceof LegacyFrame)) {
 
-                throw new IllegalStateException(msg);
+                throw new DevelopmentException(msg);
             } else {
-                Logger log = LoggerFactory.getLogger(UiControllerDependencyInjector.class);
                 log.warn(msg);
             }
+        } else {
+            log.trace("Skip injection {} of {} as it is optional and instance not found",
+                    name, frameOwner.getClass());
         }
     }
 
+    @Nullable
     protected Object getInjectedInstance(Class<?> type, String name, Class annotationClass, AnnotatedElement element) {
         Frame frame = UiControllerUtils.getFrame(frameOwner);
 
@@ -592,7 +610,7 @@ public class UiControllerDependencyInjector {
                 // Injecting the DsContext
                 return ((LegacyFrame) frame.getFrameOwner()).getDsContext();
             } else {
-                throw new IllegalStateException("CDI - DsContext can be injected only into LegacyFrame inheritors");
+                throw new DevelopmentException("DsContext can be injected only into LegacyFrame inheritors");
             }
 
         } else if (DataSupplier.class.isAssignableFrom(type)) {
@@ -600,7 +618,7 @@ public class UiControllerDependencyInjector {
                 // Injecting the DataSupplier
                 return ((LegacyFrame) frame.getFrameOwner()).getDsContext().getDataSupplier();
             } else {
-                throw new IllegalStateException("CDI - DataSupplier can be injected only into LegacyFrame inheritors");
+                throw new DevelopmentException("DataSupplier can be injected only into LegacyFrame inheritors");
             }
 
         } else if (FrameContext.class.isAssignableFrom(type)) {
