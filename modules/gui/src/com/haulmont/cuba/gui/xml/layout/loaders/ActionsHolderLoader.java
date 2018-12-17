@@ -96,7 +96,7 @@ public abstract class ActionsHolderLoader<T extends ActionsHolder> extends Abstr
         }
 
         String caption = element.attributeValue("caption");
-        if (StringUtils.isNotEmpty(caption)) {
+        if (caption != null) {
             instance.setCaption(loadResourceString(caption));
         }
 
