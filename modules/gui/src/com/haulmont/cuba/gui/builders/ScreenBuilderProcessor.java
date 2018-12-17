@@ -21,6 +21,8 @@ import com.haulmont.cuba.gui.screen.FrameOwner;
 import com.haulmont.cuba.gui.screen.Screen;
 import org.springframework.stereotype.Component;
 
+import java.util.function.Consumer;
+
 import static com.haulmont.cuba.gui.screen.UiControllerUtils.getScreenContext;
 
 @Component("cuba_ScreenBuilderProcessor")
@@ -34,12 +36,20 @@ public class ScreenBuilderProcessor {
         Screen screen;
 
         if (builder instanceof ScreenClassBuilder) {
-            Class screenClass = ((ScreenClassBuilder) builder).getScreenClass();
+            ScreenClassBuilder screenClassBuilder = (ScreenClassBuilder) builder;
+
+            Class screenClass = screenClassBuilder.getScreenClass();
             if (screenClass == null) {
                 throw new IllegalArgumentException("Screen class is not set");
             }
 
             screen = screens.create(screenClass, builder.getLaunchMode(), builder.getOptions());
+
+            @SuppressWarnings("unchecked")
+            Consumer<AfterScreenCloseEvent> closeListener = screenClassBuilder.getCloseListener();
+            if (closeListener != null) {
+                screen.addAfterCloseListener(new AfterCloseListenerAdapter(closeListener));
+            }
         } else {
             if (builder.getScreenId() == null) {
                 throw new IllegalArgumentException("Screen id is not set");

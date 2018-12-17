@@ -26,6 +26,7 @@ import com.haulmont.cuba.gui.Screens;
 import com.haulmont.cuba.gui.WindowParams;
 import com.haulmont.cuba.gui.components.HasValue;
 import com.haulmont.cuba.gui.components.ListComponent;
+import com.haulmont.cuba.gui.components.SupportsUserAction;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.data.DataUnit;
 import com.haulmont.cuba.gui.components.data.meta.ContainerDataUnit;
@@ -38,6 +39,7 @@ import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 import java.util.HashMap;
+import java.util.function.Consumer;
 
 import static com.haulmont.cuba.gui.screen.UiControllerUtils.getScreenContext;
 
@@ -125,9 +127,13 @@ public class EditorBuilderProcessor {
             screen.addAfterCloseListener(event -> {
                 CloseAction closeAction = event.getCloseAction();
                 if (isCommitCloseAction(closeAction)) {
-                    // todo do we need to remove listeners from entity here ?
-                    // todo composition support
-                    field.setValue(editorScreen.getEditedEntity());
+                    E editedEntity = editorScreen.getEditedEntity();
+
+                    if (field instanceof SupportsUserAction) {
+                        ((SupportsUserAction) field).setValueFromUser(editedEntity);
+                    } else {
+                        field.setValue(editedEntity);
+                    }
                 }
 
                 if (field instanceof com.haulmont.cuba.gui.components.Component.Focusable) {
@@ -165,14 +171,21 @@ public class EditorBuilderProcessor {
         Screen screen;
 
         if (builder instanceof EditorClassBuilder) {
+            EditorClassBuilder editorClassBuilder = (EditorClassBuilder) builder;
             @SuppressWarnings("unchecked")
-            Class<? extends Screen> screenClass = ((EditorClassBuilder) builder).getScreenClass();
+            Class<? extends Screen> screenClass = editorClassBuilder.getScreenClass();
 
             if (screenClass == null) {
                 throw new IllegalArgumentException("Screen class is not set");
             }
 
             screen = screens.create(screenClass, builder.getLaunchMode(), builder.getOptions());
+
+            @SuppressWarnings("unchecked")
+            Consumer<AfterScreenCloseEvent> closeListener = editorClassBuilder.getCloseListener();
+            if (closeListener != null) {
+                screen.addAfterCloseListener(new AfterCloseListenerAdapter(closeListener));
+            }
         } else {
             String editorScreenId;
 
@@ -208,7 +221,7 @@ public class EditorBuilderProcessor {
         return screen;
     }
 
-    protected  <E extends Entity> void initializeNestedEntity(E entity, Nested container) {
+    protected <E extends Entity> void initializeNestedEntity(E entity, Nested container) {
         InstanceContainer masterContainer = container.getMaster();
         String property = container.getProperty();
 

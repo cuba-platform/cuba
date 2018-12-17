@@ -21,11 +21,15 @@ import com.haulmont.cuba.gui.screen.OpenMode;
 import com.haulmont.cuba.gui.screen.Screen;
 import com.haulmont.cuba.gui.screen.ScreenOptions;
 
+import java.util.function.Consumer;
+
 /**
- * Builder that knows the concrete screen class. It's {@link #build()} method returns that class.
+ * Screen builder that knows the concrete screen class. It's {@link #build()} method returns that class.
  */
 public class ScreenClassBuilder<S extends Screen> extends ScreenBuilder {
+
     protected Class<S> screenClass;
+    protected Consumer<AfterScreenCloseEvent<S>> closeListener;
 
     public ScreenClassBuilder(ScreenBuilder builder, Class<S> screenClass) {
         super(builder);
@@ -57,10 +61,27 @@ public class ScreenClassBuilder<S extends Screen> extends ScreenBuilder {
     }
 
     /**
+     * Adds {@link Screen.AfterCloseEvent} listener to the screen.
+     *
+     * @param listener listener
+     */
+    public ScreenClassBuilder<S> withAfterCloseListener(Consumer<AfterScreenCloseEvent<S>> listener) {
+        this.closeListener = listener;
+        return this;
+    }
+
+    /**
      * Returns screen class.
      */
     public Class<S> getScreenClass() {
         return screenClass;
+    }
+
+    /**
+     * Returns screen close listener.
+     */
+    public Consumer<AfterScreenCloseEvent<S>> getCloseListener() {
+        return closeListener;
     }
 
     @SuppressWarnings("unchecked")

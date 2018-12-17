@@ -30,11 +30,12 @@ import com.haulmont.cuba.gui.screen.ScreenOptions;
 import java.util.function.Consumer;
 
 /**
- * Builder that knows the concrete screen class. It's {@link #build()} method returns that class.
+ * Editor screen builder that knows the concrete screen class. It's {@link #build()} method returns that class.
  */
 public class EditorClassBuilder<E extends Entity, S extends Screen & EditorScreen<E>> extends EditorBuilder<E> {
 
     protected Class<S> screenClass;
+    protected Consumer<AfterScreenCloseEvent<S>> closeListener;
 
     public EditorClassBuilder(EditorBuilder<E> builder, Class<S> screenClass) {
         super(builder);
@@ -113,6 +114,16 @@ public class EditorClassBuilder<E extends Entity, S extends Screen & EditorScree
         throw new IllegalStateException("EditorClassBuilder does not support screenId");
     }
 
+    /**
+     * Adds {@link Screen.AfterCloseEvent} listener to the screen.
+     *
+     * @param listener listener
+     */
+    public EditorClassBuilder<E, S> withAfterCloseListener(Consumer<AfterScreenCloseEvent<S>> listener) {
+        this.closeListener = listener;
+        return this;
+    }
+
     @Override
     public <T extends HasValue<E>> EditorClassBuilder<E, S> withField(T field) {
         super.withField(field);
@@ -124,6 +135,13 @@ public class EditorClassBuilder<E extends Entity, S extends Screen & EditorScree
      */
     public Class<S> getScreenClass() {
         return screenClass;
+    }
+
+    /**
+     * Returns screen close listener.
+     */
+    public Consumer<AfterScreenCloseEvent<S>> getCloseListener() {
+        return closeListener;
     }
 
     @SuppressWarnings("unchecked")

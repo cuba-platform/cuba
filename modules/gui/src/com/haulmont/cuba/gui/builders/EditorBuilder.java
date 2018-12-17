@@ -30,6 +30,9 @@ import java.util.function.Function;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
+/**
+ * Editor screen builder that is not aware of concrete screen class. It's {@link #build()} method returns {@link Screen}.
+ */
 public class EditorBuilder<E extends Entity> {
 
     protected final FrameOwner origin;
@@ -69,6 +72,7 @@ public class EditorBuilder<E extends Entity> {
         this.listComponent = builder.listComponent;
         this.field = builder.field;
         this.screenId = builder.screenId;
+        this.addFirst = builder.addFirst;
     }
 
     public EditorBuilder(FrameOwner origin, Class<E> entityClass, Function<EditorBuilder<E>, Screen> handler) {

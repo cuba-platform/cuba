@@ -31,23 +31,17 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 /**
- * Builder that knows the concrete screen class. It's {@link #build()} method returns that class.
+ * Lookup screen builder that knows the concrete screen class. It's {@link #build()} method returns that class.
  */
 public class LookupClassBuilder<E extends Entity, S extends Screen & LookupScreen<E>> extends LookupBuilder<E> {
 
-    protected final Class<S> screenClass;
+    protected Class<S> screenClass;
+    protected Consumer<AfterScreenCloseEvent<S>> closeListener;
 
     public LookupClassBuilder(LookupBuilder<E> builder, Class<S> screenClass) {
         super(builder);
 
         this.screenClass = screenClass;
-    }
-
-    /**
-     * Returns lookup screen class.
-     */
-    public Class<S> getScreenClass() {
-        return screenClass;
     }
 
     @Override
@@ -101,6 +95,30 @@ public class LookupClassBuilder<E extends Entity, S extends Screen & LookupScree
     public LookupClassBuilder<E, S> withContainer(CollectionContainer<E> container) {
         super.withContainer(container);
         return this;
+    }
+
+    /**
+     * Adds {@link Screen.AfterCloseEvent} listener to the screen.
+     *
+     * @param listener listener
+     */
+    public LookupClassBuilder<E, S> withAfterCloseListener(Consumer<AfterScreenCloseEvent<S>> listener) {
+        this.closeListener = listener;
+        return this;
+    }
+
+    /**
+     * Returns lookup screen class.
+     */
+    public Class<S> getScreenClass() {
+        return screenClass;
+    }
+
+    /**
+     * Returns screen close listener.
+     */
+    public Consumer<AfterScreenCloseEvent<S>> getCloseListener() {
+        return closeListener;
     }
 
     @SuppressWarnings("unchecked")

@@ -26,6 +26,9 @@ import java.util.function.Function;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
+/**
+ * Screen builder that is not aware of concrete screen class. It's {@link #build()} method returns {@link Screen}.
+ */
 public class ScreenBuilder {
 
     protected final FrameOwner origin;

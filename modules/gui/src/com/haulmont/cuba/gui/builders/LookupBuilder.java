@@ -33,7 +33,7 @@ import java.util.function.Predicate;
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
 /**
- * Builder that is not aware of concrete screen class. It's {@link #build()} method returns {@link Screen}.
+ * Lookup screen builder that is not aware of concrete screen class. It's {@link #build()} method returns {@link Screen}.
  */
 public class LookupBuilder<E extends Entity> {
 

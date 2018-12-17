@@ -39,6 +39,7 @@ import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Consumer;
 
 import static com.haulmont.cuba.gui.screen.UiControllerUtils.getScreenContext;
 
@@ -58,12 +59,19 @@ public class LookupBuilderProcessor {
         Screen screen;
 
         if (builder instanceof LookupClassBuilder) {
-            Class screenClass = ((LookupClassBuilder) builder).getScreenClass();
+            LookupClassBuilder lookupClassBuilder = (LookupClassBuilder) builder;
+            Class screenClass = lookupClassBuilder.getScreenClass();
             if (screenClass == null) {
                 throw new IllegalArgumentException("Screen class is not set");
             }
 
             screen = screens.create(screenClass, builder.getLaunchMode(), builder.getOptions());
+
+            @SuppressWarnings("unchecked")
+            Consumer<AfterScreenCloseEvent> closeListener = lookupClassBuilder.getCloseListener();
+            if (closeListener != null) {
+                screen.addAfterCloseListener(new AfterCloseListenerAdapter(closeListener));
+            }
         } else {
             String lookupScreenId;
             if (builder.getScreenId() != null) {
