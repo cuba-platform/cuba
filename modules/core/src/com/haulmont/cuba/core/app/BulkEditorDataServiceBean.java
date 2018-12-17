@@ -16,6 +16,7 @@
 
 package com.haulmont.cuba.core.app;
 
+import com.google.common.base.Preconditions;
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.TransactionalDataManager;
@@ -24,6 +25,7 @@ import com.haulmont.cuba.core.entity.contracts.Id;
 import com.haulmont.cuba.core.global.DataManager;
 import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.core.global.MetadataTools;
+import com.haulmont.cuba.core.global.Stores;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -55,10 +57,16 @@ public class BulkEditorDataServiceBean implements BulkEditorDataService {
 
     @SuppressWarnings("unchecked")
     protected List<Entity> loadItemsWithCompositeKey(LoadDescriptor ld) {
+        Preconditions.checkNotNull(ld.getMetaClass(), "metaClass is null");
+
         TransactionalDataManager secureDataManager = txDataManager.secure();
+        String storeName = metadataTools.getStoreName(ld.getMetaClass());
+        if (storeName == null) {
+            storeName = Stores.MAIN;
+        }
 
         List<Entity> items;
-        try (Transaction tx = persistence.createTransaction()) {
+        try (Transaction tx = persistence.createTransaction(storeName)) {
 
             // for composite key we can only load with N queries, since IN operator is not supported for composite keys
             items = ld.getSelectedItems().stream()
