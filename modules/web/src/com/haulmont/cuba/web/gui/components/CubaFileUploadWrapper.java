@@ -19,9 +19,6 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.web.widgets.CubaButton;
 import com.haulmont.cuba.web.widgets.UploadComponent;
-import com.vaadin.server.AbstractErrorMessage;
-import com.vaadin.server.CompositeErrorMessage;
-import com.vaadin.server.ErrorMessage;
 import com.vaadin.server.Resource;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -300,19 +297,6 @@ public class CubaFileUploadWrapper extends CustomField<FileDescriptor> {
 
     public String getClearButtonDescription() {
         return clearButton.getDescription();
-    }
-
-    @Override
-    public ErrorMessage getErrorMessage() {
-        ErrorMessage superError = super.getErrorMessage();
-        if (!isReadOnly() && isRequiredIndicatorVisible() && isEmpty()) {
-            ErrorMessage error = AbstractErrorMessage.getErrorMessageForException(
-                    new com.vaadin.v7.data.Validator.EmptyValueException(getRequiredError()));
-            if (error != null) {
-                return new CompositeErrorMessage(superError, error);
-            }
-        }
-        return superError;
     }
 
     @Override
