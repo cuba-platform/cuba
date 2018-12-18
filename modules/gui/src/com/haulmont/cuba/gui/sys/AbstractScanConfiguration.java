@@ -38,22 +38,10 @@ public abstract class AbstractScanConfiguration {
 
     protected abstract Environment getEnvironment();
 
-    protected MetadataReader loadClassMetadata(String className) {
-        Resource resource = getResourceLoader().getResource("/" + className.replace(".", "/") + ".class");
-        if (!resource.isReadable()) {
-            throw new RuntimeException(String.format("Resource %s is not readable for class %s", resource, className));
-        }
-        try {
-            return getMetadataReaderFactory().getMetadataReader(resource);
-        } catch (IOException e) {
-            throw new RuntimeException("Unable to read resource " + resource, e);
-        }
-    }
-
     protected Stream<MetadataReader> scanPackage(String packageName) {
         String packageSearchPath = ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX +
                 resolveBasePackage(packageName) + '/' + DEFAULT_CLASS_RESOURCE_PATTERN;
-        ResourcePatternResolver resourcePatternResolver = new PathMatchingResourcePatternResolver();
+        ResourcePatternResolver resourcePatternResolver = new PathMatchingResourcePatternResolver(getResourceLoader());
         Resource[] resources;
         try {
             resources = resourcePatternResolver.getResources(packageSearchPath);

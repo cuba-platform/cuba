@@ -18,7 +18,6 @@ package com.haulmont.cuba.gui.sys;
 
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.gui.Route;
-import com.haulmont.cuba.gui.screen.Screen;
 import com.haulmont.cuba.gui.screen.UiController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
