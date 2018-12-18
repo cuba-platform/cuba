@@ -142,6 +142,14 @@ public class EditorBuilderProcessor {
             });
         }
 
+        if (builder instanceof EditorClassBuilder) {
+            @SuppressWarnings("unchecked")
+            Consumer<AfterScreenCloseEvent> closeListener = ((EditorClassBuilder) builder).getCloseListener();
+            if (closeListener != null) {
+                screen.addAfterCloseListener(new AfterCloseListenerAdapter(closeListener));
+            }
+        }
+
         return (S) screen;
     }
 
@@ -171,21 +179,14 @@ public class EditorBuilderProcessor {
         Screen screen;
 
         if (builder instanceof EditorClassBuilder) {
-            EditorClassBuilder editorClassBuilder = (EditorClassBuilder) builder;
             @SuppressWarnings("unchecked")
-            Class<? extends Screen> screenClass = editorClassBuilder.getScreenClass();
+            Class<? extends Screen> screenClass = ((EditorClassBuilder) builder).getScreenClass();
 
             if (screenClass == null) {
                 throw new IllegalArgumentException("Screen class is not set");
             }
 
             screen = screens.create(screenClass, builder.getLaunchMode(), builder.getOptions());
-
-            @SuppressWarnings("unchecked")
-            Consumer<AfterScreenCloseEvent> closeListener = editorClassBuilder.getCloseListener();
-            if (closeListener != null) {
-                screen.addAfterCloseListener(new AfterCloseListenerAdapter(closeListener));
-            }
         } else {
             String editorScreenId;
 

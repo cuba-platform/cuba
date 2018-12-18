@@ -56,36 +56,7 @@ public class LookupBuilderProcessor {
         FrameOwner origin = builder.getOrigin();
         Screens screens = getScreenContext(origin).getScreens();
 
-        Screen screen;
-
-        if (builder instanceof LookupClassBuilder) {
-            LookupClassBuilder lookupClassBuilder = (LookupClassBuilder) builder;
-            Class screenClass = lookupClassBuilder.getScreenClass();
-            if (screenClass == null) {
-                throw new IllegalArgumentException("Screen class is not set");
-            }
-
-            screen = screens.create(screenClass, builder.getLaunchMode(), builder.getOptions());
-
-            @SuppressWarnings("unchecked")
-            Consumer<AfterScreenCloseEvent> closeListener = lookupClassBuilder.getCloseListener();
-            if (closeListener != null) {
-                screen.addAfterCloseListener(new AfterCloseListenerAdapter(closeListener));
-            }
-        } else {
-            String lookupScreenId;
-            if (builder.getScreenId() != null) {
-                lookupScreenId = builder.getScreenId();
-            } else {
-                lookupScreenId = windowConfig.getLookupScreen(builder.getEntityClass()).getId();
-            }
-
-            if (lookupScreenId == null) {
-                throw new IllegalArgumentException("Screen id is not set");
-            }
-
-            screen = screens.create(lookupScreenId, builder.getLaunchMode(), builder.getOptions());
-        }
+        Screen screen = createScreen(builder, screens);
 
         if (!(screen instanceof LookupScreen)) {
             throw new IllegalArgumentException(String.format("Screen %s does not implement LookupScreen: %s",
@@ -145,6 +116,43 @@ public class LookupBuilderProcessor {
             lookupScreen.setSelectValidator(builder.getSelectValidator());
         }
 
+        if (builder instanceof LookupClassBuilder) {
+            @SuppressWarnings("unchecked")
+            Consumer<AfterScreenCloseEvent> closeListener = ((LookupClassBuilder) builder).getCloseListener();
+            if (closeListener != null) {
+                screen.addAfterCloseListener(new AfterCloseListenerAdapter(closeListener));
+            }
+        }
+
+        return screen;
+    }
+
+    protected <E extends Entity> Screen createScreen(LookupBuilder<E> builder, Screens screens) {
+        Screen screen;
+
+        if (builder instanceof LookupClassBuilder) {
+            LookupClassBuilder lookupClassBuilder = (LookupClassBuilder) builder;
+            @SuppressWarnings("unchecked")
+            Class<? extends Screen> screenClass = lookupClassBuilder.getScreenClass();
+            if (screenClass == null) {
+                throw new IllegalArgumentException("Screen class is not set");
+            }
+
+            screen = screens.create(screenClass, builder.getLaunchMode(), builder.getOptions());
+        } else {
+            String lookupScreenId;
+            if (builder.getScreenId() != null) {
+                lookupScreenId = builder.getScreenId();
+            } else {
+                lookupScreenId = windowConfig.getLookupScreen(builder.getEntityClass()).getId();
+            }
+
+            if (lookupScreenId == null) {
+                throw new IllegalArgumentException("Screen id is not set");
+            }
+
+            screen = screens.create(lookupScreenId, builder.getLaunchMode(), builder.getOptions());
+        }
         return screen;
     }
 
