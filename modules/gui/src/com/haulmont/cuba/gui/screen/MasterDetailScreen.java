@@ -61,6 +61,11 @@ public abstract class MasterDetailScreen<T extends Entity> extends StandardLooku
      */
     protected boolean justLocked;
 
+    /**
+     * Indicates whether the cross-field validation is enabled.
+     */
+    protected boolean crossFieldValidate = true;
+
     public MasterDetailScreen() {
         addInitListener(this::initMasterDetailScreen);
     }
@@ -397,14 +402,61 @@ public abstract class MasterDetailScreen<T extends Entity> extends StandardLooku
     }
 
     /**
+     * @return {@code true} if the cross-field validation is enabled, {@code false} otherwise
+     */
+    protected boolean isCrossFieldValidate() {
+        return crossFieldValidate;
+    }
+
+    /**
+     * Sets whether the cross-field validation is active. {@code true} by default.
+     *
+     * @param crossFieldValidate {@code true} to enable the cross-field validation, {@code false} otherwise
+     */
+    protected void setCrossFieldValidate(boolean crossFieldValidate) {
+        this.crossFieldValidate = crossFieldValidate;
+    }
+
+    /**
      * Validates screen data. Default implementation validates visible and enabled UI components. <br>
      * Can be overridden in subclasses.
      *
      * @return validation errors
      */
     protected ValidationErrors validateEditorForm() {
+        ValidationErrors validationErrors = validateUiComponents();
+
+        validateAdditionalRules(validationErrors);
+
+        return validationErrors;
+    }
+
+    /**
+     * Validates visible and enabled UI components. <br>
+     * Can be overridden in subclasses.
+     *
+     * @return validation errors
+     */
+    protected ValidationErrors validateUiComponents() {
         ScreenValidation screenValidation = getBeanLocator().get(ScreenValidation.NAME);
         return screenValidation.validateUiComponents(getForm().getComponents());
+    }
+
+    /**
+     * Validates the cross-field rules if passed validation errors are empty.
+     *
+     * @param errors errors found during components validation
+     */
+    protected void validateAdditionalRules(ValidationErrors errors) {
+        // all previous validations return no errors
+        if (isCrossFieldValidate() && errors.isEmpty()) {
+            ScreenValidation screenValidation = getBeanLocator().get(ScreenValidation.NAME);
+
+            ValidationErrors validationErrors =
+                    screenValidation.validateCrossFieldRules(this, getEditContainer().getItem());
+
+            errors.addAll(validationErrors);
+        }
     }
 
     /**
