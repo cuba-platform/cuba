@@ -387,19 +387,14 @@ public class UiControllerDependencyInjector {
             }
 
             Consumer listener;
-            if (reflectionInspector.isLambdaHandlersAvailable()) {
-                // CAUTION here we use JDK internal API that could be unavailable
-                MethodHandle consumerMethodFactory = reflectionInspector.getConsumerMethodFactory(clazz,
-                        annotatedMethod.getMethodHandle(), eventType);
-                try {
-                    listener = (Consumer) consumerMethodFactory.invoke(frameOwner);
-                } catch (Error e) {
-                    throw e;
-                } catch (Throwable e) {
-                    throw new RuntimeException("Unable to bind consumer handler", e);
-                }
-            } else {
-                listener = new DeclarativeSubscribeExecutor(frameOwner, annotatedMethod.getMethod());
+            MethodHandle consumerMethodFactory = reflectionInspector.getConsumerMethodFactory(clazz,
+                    annotatedMethod.getMethodHandle(), eventType);
+            try {
+                listener = (Consumer) consumerMethodFactory.invoke(frameOwner);
+            } catch (Error e) {
+                throw e;
+            } catch (Throwable e) {
+                throw new RuntimeException("Unable to bind consumer handler", e);
             }
 
             MethodHandle addListenerMethod = reflectionInspector.getAddListenerMethod(eventTarget.getClass(), eventType);

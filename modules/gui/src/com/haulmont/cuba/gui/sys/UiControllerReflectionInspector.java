@@ -35,7 +35,6 @@ import com.haulmont.cuba.gui.screen.ScreenFragment;
 import com.haulmont.cuba.gui.screen.Subscribe;
 import org.apache.commons.lang3.ClassUtils;
 import org.apache.commons.lang3.reflect.TypeUtils;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.annotation.Order;
@@ -126,21 +125,50 @@ public class UiControllerReflectionInspector {
                     .weakKeys()
                     .build();
 
-    protected final MethodHandles.Lookup trustedLambdaLookup;
+    protected final Function<Class, MethodHandles.Lookup> lambdaLookupProvider;
 
     public UiControllerReflectionInspector() {
-        MethodHandles.Lookup trusted = null;
+        MethodHandles.Lookup original = MethodHandles.lookup();
+
+        MethodHandle privateLookupInMh;
         try {
-            MethodHandles.Lookup original = MethodHandles.lookup();
-            Field internal = MethodHandles.Lookup.class.getDeclaredField("IMPL_LOOKUP");
-            internal.setAccessible(true);
-            trusted = (MethodHandles.Lookup) internal.get(original);
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            LoggerFactory.getLogger(UiControllerReflectionInspector.class)
-                    .debug("MethodHandles.Lookup IMPL_LOOKUP is not available");
+            MethodType methodType = MethodType.methodType(MethodHandles.Lookup.class,
+                    Class.class, MethodHandles.Lookup.class);
+
+            //noinspection JavaLangInvokeHandleSignature
+            privateLookupInMh = original.findStatic(MethodHandles.class, "privateLookupIn", methodType);
+        } catch (NoSuchMethodException | IllegalAccessException e) {
+            privateLookupInMh = null;
         }
 
-        this.trustedLambdaLookup = trusted;
+        // required by compiler
+        final MethodHandle privateLookupInMhFinal = privateLookupInMh;
+
+        if (privateLookupInMhFinal == null) {
+            // Java 8
+            MethodHandles.Lookup trusted;
+            try {
+                Field internal = MethodHandles.Lookup.class.getDeclaredField("IMPL_LOOKUP");
+                internal.setAccessible(true);
+                trusted = (MethodHandles.Lookup) internal.get(original);
+
+            } catch (NoSuchFieldException | IllegalAccessException e) {
+                throw new IllegalStateException("MethodHandles.Lookup IMPL_LOOKUP is not available", e);
+            }
+
+            this.lambdaLookupProvider = trusted::in;
+        } else {
+            // Java 10+
+            this.lambdaLookupProvider = clazz -> {
+                try {
+                    return (MethodHandles.Lookup) privateLookupInMhFinal.invokeExact(clazz, original);
+                } catch (Error e) {
+                    throw e;
+                } catch (Throwable t) {
+                    throw new RuntimeException("Unable to get private lookup in class " + clazz, t);
+                }
+            };
+        }
     }
 
     public List<AnnotatedMethod<Install>> getAnnotatedInstallMethods(Class<?> clazz) {
@@ -178,22 +206,14 @@ public class UiControllerReflectionInspector {
         return targetMethodsCache.get(methodName);
     }
 
-    public boolean isLambdaHandlersAvailable() {
-        return trustedLambdaLookup != null;
-    }
-
     public MethodHandle getConsumerMethodFactory(Class<?> ownerClass, MethodHandle methodHandle, Class<?> eventClass) {
-        if (trustedLambdaLookup == null) {
-            throw new UnsupportedOperationException("MethodHandles.Lookup IMPL_LOOKUP is not available");
-        }
-
         MethodHandle lambdaMethodFactory;
         try {
             lambdaMethodFactory = lambdaMethodsCache.get(methodHandle, () -> {
                 MethodType type = MethodType.methodType(void.class, eventClass);
                 MethodType consumerType = MethodType.methodType(Consumer.class, ownerClass);
 
-                MethodHandles.Lookup caller = trustedLambdaLookup.in(ownerClass);
+                MethodHandles.Lookup caller = lambdaLookupProvider.apply(ownerClass);
                 CallSite site;
                 try {
                     site = LambdaMetafactory.metafactory(

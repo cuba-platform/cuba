@@ -29,6 +29,7 @@ public class ScreenBindSubscribe extends Screen {
 
     }
 
+    // private is also supported
     @Subscribe("btn1")
     private void onBtn1Click(Button.ClickEvent event) {
 
@@ -40,7 +41,7 @@ public class ScreenBindSubscribe extends Screen {
     }
 
     @Subscribe("split1")
-    protected void onSplitChange(SplitPanel.SplitPositionChangeEvent event) {
+    private void onSplitChange(SplitPanel.SplitPositionChangeEvent event) {
 
     }
 

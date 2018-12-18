@@ -46,8 +46,9 @@ public class ScreenBindInstall extends Screen {
         return "ok.png";
     }
 
+    // private is also supported
     @Install(subject = "validator", to = "textField1")
-    protected void validateText(String text) throws ValidationException {
+    private void validateText(String text) throws ValidationException {
         if (text == null || text.length() < 10) {
             throw new ValidationException("Incorrect length");
         }
