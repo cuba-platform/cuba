@@ -32,6 +32,7 @@ import com.haulmont.cuba.gui.screen.ScreenContext
 import com.haulmont.cuba.gui.screen.impl.MessageBundleImpl
 import com.haulmont.cuba.gui.sys.UiControllerDependencyInjector
 import com.haulmont.cuba.gui.sys.UiControllerReflectionInspector
+import com.haulmont.cuba.security.entity.User
 import spec.cuba.web.screens.injection.*
 import spock.lang.Specification
 
@@ -206,12 +207,18 @@ class UiControllerDependencyInjectorTest extends Specification {
         def window = Mock(TestWindow)
 
         def label1 = Mock(Label)
-        def usersTable = Mock(Table)
         def groupTable = Mock(Table)
         def tree = Mock(Tree)
         def textField1 = Mock(TextField)
 
+        def usersTable = Mock(Table)
+        def genColumn = new Table.Column<User>("genColumn")
+        genColumn.setOwner(usersTable)
+        usersTable.getSubPart("genColumn") >> genColumn
+
         def dataGrid = Mock(DataGrid)
+        DataGrid.Column dataGridNameColumn = Mock(DataGrid.Column)
+        dataGrid.getSubPart("name") >> dataGridNameColumn
 
         window.getComponent("label1") >> label1
         window.getComponent("usersTable") >> usersTable
@@ -241,6 +248,11 @@ class UiControllerDependencyInjectorTest extends Specification {
         1 * dataGrid.setCellDescriptionProvider({
             it != null && it.getDescription(null, null) == 'OK'
         })
+        1 * usersTable.addGeneratedColumn("genColumn", _)
+
+        1 * dataGridNameColumn.setEditFieldGenerator(_)
+        1 * dataGridNameColumn.setStyleProvider(_)
+        1 * dataGridNameColumn.setDescriptionProvider(_)
     }
 
     def "Injector supports non-required dependencies"() {

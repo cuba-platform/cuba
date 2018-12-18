@@ -896,6 +896,13 @@ public interface Table<E extends Entity>
             return String.valueOf(id);
         }
 
+        public void setColumnGenerator(Function<? super Entity, Component> columnGenerator) {
+            if (owner != null) {
+                //noinspection unchecked
+                owner.addGeneratedColumn(getStringId(), columnGenerator::apply);
+            }
+        }
+
         public Function<T, Object> getValueProvider() {
             return valueProvider;
         }
