@@ -78,7 +78,12 @@ public class DesktopCurrencyField extends DesktopTextField implements CurrencyFi
                 return;
 
             //noinspection unchecked
-            currency = (String) ((Map<String, Object>) annotation).get("currency");
+            Map<String, Object> annotationProperties = (Map<String, Object>) annotation;
+
+            currency = (String) annotationProperties.get("currency");
+
+            String labelPosition = ((com.haulmont.cuba.core.entity.annotation.CurrencyLabelPosition) annotationProperties.get("labelPosition")).name();
+            currencyLabelPosition = CurrencyLabelPosition.valueOf(labelPosition);
         }
     }
 }

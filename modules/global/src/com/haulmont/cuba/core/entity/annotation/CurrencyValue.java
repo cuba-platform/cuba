@@ -30,8 +30,14 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @MetaAnnotation
 public @interface CurrencyValue {
+
     /**
      * Currency name: USD, GBP, EUR, $ or another currency sign.
      */
     String currency() default StringUtils.EMPTY;
+
+    /**
+     * Default currency label position.
+     */
+    CurrencyLabelPosition labelPosition() default CurrencyLabelPosition.RIGHT;
 }

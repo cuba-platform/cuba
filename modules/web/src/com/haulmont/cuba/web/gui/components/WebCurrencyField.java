@@ -93,9 +93,13 @@ public class WebCurrencyField extends WebAbstractField<CubaCurrencyField> implem
                 return;
 
             //noinspection unchecked
-            Map<String, Object> currencyValue = (Map<String, Object>) obj;
-            String currencyName = (String) currencyValue.get("currency");
+            Map<String, Object> annotationProperties = (Map<String, Object>) obj;
+
+            String currencyName = (String) annotationProperties.get("currency");
             component.setCurrency(currencyName);
+
+            String labelPosition = ((com.haulmont.cuba.core.entity.annotation.CurrencyLabelPosition) annotationProperties.get("labelPosition")).name();
+            setCurrencyLabelPosition(CurrencyLabelPosition.valueOf(labelPosition));
         }
     }
 

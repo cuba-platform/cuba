@@ -17,6 +17,7 @@
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.chile.core.datatypes.Datatypes;
+import com.haulmont.cuba.core.entity.annotation.CurrencyLabelPosition;
 import com.haulmont.cuba.core.entity.annotation.CurrencyValue;
 import com.haulmont.cuba.gui.components.CurrencyField;
 import com.haulmont.cuba.gui.components.DatasourceComponent;
@@ -82,15 +83,19 @@ public class CurrencyFieldLoader extends AbstractFieldLoader<CurrencyField> {
             return;
 
         Map<String, Object> annotations = component.getMetaPropertyPath().getMetaProperty().getAnnotations();
-        Object obj = annotations.get(CurrencyValue.class.getName());
-        if (obj == null)
+        Object currencyValueAnnotation = annotations.get(CurrencyValue.class.getName());
+        if (currencyValueAnnotation == null)
             return;
 
         //noinspection unchecked
-        Map<String, Object> currencyValue = (Map<String, Object>) obj;
-        String currencyName = (String) currencyValue.get("currency");
+        Map<String, Object> annotationProperties = (Map<String, Object>) currencyValueAnnotation;
+
+        String currencyName = (String) annotationProperties.get("currency");
         if (StringUtils.isNotEmpty(currencyName)) {
             ((CurrencyField) component).setCurrency(currencyName);
         }
+
+        String labelPosition = ((CurrencyLabelPosition) annotationProperties.get("labelPosition")).name();
+        ((CurrencyField) component).setCurrencyLabelPosition(CurrencyField.CurrencyLabelPosition.valueOf(labelPosition));
     }
 }
