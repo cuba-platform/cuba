@@ -19,6 +19,7 @@ package com.haulmont.cuba.gui.screen;
 import com.haulmont.bali.events.Subscription;
 import com.haulmont.bali.events.TriggerOnce;
 import com.haulmont.cuba.core.app.LockService;
+import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.ComponentsHelper;
@@ -33,6 +34,7 @@ import com.haulmont.cuba.gui.components.data.Options;
 import com.haulmont.cuba.gui.components.data.meta.ContainerDataUnit;
 import com.haulmont.cuba.gui.components.data.options.ContainerOptions;
 import com.haulmont.cuba.gui.components.data.value.ContainerValueSourceProvider;
+import com.haulmont.cuba.gui.dynamicattributes.DynamicAttributesGuiTools;
 import com.haulmont.cuba.gui.model.*;
 import com.haulmont.cuba.security.entity.EntityOp;
 
@@ -200,6 +202,18 @@ public abstract class MasterDetailScreen<T extends Entity> extends StandardLooku
         createAction.withHandler(actionPerformedEvent -> {
             T entity = getBeanLocator().get(Metadata.class).create(getEntityClass());
             T trackedEntity = getScreenData().getDataContext().merge(entity);
+
+            DynamicAttributesGuiTools tools = getBeanLocator().get(DynamicAttributesGuiTools.NAME);
+
+            String screenId = getScreenContext().getWindowInfo().getId();
+            if (tools.screenContainsDynamicAttributes(getEditContainer().getView(), screenId)) {
+                getEditLoader().setLoadDynamicAttributes(true);
+            }
+
+            if (getEditLoader().isLoadDynamicAttributes()
+                    && trackedEntity instanceof BaseGenericIdEntity) {
+                tools.initDefaultAttributeValues((BaseGenericIdEntity) trackedEntity, trackedEntity.getMetaClass());
+            }
 
             fireEvent(StandardEditor.InitEntityEvent.class, new StandardEditor.InitEntityEvent<>(this, trackedEntity));
 

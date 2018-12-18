@@ -22,11 +22,13 @@ import com.haulmont.bali.events.TriggerOnce;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.app.LockService;
+import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.Notifications.NotificationType;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.BaseAction;
+import com.haulmont.cuba.gui.dynamicattributes.DynamicAttributesGuiTools;
 import com.haulmont.cuba.gui.icons.CubaIcon;
 import com.haulmont.cuba.gui.icons.Icons;
 import com.haulmont.cuba.gui.model.*;
@@ -134,8 +136,22 @@ public abstract class StandardEditor<T extends Entity> extends Screen implements
         if (getScreenData().getDataContext() == null) {
             throw new IllegalStateException("No DataContext defined. Make sure the editor screen XML descriptor has <data> element");
         }
+
+        DynamicAttributesGuiTools tools = getBeanLocator().get(DynamicAttributesGuiTools.NAME);
+
+        String screenId = getScreenContext().getWindowInfo().getId();
+        if (tools.screenContainsDynamicAttributes(getEditedEntityContainer().getView(), screenId)) {
+            getEditedEntityLoader().setLoadDynamicAttributes(true);
+        }
+
         if (getEntityStates().isNew(entityToEdit) || doNotReloadEditedEntity()) {
             T mergedEntity = getScreenData().getDataContext().merge(entityToEdit);
+
+            if (getEditedEntityLoader().isLoadDynamicAttributes()
+                    && getEntityStates().isNew(entityToEdit)
+                    && mergedEntity instanceof BaseGenericIdEntity) {
+                tools.initDefaultAttributeValues((BaseGenericIdEntity) mergedEntity, mergedEntity.getMetaClass());
+            }
 
             fireEvent(InitEntityEvent.class, new InitEntityEvent<>(this, mergedEntity));
 
