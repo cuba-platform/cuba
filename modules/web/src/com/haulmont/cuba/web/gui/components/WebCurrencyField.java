@@ -169,9 +169,13 @@ public class WebCurrencyField<V extends Number> extends WebV8AbstractField<CubaC
             }
 
             //noinspection unchecked
-            Map<String, Object> currencyAnnotation = (Map<String, Object>) annotation;
-            String currencyName = (String) currencyAnnotation.get("currency");
+            Map<String, Object> annotationProperties = (Map<String, Object>) annotation;
+
+            String currencyName = (String) annotationProperties.get("currency");
             component.setCurrency(currencyName);
+
+            String labelPosition = ((com.haulmont.cuba.core.entity.annotation.CurrencyLabelPosition) annotationProperties.get("labelPosition")).name();
+            setCurrencyLabelPosition(CurrencyLabelPosition.valueOf(labelPosition));
         }
     }
 
