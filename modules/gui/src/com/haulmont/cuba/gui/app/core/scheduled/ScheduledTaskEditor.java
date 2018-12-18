@@ -24,15 +24,14 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.ScheduledTask;
 import com.haulmont.cuba.core.entity.ScheduledTaskDefinedBy;
 import com.haulmont.cuba.core.entity.SchedulingType;
+import com.haulmont.cuba.gui.UiComponents;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
-import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.inject.Inject;
 import java.util.*;
-import java.util.function.Consumer;
 
 public class ScheduledTaskEditor extends AbstractEditor<ScheduledTask> {
 
@@ -43,28 +42,25 @@ public class ScheduledTaskEditor extends AbstractEditor<ScheduledTask> {
     protected LookupField<MethodInfo> methodNameField;
 
     @Inject
-    protected LookupField userNameField;
+    protected LookupField<String> userNameField;
 
     @Inject
     protected OptionsGroup<ScheduledTaskDefinedBy, ScheduledTaskDefinedBy> definedByField;
 
     @Inject
-    protected TextField classNameField;
+    protected TextField<String> classNameField;
 
     @Inject
-    protected TextField scriptNameField;
+    protected TextField<String> scriptNameField;
 
     @Inject
-    protected Label beanNameLabel;
-
+    protected Label<String> beanNameLabel;
     @Inject
-    protected Label methodNameLabel;
-
+    protected Label<String> methodNameLabel;
     @Inject
-    protected Label classNameLabel;
-
+    protected Label<String> classNameLabel;
     @Inject
-    protected Label scriptNameLabel;
+    protected Label<String> scriptNameLabel;
 
     @Inject
     protected ComponentContainer methodParamsBox;
@@ -76,28 +72,26 @@ public class ScheduledTaskEditor extends AbstractEditor<ScheduledTask> {
     protected SchedulingService service;
 
     @Inject
-    protected ComponentsFactory componentsFactory;
+    protected UiComponents uiComponents;
 
     @Inject
     protected OptionsGroup<SchedulingType, SchedulingType> schedulingTypeField;
 
     @Inject
-    protected TextField cronField;
+    protected TextField<String> cronField;
 
     @Inject
-    protected TextField periodField;
+    protected TextField<Integer> periodField;
 
     @Inject
-    protected DateField startDateField;
+    protected DateField<Date> startDateField;
 
     @Inject
-    protected Label cronLabel;
-
+    protected Label<String> cronLabel;
     @Inject
-    protected Label periodLabel;
-
+    protected Label<String> periodLabel;
     @Inject
-    protected Label startDateLabel;
+    protected Label<String> startDateLabel;
 
     @Inject
     protected ThemeConstants themeConstants;
@@ -190,7 +184,7 @@ public class ScheduledTaskEditor extends AbstractEditor<ScheduledTask> {
         methodNameField.addValueChangeListener(e -> {
             clearMethodParamsGrid();
             if (e.getValue() != null) {
-                createMethodParamsGrid((MethodInfo) e.getValue());
+                createMethodParamsGrid(e.getValue());
                 if (methodParamsBox.getComponents().size() > 1) {
                     show(methodParamsBox);
                 } else {
@@ -198,11 +192,11 @@ public class ScheduledTaskEditor extends AbstractEditor<ScheduledTask> {
                 }
             }
 
-            String methodName = (e.getValue() != null) ? ((MethodInfo) e.getValue()).getName() : null;
+            String methodName = (e.getValue() != null) ? e.getValue().getName() : null;
             taskDs.getItem().setMethodName(methodName);
 
             List<MethodParameterInfo> methodParams = (e.getValue() != null) ?
-                    ((MethodInfo) e.getValue()).getParameters() : Collections.<MethodParameterInfo>emptyList();
+                    e.getValue().getParameters() : Collections.emptyList();
             taskDs.getItem().updateMethodParameters(methodParams);
         });
 
@@ -229,7 +223,6 @@ public class ScheduledTaskEditor extends AbstractEditor<ScheduledTask> {
             show(periodField, periodLabel, startDateField, startDateLabel);
         }
     }
-
 
     @Override
     protected void initNewItem(ScheduledTask item) {
@@ -267,17 +260,17 @@ public class ScheduledTaskEditor extends AbstractEditor<ScheduledTask> {
     }
 
     protected void createMethodParamsGrid(MethodInfo methodInfo) {
-        GridLayout methodParamsGrid = componentsFactory.createComponent(GridLayout.class);
+        GridLayout methodParamsGrid = uiComponents.create(GridLayout.class);
         methodParamsGrid.setSpacing(true);
         methodParamsGrid.setColumns(2);
 
         int rowsCount = 0;
 
         for (MethodParameterInfo parameterInfo : methodInfo.getParameters()) {
-            Label nameLabel = componentsFactory.createComponent(Label.class);
+            Label<String> nameLabel = uiComponents.create(Label.NAME);
             nameLabel.setValue(parameterInfo.getType().getSimpleName() + " " + parameterInfo.getName());
 
-            TextField<Object> valueTextField = componentsFactory.createComponent(TextField.class);
+            TextField<Object> valueTextField = uiComponents.create(TextField.NAME);
             valueTextField.setWidth(themeConstants.get("cuba.gui.ScheduledTaskEditor.valueTextField.width"));
             valueTextField.setValue(parameterInfo.getValue());
 

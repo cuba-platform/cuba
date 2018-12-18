@@ -23,6 +23,7 @@ import com.haulmont.cuba.core.global.RunTaskOnceException;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.actions.BaseAction;
 import com.haulmont.cuba.gui.components.actions.EditAction;
 import com.haulmont.cuba.gui.components.actions.ItemTrackingAction;
 import com.haulmont.cuba.gui.components.actions.RemoveAction;
@@ -43,10 +44,8 @@ public class ScheduledTaskBrowser extends AbstractWindow {
 
     @Inject
     protected CollectionDatasource<ScheduledTask, UUID> tasksDs;
-
     @Inject
     protected Table<ScheduledTask> tasksTable;
-
     @Inject
     protected Button activateBtn;
 
@@ -57,20 +56,19 @@ public class ScheduledTaskBrowser extends AbstractWindow {
     public void init(Map<String, Object> params) {
         ComponentsHelper.createActions(tasksTable);
 
-        final Action editAction = tasksTable.getActionNN(EditAction.ACTION_ID);
+        Action editAction = tasksTable.getActionNN(EditAction.ACTION_ID);
         editAction.setEnabled(false);
 
-        final Action removeAction = tasksTable.getActionNN(RemoveAction.ACTION_ID);
+        Action removeAction = tasksTable.getActionNN(RemoveAction.ACTION_ID);
         removeAction.setEnabled(false);
 
-        activateBtn.setAction(new AbstractAction("activate") {
-            @Override
-            public void actionPerform(Component component) {
-                Set<ScheduledTask> tasks = tasksTable.getSelected();
-                service.setActive(tasks, !BooleanUtils.isTrue(tasks.iterator().next().getActive()));
-                tasksDs.refresh();
-            }
-        });
+        activateBtn.setAction(new BaseAction("activate")
+                .withCaption(getMessage("activate"))
+                .withHandler(e -> {
+                    Set<ScheduledTask> tasks = tasksTable.getSelected();
+                    service.setActive(tasks, !BooleanUtils.isTrue(tasks.iterator().next().getActive()));
+                    tasksDs.refresh();
+                }));
 
         activateBtn.setEnabled(false);
 
@@ -133,6 +131,8 @@ public class ScheduledTaskBrowser extends AbstractWindow {
     protected class ShowExecutionsAction extends ItemTrackingAction {
         public ShowExecutionsAction() {
             super("executions");
+
+            setCaption(getMessage("executions"));
         }
 
         @Override
@@ -154,6 +154,8 @@ public class ScheduledTaskBrowser extends AbstractWindow {
     protected class ExecuteOnceAction extends ItemTrackingAction {
         public ExecuteOnceAction() {
             super("executeOnce");
+
+            setCaption(getMessage("executeOnce"));
         }
 
         @Override
@@ -173,8 +175,8 @@ public class ScheduledTaskBrowser extends AbstractWindow {
 
         @Override
         public boolean isApplicable() {
-            return tasksTable.getSelected().size() == 1
-                    && !BooleanUtils.isTrue(tasksTable.getSingleSelected().getActive());
+            ScheduledTask task = tasksTable.getSingleSelected();
+            return task != null && !BooleanUtils.isTrue(task.getActive());
         }
     }
 }
