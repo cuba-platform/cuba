@@ -23,14 +23,14 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.ListBox;
+import com.vaadin.client.connectors.AbstractMultiSelectConnector.MultiSelectWidget;
 import com.vaadin.client.ui.VButton;
 import com.vaadin.client.ui.VTwinColSelect;
 import elemental.json.JsonObject;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
 
 public class CubaTwinColSelectWidget extends VTwinColSelect {
 
@@ -62,41 +62,84 @@ public class CubaTwinColSelectWidget extends VTwinColSelect {
     }
 
     @Override
+    public void setItems(List<JsonObject> items) {
+        // filter selected items
+        List<JsonObject> selection = items.stream()
+                .filter(MultiSelectWidget::isSelected)
+                .collect(Collectors.toList());
+        items.removeAll(selection);
+
+        updateListBox(items, optionsListBox, (listBox, _items) -> {
+            updateListBox(listBox, _items);
+            afterUpdatesOptionsBox(_items);
+        });
+
+        updateListBox(selection, selectionsListBox, (listBox, _items) -> {
+            updateListBox(listBox, _items);
+            afterUpdatesSelectionsBox(_items);
+        });
+    }
+
+    protected void updateListBox(List<JsonObject> items, ListBox listBox, BiConsumer<ListBox, List<JsonObject>> updateTask) {
+        List<String> selectedItems = null;
+
+        int selectedIdx = listBox.getSelectedIndex();
+        int itemsCount = listBox.getItemCount();
+
+        if (selectedIdx >= 0) {
+            selectedItems = new ArrayList<>();
+            for (int i = selectedIdx; i < itemsCount; i++) {
+                selectedItems.add(listBox.getItemText(i));
+            }
+        }
+
+        updateTask.accept(listBox, items);
+
+        if (selectedItems != null) {
+            // re-set selection
+            for (int i = 0; i < itemsCount; i++) {
+                String item = listBox.getItemText(i);
+                listBox.setItemSelected(i, selectedItems.contains(item));
+            }
+        }
+    }
+
+    @Override
     protected void moveSelectedItemsLeftToRight() {
-        int optionsSelectedIndex = optionsListBox.getSelectedIndex();
-
-        super.moveSelectedItemsLeftToRight();
-
-        updateSelectionListBox(optionsListBox, optionsSelectedIndex);
+        Set<String> movedItems = moveSelectedItems(optionsListBox, selectionsListBox);
+        selectionChangeListeners.forEach(listener -> listener.accept(movedItems,
+                Collections.emptySet()));
     }
 
     @Override
     protected void moveSelectedItemsRightToLeft() {
-        int selectionsSelectedIndex = selectionsListBox.getSelectedIndex();
-
-        super.moveSelectedItemsRightToLeft();
-
-        updateSelectionListBox(selectionsListBox, selectionsSelectedIndex);
+        Set<String> movedItems = moveSelectedItems(selectionsListBox, optionsListBox);
+        selectionChangeListeners.forEach(listener -> listener
+                .accept(Collections.emptySet(), movedItems));
     }
 
-    protected void updateSelectionListBox(ListBox listBox, int index) {
-        // select first element if there is no selected element but we
-        // clicked on add or remove button
-        if (index < 0 && listBox.getItemCount() > 0) {
-            index = 0;
-        }
-        // select previous (above) row if replaced row was last
-        if (index == listBox.getItemCount()) {
-            index--;
+    // CAUTION: copied from superclass
+    protected static Set<String> moveSelectedItems(ListBox source, ListBox target) {
+        final boolean[] sel = getSelectionBitmap(source);
+        final Set<String> movedItems = new HashSet<>();
+        for (int i = 0; i < sel.length; i++) {
+            if (sel[i]) {
+                final int optionIndex = i
+                        - (sel.length - source.getItemCount());
+                movedItems.add(source.getValue(optionIndex));
+
+                // Move selection to another column
+                final String text = source.getItemText(optionIndex);
+                final String value = source.getValue(optionIndex);
+                target.addItem(text, value);
+                target.setItemSelected(target.getItemCount() - 1, true);
+                source.removeItem(optionIndex);
+            }
         }
 
-        setSelectedIndex(listBox, index);
-    }
+        target.setFocus(true);
 
-    protected void setSelectedIndex(ListBox listBox, int index) {
-        if (listBox.getItemCount() > 0 && index >= 0) {
-            listBox.setSelectedIndex(index);
-        }
+        return movedItems;
     }
 
     @Override
