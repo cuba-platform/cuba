@@ -182,6 +182,13 @@ public abstract class MasterDetailScreen<T extends Entity> extends StandardLooku
         getBrowseContainer().addItemChangeListener(e -> {
             if (e.getItem() != null) {
                 InstanceLoader<T> editLoader = getEditLoader();
+
+                DynamicAttributesGuiTools tools = getBeanLocator().get(DynamicAttributesGuiTools.NAME);
+                String screenId = getScreenContext().getWindowInfo().getId();
+                if (tools.screenContainsDynamicAttributes(getEditContainer().getView(), screenId)) {
+                    editLoader.setLoadDynamicAttributes(true);
+                }
+
                 editLoader.setEntityId(e.getItem().getId());
                 editLoader.load();
             } else {
@@ -204,13 +211,21 @@ public abstract class MasterDetailScreen<T extends Entity> extends StandardLooku
             T trackedEntity = getScreenData().getDataContext().merge(entity);
 
             DynamicAttributesGuiTools tools = getBeanLocator().get(DynamicAttributesGuiTools.NAME);
-
             String screenId = getScreenContext().getWindowInfo().getId();
-            if (tools.screenContainsDynamicAttributes(getEditContainer().getView(), screenId)) {
-                getEditLoader().setLoadDynamicAttributes(true);
+
+            InstanceLoader<T> instanceLoader = null;
+            InstanceContainer<T> editedEntityContainer = getEditContainer();
+            if (tools.screenContainsDynamicAttributes(editedEntityContainer.getView(), screenId)) {
+                if (editedEntityContainer instanceof HasLoader) {
+                    if (((HasLoader) editedEntityContainer).getLoader() instanceof InstanceLoader) {
+                        instanceLoader = getEditLoader();
+                        instanceLoader.setLoadDynamicAttributes(true);
+                    }
+                }
             }
 
-            if (getEditLoader().isLoadDynamicAttributes()
+            if (instanceLoader != null
+                    && instanceLoader.isLoadDynamicAttributes()
                     && trackedEntity instanceof BaseGenericIdEntity) {
                 tools.initDefaultAttributeValues((BaseGenericIdEntity) trackedEntity, trackedEntity.getMetaClass());
             }

@@ -138,16 +138,24 @@ public abstract class StandardEditor<T extends Entity> extends Screen implements
         }
 
         DynamicAttributesGuiTools tools = getBeanLocator().get(DynamicAttributesGuiTools.NAME);
-
         String screenId = getScreenContext().getWindowInfo().getId();
-        if (tools.screenContainsDynamicAttributes(getEditedEntityContainer().getView(), screenId)) {
-            getEditedEntityLoader().setLoadDynamicAttributes(true);
+
+        InstanceLoader instanceLoader = null;
+        InstanceContainer<T> editedEntityContainer = getEditedEntityContainer();
+        if (tools.screenContainsDynamicAttributes(editedEntityContainer.getView(), screenId)) {
+            if (editedEntityContainer instanceof HasLoader) {
+                if (((HasLoader) editedEntityContainer).getLoader() instanceof InstanceLoader) {
+                    instanceLoader = getEditedEntityLoader();
+                    instanceLoader.setLoadDynamicAttributes(true);
+                }
+            }
         }
 
         if (getEntityStates().isNew(entityToEdit) || doNotReloadEditedEntity()) {
             T mergedEntity = getScreenData().getDataContext().merge(entityToEdit);
 
-            if (getEditedEntityLoader().isLoadDynamicAttributes()
+            if (instanceLoader != null
+                    && instanceLoader.isLoadDynamicAttributes()
                     && getEntityStates().isNew(entityToEdit)
                     && mergedEntity instanceof BaseGenericIdEntity) {
                 tools.initDefaultAttributeValues((BaseGenericIdEntity) mergedEntity, mergedEntity.getMetaClass());
