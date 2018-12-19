@@ -17,105 +17,93 @@
 
 package com.haulmont.cuba.web.app.folders;
 
-import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.core.global.Metadata;
+import com.haulmont.cuba.core.global.QueryParser;
+import com.haulmont.cuba.core.global.QueryTransformerFactory;
+import com.haulmont.cuba.core.global.UserSessionSource;
+import com.haulmont.cuba.gui.WindowParam;
+import com.haulmont.cuba.gui.components.AbstractWindow;
+import com.haulmont.cuba.gui.components.Button;
+import com.haulmont.cuba.gui.components.LookupField;
 import com.haulmont.cuba.gui.components.filter.UserSetHelper;
+import com.haulmont.cuba.gui.screen.Subscribe;
 import com.haulmont.cuba.security.entity.SearchFolder;
 import com.haulmont.cuba.web.AppUI;
 
+import javax.inject.Inject;
 import java.util.Map;
 import java.util.Set;
 
 public class SaveSetWindow extends AbstractWindow {
 
-    private Set ids;
-    private String componentPath;
-    private String componentId;
-    private String entityType;
-    private String entityClass;
-    private CubaFoldersPane foldersPane;
-    private LookupField<SearchFolder> foldersSelect;
-    private String query;
+    @Inject
+    protected Metadata metadata;
+    @Inject
+    protected UserSessionSource sessionSource;
+
+    @Inject
+    protected LookupField<SearchFolder> foldersSelect;
+
+    @WindowParam
+    protected CubaFoldersPane foldersPane;
+
+    @WindowParam(name = "items")
+    protected Set ids;
+    @WindowParam
+    protected String componentPath;
+    @WindowParam
+    protected String componentId;
+    @WindowParam
+    protected String entityType;
+    @WindowParam
+    protected String entityClass;
+    @WindowParam
+    protected String query;
 
     @Override
     public void init(Map<String, Object> params) {
         super.init(params);
 
         getDialogOptions().setWidthAuto();
-
-        ids = (Set) params.get("items");
-        componentPath = (String) params.get("componentPath");
-        componentId = (String) params.get("componentId");
-        entityType = (String) params.get("entityType");
-        foldersPane = (CubaFoldersPane) params.get("foldersPane");
-        entityClass = (String) params.get("entityClass");
-        query = (String) params.get("query");
-        foldersSelect = (LookupField) getComponent("folderSelect");
-
-        Button createBtn = (Button) getComponentNN("createNew");
-        Button insertBtn = (Button) getComponentNN("insertBtn");
-
-        insertBtn.setAction(new InsertAction());
-        createBtn.setAction(new CreateSetAction());
     }
 
-    private class InsertAction extends AbstractAction {
-        protected InsertAction() {
-            super("InsertAction");
-        }
+    @Subscribe("createNew")
+    protected void onCreateNewClick(Button.ClickEvent event) {
+        QueryParser parser = QueryTransformerFactory.createParser(query);
+        String entityAlias = parser.getEntityAlias(entityType);
+        String filterXml = UserSetHelper.generateSetFilter(ids, entityClass, componentId, entityAlias);
 
-        @Override
-        public void actionPerform(Component component) {
-            SearchFolder folder = foldersSelect.getValue();
-            if (folder == null) {
-                showNotification(getMessage("saveSetWindow.notSelected"), NotificationType.TRAY);
-                return;
-            }
-            String filterXml = folder.getFilterXml();
-            folder.setFilterXml(UserSetHelper.addEntities(filterXml, ids));
+        SearchFolder folder = metadata.create(SearchFolder.class);
+        folder.setUser(sessionSource.getUserSession().getUser());
+        folder.setName("");
+        folder.setFilterXml(filterXml);
+        folder.setFilterComponentId(componentPath);
+        folder.setEntityType(entityType);
+        folder.setIsSet(true);
+
+        Runnable commitHandler = () -> {
             foldersPane.saveFolder(folder);
             foldersPane.refreshFolders();
-            close(COMMIT_ACTION_ID, true);
-        }
+        };
+
+        FolderEditWindow window = AppFolderEditWindow.create(false, false, folder, null, commitHandler);
+        AppUI.getCurrent().addWindow(window);
+        window.addCloseListener(e -> close(COMMIT_ACTION_ID));
     }
 
-    private class CreateSetAction extends AbstractAction {
-
-        protected CreateSetAction() {
-            super("CreateSetAction");
+    @Subscribe("insertBtn")
+    protected void onInsertBtnClick(Button.ClickEvent event) {
+        SearchFolder folder = foldersSelect.getValue();
+        if (folder == null) {
+            showNotification(getMessage("saveSetWindow.notSelected"), NotificationType.TRAY);
+            return;
         }
+        String filterXml = folder.getFilterXml();
+        folder.setFilterXml(UserSetHelper.addEntities(filterXml, ids));
 
-        @Override
-        public void actionPerform(Component component) {
-            QueryParser parser = QueryTransformerFactory.createParser(query);
-            String entityAlias = parser.getEntityAlias(entityType);
-            String filterXml = UserSetHelper.generateSetFilter(ids, entityClass, componentId, entityAlias);
-            Metadata metadata = AppBeans.get(Metadata.NAME);
-            final SearchFolder folder = metadata.create(SearchFolder.class);
-            UserSessionSource sessionSource = AppBeans.get(UserSessionSource.NAME);
-            folder.setUser(sessionSource.getUserSession().getUser());
-            folder.setName("");
-            folder.setFilterXml(filterXml);
-            folder.setFilterComponentId(componentPath);
-            folder.setEntityType(entityType);
-            folder.setIsSet(true);
+        foldersPane.saveFolder(folder);
+        foldersPane.refreshFolders();
 
-            Runnable commitHandler = new Runnable() {
-                @Override
-                public void run() {
-                    foldersPane.saveFolder(folder);
-                    foldersPane.refreshFolders();
-                }
-            };
-
-            final FolderEditWindow window = AppFolderEditWindow.create(false, false, folder, null, commitHandler);
-            AppUI.getCurrent().addWindow(window);
-            window.addCloseListener(new com.vaadin.ui.Window.CloseListener() {
-                @Override
-                public void windowClose(com.vaadin.ui.Window.CloseEvent e) {
-                    close(COMMIT_ACTION_ID);
-                }
-            });
-        }
+        close(COMMIT_ACTION_ID, true);
     }
 }

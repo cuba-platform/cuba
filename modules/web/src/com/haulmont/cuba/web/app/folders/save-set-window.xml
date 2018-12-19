@@ -21,7 +21,9 @@
         messagesPack="com.haulmont.cuba.web.app.folders"
         focusComponent="folderSelect">
     <dsContext>
-        <collectionDatasource id="setFoldersDs" class="com.haulmont.cuba.security.entity.SearchFolder" view="_local" >
+        <collectionDatasource id="setFoldersDs"
+                              class="com.haulmont.cuba.security.entity.SearchFolder"
+                              view="_local" >
             <query>
                 select s from sec$SearchFolder s where s.user.id=:session$userId and
                     s.isSet=true and
@@ -31,8 +33,10 @@
         </collectionDatasource>
     </dsContext>
     <layout spacing="true">
-        <lookupField id="folderSelect" optionsDatasource="setFoldersDs" width="theme://cuba.web.save-set-window.folderSelect.width"
+        <lookupField id="folderSelect" optionsDatasource="setFoldersDs"
+                     width="theme://cuba.web.save-set-window.folderSelect.width"
                      caption="msg://saveSetWindow.set"/>
+
         <hbox spacing="true" id="add">
             <button id="insertBtn" caption="msg://saveSetWindow.insert"/>
             <button id="createNew" caption="msg://saveSetWindow.createNew"/>

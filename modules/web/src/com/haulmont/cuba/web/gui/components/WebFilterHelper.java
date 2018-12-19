@@ -17,19 +17,16 @@
 
 package com.haulmont.cuba.web.gui.components;
 
-import com.haulmont.bali.datastruct.Node;
 import com.haulmont.cuba.core.entity.AbstractSearchFolder;
 import com.haulmont.cuba.core.entity.Folder;
 import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.gui.UiComponents;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.filter.ConditionsTree;
 import com.haulmont.cuba.gui.components.filter.FilterHelper;
-import com.haulmont.cuba.gui.components.filter.condition.AbstractCondition;
-import com.haulmont.cuba.gui.components.filter.condition.GroupCondition;
 import com.haulmont.cuba.gui.components.mainwindow.FoldersPane;
-import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.presentations.Presentations;
-import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
+import com.haulmont.cuba.gui.screen.Screen;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.app.folders.AppFolderEditWindow;
@@ -37,28 +34,18 @@ import com.haulmont.cuba.web.app.folders.CubaFoldersPane;
 import com.haulmont.cuba.web.app.folders.FolderEditWindow;
 import com.haulmont.cuba.web.gui.components.util.ShortcutListenerDelegate;
 import com.haulmont.cuba.web.widgets.CubaTextField;
-import com.vaadin.event.Transferable;
-import com.vaadin.event.dd.DragAndDropEvent;
-import com.vaadin.event.dd.DropHandler;
-import com.vaadin.event.dd.acceptcriteria.AcceptCriterion;
-import com.vaadin.event.dd.acceptcriteria.Not;
-import com.vaadin.event.dd.acceptcriteria.Or;
-import com.vaadin.shared.ui.dd.VerticalDropLocation;
 import com.vaadin.ui.Component;
-import com.vaadin.v7.ui.AbstractSelect;
-import com.vaadin.v7.ui.ComboBox;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
-import java.util.*;
+import java.util.Map;
 
 @org.springframework.stereotype.Component(FilterHelper.NAME)
 public class WebFilterHelper implements FilterHelper {
     @Inject
     protected Configuration configuration;
-
     @Inject
-    protected ComponentsFactory componentsFactory;
+    protected UiComponents uiComponents;
 
     @Override
     public void setLookupNullSelectionAllowed(LookupField lookupField, boolean value) {
@@ -73,11 +60,7 @@ public class WebFilterHelper implements FilterHelper {
     @Override
     @Nullable
     public AbstractSearchFolder saveFolder(AbstractSearchFolder folder) {
-        RootWindow topLevelWindow = AppUI.getCurrent().getTopLevelWindow();
-        FoldersPane foldersPane = null;
-        if (topLevelWindow.getFrameOwner() instanceof Window.HasFoldersPane) {
-            foldersPane = ((Window.HasFoldersPane) topLevelWindow.getFrameOwner()).getFoldersPane();
-        }
+        FoldersPane foldersPane = getUiFoldersPane();
 
         if (foldersPane == null)
             return null;
@@ -102,6 +85,7 @@ public class WebFilterHelper implements FilterHelper {
     @Override
     public void initConditionsDragAndDrop(final Tree tree, final ConditionsTree conditions) {
         com.vaadin.ui.Tree vTree = tree.unwrap(com.vaadin.ui.Tree.class);
+        // vaadin8
 //        vTree.setDragMode(com.vaadin.v7.ui.Tree.TreeDragMode.NODE);
         /*vTree.setDropHandler(new DropHandler() {
             @Override
@@ -210,11 +194,7 @@ public class WebFilterHelper implements FilterHelper {
 
     @Override
     public Object getFoldersPane() {
-        RootWindow topLevelWindow = AppUI.getCurrent().getTopLevelWindow();
-        FoldersPane foldersPane = null;
-        if (topLevelWindow instanceof Window.HasFoldersPane) {
-            foldersPane = ((Window.HasFoldersPane) topLevelWindow).getFoldersPane();
-        }
+        FoldersPane foldersPane = getUiFoldersPane();
 
         if (foldersPane == null) {
             return null;
@@ -225,11 +205,7 @@ public class WebFilterHelper implements FilterHelper {
 
     @Override
     public void removeFolderFromFoldersPane(Folder folder) {
-        RootWindow topLevelWindow = AppUI.getCurrent().getTopLevelWindow();
-        FoldersPane foldersPane = null;
-        if (topLevelWindow instanceof Window.HasFoldersPane) {
-            foldersPane = ((Window.HasFoldersPane) topLevelWindow).getFoldersPane();
-        }
+        FoldersPane foldersPane = getUiFoldersPane();
 
         if (foldersPane == null) {
             return;
@@ -239,6 +215,17 @@ public class WebFilterHelper implements FilterHelper {
 
         foldersPaneImpl.removeFolder(folder);
         foldersPaneImpl.refreshFolders();
+    }
+
+    @Nullable
+    protected FoldersPane getUiFoldersPane() {
+        AppUI ui = AppUI.getCurrent();
+
+        Screen topLevelWindow = ui.getTopLevelWindowNN().getFrameOwner();
+        if (topLevelWindow instanceof Window.HasFoldersPane) {
+            return ((Window.HasFoldersPane) topLevelWindow).getFoldersPane();
+        }
+        return null;
     }
 
     @Override
@@ -280,11 +267,7 @@ public class WebFilterHelper implements FilterHelper {
 
     @Override
     public void setLookupCaptions(LookupField lookupField, Map<Object, String> captions) {
-        ComboBox vLookupField = lookupField.unwrap(ComboBox.class);
-        vLookupField.setItemCaptionMode(AbstractSelect.ItemCaptionMode.EXPLICIT);
-        for (Map.Entry<Object, String> entry : captions.entrySet()) {
-            vLookupField.setItemCaption(entry.getKey(), entry.getValue());
-        }
+        lookupField.setOptionCaptionProvider(captions::get);
     }
 
     @Override
@@ -319,14 +302,15 @@ public class WebFilterHelper implements FilterHelper {
 
     @Override
     public void setInternalDebugId(com.haulmont.cuba.gui.components.Component component, String id) {
-        if (AppUI.getCurrent().isTestMode()) {
+        AppUI ui = AppUI.getCurrent();
+        if (ui != null && ui.isTestMode()) {
             component.unwrap(Component.class).setCubaId(id);
         }
     }
 
     @Override
     public com.haulmont.cuba.gui.components.ComponentContainer createSearchButtonGroupContainer() {
-        CssLayout layout = componentsFactory.createComponent(CssLayout.class);
+        CssLayout layout = uiComponents.create(CssLayout.class);
         layout.addStyleName("v-component-group");
         return layout;
     }
