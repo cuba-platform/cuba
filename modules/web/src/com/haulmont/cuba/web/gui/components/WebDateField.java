@@ -134,6 +134,12 @@ public class WebDateField<V extends Comparable<V>>
         timeField.setTimeFormat(formatStringsRegistry.getFormatStringsNN(locale).getTimeFormat());
 
         setResolution(Resolution.MIN);
+
+        AppUI ui = AppUI.getCurrent();
+        if (ui != null && ui.isTestMode()) {
+            timeField.setCubaId("timepart");
+            dateField.setCubaId("datepart");
+        }
     }
 
     protected HasValue.ValueChangeListener<LocalDate> createDateValueChangeListener() {
@@ -457,19 +463,6 @@ public class WebDateField<V extends Comparable<V>>
             TestIdManager testIdManager = AppUI.getCurrent().getTestIdManager();
             timeField.setId(testIdManager.getTestId(id + "_time"));
             dateField.setId(testIdManager.getTestId(id + "_date"));
-        }
-    }
-
-    @Override
-    public void setId(String id) {
-        super.setId(id);
-
-        if (id != null) {
-            AppUI ui = AppUI.getCurrent();
-            if (ui != null && ui.isTestMode()) {
-                timeField.setId("timepart");
-                dateField.setCubaId("datepart");
-            }
         }
     }
 
