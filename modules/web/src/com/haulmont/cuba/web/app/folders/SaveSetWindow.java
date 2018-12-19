@@ -42,7 +42,7 @@ public class SaveSetWindow extends AbstractWindow {
     protected UserSessionSource sessionSource;
 
     @Inject
-    protected LookupField<SearchFolder> foldersSelect;
+    protected LookupField<SearchFolder> folderSelect;
 
     @WindowParam
     protected CubaFoldersPane foldersPane;
@@ -93,7 +93,7 @@ public class SaveSetWindow extends AbstractWindow {
 
     @Subscribe("insertBtn")
     protected void onInsertBtnClick(Button.ClickEvent event) {
-        SearchFolder folder = foldersSelect.getValue();
+        SearchFolder folder = folderSelect.getValue();
         if (folder == null) {
             showNotification(getMessage("saveSetWindow.notSelected"), NotificationType.TRAY);
             return;
