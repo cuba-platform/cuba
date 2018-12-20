@@ -656,8 +656,6 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
         component.setSortResetLabel(messages.getMainMessage("tableSort.reset"));
         component.setSortDescendingLabel(messages.getMainMessage("tableSort.descending"));
 
-        setClientCaching(component);
-
         int defaultRowHeaderWidth = 16;
         ThemeConstants theme = App.getInstance().getThemeConstants();
         if (theme != null) {
@@ -743,6 +741,8 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
         // force default sizes
         componentComposition.setHeightUndefined();
         componentComposition.setWidthUndefined();
+
+        setClientCaching();
     }
 
     protected WebTableFieldFactory createFieldFactory() {
@@ -753,18 +753,17 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
         component.setTableFieldFactory(fieldFactory);
     }
 
-    protected void setClientCaching(T component) {
+    protected void setClientCaching() {
         Configuration configuration = AppBeans.get(Configuration.NAME);
         WebConfig webConfig = configuration.getConfig(WebConfig.class);
 
         double cacheRate = webConfig.getTableCacheRate();
-        if (cacheRate >= 0) {
-            component.setCacheRate(cacheRate);
-        }
+        cacheRate = cacheRate >= 0 ? cacheRate : 2;
+
         int pageLength = webConfig.getTablePageLength();
-        if (pageLength >= 0) {
-            component.setPageLength(pageLength);
-        }
+        pageLength = pageLength >= 0 ? pageLength : 15;
+
+        componentComposition.setClientCaching(cacheRate, pageLength);
     }
 
     protected void refreshActionsState() {
@@ -2960,6 +2959,9 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
     protected static class TableComposition extends CssLayout {
         protected com.vaadin.ui.Table table;
 
+        protected double cacheRate;
+        protected int pageLength;
+
         public com.vaadin.ui.Table getTable() {
             return table;
         }
@@ -2977,6 +2979,8 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
             } else {
                 table.setHeight(100, Unit.PERCENTAGE);
             }
+
+            updateClientCaching();
         }
 
         @Override
@@ -2987,6 +2991,23 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
                 table.setWidthUndefined();
             } else {
                 table.setWidth(100, Unit.PERCENTAGE);
+            }
+        }
+
+        public void setClientCaching(double cacheRate, int pageLength) {
+            this.cacheRate = cacheRate;
+            this.pageLength = pageLength;
+
+            updateClientCaching();
+        }
+
+        protected void updateClientCaching() {
+            if (getHeight() < 0) {
+                table.setCacheRate(0);
+                table.setPageLength(0);
+            } else {
+                table.setCacheRate(cacheRate);
+                table.setPageLength(pageLength);
             }
         }
     }
