@@ -142,10 +142,10 @@ public abstract class StandardEditor<T extends Entity> extends Screen implements
 
         InstanceLoader instanceLoader = null;
         InstanceContainer<T> editedEntityContainer = getEditedEntityContainer();
-        if (tools.screenContainsDynamicAttributes(editedEntityContainer.getView(), screenId)) {
-            if (editedEntityContainer instanceof HasLoader) {
-                if (((HasLoader) editedEntityContainer).getLoader() instanceof InstanceLoader) {
-                    instanceLoader = getEditedEntityLoader();
+        if (editedEntityContainer instanceof HasLoader) {
+            if (((HasLoader) editedEntityContainer).getLoader() instanceof InstanceLoader) {
+                instanceLoader = getEditedEntityLoader();
+                if (tools.screenContainsDynamicAttributes(editedEntityContainer.getView(), screenId)) {
                     instanceLoader.setLoadDynamicAttributes(true);
                 }
             }

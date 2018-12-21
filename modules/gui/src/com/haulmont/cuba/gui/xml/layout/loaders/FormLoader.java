@@ -32,8 +32,7 @@ import com.haulmont.cuba.gui.components.data.ValueSourceProvider;
 import com.haulmont.cuba.gui.components.data.meta.EntityValueSource;
 import com.haulmont.cuba.gui.components.data.value.ContainerValueSourceProvider;
 import com.haulmont.cuba.gui.dynamicattributes.DynamicAttributesGuiTools;
-import com.haulmont.cuba.gui.model.InstanceContainer;
-import com.haulmont.cuba.gui.model.ScreenData;
+import com.haulmont.cuba.gui.model.*;
 import com.haulmont.cuba.gui.screen.FrameOwner;
 import com.haulmont.cuba.gui.screen.UiControllerUtils;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
@@ -209,6 +208,13 @@ public class FormLoader extends AbstractComponentLoader<Form> {
 
             if (!attributesToShow.isEmpty()) {
                 List<Component> components = new ArrayList<>();
+
+                if (instanceContainer instanceof HasLoader) {
+                    DataLoader dataLoader = ((HasLoader) instanceContainer).getLoader();
+                    if (dataLoader instanceof InstanceLoader) {
+                        ((InstanceLoader) dataLoader).setLoadDynamicAttributes(true);
+                    }
+                }
 
                 for (CategoryAttribute attribute : attributesToShow) {
                     String code = DynamicAttributesUtils.encodeAttributeCode(attribute.getCode());

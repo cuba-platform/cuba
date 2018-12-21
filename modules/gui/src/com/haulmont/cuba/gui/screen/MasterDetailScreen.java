@@ -215,10 +215,10 @@ public abstract class MasterDetailScreen<T extends Entity> extends StandardLooku
 
             InstanceLoader<T> instanceLoader = null;
             InstanceContainer<T> editedEntityContainer = getEditContainer();
-            if (tools.screenContainsDynamicAttributes(editedEntityContainer.getView(), screenId)) {
-                if (editedEntityContainer instanceof HasLoader) {
-                    if (((HasLoader) editedEntityContainer).getLoader() instanceof InstanceLoader) {
-                        instanceLoader = getEditLoader();
+            if (editedEntityContainer instanceof HasLoader) {
+                if (((HasLoader) editedEntityContainer).getLoader() instanceof InstanceLoader) {
+                    instanceLoader = getEditLoader();
+                    if (tools.screenContainsDynamicAttributes(editedEntityContainer.getView(), screenId)) {
                         instanceLoader.setLoadDynamicAttributes(true);
                     }
                 }
