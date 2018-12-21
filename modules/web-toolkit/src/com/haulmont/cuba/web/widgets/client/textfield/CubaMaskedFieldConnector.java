@@ -36,6 +36,13 @@ public class CubaMaskedFieldConnector extends TextFieldConnector {
     }
 
     @Override
+    protected void init() {
+        super.init();
+
+        getWidget().addValueChangeHandler(event -> sendValueChange());
+    }
+
+    @Override
     public void onStateChanged(StateChangeEvent stateChangeEvent) {
         super.onStateChanged(stateChangeEvent);
 

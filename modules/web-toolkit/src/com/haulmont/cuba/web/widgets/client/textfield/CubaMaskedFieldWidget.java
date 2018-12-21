@@ -20,6 +20,7 @@ package com.haulmont.cuba.web.widgets.client.textfield;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.*;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.vaadin.client.BrowserInfo;
 import com.vaadin.client.ui.VTextField;
 
@@ -183,6 +184,8 @@ public class CubaMaskedFieldWidget extends VTextField {
             if (validateText(newText)) {
                 valueBeforeEdit = newText;
                 setValue(newText);
+
+                ValueChangeEvent.fire(this, newText);
             } else {
                 setValue(valueBeforeEdit);
             }

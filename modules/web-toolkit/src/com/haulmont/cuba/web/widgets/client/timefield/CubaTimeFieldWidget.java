@@ -16,6 +16,7 @@
 
 package com.haulmont.cuba.web.widgets.client.timefield;
 
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.haulmont.cuba.web.widgets.client.textfield.CubaMaskedFieldWidget;
 
 import java.util.Locale;
@@ -48,6 +49,8 @@ public class CubaTimeFieldWidget extends CubaMaskedFieldWidget {
             if (validateText(newText)) {
                 valueBeforeEdit = newText;
                 setValue(newText);
+
+                ValueChangeEvent.fire(this, newText);
             } else {
                 setValue(valueBeforeEdit);
             }
