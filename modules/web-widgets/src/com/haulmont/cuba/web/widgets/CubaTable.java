@@ -943,20 +943,6 @@ public class CubaTable extends com.vaadin.v7.ui.Table implements TableSortableCo
     }
 
     @Override
-    public void setHeight(float height, Unit unit) {
-        super.setHeight(height, unit);
-
-        if (height < 0) {
-            if (getCacheRate() != 2) {
-                setCacheRate(2);
-            }
-            if (getPageLength() != 15) {
-                setPageLength(15);
-            }
-        }
-    }
-
-    @Override
     protected Container createOrderedWrapper(Container newDataSource) {
         ContainerOrderedWrapper wrapper = new ContainerOrderedWrapper(newDataSource);
         wrapper.setResetOnItemSetChange(true);

@@ -940,8 +940,6 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
         component.setSortResetLabel(messages.getMainMessage("tableSort.reset"));
         component.setSortDescendingLabel(messages.getMainMessage("tableSort.descending"));
 
-        setClientCaching(component);
-
         int defaultRowHeaderWidth = 16;
         ThemeConstantsManager themeConstantsManager =
                 applicationContext.getBean(ThemeConstantsManager.NAME, ThemeConstantsManager.class);
@@ -1020,6 +1018,8 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
         // force default sizes
         componentComposition.setHeightUndefined();
         componentComposition.setWidthUndefined();
+
+        setClientCaching();
     }
 
     protected void tableSelectionChanged(@SuppressWarnings("unused") Property.ValueChangeEvent event) {
@@ -1118,17 +1118,16 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
         return new WebTableFieldFactory(this, security, metadataTools);
     }
 
-    protected void setClientCaching(T component) {
+    protected void setClientCaching() {
         WebConfig webConfig = configuration.getConfig(WebConfig.class);
 
         double cacheRate = webConfig.getTableCacheRate();
-        if (cacheRate >= 0) {
-            component.setCacheRate(cacheRate);
-        }
+        cacheRate = cacheRate >= 0 ? cacheRate : 2;
+
         int pageLength = webConfig.getTablePageLength();
-        if (pageLength >= 0) {
-            component.setPageLength(pageLength);
-        }
+        pageLength = pageLength >= 0 ? pageLength : 15;
+
+        componentComposition.setClientCaching(cacheRate, pageLength);
     }
 
     protected void refreshActionsState() {

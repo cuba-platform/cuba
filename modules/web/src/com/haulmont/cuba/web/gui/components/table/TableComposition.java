@@ -21,6 +21,9 @@ import com.vaadin.ui.CssLayout;
 public class TableComposition extends CssLayout {
     protected com.vaadin.v7.ui.Table table;
 
+    protected double cacheRate;
+    protected int pageLength;
+
     public com.vaadin.v7.ui.Table getTable() {
         return table;
     }
@@ -38,6 +41,8 @@ public class TableComposition extends CssLayout {
         } else {
             table.setHeight(100, Unit.PERCENTAGE);
         }
+
+        updateClientCaching();
     }
 
     @Override
@@ -48,6 +53,23 @@ public class TableComposition extends CssLayout {
             table.setWidthUndefined();
         } else {
             table.setWidth(100, Unit.PERCENTAGE);
+        }
+    }
+
+    public void setClientCaching(double cacheRate, int pageLength) {
+        this.cacheRate = cacheRate;
+        this.pageLength = pageLength;
+
+        updateClientCaching();
+    }
+
+    protected void updateClientCaching() {
+        if (getHeight() < 0) {
+            table.setCacheRate(0);
+            table.setPageLength(0);
+        } else {
+            table.setCacheRate(cacheRate);
+            table.setPageLength(pageLength);
         }
     }
 }
