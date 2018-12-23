@@ -20,10 +20,11 @@ import java.lang.annotation.*;
 import java.lang.annotation.Target;
 
 /**
- * Annotation for {@link EditorScreen} and {@link LookupScreen} controllers which indicates that all data loaders
- * should be triggered automatically before showing the screen.
+ * Annotation for screen controllers which indicates that all data loaders should be triggered automatically
+ * before showing the screen.
  * <p>
- * It saves from invoking {@code getScreenData().loadAll()} in {@code BeforeShowEvent} listeners.
+ * If you need to perform some actions after loading data but before the screen is shown, remove this annotation or
+ * set its value to false and use {@code getScreenData().loadAll()} in a {@code BeforeShowEvent} listener.
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)

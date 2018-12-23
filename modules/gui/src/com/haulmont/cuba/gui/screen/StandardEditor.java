@@ -97,7 +97,6 @@ public abstract class StandardEditor<T extends Entity> extends Screen implements
     private void beforeShow(@SuppressWarnings("unused") BeforeShowEvent beforeShowEvent) {
         setupEntityToEdit();
         setupLock();
-        loadData();
     }
 
     private void beforeClose(BeforeCloseEvent event) {
@@ -168,13 +167,6 @@ public abstract class StandardEditor<T extends Entity> extends Screen implements
         } else {
             InstanceLoader loader = getEditedEntityLoader();
             loader.setEntityId(entityToEdit.getId());
-        }
-    }
-
-    private void loadData() {
-        LoadDataBeforeShow annotation = getClass().getAnnotation(LoadDataBeforeShow.class);
-        if (annotation != null && annotation.value()) {
-            getScreenData().loadAll();
         }
     }
 

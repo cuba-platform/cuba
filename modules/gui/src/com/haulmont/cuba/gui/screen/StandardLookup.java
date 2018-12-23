@@ -78,14 +78,6 @@ public class StandardLookup<T extends Entity> extends Screen implements LookupSc
     private void beforeShow(@SuppressWarnings("unused") BeforeShowEvent beforeShowEvent) {
         setupLookupComponent();
         setupCommitShortcut();
-        loadData();
-    }
-
-    private void loadData() {
-        LoadDataBeforeShow annotation = getClass().getAnnotation(LoadDataBeforeShow.class);
-        if (annotation != null && annotation.value()) {
-            getScreenData().loadAll();
-        }
     }
 
     protected void setupCommitShortcut() {

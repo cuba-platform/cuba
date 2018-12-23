@@ -399,6 +399,8 @@ public class WebScreens implements Screens, WindowManager {
 
         fireEvent(screen, BeforeShowEvent.class, new BeforeShowEvent(screen));
 
+        loadDataBeforeShow(screen);
+
         LaunchMode launchMode = screen.getWindow().getContext().getLaunchMode();
 
         if (launchMode instanceof OpenMode) {
@@ -432,6 +434,13 @@ public class WebScreens implements Screens, WindowManager {
         changeUrl(screen);
 
         fireEvent(screen, AfterShowEvent.class, new AfterShowEvent(screen));
+    }
+
+    protected void loadDataBeforeShow(Screen screen) {
+        LoadDataBeforeShow annotation = screen.getClass().getAnnotation(LoadDataBeforeShow.class);
+        if (annotation != null && annotation.value()) {
+            UiControllerUtils.getScreenData(screen).loadAll();
+        }
     }
 
     protected void changeUrl(Screen screen) {

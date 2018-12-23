@@ -458,8 +458,8 @@ public abstract class Screen implements FrameOwner {
 
     /**
      * Event sent right before the screen is shown, i.e. it is not added to the application UI yet.
-     * Data is loaded for editor and lookup screens annotated with {@code @LoadDataBeforeShow}. Security restrictions
-     * are applied to UI components. Saved component settings are not yet applied to UI components.
+     * Security restrictions are applied to UI components. Saved component settings are not yet applied to UI components.
+     * Data is not loaded yet for screens annotated with {@code @LoadDataBeforeShow}.
      * <p>
      * In this event listener, you can load data, check permissions and modify UI components. For example:
      * <pre>
