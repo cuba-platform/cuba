@@ -71,8 +71,9 @@ public class TreeToQuery implements TreeVisitorAction {
                 node.getType() == JPA2Lexer.THEN ||
                 node.getType() == JPA2Lexer.ELSE ||
                 node.getType() == JPA2Lexer.END ||
-                isExtractFromNode(node)
-                ) {
+                isExtractFromNode(node) ||
+                isCastTypeNode(node)
+        ) {
             sb.appendSpace();
         }
 
@@ -177,6 +178,19 @@ public class TreeToQuery implements TreeVisitorAction {
             if (node.childIndex >= 4) {
                 Tree extractNode = node.parent.getChild(node.childIndex - 4);
                 if ("extract(".equalsIgnoreCase(extractNode.getText())) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean isCastTypeNode(CommonTree node) {
+        if (node.parent != null) {
+            //third part of CAST expression
+            if (node.childIndex >= 2) {
+                Tree extractNode = node.parent.getChild(node.childIndex - 2);
+                if ("cast(".equalsIgnoreCase(extractNode.getText())) {
                     return true;
                 }
             }
