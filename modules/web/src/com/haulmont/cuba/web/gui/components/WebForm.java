@@ -340,7 +340,7 @@ public class WebForm extends WebAbstractComponent<CubaFieldGroupLayout> implemen
     public void setValueSourceProvider(ValueSourceProvider provider) {
         if (this.valueSourceProvider != null) {
             throw new UnsupportedOperationException("Changing value source provider is not supported " +
-                    "by the FieldGroup component");
+                    "by the Form component");
         }
 
         this.valueSourceProvider = provider;
