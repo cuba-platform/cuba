@@ -23,14 +23,14 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
-import com.haulmont.cuba.core.global.MessageTools;
-import com.haulmont.cuba.core.global.MetadataTools;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.data.HasValueSource;
 import com.haulmont.cuba.gui.components.data.ValueSourceProvider;
 import com.haulmont.cuba.gui.components.data.meta.EntityValueSource;
 import com.haulmont.cuba.gui.components.data.value.ContainerValueSourceProvider;
+import com.haulmont.cuba.gui.dynamicattributes.DynamicAttributeComponentsGenerator;
 import com.haulmont.cuba.gui.dynamicattributes.DynamicAttributesGuiTools;
 import com.haulmont.cuba.gui.model.*;
 import com.haulmont.cuba.gui.screen.FrameOwner;
@@ -219,8 +219,15 @@ public class FormLoader extends AbstractComponentLoader<Form> {
                 for (CategoryAttribute attribute : attributesToShow) {
                     String code = DynamicAttributesUtils.encodeAttributeCode(attribute.getCode());
 
-                    ComponentGenerationContext context = new ComponentGenerationContext(metaClass, code);
-                    Component dynamicAttrComponent = getUiComponentsGenerator().generate(context);
+                    Component dynamicAttrComponent;
+                    if (Boolean.TRUE.equals(attribute.getIsCollection())) {
+                        dynamicAttrComponent = getDynamicAttributesComponentsGenerator()
+                                .generateComponent(provider.getValueSource(code), attribute);
+                    } else {
+                        ComponentGenerationContext context = new ComponentGenerationContext(metaClass, code);
+                        dynamicAttrComponent = getUiComponentsGenerator().generate(context);
+                    }
+
                     if (dynamicAttrComponent instanceof Component.HasCaption) {
                         ((Component.HasCaption) dynamicAttrComponent).setCaption(attribute.getLocaleName());
                     }
@@ -238,9 +245,6 @@ public class FormLoader extends AbstractComponentLoader<Form> {
                                     ? columnWidth : attribute.getWidth();
                     loadWidth(dynamicAttrComponent, defaultWidth);
 
-                    if (Boolean.TRUE.equals(attribute.getIsCollection())) {
-                        // TODO: gg, implement
-                    }
                     components.add(dynamicAttrComponent);
                 }
                 return components;
@@ -268,6 +272,10 @@ public class FormLoader extends AbstractComponentLoader<Form> {
 
     protected UiComponentsGenerator getUiComponentsGenerator() {
         return beanLocator.get(UiComponentsGenerator.NAME);
+    }
+
+    protected DynamicAttributeComponentsGenerator getDynamicAttributesComponentsGenerator() {
+        return beanLocator.get(DynamicAttributeComponentsGenerator.NAME);
     }
 
     protected void loadCaptionPosition(Form resultComponent, Element element) {
