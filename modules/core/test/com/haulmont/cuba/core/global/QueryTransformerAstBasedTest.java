@@ -613,6 +613,17 @@ public class QueryTransformerAstBasedTest {
     }
 
     @Test
+    public void getResult_noChangesMade_Cast() throws RecognitionException {
+        EntityBuilder builder = new EntityBuilder();
+        builder.startNewEntity("Player");
+        builder.addSingleValueAttribute(Date.class, "createTs");
+        builder.addStringAttribute("createTs");
+        DomainModel model = new DomainModel(builder.produce());
+        assertTransformsToSame(model, "select p.createTs as hours, cast(p.version float) as version from Player p where cast( p.version float) = 5");
+        assertTransformsToSame(model, "select p.createTs as hours, cast(p.version number(4)) as version from Player p where cast( p.version number ( 4)) = 5");
+    }
+
+    @Test
     public void addJoinAsId() throws RecognitionException {
         DomainModel model = prepareDomainModel();
 
