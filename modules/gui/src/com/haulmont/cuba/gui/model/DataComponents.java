@@ -48,7 +48,7 @@ public class DataComponents implements ApplicationContextAware {
      * Creates {@code DataContext}.
      */
     public DataContext createDataContext() {
-        return new StandardDataContext(applicationContext);
+        return new DataContextImpl(applicationContext);
     }
 
     /**
@@ -131,27 +131,27 @@ public class DataComponents implements ApplicationContextAware {
      * Creates {@code InstanceLoader}.
      */
     public <E extends Entity> InstanceLoader<E> createInstanceLoader() {
-        return new StandardInstanceLoader<>(applicationContext);
+        return new InstanceLoaderImpl<>(applicationContext);
     }
 
     /**
      * Creates {@code CollectionLoader}.
      */
     public <E extends Entity> CollectionLoader<E> createCollectionLoader() {
-        return new StandardCollectionLoader<>(applicationContext);
+        return new CollectionLoaderImpl<>(applicationContext);
     }
 
     /**
      * Creates {@code KeyValueCollectionLoader}.
      */
     public KeyValueCollectionLoader createKeyValueCollectionLoader() {
-        return new StandardKeyValueCollectionLoader(applicationContext);
+        return new KeyValueCollectionLoaderImpl(applicationContext);
     }
 
     /**
      * Creates {@code KeyValueInstanceLoader}.
      */
     public KeyValueInstanceLoader createKeyValueInstanceLoader() {
-        return new StandardKeyValueInstanceLoader(applicationContext);
+        return new KeyValueInstanceLoaderImpl(applicationContext);
     }
 }

@@ -16,51 +16,51 @@
 
 package com.haulmont.cuba.gui.model.impl;
 
-import com.google.common.base.Strings;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.global.queryconditions.Condition;
+import com.haulmont.cuba.gui.model.CollectionContainer;
+import com.haulmont.cuba.gui.model.CollectionLoader;
 import com.haulmont.cuba.gui.model.DataContext;
 import com.haulmont.cuba.gui.model.HasLoader;
-import com.haulmont.cuba.gui.model.InstanceContainer;
-import com.haulmont.cuba.gui.model.InstanceLoader;
 import org.springframework.context.ApplicationContext;
 
 import javax.annotation.Nullable;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 
 /**
  *
  */
-public class StandardInstanceLoader<E extends Entity> implements InstanceLoader<E> {
+public class CollectionLoaderImpl<E extends Entity> implements CollectionLoader<E> {
 
-    private final ApplicationContext applicationContext;
+    private ApplicationContext applicationContext;
 
     private DataContext dataContext;
-    private InstanceContainer<E> container;
+    private CollectionContainer<E> container;
     private String query;
     private Condition condition;
     private Map<String, Object> parameters = new HashMap<>();
-    private Object entityId;
+    private int firstResult = 0;
+    private int maxResults = Integer.MAX_VALUE;
     private boolean softDeletion = true;
     private boolean loadDynamicAttributes;
+    private boolean cacheable;
     private View view;
     private String viewName;
-    private Function<LoadContext<E>, E> delegate;
+    private Sort sort;
+    private Function<LoadContext<E>, List<E>> delegate;
 
-    public StandardInstanceLoader(ApplicationContext applicationContext) {
+    public CollectionLoaderImpl(ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
-    }
-
-    protected DataManager getDataManager() {
-        return applicationContext.getBean(DataManager.NAME, DataManager.class);
     }
 
     protected ViewRepository getViewRepository() {
         return applicationContext.getBean(ViewRepository.NAME, ViewRepository.class);
+    }
+
+    protected DataManager getDataManager() {
+        return applicationContext.getBean(DataManager.NAME, DataManager.class);
     }
 
     @Nullable
@@ -78,44 +78,45 @@ public class StandardInstanceLoader<E extends Entity> implements InstanceLoader<
     public void load() {
         if (container == null)
             throw new IllegalStateException("container is null");
+        if (query == null)
+            throw new IllegalStateException("query is null");
 
-        E entity;
+        LoadContext<E> loadContext = createLoadContext();
 
+        List<E> list;
         if (delegate == null) {
-            if (!needLoad())
-                return;
-
-            LoadContext<E> loadContext = createLoadContext();
-
-            entity = getDataManager().load(loadContext);
-
-            if (entity == null) {
-                throw new EntityAccessException(container.getEntityMetaClass(), entityId);
-            }
+            list = getDataManager().loadList(loadContext);
         } else {
-            entity = delegate.apply(createLoadContext());
+            list = delegate.apply(loadContext);
         }
 
         if (dataContext != null) {
-            entity = dataContext.merge(entity);
+            List<E> mergedList = new ArrayList<>(list.size());
+            for (E entity : list) {
+                mergedList.add(dataContext.merge(entity));
+            }
+            container.setItems(mergedList);
+        } else {
+            container.setItems(list);
         }
-        container.setItem(entity);
     }
 
-    protected boolean needLoad() {
-        return entityId != null || !Strings.isNullOrEmpty(query);
-    }
-
+    @Override
     public LoadContext<E> createLoadContext() {
         LoadContext<E> loadContext = LoadContext.create(container.getEntityMetaClass().getJavaClass());
 
-        if (entityId != null) {
-            loadContext.setId(entityId);
-        } else {
-            LoadContext.Query query = loadContext.setQueryString(this.query);
-            query.setCondition(condition);
-            query.setParameters(parameters);
-        }
+        LoadContext.Query query = loadContext.setQueryString(this.query);
+
+        query.setCondition(condition);
+        query.setSort(sort);
+        query.setParameters(parameters);
+
+        query.setCacheable(cacheable);
+
+        if (firstResult > 0)
+            query.setFirstResult(firstResult);
+        if (maxResults < Integer.MAX_VALUE)
+            query.setMaxResults(maxResults);
 
         loadContext.setView(resolveView());
         loadContext.setSoftDeletion(softDeletion);
@@ -136,16 +137,17 @@ public class StandardInstanceLoader<E extends Entity> implements InstanceLoader<
     }
 
     @Override
-    public InstanceContainer<E> getContainer() {
+    public CollectionContainer<E> getContainer() {
         return container;
     }
 
     @Override
-    public void setContainer(InstanceContainer<E> container) {
+    public void setContainer(CollectionContainer<E> container) {
         this.container = container;
         if (container instanceof HasLoader) {
             ((HasLoader) container).setLoader(this);
         }
+        container.setSorter(new CollectionContainerSorter(container, this));
     }
 
     @Override
@@ -196,13 +198,23 @@ public class StandardInstanceLoader<E extends Entity> implements InstanceLoader<
     }
 
     @Override
-    public Object getEntityId() {
-        return entityId;
+    public int getFirstResult() {
+        return firstResult;
     }
 
     @Override
-    public void setEntityId(Object entityId) {
-        this.entityId = entityId;
+    public void setFirstResult(int firstResult) {
+        this.firstResult = firstResult;
+    }
+
+    @Override
+    public int getMaxResults() {
+        return maxResults;
+    }
+
+    @Override
+    public void setMaxResults(int maxResults) {
+        this.maxResults = maxResults;
     }
 
     @Override
@@ -226,13 +238,13 @@ public class StandardInstanceLoader<E extends Entity> implements InstanceLoader<
     }
 
     @Override
-    public Function<LoadContext<E>, E> getLoadDelegate() {
-        return delegate;
+    public boolean isCacheable() {
+        return cacheable;
     }
 
     @Override
-    public void setLoadDelegate(Function<LoadContext<E>, E> delegate) {
-        this.delegate = delegate;
+    public void setCacheable(boolean cacheable) {
+        this.cacheable = cacheable;
     }
 
     @Override
@@ -250,5 +262,29 @@ public class StandardInstanceLoader<E extends Entity> implements InstanceLoader<
         if (this.view != null)
             throw new IllegalStateException("view is already set");
         this.viewName = viewName;
+    }
+
+    @Override
+    public Sort getSort() {
+        return sort;
+    }
+
+    @Override
+    public void setSort(Sort sort) {
+        if (sort == null || sort.getOrders().isEmpty()) {
+            this.sort = null;
+        } else {
+            this.sort = sort;
+        }
+    }
+
+    @Override
+    public Function<LoadContext<E>, List<E>> getLoadDelegate() {
+        return delegate;
+    }
+
+    @Override
+    public void setLoadDelegate(Function<LoadContext<E>, List<E>> delegate) {
+        this.delegate = delegate;
     }
 }

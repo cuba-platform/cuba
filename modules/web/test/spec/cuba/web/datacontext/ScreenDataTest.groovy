@@ -22,8 +22,8 @@ import com.haulmont.cuba.gui.model.*
 import com.haulmont.cuba.gui.model.impl.NoopDataContext
 import com.haulmont.cuba.gui.model.impl.ScreenDataImpl
 import com.haulmont.cuba.gui.model.impl.ScreenDataXmlLoader
-import com.haulmont.cuba.gui.model.impl.StandardCollectionLoader
-import com.haulmont.cuba.gui.model.impl.StandardInstanceLoader
+import com.haulmont.cuba.gui.model.impl.CollectionLoaderImpl
+import com.haulmont.cuba.gui.model.impl.InstanceLoaderImpl
 import com.haulmont.cuba.security.entity.User
 import com.haulmont.cuba.web.testmodel.sales.Order
 import com.haulmont.cuba.web.testmodel.sales.OrderLine
@@ -241,14 +241,14 @@ class ScreenDataTest extends WebSpec {
         userLoader.entityId == UUID.fromString('60885987-1b61-4247-94c7-dff348347f93')
         !userLoader.softDeletion
         userLoader.loadDynamicAttributes
-        ((StandardInstanceLoader) userLoader).createLoadContext().view == cont.getBean(ViewRepository).getView(User, 'user.edit')
+        ((InstanceLoaderImpl) userLoader).createLoadContext().view == cont.getBean(ViewRepository).getView(User, 'user.edit')
 
         !usersLoader.softDeletion
         usersLoader.firstResult == 100
         usersLoader.maxResults == 1000
         usersLoader.cacheable
         usersLoader.loadDynamicAttributes
-        ((StandardCollectionLoader) usersLoader).createLoadContext().view == cont.getBean(ViewRepository).getView(User, 'user.browse')
+        ((CollectionLoaderImpl) usersLoader).createLoadContext().view == cont.getBean(ViewRepository).getView(User, 'user.browse')
 
         !userInfoLoader.softDeletion
         userInfoLoader.firstResult == 100

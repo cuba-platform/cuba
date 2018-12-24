@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2017 Haulmont.
+ * Copyright (c) 2008-2018 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,17 @@
 
 package com.haulmont.cuba.gui.model.impl;
 
-import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.*;
+import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.cuba.core.entity.KeyValueEntity;
+import com.haulmont.cuba.core.global.DataManager;
+import com.haulmont.cuba.core.global.Sort;
+import com.haulmont.cuba.core.global.Stores;
+import com.haulmont.cuba.core.global.ValueLoadContext;
 import com.haulmont.cuba.core.global.queryconditions.Condition;
-import com.haulmont.cuba.gui.model.CollectionContainer;
-import com.haulmont.cuba.gui.model.CollectionLoader;
 import com.haulmont.cuba.gui.model.DataContext;
 import com.haulmont.cuba.gui.model.HasLoader;
+import com.haulmont.cuba.gui.model.KeyValueCollectionContainer;
+import com.haulmont.cuba.gui.model.KeyValueCollectionLoader;
 import org.springframework.context.ApplicationContext;
 
 import javax.annotation.Nullable;
@@ -32,31 +36,25 @@ import java.util.function.Function;
 /**
  *
  */
-public class StandardCollectionLoader<E extends Entity> implements CollectionLoader<E> {
+public class KeyValueCollectionLoaderImpl implements KeyValueCollectionLoader {
 
     private ApplicationContext applicationContext;
 
     private DataContext dataContext;
-    private CollectionContainer<E> container;
+    private KeyValueCollectionContainer container;
     private String query;
     private Condition condition;
     private Map<String, Object> parameters = new HashMap<>();
     private int firstResult = 0;
     private int maxResults = Integer.MAX_VALUE;
     private boolean softDeletion = true;
-    private boolean loadDynamicAttributes;
-    private boolean cacheable;
-    private View view;
-    private String viewName;
     private Sort sort;
-    private Function<LoadContext<E>, List<E>> delegate;
 
-    public StandardCollectionLoader(ApplicationContext applicationContext) {
+    private String storeName = Stores.MAIN;
+    private Function<ValueLoadContext, Collection<KeyValueEntity>> delegate;
+
+    public KeyValueCollectionLoaderImpl(ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
-    }
-
-    protected ViewRepository getViewRepository() {
-        return applicationContext.getBean(ViewRepository.NAME, ViewRepository.class);
     }
 
     protected DataManager getDataManager() {
@@ -81,72 +79,56 @@ public class StandardCollectionLoader<E extends Entity> implements CollectionLoa
         if (query == null)
             throw new IllegalStateException("query is null");
 
-        LoadContext<E> loadContext = createLoadContext();
+        ValueLoadContext loadContext = createLoadContext();
 
-        List<E> list;
+        Collection<KeyValueEntity> list;
         if (delegate == null) {
-            list = getDataManager().loadList(loadContext);
+            list = getDataManager().loadValues(loadContext);
         } else {
             list = delegate.apply(loadContext);
         }
 
+        // TODO merge KeyValueEntity ???
         if (dataContext != null) {
-            List<E> mergedList = new ArrayList<>(list.size());
-            for (E entity : list) {
-                mergedList.add(dataContext.merge(entity));
+            for (KeyValueEntity entity : list) {
+                dataContext.merge(entity);
             }
-            container.setItems(mergedList);
-        } else {
-            container.setItems(list);
         }
+        container.setItems(list);
     }
 
     @Override
-    public LoadContext<E> createLoadContext() {
-        LoadContext<E> loadContext = LoadContext.create(container.getEntityMetaClass().getJavaClass());
+    public ValueLoadContext createLoadContext() {
+        ValueLoadContext loadContext = ValueLoadContext.create();
+        loadContext.setStoreName(storeName);
+        loadContext.setIdName(container.getIdName());
+        for (MetaProperty property : container.getEntityMetaClass().getProperties()) {
+            loadContext.addProperty(property.getName());
+        }
 
-        LoadContext.Query query = loadContext.setQueryString(this.query);
+        ValueLoadContext.Query query = loadContext.setQueryString(this.query);
 
         query.setCondition(condition);
         query.setSort(sort);
         query.setParameters(parameters);
-
-        query.setCacheable(cacheable);
 
         if (firstResult > 0)
             query.setFirstResult(firstResult);
         if (maxResults < Integer.MAX_VALUE)
             query.setMaxResults(maxResults);
 
-        loadContext.setView(resolveView());
         loadContext.setSoftDeletion(softDeletion);
-        loadContext.setLoadDynamicAttributes(loadDynamicAttributes);
-
         return loadContext;
     }
 
-    protected View resolveView() {
-        View view = this.view;
-        if (view == null && viewName != null) {
-            view = getViewRepository().getView(container.getEntityMetaClass(), viewName);
-        }
-        if (view == null) {
-            view = container.getView();
-        }
-        return view;
-    }
-
     @Override
-    public CollectionContainer<E> getContainer() {
+    public KeyValueCollectionContainer getContainer() {
         return container;
     }
 
     @Override
-    public void setContainer(CollectionContainer<E> container) {
+    public void setContainer(KeyValueCollectionContainer container) {
         this.container = container;
-        if (container instanceof HasLoader) {
-            ((HasLoader) container).setLoader(this);
-        }
         container.setSorter(new CollectionContainerSorter(container, this));
     }
 
@@ -198,16 +180,6 @@ public class StandardCollectionLoader<E extends Entity> implements CollectionLoa
     }
 
     @Override
-    public int getFirstResult() {
-        return firstResult;
-    }
-
-    @Override
-    public void setFirstResult(int firstResult) {
-        this.firstResult = firstResult;
-    }
-
-    @Override
     public int getMaxResults() {
         return maxResults;
     }
@@ -215,53 +187,6 @@ public class StandardCollectionLoader<E extends Entity> implements CollectionLoa
     @Override
     public void setMaxResults(int maxResults) {
         this.maxResults = maxResults;
-    }
-
-    @Override
-    public boolean isSoftDeletion() {
-        return softDeletion;
-    }
-
-    @Override
-    public void setSoftDeletion(boolean softDeletion) {
-        this.softDeletion = softDeletion;
-    }
-
-    @Override
-    public boolean isLoadDynamicAttributes() {
-        return loadDynamicAttributes;
-    }
-
-    @Override
-    public void setLoadDynamicAttributes(boolean loadDynamicAttributes) {
-        this.loadDynamicAttributes = loadDynamicAttributes;
-    }
-
-    @Override
-    public boolean isCacheable() {
-        return cacheable;
-    }
-
-    @Override
-    public void setCacheable(boolean cacheable) {
-        this.cacheable = cacheable;
-    }
-
-    @Override
-    public View getView() {
-        return view;
-    }
-
-    @Override
-    public void setView(View view) {
-        this.view = view;
-    }
-
-    @Override
-    public void setView(String viewName) {
-        if (this.view != null)
-            throw new IllegalStateException("view is already set");
-        this.viewName = viewName;
     }
 
     @Override
@@ -279,12 +204,42 @@ public class StandardCollectionLoader<E extends Entity> implements CollectionLoa
     }
 
     @Override
-    public Function<LoadContext<E>, List<E>> getLoadDelegate() {
+    public Function<ValueLoadContext, Collection<KeyValueEntity>> getDelegate() {
         return delegate;
     }
 
     @Override
-    public void setLoadDelegate(Function<LoadContext<E>, List<E>> delegate) {
+    public void setLoadDelegate(Function<ValueLoadContext, Collection<KeyValueEntity>> delegate) {
         this.delegate = delegate;
+    }
+
+    @Override
+    public boolean isSoftDeletion() {
+        return softDeletion;
+    }
+
+    @Override
+    public void setSoftDeletion(boolean softDeletion) {
+        this.softDeletion = softDeletion;
+    }
+
+    @Override
+    public String getStoreName() {
+        return storeName;
+    }
+
+    @Override
+    public void setStoreName(String name) {
+        storeName = name != null ? name : Stores.MAIN;
+    }
+
+    @Override
+    public int getFirstResult() {
+        return firstResult;
+    }
+
+    @Override
+    public void setFirstResult(int firstResult) {
+        this.firstResult = firstResult;
     }
 }

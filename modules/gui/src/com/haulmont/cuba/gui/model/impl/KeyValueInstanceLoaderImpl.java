@@ -34,7 +34,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
-public class StandardKeyValueInstanceLoader implements KeyValueInstanceLoader {
+public class KeyValueInstanceLoaderImpl implements KeyValueInstanceLoader {
 
     private ApplicationContext applicationContext;
 
@@ -48,7 +48,7 @@ public class StandardKeyValueInstanceLoader implements KeyValueInstanceLoader {
     private String storeName = Stores.MAIN;
     private Function<ValueLoadContext, KeyValueEntity> delegate;
 
-    public StandardKeyValueInstanceLoader(ApplicationContext applicationContext) {
+    public KeyValueInstanceLoaderImpl(ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
     }
 

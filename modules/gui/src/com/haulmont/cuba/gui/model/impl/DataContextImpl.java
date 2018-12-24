@@ -46,9 +46,9 @@ import java.util.stream.Collectors;
 /**
  * Standard implementation of {@link DataContext} which commits data to {@link DataManager}.
  */
-public class StandardDataContext implements DataContext {
+public class DataContextImpl implements DataContext {
 
-    private static final Logger log = LoggerFactory.getLogger(StandardDataContext.class);
+    private static final Logger log = LoggerFactory.getLogger(DataContextImpl.class);
 
     private ApplicationContext applicationContext;
 
@@ -64,13 +64,13 @@ public class StandardDataContext implements DataContext {
 
     protected boolean disableListeners;
 
-    protected StandardDataContext parentContext;
+    protected DataContextImpl parentContext;
 
     protected Function<CommitContext, Set<Entity>> commitDelegate;
 
     protected Map<Entity, Map<String, EmbeddedPropertyChangeListener>> embeddedPropertyListeners = new WeakHashMap<>();
 
-    public StandardDataContext(ApplicationContext applicationContext) {
+    public DataContextImpl(ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
     }
 
@@ -99,9 +99,9 @@ public class StandardDataContext implements DataContext {
     @Override
     public void setParent(DataContext parentContext) {
         Preconditions.checkNotNullArgument(parentContext, "parentContext is null");
-        if (!(parentContext instanceof StandardDataContext))
+        if (!(parentContext instanceof DataContextImpl))
             throw new IllegalArgumentException("Unsupported DataContext type: " + parentContext.getClass().getName());
-        this.parentContext = (StandardDataContext) parentContext;
+        this.parentContext = (DataContextImpl) parentContext;
     }
 
     @Override
