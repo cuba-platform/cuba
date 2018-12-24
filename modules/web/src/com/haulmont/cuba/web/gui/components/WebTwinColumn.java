@@ -86,12 +86,6 @@ public class WebTwinColumn<V> extends WebV8AbstractField<CubaTwinColSelect<V>, S
             this.optionsBinding = optionsBinder.bind(options, this, this::setItemsToPresentation);
             this.optionsBinding.activate();
         }
-
-        if (options instanceof MapOptions) {
-            setCaptionMode(CaptionMode.MAP_ENTRY);
-        } else {
-            setCaptionMode(CaptionMode.ITEM);
-        }
     }
 
     protected void setItemsToPresentation(Stream<V> options) {
