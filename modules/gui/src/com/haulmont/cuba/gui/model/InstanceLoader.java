@@ -21,7 +21,6 @@ import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.screen.InstallSubject;
 
-import java.util.Collection;
 import java.util.function.Function;
 
 /**

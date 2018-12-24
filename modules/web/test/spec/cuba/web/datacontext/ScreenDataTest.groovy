@@ -108,10 +108,22 @@ class ScreenDataTest extends WebSpec {
                     </properties>
                     <loader id="userInfoLoader">
                         <query>
-                            select u.login, u.name from sec$User u where u.id = 1
+                            select u.login, u.name from sec$User u where u.login like :login
                         </query>
                     </loader>
                 </keyValueCollection>
+                
+                <keyValueInstance id="userInfoInstanceCont">
+                    <properties>
+                        <property name="login"/>
+                        <property name="name"/>
+                    </properties>
+                    <loader id="userInfoInstanceLoader">
+                        <query>
+                            select u.login, u.name from sec$User u where u.id = 1
+                        </query>
+                    </loader>
+                </keyValueInstance>
                 
                 
             </data>
@@ -131,6 +143,8 @@ class ScreenDataTest extends WebSpec {
         CollectionLoader<User> usersLoader = screenData.getLoader('usersLoader')
         KeyValueCollectionContainer userInfoCont = screenData.getContainer('userInfoCont')
         KeyValueCollectionLoader userInfoLoader = screenData.getLoader('userInfoLoader')
+        KeyValueContainer userInfoInstanceCont = screenData.getContainer('userInfoInstanceCont')
+        KeyValueInstanceLoader userInfoInstanceLoader = screenData.getLoader('userInfoInstanceLoader')
 
         then:
 
@@ -156,7 +170,12 @@ class ScreenDataTest extends WebSpec {
         userInfoCont.getEntityMetaClass().getProperty('login') != null
         userInfoCont.getEntityMetaClass().getProperty('name') != null
         userInfoLoader.getContainer() == userInfoCont
-        userInfoLoader.getQuery() == 'select u.login, u.name from sec$User u where u.id = 1'
+        userInfoLoader.getQuery() == 'select u.login, u.name from sec$User u where u.login like :login'
+
+        userInfoInstanceCont.getEntityMetaClass().getProperty('login') != null
+        userInfoInstanceCont.getEntityMetaClass().getProperty('name') != null
+        userInfoInstanceLoader.getContainer() == userInfoInstanceCont
+        userInfoInstanceLoader.getQuery() == 'select u.login, u.name from sec$User u where u.id = 1'
     }
 
     def "loader options"() {
@@ -187,10 +206,22 @@ class ScreenDataTest extends WebSpec {
                     </properties>
                     <loader id="userInfoLoader" store="foo" softDeletion="false" firstResult="100" maxResults="1000">
                         <query>
-                            select u.login, u.name from sec$User u where u.id = 1
+                            select u.login, u.name from sec$User u where u.login like :login
                         </query>
                     </loader>
                 </keyValueCollection>
+
+                <keyValueInstance id="userInfoInstanceCont">
+                    <properties>
+                        <property name="login"/>
+                        <property name="name"/>
+                    </properties>
+                    <loader id="userInfoInstanceLoader" store="foo" softDeletion="false">
+                        <query>
+                            select u.login, u.name from sec$User u where u.id = 1
+                        </query>
+                    </loader>
+                </keyValueInstance>
             </data>
             '''
         Document document = Dom4j.readDocument(xml)
@@ -203,6 +234,7 @@ class ScreenDataTest extends WebSpec {
         InstanceLoader<User> userLoader = screenData.getLoader('userLoader')
         CollectionLoader<User> usersLoader = screenData.getLoader('usersLoader')
         KeyValueCollectionLoader userInfoLoader = screenData.getLoader('userInfoLoader')
+        KeyValueInstanceLoader userInfoInstanceLoader = screenData.getLoader('userInfoInstanceLoader')
 
         then:
 
@@ -222,6 +254,9 @@ class ScreenDataTest extends WebSpec {
         userInfoLoader.firstResult == 100
         userInfoLoader.maxResults == 1000
         userInfoLoader.storeName == 'foo'
+
+        !userInfoInstanceLoader.softDeletion
+        userInfoInstanceLoader.storeName == 'foo'
     }
 
     def "nested containers"() {

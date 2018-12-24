@@ -61,9 +61,9 @@ public class ScreenDataXmlLoader {
         if (hostScreenData == null) {
             boolean readOnly = Boolean.valueOf(element.attributeValue("readOnly"));
             DataContext dataContext = readOnly ? new NoopDataContext() : factory.createDataContext();
-            ((ScreenDataImpl) screenData).setDataContext(dataContext);
+            screenData.setDataContext(dataContext);
         } else {
-            ((ScreenDataImpl) screenData).setDataContext(hostScreenData.getDataContext());
+            screenData.setDataContext(hostScreenData.getDataContext());
         }
 
         for (Element el : element.elements()) {
@@ -73,6 +73,8 @@ public class ScreenDataXmlLoader {
                 loadInstanceContainer(screenData, el, hostScreenData);
             } else if (el.getName().equals("keyValueCollection")) {
                 loadKeyValueCollectionContainer(screenData, el, hostScreenData);
+            } else if (el.getName().equals("keyValueInstance")) {
+                loadKeyValueInstanceContainer(screenData, el, hostScreenData);
             }
         }
     }
@@ -153,7 +155,33 @@ public class ScreenDataXmlLoader {
         }
     }
 
-    private void loadProperties(Element element, KeyValueCollectionContainer container) {
+    protected void loadKeyValueInstanceContainer(ScreenData screenData, Element element, ScreenData hostScreenData) {
+        String containerId = getRequiredAttr(element, "id");
+
+        KeyValueContainer container;
+
+        if (checkProvided(element, hostScreenData)) {
+            //noinspection ConstantConditions
+            container = hostScreenData.getContainer(containerId);
+        } else {
+            container = factory.createKeyValueContainer();
+
+            loadProperties(element, container);
+
+            String idName = element.attributeValue("idName");
+            if (!Strings.isNullOrEmpty(idName))
+                container.setIdName(idName);
+        }
+
+        screenData.registerContainer(containerId, container);
+
+        Element loaderEl = element.element("loader");
+        if (loaderEl != null) {
+            loadKeyValueInstanceLoader(screenData, loaderEl, container, hostScreenData);
+        }
+    }
+
+    private void loadProperties(Element element, KeyValueContainer container) {
         Element propsEl = element.element("properties");
         if (propsEl != null) {
             for (Element propEl : propsEl.elements()) {
@@ -294,6 +322,32 @@ public class ScreenDataXmlLoader {
             loadSoftDeletion(element, loader);
             loadFirstResult(element, loader);
             loadMaxResults(element, loader);
+
+            String storeName = element.attributeValue("store");
+            if (!Strings.isNullOrEmpty(storeName))
+                loader.setStoreName(storeName);
+        }
+
+        screenData.registerLoader(loaderId, loader);
+    }
+
+    protected void loadKeyValueInstanceLoader(ScreenData screenData, Element element, KeyValueContainer container, ScreenData hostScreenData) {
+        KeyValueInstanceLoader loader;
+
+        String loaderId = element.attributeValue("id");
+        if (loaderId == null) {
+            loaderId = generateId();
+        }
+
+        if (checkProvided(element, hostScreenData)) {
+            //noinspection ConstantConditions
+            loader = hostScreenData.getLoader(loaderId);
+        } else {
+            loader = factory.createKeyValueInstanceLoader();
+            loader.setContainer(container);
+
+            loadQuery(element, loader);
+            loadSoftDeletion(element, loader);
 
             String storeName = element.attributeValue("store");
             if (!Strings.isNullOrEmpty(storeName))

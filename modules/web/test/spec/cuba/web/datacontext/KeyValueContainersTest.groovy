@@ -23,6 +23,7 @@ import com.haulmont.cuba.gui.components.data.value.ContainerValueSource
 import com.haulmont.cuba.gui.model.KeyValueCollectionContainer
 import com.haulmont.cuba.gui.model.KeyValueCollectionLoader
 import com.haulmont.cuba.gui.model.KeyValueContainer
+import com.haulmont.cuba.gui.model.KeyValueInstanceLoader
 import com.haulmont.cuba.web.testmodel.sales.Customer
 import com.haulmont.cuba.web.testmodel.sales.Order
 import com.haulmont.cuba.web.testsupport.TestServiceProxy
@@ -68,6 +69,40 @@ class KeyValueContainersTest extends WebSpec {
 
         container.items[0].getMetaClass().getProperty('custName') != null
         container.items[0].getMetaClass().getProperty('amount') != null
+    }
+
+    def "load instance"() {
+
+        KeyValueContainer container = dataComponents.createKeyValueContainer()
+        container.addProperty('custName').addProperty('amount')
+
+        KeyValueInstanceLoader loader = dataComponents.createKeyValueInstanceLoader()
+        loader.setContainer(container)
+        loader.setQuery('select o.customer.name, sum(o.amount) from test$Order o group by o.customer.name')
+
+        TestServiceProxy.mock(DataService, Mock(DataService) {
+            loadValues(_) >> {
+                KeyValueEntity entity1 = new KeyValueEntity()
+                entity1.setValue('custName', 'customer1')
+                entity1.setValue('amount', 100)
+                KeyValueEntity entity2 = new KeyValueEntity()
+                entity2.setValue('custName', 'customer2')
+                entity2.setValue('amount', 200)
+                [entity1, entity2]
+            }
+        })
+
+        when:
+
+        loader.load()
+
+        then:
+
+        container.item.getValue('custName') == 'customer1'
+        container.item.getValue('amount') == 100
+
+        container.item.getMetaClass().getProperty('custName') != null
+        container.item.getMetaClass().getProperty('amount') != null
     }
 
     def "binding"() {

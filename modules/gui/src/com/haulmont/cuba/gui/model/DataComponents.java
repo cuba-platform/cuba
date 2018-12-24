@@ -147,4 +147,11 @@ public class DataComponents implements ApplicationContextAware {
     public KeyValueCollectionLoader createKeyValueCollectionLoader() {
         return new StandardKeyValueCollectionLoader(applicationContext);
     }
+
+    /**
+     * Creates {@code KeyValueInstanceLoader}.
+     */
+    public KeyValueInstanceLoader createKeyValueInstanceLoader() {
+        return new StandardKeyValueInstanceLoader(applicationContext);
+    }
 }

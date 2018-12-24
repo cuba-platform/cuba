@@ -25,6 +25,7 @@
             <xs:choice minOccurs="0" maxOccurs="unbounded">
                 <xs:element name="instance" type="instanceContainerType"/>
                 <xs:element name="collection" type="collectionContainerType"/>
+                <xs:element name="keyValueInstance" type="keyValueInstanceContainerType"/>
                 <xs:element name="keyValueCollection" type="keyValueCollectionContainerType"/>
             </xs:choice>
         </xs:sequence>
@@ -87,9 +88,28 @@
         <xs:attribute name="provided" type="xs:boolean"/>
     </xs:complexType>
 
+
+    <xs:complexType name="keyValueInstanceContainerType">
+        <xs:sequence>
+            <xs:element name="properties" type="keyValueContainerProperties"/>
+            <xs:element name="loader" type="keyValueInstanceLoaderType" minOccurs="0"/>
+        </xs:sequence>
+        <xs:attribute name="id" type="xs:string" use="required"/>
+        <xs:attribute name="provided" type="xs:boolean"/>
+    </xs:complexType>
+
+    <xs:complexType name="keyValueInstanceLoaderType">
+        <xs:sequence>
+            <xs:element name="query" type="queryType" minOccurs="0"/>
+        </xs:sequence>
+        <xs:attribute name="id" type="xs:string"/>
+        <xs:attribute name="softDeletion" type="xs:boolean"/>
+        <xs:attribute name="provided" type="xs:boolean"/>
+    </xs:complexType>
+
     <xs:complexType name="keyValueCollectionContainerType">
         <xs:sequence>
-            <xs:element name="properties" type="keyValueCollectionContainerProperties"/>
+            <xs:element name="properties" type="keyValueContainerProperties"/>
             <xs:element name="loader" type="keyValueCollectionLoaderType" minOccurs="0"/>
         </xs:sequence>
         <xs:attribute name="id" type="xs:string" use="required"/>
@@ -107,7 +127,7 @@
         <xs:attribute name="provided" type="xs:boolean"/>
     </xs:complexType>
 
-    <xs:complexType name="keyValueCollectionContainerProperties">
+    <xs:complexType name="keyValueContainerProperties">
         <xs:sequence>
             <xs:element name="property" maxOccurs="unbounded">
                 <xs:complexType mixed="true">
