@@ -94,8 +94,7 @@
         <property name="persistence" ref="cuba_Persistence"/>
     </bean>
 
-    <bean id="performanceLogInterceptor" class="com.haulmont.cuba.core.sys.PerformanceLogInterceptor"/>
-
+    <aop:aspectj-autoproxy/>
     <aop:config proxy-target-class="false">
         <aop:aspect id="trustedServiceAspect" ref="trustedServiceInterceptor" order="1">
             <aop:around method="aroundInvoke"
@@ -124,14 +123,6 @@
         <aop:aspect id="transactionalAspect" ref="transactionalInterceptor" order="100">
             <aop:around method="aroundInvoke"
                         pointcut="execution(@org.springframework.transaction.annotation.Transactional * *(..))"/>
-        </aop:aspect>
-
-        <aop:aspect id="performanceLogTypeAspect" ref="performanceLogInterceptor" order="3">
-            <aop:around method="aroundInvoke" pointcut="@within(com.haulmont.cuba.core.sys.PerformanceLog)"/>
-        </aop:aspect>
-
-        <aop:aspect id="performanceLogMethodAspect" ref="performanceLogInterceptor" order="4">
-            <aop:around method="aroundInvoke" pointcut="execution(@com.haulmont.cuba.core.sys.PerformanceLog * *(..))"/>
         </aop:aspect>
     </aop:config>
 

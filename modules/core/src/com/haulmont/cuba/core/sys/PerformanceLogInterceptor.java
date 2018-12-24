@@ -22,7 +22,7 @@ import org.perf4j.slf4j.Slf4JStopWatch;
 
 public class PerformanceLogInterceptor {
     @SuppressWarnings({"UnusedDeclaration", "UnnecessaryLocalVariable"})
-    private Object aroundInvoke(ProceedingJoinPoint ctx) throws Throwable {
+    protected Object aroundInvoke(ProceedingJoinPoint ctx) throws Throwable {
         StopWatch stopWatch = new Slf4JStopWatch(ctx.getSignature().toShortString());
         try {
             stopWatch.start();
