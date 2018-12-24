@@ -108,6 +108,16 @@ public class WebResizableTextArea<V> extends WebAbstractTextArea<CubaTextArea, V
     }
 
     @Override
+    public boolean isCaptionAsHtml() {
+        return wrapper.isCaptionAsHtml();
+    }
+
+    @Override
+    public void setCaptionAsHtml(boolean captionAsHtml) {
+        wrapper.setCaptionAsHtml(captionAsHtml);
+    }
+
+    @Override
     public String getDescription() {
         return wrapper.getDescription();
     }

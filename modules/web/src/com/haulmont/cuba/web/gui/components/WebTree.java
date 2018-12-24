@@ -611,6 +611,16 @@ public class WebTree<E extends Entity>
     }
 
     @Override
+    public boolean isCaptionAsHtml() {
+        return ((com.vaadin.ui.AbstractComponent) getComposition()).isCaptionAsHtml();
+    }
+
+    @Override
+    public void setCaptionAsHtml(boolean captionAsHtml) {
+        ((com.vaadin.ui.AbstractComponent) getComposition()).setCaptionAsHtml(captionAsHtml);
+    }
+
+    @Override
     public String getDescription() {
         return getComposition().getDescription();
     }

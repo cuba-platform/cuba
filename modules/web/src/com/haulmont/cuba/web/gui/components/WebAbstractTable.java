@@ -2157,6 +2157,16 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
     }
 
     @Override
+    public boolean isCaptionAsHtml() {
+        return ((com.vaadin.ui.AbstractComponent) getComposition()).isCaptionAsHtml();
+    }
+
+    @Override
+    public void setCaptionAsHtml(boolean captionAsHtml) {
+        ((com.vaadin.ui.AbstractComponent) getComposition()).setCaptionAsHtml(captionAsHtml);
+    }
+
+    @Override
     public ButtonsPanel getButtonsPanel() {
         return buttonsPanel;
     }

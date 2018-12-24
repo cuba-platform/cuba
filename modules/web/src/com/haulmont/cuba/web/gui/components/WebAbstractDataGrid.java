@@ -1005,6 +1005,16 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
     }
 
     @Override
+    public boolean isCaptionAsHtml() {
+        return ((com.vaadin.ui.AbstractComponent) getComposition()).isCaptionAsHtml();
+    }
+
+    @Override
+    public void setCaptionAsHtml(boolean captionAsHtml) {
+        ((com.vaadin.ui.AbstractComponent) getComposition()).setCaptionAsHtml(captionAsHtml);
+    }
+
+    @Override
     public boolean isTextSelectionEnabled() {
         return textSelectionEnabled;
     }
