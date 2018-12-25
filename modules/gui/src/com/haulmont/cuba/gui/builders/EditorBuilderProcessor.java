@@ -24,12 +24,11 @@ import com.haulmont.cuba.core.global.ExtendedEntities;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.gui.Screens;
 import com.haulmont.cuba.gui.WindowParams;
-import com.haulmont.cuba.gui.components.HasValue;
-import com.haulmont.cuba.gui.components.ListComponent;
-import com.haulmont.cuba.gui.components.SupportsUserAction;
-import com.haulmont.cuba.gui.components.Window;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.data.DataUnit;
+import com.haulmont.cuba.gui.components.data.Options;
 import com.haulmont.cuba.gui.components.data.meta.ContainerDataUnit;
+import com.haulmont.cuba.gui.components.data.meta.EntityOptions;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.model.*;
@@ -125,6 +124,17 @@ public class EditorBuilderProcessor {
                 CloseAction closeAction = event.getCloseAction();
                 if (isCommitCloseAction(closeAction)) {
                     E editedEntity = editorScreen.getEditedEntity();
+
+                    if (field instanceof LookupPickerField) {
+                        LookupPickerField lookupPickerField = ((LookupPickerField) field);
+                        Options options = lookupPickerField.getOptions();
+                        if (options instanceof EntityOptions) {
+                            EntityOptions entityOptions = (EntityOptions) options;
+                            if (entityOptions.containsItem(editedEntity)) {
+                                entityOptions.updateItem(editedEntity);
+                            }
+                        }
+                    }
 
                     if (field instanceof SupportsUserAction) {
                         ((SupportsUserAction) field).setValueFromUser(editedEntity);
