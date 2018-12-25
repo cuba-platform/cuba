@@ -67,44 +67,6 @@ public abstract class AbstractFieldLoader<T extends Field> extends AbstractDatas
         loadCss(resultComponent, element);
     }
 
-    @SuppressWarnings("unchecked")
-    protected void loadContainer(T component, Element element) {
-        String containerId = element.attributeValue("dataContainer");
-        String property = element.attributeValue("property");
-
-        // In case a component has only a property,
-        // we try to obtain `dataContainer` from a parent element.
-        // For instance, a component is placed within the Form component
-        if (Strings.isNullOrEmpty(containerId) && property != null) {
-            containerId = getParentDataContainer(element);
-        }
-
-        if (!Strings.isNullOrEmpty(containerId)) {
-            if (property == null) {
-                throw new GuiDevelopmentException(
-                        String.format("Can't set container '%s' for component '%s' because 'property' " +
-                                "attribute is not defined", containerId, component.getId()), context.getFullFrameId());
-            }
-
-            FrameOwner frameOwner = context.getFrame().getFrameOwner();
-            ScreenData screenData = UiControllerUtils.getScreenData(frameOwner);
-            InstanceContainer container = screenData.getContainer(containerId);
-
-            component.setValueSource(new ContainerValueSource<>(container, property));
-        }
-    }
-
-    private String getParentDataContainer(Element element) {
-        Element parent = element.getParent();
-        while (parent != null) {
-            if (layoutLoaderConfig.getLoader(parent.getName()) != null) {
-                return parent.attributeValue("dataContainer");
-            }
-            parent = parent.getParent();
-        }
-        return null;
-    }
-
     protected void loadRequired(Field component, Element element) {
         String required = element.attributeValue("required");
         if (StringUtils.isNotEmpty(required)) {

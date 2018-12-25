@@ -34,8 +34,13 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Component.Alignment;
 import com.haulmont.cuba.gui.components.actions.BaseAction;
 import com.haulmont.cuba.gui.components.actions.ItemTrackingAction;
+import com.haulmont.cuba.gui.components.data.HasValueSource;
+import com.haulmont.cuba.gui.components.data.value.ContainerValueSource;
 import com.haulmont.cuba.gui.components.validators.*;
 import com.haulmont.cuba.gui.icons.Icons;
+import com.haulmont.cuba.gui.model.InstanceContainer;
+import com.haulmont.cuba.gui.model.ScreenData;
+import com.haulmont.cuba.gui.screen.FrameOwner;
 import com.haulmont.cuba.gui.screen.Screen;
 import com.haulmont.cuba.gui.screen.UiControllerUtils;
 import com.haulmont.cuba.gui.screen.compatibility.LegacyFrame;
@@ -987,5 +992,45 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
         Frame frame = context.getFrame();
         Screen screen = UiControllerUtils.getScreen(frame.getFrameOwner());
         return screen.getId();
+    }
+
+    @SuppressWarnings("unchecked")
+    protected void loadContainer(T component, Element element) {
+        String containerId = element.attributeValue("dataContainer");
+        String property = element.attributeValue("property");
+
+        // In case a component has only a property,
+        // we try to obtain `dataContainer` from a parent element.
+        // For instance, a component is placed within the Form component
+        if (Strings.isNullOrEmpty(containerId) && property != null) {
+            containerId = getParentDataContainer(element);
+        }
+
+        if (!Strings.isNullOrEmpty(containerId)) {
+            if (property == null) {
+                throw new GuiDevelopmentException(
+                        String.format("Can't set container '%s' for component '%s' because 'property' " +
+                                "attribute is not defined", containerId, component.getId()), context.getFullFrameId());
+            }
+
+            FrameOwner frameOwner = context.getFrame().getFrameOwner();
+            ScreenData screenData = UiControllerUtils.getScreenData(frameOwner);
+            InstanceContainer container = screenData.getContainer(containerId);
+
+            if (component instanceof HasValueSource) {
+                ((HasValueSource) component).setValueSource(new ContainerValueSource<>(container, property));
+            }
+        }
+    }
+
+    protected String getParentDataContainer(Element element) {
+        Element parent = element.getParent();
+        while (parent != null) {
+            if (layoutLoaderConfig.getLoader(parent.getName()) != null) {
+                return parent.attributeValue("dataContainer");
+            }
+            parent = parent.getParent();
+        }
+        return null;
     }
 }

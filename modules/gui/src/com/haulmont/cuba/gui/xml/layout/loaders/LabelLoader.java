@@ -31,7 +31,10 @@ public class LabelLoader extends AbstractDatasourceComponentLoader<Label> {
     public void loadComponent() {
         assignXmlDescriptor(resultComponent, element);
 
-        loadDatasource(resultComponent, element);
+        loadContainer(resultComponent, element);
+        if (resultComponent.getValueSource() == null) {
+            loadDatasource(resultComponent, element);
+        }
 
         loadVisible(resultComponent, element);
         loadAlign(resultComponent, element);
