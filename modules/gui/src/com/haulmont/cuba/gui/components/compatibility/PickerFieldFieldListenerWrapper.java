@@ -20,7 +20,7 @@ public class PickerFieldFieldListenerWrapper<E extends Entity>
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        TableCellClickListenerWrapper that = (TableCellClickListenerWrapper) o;
+        PickerFieldFieldListenerWrapper that = (PickerFieldFieldListenerWrapper) o;
 
         return listener.equals(that.listener);
     }

@@ -18,7 +18,7 @@ public class TimerStopListenerWrapper implements Consumer<Timer.TimerStopEvent> 
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        TableCellClickListenerWrapper that = (TableCellClickListenerWrapper) o;
+        TimerStopListenerWrapper that = (TimerStopListenerWrapper) o;
 
         return listener.equals(that.listener);
     }

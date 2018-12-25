@@ -18,7 +18,7 @@ public class TimerActionListenerWrapper implements Consumer<Timer.TimerActionEve
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        TableCellClickListenerWrapper that = (TableCellClickListenerWrapper) o;
+        TimerActionListenerWrapper that = (TimerActionListenerWrapper) o;
 
         return listener.equals(that.listener);
     }
