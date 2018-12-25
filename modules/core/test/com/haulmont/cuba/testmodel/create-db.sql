@@ -1068,6 +1068,18 @@ create table TEST_ADDRESS_EMBEDDED_CONTAINER (
 
 ------------------------------------------------------------------------------------------------------------------------
 
+create table TEST_SET_GET_ENTITY (
+     ID varchar(36) not null,
+     CREATE_TS timestamp,
+     CREATED_BY varchar(50),
+     VERSION integer,
+     UPDATE_TS timestamp,
+     UPDATED_BY varchar(50),
+     DELETE_TS timestamp,
+     DELETED_BY varchar(50),
+     primary key (ID)
+ )^
+
 create table TEST_COMPOSITE_ONE (
     ID varchar(36) not null,
     CREATE_TS timestamp,
