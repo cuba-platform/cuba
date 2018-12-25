@@ -63,8 +63,7 @@ public class MethodsCache {
             MethodHandle factory = site.getTarget();
             getter = (Function) factory.invoke();
         } catch (Throwable t) {
-            t.printStackTrace();
-            return null;
+            throw new RuntimeException("Can not create getter", t);
         }
 
         return getter;
@@ -83,8 +82,7 @@ public class MethodsCache {
             MethodHandle factory = site.getTarget();
             setter = (BiConsumer) factory.invoke();
         } catch (Throwable t) {
-            t.printStackTrace();
-            return null;
+            throw new RuntimeException("Can not create setter", t);
         }
 
         return setter;
