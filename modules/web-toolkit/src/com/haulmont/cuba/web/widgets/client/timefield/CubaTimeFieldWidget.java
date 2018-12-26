@@ -33,12 +33,16 @@ public class CubaTimeFieldWidget extends CubaMaskedFieldWidget {
     public void setMask(String mask) {
         super.setMask(mask);
 
-        // Fire value change to replace placeholders with default values
-        valueChange(false);
+        // Update value to replace placeholders with default values
+        updateValueWithChangeEvent(false);
     }
 
     @Override
     public void valueChange(boolean blurred) {
+        updateValueWithChangeEvent(true);
+    }
+
+    protected void updateValueWithChangeEvent(boolean fireEvent) {
         String newText = getValue();
 
         if (!newText.equals(valueBeforeEdit)) {
@@ -50,7 +54,9 @@ public class CubaTimeFieldWidget extends CubaMaskedFieldWidget {
                 valueBeforeEdit = newText;
                 setValue(newText);
 
-                ValueChangeEvent.fire(this, newText);
+                if (fireEvent) {
+                    ValueChangeEvent.fire(this, newText);
+                }
             } else {
                 setValue(valueBeforeEdit);
             }
