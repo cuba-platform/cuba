@@ -117,14 +117,14 @@ public class RuntimePropertiesFrame extends AbstractFrame {
             throw new DevelopmentException("runtimeProperties initialization error: runtimeDs is not provided");
         rds = (RuntimePropsDatasource) getDsContext().get(dsId);
         if (rds == null)
-            throw new DevelopmentException("runtimeProperties initialization error: runtimeDs '" + dsId + "' does not exists");
+            throw new DevelopmentException("runtimeProperties initialization error: runtimeDs '" + dsId + "' does not exist");
 
         String categoriesDsId = (String) params.get("categoriesDs");
         if (categoriesDsId == null)
             throw new DevelopmentException("runtimeProperties initialization error: categoriesDs is not provided");
         categoriesDs = (CollectionDatasource) getDsContext().get(categoriesDsId);
         if (categoriesDs == null)
-            throw new DevelopmentException("runtimeProperties initialization error: categoriesDs '" + categoriesDsId + "' does not exists");
+            throw new DevelopmentException("runtimeProperties initialization error: categoriesDs '" + categoriesDsId + "' does not exist");
     }
 
     protected void initCategoryField() {

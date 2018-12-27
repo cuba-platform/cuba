@@ -220,7 +220,7 @@ public class RuntimePropsDatasourceImpl
     protected void setMainDs(String name) {
         mainDs = dsContext.get(name);
         if (mainDs == null) {
-            throw new DevelopmentException("runtimePropsDatasource initialization error: mainDs '" + name + "' does not exists");
+            throw new DevelopmentException("runtimePropsDatasource initialization error: mainDs '" + name + "' does not exist");
         }
         mainDs.setLoadDynamicAttributes(true);
 
