@@ -15,11 +15,8 @@
  */
 package spec.cuba.core.entity_listeners
 
-import com.haulmont.cuba.core.global.AppBeans
-import com.haulmont.cuba.core.global.DataManager
-import com.haulmont.cuba.core.global.LoadContext
-import com.haulmont.cuba.core.global.View
-import com.haulmont.cuba.core.global.ViewRepository
+
+import com.haulmont.cuba.core.global.*
 import com.haulmont.cuba.core.listener.TestUserDetachListener
 import com.haulmont.cuba.core.listener.TestUserEntityListener
 import com.haulmont.cuba.core.sys.listener.EntityListenerManager
@@ -31,15 +28,19 @@ import org.junit.ClassRule
 import spock.lang.Shared
 import spock.lang.Specification
 
+import java.util.function.Consumer
+
 class EntityListenerTest extends Specification {
 
     @Shared @ClassRule
     public TestContainer cont = TestContainer.Common.INSTANCE
 
-    private dataManager
+    private DataManager dataManager
+    private EntityStates entityStates
 
     void setup() {
         dataManager = AppBeans.get(DataManager)
+        entityStates = AppBeans.get(EntityStates)
     }
 
     def "PL-9350 onBeforeInsert listener fires twice if em.flush() is used"() {
@@ -169,4 +170,139 @@ class EntityListenerTest extends Specification {
         entityListenerManager.removeListener(User, TestUserDetachListener)
         cont.deleteRecord(user)
     }
+
+    def "in BeforeInsert reference can be detached"() {
+        def user = cont.metadata().create(User)
+        user.login = "User-$user.id"
+        user.name = 'test user'
+        user.group = dataManager.load(Group).id(TestSupport.COMPANY_GROUP_ID).one()
+
+        EntityListenerManager entityListenerManager = AppBeans.get(EntityListenerManager);
+        entityListenerManager.addListener(User, TestUserEntityListener)
+
+        TestUserEntityListener.consumers.put("BeforeInsert",
+                { User it ->
+                    assert entityStates.isDetached(it.group)
+                } as Consumer<User>
+        )
+
+        when:
+
+        dataManager.commit(user)
+
+        then:
+
+        noExceptionThrown()
+
+        cleanup:
+
+        TestUserEntityListener.consumers.clear()
+        entityListenerManager.removeListener(User, TestUserEntityListener)
+        cont.deleteRecord(user)
+    }
+
+    def "in BeforeInsert reference can be new+managed"() {
+        def group = cont.metadata().create(Group)
+        group.name = "test group"
+
+        def user = cont.metadata().create(User)
+        user.login = "User-$user.id"
+        user.name = 'test user'
+        user.group = group
+
+        EntityListenerManager entityListenerManager = AppBeans.get(EntityListenerManager);
+        entityListenerManager.addListener(User, TestUserEntityListener)
+
+        TestUserEntityListener.consumers.put("BeforeInsert",
+                { User it ->
+                    assert entityStates.isNew(it.group)
+                    assert entityStates.isManaged(it.group)
+                } as Consumer<User>
+        )
+
+        when:
+
+        dataManager.commit(group, user)
+
+        then:
+
+        noExceptionThrown()
+
+        cleanup:
+
+        TestUserEntityListener.consumers.clear()
+        entityListenerManager.removeListener(User, TestUserEntityListener)
+        cont.deleteRecord(user, group)
+    }
+
+    def "in BeforeUpdate reference is managed"() {
+        def user = cont.metadata().create(User)
+        user.login = "User-$user.id"
+        user.name = 'test user'
+        user.group = dataManager.load(Group).id(TestSupport.COMPANY_GROUP_ID).one()
+        user = dataManager.commit(user)
+
+        def group = cont.metadata().create(Group)
+        group.name = "test group"
+        group = dataManager.commit(group)
+
+        EntityListenerManager entityListenerManager = AppBeans.get(EntityListenerManager);
+        entityListenerManager.addListener(User, TestUserEntityListener)
+
+        TestUserEntityListener.consumers.put("BeforeUpdate",
+                { User it ->
+                    assert entityStates.isManaged(it.group)
+                } as Consumer<User>
+        )
+
+        when:
+
+        user.group = group
+        dataManager.commit(user)
+
+        then:
+
+        noExceptionThrown()
+
+        cleanup:
+
+        TestUserEntityListener.consumers.clear()
+        entityListenerManager.removeListener(User, TestUserEntityListener)
+        cont.deleteRecord(user, group)
+    }
+
+    def "in BeforeUpdate reference is managed even if merged object loaded with local view"() {
+        def user = cont.metadata().create(User)
+        user.login = "User-$user.id"
+        user.name = 'test user'
+        user.group = dataManager.load(Group).id(TestSupport.COMPANY_GROUP_ID).one()
+        dataManager.commit(user)
+
+        user = dataManager.load(User).id(user.id).view(View.LOCAL).one()
+
+        EntityListenerManager entityListenerManager = AppBeans.get(EntityListenerManager);
+        entityListenerManager.addListener(User, TestUserEntityListener)
+
+        TestUserEntityListener.consumers.put("BeforeUpdate",
+                { User it ->
+                    assert entityStates.isManaged(it.group)
+                } as Consumer<User>
+        )
+
+        when:
+
+        user.position = "test position"
+        dataManager.commit(user)
+
+        then:
+
+        noExceptionThrown()
+
+        cleanup:
+
+        TestUserEntityListener.consumers.clear()
+        entityListenerManager.removeListener(User, TestUserEntityListener)
+        cont.deleteRecord(user)
+    }
+
 }
