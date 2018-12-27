@@ -183,6 +183,8 @@ public class WebAbstractOrderedLayout<T extends com.vaadin.ui.CssLayout> extends
             component.addLayoutClickListener(layoutClickListener);
         }
 
+        getEventHub().subscribe(LayoutClickEvent.class, listener);
+
         return () -> removeLayoutClickListener(listener);
     }
 
