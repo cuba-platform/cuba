@@ -121,7 +121,7 @@ public class RuntimePropertiesFrame extends AbstractFrame {
         rds = (RuntimePropsDatasource) getDsContext().get(dsId);
         if (rds == null) {
             throw new DevelopmentException(
-                    String.format("runtimeProperties initialization error: runtimeDs '%s' does not exists", dsId));
+                    String.format("runtimeProperties initialization error: runtimeDs '%s' does not exist", dsId));
         }
 
         String categoriesDsId = (String) params.get("categoriesDs");
@@ -132,7 +132,7 @@ public class RuntimePropertiesFrame extends AbstractFrame {
         categoriesDs = (CollectionDatasource) getDsContext().get(categoriesDsId);
         if (categoriesDs == null) {
             throw new DevelopmentException(
-                    String.format("runtimeProperties initialization error: categoriesDs '%s' does not exists",
+                    String.format("runtimeProperties initialization error: categoriesDs '%s' does not exist",
                             categoriesDsId)
             );
         }

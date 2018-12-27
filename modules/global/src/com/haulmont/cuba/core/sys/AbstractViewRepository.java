@@ -577,7 +577,7 @@ public class AbstractViewRepository implements ViewRepository {
 
             MetaProperty metaProperty = metaClass.getProperty(propertyName);
             if (metaProperty == null) {
-                throw new DevelopmentException(String.format("View %s/%s definition error: property %s doesn't exists",
+                throw new DevelopmentException(String.format("View %s/%s definition error: property %s doesn't exist",
                         metaClass.getName(), viewName, propertyName));
             }
 

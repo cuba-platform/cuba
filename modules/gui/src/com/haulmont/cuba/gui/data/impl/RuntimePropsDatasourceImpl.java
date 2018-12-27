@@ -226,7 +226,7 @@ public class RuntimePropsDatasourceImpl
         mainDs = dsContext.get(name);
         if (mainDs == null) {
             throw new DevelopmentException(
-                    String.format("runtimePropsDatasource initialization error: mainDs '%s' does not exists", name)
+                    String.format("runtimePropsDatasource initialization error: mainDs '%s' does not exist", name)
             );
         }
         mainDs.setLoadDynamicAttributes(true);
