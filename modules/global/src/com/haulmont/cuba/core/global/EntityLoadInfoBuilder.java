@@ -21,9 +21,11 @@ import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.entity.HasUuid;
+import com.haulmont.cuba.core.entity.IdProxy;
 import org.apache.commons.lang3.StringUtils;
-
 import org.springframework.stereotype.Component;
+
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.Collection;
@@ -112,7 +114,10 @@ public class EntityLoadInfoBuilder {
         if (primaryKeyProp == null)
             return null;
 
-        if (primaryKeyProp.getJavaType().equals(UUID.class)) {
+        Class pkType = primaryKeyProp.getJavaType();
+        if ((UUID.class.equals(pkType))
+                || (!(String.class.equals(pkType) || Integer.class.equals(pkType) || Long.class.equals(pkType)
+                || IdProxy.class.equals(pkType)) && HasUuid.class.isAssignableFrom(metaClass.getJavaClass()))) {
             int viewDashPos = -1;
             int dashCount = StringUtils.countMatches(str, "-");
             if (dashCount < 5) {
@@ -138,7 +143,7 @@ public class EntityLoadInfoBuilder {
             }
         } else {
             String entityIdStr;
-            if (primaryKeyProp.getJavaType().equals(String.class)) {
+            if (String.class.equals(pkType)) {
                 stringKey = true;
                 int viewDashPos = str.indexOf("}-", idDashPos + 2);
                 if (viewDashPos > -1) {
@@ -159,9 +164,9 @@ public class EntityLoadInfoBuilder {
                 entityIdStr = str.substring(idDashPos + 1, viewDashPos);
             }
             try {
-                if (primaryKeyProp.getJavaType().equals(Long.class)) {
+                if (Long.class.equals(pkType) || IdProxy.class.equals(pkType)) {
                     id = Long.valueOf(entityIdStr);
-                } else if (primaryKeyProp.getJavaType().equals(Integer.class)) {
+                } else if (Integer.class.equals(pkType)) {
                     id = Integer.valueOf(entityIdStr);
                 } else {
                     id = entityIdStr;

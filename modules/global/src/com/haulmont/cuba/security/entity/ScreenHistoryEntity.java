@@ -19,8 +19,11 @@ package com.haulmont.cuba.security.entity;
 import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.entity.Creatable;
+import com.haulmont.cuba.core.entity.ReferenceToEntity;
+import com.haulmont.cuba.core.entity.annotation.EmbeddedParameters;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.UserFormatTools;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.security.global.UserSession;
@@ -28,7 +31,6 @@ import com.haulmont.cuba.security.global.UserSession;
 import javax.annotation.PostConstruct;
 import javax.persistence.*;
 import java.util.Date;
-import java.util.UUID;
 
 /**
  * Screen history item.
@@ -60,8 +62,9 @@ public class ScreenHistoryEntity extends BaseUuidEntity implements Creatable {
     @Column(name = "URL", length = 4000)
     protected String url;
 
-    @Column(name = "ENTITY_ID")
-    protected UUID entityId;
+    @Embedded
+    @EmbeddedParameters(nullAllowed = false)
+    private ReferenceToEntity entityRef;
 
     @Override
     public Date getCreateTs() {
@@ -107,20 +110,31 @@ public class ScreenHistoryEntity extends BaseUuidEntity implements Creatable {
         this.url = url;
     }
 
-    public UUID getEntityId() {
-        return entityId;
-    }
-
-    public void setEntityId(UUID entityId) {
-        this.entityId = entityId;
-    }
-
     public User getSubstitutedUser() {
         return substitutedUser;
     }
 
     public void setSubstitutedUser(User substitutedUser) {
         this.substitutedUser = substitutedUser;
+    }
+
+    public ReferenceToEntity getEntityRef() {
+        return entityRef;
+    }
+
+    public void setEntityRef(ReferenceToEntity entityRef) {
+        this.entityRef = entityRef;
+    }
+
+    public void setObjectEntityId(Object entity) {
+        if (entityRef == null) {
+            entityRef = AppBeans.get(Metadata.class).create(ReferenceToEntity.class);
+        }
+        entityRef.setObjectEntityId(entity);
+    }
+
+    public Object getObjectEntityId() {
+        return entityRef == null ? null : entityRef.getObjectEntityId();
     }
 
     @MetaProperty
@@ -134,5 +148,7 @@ public class ScreenHistoryEntity extends BaseUuidEntity implements Creatable {
         UserSession userSession = AppBeans.get(UserSessionSource.class).getUserSession();
         setUser(userSession.getUser());
         setSubstitutedUser(userSession.getSubstitutedUser());
+        Metadata metadata = AppBeans.get(Metadata.NAME);
+        entityRef = metadata.create(ReferenceToEntity.class);
     }
 }

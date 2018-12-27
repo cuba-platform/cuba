@@ -627,6 +627,9 @@ create table SEC_SCREEN_HISTORY (
     CAPTION varchar(255),
     URL text,
     ENTITY_ID varchar(32),
+    STRING_ENTITY_ID varchar(190),
+    INT_ENTITY_ID integer,
+    LONG_ENTITY_ID bigint,
     SUBSTITUTED_USER_ID varchar(32),
       --
     primary key (ID),
@@ -636,6 +639,10 @@ create table SEC_SCREEN_HISTORY (
 
 create index IDX_SEC_SCREEN_HISTORY_USER on SEC_SCREEN_HISTORY (USER_ID)^
 create index IDX_SEC_SCREEN_HIST_SUB_USER on SEC_SCREEN_HISTORY (SUBSTITUTED_USER_ID)^
+create index IDX_SEC_SCREEN_HISTORY_ENTITY_ID on SEC_SCREEN_HISTORY (ENTITY_ID)^
+create index IDX_SEC_SCREEN_HISTORY_SENTITY_ID on SEC_SCREEN_HISTORY (STRING_ENTITY_ID)^
+create index IDX_SEC_SCREEN_HISTORY_IENTITY_ID on SEC_SCREEN_HISTORY (INT_ENTITY_ID)^
+create index IDX_SEC_SCREEN_HISTORY_LENTITY_ID on SEC_SCREEN_HISTORY (LONG_ENTITY_ID)^
 
 /**********************************************************************************************/
 

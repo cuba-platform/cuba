@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static com.haulmont.cuba.gui.WindowManager.OpenType;
+import static java.lang.String.format;
 
 @Component(ScreensLinkHandlerProcessor.NAME)
 public class ScreensLinkHandlerProcessor implements LinkHandlerProcessor, Ordered {
@@ -47,6 +48,8 @@ public class ScreensLinkHandlerProcessor implements LinkHandlerProcessor, Ordere
     protected AccessDeniedHandler accessDeniedHandler;
     @Inject
     protected NoSuchScreenHandler noSuchScreenHandler;
+    @Inject
+    protected ReferenceToEntitySupport referenceToEntitySupport;
 
     @Override
     public boolean canHandle(ExternalLinkContext linkContext) {
@@ -141,8 +144,11 @@ public class ScreensLinkHandlerProcessor implements LinkHandlerProcessor, Ordere
             return metadata.create(info.getMetaClass());
         }
 
+        String pkName = referenceToEntitySupport.getPrimaryKeyForLoadingEntityFromLink(info.getMetaClass());
         //noinspection unchecked
-        LoadContext<Entity> ctx = new LoadContext(info.getMetaClass()).setId(info.getId());
+        LoadContext<Entity> ctx = new LoadContext(info.getMetaClass());
+        ctx.setQueryString(format("select e from %s e where e.%s = :entityId", info.getMetaClass().getName(), pkName))
+                .setParameter("entityId", info.getId());
         if (info.getViewName() != null) {
             View view = viewRepository.findView(info.getMetaClass(), info.getViewName());
             if (view != null) {
