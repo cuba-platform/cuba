@@ -121,7 +121,7 @@ public class ExcelAction extends ListAction {
         if (target.getSelected().isEmpty()) {
             return true;
         }
-        CollectionContainer container = ((ContainerDataUnit) target).getContainer();
+        CollectionContainer container = ((ContainerDataUnit) target.getItems()).getContainer();
         return container != null && container.getItems().size() <= 1;
     }
 
