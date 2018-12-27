@@ -138,7 +138,13 @@ public class ClusterManager implements ClusterManagerAPI {
     protected void internalSend(Serializable message, boolean sync) {
         StopWatch sw = new Slf4JStopWatch(String.format("sendClusterMessage(%s)", message.getClass().getSimpleName()));
         try {
-            byte[] bytes = SerializationSupport.serialize(message);
+            byte[] bytes;
+            try {
+                bytes = SerializationSupport.serialize(message);
+            } catch (Exception e) {
+                log.error("Cluster message serialization error", e);
+                throw new RuntimeException("Cluster message serialization error", e);
+            }
             log.debug("Sending message: {}: {} ({} bytes)", message.getClass(), message, bytes.length);
             MessageStat stat = messagesStat.get(message.getClass().getName());
             if (stat != null) {
@@ -396,7 +402,13 @@ public class ClusterManager implements ClusterManagerAPI {
             StopWatch sw = new Slf4JStopWatch();
             String simpleClassName = null;
             try {
-                Serializable data = (Serializable) SerializationSupport.deserialize(bytes);
+                Serializable data;
+                try {
+                    data = (Serializable) SerializationSupport.deserialize(bytes);
+                } catch (Exception e) {
+                    log.error("Cluster message deserialization error", e);
+                    throw new RuntimeException("Cluster message deserialization error", e);
+                }
                 String className = data.getClass().getName();
                 simpleClassName = data.getClass().getSimpleName();
                 log.debug("Received message: {}: {} ({} bytes)", data.getClass(), data, bytes.length);
