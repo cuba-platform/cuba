@@ -30,6 +30,7 @@ import org.apache.commons.io.IOUtils;
 import org.jgroups.*;
 import org.jgroups.conf.XmlConfigurator;
 import org.jgroups.jmx.JmxConfigurator;
+import org.jgroups.logging.LogFactory;
 import org.perf4j.StopWatch;
 import org.perf4j.slf4j.Slf4JStopWatch;
 import org.slf4j.Logger;
@@ -192,6 +193,8 @@ public class ClusterManager implements ClusterManagerAPI {
         messagesStat.remove(className);
     }
 
+
+
     @Override
     public void start() {
         log.info("Starting cluster");
@@ -206,6 +209,7 @@ public class ClusterManager implements ClusterManagerAPI {
             stream = resources.getResource(configName).getInputStream();
 
             initJGroupsProperties();
+            initLogger();
 
             channel = new JChannel(XmlConfigurator.getInstance(stream));
             channel.setDiscardOwnMessages(true); // do not receive a copy of our own messages
@@ -228,6 +232,10 @@ public class ClusterManager implements ClusterManagerAPI {
         } finally {
             IOUtils.closeQuietly(stream);
         }
+    }
+
+    protected void initLogger() {
+        LogFactory.setCustomLogFactory(JGroupsLoggerFactory.INSTANCE);
     }
 
     protected void initJGroupsProperties() {
