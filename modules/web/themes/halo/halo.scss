@@ -82,6 +82,7 @@
 @import "components/suggestionfield/suggestionfield";
 @import "components/image/image";
 @import "components/capslockindicator/capslockindicator";
+@import "components/accordion/accordion";
 
 // Application specific
 @import "app/log-control";
@@ -160,6 +161,7 @@
   @include halo-colorpicker;
   @include halo-gridlayout;
   @include halo-csslayout;
+  @include halo-accordion;
   @include halo-cuba-image;
   @include halo-cuba-currencyfield;
 
