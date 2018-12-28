@@ -568,7 +568,10 @@ public class EntityLog implements EntityLogAPI {
             EntityLogAttr attr = metadata.create(EntityLogAttr.class);
             attr.setName(name);
 
-            String value = stringify(entity.getValueEx(name), entity.getMetaClass().getProperty(name));
+            MetaPropertyPath propertyPath = entity.getMetaClass().getPropertyPath(name);
+            MetaProperty metaProperty = propertyPath.getMetaProperty();
+
+            String value = stringify(entity.getValueEx(name), metaProperty);
             attr.setValue(value);
 
             Object valueId = getValueId(entity.getValueEx(name));
@@ -577,7 +580,7 @@ public class EntityLog implements EntityLogAPI {
 
             if (changes != null) {
                 Object oldValue = changes.getOldValueEx(name);
-                attr.setOldValue(stringify(oldValue, entity.getMetaClass().getProperty(name)));
+                attr.setOldValue(stringify(oldValue, metaProperty));
                 Object oldValueId = getValueId(oldValue);
                 if (oldValueId != null) {
                     attr.setOldValueId(oldValueId.toString());
