@@ -109,22 +109,12 @@ public class QueryTransformerAstBased implements QueryTransformer {
         if (where.contains("{E}")) {
             where = entityReference.replaceEntries(where, "\\{E\\}");
         }
-        try {
-            CommonTree whereTree = Parser.parseWhereClause("where " + where);
-            addWhere(whereTree, entityReference, false);
-        } catch (RecognitionException e) {
-            throw new RuntimeException(e);
-        }
+        addWhere(parseWhereCondition(where), entityReference, false);
     }
 
     @Override
     public void addWhereAsIs(String where) {
-        try {
-            CommonTree whereTree = Parser.parseWhereClause("where " + where);
-            addWhere(whereTree, null, false);
-        } catch (RecognitionException e) {
-            throw new RuntimeException(e);
-        }
+        addWhere(parseWhereCondition(where), null, false);
     }
 
     /**
@@ -133,6 +123,7 @@ public class QueryTransformerAstBased implements QueryTransformer {
      * @param statement from we copy where clause
      */
     @Override
+    @Deprecated
     public void mergeWhere(String statement) {
         try {
             EntityReference entityReference = createMainIdentificationVariableReference();
@@ -155,43 +146,34 @@ public class QueryTransformerAstBased implements QueryTransformer {
         }
         String[] strings = join.split(",");
         join = strings[0];
-        try {
-            if (StringUtils.isNotBlank(join)) {
-                List<JoinVariableNode> joinVariableNodes = Parser.parseJoinClause(join);
-                boolean firstJoin = true;
-                for (JoinVariableNode joinVariableNode : joinVariableNodes) {
-                    getTransformer().mixinJoinIntoTree(joinVariableNode, entityReference, firstJoin);
-                    firstJoin = false;
-                }
+        if (StringUtils.isNotBlank(join)) {
+            List<JoinVariableNode> joinVariableNodes = parseJoinCondition(join);
+            boolean firstJoin = true;
+            for (JoinVariableNode joinVariableNode : joinVariableNodes) {
+                getTransformer().mixinJoinIntoTree(joinVariableNode, entityReference, firstJoin);
+                firstJoin = false;
             }
-            for (int i = 1; i < strings.length; i++) {
-                CommonTree selectionSource = Parser.parseSelectionSource(strings[i]);
-                getTransformer().addSelectionSource(selectionSource);
-            }
-            CommonTree whereTree = Parser.parseWhereClause("where " + where);
-            addWhere(whereTree, entityReference, false);
-        } catch (RecognitionException e) {
-            throw new RuntimeException(e);
         }
+        for (int i = 1; i < strings.length; i++) {
+            CommonTree selectionSource = parseSelectionSource(strings[i]);
+            getTransformer().addSelectionSource(selectionSource);
+        }
+        addWhere(parseWhereCondition(where), entityReference, false);
     }
 
     @Override
     public void addJoinAsIs(String join) {
         String[] strings = join.split(",");
         join = strings[0];
-        try {
-            List<JoinVariableNode> joinVariableNodes = Parser.parseJoinClause(join);
-            IdentificationVariableNode identificationVariable = getAnalyzer().getMainIdentificationVariableNode();
-            String entityName = getAnalyzer().getMainEntityName(identificationVariable);
-            for (JoinVariableNode joinVariableNode : joinVariableNodes) {
-                getTransformer().mixinJoinIntoTree(joinVariableNode, new EntityNameEntityReference(entityName), false);
-            }
-            for (int i = 1; i < strings.length; i++) {
-                CommonTree selectionSource = Parser.parseSelectionSource(strings[i]);
-                getTransformer().addSelectionSource(selectionSource);
-            }
-        } catch (RecognitionException e) {
-            throw new RuntimeException(e);
+        List<JoinVariableNode> joinVariableNodes = parseJoinCondition(join);
+        IdentificationVariableNode identificationVariable = getAnalyzer().getMainIdentificationVariableNode();
+        String entityName = getAnalyzer().getMainEntityName(identificationVariable);
+        for (JoinVariableNode joinVariableNode : joinVariableNodes) {
+            getTransformer().mixinJoinIntoTree(joinVariableNode, new EntityNameEntityReference(entityName), false);
+        }
+        for (int i = 1; i < strings.length; i++) {
+            CommonTree selectionSource = parseSelectionSource(strings[i]);
+            getTransformer().addSelectionSource(selectionSource);
         }
     }
 
@@ -281,6 +263,33 @@ public class QueryTransformerAstBased implements QueryTransformer {
                 .filter(condition -> getAnalyzer().isConditionIN(condition))
                 .collect(Collectors.toList());
         getTransformer().clearInConditions(conditions);
+    }
+
+    protected CommonTree parseWhereCondition(String whereCondition) {
+        try {
+            return Parser.parseWhereClause("where " + whereCondition);
+        } catch (RecognitionException | JPA2RecognitionException e) {
+            throw new JpqlSyntaxException(format("Errors found while parsing where condition:[%s] for query:[%s]\n%s",
+                    StringUtils.strip(whereCondition), StringUtils.strip(query), e.getMessage()));
+        }
+    }
+
+    protected List<JoinVariableNode> parseJoinCondition(String joinCondition) {
+        try {
+            return Parser.parseJoinClause(joinCondition);
+        } catch (RecognitionException | JPA2RecognitionException e) {
+            throw new JpqlSyntaxException(format("Errors found while parsing join condition:[%s] for query:[%s]\n%s",
+                    StringUtils.strip(joinCondition), StringUtils.strip(query), e.getMessage()));
+        }
+    }
+
+    protected CommonTree parseSelectionSource(String selectionSource) {
+        try {
+            return Parser.parseSelectionSource(selectionSource);
+        } catch (RecognitionException | JPA2RecognitionException e) {
+            throw new JpqlSyntaxException(format("Errors found while parsing selection source:[%s] for query:[%s]\n%s",
+                    StringUtils.strip(selectionSource), StringUtils.strip(query), e.getMessage()));
+        }
     }
 
     protected void addWhere(CommonTree whereTree, EntityReference ref, boolean replaceVariableName) {

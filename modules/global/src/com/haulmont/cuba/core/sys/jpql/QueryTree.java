@@ -45,6 +45,7 @@ public class QueryTree {
         String modifiedQuery = StringUtils.replaceChars(query, "\n\r\t", "   ");
 
         this.model = model;
+        this.queryString = modifiedQuery;
         try {
             this.tree = Parser.parse(modifiedQuery, failOnErrors);
         } catch (RecognitionException e) {

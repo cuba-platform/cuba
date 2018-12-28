@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.core.sys.jpql.transform;
 
+import com.google.common.base.MoreObjects;
 import com.haulmont.cuba.core.sys.jpql.antlr2.JPA2Lexer;
 import com.haulmont.cuba.core.sys.jpql.tree.IdentificationVariableNode;
 import com.haulmont.cuba.core.sys.jpql.tree.PathNode;
@@ -50,7 +51,7 @@ public class VariableEntityReference implements EntityReference {
 
     @Override
     public boolean supportsJoinTo(IdentificationVariableNode node) {
-        return entityName.equals(node.getEffectiveEntityName());
+        return entityName.equals(node.getEffectiveEntityName()) || entityName.equals(node.getEntityNameFromQuery());
     }
 
 
@@ -59,5 +60,13 @@ public class VariableEntityReference implements EntityReference {
         PathNode pathNode = new PathNode(JPA2Lexer.T_SELECTED_FIELD, entityVariableName);
         pathNode.addDefaultChildren(fieldPath);
         return new PathEntityReference(pathNode, entityName);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("entityName", entityName)
+                .add("entityVariableName", entityVariableName)
+                .toString();
     }
 }
