@@ -44,6 +44,7 @@ public interface QueryTransformer {
     void addFirstSelectionSource(String selection);
 
     /** Adds 'where' clause from the query provided. Replaces entity alias */
+    @Deprecated
     void mergeWhere(String query);
 
     /** Replaces <code>select e.f1, e.f2, ...</code> clause with <code>select count(e) ...</code> */
