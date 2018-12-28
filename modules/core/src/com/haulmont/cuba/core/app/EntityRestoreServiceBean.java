@@ -144,8 +144,14 @@ public class EntityRestoreServiceBean implements EntityRestoreService {
                 for (MetaClass metaClassToRestore : metClassesToRestore) {
                     if (!metadata.getTools().isPersistent(metaClassToRestore))
                         continue;
-                    String jpql = "select e from " + metaClassToRestore.getName() + " e where e." + property.getName()
-                            + ".id = ?1 and e.deleteTs >= ?2 and e.deleteTs <= ?3";
+                    String jpql;
+                    if (property.getRange().getCardinality().isMany()) {
+                        jpql = "select e from " + metaClassToRestore.getName() + " e join e." + property.getName() + " p"
+                                + " where p.id = ?1 and e.deleteTs >= ?2 and e.deleteTs <= ?3";
+                    } else {
+                        jpql = "select e from " + metaClassToRestore.getName() + " e where e." + property.getName()
+                                + ".id = ?1 and e.deleteTs >= ?2 and e.deleteTs <= ?3";
+                    }
                     Query query = em.createQuery(jpql);
                     query.setParameter(1, entity.getId());
                     query.setParameter(2, DateUtils.addMilliseconds(deleteTs, -100));
