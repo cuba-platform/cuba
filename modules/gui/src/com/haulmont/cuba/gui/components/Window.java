@@ -597,8 +597,20 @@ public interface Window extends Frame, Component.HasCaption, Component.HasIcon {
     }
 
     /**
-     * Event sent right before the window is closed. The way the window is closing can be obtained
-     * via {@link #getCloseOrigin()}. Closing can be prevented by invoking {@link #preventWindowClose()}.
+     * Event sent right before the window is closed by an external (relative to the window content) action,
+     * like the button in the window tab or by the Esc keyboard shortcut.
+     * <p>
+     * The way the window is closing can be obtained via {@link #getCloseOrigin()}. Closing can be prevented by
+     * invoking {@link #preventWindowClose()}, for example:
+     * For example:
+     * <pre>
+     *     &#64;Subscribe(target = Target.FRAME)
+     *     protected void onBeforeCloseFrame(Window.BeforeCloseEvent event) {
+     *         if (event.getCloseOrigin() == CloseOriginType.BREADCRUMBS) {
+     *             event.preventWindowClose();
+     *         }
+     *     }
+     * </pre>
      *
      * @see CloseOriginType
      */

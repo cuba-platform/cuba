@@ -23,16 +23,14 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 /**
- * Event sent when browser URL parameters corresponding to opened screen are changed.
- * <br>
- * Event is fired before screen is shown that enables to do some preparatory work.
- * <br>
- * In this event listener, you can load some data or change screen controls state depending on new params:
+ * Event sent when browser URL parameters corresponding to opened screen are changed. It is fired before the screen is
+ * shown, which enables to do some preparatory work.
+ * <p>
+ * In this event listener, you can load some data or change screen controls state depending on new parameters:
  * <pre>
  *     &#64;Subscribe
  *     protected void onUrlParamsChanged(UrlParamsChangedEvent event) {
  *         Map&lt;String, String&gt; params = event.getParams();
- *
  *         // handle new params
  *     }
  * </pre>

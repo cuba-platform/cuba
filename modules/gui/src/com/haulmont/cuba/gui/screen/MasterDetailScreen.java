@@ -489,7 +489,18 @@ public abstract class MasterDetailScreen<T extends Entity> extends StandardLooku
     }
 
     /**
-     * Event sent when a new entity instance is created.
+     * Event sent before the new entity instance is set to edited entity container.
+     * <p>
+     * Use this event listener to initialize default values in the new entity instance, for example:
+     * <pre>
+     *     &#64;Subscribe
+     *     protected void onInitEntity(InitEntityEvent&lt;Foo&gt; event) {
+     *         event.getEntity().setStatus(Status.ACTIVE);
+     *     }
+     * </pre>
+     *
+     * @param <E> type of entity
+     * @see #addInitEntityListener(Consumer)
      */
     @TriggerOnce
     public static class InitEntityEvent<E> extends EventObject {
@@ -512,6 +523,9 @@ public abstract class MasterDetailScreen<T extends Entity> extends StandardLooku
 
     /**
      * Adds a listener to {@link InitEntityEvent}.
+     *
+     * @param listener listener
+     * @return subscription
      */
     @SuppressWarnings("unchecked")
     protected Subscription addInitEntityListener(Consumer<InitEntityEvent<T>> listener) {

@@ -452,14 +452,6 @@ public abstract class StandardEditor<T extends Entity> extends Screen implements
 
     /**
      * Adds a listener to {@link InitEntityEvent}.
-     * <p>
-     * You can also add an event listener declaratively using a controller method annotated with {@link Subscribe}:
-     * <pre>
-     *    &#64;Subscribe
-     *    protected void onInitEntity(InitEntityEvent event) {
-     *       // handle event here
-     *    }
-     * </pre>
      *
      * @param listener listener
      * @return subscription
