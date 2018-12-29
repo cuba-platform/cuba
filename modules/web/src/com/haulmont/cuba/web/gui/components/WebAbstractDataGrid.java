@@ -730,7 +730,7 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
             return new FormatterBasedValueProvider<>(column.getFormatter());
         } else if (metaProperty != null) {
             if (Collection.class.isAssignableFrom(metaProperty.getJavaType())) {
-                new FormatterBasedValueProvider<>(new CollectionFormatter(metadataTools));
+                return new FormatterBasedValueProvider<>(new CollectionFormatter(metadataTools));
             }
             if (column.getType() == Boolean.class) {
                 return new YesNoIconPresentationValueProvider();
