@@ -39,9 +39,9 @@ import com.haulmont.cuba.gui.components.data.AggregatableTableItems;
 import com.haulmont.cuba.gui.components.data.BindingState;
 import com.haulmont.cuba.gui.components.data.TableItems;
 import com.haulmont.cuba.gui.components.data.meta.ContainerDataUnit;
+import com.haulmont.cuba.gui.components.data.meta.EntityDataUnit;
 import com.haulmont.cuba.gui.components.data.meta.EntityTableItems;
 import com.haulmont.cuba.gui.components.data.meta.DatasourceDataUnit;
-import com.haulmont.cuba.gui.components.data.table.ContainerTableItems;
 import com.haulmont.cuba.gui.components.data.table.DatasourceTableItems;
 import com.haulmont.cuba.gui.components.data.table.SortableDatasourceTableItems;
 import com.haulmont.cuba.gui.components.sys.ShowInfoAction;
@@ -560,7 +560,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
         InstanceContainer<E> instanceContainer = (InstanceContainer<E>) fieldDatasources.get(item);
 
         if (instanceContainer == null) {
-            ContainerTableItems containerTableItems = (ContainerTableItems) getItems();
+            EntityDataUnit containerTableItems = (EntityDataUnit) getItems();
 
             instanceContainer = dataComponents.createInstanceContainer(containerTableItems.getEntityMetaClass().getJavaClass());
             View view = viewRepository.getView(containerTableItems.getEntityMetaClass(), "_local");

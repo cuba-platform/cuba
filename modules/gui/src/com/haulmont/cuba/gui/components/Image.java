@@ -18,33 +18,63 @@ package com.haulmont.cuba.gui.components;
 
 import com.haulmont.bali.events.Subscription;
 import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.cuba.core.entity.FileDescriptor;
+import com.haulmont.cuba.gui.components.data.HasValueSource;
+import com.haulmont.cuba.gui.components.data.ValueSource;
+import com.haulmont.cuba.gui.components.data.meta.EntityValueSource;
+import com.haulmont.cuba.gui.components.data.value.DatasourceValueSource;
 import com.haulmont.cuba.gui.data.Datasource;
 
+import javax.annotation.Nullable;
 import java.util.EventObject;
 import java.util.function.Consumer;
 
 /**
  * The Image component is intended for displaying graphic content.
  * <p>
- * It can be bound to a datasource or configured manually.
+ * It can be bound to a ValueSource or configured manually.
  */
-public interface Image extends ResourceView {
+public interface Image extends ResourceView, HasValueSource<FileDescriptor> {
     String NAME = "image";
 
     /**
      * Sets datasource and its property.
+     * @deprecated Use {@link #setValueSource(ValueSource)} instead.
      */
-    void setDatasource(Datasource datasource, String property);
+    @SuppressWarnings("unchecked")
+    @Deprecated
+    default void setDatasource(Datasource datasource, String property) {
+        if (datasource != null) {
+            this.setValueSource(new DatasourceValueSource(datasource, property));
+        } else {
+            this.setValueSource(null);
+        }
+    }
 
     /**
      * @return datasource instance
+     * @deprecated Use {@link #getValueSource()} instead.
      */
-    Datasource getDatasource();
+    @Deprecated
+    default Datasource getDatasource() {
+        ValueSource<FileDescriptor> valueSource = getValueSource();
+        return valueSource instanceof DatasourceValueSource ?
+                ((DatasourceValueSource) valueSource).getDatasource() : null;
+    }
 
     /**
-     * @return datasource property path
+     * @return return null if value source is not EntityValueSource or value source is not defined
      */
-    MetaPropertyPath getMetaPropertyPath();
+    @Nullable
+    default MetaPropertyPath getMetaPropertyPath() {
+        if (getValueSource() == null) {
+            return null;
+        }
+
+        ValueSource<FileDescriptor> valueSource = getValueSource();
+        return valueSource instanceof EntityValueSource ?
+                ((EntityValueSource) valueSource).getMetaPropertyPath() : null;
+    }
 
     /**
      * @return image scale mode

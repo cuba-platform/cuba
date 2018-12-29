@@ -19,50 +19,54 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.bali.events.Subscription;
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.MetaPropertyPath;
-import com.haulmont.chile.core.model.utils.InstanceUtils;
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.FileDescriptor;
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.MetadataTools;
+import com.haulmont.cuba.core.sys.BeanLocatorAware;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.FileDescriptorResource;
 import com.haulmont.cuba.gui.components.Image;
 import com.haulmont.cuba.gui.components.Resource;
 import com.haulmont.cuba.gui.components.StreamResource;
-import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.impl.WeakItemChangeListener;
-import com.haulmont.cuba.gui.data.impl.WeakItemPropertyChangeListener;
+import com.haulmont.cuba.gui.components.data.ValueSource;
+import com.haulmont.cuba.gui.components.data.meta.EntityValueSource;
 import com.haulmont.cuba.gui.export.ByteArrayDataProvider;
 import com.haulmont.cuba.web.widgets.CubaImage;
 import com.vaadin.event.MouseEvents;
+import org.springframework.beans.factory.InitializingBean;
 
 import java.io.InputStream;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-public class WebImage extends WebAbstractResourceView<CubaImage> implements Image {
+public class WebImage extends WebAbstractResourceView<CubaImage> implements Image, InitializingBean {
     protected static final String IMAGE_STYLENAME = "c-image";
 
-    protected Datasource datasource;
+    protected ValueSource<FileDescriptor> valueSource;
+
+    protected Subscription valueChangeSubscription;
+    protected Subscription instanceChangeSubscription;
+
     protected MetaPropertyPath metaPropertyPath;
 
     protected ScaleMode scaleMode = ScaleMode.NONE;
 
-    protected Datasource.ItemPropertyChangeListener itemPropertyChangeListener;
-    protected WeakItemPropertyChangeListener weakItemPropertyChangeListener;
-
-    protected Datasource.ItemChangeListener itemChangeListener;
-    protected WeakItemChangeListener weakItemChangeListener;
-
     protected MouseEvents.ClickListener vClickListener;
 
     public WebImage() {
-        component = new CubaImage();
-        component.setPrimaryStyleName(IMAGE_STYLENAME);
+        component = createComponent();
+    }
+
+    protected CubaImage createComponent() {
+        return new CubaImage();
     }
 
     @Override
-    public Datasource getDatasource() {
-        return datasource;
+    public void afterPropertiesSet() throws Exception {
+        initComponent(component);
+    }
+
+    protected void initComponent(CubaImage component) {
+        component.setPrimaryStyleName(IMAGE_STYLENAME);
     }
 
     @Override
@@ -71,61 +75,57 @@ public class WebImage extends WebAbstractResourceView<CubaImage> implements Imag
     }
 
     @Override
-    public void setDatasource(Datasource datasource, String property) {
-        if ((datasource == null && property != null) || (datasource != null && property == null)) {
-            throw new IllegalArgumentException("Datasource and property should be either null or not null at the same time");
-        }
-
-        if (datasource == this.datasource && ((metaPropertyPath != null && metaPropertyPath.toString().equals(property)) ||
-                (metaPropertyPath == null && property == null))) {
+    public void setValueSource(ValueSource<FileDescriptor> valueSource) {
+        if (this.valueSource == valueSource) {
             return;
         }
 
-        if (this.datasource != null) {
-            metaPropertyPath = null;
+        unbindValueSourceEvents();
 
+        if (this.valueSource != null && valueSource == null) {
             component.setSource(null);
-
-            //noinspection unchecked
-            this.datasource.removeItemPropertyChangeListener(weakItemPropertyChangeListener);
-            weakItemPropertyChangeListener = null;
-
-            //noinspection unchecked
-            this.datasource.removeItemChangeListener(weakItemChangeListener);
-            weakItemChangeListener = null;
-
-            this.datasource = null;
+            this.valueSource = null;
+            return;
         }
 
-        if (datasource != null) {
-            //noinspection unchecked
-            this.datasource = datasource;
+        this.valueSource = valueSource;
 
-            metaPropertyPath = AppBeans.get(MetadataTools.class)
-                    .resolveMetaPropertyPathNN(datasource.getMetaClass(), property);
+        bindValueSourceEvents();
+        updateComponent();
+    }
 
-            updateComponent();
-
-            itemPropertyChangeListener = e -> {
-                if (e.getProperty().equals(metaPropertyPath.toString())) {
-                    updateComponent();
-                }
-            };
-            weakItemPropertyChangeListener = new WeakItemPropertyChangeListener(datasource, itemPropertyChangeListener);
-            //noinspection unchecked
-            this.datasource.addItemPropertyChangeListener(weakItemPropertyChangeListener);
-
-            itemChangeListener = e ->
-                    updateComponent();
-
-            weakItemChangeListener = new WeakItemChangeListener(datasource, itemChangeListener);
-            //noinspection unchecked
-            datasource.addItemChangeListener(weakItemChangeListener);
+    protected void unbindValueSourceEvents() {
+        if (valueChangeSubscription != null) {
+            valueChangeSubscription.remove();
+        }
+        if (instanceChangeSubscription != null) {
+            instanceChangeSubscription.remove();
         }
     }
 
+    protected void bindValueSourceEvents() {
+        if (valueSource == null) {
+            return;
+        }
+
+        if (valueSource instanceof BeanLocatorAware) {
+            ((BeanLocatorAware) valueSource).setBeanLocator(beanLocator);
+        }
+
+        valueChangeSubscription = valueSource.addValueChangeListener(event -> updateComponent());
+        if (valueSource instanceof EntityValueSource) {
+            instanceChangeSubscription = ((EntityValueSource<Entity, FileDescriptor>) valueSource)
+                    .addInstanceChangeListener(event -> updateComponent());
+        }
+    }
+
+    @Override
+    public ValueSource<FileDescriptor> getValueSource() {
+        return valueSource;
+    }
+
     protected void updateComponent() {
-        Object propertyValue = InstanceUtils.getValueEx(datasource.getItem(), metaPropertyPath.getPath());
+        Object propertyValue = valueSource.getValue();
         Resource resource = createImageResource(propertyValue);
 
         updateValue(resource);

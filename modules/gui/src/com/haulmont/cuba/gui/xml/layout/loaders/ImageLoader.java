@@ -34,7 +34,10 @@ public class ImageLoader extends AbstractResourceViewLoader<Image> {
     public void loadComponent() {
         super.loadComponent();
 
-        loadDatasource(resultComponent, element);
+        loadContainer(resultComponent, element);
+        if (resultComponent.getValueSource() == null) {
+            loadDatasource(resultComponent, element);
+        }
 
         loadScaleMode(resultComponent, element);
     }
