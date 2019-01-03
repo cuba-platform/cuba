@@ -148,7 +148,7 @@ public class WebSideMenu extends WebAbstractComponent<CubaSideMenu> implements S
 
     protected void checkItemIdDuplicate(String id) {
         if (allItemsIds.containsKey(id)) {
-            throw new IllegalArgumentException("MenuItem with this id already exists");
+            throw new IllegalArgumentException(String.format("MenuItem with id \"%s\" already exists", id));
         }
     }
 
