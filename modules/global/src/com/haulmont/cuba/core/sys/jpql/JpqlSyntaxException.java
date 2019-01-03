@@ -18,6 +18,7 @@
 package com.haulmont.cuba.core.sys.jpql;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class JpqlSyntaxException extends RuntimeException {
@@ -39,6 +40,10 @@ public class JpqlSyntaxException extends RuntimeException {
     }
 
     public List<ErrorRec> getErrorRecs() {
+        if (errorRecs == null) {
+            return Collections.emptyList();
+        }
+
         return errorRecs;
     }
 
