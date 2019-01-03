@@ -16,7 +16,6 @@
 
 package com.haulmont.cuba.web.gui.components.mainwindow;
 
-import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.gui.components.AbstractAction;
 import com.haulmont.cuba.gui.components.Button;
 import com.haulmont.cuba.gui.components.Component;
@@ -71,7 +70,7 @@ public class WebSideMenu extends WebAbstractComponent<CubaSideMenu> implements S
 
     @Override
     public void loadMenuConfig() {
-        SideMenuBuilder menuBuilder = AppBeans.getPrototype(SideMenuBuilder.NAME);
+        SideMenuBuilder menuBuilder = beanLocator.getPrototype(SideMenuBuilder.NAME);
         menuBuilder.build(this);
     }
 
@@ -148,7 +147,7 @@ public class WebSideMenu extends WebAbstractComponent<CubaSideMenu> implements S
 
     protected void checkItemIdDuplicate(String id) {
         if (allItemsIds.containsKey(id)) {
-            throw new IllegalArgumentException("MenuItem with this id already exists");
+            throw new IllegalArgumentException(String.format("MenuItem with id \"%s\" already exists", id));
         }
     }
 
@@ -397,7 +396,7 @@ public class WebSideMenu extends WebAbstractComponent<CubaSideMenu> implements S
             this.icon = icon;
 
             if (icon != null) {
-                Resource iconResource = AppBeans.get(IconResolver.class)
+                Resource iconResource = menu.beanLocator.get(IconResolver.class)
                         .getIconResource(this.icon);
                 delegateItem.setIcon(iconResource);
             } else {
