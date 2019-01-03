@@ -186,26 +186,28 @@ configure([sharedLibModule, globalModule, coreModule, clientModule, guiModule,
     }
 }
 
+if (rootProject.hasProperty('jacoco')) {
 // Jacoco
-configure([sharedLibModule, globalModule, coreModule, clientModule, guiModule, webModule]) {
-    apply(plugin: 'jacoco')
+    configure([sharedLibModule, globalModule, coreModule, clientModule, guiModule, webModule]) {
+        apply(plugin: 'jacoco')
 
-    jacoco {
-        toolVersion = "0.8.2"
-    }
-
-    jacocoTestReport {
-        reports {
-            xml.enabled = true
-            html.enabled = true
+        jacoco {
+            toolVersion = "0.8.2"
         }
-    }
 
-    if (rootProject.hasProperty('jacocoTeamcity')) {
-        jacocoTestReport.doLast {
-            println "##teamcity[jacocoReport dataPath='modules/${project.projectDir.name}/build/jacoco/test.exec' " +
-                    "includes='com.haulmont.cuba.*' " +
-                    "classpath='+:modules/${project.projectDir.name}/build/classes/java/main/**']"
+        jacocoTestReport {
+            reports {
+                xml.enabled = true
+                html.enabled = true
+            }
+        }
+
+        if (rootProject.hasProperty('jacocoTeamcity')) {
+            jacocoTestReport.doLast {
+                println "##teamcity[jacocoReport dataPath='modules/${project.projectDir.name}/build/jacoco/test.exec' " +
+                        "includes='com.haulmont.cuba.*' " +
+                        "classpath='+:modules/${project.projectDir.name}/build/classes/java/main/**']"
+            }
         }
     }
 }
@@ -928,39 +930,41 @@ zipProject {
     excludeFromZip = ['out']
 }
 
-apply plugin: 'jacoco'
+if (rootProject.hasProperty('jacoco')) {
+    apply plugin: 'jacoco'
 
-jacoco {
-    toolVersion = "0.8.2"
-}
-
-task jacocoProjectReport(type: JacocoReport, group: 'Reporting') {
-    description = 'Generates an aggregate report from all subprojects'
-
-    def jacocoProjects = subprojects.findAll { prj ->
-        return prj.project.extensions.findByName('jacoco') != null
+    jacoco {
+        toolVersion = "0.8.2"
     }
 
-    dependsOn(jacocoProjects.jacocoTestReport)
+    task jacocoProjectReport(type: JacocoReport, group: 'Reporting') {
+        description = 'Generates an aggregate report from all subprojects'
 
-    additionalSourceDirs = generateSourceFiles(jacocoProjects)
-    sourceDirectories = generateSourceFiles(jacocoProjects)
-    classDirectories = generateClassDirs(jacocoProjects)
-    executionData = rootProject.files(jacocoProjects.jacocoTestReport.executionData)
-
-    reports {
-        html {
-            enabled true
-            destination new File(rootProject.buildDir, 'reports/jacoco/project')
+        def jacocoProjects = subprojects.findAll { prj ->
+            return prj.project.extensions.findByName('jacoco') != null
         }
-        xml {
-            enabled true
-            destination new File(rootProject.buildDir, 'reports/jacoco/project/jacoco-project.xml')
-        }
-    }
 
-    doFirst {
-        executionData = files(executionData.findAll { it.exists() })
+        dependsOn(jacocoProjects.jacocoTestReport)
+
+        additionalSourceDirs = generateSourceFiles(jacocoProjects)
+        sourceDirectories = generateSourceFiles(jacocoProjects)
+        classDirectories = generateClassDirs(jacocoProjects)
+        executionData = rootProject.files(jacocoProjects.jacocoTestReport.executionData)
+
+        reports {
+            html {
+                enabled true
+                destination new File(rootProject.buildDir, 'reports/jacoco/project')
+            }
+            xml {
+                enabled true
+                destination new File(rootProject.buildDir, 'reports/jacoco/project/jacoco-project.xml')
+            }
+        }
+
+        doFirst {
+            executionData = files(executionData.findAll { it.exists() })
+        }
     }
 }
 
