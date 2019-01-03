@@ -720,7 +720,7 @@ public class CubaFoldersPane extends VerticalLayout {
         }
     }
 
-    protected abstract class FolderAction extends Action {
+    protected static abstract class FolderAction extends Action {
 
         public FolderAction(String caption) {
             super(caption);
@@ -912,7 +912,7 @@ public class CubaFoldersPane extends VerticalLayout {
     protected static class FoldersPaneTimer extends CubaTimer {
     }
 
-    protected class FoldersDataProvider<T extends Folder> extends TreeDataProvider<T>
+    protected static class FoldersDataProvider<T extends Folder> extends TreeDataProvider<T>
             implements EnhancedTreeDataProvider<T> {
 
         public FoldersDataProvider(TreeData<T> treeData) {

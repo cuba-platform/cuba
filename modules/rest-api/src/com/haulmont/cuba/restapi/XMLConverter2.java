@@ -51,7 +51,6 @@ import java.util.*;
 
 /**
  * XML Converter that works with new xml schema defined in platform v5.4
- *
  */
 @Component
 public class XMLConverter2 implements Converter {
@@ -109,7 +108,7 @@ public class XMLConverter2 implements Converter {
     protected Document _process(Entity entity, View view) throws Exception {
         Document document = DocumentHelper.createDocument();
         Element rootEl = document.addElement("instances");
-        encodeEntity(entity, new HashSet<Entity>(), view, rootEl);
+        encodeEntity(entity, new HashSet<>(), view, rootEl);
         return document;
     }
 
@@ -123,7 +122,7 @@ public class XMLConverter2 implements Converter {
         Document document = DocumentHelper.createDocument();
         Element rootEl = document.addElement("instances");
         for (Entity entity : entities) {
-            encodeEntity(entity, new HashSet<Entity>(), view, rootEl);
+            encodeEntity(entity, new HashSet<>(), view, rootEl);
         }
         return document;
     }
@@ -133,7 +132,7 @@ public class XMLConverter2 implements Converter {
         Document document = DocumentHelper.createDocument();
         Element rootEl = document.addElement("instances");
         for (Entity entity : entities) {
-            encodeEntity(entity, new HashSet<Entity>(), null, rootEl);
+            encodeEntity(entity, new HashSet<>(), null, rootEl);
         }
         return documentToString(document);
     }
@@ -260,10 +259,6 @@ public class XMLConverter2 implements Converter {
             throw new IllegalArgumentException("Method name not specified in request");
         }
         String methodName = methodEl.getTextTrim();
-        String viewName = null;
-        Element viewEl = rootElement.element("view");
-        if (viewEl != null)
-            viewName = viewEl.getTextTrim();
 
         ServiceRequest serviceRequest = new ServiceRequest(serviceName, methodName, this);
 
@@ -717,7 +712,6 @@ public class XMLConverter2 implements Converter {
         return (viewProperty != null);
     }
 
-
     protected void encodeNull(Element element) {
         element.addAttribute("null", "true");
     }
@@ -733,5 +727,4 @@ public class XMLConverter2 implements Converter {
             throw new RuntimeException(e);
         }
     }
-
 }

@@ -18,7 +18,7 @@
 package com.haulmont.cuba.core.sys.jpql.model;
 
 public class VirtualJpqlEntityModel extends JpqlEntityModelImpl {
-    public static int idx = 0;
+    protected static int idx = 0;
 
     public VirtualJpqlEntityModel() {
         super(VirtualJpqlEntityModel.generateName());

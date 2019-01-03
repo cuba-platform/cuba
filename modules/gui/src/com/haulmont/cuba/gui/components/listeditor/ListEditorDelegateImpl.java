@@ -19,12 +19,11 @@ package com.haulmont.cuba.gui.components.listeditor;
 import com.google.common.base.Joiner;
 import com.haulmont.bali.events.EventHub;
 import com.haulmont.bali.events.Subscription;
-import com.haulmont.cuba.core.global.BeanLocator;
-import com.haulmont.cuba.gui.*;
+import com.haulmont.cuba.gui.ComponentsHelper;
+import com.haulmont.cuba.gui.UiComponents;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.BaseAction;
 import com.haulmont.cuba.gui.components.data.Options;
-import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.icons.CubaIcon;
 import com.haulmont.cuba.gui.screen.*;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -44,13 +43,10 @@ import java.util.stream.Collectors;
 public class ListEditorDelegateImpl<V> implements ListEditorDelegate<V> {
     /* Beans */
     protected UiComponents uiComponents;
-    protected BeanLocator beanLocator;
-    protected WindowConfig windowConfig;
 
     protected Field actualField;
 
     protected List<V> value;
-    protected List<V> prevValue;
 
     protected Options<V> options;
     protected Function<? super V, String> optionCaptionProvider;
@@ -62,7 +58,9 @@ public class ListEditorDelegateImpl<V> implements ListEditorDelegate<V> {
     protected String entityName;
     protected String lookupScreen;
     protected boolean useLookupField;
-    protected Map<String, V> optionsMap;
+
+    protected Map<String, V> optionsMap; // todo where it is written ?
+
     protected String entityJoinClause;
     protected String entityWhereClause;
     protected Class<? extends Enum> enumClass;
@@ -83,71 +81,59 @@ public class ListEditorDelegateImpl<V> implements ListEditorDelegate<V> {
         this.uiComponents = uiComponents;
     }
 
-    @Inject
-    public void setBeanLocator(BeanLocator beanLocator) {
-        this.beanLocator = beanLocator;
-    }
-
-    @Inject
-    public void setWindowConfig(WindowConfig windowConfig) {
-        this.windowConfig = windowConfig;
-    }
-
     @PostConstruct
     public void init() {
         layout = uiComponents.create(HBoxLayout.class);
         layout.setStyleName("c-listeditor-layout");
         layout.setWidth("100%");
 
-        displayValuesField = uiComponents.create(TextField.class);
+        displayValuesField = uiComponents.create(TextField.NAME);
         displayValuesField.setStyleName("c-listeditor-text");
         displayValuesField.setEditable(false);
         Button openEditorBtn = uiComponents.create(Button.class);
         openEditorBtn.setIconFromSet(CubaIcon.PICKERFIELD_LOOKUP);
         openEditorBtn.setStyleName("c-listeditor-button");
         openEditorBtn.setCaption("");
-        openEditorBtn.setAction(new AbstractAction("openEditor") {
-
-            @Override
-            public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
-                Map<String, Object> params = new HashMap<>();
-                params.put("itemType", itemType);
-                params.put("entityName", entityName);
-                params.put("useLookupField", useLookupField);
-                params.put("options", options);
-                params.put("optionCaptionProvider", optionCaptionProvider);
-                params.put("enumClass", enumClass);
-                params.put("lookupScreen", lookupScreen);
-                params.put("entityJoinClause", entityJoinClause);
-                params.put("entityWhereClause", entityWhereClause);
-                params.put("values", getValue());
-                params.put("editable", editable);
-                params.put("timeZone", timeZone);
-
-                if (editorParamsSupplier != null) {
-                    Map<String, Object> additionalParams = getEditorParamsSupplier().get();
-                    if (additionalParams != null) {
-                        params.putAll(additionalParams);
-                    }
-                }
-
-                ScreenContext screenContext = ComponentsHelper.getScreenContext(actualField);
-
-                Screen screen = screenContext.getScreens().create(editorWindowId, OpenMode.DIALOG, new MapScreenOptions(params));
-                screen.addAfterCloseListener(event -> {
-                    CloseAction closeAction = event.getCloseAction();
-                    if (closeAction instanceof StandardCloseAction
-                            && ((StandardCloseAction) closeAction).getActionId().equals(Window.COMMIT_ACTION_ID)) {
-                        actualField.setValue(((ListEditorWindowController) screen).getValue());
-                    }
-                });
-                screen.show();
-            }
-        });
+        openEditorBtn.addClickListener(e -> openEditor());
 
         layout.add(displayValuesField);
         layout.add(openEditorBtn);
         layout.expand(displayValuesField);
+    }
+
+    protected void openEditor() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("itemType", itemType);
+        params.put("entityName", entityName);
+        params.put("useLookupField", useLookupField);
+        params.put("options", options);
+        params.put("optionCaptionProvider", optionCaptionProvider);
+        params.put("enumClass", enumClass);
+        params.put("lookupScreen", lookupScreen);
+        params.put("entityJoinClause", entityJoinClause);
+        params.put("entityWhereClause", entityWhereClause);
+        params.put("values", getValue());
+        params.put("editable", editable);
+        params.put("timeZone", timeZone);
+
+        if (editorParamsSupplier != null) {
+            Map<String, Object> additionalParams = getEditorParamsSupplier().get();
+            if (additionalParams != null) {
+                params.putAll(additionalParams);
+            }
+        }
+
+        ScreenContext screenContext = ComponentsHelper.getScreenContext(actualField);
+
+        Screen screen = screenContext.getScreens().create(editorWindowId, OpenMode.DIALOG, new MapScreenOptions(params));
+        screen.addAfterCloseListener(event -> {
+            CloseAction closeAction = event.getCloseAction();
+            if (closeAction instanceof StandardCloseAction
+                    && ((StandardCloseAction) closeAction).getActionId().equals(Window.COMMIT_ACTION_ID)) {
+                actualField.setValue(((ListEditorWindowController) screen).getValue());
+            }
+        });
+        screen.show();
     }
 
     protected EventHub getEventHub() {

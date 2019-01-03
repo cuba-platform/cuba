@@ -431,7 +431,7 @@ public class RelatedEntitiesBean implements RelatedEntitiesAPI {
         }
     }
 
-    protected class MetaDataDescriptor {
+    protected static class MetaDataDescriptor {
 
         protected final MetaClass metaClass;
         protected final MetaProperty metaProperty;

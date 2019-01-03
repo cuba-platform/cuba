@@ -34,9 +34,6 @@ public class AboutWindow extends AbstractWindow {
     @Inject
     protected BuildInfo buildInfo;
 
-    @Inject
-    protected Messages messages;
-
     @Override
     public void init(Map<String, Object> params) {
         BuildInfo.Content content = buildInfo.getContent();

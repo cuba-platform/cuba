@@ -35,7 +35,9 @@ import com.haulmont.cuba.gui.screen.compatibility.LegacyFrame;
 import com.haulmont.cuba.gui.settings.Settings;
 import com.haulmont.cuba.gui.util.OperationResult;
 
+import javax.annotation.CheckReturnValue;
 import javax.annotation.Nullable;
+import javax.annotation.meta.When;
 import java.util.Collection;
 import java.util.EventObject;
 import java.util.List;
@@ -693,6 +695,7 @@ public interface Window extends Frame, Component.HasCaption, Component.HasIcon {
      * @param listener the listener to register
      */
     @Deprecated
+    @CheckReturnValue(when = When.NEVER)
     default void addBeforeCloseWithShortcutListener(Consumer<BeforeCloseWithShortcutEvent> listener) {
         addBeforeWindowCloseListener(new BeforeCloseWithShortcutListenerAdapter(listener));
     }
@@ -729,6 +732,7 @@ public interface Window extends Frame, Component.HasCaption, Component.HasIcon {
      * @param listener the listener to register
      */
     @Deprecated
+    @CheckReturnValue(when = When.NEVER)
     default void addBeforeCloseWithCloseButtonListener(Consumer<BeforeCloseWithCloseButtonEvent> listener) {
         addBeforeWindowCloseListener(new BeforeCloseWithCloseButtonListenerAdapter(listener));
     }

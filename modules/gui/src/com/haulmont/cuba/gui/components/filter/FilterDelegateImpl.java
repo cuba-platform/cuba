@@ -1859,7 +1859,8 @@ public class FilterDelegateImpl implements FilterDelegate {
                 groupBoxExpandedEl = element.addElement("groupBoxExpanded");
 
             Boolean oldGroupBoxExpandedValue =
-                    groupBoxExpandedEl.getText().isEmpty() ? true : Boolean.valueOf(groupBoxExpandedEl.getText());
+                    groupBoxExpandedEl.getText().isEmpty() ? Boolean.TRUE : Boolean.valueOf(groupBoxExpandedEl.getText());
+
             Boolean newGroupBoxExpandedValue = groupBoxLayout.isExpanded();
             if (!Objects.equals(oldGroupBoxExpandedValue, newGroupBoxExpandedValue)) {
                 groupBoxExpandedEl.setText(newGroupBoxExpandedValue.toString());

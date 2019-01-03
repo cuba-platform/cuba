@@ -29,8 +29,6 @@ public class ListCalendarEventProvider implements CalendarEventProvider {
 
     protected List<CalendarEvent> eventList = new ArrayList<>();
 
-    protected Calendar calendar;
-
     protected Consumer<EventChangeEvent> eventChangeListener = eventChangeEvent ->
             fireEventSetChange();
 
@@ -67,11 +65,6 @@ public class ListCalendarEventProvider implements CalendarEventProvider {
 
         eventList.clear();
         fireEventSetChange();
-    }
-
-    @Override
-    public void setCalendar(Calendar calendar) {
-        this.calendar = calendar;
     }
 
     @Override

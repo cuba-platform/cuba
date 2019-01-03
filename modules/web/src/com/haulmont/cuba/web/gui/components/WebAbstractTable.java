@@ -39,9 +39,9 @@ import com.haulmont.cuba.gui.components.data.AggregatableTableItems;
 import com.haulmont.cuba.gui.components.data.BindingState;
 import com.haulmont.cuba.gui.components.data.TableItems;
 import com.haulmont.cuba.gui.components.data.meta.ContainerDataUnit;
+import com.haulmont.cuba.gui.components.data.meta.DatasourceDataUnit;
 import com.haulmont.cuba.gui.components.data.meta.EntityDataUnit;
 import com.haulmont.cuba.gui.components.data.meta.EntityTableItems;
-import com.haulmont.cuba.gui.components.data.meta.DatasourceDataUnit;
 import com.haulmont.cuba.gui.components.data.table.DatasourceTableItems;
 import com.haulmont.cuba.gui.components.data.table.SortableDatasourceTableItems;
 import com.haulmont.cuba.gui.components.sys.ShowInfoAction;
@@ -1259,8 +1259,6 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
                 } else if (propertyPath.getRange().isDatatype()) {
                     if (!isLookup && !StringUtils.isEmpty(isLink)) {
                         setClickListener(propertyPath.toString(), new LinkCellClickListener(this, applicationContext));
-                    } else if (editable && BooleanUtils.isTrue(column.isCalculatable())) {
-                        addGeneratedColumnInternal(propertyPath, new CalculatableColumnGenerator(this));
                     } else {
                         if (column.getMaxTextLength() != null) {
                             addGeneratedColumnInternal(propertyPath, new AbbreviatedColumnGenerator(column, dynamicAttributesTools));
@@ -1285,7 +1283,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
             this.dataBinding.unbind();
             this.dataBinding = null;
 
-            // todo fieldDatasources
+            fieldDatasources.clear();
 
             this.component.setContainerDataSource(null);
         }
@@ -1309,7 +1307,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
 
             for (Table.Column column : this.columnsOrder) {
                 if (editable && column.getAggregation() != null
-                        && (BooleanUtils.isTrue(column.isEditable()) || BooleanUtils.isTrue(column.isCalculatable()))) {
+                        && (BooleanUtils.isTrue(column.isEditable()))) {
                     addAggregationCell(column);
                 }
             }

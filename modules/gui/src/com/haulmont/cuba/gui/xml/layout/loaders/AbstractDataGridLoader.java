@@ -147,7 +147,7 @@ public abstract class AbstractDataGridLoader<T extends DataGrid> extends Actions
             }
             datasource = context.getDsContext().get(datasourceId);
             if (datasource == null) {
-                throw new GuiDevelopmentException("Can't find datasource by name: " + datasource, context.getCurrentFrameId());
+                throw new GuiDevelopmentException("Can't find datasource by name: " + datasourceId, context.getCurrentFrameId());
             }
             if (!(datasource instanceof CollectionDatasource)) {
                 throw new GuiDevelopmentException("Not a CollectionDatasource: " + datasource, context.getCurrentFrameId());

@@ -29,7 +29,8 @@ public class EditableColumnFieldWrapper extends CustomField {
         this.component = component;
 
         if (component.getWidth() < 0) {
-            setWidthUndefined();
+            // do not trigger overridden method
+            super.setWidth(-1, Unit.PIXELS);
         }
 
         if (columnComponent instanceof Field) {
@@ -58,7 +59,7 @@ public class EditableColumnFieldWrapper extends CustomField {
             if (width < 0) {
                 component.setWidth(com.haulmont.cuba.gui.components.Component.AUTO_SIZE);
             } else {
-                component.setWidth("100%");
+                component.setWidth(100, Unit.PERCENTAGE);
             }
         }
     }
@@ -71,7 +72,7 @@ public class EditableColumnFieldWrapper extends CustomField {
             if (height < 0) {
                 component.setHeight(com.haulmont.cuba.gui.components.Component.AUTO_SIZE);
             } else {
-                component.setHeight("100%");
+                component.setHeight(100, Unit.PERCENTAGE);
             }
         }
     }

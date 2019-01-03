@@ -45,7 +45,8 @@ public class WebRemoteProxyBeanCreator extends RemoteProxyBeanCreator {
         String useLocal = AppContext.getProperty("cuba.useLocalServiceInvocation");
 
         if (Boolean.valueOf(useLocal)) {
-            log.info("Configuring proxy beans for local service invocations: " + services.keySet());
+            log.info("Configuring proxy beans for local service invocations: {}", services.keySet());
+
             BeanDefinitionRegistry registry = (BeanDefinitionRegistry) beanFactory;
             for (Map.Entry<String, String> entry : services.entrySet()) {
                 String name = entry.getKey();
@@ -55,7 +56,8 @@ public class WebRemoteProxyBeanCreator extends RemoteProxyBeanCreator {
                 propertyValues.add("serviceName", name);
                 propertyValues.add("serviceInterface", serviceInterface);
                 registry.registerBeanDefinition(name, definition);
-                log.debug("Configured proxy bean " + name + " of type " + serviceInterface);
+
+                log.debug("Configured proxy bean {} of type {}", name, serviceInterface);
             }
 
             processSubstitutions(beanFactory);

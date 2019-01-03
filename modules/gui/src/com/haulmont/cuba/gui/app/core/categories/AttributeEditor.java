@@ -115,7 +115,6 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
     protected LookupField<String> entityTypeField;
     protected PickerField<Entity> defaultEntityField;
 
-    protected PickerField.LookupAction entityLookupAction;
     protected String fieldWidth;
 
     @Inject
@@ -305,7 +304,7 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
                 }
                 ((AbstractDatasource) attributeDs).modified(attribute);
             });
-            entityLookupAction = defaultEntityField.addLookupAction();
+            defaultEntityField.addLookupAction();
             defaultEntityField.addClearAction();
 
             return defaultEntityField;

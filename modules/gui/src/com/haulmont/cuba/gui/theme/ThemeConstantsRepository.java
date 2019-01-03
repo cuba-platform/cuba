@@ -21,7 +21,6 @@ import com.haulmont.cuba.core.global.DevelopmentException;
 import com.haulmont.cuba.core.global.Resources;
 import com.haulmont.cuba.core.sys.AppContext;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringTokenizer;
 import org.slf4j.Logger;
@@ -70,11 +69,7 @@ public class ThemeConstantsRepository {
             for (String fileName : tokenizer.getTokenArray()) {
                 String themeName = parseThemeName(fileName);
                 if (StringUtils.isNotBlank(themeName)) {
-                    Map<String, String> themeMap = themeProperties.get(themeName);
-                    if (themeMap == null) {
-                        themeMap = new HashMap<>();
-                        themeProperties.put(themeName, themeMap);
-                    }
+                    Map<String, String> themeMap = themeProperties.computeIfAbsent(themeName, k -> new HashMap<>());
 
                     loadThemeProperties(fileName, themeMap);
                 }
@@ -93,25 +88,22 @@ public class ThemeConstantsRepository {
     }
 
     public void loadThemeProperties(String fileName, Map<String, String> themeMap) {
-        InputStream propertiesStream = null;
-        try {
-            propertiesStream = resources.getResourceAsStream(fileName);
+        try (InputStream propertiesStream = resources.getResourceAsStream(fileName)) {
             if (propertiesStream == null) {
-                throw new DevelopmentException("Unable to load theme constants for: '" + fileName + "'");
+                throw new DevelopmentException(String.format("Unable to load theme constants for: '%s'", fileName));
             }
-
-            InputStreamReader propertiesReader = new InputStreamReader(propertiesStream, StandardCharsets.UTF_8);
 
             Properties properties = new Properties();
-            try {
+
+            try (InputStreamReader propertiesReader = new InputStreamReader(propertiesStream, StandardCharsets.UTF_8)) {
                 properties.load(propertiesReader);
             } catch (IOException e) {
-                throw new DevelopmentException("Unable to parse theme constants for: '" + fileName + "'");
+                throw new DevelopmentException(String.format("Unable to parse theme constants for: '%s'", fileName));
             }
 
-            Object includeValue = properties.get("@include");
+            String includeValue = properties.getProperty("@include");
             if (includeValue != null) {
-                String[] themeIncludes = StringUtils.split(includeValue.toString(), " ,");
+                String[] themeIncludes = StringUtils.split(includeValue, " ,");
 
                 for (String include : themeIncludes) {
                     loadThemeProperties(include, themeMap);
@@ -126,8 +118,8 @@ public class ThemeConstantsRepository {
                     themeMap.put(key.toString(), value.toString());
                 }
             }
-        } finally {
-            IOUtils.closeQuietly(propertiesStream);
+        } catch (IOException e) {
+            throw new RuntimeException(String.format("Unable to read theme properties from '%s'", fileName));
         }
     }
 

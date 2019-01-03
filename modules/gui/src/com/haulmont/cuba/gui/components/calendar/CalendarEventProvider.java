@@ -17,9 +17,7 @@
 package com.haulmont.cuba.gui.components.calendar;
 
 import com.haulmont.bali.events.Subscription;
-import com.haulmont.cuba.gui.components.Calendar;
 
-import java.io.Serializable;
 import java.util.EventObject;
 import java.util.List;
 import java.util.function.Consumer;
@@ -50,8 +48,6 @@ public interface CalendarEventProvider {
      * Not supported by {@link EntityCalendarEventProvider}, use datasource for changing data items.
      */
     void removeAllEvents();
-
-    void setCalendar(Calendar calendar);
 
     Subscription addEventSetChangeListener(Consumer<EventSetChangeEvent> listener);
 

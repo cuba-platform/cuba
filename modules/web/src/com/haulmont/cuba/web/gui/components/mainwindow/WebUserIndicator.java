@@ -88,8 +88,6 @@ public class WebUserIndicator extends WebAbstractComponent<com.vaadin.ui.CssLayo
             component.addComponent(userNameLabel);
             component.setDescription(substitutedUserCaption);
         } else {
-            User user = uss.getUserSession().getUser();
-
             userNameLabel = null;
 
             userComboBox = new CubaComboBox<>();

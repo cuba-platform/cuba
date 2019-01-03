@@ -44,8 +44,6 @@ public class ContainerOptions<E extends Entity<K>, K> implements Options<E>, Ent
 
     protected EventHub events = new EventHub();
 
-    protected BindingState state = BindingState.INACTIVE;
-
     protected E deferredSelectedItem;
 
     public ContainerOptions(CollectionContainer<E> container) {
@@ -116,7 +114,6 @@ public class ContainerOptions<E extends Entity<K>, K> implements Options<E>, Ent
         return BindingState.ACTIVE;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public Subscription addStateChangeListener(Consumer<StateChangeEvent> listener) {
         return events.subscribe(StateChangeEvent.class, listener);

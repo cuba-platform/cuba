@@ -401,10 +401,13 @@ public class EntityInspectorBrowse extends AbstractLookup {
             try {
                 Collection<Entity> importedEntities;
                 if ("json".equals(Files.getFileExtension(fileName))) {
-                    importedEntities = entityImportExportService.importEntitiesFromJSON(new String(fileBytes), createEntityImportView(selectedMeta));
+                    String content = new String(fileBytes, StandardCharsets.UTF_8);
+                    importedEntities = entityImportExportService.importEntitiesFromJSON(content, createEntityImportView(selectedMeta));
                 } else {
                     importedEntities = entityImportExportService.importEntitiesFromZIP(fileBytes, createEntityImportView(selectedMeta));
                 }
+
+                // todo localize the message !
                 showNotification(importedEntities.size() + " entities imported", NotificationType.HUMANIZED);
             } catch (Exception e) {
                 showNotification(getMessage("importFailed"),

@@ -38,6 +38,7 @@ import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.web.filter.DelegatingFilterProxy;
 import org.springframework.web.servlet.DispatcherServlet;
 
+import javax.annotation.Nonnull;
 import javax.servlet.*;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -227,6 +228,7 @@ public class SingleAppWebContextLoader extends WebAppContextLoader {
              * during application initialization.
              */
             @Override
+            @Nonnull
             protected ResourcePatternResolver getResourcePatternResolver() {
                 if (dependencyJars == null || dependencyJars.isEmpty()) {
                     throw new RuntimeException("No JARs defined for the 'web' block. " +
@@ -257,7 +259,7 @@ public class SingleAppWebContextLoader extends WebAppContextLoader {
 
     protected static class SetClassLoaderFilter implements Filter {
         @Override
-        public void init(FilterConfig filterConfig) throws ServletException {
+        public void init(FilterConfig filterConfig) {
             //do nothing
         }
 

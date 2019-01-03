@@ -17,21 +17,19 @@
 
 package com.haulmont.cuba.web.gui.components;
 
-import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.gui.ComponentsHelper;
-import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.ComponentContainer;
-import com.haulmont.cuba.gui.components.KeyCombination.Modifier;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.TextField;
-import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
+import com.haulmont.cuba.gui.components.KeyCombination.Modifier;
 import com.haulmont.cuba.web.gui.components.util.ShortcutListenerDelegate;
 import com.haulmont.cuba.web.widgets.*;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.server.Sizeable;
-import com.vaadin.ui.*;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.TabSheet;
+import com.vaadin.ui.*;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Nullable;
@@ -128,18 +126,6 @@ public class WebComponentsHelper {
     }
 
     /**
-     * todo rework, do not use WebButton here
-     */
-    @Deprecated
-    public static CubaButton createButton(String icon) {
-        ComponentsFactory cf = AppBeans.get(ComponentsFactory.NAME);
-        com.haulmont.cuba.gui.components.Button button =
-                cf.createComponent(com.haulmont.cuba.gui.components.Button.class);
-        button.setIcon(icon);
-        return (CubaButton) unwrap(button);
-    }
-
-    /**
      * Checks if the component should be visible to the client. Returns false if
      * the child should not be sent to the client, true otherwise.
      *
@@ -228,6 +214,9 @@ public class WebComponentsHelper {
         button.setClickShortcut(closeCode, closeModifiers);
     }
 
+    /**
+     * @deprecated Will be removed without replacement
+     */
     @Deprecated
     public static void addEnterShortcut(TextField textField, Runnable runnable) {
         CubaTextField cubaTextField = textField.unwrap(CubaTextField.class);
@@ -241,12 +230,9 @@ public class WebComponentsHelper {
 
     @Deprecated
     public static void focusProblemComponent(ValidationErrors errors) {
-        com.haulmont.cuba.gui.components.Component component = null;
-        if (!errors.getAll().isEmpty()) {
-            component = errors.getAll().get(0).component;
-        }
-        if (component != null) {
-            ComponentsHelper.focusComponent(component);
+        com.haulmont.cuba.gui.components.Component problemComponent = errors.getFirstComponent();
+        if (problemComponent != null) {
+            ComponentsHelper.focusComponent(problemComponent);
         }
     }
 
@@ -288,10 +274,6 @@ public class WebComponentsHelper {
         while (targetComponent != null
                 && targetComponent.getParent() != vaadinSource) {
             targetComponent = targetComponent.getParent();
-        }
-
-        if (targetComponent instanceof CubaFieldWrapper) {
-            targetComponent = ((CubaFieldWrapper) targetComponent).getContent();
         }
 
         return targetComponent;

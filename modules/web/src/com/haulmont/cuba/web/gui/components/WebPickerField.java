@@ -522,8 +522,8 @@ public class WebPickerField<V extends Entity> extends WebV8AbstractField<CubaPic
 
         @Override
         public void handleAction(com.vaadin.event.Action action, Object sender, Object target) {
-            //noinspection RedundantCast
-            Action pickerAction = actionsMap.get((ShortcutAction) action);
+            @SuppressWarnings("SuspiciousMethodCalls")
+            Action pickerAction = actionsMap.get(action);
             if (pickerAction != null) {
                 pickerAction.actionPerform(WebPickerField.this);
             }

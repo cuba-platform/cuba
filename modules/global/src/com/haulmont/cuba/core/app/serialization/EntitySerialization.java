@@ -655,7 +655,7 @@ public class EntitySerialization implements EntitySerializationAPI {
         }
     }
 
-    protected class DateSerializer implements JsonSerializer<Date> {
+    protected static class DateSerializer implements JsonSerializer<Date> {
 
         private final Datatype<Date> dateDatatype;
 
@@ -670,7 +670,7 @@ public class EntitySerialization implements EntitySerializationAPI {
         }
     }
 
-    protected class DateDeserializer implements JsonDeserializer<Date> {
+    protected static class DateDeserializer implements JsonDeserializer<Date> {
 
         private final Datatype<Date> dateDatatype;
 

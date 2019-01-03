@@ -126,6 +126,9 @@ public interface EntityLinkField<V> extends Field<V>, Component.Focusable {
 
         public EditorCloseEvent(EntityLinkField<V> source, EditorScreen screen, String actionId) {
             super(source);
+            
+            this.screen = screen;
+            this.actionId = actionId;
         }
 
         @Nullable

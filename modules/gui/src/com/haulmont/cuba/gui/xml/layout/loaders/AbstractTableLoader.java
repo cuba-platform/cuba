@@ -482,7 +482,6 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
         column.setFormatter(loadFormatter(element));
 
         loadAggregation(column, element);
-        loadCalculatable(column, element);
         loadMaxTextLength(column, element);
         loadCaptionAsHtml(column, element);
 
@@ -540,13 +539,6 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
             if (aggregationType == null && strategyClass == null) {
                 throw new GuiDevelopmentException("Incorrect aggregation - type or strategyClass is required", context.getFullFrameId());
             }
-        }
-    }
-
-    protected void loadCalculatable(Table.Column column, Element columnElement) {
-        String calc = columnElement.attributeValue("calculatable");
-        if (StringUtils.isNotEmpty(calc)) {
-            column.setCalculatable(Boolean.parseBoolean(calc));
         }
     }
 

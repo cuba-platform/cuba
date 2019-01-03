@@ -325,7 +325,7 @@ public class ConditionDescriptorsTreeBuilder implements ConditionDescriptorsTree
         return filterComponentName;
     }
 
-    protected class ConditionDescriptorComparator implements Comparator<AbstractConditionDescriptor> {
+    protected static class ConditionDescriptorComparator implements Comparator<AbstractConditionDescriptor> {
         @Override
         public int compare(AbstractConditionDescriptor cd1, AbstractConditionDescriptor cd2) {
             return cd1.getLocCaption().compareTo(cd2.getLocCaption());

@@ -106,7 +106,7 @@ public class WebNotifications implements Notifications {
         @Override
         public NotificationBuilder withContentMode(ContentMode contentMode) {
             if (contentMode == ContentMode.PREFORMATTED) {
-                throw new UnsupportedOperationException("ContentMode.PREFORMATTED unsupported for Notification");
+                throw new UnsupportedOperationException("ContentMode.PREFORMATTED is not supported for Notification");
             }
 
             this.contentMode = contentMode;
@@ -171,13 +171,10 @@ public class WebNotifications implements Notifications {
         }
 
         protected void setNotificationDelayMsec(com.vaadin.ui.Notification notification, NotificationType type) {
-            switch (type) {
-                case HUMANIZED:
-                    notification.setDelayMsec(HUMANIZED_NOTIFICATION_DELAY_MSEC);
-                    break;
-                case WARNING:
-                    notification.setDelayMsec(WARNING_NOTIFICATION_DELAY_MSEC);
-                    break;
+            if (type == NotificationType.HUMANIZED) {
+                notification.setDelayMsec(HUMANIZED_NOTIFICATION_DELAY_MSEC);
+            } else if (type == NotificationType.WARNING) {
+                notification.setDelayMsec(WARNING_NOTIFICATION_DELAY_MSEC);
             }
         }
 

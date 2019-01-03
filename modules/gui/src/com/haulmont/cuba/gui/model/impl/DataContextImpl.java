@@ -20,7 +20,6 @@ import com.google.common.collect.Sets;
 import com.haulmont.bali.events.EventHub;
 import com.haulmont.bali.events.Subscription;
 import com.haulmont.bali.util.Numbers;
-import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
@@ -42,6 +41,8 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
 /**
  * Standard implementation of {@link DataContext} which commits data to {@link DataManager}.
@@ -98,7 +99,7 @@ public class DataContextImpl implements DataContext {
 
     @Override
     public void setParent(DataContext parentContext) {
-        Preconditions.checkNotNullArgument(parentContext, "parentContext is null");
+        checkNotNullArgument(parentContext, "parentContext is null");
         if (!(parentContext instanceof DataContextImpl))
             throw new IllegalArgumentException("Unsupported DataContext type: " + parentContext.getClass().getName());
         this.parentContext = (DataContextImpl) parentContext;
@@ -127,21 +128,21 @@ public class DataContextImpl implements DataContext {
     @Nullable
     @Override
     public <T extends Entity> T find(T entity) {
-        Preconditions.checkNotNullArgument(entity, "entity is null");
+        checkNotNullArgument(entity, "entity is null");
         return (T) find(entity.getClass(), entity.getId());
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public boolean contains(Entity entity) {
-        Preconditions.checkNotNullArgument(entity, "entity is null");
+        checkNotNullArgument(entity, "entity is null");
         return find(entity.getClass(), entity.getId()) != null;
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public <T extends Entity> T merge(T entity) {
-        Preconditions.checkNotNullArgument(entity, "entity is null");
+        checkNotNullArgument(entity, "entity is null");
 
         disableListeners = true;
         T result;
@@ -156,7 +157,7 @@ public class DataContextImpl implements DataContext {
 
     @Override
     public EntitySet merge(Collection<? extends Entity> entities) {
-        Preconditions.checkNotNullArgument(entities, "entity collection is null");
+        checkNotNullArgument(entities, "entity collection is null");
 
         List<Entity> managedList = new ArrayList<>(entities.size());
         disableListeners = true;
@@ -441,7 +442,8 @@ public class DataContextImpl implements DataContext {
 
     @Override
     public void remove(Entity entity) {
-        Preconditions.checkNotNullArgument(entity, "entity is null");
+        checkNotNullArgument(entity, "entity is null");
+
         Map<Object, Entity> entityMap = content.get(entity.getClass());
         if (entityMap != null) {
             Entity mergedEntity = entityMap.get(entity.getId());
@@ -457,13 +459,16 @@ public class DataContextImpl implements DataContext {
     }
 
     protected void removeFromCollections(Entity entityToRemove) {
-        for (Class<?> entityClass : content.keySet()) {
+        for (Map.Entry<Class<?>, Map<Object, Entity>> entry : content.entrySet()) {
+            Class<?> entityClass = entry.getKey();
+
             MetaClass metaClass = getMetadata().getClassNN(entityClass);
             for (MetaProperty metaProperty : metaClass.getProperties()) {
                 if (metaProperty.getRange().isClass()
                         && metaProperty.getRange().getCardinality().isMany()
                         && metaProperty.getRange().asClass().getJavaClass().isAssignableFrom(entityToRemove.getClass())) {
-                    Map<Object, Entity> entityMap = content.get(entityClass);
+
+                    Map<Object, Entity> entityMap = entry.getValue();
                     for (Entity entity : entityMap.values()) {
                         if (getEntityStates().isLoaded(entity, metaProperty.getName())) {
                             Collection collection = entity.getValue(metaProperty.getName());
@@ -479,7 +484,8 @@ public class DataContextImpl implements DataContext {
 
     @Override
     public void evict(Entity entity) {
-        Preconditions.checkNotNullArgument(entity, "entity is null");
+        checkNotNullArgument(entity, "entity is null");
+
         Map<Object, Entity> entityMap = content.get(entity.getClass());
         if (entityMap != null) {
             Entity mergedEntity = entityMap.get(entity.getId());

@@ -814,7 +814,6 @@ public interface Table<E extends Entity>
         protected boolean groupAllowed = true;
         protected boolean sortable = true;
         protected AggregationInfo aggregation;
-        protected boolean calculatable;
         protected Integer maxTextLength;
         protected ColumnAlignment alignment;
         protected boolean captionAsHtml;
@@ -1060,16 +1059,6 @@ public interface Table<E extends Entity>
             if (owner != null) {
                 owner.addAggregationProperty(this, aggregation.getType());
             }
-        }
-
-        @Deprecated
-        public boolean isCalculatable() {
-            return calculatable;
-        }
-
-        @Deprecated
-        public void setCalculatable(boolean calculatable) {
-            this.calculatable = calculatable;
         }
 
         public Integer getMaxTextLength() {

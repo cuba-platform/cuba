@@ -20,7 +20,6 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.WindowParam;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.filter.dateinterval.predefined.PredefinedDateInterval;
@@ -52,9 +51,6 @@ public class DateIntervalEditor extends AbstractWindow {
 
     @Inject
     protected LookupField<PredefinedDateInterval> predefinedIntervalsLookup;
-
-    @Inject
-    protected Messages messages;
 
     @Inject
     protected ThemeConstants themeConstants;
@@ -97,14 +93,14 @@ public class DateIntervalEditor extends AbstractWindow {
         predefinedIntervalsLookup.setValue(intervalValue.getPredefinedDateInterval());
 
         typeOptionsGroup.addValueChangeListener(e -> {
-            DateIntervalValue.Type type = (DateIntervalValue.Type) e.getValue();
+            DateIntervalValue.Type type = e.getValue();
             intervalValue.setType(type);
             initComponentsVisibility(type);
         });
-        numberField.addValueChangeListener(e -> intervalValue.setNumber((Integer) e.getValue()));
-        timeUnitLookup.addValueChangeListener(e -> intervalValue.setTimeUnit((DateIntervalValue.TimeUnit) e.getValue()));
-        includingCurrentCheckBox.addValueChangeListener(e -> intervalValue.setIncludingCurrent((Boolean) e.getValue()));
-        predefinedIntervalsLookup.addValueChangeListener(e -> intervalValue.setPredefinedDateInterval((PredefinedDateInterval) e.getValue()));
+        numberField.addValueChangeListener(e -> intervalValue.setNumber(e.getValue()));
+        timeUnitLookup.addValueChangeListener(e -> intervalValue.setTimeUnit(e.getValue()));
+        includingCurrentCheckBox.addValueChangeListener(e -> intervalValue.setIncludingCurrent(e.getValue()));
+        predefinedIntervalsLookup.addValueChangeListener(e -> intervalValue.setPredefinedDateInterval(e.getValue()));
     }
 
     @Override
@@ -152,7 +148,7 @@ public class DateIntervalEditor extends AbstractWindow {
 
     protected Collection<PredefinedDateInterval> getPredefinedDateIntervals() {
         List<PredefinedDateInterval> intervals = new ArrayList<>(AppBeans.getAll(PredefinedDateInterval.class).values());
-        Collections.sort(intervals, new AnnotationAwareOrderComparator());
+        intervals.sort(new AnnotationAwareOrderComparator());
         return intervals;
     }
 

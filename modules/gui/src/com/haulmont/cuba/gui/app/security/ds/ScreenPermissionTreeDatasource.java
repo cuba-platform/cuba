@@ -32,7 +32,6 @@ public class ScreenPermissionTreeDatasource extends BasicPermissionTreeDatasourc
 
     protected PermissionConfig permissionConfig = AppBeans.get(PermissionConfig.class);
     protected UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.NAME);
-    protected UserSessionSource uss = AppBeans.get(UserSessionSource.class);
     protected Predicate<BasicPermissionTarget> screenFilter;
 
     @Override

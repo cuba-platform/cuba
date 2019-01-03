@@ -22,7 +22,6 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.ClientType;
 import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.TimeZones;
-import com.haulmont.cuba.gui.Route;
 import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.BaseAction;
@@ -59,17 +58,17 @@ public class SettingsWindow extends AbstractWindow {
     protected String msgSingle;
 
     @Inject
-    protected UserSettingsTools userSettingsTools;
+    protected App app;
 
     @Inject
+    protected UserSettingsTools userSettingsTools;
+    @Inject
     protected UserSession userSession;
-
     @Inject
     protected UserManagementService userManagementService;
 
     @Inject
     protected ClientConfig clientConfig;
-
     @Inject
     protected GlobalConfig globalConfig;
 
@@ -78,28 +77,22 @@ public class SettingsWindow extends AbstractWindow {
 
     @Inject
     protected Button okBtn;
-
     @Inject
     protected Button cancelBtn;
-
     @Inject
     protected Button changePasswordBtn;
-
     @Inject
-    private Button resetScreenSettingsBtn;
+    protected Button resetScreenSettingsBtn;
 
     @Inject
     protected OptionsGroup<String, String> modeOptions;
 
     @Inject
     protected LookupField<String> appThemeField;
-
     @Inject
     protected LookupField<String> timeZoneLookup;
-
     @Inject
     protected LookupField<String> appLangField;
-
     @Inject
     protected CheckBox timeZoneAutoField;
 
@@ -108,16 +101,13 @@ public class SettingsWindow extends AbstractWindow {
 
     @Inject
     protected MenuConfig menuConfig;
-
     @Inject
     protected WebConfig webConfig;
-
     @Inject
     protected WindowConfig windowConfig;
 
     @Inject
     protected UserSettingService userSettingService;
-
     @Inject
     protected SettingsClient settingsClient;
 
@@ -251,9 +241,13 @@ public class SettingsWindow extends AbstractWindow {
         if (changeThemeEnabled) {
             String selectedTheme = appThemeField.getValue();
             userSettingsTools.saveAppWindowTheme(selectedTheme);
-            App.getInstance().setUserAppTheme(selectedTheme);
+
+            app.setUserAppTheme(selectedTheme);
         }
-        AppWorkArea.Mode m = modeOptions.getValue() == msgTabbed ? AppWorkArea.Mode.TABBED : AppWorkArea.Mode.SINGLE;
+
+        AppWorkArea.Mode m = Objects.equals(modeOptions.getValue(), msgTabbed) ?
+                AppWorkArea.Mode.TABBED : AppWorkArea.Mode.SINGLE;
+
         userSettingsTools.saveAppWindowMode(m);
         saveTimeZoneSettings();
         saveLocaleSettings();
@@ -306,6 +300,8 @@ public class SettingsWindow extends AbstractWindow {
 
     protected Set<String> getAllWindowIds() {
         Collection<WindowInfo> windows = windowConfig.getWindows();
-        return windows.stream().map(WindowInfo::getId).collect(Collectors.toSet());
+        return windows.stream()
+                .map(WindowInfo::getId)
+                .collect(Collectors.toSet());
     }
 }

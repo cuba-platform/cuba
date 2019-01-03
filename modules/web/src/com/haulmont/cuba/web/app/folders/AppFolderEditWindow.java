@@ -29,9 +29,8 @@ import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.widgets.CubaSourceCodeEditor;
-import com.vaadin.ui.Button;
-import org.apache.commons.lang3.StringUtils;
 import com.haulmont.cuba.web.widgets.addons.aceeditor.AceMode;
+import org.apache.commons.lang3.StringUtils;
 
 import java.lang.reflect.Constructor;
 import java.util.List;
@@ -58,11 +57,11 @@ public class AppFolderEditWindow extends FolderEditWindow {
                 throw new RuntimeException("Unable to create FolderEditWindow", e);
             }
         } else
-            return isAppFolder ? new AppFolderEditWindow(adding, folder, presentations, commitHandler)
+            return isAppFolder ? new AppFolderEditWindow(adding, (AppFolder) folder, presentations, commitHandler)
                                : new FolderEditWindow(adding, folder, presentations, commitHandler);
     }
 
-    public AppFolderEditWindow(boolean adding, Folder folder, Presentations presentations, Runnable commitHandler) {
+    public AppFolderEditWindow(boolean adding, AppFolder folder, Presentations presentations, Runnable commitHandler) {
         super(adding, folder, presentations, commitHandler);
         if (!adding) {
             ThemeConstants theme = App.getInstance().getThemeConstants();
@@ -74,12 +73,12 @@ public class AppFolderEditWindow extends FolderEditWindow {
             visibilityScriptField.setMode(AceMode.groovy);
             visibilityScriptField.setWidth(100, Unit.PERCENTAGE);
             visibilityScriptField.setCaption(getMessage("folders.visibilityScript"));
-            String vScript = StringUtils.trimToEmpty(((AppFolder) folder).getVisibilityScript());
+            String vScript = StringUtils.trimToEmpty(folder.getVisibilityScript());
             visibilityScriptField.setValue(vScript);
             layout.addComponent(visibilityScriptField, 3);
 
             quantityScriptField = new CubaSourceCodeEditor();
-            String qScript = StringUtils.trimToEmpty(((AppFolder) folder).getQuantityScript());
+            String qScript = StringUtils.trimToEmpty(folder.getQuantityScript());
             quantityScriptField.setValue(qScript);
             quantityScriptField.setMode(AceMode.groovy);
             quantityScriptField.setWidth(100, Unit.PERCENTAGE);
@@ -97,12 +96,7 @@ public class AppFolderEditWindow extends FolderEditWindow {
 
     @Override
     protected void initButtonOkListener() {
-        okBtn.addClickListener(new Button.ClickListener() {
-            @Override
-            public void buttonClick(Button.ClickEvent event) {
-                commit();
-            }
-        });
+        okBtn.addClickListener(e -> commit());
     }
 
     @Override
@@ -119,10 +113,10 @@ public class AppFolderEditWindow extends FolderEditWindow {
         if (sortOrderField.getValue() == null || "".equals(sortOrderField.getValue())) {
             folder.setSortOrder(null);
         } else {
-            Object value = sortOrderField.getValue();
+            String value = sortOrderField.getValue();
             int sortOrder;
             try {
-                sortOrder = Integer.parseInt((String) value);
+                sortOrder = Integer.parseInt(value);
             } catch (NumberFormatException e) {
                 String msg = messages.getMessage(messagesPack, "folders.folderEditWindow.invalidSortOrder");
                 App.getInstance().getWindowManager().showNotification(msg, Frame.NotificationType.TRAY);

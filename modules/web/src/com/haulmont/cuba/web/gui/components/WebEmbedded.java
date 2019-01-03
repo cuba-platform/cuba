@@ -34,6 +34,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -200,8 +201,8 @@ public class WebEmbedded extends WebAbstractComponent<com.vaadin.ui.Embedded> im
             case BROWSER:
                 component.setType(com.vaadin.ui.Embedded.TYPE_BROWSER);
                 if (resource == null) {
-                    component.setSource(new StreamResource((StreamResource.StreamSource) () -> {
-                        return new ByteArrayInputStream("<html></html>".getBytes());
+                    component.setSource(new StreamResource(() -> {
+                        return new ByteArrayInputStream("<html></html>".getBytes(StandardCharsets.UTF_8));
                     }, UUID.randomUUID() + ".html"));
                 }
                 break;
@@ -216,8 +217,7 @@ public class WebEmbedded extends WebAbstractComponent<com.vaadin.ui.Embedded> im
         @Override
         public InputStream getStream() {
             if (emptyImage == null) {
-                InputStream stream =
-                        getClass().getResourceAsStream(EMPTY_IMAGE_PATH);
+                InputStream stream = WebEmbedded.class.getResourceAsStream(EMPTY_IMAGE_PATH);
                 try {
                     emptyImage = IOUtils.toByteArray(stream);
                 } catch (IOException e) {

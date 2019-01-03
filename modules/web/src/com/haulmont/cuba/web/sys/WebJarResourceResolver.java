@@ -169,10 +169,10 @@ public class WebJarResourceResolver {
 
     protected SortedMap<String, String> filterPathIndexByPrefix(SortedMap<String, String> pathIndex, String prefix) {
         SortedMap<String, String> filteredPathIndex = new TreeMap<>();
-        for (String key : pathIndex.keySet()) {
-            String value = pathIndex.get(key);
+        for (Map.Entry<String, String> entry : pathIndex.entrySet()) {
+            String value = entry.getValue();
             if (value.startsWith(prefix)) {
-                filteredPathIndex.put(key, value);
+                filteredPathIndex.put(entry.getKey(), value);
             }
         }
         return filteredPathIndex;

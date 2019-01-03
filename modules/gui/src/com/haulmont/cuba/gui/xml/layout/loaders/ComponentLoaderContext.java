@@ -47,7 +47,6 @@ public class ComponentLoaderContext implements ComponentLoader.Context {
     protected Map<String, String> aliasesMap = new HashMap<>();
 
     protected ComponentLoader.Context parent;
-    protected Locale locale;
 
     public ComponentLoaderContext(ScreenOptions options) {
         this.options = options;

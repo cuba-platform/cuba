@@ -40,6 +40,7 @@ buildscript {
     }
     dependencies {
         classpath group: 'com.haulmont.gradle', name: 'cuba-plugin', version: cubaVersion
+        classpath group: 'gradle.plugin.com.github.spotbugs', name: 'spotbugs-gradle-plugin', version: '1.6.8'
     }
 }
 
@@ -97,8 +98,7 @@ configure([sharedLibModule, globalModule, coreModule, clientModule, guiModule,
     apply(plugin: 'cuba')
 
     // code quality
-    apply(plugin: 'findbugs')
-    apply(plugin: 'pmd')
+    apply(plugin: 'com.github.spotbugs')
 
     dependencies {
         testCompile(bom['org.jmockit:jmockit'])
@@ -147,108 +147,68 @@ configure([sharedLibModule, globalModule, coreModule, clientModule, guiModule,
     }
 
     javadoc {
-        // move to plugin ?
         options.addStringOption("sourcepath", "")
     }
 
-    findbugs {
-        toolVersion = "3.0.1"
+    spotbugs {
+        toolVersion = "3.1.10"
         ignoreFailures = false
         omitVisitors = ['FindDoubleCheck']
-        excludeFilter = rootProject.file("findbugs/exclude-filter.xml")
+        excludeFilter = rootProject.file("codestyle/exclude-filter.xml")
         effort = "max"
         reportLevel = "high"
     }
 
-    findbugsMain {
+    spotbugsMain {
+        jvmArgs '-Xmx2048m'
+
         reports {
             xml.enabled = false
             html {
                 enabled = true
-                stylesheet = rootProject.resources.text.fromFile("findbugs/fancy-hist.xsl")
-                destination file("${project.buildDir}/reports/findbugs/${project.name}.html")
+                stylesheet = rootProject.resources.text.fromFile("codestyle/fancy-hist.xsl")
+                destination file("${project.buildDir}/reports/spotbugs/${project.name}.html")
             }
         }
     }
 
-    findbugsTest {
+    spotbugsTest {
+        jvmArgs '-Xmx2048m'
+
         reports {
             xml.enabled = false
             html {
                 enabled = true
-                stylesheet = rootProject.resources.text.fromFile("findbugs/fancy-hist.xsl")
-                destination file("${project.buildDir}/reports/findbugs/test-${project.name}.html")
+                stylesheet = rootProject.resources.text.fromFile("codestyle/fancy-hist.xsl")
+                destination file("${project.buildDir}/reports/spotbugs/test-${project.name}.html")
             }
         }
-    }
-
-    pmd {
-        ignoreFailures = true
-        sourceSets = [sourceSets.main]
-        reportsDir = file("${project.buildDir}/reports/pmd")
-        ruleSets = [
-                "java-basic",
-                "java-braces",
-                "java-design",
-                "java-unusedcode"
-        ]
-    }
-
-    pmdMain {
-        excludes = [
-                "**/JPAParser.java",
-                "**/JPA2Parser.java"
-        ]
-        reports {
-            xml.enabled = true
-            html.enabled = false
-        }
-        source project.fileTree("src")
-    }
-
-    task pmdReport(dependsOn: pmdMain, group: 'verification', description:
-            'Generates a HTML report after executing PMD checks.') {
-        doLast {
-            ant.xslt(
-                    'in': "${project.buildDir}/reports/pmd/main.xml",
-                    'style': "${rootDir}/findbugs/pmd-nicerhtml.xsl",
-                    'out': "${project.buildDir}/reports/pmd/main.html")
-        }
-    }
-
-    check {
-        dependsOn += ['pmdReport']
     }
 }
 
 // Jacoco
-//configure([sharedLibModule, globalModule, coreModule, clientModule, guiModule, webModule]) {
-//    apply(plugin: 'jacoco')
-//
-//    jacoco {
-//        toolVersion = "0.8.0"
-//    }
-//
-//    jacocoTestReport {
-//        reports {
-//            xml.enabled = true
-//            html.enabled = true
-//        }
-//
-//        afterEvaluate {
-//            // without enhanced-classes output
-//            classDirectories = files(new File(project.buildDir, 'classes/java/main'))
-//        }
-//    }
-//
-//    if (rootProject.hasProperty('jacocoTeamcity')) {
-//        jacocoTestReport.doLast {
-//            println "##teamcity[jacocoReport dataPath='modules/${project.projectDir.name}/build/jacoco/test.exec' " +
-//                    "includes='com.haulmont.cuba.*' " +
-//                    "classpath='+:modules/${project.projectDir.name}/build/classes/java/main/**']"
-//        }
-//    }
-//}
+configure([sharedLibModule, globalModule, coreModule, clientModule, guiModule, webModule]) {
+    apply(plugin: 'jacoco')
+
+    jacoco {
+        toolVersion = "0.8.2"
+    }
+
+    jacocoTestReport {
+        reports {
+            xml.enabled = true
+            html.enabled = true
+        }
+    }
+
+    if (rootProject.hasProperty('jacocoTeamcity')) {
+        jacocoTestReport.doLast {
+            println "##teamcity[jacocoReport dataPath='modules/${project.projectDir.name}/build/jacoco/test.exec' " +
+                    "includes='com.haulmont.cuba.*' " +
+                    "classpath='+:modules/${project.projectDir.name}/build/classes/java/main/**']"
+        }
+    }
+}
 
 // configure web toolkit module
 configure([webWidgetsModule, webToolkitModule]) {
@@ -389,7 +349,7 @@ configure(globalModule) {
     }
     sourceJar.dependsOn filterDummyEntities
 
-    findbugsMain {
+    spotbugsMain {
         classes = classes.filter {
             !it.path.contains(new File("com/haulmont/cuba/core/global/release.").path)
         }
@@ -877,7 +837,7 @@ configure(desktopModule) {
     compileTestGroovy.enabled = false
     compileTestJava.enabled = false
     javadoc.enabled = false
-    findbugsMain.enabled = false
+    spotbugsMain.enabled = false
 }
 
 configure(restApiModule) {
@@ -968,41 +928,41 @@ zipProject {
     excludeFromZip = ['out']
 }
 
-//apply plugin: 'jacoco'
-//
-//jacoco {
-//    toolVersion = "0.8.1"
-//}
-//
-//task jacocoProjectReport(type: JacocoReport, group: 'Reporting') {
-//    description = 'Generates an aggregate report from all subprojects'
-//
-//    def jacocoProjects = subprojects.findAll { prj ->
-//        return prj.project.extensions.findByName('jacoco') != null
-//    }
-//
-//    dependsOn(jacocoProjects.jacocoTestReport)
-//
-//    additionalSourceDirs = generateSourceFiles(jacocoProjects)
-//    sourceDirectories = generateSourceFiles(jacocoProjects)
-//    classDirectories = generateClassDirs(jacocoProjects)
-//    executionData = rootProject.files(jacocoProjects.jacocoTestReport.executionData)
-//
-//    reports {
-//        html {
-//            enabled true
-//            destination new File(rootProject.buildDir, 'reports/jacoco/project')
-//        }
-//        xml {
-//            enabled true
-//            destination new File(rootProject.buildDir, 'reports/jacoco/project/jacoco-project.xml')
-//        }
-//    }
-//
-//    doFirst {
-//        executionData = files(executionData.findAll { it.exists() })
-//    }
-//}
+apply plugin: 'jacoco'
+
+jacoco {
+    toolVersion = "0.8.2"
+}
+
+task jacocoProjectReport(type: JacocoReport, group: 'Reporting') {
+    description = 'Generates an aggregate report from all subprojects'
+
+    def jacocoProjects = subprojects.findAll { prj ->
+        return prj.project.extensions.findByName('jacoco') != null
+    }
+
+    dependsOn(jacocoProjects.jacocoTestReport)
+
+    additionalSourceDirs = generateSourceFiles(jacocoProjects)
+    sourceDirectories = generateSourceFiles(jacocoProjects)
+    classDirectories = generateClassDirs(jacocoProjects)
+    executionData = rootProject.files(jacocoProjects.jacocoTestReport.executionData)
+
+    reports {
+        html {
+            enabled true
+            destination new File(rootProject.buildDir, 'reports/jacoco/project')
+        }
+        xml {
+            enabled true
+            destination new File(rootProject.buildDir, 'reports/jacoco/project/jacoco-project.xml')
+        }
+    }
+
+    doFirst {
+        executionData = files(executionData.findAll { it.exists() })
+    }
+}
 
 def generateSourceFiles(Collection projects) {
     def dirs = projects.collect { prj -> new File(prj.projectDir, 'src') }

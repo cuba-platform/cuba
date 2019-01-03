@@ -43,9 +43,8 @@ public class RestControllerExceptionHandler {
 
     private static final Logger log = LoggerFactory.getLogger(RestControllerExceptionHandler.class);
 
-    protected static final Class[] serializableInvalidValueTypes = new Class[]{
-            String.class, Date.class, Number.class, Enum.class, UUID.class
-    };
+    protected static final Collection<Class> serializableInvalidValueTypes =
+            Arrays.asList(String.class, Date.class, Number.class, Enum.class, UUID.class);
 
     @ExceptionHandler(RestAPIException.class)
     @ResponseBody

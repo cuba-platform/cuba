@@ -17,8 +17,6 @@
 
 package com.haulmont.cuba.core.app.dynamicattributes;
 
-import com.google.common.base.Predicate;
-import com.google.common.collect.Collections2;
 import com.google.common.collect.Multimap;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Category;
@@ -30,7 +28,11 @@ import org.apache.commons.lang3.StringUtils;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Immutable
 public class DynamicAttributesCache implements Serializable {
@@ -54,16 +56,10 @@ public class DynamicAttributesCache implements Serializable {
     public Collection<CategoryAttribute> getAttributesForMetaClass(MetaClass metaClass) {
         MetaClass targetMetaClass = resolveTargetMetaClass(metaClass);
         Collection<Category> categories = categoriesCache.get(targetMetaClass.getName());
-        List<CategoryAttribute> categoryAttributes = new ArrayList<>();
-        for (Category category : categories) {
-            categoryAttributes.addAll(Collections2.filter(category.getCategoryAttrs(), new Predicate<CategoryAttribute>() {
-                @Override
-                public boolean apply(@Nullable CategoryAttribute input) {
-                    return input != null && StringUtils.isNotBlank(input.getCode());
-                }
-            }));
-        }
-        return categoryAttributes;
+        return categories.stream()
+                .flatMap(ca -> ca.getCategoryAttrs().stream())
+                .filter(a -> StringUtils.isNotBlank(a.getCode()))
+                .collect(Collectors.toList());
     }
 
     @Nullable

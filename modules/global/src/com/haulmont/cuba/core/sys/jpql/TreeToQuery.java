@@ -112,7 +112,7 @@ public class TreeToQuery implements TreeVisitorAction {
     }
 
     private boolean isDecimal(CommonTree node) {
-        if (node instanceof CommonTree) {
+        if (node != null) {
             if (Objects.equals(".", node.getText())) {
                 return true;
             }
@@ -220,7 +220,6 @@ public class TreeToQuery implements TreeVisitorAction {
                 isExtractFromNode(node)) {
             sb.appendSpace();
         }
-
 
         if (node instanceof TreeToQueryCapable) {
             return ((TreeToQueryCapable) t).treeToQueryPost(sb, invalidNodes);

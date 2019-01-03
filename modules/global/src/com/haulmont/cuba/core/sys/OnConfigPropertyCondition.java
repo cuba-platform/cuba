@@ -22,11 +22,12 @@ import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
+import javax.annotation.Nonnull;
 import java.util.Map;
 
 public class OnConfigPropertyCondition implements Condition {
     @Override
-    public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
+    public boolean matches(@Nonnull ConditionContext context, @Nonnull AnnotatedTypeMetadata metadata) {
         Map<String, Object> attributes
                 = metadata.getAnnotationAttributes(ConditionalOnAppProperty.class.getName());
 
@@ -39,6 +40,10 @@ public class OnConfigPropertyCondition implements Condition {
         } else {
             Map<String, Object> valueMap =
                     metadata.getAnnotationAttributes(ConditionalOnAppProperties.class.getName());
+            if (valueMap == null) {
+                return true;
+            }
+
             AnnotationAttributes[] properties = (AnnotationAttributes[]) valueMap.get("value");
 
             for (AnnotationAttributes propertyCondition : properties) {

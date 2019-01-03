@@ -1026,6 +1026,9 @@ public class WebTree<E extends Entity>
                 component.deselectAll();
                 ((MultiSelectionModel) component.getSelectionModel()).selectItems(items.toArray());
                 break;
+
+            default:
+                throw new UnsupportedOperationException("Unsupported selection mode");
         }
     }
 

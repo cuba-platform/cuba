@@ -30,6 +30,7 @@ import com.esotericsoftware.kryo.util.Util;
 import com.esotericsoftware.reflectasm.ConstructorAccess;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.HashMultimap;
+import com.google.common.collect.ImmutableList;
 import com.haulmont.chile.core.model.impl.MetaClassImpl;
 import com.haulmont.chile.core.model.impl.MetaPropertyImpl;
 import com.haulmont.cuba.core.entity.BaseEntityInternalAccess;
@@ -69,16 +70,10 @@ public class KryoSerialization implements Serialization {
     protected static final Logger log = LoggerFactory.getLogger(KryoSerialization.class);
 
     protected static final List<String> INCLUDED_VALUE_HOLDER_FIELDS =
-            Arrays.asList("value", "isInstantiated", "mapping", "sourceAttributeName", "relationshipSourceObject");
-
+            ImmutableList.of("value", "isInstantiated", "mapping", "sourceAttributeName", "relationshipSourceObject");
 
     protected boolean onlySerializable = true;
-    protected final ThreadLocal<Kryo> kryos = new ThreadLocal<Kryo>() {
-        @Override
-        protected Kryo initialValue() {
-            return newKryoInstance();
-        }
-    };
+    protected final ThreadLocal<Kryo> kryos = ThreadLocal.withInitial(this::newKryoInstance);
 
     public KryoSerialization() {
     }
@@ -98,6 +93,7 @@ public class KryoSerialization implements Serialization {
         //all the other application classes). For web application it means placing this class inside webapp folder.
         kryo.setClassLoader(KryoSerialization.class.getClassLoader());
 
+        //noinspection ArraysAsListWithZeroOrOneArgument
         kryo.register(Arrays.asList("").getClass(), new ArraysAsListSerializer());
         kryo.register(Collections.EMPTY_LIST.getClass(), new CollectionsEmptyListSerializer());
         kryo.register(Collections.EMPTY_MAP.getClass(), new CollectionsEmptyMapSerializer());

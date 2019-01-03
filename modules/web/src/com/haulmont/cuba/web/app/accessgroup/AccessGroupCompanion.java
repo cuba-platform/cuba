@@ -16,7 +16,6 @@
 
 package com.haulmont.cuba.web.app.accessgroup;
 
-import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.app.security.group.browse.GroupBrowser;
 import com.haulmont.cuba.gui.app.security.group.browse.GroupChangeEvent;
 import com.haulmont.cuba.gui.app.security.group.browse.UserGroupChangedEvent;
@@ -24,22 +23,9 @@ import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.components.Tree;
 import com.haulmont.cuba.security.entity.Group;
 import com.haulmont.cuba.security.entity.User;
-import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.widgets.CubaTree;
-import com.vaadin.v7.data.Item;
-import com.vaadin.v7.event.DataBoundTransferable;
-import com.vaadin.event.dd.acceptcriteria.Not;
-import com.vaadin.event.dd.DragAndDropEvent;
-import com.vaadin.event.dd.DropHandler;
-import com.vaadin.event.dd.acceptcriteria.AcceptCriterion;
-import com.vaadin.event.dd.acceptcriteria.And;
-import com.vaadin.v7.ui.AbstractSelect;
-import com.vaadin.ui.Component;
 
-import javax.annotation.Nullable;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.function.Consumer;
 
 public class AccessGroupCompanion implements GroupBrowser.Companion {
@@ -51,10 +37,10 @@ public class AccessGroupCompanion implements GroupBrowser.Companion {
         com.vaadin.v7.ui.Table vTable = usersTable.unwrap(com.vaadin.v7.ui.Table.class);
         vTable.setDragMode(com.vaadin.v7.ui.Table.TableDragMode.MULTIROW);
 
-        CubaTree<Group> vTree = groupsTree.unwrap(CubaTree.class);
+        /*CubaTree<Group> vTree = groupsTree.unwrap(CubaTree.class);
         // TODO: gg, re-implement
 //        vTree.setDragMode(com.vaadin.v7.ui.Tree.TreeDragMode.NODE);
-        /*vTree.setDropHandler(new DropHandler() {
+        vTree.setDropHandler(new DropHandler() {
             @Override
             public void drop(DragAndDropEvent dropEvent) {
                 DataBoundTransferable transferable = (DataBoundTransferable) dropEvent.getTransferable();
@@ -147,7 +133,7 @@ public class AccessGroupCompanion implements GroupBrowser.Companion {
         return true;
     }
 
-    @Nullable
+    /*@Nullable
     protected <T extends Entity> T convertToEntity(@Nullable Item item, Class<T> entityClass) {
         if (!(item instanceof ItemWrapper)) {
             return null;
@@ -158,5 +144,5 @@ public class AccessGroupCompanion implements GroupBrowser.Companion {
         }
         //noinspection unchecked
         return (T) entity;
-    }
+    }*/
 }

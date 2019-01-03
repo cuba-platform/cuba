@@ -21,7 +21,6 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Messages;
-import com.haulmont.cuba.core.global.Security;
 import com.haulmont.cuba.gui.RemoveOperation;
 import com.haulmont.cuba.gui.components.ActionType;
 import com.haulmont.cuba.gui.components.Component;
@@ -39,8 +38,6 @@ public class ExcludeAction extends SecuredListAction {
 
     public static final String ID = "exclude";
 
-    @Inject
-    protected Security security;
     @Inject
     protected RemoveOperation removeOperation;
 

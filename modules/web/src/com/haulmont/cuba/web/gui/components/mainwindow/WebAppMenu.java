@@ -18,7 +18,6 @@
 package com.haulmont.cuba.web.gui.components.mainwindow;
 
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.gui.sys.TestIdManager;
 import com.haulmont.cuba.gui.components.mainwindow.AppMenu;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.gui.components.WebAbstractComponent;
@@ -100,7 +99,7 @@ public class WebAppMenu extends WebAbstractComponent<CubaMenuBar> implements App
         checkNotNullArgument(id);
         checkItemIdDuplicate(id);
 
-        MenuItem menuItem = new MenuItemImpl(this, id);
+        MenuItemImpl menuItem = new MenuItemImpl(this, id);
 
         Resource iconResource = null;
         if (icon != null) {
@@ -109,10 +108,13 @@ public class WebAppMenu extends WebAbstractComponent<CubaMenuBar> implements App
 
         MenuBar.MenuItem delegateItem = component.createMenuItem(caption, iconResource, null);
         if (command != null) {
+            @SuppressWarnings("UnnecessaryLocalVariable")
+            Consumer<MenuItem> nonnullCommand = command;
+
             delegateItem.setCommand(selectedItem ->
-                    command.accept(menuItem));
+                    nonnullCommand.accept(menuItem));
         }
-        ((MenuItemImpl) menuItem).setDelegateItem(delegateItem);
+        menuItem.setDelegateItem(delegateItem);
 
         menuItem.setCaption(caption);
         menuItem.setIcon(icon);

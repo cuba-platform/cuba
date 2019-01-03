@@ -102,8 +102,6 @@ public class ParamWrapper implements Component, HasValue<Object> {
                         value = wrapValueForLike(stringValue);
                     }
                 }
-            } else if (value instanceof EnumClass) {
-                value = ((EnumClass) value).getId();
             }
         } else if (value instanceof Entity) {
             value = ((Entity) value).getId();

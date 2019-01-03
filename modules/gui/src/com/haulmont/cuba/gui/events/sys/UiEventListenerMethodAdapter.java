@@ -32,6 +32,7 @@ import org.springframework.util.ClassUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.ReflectionUtils;
 
+import javax.annotation.Nonnull;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -40,6 +41,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+
+import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
 public class UiEventListenerMethodAdapter implements GenericApplicationListener {
 
@@ -54,13 +57,22 @@ public class UiEventListenerMethodAdapter implements GenericApplicationListener 
     private Events events;
 
     public UiEventListenerMethodAdapter(Object instance, Class<?> targetClass, Method method, Events events) {
+        checkNotNullArgument(targetClass);
+        checkNotNullArgument(method);
+        checkNotNullArgument(instance);
+        checkNotNullArgument(events);
+
+        Method targetMethod = ClassUtils.getMostSpecificMethod(method, targetClass);
+        EventListener ann = AnnotatedElementUtils.findMergedAnnotation(targetMethod, EventListener.class);
+
+        if (ann == null) {
+            throw new IllegalArgumentException("No @EventListener annotation for method " + method);
+        }
+
         this.instanceRef = new WeakReference<>(instance);
         this.method = method;
         this.bridgedMethod = BridgeMethodResolver.findBridgedMethod(method);
         this.events = events;
-
-        Method targetMethod = ClassUtils.getMostSpecificMethod(method, targetClass);
-        EventListener ann = AnnotatedElementUtils.findMergedAnnotation(targetMethod, EventListener.class);
 
         this.declaredEventTypes = resolveDeclaredEventTypes(method, ann);
         if (!ann.condition().isEmpty()) {
@@ -70,11 +82,12 @@ public class UiEventListenerMethodAdapter implements GenericApplicationListener 
     }
 
     @Override
-    public boolean supportsEventType(ResolvableType eventType) {
+    public boolean supportsEventType(@Nonnull ResolvableType eventType) {
         for (ResolvableType declaredEventType : this.declaredEventTypes) {
             if (declaredEventType.isAssignableFrom(eventType)) {
                 return true;
-            } else if (PayloadApplicationEvent.class.isAssignableFrom(eventType.getRawClass())) {
+            } else if (eventType.getRawClass() != null
+                    && PayloadApplicationEvent.class.isAssignableFrom(eventType.getRawClass())) {
                 ResolvableType payloadType = eventType.as(PayloadApplicationEvent.class).getGeneric();
                 if (declaredEventType.isAssignableFrom(payloadType)) {
                     return true;
@@ -90,7 +103,7 @@ public class UiEventListenerMethodAdapter implements GenericApplicationListener 
     }
 
     @Override
-    public void onApplicationEvent(ApplicationEvent event) {
+    public void onApplicationEvent(@Nonnull ApplicationEvent event) {
         Object instance = instanceRef.get();
         if (instance != null) {
             processEvent(instance, event);
@@ -151,7 +164,7 @@ public class UiEventListenerMethodAdapter implements GenericApplicationListener 
      */
     protected Object[] resolveArguments(ApplicationEvent event) {
         ResolvableType declaredEventType = getResolvableType(event);
-        if (declaredEventType == null) {
+        if (declaredEventType == null || declaredEventType.getRawClass() == null) {
             return null;
         }
         if (this.method.getParameterTypes().length == 0) {
@@ -243,6 +256,7 @@ public class UiEventListenerMethodAdapter implements GenericApplicationListener 
      * @param message error message to append the HandlerMethod details to
      */
     protected String getDetailedErrorMessage(Object bean, String message) {
+        @SuppressWarnings("StringBufferReplaceableByString")
         StringBuilder sb = new StringBuilder(message).append("\n");
         sb.append("HandlerMethod details: \n");
         sb.append("Bean [").append(bean.getClass().getName()).append("]\n");
@@ -288,16 +302,22 @@ public class UiEventListenerMethodAdapter implements GenericApplicationListener 
         ResolvableType payloadType = null;
         if (event instanceof PayloadApplicationEvent) {
             PayloadApplicationEvent<?> payloadEvent = (PayloadApplicationEvent<?>) event;
-            payloadType = payloadEvent.getResolvableType().as(PayloadApplicationEvent.class).getGeneric();
+            ResolvableType resolvableType = payloadEvent.getResolvableType();
+            if (resolvableType != null) {
+                payloadType = resolvableType.as(PayloadApplicationEvent.class).getGeneric();
+            }
         }
+
         for (ResolvableType declaredEventType : this.declaredEventTypes) {
-            if (!ApplicationEvent.class.isAssignableFrom(declaredEventType.getRawClass()) && payloadType != null) {
-                if (declaredEventType.isAssignableFrom(payloadType)) {
+            if (declaredEventType.getRawClass() != null) {
+                if (!ApplicationEvent.class.isAssignableFrom(declaredEventType.getRawClass()) && payloadType != null) {
+                    if (declaredEventType.isAssignableFrom(payloadType)) {
+                        return declaredEventType;
+                    }
+                }
+                if (declaredEventType.getRawClass().isInstance(event)) {
                     return declaredEventType;
                 }
-            }
-            if (declaredEventType.getRawClass().isInstance(event)) {
-                return declaredEventType;
             }
         }
         return null;

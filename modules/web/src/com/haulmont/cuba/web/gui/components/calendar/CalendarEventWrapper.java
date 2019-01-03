@@ -24,6 +24,7 @@ import java.util.List;
 
 public class CalendarEventWrapper implements com.vaadin.v7.ui.components.calendar.event.CalendarEvent,
         com.vaadin.v7.ui.components.calendar.event.CalendarEvent.EventChangeNotifier {
+
     protected CalendarEvent calendarEvent;
     protected List<EventChangeListener> eventChangeListeners;
 
@@ -74,13 +75,22 @@ public class CalendarEventWrapper implements com.vaadin.v7.ui.components.calenda
     }
 
     @Override
-    public boolean equals(Object obj) {
-        return calendarEvent == ((CalendarEventWrapper) obj).getCalendarEvent();
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        CalendarEventWrapper that = (CalendarEventWrapper) o;
+
+        return calendarEvent.equals(that.calendarEvent);
     }
 
     @Override
     public int hashCode() {
-        return this.getCalendarEvent().hashCode();
+        return calendarEvent.hashCode();
     }
 
     public CalendarEvent getCalendarEvent() {

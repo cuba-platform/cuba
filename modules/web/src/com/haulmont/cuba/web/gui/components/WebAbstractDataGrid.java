@@ -1624,6 +1624,9 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
                 component.deselectAll();
                 ((SelectionModel.Multi) component.getSelectionModel()).selectItems(items.toArray());
                 break;
+
+            default:
+                throw new UnsupportedOperationException("Unsupported selection mode");
         }
     }
 

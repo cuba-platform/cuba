@@ -49,15 +49,12 @@ public class DynamicAttributesConditionFrame extends ConditionFrame<DynamicAttri
 
     @Inject
     protected LookupField<Category> categoryLookup;
-
     @Inject
     protected LookupField<CategoryAttribute> attributeLookup;
-
     @Inject
     protected LookupField<Op> operationLookup;
-
     @Inject
-    protected Label categoryLabel;
+    protected Label<String> categoryLabel;
 
     @Inject
     protected ReferenceToEntitySupport referenceToEntitySupport;
@@ -66,23 +63,18 @@ public class DynamicAttributesConditionFrame extends ConditionFrame<DynamicAttri
     protected TextField<String> caption;
 
     @Override
-    public void init(Map<String, Object> params) {
-        super.init(params);
-    }
-
-    @Override
     protected void initComponents() {
         super.initComponents();
 
         categoryLookup.addValueChangeListener(e -> {
             if (e.getValue() != null) {
-                fillAttributeSelect((Category) e.getValue());
+                fillAttributeSelect(e.getValue());
             }
         });
 
         attributeLookup.addValueChangeListener(e -> {
             if (e.getValue() != null) {
-                CategoryAttribute categoryAttribute = (CategoryAttribute) e.getValue();
+                CategoryAttribute categoryAttribute = e.getValue();
                 fillOperationSelect(categoryAttribute);
             }
         });
@@ -121,11 +113,10 @@ public class DynamicAttributesConditionFrame extends ConditionFrame<DynamicAttri
 
         CategoryAttribute attribute = attributeLookup.getValue();
 
-        String alias = condition.getEntityAlias();
         String cavAlias = "cav" + RandomStringUtils.randomNumeric(5);
 
         String paramName;
-        String operation = operationLookup.<Op>getValue().forJpql();
+        String operation = operationLookup.getValue().forJpql();
         Op op = operationLookup.getValue();
 
         Class javaClass = DynamicAttributesUtils.getAttributeClass(attribute);

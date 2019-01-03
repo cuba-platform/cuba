@@ -65,7 +65,6 @@ public class WebSearchPickerField<V extends Entity> extends WebPickerField<V>
     protected FilterPredicate filterPredicate;
 
     protected Function<? super V, String> optionIconProvider;
-    protected Function<? super V, String> optionCaptionProvider;
     protected Function<? super V, String> optionStyleProvider;
 
     protected OptionsBinding<V> optionsBinding;
@@ -506,11 +505,6 @@ public class WebSearchPickerField<V extends Entity> extends WebPickerField<V>
         return itemCaption
                 .toLowerCase(locale)
                 .contains(filterText.toLowerCase(locale));
-    }
-
-    @Override
-    public Function<? super V, String> getOptionCaptionProvider() {
-        return optionCaptionProvider;
     }
 
     @Override

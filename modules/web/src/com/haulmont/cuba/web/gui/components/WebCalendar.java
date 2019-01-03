@@ -61,7 +61,7 @@ public class WebCalendar extends WebAbstractComponent<CubaCalendar>
     }
 
     @Override
-    public void afterPropertiesSet() throws Exception {
+    public void afterPropertiesSet() {
         initComponent(component);
         initDefaultEventProvider(component);
     }
@@ -113,7 +113,6 @@ public class WebCalendar extends WebAbstractComponent<CubaCalendar>
 
     protected void initDefaultEventProvider(CubaCalendar component) {
         calendarEventProvider = new ListCalendarEventProvider();
-        calendarEventProvider.setCalendar(this);
 
         component.setEventProvider(new CalendarEventProviderWrapper(calendarEventProvider));
     }
@@ -243,7 +242,6 @@ public class WebCalendar extends WebAbstractComponent<CubaCalendar>
 
         this.calendarEventProvider = calendarEventProvider;
         if (calendarEventProvider != null) {
-            calendarEventProvider.setCalendar(this);
             component.setEventProvider(new CalendarEventProviderWrapper(calendarEventProvider));
         } else {
             component.setEventProvider(new CalendarEventProviderWrapper(new ListCalendarEventProvider()));

@@ -84,10 +84,10 @@ public class WebFilterHelper implements FilterHelper {
 
     @Override
     public void initConditionsDragAndDrop(final Tree tree, final ConditionsTree conditions) {
-        com.vaadin.ui.Tree vTree = tree.unwrap(com.vaadin.ui.Tree.class);
+        /*com.vaadin.ui.Tree vTree = tree.unwrap(com.vaadin.ui.Tree.class);
         // vaadin8
 //        vTree.setDragMode(com.vaadin.v7.ui.Tree.TreeDragMode.NODE);
-        /*vTree.setDropHandler(new DropHandler() {
+        vTree.setDropHandler(new DropHandler() {
             @Override
             public void drop(DragAndDropEvent event) {
                 Transferable t = event.getTransferable();

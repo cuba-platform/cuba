@@ -207,7 +207,7 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
     }
 
     /**
-     * Marks all the items in the current data source as selected
+     * Marks all the items in the current data source as selected.
      */
     void selectAll();
 
@@ -219,7 +219,7 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
     void deselect(E item);
 
     /**
-     * Deselects all the items in the current data source
+     * Deselects all the items in the current data source.
      */
     void deselectAll();
 
@@ -1820,7 +1820,6 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
      *
      * @param listener the listener to register
      */
-    @SuppressWarnings("unchecked")
     Subscription addSelectionListener(Consumer<SelectionEvent<E>> listener);
 
     /**
@@ -1829,7 +1828,6 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
      * @param listener the listener to remove
      * @deprecated Use {@link Subscription} instead
      */
-    @SuppressWarnings("unchecked")
     @Deprecated
     void removeSelectionListener(Consumer<SelectionEvent<E>> listener);
 
@@ -2029,7 +2027,6 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
      *
      * @param listener the listener to register
      */
-    @SuppressWarnings("unchecked")
     Subscription addItemClickListener(Consumer<ItemClickEvent<E>> listener);
 
     /**
@@ -2037,7 +2034,6 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
      *
      * @param listener the listener to remove
      */
-    @SuppressWarnings("unchecked")
     void removeItemClickListener(Consumer<ItemClickEvent<E>> listener);
 
     /**

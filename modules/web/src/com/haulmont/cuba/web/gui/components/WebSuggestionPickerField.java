@@ -58,8 +58,6 @@ public class WebSuggestionPickerField<V extends Entity> extends WebPickerField<V
 
     protected Locale locale;
 
-    protected Function<? super V, String> optionCaptionProvider;
-
     public WebSuggestionPickerField() {
     }
 
@@ -105,16 +103,6 @@ public class WebSuggestionPickerField<V extends Entity> extends WebPickerField<V
         }
 
         return metadataTools.getInstanceName(value);
-    }
-
-    @Override
-    public void setOptionCaptionProvider(Function<? super V, String> optionCaptionProvider) {
-        this.optionCaptionProvider = optionCaptionProvider;
-    }
-
-    @Override
-    public Function<? super V, String> getOptionCaptionProvider() {
-        return optionCaptionProvider;
     }
 
     protected void cancelSearch() {

@@ -18,6 +18,7 @@ package spec.cuba.web.screens
 
 import com.google.common.collect.ImmutableMap
 import com.haulmont.cuba.core.global.BeanLocator
+import com.haulmont.cuba.core.global.Events
 import com.haulmont.cuba.core.global.Messages
 import com.haulmont.cuba.gui.Dialogs
 import com.haulmont.cuba.gui.Notifications
@@ -141,10 +142,12 @@ class UiControllerDependencyInjectorTest extends Specification {
         def inspector = new UiControllerReflectionInspector()
         def beanLocator = Mock(BeanLocator)
         def window = Mock(TestWindow)
+        def events = Mock(Events)
 
         screen.window = window
 
         beanLocator.getAll(BeanLocator) >> ImmutableMap.of("beanLocator", beanLocator)
+        beanLocator.get(Events.NAME) >> events
 
         injector.reflectionInspector = inspector
         injector.beanLocator = beanLocator

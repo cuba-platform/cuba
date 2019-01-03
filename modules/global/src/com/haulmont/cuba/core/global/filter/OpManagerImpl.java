@@ -16,6 +16,7 @@
 
 package com.haulmont.cuba.core.global.filter;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
@@ -29,10 +30,7 @@ import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 import java.time.*;
-import java.util.Date;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 import static com.haulmont.cuba.core.global.filter.Op.*;
 
@@ -41,13 +39,12 @@ public class OpManagerImpl implements OpManager {
 
     @Inject
     protected MetadataTools metadataTools;
-
     @Inject
     protected Metadata metadata;
 
-    protected static final List<Class> dateTimeClasses = Lists.newArrayList(Date.class, LocalDate.class, LocalDateTime.class,
+    protected static final List<Class> dateTimeClasses = ImmutableList.of(Date.class, LocalDate.class, LocalDateTime.class,
             OffsetDateTime.class);
-    protected static final List<Class> timeClasses = Lists.newArrayList(LocalTime.class, OffsetTime.class);
+    protected static final List<Class> timeClasses = ImmutableList.of(LocalTime.class, OffsetTime.class);
 
     @Override
     public EnumSet<Op> availableOps(Class javaClass) {

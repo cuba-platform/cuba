@@ -19,7 +19,6 @@ package com.haulmont.cuba.gui.components.calendar;
 import com.haulmont.bali.events.EventHub;
 import com.haulmont.bali.events.Subscription;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.gui.components.Calendar;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 
@@ -33,7 +32,6 @@ public class EntityCalendarEventProvider implements CalendarEventProvider,
 
     protected List<CalendarEvent> itemsCache;
     protected CollectionDatasource datasource;
-    protected Calendar calendar;
 
     protected String startDateProperty;
     protected String endDateProperty;
@@ -47,6 +45,7 @@ public class EntityCalendarEventProvider implements CalendarEventProvider,
     protected CollectionDatasource.CollectionChangeListener collectionChangeListener;
     protected Datasource.ItemPropertyChangeListener itemPropertyChangeListener;
 
+    @SuppressWarnings("unchecked")
     public EntityCalendarEventProvider (CollectionDatasource datasource) {
         this.datasource = datasource;
 
@@ -97,11 +96,6 @@ public class EntityCalendarEventProvider implements CalendarEventProvider,
     @Override
     public void removeAllEvents() {
         throw new UnsupportedOperationException("Use datasource for changing data items of EntityCalendarEventProvider");
-    }
-
-    @Override
-    public void setCalendar(Calendar calendar) {
-        this.calendar = calendar;
     }
 
     @Override
@@ -191,6 +185,7 @@ public class EntityCalendarEventProvider implements CalendarEventProvider,
         return allDayProperty;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void unbind() {
         datasource.removeCollectionChangeListener(collectionChangeListener);

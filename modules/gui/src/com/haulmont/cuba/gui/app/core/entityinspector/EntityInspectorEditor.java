@@ -429,11 +429,15 @@ public class EntityInspectorEditor extends AbstractWindow {
         for (MetaProperty metaProperty : embeddableMetaClass.getProperties()) {
             boolean isRequired = isRequired(metaProperty) || metaProperty.equals(nullIndicatorProperty);
             boolean isReadonly = metaProperty.isReadOnly();
+
+            if (metaProperty.getType() == MetaProperty.Type.DATATYPE) {
+                if (metaProperty.getRange().asDatatype().getJavaClass().equals(Date.class)) {
+                    dateTimeFields.add(metaProperty.getName());
+                }
+            }
+
             switch (metaProperty.getType()) {
                 case DATATYPE:
-                    if (metaProperty.getRange().asDatatype().getJavaClass().equals(Date.class)) {
-                        dateTimeFields.add(metaProperty.getName());
-                    }
                 case ENUM:
                     //skip system properties
                     if (metadata.getTools().isSystem(metaProperty) && !showSystemFields) {
@@ -445,6 +449,7 @@ public class EntityInspectorEditor extends AbstractWindow {
                     }
                     addField(embeddableMetaClass, metaProperty, embeddedItem, fieldGroup, isRequired, false, isReadonly, customFields);
                     break;
+
                 case COMPOSITION:
                 case ASSOCIATION:
                     if (metaProperty.getRange().getCardinality().isMany()) {
@@ -458,6 +463,7 @@ public class EntityInspectorEditor extends AbstractWindow {
                         }
                     }
                     break;
+
                 default:
                     break;
             }

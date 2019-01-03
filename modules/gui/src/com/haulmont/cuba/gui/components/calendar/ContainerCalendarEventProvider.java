@@ -19,7 +19,6 @@ package com.haulmont.cuba.gui.components.calendar;
 import com.haulmont.bali.events.EventHub;
 import com.haulmont.bali.events.Subscription;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.gui.components.Calendar;
 import com.haulmont.cuba.gui.components.data.calendar.EntityCalendarEventProvider;
 import com.haulmont.cuba.gui.model.CollectionContainer;
 import com.haulmont.cuba.gui.model.CollectionContainer.CollectionChangeEvent;
@@ -36,8 +35,6 @@ public class ContainerCalendarEventProvider<E extends Entity>
     protected List<CalendarEvent> itemsCache;
 
     protected CollectionContainer<E> container;
-
-    protected Calendar calendar;
 
     protected String startDateProperty;
     protected String endDateProperty;
@@ -95,11 +92,6 @@ public class ContainerCalendarEventProvider<E extends Entity>
     public void removeAllEvents() {
         throw new UnsupportedOperationException("Use container for changing data items of " +
                 "ContainerCalendarEventProvider");
-    }
-
-    @Override
-    public void setCalendar(Calendar calendar) {
-        this.calendar = calendar;
     }
 
     @Override

@@ -24,10 +24,10 @@ import org.springframework.jmx.export.annotation.AnnotationJmxAttributeSource;
 import org.springframework.jmx.export.assembler.AbstractReflectiveMBeanInfoAssembler;
 import org.springframework.jmx.export.metadata.*;
 import org.springframework.jmx.support.JmxUtils;
-import org.springframework.jmx.support.MetricType;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
+import javax.annotation.Nonnull;
 import javax.management.Descriptor;
 import javax.management.MBeanParameterInfo;
 import javax.management.modelmbean.ModelMBeanNotificationInfo;
@@ -88,9 +88,9 @@ public class AnnotationMBeanInfoAssembler extends AbstractReflectiveMBeanInfoAss
             }
         }
 
-        String msg = "Bean " + beanKey + " doesn't implement management interfaces. " +
-                "Management interface should either follow naming scheme or be annotated by @ManagedResource";
-        throw new IllegalArgumentException(msg);
+        throw new IllegalArgumentException(String.format(
+                "Bean %s doesn't implement management interfaces. Management interface should either follow naming scheme or be annotated by @ManagedResource",
+                beanKey));
     }
 
     /**
@@ -101,7 +101,7 @@ public class AnnotationMBeanInfoAssembler extends AbstractReflectiveMBeanInfoAss
      * @return whether the method has the appropriate metadata
      */
     @Override
-    protected boolean includeReadAttribute(Method method, String beanKey) {
+    protected boolean includeReadAttribute(@Nonnull Method method, @Nonnull String beanKey) {
         Method interfaceMethod = findJmxMethod(method, beanKey);
         boolean metric = interfaceMethod != null && attributeSource.getManagedMetric(interfaceMethod) != null;
         boolean operation = interfaceMethod != null && attributeSource.getManagedOperation(interfaceMethod) != null;
@@ -119,7 +119,7 @@ public class AnnotationMBeanInfoAssembler extends AbstractReflectiveMBeanInfoAss
      * @return whether the method has the appropriate metadata
      */
     @Override
-    protected boolean includeWriteAttribute(Method method, String beanKey) {
+    protected boolean includeWriteAttribute(@Nonnull Method method, @Nonnull String beanKey) {
         Method interfaceMethod = findJmxMethod(method, beanKey);
         boolean operation = interfaceMethod != null && attributeSource.getManagedOperation(interfaceMethod) != null;
 
@@ -136,7 +136,7 @@ public class AnnotationMBeanInfoAssembler extends AbstractReflectiveMBeanInfoAss
      * @return whether the method has the appropriate metadata
      */
     @Override
-    protected boolean includeOperation(Method method, String beanKey) {
+    protected boolean includeOperation(@Nonnull Method method, @Nonnull String beanKey) {
         Method interfaceMethod = findJmxMethod(method, beanKey);
         return interfaceMethod != null;
     }
@@ -165,10 +165,11 @@ public class AnnotationMBeanInfoAssembler extends AbstractReflectiveMBeanInfoAss
      * Returns an empty {@code String} if no description can be found.
      */
     @Override
-    protected String getDescription(Object managedBean, String beanKey) {
+    @Nonnull
+    protected String getDescription(@Nonnull Object managedBean, String beanKey) {
         Class ifc = findJmxInterface(beanKey, AopUtils.getTargetClass(managedBean));
         ManagedResource mr = this.attributeSource.getManagedResource(ifc);
-        return (mr != null ? mr.getDescription() : null);
+        return (mr != null ? mr.getDescription() : "");
     }
 
     /**
@@ -176,6 +177,7 @@ public class AnnotationMBeanInfoAssembler extends AbstractReflectiveMBeanInfoAss
      * descriptor. Attempts to create the description using metadata from either
      * the getter or setter attributes, otherwise uses the property name.
      */
+    @Nonnull
     @Override
     protected String getAttributeDescription(PropertyDescriptor propertyDescriptor, String beanKey) {
         Method readMethod = propertyDescriptor.getReadMethod();
@@ -208,6 +210,7 @@ public class AnnotationMBeanInfoAssembler extends AbstractReflectiveMBeanInfoAss
      * metadata. Uses the method name is no description is present in the metadata.
      */
     @Override
+    @Nonnull
     protected String getOperationDescription(Method method, String beanKey) {
         PropertyDescriptor pd = BeanUtils.findPropertyForMethod(method);
         Method resolvedMethod = findJmxMethod(method, beanKey);
@@ -235,10 +238,11 @@ public class AnnotationMBeanInfoAssembler extends AbstractReflectiveMBeanInfoAss
      * if no attributes are found.
      */
     @Override
-    protected MBeanParameterInfo[] getOperationParameters(Method method, String beanKey) {
+    @Nonnull
+    protected MBeanParameterInfo[] getOperationParameters(@Nonnull Method method, String beanKey) {
         Method resolvedMethod = findJmxMethod(method, beanKey);
         ManagedOperationParameter[] params = this.attributeSource.getManagedOperationParameters(resolvedMethod);
-        if (params == null || params.length == 0) {
+        if (params.length == 0) {
             return new MBeanParameterInfo[0];
         }
 
@@ -259,6 +263,7 @@ public class AnnotationMBeanInfoAssembler extends AbstractReflectiveMBeanInfoAss
      * and generates and returns the corresponding {@link javax.management.modelmbean.ModelMBeanNotificationInfo} metadata.
      */
     @Override
+    @Nonnull
     protected ModelMBeanNotificationInfo[] getNotificationInfo(Object managedBean, String beanKey) {
         Class intf = findJmxInterface(beanKey, AopUtils.getTargetClass(managedBean));
         ManagedNotification[] notificationAttributes =
@@ -281,7 +286,7 @@ public class AnnotationMBeanInfoAssembler extends AbstractReflectiveMBeanInfoAss
      * and {@code persistName} descriptor fields if they are present in the metadata.
      */
     @Override
-    protected void populateMBeanDescriptor(Descriptor desc, Object managedBean, String beanKey) {
+    protected void populateMBeanDescriptor(@Nonnull Descriptor desc, Object managedBean, String beanKey) {
         Class intf = findJmxInterface(beanKey, AopUtils.getTargetClass(managedBean));
         ManagedResource mr = this.attributeSource.getManagedResource(intf);
         if (mr == null) {
@@ -317,7 +322,7 @@ public class AnnotationMBeanInfoAssembler extends AbstractReflectiveMBeanInfoAss
      * to the attribute descriptor.
      */
     @Override
-    protected void populateAttributeDescriptor(Descriptor desc, Method getter, Method setter, String beanKey) {
+    protected void populateAttributeDescriptor(@Nonnull Descriptor desc, Method getter, Method setter, String beanKey) {
         Method resolvedGetter = findJmxMethod(getter, beanKey);
         Method resolvedSetter = findJmxMethod(setter, beanKey);
         ManagedMetric metricInfo = resolvedGetter != null ? attributeSource.getManagedMetric(resolvedGetter) : null;
@@ -376,23 +381,19 @@ public class AnnotationMBeanInfoAssembler extends AbstractReflectiveMBeanInfoAss
             desc.setField(FIELD_METRIC_CATEGORY, metric.getCategory());
         }
 
-        String metricType = (metric.getMetricType() == null) ? MetricType.GAUGE.toString() : metric.getMetricType().toString();
-        desc.setField(FIELD_METRIC_TYPE, metricType);
+        desc.setField(FIELD_METRIC_TYPE, metric.getMetricType().toString());
     }
 
     /**
-     * Adds descriptor fields from the {@code ManagedAttribute} attribute
-     * to the attribute descriptor. Specifically, adds the {@code currencyTimeLimit}
-     * descriptor field if it is present in the metadata.
+     * Adds descriptor fields from the {@code ManagedAttribute} attribute to the attribute descriptor. Specifically,
+     * adds the {@code currencyTimeLimit} descriptor field if it is present in the metadata.
      */
     @Override
-    protected void populateOperationDescriptor(Descriptor desc, Method method, String beanKey) {
+    protected void populateOperationDescriptor(@Nonnull Descriptor desc, Method method, String beanKey) {
         Method resolvedOperation = findJmxMethod(method, beanKey);
         ManagedOperation mo = this.attributeSource.getManagedOperation(resolvedOperation);
 
-        if (resolvedOperation != null) {
-            applyRunAsync(desc, resolvedOperation);
-        }
+        applyRunAsync(desc, resolvedOperation);
 
         if (mo != null) {
             applyCurrencyTimeLimit(desc, mo.getCurrencyTimeLimit());

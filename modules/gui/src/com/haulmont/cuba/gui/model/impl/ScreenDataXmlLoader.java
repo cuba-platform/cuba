@@ -67,14 +67,19 @@ public class ScreenDataXmlLoader {
         }
 
         for (Element el : element.elements()) {
-            if (el.getName().equals("collection")) {
-                loadCollectionContainer(screenData, el, hostScreenData);
-            } else if (el.getName().equals("instance")) {
-                loadInstanceContainer(screenData, el, hostScreenData);
-            } else if (el.getName().equals("keyValueCollection")) {
-                loadKeyValueCollectionContainer(screenData, el, hostScreenData);
-            } else if (el.getName().equals("keyValueInstance")) {
-                loadKeyValueInstanceContainer(screenData, el, hostScreenData);
+            switch (el.getName()) {
+                case "collection":
+                    loadCollectionContainer(screenData, el, hostScreenData);
+                    break;
+                case "instance":
+                    loadInstanceContainer(screenData, el, hostScreenData);
+                    break;
+                case "keyValueCollection":
+                    loadKeyValueCollectionContainer(screenData, el, hostScreenData);
+                    break;
+                case "keyValueInstance":
+                    loadKeyValueInstanceContainer(screenData, el, hostScreenData);
+                    break;
             }
         }
     }
@@ -161,7 +166,6 @@ public class ScreenDataXmlLoader {
         KeyValueContainer container;
 
         if (checkProvided(element, hostScreenData)) {
-            //noinspection ConstantConditions
             container = hostScreenData.getContainer(containerId);
         } else {
             container = factory.createKeyValueContainer();
@@ -340,7 +344,6 @@ public class ScreenDataXmlLoader {
         }
 
         if (checkProvided(element, hostScreenData)) {
-            //noinspection ConstantConditions
             loader = hostScreenData.getLoader(loaderId);
         } else {
             loader = factory.createKeyValueInstanceLoader();
@@ -434,7 +437,7 @@ public class ScreenDataXmlLoader {
         if (Strings.isNullOrEmpty(firstResultStr))
             return;
 
-        loader.setFirstResult(Integer.valueOf(firstResultStr));
+        loader.setFirstResult(Integer.parseInt(firstResultStr));
     }
 
     protected void loadMaxResults(Element element, BaseCollectionLoader loader) {
@@ -442,7 +445,7 @@ public class ScreenDataXmlLoader {
         if (Strings.isNullOrEmpty(maxResultsStr))
             return;
 
-        loader.setMaxResults(Integer.valueOf(maxResultsStr));
+        loader.setMaxResults(Integer.parseInt(maxResultsStr));
     }
 
     protected void loadCacheable(Element element, CollectionLoader<Entity> loader) {

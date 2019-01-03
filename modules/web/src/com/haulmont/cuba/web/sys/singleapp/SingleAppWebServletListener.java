@@ -85,9 +85,15 @@ public class SingleAppWebServletListener implements ServletContextListener {
             appContextLoader = appContextLoaderClass.newInstance();
 
             Method setJarsNamesMethod = findMethod(appContextLoaderClass, "setJarNames", String.class);
+            if (setJarsNamesMethod == null) {
+                throw new RuntimeException("No setJarNames method in AppContextLoader");
+            }
             invokeMethod(setJarsNamesMethod, appContextLoader, dependenciesFile);
 
             Method contextInitializedMethod = findMethod(appContextLoaderClass, "contextInitialized", ServletContextEvent.class);
+            if (contextInitializedMethod == null) {
+                throw new RuntimeException("No contextInitialized method in AppContextLoader");
+            }
             invokeMethod(contextInitializedMethod, appContextLoader, sce);
 
             Thread.currentThread().setContextClassLoader(contextClassLoader);
@@ -100,8 +106,11 @@ public class SingleAppWebServletListener implements ServletContextListener {
 
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
-        Method contextInitialized = findMethod(appContextLoader.getClass(), "contextDestroyed", ServletContextEvent.class);
-        invokeMethod(contextInitialized, appContextLoader, sce);
+        Method contextDestroyed = findMethod(appContextLoader.getClass(), "contextDestroyed", ServletContextEvent.class);
+        if (contextDestroyed == null) {
+            throw new RuntimeException("No contextDestroyed method in AppContextLoader");
+        }
+        invokeMethod(contextDestroyed, appContextLoader, sce);
     }
 
     protected String getAppContextLoaderClassName() {

@@ -60,7 +60,6 @@ public class WebLookupPickerField<V extends Entity> extends WebPickerField<V>
     protected Consumer<String> newOptionHandler;
 
     protected Function<? super V, String> optionIconProvider;
-    protected Function<? super V, String> optionCaptionProvider;
     protected Function<? super V, String> optionStyleProvider;
 
     protected OptionsBinding<V> optionsBinding;
@@ -379,11 +378,6 @@ public class WebLookupPickerField<V extends Entity> extends WebPickerField<V>
         return itemCaption
                 .toLowerCase(locale)
                 .contains(filterText.toLowerCase(locale));
-    }
-
-    @Override
-    public Function<? super V, String> getOptionCaptionProvider() {
-        return optionCaptionProvider;
     }
 
     @Override

@@ -36,7 +36,6 @@ import javax.inject.Inject;
 public class CubaAuthProviderFactory {
     @Inject
     protected Configuration configuration;
-
     @Inject
     protected ApplicationContext applicationContext;
 
@@ -44,9 +43,14 @@ public class CubaAuthProviderFactory {
         WebAuthConfig authConfig = configuration.getConfig(WebAuthConfig.class);
         String providerClassName = authConfig.getExternalAuthenticationProviderClass();
 
+        ClassLoader classLoader = applicationContext.getClassLoader();
+        if (classLoader == null) {
+            throw new IllegalStateException("Application context class loader is null");
+        }
+
         try {
-            ClassLoader classLoader = applicationContext.getClassLoader();
             Class<?> providerClass = classLoader.loadClass(providerClassName);
+
             CubaAuthProvider cubaAuthProvider = (CubaAuthProvider) providerClass.newInstance();
             return cubaAuthProvider;
         } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {

@@ -77,4 +77,16 @@ public class ValidationErrors {
     public boolean isEmpty() {
         return items.isEmpty();
     }
+
+    /**
+     * @return component of the first validation problem or null if no validation errors
+     */
+    @Nullable
+    public Component getFirstComponent() {
+        if (items.isEmpty()) {
+            return null;
+        }
+
+        return items.get(0).component;
+    }
 }

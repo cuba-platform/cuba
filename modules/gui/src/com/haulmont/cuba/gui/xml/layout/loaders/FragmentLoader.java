@@ -236,7 +236,7 @@ public class FragmentLoader extends ContainerLoader<Fragment> implements Compone
         }
     }
 
-    protected class FragmentLoaderInitTask implements InitTask {
+    protected static class FragmentLoaderInitTask implements InitTask {
         protected Fragment fragment;
         protected ScreenOptions options;
 

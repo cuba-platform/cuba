@@ -20,12 +20,8 @@ import com.haulmont.cuba.gui.components.data.TreeTableItems;
 import com.haulmont.cuba.web.widgets.data.TreeTableContainer;
 
 import java.util.Collection;
-import java.util.List;
 
 public class TreeTableDataContainer<I> extends SortableDataContainer<I> implements TreeTableContainer {
-
-    // vaadin8 aggregation
-    protected List<Object> aggregationProperties = null;
 
     public TreeTableDataContainer(TreeTableItems<I> tableDataSource,
                                   TableItemsEventsDelegate<I> dataEventsDelegate) {

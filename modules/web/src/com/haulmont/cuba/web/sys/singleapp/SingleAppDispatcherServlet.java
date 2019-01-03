@@ -24,6 +24,8 @@ import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.web.context.ConfigurableWebApplicationContext;
 import org.springframework.web.context.WebApplicationContext;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Set;
 
 public class SingleAppDispatcherServlet extends CubaDispatcherServlet {
@@ -35,11 +37,12 @@ public class SingleAppDispatcherServlet extends CubaDispatcherServlet {
     }
 
     @Override
-    protected WebApplicationContext createWebApplicationContext(ApplicationContext parent) {
+    @Nonnull
+    protected WebApplicationContext createWebApplicationContext(@Nullable ApplicationContext parent) {
         if (this.logger.isDebugEnabled()) {
-            this.logger.debug("Servlet with name '" + getServletName() +
-                    "' will try to create custom WebApplicationContext context of class '" +
-                    CubaXmlWebApplicationContext.class.getName() + "'" + ", using parent context [" + parent + "]");
+            this.logger.debug(
+                    String.format("Servlet with name '%s' will try to create custom WebApplicationContext context of class '%s', using parent context [%s]",
+                            getServletName(), CubaXmlWebApplicationContext.class.getName(), parent));
         }
         ConfigurableWebApplicationContext wac = new CubaXmlWebApplicationContext() {
             @Override
@@ -52,9 +55,14 @@ public class SingleAppDispatcherServlet extends CubaDispatcherServlet {
             }
         };
 
+        String contextConfigLocation = getContextConfigLocation();
+        if (contextConfigLocation == null) {
+            throw new RuntimeException("Unable to determine context config location");
+        }
+
         wac.setEnvironment(getEnvironment());
         wac.setParent(parent);
-        wac.setConfigLocation(getContextConfigLocation());
+        wac.setConfigLocation(contextConfigLocation);
 
         configureAndRefreshWebApplicationContext(wac);
 

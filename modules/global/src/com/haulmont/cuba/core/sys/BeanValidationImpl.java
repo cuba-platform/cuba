@@ -37,18 +37,17 @@ import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
 @Component(BeanValidation.NAME)
 public class BeanValidationImpl implements BeanValidation {
+
+    public static final ValidationOptions NO_VALIDATION_OPTIONS = new ValidationOptions();
+
     @Inject
     protected Messages messages;
-
     @Inject
     protected Metadata metadata;
-
     @Inject
     protected TimeSource timeSource;
-
     @Inject
     protected UserSessionSource userSessionSource;
-
     @Inject
     protected EntityStates entityStates;
 
@@ -65,7 +64,7 @@ public class BeanValidationImpl implements BeanValidation {
     public Validator getValidator(ConstraintMapping constraintMapping) {
         checkNotNullArgument(constraintMapping);
 
-        return getValidator(constraintMapping, null);
+        return getValidator(constraintMapping, NO_VALIDATION_OPTIONS);
     }
 
     @Override

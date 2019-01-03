@@ -23,7 +23,6 @@ import com.haulmont.cuba.core.global.filter.ConditionType;
 import com.haulmont.cuba.gui.components.Filter;
 import com.haulmont.cuba.gui.components.FilterImplementation;
 import com.haulmont.cuba.gui.components.filter.condition.*;
-import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.screen.FrameOwner;
 import com.haulmont.cuba.gui.screen.UiControllerUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -91,7 +90,7 @@ public class FilterParserImpl implements FilterParser {
 
         Class<? extends FrameOwner> controllerClass = filter.getFrame().getFrameOwner().getClass();
         String messagesPack = UiControllerUtils.getPackage(controllerClass); // todo rework
-        CollectionDatasource datasource = filter.getDatasource();
+
         switch (type) {
             case GROUP:
                 return new GroupCondition(element, filterComponentName);
@@ -104,7 +103,7 @@ public class FilterParserImpl implements FilterParser {
             case FTS:
                 return new FtsCondition(element, messagesPack, filterComponentName, ((FilterImplementation) filter).getEntityMetaClass());
             default:
-                throw new IllegalStateException("Unknown condition type: " + type + " in " + xml);
+                throw new IllegalStateException(String.format("Unknown condition type: %s in %s", type, xml));
         }
     }
 

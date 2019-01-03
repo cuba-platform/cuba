@@ -308,7 +308,8 @@ public class GroupBrowser extends AbstractWindow {
         try {
             Collection<Entity> importedEntities;
             if ("json".equals(Files.getFileExtension(importUpload.getFileName()))) {
-                importedEntities = entityImportExportService.importEntitiesFromJSON(new String(fileBytes), createGroupsImportView());
+                String json = new String(fileBytes, StandardCharsets.UTF_8);
+                importedEntities = entityImportExportService.importEntitiesFromJSON(json, createGroupsImportView());
             } else {
                 importedEntities = entityImportExportService.importEntitiesFromZIP(fileBytes, createGroupsImportView());
             }

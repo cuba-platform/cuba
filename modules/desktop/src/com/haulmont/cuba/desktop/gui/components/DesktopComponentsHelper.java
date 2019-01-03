@@ -411,7 +411,7 @@ public class DesktopComponentsHelper {
     public static void focusProblemComponent(ValidationErrors errors) {
         Component component = null;
         if (!errors.getAll().isEmpty()) {
-            component = errors.getAll().iterator().next().component;
+            component = errors.getFirstComponent();
         }
 
         if (component != null) {

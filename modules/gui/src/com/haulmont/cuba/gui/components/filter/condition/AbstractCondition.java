@@ -31,7 +31,6 @@ import com.haulmont.cuba.gui.components.filter.ConditionParamBuilder;
 import com.haulmont.cuba.gui.components.filter.Param;
 import com.haulmont.cuba.gui.components.filter.descriptor.AbstractConditionDescriptor;
 import com.haulmont.cuba.gui.components.filter.operationedit.AbstractOperationEditor;
-import com.haulmont.cuba.gui.data.Datasource;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
@@ -82,7 +81,6 @@ public abstract class AbstractCondition extends BaseUuidEntity {
     protected Boolean useUserTimeZone;
     protected Integer width = 1;
     protected Op operator;
-
 
     protected List<Listener> listeners = new ArrayList<>();
     protected AbstractOperationEditor operationEditor;
@@ -151,9 +149,7 @@ public abstract class AbstractCondition extends BaseUuidEntity {
         metaClass = descriptor.getDatasourceMetaClass();
         messagesPack = descriptor.getMessagesPack();
         ConditionParamBuilder paramBuilder = AppBeans.get(ConditionParamBuilder.class);
-        if (Strings.isNullOrEmpty(paramName)) {
-            paramName = paramBuilder.createParamName(this);
-        }
+        paramName = paramBuilder.createParamName(this);
         param = paramBuilder.createParam(this);
         String operatorType = descriptor.getOperatorType();
         if (operatorType != null) {
@@ -423,11 +419,6 @@ public abstract class AbstractCondition extends BaseUuidEntity {
     public void setWidth(Integer width) {
         this.width = width;
     }
-
-//    public String createParamName() {
-//        return "component$" + getFilterComponentName() + "." +
-//                getName().replace('.', '_') + RandomStringUtils.randomNumeric(5);
-//    }
 
     public AbstractOperationEditor createOperationEditor() {
         return null;

@@ -151,7 +151,7 @@ public class ScreenValidation {
     protected void focusProblemComponent(ValidationErrors errors) {
         com.haulmont.cuba.gui.components.Component component = null;
         if (!errors.getAll().isEmpty()) {
-            component = errors.getAll().get(0).component;
+            component = errors.getFirstComponent();
         }
         if (component != null) {
             ComponentsHelper.focusComponent(component);

@@ -229,7 +229,6 @@ public class TableDataContainer<I> implements Container, ItemSetChangeNotifier {
         throw new UnsupportedOperationException();
     }
 
-    @SuppressWarnings("SuspiciousMethodCalls")
     @Override
     public boolean removeContainerProperty(Object propertyId) throws UnsupportedOperationException {
         return this.properties.remove(propertyId);

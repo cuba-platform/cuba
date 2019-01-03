@@ -42,15 +42,15 @@ public class ExcelAutoColumnSizer {
     private Graphics2D graphics = null;
 
     /** Maps a Short (HSSF font index) to a FontMetrics object */
-    private Map fontMetrics = new HashMap();
+    private Map<Short, FontMetrics> fontMetrics = new HashMap<>();
 
     private short currentWidth = WIDTH_MIN;
 
     private FontMetrics getFontMetrics(HSSFFont hf){
         FontMetrics fm;
-        Short pFont = new Short(hf.getIndex());
+        Short pFont = hf.getIndex();
 
-        fm = (FontMetrics) fontMetrics.get(pFont);
+        fm = fontMetrics.get(pFont);
         if (fm == null) {
             int style;
             if (hf.getBold() || hf.getItalic()) {
@@ -127,7 +127,7 @@ public class ExcelAutoColumnSizer {
 
     public void dispose() {
         if (graphics != null) {
-            graphics.finalize();
+            graphics.dispose();
             graphics = null;
         }
         fontMetrics = null;

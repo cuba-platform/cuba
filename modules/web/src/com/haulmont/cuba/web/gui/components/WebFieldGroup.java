@@ -1437,8 +1437,8 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout> im
             return targetCaptionAsHtml;
         }
 
-        public void setTargetCaptionAsHtnl(Boolean targetCaptionAsHtml) {
-            this.targetCaption = targetCaption;
+        public void setTargetCaptionAsHtml(Boolean targetCaptionAsHtml) {
+            this.targetCaptionAsHtml = targetCaptionAsHtml;
         }
 
         public String getTargetDescription() {
@@ -1487,7 +1487,9 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout> im
 
         @Override
         public String toString() {
-            return "FieldConfig: " + id;
+            return "FieldConfigImpl{" +
+                    "id='" + id + '\'' +
+                    '}';
         }
     }
 }

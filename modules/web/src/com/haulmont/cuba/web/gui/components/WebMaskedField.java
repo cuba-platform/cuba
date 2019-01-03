@@ -30,12 +30,11 @@ import com.haulmont.cuba.web.widgets.CubaMaskedTextField;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.event.ShortcutListener;
 import com.vaadin.shared.ui.ValueChangeMode;
+import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.InitializingBean;
 
 import javax.inject.Inject;
 import java.text.ParseException;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -47,9 +46,7 @@ public class WebMaskedField<V> extends WebV8AbstractField<CubaMaskedTextField, S
         implements MaskedField<V>, InitializingBean {
 
     protected static final char PLACE_HOLDER = '_';
-
-    protected final static List<Character> maskSymbols
-            = Arrays.asList('#', 'U', 'L', '?', 'A', '*', 'H', 'h', '~');
+    protected static final Character[] MASK_SYMBOLS = new Character[]{'#', 'U', 'L', '?', 'A', '*', 'H', 'h', '~'};
 
     protected ShortcutListener enterShortcutListener;
     protected String nullRepresentation;
@@ -80,9 +77,10 @@ public class WebMaskedField<V> extends WebV8AbstractField<CubaMaskedTextField, S
 
         for (int i = 0; i < mask.length(); i++) {
             char c = mask.charAt(i);
+
             if (c == '\'') {
                 valueBuilder.append(mask.charAt(++i));
-            } else if (maskSymbols.contains(c)) {
+            } else if (ArrayUtils.contains(MASK_SYMBOLS, c)) {
                 valueBuilder.append(PLACE_HOLDER);
             } else {
                 valueBuilder.append(c);
