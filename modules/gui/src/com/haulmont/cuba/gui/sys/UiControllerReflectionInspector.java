@@ -59,63 +59,23 @@ import static org.springframework.core.annotation.AnnotatedElementUtils.findMerg
 @Component("cuba_UiControllerReflectionInspector")
 public class UiControllerReflectionInspector {
 
-    protected final LoadingCache<Class<?>, List<InjectElement>> injectValueElementsCache =
+    protected final LoadingCache<Class<?>, ScreenIntrospectionData> screenIntrospectionCache =
             CacheBuilder.newBuilder()
                     .weakKeys()
-                    .build(new CacheLoader<Class<?>, List<InjectElement>>() {
+                    .build(new CacheLoader<Class<?>, ScreenIntrospectionData>() {
                         @Override
-                        public List<InjectElement> load(@Nonnull Class<?> concreteClass) {
-                            return getAnnotatedInjectElementsNotCached(concreteClass);
+                        public ScreenIntrospectionData load(@Nonnull Class<?> concreteClass) {
+                            return getScreenIntrospectionDataNotCached(concreteClass);
                         }
                     });
 
-    protected final LoadingCache<Class<?>, List<Method>> eventListenerMethodsCache =
+    protected final LoadingCache<Class<?>, TargetIntrospectionData> targetIntrospectionCache =
             CacheBuilder.newBuilder()
                     .weakKeys()
-                    .build(new CacheLoader<Class<?>, List<Method>>() {
+                    .build(new CacheLoader<Class<?>, TargetIntrospectionData>() {
                         @Override
-                        public List<Method> load(@Nonnull Class<?> concreteClass) {
-                            return getAnnotatedListenerMethodsNotCached(concreteClass);
-                        }
-                    });
-
-    protected final LoadingCache<Class<?>, List<AnnotatedMethod<Subscribe>>> subscribeMethodsCache =
-            CacheBuilder.newBuilder()
-                    .weakKeys()
-                    .build(new CacheLoader<Class<?>, List<AnnotatedMethod<Subscribe>>>() {
-                        @Override
-                        public List<AnnotatedMethod<Subscribe>> load(@Nonnull Class<?> concreteClass) {
-                            return getAnnotatedSubscribeMethodsNotCached(concreteClass);
-                        }
-                    });
-
-    protected final LoadingCache<Class<?>, Map<Class, MethodHandle>> addListenerMethodsCache =
-            CacheBuilder.newBuilder()
-                    .weakKeys()
-                    .build(new CacheLoader<Class<?>, Map<Class, MethodHandle>>() {
-                        @Override
-                        public Map<Class, MethodHandle> load(@Nonnull Class<?> concreteClass) {
-                            return getAddListenerMethodsNotCached(concreteClass);
-                        }
-                    });
-
-    protected final LoadingCache<Class<?>, List<AnnotatedMethod<Install>>> installMethodsCache =
-            CacheBuilder.newBuilder()
-                    .weakKeys()
-                    .build(new CacheLoader<Class<?>, List<AnnotatedMethod<Install>>>() {
-                        @Override
-                        public List<AnnotatedMethod<Install>> load(@Nonnull Class<?> concreteClass) {
-                            return getAnnotatedInstallMethodsNotCached(concreteClass);
-                        }
-                    });
-
-    protected final LoadingCache<Class<?>, Map<String, MethodHandle>> installTargetMethodsCache =
-            CacheBuilder.newBuilder()
-                    .weakKeys()
-                    .build(new CacheLoader<Class<?>, Map<String, MethodHandle>>() {
-                        @Override
-                        public Map<String, MethodHandle> load(@Nonnull Class<?> concreteClass) {
-                            return getInstallTargetMethodsNotCached(concreteClass);
+                        public TargetIntrospectionData load(@Nonnull Class<?> concreteClass) {
+                            return getTargetIntrospectionDataNotCached(concreteClass);
                         }
                     });
 
@@ -171,39 +131,42 @@ public class UiControllerReflectionInspector {
         }
     }
 
+    /**
+     * Introspects screen class and finds annotated fields and methods for dependency injection.
+     *
+     * @param clazz screen class
+     * @return screen data
+     */
+    public ScreenIntrospectionData getScreenIntrospectionData(Class<?> clazz) {
+        return screenIntrospectionCache.getUnchecked(clazz);
+    }
+
     public List<AnnotatedMethod<Install>> getAnnotatedInstallMethods(Class<?> clazz) {
-        return installMethodsCache.getUnchecked(clazz);
+        return screenIntrospectionCache.getUnchecked(clazz).getInstallMethods();
     }
 
     public List<AnnotatedMethod<Subscribe>> getAnnotatedSubscribeMethods(Class<?> clazz) {
-        return subscribeMethodsCache.getUnchecked(clazz);
+        return screenIntrospectionCache.getUnchecked(clazz).getSubscribeMethods();
     }
 
     public List<Method> getAnnotatedListenerMethods(Class<?> clazz) {
-        if (clazz == AbstractWindow.class
-                || clazz == AbstractEditor.class
-                || clazz == AbstractLookup.class
-                || clazz == AbstractFrame.class) {
-            return Collections.emptyList();
-        }
-
-        return eventListenerMethodsCache.getUnchecked(clazz);
+        return screenIntrospectionCache.getUnchecked(clazz).getEventListenerMethods();
     }
 
     public List<InjectElement> getAnnotatedInjectElements(Class<?> clazz) {
-        return injectValueElementsCache.getUnchecked(clazz);
+        return screenIntrospectionCache.getUnchecked(clazz).getInjectElements();
     }
 
     @Nullable
     public MethodHandle getAddListenerMethod(Class<?> clazz, Class<?> eventType) {
-        Map<Class, MethodHandle> subscribeMethodsMap = addListenerMethodsCache.getUnchecked(clazz);
-        return subscribeMethodsMap.get(eventType);
+        Map<Class, MethodHandle> methods = targetIntrospectionCache.getUnchecked(clazz).getAddListenerMethods();
+        return methods.get(eventType);
     }
 
     @Nullable
     public MethodHandle getInstallTargetMethod(Class<?> clazz, String methodName) {
-        Map<String, MethodHandle> targetMethodsCache = installTargetMethodsCache.getUnchecked(clazz);
-        return targetMethodsCache.get(methodName);
+        Map<String, MethodHandle> methods = targetIntrospectionCache.getUnchecked(clazz).getInstallTargetMethods();
+        return methods.get(methodName);
     }
 
     public MethodHandle getConsumerMethodFactory(Class<?> ownerClass, MethodHandle methodHandle, Class<?> eventClass) {
@@ -235,16 +198,30 @@ public class UiControllerReflectionInspector {
      * Clear underlying reflection caches.
      */
     public void clearCache() {
-        injectValueElementsCache.invalidateAll();
-        eventListenerMethodsCache.invalidateAll();
-
-        subscribeMethodsCache.invalidateAll();
-        addListenerMethodsCache.invalidateAll();
-
-        installMethodsCache.invalidateAll();
-        installTargetMethodsCache.invalidateAll();
+        screenIntrospectionCache.invalidateAll();
+        targetIntrospectionCache.invalidateAll();
 
         lambdaMethodsCache.invalidateAll();
+    }
+
+    protected ScreenIntrospectionData getScreenIntrospectionDataNotCached(Class<?> concreteClass) {
+        Method[] methods = ReflectionUtils.getUniqueDeclaredMethods(concreteClass);
+
+        List<InjectElement> injectElements = getAnnotatedInjectElementsNotCached(concreteClass);
+        List<AnnotatedMethod<Subscribe>> subscribeMethods = getAnnotatedSubscribeMethodsNotCached(concreteClass, methods);
+        List<AnnotatedMethod<Install>> installMethods = getAnnotatedInstallMethodsNotCached(concreteClass, methods);
+        List<Method> eventListenerMethods = getAnnotatedListenerMethodsNotCached(concreteClass, methods);
+
+        return new ScreenIntrospectionData(injectElements, eventListenerMethods, subscribeMethods, installMethods);
+    }
+
+    protected TargetIntrospectionData getTargetIntrospectionDataNotCached(Class<?> concreteClass) {
+        Method[] methods = ReflectionUtils.getUniqueDeclaredMethods(concreteClass);
+
+        Map<Class, MethodHandle> addListenerMethods = getAddListenerMethodsNotCached(concreteClass, methods);
+        Map<String, MethodHandle> installTargetMethods = getInstallTargetMethodsNotCached(concreteClass, methods);
+
+        return new TargetIntrospectionData(addListenerMethods, installTargetMethods);
     }
 
     protected List<InjectElement> getAnnotatedInjectElementsNotCached(Class<?> clazz) {
@@ -321,10 +298,16 @@ public class UiControllerReflectionInspector {
         return null;
     }
 
-    protected List<Method> getAnnotatedListenerMethodsNotCached(Class<?> clazz) {
-        Method[] methods = ReflectionUtils.getUniqueDeclaredMethods(clazz);
+    protected List<Method> getAnnotatedListenerMethodsNotCached(Class<?> clazz, Method[] uniqueDeclaredMethods) {
+        // for legacy screens
+        if (clazz == AbstractWindow.class
+                || clazz == AbstractEditor.class
+                || clazz == AbstractLookup.class
+                || clazz == AbstractFrame.class) {
+            return Collections.emptyList();
+        }
 
-        return Arrays.stream(methods)
+        return Arrays.stream(uniqueDeclaredMethods)
                 .filter(m -> findMergedAnnotation(m, EventListener.class) != null)
                 .peek(m -> {
                     if (!m.isAccessible()) {
@@ -334,13 +317,13 @@ public class UiControllerReflectionInspector {
                 .collect(ImmutableList.toImmutableList());
     }
 
-    protected List<AnnotatedMethod<Install>> getAnnotatedInstallMethodsNotCached(Class<?> clazz) {
-        Method[] methods = ReflectionUtils.getUniqueDeclaredMethods(clazz);
+    protected List<AnnotatedMethod<Install>> getAnnotatedInstallMethodsNotCached(@SuppressWarnings("unused") Class<?> clazz,
+                                                                                 Method[] uniqueDeclaredMethods) {
         MethodHandles.Lookup lookup = MethodHandles.lookup();
 
         List<AnnotatedMethod<Install>> annotatedMethods = new ArrayList<>();
 
-        for (Method m : methods) {
+        for (Method m : uniqueDeclaredMethods) {
             if (m.getParameterCount() > 0 || m.getReturnType() != Void.TYPE) {
                 Install installAnnotation = findMergedAnnotation(m, Install.class);
                 if (installAnnotation != null) {
@@ -361,13 +344,13 @@ public class UiControllerReflectionInspector {
         return ImmutableList.copyOf(annotatedMethods);
     }
 
-    protected List<AnnotatedMethod<Subscribe>> getAnnotatedSubscribeMethodsNotCached(Class<?> clazz) {
-        Method[] methods = ReflectionUtils.getUniqueDeclaredMethods(clazz);
+    protected List<AnnotatedMethod<Subscribe>> getAnnotatedSubscribeMethodsNotCached(@SuppressWarnings("unused") Class<?> clazz,
+                                                                                     Method[] uniqueDeclaredMethods) {
         MethodHandles.Lookup lookup = MethodHandles.lookup();
 
         List<AnnotatedMethod<Subscribe>> annotatedMethods = new ArrayList<>();
 
-        for (Method m : methods) {
+        for (Method m : uniqueDeclaredMethods) {
             if (m.getParameterCount() == 1 && EventObject.class.isAssignableFrom(m.getParameterTypes()[0])) {
                 Subscribe annotation = findMergedAnnotation(m, Subscribe.class);
                 if (annotation != null) {
@@ -390,14 +373,13 @@ public class UiControllerReflectionInspector {
         return ImmutableList.copyOf(annotatedMethods);
     }
 
-    protected Map<Class, MethodHandle> getAddListenerMethodsNotCached(Class<?> clazz) {
-        Method[] methods = ReflectionUtils.getUniqueDeclaredMethods(clazz);
-
+    protected Map<Class, MethodHandle> getAddListenerMethodsNotCached(@SuppressWarnings("unused") Class<?> clazz,
+                                                                      Method[] uniqueDeclaredMethods) {
         MethodHandles.Lookup lookup = MethodHandles.lookup();
 
         Map<Class, MethodHandle> subscriptionMethods = new HashMap<>();
 
-        for (Method m : methods) {
+        for (Method m : uniqueDeclaredMethods) {
             if (m.getParameterCount() == 1
                     && Consumer.class.isAssignableFrom(m.getParameterTypes()[0])) {
                 // setXxxListener or addXxxListener
@@ -558,11 +540,12 @@ public class UiControllerReflectionInspector {
         return result;
     }
 
-    protected Map<String, MethodHandle> getInstallTargetMethodsNotCached(Class<?> clazz) {
+    protected Map<String, MethodHandle> getInstallTargetMethodsNotCached(@SuppressWarnings("unused") Class<?> clazz,
+                                                                         Method[] uniqueDeclaredMethods) {
         Map<String, MethodHandle> handlesMap = new HashMap<>();
         MethodHandles.Lookup lookup = MethodHandles.lookup();
 
-        for (Method m : ReflectionUtils.getUniqueDeclaredMethods(clazz)) {
+        for (Method m : uniqueDeclaredMethods) {
             if (Modifier.isPublic(m.getModifiers())
                     && m.getParameterCount() == 1
                     && (m.getName().startsWith("set") || m.getName().startsWith("add"))) {
@@ -648,6 +631,62 @@ public class UiControllerReflectionInspector {
                     "annotation=" + annotation +
                     ", method=" + method +
                     '}';
+        }
+    }
+
+    public static class ScreenIntrospectionData {
+        private final List<InjectElement> injectElements;
+
+        private final List<Method> eventListenerMethods;
+
+        private final List<AnnotatedMethod<Subscribe>> subscribeMethods;
+
+        private final List<AnnotatedMethod<Install>> installMethods;
+
+        public ScreenIntrospectionData(List<InjectElement> injectElements,
+                                       List<Method> eventListenerMethods,
+                                       List<AnnotatedMethod<Subscribe>> subscribeMethods,
+                                       List<AnnotatedMethod<Install>> installMethods) {
+            this.injectElements = injectElements;
+            this.eventListenerMethods = eventListenerMethods;
+            this.subscribeMethods = subscribeMethods;
+            this.installMethods = installMethods;
+        }
+
+        public List<InjectElement> getInjectElements() {
+            return injectElements;
+        }
+
+        public List<Method> getEventListenerMethods() {
+            return eventListenerMethods;
+        }
+
+        public List<AnnotatedMethod<Subscribe>> getSubscribeMethods() {
+            return subscribeMethods;
+        }
+
+        public List<AnnotatedMethod<Install>> getInstallMethods() {
+            return installMethods;
+        }
+    }
+
+    public static class TargetIntrospectionData {
+        private final Map<Class, MethodHandle> addListenerMethods;
+
+        private final Map<String, MethodHandle> installTargetMethods;
+
+        public TargetIntrospectionData(Map<Class, MethodHandle> addListenerMethods,
+                                       Map<String, MethodHandle> installTargetMethods) {
+            this.addListenerMethods = addListenerMethods;
+            this.installTargetMethods = installTargetMethods;
+        }
+
+        public Map<Class, MethodHandle> getAddListenerMethods() {
+            return addListenerMethods;
+        }
+
+        public Map<String, MethodHandle> getInstallTargetMethods() {
+            return installTargetMethods;
         }
     }
 }

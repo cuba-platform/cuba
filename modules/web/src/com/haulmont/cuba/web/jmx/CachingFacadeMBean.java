@@ -17,6 +17,8 @@
 
 package com.haulmont.cuba.web.jmx;
 
+import org.springframework.jmx.export.annotation.ManagedOperation;
+
 public interface CachingFacadeMBean {
 
     int getMessagesCacheSize();
@@ -38,4 +40,7 @@ public interface CachingFacadeMBean {
     void clearSystemPropertiesCache();
 
     void clearConfigCache();
+
+    @ManagedOperation(description = "Clears reflection caches for screens")
+    void clearScreenReflectionCache();
 }

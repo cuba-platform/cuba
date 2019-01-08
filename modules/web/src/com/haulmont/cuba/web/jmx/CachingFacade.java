@@ -28,6 +28,7 @@ import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
 import com.haulmont.cuba.gui.config.MenuConfig;
 import com.haulmont.cuba.gui.config.WindowConfig;
+import com.haulmont.cuba.gui.sys.UiControllerReflectionInspector;
 import com.haulmont.cuba.security.app.TrustedClientService;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
@@ -72,6 +73,9 @@ public class CachingFacade implements CachingFacadeMBean {
 
     @Inject
     private ClientCacheManager clientCacheManager;
+
+    @Inject
+    private UiControllerReflectionInspector uiControllerReflectionInspector;
 
     @Override
     public int getMessagesCacheSize() {
@@ -132,5 +136,10 @@ public class CachingFacade implements CachingFacadeMBean {
     @Override
     public void clearConfigCache() {
         clientCacheManager.clearCache();
+    }
+
+    @Override
+    public void clearScreenReflectionCache() {
+        uiControllerReflectionInspector.clearCache();
     }
 }

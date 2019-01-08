@@ -40,6 +40,7 @@ import com.haulmont.cuba.gui.screen.*;
 import com.haulmont.cuba.gui.screen.compatibility.LegacyFrame;
 import com.haulmont.cuba.gui.sys.UiControllerReflectionInspector.AnnotatedMethod;
 import com.haulmont.cuba.gui.sys.UiControllerReflectionInspector.InjectElement;
+import com.haulmont.cuba.gui.sys.UiControllerReflectionInspector.ScreenIntrospectionData;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
 import org.apache.commons.lang3.ArrayUtils;
@@ -104,19 +105,20 @@ public class UiControllerDependencyInjector {
     }
 
     public void inject() {
-        injectValues(frameOwner);
+        ScreenIntrospectionData screenIntrospectionData =
+                reflectionInspector.getScreenIntrospectionData(frameOwner.getClass());
 
-        initSubscribeListeners(frameOwner);
+        injectValues(frameOwner, screenIntrospectionData);
 
-        initInstallMethods(frameOwner);
+        initSubscribeListeners(frameOwner, screenIntrospectionData);
 
-        initUiEventListeners(frameOwner);
+        initInstallMethods(frameOwner, screenIntrospectionData);
+
+        initUiEventListeners(frameOwner, screenIntrospectionData);
     }
 
-    protected void initInstallMethods(FrameOwner frameOwner) {
-        Class<? extends FrameOwner> clazz = frameOwner.getClass();
-
-        List<AnnotatedMethod<Install>> installMethods = reflectionInspector.getAnnotatedInstallMethods(clazz);
+    protected void initInstallMethods(FrameOwner frameOwner, ScreenIntrospectionData screenIntrospectionData) {
+        List<AnnotatedMethod<Install>> installMethods = screenIntrospectionData.getInstallMethods();
 
         for (AnnotatedMethod<Install> annotatedMethod : installMethods) {
             Install annotation = annotatedMethod.getAnnotation();
@@ -295,18 +297,19 @@ public class UiControllerDependencyInjector {
         }
     }
 
-    protected void injectValues(FrameOwner frameOwner) {
-        List<InjectElement> injectElements = reflectionInspector.getAnnotatedInjectElements(frameOwner.getClass());
+    protected void injectValues(@SuppressWarnings("unused") FrameOwner frameOwner,
+                                ScreenIntrospectionData screenIntrospectionData) {
+        List<InjectElement> injectElements = screenIntrospectionData.getInjectElements();
 
         for (InjectElement entry : injectElements) {
             doInjection(entry.getElement(), entry.getAnnotationClass());
         }
     }
 
-    protected void initSubscribeListeners(FrameOwner frameOwner) {
+    protected void initSubscribeListeners(FrameOwner frameOwner, ScreenIntrospectionData screenIntrospectionData) {
         Class<? extends FrameOwner> clazz = frameOwner.getClass();
 
-        List<AnnotatedMethod<Subscribe>> eventListenerMethods = reflectionInspector.getAnnotatedSubscribeMethods(clazz);
+        List<AnnotatedMethod<Subscribe>> eventListenerMethods = screenIntrospectionData.getSubscribeMethods();
 
         for (AnnotatedMethod<Subscribe> annotatedMethod : eventListenerMethods) {
             Method method = annotatedMethod.getMethod();
@@ -452,10 +455,10 @@ public class UiControllerDependencyInjector {
         return null;
     }
 
-    protected void initUiEventListeners(FrameOwner frameOwner) {
+    protected void initUiEventListeners(FrameOwner frameOwner, ScreenIntrospectionData screenIntrospectionData) {
         Class<? extends FrameOwner> clazz = frameOwner.getClass();
 
-        List<Method> eventListenerMethods = reflectionInspector.getAnnotatedListenerMethods(clazz);
+        List<Method> eventListenerMethods = screenIntrospectionData.getEventListenerMethods();
 
         if (!eventListenerMethods.isEmpty()) {
             Events events = beanLocator.get(Events.NAME);
@@ -692,7 +695,7 @@ public class UiControllerDependencyInjector {
         return null;
     }
 
-    protected MessageBundle createMessageBundle(AnnotatedElement element, Frame frame) {
+    protected MessageBundle createMessageBundle(@SuppressWarnings("unused") AnnotatedElement element, Frame frame) {
         MessageBundle messageBundle = beanLocator.getPrototype(MessageBundle.NAME);
 
         Class<? extends FrameOwner> screenClass = frame.getFrameOwner().getClass();
@@ -734,33 +737,6 @@ public class UiControllerDependencyInjector {
                 throw new RuntimeException("CDI - Unable to assign value through setter "
                         + method.getName(), e);
             }
-        }
-    }
-
-    public static class DeclarativeSubscribeExecutor implements Consumer {
-        protected final Object owner;
-        protected final Method method;
-
-        public DeclarativeSubscribeExecutor(Object owner, Method method) {
-            this.method = method;
-            this.owner = owner;
-        }
-
-        @Override
-        public void accept(Object event) {
-            try {
-                method.invoke(owner, event);
-            } catch (IllegalAccessException | InvocationTargetException e) {
-                throw new RuntimeException("Unhandled exception in UI controller", e);
-            }
-        }
-
-        @Override
-        public String toString() {
-            return "DeclarativeSubscribeExecutor{" +
-                    "owner=" + owner.getClass() +
-                    ", method=" + method +
-                    '}';
         }
     }
 
