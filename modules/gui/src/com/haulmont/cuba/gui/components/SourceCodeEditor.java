@@ -24,7 +24,6 @@ import org.apache.commons.lang3.StringUtils;
 public interface SourceCodeEditor extends Field<String>, Component.Focusable {
     String NAME = "sourceCodeEditor";
 
-    @Deprecated
     enum Mode implements HighlightMode {
         Java("java"),
         HTML("html"),

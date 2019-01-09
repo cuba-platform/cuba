@@ -39,7 +39,7 @@ import java.util.List;
 public class WebSourceCodeEditor extends WebV8AbstractField<CubaSourceCodeEditor, String, String>
         implements SourceCodeEditor {
 
-    protected HighlightMode mode = HighlightMode.TEXT;
+    protected HighlightMode mode = Mode.Text;
     protected Suggester suggester;
     protected SuggestionExtension suggestionExtension;
 

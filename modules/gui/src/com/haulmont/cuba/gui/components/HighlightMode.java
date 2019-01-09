@@ -19,15 +19,4 @@ package com.haulmont.cuba.gui.components;
 public interface HighlightMode {
 
     String getId();
-
-    HighlightMode JAVA = () -> "java";
-    HighlightMode HTML = () -> "html";
-    HighlightMode XML = () -> "xml";
-    HighlightMode GROOVY = () -> "groovy";
-    HighlightMode SQL = () -> "sql";
-    HighlightMode JAVASCRIPT = () -> "javascript";
-    HighlightMode PROPERTIES = () -> "properties";
-    HighlightMode CSS = () -> "css";
-    HighlightMode SCSS = () -> "scss";
-    HighlightMode TEXT = () -> "text";
 }
