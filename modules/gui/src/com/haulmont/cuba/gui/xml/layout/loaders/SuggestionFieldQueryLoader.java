@@ -19,13 +19,12 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.DataManager;
 import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.core.global.QueryUtils;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.SuggestionField;
-import com.haulmont.cuba.gui.data.DataSupplier;
-import com.haulmont.cuba.gui.screen.compatibility.LegacyFrame;
 import groovy.text.GStringTemplateEngine;
 import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
@@ -55,9 +54,8 @@ public abstract class SuggestionFieldQueryLoader<T extends Field> extends Abstra
 
             String entityClassName = queryElement.attributeValue("entityClass");
             if (StringUtils.isNotEmpty(entityClassName)) {
+                DataManager dataManager = beanLocator.get(DataManager.NAME);
                 suggestionField.setSearchExecutor((searchString, searchParams) -> {
-                    LegacyFrame frame = (LegacyFrame) suggestionField.getFrame().getFrameOwner();
-                    DataSupplier supplier = frame.getDsContext().getDataSupplier();
                     Class<Entity> entityClass = ReflectionHelper.getClass(entityClassName);
                     if (escapeValue) {
                         searchString = QueryUtils.escapeForLike(searchString);
@@ -71,7 +69,7 @@ public abstract class SuggestionFieldQueryLoader<T extends Field> extends Abstra
                     loadContext.setQuery(LoadContext.createQuery(stringQuery).setParameter("searchString", searchString));
 
                     //noinspection unchecked
-                    return supplier.loadList(loadContext);
+                    return dataManager.loadList(loadContext);
                 });
             } else {
                 throw new GuiDevelopmentException(String.format("Field 'entityClass' is empty in component %s.",
