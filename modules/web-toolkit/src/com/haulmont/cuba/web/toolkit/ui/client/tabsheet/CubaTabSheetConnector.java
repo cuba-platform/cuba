@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.web.toolkit.ui.client.tabsheet;
 
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ContextMenuEvent;
 import com.haulmont.cuba.web.toolkit.ui.CubaTabSheet;
 import com.haulmont.cuba.web.toolkit.ui.client.action.RemoteAction;
@@ -102,5 +103,11 @@ public class CubaTabSheetConnector extends DDTabsheetConnector {
         super.onStateChanged(stateChangeEvent);
 
         getWidget().assignAdditionalCellStyles();
+    }
+
+    @Override
+    protected Object findTabCaption(Element element) {
+        return WidgetUtil.findWidget(element,
+                CubaTabSheetWidget.CubaTabCaption.class);
     }
 }

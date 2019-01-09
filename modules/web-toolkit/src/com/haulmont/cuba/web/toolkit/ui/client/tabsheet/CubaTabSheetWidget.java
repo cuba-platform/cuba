@@ -31,10 +31,12 @@ import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.haulmont.cuba.web.toolkit.ui.client.appui.ValidationErrorHolder;
 import com.vaadin.client.ComputedStyle;
+import com.vaadin.client.TooltipInfo;
 import com.vaadin.client.WidgetUtil;
 import com.vaadin.client.ui.VTabsheet;
 import com.vaadin.client.ui.dd.VDragAndDropManager;
 import com.vaadin.client.ui.dd.VDragEvent;
+import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.shared.ui.tabsheet.TabState;
 import fi.jasoft.dragdroplayouts.client.ui.tabsheet.VDDTabSheet;
 
@@ -182,6 +184,27 @@ public class CubaTabSheetWidget extends VDDTabSheet {
             }
 
             super.onClose();
+        }
+
+        @Override
+        protected TabCaption createTabCaption() {
+            return new CubaTabCaption(this);
+        }
+    }
+
+    public static class CubaTabCaption extends TabCaption {
+
+        public CubaTabCaption(Tab tab) {
+            super(tab);
+        }
+
+        @Override
+        protected TooltipInfo createTooltipInfo(TabState tabState) {
+            TooltipInfo tooltipInfo = new TooltipInfo(tabState.description,
+                    tabState.componentError, this,
+                    tabState.componentErrorLevel);
+            tooltipInfo.setContentMode(ContentMode.TEXT);
+            return tooltipInfo;
         }
     }
 
