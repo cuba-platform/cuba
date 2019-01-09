@@ -457,6 +457,10 @@ $cuba-sidemenu-userindicator-font-weight: $v-font-weight !default;
         .v-label {
           line-height: $v-unit-size;
         }
+
+        @if ($cuba-sidemenu-title-gradient == false) {
+          background: if(is-dark-color($cuba-sidemenu-background-color), lighten($cuba-sidemenu-background-color, 5%), darken($cuba-sidemenu-background-color, 5%));
+        }
       }
 
       .#{$primary-stylename}-wrap {
