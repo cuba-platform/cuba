@@ -57,6 +57,8 @@ public interface TreeDataGrid<E extends Entity> extends DataGrid<E> {
         }
     }
 
+    int getLevel(final Object itemId);
+
     @Nullable
     @Override
     TreeDataGridItems<E> getItems();

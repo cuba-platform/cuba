@@ -16,10 +16,12 @@
 
 package com.haulmont.cuba.gui.components.data.datagrid;
 
+import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.data.TreeDataGridItems;
 import com.haulmont.cuba.gui.model.CollectionContainer;
 
+import javax.annotation.Nullable;
 import java.util.stream.Stream;
 
 public class ContainerTreeDataGridItems<E extends Entity>
@@ -62,5 +64,12 @@ public class ContainerTreeDataGridItems<E extends Entity>
             E parentItem = it.getValue(hierarchyProperty);
             return parentItem != null && parentItem.equals(item);
         });
+    }
+
+    @Nullable
+    @Override
+    public E getParent(E item) {
+        Preconditions.checkNotNullArgument(item);
+        return item.getValue(hierarchyProperty);
     }
 }

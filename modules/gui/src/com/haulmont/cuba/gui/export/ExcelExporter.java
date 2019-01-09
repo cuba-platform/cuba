@@ -631,6 +631,9 @@ public class ExcelExporter {
         Instance instance = (Instance) dataGrid.getItems().getItem(itemId);
 
         int level = 0;
+        if (dataGrid instanceof TreeDataGrid) {
+            level = ((TreeDataGrid) dataGrid).getLevel(itemId);
+        }
         for (int c = startColumn; c < columns.size(); c++) {
             HSSFCell cell = row.createCell(c);
 
