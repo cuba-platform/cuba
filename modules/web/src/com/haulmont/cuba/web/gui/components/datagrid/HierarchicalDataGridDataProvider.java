@@ -18,6 +18,7 @@ package com.haulmont.cuba.web.gui.components.datagrid;
 
 import com.haulmont.cuba.gui.components.data.BindingState;
 import com.haulmont.cuba.gui.components.data.TreeDataGridItems;
+import com.haulmont.cuba.web.widgets.data.EnhancedHierarchicalDataProvider;
 import com.vaadin.data.provider.HierarchicalDataProvider;
 import com.vaadin.data.provider.HierarchicalQuery;
 import com.vaadin.server.SerializablePredicate;
@@ -25,7 +26,7 @@ import com.vaadin.server.SerializablePredicate;
 import java.util.stream.Stream;
 
 public class HierarchicalDataGridDataProvider<T> extends SortableDataGridDataProvider<T>
-        implements HierarchicalDataProvider<T, SerializablePredicate<T>> {
+        implements HierarchicalDataProvider<T, SerializablePredicate<T>>, EnhancedHierarchicalDataProvider<T> {
 
 
     public HierarchicalDataGridDataProvider(TreeDataGridItems<T> dataGridSource,
@@ -60,5 +61,21 @@ public class HierarchicalDataGridDataProvider<T> extends SortableDataGridDataPro
     @Override
     public boolean hasChildren(T item) {
         return getTreeDataGridSource().hasChildren(item);
+    }
+
+    @Override
+    public int getLevel(final T item) {
+        TreeDataGridItems<T> items = getTreeDataGridSource();
+        if (!items.containsItem(item)) {
+            throw new IllegalStateException("TreeDataGridItems do not contain the item passed to the method");
+        }
+
+        int level = 0;
+        T currentItem = item;
+        while ((currentItem = items.getParent(currentItem)) != null) {
+            ++level;
+        }
+
+        return level;
     }
 }

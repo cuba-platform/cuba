@@ -632,7 +632,7 @@ public class ExcelExporter {
 
         int level = 0;
         if (dataGrid instanceof TreeDataGrid) {
-            level = ((TreeDataGrid) dataGrid).getLevel(itemId);
+            level = ((TreeDataGrid) dataGrid).getLevel((Entity) instance);
         }
         for (int c = startColumn; c < columns.size(); c++) {
             HSSFCell cell = row.createCell(c);

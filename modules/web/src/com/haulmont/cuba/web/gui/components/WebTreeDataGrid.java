@@ -54,19 +54,8 @@ public class WebTreeDataGrid<E extends Entity> extends WebAbstractDataGrid<CubaT
     }
 
     @Override
-    public int getLevel(final Object itemId) {
-        int level = 0;
-        TreeDataGridItems<E> items = getItems();
-
-        if (items != null) {
-            E item = items.getItem(itemId);
-
-            while ((item = items.getParent(item)) != null) {
-                ++level;
-            }
-        }
-
-        return level;
+    public int getLevel(final E item) {
+        return component.getLevel(item);
     }
 
     @Nullable

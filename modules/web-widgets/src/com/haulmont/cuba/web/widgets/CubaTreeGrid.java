@@ -1,10 +1,12 @@
 package com.haulmont.cuba.web.widgets;
 
 import com.haulmont.cuba.web.widgets.client.treegrid.CubaTreeGridState;
+import com.haulmont.cuba.web.widgets.data.EnhancedHierarchicalDataProvider;
 import com.haulmont.cuba.web.widgets.grid.CubaEditorField;
 import com.haulmont.cuba.web.widgets.grid.CubaEditorImpl;
 import com.haulmont.cuba.web.widgets.grid.CubaGridColumn;
 import com.vaadin.data.ValueProvider;
+import com.vaadin.data.provider.HierarchicalDataProvider;
 import com.vaadin.ui.TreeGrid;
 import com.vaadin.ui.components.grid.Editor;
 import com.vaadin.ui.components.grid.GridSelectionModel;
@@ -89,5 +91,14 @@ public class CubaTreeGrid<T> extends TreeGrid<T> implements CubaEnhancedGrid<T> 
     @Override
     public CubaEditorField<?> getColumnEditorField(T bean, Column<T, ?> column) {
         return editorFieldFactory.createField(bean, column);
+    }
+
+    @SuppressWarnings("unchecked")
+    public int getLevel(final T item) {
+        HierarchicalDataProvider<T, ?> dataProvider = getDataProvider();
+        if (!(dataProvider instanceof EnhancedHierarchicalDataProvider)) {
+            throw new IllegalStateException("Only EnhancedHierarchicalDataProvider supports the method");
+        }
+        return ((EnhancedHierarchicalDataProvider) dataProvider).getLevel(item);
     }
 }

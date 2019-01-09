@@ -57,7 +57,12 @@ public interface TreeDataGrid<E extends Entity> extends DataGrid<E> {
         }
     }
 
-    int getLevel(final Object itemId);
+    /**
+     * Returns the hierarchy level of an item.
+     * @param item the item to get level
+     * @return the level of given item
+     */
+    int getLevel(final E item);
 
     @Nullable
     @Override
