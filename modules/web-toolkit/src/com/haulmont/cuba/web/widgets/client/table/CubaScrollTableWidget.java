@@ -407,6 +407,12 @@ public class CubaScrollTableWidget extends VScrollTable implements TableWidget {
 
             return super.getCustomHtmlAttributes(action);
         }
+
+        @Override
+        protected boolean shouldRecalcColWidths(HeaderCell cell) {
+            HeaderCell lastCell = getHeaderCell(tHead.getVisibleCellCount() - 1);
+            return cell == lastCell && getIconsOffsetWidth() > 0;
+        }
     }
 
     protected class CubaScrollTableHeaderCell extends HeaderCell {
@@ -535,6 +541,12 @@ public class CubaScrollTableWidget extends VScrollTable implements TableWidget {
             Style style = this.getElement().getStyle();
             style.setProperty("minWidth", width);
             style.setProperty("maxWidth", width);
+        }
+
+        @Override
+        protected boolean leaveRoomForSortIndicator() {
+            HeaderCell lastCell = tHead.getHeaderCell(tHead.getVisibleCellCount() - 1);
+            return this.equals(lastCell);
         }
     }
 
