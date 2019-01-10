@@ -23,7 +23,6 @@ $cuba-suggestionfield-edit-color: #dceeff !default;
   .#{$primary-stylename}.v-readonly {
     background: transparent;
     border: $cuba-field-readonly-border-color 1px solid;
-    color: transparent;
   }
 
   .#{$primary-stylename}.v-disabled {
