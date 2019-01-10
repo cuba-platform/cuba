@@ -37,6 +37,8 @@ public class CubaTextField extends TextField implements Action.Container, Legacy
      */
     protected ActionManager shortcutsManager;
 
+    protected boolean actionsInitialized = false;
+
     public CubaTextField() {
         // vaadin8
 //        setValidationVisible(false);
@@ -46,8 +48,10 @@ public class CubaTextField extends TextField implements Action.Container, Legacy
 
     @Override
     public void paintContent(PaintTarget target) throws PaintException {
-        if (shortcutsManager != null) {
+        if (shortcutsManager != null && !actionsInitialized) {
             shortcutsManager.paintActions(null, target);
+
+            actionsInitialized = true;
         }
     }
 
