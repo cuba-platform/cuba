@@ -179,6 +179,14 @@ public interface WindowManager extends Screens {
             return instance;
         }
 
+        public String getHeightString() {
+            if (height == null) {
+                return null;
+            }
+
+            return height + (heightUnit != null ? heightUnit.getSymbol() : "px");
+        }
+
         public SizeUnit getWidthUnit() {
             return widthUnit;
         }
@@ -191,6 +199,14 @@ public interface WindowManager extends Screens {
 
         public Float getWidth() {
             return width;
+        }
+
+        public String getWidthString() {
+            if (width == null) {
+                return null;
+            }
+
+            return width + (widthUnit != null ? widthUnit.getSymbol() : "px");
         }
 
         /**

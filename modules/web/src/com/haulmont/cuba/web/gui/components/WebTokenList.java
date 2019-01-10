@@ -395,10 +395,10 @@ public class WebTokenList<V extends Entity> extends WebV8AbstractField<CubaToken
                 dialogWindow.setResizable(openType.getResizable());
             }
             if (openType.getWidth() != null) {
-                dialogWindow.setDialogWidth(openType.getWidth() + openType.getWidthUnit().getSymbol());
+                dialogWindow.setDialogWidth(openType.getWidthString());
             }
             if (openType.getHeight() != null) {
-                dialogWindow.setDialogHeight(openType.getHeight() + openType.getHeightUnit().getSymbol());
+                dialogWindow.setDialogHeight(openType.getHeightString());
             }
         }
 

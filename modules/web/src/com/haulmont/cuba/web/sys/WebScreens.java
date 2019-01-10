@@ -47,6 +47,7 @@ import com.haulmont.cuba.gui.icons.CubaIcon;
 import com.haulmont.cuba.gui.icons.Icons;
 import com.haulmont.cuba.gui.logging.UIPerformanceLogger.LifeCycle;
 import com.haulmont.cuba.gui.model.impl.ScreenDataImpl;
+import com.haulmont.cuba.gui.navigation.NavigationState;
 import com.haulmont.cuba.gui.screen.*;
 import com.haulmont.cuba.gui.screen.Screen.*;
 import com.haulmont.cuba.gui.screen.compatibility.*;
@@ -70,7 +71,6 @@ import com.haulmont.cuba.web.gui.components.WebDialogWindow.GuiDialogWindow;
 import com.haulmont.cuba.web.gui.components.WebTabWindow;
 import com.haulmont.cuba.web.gui.components.mainwindow.WebAppWorkArea;
 import com.haulmont.cuba.web.gui.icons.IconResolver;
-import com.haulmont.cuba.gui.navigation.NavigationState;
 import com.haulmont.cuba.web.sys.navigation.UrlTools;
 import com.haulmont.cuba.web.widgets.*;
 import com.vaadin.ui.CssLayout;
@@ -1723,10 +1723,10 @@ public class WebScreens implements Screens, WindowManager {
                 dialogWindow.setResizable(openType.getResizable());
             }
             if (openType.getWidth() != null) {
-                dialogWindow.setDialogWidth(openType.getWidth() + openType.getWidthUnit().getSymbol());
+                dialogWindow.setDialogWidth(openType.getWidthString());
             }
             if (openType.getHeight() != null) {
-                dialogWindow.setDialogHeight(openType.getHeight() + openType.getHeightUnit().getSymbol());
+                dialogWindow.setDialogHeight(openType.getHeightString());
             }
         }
 
