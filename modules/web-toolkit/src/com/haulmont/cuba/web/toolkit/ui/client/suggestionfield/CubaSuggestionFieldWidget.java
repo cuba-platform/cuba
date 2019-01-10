@@ -164,7 +164,10 @@ public class CubaSuggestionFieldWidget extends Composite implements HasEnabled, 
     }
 
     protected void selectSuggestion() {
-        selectSuggestion(suggestionsContainer.getSelectedSuggestion().getSuggestion());
+        SuggestionItem selectedItem = suggestionsContainer.getSelectedItem();
+        if (selectedItem != null) {
+            selectSuggestion(selectedItem.getSuggestion());
+        }
     }
 
     protected void selectSuggestion(Suggestion newSuggestion) {
@@ -265,14 +268,15 @@ public class CubaSuggestionFieldWidget extends Composite implements HasEnabled, 
     }
 
     protected void handleEnterKeyPressed(KeyCodeEvent event) {
-        if (suggestionsPopup.isShowing()) {
-            selectSuggestion(suggestionsContainer.getSelectedSuggestion().getSuggestion());
-            preventEvent(event);
+        if (suggestionsPopup.isShowing()
+                && suggestionsContainer.getSelectedItem() != null) {
+            selectSuggestion(suggestionsContainer.getSelectedItem().getSuggestion());
         } else {
             if (enterActionHandler != null) {
                 enterActionHandler.accept(textField.getText().trim());
             }
         }
+        preventEvent(event);
     }
 
     protected void handleArrowUpKeyPressed(KeyCodeEvent event) {
@@ -478,7 +482,7 @@ public class CubaSuggestionFieldWidget extends Composite implements HasEnabled, 
                 newPopupWidth = popupWidth;
             }
 
-            List<SuggestionItem> suggestions = suggestionsContainer.getSuggestions();
+            List<SuggestionItem> suggestions = suggestionsContainer.getItems();
             if (newPopupWidth == null &&
                     (suggestions == null || suggestions.isEmpty())) {
                 newPopupWidth = fieldWidth - popupMarginBorderPaddingWidth + "px";
