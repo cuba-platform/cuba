@@ -123,8 +123,8 @@ public abstract class StandardEditor<T extends Entity> extends Screen implements
                     .onCancel(result::fail);
             } else {
                 screenValidation.showUnsavedChangesDialog(this, action)
-                        .onYes(() -> result.resolveWith(closeWithCommit()))
-                        .onNo(result::fail);
+                        .onDiscard(() -> result.resolveWith(closeWithCommit()))
+                        .onCancel(result::fail);
             }
 
             event.preventWindowClose(result);

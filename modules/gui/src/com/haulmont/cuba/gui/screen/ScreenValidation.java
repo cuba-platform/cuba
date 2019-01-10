@@ -165,7 +165,7 @@ public class ScreenValidation {
      * @param item   item to validate
      * @return validation errors
      */
-    public ValidationErrors validateCrossFieldRules(FrameOwner origin, Entity item) {
+    public ValidationErrors validateCrossFieldRules(@SuppressWarnings("unused") FrameOwner origin, Entity item) {
         ValidationErrors errors = new ValidationErrors();
 
         Validator validator = beanValidation.getValidator();
@@ -186,11 +186,12 @@ public class ScreenValidation {
     /**
      * JavaDoc
      *
-     * @param origin
-     * @param closeAction
-     * @return
+     * @param origin screen controller
+     * @param closeAction close action
+     * @return result
      */
-    public UnsavedChangesDialogResult showUnsavedChangesDialog(FrameOwner origin, CloseAction closeAction) {
+    public UnsavedChangesDialogResult showUnsavedChangesDialog(FrameOwner origin,
+                                                               @SuppressWarnings("unused") CloseAction closeAction) {
         UnsavedChangesDialogResult result = new UnsavedChangesDialogResult();
 
         Dialogs dialogs = getScreenContext(origin).getDialogs();
@@ -220,11 +221,12 @@ public class ScreenValidation {
     /**
      * JavaDoc
      *
-     * @param origin
-     * @param closeAction
-     * @return
+     * @param origin screen controller
+     * @param closeAction close action
+     * @return result
      */
-    public SaveChangesDialogResult showSaveConfirmationDialog(FrameOwner origin, CloseAction closeAction) {
+    public SaveChangesDialogResult showSaveConfirmationDialog(FrameOwner origin,
+                                                              @SuppressWarnings("unused") CloseAction closeAction) {
         SaveChangesDialogResult result = new SaveChangesDialogResult();
 
         Dialogs dialogs = getScreenContext(origin).getDialogs();
@@ -266,12 +268,12 @@ public class ScreenValidation {
         public UnsavedChangesDialogResult() {
         }
 
-        public UnsavedChangesDialogResult onYes(Runnable onYesHandler) {
+        public UnsavedChangesDialogResult onDiscard(Runnable onYesHandler) {
             this.yesHandler = onYesHandler;
             return this;
         }
 
-        public UnsavedChangesDialogResult onNo(Runnable onNoHandler) {
+        public UnsavedChangesDialogResult onCancel(Runnable onNoHandler) {
             this.noHandler = onNoHandler;
             return this;
         }

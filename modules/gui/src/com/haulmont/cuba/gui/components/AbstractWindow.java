@@ -17,6 +17,8 @@
 package com.haulmont.cuba.gui.components;
 
 import com.haulmont.bali.events.Subscription;
+import com.haulmont.cuba.client.ClientConfig;
+import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Events;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.DialogOptions;
@@ -28,6 +30,8 @@ import com.haulmont.cuba.gui.icons.Icons;
 import com.haulmont.cuba.gui.screen.*;
 import com.haulmont.cuba.gui.screen.compatibility.LegacyFrame;
 import com.haulmont.cuba.gui.settings.Settings;
+import com.haulmont.cuba.gui.util.OperationResult;
+import com.haulmont.cuba.gui.util.UnknownOperationResult;
 import org.dom4j.Element;
 import org.springframework.core.annotation.Order;
 
@@ -44,7 +48,7 @@ import java.util.stream.Stream;
  * Base class for simple screen controllers.
  */
 public class AbstractWindow extends Screen implements Window, LegacyFrame, Component.HasXmlDescriptor, Window.Wrapper,
-        SecuredActionsHolder {
+        SecuredActionsHolder, ChangeTracker {
 
     public static final String UNKNOWN_CLOSE_ACTION_ID = "unknown";
 
@@ -118,6 +122,52 @@ public class AbstractWindow extends Screen implements Window, LegacyFrame, Compo
                 event.preventWindowClose();
             }
         }
+
+        if (!event.isClosePrevented()) {
+            if (closeAction instanceof ChangeTrackerCloseAction
+                    && ((ChangeTrackerCloseAction) closeAction).isCheckForUnsavedChanges()
+                    && hasUnsavedChanges()) {
+                Configuration configuration = getBeanLocator().get(Configuration.NAME);
+                ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
+
+                ScreenValidation screenValidation = getBeanLocator().get(ScreenValidation.NAME);
+
+                UnknownOperationResult result = new UnknownOperationResult();
+
+                if (this instanceof Committable && clientConfig.getUseSaveConfirmation()) {
+                    Committable committable = (Committable) this;
+
+                    screenValidation.showSaveConfirmationDialog(this, closeAction)
+                            .onCommit(committable::commitAndClose)
+                            .onDiscard(() -> result.resolveWith(closeWithDiscard()))
+                            .onCancel(result::fail);
+                } else {
+                    screenValidation.showUnsavedChangesDialog(this, closeAction)
+                            .onDiscard(() -> result.resolveWith(closeWithDiscard()))
+                            .onCancel(result::fail);
+                }
+
+                event.preventWindowClose(result);
+            }
+        }
+    }
+
+    /**
+     * Ignores the unsaved changes and closes the screen with {@link #WINDOW_DISCARD_AND_CLOSE_ACTION} action.
+     *
+     * @return result of close request
+     */
+    public OperationResult closeWithDiscard() {
+        return close(WINDOW_DISCARD_AND_CLOSE_ACTION);
+    }
+
+    @Override
+    public boolean hasUnsavedChanges() {
+        if (this instanceof Committable) {
+            return ((Committable) this).isModified();
+        }
+
+        return getDsContext() != null && getDsContext().isModified();
     }
 
     /**

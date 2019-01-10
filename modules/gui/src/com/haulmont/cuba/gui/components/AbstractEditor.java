@@ -37,12 +37,7 @@ import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import com.haulmont.cuba.gui.data.impl.DsContextImplementation;
 import com.haulmont.cuba.gui.data.impl.EntityCopyUtils;
 import com.haulmont.cuba.gui.dynamicattributes.DynamicAttributesGuiTools;
-import com.haulmont.cuba.gui.screen.ChangeTrackerCloseAction;
-import com.haulmont.cuba.gui.screen.CloseAction;
-import com.haulmont.cuba.gui.screen.Screen;
-import com.haulmont.cuba.gui.screen.ScreenValidation;
 import com.haulmont.cuba.gui.util.OperationResult;
-import com.haulmont.cuba.gui.util.UnknownOperationResult;
 import com.haulmont.cuba.security.entity.EntityOp;
 import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
@@ -331,11 +326,6 @@ public class AbstractEditor<T extends Entity> extends AbstractWindow implements 
     }
 
     @Override
-    public boolean hasUnsavedChanges() {
-        return isModified();
-    }
-
-    @Override
     public boolean isModified() {
         return getDsContext() != null && getDsContext().isModified();
     }
@@ -356,6 +346,7 @@ public class AbstractEditor<T extends Entity> extends AbstractWindow implements 
      * Commit changes with optional validation.
      * <p>Don't override this method in subclasses, use hooks {@link #postValidate(ValidationErrors)}, {@link #preCommit()}
      * and {@link #postCommit(boolean, boolean)} instead.</p>
+     *
      * @param validate false to avoid validation
      * @return true if commit was successful
      */
@@ -372,7 +363,8 @@ public class AbstractEditor<T extends Entity> extends AbstractWindow implements 
             return false;
 
         boolean committed;
-        final DsContext context = getDsContext();
+
+        DsContext context = getDsContext();
         if (context != null) {
             committed = context.commit();
         } else {
@@ -413,9 +405,11 @@ public class AbstractEditor<T extends Entity> extends AbstractWindow implements 
     }
 
     /**
-     * JavaDoc
+     * Tries to validate and commit data. If data committed successfully then closes the screen with
+     * {@link #WINDOW_COMMIT_AND_CLOSE} action. May show validation errors or open an additional dialog before closing
+     * the screen.
      *
-     * @return
+     * @return result of close request
      */
     public OperationResult closeWithCommit() {
         if (validateAll()) {
@@ -425,45 +419,6 @@ public class AbstractEditor<T extends Entity> extends AbstractWindow implements 
             }
         }
         return OperationResult.fail();
-    }
-
-    /**
-     * JavaDoc
-     */
-    public OperationResult closeWithDiscard() {
-        return close(WINDOW_DISCARD_AND_CLOSE_ACTION);
-    }
-
-    @Override
-    protected void beforeClose(Screen.BeforeCloseEvent event) {
-        super.beforeClose(event);
-
-        if (!event.isClosePrevented()) {
-            CloseAction closeAction = event.getCloseAction();
-            if (closeAction instanceof ChangeTrackerCloseAction
-                    && ((ChangeTrackerCloseAction) closeAction).isCheckForUnsavedChanges()
-                    && hasUnsavedChanges()) {
-                Configuration configuration = getBeanLocator().get(Configuration.NAME);
-                ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
-
-                ScreenValidation screenValidation = getBeanLocator().get(ScreenValidation.NAME);
-
-                UnknownOperationResult result = new UnknownOperationResult();
-
-                if (clientConfig.getUseSaveConfirmation()) {
-                    screenValidation.showSaveConfirmationDialog(this, closeAction)
-                            .onCommit(() -> result.resolveWith(closeWithCommit()))
-                            .onDiscard(() -> result.resolveWith(closeWithDiscard()))
-                            .onCancel(result::fail);
-                } else {
-                    screenValidation.showUnsavedChangesDialog(this, closeAction)
-                            .onYes(() -> result.resolveWith(closeWithCommit()))
-                            .onNo(result::fail);
-                }
-
-                event.preventWindowClose(result);
-            }
-        }
     }
 
     /**
@@ -544,9 +499,10 @@ public class AbstractEditor<T extends Entity> extends AbstractWindow implements 
     /**
      * Hook to be implemented in subclasses. Called by the framework after committing datasources.
      * The default implementation notifies about commit and calls {@link #postInit()} if the window is not closing.
+     *
      * @param committed whether any data were actually changed and committed
      * @param close     whether the window is going to be closed
-     * @return  true to continue, false to abort
+     * @return true to continue, false to abort
      */
     protected boolean postCommit(boolean committed, boolean close) {
         if (committed && !close) {

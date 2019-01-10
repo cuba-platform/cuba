@@ -343,7 +343,6 @@ public interface Window extends Frame, Component.HasCaption, Component.HasIcon {
     /**
      * Represents a window that can be committed on close.
      * <br>
-     * todo support in AbstractWindow
      * Implement this interface in controller if you want to support saving uncommitted changes on window close.
      * {@link AbstractEditor} already implements it.
      */
