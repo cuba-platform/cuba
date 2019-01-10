@@ -38,10 +38,10 @@ import java.util.List;
 public class SuggestionsContainer extends Widget {
     protected static final String STYLENAME = "c-suggestionfield-popup";
 
-    protected final List<SuggestionItem> suggestions = new ArrayList<>();
+    protected final List<SuggestionItem> items = new ArrayList<>();
+    protected SuggestionItem selectedItem;
 
     protected final Element container;
-    protected SuggestionItem selectedSuggestion;
 
     protected final CubaSuggestionFieldWidget suggestionFieldWidget;
 
@@ -61,22 +61,22 @@ public class SuggestionsContainer extends Widget {
     }
 
     public void selectItem(int index) {
-        if (index > -1 && index < suggestions.size()) {
-            selectItem(suggestions.get(index));
+        if (index > -1 && index < items.size()) {
+            selectItem(items.get(index));
         }
     }
 
-    public List<SuggestionItem> getSuggestions() {
-        return suggestions;
+    public List<SuggestionItem> getItems() {
+        return items;
     }
 
     protected void selectItem(SuggestionItem item) {
-        if (item == selectedSuggestion) {
+        if (item == selectedItem) {
             return;
         }
 
-        if (selectedSuggestion != null) {
-            selectedSuggestion.updateSelection(false);
+        if (selectedItem != null) {
+            selectedItem.updateSelection(false);
         }
 
         if (item != null) {
@@ -84,12 +84,12 @@ public class SuggestionsContainer extends Widget {
             Roles.getMenubarRole().setAriaActivedescendantProperty(getElement(), Id.of(item.getElement()));
         }
 
-        selectedSuggestion = item;
+        selectedItem = item;
     }
 
     public SuggestionItem addItem(SuggestionItem item) {
-        int idx = suggestions.size();
-        suggestions.add(idx, item);
+        int idx = items.size();
+        items.add(idx, item);
 
         DOM.appendChild(container, item.getElement());
         item.setSuggestionsContainer(this);
@@ -102,42 +102,50 @@ public class SuggestionsContainer extends Widget {
 
         container.removeAllChildren();
 
-        for (UIObject item : suggestions) {
+        for (UIObject item : items) {
             item.getElement().setPropertyInt("colSpan", 1);
             ((SuggestionItem) item).setSuggestionsContainer(null);
         }
 
-        suggestions.clear();
+        items.clear();
     }
 
-    public SuggestionItem getSelectedSuggestion() {
-        return selectedSuggestion;
+    public SuggestionItem getSelectedItem() {
+        return selectedItem;
     }
 
     public void selectNextItem() {
-        if (selectedSuggestion == null) {
-            return;
+        SuggestionItem itemToSelect = null;
+
+        if (selectedItem == null) {
+            itemToSelect = !items.isEmpty()
+                    ? items.get(0)
+                    : null;
+        } else {
+            int index = items.indexOf(selectedItem) + 1;
+            if (index < items.size()) {
+                itemToSelect = items.get(index);
+            }
         }
 
-        int index = suggestions.indexOf(selectedSuggestion) + 1;
-        if (index >= suggestions.size()) {
-            index = 0;
-        }
-
-        selectItem(suggestions.get(index));
+        selectItem(itemToSelect);
     }
 
     public void selectPrevItem() {
-        if (selectedSuggestion == null) {
-            return;
+        SuggestionItem itemToSelect = null;
+
+        if (selectedItem == null) {
+            itemToSelect = !items.isEmpty()
+                    ? items.get(items.size() - 1)
+                    : null;
+        } else {
+            int index = items.indexOf(selectedItem) - 1;
+            if (index >= 0) {
+                itemToSelect = items.get(index);
+            }
         }
 
-        int index = suggestions.indexOf(selectedSuggestion) - 1;
-        if (index < 0) {
-            index = suggestions.size() - 1;
-        }
-
-        selectItem(suggestions.get(index));
+        selectItem(itemToSelect);
     }
 
     @Override
@@ -203,7 +211,7 @@ public class SuggestionsContainer extends Widget {
     }
 
     protected SuggestionItem findItem(Element element) {
-        for (SuggestionItem menuItem : suggestions) {
+        for (SuggestionItem menuItem : items) {
             if (menuItem.getElement().isOrHasChild(element)) {
                 return menuItem;
             }
@@ -217,7 +225,7 @@ public class SuggestionsContainer extends Widget {
     }
 
     protected void performItemCommand(final SuggestionItem item) {
-        selectedSuggestion = item;
+        selectedItem = item;
 
         Scheduler.ScheduledCommand cmd = item.getScheduledCommand();
         if (cmd != null) {
