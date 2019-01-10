@@ -423,6 +423,7 @@ configure(coreModule) {
     task startDb(description: 'Starts local HSQLDB server', type: CubaHsqlStart) {
         dbPort = hsqlPort
         dbName = hsqlDbName
+        showUi = !rootProject.hasProperty('headlessHsqlServer')
     }
 
     task stopDb(description: 'Stops local HSQLDB server', type: CubaHsqlStop)  {
