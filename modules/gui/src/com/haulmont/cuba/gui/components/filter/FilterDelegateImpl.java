@@ -23,7 +23,6 @@ import com.google.common.collect.Lists;
 import com.haulmont.bali.datastruct.Node;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.bali.util.ParamsMap;
-import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.client.ClientConfig;
@@ -46,6 +45,9 @@ import com.haulmont.cuba.gui.components.Frame.MessageType;
 import com.haulmont.cuba.gui.components.KeyCombination.Key;
 import com.haulmont.cuba.gui.components.actions.BaseAction;
 import com.haulmont.cuba.gui.components.actions.ItemTrackingAction;
+import com.haulmont.cuba.gui.components.data.meta.ContainerDataUnit;
+import com.haulmont.cuba.gui.components.data.meta.DatasourceDataUnit;
+import com.haulmont.cuba.gui.components.data.meta.EntityDataUnit;
 import com.haulmont.cuba.gui.components.filter.condition.*;
 import com.haulmont.cuba.gui.components.filter.edit.FilterEditor;
 import com.haulmont.cuba.gui.components.filter.filterselect.FilterSelectWindow;
@@ -54,12 +56,12 @@ import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
+import com.haulmont.cuba.gui.model.CollectionContainer;
 import com.haulmont.cuba.gui.model.CollectionLoader;
 import com.haulmont.cuba.gui.presentations.Presentations;
 import com.haulmont.cuba.gui.settings.SettingsImpl;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
-import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.entity.FilterEntity;
 import com.haulmont.cuba.security.entity.SearchFolder;
 import org.apache.commons.lang3.ArrayUtils;
@@ -95,7 +97,7 @@ public class FilterDelegateImpl implements FilterDelegate {
     protected static final String MODIFIED_INDICATOR_SYMBOL = " *";
 
     @Inject
-    protected ComponentsFactory componentsFactory;
+    protected UiComponents uiComponents;
     @Inject
     protected ThemeConstantsManager themeConstantsManager;
     @Inject
@@ -158,7 +160,7 @@ public class FilterDelegateImpl implements FilterDelegate {
     protected ComponentContainer conditionsLayout;
     protected BoxLayout maxResultsLayout;
     protected Field<Integer> maxResultsField;
-    protected TextField maxResultsTextField;
+    protected TextField<Integer> maxResultsTextField;
     protected LookupField maxResultsLookupField;
     protected BoxLayout controlsLayout;
     protected ComponentContainer appliedFiltersLayout;
@@ -204,7 +206,7 @@ public class FilterDelegateImpl implements FilterDelegate {
     protected PinAppliedAction pinAppliedAction;
     protected SaveAsFolderAction saveAsAppFolderAction;
     protected SaveAsFolderAction saveAsSearchFolderAction;
-    protected LookupField filtersLookup;
+    protected LookupField<FilterEntity> filtersLookup;
 
     protected Consumer<FDExpandedStateChangeEvent> expandedStateChangeListener;
 
@@ -237,10 +239,10 @@ public class FilterDelegateImpl implements FilterDelegate {
 
     protected void createLayout() {
         if (layout == null) {
-            groupBoxLayout = componentsFactory.createComponent(GroupBoxLayout.class);
+            groupBoxLayout = uiComponents.create(GroupBoxLayout.class);
             groupBoxLayout.addExpandedStateChangeListener(e -> fireExpandStateChange(e.isUserOriginated()));
             groupBoxLayout.setOrientation(GroupBoxLayout.Orientation.VERTICAL);
-            groupBoxLayout.setWidth("100%");
+            groupBoxLayout.setWidthFull();
 
             layout = groupBoxLayout;
             layout.setSpacing(true);
@@ -255,16 +257,16 @@ public class FilterDelegateImpl implements FilterDelegate {
             }
         }
 
-        appliedFiltersLayout = componentsFactory.createComponent(VBoxLayout.class);
+        appliedFiltersLayout = uiComponents.create(VBoxLayout.class);
 
         if (AppConfig.getClientType() == ClientType.DESKTOP) {
-            conditionsLayout = componentsFactory.createComponent(HBoxLayout.class);
+            conditionsLayout = uiComponents.create(HBoxLayout.class);
         } else {
-            conditionsLayout = componentsFactory.createComponent(CssLayout.class);
+            conditionsLayout = uiComponents.create(CssLayout.class);
         }
 
         conditionsLayout.setVisible(false); // initially hidden
-        conditionsLayout.setWidth("100%");
+        conditionsLayout.setWidthFull();
         conditionsLayout.setStyleName("filter-conditions");
 
         if (filterMode == FilterMode.GENERIC_MODE) {
@@ -283,16 +285,16 @@ public class FilterDelegateImpl implements FilterDelegate {
     }
 
     protected void createControlsLayoutForGeneric() {
-        controlsLayout = componentsFactory.createComponent(HBoxLayout.class);
+        controlsLayout = uiComponents.create(HBoxLayout.class);
         controlsLayout.setSpacing(true);
-        controlsLayout.setWidth("100%");
+        controlsLayout.setWidthFull();
         filterHelper.setInternalDebugId(controlsLayout, "controlsLayout");
 
         filtersPopupBox = filterHelper.createSearchButtonGroupContainer();
         filtersPopupBox.addStyleName("filter-search-button-layout");
         filterHelper.setInternalDebugId(filtersPopupBox, "filtersPopupBox");
 
-        searchBtn = componentsFactory.createComponent(Button.class);
+        searchBtn = uiComponents.create(Button.class);
         filtersPopupBox.add(searchBtn);
         searchBtn.setStyleName("filter-search-button");
         searchBtn.setCaption(getMainMessage("filter.search"));
@@ -304,18 +306,18 @@ public class FilterDelegateImpl implements FilterDelegate {
 
         filterHelper.setInternalDebugId(searchBtn, "searchBtn");
 
-        filtersPopupButton = componentsFactory.createComponent(PopupButton.class);
+        filtersPopupButton = uiComponents.create(PopupButton.class);
         filtersPopupButton.setStyleName("icon-only");
         filterHelper.setInternalDebugId(filtersPopupButton, "filtersPopupButton");
         filtersPopupBox.add(filtersPopupButton);
 
-        filtersLookup = componentsFactory.createComponent(LookupField.class);
+        filtersLookup = uiComponents.create(LookupField.class);
         filtersLookup.setWidth(theme.get("cuba.gui.filter.select.width"));
         filtersLookup.addValueChangeListener(new FiltersLookupChangeListener());
         filterHelper.setLookupNullSelectionAllowed(filtersLookup, false);
         filterHelper.setInternalDebugId(filtersLookup, "filtersLookup");
 
-        addConditionBtn = componentsFactory.createComponent(LinkButton.class);
+        addConditionBtn = uiComponents.create(LinkButton.class);
         addConditionBtn.setAlignment(Alignment.MIDDLE_LEFT);
         addConditionBtn.setCaption(getMainMessage("filter.addCondition"));
         addConditionBtn.addClickListener(e ->
@@ -323,12 +325,12 @@ public class FilterDelegateImpl implements FilterDelegate {
         );
         filterHelper.setInternalDebugId(addConditionBtn, "addConditionBtn");
 
-        controlsLayoutGap = componentsFactory.createComponent(Label.class);
+        controlsLayoutGap = uiComponents.create(Label.class);
         filterHelper.setInternalDebugId(controlsLayoutGap, "controlsLayoutGap");
         controlsLayout.add(controlsLayoutGap);
         controlsLayout.expand(controlsLayoutGap);
 
-        settingsBtn = componentsFactory.createComponent(PopupButton.class);
+        settingsBtn = uiComponents.create(PopupButton.class);
         settingsBtn.setIcon("icons/gear.png");
         settingsBtn.setStyleName("filter-settings-button");
         filterHelper.setInternalDebugId(settingsBtn, "settingsBtn");
@@ -353,11 +355,11 @@ public class FilterDelegateImpl implements FilterDelegate {
     }
 
     protected void createControlsLayoutForFts() {
-        controlsLayout = componentsFactory.createComponent(HBoxLayout.class);
+        controlsLayout = uiComponents.create(HBoxLayout.class);
         controlsLayout.setSpacing(true);
         controlsLayout.setWidthFull();
 
-        ftsSearchCriteriaField = componentsFactory.createComponent(TextField.class);
+        ftsSearchCriteriaField = uiComponents.create(TextField.NAME);
         ftsSearchCriteriaField.setWidth(theme.get("cuba.gui.filter.ftsSearchCriteriaField.width"));
         ftsSearchCriteriaField.setInputPrompt(getMainMessage("filter.enterSearchPhrase"));
         filterHelper.setInternalDebugId(ftsSearchCriteriaField, "ftsSearchCriteriaField");
@@ -366,7 +368,7 @@ public class FilterDelegateImpl implements FilterDelegate {
         paramEditComponentToFocus = ftsSearchCriteriaField;
         controlsLayout.add(ftsSearchCriteriaField);
 
-        searchBtn = componentsFactory.createComponent(Button.class);
+        searchBtn = uiComponents.create(Button.class);
         searchBtn.setCaption(getMainMessage("filter.search"));
         searchBtn.setIcon("icons/search.png");
         searchBtn.setAction(new AbstractAction("search") {
@@ -377,7 +379,7 @@ public class FilterDelegateImpl implements FilterDelegate {
         });
         controlsLayout.add(searchBtn);
 
-        controlsLayoutGap = componentsFactory.createComponent(Label.class);
+        controlsLayoutGap = uiComponents.create(Label.class);
         controlsLayout.add(controlsLayoutGap);
         controlsLayout.expand(controlsLayoutGap);
 
@@ -402,7 +404,7 @@ public class FilterDelegateImpl implements FilterDelegate {
     }
 
     protected void createFtsSwitch() {
-        ftsSwitch = componentsFactory.createComponent(CheckBox.class);
+        ftsSwitch = uiComponents.create(CheckBox.class);
         ftsSwitch.setCaption(getMainMessage("filter.ftsSwitch"));
         ftsSwitch.setValue(filterMode == FilterMode.FTS_MODE);
 
@@ -451,20 +453,19 @@ public class FilterDelegateImpl implements FilterDelegate {
     }
 
     protected void createMaxResultsLayout() {
-        maxResultsLayout = componentsFactory.createComponent(HBoxLayout.class);
+        maxResultsLayout = uiComponents.create(HBoxLayout.class);
         maxResultsLayout.setStyleName("c-maxresults");
         maxResultsLayout.setSpacing(true);
-        Label<String> maxResultsLabel = componentsFactory.createComponent(Label.class);
+        Label<String> maxResultsLabel = uiComponents.create(Label.NAME);
         maxResultsLabel.setStyleName("c-maxresults-label");
         maxResultsLabel.setValue(messages.getMainMessage("filter.maxResults.label1"));
         maxResultsLabel.setAlignment(Alignment.MIDDLE_RIGHT);
         maxResultsLayout.add(maxResultsLabel);
 
-        maxResultsTextField = componentsFactory.createComponent(TextField.class);
+        maxResultsTextField = uiComponents.create(TextField.TYPE_INTEGER);
         maxResultsTextField.setStyleName("c-maxresults-input");
         maxResultsTextField.setMaxLength(4);
         maxResultsTextField.setWidth(theme.get("cuba.gui.Filter.maxResults.width"));
-        maxResultsTextField.setDatatype(Datatypes.get("int"));
 
         maxResultsLookupField = maxResultsFieldHelper.createMaxResultsLookupField();
         maxResultsLookupField.setStyleName("c-maxresults-select");
@@ -852,7 +853,7 @@ public class FilterDelegateImpl implements FilterDelegate {
         int conditionsCount = getColumnsCount();
         int row = 0;
         int nextColumnStart = 0;
-        GridLayout grid = componentsFactory.createComponent(GridLayout.class);
+        GridLayout grid = uiComponents.create(GridLayout.class);
         grid.setStyleName("conditions-grid");
         grid.setColumns(conditionsCount * 2);
         //set expand ratio only for cells with param edit components
@@ -888,7 +889,7 @@ public class FilterDelegateImpl implements FilterDelegate {
                     labelAndOperationCellContent = paramEditor.getLabelAndOperationLayout();
                     paramEditComponentCellContent = paramEditor.getParamEditComponentLayout();
                 } else {
-                    BoxLayout paramLayout = componentsFactory.createComponent(HBoxLayout.class);
+                    BoxLayout paramLayout = uiComponents.create(HBoxLayout.class);
                     paramLayout.setSpacing(true);
                     paramLayout.setMargin(false);
 
@@ -970,7 +971,7 @@ public class FilterDelegateImpl implements FilterDelegate {
 
     protected Component createGroupConditionBox(AbstractCondition condition, Node<AbstractCondition> node, ConditionsFocusType conditionsFocusType, boolean focusSet, int level) {
         Component groupCellContent;
-        GroupBoxLayout groupBox = componentsFactory.createComponent(GroupBoxLayout.class);
+        GroupBoxLayout groupBox = uiComponents.create(GroupBoxLayout.class);
         groupBox.setStyleName("conditions-group");
         groupBox.setWidth("100%");
         groupBox.setCaption(condition.getLocCaption());
@@ -1008,8 +1009,8 @@ public class FilterDelegateImpl implements FilterDelegate {
      */
     protected void completeGridRowWithGaps(GridLayout grid, int row, int startColumn, boolean lastRow) {
         for (int i = startColumn * 2; i < grid.getColumns(); i++) {
-            Component gap = componentsFactory.createComponent(Label.class);
-            gap.setWidth("100%");
+            Component gap = uiComponents.create(Label.class);
+            gap.setWidthFull();
             grid.add(gap, i, row);
         }
     }
@@ -1211,7 +1212,7 @@ public class FilterDelegateImpl implements FilterDelegate {
         filtersLookupListenerEnabled = false;
         //set null to remove previous value from lookup options list
         filtersLookup.setValue(null);
-        List<Object> optionsList = new ArrayList<>();
+        List<FilterEntity> optionsList = new ArrayList<>();
         optionsList.add(adHocFilter);
         optionsList.addAll(filterEntities);
         filtersLookup.setOptionsList(optionsList);
@@ -1247,7 +1248,7 @@ public class FilterDelegateImpl implements FilterDelegate {
 
         this.layout.add(appliedFiltersLayout, CONDITIONS_LOCATION_TOP.equals(conditionsLocation) ? 0 : 1);
 
-        BoxLayout layout = componentsFactory.createComponent(HBoxLayout.class);
+        BoxLayout layout = uiComponents.create(HBoxLayout.class);
         layout.setSpacing(true);
 
         if (!appliedFilters.isEmpty()) {
@@ -1255,19 +1256,14 @@ public class FilterDelegateImpl implements FilterDelegate {
             holder.layout.remove(holder.button);
         }
 
-        Label label = componentsFactory.createComponent(Label.class);
+        Label<String> label = uiComponents.create(Label.NAME);
         label.setValue(lastAppliedFilter.getText());
         layout.add(label);
         label.setAlignment(Alignment.MIDDLE_LEFT);
 
-        LinkButton button = componentsFactory.createComponent(LinkButton.class);
+        LinkButton button = uiComponents.create(LinkButton.class);
         button.setIcon("icons/item-remove.png");
-        button.setAction(new AbstractAction("") {
-            @Override
-            public void actionPerform(Component component) {
-                removeAppliedFilter();
-            }
-        });
+        button.addClickListener(e -> removeAppliedFilter());
         layout.add(button);
 
         addAppliedFilterLayoutHook(layout);
@@ -1949,7 +1945,7 @@ public class FilterDelegateImpl implements FilterDelegate {
             addToCurrSet = new AddToCurrSetAction();
 
             if (addToCurSetBtn == null) {
-                addToCurSetBtn = componentsFactory.createComponent(Button.class);
+                addToCurSetBtn = uiComponents.create(Button.class);
                 addToCurSetBtn.setId("addToCurSetBtn");
                 addToCurSetBtn.setCaption(getMainMessage("filter.addToCurSet"));
                 buttons.add(addToCurSetBtn);
@@ -1964,7 +1960,7 @@ public class FilterDelegateImpl implements FilterDelegate {
 
             removeFromCurrSet = new RemoveFromSetAction(table);
             if (removeFromCurSetBtn == null) {
-                removeFromCurSetBtn = componentsFactory.createComponent(Button.class);
+                removeFromCurSetBtn = uiComponents.create(Button.class);
                 removeFromCurSetBtn.setId("removeFromCurSetBtn");
                 removeFromCurSetBtn.setCaption(getMainMessage("filter.removeFromCurSet"));
                 buttons.add(removeFromCurSetBtn);
@@ -1980,7 +1976,7 @@ public class FilterDelegateImpl implements FilterDelegate {
         } else {
             addToSet = new AddToSetAction(table);
             if (addToSetBtn == null) {
-                addToSetBtn = componentsFactory.createComponent(Button.class);
+                addToSetBtn = uiComponents.create(Button.class);
                 addToSetBtn.setId("addToSetBtn");
                 addToSetBtn.setCaption(getMainMessage("filter.addToSet"));
                 buttons.add(addToSetBtn);
@@ -2236,15 +2232,17 @@ public class FilterDelegateImpl implements FilterDelegate {
         this.captionChangedListener = captionChangedListener;
     }
 
-    protected class FiltersLookupChangeListener implements Consumer<HasValue.ValueChangeEvent> {
+    protected class FiltersLookupChangeListener implements Consumer<HasValue.ValueChangeEvent<FilterEntity>> {
         public FiltersLookupChangeListener() {
         }
 
         @Override
-        public void accept(HasValue.ValueChangeEvent e) {
-            if (!filtersLookupListenerEnabled) return;
-            if (e.getValue() instanceof FilterEntity) {
-                setFilterEntity((FilterEntity) e.getValue());
+        public void accept(HasValue.ValueChangeEvent<FilterEntity> e) {
+            if (!filtersLookupListenerEnabled) {
+                return;
+            }
+            if (e.getValue() != null) {
+                setFilterEntity(e.getValue());
             }
         }
     }
@@ -2575,7 +2573,13 @@ public class FilterDelegateImpl implements FilterDelegate {
             Set<Entity> ownerSelection = target.getSelected();
 
             if (!ownerSelection.isEmpty()) {
-                String entityType = target.getDatasource().getMetaClass().getName();
+                String entityType;
+                if (target.getItems() instanceof EntityDataUnit) {
+                    MetaClass metaClass = ((EntityDataUnit) target.getItems()).getEntityMetaClass();
+                    entityType = metaClass.getName();
+                } else {
+                    throw new UnsupportedOperationException("Unsupported data unit " + target.getItems());
+                }
 
                 String[] strings = ValuePathHelper.parse(ComponentsHelper.getFilterComponentPath(filter));
                 String componentId = ValuePathHelper.format(Arrays.copyOfRange(strings, 1, strings.length));
@@ -2617,7 +2621,19 @@ public class FilterDelegateImpl implements FilterDelegate {
                 return;
             }
 
-            if (target.getDatasource().getItemIds().size() == 1) {
+            int size;
+
+            if (target.getItems() instanceof ContainerDataUnit) {
+                CollectionContainer container = ((ContainerDataUnit) target.getItems()).getContainer();
+                size = container.getItems().size();
+            } else if (target.getItems() instanceof DatasourceDataUnit) {
+                CollectionDatasource datasource = ((DatasourceDataUnit) target.getItems()).getDatasource();
+                size = datasource.getItemIds().size();
+            } else {
+                throw new UnsupportedOperationException("Unsupported data unit " + target.getItems());
+            }
+
+            if (size == 1) {
                 filterHelper.removeFolderFromFoldersPane(filterEntity.getFolder());
                 removeFilterEntity();
 
@@ -2791,7 +2807,7 @@ public class FilterDelegateImpl implements FilterDelegate {
             if (!isActionAllowed(actionName)) {
                 return null;
             }
-            Button button = componentsFactory.createComponent(Button.class);
+            Button button = uiComponents.create(Button.class);
             button.setAction(filterActions.get(actionName));
             if (options.contains("no-caption")) {
                 button.setCaption(null);

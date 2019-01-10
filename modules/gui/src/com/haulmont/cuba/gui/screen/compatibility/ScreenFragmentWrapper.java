@@ -17,8 +17,11 @@
 package com.haulmont.cuba.gui.screen.compatibility;
 
 import com.haulmont.cuba.gui.components.AbstractFrame;
+import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.screen.ScreenFragment;
+
+import javax.annotation.Nullable;
 
 /**
  * Wrapper object for compatibility with legacy code.
@@ -35,5 +38,11 @@ public class ScreenFragmentWrapper extends AbstractFrame {
     @Override
     public Frame getWrappedFrame() {
         return screen.getFragment();
+    }
+
+    @Nullable
+    @Override
+    public Component getComponent(String id) {
+        return screen.getFragment().getComponent(id);
     }
 }

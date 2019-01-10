@@ -17,11 +17,13 @@
 package com.haulmont.cuba.gui.screen.compatibility;
 
 import com.haulmont.cuba.gui.components.AbstractLookup;
+import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.compatibility.AfterCloseListenerAdapter;
 import com.haulmont.cuba.gui.screen.LookupScreen;
 import com.haulmont.cuba.gui.screen.Screen;
 
+import javax.annotation.Nullable;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
@@ -61,5 +63,11 @@ public class ScreenLookupWrapper extends AbstractLookup {
     @Override
     public void setSelectHandler(Consumer lookupHandler) {
         ((LookupScreen) screen).setSelectHandler(lookupHandler);
+    }
+
+    @Nullable
+    @Override
+    public Component getComponent(String id) {
+        return screen.getWindow().getComponent(id);
     }
 }

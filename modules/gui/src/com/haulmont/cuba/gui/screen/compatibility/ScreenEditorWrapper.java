@@ -18,10 +18,13 @@ package com.haulmont.cuba.gui.screen.compatibility;
 
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.AbstractEditor;
+import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.compatibility.AfterCloseListenerAdapter;
 import com.haulmont.cuba.gui.screen.EditorScreen;
 import com.haulmont.cuba.gui.screen.Screen;
+
+import javax.annotation.Nullable;
 
 /**
  * Wrapper object for compatibility with legacy code.
@@ -58,5 +61,11 @@ public class ScreenEditorWrapper extends AbstractEditor {
     @Override
     public Entity getItem() {
         return ((EditorScreen) screen).getEditedEntity();
+    }
+
+    @Nullable
+    @Override
+    public Component getComponent(String id) {
+        return screen.getWindow().getComponent(id);
     }
 }
