@@ -19,13 +19,13 @@ package com.haulmont.cuba.gui.components;
 import com.haulmont.cuba.client.testsupport.CubaClientTestCase;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.View;
+import com.haulmont.cuba.gui.UiComponents;
 import com.haulmont.cuba.gui.components.factories.DefaultComponentGenerationStrategy;
 import com.haulmont.cuba.gui.components.factories.FieldGroupFieldFactoryImpl;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsBuilder;
 import com.haulmont.cuba.gui.data.impl.DatasourceImpl;
 import com.haulmont.cuba.gui.executors.BackgroundWorker;
-import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.entity.User;
 import mockit.Expectations;
 import mockit.Mocked;
@@ -47,7 +47,7 @@ public class FieldGroupTest extends CubaClientTestCase {
     @Mocked
     protected BackgroundWorker backgroundWorker;
 
-    protected ComponentsFactory componentsFactory;
+    protected UiComponents componentsFactory;
 
     protected TestFieldGroupFieldFactoryImpl fieldFactory;
 
@@ -76,7 +76,7 @@ public class FieldGroupTest extends CubaClientTestCase {
         messages.init();
 
         DefaultComponentGenerationStrategy strategy = new DefaultComponentGenerationStrategy(messages, null);
-        strategy.setComponentsFactory(FieldGroupTest.this.componentsFactory);
+        strategy.setUiComponents(FieldGroupTest.this.componentsFactory);
 
         UiComponentsGenerator uiComponentsGenerator = new UiComponentsGenerator(){
             @Override
@@ -92,19 +92,19 @@ public class FieldGroupTest extends CubaClientTestCase {
     protected void initExpectations() {
     }
 
-    protected ComponentsFactory createComponentsFactory() {
+    protected UiComponents createComponentsFactory() {
         throw new UnsupportedOperationException();
     }
 
     @Test
     public void newFieldGroup() {
-        Component component = componentsFactory.createComponent(FieldGroup.NAME);
+        Component component = componentsFactory.create(FieldGroup.NAME);
         assertTrue(component instanceof FieldGroup);
     }
 
     @Test
     public void initFields() {
-        FieldGroup fieldGroup = componentsFactory.createComponent(FieldGroup.class);
+        FieldGroup fieldGroup = componentsFactory.create(FieldGroup.class);
 
         FieldGroup.FieldConfig fc = fieldGroup.createField("name");
         fc.setProperty("name");
@@ -116,7 +116,7 @@ public class FieldGroupTest extends CubaClientTestCase {
 
     @Test
     public void initFieldsWithProperties() {
-        FieldGroup fieldGroup = componentsFactory.createComponent(FieldGroup.class);
+        FieldGroup fieldGroup = componentsFactory.create(FieldGroup.class);
 
         Datasource<User> testDs = createTestDs();
 
@@ -144,19 +144,19 @@ public class FieldGroupTest extends CubaClientTestCase {
 
     @Test
     public void initWithCustomFields() {
-        FieldGroup fieldGroup = componentsFactory.createComponent(FieldGroup.class);
+        FieldGroup fieldGroup = componentsFactory.create(FieldGroup.class);
 
         FieldGroup.FieldConfig fcName = fieldGroup.createField("name");
         fcName.setProperty("name");
         fcName.setEditable(false);
-        fcName.setComponent(componentsFactory.createComponent(TextField.NAME));
+        fcName.setComponent(componentsFactory.create(TextField.NAME));
         fieldGroup.addField(fcName);
 
         FieldGroup.FieldConfig fcLogin = fieldGroup.createField("login");
         fcLogin.setProperty("login");
         fcLogin.setEnabled(false);
         fcLogin.setVisible(false);
-        fcLogin.setComponent(componentsFactory.createComponent(TextField.NAME));
+        fcLogin.setComponent(componentsFactory.create(TextField.NAME));
         fieldGroup.addField(fcLogin);
 
         assertNotNull(fcLogin.getComponent());
@@ -169,19 +169,19 @@ public class FieldGroupTest extends CubaClientTestCase {
 
     @Test
     public void add() {
-        FieldGroup fieldGroup = componentsFactory.createComponent(FieldGroup.class);
+        FieldGroup fieldGroup = componentsFactory.create(FieldGroup.class);
 
         FieldGroup.FieldConfig fcName = fieldGroup.createField("name");
         fcName.setProperty("name");
         fcName.setEditable(false);
-        fcName.setComponent(componentsFactory.createComponent(TextField.NAME));
+        fcName.setComponent(componentsFactory.create(TextField.NAME));
         fieldGroup.addField(fcName);
 
         FieldGroup.FieldConfig fcLogin = fieldGroup.createField("login");
         fcLogin.setProperty("login");
         fcLogin.setEnabled(false);
         fcLogin.setVisible(false);
-        fcLogin.setComponent(componentsFactory.createComponent(TextField.NAME));
+        fcLogin.setComponent(componentsFactory.create(TextField.NAME));
         fieldGroup.addField(fcLogin);
 
         assertNotNull(fcLogin.getComponent());
@@ -203,20 +203,20 @@ public class FieldGroupTest extends CubaClientTestCase {
 
     @Test
     public void addWithColumn() {
-        FieldGroup fieldGroup = componentsFactory.createComponent(FieldGroup.class);
+        FieldGroup fieldGroup = componentsFactory.create(FieldGroup.class);
         fieldGroup.setColumns(2);
 
         FieldGroup.FieldConfig fcName = fieldGroup.createField("name");
         fcName.setProperty("name");
         fcName.setEditable(false);
-        fcName.setComponent(componentsFactory.createComponent(TextField.NAME));
+        fcName.setComponent(componentsFactory.create(TextField.NAME));
         fieldGroup.addField(fcName);
 
         FieldGroup.FieldConfig fcLogin = fieldGroup.createField("login");
         fcLogin.setProperty("login");
         fcLogin.setEnabled(false);
         fcLogin.setVisible(false);
-        fcLogin.setComponent(componentsFactory.createComponent(TextField.NAME));
+        fcLogin.setComponent(componentsFactory.create(TextField.NAME));
         fieldGroup.addField(fcLogin, 1);
 
         assertNotNull(fcLogin.getComponent());
@@ -238,19 +238,19 @@ public class FieldGroupTest extends CubaClientTestCase {
 
     @Test
     public void addWithColumnAndRow() {
-        FieldGroup fieldGroup = componentsFactory.createComponent(FieldGroup.class);
+        FieldGroup fieldGroup = componentsFactory.create(FieldGroup.class);
 
         FieldGroup.FieldConfig fcName = fieldGroup.createField("name");
         fcName.setProperty("name");
         fcName.setEditable(false);
-        fcName.setComponent(componentsFactory.createComponent(TextField.NAME));
+        fcName.setComponent(componentsFactory.create(TextField.NAME));
         fieldGroup.addField(fcName);
 
         FieldGroup.FieldConfig fcLogin = fieldGroup.createField("login");
         fcLogin.setProperty("login");
         fcLogin.setEnabled(false);
         fcLogin.setVisible(false);
-        fcLogin.setComponent(componentsFactory.createComponent(TextField.NAME));
+        fcLogin.setComponent(componentsFactory.create(TextField.NAME));
         fieldGroup.addField(fcLogin, 0, 0);
 
         assertNotNull(fcLogin.getComponent());
@@ -272,7 +272,7 @@ public class FieldGroupTest extends CubaClientTestCase {
 
     @Test
     public void removeField() {
-        FieldGroup fieldGroup = componentsFactory.createComponent(FieldGroup.class);
+        FieldGroup fieldGroup = componentsFactory.create(FieldGroup.class);
 
         Datasource<User> testDs = createTestDs();
 
@@ -304,7 +304,7 @@ public class FieldGroupTest extends CubaClientTestCase {
 
     @Test
     public void removeBoundField() {
-        FieldGroup fieldGroup = componentsFactory.createComponent(FieldGroup.class);
+        FieldGroup fieldGroup = componentsFactory.create(FieldGroup.class);
 
         Datasource<User> testDs = createTestDs();
 
@@ -336,7 +336,7 @@ public class FieldGroupTest extends CubaClientTestCase {
 
     @Test
     public void addWithSet() {
-        FieldGroup fieldGroup = componentsFactory.createComponent(FieldGroup.class);
+        FieldGroup fieldGroup = componentsFactory.create(FieldGroup.class);
         fieldGroup.setColumns(2);
 
         FieldGroup.FieldConfig fcName = fieldGroup.createField("name");
@@ -350,8 +350,8 @@ public class FieldGroupTest extends CubaClientTestCase {
         fcLogin.setVisible(false);
         fieldGroup.addField(fcLogin, 1);
 
-        fcName.setComponent(componentsFactory.createComponent(TextField.NAME));
-        fcLogin.setComponent(componentsFactory.createComponent(TextField.NAME));
+        fcName.setComponent(componentsFactory.create(TextField.NAME));
+        fcLogin.setComponent(componentsFactory.create(TextField.NAME));
 
         assertNotNull(fcLogin.getComponent());
         assertNotNull(fcName.getComponent());
@@ -372,7 +372,7 @@ public class FieldGroupTest extends CubaClientTestCase {
 
     @Test(expected = IllegalArgumentException.class)
     public void addExistingField() {
-        FieldGroup fieldGroup = componentsFactory.createComponent(FieldGroup.class);
+        FieldGroup fieldGroup = componentsFactory.create(FieldGroup.class);
         fieldGroup.setColumns(2);
 
         FieldGroup.FieldConfig fcName = fieldGroup.createField("name");
@@ -385,7 +385,7 @@ public class FieldGroupTest extends CubaClientTestCase {
 
     @Test(expected = IllegalArgumentException.class)
     public void addIncorrectColumn() {
-        FieldGroup fieldGroup = componentsFactory.createComponent(FieldGroup.class);
+        FieldGroup fieldGroup = componentsFactory.create(FieldGroup.class);
         fieldGroup.setColumns(2);
 
         FieldGroup.FieldConfig fcName = fieldGroup.createField("name");
@@ -398,7 +398,7 @@ public class FieldGroupTest extends CubaClientTestCase {
 
     @Test(expected = IllegalArgumentException.class)
     public void addIncorrectRow() {
-        FieldGroup fieldGroup = componentsFactory.createComponent(FieldGroup.class);
+        FieldGroup fieldGroup = componentsFactory.create(FieldGroup.class);
         fieldGroup.setColumns(2);
 
         FieldGroup.FieldConfig fcName = fieldGroup.createField("name");
@@ -411,7 +411,7 @@ public class FieldGroupTest extends CubaClientTestCase {
 
     @Test(expected = IllegalStateException.class)
     public void changeBoundComponent() {
-        FieldGroup fieldGroup = componentsFactory.createComponent(FieldGroup.class);
+        FieldGroup fieldGroup = componentsFactory.create(FieldGroup.class);
         fieldGroup.setColumns(2);
 
         FieldGroup.FieldConfig fcName = fieldGroup.createField("name");
@@ -421,12 +421,12 @@ public class FieldGroupTest extends CubaClientTestCase {
 
         fieldGroup.bind();
 
-        fcName.setComponent(componentsFactory.createComponent(TextArea.NAME));
+        fcName.setComponent(componentsFactory.create(TextArea.NAME));
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void removeNonDefinedField() {
-        FieldGroup fieldGroup = componentsFactory.createComponent(FieldGroup.class);
+        FieldGroup fieldGroup = componentsFactory.create(FieldGroup.class);
         fieldGroup.setColumns(2);
 
         fieldGroup.removeField("none");

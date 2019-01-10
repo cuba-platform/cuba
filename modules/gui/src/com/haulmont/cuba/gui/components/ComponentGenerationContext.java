@@ -17,21 +17,32 @@
 package com.haulmont.cuba.gui.components;
 
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.cuba.gui.UiComponents;
+import com.haulmont.cuba.gui.components.data.Options;
+import com.haulmont.cuba.gui.components.data.ValueSource;
+import com.haulmont.cuba.gui.components.data.options.DatasourceOptions;
+import com.haulmont.cuba.gui.components.data.value.DatasourceValueSource;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import org.dom4j.Element;
 
 import javax.annotation.Nullable;
 
+import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
+
 /**
  * A class which stores information that can be used
- * when creating a component by the {@link com.haulmont.cuba.gui.xml.layout.ComponentsFactory}.
+ * when creating a component by the {@link UiComponents}.
  */
 public class ComponentGenerationContext {
     protected MetaClass metaClass;
     protected String property;
+    @Deprecated
     protected Datasource datasource;
+    @Deprecated
     protected CollectionDatasource optionsDatasource;
+    protected ValueSource valueSource;
+    protected Options options;
     protected Element xmlDescriptor;
     protected Class componentClass;
 
@@ -42,6 +53,9 @@ public class ComponentGenerationContext {
      * @param property  the entity attribute for which the component is created
      */
     public ComponentGenerationContext(MetaClass metaClass, String property) {
+        checkNotNullArgument(metaClass);
+        checkNotNullArgument(property);
+
         this.metaClass = metaClass;
         this.property = property;
     }
@@ -84,7 +98,9 @@ public class ComponentGenerationContext {
 
     /**
      * @return a datasource that can be used to create the component
+     * @deprecated Use {@link #getValueSource()} instead
      */
+    @Deprecated
     @Nullable
     public Datasource getDatasource() {
         return datasource;
@@ -95,7 +111,9 @@ public class ComponentGenerationContext {
      *
      * @param datasource a datasource
      * @return this object
+     * @deprecated Use {@link #setValueSource(ValueSource)} instead
      */
+    @Deprecated
     public ComponentGenerationContext setDatasource(Datasource datasource) {
         this.datasource = datasource;
         return this;
@@ -103,7 +121,9 @@ public class ComponentGenerationContext {
 
     /**
      * @return a datasource that can be used to show options
+     * @deprecated Use {@link #getOptions()} instead
      */
+    @Deprecated
     @Nullable
     public CollectionDatasource getOptionsDatasource() {
         return optionsDatasource;
@@ -114,9 +134,55 @@ public class ComponentGenerationContext {
      *
      * @param optionsDatasource a datasource that can be used as optional to create the component
      * @return this object
+     * @deprecated Use {@link #setOptions(Options)} instead
      */
+    @Deprecated
     public ComponentGenerationContext setOptionsDatasource(CollectionDatasource optionsDatasource) {
         this.optionsDatasource = optionsDatasource;
+        return this;
+    }
+
+    /**
+     * @return a value source that can be used to create the component
+     */
+    @SuppressWarnings("unchecked")
+    @Nullable
+    public ValueSource getValueSource() {
+        return valueSource == null && datasource != null
+                ? new DatasourceValueSource(datasource, property)
+                : valueSource;
+    }
+
+    /**
+     * Sets a value source, using fluent API method.
+     *
+     * @param valueSource a value source to set
+     * @return this object
+     */
+    public ComponentGenerationContext setValueSource(ValueSource valueSource) {
+        this.valueSource = valueSource;
+        return this;
+    }
+
+    /**
+     * @return an options object
+     */
+    @SuppressWarnings("unchecked")
+    @Nullable
+    public Options getOptions() {
+        return options == null && optionsDatasource != null
+                ? new DatasourceOptions(optionsDatasource)
+                : options;
+    }
+
+    /**
+     * Sets an options object, using fluent API method.
+     *
+     * @param options an options object that can be used as optional to create the component
+     * @return this object
+     */
+    public ComponentGenerationContext setOptions(Options options) {
+        this.options = options;
         return this;
     }
 

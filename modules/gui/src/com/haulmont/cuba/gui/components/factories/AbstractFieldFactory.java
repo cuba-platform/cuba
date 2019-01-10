@@ -18,10 +18,15 @@ package com.haulmont.cuba.gui.components.factories;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.ComponentGenerationContext;
+import com.haulmont.cuba.gui.components.FieldFactory;
+import com.haulmont.cuba.gui.components.Table;
+import com.haulmont.cuba.gui.components.UiComponentsGenerator;
+import com.haulmont.cuba.gui.components.data.Options;
+import com.haulmont.cuba.gui.components.data.meta.EntityValueSource;
+import com.haulmont.cuba.gui.components.data.value.DatasourceValueSource;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.RuntimePropsDatasource;
 import org.dom4j.Element;
 
 import javax.annotation.Nullable;
@@ -30,24 +35,25 @@ public abstract class AbstractFieldFactory implements FieldFactory {
 
     protected UiComponentsGenerator componentsGenerator = AppBeans.get(UiComponentsGenerator.NAME);
 
+    @SuppressWarnings("unchecked")
     @Override
     public Component createField(Datasource datasource, String property, Element xmlDescriptor) {
-        MetaClass metaClass = resolveMetaClass(datasource);
+        return createField(new DatasourceValueSource(datasource, property), property, xmlDescriptor);
+    }
+
+    @Override
+    public Component createField(EntityValueSource valueSource, String property, Element xmlDescriptor) {
+        MetaClass metaClass = valueSource.getEntityMetaClass();
 
         ComponentGenerationContext context = new ComponentGenerationContext(metaClass, property)
-                .setDatasource(datasource)
-                .setOptionsDatasource(getOptionsDatasource(datasource, property))
+                .setValueSource(valueSource)
+                .setOptions(getOptions(valueSource, property))
                 .setXmlDescriptor(xmlDescriptor)
                 .setComponentClass(Table.class);
 
         return componentsGenerator.generate(context);
     }
 
-    protected MetaClass resolveMetaClass(Datasource datasource) {
-        return datasource instanceof RuntimePropsDatasource ?
-                ((RuntimePropsDatasource) datasource).resolveCategorizedEntityClass() : datasource.getMetaClass();
-    }
-
     @Nullable
-    protected abstract CollectionDatasource getOptionsDatasource(Datasource datasource, String property);
+    protected abstract Options getOptions(EntityValueSource container, String property);
 }

@@ -16,6 +16,7 @@
 
 package com.haulmont.cuba.gui.components;
 
+import com.haulmont.cuba.gui.components.data.meta.EntityValueSource;
 import com.haulmont.cuba.gui.data.Datasource;
 
 /**
@@ -31,6 +32,18 @@ public interface DataGridEditorFieldFactory {
      * @param property   editing item property
      * @return generated component
      * @throws IllegalStateException if created component doesn't implement the {@link Field} interface
+     * @deprecated Use {@link #createField(EntityValueSource, String)} instead
      */
+    @Deprecated
     Field createField(Datasource datasource, String property);
+
+    /**
+     * Generates component for {@link DataGrid} editor.
+     *
+     * @param valueSource editing item value source
+     * @param property    editing item property
+     * @return generated component
+     * @throws IllegalStateException if created component doesn't implement the {@link Field} interface
+     */
+    Field createField(EntityValueSource valueSource, String property);
 }

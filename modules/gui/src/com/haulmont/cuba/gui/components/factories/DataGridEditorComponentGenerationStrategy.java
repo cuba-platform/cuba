@@ -25,11 +25,13 @@ import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.ComponentsHelper;
+import com.haulmont.cuba.gui.UiComponents;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.data.Options;
+import com.haulmont.cuba.gui.components.data.options.DatasourceOptions;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.dynamicattributes.DynamicAttributesGuiTools;
-import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import org.springframework.core.Ordered;
 
 import javax.annotation.Nullable;
@@ -45,8 +47,8 @@ public class DataGridEditorComponentGenerationStrategy extends AbstractComponent
     }
 
     @Inject
-    public void setComponentsFactory(ComponentsFactory componentsFactory) {
-        this.componentsFactory = componentsFactory;
+    public void setUiComponents(UiComponents uiComponents) {
+        this.uiComponents = uiComponents;
     }
 
     @Nullable
@@ -62,29 +64,32 @@ public class DataGridEditorComponentGenerationStrategy extends AbstractComponent
 
     @Override
     protected Component createStringField(ComponentGenerationContext context, MetaPropertyPath mpp) {
-        TextField component = componentsFactory.createComponent(TextField.class);
-        setDatasource(component, context);
+        TextField component = uiComponents.create(TextField.class);
+        setValueSource(component, context);
         return component;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     protected Field createEntityField(ComponentGenerationContext context, MetaPropertyPath mpp) {
-        CollectionDatasource optionsDatasource = null;
+        Options options = context.getOptions();
 
         if (DynamicAttributesUtils.isDynamicAttribute(mpp.getMetaProperty())) {
             DynamicAttributesMetaProperty metaProperty = (DynamicAttributesMetaProperty) mpp.getMetaProperty();
             CategoryAttribute attribute = metaProperty.getAttribute();
             if (Boolean.TRUE.equals(attribute.getLookup())) {
                 DynamicAttributesGuiTools dynamicAttributesGuiTools = AppBeans.get(DynamicAttributesGuiTools.class);
-                optionsDatasource = dynamicAttributesGuiTools.createOptionsDatasourceForLookup(metaProperty.getRange()
-                        .asClass(), attribute.getJoinClause(), attribute.getWhereClause());
+                CollectionDatasource optionsDatasource = dynamicAttributesGuiTools
+                        .createOptionsDatasourceForLookup(metaProperty.getRange().asClass(),
+                                attribute.getJoinClause(), attribute.getWhereClause());
+                options = new DatasourceOptions(optionsDatasource);
             }
         }
 
         PickerField pickerField;
-        if (optionsDatasource == null) {
-            pickerField = componentsFactory.createComponent(PickerField.class);
-            setDatasource(pickerField, context);
+        if (options == null) {
+            pickerField = uiComponents.create(PickerField.class);
+            setValueSource(pickerField, context);
             pickerField.addLookupAction();
             if (DynamicAttributesUtils.isDynamicAttribute(mpp.getMetaProperty())) {
                 DynamicAttributesGuiTools dynamicAttributesGuiTools = AppBeans.get(DynamicAttributesGuiTools.class);
@@ -104,9 +109,9 @@ public class DataGridEditorComponentGenerationStrategy extends AbstractComponent
                 pickerField.addClearAction();
             }
         } else {
-            LookupPickerField lookupPickerField = componentsFactory.createComponent(LookupPickerField.class);
-            setDatasource(lookupPickerField, context);
-            lookupPickerField.setOptionsDatasource(optionsDatasource);
+            LookupPickerField lookupPickerField = uiComponents.create(LookupPickerField.class);
+            setValueSource(lookupPickerField, context);
+            lookupPickerField.setOptions(options);
 
             pickerField = lookupPickerField;
 

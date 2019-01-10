@@ -18,10 +18,9 @@ package com.haulmont.cuba.web.test.ui;
 
 import com.google.common.collect.ImmutableMap;
 import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.gui.UiComponents;
 import com.haulmont.cuba.gui.components.FieldGroup;
 import com.haulmont.cuba.gui.components.FieldGroupTest;
-import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
-import com.haulmont.cuba.web.gui.WebComponentsFactory;
 import com.haulmont.cuba.web.gui.WebUiComponents;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.GridLayout;
@@ -55,12 +54,8 @@ public class WebFieldGroupTest extends FieldGroupTest {
     }
 
     @Override
-    protected ComponentsFactory createComponentsFactory() {
-        return new WebComponentsFactory() {
-            {
-                this.uiComponents = new WebUiComponents();
-            }
-        };
+    protected UiComponents createComponentsFactory() {
+        return new WebUiComponents();
     }
 
     @Override

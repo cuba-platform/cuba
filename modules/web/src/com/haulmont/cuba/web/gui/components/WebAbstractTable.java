@@ -531,23 +531,24 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
             fieldDatasources = new WeakHashMap<>();
         }
 
-        Datasource fieldDatasource = (Datasource) fieldDatasources.get(item);
-
-        if (fieldDatasource == null) {
-            fieldDatasource = DsBuilder.create()
-                    .setAllowCommit(false)
-                    .setMetaClass(getDatasource().getMetaClass())
-                    .setRefreshMode(CollectionDatasource.RefreshMode.NEVER)
-                    .setViewName("_local")
-                    .buildDatasource();
-
-            ((DatasourceImplementation) fieldDatasource).valid();
-
-            fieldDatasource.setItem(item);
-            fieldDatasources.put(item, fieldDatasource);
+        Object fieldDatasource = fieldDatasources.get(item);
+        if (fieldDatasource instanceof Datasource) {
+            return (Datasource) fieldDatasource;
         }
 
-        return fieldDatasource;
+       Datasource datasource = DsBuilder.create()
+                .setAllowCommit(false)
+                .setMetaClass(getDatasource().getMetaClass())
+                .setRefreshMode(CollectionDatasource.RefreshMode.NEVER)
+                .setViewName("_local")
+                .buildDatasource();
+
+        ((DatasourceImplementation) datasource).valid();
+
+        datasource.setItem(item);
+        fieldDatasources.put(item, datasource);
+
+        return datasource;
     }
 
     @Override
@@ -556,19 +557,20 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
             fieldDatasources = new WeakHashMap<>();
         }
 
-        //noinspection unchecked
-        InstanceContainer<E> instanceContainer = (InstanceContainer<E>) fieldDatasources.get(item);
-
-        if (instanceContainer == null) {
-            EntityDataUnit containerTableItems = (EntityDataUnit) getItems();
-
-            instanceContainer = dataComponents.createInstanceContainer(containerTableItems.getEntityMetaClass().getJavaClass());
-            View view = viewRepository.getView(containerTableItems.getEntityMetaClass(), "_local");
-            instanceContainer.setView(view);
-            instanceContainer.setItem(item);
-
-            fieldDatasources.put(item, instanceContainer);
+        Object fieldDatasource = fieldDatasources.get(item);
+        if (fieldDatasource instanceof InstanceContainer) {
+            //noinspection unchecked
+            return (InstanceContainer<E>) fieldDatasource;
         }
+
+        EntityTableItems containerTableItems = (EntityTableItems) getItems();
+        InstanceContainer<E> instanceContainer = dataComponents.createInstanceContainer(
+                containerTableItems.getEntityMetaClass().getJavaClass());
+        View view = viewRepository.getView(containerTableItems.getEntityMetaClass(), "_local");
+        instanceContainer.setView(view);
+        instanceContainer.setItem(item);
+
+        fieldDatasources.put(item, instanceContainer);
 
         return instanceContainer;
     }
@@ -1115,7 +1117,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
     }
 
     protected WebTableFieldFactory createFieldFactory() {
-        return new WebTableFieldFactory(this, security, metadataTools);
+        return new WebTableFieldFactory<>(this, security, metadataTools);
     }
 
     protected void setClientCaching() {

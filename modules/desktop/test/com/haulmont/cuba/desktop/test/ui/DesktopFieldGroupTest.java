@@ -21,11 +21,11 @@ import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.desktop.gui.DesktopComponentsFactory;
 import com.haulmont.cuba.desktop.gui.components.DesktopFieldGroup;
 import com.haulmont.cuba.desktop.gui.executors.impl.DesktopBackgroundWorker;
+import com.haulmont.cuba.gui.UiComponents;
 import com.haulmont.cuba.gui.components.ComponentGenerationStrategy;
 import com.haulmont.cuba.gui.components.factories.DefaultComponentGenerationStrategy;
 import com.haulmont.cuba.gui.components.FieldGroup;
 import com.haulmont.cuba.gui.components.FieldGroupTest;
-import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import mockit.Mock;
 import mockit.MockUp;
 import mockit.Expectations;
@@ -52,12 +52,12 @@ public class DesktopFieldGroupTest extends FieldGroupTest {
     }
 
     @Override
-    protected ComponentsFactory createComponentsFactory() {
+    protected UiComponents createComponentsFactory() {
         return new DesktopComponentsFactory() {
             @Override
             public List<ComponentGenerationStrategy> getComponentGenerationStrategies() {
                 DefaultComponentGenerationStrategy strategy = new DefaultComponentGenerationStrategy(messages);
-                strategy.setComponentsFactory(this);
+                strategy.setUiComponents(this);
                 return Collections.singletonList(strategy);
             }
         };

@@ -19,8 +19,6 @@ package com.haulmont.cuba.web.widgets;
 import com.haulmont.cuba.web.widgets.grid.CubaEditorField;
 import com.vaadin.ui.Grid;
 
-import javax.annotation.Nullable;
-
 /**
  * Factory that generates components for {@link CubaGrid} editor.
  */
@@ -31,8 +29,7 @@ public interface CubaGridEditorFieldFactory<T> {
      *
      * @param bean   the editing item
      * @param column the column for which the field is being created
-     * @return generated component or {@code null}
+     * @return generated component
      */
-    @Nullable
     CubaEditorField<?> createField(T bean, Grid.Column<T, ?> column);
 }

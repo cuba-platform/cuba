@@ -24,8 +24,28 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.client.sys.PersistenceManagerClient;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.MessageTools;
+import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.core.global.MetadataTools;
+import com.haulmont.cuba.core.global.Security;
+import com.haulmont.cuba.core.global.View;
+import com.haulmont.cuba.core.global.ViewRepository;
+import com.haulmont.cuba.gui.components.Action;
+import com.haulmont.cuba.gui.components.Buffered;
+import com.haulmont.cuba.gui.components.ButtonsPanel;
+import com.haulmont.cuba.gui.components.ContentMode;
+import com.haulmont.cuba.gui.components.DataGrid;
+import com.haulmont.cuba.gui.components.DataGridEditorFieldFactory;
+import com.haulmont.cuba.gui.components.Field;
+import com.haulmont.cuba.gui.components.HasInnerComponents;
+import com.haulmont.cuba.gui.components.KeyCombination;
+import com.haulmont.cuba.gui.components.LookupComponent;
+import com.haulmont.cuba.gui.components.MouseEventDetails;
+import com.haulmont.cuba.gui.components.RowsCount;
+import com.haulmont.cuba.gui.components.SecuredActionsHolder;
+import com.haulmont.cuba.gui.components.ValidationException;
+import com.haulmont.cuba.gui.components.VisibilityChangeNotifier;
 import com.haulmont.cuba.gui.components.actions.BaseAction;
 import com.haulmont.cuba.gui.components.data.BindingState;
 import com.haulmont.cuba.gui.components.data.DataGridItems;
@@ -33,6 +53,7 @@ import com.haulmont.cuba.gui.components.data.ValueSourceProvider;
 import com.haulmont.cuba.gui.components.data.meta.ContainerDataUnit;
 import com.haulmont.cuba.gui.components.data.meta.DatasourceDataUnit;
 import com.haulmont.cuba.gui.components.data.meta.EntityDataGridItems;
+import com.haulmont.cuba.gui.components.data.value.ContainerValueSource;
 import com.haulmont.cuba.gui.components.data.value.ContainerValueSourceProvider;
 import com.haulmont.cuba.gui.components.formatters.CollectionFormatter;
 import com.haulmont.cuba.gui.components.security.ActionsPermissions;
@@ -53,16 +74,39 @@ import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.gui.components.datagrid.DataGridDataProvider;
 import com.haulmont.cuba.web.gui.components.datagrid.DataGridItemsEventsDelegate;
 import com.haulmont.cuba.web.gui.components.datagrid.SortableDataGridDataProvider;
-import com.haulmont.cuba.web.gui.components.renderers.*;
+import com.haulmont.cuba.web.gui.components.renderers.RendererWrapper;
+import com.haulmont.cuba.web.gui.components.renderers.WebButtonRenderer;
+import com.haulmont.cuba.web.gui.components.renderers.WebCheckBoxRenderer;
+import com.haulmont.cuba.web.gui.components.renderers.WebClickableTextRenderer;
+import com.haulmont.cuba.web.gui.components.renderers.WebComponentRenderer;
+import com.haulmont.cuba.web.gui.components.renderers.WebDateRenderer;
+import com.haulmont.cuba.web.gui.components.renderers.WebHtmlRenderer;
+import com.haulmont.cuba.web.gui.components.renderers.WebImageRenderer;
+import com.haulmont.cuba.web.gui.components.renderers.WebLocalDateRenderer;
+import com.haulmont.cuba.web.gui.components.renderers.WebLocalDateTimeRenderer;
+import com.haulmont.cuba.web.gui.components.renderers.WebNumberRenderer;
+import com.haulmont.cuba.web.gui.components.renderers.WebProgressBarRenderer;
+import com.haulmont.cuba.web.gui.components.renderers.WebTextRenderer;
 import com.haulmont.cuba.web.gui.components.util.ShortcutListenerDelegate;
-import com.haulmont.cuba.web.gui.components.valueproviders.*;
+import com.haulmont.cuba.web.gui.components.valueproviders.DataGridConverterBasedValueProvider;
+import com.haulmont.cuba.web.gui.components.valueproviders.EntityValueProvider;
+import com.haulmont.cuba.web.gui.components.valueproviders.FormatterBasedValueProvider;
+import com.haulmont.cuba.web.gui.components.valueproviders.StringPresentationValueProvider;
+import com.haulmont.cuba.web.gui.components.valueproviders.YesNoIconPresentationValueProvider;
 import com.haulmont.cuba.web.gui.icons.IconResolver;
 import com.haulmont.cuba.web.widgets.CubaCssActionsLayout;
 import com.haulmont.cuba.web.widgets.CubaEnhancedGrid;
 import com.haulmont.cuba.web.widgets.CubaGridEditorFieldFactory;
 import com.haulmont.cuba.web.widgets.CubaUI;
 import com.haulmont.cuba.web.widgets.data.SortableDataProvider;
-import com.haulmont.cuba.web.widgets.grid.*;
+import com.haulmont.cuba.web.widgets.grid.CubaEditorBeforeSaveEvent;
+import com.haulmont.cuba.web.widgets.grid.CubaEditorField;
+import com.haulmont.cuba.web.widgets.grid.CubaEditorImpl;
+import com.haulmont.cuba.web.widgets.grid.CubaEditorOpenEvent;
+import com.haulmont.cuba.web.widgets.grid.CubaGridContextMenu;
+import com.haulmont.cuba.web.widgets.grid.CubaMultiCheckSelectionModel;
+import com.haulmont.cuba.web.widgets.grid.CubaMultiSelectionModel;
+import com.haulmont.cuba.web.widgets.grid.CubaSingleSelectionModel;
 import com.vaadin.data.HasValue;
 import com.vaadin.data.SelectionModel;
 import com.vaadin.data.ValidationResult;
@@ -77,9 +121,16 @@ import com.vaadin.shared.Registration;
 import com.vaadin.shared.ui.grid.HeightMode;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.DescriptionGenerator;
-import com.vaadin.ui.*;
+import com.vaadin.ui.Grid;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.MenuItem;
-import com.vaadin.ui.components.grid.*;
+import com.vaadin.ui.StyleGenerator;
+import com.vaadin.ui.components.grid.EditorCancelEvent;
+import com.vaadin.ui.components.grid.EditorSaveEvent;
+import com.vaadin.ui.components.grid.Footer;
+import com.vaadin.ui.components.grid.Header;
+import com.vaadin.ui.components.grid.StaticSection;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Document;
@@ -92,7 +143,17 @@ import org.springframework.beans.factory.InitializingBean;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.beans.PropertyChangeEvent;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.WeakHashMap;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -175,7 +236,8 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
     protected boolean showIconsForPopupMenuActions;
 
     protected DataGridDataProvider<E> dataBinding;
-    protected ValueSourceProvider valueSourceProvider;
+
+    protected Map<E, InstanceContainer<E>> itemContainers; // lazily initialized WeakHashMap;
 
     static {
         ImmutableMap.Builder<Class<? extends Renderer>, Class<? extends Renderer>> builder =
@@ -1293,7 +1355,16 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
         return fieldDatasource;
     }
 
-    protected ValueSourceProvider createValueSourceProvider(E item) {
+    protected InstanceContainer<E> createInstanceContainer(E item) {
+        if (itemContainers == null) {
+            itemContainers = new WeakHashMap<>();
+        }
+
+        InstanceContainer<E> container = itemContainers.get(item);
+        if (container != null) {
+            return container;
+        }
+
         EntityDataGridItems<E> items = getEntityDataGridItemsNN();
         DataComponents factory = beanLocator.get(DataComponents.class);
         ViewRepository viewRepository = beanLocator.get(ViewRepository.NAME);
@@ -1303,6 +1374,13 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
         instanceContainer.setView(viewRepository.getView(metaClass, View.LOCAL));
         instanceContainer.setItem(item);
 
+        itemContainers.put(item, instanceContainer);
+
+        return instanceContainer;
+    }
+
+    protected ValueSourceProvider createValueSourceProvider(E item) {
+        InstanceContainer<E> instanceContainer = createInstanceContainer(item);
         return new ContainerValueSourceProvider<>(instanceContainer);
     }
 
@@ -1317,7 +1395,6 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
             this.fieldFactory = fieldFactory;
         }
 
-        @Nullable
         @Override
         public CubaEditorField<?> createField(E bean, Grid.Column<E, ?> gridColumn) {
             ColumnImpl<E> column = dataGrid.getColumnByGridColumn(gridColumn);
@@ -1331,11 +1408,15 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
                 EditorFieldGenerationContext<E> context = new EditorFieldGenerationContext<>(bean, valueSourceProvider);
                 columnComponent = column.getEditFieldGenerator().apply(context);
             } else {
-                Datasource fieldDatasource = dataGrid.createItemDatasource(bean);
                 String fieldPropertyId = String.valueOf(column.getPropertyId());
-                columnComponent = column.getEditorFieldGenerator() != null
-                        ? column.getEditorFieldGenerator().createField(fieldDatasource, fieldPropertyId)
-                        : fieldFactory.createField(fieldDatasource, fieldPropertyId);
+                if (column.getEditorFieldGenerator() != null) {
+                    Datasource fieldDatasource = dataGrid.createItemDatasource(bean);
+                    columnComponent = column.getEditorFieldGenerator().createField(fieldDatasource, fieldPropertyId);
+                } else {
+                    InstanceContainer<E> container = dataGrid.createInstanceContainer(bean);
+                    columnComponent = fieldFactory.createField(
+                            new ContainerValueSource<>(container, fieldPropertyId), fieldPropertyId);
+                }
             }
 
             columnComponent.setParent(dataGrid);

@@ -20,9 +20,9 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesTools;
 import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.gui.UiComponents;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.ComponentGenerationContext;
-import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import org.springframework.core.Ordered;
 
 import javax.annotation.Nullable;
@@ -44,8 +44,8 @@ public class CustomDatatypesComponentGenerationStrategy extends AbstractComponen
     }
 
     @Inject
-    public void setComponentsFactory(ComponentsFactory componentsFactory) {
-        this.componentsFactory = componentsFactory;
+    public void setUiComponents(UiComponents uiComponents) {
+        this.uiComponents = uiComponents;
     }
 
     @Nullable
