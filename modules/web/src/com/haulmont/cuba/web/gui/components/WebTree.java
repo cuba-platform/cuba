@@ -47,11 +47,12 @@ import com.haulmont.cuba.web.widgets.addons.contextmenu.TreeContextMenu;
 import com.haulmont.cuba.web.widgets.grid.CubaMultiSelectionModel;
 import com.haulmont.cuba.web.widgets.grid.CubaSingleSelectionModel;
 import com.haulmont.cuba.web.widgets.tree.EnhancedTreeDataProvider;
+import com.vaadin.data.HasValue;
 import com.vaadin.data.TreeData;
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.event.ShortcutListener;
-import com.vaadin.event.selection.SelectionEvent;
+import com.vaadin.event.selection.MultiSelectionEvent;
 import com.vaadin.server.Resource;
 import com.vaadin.server.Sizeable;
 import com.vaadin.shared.Registration;
@@ -918,7 +919,7 @@ public class WebTree<E extends Entity>
         component.addSelectionListener(this::onSelectionChange);
     }
 
-    protected void onSelectionChange(SelectionEvent<E> event) {
+    protected void onSelectionChange(com.vaadin.event.selection.SelectionEvent<E> event) {
         TreeItems<E> treeItems = getItems();
 
         if (treeItems == null
@@ -949,10 +950,24 @@ public class WebTree<E extends Entity>
             }
         }
 
+        fireSelectionEvent(event);
+
         LookupSelectionChangeEvent<E> selectionChangeEvent = new LookupSelectionChangeEvent<>(this);
         publish(LookupSelectionChangeEvent.class, selectionChangeEvent);
+    }
 
-        // todo implement selection change events
+    protected void fireSelectionEvent(com.vaadin.event.selection.SelectionEvent<E> e) {
+        Set<E> oldSelection;
+        if (e instanceof MultiSelectionEvent) {
+            oldSelection = ((MultiSelectionEvent<E>) e).getOldSelection();
+        } else {
+            //noinspection unchecked
+            E oldValue = ((HasValue.ValueChangeEvent<E>) e).getOldValue();
+            oldSelection = oldValue != null ? Collections.singleton(oldValue) : Collections.emptySet();
+        }
+
+        SelectionEvent<E> event = new SelectionEvent<>(WebTree.this, oldSelection, e.isUserOriginated());
+        publish(SelectionEvent.class, event);
     }
 
     @Override
@@ -1030,6 +1045,12 @@ public class WebTree<E extends Entity>
             default:
                 throw new UnsupportedOperationException("Unsupported selection mode");
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public Subscription addSelectionListener(Consumer<SelectionEvent<E>> listener) {
+        return getEventHub().subscribe(SelectionEvent.class, (Consumer) listener);
     }
 
     @SuppressWarnings("unchecked")

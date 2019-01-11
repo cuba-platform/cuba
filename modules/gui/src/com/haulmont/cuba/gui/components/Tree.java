@@ -17,12 +17,17 @@
 package com.haulmont.cuba.gui.components;
 
 import com.google.common.reflect.TypeToken;
+import com.haulmont.bali.events.Subscription;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.data.TreeItems;
 import com.haulmont.cuba.gui.components.data.tree.DatasourceTreeItems;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 
 import javax.annotation.Nullable;
+import java.util.EventObject;
+import java.util.LinkedHashSet;
+import java.util.Set;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 public interface Tree<E extends Entity> extends ListComponent<E>, HasButtonsPanel,
@@ -199,4 +204,93 @@ public interface Tree<E extends Entity> extends ListComponent<E>, HasButtonsPane
          */
         NONE
     }
+
+    /**
+     * Event sent when the selection changes. It specifies what in a selection has changed, and where the
+     * selection took place.
+     */
+    class SelectionEvent<E extends Entity> extends EventObject implements HasUserOriginated {
+        protected final Set<E> selected;
+        protected final Set<E> oldSelection;
+        protected final boolean userOriginated;
+
+        /**
+         * Constructor for a selection event.
+         *
+         * @param component      the DataGrid from which this event originates
+         * @param oldSelection   the old set of selected items
+         * @param userOriginated {@code true} if an event is a result of user interaction,
+         *                       {@code false} if from the API call
+         */
+        public SelectionEvent(Tree<E> component, Set<E> oldSelection, boolean userOriginated) {
+            super(component);
+            this.oldSelection = oldSelection;
+            this.selected = component.getSelected();
+            this.userOriginated = userOriginated;
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public Tree<E> getSource() {
+            return (Tree<E>) super.getSource();
+        }
+
+        /**
+         * A {@link Set} of all the items that became selected.
+         *
+         * <em>Note:</em> this excludes all items that might have been previously
+         * selected.
+         *
+         * @return a set of the items that became selected
+         */
+        public Set<E> getAdded() {
+            LinkedHashSet<E> copy = new LinkedHashSet<>(getSelected());
+            copy.removeAll(getOldSelection());
+            return copy;
+        }
+
+        /**
+         * A {@link Set} of all the items that became deselected.
+         *
+         * <em>Note:</em> this excludes all items that might have been previously
+         * deselected.
+         *
+         * @return a set of the items that became deselected
+         */
+        public Set<E> getRemoved() {
+            LinkedHashSet<E> copy = new LinkedHashSet<>(getOldSelection());
+            copy.removeAll(getSelected());
+            return copy;
+        }
+
+        /**
+         * A {@link Set} of all the items that are currently selected.
+         *
+         * @return a set of the items that are currently selected
+         */
+        public Set<E> getSelected() {
+            return selected;
+        }
+
+        /**
+         * A {@link Set} of all the items that were selected before the selection was changed.
+         *
+         * @return a set of items selected before the selection was changed
+         */
+        public Set<E> getOldSelection() {
+            return oldSelection;
+        }
+
+        @Override
+        public boolean isUserOriginated() {
+            return userOriginated;
+        }
+    }
+
+    /**
+     * Registers a new selection listener
+     *
+     * @param listener the listener to register
+     */
+    Subscription addSelectionListener(Consumer<SelectionEvent<E>> listener);
 }
