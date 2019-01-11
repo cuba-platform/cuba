@@ -476,10 +476,10 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
             }
         }
 
+        fireSelectionEvent(e);
+
         LookupSelectionChangeEvent<E> selectionChangeEvent = new LookupSelectionChangeEvent<>(this);
         publish(LookupSelectionChangeEvent.class, selectionChangeEvent);
-
-        fireSelectionEvent(e);
     }
 
     protected void fireSelectionEvent(com.vaadin.event.selection.SelectionEvent<E> e) {

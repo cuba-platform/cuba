@@ -1051,10 +1051,10 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
             }
         }
 
+        fireSelectionEvent(event);
+
         LookupSelectionChangeEvent<E> selectionChangeEvent = new LookupSelectionChangeEvent<>(this);
         publish(LookupSelectionChangeEvent.class, selectionChangeEvent);
-
-        fireSelectionEvent(event);
     }
 
     protected void fireSelectionEvent(Property.ValueChangeEvent e) {
