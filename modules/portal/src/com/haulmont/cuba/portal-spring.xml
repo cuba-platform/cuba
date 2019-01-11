@@ -60,6 +60,8 @@
         </property>
     </bean>
 
+    <bean id="cuba_AnnotationMBeanExporter" class="com.haulmont.cuba.core.sys.jmx.AnnotationMBeanExporter" lazy-init="false"/>
+
     <!-- Remote stubs -->
 
     <bean id="cuba_ServerSorter" class="com.haulmont.cuba.core.sys.remoting.discovery.RandomServerSorter"/>

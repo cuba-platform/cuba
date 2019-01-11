@@ -20,6 +20,8 @@ package com.haulmont.cuba.core.sys.jmx;
 import org.apache.commons.logging.LogFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.jmx.export.annotation.AnnotationJmxAttributeSource;
 import org.springframework.jmx.support.MBeanRegistrationSupport;
 
 import javax.management.DynamicMBean;
@@ -39,8 +41,10 @@ public class MBeanExporter extends org.springframework.jmx.export.MBeanExporter 
 
     private final Logger log = LoggerFactory.getLogger(MBeanExporter.class);
 
+    protected AnnotationJmxAttributeSource jmxAttributeSource = new AnnotationJmxAttributeSource();
+
     public MBeanExporter() {
-        setAssembler(new AnnotationMBeanInfoAssembler());
+        setAssembler(new AnnotationMBeanInfoAssembler(jmxAttributeSource));
         // hack logging
         try {
             Field loggerField = MBeanRegistrationSupport.class.getDeclaredField("logger");
@@ -48,6 +52,12 @@ public class MBeanExporter extends org.springframework.jmx.export.MBeanExporter 
             loggerField.set(this, LogFactory.getLog(org.springframework.jmx.export.MBeanExporter.class));
         } catch (NoSuchFieldException | IllegalAccessException ignore) {
         }
+    }
+
+    @Override
+    public void setBeanFactory(BeanFactory beanFactory) {
+        super.setBeanFactory(beanFactory);
+        jmxAttributeSource.setBeanFactory(beanFactory);
     }
 
     @Override
@@ -75,7 +85,11 @@ public class MBeanExporter extends org.springframework.jmx.export.MBeanExporter 
 
     @Override
     protected DynamicMBean adaptMBeanIfPossible(Object bean) throws JMException {
-        /* Never adapt */
+        /* Never adapt to DynamicMBean */
         return null;
+    }
+
+    protected AnnotationJmxAttributeSource getJmxAttributeSource() {
+        return jmxAttributeSource;
     }
 }

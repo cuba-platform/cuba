@@ -175,6 +175,8 @@
         </property>
     </bean>
 
+    <bean id="cuba_AnnotationMBeanExporter" class="com.haulmont.cuba.core.sys.jmx.AnnotationMBeanExporter" lazy-init="false"/>
+
     <!-- Scheduling setup -->
 
     <bean id="scheduler" class="com.haulmont.cuba.core.sys.CubaThreadPoolTaskScheduler">

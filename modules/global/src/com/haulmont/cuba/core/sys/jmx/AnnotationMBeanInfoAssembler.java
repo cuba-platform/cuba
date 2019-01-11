@@ -20,8 +20,8 @@ package com.haulmont.cuba.core.sys.jmx;
 import com.google.common.collect.Maps;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.BeanUtils;
-import org.springframework.jmx.export.annotation.AnnotationJmxAttributeSource;
 import org.springframework.jmx.export.assembler.AbstractReflectiveMBeanInfoAssembler;
+import org.springframework.jmx.export.assembler.AutodetectCapableMBeanInfoAssembler;
 import org.springframework.jmx.export.metadata.*;
 import org.springframework.jmx.support.JmxUtils;
 import org.springframework.util.ClassUtils;
@@ -34,6 +34,7 @@ import javax.management.MBeanParameterInfo;
 import javax.management.modelmbean.ModelMBeanNotificationInfo;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.util.Arrays;
 import java.util.Map;
 
@@ -49,9 +50,11 @@ import java.util.Map;
  * If getter or setter is annotated as @ManagedOperation, it is considered as heavy operation.
  * Such method is exposed as operation, not as attribute accessor.
  */
-public class AnnotationMBeanInfoAssembler extends AbstractReflectiveMBeanInfoAssembler {
+public class AnnotationMBeanInfoAssembler extends AbstractReflectiveMBeanInfoAssembler
+        implements AutodetectCapableMBeanInfoAssembler {
     protected static final String FIELD_RUN_ASYNC = "runAsync";
     protected static final String FIELD_TIMEOUT = "timeout";
+    protected static final String MBEAN_SUFFIX = "MBean";
 
     /* Map: Bean name -> jmx interface */
     private Map<String, Class> interfaceCache = Maps.newHashMap();
@@ -59,12 +62,43 @@ public class AnnotationMBeanInfoAssembler extends AbstractReflectiveMBeanInfoAss
     /* Extracts annotation information from jmx interface */
     private JmxAttributeSource attributeSource;
 
-    public AnnotationMBeanInfoAssembler() {
-        attributeSource = new AnnotationJmxAttributeSource();
+    public AnnotationMBeanInfoAssembler(JmxAttributeSource attributeSource) {
+        this.attributeSource = attributeSource;
     }
 
-    public void setAttributeSource(JmxAttributeSource attributeSource) {
-        this.attributeSource = attributeSource;
+    @Override
+    public boolean includeBean(Class<?> beanClass, String beanName) {
+        Class<?> mbeanInterface;
+        if (Proxy.isProxyClass(beanClass)) {
+            Class[] implementedInterfaces = ClassUtils.getAllInterfacesForClass(beanClass);
+            mbeanInterface = Arrays.stream(implementedInterfaces)
+                    .filter(i -> i.getName().endsWith(MBEAN_SUFFIX))
+                    .findFirst()
+                    .orElse(null);
+        } else {
+            mbeanInterface = JmxUtils.getMBeanInterface(beanClass);
+        }
+
+        if (mbeanInterface != null) {
+            JmxBean a = mbeanInterface.getAnnotation(JmxBean.class);
+            if (a != null) {
+                return true;
+            }
+        }
+
+        //find with @org.springframework.jmx.export.annotation.ManagedResource and @JmxBean annotations
+        Class<?>[] implementedInterfaces = ClassUtils.getAllInterfacesForClass(beanClass);
+        for (Class<?> ifc : implementedInterfaces) {
+            ManagedResource metadata = attributeSource.getManagedResource(ifc);
+            if (metadata != null) {
+                JmxBean a = ifc.getAnnotation(JmxBean.class);
+                if (a != null) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     @Nonnull
