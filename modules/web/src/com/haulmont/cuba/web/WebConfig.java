@@ -242,11 +242,11 @@ public interface WebConfig extends Config {
     boolean getUseFontIcons();
 
     /**
-     * Sets the page length for Table implementation - count of rows for first rendering of Table.
-     * After first partial rendering Table will request rest of rows from the server.<br>
-     *
-     * Setting page length 0 disables paging. <br>
-     *
+     * Sets the page length for Table implementation - count of rows for first rendering of Table. After first partial
+     * rendering Table will request rest of rows from the server.
+     * <br>
+     * Setting page length 0 disables paging.
+     * <br>
      * If Table has fixed height the client side may update the page length automatically the correct value.
      */
     @Property("cuba.web.table.pageLength")
@@ -254,16 +254,14 @@ public interface WebConfig extends Config {
     int getTablePageLength();
 
     /**
-     * This method adjusts a possible caching mechanism of table implementation. <br>
-     *
-     * Table component may fetch and render some rows outside visible area. With
-     * complex tables (for example containing layouts and components), the
-     * client side may become unresponsive. Setting the value lower, UI will
-     * become more responsive. With higher values scrolling in client will hit
-     * server less frequently. <br>
-     *
-     * The amount of cached rows will be cacheRate multiplied with pageLength
-     * {@link #getTablePageLength()} both below and above visible area.
+     * This property adjusts a possible caching mechanism of table implementation.
+     * <br>
+     * Table component may fetch and render some rows outside visible area. With complex tables (for example containing
+     * layouts and components), the client side may become unresponsive. Setting the value lower, UI will become more
+     * responsive. With higher values scrolling in client will hit server less frequently.
+     * <br>
+     * The amount of cached rows will be cacheRate multiplied with pageLength {@link #getTablePageLength()} both below
+     * and above visible area.
      */
     @Property("cuba.web.table.cacheRate")
     @DefaultDouble(2)
@@ -284,8 +282,8 @@ public interface WebConfig extends Config {
     int getAppLogMaxItemsCount();
 
     /**
-     * @return the interval of the heartbeat requests for Web Client UI. If not set Web Client uses calculated
-     * value {@link #getHttpSessionExpirationTimeoutSec()} / 3.
+     * @return the interval of the heartbeat requests for Web Client UI. If set to -1 then Web Client uses calculated
+     * value {@link #getHttpSessionExpirationTimeoutSec()} / 3. Set to 0 in order to disable heartbeat requests.
      */
     @Property("cuba.web.uiHeartbeatIntervalSec")
     @DefaultInt(-1)
@@ -411,7 +409,7 @@ public interface WebConfig extends Config {
     @Source(type = SourceType.DATABASE)
     @DefaultBoolean(true)
     boolean getDefaultScreenCanBeClosed();
-    void setDefaultScreenCanBeClosed(boolean b);
+    void setDefaultScreenCanBeClosed(boolean value);
 
     /**
      * Defines the list of regular expression patterns that are applied to each row of the log in the Server Log window.
