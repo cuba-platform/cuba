@@ -333,6 +333,10 @@ public class WebTokenList<V extends Entity> extends WebV8AbstractField<CubaToken
             applyOpenTypeParameters(lookupScreen.getWindow(), lookupOpenMode);
         }
 
+        if (lookupScreen instanceof MultiSelectLookupScreen) {
+            ((MultiSelectLookupScreen) lookupScreen).setLookupComponentMultiSelect(isMultiSelect());
+        }
+
         return lookupScreen;
     }
 

@@ -21,10 +21,8 @@ import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Messages;
-import com.haulmont.cuba.gui.components.Action;
-import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.LookupComponent;
-import com.haulmont.cuba.gui.components.Window;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.BaseAction;
 import com.haulmont.cuba.gui.icons.CubaIcon;
 import com.haulmont.cuba.gui.icons.Icons;
@@ -40,7 +38,7 @@ import java.util.function.Predicate;
  *
  * @param <T> type of entity
  */
-public class StandardLookup<T extends Entity> extends Screen implements LookupScreen<T> {
+public class StandardLookup<T extends Entity> extends Screen implements LookupScreen<T>, MultiSelectLookupScreen {
     protected Consumer<Collection<T>> selectHandler;
     protected Predicate<ValidationContext<T>> selectValidator;
 
@@ -164,6 +162,22 @@ public class StandardLookup<T extends Entity> extends Screen implements LookupSc
             if (selectHandler != null) {
                 result.then(() -> selectHandler.accept(items));
             }
+        }
+    }
+
+    @Override
+    public void setLookupComponentMultiSelect(boolean multiSelect) {
+        LookupComponent<T> lookupComponent = getLookupComponent();
+        if (lookupComponent instanceof Table) {
+            ((Table<T>) lookupComponent).setMultiSelect(multiSelect);
+        } else if (lookupComponent instanceof DataGrid) {
+            ((DataGrid<T>) lookupComponent).setSelectionMode(multiSelect
+                    ? DataGrid.SelectionMode.MULTI
+                    : DataGrid.SelectionMode.SINGLE);
+        } else if (lookupComponent instanceof Tree) {
+            ((Tree<T>) lookupComponent).setSelectionMode(multiSelect
+                    ? Tree.SelectionMode.MULTI
+                    : Tree.SelectionMode.SINGLE);
         }
     }
 }
