@@ -7,14 +7,16 @@ package com.haulmont.cuba.web.widgets.data;
 
 /**
  * Interface defining methods for enhancing {@link com.vaadin.data.provider.HierarchicalDataProvider} behavior.
+ *
  * @param <T> data type
  */
 public interface EnhancedHierarchicalDataProvider<T> {
 
     /**
      * Returns the hierarchy level of an item.
+     *
      * @param item the item to get level
-     * @return the level of given item
+     * @return the level of the given item
      */
-    int getLevel(final T item);
+    int getLevel(T item);
 }

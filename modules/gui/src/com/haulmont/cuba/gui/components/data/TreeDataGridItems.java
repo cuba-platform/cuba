@@ -46,7 +46,7 @@ public interface TreeDataGridItems<T> extends DataGridItems.Sortable<T> {
 
     /**
      * @param item the item to get parent
-     * @return the parent of given item or {@code null} if no parent
+     * @return the parent of the given item or {@code null} if no parent
      */
     @Nullable
     T getParent(T item);

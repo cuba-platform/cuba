@@ -628,11 +628,11 @@ public class ExcelExporter {
             return;
         }
         HSSFRow row = sheet.createRow(rowNumber);
-        Instance instance = (Instance) dataGrid.getItems().getItem(itemId);
+        Entity item = (Entity) dataGrid.getItems().getItem(itemId);
 
         int level = 0;
         if (dataGrid instanceof TreeDataGrid) {
-            level = ((TreeDataGrid) dataGrid).getLevel((Entity) instance);
+            level = ((TreeDataGrid) dataGrid).getLevel(item);
         }
         for (int c = startColumn; c < columns.size(); c++) {
             HSSFCell cell = row.createCell(c);
@@ -644,7 +644,7 @@ public class ExcelExporter {
             if (column.getPropertyPath() != null) {
                 propertyPath = column.getPropertyPath();
 
-                cellValue = InstanceUtils.getValueEx(instance, propertyPath.getPath());
+                cellValue = InstanceUtils.getValueEx(item, propertyPath.getPath());
 
                 if (column.getFormatter() != null) {
                     cellValue = column.getFormatter().apply(cellValue);
@@ -652,7 +652,7 @@ public class ExcelExporter {
             } else {
                 DataGrid.ColumnGenerator generator = dataGrid.getColumnGenerator(column.getId());
                 DataGrid.ColumnGeneratorEvent event =
-                        new DataGrid.ColumnGeneratorEvent(dataGrid, instance, column.getId());
+                        new DataGrid.ColumnGeneratorEvent(dataGrid, item, column.getId());
                 cellValue = generator.getValue(event);
 
                 if (cellValue == null && Boolean.class.equals(generator.getType())) {

@@ -64,15 +64,14 @@ public class HierarchicalDataGridDataProvider<T> extends SortableDataGridDataPro
     }
 
     @Override
-    public int getLevel(final T item) {
+    public int getLevel(T item) {
         TreeDataGridItems<T> items = getTreeDataGridSource();
         if (!items.containsItem(item)) {
-            throw new IllegalStateException("TreeDataGridItems do not contain the item passed to the method");
+            throw new IllegalArgumentException("Data provider doesn't contain the item passed to the method");
         }
 
         int level = 0;
-        T currentItem = item;
-        while ((currentItem = items.getParent(currentItem)) != null) {
+        while ((item = items.getParent(item)) != null) {
             ++level;
         }
 

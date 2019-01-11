@@ -94,10 +94,12 @@ public class CubaTreeGrid<T> extends TreeGrid<T> implements CubaEnhancedGrid<T> 
     }
 
     @SuppressWarnings("unchecked")
-    public int getLevel(final T item) {
+    public int getLevel(T item) {
         HierarchicalDataProvider<T, ?> dataProvider = getDataProvider();
         if (!(dataProvider instanceof EnhancedHierarchicalDataProvider)) {
-            throw new IllegalStateException("Only EnhancedHierarchicalDataProvider supports the method");
+            throw new IllegalStateException(
+                    "Data provider must implement com.haulmont.cuba.web.widgets.data.EnhancedHierarchicalDataProvider"
+            );
         }
         return ((EnhancedHierarchicalDataProvider) dataProvider).getLevel(item);
     }
