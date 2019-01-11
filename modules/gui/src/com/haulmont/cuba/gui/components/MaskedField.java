@@ -17,6 +17,11 @@
 
 package com.haulmont.cuba.gui.components;
 
+import com.google.common.reflect.TypeToken;
+
+import java.math.BigDecimal;
+import java.util.UUID;
+
 /**
  * Masked field component generic interface.
  * FieldConfig supports following format symbols:
@@ -40,6 +45,16 @@ public interface MaskedField<V>
             TextInputField.EnterPressNotifier {
 
     String NAME = "maskedField";
+
+    TypeToken<MaskedField<String>> TYPE_DEFAULT = new TypeToken<MaskedField<String>>(){};
+    TypeToken<MaskedField<String>> TYPE_STRING = new TypeToken<MaskedField<String>>(){};
+
+    TypeToken<MaskedField<Integer>> TYPE_INTEGER = new TypeToken<MaskedField<Integer>>(){};
+    TypeToken<MaskedField<Long>> TYPE_LONG = new TypeToken<MaskedField<Long>>(){};
+    TypeToken<MaskedField<Double>> TYPE_DOUBLE = new TypeToken<MaskedField<Double>>(){};
+    TypeToken<MaskedField<BigDecimal>> TYPE_BIGDECIMAL = new TypeToken<MaskedField<BigDecimal>>(){};
+
+    TypeToken<MaskedField<UUID>> TYPE_UUID = new TypeToken<MaskedField<UUID>>(){};
 
     void setMask(String mask);
     String getMask();
