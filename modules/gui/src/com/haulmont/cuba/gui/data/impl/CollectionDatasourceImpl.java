@@ -300,7 +300,8 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
     @Override
     public List<K> getItemIds(int startIndex, int numberOfItems) {
         //noinspection unchecked
-        return data.asList().subList(startIndex, startIndex + numberOfItems);
+        List<K> list = data.asList();
+        return list.subList(startIndex, Math.min(startIndex + numberOfItems, list.size()));
     }
 
     @Override

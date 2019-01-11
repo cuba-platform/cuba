@@ -920,7 +920,8 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
 
     @Override
     public List<K> getItemIds(int startIndex, int numberOfItems) {
-        return ((List<K>) getItemIds()).subList(startIndex, startIndex + numberOfItems);
+        List<K> list = (List<K>) getItemIds();
+        return list.subList(startIndex, Math.min(startIndex + numberOfItems, list.size()));
     }
 
     @Override
