@@ -53,12 +53,9 @@ import java.util.stream.Collectors;
  * Main CUBA web-application servlet.
  */
 public class CubaApplicationServlet extends VaadinServlet {
-    public static final String INTERNAL_ERROR_TEXT = "Internal Server Error. Please contact system administrator";
-
-    private static final long serialVersionUID = -8701539520754293569L;
-
-    public static final String FROM_HTML_REDIRECT_PARAM = "fromCubaHtmlRedirect";
-    private static final String REDIRECT_PAGE_TEMPLATE_PATH = "/com/haulmont/cuba/web/sys/redirect-page-template.html";
+    protected static final String INTERNAL_ERROR_TEXT = "Internal Server Error. Please contact system administrator";
+    protected static final String FROM_HTML_REDIRECT_PARAM = "fromCubaHtmlRedirect";
+    protected static final String REDIRECT_PAGE_TEMPLATE_PATH = "/com/haulmont/cuba/web/sys/redirect-page-template.html";
 
     private final Logger log = LoggerFactory.getLogger(CubaApplicationServlet.class);
 
@@ -117,17 +114,28 @@ public class CubaApplicationServlet extends VaadinServlet {
                 .sorted(AnnotationAwareOrderComparator.INSTANCE)
                 .collect(Collectors.toList());
 
-        getService().addSessionInitListener(event -> bootstrapListeners.forEach(event.getSession()::addBootstrapListener));
+        getService().addSessionInitListener(event ->
+                bootstrapListeners.forEach(event.getSession()::addBootstrapListener)
+        );
     }
 
     @Override
     protected DeploymentConfiguration createDeploymentConfiguration(Properties initParameters) {
-        int sessionExpirationTimeout = webConfig.getHttpSessionExpirationTimeoutSec();
-        int sessionPingPeriod = sessionExpirationTimeout / 3;
+        int uiHeartbeatIntervalSec = webConfig.getUiHeartbeatIntervalSec();
+        if (uiHeartbeatIntervalSec >= 0) {
+            int sessionPingPeriod;
+            if (uiHeartbeatIntervalSec == 0) {
+                sessionPingPeriod = -1; // disabled ping
+            } else {
+                sessionPingPeriod = uiHeartbeatIntervalSec;
+            }
 
-        if (webConfig.getUiHeartbeatIntervalSec() > 0) {
-            initParameters.setProperty(Constants.SERVLET_PARAMETER_HEARTBEAT_INTERVAL, String.valueOf(webConfig.getUiHeartbeatIntervalSec()));
+            initParameters.setProperty(Constants.SERVLET_PARAMETER_HEARTBEAT_INTERVAL, String.valueOf(sessionPingPeriod));
         } else if (Strings.isNullOrEmpty(initParameters.getProperty(Constants.SERVLET_PARAMETER_HEARTBEAT_INTERVAL))) {
+            // calculate ping period using session timeout
+
+            int sessionExpirationTimeout = webConfig.getHttpSessionExpirationTimeoutSec();
+            int sessionPingPeriod = sessionExpirationTimeout / 3;
             if (sessionPingPeriod > 0) {
                 // configure Vaadin heartbeat according to web config
                 initParameters.setProperty(Constants.SERVLET_PARAMETER_HEARTBEAT_INTERVAL, String.valueOf(sessionPingPeriod));
@@ -168,8 +176,7 @@ public class CubaApplicationServlet extends VaadinServlet {
     }
 
     @Override
-    protected void service(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+    protected void service(HttpServletRequest request, HttpServletResponse response) throws IOException {
         try {
             if (handleContextRootWithoutSlash(request, response)) {
                 return;
@@ -228,8 +235,8 @@ public class CubaApplicationServlet extends VaadinServlet {
     protected void redirectWithBlankHtmlPage(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
 
-        final BufferedWriter page = new BufferedWriter(new OutputStreamWriter(
-                response.getOutputStream(), "UTF-8"));
+        BufferedWriter page = new BufferedWriter(new OutputStreamWriter(
+                response.getOutputStream(), StandardCharsets.UTF_8));
 
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(request.getRequestURI());
@@ -251,7 +258,12 @@ public class CubaApplicationServlet extends VaadinServlet {
         }
         String url = stringBuilder.toString();
 
-        page.write(String.format(IOUtils.toString(resources.getResourceAsStream(REDIRECT_PAGE_TEMPLATE_PATH),
+        InputStream redirectPageStream = resources.getResourceAsStream(REDIRECT_PAGE_TEMPLATE_PATH);
+        if (redirectPageStream == null) {
+            throw new IllegalStateException("Unable to get redirect page template: " + REDIRECT_PAGE_TEMPLATE_PATH);
+        }
+
+        page.write(String.format(IOUtils.toString(redirectPageStream,
                 StandardCharsets.UTF_8.name()), url, url));
         page.close();
     }
@@ -319,7 +331,7 @@ public class CubaApplicationServlet extends VaadinServlet {
             RequestContext.destroy();
         }
 
-        if (hasPathPrefix(request, ApplicationConstants.UIDL_PATH + '/')) {
+        if (hasUidlPathPrefix(request)) {
             long t = System.currentTimeMillis() - startTs;
             if (t > (webConfig.getLogLongRequestsThresholdSec() * 1000)) {
                 log.warn(String.format("Too long request processing [%d ms]: ip=%s, url=%s",
@@ -328,16 +340,13 @@ public class CubaApplicationServlet extends VaadinServlet {
         }
     }
 
-    protected boolean hasPathPrefix(HttpServletRequest request, String prefix) {
+    protected boolean hasUidlPathPrefix(HttpServletRequest request) {
         String pathInfo = request.getPathInfo();
-
         if (pathInfo == null) {
             return false;
         }
 
-        if (!prefix.startsWith("/")) {
-            prefix = '/' + prefix;
-        }
+        String prefix = '/' + ApplicationConstants.UIDL_PATH + '/';
 
         return pathInfo.startsWith(prefix);
     }
@@ -355,6 +364,7 @@ public class CubaApplicationServlet extends VaadinServlet {
         return pkgName;
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     protected boolean isAllowedVAADINResourceUrl(HttpServletRequest request, URL resourceUrl) {
         boolean isUberJar = Boolean.parseBoolean(AppContext.getProperty("cuba.uberJar"));
@@ -369,7 +379,6 @@ public class CubaApplicationServlet extends VaadinServlet {
         return super.isAllowedVAADINResourceUrl(request, resourceUrl);
     }
 
-    @SuppressWarnings("unchecked")
     public void handleServerError(HttpServletRequest req, HttpServletResponse resp, Throwable exception) throws IOException {
         // if it is UberJar or deployed to Jetty
         if (ExceptionUtils.getThrowableList(exception).stream()
@@ -444,7 +453,7 @@ public class CubaApplicationServlet extends VaadinServlet {
         Map<String, Locale> locales = globalConfig.getAvailableLocales();
 
         if (globalConfig.getLocaleSelectVisible()) {
-            String lastLocale = getCookieValue(req, "LAST_LOCALE");
+            String lastLocale = getLocaleFromCookie(req);
             if (lastLocale != null) {
                 for (Locale locale : locales.values()) {
                     if (locale.toLanguageTag().equals(lastLocale)) {
@@ -475,13 +484,13 @@ public class CubaApplicationServlet extends VaadinServlet {
         return messages.getTools().getDefaultLocale();
     }
 
-    protected String getCookieValue(HttpServletRequest req, String cookieName) {
+    protected String getLocaleFromCookie(HttpServletRequest req) {
         if (req.getCookies() == null) {
             return null;
         }
 
         for (Cookie cookie : req.getCookies()) {
-            if (Objects.equals(cookieName, cookie.getName())) {
+            if (Objects.equals("LAST_LOCALE", cookie.getName())) {
                 return cookie.getValue();
             }
         }
