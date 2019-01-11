@@ -23,6 +23,7 @@ import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.components.LookupComponent;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.LookupComponent.LookupSelectionChangeNotifier;
 import com.haulmont.cuba.gui.components.actions.BaseAction;
 import com.haulmont.cuba.gui.icons.CubaIcon;
 import com.haulmont.cuba.gui.icons.Icons;
@@ -71,6 +72,18 @@ public class StandardLookup<T extends Entity> extends Screen implements LookupSc
                 .withHandler(this::cancel);
 
         window.addAction(closeAction);
+
+        Component lookupComponent = getLookupComponent();
+        if (lookupComponent instanceof LookupSelectionChangeNotifier) {
+            LookupSelectionChangeNotifier selectionNotifier = (LookupSelectionChangeNotifier) lookupComponent;
+            if (commitAction != null) {
+                //noinspection unchecked
+                selectionNotifier.addLookupValueChangeListener(valueChangeEvent ->
+                        commitAction.setEnabled(!selectionNotifier.getLookupSelectedItems().isEmpty()));
+
+                commitAction.setEnabled(!selectionNotifier.getLookupSelectedItems().isEmpty());
+            }
+        }
     }
 
     private void beforeShow(@SuppressWarnings("unused") BeforeShowEvent beforeShowEvent) {
