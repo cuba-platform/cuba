@@ -39,7 +39,7 @@ public class CategoryAttributeValue extends StandardEntity {
     @JoinColumn(name = "CATEGORY_ATTR_ID")
     private CategoryAttribute categoryAttribute;
 
-    @Column(name = "CODE")
+    @Column(name = "CODE", nullable = false)
     private String code;
 
     @Column(name = "STRING_VALUE")

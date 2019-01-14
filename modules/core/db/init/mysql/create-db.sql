@@ -833,7 +833,7 @@ create table SYS_ATTR_VALUE (
     STRING_ENTITY_VALUE varchar(190),
     INT_ENTITY_VALUE integer,
     LONG_ENTITY_VALUE bigint,
-    CODE varchar(100),
+    CODE varchar(100) not null,
     PARENT_ID varchar(32),
     --
     primary key (ID),

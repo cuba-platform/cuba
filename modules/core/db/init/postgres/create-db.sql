@@ -780,7 +780,7 @@ create table SYS_ATTR_VALUE (
     DELETED_BY varchar(50),
     --
     CATEGORY_ATTR_ID uuid not null,
-    CODE varchar(100),
+    CODE varchar(100) not null,
     ENTITY_ID uuid,
     STRING_ENTITY_ID varchar(255),
     INT_ENTITY_ID integer,

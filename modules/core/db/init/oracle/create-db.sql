@@ -31,7 +31,7 @@ create table SYS_ATTR_VALUE (
     STRING_ENTITY_VALUE varchar2(255),
     INT_ENTITY_VALUE integer,
     LONG_ENTITY_VALUE number,
-    CODE varchar2(100),
+    CODE varchar2(100) not null,
     PARENT_ID varchar2(32),
     primary key(ID)
 )^

@@ -776,7 +776,7 @@ create table SYS_ATTR_VALUE (
     INT_ENTITY_VALUE integer,
     LONG_ENTITY_VALUE bigint,
     PARENT_ID varchar(36),
-    CODE varchar(100),
+    CODE varchar(100) not null,
     --
     primary key (ID)
 )^
