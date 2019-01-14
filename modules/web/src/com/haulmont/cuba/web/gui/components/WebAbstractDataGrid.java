@@ -2523,6 +2523,12 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
     }
 
     protected void onColumnVisibilityChanged(Grid.ColumnVisibilityChangeEvent e) {
+        // Due to vaadin/framework#11419,
+        // we discard events with UserOriginated == false.
+        if (!e.isUserOriginated()) {
+            return;
+        }
+
         //noinspection unchecked
         ColumnCollapsingChangeEvent event = new ColumnCollapsingChangeEvent(WebAbstractDataGrid.this,
                 getColumnByGridColumn((Grid.Column<E, ?>) e.getColumn()), e.isHidden(), e.isUserOriginated());
@@ -3229,6 +3235,11 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
             this.collapsed = collapsed;
             if (gridColumn != null) {
                 gridColumn.setHidden(collapsed);
+
+                // Due to vaadin/framework#11419,
+                // we explicitly send ColumnCollapsingChangeEvent with UserOriginated == false.
+                ColumnCollapsingChangeEvent event = new ColumnCollapsingChangeEvent(owner, this, collapsed, false);
+                owner.publish(ColumnCollapsingChangeEvent.class, event);
             }
         }
 
