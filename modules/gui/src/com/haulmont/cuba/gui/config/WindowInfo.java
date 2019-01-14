@@ -143,7 +143,7 @@ public class WindowInfo {
      * @return true if the screen marked with {@link MultipleOpen} annotation or registered with multipleOpen="true"
      */
     public Boolean getMultipleOpen() {
-        return windowAttributesProvider.isMultiOpen(this);
+        return windowAttributesProvider.isMultipleOpen(this);
     }
 
     /**

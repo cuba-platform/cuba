@@ -190,7 +190,7 @@ public class FragmentComponentLoader extends ContainerLoader<Fragment> {
             }
 
             @Override
-            public boolean isMultiOpen(WindowInfo wi) {
+            public Boolean isMultipleOpen(WindowInfo wi) {
                 return false;
             }
 

@@ -112,7 +112,7 @@ public class WindowConfig {
         }
 
         @Override
-        public Boolean isMultiOpen(WindowInfo windowInfo) {
+        public Boolean isMultipleOpen(WindowInfo windowInfo) {
             return extractMultiOpen(windowInfo);
         }
 

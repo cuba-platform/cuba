@@ -244,7 +244,7 @@ public class RuntimePropertiesFrameLoader extends ContainerLoader<Frame> {
             }
 
             @Override
-            public boolean isMultiOpen(WindowInfo wi) {
+            public Boolean isMultipleOpen(WindowInfo wi) {
                 return false;
             }
 
