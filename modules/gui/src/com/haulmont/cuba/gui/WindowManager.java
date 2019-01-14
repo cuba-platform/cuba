@@ -35,10 +35,6 @@ import java.util.Map;
 @Deprecated
 public interface WindowManager extends Screens {
 
-    /*
-     * Deprecated methods
-     */
-
     /**
      * Constant that is passed to {@link Window#close(String)} and {@link Window#close(String, boolean)} methods when
      * the screen is closed by window manager. Propagated to {@link Window.CloseListener#windowClosed}.

@@ -436,6 +436,70 @@ public class WebScreens implements Screens, WindowManager {
         fireEvent(screen, AfterShowEvent.class, new AfterShowEvent(screen));
     }
 
+    @Override
+    public OperationResult showFromNavigation(Screen screen) {
+        LaunchMode launchMode = screen.getWindow().getContext().getLaunchMode();
+
+        if (launchMode == OpenMode.NEW_TAB
+            || launchMode == OpenMode.NEW_WINDOW) {
+            WebAppWorkArea workArea = getConfiguredWorkArea();
+
+            if (workArea.getMode() == Mode.SINGLE) {
+                Collection<Screen> currentBreadcrumbs = workArea.getCurrentBreadcrumbs();
+
+                if (!currentBreadcrumbs.isEmpty()) {
+                    Iterator<Screen> iterator = currentBreadcrumbs.iterator();
+                    OperationResult result = OperationResult.success();
+
+                    // close all
+                    while (result.getStatus() == OperationResult.Status.SUCCESS
+                            && iterator.hasNext()) {
+
+                        Screen previousScreen = iterator.next();
+                        result = previousScreen.close(NAVIGATION_CLOSE_ACTION);
+                    }
+
+                    if (result.getStatus() != OperationResult.Status.SUCCESS) {
+                        // if unsaved changes dialog is shown, we can continue later
+                        return result.compose(() -> showFromNavigation(screen));
+                    }
+                }
+            } else {
+                int maxTabCount = webConfig.getMaxTabCount();
+                if (maxTabCount > 0
+                        && workArea.getOpenedTabCount() > maxTabCount) {
+                    ui.getNotifications()
+                            .create(NotificationType.WARNING)
+                            .withCaption(messages.formatMainMessage("tooManyOpenTabs.message", maxTabCount))
+                            .show();
+
+                    return OperationResult.fail();
+                }
+
+                if (!UiControllerUtils.isMultipleOpen(screen)) {
+                    Screen sameScreen = getTabbedScreensStacks(workArea)
+                            .filter(windowStack -> windowStack.getBreadcrumbs().size() == 1) // never close non-top active screens
+                            .map(windowStack -> windowStack.getBreadcrumbs().iterator().next())
+                            .filter(tabScreen -> isAlreadyOpened(screen, tabScreen))
+                            .findFirst()
+                            .orElse(null);
+
+                    if (sameScreen != null) {
+                        OperationResult result = sameScreen.close(NAVIGATION_CLOSE_ACTION);
+                        if (result.getStatus() != OperationResult.Status.SUCCESS) {
+                            // if unsaved changes dialog is shown, we can continue later
+                            return result.compose(() -> showFromNavigation(screen));
+                        }
+                    }
+                }
+            }
+        }
+
+        show(screen);
+
+        return OperationResult.success();
+    }
+
     protected void loadDataBeforeShow(Screen screen) {
         LoadDataBeforeShow annotation = screen.getClass().getAnnotation(LoadDataBeforeShow.class);
         if (annotation != null && annotation.value()) {
@@ -753,13 +817,21 @@ public class WebScreens implements Screens, WindowManager {
         return window.getFrameOwner();
     }
 
+    protected Stream<WindowStack> getTabbedScreensStacks(WebAppWorkArea workArea) {
+        if (workArea.getMode() != Mode.TABBED) {
+            throw new IllegalArgumentException("WorkArea mode is not TABBED");
+        }
+
+        TabSheetBehaviour tabSheetBehaviour = workArea.getTabbedWindowContainer().getTabSheetBehaviour();
+
+        return tabSheetBehaviour.getTabComponentsStream()
+                .map(c -> ((TabWindowContainer) c))
+                .map(windowContainer -> new WindowStackImpl(windowContainer, workArea.getTabbedWindowContainer()));
+    }
+
     protected Collection<WindowStack> getWorkAreaStacks(WebAppWorkArea workArea) {
         if (workArea.getMode() == Mode.TABBED) {
-            TabSheetBehaviour tabSheetBehaviour = workArea.getTabbedWindowContainer().getTabSheetBehaviour();
-
-            return tabSheetBehaviour.getTabComponentsStream()
-                    .map(c -> ((TabWindowContainer) c))
-                    .map(windowContainer -> new WindowStackImpl(windowContainer, workArea.getTabbedWindowContainer()))
+            return getTabbedScreensStacks(workArea)
                     .collect(Collectors.toList());
         } else {
             TabWindowContainer windowContainer = (TabWindowContainer) workArea.getSingleWindowContainer().getWindowContainer();

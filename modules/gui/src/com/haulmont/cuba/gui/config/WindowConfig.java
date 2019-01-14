@@ -112,7 +112,7 @@ public class WindowConfig {
         }
 
         @Override
-        public boolean isMultiOpen(WindowInfo windowInfo) {
+        public Boolean isMultiOpen(WindowInfo windowInfo) {
             return extractMultiOpen(windowInfo);
         }
 
@@ -172,24 +172,26 @@ public class WindowConfig {
         throw new IllegalStateException("Neither screen class nor descriptor is set for WindowInfo");
     }
 
-    protected boolean extractMultiOpen(WindowInfo windowInfo) {
-        if (windowInfo.getDescriptor() != null) {
-            return Boolean.parseBoolean(windowInfo.getDescriptor().attributeValue("multipleOpen"));
-        }
-
+    protected Boolean extractMultiOpen(WindowInfo windowInfo) {
         if (windowInfo.getControllerClassName() != null) {
             Class<? extends FrameOwner> screenClass = loadDefinedScreenClass(windowInfo.getControllerClassName());
 
-            UiController uiController = screenClass.getAnnotation(UiController.class);
-            if (uiController == null) {
+            MultipleOpen multipleOpen = screenClass.getAnnotation(MultipleOpen.class);
+            if (multipleOpen != null) {
                 // default is false
-                return false;
+                return multipleOpen.value();
             }
-            // todo multi open
-            return false;
         }
 
-        throw new IllegalStateException("Neither screen class nor descriptor is set for WindowInfo");
+        if (windowInfo.getDescriptor() != null) {
+            String multipleOpen = windowInfo.getDescriptor().attributeValue("multipleOpen");
+
+            if (multipleOpen != null) {
+                return Boolean.parseBoolean(multipleOpen);
+            }
+        }
+
+        return null;
     }
 
     @Nullable

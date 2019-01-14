@@ -25,6 +25,7 @@ import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.gui.Screens;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.sys.WindowImplementation;
+import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.model.ScreenData;
 import com.haulmont.cuba.gui.navigation.UrlParamsChangedEvent;
 import com.haulmont.cuba.gui.settings.Settings;
@@ -344,14 +345,42 @@ public abstract class Screen implements FrameOwner {
         return OperationResult.success();
     }
 
+    /**
+     * @param action close action
+     * @return true if the screen should be registered in UI history
+     */
     protected boolean isSaveScreenHistoryOnClose(@SuppressWarnings("unused") CloseAction action) {
         return true;
     }
 
+    /**
+     * @param action close action
+     * @return true if UI settings should be saved
+     */
     protected boolean isSaveSettingsOnClose(@SuppressWarnings("unused") CloseAction action) {
         Configuration configuration = beanLocator.get(Configuration.NAME);
         ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
         return !clientConfig.getManualScreenSettingsSaving();
+    }
+
+    /**
+     * @return true if screen can be opened multiple times from a navigation menu
+     */
+    protected boolean isMultipleOpen() {
+        WindowInfo windowInfo = UiControllerUtils.getScreenContext(this).getWindowInfo();
+        Boolean multipleOpen = windowInfo.getMultipleOpen();
+        return multipleOpen != null ? multipleOpen : false;
+    }
+
+    /**
+     * Compares this screen with an already opened screen.
+     *
+     * @param openedScreen already opened screen
+     * @return true if screens are the same
+     */
+    protected boolean isSameScreen(Screen openedScreen) {
+        return this.getClass() == openedScreen.getClass()
+                && this.getId().equals(openedScreen.getId());
     }
 
     /**

@@ -18,10 +18,8 @@
 package com.haulmont.cuba.gui;
 
 import com.haulmont.cuba.gui.components.mainwindow.AppWorkArea;
-import com.haulmont.cuba.gui.screen.FrameOwner;
-import com.haulmont.cuba.gui.screen.OpenMode;
-import com.haulmont.cuba.gui.screen.Screen;
-import com.haulmont.cuba.gui.screen.ScreenOptions;
+import com.haulmont.cuba.gui.screen.*;
+import com.haulmont.cuba.gui.util.OperationResult;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -33,6 +31,13 @@ import java.util.Collection;
  * @see ScreenBuilders
  */
 public interface Screens {
+
+    String NAVIGATION_CLOSE_ACTION_ID = WindowManager.MAIN_MENU_ACTION_ID;
+
+    /**
+     * Constant that is passed to {@link Screen#close(CloseAction)} when the screen is closed by screens manager.
+     */
+    CloseAction NAVIGATION_CLOSE_ACTION = new StandardCloseAction(NAVIGATION_CLOSE_ACTION_ID);
 
     /**
      * Creates a screen by its controller class.
@@ -85,13 +90,18 @@ public interface Screens {
 
     /**
      * Displays the given screen according to its {@link LaunchMode}.
+     *
+     * @param screen screen
      */
     void show(Screen screen);
 
-    // todo implement max tab count in menu components
-    // todo check if mode SINGLE and close previous screens first
-    // todo check multi open
-//    boolean show(Screen screen);
+    /**
+     * Displays the given screen taking into account already opened screens and multipleOpen option.
+     *
+     * @param screen screen
+     * @return operation result
+     */
+    OperationResult showFromNavigation(Screen screen);
 
     /**
      * Removes screen from UI and releases all the resources of screen.

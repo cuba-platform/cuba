@@ -178,4 +178,12 @@ public final class UiControllerUtils {
         }
         return hostScreen;
     }
+
+    public static boolean isMultipleOpen(Screen screen) {
+        return screen.isMultipleOpen();
+    }
+
+    public static boolean isAlreadyOpened(Screen newScreen, Screen openedScreen) {
+        return newScreen.isSameScreen(openedScreen);
+    }
 }

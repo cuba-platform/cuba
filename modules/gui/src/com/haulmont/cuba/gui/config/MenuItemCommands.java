@@ -26,7 +26,10 @@ import com.haulmont.cuba.gui.Screens;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.WindowParams;
 import com.haulmont.cuba.gui.components.Window;
-import com.haulmont.cuba.gui.screen.*;
+import com.haulmont.cuba.gui.screen.FrameOwner;
+import com.haulmont.cuba.gui.screen.MapScreenOptions;
+import com.haulmont.cuba.gui.screen.OpenMode;
+import com.haulmont.cuba.gui.screen.Screen;
 import com.haulmont.cuba.gui.screen.compatibility.LegacyFrame;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.MethodUtils;
@@ -36,6 +39,7 @@ import org.perf4j.slf4j.Slf4JStopWatch;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -197,7 +201,7 @@ public class MenuItemCommands {
 
             } else {
                 Screen screen = screens.create(screenId, openType.getOpenMode(), new MapScreenOptions(params));
-                screens.show(screen);
+                screens.showFromNavigation(screen);
             }
 
             sw.stop();
@@ -294,10 +298,17 @@ public class MenuItemCommands {
                                 runnableClass));
             }
 
+            Constructor<?> constructor;
+            try {
+                constructor = clazz.getConstructor();
+            } catch (NoSuchMethodException e) {
+                throw new DevelopmentException(String.format("Unable to get constructor of %s", runnableClass));
+            }
+
             Object classInstance;
             try {
-                classInstance = clazz.newInstance();
-            } catch (InstantiationException | IllegalAccessException e) {
+                classInstance = constructor.newInstance();
+            } catch (InstantiationException | InvocationTargetException | IllegalAccessException e) {
                 throw new DevelopmentException(String.format("Failed to get a new instance of %s", runnableClass));
             }
 

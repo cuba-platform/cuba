@@ -349,6 +349,18 @@ public class WebAppWorkArea extends WebAbstractComponent<CssLayout> implements A
         return Collections.emptyList();
     }
 
+    public int getOpenedTabCount() {
+        if (getMode() == Mode.TABBED) {
+            TabSheetBehaviour tabSheetBehaviour = getTabbedWindowContainer().getTabSheetBehaviour();
+
+            return tabSheetBehaviour.getComponentCount();
+        } else {
+            CubaSingleModeContainer singleWindowContainer = getSingleWindowContainer();
+            TabWindowContainer windowContainer = (TabWindowContainer) singleWindowContainer.getWindowContainer();
+            return windowContainer != null ? 1 : 0;
+        }
+    }
+
     public Stream<Screen> getOpenedWorkAreaScreensStream() {
         if (getMode() == Mode.TABBED) {
             TabSheetBehaviour tabSheetBehaviour = getTabbedWindowContainer().getTabSheetBehaviour();

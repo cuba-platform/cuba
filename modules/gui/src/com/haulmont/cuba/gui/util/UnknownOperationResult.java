@@ -35,6 +35,13 @@ public class UnknownOperationResult implements OperationResult {
 
     @Override
     public OperationResult compose(Supplier<OperationResult> nextStep) {
+        if (status == Status.SUCCESS) {
+            return nextStep.get();
+        }
+        if (status == Status.FAIL) {
+            return OperationResult.fail();
+        }
+
         UnknownOperationResult operationResult = new UnknownOperationResult();
 
         then(() -> {
@@ -82,9 +89,9 @@ public class UnknownOperationResult implements OperationResult {
     }
 
     /**
-     * JavaDoc
+     * Resolve this result depending on the passed result.
      *
-     * @param result
+     * @param result dependency
      */
     public void resolveWith(OperationResult result) {
         result.then(this::success)

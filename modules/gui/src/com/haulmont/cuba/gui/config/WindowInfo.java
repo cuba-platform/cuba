@@ -17,6 +17,7 @@
 package com.haulmont.cuba.gui.config;
 
 import com.haulmont.cuba.gui.screen.FrameOwner;
+import com.haulmont.cuba.gui.screen.MultipleOpen;
 import com.haulmont.cuba.gui.screen.Screen;
 import com.haulmont.cuba.gui.screen.ScreenFragment;
 import com.haulmont.cuba.gui.sys.RouteDefinition;
@@ -79,7 +80,7 @@ public class WindowInfo {
     }
 
     /**
-     * JavaDoc
+     * @return type of registered window: SCREEN or FRAGMENT
      */
     public Type getType() {
         return windowAttributesProvider.getType(this);
@@ -121,7 +122,7 @@ public class WindowInfo {
     /**
      * Screen class as set in <code>screens.xml</code>
      *
-     * JavaDoc
+     * @return screen class name
      */
     @Nullable
     public String getControllerClassName() {
@@ -131,7 +132,7 @@ public class WindowInfo {
     /**
      * Screen template path as set in <code>screens.xml</code>
      *
-     * JavaDoc
+     * @return screen template path
      */
     @Nullable
     public String getTemplate() {
@@ -139,9 +140,9 @@ public class WindowInfo {
     }
 
     /**
-     * JavaDoc
+     * @return true if the screen marked with {@link MultipleOpen} annotation or registered with multipleOpen="true"
      */
-    public boolean getMultipleOpen() {
+    public Boolean getMultipleOpen() {
         return windowAttributesProvider.isMultiOpen(this);
     }
 

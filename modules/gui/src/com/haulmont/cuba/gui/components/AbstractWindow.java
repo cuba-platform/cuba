@@ -25,6 +25,7 @@ import com.haulmont.cuba.gui.DialogOptions;
 import com.haulmont.cuba.gui.WindowContext;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.security.ActionsPermissions;
+import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.icons.Icons;
 import com.haulmont.cuba.gui.screen.*;
@@ -778,6 +779,20 @@ public class AbstractWindow extends Screen implements Window, LegacyFrame, Compo
     protected void showValidationErrors(ValidationErrors errors) {
         ScreenValidation screenValidation = getBeanLocator().get(ScreenValidation.NAME);
         screenValidation.showValidationErrors(this, errors);
+    }
+
+    @Override
+    protected boolean isSameScreen(Screen openedScreen) {
+        return super.isSameScreen(openedScreen)
+                && getScreenHashCode(this) == getScreenHashCode(openedScreen);
+    }
+
+    protected int getScreenHashCode(Screen screen) {
+        ScreenContext screenContext = UiControllerUtils.getScreenContext(screen);
+        WindowInfo windowInfo = screenContext.getWindowInfo();
+
+        Map<String, Object> params = getFrame().getContext().getParams();
+        return windowInfo.hashCode() + (params != null ? params.hashCode() : 0);
     }
 
     /**
