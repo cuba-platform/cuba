@@ -71,7 +71,8 @@ public class HierarchicalDataGridDataProvider<T> extends SortableDataGridDataPro
         }
 
         int level = 0;
-        while ((item = items.getParent(item)) != null) {
+        T currentItem = item;
+        while ((currentItem = items.getParent(currentItem)) != null) {
             ++level;
         }
 
