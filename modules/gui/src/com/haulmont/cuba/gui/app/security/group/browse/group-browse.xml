@@ -16,7 +16,7 @@
   -->
 
 <window xmlns="http://schemas.haulmont.com/cuba/window.xsd"
-        messagesPack="com.haulmont.cuba.gui.app.security.group"
+        messagesPack="com.haulmont.cuba.gui.app.security.group.browse"
         class="com.haulmont.cuba.gui.app.security.group.browse.GroupBrowser"
         caption="msg://browser.caption"
         focusComponent="groupsTree">
