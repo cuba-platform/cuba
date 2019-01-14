@@ -58,12 +58,16 @@ public class ScreenDataXmlLoader {
         Preconditions.checkNotNullArgument(screenData, "screenData is null");
         Preconditions.checkNotNullArgument(element, "element is null");
 
-        if (hostScreenData == null) {
+        DataContext hostDataContext = null;
+        if (hostScreenData != null) {
+            hostDataContext = hostScreenData.getDataContext();
+        }
+        if (hostDataContext != null) {
+            screenData.setDataContext(hostDataContext);
+        } else {
             boolean readOnly = Boolean.valueOf(element.attributeValue("readOnly"));
             DataContext dataContext = readOnly ? new NoopDataContext() : factory.createDataContext();
             screenData.setDataContext(dataContext);
-        } else {
-            screenData.setDataContext(hostScreenData.getDataContext());
         }
 
         for (Element el : element.elements()) {
