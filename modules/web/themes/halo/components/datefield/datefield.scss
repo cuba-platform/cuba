@@ -104,7 +104,7 @@ $c-default-datefield-width: 120px;
     }
   }
 
-  .#{$primary-stylename} .v-datefield-calendarpanel-day.v-datefield-calendarpanel-day-focused {
+  .#{$primary-stylename}.v-datefield-popup .v-datefield-calendarpanel-day.v-datefield-calendarpanel-day-focused {
     border-color: $v-focus-color;
   }
 
