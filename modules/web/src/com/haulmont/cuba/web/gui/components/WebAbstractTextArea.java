@@ -45,6 +45,8 @@ public abstract class WebAbstractTextArea<T extends com.vaadin.ui.TextArea, V>
 
     protected boolean trimming = true;
 
+    protected int columns;
+
     @Override
     public void focus() {
         component.focus();
@@ -163,13 +165,14 @@ public abstract class WebAbstractTextArea<T extends com.vaadin.ui.TextArea, V>
 
     @Override
     public int getColumns() {
-        // vaadin8
-        return 0;
+        return columns;
     }
 
     @Override
     public void setColumns(int columns) {
-        // vaadin8
+        this.columns = columns;
+        // See com.vaadin.v7.client.ui.VTextField.setColumns for formula
+        component.setWidth(columns + "em");
     }
 
     @Override

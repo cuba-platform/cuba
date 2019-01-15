@@ -53,10 +53,19 @@ public interface TextArea<V> extends TextInputField<V>,
     int getRows();
     void setRows(int rows);
 
-    // vaadin8
+    /**
+     * @return the number of columns
+     * @deprecated Use {@link #getWidth()} instead
+     */
     @Deprecated
     int getColumns();
-    // vaadin8
+
+    /**
+     * Sets width according to the number of columns.
+     *
+     * @param columns the number of columns to set
+     * @deprecated Use {@link #setWidth(String)} instead
+     */
     @Deprecated
     void setColumns(int columns);
 
