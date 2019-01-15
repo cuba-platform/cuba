@@ -25,13 +25,27 @@ import static com.haulmont.cuba.gui.components.Window.HasFoldersPane;
 import static com.haulmont.cuba.gui.components.Window.HasUserIndicator;
 
 /**
- * JavaDoc
+ * Interface for main screen controllers with standard features: workArea, userIndicator, foldersPane.
  */
 public interface MainScreen extends HasWorkArea, HasUserIndicator, HasFoldersPane {
-
+    /**
+     * Called by the framework to set main work area.
+     *
+     * @param workArea workArea
+     */
     void setWorkArea(AppWorkArea workArea);
 
+    /**
+     * Called by the framework to set a user indicator.
+     *
+     * @param userIndicator userIndicator
+     */
     void setUserIndicator(UserIndicator userIndicator);
 
+    /**
+     * Called by the framework to set a folders pane.
+     *
+     * @param foldersPane folders pane
+     */
     void setFoldersPane(FoldersPane foldersPane);
 }

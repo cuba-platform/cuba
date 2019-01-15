@@ -17,7 +17,7 @@
 package com.haulmont.cuba.gui.screen;
 
 /**
- * JavaDoc
+ * Interface that provides messages from a message pack bound to screen controller.
  */
 public interface MessageBundle {
 
@@ -26,7 +26,20 @@ public interface MessageBundle {
     void setMessagesPack(String messagePack);
     String getMessagesPack();
 
+    /**
+     *
+     *
+     * @param key
+     * @return
+     */
     String getMessage(String key);
 
+    /**
+     *
+     *
+     * @param key
+     * @param params
+     * @return
+     */
     String formatMessage(String key, Object... params);
 }

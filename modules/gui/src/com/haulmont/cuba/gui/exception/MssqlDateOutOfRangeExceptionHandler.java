@@ -43,7 +43,6 @@ public class MssqlDateOutOfRangeExceptionHandler implements GenericExceptionHand
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public boolean handle(Throwable exception, WindowManager windowManager) {
         List<Throwable> list = ExceptionUtils.getThrowableList(exception);
         for (Throwable throwable : list) {

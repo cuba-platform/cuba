@@ -421,7 +421,6 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
         listenersSuspended = false;
 
         while(!suspendedEvents.isEmpty()) {
-            //noinspection unchecked
             CollectionChangeEvent<T,K> suspendedEvent = suspendedEvents.removeLast();
             fireCollectionChanged(suspendedEvent.getOperation(), Collections.unmodifiableList(suspendedEvent.getItems()));
         }

@@ -24,9 +24,9 @@ import java.util.EventObject;
 import java.util.function.Consumer;
 
 /**
- * todo JavaDoc
+ * A common interface for providing data for {@link com.haulmont.cuba.gui.components.Table} component.
  *
- * @param <I>
+ * @param <I> row item type
  */
 public interface TableItems<I> extends DataUnit {
     Collection<?> getItemIds();
@@ -52,8 +52,28 @@ public interface TableItems<I> extends DataUnit {
 
     boolean supportsProperty(Object propertyId);
 
+    /**
+     * Registers a new value change listener.
+     *
+     * @param listener the listener to be added
+     * @return a registration object for removing an event listener added to a source
+     */
     Subscription addValueChangeListener(Consumer<ValueChangeEvent<I>> listener);
+
+    /**
+     * Registers a new item set change listener.
+     *
+     * @param listener the listener to be added
+     * @return a registration object for removing an event listener added to a source
+     */
     Subscription addItemSetChangeListener(Consumer<ItemSetChangeEvent<I>> listener);
+
+    /**
+     * Registers a new selected item change listener.
+     *
+     * @param listener the listener to be added
+     * @return a registration object for removing an event listener added to a source
+     */
     Subscription addSelectedItemChangeListener(Consumer<SelectedItemChangeEvent<I>> listener);
 
     interface Ordered<T> extends TableItems<T> {
@@ -76,7 +96,11 @@ public interface TableItems<I> extends DataUnit {
         void resetSortOrder();
     }
 
-    // todo
+    /**
+     * An event that is fired when value of item property is changed.
+     *
+     * @param <T> row item type
+     */
     class ValueChangeEvent<T> extends EventObject {
         private final T item;
         private final String property;
@@ -121,7 +145,11 @@ public interface TableItems<I> extends DataUnit {
         }
     }
 
-    // todo
+    /**
+     * An event that is fired when item set is changed.
+     *
+     * @param <T> row item type
+     */
     class ItemSetChangeEvent<T> extends EventObject {
         public ItemSetChangeEvent(TableItems<T> source) {
             super(source);
@@ -134,7 +162,11 @@ public interface TableItems<I> extends DataUnit {
         }
     }
 
-    // todo
+    /**
+     * An event that is fired when selected item is changed.
+     *
+     * @param <T> row item type
+     */
     class SelectedItemChangeEvent<T> extends EventObject {
         protected final T selectedItem;
 

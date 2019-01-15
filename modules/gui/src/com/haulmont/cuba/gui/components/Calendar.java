@@ -270,7 +270,6 @@ public interface Calendar extends Component.BelongToFrame, Component.HasCaption,
             this.newStart = newStart;
         }
 
-        @SuppressWarnings("unchecked")
         @Override
         public Calendar getSource() {
             return (Calendar) super.getSource();
@@ -300,7 +299,6 @@ public interface Calendar extends Component.BelongToFrame, Component.HasCaption,
             super(calendar);
         }
 
-        @SuppressWarnings("unchecked")
         @Override
         public Calendar getSource() {
             return (Calendar) super.getSource();
@@ -329,7 +327,6 @@ public interface Calendar extends Component.BelongToFrame, Component.HasCaption,
             return date;
         }
 
-        @SuppressWarnings("unchecked")
         @Override
         public Calendar getSource() {
             return (Calendar) super.getSource();
@@ -364,7 +361,6 @@ public interface Calendar extends Component.BelongToFrame, Component.HasCaption,
             return calendarEvent;
         }
 
-        @SuppressWarnings("unchecked")
         @Override
         public Calendar getSource() {
             return (Calendar) super.getSource();
@@ -417,7 +413,6 @@ public interface Calendar extends Component.BelongToFrame, Component.HasCaption,
             return calendarEvent;
         }
 
-        @SuppressWarnings("unchecked")
         @Override
         public Calendar getSource() {
             return (Calendar) super.getSource();
@@ -452,7 +447,6 @@ public interface Calendar extends Component.BelongToFrame, Component.HasCaption,
             this.year = year;
         }
 
-        @SuppressWarnings("unchecked")
         @Override
         public Calendar getSource() {
             return (Calendar) super.getSource();
@@ -487,7 +481,6 @@ public interface Calendar extends Component.BelongToFrame, Component.HasCaption,
             this.end = end;
         }
 
-        @SuppressWarnings("unchecked")
         @Override
         public Calendar getSource() {
             return (Calendar) super.getSource();

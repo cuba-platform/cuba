@@ -17,9 +17,11 @@
 
 package com.haulmont.cuba.gui;
 
-import com.haulmont.cuba.gui.components.AbstractWindow;
+import com.haulmont.cuba.gui.components.DialogWindow;
 import com.haulmont.cuba.gui.components.SizeUnit;
 import com.haulmont.cuba.gui.components.SizeWithUnit;
+import com.haulmont.cuba.gui.screen.DialogMode;
+import com.haulmont.cuba.gui.screen.Screen;
 
 import static com.haulmont.cuba.gui.components.Component.AUTO_SIZE;
 
@@ -30,14 +32,8 @@ import static com.haulmont.cuba.gui.components.Component.AUTO_SIZE;
  *     .setWidth("640px")
  *     .setHeight("480px");
  * </pre>
- * <p>
- * A window can be forced to open as a dialog in {@link AbstractWindow#init} using the {@link #setForceDialog(Boolean)} method:
- * <pre>
- * getDialogOptions()
- *     .setForceDialog(true);
- * </pre>
  *
- * @deprecated JavaDoc
+ * @deprecated Use {@link Screen#getWindow()} directly with cast to {@link DialogWindow} if needed.
  */
 @Deprecated
 public class DialogOptions {
@@ -255,7 +251,8 @@ public class DialogOptions {
      * Force a window manager to open a window as a dialog. Can be set from AbstractWindow.init() method before the window is shown.
      *
      * @param forceDialog force dialog option
-     * @deprecated todo does not make sense anymore
+     * @deprecated Does not affect window open mode anymore. Use {@link DialogMode#forceDialog()} on controller class
+     *             or set forceDialog attribute in XML descriptor.
      */
     @Deprecated
     public DialogOptions setForceDialog(Boolean forceDialog) {

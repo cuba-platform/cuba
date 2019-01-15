@@ -46,7 +46,6 @@ public interface DataUnit {
             this.state = state;
         }
 
-        @SuppressWarnings("unchecked")
         @Override
         public DataUnit getSource() {
             return (DataUnit) super.getSource();

@@ -728,12 +728,11 @@ public class Param {
         });
 
         UserSessionSource sessionSource = AppBeans.get(UserSessionSource.NAME);
-        //noinspection unchecked
         field.setValue(datatype.format(_getValue(valueProperty), sessionSource.getLocale()));
         return field;
     }
 
-    protected Component createBooleanField(final ValueProperty valueProperty) {
+    protected Component createBooleanField(ValueProperty valueProperty) {
         Messages messages = AppBeans.get(Messages.NAME);
         ThemeConstants theme = AppBeans.get(ThemeConstantsManager.class).getConstants();
 
@@ -760,10 +759,10 @@ public class Param {
             return listEditor;
         }
 
-        TextField<String> field = componentsFactory.createComponent(TextField.class);
+        TextField<String> field = componentsFactory.createComponent(TextField.NAME);
 
         field.addValueChangeListener(e -> {
-            String strValue = (String) e.getValue();
+            String strValue = e.getValue();
             if (strValue == null) {
                 _setValue(null, valueProperty);
             } else if ((!StringUtils.isBlank(strValue))) {
@@ -847,7 +846,6 @@ public class Param {
                 lookup.setWidth(theme.get("cuba.gui.filter.Param.textComponent.width"));
                 lookup.setOptionsDatasource(optionsDataSource);
 
-                //noinspection unchecked
                 optionsDataSource.addCollectionChangeListener(e -> lookup.setValue(null));
 
                 lookup.addValueChangeListener(e ->

@@ -55,8 +55,7 @@ public class DatasourceOptions<E extends Entity<K>, K> implements Options<E>, En
         events.publish(OptionsChangeEvent.class, new OptionsChangeEvent<>(this));
     }
 
-    @SuppressWarnings("unchecked")
-    protected void datasourceItemPropertyChanged(Datasource.ItemPropertyChangeEvent<E> e) {
+    protected void datasourceItemPropertyChanged(@SuppressWarnings("unused") Datasource.ItemPropertyChangeEvent<E> e) {
         events.publish(OptionsChangeEvent.class, new OptionsChangeEvent<>(this));
     }
 
@@ -108,7 +107,6 @@ public class DatasourceOptions<E extends Entity<K>, K> implements Options<E>, En
         datasource.refresh();
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public Subscription addStateChangeListener(Consumer<StateChangeEvent> listener) {
         return events.subscribe(StateChangeEvent.class, listener);

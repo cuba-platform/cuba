@@ -252,7 +252,6 @@ public interface TreeDataGrid<E extends Entity> extends DataGrid<E> {
      * @param listener the listener to be added
      * @return a registration object for removing an event listener added to a source
      */
-    @SuppressWarnings("unchecked")
     Subscription addExpandListener(Consumer<ExpandEvent<E>> listener);
 
     /**
@@ -261,7 +260,6 @@ public interface TreeDataGrid<E extends Entity> extends DataGrid<E> {
      * @param listener the listener to be added
      * @return a registration object for removing an event listener added to a source
      */
-    @SuppressWarnings("unchecked")
     Subscription addCollapseListener(Consumer<CollapseEvent<E>> listener);
 
     /**

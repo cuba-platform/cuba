@@ -20,7 +20,9 @@ import java.lang.annotation.*;
 import java.lang.annotation.Target;
 
 /**
- * JavaDoc
+ * Annotation for screen controllers, specifies ID of UI component used as value source of {@link LookupScreen}.
+ *
+ * @see StandardLookup
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)

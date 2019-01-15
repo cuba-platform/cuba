@@ -17,7 +17,7 @@
 package com.haulmont.cuba.gui.components;
 
 /**
- * JavaDoc for all properties
+ * UI component that represents a dialog window of application.
  */
 public interface DialogWindow extends Window {
     /**

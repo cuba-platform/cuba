@@ -133,7 +133,6 @@ public class FrameContextImpl implements FrameContext {
     @SuppressWarnings("unchecked")
     protected <T> T getValue(Component component) {
         if (component instanceof HasValue) {
-            //noinspection RedundantTypeArguments
             return (T) ((HasValue) component).getValue();
         } else if (component instanceof ListComponent) {
             ListComponent list = (ListComponent) component;

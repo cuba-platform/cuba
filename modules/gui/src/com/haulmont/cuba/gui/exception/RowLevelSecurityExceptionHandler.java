@@ -54,7 +54,6 @@ public class RowLevelSecurityExceptionHandler extends AbstractGenericExceptionHa
             String userMessage = null;
 
             if (throwable != null) {
-                //noinspection ThrowableResultOfMethodCallIgnored
                 Throwable rootCause = ExceptionUtils.getRootCause(throwable);
                 RowLevelSecurityException exception = null;
                 if (throwable instanceof RowLevelSecurityException) {

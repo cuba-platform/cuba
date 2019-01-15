@@ -64,7 +64,6 @@ public abstract class ContainerLoader<T extends Component> extends AbstractCompo
         loader.setLocale(getLocale());
         loader.setMessagesPack(getMessagesPack());
 
-        //noinspection unchecked
         for (Element subElement : containerElement.elements()) {
             if (!isChildElementIgnored(subElement)) {
                 ComponentLoader componentLoader = loader.createComponent(subElement);

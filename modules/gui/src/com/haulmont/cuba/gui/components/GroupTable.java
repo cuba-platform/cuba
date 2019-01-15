@@ -30,9 +30,9 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * todo JavaDoc
+ * Table UI component that supports grouping of rows by property values.
  *
- * @param <E>
+ * @param <E> row item type
  */
 public interface GroupTable<E extends Entity> extends Table<E> {
 

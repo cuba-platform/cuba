@@ -19,9 +19,9 @@ package com.haulmont.cuba.gui.components.data;
 import java.util.Collection;
 
 /**
- * todo JavaDoc
+ * A common interface for providing data for {@link com.haulmont.cuba.gui.components.TreeTable} component.
  *
- * @param <I>
+ * @param <I> row item type
  */
 public interface TreeTableItems<I> extends TableItems.Sortable<I> {
     /** Property of entity which forms the hierarchy */

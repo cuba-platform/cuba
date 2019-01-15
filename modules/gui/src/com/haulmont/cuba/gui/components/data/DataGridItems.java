@@ -25,9 +25,9 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 /**
- * A common interface for providing data for the {@link com.haulmont.cuba.gui.components.DataGrid} component.
+ * A common interface for providing data for {@link com.haulmont.cuba.gui.components.DataGrid} component.
  *
- * @param <T> items type
+ * @param <T> row item type
  */
 public interface DataGridItems<T> extends DataUnit {
 
@@ -129,9 +129,9 @@ public interface DataGridItems<T> extends DataUnit {
     }
 
     /**
-     * An event that is fired when DataGridItems value is changed.
+     * An event that is fired when value of item property is changed.
      *
-     * @param <T> the source component type
+     * @param <T> row item type
      */
     class ValueChangeEvent<T> extends EventObject {
         private final T item;
@@ -183,9 +183,9 @@ public interface DataGridItems<T> extends DataUnit {
     }
 
     /**
-     * An event that is fired when DataGridItems item set is changed.
+     * An event that is fired when item set is changed.
      *
-     * @param <T> the source component type
+     * @param <T> row item type
      */
     class ItemSetChangeEvent<T> extends EventObject {
         public ItemSetChangeEvent(DataGridItems<T> source) {
@@ -200,9 +200,9 @@ public interface DataGridItems<T> extends DataUnit {
     }
 
     /**
-     * An event that is fired when DataGridItems selected item is changed.
+     * An event that is fired when selected item is changed.
      *
-     * @param <T> the source component type
+     * @param <T> row item type
      */
     class SelectedItemChangeEvent<T> extends EventObject {
         protected final T selectedItem;

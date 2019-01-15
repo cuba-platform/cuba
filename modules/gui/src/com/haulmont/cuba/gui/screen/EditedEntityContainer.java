@@ -20,7 +20,9 @@ import java.lang.annotation.*;
 import java.lang.annotation.Target;
 
 /**
- * JavaDoc
+ * Annotation for screen controllers, specifies a data container that contains edited entity.
+ *
+ * @see StandardEditor
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)

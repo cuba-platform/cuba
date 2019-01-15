@@ -184,7 +184,7 @@ public class ScreenValidation {
     }
 
     /**
-     * JavaDoc
+     * Shows standard unsaved changes dialog with Discard and Cancel actions.
      *
      * @param origin screen controller
      * @param closeAction close action
@@ -203,14 +203,14 @@ public class ScreenValidation {
                         new DialogAction(DialogAction.Type.YES)
                                 .withHandler(e -> {
 
-                                    result.yesSelected();
+                                    result.discard();
                                 }),
                         new DialogAction(DialogAction.Type.NO, Action.Status.PRIMARY)
                                 .withHandler(e -> {
                                     Frame frame = UiControllerUtils.getFrame(origin);
                                     ComponentsHelper.focusChildComponent(frame);
 
-                                    result.noSelected();
+                                    result.cancel();
                                 })
                 )
                 .show();
@@ -219,7 +219,7 @@ public class ScreenValidation {
     }
 
     /**
-     * JavaDoc
+     * Shows standard save confirmation dialog with Save, Discard and Cancel actions.
      *
      * @param origin screen controller
      * @param closeAction close action
@@ -261,36 +261,42 @@ public class ScreenValidation {
         return result;
     }
 
+    /**
+     * Callbacks holder for unsaved changes dialog.
+     */
     public static class UnsavedChangesDialogResult {
-        protected Runnable yesHandler;
-        protected Runnable noHandler;
+        protected Runnable discardHandler;
+        protected Runnable cancelHandler;
 
         public UnsavedChangesDialogResult() {
         }
 
-        public UnsavedChangesDialogResult onDiscard(Runnable onYesHandler) {
-            this.yesHandler = onYesHandler;
+        public UnsavedChangesDialogResult onDiscard(Runnable discardHandler) {
+            this.discardHandler = discardHandler;
             return this;
         }
 
-        public UnsavedChangesDialogResult onCancel(Runnable onNoHandler) {
-            this.noHandler = onNoHandler;
+        public UnsavedChangesDialogResult onCancel(Runnable cancelHandler) {
+            this.cancelHandler = cancelHandler;
             return this;
         }
 
-        public void yesSelected() {
-            if (yesHandler != null) {
-                yesHandler.run();
+        public void discard() {
+            if (discardHandler != null) {
+                discardHandler.run();
             }
         }
 
-        public void noSelected() {
-            if (noHandler != null) {
-                noHandler.run();
+        public void cancel() {
+            if (cancelHandler != null) {
+                cancelHandler.run();
             }
         }
     }
 
+    /**
+     * Callbacks holder for save changes dialog.
+     */
     public static class SaveChangesDialogResult {
         protected Runnable commitHandler;
         protected Runnable discardHandler;

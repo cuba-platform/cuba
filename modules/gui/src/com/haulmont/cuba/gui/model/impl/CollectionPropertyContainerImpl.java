@@ -84,7 +84,6 @@ public class CollectionPropertyContainerImpl<E extends Entity>
         }
     }
 
-    @SuppressWarnings("unchecked")
     protected void updateMaster() {
         MetaProperty masterProperty = getMasterProperty();
         Collection masterCollection = master.getItem().getValue(masterProperty.getName());

@@ -36,7 +36,7 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 
 /**
- * Base class for controller of application Main window.
+ * Base class for a controller of application Main window.
  */
 public class AbstractMainWindow extends AbstractTopLevelWindow implements MainScreen {
 

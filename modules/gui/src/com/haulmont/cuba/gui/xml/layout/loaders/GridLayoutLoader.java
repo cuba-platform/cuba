@@ -49,8 +49,7 @@ public class GridLayoutLoader extends ContainerLoader<GridLayout> {
         }
 
         int columnCount;
-        @SuppressWarnings("unchecked")
-        final List<Element> columnElements = columnsElement.elements("column");
+        List<Element> columnElements = columnsElement.elements("column");
         if (columnElements.size() == 0) {
             try {
                 columnCount = Integer.parseInt(columnsElement.attributeValue("count"));
@@ -80,7 +79,6 @@ public class GridLayoutLoader extends ContainerLoader<GridLayout> {
             }
         }
 
-        @SuppressWarnings("unchecked")
         List<Element> rowElements = rowsElement.elements("row");
         Set<Element> invisibleRows = new HashSet<>();
 
@@ -156,7 +154,6 @@ public class GridLayoutLoader extends ContainerLoader<GridLayout> {
 
         int col = 0;
 
-        //noinspection unchecked
         for (Element subElement : element.elements()) {
             ComponentLoader componentLoader = loader.createComponent(subElement);
             pendingLoadComponents.add(componentLoader);

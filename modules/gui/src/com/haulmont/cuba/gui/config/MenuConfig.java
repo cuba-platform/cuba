@@ -150,7 +150,6 @@ public class MenuConfig {
     }
 
     protected void loadMenuItems(Element parentElement, MenuItem parentItem) {
-        //noinspection unchecked
         for (Element element : ((List<Element>) parentElement.elements())) {
             MenuItem menuItem = null;
             MenuItem currentParentItem = parentItem;

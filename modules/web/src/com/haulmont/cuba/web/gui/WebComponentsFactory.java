@@ -33,13 +33,11 @@ public class WebComponentsFactory implements ComponentsFactory {
     @Inject
     protected UiComponentsGenerator uiComponentsGenerator;
 
-    @SuppressWarnings("unchecked")
     @Override
     public <T extends Component> T createComponent(String name) {
         return uiComponents.create(name);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public <T extends Component> T createComponent(Class<T> type) {
         return uiComponents.create(type);

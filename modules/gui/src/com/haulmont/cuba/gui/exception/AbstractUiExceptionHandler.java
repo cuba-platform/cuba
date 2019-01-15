@@ -41,7 +41,6 @@ public abstract class AbstractUiExceptionHandler implements UiExceptionHandler {
 
     @Override
     public boolean handle(Throwable exception, UiContext context) {
-        //noinspection unchecked
         List<Throwable> list = ExceptionUtils.getThrowableList(exception);
         for (Throwable throwable : list) {
             if (classNames.contains(throwable.getClass().getName())

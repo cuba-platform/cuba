@@ -86,7 +86,6 @@ public abstract class AbstractFieldLoader<T extends Field> extends AbstractDatas
     }
 
     protected void loadValidators(Field component, Element element) {
-        @SuppressWarnings({"unchecked"})
         List<Element> validatorElements = element.elements("validator");
 
         if (!validatorElements.isEmpty()) {

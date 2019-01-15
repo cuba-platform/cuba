@@ -17,9 +17,7 @@
 package com.haulmont.cuba.gui.components;
 
 /**
- * todo JavaDoc
- *
- * todo extract
+ * Interface for UI components that support a textual input prompt.
  */
 public interface HasInputPrompt {
     /**

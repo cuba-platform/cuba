@@ -70,9 +70,7 @@ public interface ComponentsFactory {
      * Create a timer instance.
      *
      * @return client-specific implementation of the timer
-     * @deprecated JavaDoc
-     *
-     * todo move to Window
+     * @deprecated Use {@link UiComponents#create(String)} instead.
      */
     @Deprecated
     Timer createTimer();

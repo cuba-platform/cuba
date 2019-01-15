@@ -21,7 +21,11 @@ import com.haulmont.cuba.gui.components.data.TableItems;
 
 import javax.annotation.Nullable;
 
-// todo JavaDoc
+/**
+ * Interface for table data components bound to {@link Entity} type.
+ *
+ * @param <E> entity type
+ */
 public interface EntityTableItems<E extends Entity> extends TableItems<E>, EntityDataUnit {
     /**
      * @return the current item contained in the source

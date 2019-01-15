@@ -426,7 +426,6 @@ public class ExcelExporter {
         doubleFormatCellStyle.setDataFormat(format.getFormat("#,##0.################"));
     }
 
-    @SuppressWarnings("unchecked")
     protected int createHierarhicalRow(TreeTable table, List<Table.Column> columns,
                                        Boolean exportExpanded, int rowNumber, Object itemId) {
         TreeTableItems treeTableSource = (TreeTableItems) table.getItems();

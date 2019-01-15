@@ -22,6 +22,7 @@ import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.validation.groups.UiCrossFieldChecks;
 import com.haulmont.cuba.gui.DialogOptions;
+import com.haulmont.cuba.gui.UiComponents;
 import com.haulmont.cuba.gui.WindowContext;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.compatibility.*;
@@ -45,7 +46,7 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 /**
- * Represents an independent screen opened inside the main application window.
+ * Represents an independent window of application.
  */
 public interface Window extends Frame, Component.HasCaption, Component.HasIcon {
     @Deprecated
@@ -276,7 +277,7 @@ public interface Window extends Frame, Component.HasCaption, Component.HasIcon {
     /**
      * Add a {@link Timer} component to this screen.
      * <br> This method is called when a timer is created from XML descriptor. It should also be called from an
-     * application code if the timer is created programmatically by {@link com.haulmont.cuba.gui.xml.layout.ComponentsFactory#createTimer()} method.
+     * application code if the timer is created programmatically by {@link UiComponents} factory.
      * <br> The timer added to the window is stopped when the window is closed.
      *
      * @param timer Timer instance

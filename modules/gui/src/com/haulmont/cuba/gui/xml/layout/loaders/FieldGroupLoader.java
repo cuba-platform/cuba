@@ -112,9 +112,7 @@ public class FieldGroupLoader extends AbstractComponentLoader<FieldGroup> {
                 resultComponent.addField(field);
             }
         } else {
-            @SuppressWarnings("unchecked")
             List<Element> columnElements = element.elements("column");
-            @SuppressWarnings("unchecked")
             List<Element> fieldElements = element.elements("field");
             if (fieldElements.size() > 0) {
                 Map<String, Object> params = new HashMap<>();
@@ -290,7 +288,6 @@ public class FieldGroupLoader extends AbstractComponentLoader<FieldGroup> {
 
     protected List<FieldGroup.FieldConfig> loadFields(FieldGroup resultComponent, Element element, Datasource ds,
                                                       @Nullable String columnWidth) {
-        @SuppressWarnings("unchecked")
         List<Element> fieldElements = element.elements("field");
         if (!fieldElements.isEmpty()) {
             return loadFields(resultComponent, fieldElements, ds, columnWidth);
@@ -545,7 +542,6 @@ public class FieldGroupLoader extends AbstractComponentLoader<FieldGroup> {
 
     protected void loadValidators(FieldGroup resultComponent, FieldGroup.FieldConfig field) {
         Element descriptor = field.getXmlDescriptor();
-        @SuppressWarnings("unchecked")
         List<Element> validatorElements = (descriptor == null) ? null : descriptor.elements("validator");
         if (validatorElements != null) {
             if (!validatorElements.isEmpty()) {

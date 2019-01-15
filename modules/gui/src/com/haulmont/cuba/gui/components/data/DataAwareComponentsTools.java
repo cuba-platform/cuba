@@ -39,7 +39,7 @@ import java.util.Map;
 import java.util.TimeZone;
 
 /**
- * todo JavaDoc
+ * Utillity bean that provides typical data aware operations with UI components.
  */
 @Component(DataAwareComponentsTools.NAME)
 public class DataAwareComponentsTools {
@@ -48,24 +48,20 @@ public class DataAwareComponentsTools {
 
     @Inject
     protected UserSessionSource userSessionSource;
-
     @Inject
     protected MessageTools messageTools;
-
     @Inject
     protected TimeSource timeSource;
-
     @Inject
     protected DateTimeTransformations dateTimeTransformations;
-
     @Inject
     protected MetadataTools metadataTools;
 
     /**
-     * todo JavaDoc
+     * Sets case conversion using {@link CaseConversion} annotation on entity property.
      *
-     * @param component
-     * @param valueSource
+     * @param component UI component
+     * @param valueSource value source
      */
     public void setupCaseConversion(TextInputField.CaseConversionSupported component, EntityValueSource valueSource) {
         MetaProperty metaProperty = valueSource.getMetaPropertyPath().getMetaProperty();
@@ -83,10 +79,10 @@ public class DataAwareComponentsTools {
     }
 
     /**
-     * todo JavaDoc
+     * Sets max length for textual UI component using Entity metadata.
      *
-     * @param component
-     * @param valueSource
+     * @param component UI component
+     * @param valueSource value source
      */
     public void setupMaxLength(TextInputField.MaxLengthLimited component, EntityValueSource valueSource) {
         MetaProperty metaProperty = valueSource.getMetaPropertyPath().getMetaProperty();

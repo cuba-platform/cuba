@@ -857,7 +857,6 @@ public class EntityInspectorEditor extends AbstractWindow {
      * @param table        table
      * @return buttons panel
      */
-    @SuppressWarnings("unchecked")
     protected ButtonsPanel createButtonsPanel(MetaProperty metaProperty,
                                               CollectionDatasource propertyDs, Table table) {
         MetaClass propertyMetaClass = metaProperty.getRange().asClass();

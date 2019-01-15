@@ -430,7 +430,6 @@ public class EntityInspectorBrowse extends AbstractLookup {
     }
 
     protected View createView(MetaClass meta) {
-        //noinspection unchecked
         View view = new View(meta.getJavaClass(), false);
         for (MetaProperty metaProperty : meta.getProperties()) {
             switch (metaProperty.getType()) {

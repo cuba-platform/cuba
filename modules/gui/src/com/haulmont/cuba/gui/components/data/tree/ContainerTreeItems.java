@@ -149,7 +149,6 @@ public class ContainerTreeItems<E extends Entity> implements EntityTreeItems<E>,
         return hierarchyProperty;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public Subscription addStateChangeListener(Consumer<StateChangeEvent> listener) {
         return events.subscribe(StateChangeEvent.class, listener);

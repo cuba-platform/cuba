@@ -152,7 +152,6 @@ public class DatasourceValueSource<E extends Entity, V> implements EntityValueSo
         return events.subscribe(InstanceChangeEvent.class, (Consumer) listener);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public Subscription addStateChangeListener(Consumer<StateChangeEvent> listener) {
         return events.subscribe(StateChangeEvent.class, listener);

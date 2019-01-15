@@ -16,16 +16,14 @@
 
 package com.haulmont.cuba.gui.components;
 
+import com.haulmont.cuba.gui.UiComponents;
+
 /**
- * JavaDoc
- *
- * todo rename
+ * UI component that represents a top level window of application.
  */
 public interface RootWindow extends Window {
     /**
-     * Name that is used to register a client type specific screen implementation in
-     * {@link com.haulmont.cuba.gui.xml.layout.ComponentsFactory}
+     * Name that is used to register a client type specific screen implementation in {@link UiComponents}
      */
     String NAME = "rootWindow";
-
 }

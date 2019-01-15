@@ -116,7 +116,7 @@ public class XmlInheritanceProcessor {
             resultElem.setText(extElem.getText());
 
         // add all attributes from extension
-        for (Attribute attribute : Dom4j.attributes(extElem)) {
+        for (Attribute attribute : extElem.attributes()) {
             if (resultElem == document.getRootElement() && attribute.getName().equals("extends")) {
                 // ignore "extends" in root element
                 continue;
@@ -139,13 +139,12 @@ public class XmlInheritanceProcessor {
             }
 
             parent.remove(resultElem);
-            //noinspection unchecked
             parent.elements().add(index, resultElem);
         }
 
         // add and process elements
         Set<Element> justAdded = new HashSet<>();
-        for (Element element : Dom4j.elements(extElem)) {
+        for (Element element : extElem.elements()) {
             // look for suitable locator
             ElementTargetLocator locator = null;
             for (ElementTargetLocator l : targetLocators) {
@@ -164,7 +163,7 @@ public class XmlInheritanceProcessor {
                 }
             } else {
                 // if no suitable locator found, look for a single element with the same name
-                List<Element> list = Dom4j.elements(resultElem, element.getName());
+                List<Element> list = resultElem.elements(element.getName());
                 if (list.size() == 1 && !justAdded.contains(list.get(0))) {
                     process(list.get(0), element);
                 } else {
@@ -182,7 +181,6 @@ public class XmlInheritanceProcessor {
         } else {
             newElement = DocumentHelper.createElement(element.getName());
 
-            @SuppressWarnings("unchecked")
             List<Element> elements = resultElem.elements();
             int index = Integer.parseInt(idx);
             if (index < 0 || index > elements.size()) {
@@ -214,7 +212,7 @@ public class XmlInheritanceProcessor {
         @Override
         public Element locate(Element resultParentElem, Element extElem) {
             String id = extElem.attributeValue("id");
-            for (Element e : Dom4j.elements(resultParentElem)) {
+            for (Element e : resultParentElem.elements()) {
                 if (id.equals(e.attributeValue("id"))) {
                     return e;
                 }
@@ -235,7 +233,7 @@ public class XmlInheritanceProcessor {
             String entity = extElem.attributeValue("entity");
             String clazz = extElem.attributeValue("class");
             String name = extElem.attributeValue("name");
-            for (Element e : Dom4j.elements(resultParentElem)) {
+            for (Element e : resultParentElem.elements()) {
                 if (name.equals(e.attributeValue("name"))
                         && ((entity != null && entity.equals(e.attributeValue("entity")))
                             || (clazz != null && clazz.equals(e.attributeValue("class")))))
@@ -258,7 +256,7 @@ public class XmlInheritanceProcessor {
         @Override
         public Element locate(Element resultParentElem, Element extElem) {
             String name = extElem.attributeValue("name");
-            for (Element e : Dom4j.elements(resultParentElem)) {
+            for (Element e : resultParentElem.elements()) {
                 if (name.equals(e.attributeValue("name"))) {
                     return e;
                 }
@@ -279,7 +277,7 @@ public class XmlInheritanceProcessor {
         @Override
         public Element locate(Element resultParentElem, Element extElem) {
             String action = extElem.attributeValue("action");
-            for (Element e : Dom4j.elements(resultParentElem)) {
+            for (Element e : resultParentElem.elements()) {
                 if (action.equals(e.attributeValue("action"))) {
                     return e;
                 }

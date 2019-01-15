@@ -54,7 +54,6 @@ public interface DatePicker<V> extends Field<V>, HasDatatype<V>, Component.Focus
      */
     void setResolution(Resolution resolution);
 
-    @SuppressWarnings("unchecked")
     @Override
     V getValue();
 }

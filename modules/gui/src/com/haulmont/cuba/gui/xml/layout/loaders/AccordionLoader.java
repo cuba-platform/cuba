@@ -35,7 +35,6 @@ public class AccordionLoader extends ContainerLoader<Accordion> {
         resultComponent = factory.create(Accordion.NAME);
         loadId(resultComponent, element);
 
-        //noinspection unchecked
         List<Element> tabElements = element.elements("tab");
         for (Element tabElement : tabElements) {
             String name = tabElement.attributeValue("id");
@@ -81,7 +80,6 @@ public class AccordionLoader extends ContainerLoader<Accordion> {
 
         loadTabCaptionsAsHtml(resultComponent, element);
 
-        @SuppressWarnings("unchecked")
         List<Element> tabElements = element.elements("tab");
         for (Element tabElement : tabElements) {
             Accordion.Tab tab = pendingLoadTabs.remove(tabElement);

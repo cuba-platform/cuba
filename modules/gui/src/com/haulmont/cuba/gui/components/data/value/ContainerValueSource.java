@@ -47,7 +47,6 @@ public class ContainerValueSource<E extends Entity, V> implements EntityValueSou
 
     protected EventHub events = new EventHub();
 
-    @SuppressWarnings("unchecked")
     public ContainerValueSource(InstanceContainer<E> container, String property) {
         checkNotNullArgument(container);
         checkNotNullArgument(property);
@@ -159,7 +158,6 @@ public class ContainerValueSource<E extends Entity, V> implements EntityValueSou
 
     @Override
     public boolean isReadOnly() {
-        // todo what about security ?
         return metaPropertyPath.getMetaProperty().isReadOnly();
     }
 
@@ -180,7 +178,6 @@ public class ContainerValueSource<E extends Entity, V> implements EntityValueSou
         return events.subscribe(InstanceChangeEvent.class, (Consumer) listener);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public Subscription addStateChangeListener(Consumer<StateChangeEvent> listener) {
         return events.subscribe(StateChangeEvent.class, listener);

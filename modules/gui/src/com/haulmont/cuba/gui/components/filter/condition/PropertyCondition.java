@@ -81,7 +81,6 @@ public class PropertyCondition extends AbstractCondition {
         }
     }
 
-    @SuppressWarnings("unchecked")
     public PropertyCondition(AbstractConditionDescriptor descriptor, String entityAlias) {
         super(descriptor);
         this.entityAlias = entityAlias;

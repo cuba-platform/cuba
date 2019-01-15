@@ -252,7 +252,6 @@ public class PermissionConfig {
         }
 
         private void walkSpecific(Element element, Node<BasicPermissionTarget> node) {
-            //noinspection unchecked
             for (Element elem : (List<Element>) element.elements()) {
                 String id = elem.attributeValue("id");
                 String caption = getMessage("permission-config." + id);

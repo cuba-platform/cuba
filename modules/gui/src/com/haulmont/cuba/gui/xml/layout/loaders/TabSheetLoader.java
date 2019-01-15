@@ -35,7 +35,6 @@ public class TabSheetLoader extends ContainerLoader<TabSheet> {
         resultComponent = factory.create(TabSheet.NAME);
         loadId(resultComponent, element);
 
-        //noinspection unchecked
         List<Element> tabElements = element.elements("tab");
         for (Element tabElement : tabElements) {
             final String name = tabElement.attributeValue("id");
@@ -90,7 +89,6 @@ public class TabSheetLoader extends ContainerLoader<TabSheet> {
     }
 
     protected void loadTabsProperties() {
-        @SuppressWarnings("unchecked")
         List<Element> tabElements = element.elements("tab");
 
         for (Element tabElement : tabElements) {

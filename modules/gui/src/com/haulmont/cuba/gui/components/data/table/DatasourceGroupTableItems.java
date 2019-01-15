@@ -60,26 +60,22 @@ public class DatasourceGroupTableItems<E extends Entity<K>, K>
         return getGroupDatasource().getChildren(groupId);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public List<E> getOwnChildItems(GroupInfo groupId) {
         return getGroupDatasource().getOwnChildItems(groupId);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public List<E> getChildItems(GroupInfo groupId) {
         return getGroupDatasource().getChildItems(groupId);
     }
 
-    @SuppressWarnings("unchecked")
     @Nullable
     @Override
     public GroupInfo getParentGroup(E entity) {
         return getGroupDatasource().getParentGroup(entity);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public List<GroupInfo> getGroupPath(E entity) {
         return getGroupDatasource().getGroupPath(entity);

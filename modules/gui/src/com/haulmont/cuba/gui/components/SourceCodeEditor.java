@@ -99,7 +99,6 @@ public interface SourceCodeEditor extends Field<String>, Component.Focusable {
      */
     boolean isHandleTabKey();
 
-    @SuppressWarnings("unchecked")
     @Override
     String getValue();
 

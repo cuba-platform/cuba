@@ -17,17 +17,21 @@
 package com.haulmont.cuba.gui.components.data.meta;
 
 import com.haulmont.cuba.gui.components.HasValue;
+import com.haulmont.cuba.gui.components.data.BindingState;
 import com.haulmont.cuba.gui.components.data.ValueSource;
 
 /**
- * vaadin8 todo JavaDoc
+ * Object that holds data binding information for {@link HasValue} UI component.
  *
- * @param <V> todo
+ * @param <V> type of value
  */
 public interface ValueBinding<V> extends Binding {
     ValueSource<V> getSource();
     HasValue<V> getComponent();
 
+    /**
+     * Activates value binding - reads value from source to UI component if state is {@link BindingState#ACTIVE}.
+     */
     void activate();
 
     /**

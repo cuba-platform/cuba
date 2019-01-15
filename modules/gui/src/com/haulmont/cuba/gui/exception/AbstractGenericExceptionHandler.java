@@ -46,7 +46,6 @@ public abstract class AbstractGenericExceptionHandler implements GenericExceptio
 
     @Override
     public boolean handle(Throwable exception, WindowManager windowManager) {
-        //noinspection unchecked
         List<Throwable> list = ExceptionUtils.getThrowableList(exception);
         for (Throwable throwable : list) {
             if (classNames.contains(throwable.getClass().getName())

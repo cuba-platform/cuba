@@ -89,53 +89,40 @@ public class DsContextLoader {
 
         builder = DsBuilder.create(context);
 
-        //noinspection unchecked
         List<Element> elements = element.elements("datasource");
         for (Element ds : elements) {
             Datasource datasource = loadDatasource(ds);
             setLoadDynamicAttributes(ds, datasource);
         }
 
-        //noinspection unchecked
         elements = element.elements("hierarchicalDatasource");
         for (Element ds : elements) {
             Datasource datasource = loadHierarchicalDatasource(ds);
             setLoadDynamicAttributes(ds, datasource);
         }
 
-        //noinspection unchecked
         elements = element.elements("collectionDatasource");
         for (Element ds : elements) {
             CollectionDatasource datasource = loadCollectionDatasource(ds);
             setLoadDynamicAttributes(ds, datasource);
         }
-
-        //noinspection unchecked
         elements = element.elements("groupDatasource");
         for (Element ds : elements) {
             Datasource datasource = loadGroupDatasource(ds);
             setLoadDynamicAttributes(ds, datasource);
         }
-
-        //noinspection unchecked
         elements = element.elements("runtimePropsDatasource");
         for (Element ds : elements) {
             loadRuntimePropsDatasource(ds);
         }
-
-        //noinspection unchecked
         elements = element.elements("valueCollectionDatasource");
         for (Element ds : elements) {
             loadValueCollectionDatasource(ds);
         }
-
-        //noinspection unchecked
         elements = element.elements("valueGroupDatasource");
         for (Element ds : elements) {
             loadValueGroupDatasource(ds);
         }
-
-        //noinspection unchecked
         elements = element.elements("valueHierarchicalDatasource");
         for (Element ds : elements) {
             loadValueHierarchicalDatasource(ds);
@@ -261,35 +248,30 @@ public class DsContextLoader {
     }
 
     protected void loadDatasources(Element element, Datasource datasource) {
-        //noinspection unchecked
         List<Element> elements = element.elements("datasource");
         for (Element ds : elements) {
             final String property = ds.attributeValue("property");
             loadDatasource(ds, datasource, property);
         }
 
-        //noinspection unchecked
         elements = element.elements("collectionDatasource");
         for (Element ds : elements) {
             final String property = ds.attributeValue("property");
             loadCollectionDatasource(ds, datasource, property);
         }
 
-        //noinspection unchecked
         elements = element.elements("groupDatasource");
         for (Element ds : elements) {
             final String property = ds.attributeValue("property");
             loadGroupDatasource(ds, datasource, property);
         }
 
-        //noinspection unchecked
         elements = element.elements("hierarchicalDatasource");
         for (Element ds : elements) {
             final String property = ds.attributeValue("property");
             loadHierarchicalDatasource(ds, datasource, property);
         }
 
-        //noinspection unchecked
         elements = element.elements("runtimePropsDatasource");
         for (Element ds : elements) {
             loadRuntimePropsDatasource(ds);

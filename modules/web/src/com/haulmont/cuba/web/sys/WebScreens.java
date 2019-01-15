@@ -64,6 +64,7 @@ import com.haulmont.cuba.gui.xml.layout.ScreenXmlLoader;
 import com.haulmont.cuba.gui.xml.layout.loaders.ComponentLoaderContext;
 import com.haulmont.cuba.security.app.UserSettingService;
 import com.haulmont.cuba.security.entity.PermissionType;
+import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.gui.WebWindow;
@@ -1489,7 +1490,7 @@ public class WebScreens implements Screens, WindowManager {
     /**
      * Close all screens in all main windows (browser tabs).
      *
-     * @deprecated JavaDoc
+     * @deprecated Use {@link App#removeAllWindows()} instead.
      */
     @Deprecated
     public void closeAllWindows() {
@@ -1499,7 +1500,7 @@ public class WebScreens implements Screens, WindowManager {
     /**
      * Close all screens in the main window (browser tab) this WindowManagerImpl belongs to.
      *
-     * @deprecated JavaDoc
+     * @deprecated Use {@link #removeAll()} instead.
      */
     @Deprecated
     public void closeAll() {

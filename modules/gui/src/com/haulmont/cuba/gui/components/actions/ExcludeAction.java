@@ -167,7 +167,6 @@ public class ExcludeAction extends RemoveAction {
     @SuppressWarnings("unchecked")
     @Override
     protected void doRemove(Set<Entity> selected, boolean autocommit) {
-        @SuppressWarnings({"unchecked"})
         CollectionDatasource ds = target.getDatasource();
         if (ds instanceof NestedDatasource) {
             // Clear reference to master entity

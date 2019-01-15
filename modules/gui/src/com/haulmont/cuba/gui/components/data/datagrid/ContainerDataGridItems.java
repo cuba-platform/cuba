@@ -133,7 +133,6 @@ public class ContainerDataGridItems<E extends Entity>
         container.setItem(item);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public Subscription addStateChangeListener(Consumer<StateChangeEvent> listener) {
         return events.subscribe(StateChangeEvent.class, listener);

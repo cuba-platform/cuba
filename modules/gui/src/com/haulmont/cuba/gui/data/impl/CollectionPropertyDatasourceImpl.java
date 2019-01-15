@@ -291,14 +291,12 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
         });
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public void addItemFirst(T item) {
         checkNotNullArgument(item, "item is null");
         internalAddItem(item, () -> {
             addToCollectionFirst(item);
         });
-
     }
 
     @SuppressWarnings("unchecked")
@@ -811,7 +809,6 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
         listenersSuspended = false;
 
         while(!suspendedEvents.isEmpty()) {
-            //noinspection unchecked
             CollectionChangeEvent<T,K> suspendedEvent = suspendedEvents.removeLast();
             fireCollectionChanged(suspendedEvent.getOperation(), Collections.unmodifiableList(suspendedEvent.getItems()));
         }

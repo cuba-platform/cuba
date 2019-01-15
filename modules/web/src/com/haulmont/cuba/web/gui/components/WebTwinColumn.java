@@ -183,7 +183,7 @@ public class WebTwinColumn<V> extends WebV8AbstractField<CubaTwinColSelect<V>, S
     @Override
     public void setColumns(int columns) {
         this.columns = columns;
-        // see javaDoc Vaadin 7 com.vaadin.ui.TwinColSelect#setColumns(int) for formula
+        // see Vaadin 7 com.vaadin.ui.TwinColSelect#setColumns(int) for formula
         component.setWidth((columns * 2 + 4) + columns + "em");
     }
 
