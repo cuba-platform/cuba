@@ -548,12 +548,8 @@ public class WebScreens implements Screens, WindowManager {
             }
         }
 
-        if (screen instanceof AbstractWindow) {
-            AbstractWindow abstractWindow = (AbstractWindow) screen;
-
-            if (abstractWindow.isAttributeAccessControlEnabled()) {
-                attributeAccessSupport.applyAttributeAccess(abstractWindow, false);
-            }
+        if (UiControllerUtils.isAttributeAccessControlEnabled(screen)) {
+            attributeAccessSupport.applyAttributeAccess(screen, false);
         }
     }
 

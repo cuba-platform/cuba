@@ -25,12 +25,16 @@ import com.haulmont.cuba.core.entity.SecurityState;
 import com.haulmont.cuba.core.global.Security;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Component.Editable;
+import com.haulmont.cuba.gui.components.ComponentContainer;
 import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.Frame;
+import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.data.BindingState;
 import com.haulmont.cuba.gui.components.data.meta.EntityValueSource;
 import com.haulmont.cuba.gui.components.data.HasValueSource;
 import com.haulmont.cuba.gui.components.data.ValueSource;
+import com.haulmont.cuba.gui.screen.FrameOwner;
+import com.haulmont.cuba.gui.screen.Screen;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
@@ -54,16 +58,20 @@ public class AttributeAccessSupport {
      * Apply attribute access rules to a given frame. It means that all components bound to datasources will adjust
      * their visible/read-only/required state according to security state of entity instances contained in the datasources.
      *
-     * @param frame frame or screen
+     * @param frameOwner frame or screen
      * @param reset whether to reset the components to the default state specified by role-based security and model
      *              annotations. If you invoke this method to apply attribute access to already opened screen, set
      *              the parameter to true, but keep in mind that previous programmatic changes in the components
      *              visible/read-only/required state will be lost.
      */
-    public void applyAttributeAccess(Frame frame, boolean reset) {
-        ComponentsHelper.walkComponents(frame, (component, name) -> {
-            visitComponent(component, reset);
-        });
+    public void applyAttributeAccess(FrameOwner frameOwner, boolean reset) {
+        ComponentContainer componentContainer;
+        if (frameOwner instanceof Screen) {
+            componentContainer = ((Screen) frameOwner).getWindow();
+        } else {
+            componentContainer = (Window) frameOwner;
+        }
+        ComponentsHelper.walkComponents(componentContainer, (component, name) -> visitComponent(component, reset));
     }
 
     /**
@@ -73,17 +81,17 @@ public class AttributeAccessSupport {
      * instances contained in the datasources.
      *
      * @param entities list of instances that should recalculate their security state
-     * @param frame frame or screen
+     * @param frameOwner frame or screen
      * @param reset whether to reset the components to the default state specified by role-based security and model
      *              annotations. If you invoke this method to apply attribute access to already opened screen, set
      *              the parameter to true, but keep in mind that previous programmatic changes in the components
      *              visible/read-only/required state will be lost.
      */
-    public void applyAttributeAccess(Frame frame, boolean reset, Entity... entities) {
+    public void applyAttributeAccess(FrameOwner frameOwner, boolean reset, Entity... entities) {
         for (Entity entity : entities) {
             attributeAccessUpdater.updateAttributeAccess(entity);
         }
-        applyAttributeAccess(frame, reset);
+        applyAttributeAccess(frameOwner, reset);
     }
 
     protected void visitComponent(com.haulmont.cuba.gui.components.Component component, boolean reset) {

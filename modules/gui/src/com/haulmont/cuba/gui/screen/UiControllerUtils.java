@@ -186,4 +186,8 @@ public final class UiControllerUtils {
     public static boolean isAlreadyOpened(Screen newScreen, Screen openedScreen) {
         return newScreen.isSameScreen(openedScreen);
     }
+
+    public static boolean isAttributeAccessControlEnabled(Screen screen) {
+        return screen.isAttributeAccessControlEnabled();
+    }
 }

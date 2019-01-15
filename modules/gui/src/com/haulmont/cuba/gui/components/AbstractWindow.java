@@ -737,10 +737,7 @@ public class AbstractWindow extends Screen implements Window, LegacyFrame, Compo
         return frame.getDialogOptions();
     }
 
-    /**
-     * Whether automatic applying of attribute access rules enabled. If you don't want to apply attribute access
-     * rules to a screen, override this method and return false.
-     */
+    @Override
     public boolean isAttributeAccessControlEnabled() {
         return true;
     }

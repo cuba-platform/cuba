@@ -384,6 +384,14 @@ public abstract class Screen implements FrameOwner {
     }
 
     /**
+     * Whether automatic applying of attribute access rules enabled. If you don't want to apply attribute access
+     * rules to a screen, override this method and return false.
+     */
+    protected boolean isAttributeAccessControlEnabled() {
+        return true;
+    }
+
+    /**
      * @return screen settings
      */
     @Nullable
