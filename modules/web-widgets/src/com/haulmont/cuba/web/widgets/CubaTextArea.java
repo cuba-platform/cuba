@@ -23,10 +23,6 @@ import java.util.Objects;
 
 public class CubaTextArea extends TextArea {
     public CubaTextArea() {
-//        vaadin8
-//        setValidationVisible(false);
-//        setShowBufferedSourceException(false);
-//        setShowErrorForDisabledState(false);
     }
 
     @Override

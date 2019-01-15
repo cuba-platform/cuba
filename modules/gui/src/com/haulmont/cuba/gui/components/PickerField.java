@@ -244,7 +244,6 @@ public interface PickerField<V extends Entity> extends Field<V>, ActionsHolder, 
         }
 
         protected Datasource getPropertyDatasource() {
-            // TODO: gg, use value source
             if (pickerField.getDatasource() == null
                     || pickerField.getMetaPropertyPath() == null
                     || pickerField.getMetaPropertyPath().getMetaProperty().getType() != MetaProperty.Type.COMPOSITION

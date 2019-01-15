@@ -45,8 +45,7 @@ public abstract class WebAbstractField<T extends com.vaadin.v7.ui.AbstractField,
     protected V internalValue;
     protected ValueBinding<V> valueBinding;
 
-    // VAADIN8: gg, replace with Subscription
-    protected Consumer<EditableChangeNotifier.EditableChangeEvent> parentEditableChangeListener;
+    protected Subscription parentEditableChangeListener;
 
     @Override
     public ValueSource<V> getValueSource() {
@@ -147,20 +146,18 @@ public abstract class WebAbstractField<T extends com.vaadin.v7.ui.AbstractField,
     public void setParent(Component parent) {
         if (this.parent instanceof EditableChangeNotifier
                 && parentEditableChangeListener != null) {
-            ((EditableChangeNotifier) this.parent).removeEditableChangeListener(parentEditableChangeListener);
-
+            parentEditableChangeListener.remove();
             parentEditableChangeListener = null;
         }
 
         super.setParent(parent);
 
         if (parent instanceof EditableChangeNotifier) {
-            parentEditableChangeListener = event -> {
+            parentEditableChangeListener = ((EditableChangeNotifier) parent).addEditableChangeListener(event -> {
                 boolean parentEditable = event.getSource().isEditable();
                 boolean finalEditable = parentEditable && editable;
                 setEditableToComponent(finalEditable);
-            };
-            ((EditableChangeNotifier) parent).addEditableChangeListener(parentEditableChangeListener);
+            });
 
             Editable parentEditable = (Editable) parent;
             if (!parentEditable.isEditable()) {

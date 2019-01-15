@@ -65,17 +65,14 @@ public interface LookupField<V> extends OptionsField<V, V>, HasInputPrompt, Buff
     void setFilterMode(FilterMode mode);
 
     /**
-     * vaadin8 deprecate
-     *
      * @return true if the component handles new options entered by user.
      * @see #setNewOptionHandler(Consumer)
      */
     @Deprecated
     boolean isNewOptionAllowed();
     /**
-     * vaadin8 deprecate
-     *
      * Makes the component handle new options entered by user.
+     *
      * @see #setNewOptionHandler(Consumer)
      * @deprecated setting the new option handler enables new options
      */

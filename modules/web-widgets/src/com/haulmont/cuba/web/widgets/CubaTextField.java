@@ -40,10 +40,6 @@ public class CubaTextField extends TextField implements Action.Container, Legacy
     protected boolean actionsInitialized = false;
 
     public CubaTextField() {
-        // vaadin8
-//        setValidationVisible(false);
-//        setShowBufferedSourceException(false);
-//        setShowErrorForDisabledState(false);
     }
 
     @Override

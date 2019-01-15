@@ -25,10 +25,6 @@ import java.util.Objects;
 public class CubaPasswordField extends PasswordField {
 
     public CubaPasswordField() {
-//        vaadin8
-//        setValidationVisible(false);
-//        setShowBufferedSourceException(false);
-//        setShowErrorForDisabledState(false);
         setAutocomplete(false);
     }
 

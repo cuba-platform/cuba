@@ -82,15 +82,6 @@ public class WebSearchPickerField<V extends Entity> extends WebPickerField<V>
     protected Locale locale;
 
     public WebSearchPickerField() {
-        /* vaadin8
-        final ComboBox selectComponent = component;
-        WebPickerField.Picker picker = new WebPickerField.Picker(this, component) {
-            @Override
-            public void setRequired(boolean required) {
-                super.setRequired(required);
-                selectComponent.setNullSelectionAllowed(!required);
-            }
-        };*/
     }
 
     @Override

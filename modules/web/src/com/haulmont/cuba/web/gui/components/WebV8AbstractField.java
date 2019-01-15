@@ -15,6 +15,7 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.bali.events.Subscription;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.data.ConversionException;
@@ -44,8 +45,7 @@ public abstract class WebV8AbstractField<T extends com.vaadin.ui.Component & com
 
     protected boolean editable = true;
 
-    // VAADIN8: gg, replace with Subscription
-    protected Consumer<EditableChangeNotifier.EditableChangeEvent> parentEditableChangeListener;
+    protected Subscription parentEditableChangeListener;
 
     @Override
     public boolean isRequired() {
@@ -88,20 +88,18 @@ public abstract class WebV8AbstractField<T extends com.vaadin.ui.Component & com
     public void setParent(Component parent) {
         if (this.parent instanceof EditableChangeNotifier
                 && parentEditableChangeListener != null) {
-            ((EditableChangeNotifier) this.parent).removeEditableChangeListener(parentEditableChangeListener);
-
+            parentEditableChangeListener.remove();
             parentEditableChangeListener = null;
         }
 
         super.setParent(parent);
 
         if (parent instanceof EditableChangeNotifier) {
-            parentEditableChangeListener = event -> {
+            parentEditableChangeListener = ((EditableChangeNotifier) parent).addEditableChangeListener(event -> {
                 boolean parentEditable = event.getSource().isEditable();
                 boolean finalEditable = parentEditable && editable;
                 setEditableToComponent(finalEditable);
-            };
-            ((EditableChangeNotifier) parent).addEditableChangeListener(parentEditableChangeListener);
+            });
 
             Editable parentEditable = (Editable) parent;
             if (!parentEditable.isEditable()) {

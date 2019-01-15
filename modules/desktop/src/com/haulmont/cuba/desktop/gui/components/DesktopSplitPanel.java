@@ -172,7 +172,6 @@ public class DesktopSplitPanel extends DesktopAbstractComponent<JSplitPane> impl
 
     @Override
     public void setMaxSplitPosition(int pos, int unit) {
-        // FIXME: gg, what is going on here?
 //        if (unit != UNITS_PERCENTAGE) {
 //            // not supported
 //            return;
@@ -184,13 +183,10 @@ public class DesktopSplitPanel extends DesktopAbstractComponent<JSplitPane> impl
 
     @Override
     public void setMaxSplitPosition(int pos, SizeUnit unit) {
-        ;
-        // VAADIN8: gg, implement?
     }
 
     @Override
     public void setMinSplitPosition(int pos, int unit) {
-        // FIXME: gg, what is going on here?
 //        if (unit != UNITS_PERCENTAGE) {
 //            // not supported
 //            return;
@@ -202,7 +198,6 @@ public class DesktopSplitPanel extends DesktopAbstractComponent<JSplitPane> impl
 
     @Override
     public void setMinSplitPosition(int pos, SizeUnit unit) {
-        // VAADIN8: gg, implement?
     }
 
     @Override

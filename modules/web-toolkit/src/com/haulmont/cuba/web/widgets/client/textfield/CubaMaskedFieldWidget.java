@@ -308,7 +308,7 @@ public class CubaMaskedFieldWidget extends VTextField {
         return true;
     }
 
-    // VAADIN8: gg, used by DateField
+    // Used by DateField
     public void updateTextState() {
         if (valueBeforeEdit == null || !getText().equals(valueBeforeEdit)) {
             valueBeforeEdit = getText();
@@ -425,7 +425,6 @@ public class CubaMaskedFieldWidget extends VTextField {
         setCursorPos(getNextPos(pasteStart + maskedPart.length() - 1));
     }
 
-    // VAADIN8: gg, do we need this method?
     protected void setRawCursorPosition(int pos) {
         if (pos >= 0 && pos <= maskTest.size())
             setCursorPos(pos);

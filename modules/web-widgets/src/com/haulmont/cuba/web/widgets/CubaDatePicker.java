@@ -19,10 +19,6 @@ package com.haulmont.cuba.web.widgets;
 import com.vaadin.ui.InlineDateField;
 
 public class CubaDatePicker extends InlineDateField {
-
     public CubaDatePicker() {
-        // VAADIN8: gg,
-//        setValidationVisible(false);
-//        setShowBufferedSourceException(false);
     }
 }

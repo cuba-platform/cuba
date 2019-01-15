@@ -69,8 +69,7 @@ public class AttributeEditor {
             dateField.setWidth("500px");
             dateField.setFrame(frame);
             if (value != null) {
-                // todo ??? vaadin8
-//                dateField.setValue(value.toString());
+                dateField.setValue((Date) value);
             }
         } else {
             textField = componentsFactory.createComponent(TextField.class);

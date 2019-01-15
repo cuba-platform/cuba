@@ -52,20 +52,6 @@ public class CubaDateField extends com.vaadin.ui.DateField implements Action.Con
         return (CubaDateFieldState) super.getState(markAsDirty);
     }
 
-    // VAADIN8: gg, do we need this method?
-    /*@Override
-    public void changeVariables(Object source, Map<String, Object> variables) {
-        lastInvalidDateString = (String) variables.get("lastInvalidDateString");
-        dateString = (String) variables.get("dateString");
-        super.changeVariables(source, variables);
-
-        // Actions
-        if (shortcutsManager != null) {
-            shortcutsManager.handleActions(variables, this);
-        }
-    }*/
-
-
     @Override
     public void setDateFormat(String dateFormat) {
         super.setDateFormat(dateFormat);

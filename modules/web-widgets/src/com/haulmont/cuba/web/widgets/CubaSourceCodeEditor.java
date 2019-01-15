@@ -32,15 +32,6 @@ public class CubaSourceCodeEditor extends AceEditor {
 
         setUseWorker(false);
 
-/*      vaadin8 implement
-        setTextChangeEventMode(TextInputField.TextChangeEventMode.LAZY);
-        setTextChangeTimeout(200);
-
-        setValidationVisible(false);
-        setShowBufferedSourceException(false);
-        setShowErrorForDisabledState(false);
-*/
-
         setHandleTabKey(false);
         setFontSize("auto");
     }

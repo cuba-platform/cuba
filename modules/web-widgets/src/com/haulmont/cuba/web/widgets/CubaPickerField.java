@@ -105,8 +105,6 @@ public class CubaPickerField<T> extends com.vaadin.ui.CustomField<T> implements 
         field.setReadOnlyFocusable(true);
 
         field.setReadOnly(fieldReadOnly);
-//        vaadin8
-//        field.setNullRepresentation("");
 
         this.field = field;
 

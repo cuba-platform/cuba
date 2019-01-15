@@ -378,11 +378,6 @@ public abstract class AbstractDataGridLoader<T extends DataGrid> extends Actions
             column.setEditable(Boolean.parseBoolean(editable));
         }
 
-        // Default caption set to columns when it is added to a DataGrid,
-        // so we need to set caption as null to get caption from
-        // metaProperty if 'caption' attribute is empty
-        // TODO: gg, do we need this?
-//        column.setCaption(null);
         String caption = loadCaption(element);
 
         if (caption == null) {

@@ -49,29 +49,4 @@ public class CubaDateFieldConnector extends PopupDateFieldConnector {
             getWidget().updateTabIndex(getState().tabIndex);
         }
     }
-
-    // VAADIN8: gg, how to replace?
-    /*@Override
-    public void updateFromUIDL(UIDL uidl, ApplicationConnection client) {
-        super.updateFromUIDL(uidl, client);
-
-        getWidget().updateTextState();
-
-        // We may have actions attached to this text field
-        if (uidl.getChildCount() > 0) {
-            final int cnt = uidl.getChildCount();
-            for (int i = 0; i < cnt; i++) {
-                UIDL childUidl = uidl.getChildUIDL(i);
-                if (childUidl.getTag().equals("actions")) {
-                    if (getWidget().getShortcutActionHandler() == null) {
-                        getWidget().setShortcutActionHandler(new ShortcutActionHandler(uidl.getId(), client));
-                    }
-                    getWidget().getShortcutActionHandler().updateActionMap(childUidl);
-                }
-            }
-        }
-
-        // set read only manually, cause tabIndex in maskedField sets after dateField
-        getWidget().setReadonly(getState().readOnly);
-    }*/
 }

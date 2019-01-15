@@ -22,9 +22,6 @@ import com.vaadin.ui.CheckBox;
 public class CubaCheckBox extends CheckBox {
 
     public CubaCheckBox() {
-//        vaadin8
-//        setValidationVisible(false);
-//        setShowBufferedSourceException(false);
     }
 
     public CubaCheckBox(String caption) {

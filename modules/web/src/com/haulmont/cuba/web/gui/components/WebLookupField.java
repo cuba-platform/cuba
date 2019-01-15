@@ -66,9 +66,6 @@ public class WebLookupField<V> extends WebV8AbstractField<CubaComboBox<V>, V, V>
 
     protected Consumer<String> newOptionHandler;
 
-    // todo
-    protected Consumer<ErrorMessage> componentErrorHandler;
-
     protected Function<? super V, String> optionIconProvider;
     protected Function<? super V, String> optionCaptionProvider;
     protected Function<? super V, String> optionStyleProvider;
@@ -206,22 +203,6 @@ public class WebLookupField<V> extends WebV8AbstractField<CubaComboBox<V>, V, V>
         }
     }
 
-    // vaadin8
-    /*protected void createComponent() {
-        this.component = new CubaComboBox() {
-            @Override
-            public void setComponentError(ErrorMessage componentError) {
-                boolean handled = false;
-                if (componentErrorHandler != null)
-                    handled = componentErrorHandler.handleError(componentError);
-
-                if (!handled)
-                    super.setComponentError(componentError);
-            }
-        };
-    }*/
-
-    @SuppressWarnings("unchecked")
     @Override
     public V getValue() {
         return internalValue;

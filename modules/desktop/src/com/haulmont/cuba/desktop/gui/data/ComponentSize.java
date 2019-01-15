@@ -22,7 +22,6 @@ import com.haulmont.cuba.gui.components.SizeUnit;
 
 public class ComponentSize {
 
-    // FIXME: gg, why public?
     public final float value;
     @Deprecated
     public final int unit; // Component.UNITS_PIXELS or Component.UNITS_PERCENTAGE

@@ -150,7 +150,7 @@ public class CubaTextFieldWidget extends VTextField implements ShortcutActionHan
             setTabIndex(0);
         }
     }
-/* vaadin8
+/*  vaadin8
     @Override
     public void setText(String text) {
         String styleName = getStyleName();

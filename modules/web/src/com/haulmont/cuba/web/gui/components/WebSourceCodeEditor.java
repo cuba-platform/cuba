@@ -71,11 +71,6 @@ public class WebSourceCodeEditor extends WebV8AbstractField<CubaSourceCodeEditor
     protected void initComponent(CubaSourceCodeEditor component) {
         component.setMode(AceMode.text);
         component.addAttachListener(this::handleAttach);
-
-//        vaadin8
-//        component.setInvalidCommitted(true);
-//        component.setInvalidAllowed(false);
-//        component.setBuffered(false);
     }
 
     protected void handleAttach(ClientConnector.AttachEvent attachEvent) {
@@ -193,7 +188,6 @@ public class WebSourceCodeEditor extends WebV8AbstractField<CubaSourceCodeEditor
         return component.isHandleTabKey();
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public String getValue() {
         String value = super.getValue();

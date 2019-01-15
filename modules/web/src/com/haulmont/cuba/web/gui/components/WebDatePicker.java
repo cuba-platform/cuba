@@ -69,43 +69,6 @@ public class WebDatePicker<V> extends WebV8AbstractField<InlineDateField, LocalD
         component.setResolution(vResolution);
     }
 
-    // VAADIN8: gg, need to use?
-    /*protected boolean checkRange(Date value) {
-        if (updatingInstance) {
-            return true;
-        }
-
-        if (value != null) {
-            if (component.getRangeStart() != null && value.before(component.getRangeStart())) {
-                handleDateOutOfRange(value);
-                return false;
-            }
-
-            if (component.getRangeEnd() != null && value.after(component.getRangeEnd())) {
-                handleDateOutOfRange(value);
-                return false;
-            }
-        }
-
-        return true;
-    }*/
-
-    // VAADIN8: gg, need to use?
-    /*protected void handleDateOutOfRange(Date value) {
-        if (getFrame() != null) {
-            Messages messages = AppBeans.get(Messages.NAME);
-            getFrame().showNotification(messages.getMainMessage("datePicker.dateOutOfRangeMessage"),
-                    Frame.NotificationType.TRAY);
-        }
-
-        updatingInstance = true;
-        try {
-            component.setValue(internalValue);
-        } finally {
-            updatingInstance = false;
-        }
-    }*/
-
     @Override
     protected void valueBindingConnected(ValueSource<V> valueSource) {
         super.valueBindingConnected(valueSource);

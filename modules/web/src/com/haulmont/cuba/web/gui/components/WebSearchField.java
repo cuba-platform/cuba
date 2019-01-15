@@ -50,21 +50,6 @@ public class WebSearchField<V extends Entity> extends WebLookupField<V> implemen
     @Override
     protected CubaComboBox<V> createComponent() {
         return new CubaSearchSelect<>();
-
-        /* vaadin8
-        this.component = new CubaSearchSelect() {
-            @Override
-            public void setComponentError(ErrorMessage componentError) {
-                boolean handled = false;
-                if (componentErrorHandler != null) {
-                    handled = componentErrorHandler.handleError(componentError);
-                }
-
-                if (!handled) {
-                    super.setComponentError(componentError);
-                }
-            }
-        };*/
     }
 
     @Override
