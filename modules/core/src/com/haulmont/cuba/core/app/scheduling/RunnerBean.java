@@ -30,6 +30,7 @@ import com.haulmont.cuba.core.entity.SchedulingType;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
+import com.haulmont.cuba.core.sys.events.AppContextStoppedEvent;
 import com.haulmont.cuba.security.app.UserSessionsAPI;
 import com.haulmont.cuba.security.auth.AuthenticationManager;
 import com.haulmont.cuba.security.auth.SystemUserCredentials;
@@ -38,6 +39,7 @@ import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang3.BooleanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Nonnull;
@@ -116,6 +118,11 @@ public class RunnerBean implements Runner {
         runTask(task, now, true, userSession);
     }
 
+    @EventListener(AppContextStoppedEvent.class)
+    protected void applicationStopped() {
+        executorService.shutdown();
+    }
+
     protected void runTask(ScheduledTask task, final long now, final boolean manually,
                            final @Nullable UserSession userSession) {
         // It's better not to pass an entity instance in managed state to another thread
@@ -138,6 +145,7 @@ public class RunnerBean implements Runner {
                             throw throwable;
                         }
                     } finally {
+                        AppContext.setSecurityContext(null);
                         scheduling.setRunning(taskCopy, false);
                         scheduling.setFinished(task);
                     }
