@@ -28,5 +28,8 @@ import java.lang.annotation.RetentionPolicy;
 @Inherited
 @Retention(RetentionPolicy.RUNTIME)
 public @interface MultipleOpen {
-    boolean value() default false;
+    /**
+     * Set to false to disable multiple open of the screen from menu.
+     */
+    boolean value() default true;
 }
