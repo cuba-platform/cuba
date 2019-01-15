@@ -30,12 +30,6 @@ import java.util.stream.Collectors;
 
 public class CubaDateField extends com.vaadin.ui.DateField implements Action.Container {
 
-    /**
-     * Keeps track of the Actions added to this component, and manages the
-     * painting and handling as well.
-     */
-//    protected ActionManager shortcutsManager;
-
     protected String dateString;
 
     public CubaDateField() {
@@ -139,39 +133,6 @@ public class CubaDateField extends com.vaadin.ui.DateField implements Action.Con
             setValue(reconstructDateFromFields(getState().resolutions, getValue()), true);
         }
     }
-
-    // VAADIN8: gg, do we need this method?
-    /*@Override
-    public void paintContent(PaintTarget target) throws PaintException {
-        super.paintContent(target);
-
-        if (shortcutsManager != null) {
-            shortcutsManager.paintActions(null, target);
-        }
-    }*/
-
-    // VAADIN8: gg, do we need this method?
-    /*@Override
-    protected ActionManager getActionManager() {
-        if (shortcutsManager == null) {
-            shortcutsManager = new ActionManager(this);
-        }
-        return shortcutsManager;
-    }*/
-
-    // VAADIN8: gg, do we need this method?
-    /*@Override
-    public Registration addShortcutListener(ShortcutListener listener) {
-        Objects.requireNonNull(listener, "Listener must not be null.");
-        getActionManager().addAction(listener);
-        return () -> getActionManager().removeAction(listener);
-    }*/
-
-    // VAADIN8: gg, remove?
-    /*@Override
-    public void removeShortcutListener(ShortcutListener listener) {
-        getActionManager().removeAction(listener);
-    }*/
 
     @Override
     public void addActionHandler(Action.Handler actionHandler) {
