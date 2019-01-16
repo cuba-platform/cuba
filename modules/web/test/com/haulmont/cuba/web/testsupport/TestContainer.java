@@ -20,7 +20,6 @@ import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.LoggerContext;
 import com.haulmont.cuba.core.app.ConfigStorageService;
 import com.haulmont.cuba.core.app.DataService;
-import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.ClientType;
 import com.haulmont.cuba.core.global.Events;
 import com.haulmont.cuba.core.sys.AbstractAppContextLoader;
@@ -253,7 +252,7 @@ public class TestContainer extends ExternalResource {
         springAppContext = new CubaClassPathXmlApplicationContext(locations.toArray(new String[0]));
         AppContext.Internals.setApplicationContext(springAppContext);
 
-        Events events = AppBeans.get(Events.NAME);
+        Events events = springAppContext.getBean(Events.NAME, Events.class);
         events.publish(new AppContextInitializedEvent(springAppContext));
     }
 
