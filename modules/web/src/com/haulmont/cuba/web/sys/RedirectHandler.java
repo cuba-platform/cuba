@@ -20,12 +20,12 @@ import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.core.global.Events;
 import com.haulmont.cuba.gui.components.RootWindow;
 import com.haulmont.cuba.gui.config.WindowConfig;
+import com.haulmont.cuba.gui.navigation.NavigationState;
 import com.haulmont.cuba.gui.sys.RouteDefinition;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.app.ui.navigation.notfoundwindow.NotFoundScreen;
 import com.haulmont.cuba.web.gui.UrlHandlingMode;
-import com.haulmont.cuba.gui.navigation.NavigationState;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -34,7 +34,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 
@@ -86,7 +86,7 @@ public class RedirectHandler {
             return;
         }
 
-        Map<String, String> params = new HashMap<>();
+        Map<String, String> params = new LinkedHashMap<>();
         params.put(REDIRECT_PARAM, nestedRoute);
 
         if (redirect.getParams() != null) {

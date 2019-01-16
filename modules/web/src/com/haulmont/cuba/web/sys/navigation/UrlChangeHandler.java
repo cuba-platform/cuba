@@ -45,6 +45,7 @@ import com.haulmont.cuba.web.sys.RedirectHandler;
 import com.haulmont.cuba.web.sys.navigation.accessfilter.NavigationFilter;
 import com.haulmont.cuba.web.sys.navigation.accessfilter.NavigationFilter.AccessCheckResult;
 import com.vaadin.server.Page;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -349,10 +350,14 @@ public class UrlChangeHandler {
         }
 
         String screenRoute = windowConfig.findRoute(windowInfo.getId());
+
         if (StringUtils.isNotEmpty(screenRoute)
                 && requestedState.getNestedRoute().endsWith(screenRoute)) {
-            UiControllerUtils.fireEvent(screen, UrlParamsChangedEvent.class,
-                    new UrlParamsChangedEvent(screen, requestedState.getParams()));
+
+            if (MapUtils.isNotEmpty(requestedState.getParams())) {
+                UiControllerUtils.fireEvent(screen, UrlParamsChangedEvent.class,
+                        new UrlParamsChangedEvent(screen, requestedState.getParams()));
+            }
 
             ((WebWindow) screen.getWindow()).setResolvedState(requestedState);
         }
@@ -420,7 +425,7 @@ public class UrlChangeHandler {
         }
 
         Class<?> idType = metaClass.getPropertyNN("id").getJavaType();
-        Object id = UrlTools.deserializeId(idType, idParam);
+        Object id = UrlIdSerializer.deserializeId(idType, idParam);
 
         LoadContext<?> ctx = new LoadContext(metaClass);
         ctx.setId(id);

@@ -31,6 +31,7 @@ import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.gui.UrlHandlingMode;
 import com.haulmont.cuba.web.gui.WebWindow;
 import com.haulmont.cuba.gui.navigation.NavigationState;
+import com.haulmont.cuba.web.sys.navigation.UrlIdSerializer;
 import com.haulmont.cuba.web.sys.navigation.UrlTools;
 import com.vaadin.server.Page;
 import org.apache.commons.collections4.MapUtils;
@@ -100,10 +101,6 @@ public class WebUrlRouting implements UrlRouting {
         NavigationState currentState = getState();
         NavigationState newState = buildNavState(screen, urlParams);
 
-        if (complexRouteNavigation(currentState, newState)) {
-            return;
-        }
-
         // do not push copy-pasted requested state to avoid double state pushing into browser history
         if (!pushState || externalNavigation(currentState, newState)) {
             UrlTools.replaceState(newState.asRoute());
@@ -115,6 +112,8 @@ public class WebUrlRouting implements UrlRouting {
 
         if (pushState) {
             ui.getHistory().forward(newState);
+        } else {
+            ui.getHistory().replace(newState);
         }
     }
 
@@ -233,9 +232,11 @@ public class WebUrlRouting implements UrlRouting {
 
         if (isEditor(screen)) {
             Object entityId = ((EditorScreen) screen).getEditedEntity().getId();
-            String base64Id = UrlTools.serializeId(entityId);
-            if (base64Id != null && !"".equals(base64Id)) {
-                params.put("id", base64Id);
+            if (entityId != null) {
+                String serializedId = UrlIdSerializer.serializeId(entityId);
+                if (!"".equals(serializedId)) {
+                    params.put("id", serializedId);
+                }
             }
         }
 
@@ -291,17 +292,6 @@ public class WebUrlRouting implements UrlRouting {
     protected String getStateMark(Screen screen) {
         WebWindow window = (WebWindow) screen.getWindow();
         return String.valueOf(window.getUrlStateMark());
-    }
-
-    protected boolean complexRouteNavigation(NavigationState currentState, NavigationState newState) {
-        if (currentState == null
-                || newState == null
-                || currentState.getNestedRoute() == null
-                || !currentState.getNestedRoute().contains("/")) {
-            return false;
-        }
-
-        return !currentState.getNestedRoute().endsWith(newState.getNestedRoute());
     }
 
     protected boolean externalNavigation(NavigationState currentState, NavigationState newState) {

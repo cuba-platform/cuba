@@ -83,4 +83,14 @@ public interface History {
      * @return true if history has an entry, false otherwise
      */
     boolean has(NavigationState navigationState);
+
+    /**
+     * Replaces current state by the new one.
+     * <p>
+     * This operation is allowed when only params are changed.
+     *
+     * @param navigationState new state
+     * @return true if old state is replaced, false otherwise
+     */
+    boolean replace(NavigationState navigationState);
 }

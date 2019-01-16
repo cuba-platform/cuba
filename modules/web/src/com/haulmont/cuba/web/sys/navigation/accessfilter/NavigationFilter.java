@@ -36,7 +36,7 @@ public interface NavigationFilter {
     int LOWEST_PLATFORM_PRECEDENCE = 1000;
 
     /**
-     * Checks whether {@code fromState} to {@code toState} transition is allowed or not.
+     * Checks whether {@code fromState} to {@code toState} navigation is allowed or not.
      *
      * @param fromState from state
      * @param toState   to state
@@ -59,11 +59,7 @@ public interface NavigationFilter {
         }
 
         public static AccessCheckResult allowed() {
-            return allowed("");
-        }
-
-        public static AccessCheckResult allowed(String msg) {
-            return new AccessCheckResult(true, msg);
+            return new AccessCheckResult(true, "");
         }
 
         public static AccessCheckResult rejected() {

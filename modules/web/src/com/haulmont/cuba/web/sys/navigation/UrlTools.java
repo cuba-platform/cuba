@@ -16,16 +16,14 @@
 
 package com.haulmont.cuba.web.sys.navigation;
 
-import com.haulmont.bali.util.URLEncodeUtils;
 import com.haulmont.cuba.gui.navigation.NavigationState;
 import com.vaadin.server.Page;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Nullable;
-import java.nio.ByteBuffer;
-import java.util.*;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -48,73 +46,6 @@ public class UrlTools {
             "^(?:(?:\\w+=[-a-zA-Z0-9_/+%]+)?|\\w+=[-a-zA-Z0-9_/+%]+(?:&\\w+=[-a-zA-Z0-9_/+%]+)+)$";
     protected static final Pattern PARAMS_PATTERN = Pattern.compile(PARAMS_REGEX);
 
-    @Nullable
-    public static String serializeId(Object id) {
-        if (id == null) {
-            return null;
-        }
-
-        String serialized = null;
-        Class<?> idClass = id.getClass();
-
-        if (String.class == idClass || Integer.class == idClass || Long.class == idClass) {
-            serialized = URLEncodeUtils.encodeUtf8(id.toString());
-
-        } else if (UUID.class == idClass) {
-            try {
-                byte[] bytes = ByteBuffer.allocate(Long.BYTES * 2)
-                        .putLong(((UUID) id).getMostSignificantBits())
-                        .putLong(((UUID) id).getLeastSignificantBits())
-                        .array();
-
-                String encoded = Base64.getEncoder().withoutPadding()
-                        .encodeToString(bytes);
-
-                serialized = URLEncodeUtils.encodeUtf8(encoded);
-            } catch (Exception e) {
-                log.info("An error occurred while serializing UUID id: {}", id, e);
-            }
-        } else {
-            log.info("Unable to serialize id '{}' of type '{}'", id, idClass);
-        }
-
-        return serialized;
-    }
-
-    @Nullable
-    public static Object deserializeId(Class idClass, String base64Id) {
-        if (idClass == null || StringUtils.isEmpty(base64Id)) {
-            return null;
-        }
-
-        Object deserialized = null;
-        String decoded = URLEncodeUtils.decodeUtf8(base64Id);
-
-        try {
-            if (String.class == idClass) {
-                deserialized = decoded;
-
-            } else if (Integer.class == idClass) {
-                deserialized = Integer.valueOf(decoded);
-
-            } else if (Long.class == idClass) {
-                deserialized = Long.valueOf(decoded);
-
-            } else if (UUID.class == idClass) {
-                byte[] bytes = Base64.getDecoder().decode(decoded);
-                ByteBuffer bb = ByteBuffer.wrap(bytes);
-                deserialized = new UUID(bb.getLong(), bb.getLong());
-
-            } else {
-                log.info("Unable to deserialize base64 id '{}' of type '{}'", base64Id, idClass);
-            }
-        } catch (Exception e) {
-            log.info("An error occurred while deserializing base64 id: '{}' of type '{}'", base64Id, idClass, e);
-        }
-
-        return deserialized;
-    }
-
     public static void pushState(String navigationState) {
         checkNotEmptyString(navigationState, "Unable to push empty navigation state");
 
@@ -124,10 +55,6 @@ public class UrlTools {
         }
 
         Page.getCurrent().setUriFragment(navigationState, false);
-
-        // TODO: get rid of this hack with Crockford Base32 encoding
-        // replace state with the same route to ignore redundant URL encoding inside of java.net.URI
-        replaceState(navigationState);
     }
 
     public static void replaceState(String navigationState) {
@@ -157,7 +84,7 @@ public class UrlTools {
         }
 
         if (navigationState == null) {
-            log.info("Unable to determine navigation state for the given fragment: \"{}\"", uriFragment);
+            log.debug("Unable to determine navigation state for the given fragment: \"{}\"", uriFragment);
             return NavigationState.EMPTY;
         }
 

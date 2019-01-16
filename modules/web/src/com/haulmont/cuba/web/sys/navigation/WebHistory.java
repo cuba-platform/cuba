@@ -143,9 +143,36 @@ public class WebHistory implements History {
 
     @Override
     public boolean has(NavigationState navigationState) {
+        if (checkNotNativeUrlHandlingMode()) {
+            return false;
+        }
+
         Preconditions.checkNotNullArgument(navigationState);
 
         return history.contains(navigationState);
+    }
+
+    @Override
+    public boolean replace(NavigationState navigationState) {
+        if (checkNotNativeUrlHandlingMode()) {
+            return false;
+        }
+
+        Preconditions.checkNotNullArgument(navigationState);
+
+        NavigationState currentState = history.get(now);
+
+        if (!Objects.equals(currentState.getRoot(), navigationState.getRoot())
+                || !Objects.equals(currentState.getStateMark(), navigationState.getStateMark())
+                || !Objects.equals(currentState.getNestedRoute(), navigationState.getNestedRoute())) {
+            log.debug("It's allowed to replace state in history when only params are changed");
+
+            return false;
+        }
+
+        history.set(now, navigationState);
+
+        return true;
     }
 
     protected void dropFutureEntries() {
