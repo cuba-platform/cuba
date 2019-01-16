@@ -283,11 +283,11 @@ public class EntityLogBrowser extends AbstractWindow {
             if (metadata.getExtendedEntities().getExtendedClass(metaClass) == null) {
                 MetaClass originalMetaClass = metadata.getExtendedEntities().getOriginalOrThisMetaClass(metaClass);
                 String originalName = originalMetaClass.getName();
-                Class javaClass = metaClass.getJavaClass();
+                Class javaClass = originalMetaClass.getJavaClass();
                 if (metadata.getTools().hasCompositePrimaryKey(metaClass) && !HasUuid.class.isAssignableFrom(javaClass)) {
                     continue;
                 }
-                String caption = messages.getMessage(javaClass, javaClass.getSimpleName()) + " (" + metaClass.getName() + ")";
+                String caption = messages.getMessage(javaClass, javaClass.getSimpleName()) + " (" + originalName + ")";
                 options.put(caption, originalName);
             }
         }
