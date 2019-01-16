@@ -56,10 +56,14 @@ public abstract class StandardEditor<T extends Entity> extends Screen implements
     private boolean justLocked = false;
     private boolean readOnly = false;
 
+    // whether user has edited entity after screen opening
+    private boolean entityModified = false;
+
     protected StandardEditor() {
         addInitListener(this::initActions);
         addBeforeShowListener(this::beforeShow);
         addBeforeCloseListener(this::beforeClose);
+        addAfterShowListener(this::afterShow);
     }
 
     protected void initActions(@SuppressWarnings("unused") InitEvent event) {
@@ -99,8 +103,28 @@ public abstract class StandardEditor<T extends Entity> extends Screen implements
         setupLock();
     }
 
+    private void afterShow(@SuppressWarnings("unused") AfterShowEvent event) {
+        setupModifiedTracking();
+    }
+
     private void beforeClose(BeforeCloseEvent event) {
         preventUnsavedChanges(event);
+    }
+
+    protected void setupModifiedTracking() {
+        DataContext dataContext = getScreenData().getDataContext();
+        if (dataContext != null) {
+            dataContext.addChangeListener(this::editedEntityModified);
+            dataContext.addPostCommitListener(this::editedEntityCommitted);
+        }
+    }
+
+    protected void editedEntityModified(@SuppressWarnings("unused") DataContext.ChangeEvent event) {
+        setEntityModified(true);
+    }
+
+    protected void editedEntityCommitted(@SuppressWarnings("unused") DataContext.PostCommitEvent event) {
+        setEntityModified(false);
     }
 
     protected void preventUnsavedChanges(BeforeCloseEvent event) {
@@ -123,7 +147,7 @@ public abstract class StandardEditor<T extends Entity> extends Screen implements
                     .onCancel(result::fail);
             } else {
                 screenValidation.showUnsavedChangesDialog(this, action)
-                        .onDiscard(() -> result.resolveWith(closeWithCommit()))
+                        .onDiscard(() -> result.resolveWith(closeWithDiscard()))
                         .onCancel(result::fail);
             }
 
@@ -216,7 +240,7 @@ public abstract class StandardEditor<T extends Entity> extends Screen implements
     }
 
     protected void releaseLock() {
-        if (justLocked) {
+        if (isLocked()) {
             Entity entity = getEditedEntityContainer().getItemOrNull();
             if (entity != null) {
                 getBeanLocator().get(LockService.class).unlock(getLockName(), entity.getId().toString());
@@ -341,13 +365,18 @@ public abstract class StandardEditor<T extends Entity> extends Screen implements
 
     @Override
     public boolean hasUnsavedChanges() {
-        if (readOnly) {
+        if (isReadOnly()) {
             return false;
         }
 
-        return getScreenData().getDataContext().hasChanges();
+        return isEntityModified() && getScreenData().getDataContext().hasChanges();
     }
 
+    /**
+     * Validates screen and commits data context.
+     *
+     * @return operation result
+     */
     protected OperationResult commitChanges() {
         ValidationErrors validationErrors = validateScreen();
         if (!validationErrors.isEmpty()) {
@@ -367,6 +396,27 @@ public abstract class StandardEditor<T extends Entity> extends Screen implements
         return justLocked;
     }
 
+    protected void setEntityModified(boolean entityModified) {
+        this.entityModified = entityModified;
+    }
+
+    /**
+     * @return true if user has edited entity after screen opening
+     */
+    protected boolean isEntityModified() {
+        return entityModified;
+    }
+
+    /**
+     * @return true if the editor switched to read-only mode because the entity is locked by another user
+     */
+    protected boolean isReadOnly() {
+        return readOnly;
+    }
+
+    /**
+     * @return true if cross-field validation is enabled
+     */
     protected boolean isCrossFieldValidate() {
         return crossFieldValidate;
     }

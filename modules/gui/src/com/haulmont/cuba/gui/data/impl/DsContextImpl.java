@@ -48,10 +48,6 @@ public class DsContextImpl implements DsContextImplementation {
 
     protected Metadata metadata;
 
-    // TODO implement ContextListeners
-//    private Map<String, Collection<Datasource>> contextListeners =
-//            new HashMap<String, Collection<Datasource>>();
-
     protected List<LazyTask> lazyTasks = new ArrayList<>();
 
     protected List<BeforeCommitListener> beforeCommitListeners; // lazily initialized list
@@ -80,7 +76,7 @@ public class DsContextImpl implements DsContextImplementation {
 
     @Override
     public void resumeSuspended() {
-        LinkedList<CollectionDatasource.Suspendable> list = new LinkedList<>();
+        List<CollectionDatasource.Suspendable> list = new ArrayList<>();
 
         addDsContextToResume(this, list);
 
@@ -89,7 +85,7 @@ public class DsContextImpl implements DsContextImplementation {
         }
     }
 
-    protected void addDsContextToResume(DsContext dsContext, LinkedList<CollectionDatasource.Suspendable> list) {
+    protected void addDsContextToResume(DsContext dsContext, List<CollectionDatasource.Suspendable> list) {
         for (Datasource datasource : dsContext.getAll()) {
             if (datasource instanceof CollectionDatasource.Suspendable) {
                 addDatasourceToResume(list, datasource);
@@ -100,7 +96,7 @@ public class DsContextImpl implements DsContextImplementation {
         }
     }
 
-    protected void addDatasourceToResume(LinkedList<CollectionDatasource.Suspendable> list, Datasource datasource) {
+    protected void addDatasourceToResume(List<CollectionDatasource.Suspendable> list, Datasource datasource) {
         if (list.contains(datasource)) {
             return;
         }
@@ -123,31 +119,6 @@ public class DsContextImpl implements DsContextImplementation {
     @Override
     public void setFrameContext(FrameContext windowContext) {
         this.windowContext = windowContext;
-        // TODO implement ContextListeners
-//        for (Map.Entry<String, Collection<Datasource>> entry : contextListeners.entrySet()) {
-//            final String property = entry.getKey();
-//            final Object value = windowContext.getValue(property);
-//
-//            if (value != null) {
-//                final Collection<Datasource> datasources = entry.getValue();
-//                for (Datasource datasource : datasources) {
-//                    datasource.setItem((Entity) value);
-//                }
-//            }
-//        }
-//
-//        windowContext.addValueListener(new ValueListener() {
-//            public void valueChanged(Object source, String property, Object prevValue, Object value) {
-//                for (Map.Entry<String, Collection<Datasource>> entry : contextListeners.entrySet()) {
-//                    if (entry.getKey().equals(property)) {
-//                        final Collection<Datasource> datasources = entry.getValue();
-//                        for (Datasource datasource : datasources) {
-//                            datasource.setItem((Entity) value);
-//                        }
-//                    }
-//                }
-//            }
-//        });
     }
 
     @Override
@@ -216,7 +187,7 @@ public class DsContextImpl implements DsContextImplementation {
 
     protected void notifyAllDsCommited(DataSupplier dataservice, Set<Entity> committedEntities) {
         // Notify all datasources in context
-        List<Datasource> datasources = new LinkedList<>();
+        List<Datasource> datasources = new ArrayList<>();
         for (DsContext childDsContext : children) {
             for (Datasource ds : childDsContext.getAll()) {
                 if (Objects.equals(ds.getDataSupplier(), dataservice)
@@ -270,7 +241,7 @@ public class DsContextImpl implements DsContextImplementation {
 
         for (Datasource<Entity> datasource : commitData.get(dataservice)) {
             if (datasource instanceof DatasourceImplementation) {
-                final DatasourceImplementation<Entity> implementation = (DatasourceImplementation) datasource;
+                DatasourceImplementation<Entity> implementation = (DatasourceImplementation) datasource;
 
                 boolean listenersEnabled = implementation.enableListeners(false);
                 try {
@@ -390,7 +361,7 @@ public class DsContextImpl implements DsContextImplementation {
         }
         datasources.addAll(datasourceMap.values());
 
-        final Map<DataSupplier, Collection<Datasource<Entity>>> commitDatasources = new HashMap<>();
+        Map<DataSupplier, Collection<Datasource<Entity>>> commitDatasources = new HashMap<>();
 
         for (Datasource datasource : datasources) {
             if (Datasource.CommitMode.DATASTORE == datasource.getCommitMode() &&
@@ -410,7 +381,7 @@ public class DsContextImpl implements DsContextImplementation {
     }
 
     @Override
-    public void registerDependency(final Datasource datasource, final Datasource dependFrom, final String propertyName) {
+    public void registerDependency(Datasource datasource, Datasource dependFrom, String propertyName) {
         Datasource ds = dependencies.get(datasource);
         if (ds != null) {
             if (ds.equals(dependFrom)) {
@@ -596,17 +567,6 @@ public class DsContextImpl implements DsContextImplementation {
 
     @Override
     public void registerListener(ParameterInfo item, Datasource datasource) {
-        // TODO implement ContextListeners
-//        if (ParametersHelper.ParameterInfo.Type.PARAM.equals(item.getType())) {
-//            Collection<Datasource> collection = contextListeners.get(item.getPath());
-//            if (collection == null) {
-//                collection = new ArrayList<Datasource>();
-//                contextListeners.put(item.getPath(), collection);
-//            }
-//            collection.add(datasource);
-//        } else {
-//            throw new UnsupportedOperationException();
-//        }
     }
 
     @Override

@@ -51,7 +51,7 @@ public class DataContextImpl implements DataContext {
 
     private static final Logger log = LoggerFactory.getLogger(DataContextImpl.class);
 
-    private ApplicationContext applicationContext;
+    protected ApplicationContext applicationContext;
 
     protected EventHub events = new EventHub();
 
@@ -100,8 +100,9 @@ public class DataContextImpl implements DataContext {
     @Override
     public void setParent(DataContext parentContext) {
         checkNotNullArgument(parentContext, "parentContext is null");
-        if (!(parentContext instanceof DataContextImpl))
+        if (!(parentContext instanceof DataContextImpl)) {
             throw new IllegalArgumentException("Unsupported DataContext type: " + parentContext.getClass().getName());
+        }
         this.parentContext = (DataContextImpl) parentContext;
     }
 
@@ -119,8 +120,9 @@ public class DataContextImpl implements DataContext {
     @Nullable
     public <T extends Entity<K>, K> T find(Class<T> entityClass, K entityId) {
         Map<Object, Entity> entityMap = content.get(entityClass);
-        if (entityMap != null)
+        if (entityMap != null) {
             return (T) entityMap.get(entityId);
+        }
         return null;
     }
 

@@ -30,6 +30,9 @@ public interface OperationResult {
         return SuccessOperationResult.INSTANCE;
     }
 
+    /**
+     * @return status of the operation
+     */
     Status getStatus();
 
     /**

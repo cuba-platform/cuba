@@ -30,6 +30,7 @@ public interface DsContextImplementation extends DsContext {
 
     void register(Datasource datasource);
     void unregister(Datasource datasource);
+    @Deprecated
     void registerListener(ParameterInfo item, Datasource datasource);
 
     interface LazyTask {
