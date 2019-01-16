@@ -152,7 +152,7 @@ class EntityLogDatatypesTest extends AbstractEntityLogTest {
 
         then:
 
-        List<EntityLogItem> logItems = getEntityLogItems('test$IntIdentityEntity', intIdentityEntity)
+        List<EntityLogItem> logItems = getEntityLogItems('test$IntIdentityEntity', intIdentityEntity.id.get())
         EntityLogItem logItem = logItems.first()
 
         logItems.size() == 2
