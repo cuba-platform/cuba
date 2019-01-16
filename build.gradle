@@ -640,6 +640,25 @@ configure(webModule) {
         testRuntime(bom['javax.servlet:javax.servlet-api'])
     }
 
+    test {
+        exclude 'com/haulmont/cuba/web/test/ds/api/consistency/WebCheckBoxDsTest/**'
+        exclude 'com/haulmont/cuba/web/test/ui/**'
+    }
+
+    task testUiComponents(type: Test) {
+        maxHeapSize = '256m'
+        systemProperties = [
+                'jdk.attach.allowAttachSelf' : 'true'
+        ]
+
+        if (System.getProperty('logback.configurationFile')) {
+            systemProperty 'logback.configurationFile', System.getProperty('logback.configurationFile')
+        }
+
+        include 'com/haulmont/cuba/web/test/ds/api/consistency/WebCheckBoxDsTest/**'
+        include 'com/haulmont/cuba/web/test/ui/**'
+    }
+
     entitiesEnhancing {
         main {
             enabled = true
