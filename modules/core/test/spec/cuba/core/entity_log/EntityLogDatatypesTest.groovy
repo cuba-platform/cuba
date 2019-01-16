@@ -23,6 +23,7 @@ import com.haulmont.cuba.core.entity.BaseDbGeneratedIdEntity
 import com.haulmont.cuba.core.entity.Entity
 import com.haulmont.cuba.core.global.AppBeans
 import com.haulmont.cuba.security.app.EntityAttributeChanges
+import com.haulmont.cuba.security.entity.EntityLogItem
 import com.haulmont.cuba.testmodel.primary_keys.IdentityEntity
 import com.haulmont.cuba.testmodel.primary_keys.IntIdentityEntity
 import com.haulmont.cuba.testmodel.primary_keys.StringKeyEntity
@@ -151,8 +152,11 @@ class EntityLogDatatypesTest extends AbstractEntityLogTest {
 
         then:
 
-        def logItem = getLatestEntityLogItem('test$IntIdentityEntity', intIdentityEntity)
+        List<EntityLogItem> logItems = getEntityLogItems('test$IntIdentityEntity', intIdentityEntity)
+        EntityLogItem logItem = logItems.first()
 
+        logItems.size() == 2
+        logItem.type == EntityLogItem.Type.MODIFY
         loggedValueMatches(logItem, 'name', 'test2')
         loggedOldValueMatches(logItem, 'name', 'test1')
 
