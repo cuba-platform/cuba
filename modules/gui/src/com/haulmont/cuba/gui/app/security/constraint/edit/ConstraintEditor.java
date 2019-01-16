@@ -180,6 +180,11 @@ public class ConstraintEditor extends AbstractEditor<Constraint> {
         } else {
             type.setEnabled(true);
         }
+
+        if (!item.getCheckType().database()) {
+            item.setJoinClause(null);
+            item.setWhereClause(null);
+        }
     }
 
     protected boolean isUnavailableInSecurityConstraints(MetaClass metaClass) {
