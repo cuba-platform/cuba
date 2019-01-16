@@ -381,7 +381,7 @@ public class WebDialogWindow extends WebWindow implements DialogWindow, Initiali
                 setDialogHeight(height + sizeUnit.getSymbol());
             } else {
                 if (height != null) {
-                    setDialogWidth(height + "px");
+                    setDialogHeight(height + "px");
                 }
             }
 
