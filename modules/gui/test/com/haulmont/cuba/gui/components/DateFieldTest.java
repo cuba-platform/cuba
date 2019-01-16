@@ -33,19 +33,20 @@ import java.util.function.Consumer;
 
 import static org.junit.Assert.*;
 
+@SuppressWarnings("unchecked")
 @Ignore
 public class DateFieldTest extends AbstractComponentTestCase {
 
     @Test
     public void testNew() {
-        Component component = factory.createComponent(DateField.NAME);
+        Component component = uiComponents.create(DateField.NAME);
         assertNotNull(component);
         assertTrue(component instanceof DateField);
     }
 
     @Test
     public void testGetSetValue() throws ParseException {
-        DateField component = factory.createComponent(DateField.class);
+        DateField component = uiComponents.create(DateField.class);
 
         assertNull(component.getValue());
 
@@ -57,7 +58,7 @@ public class DateFieldTest extends AbstractComponentTestCase {
 
     @Test
     public void testSetToReadonly() throws ParseException {
-        DateField component = factory.createComponent(DateField.class);
+        DateField component = uiComponents.create(DateField.class);
 
         component.setEditable(false);
         assertFalse(component.isEditable());
@@ -71,7 +72,7 @@ public class DateFieldTest extends AbstractComponentTestCase {
 
     @Test
     public void testSetToReadonlyFromValueListener() throws ParseException {
-        DateField component = factory.createComponent(DateField.class);
+        DateField component = uiComponents.create(DateField.class);
 
         assertTrue(component.isEditable());
 
@@ -86,7 +87,7 @@ public class DateFieldTest extends AbstractComponentTestCase {
 
     @Test
     public void testDatasource() throws ParseException {
-        DateField component = factory.createComponent(DateField.class);
+        DateField component = uiComponents.create(DateField.class);
 
         //noinspection unchecked
         Datasource<User> testDs = new DsBuilder()
@@ -118,7 +119,7 @@ public class DateFieldTest extends AbstractComponentTestCase {
 
     @Test
     public void testValueChangeListener() throws ParseException {
-        DateField component = factory.createComponent(DateField.class);
+        DateField component = uiComponents.create(DateField.class);
 
         AtomicInteger counter = new AtomicInteger(0);
 

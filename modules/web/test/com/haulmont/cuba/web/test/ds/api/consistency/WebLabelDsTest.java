@@ -17,22 +17,18 @@
 package com.haulmont.cuba.web.test.ds.api.consistency;
 
 import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.ds.api.consistency.LabelDsTest;
-import com.haulmont.cuba.web.gui.WebComponentsFactory;
+import com.haulmont.cuba.web.gui.components.WebLabel;
+import com.haulmont.cuba.web.test.stubs.TestUiComponents;
 import com.vaadin.server.VaadinSession;
-import mockit.Mocked;
 import mockit.Expectations;
-import org.junit.Ignore;
+import mockit.Mocked;
 
-@Ignore
 public class WebLabelDsTest extends LabelDsTest {
 
     @Mocked
-    protected  VaadinSession vaadinSession;
-
-    public WebLabelDsTest() {
-        factory = new WebComponentsFactory();
-    }
+    protected VaadinSession vaadinSession;
 
     @Override
     protected void initExpectations() {
@@ -44,5 +40,15 @@ public class WebLabelDsTest extends LabelDsTest {
                 AppContext.getProperty("cuba.mainMessagePack"); result = "com.haulmont.cuba.web"; minTimes = 0;
             }
         };
+        uiComponents = new TestUiComponents(applicationContext);
+    }
+
+    @Override
+    protected void autowireUiComponent(Component component) {
+        super.autowireUiComponent(component);
+
+        WebLabel label = (WebLabel) component;
+        label.setBeanLocator(beanLocator);
+        label.setMetadataTools(metadata.getTools());
     }
 }

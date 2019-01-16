@@ -33,12 +33,13 @@ import java.util.function.Consumer;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+@SuppressWarnings("unchecked")
 @Ignore
 public class LookupFieldDsTest extends DsApiConsistencyTestCase {
 
     @Test
     public void testUnsubscribeComponentListener() {
-        LookupField lookupField = factory.createComponent(LookupField.class);
+        LookupField lookupField = uiComponents.create(LookupField.class);
 
         CollectionDatasource<Group, UUID> groupsDs = getTestCollectionDatasource();
         lookupField.setOptionsDatasource(groupsDs);
@@ -62,7 +63,7 @@ public class LookupFieldDsTest extends DsApiConsistencyTestCase {
 
     @Test
     public void testUnsubscribeDsListener() {
-        LookupField lookupField = factory.createComponent(LookupField.class);
+        LookupField lookupField = uiComponents.create(LookupField.class);
 
         CollectionDatasource<Group, UUID> groupsDs = getTestCollectionDatasource();
         lookupField.setOptionsDatasource(groupsDs);
@@ -85,7 +86,7 @@ public class LookupFieldDsTest extends DsApiConsistencyTestCase {
 
     @Test
     public void testOptionsDsUnsubscribe() {
-        LookupField lookupField = factory.createComponent(LookupField.class);
+        LookupField lookupField = uiComponents.create(LookupField.class);
 
         CollectionDatasource<Group, UUID> groupsDs = getTestCollectionDatasource();
         lookupField.setOptionsDatasource(groupsDs);
@@ -107,9 +108,8 @@ public class LookupFieldDsTest extends DsApiConsistencyTestCase {
 
     @Test
     public void testSetValueWithoutOptions() {
-        LookupField lookupField = (LookupField) factory.createComponent(LookupField.NAME);
+        LookupField lookupField = uiComponents.create(LookupField.NAME);
 
-        // noinspection unchecked
         Datasource<User> userDs = getTestUserDatasource();
 
         User user = userDs.getItem();
@@ -121,7 +121,7 @@ public class LookupFieldDsTest extends DsApiConsistencyTestCase {
 
     @Test
     public void testValueChangeListener() {
-        LookupField lookupField = factory.createComponent(LookupField.class);
+        LookupField lookupField = uiComponents.create(LookupField.class);
 
         CollectionDatasource<Group, UUID> groupsDs = getTestCollectionDatasource();
         lookupField.setOptionsDatasource(groupsDs);
@@ -136,12 +136,12 @@ public class LookupFieldDsTest extends DsApiConsistencyTestCase {
         lookupField.addValueChangeListener(listener);
 
         lookupField.setDatasource(userDs, "group");
-        assertEquals(true, valueWasChanged[0]);
+        assertTrue(valueWasChanged[0]);
     }
 
     @Test
     public void testUnsubscribeSubscribeComponentListener() {
-        LookupField lookupField = factory.createComponent(LookupField.class);
+        LookupField lookupField = uiComponents.create(LookupField.class);
 
         CollectionDatasource<Group, UUID> groupsDs = getTestCollectionDatasource();
         lookupField.setOptionsDatasource(groupsDs);
@@ -164,7 +164,7 @@ public class LookupFieldDsTest extends DsApiConsistencyTestCase {
         lookupField.addValueChangeListener(listener);
 
         user.setGroup(metadata.create(Group.class));
-        assertEquals(true, valueWasChanged[0]);
+        assertTrue(valueWasChanged[0]);
 
         // reset state
 
@@ -177,12 +177,12 @@ public class LookupFieldDsTest extends DsApiConsistencyTestCase {
 
         lookupField.addValueChangeListener(listener);
         lookupField.setDatasource(userDs, "group");
-        assertEquals(true, valueWasChanged[0]);
+        assertTrue(valueWasChanged[0]);
     }
 
     @Test
     public void testUnsubscribeSubscribeDsListener() {
-        LookupField lookupField = factory.createComponent(LookupField.class);
+        LookupField lookupField = uiComponents.create(LookupField.class);
 
         CollectionDatasource<Group, UUID> groupsDs = getTestCollectionDatasource();
         lookupField.setOptionsDatasource(groupsDs);
@@ -202,12 +202,12 @@ public class LookupFieldDsTest extends DsApiConsistencyTestCase {
 
         lookupField.setDatasource(userDs, "group");
         lookupField.setValue(null);
-        assertEquals(true, valueWasChanged[0]);
+        assertTrue(valueWasChanged[0]);
     }
 
     @Test
     public void testUnsubscribeSubscribeOptions() {
-        LookupField lookupField = factory.createComponent(LookupField.class);
+        LookupField lookupField = uiComponents.create(LookupField.class);
 
         CollectionDatasource<Group, UUID> groupsDs = getTestCollectionDatasource();
         lookupField.setOptionsDatasource(groupsDs);
@@ -234,12 +234,12 @@ public class LookupFieldDsTest extends DsApiConsistencyTestCase {
         lookupField.setOptionsDatasource(groupsDs);
 
         lookupField.setValue(groups.get(2));
-        assertEquals(true, valueWasChanged[0]);
+        assertTrue(valueWasChanged[0]);
     }
 
     @Test
     public void testDatasourceRepeatableAssign() {
-        LookupField lookupField = (LookupField) factory.createComponent(LookupField.NAME);
+        LookupField lookupField = uiComponents.create(LookupField.NAME);
 
         lookupField.setDatasource(null, null);
         lookupField.setDatasource(null, null);

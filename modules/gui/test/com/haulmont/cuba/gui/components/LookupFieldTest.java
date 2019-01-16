@@ -62,14 +62,14 @@ public class LookupFieldTest extends AbstractComponentTestCase {
 
     @Test
     public void testNew() {
-        Component component = factory.createComponent(LookupField.NAME);
+        Component component = uiComponents.create(LookupField.NAME);
         assertNotNull(component);
         assertTrue(component instanceof LookupField);
     }
 
     @Test
     public void testGetSetValue() {
-        LookupField component = factory.createComponent(LookupField.class);
+        LookupField component = uiComponents.create(LookupField.class);
 
         assertNull(component.getValue());
 
@@ -81,7 +81,7 @@ public class LookupFieldTest extends AbstractComponentTestCase {
 
     @Test
     public void testSetToReadonly() {
-        LookupField component = factory.createComponent(LookupField.class);
+        LookupField component = uiComponents.create(LookupField.class);
 
         component.setEditable(false);
         assertFalse(component.isEditable());
@@ -95,7 +95,7 @@ public class LookupFieldTest extends AbstractComponentTestCase {
 
     @Test
     public void testSetToReadonlyFromValueListener() {
-        final LookupField component = factory.createComponent(LookupField.class);
+        final LookupField component = uiComponents.create(LookupField.class);
 
         assertTrue(component.isEditable());
 
@@ -109,7 +109,7 @@ public class LookupFieldTest extends AbstractComponentTestCase {
 
     @Test
     public void testDatasource() {
-        LookupField component = factory.createComponent(LookupField.class);
+        LookupField component = uiComponents.create(LookupField.class);
 
         //noinspection unchecked
         Datasource<User> testDs = new DsBuilder()
@@ -163,7 +163,7 @@ public class LookupFieldTest extends AbstractComponentTestCase {
 
     @Test
     public void testValueChangeListener() {
-        LookupField component = factory.createComponent(LookupField.class);
+        LookupField component = uiComponents.create(LookupField.class);
 
         final AtomicInteger counter = new AtomicInteger(0);
 
@@ -245,7 +245,7 @@ public class LookupFieldTest extends AbstractComponentTestCase {
 
     @Test
     public void testValueLoadFromOptions() {
-        LookupField component = factory.createComponent(LookupField.class);
+        LookupField component = uiComponents.create(LookupField.class);
 
         //noinspection unchecked
         Datasource<User> testDs = new DsBuilder()
@@ -281,7 +281,7 @@ public class LookupFieldTest extends AbstractComponentTestCase {
 
         component.setDatasource(testDs, "group");
 
-        assertTrue("Value should be from options ds", g1 == component.getValue());
+        assertTrue("Value should be from value ds", g == component.getValue());
 
         component.setValue(g2);
 

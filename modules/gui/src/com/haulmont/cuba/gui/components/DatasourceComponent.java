@@ -26,15 +26,14 @@ import com.haulmont.cuba.gui.data.Datasource;
 
 /**
  * A component that represents data from one property of a datasource.
- * vaadin8
  */
 @Deprecated
 public interface DatasourceComponent<V> extends Component, HasValue<V>, HasValueSource<V> {
 
     /**
-     * vaadin8
-     *
      * @return datasource instance
+     *
+     * @deprecated Use {@link #getValueSource()} instead
      */
     @Deprecated
     default Datasource getDatasource() {
@@ -44,10 +43,8 @@ public interface DatasourceComponent<V> extends Component, HasValue<V>, HasValue
     }
 
     /**
-     * vaadin8
-     *
      * @return datasource property
-     * @deprecated Use {@link #getMetaPropertyPath()}
+     * @deprecated Use {@link #getValueSource()} instead
      */
     @Deprecated
     default MetaProperty getMetaProperty() {
@@ -62,9 +59,9 @@ public interface DatasourceComponent<V> extends Component, HasValue<V>, HasValue
     }
 
     /**
-     * vaadin8
-     *
      * @return datasource property path
+     *
+     * @deprecated Use {@link #getValueSource()} instead
      */
     @Deprecated
     default MetaPropertyPath getMetaPropertyPath() {
@@ -80,12 +77,16 @@ public interface DatasourceComponent<V> extends Component, HasValue<V>, HasValue
 
     /**
      * Set datasource and its property.
-     * <p>
-     * vaadin8
+     *
+     * @deprecated Use {@link #setValueSource(ValueSource)} instead
      */
     @SuppressWarnings("unchecked")
     @Deprecated
     default void setDatasource(Datasource datasource, String property) {
+        if (datasource == null && property != null) {
+            throw new IllegalArgumentException("datasource is null");
+        }
+
         if (datasource != null) {
             this.setValueSource(new DatasourceValueSource(datasource, property));
         } else {

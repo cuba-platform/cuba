@@ -22,7 +22,6 @@ import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.app.dynamicattributes.PropertyType;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
-import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.gui.components.OptionsList;
 import com.haulmont.cuba.gui.components.data.Options;
@@ -36,7 +35,6 @@ import com.haulmont.cuba.gui.model.CollectionContainer;
 import com.haulmont.cuba.web.widgets.CubaListSelect;
 import com.vaadin.v7.data.util.IndexedContainer;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.context.ApplicationContext;
 
 import javax.inject.Inject;
 import java.util.*;
@@ -48,13 +46,10 @@ public class WebOptionsList<V, I> extends WebAbstractField<CubaListSelect, V>
         implements OptionsList<V, I>, InitializingBean {
 
     protected MetadataTools metadataTools;
-    protected ApplicationContext applicationContext;
 
     protected OptionsBinding<I> optionsBinding;
 
     protected Function<? super I, String> optionCaptionProvider;
-
-    protected String captionProperty;
 
     @SuppressWarnings("unchecked")
     public WebOptionsList() {
@@ -66,7 +61,7 @@ public class WebOptionsList<V, I> extends WebAbstractField<CubaListSelect, V>
     }
 
     @Override
-    public void afterPropertiesSet() throws Exception {
+    public void afterPropertiesSet() {
         initComponent(component);
     }
 
@@ -105,11 +100,6 @@ public class WebOptionsList<V, I> extends WebAbstractField<CubaListSelect, V>
     @Inject
     public void setMetadataTools(MetadataTools metadataTools) {
         this.metadataTools = metadataTools;
-    }
-
-    @Inject
-    public void setApplicationContext(ApplicationContext applicationContext) {
-        this.applicationContext = applicationContext;
     }
 
     @Override
@@ -223,7 +213,7 @@ public class WebOptionsList<V, I> extends WebAbstractField<CubaListSelect, V>
         }
 
         if (options != null) {
-            OptionsBinder optionsBinder = applicationContext.getBean(OptionsBinder.NAME, OptionsBinder.class);
+            OptionsBinder optionsBinder = beanLocator.get(OptionsBinder.NAME, OptionsBinder.class);
             this.optionsBinding = optionsBinder.bind(options, this, this::setItemsToPresentation);
             this.optionsBinding.activate();
         }
@@ -300,10 +290,6 @@ public class WebOptionsList<V, I> extends WebAbstractField<CubaListSelect, V>
     @Override
     public void setTabIndex(int tabIndex) {
         component.setTabIndex(tabIndex);
-    }
-
-    protected String generateOptionPropertyCaption(I item) {
-        return ((Entity) item).getValueEx(captionProperty);
     }
 
     protected boolean isCollectionValuesChanged(Collection<I> value, Collection<I> oldValue) {

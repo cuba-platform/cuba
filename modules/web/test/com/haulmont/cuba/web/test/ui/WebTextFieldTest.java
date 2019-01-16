@@ -19,16 +19,16 @@ package com.haulmont.cuba.web.test.ui;
 
 import com.google.common.collect.ImmutableMap;
 import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.TextFieldTest;
-import com.haulmont.cuba.web.gui.WebComponentsFactory;
+import com.haulmont.cuba.web.gui.components.WebTextField;
+import com.haulmont.cuba.web.test.stubs.TestUiComponents;
 import com.vaadin.server.VaadinSession;
-import mockit.Mocked;
 import mockit.Expectations;
-import org.junit.Ignore;
+import mockit.Mocked;
 
 import java.util.Locale;
 
-@Ignore
 public class WebTextFieldTest extends TextFieldTest {
 
     @Mocked
@@ -48,6 +48,15 @@ public class WebTextFieldTest extends TextFieldTest {
             }
         };
 
-        factory = new WebComponentsFactory();
+        this.uiComponents = new TestUiComponents(applicationContext);
+    }
+
+    @Override
+    protected void autowireUiComponent(Component component) {
+        super.autowireUiComponent(component);
+
+        WebTextField textField = (WebTextField) component;
+        textField.setUserSessionSource(userSessionSource);
+        textField.setBeanLocator(beanLocator);
     }
 }

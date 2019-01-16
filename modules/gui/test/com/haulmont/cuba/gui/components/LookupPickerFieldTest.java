@@ -26,12 +26,11 @@ import com.haulmont.cuba.gui.data.DsBuilder;
 import com.haulmont.cuba.gui.data.impl.DatasourceImpl;
 import com.haulmont.cuba.security.entity.Group;
 import com.haulmont.cuba.security.entity.User;
-import mockit.Mocked;
 import mockit.Expectations;
+import mockit.Mocked;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -39,6 +38,7 @@ import java.util.function.Consumer;
 
 import static org.junit.Assert.*;
 
+@SuppressWarnings("unchecked")
 @Ignore
 public class LookupPickerFieldTest extends AbstractComponentTestCase {
 
@@ -64,54 +64,75 @@ public class LookupPickerFieldTest extends AbstractComponentTestCase {
 
     @Test
     public void testNew() {
-        Component component = factory.createComponent(LookupPickerField.NAME);
+        Component component = uiComponents.create(LookupPickerField.NAME);
         assertNotNull(component);
         assertTrue(component instanceof LookupPickerField);
     }
 
     @Test
     public void testGetSetValue() {
-        LookupPickerField component = factory.createComponent(LookupPickerField.class);
+        LookupPickerField component = uiComponents.create(LookupPickerField.class);
 
         assertNull(component.getValue());
 
-        component.setOptionsList(new ArrayList<>(Arrays.asList("One", "Two", "Three")));
-        component.setValue("One");
+        User one = new User();
+        one.setLogin("one");
+        User two = new User();
+        two.setLogin("two");
+        User three = new User();
+        three.setLogin("three");
 
-        assertEquals("One", component.getValue());
+        component.setOptionsList(Arrays.asList(one, two, three));
+        component.setValue(one);
+
+        assertEquals(one, component.getValue());
     }
 
     @Test
     public void testSetToReadonly() {
-        LookupPickerField component = factory.createComponent(LookupPickerField.class);
+        LookupPickerField component = uiComponents.create(LookupPickerField.class);
 
         component.setEditable(false);
         assertFalse(component.isEditable());
 
-        component.setOptionsList(new ArrayList<>(Arrays.asList("One", "Two", "Three")));
-        component.setValue("One");
+        User one = new User();
+        one.setLogin("one");
+        User two = new User();
+        two.setLogin("two");
+        User three = new User();
+        three.setLogin("three");
 
-        assertEquals("One", component.getValue());
+        component.setOptionsList(Arrays.asList(one, two, three));
+        component.setValue(one);
+
+        assertEquals(one, component.getValue());
         assertFalse(component.isEditable());
     }
 
     @Test
     public void testSetToReadonlyFromValueListener() {
-        final LookupPickerField component = factory.createComponent(LookupPickerField.class);
+        LookupPickerField component = uiComponents.create(LookupPickerField.class);
 
         assertTrue(component.isEditable());
 
-        component.setOptionsList(new ArrayList<>(Arrays.asList("One", "Two", "Three")));
-        component.addValueChangeListener(e -> component.setEditable(false));
-        component.setValue("One");
+        User one = new User();
+        one.setLogin("one");
+        User two = new User();
+        two.setLogin("two");
+        User three = new User();
+        three.setLogin("three");
 
-        assertEquals("One", component.getValue());
+        component.setOptionsList(Arrays.asList(one, two, three));
+        component.addValueChangeListener(e -> component.setEditable(false));
+        component.setValue(one);
+
+        assertEquals(one, component.getValue());
         assertFalse(component.isEditable());
     }
 
     @Test
     public void testDatasource() {
-        LookupPickerField component = factory.createComponent(LookupPickerField.class);
+        LookupPickerField component = uiComponents.create(LookupPickerField.class);
 
         //noinspection unchecked
         Datasource<User> testDs = new DsBuilder()
@@ -165,7 +186,7 @@ public class LookupPickerFieldTest extends AbstractComponentTestCase {
 
     @Test
     public void testValueChangeListener() {
-        LookupPickerField component = factory.createComponent(LookupPickerField.class);
+        LookupPickerField component = uiComponents.create(LookupPickerField.class);
 
         final AtomicInteger counter = new AtomicInteger(0);
 
@@ -247,7 +268,7 @@ public class LookupPickerFieldTest extends AbstractComponentTestCase {
 
     @Test
     public void testValueLoadFromOptions() {
-        LookupPickerField component = factory.createComponent(LookupPickerField.class);
+        LookupPickerField component = uiComponents.create(LookupPickerField.class);
 
         //noinspection unchecked
         Datasource<User> testDs = new DsBuilder()
@@ -283,7 +304,7 @@ public class LookupPickerFieldTest extends AbstractComponentTestCase {
 
         component.setDatasource(testDs, "group");
 
-        assertTrue("Value should be from options ds", g1 == component.getValue());
+        assertSame("Value should be from options ds", g, component.getValue());
 
         component.setValue(g2);
 

@@ -29,12 +29,13 @@ import java.util.function.Consumer;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+@SuppressWarnings("unchecked")
 @Ignore
 public class DatePickerDsTest extends DsApiConsistencyTestCase {
 
     @Test
     public void testUnsubscribeComponentListener() {
-        DatePicker datePicker = (DatePicker) factory.createComponent(DatePicker.NAME);
+        DatePicker datePicker = uiComponents.create(DatePicker.NAME);
 
         Datasource<User> userDs = getTestUserDatasource();
         User user = userDs.getItem();
@@ -57,7 +58,7 @@ public class DatePickerDsTest extends DsApiConsistencyTestCase {
 
     @Test
     public void testUnsubscribeDsListener() {
-        DatePicker datePicker = (DatePicker) factory.createComponent(DatePicker.NAME);
+        DatePicker datePicker = uiComponents.create(DatePicker.NAME);
 
         Datasource<User> userDs = getTestUserDatasource();
         User user = userDs.getItem();
@@ -79,7 +80,7 @@ public class DatePickerDsTest extends DsApiConsistencyTestCase {
 
     @Test
     public void testUnsubscribeSubscribeComponentListener() {
-        DatePicker datePicker = (DatePicker) factory.createComponent(DatePicker.NAME);
+        DatePicker datePicker = uiComponents.create(DatePicker.NAME);
 
         Datasource<User> userDs = getTestUserDatasource();
         User user = userDs.getItem();
@@ -119,7 +120,7 @@ public class DatePickerDsTest extends DsApiConsistencyTestCase {
 
     @Test
     public void testUnsubscribeSubscribeDsListener() {
-        DatePicker datePicker = (DatePicker) factory.createComponent(DatePicker.NAME);
+        DatePicker datePicker = uiComponents.create(DatePicker.NAME);
 
         Datasource<User> userDs = getTestUserDatasource();
         User user = userDs.getItem();
@@ -145,7 +146,7 @@ public class DatePickerDsTest extends DsApiConsistencyTestCase {
 
     @Test
     public void testValueChangeListener() {
-        DatePicker datePicker = (DatePicker) factory.createComponent(DatePicker.NAME);
+        DatePicker datePicker = uiComponents.create(DatePicker.NAME);
 
         Datasource<User> userDs = getTestUserDatasource();
         User user = userDs.getItem();
@@ -174,7 +175,7 @@ public class DatePickerDsTest extends DsApiConsistencyTestCase {
 
     @Test
     public void testDatasourceRepeatableAssign() {
-        DatePicker datePicker = (DatePicker) factory.createComponent(DatePicker.NAME);
+        DatePicker datePicker = uiComponents.create(DatePicker.NAME);
 
         datePicker.setDatasource(null, null);
         datePicker.setDatasource(null, null);

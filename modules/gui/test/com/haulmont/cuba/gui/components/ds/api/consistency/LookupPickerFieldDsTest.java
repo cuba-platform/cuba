@@ -30,16 +30,14 @@ import java.util.List;
 import java.util.UUID;
 import java.util.function.Consumer;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @Ignore
 public class LookupPickerFieldDsTest extends DsApiConsistencyTestCase {
 
     @Test
     public void testUnsubscribeComponentListener() {
-        LookupPickerField component = (LookupPickerField) factory.createComponent(LookupPickerField.NAME);
+        LookupPickerField component = uiComponents.create(LookupPickerField.NAME);
 
         CollectionDatasource<Group, UUID> groupsDs = getTestCollectionDatasource();
         component.setOptionsDatasource(groupsDs);
@@ -64,7 +62,7 @@ public class LookupPickerFieldDsTest extends DsApiConsistencyTestCase {
 
     @Test
     public void testUnsubscribeDsListener() {
-        LookupPickerField component = (LookupPickerField) factory.createComponent(LookupPickerField.NAME);
+        LookupPickerField component = uiComponents.create(LookupPickerField.NAME);
 
         CollectionDatasource<Group, UUID> groupsDs = getTestCollectionDatasource();
         component.setOptionsDatasource(groupsDs);
@@ -88,7 +86,7 @@ public class LookupPickerFieldDsTest extends DsApiConsistencyTestCase {
 
     @Test
     public void testOptionsDsUnsubscribe() {
-        LookupPickerField component = (LookupPickerField) factory.createComponent(LookupPickerField.NAME);
+        LookupPickerField component = uiComponents.create(LookupPickerField.NAME);
 
         CollectionDatasource<Group, UUID> groupsDs = getTestCollectionDatasource();
         component.setOptionsDatasource(groupsDs);
@@ -113,7 +111,7 @@ public class LookupPickerFieldDsTest extends DsApiConsistencyTestCase {
 
     @Test
     public void testSetValueWithoutOptions() {
-        LookupPickerField component = (LookupPickerField) factory.createComponent(LookupPickerField.NAME);
+        LookupPickerField component = uiComponents.create(LookupPickerField.NAME);
 
         Datasource<User> userDs = getTestUserDatasource();
 
@@ -129,7 +127,7 @@ public class LookupPickerFieldDsTest extends DsApiConsistencyTestCase {
 
     @Test
     public void testValueChangeListener() {
-        LookupPickerField component = (LookupPickerField) factory.createComponent(LookupPickerField.NAME);
+        LookupPickerField component = uiComponents.create(LookupPickerField.NAME);
 
         CollectionDatasource<Group, UUID> groupsDs = getTestCollectionDatasource();
         component.setOptionsDatasource(groupsDs);
@@ -163,7 +161,7 @@ public class LookupPickerFieldDsTest extends DsApiConsistencyTestCase {
 
     @Test
     public void testUnsubscribeSubscribeComponentListener() {
-        LookupPickerField component = (LookupPickerField) factory.createComponent(LookupPickerField.NAME);
+        LookupPickerField component = uiComponents.create(LookupPickerField.NAME);
 
         CollectionDatasource<Group, UUID> groupsDs = getTestCollectionDatasource();
         component.setOptionsDatasource(groupsDs);
@@ -203,7 +201,7 @@ public class LookupPickerFieldDsTest extends DsApiConsistencyTestCase {
 
     @Test
     public void testUnsubscribeSubscribeDsListener() {
-        LookupPickerField component = (LookupPickerField) factory.createComponent(LookupPickerField.NAME);
+        LookupPickerField component = uiComponents.create(LookupPickerField.NAME);
 
         CollectionDatasource<Group, UUID> groupsDs = getTestCollectionDatasource();
         component.setOptionsDatasource(groupsDs);
@@ -229,7 +227,7 @@ public class LookupPickerFieldDsTest extends DsApiConsistencyTestCase {
 
     @Test
     public void testUnsubscribeSubscribeOptions() {
-        LookupPickerField component = (LookupPickerField) factory.createComponent(LookupPickerField.NAME);
+        LookupPickerField component = uiComponents.create(LookupPickerField.NAME);
 
         CollectionDatasource<Group, UUID> groupsDs = getTestCollectionDatasource();
         component.setOptionsDatasource(groupsDs);
@@ -265,7 +263,7 @@ public class LookupPickerFieldDsTest extends DsApiConsistencyTestCase {
 
     @Test
     public void testDatasourceRepeatableAssign() {
-        LookupPickerField component = (LookupPickerField) factory.createComponent(LookupPickerField.NAME);
+        LookupPickerField component = uiComponents.create(LookupPickerField.NAME);
 
         component.setDatasource(null, null);
         component.setDatasource(null, null);

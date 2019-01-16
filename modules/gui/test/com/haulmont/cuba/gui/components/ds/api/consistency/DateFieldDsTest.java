@@ -29,12 +29,13 @@ import java.util.function.Consumer;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+@SuppressWarnings("unchecked")
 @Ignore
 public class DateFieldDsTest extends DsApiConsistencyTestCase {
 
     @Test
     public void testUnsubscribeComponentListener() {
-        DateField dateField = (DateField) factory.createComponent(DateField.NAME);
+        DateField dateField = uiComponents.create(DateField.NAME);
 
         Datasource<User> userDs = getTestUserDatasource();
         User user = userDs.getItem();
@@ -58,7 +59,7 @@ public class DateFieldDsTest extends DsApiConsistencyTestCase {
 
     @Test
     public void testUnsubscribeDsListener() {
-        DateField dateField = (DateField) factory.createComponent(DateField.NAME);
+        DateField dateField = uiComponents.create(DateField.NAME);
 
         Datasource<User> userDs = getTestUserDatasource();
         User user = userDs.getItem();
@@ -80,7 +81,7 @@ public class DateFieldDsTest extends DsApiConsistencyTestCase {
 
     @Test
     public void testUnsubscribeSubscribeComponentListener() {
-        DateField dateField = (DateField) factory.createComponent(DateField.NAME);
+        DateField dateField = uiComponents.create(DateField.NAME);
 
         Datasource<User> userDs = getTestUserDatasource();
         User user = userDs.getItem();
@@ -122,7 +123,7 @@ public class DateFieldDsTest extends DsApiConsistencyTestCase {
 
     @Test
     public void testUnsubscribeSubscribeDsListener() {
-        DateField dateField = (DateField) factory.createComponent(DateField.NAME);
+        DateField dateField = uiComponents.create(DateField.NAME);
 
         Datasource<User> userDs = getTestUserDatasource();
         User user = userDs.getItem();
@@ -148,7 +149,7 @@ public class DateFieldDsTest extends DsApiConsistencyTestCase {
 
     @Test
     public void testValueChangeListener() {
-        DateField dateField = (DateField) factory.createComponent(DateField.NAME);
+        DateField dateField = uiComponents.create(DateField.NAME);
 
         Datasource<User> userDs = getTestUserDatasource();
         User user = userDs.getItem();
@@ -177,7 +178,7 @@ public class DateFieldDsTest extends DsApiConsistencyTestCase {
 
     @Test
     public void testDatasourceRepeatableAssign() {
-        DateField dateField = (DateField) factory.createComponent(DateField.NAME);
+        DateField dateField = uiComponents.create(DateField.NAME);
 
         dateField.setDatasource(null, null);
         dateField.setDatasource(null, null);

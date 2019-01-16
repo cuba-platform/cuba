@@ -18,26 +18,21 @@ package com.haulmont.cuba.web.test.ds.api.consistency;
 
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.ds.api.consistency.LookupPickerFieldDsTest;
-import com.haulmont.cuba.web.gui.WebComponentsFactory;
-import com.vaadin.v7.data.util.converter.DefaultConverterFactory;
+import com.haulmont.cuba.web.gui.components.WebLookupPickerField;
+import com.haulmont.cuba.web.test.stubs.TestUiComponents;
 import com.vaadin.server.VaadinSession;
-import mockit.Mocked;
+import com.vaadin.v7.data.util.converter.DefaultConverterFactory;
 import mockit.Expectations;
-import org.junit.Ignore;
+import mockit.Mocked;
 
-@Ignore
 public class WebLookupPickerFieldDsTest extends LookupPickerFieldDsTest {
 
     @Mocked
     protected VaadinSession vaadinSession;
-
     @Mocked
     protected ClientConfig clientConfig;
-
-    public WebLookupPickerFieldDsTest() {
-        factory = new WebComponentsFactory();
-    }
 
     @Override
     protected void initExpectations() {
@@ -52,5 +47,15 @@ public class WebLookupPickerFieldDsTest extends LookupPickerFieldDsTest {
                 clientConfig.getPickerShortcutModifiers(); result = "CTRL-ALT"; minTimes = 0;
             }
         };
+        this.uiComponents = new TestUiComponents(applicationContext);
+    }
+
+    @Override
+    protected void autowireUiComponent(Component component) {
+        super.autowireUiComponent(component);
+
+        WebLookupPickerField lookupPickerField = (WebLookupPickerField) component;
+        lookupPickerField.setBeanLocator(beanLocator);
+        lookupPickerField.setMetadataTools(metadata.getTools());
     }
 }

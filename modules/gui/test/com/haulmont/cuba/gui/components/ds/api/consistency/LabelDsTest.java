@@ -27,12 +27,13 @@ import java.util.function.Consumer;
 
 import static org.junit.Assert.*;
 
+@SuppressWarnings("unchecked")
 @Ignore
 public class LabelDsTest extends DsApiConsistencyTestCase {
 
     @Test
     public void testUnsubscribeComponentListener() {
-        Label label = (Label) factory.createComponent(Label.NAME);
+        Label label = uiComponents.create(Label.NAME);
 
         Datasource<User> userDs = getTestUserDatasource();
         User user = userDs.getItem();
@@ -54,7 +55,7 @@ public class LabelDsTest extends DsApiConsistencyTestCase {
 
     @Test
     public void testUnsubscribeDsListener() {
-        Label label = (Label) factory.createComponent(Label.NAME);
+        Label label = uiComponents.create(Label.NAME);
 
         Datasource<User> userDs = getTestUserDatasource();
         User user = userDs.getItem();
@@ -76,7 +77,7 @@ public class LabelDsTest extends DsApiConsistencyTestCase {
 
     @Test
     public void testValueChangeListener() {
-        Label label = (Label) factory.createComponent(Label.NAME);
+        Label label = uiComponents.create(Label.NAME);
 
         Datasource<User> userDs = getTestUserDatasource();
         User user = userDs.getItem();
@@ -106,7 +107,7 @@ public class LabelDsTest extends DsApiConsistencyTestCase {
 
     @Test
     public void testUnsubscribeSubscribeComponentListener() {
-        Label label = (Label) factory.createComponent(Label.NAME);
+        Label label = uiComponents.create(Label.NAME);
 
         Datasource<User> userDs = getTestUserDatasource();
         User user = userDs.getItem();
@@ -142,7 +143,7 @@ public class LabelDsTest extends DsApiConsistencyTestCase {
 
     @Test
     public void testUnsubscribeSubscribeDsListener() {
-        Label label = (Label) factory.createComponent(Label.NAME);
+        Label label = uiComponents.create(Label.NAME);
 
         Datasource<User> userDs = getTestUserDatasource();
         User user = userDs.getItem();
@@ -163,7 +164,7 @@ public class LabelDsTest extends DsApiConsistencyTestCase {
 
     @Test
     public void testDatasourceRepeatableAssign() {
-        Label label = (Label) factory.createComponent(Label.NAME);
+        Label label = uiComponents.create(Label.NAME);
 
         label.setDatasource(null, null);
         label.setDatasource(null, null);

@@ -90,12 +90,12 @@ public class WebLookupField<V> extends WebV8AbstractField<CubaComboBox<V>, V, V>
     }
 
     @Inject
-    protected void setMetadataTools(MetadataTools metadataTools) {
+    public void setMetadataTools(MetadataTools metadataTools) {
         this.metadataTools = metadataTools;
     }
 
     @Inject
-    protected void setIconResolver(IconResolver iconResolver) {
+    public void setIconResolver(IconResolver iconResolver) {
         this.iconResolver = iconResolver;
     }
 

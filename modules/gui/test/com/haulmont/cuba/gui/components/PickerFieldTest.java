@@ -33,6 +33,7 @@ import java.util.function.Consumer;
 
 import static org.junit.Assert.*;
 
+@SuppressWarnings("unchecked")
 @Ignore
 public class PickerFieldTest extends AbstractComponentTestCase {
 
@@ -49,21 +50,21 @@ public class PickerFieldTest extends AbstractComponentTestCase {
 
     @Test
     public void testNew() {
-        Component component = factory.createComponent(PickerField.NAME);
+        Component component = uiComponents.create(PickerField.NAME);
         assertNotNull(component);
         assertTrue(component instanceof PickerField);
     }
 
     @Test
     public void testGetSetValue() {
-        PickerField component = factory.createComponent(PickerField.class);
+        PickerField component = uiComponents.create(PickerField.class);
 
         assertNull(component.getValue());
 
         boolean thrown = false;
         try {
             component.setValue("One");
-        } catch (IllegalStateException e) {
+        } catch (ClassCastException e) {
             thrown = true;
         }
         assertTrue(thrown);
@@ -81,7 +82,7 @@ public class PickerFieldTest extends AbstractComponentTestCase {
 
     @Test
     public void testSetToReadonly() {
-        PickerField component = factory.createComponent(PickerField.class);
+        PickerField component = uiComponents.create(PickerField.class);
 
         component.setEditable(false);
         component.setMetaClass(metadata.getClass(User.class));
@@ -97,7 +98,7 @@ public class PickerFieldTest extends AbstractComponentTestCase {
 
     @Test
     public void testSetToReadonlyFromValueListener() {
-        final PickerField component = factory.createComponent(PickerField.class);
+        final PickerField component = uiComponents.create(PickerField.class);
 
         component.setMetaClass(metadata.getClass(User.class));
         assertTrue(component.isEditable());
@@ -114,7 +115,7 @@ public class PickerFieldTest extends AbstractComponentTestCase {
 
     @Test
     public void testDatasource() {
-        PickerField component = factory.createComponent(PickerField.class);
+        PickerField component = uiComponents.create(PickerField.class);
 
         //noinspection unchecked
         Datasource<User> testDs = new DsBuilder()
@@ -148,7 +149,7 @@ public class PickerFieldTest extends AbstractComponentTestCase {
 
     @Test
     public void testValueChangeListener() {
-        PickerField component = factory.createComponent(PickerField.class);
+        PickerField component = uiComponents.create(PickerField.class);
 
         final AtomicInteger counter = new AtomicInteger(0);
 

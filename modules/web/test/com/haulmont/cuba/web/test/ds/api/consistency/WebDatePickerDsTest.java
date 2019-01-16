@@ -17,20 +17,17 @@
 package com.haulmont.cuba.web.test.ds.api.consistency;
 
 import com.google.common.collect.ImmutableMap;
+import com.haulmont.cuba.core.global.DateTimeTransformations;
 import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.ds.api.consistency.DatePickerDsTest;
-import com.haulmont.cuba.web.gui.WebComponentsFactory;
+import com.haulmont.cuba.web.gui.components.WebDatePicker;
+import com.haulmont.cuba.web.test.stubs.TestUiComponents;
 import mockit.Expectations;
-import org.junit.Ignore;
 
 import java.util.Locale;
 
-@Ignore
 public class WebDatePickerDsTest extends DatePickerDsTest {
-
-    public WebDatePickerDsTest() {
-        factory = new WebComponentsFactory();
-    }
 
     @Override
     protected void initExpectations() {
@@ -42,5 +39,16 @@ public class WebDatePickerDsTest extends DatePickerDsTest {
                 AppContext.getProperty("cuba.mainMessagePack"); result = "com.haulmont.cuba.web"; minTimes = 0;
             }
         };
+
+        uiComponents = new TestUiComponents(applicationContext);
+    }
+
+    @Override
+    protected void autowireUiComponent(Component component) {
+        super.autowireUiComponent(component);
+
+        WebDatePicker datePicker = (WebDatePicker) component;
+        datePicker.setBeanLocator(beanLocator);
+        datePicker.setDateTimeTransformations(new DateTimeTransformations());
     }
 }

@@ -27,8 +27,8 @@ import com.haulmont.cuba.gui.data.DsBuilder;
 import com.haulmont.cuba.gui.data.impl.DatasourceImpl;
 import com.haulmont.cuba.security.entity.Group;
 import com.haulmont.cuba.security.entity.User;
-import mockit.Mocked;
 import mockit.Expectations;
+import mockit.Mocked;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -40,6 +40,7 @@ import java.util.function.Consumer;
 
 import static org.junit.Assert.*;
 
+@SuppressWarnings("unchecked")
 @Ignore
 public class OptionsGroupTest extends AbstractComponentTestCase {
     @Mocked
@@ -62,14 +63,14 @@ public class OptionsGroupTest extends AbstractComponentTestCase {
 
     @Test
     public void testNew() {
-        Component component = factory.createComponent(OptionsGroup.NAME);
+        Component component = uiComponents.create(OptionsGroup.NAME);
         assertNotNull(component);
         assertTrue(component instanceof OptionsGroup);
     }
 
     @Test
     public void testGetSetValue() {
-        OptionsGroup component = factory.createComponent(OptionsGroup.class);
+        OptionsGroup component = uiComponents.create(OptionsGroup.class);
 
         assertNull(component.getValue());
 
@@ -81,7 +82,7 @@ public class OptionsGroupTest extends AbstractComponentTestCase {
 
     @Test
     public void testSetToReadonly() {
-        OptionsGroup component = factory.createComponent(OptionsGroup.class);
+        OptionsGroup component = uiComponents.create(OptionsGroup.class);
 
         component.setEditable(false);
         assertFalse(component.isEditable());
@@ -95,7 +96,7 @@ public class OptionsGroupTest extends AbstractComponentTestCase {
 
     @Test
     public void testSetToReadonlyFromValueListener() {
-        final OptionsGroup component = factory.createComponent(OptionsGroup.class);
+        final OptionsGroup component = uiComponents.create(OptionsGroup.class);
 
         assertTrue(component.isEditable());
 
@@ -110,7 +111,7 @@ public class OptionsGroupTest extends AbstractComponentTestCase {
 
     @Test
     public void testDatasource() {
-        OptionsGroup component = factory.createComponent(OptionsGroup.class);
+        OptionsGroup component = uiComponents.create(OptionsGroup.class);
 
         //noinspection unchecked
         Datasource<User> testDs = new DsBuilder()
@@ -130,7 +131,7 @@ public class OptionsGroupTest extends AbstractComponentTestCase {
 
     @Test
     public void testOptionsDatasource() {
-        OptionsGroup component = factory.createComponent(OptionsGroup.class);
+        OptionsGroup component = uiComponents.create(OptionsGroup.class);
 
         //noinspection unchecked
         Datasource<User> testDs = new DsBuilder()
@@ -181,7 +182,7 @@ public class OptionsGroupTest extends AbstractComponentTestCase {
 
     @Test
     public void testValueChangeListener() {
-        OptionsGroup component = factory.createComponent(OptionsGroup.class);
+        OptionsGroup component = uiComponents.create(OptionsGroup.class);
 
         final AtomicInteger counter = new AtomicInteger(0);
 

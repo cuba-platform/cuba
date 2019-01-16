@@ -29,7 +29,6 @@ import org.springframework.context.annotation.Scope;
 
 import java.util.stream.Stream;
 
-@Scope(BeanDefinition.SCOPE_PROTOTYPE)
 @org.springframework.stereotype.Component(OptionsBinder.NAME)
 public class OptionsBinder {
 

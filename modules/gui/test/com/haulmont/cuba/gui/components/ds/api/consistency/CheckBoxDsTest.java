@@ -27,12 +27,13 @@ import java.util.function.Consumer;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+@SuppressWarnings("unchecked")
 @Ignore
 public class CheckBoxDsTest extends DsApiConsistencyTestCase {
 
     @Test
     public void testUnsubscribeComponentListener() {
-        CheckBox checkBox = factory.createComponent(CheckBox.NAME);
+        CheckBox checkBox = uiComponents.create(CheckBox.NAME);
 
         Datasource<User> userDs = getTestUserDatasource();
         User user = userDs.getItem();
@@ -53,7 +54,7 @@ public class CheckBoxDsTest extends DsApiConsistencyTestCase {
 
     @Test
     public void testUnsubscribeDsListener() {
-        CheckBox checkBox = factory.createComponent(CheckBox.NAME);
+        CheckBox checkBox = uiComponents.create(CheckBox.NAME);
 
         Datasource<User> userDs = getTestUserDatasource();
         User user = userDs.getItem();
@@ -74,7 +75,7 @@ public class CheckBoxDsTest extends DsApiConsistencyTestCase {
 
     @Test
     public void testUnsubscribeSubscribeComponentListener() {
-        CheckBox checkBox = factory.createComponent(CheckBox.NAME);
+        CheckBox checkBox = uiComponents.create(CheckBox.NAME);
 
         Datasource<User> userDs = getTestUserDatasource();
         User user = userDs.getItem();
@@ -112,7 +113,7 @@ public class CheckBoxDsTest extends DsApiConsistencyTestCase {
 
     @Test
     public void testUnsubscribeSubscribeDsListener() {
-        CheckBox checkBox = (CheckBox) factory.createComponent(CheckBox.NAME);
+        CheckBox checkBox = uiComponents.create(CheckBox.NAME);
 
         Datasource<User> userDs = getTestUserDatasource();
         User user = userDs.getItem();
@@ -135,7 +136,7 @@ public class CheckBoxDsTest extends DsApiConsistencyTestCase {
 
     @Test
     public void testValueChangeListener() {
-        CheckBox checkBox = factory.createComponent(CheckBox.NAME);
+        CheckBox checkBox = uiComponents.create(CheckBox.NAME);
 
         Datasource<User> userDs = getTestUserDatasource();
         User user = userDs.getItem();
@@ -164,7 +165,7 @@ public class CheckBoxDsTest extends DsApiConsistencyTestCase {
 
     @Test
     public void testDatasourceRepeatableAssign() {
-        CheckBox checkBox = factory.createComponent(CheckBox.NAME);
+        CheckBox checkBox = uiComponents.create(CheckBox.NAME);
 
         checkBox.setDatasource(null, null);
         checkBox.setDatasource(null, null);

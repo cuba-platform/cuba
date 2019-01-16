@@ -17,21 +17,20 @@
 package com.haulmont.cuba.web.test.ds.api.consistency;
 
 import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.ds.api.consistency.TextFieldDsTest;
-import com.haulmont.cuba.web.gui.WebComponentsFactory;
+import com.haulmont.cuba.web.gui.components.WebTextField;
+import com.haulmont.cuba.web.test.stubs.TestUiComponents;
 import com.vaadin.server.VaadinSession;
-import mockit.Mocked;
 import mockit.Expectations;
-import org.junit.Ignore;
+import mockit.Mocked;
 
-@Ignore
 public class WebTextFieldDsTest extends TextFieldDsTest {
 
     @Mocked
     protected VaadinSession vaadinSession;
 
     public WebTextFieldDsTest() {
-        factory = new WebComponentsFactory();
     }
 
     @Override
@@ -43,5 +42,16 @@ public class WebTextFieldDsTest extends TextFieldDsTest {
                 AppContext.getProperty("cuba.mainMessagePack"); result = "com.haulmont.cuba.web"; minTimes = 0;
             }
         };
+
+        this.uiComponents = new TestUiComponents(applicationContext);
+    }
+
+    @Override
+    protected void autowireUiComponent(Component component) {
+        super.autowireUiComponent(component);
+
+        WebTextField textField = (WebTextField) component;
+        textField.setUserSessionSource(userSessionSource);
+        textField.setBeanLocator(beanLocator);
     }
 }

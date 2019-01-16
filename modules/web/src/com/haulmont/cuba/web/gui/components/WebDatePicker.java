@@ -36,7 +36,6 @@ import java.util.Date;
 
 public class WebDatePicker<V> extends WebV8AbstractField<InlineDateField, LocalDate, V> implements DatePicker<V> {
 
-    @Inject
     protected DateTimeTransformations dateTimeTransformations;
 
     protected Resolution resolution = Resolution.DAY;
@@ -48,6 +47,11 @@ public class WebDatePicker<V> extends WebV8AbstractField<InlineDateField, LocalD
         this.component = new CubaDatePicker();
 
         attachValueChangeListener(component);
+    }
+
+    @Inject
+    public void setDateTimeTransformations(DateTimeTransformations dateTimeTransformations) {
+        this.dateTimeTransformations = dateTimeTransformations;
     }
 
     @Inject

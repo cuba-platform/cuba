@@ -28,12 +28,13 @@ import java.util.function.Consumer;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+@SuppressWarnings("unchecked")
 @Ignore
 public class TextFieldDsTest extends DsApiConsistencyTestCase {
 
     @Test
     public void testUnsubscribeComponentListener() {
-        TextField textField = (TextField) factory.createComponent(TextField.NAME);
+        TextField textField = uiComponents.create(TextField.NAME);
 
         Datasource<User> userDs = getTestUserDatasource();
         User user = userDs.getItem();
@@ -52,7 +53,7 @@ public class TextFieldDsTest extends DsApiConsistencyTestCase {
 
     @Test
     public void testUnsubscribeDsListener() {
-        TextField textField = (TextField) factory.createComponent(TextField.NAME);
+        TextField textField = uiComponents.create(TextField.NAME);
 
         Datasource<User> userDs = getTestUserDatasource();
         userDs.getItem().setName("testName");
@@ -71,7 +72,7 @@ public class TextFieldDsTest extends DsApiConsistencyTestCase {
 
     @Test
     public void testValueChangeListener() {
-        TextField textField = (TextField) factory.createComponent(TextField.NAME);
+        TextField textField = uiComponents.create(TextField.NAME);
 
         Datasource<User> userDs = getTestUserDatasource();
         userDs.getItem().setName("testName");
@@ -99,7 +100,7 @@ public class TextFieldDsTest extends DsApiConsistencyTestCase {
 
     @Test
     public void testUnsubscribeSubscribeComponentListener() {
-        TextField textField = (TextField) factory.createComponent(TextField.NAME);
+        TextField textField = uiComponents.create(TextField.NAME);
 
         Datasource<User> userDs = getTestUserDatasource();
         User user = userDs.getItem();
@@ -134,7 +135,7 @@ public class TextFieldDsTest extends DsApiConsistencyTestCase {
 
     @Test
     public void testUnsubscribeSubscribeDsListener() {
-        TextField textField = (TextField) factory.createComponent(TextField.NAME);
+        TextField textField = uiComponents.create(TextField.NAME);
 
         Datasource<User> userDs = getTestUserDatasource();
         userDs.getItem().setName("testName");
@@ -155,7 +156,7 @@ public class TextFieldDsTest extends DsApiConsistencyTestCase {
 
     @Test
     public void testDatasourceRepeatableAssign() {
-        TextField textField = (TextField) factory.createComponent(TextField.NAME);
+        TextField textField = uiComponents.create(TextField.NAME);
 
         textField.setDatasource(null, null);
         textField.setDatasource(null, null);
@@ -186,7 +187,8 @@ public class TextFieldDsTest extends DsApiConsistencyTestCase {
         Datasource<User> userDs2 = getTestUserDatasource();
         textField.setDatasource(userDs2, "name");
 
-        textField.setValue(false);
-        assertEquals("Test name", userDs1.getItem().getName());
+        // type change is not supported any more
+//        textField.setValue(false);
+//        assertEquals("Test name", userDs1.getItem().getName());
     }
 }

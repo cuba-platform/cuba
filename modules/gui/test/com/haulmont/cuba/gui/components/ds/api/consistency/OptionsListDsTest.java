@@ -19,12 +19,13 @@ import java.util.function.Consumer;
 import static junit.framework.TestCase.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+@SuppressWarnings("unchecked")
 @Ignore
 public class OptionsListDsTest extends DsApiConsistencyTestCase {
 
     @Test
     public void testUnsubscribeComponentListener() {
-        OptionsList optionsList = (OptionsList) factory.createComponent(OptionsList.NAME);
+        OptionsList optionsList = uiComponents.create(OptionsList.NAME);
 
         Datasource<Role> roleDs = getTestRoleDatasource();
         optionsList.setDatasource(roleDs, "type");
@@ -44,7 +45,7 @@ public class OptionsListDsTest extends DsApiConsistencyTestCase {
 
     @Test
     public void testUnsubscribeDsListener() {
-        OptionsList optionsList = (OptionsList) factory.createComponent(OptionsList.NAME);
+        OptionsList optionsList = uiComponents.create(OptionsList.NAME);
 
         Datasource<Role> roleDs = getTestRoleDatasource();
         optionsList.setDatasource(roleDs, "type");
@@ -63,7 +64,7 @@ public class OptionsListDsTest extends DsApiConsistencyTestCase {
 
     @Test
     public void testUnsubscribeSubscribeComponentListener() {
-        OptionsList optionsList = (OptionsList) factory.createComponent(OptionsList.NAME);
+        OptionsList optionsList = uiComponents.create(OptionsList.NAME);
 
         Datasource<Role> roleDs = getTestRoleDatasource();
         roleDs.getItem().setType(RoleType.DENYING);
@@ -95,7 +96,7 @@ public class OptionsListDsTest extends DsApiConsistencyTestCase {
 
     @Test
     public void testUnsubscribeSubscribeDsListener() {
-        OptionsList optionsList = (OptionsList) factory.createComponent(OptionsList.NAME);
+        OptionsList optionsList = uiComponents.create(OptionsList.NAME);
 
         Datasource<Role> roleDs = getTestRoleDatasource();
         roleDs.getItem().setType(RoleType.DENYING);
@@ -114,7 +115,7 @@ public class OptionsListDsTest extends DsApiConsistencyTestCase {
 
     @Test
     public void testValueChangeListener() {
-        OptionsList optionsList = (OptionsList) factory.createComponent(OptionsList.NAME);
+        OptionsList optionsList = uiComponents.create(OptionsList.NAME);
 
         // listener before datasource
 
@@ -142,7 +143,7 @@ public class OptionsListDsTest extends DsApiConsistencyTestCase {
 
     @Test
     public void testDatasourceRepeatableAssign() {
-        OptionsList optionsList = (OptionsList) factory.createComponent(OptionsList.NAME);
+        OptionsList optionsList = uiComponents.create(OptionsList.NAME);
 
         optionsList.setDatasource(null, null);
         optionsList.setDatasource(null, null);

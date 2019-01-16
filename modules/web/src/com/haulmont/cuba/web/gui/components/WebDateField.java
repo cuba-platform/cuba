@@ -58,7 +58,6 @@ public class WebDateField<V extends Comparable<V>>
 
     protected static final int VALIDATORS_LIST_INITIAL_CAPACITY = 2;
 
-    @Inject
     protected DateTimeTransformations dateTimeTransformations;
 
     protected List<Consumer> validators; // lazily initialized list
@@ -119,6 +118,11 @@ public class WebDateField<V extends Comparable<V>>
 
     protected void initTimeField(CubaTimeField timeField) {
         timeField.setCaptionManagedByLayout(false);
+    }
+
+    @Inject
+    public void setDateTimeTransformations(DateTimeTransformations dateTimeTransformations) {
+        this.dateTimeTransformations = dateTimeTransformations;
     }
 
     @Override
@@ -404,7 +408,6 @@ public class WebDateField<V extends Comparable<V>>
             zonedDateTime = zonedDateTime.withZoneSameInstant(zoneId != null ? zoneId : ZoneId.systemDefault());
         }
         return zonedDateTime.toLocalDateTime();
-
     }
 
     protected Object convertFromLocalDateTime(LocalDateTime localDateTime, ZoneId fromZoneId, Class javaType) {

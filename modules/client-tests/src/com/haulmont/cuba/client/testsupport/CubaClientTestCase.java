@@ -195,8 +195,10 @@ public class CubaClientTestCase {
 
         entityStates = new TestEntityStates();
 
-        ((TestMetadataTools) metadata.getTools()).setMessages(messages);
-        ((TestMetadataTools) metadata.getTools()).setUserSessionSource(userSessionSource);
+        TestMetadataTools testMetadataTools = (TestMetadataTools) metadata.getTools();
+        testMetadataTools.setMessages(messages);
+        testMetadataTools.setDatatypeRegistry(metadata.getDatatypes());
+        testMetadataTools.setUserSessionSource(userSessionSource);
 
         messages.setConfiguration(configuration);
 

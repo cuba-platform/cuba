@@ -22,12 +22,13 @@ import java.util.function.Consumer;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+@SuppressWarnings("unchecked")
 @Ignore
 public class SearchFieldDsTest extends DsApiConsistencyTestCase {
 
     @Test
     public void testUnsubscribeComponentListener() {
-        SearchField searchField = factory.createComponent(SearchField.class);
+        SearchField searchField = uiComponents.create(SearchField.class);
 
         CollectionDatasource<Group, UUID> groupsDs = getTestCollectionDatasource();
         searchField.setOptionsDatasource(groupsDs);
@@ -51,7 +52,7 @@ public class SearchFieldDsTest extends DsApiConsistencyTestCase {
 
     @Test
     public void testUnsubscribeDsListener() {
-        SearchField searchField = factory.createComponent(SearchField.class);
+        SearchField searchField = uiComponents.create(SearchField.class);
 
         CollectionDatasource<Group, UUID> groupsDs = getTestCollectionDatasource();
         searchField.setOptionsDatasource(groupsDs);
@@ -74,7 +75,7 @@ public class SearchFieldDsTest extends DsApiConsistencyTestCase {
 
     @Test
     public void testUnsubscribeSubscribeComponentListener() {
-        SearchField searchField = factory.createComponent(SearchField.class);
+        SearchField searchField = uiComponents.create(SearchField.class);
 
         CollectionDatasource<Group, UUID> groupsDs = getTestCollectionDatasource();
         searchField.setOptionsDatasource(groupsDs);
@@ -97,7 +98,7 @@ public class SearchFieldDsTest extends DsApiConsistencyTestCase {
         searchField.addValueChangeListener(listener);
 
         user.setGroup(metadata.create(Group.class));
-        assertEquals(true, valueWasChanged[0]);
+        assertTrue(valueWasChanged[0]);
 
         // reset state
 
@@ -110,12 +111,12 @@ public class SearchFieldDsTest extends DsApiConsistencyTestCase {
 
         searchField.addValueChangeListener(listener);
         searchField.setDatasource(userDs, "group");
-        assertEquals(true, valueWasChanged[0]);
+        assertTrue(valueWasChanged[0]);
     }
 
     @Test
     public void testUnsubscribeSubscribeDsListener() {
-        SearchField searchField = factory.createComponent(SearchField.class);
+        SearchField searchField = uiComponents.create(SearchField.class);
 
         CollectionDatasource<Group, UUID> groupsDs = getTestCollectionDatasource();
         searchField.setOptionsDatasource(groupsDs);
@@ -135,12 +136,12 @@ public class SearchFieldDsTest extends DsApiConsistencyTestCase {
 
         searchField.setDatasource(userDs, "group");
         searchField.setValue(null);
-        assertEquals(true, valueWasChanged[0]);
+        assertTrue(valueWasChanged[0]);
     }
 
     @Test
     public void testValueChangeListener() {
-        SearchField searchField = factory.createComponent(SearchField.class);
+        SearchField searchField = uiComponents.create(SearchField.class);
 
         CollectionDatasource<Group, UUID> groupsDs = getTestCollectionDatasource();
         searchField.setOptionsDatasource(groupsDs);
@@ -155,12 +156,12 @@ public class SearchFieldDsTest extends DsApiConsistencyTestCase {
         searchField.addValueChangeListener(listener);
 
         searchField.setDatasource(userDs, "group");
-        assertEquals(true, valueWasChanged[0]);
+        assertTrue(valueWasChanged[0]);
     }
 
     @Test
     public void testDatasourceRepeatableAssign() {
-        SearchField searchField = (SearchField) factory.createComponent(SearchField.NAME);
+        SearchField searchField = uiComponents.create(SearchField.NAME);
 
         searchField.setDatasource(null, null);
         searchField.setDatasource(null, null);

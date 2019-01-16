@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.client.testsupport;
 
+import com.haulmont.chile.core.datatypes.DatatypeRegistry;
 import com.haulmont.cuba.core.global.*;
 
 public class TestMetadataTools extends MetadataTools {
@@ -34,5 +35,9 @@ public class TestMetadataTools extends MetadataTools {
 
     public void setUserSessionSource(UserSessionSource userSessionSource) {
         this.userSessionSource = userSessionSource;
+    }
+
+    public void setDatatypeRegistry(DatatypeRegistry datatypeRegistry) {
+        this.datatypeRegistry = datatypeRegistry;
     }
 }

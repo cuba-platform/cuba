@@ -19,19 +19,18 @@ package com.haulmont.cuba.web.test.ui;
 
 import com.google.common.collect.ImmutableMap;
 import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.LookupFieldTest;
-import com.haulmont.cuba.web.gui.WebComponentsFactory;
-import com.vaadin.v7.data.util.converter.DefaultConverterFactory;
+import com.haulmont.cuba.web.gui.components.WebLookupField;
+import com.haulmont.cuba.web.test.stubs.TestUiComponents;
 import com.vaadin.server.VaadinSession;
-import mockit.Mocked;
+import com.vaadin.v7.data.util.converter.DefaultConverterFactory;
 import mockit.Expectations;
-import org.junit.Ignore;
+import mockit.Mocked;
 
 import java.util.Locale;
 
-@Ignore
 public class WebLookupFieldTest extends LookupFieldTest {
-
     @Mocked
     protected VaadinSession vaadinSession;
 
@@ -51,6 +50,15 @@ public class WebLookupFieldTest extends LookupFieldTest {
             }
         };
 
-        factory = new WebComponentsFactory();
+        this.uiComponents = new TestUiComponents(applicationContext);
+    }
+
+    @Override
+    protected void autowireUiComponent(Component component) {
+        super.autowireUiComponent(component);
+
+        WebLookupField lookupField = (WebLookupField) component;
+        lookupField.setBeanLocator(beanLocator);
+        lookupField.setMetadataTools(metadata.getTools());
     }
 }

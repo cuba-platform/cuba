@@ -19,19 +19,19 @@ package com.haulmont.cuba.web.test.ui;
 import com.google.common.collect.ImmutableMap;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.UiComponents;
+import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.FieldGroup;
 import com.haulmont.cuba.gui.components.FieldGroupTest;
-import com.haulmont.cuba.web.gui.WebUiComponents;
+import com.haulmont.cuba.web.gui.components.WebTextField;
+import com.haulmont.cuba.web.test.stubs.TestUiComponents;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.v7.data.util.converter.DefaultConverterFactory;
 import mockit.Expectations;
 import mockit.Mocked;
-import org.junit.Ignore;
 
 import java.util.Locale;
 
-@Ignore
 public class WebFieldGroupTest extends FieldGroupTest {
     @Mocked
     protected VaadinSession vaadinSession;
@@ -55,7 +55,7 @@ public class WebFieldGroupTest extends FieldGroupTest {
 
     @Override
     protected UiComponents createComponentsFactory() {
-        return new WebUiComponents();
+        return new TestUiComponents(applicationContext);
     }
 
     @Override
@@ -71,5 +71,16 @@ public class WebFieldGroupTest extends FieldGroupTest {
     @Override
     protected Object getGridCellComposition(FieldGroup fieldGroup, int col, int row) {
         return fieldGroup.unwrap(GridLayout.class).getComponent(col, row);
+    }
+
+    @Override
+    protected void autowireUiComponent(Component o) {
+        super.autowireUiComponent(o);
+
+        if (o instanceof WebTextField) {
+            WebTextField textField = (WebTextField) o;
+            textField.setUserSessionSource(userSessionSource);
+            textField.setBeanLocator(beanLocator);
+        }
     }
 }

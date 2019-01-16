@@ -31,19 +31,20 @@ import java.util.function.Consumer;
 
 import static org.junit.Assert.*;
 
+@SuppressWarnings("unchecked")
 @Ignore
 public class TextFieldTest extends AbstractComponentTestCase {
 
     @Test
     public void testNew() {
-        Component component = factory.createComponent(TextField.NAME);
+        Component component = uiComponents.create(TextField.NAME);
         assertNotNull(component);
         assertTrue(component instanceof TextField);
     }
 
     @Test
     public void testGetSetValue() {
-        TextField component = factory.createComponent(TextField.class);
+        TextField component = uiComponents.create(TextField.class);
 
         assertNull(component.getValue());
 
@@ -54,7 +55,7 @@ public class TextFieldTest extends AbstractComponentTestCase {
 
     @Test
     public void testGetSetInteger() {
-        TextField component = factory.createComponent(TextField.class);
+        TextField component = uiComponents.create(TextField.class);
 
         assertNull(component.getValue());
 
@@ -66,7 +67,7 @@ public class TextFieldTest extends AbstractComponentTestCase {
 
     @Test
     public void testSetToReadonly() {
-        TextField component = factory.createComponent(TextField.class);
+        TextField component = uiComponents.create(TextField.class);
 
         component.setEditable(false);
         assertFalse(component.isEditable());
@@ -79,7 +80,7 @@ public class TextFieldTest extends AbstractComponentTestCase {
 
     @Test
     public void testSetToReadonlyFromValueListener() {
-        final TextField component = factory.createComponent(TextField.class);
+        TextField component = uiComponents.create(TextField.class);
 
         assertTrue(component.isEditable());
 
@@ -93,7 +94,7 @@ public class TextFieldTest extends AbstractComponentTestCase {
 
     @Test
     public void testDatasource() {
-        TextField component = factory.createComponent(TextField.class);
+        TextField component = uiComponents.create(TextField.class);
 
         //noinspection unchecked
         Datasource<User> testDs = new DsBuilder()
@@ -121,7 +122,7 @@ public class TextFieldTest extends AbstractComponentTestCase {
 
     @Test
     public void testValueChangeListener() {
-        TextField component = factory.createComponent(TextField.class);
+        TextField component = uiComponents.create(TextField.class);
 
         AtomicInteger counter = new AtomicInteger(0);
 

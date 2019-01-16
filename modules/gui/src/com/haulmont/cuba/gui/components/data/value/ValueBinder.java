@@ -36,8 +36,6 @@ import com.haulmont.cuba.gui.components.data.ValueSource;
 import com.haulmont.cuba.gui.components.data.meta.EntityValueSource;
 import com.haulmont.cuba.gui.components.data.meta.ValueBinding;
 import com.haulmont.cuba.gui.components.validators.BeanPropertyValidator;
-import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.context.annotation.Scope;
 
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
@@ -46,7 +44,6 @@ import java.util.Collection;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-@Scope(BeanDefinition.SCOPE_PROTOTYPE)
 @org.springframework.stereotype.Component(ValueBinder.NAME)
 public class ValueBinder {
 

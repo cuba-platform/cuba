@@ -30,12 +30,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+@SuppressWarnings("unchecked")
 @Ignore
 public class PickerFieldDsTest extends DsApiConsistencyTestCase {
 
     @Test
     public void testUnsubscribeWithComponentListener() {
-        PickerField pickerField = (PickerField) factory.createComponent(PickerField.NAME);
+        PickerField pickerField = uiComponents.create(PickerField.NAME);
 
         Datasource<User> userDs = getTestUserDatasource();
         Group group = metadata.create(Group.class);
@@ -55,7 +56,7 @@ public class PickerFieldDsTest extends DsApiConsistencyTestCase {
 
     @Test
     public void testUnsubscribeWithDsListener() {
-        PickerField pickerField = (PickerField) factory.createComponent(PickerField.NAME);
+        PickerField pickerField = uiComponents.create(PickerField.NAME);
 
         Datasource<User> userDs = getTestUserDatasource();
         Group group = metadata.create(Group.class);
@@ -75,7 +76,7 @@ public class PickerFieldDsTest extends DsApiConsistencyTestCase {
 
     @Test
     public void testValueChangeListener() {
-        PickerField pickerField = (PickerField) factory.createComponent(PickerField.NAME);
+        PickerField pickerField = uiComponents.create(PickerField.NAME);
 
         Datasource<User> userDs = getTestUserDatasource();
 
@@ -91,7 +92,7 @@ public class PickerFieldDsTest extends DsApiConsistencyTestCase {
         pickerField.addValueChangeListener(listener);
 
         pickerField.setDatasource(userDs, "group");
-        assertEquals(true, valueWasChanged[0]);
+        assertTrue(valueWasChanged[0]);
 
         // reset state
         pickerField.setDatasource(null, null);
@@ -102,12 +103,12 @@ public class PickerFieldDsTest extends DsApiConsistencyTestCase {
         // listener before datasource
         pickerField.addValueChangeListener(listener);
         pickerField.setDatasource(userDs, "group");
-        assertEquals(true, valueWasChanged[0]);
+        assertTrue(valueWasChanged[0]);
     }
 
     @Test
     public void testUnsubscribeSubscribeComponentListener() {
-        PickerField pickerField = (PickerField) factory.createComponent(PickerField.NAME);
+        PickerField pickerField = uiComponents.create(PickerField.NAME);
 
         Datasource<User> userDs = getTestUserDatasource();
 
@@ -131,7 +132,7 @@ public class PickerFieldDsTest extends DsApiConsistencyTestCase {
         pickerField.addValueChangeListener(listener);
 
         user.setGroup(null);
-        assertEquals(true, valueWasChanged[0]);
+        assertTrue(valueWasChanged[0]);
 
         // reset state
         pickerField.setDatasource(null, null);
@@ -143,12 +144,12 @@ public class PickerFieldDsTest extends DsApiConsistencyTestCase {
         pickerField.addValueChangeListener(listener);
         pickerField.setDatasource(userDs, "group");
 
-        assertEquals(true, valueWasChanged[0]);
+        assertTrue(valueWasChanged[0]);
     }
 
     @Test
     public void testUnsubscribeSubscribeDsListener() {
-        PickerField pickerField = (PickerField) factory.createComponent(PickerField.NAME);
+        PickerField pickerField = uiComponents.create(PickerField.NAME);
 
         Datasource<User> userDs = getTestUserDatasource();
         Group group = metadata.create(Group.class);
@@ -166,12 +167,12 @@ public class PickerFieldDsTest extends DsApiConsistencyTestCase {
         pickerField.setDatasource(userDs, "group");
 
         pickerField.setValue(null);
-        assertEquals(true, valueWasChanged[0]);
+        assertTrue(valueWasChanged[0]);
     }
 
     @Test
     public void testDatasourceRepeatableAssign() {
-        PickerField pickerField = (PickerField) factory.createComponent(PickerField.NAME);
+        PickerField pickerField = uiComponents.create(PickerField.NAME);
 
         pickerField.setDatasource(null, null);
         pickerField.setDatasource(null, null);

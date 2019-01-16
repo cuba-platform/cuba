@@ -18,17 +18,20 @@
 package com.haulmont.cuba.web.test.ui;
 
 import com.google.common.collect.ImmutableMap;
+import com.haulmont.cuba.core.global.DateTimeTransformations;
 import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.DateFieldTest;
-import com.haulmont.cuba.web.gui.WebComponentsFactory;
+import com.haulmont.cuba.web.gui.components.WebDateField;
+import com.haulmont.cuba.web.test.stubs.TestUiComponents;
 import com.vaadin.server.VaadinSession;
-import mockit.Mocked;
 import mockit.Expectations;
-import org.junit.Ignore;
+import mockit.Mocked;
+import org.junit.Test;
 
+import java.text.ParseException;
 import java.util.Locale;
 
-@Ignore
 public class WebDateFieldTest extends DateFieldTest {
 
     @Mocked
@@ -48,6 +51,15 @@ public class WebDateFieldTest extends DateFieldTest {
             }
         };
 
-        factory = new WebComponentsFactory();
+        this.uiComponents = new TestUiComponents(applicationContext);
+    }
+
+    @Override
+    protected void autowireUiComponent(Component component) {
+        super.autowireUiComponent(component);
+
+        WebDateField dateField = (WebDateField) component;
+        dateField.setBeanLocator(beanLocator);
+        dateField.setDateTimeTransformations(new DateTimeTransformations());
     }
 }

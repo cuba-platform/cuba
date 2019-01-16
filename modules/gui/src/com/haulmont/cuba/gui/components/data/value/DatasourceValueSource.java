@@ -48,8 +48,8 @@ public class DatasourceValueSource<E extends Entity, V> implements EntityValueSo
         checkNotNullArgument(datasource);
         checkNotNullArgument(property);
 
-        this.property = property;
         this.datasource = datasource;
+        this.property = property;
     }
 
     @Override

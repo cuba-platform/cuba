@@ -17,20 +17,17 @@
 package com.haulmont.cuba.web.test.ds.api.consistency;
 
 import com.google.common.collect.ImmutableMap;
+import com.haulmont.cuba.core.global.DateTimeTransformations;
 import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.ds.api.consistency.DateFieldDsTest;
-import com.haulmont.cuba.web.gui.WebComponentsFactory;
+import com.haulmont.cuba.web.gui.components.WebDateField;
+import com.haulmont.cuba.web.test.stubs.TestUiComponents;
 import mockit.Expectations;
-import org.junit.Ignore;
 
 import java.util.Locale;
 
-@Ignore
 public class WebDateFieldDsTest extends DateFieldDsTest {
-
-    public WebDateFieldDsTest() {
-        factory = new WebComponentsFactory();
-    }
 
     @Override
     protected void initExpectations() {
@@ -42,5 +39,16 @@ public class WebDateFieldDsTest extends DateFieldDsTest {
                 AppContext.getProperty("cuba.mainMessagePack"); result = "com.haulmont.cuba.web"; minTimes = 0;
             }
         };
+
+        uiComponents = new TestUiComponents(applicationContext);
+    }
+
+    @Override
+    protected void autowireUiComponent(Component component) {
+        super.autowireUiComponent(component);
+
+        WebDateField dateField = (WebDateField) component;
+        dateField.setBeanLocator(beanLocator);
+        dateField.setDateTimeTransformations(new DateTimeTransformations());
     }
 }

@@ -23,16 +23,15 @@ import com.haulmont.cuba.core.app.dynamicattributes.PropertyType;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.gui.components.OptionsGroup;
+import com.haulmont.cuba.gui.components.data.Options;
 import com.haulmont.cuba.gui.components.data.ValueSource;
 import com.haulmont.cuba.gui.components.data.meta.EntityValueSource;
 import com.haulmont.cuba.gui.components.data.meta.OptionsBinding;
-import com.haulmont.cuba.gui.components.data.Options;
 import com.haulmont.cuba.gui.components.data.options.EnumOptions;
 import com.haulmont.cuba.gui.components.data.options.OptionsBinder;
 import com.haulmont.cuba.web.widgets.CubaOptionGroup;
 import com.haulmont.cuba.web.widgets.client.optiongroup.OptionGroupOrientation;
 import com.vaadin.v7.data.util.IndexedContainer;
-import org.springframework.context.ApplicationContext;
 
 import javax.inject.Inject;
 import java.util.*;
@@ -46,7 +45,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class WebOptionsGroup<V, I> extends WebAbstractField<CubaOptionGroup, V> implements OptionsGroup<V, I> {
 
     protected MetadataTools metadataTools;
-    protected ApplicationContext applicationContext;
 
     protected OptionsBinding<I> optionsBinding;
 
@@ -90,11 +88,6 @@ public class WebOptionsGroup<V, I> extends WebAbstractField<CubaOptionGroup, V> 
     @Inject
     public void setMetadataTools(MetadataTools metadataTools) {
         this.metadataTools = metadataTools;
-    }
-
-    @Inject
-    public void setApplicationContext(ApplicationContext applicationContext) {
-        this.applicationContext = applicationContext;
     }
 
     @Override
@@ -203,7 +196,7 @@ public class WebOptionsGroup<V, I> extends WebAbstractField<CubaOptionGroup, V> 
         }
 
         if (options != null) {
-            OptionsBinder optionsBinder = applicationContext.getBean(OptionsBinder.NAME, OptionsBinder.class);
+            OptionsBinder optionsBinder = beanLocator.get(OptionsBinder.NAME, OptionsBinder.class);
             this.optionsBinding = optionsBinder.bind(options, this, this::setItemsToPresentation);
             this.optionsBinding.activate();
         }

@@ -40,6 +40,7 @@ import java.util.function.Consumer;
 
 import static org.junit.Assert.*;
 
+@SuppressWarnings("unchecked")
 @Ignore
 public class OptionsListTest extends AbstractComponentTestCase {
 
@@ -63,14 +64,14 @@ public class OptionsListTest extends AbstractComponentTestCase {
 
     @Test
     public void testNew() {
-        Component component = factory.createComponent(OptionsList.NAME);
+        Component component = uiComponents.create(OptionsList.NAME);
         assertNotNull(component);
         assertTrue(component instanceof OptionsList);
     }
 
     @Test
     public void testGetSetValue() {
-        OptionsList component = factory.createComponent(OptionsList.class);
+        OptionsList component = uiComponents.create(OptionsList.class);
 
         assertNull(component.getValue());
 
@@ -82,7 +83,7 @@ public class OptionsListTest extends AbstractComponentTestCase {
 
     @Test
     public void testSetToReadonly() {
-        OptionsList component = factory.createComponent(OptionsList.class);
+        OptionsList component = uiComponents.create(OptionsList.class);
 
         component.setEditable(false);
         assertFalse(component.isEditable());
@@ -96,7 +97,7 @@ public class OptionsListTest extends AbstractComponentTestCase {
 
     @Test
     public void testSetToReadonlyFromValueListener() {
-        final OptionsList component = factory.createComponent(OptionsList.class);
+        final OptionsList component = uiComponents.create(OptionsList.class);
 
         assertTrue(component.isEditable());
 
@@ -111,7 +112,7 @@ public class OptionsListTest extends AbstractComponentTestCase {
 
     @Test
     public void testDatasource() {
-        OptionsList component = factory.createComponent(OptionsList.class);
+        OptionsList component = uiComponents.create(OptionsList.class);
 
         //noinspection unchecked
         Datasource<User> testDs = new DsBuilder()
@@ -131,7 +132,7 @@ public class OptionsListTest extends AbstractComponentTestCase {
 
     @Test
     public void testOptionsDatasource() {
-        OptionsList component = factory.createComponent(OptionsList.class);
+        OptionsList component = uiComponents.create(OptionsList.class);
 
         //noinspection unchecked
         Datasource<User> testDs = new DsBuilder()
@@ -182,7 +183,7 @@ public class OptionsListTest extends AbstractComponentTestCase {
 
     @Test
     public void testValueChangeListener() {
-        OptionsList component = factory.createComponent(OptionsList.class);
+        OptionsList component = uiComponents.create(OptionsList.class);
 
         final AtomicInteger counter = new AtomicInteger(0);
 

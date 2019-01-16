@@ -17,23 +17,18 @@
 package com.haulmont.cuba.web.test.ds.api.consistency;
 
 import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.ds.api.consistency.PickerFieldDsTest;
-import com.haulmont.cuba.web.gui.WebComponentsFactory;
-import com.vaadin.v7.data.util.converter.DefaultConverterFactory;
+import com.haulmont.cuba.web.gui.components.WebPickerField;
+import com.haulmont.cuba.web.test.stubs.TestUiComponents;
 import com.vaadin.server.VaadinSession;
-import mockit.Mocked;
+import com.vaadin.v7.data.util.converter.DefaultConverterFactory;
 import mockit.Expectations;
-import org.junit.Ignore;
+import mockit.Mocked;
 
-@Ignore
 public class WebPickerFieldDsTest extends PickerFieldDsTest {
-
     @Mocked
     protected VaadinSession vaadinSession;
-
-    public WebPickerFieldDsTest() {
-        factory = new WebComponentsFactory();
-    }
 
     @Override
     protected void initExpectations() {
@@ -46,5 +41,16 @@ public class WebPickerFieldDsTest extends PickerFieldDsTest {
                 AppContext.getProperty("cuba.mainMessagePack"); result = "com.haulmont.cuba.web"; minTimes = 0;
             }
         };
+
+        this.uiComponents = new TestUiComponents(applicationContext);
+    }
+
+    @Override
+    protected void autowireUiComponent(Component component) {
+        super.autowireUiComponent(component);
+
+        WebPickerField pickerField = (WebPickerField) component;
+        pickerField.setBeanLocator(beanLocator);
+        pickerField.setMetadataTools(metadata.getTools());
     }
 }
