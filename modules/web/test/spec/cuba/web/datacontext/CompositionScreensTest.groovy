@@ -28,11 +28,11 @@ import com.haulmont.cuba.web.testsupport.TestServiceProxy
 import org.springframework.core.type.classreading.MetadataReaderFactory
 import spec.cuba.web.UiScreenSpec
 import spec.cuba.web.datacontext.screens.OrderScreen
-import spock.lang.Ignore
 import spock.lang.Unroll
 
 class CompositionScreensTest extends UiScreenSpec {
 
+    @SuppressWarnings(["GroovyAssignabilityCheck", "GroovyAccessibility"])
     void setup() {
         TestServiceProxy.mock(UserManagementService, Mock(UserManagementService) {
             getSubstitutedUsers(_) >> Collections.emptyList()
@@ -46,10 +46,16 @@ class CompositionScreensTest extends UiScreenSpec {
         configuration.basePackages = ['spec.cuba.web.datacontext.screens']
 
         windowConfig.configurations = [configuration]
+        windowConfig.initialized = false
     }
 
+    @SuppressWarnings(["GroovyAccessibility"])
     def cleanup() {
         TestServiceProxy.clear()
+
+        def windowConfig = cont.getBean(WindowConfig)
+        windowConfig.configurations = []
+        windowConfig.initialized = false
     }
 
     def "temporary debug failing test on Travis"() {
@@ -66,7 +72,6 @@ class CompositionScreensTest extends UiScreenSpec {
         noExceptionThrown()
     }
 
-    @Ignore
     @Unroll
     def "create and immediate edit of the same nested instance"(boolean explicitParentDc) {
 
