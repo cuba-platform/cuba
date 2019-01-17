@@ -17,6 +17,7 @@
 package com.haulmont.cuba.web.widgets.client.grid;
 
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.user.client.ui.Widget;
 import com.vaadin.client.WidgetUtil;
 import com.vaadin.client.renderers.Renderer;
@@ -27,6 +28,7 @@ import com.vaadin.client.widget.grid.AutoScroller;
 import com.vaadin.client.widget.grid.events.GridClickEvent;
 import com.vaadin.client.widget.grid.selection.SelectionModel;
 import com.vaadin.client.widgets.Grid;
+import elemental.events.Event;
 import elemental.json.JsonObject;
 
 import java.util.HashMap;
@@ -69,16 +71,25 @@ public class CubaGridWidget extends Grid<JsonObject> {
     }
 
     @Override
-    protected boolean isWidgetAllowsClickHandling(Element targetElement) {
-        // by default, clicking on widget renderer prevents row selection
-        // we want to allow row selection
-        return true;
+    protected boolean isWidgetAllowsClickHandling(Element targetElement, NativeEvent nativeEvent) {
+        // By default, clicking on widget renderer prevents row selection.
+        // We want to allow row selection. Every time selection is changed,
+        // all renderers render their content, as the result, components rendered by
+        // ComponentRenderer lose focus because they are replaced with new instances,
+        // so we prevent click handling for Focus widgets.
+        Widget widget = WidgetUtil.findWidget(targetElement, null);
+        return !(widget instanceof com.vaadin.client.Focusable
+                || widget instanceof com.google.gwt.user.client.ui.Focusable);
     }
 
     @Override
-    protected boolean isEventHandlerShouldHandleEvent(Element targetElement) {
-        // TEST: gg, instanceof is used for the ComponentRenderer. Check if we need some changes in the renderer
-        // by default, clicking on widget renderer prevents cell focus changing
+    protected boolean isEventHandlerShouldHandleEvent(Element targetElement, GridEvent<JsonObject> event) {
+        if (!event.getDomEvent().getType().equals(Event.MOUSEDOWN)
+                && !event.getDomEvent().getType().equals(Event.CLICK)) {
+            return super.isEventHandlerShouldHandleEvent(targetElement, event);
+        }
+
+        // By default, clicking on widget renderer prevents cell focus changing
         // for some widget renderers we want to allow focus changing
         Widget widget = WidgetUtil.findWidget(targetElement, null);
         return !(widget instanceof com.vaadin.client.Focusable
