@@ -34,7 +34,7 @@ import javax.inject.Inject;
 @UiController(NotFoundScreen.ID)
 public class NotFoundScreen extends Screen {
 
-    public static final String ID = "404 Not Found";
+    public static final String ID = "NotFoundScreen";
 
     @WindowParam(name = "requestedRoute", required = true)
     protected String requestedRoute;

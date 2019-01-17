@@ -141,7 +141,9 @@ public class UrlChangeHandler {
     protected void handleHistoryBackward(NavigationState requestedState) {
         AccessCheckResult accessCheckResult = navigationAllowed(requestedState);
         if (accessCheckResult.isRejected()) {
-            showNotification(accessCheckResult.getMessage());
+            if (StringUtils.isNotEmpty(accessCheckResult.getMessage())) {
+                showNotification(accessCheckResult.getMessage());
+            }
             revertNavigationState();
             return;
         }
@@ -235,7 +237,9 @@ public class UrlChangeHandler {
 
         AccessCheckResult result = navigationAllowed(requestedState);
         if (result.isRejected()) {
-            showNotification(result.getMessage());
+            if (StringUtils.isNotEmpty(result.getMessage())) {
+                showNotification(result.getMessage());
+            }
             revertNavigationState();
             return true;
         }
@@ -324,12 +328,10 @@ public class UrlChangeHandler {
 
         AccessCheckResult accessCheckResult = navigationAllowed(requestedState);
         if (accessCheckResult.isRejected()) {
-            revertNavigationState();
-
-            String msg = accessCheckResult.getMessage();
-            if (msg != null && !msg.isEmpty()) {
-                showNotification(msg);
+            if (StringUtils.isNotEmpty(accessCheckResult.getMessage())) {
+                showNotification(accessCheckResult.getMessage());
             }
+            revertNavigationState();
 
             return true;
         }
@@ -445,8 +447,14 @@ public class UrlChangeHandler {
         }
 
         Screen screen = findActiveScreenByState(requestedState);
+
+        Map<String, String> params = requestedState.getParams();
+        if (params == null) {
+            params = Collections.emptyMap();
+        }
+
         UiControllerUtils.fireEvent(screen, UrlParamsChangedEvent.class,
-                new UrlParamsChangedEvent(screen, requestedState.getParams()));
+                new UrlParamsChangedEvent(screen, params));
 
         return true;
     }
