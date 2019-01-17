@@ -36,14 +36,11 @@ public class DefaultExceptionHandler implements ExceptionHandler {
 
     protected Messages messages = AppBeans.get(Messages.NAME);
 
-    @SuppressWarnings("unchecked")
     @Override
     public boolean handle(ErrorEvent event, App app) {
         // Copied from com.vaadin.server.DefaultErrorHandler.doDefault()
 
-        //noinspection ThrowableResultOfMethodCallIgnored
         Throwable t = event.getThrowable();
-        //noinspection ThrowableResultOfMethodCallIgnored
         if (t instanceof SocketException
                 || ExceptionUtils.getRootCause(t) instanceof SocketException) {
             // Most likely client browser closed socket

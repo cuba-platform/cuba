@@ -586,7 +586,6 @@ public class CubaFoldersPane extends VerticalLayout {
             if (tree.getTreeData().contains(parent)) {
                 tree.getTreeData().addItem(parent, folder);
             } else {
-                //noinspection unchecked
                 tree.getTreeData().addItem(null, folder);
             }
         }

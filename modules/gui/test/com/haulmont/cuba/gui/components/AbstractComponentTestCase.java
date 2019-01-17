@@ -66,7 +66,7 @@ public class AbstractComponentTestCase extends CubaClientTestCase {
     }
 
     protected void setupGuiInfrastructure() {
-        this.valueBinder = new TestValueBinder(beanLocator, messageTools, metadata.getTools(), beanValidation);
+        this.valueBinder = new TestValueBinder(beanLocator, messageTools, metadata.getTools(), beanValidation, security);
         this.optionsBinder = new OptionsBinder();
 
         new Expectations() {
@@ -111,11 +111,13 @@ public class AbstractComponentTestCase extends CubaClientTestCase {
     public static class TestValueBinder extends ValueBinder {
         @SuppressWarnings("ReassignmentInjectVariable")
         public TestValueBinder(BeanLocator beanLocator, MessageTools messageTools,
-                               MetadataTools metadataTools, BeanValidation beanValidation) {
+                               MetadataTools metadataTools, BeanValidation beanValidation,
+                               Security security) {
             this.beanLocator = beanLocator;
             this.messageTools = messageTools;
             this.metadataTools = metadataTools;
             this.beanValidation = beanValidation;
+            this.security = security;
         }
     }
 }

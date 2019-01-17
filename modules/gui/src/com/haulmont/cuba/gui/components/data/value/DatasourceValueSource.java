@@ -44,12 +44,25 @@ public class DatasourceValueSource<E extends Entity, V> implements EntityValueSo
 
     protected EventHub events = new EventHub();
 
+    protected boolean dataModelSecurityEnabled = true;
+
     public DatasourceValueSource(Datasource<E> datasource, String property) {
         checkNotNullArgument(datasource);
         checkNotNullArgument(property);
 
         this.datasource = datasource;
         this.property = property;
+    }
+
+    /**
+     * Sets data model security enabled for data binding.
+     * <br>
+     * Caller may set false in order to disable built-in security check on data binding.
+     *
+     * @param enabled enabled flag
+     */
+    public void setDataModelSecurityEnabled(boolean enabled) {
+        this.dataModelSecurityEnabled = enabled;
     }
 
     @Override
@@ -97,6 +110,11 @@ public class DatasourceValueSource<E extends Entity, V> implements EntityValueSo
     @Override
     public E getItem() {
         return datasource.getItem();
+    }
+
+    @Override
+    public boolean isDataModelSecurityEnabled() {
+        return dataModelSecurityEnabled;
     }
 
     @Override

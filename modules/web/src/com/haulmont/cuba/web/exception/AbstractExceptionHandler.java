@@ -46,7 +46,6 @@ public abstract class AbstractExceptionHandler implements ExceptionHandler {
     @Override
     public boolean handle(ErrorEvent event, App app) {
         Throwable exception = event.getThrowable();
-        //noinspection unchecked
         List<Throwable> list = ExceptionUtils.getThrowableList(exception);
         for (Throwable throwable : list) {
             if (classNames.contains(throwable.getClass().getName())

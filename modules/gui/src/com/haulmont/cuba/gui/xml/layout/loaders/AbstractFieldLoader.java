@@ -16,19 +16,12 @@
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
-import com.google.common.base.Strings;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
-import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.Buffered;
 import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.HasDatatype;
-import com.haulmont.cuba.gui.components.data.value.ContainerValueSource;
-import com.haulmont.cuba.gui.model.InstanceContainer;
-import com.haulmont.cuba.gui.model.ScreenData;
-import com.haulmont.cuba.gui.screen.FrameOwner;
-import com.haulmont.cuba.gui.screen.UiControllerUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
 

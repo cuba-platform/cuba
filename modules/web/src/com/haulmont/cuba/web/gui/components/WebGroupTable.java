@@ -668,7 +668,6 @@ public class WebGroupTable<E extends Entity> extends WebAbstractTable<CubaGroupT
         }
     }
 
-    @SuppressWarnings("unchecked")
     protected String formatGroupPropertyValue(GroupInfo<MetaPropertyPath> groupId, @Nullable Object value) {
         if (value == null) {
             return "";

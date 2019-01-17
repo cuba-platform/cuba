@@ -1530,7 +1530,6 @@ public class WebScreens implements Screens, WindowManager {
         if (element != null) {
             Element paramsElement = element.element("params") != null ? element.element("params") : element;
             if (paramsElement != null) {
-                @SuppressWarnings({"unchecked"})
                 List<Element> paramElements = paramsElement.elements("param");
                 for (Element paramElement : paramElements) {
                     String name = paramElement.attributeValue("name");

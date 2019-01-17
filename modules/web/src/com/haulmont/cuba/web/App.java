@@ -229,7 +229,6 @@ public abstract class App {
                 getExceptionHandlers().handle(event);
                 getAppLog().log(event);
             } catch (Throwable e) {
-                //noinspection ThrowableResultOfMethodCallIgnored
                 log.error("Error handling exception\nOriginal exception:\n{}\nException in handlers:\n{}",
                         ExceptionUtils.getStackTrace(event.getThrowable()), ExceptionUtils.getStackTrace(e)
                 );

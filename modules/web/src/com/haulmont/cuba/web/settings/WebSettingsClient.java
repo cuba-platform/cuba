@@ -42,7 +42,6 @@ public class WebSettingsClient implements SettingsClient {
     @Override
     public String getSetting(String name) {
         Map<String, Optional<String>> settings = getCache();
-        //noinspection Guava
         Optional<String> cached = settings.get(name);
         if (cached != null) {
             return cached.orElse(null);

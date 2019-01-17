@@ -47,12 +47,25 @@ public class ContainerValueSource<E extends Entity, V> implements EntityValueSou
 
     protected EventHub events = new EventHub();
 
+    protected boolean dataModelSecurityEnabled = true;
+
     public ContainerValueSource(InstanceContainer<E> container, String property) {
         checkNotNullArgument(container);
         checkNotNullArgument(property);
 
         this.container = container;
         this.property = property;
+    }
+
+    /**
+     * Sets data model security enabled for data binding.
+     * <br>
+     * Caller may set false in order to disable built-in security check on data binding.
+     *
+     * @param enabled enabled flag
+     */
+    public void setDataModelSecurityEnabled(boolean enabled) {
+        this.dataModelSecurityEnabled = enabled;
     }
 
     @Override
@@ -133,6 +146,11 @@ public class ContainerValueSource<E extends Entity, V> implements EntityValueSou
     @Override
     public E getItem() {
         return container.getItemOrNull();
+    }
+
+    @Override
+    public boolean isDataModelSecurityEnabled() {
+        return dataModelSecurityEnabled;
     }
 
     @Override

@@ -82,7 +82,6 @@ public final class JmxConnectionHelper {
         Set<ObjectName> names = connection.queryNames(null, null);
 
         // find all suitable beans
-        @SuppressWarnings("unchecked")
         Collection<ObjectName> suitableNames = CollectionUtils.select(names, o -> {
             MBeanInfo info;
             try {

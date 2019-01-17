@@ -179,7 +179,6 @@ public class WebListEditor<V> extends WebV8AbstractField<WebListEditor.CubaListE
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public List<V> getValue() {
         return delegate.getValue();

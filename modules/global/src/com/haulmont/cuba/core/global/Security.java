@@ -18,6 +18,7 @@
 package com.haulmont.cuba.core.global;
 
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.security.entity.ConstraintOperationType;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
@@ -90,6 +91,36 @@ public interface Security {
      * @param propertyPath entity attribute path
      */
     boolean isEntityAttrUpdatePermitted(MetaClass metaClass, String propertyPath);
+
+    /**
+     * Check if current user can modify an entity attribute which is the last part of the path given.
+     * It means that he has the following permissions:
+     *
+     * <ul>
+     * <li> {@link EntityOp#CREATE} or {@link EntityOp#UPDATE} on the whole entity which the attribute belongs to</li>
+     * <li> {@link EntityAttrAccess#MODIFY} on the attribute</li>
+     * </ul>
+     *
+     * Takes into account original metaclass of entity.
+     *
+     * @param propertyPath entity attribute path
+     */
+    boolean isEntityAttrUpdatePermitted(MetaPropertyPath propertyPath);
+
+    /**
+     * Check if current user can read an entity attribute which is the last part of the path given.
+     * It means that he has the following permissions:
+     *
+     * <ul>
+     * <li> {@link EntityOp#READ} on the whole entity which the attribute belongs to</li>
+     * <li> {@link EntityAttrAccess#VIEW} on the attribute</li>
+     * </ul>
+     *
+     * Takes into account original metaclass of entity.
+     *
+     * @param propertyPath entity attribute path
+     */
+    boolean isEntityAttrReadPermitted(MetaPropertyPath propertyPath);
 
     /**
      * Check if current user can read an entity attribute which is the last part of the path given.

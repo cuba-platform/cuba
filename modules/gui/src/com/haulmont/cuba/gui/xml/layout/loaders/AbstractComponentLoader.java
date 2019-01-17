@@ -235,21 +235,6 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
 
     protected void loadEditable(Component component, Element element) {
         if (component instanceof Component.Editable) {
-            if (component instanceof DatasourceComponent
-                    && ((DatasourceComponent) component).getDatasource() != null) {
-
-                DatasourceComponent wiredComponent = (DatasourceComponent) component;
-                MetaClass metaClass = wiredComponent.getDatasource().getMetaClass();
-                MetaPropertyPath propertyPath = wiredComponent.getMetaPropertyPath();
-
-                // vaadin8 move to ValueBinder !
-                if (propertyPath != null
-                        && !getSecurity().isEntityAttrUpdatePermitted(metaClass, propertyPath.toString())) {
-                    ((Component.Editable) component).setEditable(false);
-                    return;
-                }
-            }
-
             String editable = element.attributeValue("editable");
             if (!StringUtils.isEmpty(editable)) {
                 ((Component.Editable) component).setEditable(Boolean.parseBoolean(editable));

@@ -641,7 +641,7 @@ configure(webModule) {
     }
 
     test {
-        exclude 'com/haulmont/cuba/web/test/ds/api/consistency/WebCheckBoxDsTest/**'
+        exclude 'com/haulmont/cuba/web/test/ds/**'
         exclude 'com/haulmont/cuba/web/test/ui/**'
     }
 

@@ -51,7 +51,6 @@ public class WebOptionsList<V, I> extends WebAbstractField<CubaListSelect, V>
 
     protected Function<? super I, String> optionCaptionProvider;
 
-    @SuppressWarnings("unchecked")
     public WebOptionsList() {
         component = createComponent();
     }

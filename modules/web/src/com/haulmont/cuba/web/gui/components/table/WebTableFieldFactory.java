@@ -134,12 +134,11 @@ public class WebTableFieldFactory<E extends Entity> extends AbstractFieldFactory
             MetaPropertyPath propertyPath = ((EntityValueSource) component.getValueSource()).getMetaPropertyPath();
 
             if (propertyPath != null) {
-                MetaClass metaClass = ((EntityValueSource) component.getValueSource()).getEntityMetaClass();
                 com.haulmont.cuba.gui.components.Component.Editable editable =
                         (com.haulmont.cuba.gui.components.Component.Editable) component;
 
                 editable.setEditable(editable.isEditable()
-                        && security.isEntityAttrUpdatePermitted(metaClass, propertyPath.toString()));
+                        && security.isEntityAttrUpdatePermitted(propertyPath));
             }
         }
     }

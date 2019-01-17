@@ -92,7 +92,6 @@ public class AppLog {
         log(new LogItem(timeSource.currentTimestamp(), LogLevel.ERROR, message, null));
     }
 
-    @SuppressWarnings({"ThrowableResultOfMethodCallIgnored"})
     public void log(ErrorEvent event) {
         Throwable t = event.getThrowable();
 

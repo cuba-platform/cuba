@@ -203,7 +203,6 @@ public class WebCheckBoxGroup<V> extends WebV8AbstractField<CubaCheckBoxGroup<V>
     @Override
     public void setOptionIconProvider(Function<? super V, String> optionIconProvider) {
         if (this.optionIconProvider != optionIconProvider) {
-            // noinspection unchecked
             this.optionIconProvider = optionIconProvider;
 
             if (optionIconProvider != null) {
@@ -222,7 +221,6 @@ public class WebCheckBoxGroup<V> extends WebV8AbstractField<CubaCheckBoxGroup<V>
     protected Resource generateOptionIcon(V item) {
         String resourceId;
         try {
-            // noinspection unchecked
             resourceId = optionIconProvider.apply(item);
         } catch (Exception e) {
             LoggerFactory.getLogger(WebCheckBoxGroup.class)

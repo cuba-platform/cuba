@@ -134,7 +134,6 @@ public abstract class WebV8AbstractField<T extends com.vaadin.ui.Component & com
         component.setReadOnly(!editable);
     }
 
-    @SuppressWarnings("unchecked")
     protected void attachValueChangeListener(T component) {
         component.addValueChangeListener(event ->
                 componentValueChanged(event.getOldValue(), event.getValue(), event.isUserOriginated())
@@ -160,14 +159,13 @@ public abstract class WebV8AbstractField<T extends com.vaadin.ui.Component & com
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public Collection<Consumer<V>> getValidators() {
         if (validators == null) {
             return Collections.emptyList();
         }
 
-        return (Collection) Collections.unmodifiableCollection(validators);
+        return Collections.unmodifiableCollection(validators);
     }
 
     @Override

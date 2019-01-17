@@ -21,19 +21,26 @@ import com.haulmont.cuba.client.ClientUserSession
 import com.haulmont.cuba.client.sys.cache.CachingStrategy
 import com.haulmont.cuba.client.sys.cache.ClientCacheManager
 import com.haulmont.cuba.client.sys.cache.DynamicAttributesCacheStrategy
+import com.haulmont.cuba.client.testsupport.TestUserSessionSource
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesCache
+import com.haulmont.cuba.core.global.UserSessionSource
 
 import java.util.concurrent.locks.Lock
 import java.util.concurrent.locks.ReadWriteLock
 
 class UiScreenSpec extends WebSpec {
 
-    void setup() {
-        def session = Mock(ClientUserSession) {
-            getLocale() >> Locale.ENGLISH
-        }
+    ClientUserSession session
 
+    void setup() {
+        def userSessionSource = (TestUserSessionSource) cont.getBean(UserSessionSource.class)
+        def testSession = new ClientUserSession(userSessionSource.createTestSession())
+
+        this.session = Spy(testSession)
         this.sessionSource.getUserSession() >> session
+
+        userSessionSource.setSession(session)
+
         session.isAuthenticated() >> true
 
         def clientCacheManager = cont.getBean(ClientCacheManager)
@@ -55,5 +62,8 @@ class UiScreenSpec extends WebSpec {
     void cleanup() {
         def clientCacheManager = cont.getBean(ClientCacheManager)
         clientCacheManager.cache.remove(DynamicAttributesCacheStrategy.NAME)
+
+        def userSessionSource = (TestUserSessionSource) cont.getBean(UserSessionSource.class)
+        userSessionSource.setSession(null)
     }
 }

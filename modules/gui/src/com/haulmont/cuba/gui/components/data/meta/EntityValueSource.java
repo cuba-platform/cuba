@@ -26,18 +26,33 @@ import java.util.EventObject;
 import java.util.function.Consumer;
 
 /**
- * vaadin8 document
+ * Data component bound to property of Entity.
  *
- * @param <V>
+ * @param <V> type of value
  */
 public interface EntityValueSource<E extends Entity, V> extends ValueSource<V>, EntityDataUnit {
-    MetaPropertyPath getMetaPropertyPath();
-
+    /**
+     * @return entity
+     */
     E getItem();
 
-    // vaadin8 security listener
+    /**
+     * @return property path
+     */
+    MetaPropertyPath getMetaPropertyPath();
+
+    /**
+     * @return true if data model security check is required on data binding
+     */
+    boolean isDataModelSecurityEnabled();
+
     Subscription addInstanceChangeListener(Consumer<InstanceChangeEvent<E>> listener);
 
+    /**
+     * An event fired when related entity instance is changed.
+     *
+     * @param <E> entity type
+     */
     class InstanceChangeEvent<E extends Entity> extends EventObject {
         private final E prevItem;
         private final E item;

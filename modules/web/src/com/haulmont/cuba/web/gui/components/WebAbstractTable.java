@@ -40,7 +40,6 @@ import com.haulmont.cuba.gui.components.data.BindingState;
 import com.haulmont.cuba.gui.components.data.TableItems;
 import com.haulmont.cuba.gui.components.data.meta.ContainerDataUnit;
 import com.haulmont.cuba.gui.components.data.meta.DatasourceDataUnit;
-import com.haulmont.cuba.gui.components.data.meta.EntityDataUnit;
 import com.haulmont.cuba.gui.components.data.meta.EntityTableItems;
 import com.haulmont.cuba.gui.components.data.table.DatasourceTableItems;
 import com.haulmont.cuba.gui.components.data.table.SortableDatasourceTableItems;
@@ -287,7 +286,6 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public E getSingleSelected() {
         TableItems<E> tableItems = getItems();
@@ -523,7 +521,6 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
         column.setOwner(null);
     }
 
-    // vaadin8 rework this cache
     @SuppressWarnings("unchecked")
     @Override
     public Datasource getItemDatasource(Entity item) {
@@ -925,7 +922,6 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
         component.setPresentations(tablePresentations);
     }
 
-    @SuppressWarnings("unchecked")
     protected void initComponent(T component) {
         component.setMultiSelect(false);
         component.setValidationVisible(false);
@@ -1299,7 +1295,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
             }
 
             // bind new datasource
-            this.dataBinding = createTableDataContainer(tableItems); // vaadin8 pass delegate there
+            this.dataBinding = createTableDataContainer(tableItems);
             this.dataBinding.setProperties(getPropertyColumns(entityTableSource, columnsOrder));
             this.component.setContainerDataSource(this.dataBinding);
 
@@ -1471,7 +1467,6 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
 
         TableItems<E> tableItems = event.getSource();
         for (Object entityId : selectedItemIds) {
-            //noinspection unchecked
             if (tableItems.getItem(entityId) != null) {
                 newSelection.add(entityId);
             }
@@ -1633,7 +1628,6 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
     }
 
     protected boolean canBeSorted(@Nullable TableItems<E> tableItems) {
-        //noinspection SimplifiableConditionalExpression
         return tableItems instanceof TableItems.Sortable;
     }
 
@@ -1829,7 +1823,6 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
     }
 
     // For vaadin component extensions
-    @SuppressWarnings("unchecked")
     protected Resource getItemIcon(Object itemId) {
         if (iconProvider == null
                 || getItems() == null) {
@@ -2615,7 +2608,6 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
             } else {
                 Function<Object, String> formatter = column.getFormatter();
                 if (formatter != null) {
-                    //noinspection unchecked
                     cellText = formatter.apply(value);
                 } else {
                     Datatype datatype = datatypeRegistry.get(value.getClass());
@@ -2911,7 +2903,6 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
         return style == null ? null : (CUSTOM_STYLE_NAME_PREFIX + style);
     }
 
-    @SuppressWarnings("unchecked")
     protected String generateDefaultCellStyle(Object itemId, Object propertyId, MetaPropertyPath propertyPath) {
         String style = null;
 
@@ -3045,7 +3036,6 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
     protected class StyleGeneratorAdapter implements com.vaadin.v7.ui.Table.CellStyleGenerator {
         protected boolean exceptionHandled = false;
 
-        @SuppressWarnings({"unchecked"})
         @Override
         public String getStyle(com.vaadin.v7.ui.Table source, Object itemId, Object propertyId) {
             if (exceptionHandled) {

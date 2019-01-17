@@ -18,7 +18,6 @@
 package com.haulmont.cuba.client.testsupport;
 
 import com.haulmont.cuba.core.sys.AbstractUserSessionSource;
-import com.haulmont.cuba.security.entity.Role;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -41,14 +40,31 @@ public class TestUserSessionSource extends AbstractUserSessionSource {
     @Override
     public synchronized UserSession getUserSession() {
         if (session == null) {
-            User user = new User();
-            user.setId(UUID.fromString(USER_ID));
-            user.setLogin("test_admin");
-            user.setName("Test Administrator");
-            user.setPassword(DigestUtils.md5Hex("test_admin"));
-
-            session = new UserSession(UUID.randomUUID(), user, Collections.<Role>emptyList(), Locale.ENGLISH, false);
+            session = createTestSession();
         }
         return session;
+    }
+
+    public UserSession createTestSession() {
+        User user = createTestUser();
+
+        return new UserSession(UUID.randomUUID(), user, Collections.emptyList(), Locale.ENGLISH, false);
+    }
+
+    public User createTestUser() {
+        User user = new User();
+        user.setId(UUID.fromString(USER_ID));
+        user.setLogin("test_admin");
+        user.setName("Test Administrator");
+        user.setPassword(DigestUtils.md5Hex("test_admin"));
+        return user;
+    }
+
+    public UserSession getSession() {
+        return session;
+    }
+
+    public void setSession(UserSession session) {
+        this.session = session;
     }
 }

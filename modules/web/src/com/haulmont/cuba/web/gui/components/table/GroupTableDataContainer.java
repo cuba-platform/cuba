@@ -201,7 +201,6 @@ public class GroupTableDataContainer<I> extends SortableDataContainer<I> impleme
     protected List getCachedItemIds() {
         if (cachedItemIds == null) {
             if (getGroupTableSource().hasGroups()) {
-                //noinspection unchecked
                 List<Object> result = new ArrayList<>();
 
                 List<GroupInfo> roots = getGroupTableSource().rootGroups();

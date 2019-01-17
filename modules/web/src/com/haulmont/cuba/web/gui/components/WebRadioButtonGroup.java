@@ -164,7 +164,6 @@ public class WebRadioButtonGroup<V> extends WebV8AbstractField<CubaRadioButtonGr
     @Override
     public void setOptionIconProvider(Function<? super V, String> optionIconProvider) {
         if (this.optionIconProvider != optionIconProvider) {
-            // noinspection unchecked
             this.optionIconProvider = optionIconProvider;
 
             if (optionIconProvider != null) {
@@ -183,7 +182,6 @@ public class WebRadioButtonGroup<V> extends WebV8AbstractField<CubaRadioButtonGr
     protected Resource generateOptionIcon(V item) {
         String resourceId;
         try {
-            // noinspection unchecked
             resourceId = optionIconProvider.apply(item);
         } catch (Exception e) {
             LoggerFactory.getLogger(WebRadioButtonGroup.class)

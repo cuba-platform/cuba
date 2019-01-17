@@ -397,7 +397,6 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
         if (hasSubscriptions(ItemClickEvent.class)) {
             MouseEventDetails mouseEventDetails = WebWrapperUtils.toMouseEventDetails(vMouseEventDetails);
 
-            //noinspection unchecked
             E item = e.getItem();
             if (item == null) {
                 // this can happen if user clicked on an item which is removed from the
@@ -584,7 +583,6 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
                 if (isMultiSelect()) {
                     component.deselectAll();
                 }
-                //noinspection unchecked
                 setSelected(event.getItem());
             }
         });
@@ -1000,7 +998,6 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
         Set<E> selectedItems = getSelected();
         Set<E> newSelection = new HashSet<>();
         for (E item : selectedItems) {
-            //noinspection unchecked
             if (event.getSource().containsItem(item)) {
                 newSelection.add(event.getSource().getItem(item.getId()));
             }
@@ -1041,7 +1038,6 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
     }
 
     protected String[] getColumnOrder() {
-        //noinspection unchecked
         return columnsOrder.stream()
                 .filter(Column::isVisible)
                 .map(Column::getId)
@@ -1475,7 +1471,6 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
 
         @Override
         protected void doSetValue(T value) {
-            //noinspection unchecked
             columnComponent.setValue(value);
         }
 
@@ -2488,7 +2483,6 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
         column.setWidth(existingColumn.getWidth());
         column.setExpandRatio(existingColumn.getExpandRatio());
         column.setResizable(existingColumn.isResizable());
-        //noinspection unchecked
         column.setFormatter(existingColumn.getFormatter());
         column.setStyleProvider(existingColumn.getStyleProvider());
         column.setDescriptionProvider(existingColumn.getDescriptionProvider(),
@@ -3206,8 +3200,7 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
             if (this.visible != visible) {
                 this.visible = visible;
 
-                //noinspection unchecked
-                Grid<E> grid = (Grid<E>) owner.getComponent();
+                Grid<E> grid = owner.getComponent();
 
                 if (visible) {
                     Grid.Column<E, ?> gridColumn =
@@ -3552,7 +3545,6 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
 
-            //noinspection unchecked
             ColumnImpl column = (ColumnImpl) o;
 
             return id.equals(column.id);

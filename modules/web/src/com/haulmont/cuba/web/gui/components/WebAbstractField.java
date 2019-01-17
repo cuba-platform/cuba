@@ -200,7 +200,6 @@ public abstract class WebAbstractField<T extends com.vaadin.v7.ui.AbstractField,
         component.setReadOnly(!editable);
     }
 
-    @SuppressWarnings("unchecked")
     protected void attachListener(T component) {
         component.addValueChangeListener(event -> {
             Object value = event.getProperty().getValue();
@@ -229,7 +228,6 @@ public abstract class WebAbstractField<T extends com.vaadin.v7.ui.AbstractField,
         return (V) componentRawValue;
     }
 
-    @SuppressWarnings("unchecked")
     protected Object convertToPresentation(V modelValue) {
         return modelValue;
     }

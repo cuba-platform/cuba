@@ -367,7 +367,6 @@ public class WebLookupField<V> extends WebV8AbstractField<CubaComboBox<V>, V, V>
     @Override
     public void setOptionIconProvider(Function<? super V, String> optionIconProvider) {
         if (this.optionIconProvider != optionIconProvider) {
-            // noinspection unchecked
             this.optionIconProvider = optionIconProvider;
 
             if (optionIconProvider != null) {
@@ -391,7 +390,6 @@ public class WebLookupField<V> extends WebV8AbstractField<CubaComboBox<V>, V, V>
     protected Resource generateOptionIcon(V item) {
         String resourceId;
         try {
-            // noinspection unchecked
             resourceId = optionIconProvider.apply(item);
         } catch (Exception e) {
             LoggerFactory.getLogger(WebLookupField.class)

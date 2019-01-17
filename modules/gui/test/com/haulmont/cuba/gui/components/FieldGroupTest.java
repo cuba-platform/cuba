@@ -76,7 +76,7 @@ public class FieldGroupTest extends CubaClientTestCase {
 
         fieldFactory = new TestFieldGroupFieldFactoryImpl();
 
-        this.valueBinder = new TestValueBinder(beanLocator, messageTools, metadata.getTools(), beanValidation);
+        this.valueBinder = new TestValueBinder(beanLocator, messageTools, metadata.getTools(), beanValidation, security);
         this.optionsBinder = new OptionsBinder();
 
         new Expectations() {

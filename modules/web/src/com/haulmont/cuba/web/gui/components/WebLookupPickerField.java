@@ -274,7 +274,6 @@ public class WebLookupPickerField<V extends Entity> extends WebPickerField<V>
     @Override
     public void setOptionIconProvider(Function<? super V, String> optionIconProvider) {
         if (this.optionIconProvider != optionIconProvider) {
-            // noinspection unchecked
             this.optionIconProvider = optionIconProvider;
 
             if (optionIconProvider != null) {
@@ -298,7 +297,6 @@ public class WebLookupPickerField<V extends Entity> extends WebPickerField<V>
     protected Resource generateOptionIcon(V item) {
         String resourceId;
         try {
-            // noinspection unchecked
             resourceId = optionIconProvider.apply(item);
         } catch (Exception e) {
             LoggerFactory.getLogger(WebLookupPickerField.class)

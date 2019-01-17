@@ -121,7 +121,8 @@ public class SecurityImpl implements Security {
             throw new AccessDeniedException(PermissionType.SPECIFIC, name);
     }
 
-    protected boolean isEntityAttrReadPermitted(MetaPropertyPath mpp) {
+    @Override
+    public boolean isEntityAttrReadPermitted(MetaPropertyPath mpp) {
         MetaClass propertyMetaClass = metadata.getTools().getPropertyEnclosingMetaClass(mpp);
         return isEntityOpPermitted(propertyMetaClass, EntityOp.READ)
                 && isEntityAttrPermitted(propertyMetaClass, mpp, EntityAttrAccess.VIEW);
@@ -137,7 +138,8 @@ public class SecurityImpl implements Security {
                 .isEntityAttrPermitted(metaClass, propertyPath.getMetaProperty().getName(), access);
     }
 
-    protected boolean isEntityAttrUpdatePermitted(MetaPropertyPath mpp) {
+    @Override
+    public boolean isEntityAttrUpdatePermitted(MetaPropertyPath mpp) {
         MetaClass propertyMetaClass = metadata.getTools().getPropertyEnclosingMetaClass(mpp);
 
         if (metadata.getTools().isEmbeddable(propertyMetaClass)) {

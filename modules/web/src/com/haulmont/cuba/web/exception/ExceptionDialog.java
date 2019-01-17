@@ -235,7 +235,6 @@ public class ExceptionDialog extends CubaWindow {
         if (throwable instanceof RemoteException) {
             RemoteException re = (RemoteException) throwable;
             for (int i = re.getCauses().size() - 1; i >= 0; i--) {
-                //noinspection ThrowableResultOfMethodCallIgnored
                 if (re.getCauses().get(i).getThrowable() != null) {
                     return re.getCauses().get(i).getThrowable();
                 }
@@ -250,7 +249,6 @@ public class ExceptionDialog extends CubaWindow {
             RemoteException re = (RemoteException) rootCause;
             if (!re.getCauses().isEmpty()) {
                 RemoteException.Cause cause = re.getCauses().get(re.getCauses().size() - 1);
-                //noinspection ThrowableResultOfMethodCallIgnored
                 if (cause.getThrowable() != null) {
                     rootCause = cause.getThrowable();
                 } else {

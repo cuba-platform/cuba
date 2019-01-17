@@ -233,7 +233,6 @@ public class WebTree<E extends Entity>
                 if (isMultiSelect()) {
                     component.deselectAll();
                 }
-                //noinspection unchecked
                 setSelected(event.getItem());
             }
         });
@@ -520,7 +519,6 @@ public class WebTree<E extends Entity>
         Set<E> newSelection = new HashSet<>();
         TreeItems<E> source = event.getSource();
         for (E item : selectedItems) {
-            //noinspection unchecked
             if (source.containsItem(item)) {
                 newSelection.add(source.getItem(item.getId()));
             }

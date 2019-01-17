@@ -60,7 +60,6 @@ public class AbbreviatedCellClickListener implements Table.CellClickListener {
             if (value == null || (value.length() <= column.getMaxTextLength() + MAX_TEXT_LENGTH_GAP
                     && !isMultiLineCell)) {
                 // todo artamonov if we click with CTRL and Table is multiselect then we lose previous selected items
-                //noinspection SuspiciousMethodCalls
                 if (!table.getSelected().contains(item)) {
                     table.setSelected(item);
                 }
