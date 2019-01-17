@@ -44,7 +44,7 @@ public class ConstraintLocalizationEdit extends AbstractEditor<LocalizedConstrai
     protected TextField caption;
 
     @Inject
-    protected ResizableTextArea message;
+    protected TextArea message;
 
     @Inject
     protected GlobalConfig globalConfig;
