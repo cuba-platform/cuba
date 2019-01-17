@@ -418,7 +418,7 @@ configure(coreModule) {
         includes = ['com/haulmont/cuba/entity_cache/EntityCacheTestSuite.class']
 
         if (System.getProperty('logback.configurationFile')) {
-            systemProperty 'logback.configurationFile', System.getProperty('logback.configurationFile')
+            systemProperty 'logback.configurationFile', System.getProperty('logback.testEntityCache.configurationFile')
         }
     }
 
