@@ -75,7 +75,8 @@ public class FragmentComponentLoader extends ContainerLoader<Fragment> {
 
         WindowInfo windowInfo;
         if (src == null) {
-            windowInfo = getWindowConfig().getWindowInfo(screenId);
+            // load screen class only once
+            windowInfo = getWindowConfig().getWindowInfo(screenId).resolve();
             if (windowInfo.getTemplate() == null) {
                 throw new GuiDevelopmentException(
                         String.format("Screen %s doesn't have template path configured", screenId),
@@ -189,15 +190,15 @@ public class FragmentComponentLoader extends ContainerLoader<Fragment> {
                 return src;
             }
 
-            @Override
-            public Boolean isMultipleOpen(WindowInfo wi) {
-                return false;
-            }
-
             @Nonnull
             @Override
             public Class<? extends FrameOwner> getControllerClass(WindowInfo wi) {
                 return fragmentClass;
+            }
+
+            @Override
+            public WindowInfo resolve(WindowInfo windowInfo) {
+                return windowInfo;
             }
         }, screenElement);
     }

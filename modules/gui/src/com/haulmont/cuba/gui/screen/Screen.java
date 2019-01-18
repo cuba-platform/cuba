@@ -368,8 +368,21 @@ public abstract class Screen implements FrameOwner {
      */
     protected boolean isMultipleOpen() {
         WindowInfo windowInfo = UiControllerUtils.getScreenContext(this).getWindowInfo();
-        Boolean multipleOpen = windowInfo.getMultipleOpen();
-        return multipleOpen != null ? multipleOpen : false;
+        if (windowInfo.getDescriptor() != null) {
+            String multipleOpenAttr = windowInfo.getDescriptor().attributeValue("multipleOpen");
+
+            if (multipleOpenAttr != null) {
+                return Boolean.parseBoolean(multipleOpenAttr);
+            }
+        }
+
+        MultipleOpen annotation = this.getClass().getAnnotation(MultipleOpen.class);
+        if (annotation != null) {
+            // default is false
+            return annotation.value();
+        }
+
+        return false;
     }
 
     /**

@@ -102,26 +102,77 @@ public class WindowConfig {
     protected WindowAttributesProvider windowAttributesProvider = new WindowAttributesProvider() {
         @Override
         public WindowInfo.Type getType(WindowInfo windowInfo) {
-            return extractWindowInfoType(windowInfo);
+            return resolveWindowInfo(windowInfo).getType();
         }
 
         @Nullable
         @Override
         public String getTemplate(WindowInfo windowInfo) {
-            return extractWindowTemplate(windowInfo);
-        }
-
-        @Override
-        public Boolean isMultipleOpen(WindowInfo windowInfo) {
-            return extractMultiOpen(windowInfo);
+            return resolveWindowInfo(windowInfo).getTemplate();
         }
 
         @Nonnull
         @Override
         public Class<? extends FrameOwner> getControllerClass(WindowInfo windowInfo) {
-            return extractControllerClass(windowInfo);
+            return resolveWindowInfo(windowInfo).getControllerClass();
+        }
+
+        @Override
+        public WindowInfo resolve(WindowInfo windowInfo) {
+            return resolveWindowInfo(windowInfo);
         }
     };
+
+    protected WindowInfo resolveWindowInfo(WindowInfo windowInfo) {
+        Class<? extends FrameOwner> controllerClass;
+        String template;
+
+        if (windowInfo.getDescriptor() != null) {
+            String className = windowInfo.getDescriptor().attributeValue("class");
+
+            if (Strings.isNullOrEmpty(className)) {
+                template = windowInfo.getDescriptor().attributeValue("template");
+
+                Element screenXml = screenXmlLoader.load(template,
+                        windowInfo.getId(), Collections.emptyMap());
+                className = screenXml.attributeValue("class");
+            } else {
+                template = null;
+            }
+
+            if (Strings.isNullOrEmpty(className)) {
+                // fallback for legacy frames
+                controllerClass = AbstractFrame.class;
+            } else {
+                controllerClass = loadDefinedScreenClass(className);
+            }
+
+        } else if (windowInfo.getControllerClassName() != null) {
+            controllerClass = loadDefinedScreenClass(windowInfo.getControllerClassName());
+
+            UiDescriptor annotation = controllerClass.getAnnotation(UiDescriptor.class);
+            if (annotation == null) {
+                template = null;
+            } else {
+                String templatePath = UiDescriptorUtils.getInferredTemplate(annotation, controllerClass);
+                if (!templatePath.startsWith("/")) {
+                    String packageName = UiControllerUtils.getPackage(controllerClass);
+                    if (StringUtils.isNotEmpty(packageName)) {
+                        String relativePath = packageName.replace('.', '/');
+                        templatePath = "/" + relativePath + "/" + templatePath;
+                    }
+                }
+
+                template = templatePath;
+            }
+        } else {
+            throw new IllegalStateException("Neither screen class nor descriptor is set for WindowInfo " + windowInfo.getId());
+        }
+
+        WindowInfo.Type type = extractWindowInfoType(windowInfo, controllerClass);
+
+        return new ResolvedWindowInfo(windowInfo, type, controllerClass, template);
+    }
 
     protected MetadataReaderFactory getMetadataReaderFactory() {
         return metadataReaderFactory;
@@ -131,9 +182,7 @@ public class WindowConfig {
         return applicationContext;
     }
 
-    protected WindowInfo.Type extractWindowInfoType(WindowInfo windowInfo) {
-        Class<? extends FrameOwner> controllerClass = extractControllerClass(windowInfo);
-
+    protected WindowInfo.Type extractWindowInfoType(WindowInfo windowInfo, Class<? extends FrameOwner> controllerClass) {
         if (Screen.class.isAssignableFrom(controllerClass)) {
             return WindowInfo.Type.SCREEN;
         }
@@ -143,83 +192,6 @@ public class WindowConfig {
         }
 
         throw new IllegalStateException("Unknown type of screen " + windowInfo.getId());
-    }
-
-    @Nonnull
-    @SuppressWarnings("unchecked")
-    protected Class<? extends FrameOwner> extractControllerClass(WindowInfo windowInfo) {
-        if (windowInfo.getDescriptor() != null) {
-            String className = windowInfo.getDescriptor().attributeValue("class");
-
-            if (Strings.isNullOrEmpty(className)) {
-                Element screenXml = screenXmlLoader.load(windowInfo.getTemplate(),
-                        windowInfo.getId(), Collections.emptyMap());
-                className = screenXml.attributeValue("class");
-            }
-
-            if (Strings.isNullOrEmpty(className)) {
-                // fallback for legacy frames
-                return AbstractFrame.class;
-            }
-
-            return (Class<? extends FrameOwner>) scripting.loadClassNN(className);
-        }
-
-        if (windowInfo.getControllerClassName() != null) {
-            return loadDefinedScreenClass(windowInfo.getControllerClassName());
-        }
-
-        throw new IllegalStateException("Neither screen class nor descriptor is set for WindowInfo");
-    }
-
-    protected Boolean extractMultiOpen(WindowInfo windowInfo) {
-        if (windowInfo.getControllerClassName() != null) {
-            Class<? extends FrameOwner> screenClass = loadDefinedScreenClass(windowInfo.getControllerClassName());
-
-            MultipleOpen multipleOpen = screenClass.getAnnotation(MultipleOpen.class);
-            if (multipleOpen != null) {
-                // default is false
-                return multipleOpen.value();
-            }
-        }
-
-        if (windowInfo.getDescriptor() != null) {
-            String multipleOpen = windowInfo.getDescriptor().attributeValue("multipleOpen");
-
-            if (multipleOpen != null) {
-                return Boolean.parseBoolean(multipleOpen);
-            }
-        }
-
-        return null;
-    }
-
-    @Nullable
-    protected String extractWindowTemplate(WindowInfo windowInfo) {
-        if (windowInfo.getDescriptor() != null) {
-            return windowInfo.getDescriptor().attributeValue("template");
-        }
-
-        if (windowInfo.getControllerClassName() != null) {
-            Class<? extends FrameOwner> screenClass = loadDefinedScreenClass(windowInfo.getControllerClassName());
-
-            UiDescriptor annotation = screenClass.getAnnotation(UiDescriptor.class);
-            if (annotation == null) {
-                return null;
-            }
-            String template = UiDescriptorUtils.getInferredTemplate(annotation, screenClass);
-            if (!template.startsWith("/")) {
-                String packageName = UiControllerUtils.getPackage(screenClass);
-                if (StringUtils.isNotEmpty(packageName)) {
-                    String relativePath = packageName.replace('.', '/');
-                    template = "/" + relativePath + "/" + template;
-                }
-            }
-
-            return template;
-        }
-
-        throw new IllegalStateException("Neither screen class nor descriptor is set for WindowInfo");
     }
 
     @SuppressWarnings("unchecked")
@@ -582,5 +554,44 @@ public class WindowConfig {
             id = getBrowseScreenId(metaClass);
         }
         return id;
+    }
+
+    public static class ResolvedWindowInfo extends WindowInfo {
+
+        protected final String template;
+        protected final Class<? extends FrameOwner> controllerClass;
+        protected final Type type;
+
+        public ResolvedWindowInfo(WindowInfo windowInfo, Type type, Class<? extends FrameOwner> controllerClass, String template) {
+            super(windowInfo.getId(), null, windowInfo.getDescriptor(),
+                    windowInfo.getControllerClassName(), windowInfo.getRouteDefinition());
+
+            this.template = template;
+
+            this.controllerClass = controllerClass;
+            this.type = type;
+        }
+
+        @Nullable
+        @Override
+        public String getTemplate() {
+            return template;
+        }
+
+        @Override
+        public Type getType() {
+            return type;
+        }
+
+        @Nonnull
+        @Override
+        public Class<? extends FrameOwner> getControllerClass() {
+            return controllerClass;
+        }
+
+        @Override
+        public WindowInfo resolve() {
+            return this;
+        }
     }
 }

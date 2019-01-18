@@ -30,7 +30,6 @@ import com.haulmont.cuba.gui.screen.FrameOwner;
 import com.haulmont.cuba.gui.screen.MapScreenOptions;
 import com.haulmont.cuba.gui.screen.OpenMode;
 import com.haulmont.cuba.gui.screen.Screen;
-import com.haulmont.cuba.gui.screen.compatibility.LegacyFrame;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.MethodUtils;
 import org.dom4j.Element;
@@ -116,8 +115,7 @@ public class MenuItemCommands {
         if (StringUtils.isNotEmpty(screen)) {
             WindowInfo windowInfo = windowConfig.getWindowInfo(screen);
             // caption is passed only for legacy screens
-
-            if (LegacyFrame.class.isAssignableFrom(windowInfo.getControllerClass())) {
+            if (windowInfo.getDescriptor() != null) {
                 String caption = menuConfig.getItemCaption(screen);
 
                 builder.put(WindowParams.CAPTION.name(), caption);

@@ -243,15 +243,15 @@ public class RuntimePropertiesFrameLoader extends ContainerLoader<Frame> {
                 return src;
             }
 
-            @Override
-            public Boolean isMultipleOpen(WindowInfo wi) {
-                return false;
-            }
-
             @Nonnull
             @Override
             public Class<? extends FrameOwner> getControllerClass(WindowInfo wi) {
                 return fragmentClass;
+            }
+
+            @Override
+            public WindowInfo resolve(WindowInfo windowInfo) {
+                return windowInfo;
             }
         }, screenElement);
     }

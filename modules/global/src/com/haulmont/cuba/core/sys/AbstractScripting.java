@@ -74,17 +74,25 @@ public abstract class AbstractScripting implements Scripting {
     public AbstractScripting(JavaClassLoader javaClassLoader, Configuration configuration, SpringBeanLoader springBeanLoader) {
         this.javaClassLoader = javaClassLoader;
         this.springBeanLoader = springBeanLoader;
-        globalConfig = configuration.getConfig(GlobalConfig.class);
-        groovyClassPath = globalConfig.getConfDir() + File.pathSeparator;
+
+        this.globalConfig = configuration.getConfig(GlobalConfig.class);
+
+        StringBuilder groovyClassPathBuilder = new StringBuilder(globalConfig.getConfDir())
+                .append(File.pathSeparator);
 
         String classPathProp = AppContext.getProperty("cuba.groovyClassPath");
         if (StringUtils.isNotBlank(classPathProp)) {
             String[] strings = classPathProp.split(";");
             for (String string : strings) {
-                if (!groovyClassPath.contains(string.trim() + File.pathSeparator))
-                    groovyClassPath = groovyClassPath + string.trim() + File.pathSeparator;
+                String entry = string.trim() + File.pathSeparator;
+
+                if (groovyClassPathBuilder.indexOf(entry) < 0) {
+                    groovyClassPathBuilder.append(entry);
+                }
             }
         }
+
+        this.groovyClassPath = groovyClassPathBuilder.toString();
 
         String importProp = AppContext.getProperty("cuba.groovyEvaluatorImport");
         if (StringUtils.isNotBlank(importProp)) {
@@ -124,7 +132,7 @@ public abstract class AbstractScripting implements Scripting {
 
     private synchronized GenericKeyedObjectPool<String, Script> getPool() {
         if (pool == null) {
-            GenericKeyedObjectPoolConfig poolConfig = new GenericKeyedObjectPoolConfig();
+            GenericKeyedObjectPoolConfig<Script> poolConfig = new GenericKeyedObjectPoolConfig<>();
             poolConfig.setMaxTotalPerKey(-1);
             poolConfig.setMaxIdlePerKey(globalConfig.getGroovyEvaluationPoolMaxIdle());
             pool = new GenericKeyedObjectPool<>(
@@ -233,18 +241,20 @@ public abstract class AbstractScripting implements Scripting {
         return (T) evaluateGroovy(text, binding);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <T> T runGroovyScript(String name, Binding binding) {
         try {
-            //noinspection unchecked
             return (T) getGroovyScriptEngine().run(name, binding);
         } catch (ResourceException e) {
             // Perhaps the Groovy source not found - it is possible when we run tests. Let's try to find a
             // compiled script in the classpath
-            if (name.endsWith(".groovy"))
+            if (name.endsWith(".groovy")) {
                 name = name.substring(0, name.length() - 7);
-            if (name.startsWith("/"))
+            }
+            if (name.startsWith("/")) {
                 name = name.substring(1);
+            }
             name = name.replace("/", ".");
 
             Class scriptClass = loadClass(name);
@@ -491,7 +501,9 @@ public abstract class AbstractScripting implements Scripting {
                     }
                 }
                 // no class found, there should have been an exception before now
-                if (last == null) throw new AssertionError(true);
+                if (last == null) {
+                    throw new AssertionError(true);
+                }
                 throw last;
             }
             return cls;

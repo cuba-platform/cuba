@@ -17,7 +17,6 @@
 package com.haulmont.cuba.gui.config;
 
 import com.haulmont.cuba.gui.screen.FrameOwner;
-import com.haulmont.cuba.gui.screen.MultipleOpen;
 import com.haulmont.cuba.gui.screen.Screen;
 import com.haulmont.cuba.gui.screen.ScreenFragment;
 import com.haulmont.cuba.gui.sys.RouteDefinition;
@@ -43,6 +42,15 @@ public class WindowInfo {
     private final String screenClassName;
 
     private final RouteDefinition routeDefinition;
+
+    protected WindowInfo(String id, WindowAttributesProvider windowAttributesProvider,
+                         Element descriptor, String screenClassName, RouteDefinition routeDefinition) {
+        this.id = id;
+        this.windowAttributesProvider = windowAttributesProvider;
+        this.descriptor = descriptor;
+        this.screenClassName = screenClassName;
+        this.routeDefinition = routeDefinition;
+    }
 
     public WindowInfo(String id, WindowAttributesProvider windowAttributesProvider, Element descriptor) {
         this(id, windowAttributesProvider, descriptor, null);
@@ -84,6 +92,13 @@ public class WindowInfo {
      */
     public Type getType() {
         return windowAttributesProvider.getType(this);
+    }
+
+    /**
+     * @return detached window info instance
+     */
+    public WindowInfo resolve() {
+        return windowAttributesProvider.resolve(this);
     }
 
     @Nonnull
@@ -140,13 +155,6 @@ public class WindowInfo {
     }
 
     /**
-     * @return true if the screen marked with {@link MultipleOpen} annotation or registered with multipleOpen="true"
-     */
-    public Boolean getMultipleOpen() {
-        return windowAttributesProvider.isMultipleOpen(this);
-    }
-
-    /**
      * @return route definition configured with {@link com.haulmont.cuba.gui.Route} annotation
      */
     public RouteDefinition getRouteDefinition() {
@@ -155,10 +163,9 @@ public class WindowInfo {
 
     @Override
     public String toString() {
-        String template = getTemplate();
         return "WindowInfo{" +
                 "id='" + id + '\'' +
-                (template != null ? ", template=" + template : "") +
+                (descriptor != null ? ", descriptor=" + descriptor : "") +
                 (screenClassName != null ? ", screenClass=" + screenClassName : "") +
                 "}";
     }

@@ -12,9 +12,8 @@ public interface WindowAttributesProvider {
     @Nullable
     String getTemplate(WindowInfo windowInfo);
 
-    @Nullable
-    Boolean isMultipleOpen(WindowInfo windowInfo);
-
     @Nonnull
     Class<? extends FrameOwner> getControllerClass(WindowInfo windowInfo);
+
+    WindowInfo resolve(WindowInfo windowInfo);
 }

@@ -149,7 +149,7 @@ public class WebScreens implements Screens, WindowManager {
         checkNotNullArgument(launchMode);
         checkNotNullArgument(options);
 
-        WindowInfo windowInfo = getScreenInfo(requiredScreenClass);
+        WindowInfo windowInfo = getScreenInfo(requiredScreenClass).resolve();
 
         return createScreen(windowInfo, launchMode, options);
     }
@@ -160,7 +160,8 @@ public class WebScreens implements Screens, WindowManager {
         checkNotNullArgument(launchMode);
         checkNotNullArgument(options);
 
-        WindowInfo windowInfo = windowConfig.getWindowInfo(screenId);
+        // load screen class only once
+        WindowInfo windowInfo = windowConfig.getWindowInfo(screenId).resolve();
 
         return createScreen(windowInfo, launchMode, options);
     }

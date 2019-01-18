@@ -342,7 +342,7 @@ public class UrlChangeHandler {
             screen = createEditor(windowInfo, requestedState);
             if (screen == null) {
                 log.debug("Unable to open screen '{}' for requested route '{}'",
-                        windowInfo, requestedState.getNestedRoute());
+                        windowInfo.getId(), requestedState.getNestedRoute());
                 revertNavigationState();
                 return true;
             }
