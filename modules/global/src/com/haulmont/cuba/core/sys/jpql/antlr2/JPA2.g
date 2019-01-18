@@ -225,7 +225,7 @@ subquery_from_clause
 
 subselect_identification_variable_declaration
     : identification_variable_declaration
-    | derived_path_expression AS identification_variable (join)*
+    | derived_path_expression (AS)? identification_variable (join)*
     | derived_collection_member_declaration;
 derived_path_expression
     : general_derived_path'.'single_valued_object_field

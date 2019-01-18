@@ -409,6 +409,18 @@ public class QueryParserAstBasedTest {
         }
     }
 
+    @Test
+    public void testPathVariableInSubQuery() {
+        DomainModel model = prepareDomainModel();
+        QueryParserAstBased parser = new QueryParserAstBased(model,
+                "select h from sec$GroupHierarchy h where exists(select c from h.constraints as c)");
+        parser.getEntityAlias();
+
+        parser = new QueryParserAstBased(model,
+                "select h from sec$GroupHierarchy h where exists(select c from h.constraints c)");
+        parser.getEntityAlias();
+    }
+
     private DomainModel prepareDomainModel() {
         EntityBuilder builder = new EntityBuilder();
         builder.startNewEntity("sec$GroupHierarchy");
