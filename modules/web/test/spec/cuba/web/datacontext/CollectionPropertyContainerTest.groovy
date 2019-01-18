@@ -16,11 +16,14 @@
 
 package spec.cuba.web.datacontext
 
+
 import com.haulmont.cuba.gui.model.CollectionPropertyContainer
 import com.haulmont.cuba.gui.model.InstanceContainer
 import com.haulmont.cuba.web.testmodel.sales.Order
 import com.haulmont.cuba.web.testmodel.sales.OrderLine
 import spec.cuba.web.WebSpec
+
+import java.util.function.Consumer
 
 class CollectionPropertyContainerTest extends WebSpec {
 
@@ -107,4 +110,21 @@ class CollectionPropertyContainerTest extends WebSpec {
         !order.orderLines.contains(orderLine4)
     }
 
+    def "master container is NOT notified when the collection is changed"() {
+
+        orderCt.setItem(order)
+
+        def orderLine3 = new OrderLine(order: this.order, quantity: 3)
+
+        Consumer<InstanceContainer.ItemPropertyChangeEvent<Order>> listener = Mock()
+        orderCt.addItemPropertyChangeListener(listener)
+
+        when:
+
+        linesCt.getMutableItems().add(orderLine3)
+
+        then:
+
+        0 * listener.accept(_)
+    }
 }
