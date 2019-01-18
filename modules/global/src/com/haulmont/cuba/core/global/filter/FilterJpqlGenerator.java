@@ -17,9 +17,25 @@
 
 package com.haulmont.cuba.core.global.filter;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public class FilterJpqlGenerator extends AbstractJpqlGenerator {
+
+    public static final String OR_PATTERN_REGEX = "\\bOR\\b";
+    public static final Pattern OR_PATTERN = Pattern.compile(OR_PATTERN_REGEX, Pattern.CASE_INSENSITIVE);
+
     @Override
     protected String generateClauseText(Clause condition) {
-        return condition.getContent();
+        if (condition.getType() == ConditionType.CUSTOM) {
+            String content = condition.getContent();
+            Matcher orMatcher = OR_PATTERN.matcher(content);
+            if (orMatcher.find()) {
+                return "(" + content + ")";
+            }
+            return content;
+        } else {
+            return condition.getContent();
+        }
     }
 }
