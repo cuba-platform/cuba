@@ -73,7 +73,7 @@ public class Clause extends Condition {
 
     public ConditionType getType() {
         try {
-            return ConditionType.valueOf(type);
+            return type == null ? null : ConditionType.valueOf(type);
         } catch (IllegalArgumentException e) {
             return null;
         }
