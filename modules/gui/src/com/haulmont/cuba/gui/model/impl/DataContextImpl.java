@@ -338,7 +338,7 @@ public class DataContextImpl implements DataContext {
 
         } else if (dstEntity instanceof AbstractNotPersistentEntity) {
             ((AbstractNotPersistentEntity) dstEntity).setId((UUID) srcEntity.getId());
-            BaseEntityInternalAccess.setNew((AbstractNotPersistentEntity) dstEntity, BaseEntityInternalAccess.isNew((BaseGenericIdEntity) srcEntity));
+            BaseEntityInternalAccess.setNew((AbstractNotPersistentEntity) dstEntity, BaseEntityInternalAccess.isNew((AbstractNotPersistentEntity) srcEntity));
         }
 
         if (dstEntity instanceof Versioned) {
@@ -360,7 +360,7 @@ public class DataContextImpl implements DataContext {
                 }
             }
         } else if (dstEntity instanceof AbstractNotPersistentEntity) {
-            BaseEntityInternalAccess.setNew((AbstractNotPersistentEntity) dstEntity, BaseEntityInternalAccess.isNew((BaseGenericIdEntity) srcEntity));
+            BaseEntityInternalAccess.setNew((AbstractNotPersistentEntity) dstEntity, BaseEntityInternalAccess.isNew((AbstractNotPersistentEntity) srcEntity));
         }
     }
 
