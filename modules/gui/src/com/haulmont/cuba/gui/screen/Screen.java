@@ -242,7 +242,7 @@ public abstract class Screen implements FrameOwner {
      * @param listener listener
      * @return subscription
      */
-    protected Subscription addAfterShowListener(Consumer<AfterShowEvent> listener) {
+    public Subscription addAfterShowListener(Consumer<AfterShowEvent> listener) {
         return eventHub.subscribe(AfterShowEvent.class, listener);
     }
 

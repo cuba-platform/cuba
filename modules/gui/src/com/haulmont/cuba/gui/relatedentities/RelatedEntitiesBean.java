@@ -39,10 +39,8 @@ import com.haulmont.cuba.gui.components.filter.condition.PropertyCondition;
 import com.haulmont.cuba.gui.components.filter.descriptor.PropertyConditionDescriptor;
 import com.haulmont.cuba.gui.components.sys.ValuePathHelper;
 import com.haulmont.cuba.gui.config.WindowConfig;
-import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.data.impl.DsContextImplementation;
-import com.haulmont.cuba.gui.screen.MapScreenOptions;
-import com.haulmont.cuba.gui.screen.Screen;
+import com.haulmont.cuba.gui.screen.*;
 import com.haulmont.cuba.gui.screen.compatibility.LegacyFrame;
 import com.haulmont.cuba.security.entity.FilterEntity;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -55,6 +53,8 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static com.haulmont.cuba.gui.screen.UiControllerUtils.getScreenContext;
 
 @Component(RelatedEntitiesAPI.NAME)
 public class RelatedEntitiesBean implements RelatedEntitiesAPI {
@@ -91,6 +91,11 @@ public class RelatedEntitiesBean implements RelatedEntitiesAPI {
 
     @Inject
     protected ConditionParamBuilder paramBuilder;
+
+    @Override
+    public RelatedEntitiesBuilder builder(FrameOwner frameOwner) {
+        return new RelatedEntitiesBuilder(frameOwner, this::buildScreen);
+    }
 
     @Override
     public void openRelatedScreen(Collection<? extends Entity> selectedEntities, MetaClass metaClass, MetaProperty metaProperty) {
@@ -369,7 +374,7 @@ public class RelatedEntitiesBean implements RelatedEntitiesAPI {
         conditionElement.addAttribute("width", "1");
         conditionElement.addAttribute("type", "CUSTOM");
         String entityName = metaClass.getName().contains("$") ?
-                StringUtils.substringAfter(metaClass.getName(), "$"):
+                StringUtils.substringAfter(metaClass.getName(), "$") :
                 StringUtils.substringAfter(metaClass.getName(), "_");
         String conditionCaption = String.format("%s ids", entityName);
         // condition will be hidden so we don't have to load localized condition caption
@@ -428,6 +433,102 @@ public class RelatedEntitiesBean implements RelatedEntitiesAPI {
             return Collections.emptyList();
         } else {
             return selectedParents.stream().map(Entity::getId).collect(Collectors.toList());
+        }
+    }
+
+    protected Screen buildScreen(RelatedEntitiesBuilder builder) {
+        MetaClass metaClass = getMetaClassNN(builder);
+        MetaProperty metaProperty = getMetaPropertyNN(builder, metaClass);
+
+        Screen screen = createScreen(builder, metaClass, metaProperty);
+
+        Collection<? extends Entity> selectedEntities = builder.getSelectedEntities() == null ?
+                Collections.emptyList() : builder.getSelectedEntities();
+
+        boolean found = ComponentsHelper.walkComponents(screen.getWindow(), screenComponent -> {
+            if (!(screenComponent instanceof Filter)) {
+                return false;
+            } else {
+                MetaClass actualMetaClass = ((FilterImplementation) screenComponent).getEntityMetaClass();
+                MetaClass relatedMetaClass = metaProperty.getRange().asClass();
+                MetaClass effectiveMetaClass = extendedEntities.getEffectiveMetaClass(relatedMetaClass);
+                if (Objects.equals(actualMetaClass, effectiveMetaClass)) {
+                    MetaDataDescriptor metaDataDescriptor = new MetaDataDescriptor(metaClass, metaProperty);
+
+                    RelatedScreenDescriptor descriptor = new RelatedScreenDescriptor();
+                    descriptor.setFilterCaption(builder.getFilterCaption());
+                    applyFilter(((Filter) screenComponent), selectedEntities, descriptor, metaDataDescriptor);
+                    return true;
+                }
+                return false;
+            }
+        });
+
+        if (!found) {
+            screen.addAfterShowListener(event -> {
+                ScreenContext screenContext = UiControllerUtils.getScreenContext(event.getSource());
+                screenContext.getNotifications()
+                        .create(Notifications.NotificationType.WARNING)
+                        .withCaption(messages.getMainMessage("actions.Related.FilterNotFound"))
+                        .show();
+            });
+        }
+
+        return screen;
+    }
+
+    protected MetaClass getMetaClassNN(RelatedEntitiesBuilder builder) {
+        MetaClass metaClass = builder.getMetaClass();
+        if (metaClass == null) {
+            Class entityClass = builder.getEntityClass();
+            if (entityClass == null) {
+                throw new IllegalArgumentException("MetaClass or entityClass can't be null");
+            } else {
+                metaClass = metadata.getClassNN(entityClass);
+            }
+        }
+        return metaClass;
+    }
+
+    protected MetaProperty getMetaPropertyNN(RelatedEntitiesBuilder builder, MetaClass metaClass) {
+        MetaProperty metaProperty = builder.getMetaProperty();
+        if (metaProperty == null) {
+            String property = builder.getProperty();
+            if (StringUtils.isEmpty(property)) {
+                throw new IllegalArgumentException("metaProperty or property can't be null");
+            } else {
+                metaProperty = metaClass.getPropertyNN(property);
+            }
+        }
+        return metaProperty;
+    }
+
+    @SuppressWarnings("unchecked")
+    protected Screen createScreen(RelatedEntitiesBuilder builder, MetaClass metaClass, MetaProperty metaProperty) {
+        FrameOwner origin = builder.getOrigin();
+        Screens screens = getScreenContext(origin).getScreens();
+        if (builder instanceof RelatedEntitiesClassBuilder) {
+            RelatedEntitiesClassBuilder screenClassBuilder = (RelatedEntitiesClassBuilder) builder;
+
+            Class screenClass = screenClassBuilder.getScreenClass();
+            if (screenClass == null) {
+                throw new IllegalArgumentException("Screen class is not set");
+            }
+
+            return screens.create(screenClass, builder.getLaunchMode(), builder.getOptions());
+        } else {
+            String screenId = builder.getScreenId();
+            if (StringUtils.isEmpty(screenId)) {
+                // try to get default browse screen id
+                screenId = windowConfig.getBrowseScreenId(metaProperty.getRange().asClass());
+                if (StringUtils.isEmpty(screenId)) {
+                    String message = String.format("Can't create related entities screen: passed screen id is null and " +
+                            "there is no default browse screen for %s", metaClass.getName());
+                    throw new IllegalArgumentException(message);
+                }
+            }
+
+            return screens.create(builder.getScreenId(), builder.getLaunchMode(), builder.getOptions());
         }
     }
 
