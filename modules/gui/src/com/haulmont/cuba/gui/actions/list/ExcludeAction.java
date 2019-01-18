@@ -25,7 +25,6 @@ import com.haulmont.cuba.gui.RemoveOperation;
 import com.haulmont.cuba.gui.components.ActionType;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.data.meta.ContainerDataUnit;
-import com.haulmont.cuba.gui.components.data.meta.EntityDataUnit;
 import com.haulmont.cuba.gui.icons.CubaIcon;
 import com.haulmont.cuba.gui.icons.Icons;
 import com.haulmont.cuba.gui.model.CollectionContainer;
@@ -67,18 +66,19 @@ public class ExcludeAction extends SecuredListAction {
 
     @Override
     protected boolean isPermitted() {
-        if (target == null || !(target.getItems() instanceof EntityDataUnit)) {
+        if (target == null || !(target.getItems() instanceof ContainerDataUnit)) {
             return false;
         }
 
-        MetaClass metaClass = ((EntityDataUnit) target.getItems()).getEntityMetaClass();
+        ContainerDataUnit containerDataUnit = (ContainerDataUnit) target.getItems();
+
+        MetaClass metaClass = containerDataUnit.getEntityMetaClass();
         if (metaClass == null) {
-            return true;
+            return false;
         }
 
-        EntityDataUnit dataUnit = (EntityDataUnit) target.getItems();
-        if (dataUnit instanceof Nested) {
-            Nested nestedContainer = (Nested) dataUnit;
+        if (containerDataUnit.getContainer() instanceof Nested) {
+            Nested nestedContainer = (Nested) containerDataUnit.getContainer();
 
             MetaClass masterMetaClass = nestedContainer.getMaster().getEntityMetaClass();
             MetaProperty metaProperty = masterMetaClass.getPropertyNN(nestedContainer.getProperty());
