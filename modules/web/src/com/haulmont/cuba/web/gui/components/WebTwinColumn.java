@@ -242,4 +242,19 @@ public class WebTwinColumn<V> extends WebV8AbstractField<CubaTwinColSelect<V>, S
     public String getRightColumnCaption() {
         return component.getRightColumnCaption();
     }
+
+    @Override
+    public void focus() {
+        component.focus();
+    }
+
+    @Override
+    public int getTabIndex() {
+        return component.getTabIndex();
+    }
+
+    @Override
+    public void setTabIndex(int tabIndex) {
+        component.setTabIndex(tabIndex);
+    }
 }

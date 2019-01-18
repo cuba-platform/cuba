@@ -2536,8 +2536,6 @@
                 <xs:attribute name="leftColumnCaption" type="resourceString"/>
                 <xs:attribute name="rightColumnCaption" type="resourceString"/>
 
-                <xs:attribute name="multiselect" type="xs:boolean"/>
-
                 <xs:attribute name="columns" type="xs:string"/>
                 <xs:attribute name="rows" type="xs:string"/>
                 <xs:attribute name="addAllBtnEnabled" type="xs:boolean"/>

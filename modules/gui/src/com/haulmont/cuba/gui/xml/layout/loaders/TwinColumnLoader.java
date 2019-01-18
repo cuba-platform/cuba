@@ -74,13 +74,7 @@ public class TwinColumnLoader extends AbstractFieldLoader<TwinColumn> {
             resultComponent.setLeftColumnCaption(loadResourceString(leftColumnCaption));
         }
 
-//        vaadin8
-        /*String multiselect = element.attributeValue("multiselect");
-        if (StringUtils.isNotEmpty(multiselect)) {
-            resultComponent.setMultiSelect(Boolean.parseBoolean(multiselect));
-        }
-
-        loadTabIndex(resultComponent, element);*/
+        loadTabIndex(resultComponent, element);
     }
 
     @Override

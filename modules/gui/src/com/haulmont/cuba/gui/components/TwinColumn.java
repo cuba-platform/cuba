@@ -25,7 +25,7 @@ import java.util.Collection;
  *
  * @param <V> value and options type for the component
  */
-public interface TwinColumn<V> extends OptionsField<Collection<V>, V> {
+public interface TwinColumn<V> extends OptionsField<Collection<V>, V>, Component.Focusable {
 
     String NAME = "twinColumn";
 
