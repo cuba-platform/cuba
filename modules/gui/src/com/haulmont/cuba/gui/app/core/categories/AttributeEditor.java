@@ -249,13 +249,12 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
 
         attributeFieldGroup.addCustomField("screen", (datasource, propertyId) -> {
             screenField = uiComponents.create(LookupField.NAME);
+            screenField.setDatasource(datasource, propertyId);
             screenField.setId("screenField");
             screenField.setCaption(getMessage("screen"));
             screenField.setWidth(fieldWidth);
-            screenField.setRequired(true);
             screenField.setRequiredMessage(getMessage("entityScreenRequired"));
             screenField.setFrame(frame);
-            screenField.setDatasource(datasource, propertyId);
 
             return screenField;
         });
