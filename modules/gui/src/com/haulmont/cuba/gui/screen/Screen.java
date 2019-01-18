@@ -232,12 +232,12 @@ public abstract class Screen implements FrameOwner {
      * Adds {@link AfterShowEvent} listener.
      * <p>
      * You can also add an event listener declaratively using a controller method annotated with {@link Subscribe}:
-     * <pre>{@code
-     *    @Subscribe
+     * <pre>
+     *    &#64;Subscribe
      *    protected void onAfterShow(AfterShowEvent event) {
      *       // handle event here
      *    }
-     * }</pre>
+     * </pre>
      *
      * @param listener listener
      * @return subscription
