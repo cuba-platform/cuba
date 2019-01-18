@@ -57,7 +57,7 @@ public class TreeToQuery implements TreeVisitorAction {
                 node.parent != null && node.parent.getType() == JPA2Lexer.T_CONDITION && node.getType() == JPA2Lexer.LPAREN && (node.childIndex == 0 || node.parent.getChild(node.childIndex - 1).getType() != JPA2Lexer.LPAREN) ||
                 node.getType() == JPA2Lexer.AND ||
                 node.parent != null && node.parent.getType() == JPA2Lexer.T_ORDER_BY_FIELD && !isExtractDatePartNode(node) ||
-                node.parent != null && node.parent.getType() == JPA2Lexer.T_SELECTED_ITEM && node.getType() == JPA2Lexer.AS ||
+                node.parent != null && (node.parent.getType() == JPA2Lexer.T_SELECTED_ITEM || node.parent.getType() == JPA2Lexer.T_SOURCE) && node.getType() == JPA2Lexer.AS ||
                 node.getType() == JPA2Lexer.OR ||
                 node.getType() == JPA2Lexer.NOT ||
                 node.getType() == JPA2Lexer.DISTINCT && node.childIndex == 0 ||
@@ -72,7 +72,8 @@ public class TreeToQuery implements TreeVisitorAction {
                 node.getType() == JPA2Lexer.ELSE ||
                 node.getType() == JPA2Lexer.END ||
                 isExtractFromNode(node) ||
-                isCastTypeNode(node)
+                isCastTypeNode(node) ||
+                isSubQueryAliasWithoutAs(node)
         ) {
             sb.appendSpace();
         }
@@ -198,6 +199,18 @@ public class TreeToQuery implements TreeVisitorAction {
         return false;
     }
 
+    private boolean isSubQueryAliasWithoutAs(CommonTree node) {
+        if (node.parent != null && node.parent.getType() == JPA2Lexer.T_SOURCE) {
+            if (node.childIndex >= 2) {
+                Tree dotNode = node.parent.getChild(node.childIndex - 2);
+                if (".".equals(dotNode.getText())) {
+                    return !".".equals(node.getText());
+                }
+            }
+        }
+        return false;
+    }
+
     @Override
     public Object post(Object t) {
         if (!(t instanceof CommonTree))
@@ -216,7 +229,7 @@ public class TreeToQuery implements TreeVisitorAction {
                 node.getType() == JPA2Lexer.FETCH ||
                 node.getType() == JPA2Lexer.THEN ||
                 node.getType() == JPA2Lexer.ELSE ||
-                node.parent != null && node.parent.getType() == JPA2Lexer.T_SELECTED_ITEM && node.getType() == JPA2Lexer.AS ||
+                node.parent != null && (node.parent.getType() == JPA2Lexer.T_SELECTED_ITEM || node.parent.getType() == JPA2Lexer.T_SOURCE) && node.getType() == JPA2Lexer.AS ||
                 isExtractFromNode(node)) {
             sb.appendSpace();
         }

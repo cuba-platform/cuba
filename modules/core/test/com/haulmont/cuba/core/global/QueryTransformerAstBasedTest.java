@@ -589,6 +589,28 @@ public class QueryTransformerAstBasedTest {
     }
 
     @Test
+    public void getResult_noChangesMade_AsInFrom() throws RecognitionException {
+        EntityBuilder builder = new EntityBuilder();
+        JpqlEntityModel teamEntity = builder.produceImmediately("Team", "name");
+
+        builder.startNewEntity("Player");
+        builder.addReferenceAttribute("team", "Team");
+        builder.addStringAttribute("name");
+        JpqlEntityModel playerEntity = builder.produce();
+        DomainModel model = new DomainModel(playerEntity, teamEntity);
+
+        QueryTransformerAstBased transformerAstBased = new QueryTransformerAstBased(model,
+                        "SELECT p FROM Player as p where exists(select t from p.team as t)");
+        String result = transformerAstBased.getResult();
+        assertEquals("SELECT p FROM Player p where exists (select t from p.team as t)", result);
+
+        transformerAstBased = new QueryTransformerAstBased(model,
+                "SELECT p FROM Player as p where exists(select t from p.team t)");
+        result = transformerAstBased.getResult();
+        assertEquals("SELECT p FROM Player p where exists (select t from p.team t)", result);
+    }
+
+    @Test
     public void getResult_noChangesMade_Extract() throws RecognitionException {
         EntityBuilder builder = new EntityBuilder();
         builder.startNewEntity("Player");
