@@ -23,47 +23,13 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Logger class for UI performance stats.
- * Contains constants for screen life cycle.
  */
 public final class UIPerformanceLogger {
 
     private UIPerformanceLogger() {
     }
 
-    public enum LifeCycle {
-        CREATE("create", "#create"),
-        LOAD("load", "#load"),
-        XML("xml", "#xml"),
-        INIT("init", "#init"),
-        READY("ready", "#ready"),
-        SET_ITEM("setItem", "#setItem"),
-        UI_PERMISSIONS("uiPermissions", "#uiPermissions"),
-        INJECTION("inject", "#inject"),
-        COMPANION("companion", "#companion");
-
-        private String name;
-        private String suffix;
-
-        LifeCycle(String name, String suffix) {
-            this.name = name;
-            this.suffix = suffix;
-        }
-
-        @Override
-        public String toString() {
-            return name;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public String getSuffix() {
-            return suffix;
-        }
-    }
-
-    public static StopWatch createStopWatch(LifeCycle lifeCycle, String loggingId) {
+    public static StopWatch createStopWatch(ScreenLifeCycle lifeCycle, String loggingId) {
         return new Slf4JStopWatch(loggingId + lifeCycle.getSuffix(), LoggerFactory.getLogger(UIPerformanceLogger.class));
     }
 }

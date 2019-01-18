@@ -19,8 +19,8 @@ package com.haulmont.cuba.gui.xml.layout;
 import com.haulmont.cuba.core.global.BeanLocator;
 import com.haulmont.cuba.core.global.DevelopmentException;
 import com.haulmont.cuba.core.global.Resources;
+import com.haulmont.cuba.gui.logging.ScreenLifeCycle;
 import com.haulmont.cuba.gui.logging.UIPerformanceLogger;
-import com.haulmont.cuba.gui.logging.UIPerformanceLogger.LifeCycle;
 import com.haulmont.cuba.gui.xml.XmlInheritanceProcessor;
 import org.apache.commons.io.IOUtils;
 import org.dom4j.Document;
@@ -44,7 +44,6 @@ public class ScreenXmlLoader {
 
     @Inject
     protected Resources resources;
-
     @Inject
     protected ScreenXmlDocumentCache screenXmlCache;
     @Inject
@@ -54,13 +53,14 @@ public class ScreenXmlLoader {
 
     /**
      * Loads a descriptor.
-     * @param resourcePath  path to the resource containing the XML
-     * @param id            screen ID
-     * @param params        screen parameters
+     *
+     * @param resourcePath path to the resource containing the XML
+     * @param id           screen ID
+     * @param params       screen parameters
      * @return root XML element
      */
     public Element load(String resourcePath, String id, Map<String, Object> params) {
-        StopWatch xmlLoadWatch = UIPerformanceLogger.createStopWatch(LifeCycle.XML, id);
+        StopWatch xmlLoadWatch = UIPerformanceLogger.createStopWatch(ScreenLifeCycle.XML, id);
 
         String template = loadTemplate(resourcePath);
         Document document = getDocument(template, params);
@@ -70,17 +70,14 @@ public class ScreenXmlLoader {
     }
 
     protected String loadTemplate(String resourcePath) {
-        InputStream stream = resources.getResourceAsStream(resourcePath);
-        if (stream == null) {
-            throw new DevelopmentException("Template is not found " + resourcePath, "Path", resourcePath);
-        }
+        try (InputStream stream = resources.getResourceAsStream(resourcePath)) {
+            if (stream == null) {
+                throw new DevelopmentException("Template is not found " + resourcePath, "Path", resourcePath);
+            }
 
-        try {
             return IOUtils.toString(stream, StandardCharsets.UTF_8);
         } catch (IOException e) {
             throw new RuntimeException("Unable to read screen template");
-        } finally {
-            IOUtils.closeQuietly(stream);
         }
     }
 

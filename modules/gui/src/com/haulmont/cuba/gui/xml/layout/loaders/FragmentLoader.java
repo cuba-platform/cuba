@@ -27,7 +27,7 @@ import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import com.haulmont.cuba.gui.data.impl.GenericDataSupplier;
-import com.haulmont.cuba.gui.logging.UIPerformanceLogger.LifeCycle;
+import com.haulmont.cuba.gui.logging.ScreenLifeCycle;
 import com.haulmont.cuba.gui.model.ScreenData;
 import com.haulmont.cuba.gui.model.impl.ScreenDataXmlLoader;
 import com.haulmont.cuba.gui.screen.FrameOwner;
@@ -214,7 +214,7 @@ public class FragmentLoader extends ContainerLoader<Fragment> implements Compone
                 if (fragment.getFrameOwner() instanceof AbstractFrame) {
                     Element companionsElem = element.element("companions");
                     if (companionsElem != null) {
-                        StopWatch companionStopWatch = createStopWatch(LifeCycle.COMPANION, loggingId);
+                        StopWatch companionStopWatch = createStopWatch(ScreenLifeCycle.COMPANION, loggingId);
 
                         initCompanion(companionsElem, (AbstractFrame) fragment.getFrameOwner());
 
@@ -222,7 +222,7 @@ public class FragmentLoader extends ContainerLoader<Fragment> implements Compone
                     }
                 }
 
-                StopWatch injectStopWatch = createStopWatch(LifeCycle.INJECTION, loggingId);
+                StopWatch injectStopWatch = createStopWatch(ScreenLifeCycle.INJECTION, loggingId);
 
                 FrameOwner controller = fragment.getFrameOwner();
                 UiControllerDependencyInjector dependencyInjector =
@@ -249,7 +249,7 @@ public class FragmentLoader extends ContainerLoader<Fragment> implements Compone
         public void execute(Context context, Frame window) {
             String loggingId = ComponentsHelper.getFullFrameId(this.fragment);
 
-            StopWatch stopWatch = createStopWatch(LifeCycle.INIT, loggingId);
+            StopWatch stopWatch = createStopWatch(ScreenLifeCycle.INIT, loggingId);
 
             ScreenFragment frameOwner = fragment.getFrameOwner();
 

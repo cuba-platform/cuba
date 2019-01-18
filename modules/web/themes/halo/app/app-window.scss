@@ -183,6 +183,7 @@ $cuba-menubar-lineheight: $cuba-menubar-height - 2px !default;
 
   .c-main-singlewindow {
     background-color: $v-panel-background-color;
+    padding: $v-layout-margin-top / 2 $v-layout-margin-right / 2 $v-layout-margin-bottom / 2 $v-layout-margin-left / 2;
   }
 
   .v-splitpanel-horizontal > div > .v-splitpanel-hsplitter div:before {

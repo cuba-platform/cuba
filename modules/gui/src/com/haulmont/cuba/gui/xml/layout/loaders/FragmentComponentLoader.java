@@ -26,7 +26,7 @@ import com.haulmont.cuba.gui.components.sys.FrameImplementation;
 import com.haulmont.cuba.gui.config.WindowAttributesProvider;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
-import com.haulmont.cuba.gui.logging.UIPerformanceLogger.LifeCycle;
+import com.haulmont.cuba.gui.logging.ScreenLifeCycle;
 import com.haulmont.cuba.gui.model.impl.ScreenDataImpl;
 import com.haulmont.cuba.gui.screen.FrameOwner;
 import com.haulmont.cuba.gui.screen.ScreenContext;
@@ -87,7 +87,7 @@ public class FragmentComponentLoader extends ContainerLoader<Fragment> {
             windowInfo = createFakeWindowInfo(src, fragmentId);
         }
 
-        StopWatch createStopWatch = createStopWatch(LifeCycle.CREATE, windowInfo.getId());
+        StopWatch createStopWatch = createStopWatch(ScreenLifeCycle.CREATE, windowInfo.getId());
 
         Fragment fragment = factory.create(Fragment.NAME);
         ScreenFragment controller = createController(windowInfo, fragment, windowInfo.asFragment());
@@ -203,7 +203,8 @@ public class FragmentComponentLoader extends ContainerLoader<Fragment> {
         }, screenElement);
     }
 
-    protected <T extends ScreenFragment> T createController(WindowInfo windowInfo, Fragment fragment,
+    protected <T extends ScreenFragment> T createController(@SuppressWarnings("unused") WindowInfo windowInfo,
+                                                            @SuppressWarnings("unused") Fragment fragment,
                                                             Class<T> screenClass) {
         Constructor<T> constructor;
         try {
@@ -243,7 +244,7 @@ public class FragmentComponentLoader extends ContainerLoader<Fragment> {
             }
         }
 
-        StopWatch loadStopWatch = createStopWatch(LifeCycle.LOAD, screenPath);
+        StopWatch loadStopWatch = createStopWatch(ScreenLifeCycle.LOAD, screenPath);
 
         // if fragment has XML descriptor
 

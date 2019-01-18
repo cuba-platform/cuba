@@ -474,8 +474,6 @@ public interface WindowManager extends Screens {
         window.setDescription(description);
     }
 
-    boolean windowExist(WindowInfo windowInfo, Map<String, Object> params);
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     Window openWindow(WindowInfo windowInfo, OpenType openType, Map<String, Object> params);

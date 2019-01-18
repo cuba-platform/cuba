@@ -25,7 +25,7 @@ import com.haulmont.cuba.gui.UiComponents;
 import com.haulmont.cuba.gui.components.AbstractWindow;
 import com.haulmont.cuba.gui.components.Timer;
 import com.haulmont.cuba.gui.components.Window;
-import com.haulmont.cuba.gui.logging.UIPerformanceLogger.LifeCycle;
+import com.haulmont.cuba.gui.logging.ScreenLifeCycle;
 import com.haulmont.cuba.gui.model.ScreenData;
 import com.haulmont.cuba.gui.model.impl.ScreenDataXmlLoader;
 import com.haulmont.cuba.gui.screen.FrameOwner;
@@ -106,7 +106,7 @@ public class WindowLoader extends ContainerLoader<Window> implements ComponentRo
 
             Element companionsElem = element.element("companions");
             if (companionsElem != null) {
-                StopWatch companionStopWatch = createStopWatch(LifeCycle.COMPANION, controller.getId());
+                StopWatch companionStopWatch = createStopWatch(ScreenLifeCycle.COMPANION, controller.getId());
 
                 Object companion = initCompanion(companionsElem, (AbstractWindow) controller);
 

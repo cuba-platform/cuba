@@ -24,43 +24,43 @@ import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.icons.CubaIcon;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.web.App;
+import com.haulmont.cuba.web.AppUI;
+import com.haulmont.cuba.web.sys.WebScreens;
 
 public class ChangeSubstUserAction extends AbstractAction {
     protected User user;
 
     public ChangeSubstUserAction(User user) {
         super("changeSubstUserAction");
+
         this.user = user;
+
         setIconFromSet(CubaIcon.OK);
     }
 
     @Override
     public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
-        App app = App.getInstance();
-        app.getWindowManager().checkModificationsAndCloseAll(
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            app.getConnection().substituteUser(user);
-                            doAfterChangeUser();
-                        } catch (javax.persistence.NoResultException e) {
-                            Messages messages = AppBeans.get(Messages.NAME);
-                            app.getWindowManager().showNotification(
-                                    messages.formatMainMessage("substitutionNotPerformed", user.getName()),
-                                    Frame.NotificationType.WARNING
-                            );
-                            doRevert();
-                        }
-                    }
-                },
-                new Runnable() {
-                    @Override
-                    public void run() {
+        AppUI ui = AppUI.getCurrent();
+
+        WebScreens screens = (WebScreens) ui.getScreens();
+
+        screens.checkModificationsAndCloseAll()
+                .then(() -> {
+                    App app = ui.getApp();
+
+                    try {
+                        app.getConnection().substituteUser(user);
+                        doAfterChangeUser();
+                    } catch (javax.persistence.NoResultException e) {
+                        Messages messages = AppBeans.get(Messages.NAME);
+                        app.getWindowManager().showNotification(
+                                messages.formatMainMessage("substitutionNotPerformed", user.getName()),
+                                Frame.NotificationType.WARNING
+                        );
                         doRevert();
                     }
-                }
-        );
+                })
+                .otherwise(this::doRevert);
     }
 
     public void doAfterChangeUser() {

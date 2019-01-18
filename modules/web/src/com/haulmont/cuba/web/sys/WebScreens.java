@@ -45,7 +45,8 @@ import com.haulmont.cuba.gui.data.impl.DsContextImplementation;
 import com.haulmont.cuba.gui.data.impl.GenericDataSupplier;
 import com.haulmont.cuba.gui.icons.CubaIcon;
 import com.haulmont.cuba.gui.icons.Icons;
-import com.haulmont.cuba.gui.logging.UIPerformanceLogger.LifeCycle;
+import com.haulmont.cuba.gui.logging.ScreenLifeCycle;
+import com.haulmont.cuba.gui.logging.UserActionsLogger;
 import com.haulmont.cuba.gui.model.impl.ScreenDataImpl;
 import com.haulmont.cuba.gui.navigation.NavigationState;
 import com.haulmont.cuba.gui.screen.*;
@@ -79,6 +80,7 @@ import com.vaadin.ui.Layout;
 import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
 import org.perf4j.StopWatch;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -97,6 +99,9 @@ import static com.haulmont.cuba.gui.screen.FrameOwner.WINDOW_CLOSE_ACTION;
 import static com.haulmont.cuba.gui.screen.UiControllerUtils.*;
 
 public class WebScreens implements Screens, WindowManager {
+
+    private static final org.slf4j.Logger userActionsLog = LoggerFactory.getLogger(UserActionsLogger.class);
+
     @Inject
     protected BeanLocator beanLocator;
 
@@ -183,7 +188,7 @@ public class WebScreens implements Screens, WindowManager {
 
         checkPermissions(openDetails.getOpenMode(), windowInfo);
 
-        // todo perf4j stop watches for lifecycle
+        StopWatch createStopWatch = createStopWatch(ScreenLifeCycle.CREATE, windowInfo.getId());
 
         Window window = createWindow(windowInfo, resolvedScreenClass, openDetails);
 
@@ -203,7 +208,11 @@ public class WebScreens implements Screens, WindowManager {
         windowImpl.setFrameOwner(controller);
         windowImpl.setId(controller.getId());
 
+        createStopWatch.stop();
+
         // load UI from XML
+
+        StopWatch loadStopWatch = createStopWatch(ScreenLifeCycle.LOAD, windowInfo.getId());
 
         ComponentLoaderContext componentLoaderContext = new ComponentLoaderContext(options);
         componentLoaderContext.setFullFrameId(windowInfo.getId());
@@ -214,8 +223,10 @@ public class WebScreens implements Screens, WindowManager {
             loadWindowFromXml(element, windowInfo, window, controller, componentLoaderContext);
         }
 
+        loadStopWatch.stop();
+
         // inject top level screen dependencies
-        StopWatch injectStopWatch = createStopWatch(LifeCycle.INJECTION, windowInfo.getId());
+        StopWatch injectStopWatch = createStopWatch(ScreenLifeCycle.INJECTION, windowInfo.getId());
 
         UiControllerDependencyInjector dependencyInjector =
                 beanLocator.getPrototype(UiControllerDependencyInjector.NAME, controller, options);
@@ -228,7 +239,11 @@ public class WebScreens implements Screens, WindowManager {
 
         // run init
 
+        StopWatch initStopWatch = createStopWatch(ScreenLifeCycle.INIT, windowInfo.getId());
+
         fireEvent(controller, InitEvent.class, new InitEvent(controller, options));
+
+        initStopWatch.stop();
 
         componentLoaderContext.executeInitTasks();
         componentLoaderContext.executePostInitTasks();
@@ -363,7 +378,7 @@ public class WebScreens implements Screens, WindowManager {
         return dsContext;
     }
 
-    protected void initDatasources(Window window, DsContext dsContext, Map<String, Object> params) {
+    protected void initDatasources(Window window, DsContext dsContext, @SuppressWarnings("unused") Map<String, Object> params) {
         ((LegacyFrame) window.getFrameOwner()).setDsContext(dsContext);
 
         for (Datasource ds : dsContext.getAll()) {
@@ -393,15 +408,19 @@ public class WebScreens implements Screens, WindowManager {
         checkNotNullArgument(screen);
         checkNotYetOpened(screen);
 
-        StopWatch uiPermissionsWatch = createStopWatch(LifeCycle.UI_PERMISSIONS, screen.getId());
+        StopWatch uiPermissionsWatch = createStopWatch(ScreenLifeCycle.UI_PERMISSIONS, screen.getId());
 
         windowCreationHelper.applyUiPermissions(screen.getWindow());
 
         uiPermissionsWatch.stop();
 
+        StopWatch beforeShowWatch = createStopWatch(ScreenLifeCycle.BEFORE_SHOW, screen.getId());
+
         fireEvent(screen, BeforeShowEvent.class, new BeforeShowEvent(screen));
 
         loadDataBeforeShow(screen);
+
+        beforeShowWatch.stop();
 
         LaunchMode launchMode = screen.getWindow().getContext().getLaunchMode();
 
@@ -431,11 +450,17 @@ public class WebScreens implements Screens, WindowManager {
             }
         }
 
+        userActionsLog.trace("Screen {} {} opened", screen.getId(), screen.getClass());
+
         afterShowWindow(screen);
 
         changeUrl(screen);
 
+        StopWatch afterShowWatch = createStopWatch(ScreenLifeCycle.AFTER_SHOW, screen.getId());
+
         fireEvent(screen, AfterShowEvent.class, new AfterShowEvent(screen));
+
+        afterShowWatch.stop();
     }
 
     @Override
@@ -679,8 +704,6 @@ public class WebScreens implements Screens, WindowManager {
             ContentSwitchMode contentSwitchMode =
                     ContentSwitchMode.valueOf(tabWindow.getContentSwitchMode().name());
             tabSheet.setContentSwitchMode(tabId, contentSwitchMode);
-        } else {
-            // todo single window mode
         }
     }
 
@@ -909,7 +932,8 @@ public class WebScreens implements Screens, WindowManager {
         return controller;
     }
 
-    protected Window createWindow(WindowInfo windowInfo, Class<? extends Screen> screenClass,
+    protected Window createWindow(@SuppressWarnings("unused") WindowInfo windowInfo,
+                                  Class<? extends Screen> screenClass,
                                   ScreenOpenDetails openDetails) {
         Window window;
 
@@ -1080,13 +1104,6 @@ public class WebScreens implements Screens, WindowManager {
                 .filter(ws -> ws.getBreadcrumbs().contains(screen))
                 .findFirst()
                 .ifPresent(WindowStack::select);
-    }
-
-    @Override
-    public boolean windowExist(WindowInfo windowInfo, Map<String, Object> params) {
-        // todo
-
-        throw new UnsupportedOperationException();
     }
 
     @SuppressWarnings({"IncorrectCreateGuiComponent", "deprecation"})
@@ -1454,10 +1471,7 @@ public class WebScreens implements Screens, WindowManager {
                                         result.success();
                                     }),
                             new DialogAction(DialogAction.Type.CANCEL, Action.Status.PRIMARY)
-                                    .withHandler(event -> {
-
-                                        result.fail();
-                                    })
+                                    .withHandler(event -> result.fail())
                     )
                     .show();
 

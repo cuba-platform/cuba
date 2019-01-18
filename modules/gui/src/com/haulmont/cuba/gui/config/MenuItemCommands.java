@@ -26,6 +26,8 @@ import com.haulmont.cuba.gui.Screens;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.WindowParams;
 import com.haulmont.cuba.gui.components.Window;
+import com.haulmont.cuba.gui.logging.UIPerformanceLogger;
+import com.haulmont.cuba.gui.logging.UserActionsLogger;
 import com.haulmont.cuba.gui.screen.FrameOwner;
 import com.haulmont.cuba.gui.screen.MapScreenOptions;
 import com.haulmont.cuba.gui.screen.OpenMode;
@@ -35,6 +37,7 @@ import org.apache.commons.lang3.reflect.MethodUtils;
 import org.dom4j.Element;
 import org.perf4j.StopWatch;
 import org.perf4j.slf4j.Slf4JStopWatch;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
@@ -49,6 +52,8 @@ import static com.haulmont.cuba.gui.screen.UiControllerUtils.getScreenContext;
 
 @Component("cuba_MenuItemCommands")
 public class MenuItemCommands {
+
+    private static final org.slf4j.Logger userActionsLog = LoggerFactory.getLogger(UserActionsLogger.class);
 
     @Inject
     protected DataService dataService;
@@ -135,6 +140,10 @@ public class MenuItemCommands {
         return dataService.load(ctx);
     }
 
+    protected StopWatch createStopWatch(MenuItem item) {
+        return new Slf4JStopWatch("MenuItem." + item.getId(), LoggerFactory.getLogger(UIPerformanceLogger.class));
+    }
+
     protected class ScreenCommand implements MenuItemCommand {
         protected FrameOwner origin;
         protected MenuItem item;
@@ -154,7 +163,9 @@ public class MenuItemCommands {
 
         @Override
         public void run() {
-            StopWatch sw = new Slf4JStopWatch("MenuItem." + item.getId());
+            userActionsLog.trace("Menu item {} triggered", item.getId());
+
+            StopWatch sw = createStopWatch(item);
 
             WindowManager.OpenType openType = WindowManager.OpenType.NEW_TAB;
             String openTypeStr = descriptor.attributeValue("openType");
@@ -231,7 +242,9 @@ public class MenuItemCommands {
 
         @Override
         public void run() {
-            StopWatch sw = new Slf4JStopWatch("MenuItem." + item.getId());
+            userActionsLog.trace("Menu item {} triggered", item.getId());
+
+            StopWatch sw = createStopWatch(item);
 
             Object beanInstance = beanLocator.get(bean);
             try {
@@ -280,7 +293,9 @@ public class MenuItemCommands {
         @SuppressWarnings("unchecked")
         @Override
         public void run() {
-            StopWatch sw = new Slf4JStopWatch("MenuItem." + item.getId());
+            userActionsLog.trace("Menu item {} triggered", item.getId());
+
+            StopWatch sw = createStopWatch(item);
 
             Class<?> clazz = scripting.loadClass(runnableClass);
             if (clazz == null) {

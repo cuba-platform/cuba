@@ -28,7 +28,7 @@ import com.haulmont.cuba.gui.components.sys.FrameImplementation;
 import com.haulmont.cuba.gui.config.WindowAttributesProvider;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
-import com.haulmont.cuba.gui.logging.UIPerformanceLogger;
+import com.haulmont.cuba.gui.logging.ScreenLifeCycle;
 import com.haulmont.cuba.gui.model.impl.ScreenDataImpl;
 import com.haulmont.cuba.gui.screen.FrameOwner;
 import com.haulmont.cuba.gui.screen.ScreenContext;
@@ -174,7 +174,7 @@ public class RuntimePropertiesFrameLoader extends ContainerLoader<Frame> {
             }
         }
 
-        StopWatch loadStopWatch = createStopWatch(UIPerformanceLogger.LifeCycle.LOAD, screenPath);
+        StopWatch loadStopWatch = createStopWatch(ScreenLifeCycle.LOAD, screenPath);
 
         // if fragment has XML descriptor
 
@@ -267,7 +267,8 @@ public class RuntimePropertiesFrameLoader extends ContainerLoader<Frame> {
         return messagesPack;
     }
 
-    protected <T extends ScreenFragment> T createController(WindowInfo windowInfo, Fragment fragment,
+    protected <T extends ScreenFragment> T createController(@SuppressWarnings("unused") WindowInfo windowInfo,
+                                                            @SuppressWarnings("unused") Fragment fragment,
                                                             Class<T> screenClass) {
         Constructor<T> constructor;
         try {

@@ -30,6 +30,7 @@ import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.impl.DsContextImplementation;
+import com.haulmont.cuba.gui.logging.ScreenLifeCycle;
 import com.haulmont.cuba.gui.model.impl.ScreenDataImpl;
 import com.haulmont.cuba.gui.screen.*;
 import com.haulmont.cuba.gui.screen.compatibility.LegacyFrame;
@@ -45,8 +46,7 @@ import com.haulmont.cuba.web.AppUI;
 import com.vaadin.server.ClientConnector;
 import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
+import org.perf4j.StopWatch;
 
 import javax.inject.Inject;
 import java.lang.reflect.Constructor;
@@ -54,6 +54,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Locale;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
+import static com.haulmont.cuba.gui.logging.UIPerformanceLogger.createStopWatch;
 import static com.haulmont.cuba.gui.screen.UiControllerUtils.*;
 
 public class WebFragments implements Fragments {
@@ -116,6 +117,8 @@ public class WebFragments implements Fragments {
             );
         }
 
+        StopWatch createStopWatch = createStopWatch(ScreenLifeCycle.CREATE, windowInfo.getId());
+
         Fragment fragment = uiComponents.create(Fragment.NAME);
         ScreenFragment controller = createController(windowInfo, fragment, windowInfo.asFragment());
 
@@ -137,6 +140,10 @@ public class WebFragments implements Fragments {
         FragmentImplementation fragmentImpl = (FragmentImplementation) fragment;
         fragmentImpl.setFrameOwner(controller);
         fragmentImpl.setId(controller.getId());
+
+        createStopWatch.stop();
+
+        StopWatch loadStopWatch = createStopWatch(ScreenLifeCycle.LOAD, windowInfo.getId());
 
         Frame parentFrame = getFrame(parent);
 
@@ -179,6 +186,8 @@ public class WebFragments implements Fragments {
             loaderContext.getInitTasks().addAll(innerContext.getInitTasks());
             loaderContext.getPostInitTasks().addAll(innerContext.getPostInitTasks());
         }
+
+        loadStopWatch.stop();
 
         loaderContext.executeInjectTasks();
 
@@ -238,7 +247,8 @@ public class WebFragments implements Fragments {
         return userSessionSource.getUserSession().getLocale();
     }
 
-    protected <T extends ScreenFragment> T createController(WindowInfo windowInfo, Fragment fragment,
+    protected <T extends ScreenFragment> T createController(@SuppressWarnings("unused") WindowInfo windowInfo,
+                                                            @SuppressWarnings("unused") Fragment fragment,
                                                             Class<T> screenClass) {
         Constructor<T> constructor;
         try {
