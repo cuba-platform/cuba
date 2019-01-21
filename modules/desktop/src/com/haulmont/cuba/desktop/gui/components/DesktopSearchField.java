@@ -442,6 +442,16 @@ public class DesktopSearchField extends DesktopAbstractOptionsField<JComponent> 
     }
 
     @Override
+    public boolean isAutomaticPopupOnFocus() {
+        return false;
+    }
+
+    @Override
+    public void setAutomaticPopupOnFocus(boolean automaticPopupOnFocus) {
+        // do nothing
+    }
+
+    @Override
     public NewOptionHandler getNewOptionHandler() {
         return null;
     }

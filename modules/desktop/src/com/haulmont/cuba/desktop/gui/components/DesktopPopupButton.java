@@ -62,6 +62,8 @@ public class DesktopPopupButton extends DesktopAbstractActionsHolderComponent<JB
     protected boolean closePopupOnOutsideClick = true; // just stub
     protected Component popupContent; // just stub
 
+    protected List<PopupVisibilityListener> popupVisibilityListeners = new ArrayList<>();
+
     public DesktopPopupButton() {
         popup = new JPopupMenu();
 
@@ -94,6 +96,7 @@ public class DesktopPopupButton extends DesktopAbstractActionsHolderComponent<JB
     }
 
     protected void showPopup() {
+        firePopupVisibilityEvent();
         popup.removeAll();
 
         for (final Action action : actionList) {
@@ -261,12 +264,21 @@ public class DesktopPopupButton extends DesktopAbstractActionsHolderComponent<JB
 
     @Override
     public void addPopupVisibilityListener(PopupVisibilityListener listener) {
-        // stub
+        if (!popupVisibilityListeners.contains(listener)) {
+            popupVisibilityListeners.add(listener);
+        }
     }
 
     @Override
     public void removePopupVisibilityListener(PopupVisibilityListener listener) {
-        // stub
+        popupVisibilityListeners.remove(listener);
+    }
+
+    protected void firePopupVisibilityEvent() {
+        PopupVisibilityEvent event = new PopupVisibilityEvent(this);
+        for (PopupVisibilityListener listener : popupVisibilityListeners) {
+            listener.popupVisibilityChange(event);
+        }
     }
 
     @Override

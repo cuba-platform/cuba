@@ -121,6 +121,8 @@ public abstract class DesktopAbstractTable<C extends JXTable, E extends Entity>
 
     protected boolean showSelection = true;
 
+    protected boolean automaticScrollEnabled = true;
+
     // Indicates that model is being changed.
     protected boolean isAdjusting = false;
 
@@ -325,6 +327,17 @@ public abstract class DesktopAbstractTable<C extends JXTable, E extends Entity>
                 columnsInitialized = true;
             }
         });
+
+        if (impl instanceof FocusableTable) {
+            FocusableTable table = (FocusableTable) impl;
+            table.setFocusManager(new TableFocusManager(impl) {
+                @Override public void scrollToSelectedRow(int selectedRow) {
+                    if (automaticScrollEnabled) {
+                        super.scrollToSelectedRow(selectedRow);
+                    }
+                }
+            });
+        }
 
         // init default row height
         SwingUtilities.invokeLater(new Runnable() {
@@ -1260,6 +1273,16 @@ public abstract class DesktopAbstractTable<C extends JXTable, E extends Entity>
     @Override
     public boolean isSortable() {
         return sortable;
+    }
+
+    @Override
+    public void setAutoScrolling(boolean autoScroll) {
+        automaticScrollEnabled = autoScroll;
+    }
+
+    @Override
+    public boolean isAutoScrolling() {
+        return automaticScrollEnabled;
     }
 
     @Override

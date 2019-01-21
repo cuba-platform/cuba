@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.desktop.gui.components;
 
+import com.google.common.collect.Iterators;
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.CaptionMode;
@@ -28,12 +29,26 @@ import net.miginfocom.swing.MigLayout;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 
+import javax.annotation.Nullable;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.util.*;
+import java.util.function.Consumer;
 
 public class DesktopOptionsGroup extends DesktopAbstractOptionsField<JPanel> implements OptionsGroup {
+
+    // Focus group transfer actions and corresponding keys.
+    protected static final String ACTION_KEY_DOWN = "ACTION_KEY_DOWN";
+    protected static final String ACTION_KEY_UP = "ACTION_KEY_UP";
+    protected static final String ACTION_KEY_LEFT = "ACTION_KEY_LEFT";
+    protected static final String ACTION_KEY_RIGHT = "ACTION_KEY_RIGHT";
+
+    protected static final KeyStroke KEY_DOWN = KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0);
+    protected static final KeyStroke KEY_UP = KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0);
+    protected static final KeyStroke KEY_RIGHT = KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0);
+    protected static final KeyStroke KEY_LEFT = KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0);
 
     private boolean multiselect;
     private boolean optionsInitialized;
@@ -235,9 +250,84 @@ public class DesktopOptionsGroup extends DesktopAbstractOptionsField<JPanel> imp
                     }
                 }
         );
+        addFocusGroupShortcuts(button);
 
         impl.add(button);
         items.put(item, button);
+    }
+
+    protected Optional<AbstractButton> nextTo(AbstractButton target) {
+        Enumeration<AbstractButton> elements = buttonGroup.getElements();
+        while (elements.hasMoreElements()) {
+            AbstractButton button = elements.nextElement();
+            if (target.equals(button)) {
+                if (elements.hasMoreElements()) {
+                    return Optional.of(elements.nextElement());
+                } else {
+                    return Optional.empty();
+                }
+            }
+        }
+        return Optional.empty();
+    }
+
+    protected Optional<AbstractButton> prevTo(AbstractButton target) {
+        Enumeration<AbstractButton> elements = buttonGroup.getElements();
+        AbstractButton button = null;
+        while (elements.hasMoreElements()) {
+            AbstractButton current = elements.nextElement();
+            if (target.equals(current)) {
+                return Optional.ofNullable(button);
+            }
+            button = current;
+        }
+        return Optional.empty();
+    }
+
+    protected AbstractAction asAction(Consumer<ActionEvent> consumer) {
+        return new AbstractAction() {
+            @Override public void actionPerformed(ActionEvent e) {
+                consumer.accept(e);
+            }
+        };
+    }
+
+    protected Consumer<ActionEvent> nextElementFocusAction(AbstractButton button) {
+        return e -> nextTo(button).ifPresent(JComponent::requestFocusInWindow);
+    }
+
+    protected Consumer<ActionEvent> prevElementFocusAction(AbstractButton button) {
+        return e -> prevTo(button).ifPresent(JComponent::requestFocusInWindow);
+    }
+
+    protected Consumer<ActionEvent> onlyWhenHorizontal(Consumer<ActionEvent> consumer) {
+        return e -> {
+            if (Orientation.HORIZONTAL == getOrientation()) {
+                consumer.accept(e);
+            }
+        };
+    }
+
+    protected Consumer<ActionEvent> onlyWhenVertical(Consumer<ActionEvent> consumer) {
+        return e -> {
+            if (Orientation.VERTICAL == getOrientation()) {
+                consumer.accept(e);
+            }
+        };
+    }
+
+    protected void addFocusGroupShortcuts(JToggleButton button) {
+        InputMap inputs = button.getInputMap();
+        inputs.put(KEY_DOWN, ACTION_KEY_DOWN);
+        inputs.put(KEY_UP, ACTION_KEY_UP);
+        inputs.put(KEY_LEFT, ACTION_KEY_LEFT);
+        inputs.put(KEY_RIGHT, ACTION_KEY_RIGHT);
+
+        ActionMap actions = button.getActionMap();
+        actions.put(ACTION_KEY_DOWN, asAction(onlyWhenVertical(nextElementFocusAction(button))));
+        actions.put(ACTION_KEY_UP, asAction(onlyWhenVertical(prevElementFocusAction(button))));
+        actions.put(ACTION_KEY_RIGHT, asAction(onlyWhenHorizontal(nextElementFocusAction(button))));
+        actions.put(ACTION_KEY_LEFT, asAction(onlyWhenHorizontal(prevElementFocusAction(button))));
     }
 
     @Override
@@ -289,14 +379,9 @@ public class DesktopOptionsGroup extends DesktopAbstractOptionsField<JPanel> imp
     @Override
     protected void updateComponent(Object value) {
         if (multiselect && value instanceof Collection) {
-            for (Object v : ((Collection) value)) {
-                for (Map.Entry<ValueWrapper, JToggleButton> entry : items.entrySet()) {
-                    if (Objects.equals(entry.getKey().getValue(), v))
-                        entry.getValue().setSelected(true);
-                    else
-                        entry.getValue().setSelected(false);
-                }
-            }
+            Collection collection = (Collection) value;
+            items.forEach((wrapper, button) ->
+                    button.setSelected(collection.contains(wrapper.getValue())));
             updateMissingValueState();
         } else {
             super.updateComponent(value);

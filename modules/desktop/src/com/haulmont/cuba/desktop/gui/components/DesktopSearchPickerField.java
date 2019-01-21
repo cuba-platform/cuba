@@ -160,6 +160,15 @@ public class DesktopSearchPickerField extends DesktopSearchField implements Sear
         return actionsPermissions;
     }
 
+    @Override
+    public boolean isAutomaticPopupOnFocus() {
+        return false;
+    }
+
+    @Override
+    public void setAutomaticPopupOnFocus(boolean automaticPopupOnFocus) {
+    }
+
     private class Picker extends com.haulmont.cuba.desktop.sys.vcl.Picker {
         @Override
         protected void initEditor() {

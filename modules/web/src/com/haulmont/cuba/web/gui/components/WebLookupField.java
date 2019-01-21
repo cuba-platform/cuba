@@ -392,6 +392,16 @@ public class WebLookupField extends WebAbstractOptionsField<CubaComboBox> implem
     }
 
     @Override
+    public boolean isAutomaticPopupOnFocus() {
+        return false;
+    }
+
+    @Override
+    public void setAutomaticPopupOnFocus(boolean automaticPopupOnFocus) {
+        // do nothing
+    }
+
+    @Override
     public NewOptionHandler getNewOptionHandler() {
         return newOptionHandler;
     }
