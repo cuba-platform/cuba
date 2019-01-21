@@ -2870,6 +2870,7 @@ public class FilterDelegateImpl implements FilterDelegate {
         protected Filter filter;
         protected QueryFilter queryFilter;
         protected boolean preventDataLoading;
+        protected List<String> lastQueryFilterParameters = new ArrayList<>();
 
         /**
          * Condition which was set on DataLoader before applying the filter
@@ -2923,7 +2924,7 @@ public class FilterDelegateImpl implements FilterDelegate {
 
         @Override
         public Map<String, Object> getLastRefreshParameters() {
-            return loader.getParameters();
+            return Collections.emptyMap();
         }
 
         @Override
@@ -2934,6 +2935,11 @@ public class FilterDelegateImpl implements FilterDelegate {
 
         @Override
         public void refreshIfNotSuspended(Map<String, Object> parameters) {
+            for (String paramName : lastQueryFilterParameters) {
+                loader.removeParameter(paramName);
+            }
+            lastQueryFilterParameters.clear();
+
             for (Map.Entry<String, Object> entry : parameters.entrySet()) {
                 setLoaderParameter(entry.getKey(), entry.getValue());
             }
@@ -2951,6 +2957,7 @@ public class FilterDelegateImpl implements FilterDelegate {
                         parameterInfo.setPath(parameterInfo.getPath().replace(".", "_"));
 
                         setLoaderParameter(parameterInfo.getFlatName(), filter.getParamValue(name));
+                        lastQueryFilterParameters.add(parameterInfo.getFlatName());
                     }
                 }
 
