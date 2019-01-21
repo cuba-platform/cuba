@@ -39,7 +39,9 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * Data provider for File on name and path
+ * Data provider for downloading files from the middle tier by the path in the file system.
+ * <p>
+ * The path must be listed in the `cuba.download.directories` application property.
  */
 public class SimpleFileDataProvider implements ExportDataProvider {
 
