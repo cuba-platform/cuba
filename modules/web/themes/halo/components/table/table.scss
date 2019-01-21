@@ -43,9 +43,18 @@ $cuba-table-aggregation-background-color-default: rgba(255,255,255, 1);
  */
 $cuba-table-aggregation-background-color: $cuba-table-aggregation-background-color-default !default;
 
+/**
+ * Border color of table when it is drop target.
+ */
+$c-table-drag-indicator-color: $v-focus-color;
+
 @mixin halo-table($primary-stylename: v-table) {
   $background-color: $v-table-background-color or valo-table-background-color();
   $border-color: $v-table-border-color or first-color(valo-border($color: $background-color, $strength: 0.8));
+
+  .#{$primary-stylename}-drag-center {
+    border: 2px solid $c-table-drag-indicator-color;
+  }
 
   .#{$primary-stylename}-arow {
     @include box-defaults;
