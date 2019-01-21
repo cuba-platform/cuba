@@ -1014,7 +1014,7 @@ task aggregateJavadoc(type: Javadoc,
 
     options.encoding = 'UTF-8'
     options.addStringOption("sourcepath", "")
-    options.memberLevel = org.gradle.external.javadoc.JavadocMemberLevel.PUBLIC
+    options.memberLevel = org.gradle.external.javadoc.JavadocMemberLevel.PROTECTED
 
     include 'com/haulmont/cuba/**'
 
