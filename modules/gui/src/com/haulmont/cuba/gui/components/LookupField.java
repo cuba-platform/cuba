@@ -90,6 +90,16 @@ public interface LookupField<V> extends OptionsField<V, V>, HasInputPrompt, Buff
     void setTextInputAllowed(boolean textInputAllowed);
 
     /**
+     * When enabled popup automatically opens on focus.
+     */
+    void setAutomaticPopupOnFocus(boolean automaticPopupOnFocus);
+
+    /**
+     * @return whether popup is automatically shows on focus.
+     */
+    boolean isAutomaticPopupOnFocus();
+
+    /**
      * @return current handler
      */
     Consumer<String> getNewOptionHandler();

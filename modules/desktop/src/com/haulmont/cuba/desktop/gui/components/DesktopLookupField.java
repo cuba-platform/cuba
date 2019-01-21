@@ -40,6 +40,7 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.WeakCollectionChangeListener;
 import org.apache.commons.lang3.StringUtils;
+import sun.awt.CausedFocusEvent;
 
 import javax.swing.*;
 import javax.swing.event.PopupMenuEvent;
@@ -79,6 +80,8 @@ public class DesktopLookupField extends DesktopAbstractOptionsField<JComponent> 
     protected boolean textInputAllowed = true;
 
     protected boolean nullOptionVisible = true;
+
+    protected boolean automaticPopupOnFocus = false;
 
     protected List<UserSelectionListener> userSelectionListeners = null; // lazy initialized list
 
@@ -176,6 +179,13 @@ public class DesktopLookupField extends DesktopAbstractOptionsField<JComponent> 
                     }
                 }
         );
+        comboBox.addFocusListener(
+                new FocusAdapter() {
+                    @Override
+                    public void focusGained(FocusEvent e) {
+                        onFocusGainedEvent(e);
+                    }
+                });
 
         setFilterMode(DEFAULT_FILTER_MODE);
 
@@ -193,6 +203,41 @@ public class DesktopLookupField extends DesktopAbstractOptionsField<JComponent> 
         textField.setMinimumSize(new Dimension(comboBox.getMinimumSize().width, textField.getPreferredSize().height));
 
         initClearShortcut();
+    }
+
+    protected void onFocusGainedEvent(FocusEvent e) {
+        if (automaticPopupOnFocus) {
+            if (e instanceof CausedFocusEvent) {
+                CausedFocusEvent event = (CausedFocusEvent) e;
+                CausedFocusEvent.Cause cause = event.getCause();
+                if (cause != null) switch (cause) {
+                    case TRAVERSAL_BACKWARD:
+                    case TRAVERSAL_FORWARD: {
+                        Component component = e.getOppositeComponent();
+                        if (!isOwned(component)) {
+                            SwingUtilities.invokeLater(() -> comboBox.showPopup());
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    protected boolean isOwned(Component component) {
+        Component self = getComposition();
+        Queue<Component> queue = new LinkedList<>();
+        queue.add(self);
+        while (!queue.isEmpty()) {
+            Component current = queue.poll();
+            if (component == current) {
+                return true;
+            } else if (current instanceof java.awt.Container) {
+                java.awt.Container container = (java.awt.Container) current;
+                queue.addAll(Arrays.asList(container.getComponents()));
+            }
+        }
+        return false;
     }
 
     protected void fireUserSelectionListeners() {
@@ -720,6 +765,16 @@ public class DesktopLookupField extends DesktopAbstractOptionsField<JComponent> 
             captionValue = "";
 
         return captionValue;
+    }
+
+    @Override
+    public boolean isAutomaticPopupOnFocus() {
+        return automaticPopupOnFocus;
+    }
+
+    @Override
+    public void setAutomaticPopupOnFocus(boolean automaticPopupOnFocus) {
+        this.automaticPopupOnFocus = automaticPopupOnFocus;
     }
 
     @Override

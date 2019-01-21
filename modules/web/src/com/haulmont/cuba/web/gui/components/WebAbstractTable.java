@@ -755,6 +755,15 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
     }
 
     @Override
+    public void setAutoScrolling(boolean autoScroll) {
+    }
+
+    @Override
+    public boolean isAutoScrolling() {
+        return true;
+    }
+
+    @Override
     public boolean getColumnReorderingAllowed() {
         return component.isColumnReorderingAllowed();
     }

@@ -300,6 +300,14 @@ public class WebLookupField<V> extends WebV8AbstractField<CubaComboBox<V>, V, V>
     }
 
     @Override
+    public boolean isAutomaticPopupOnFocus() {
+        return false;
+    }
+
+    @Override
+    public void setAutomaticPopupOnFocus(boolean popup) {}
+
+    @Override
     public Consumer<String> getNewOptionHandler() {
         return newOptionHandler;
     }

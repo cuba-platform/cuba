@@ -229,6 +229,15 @@ public class WebLookupPickerField<V extends Entity> extends WebPickerField<V>
     }
 
     @Override
+    public void setAutomaticPopupOnFocus(boolean automaticPopupOnFocus) {
+    }
+
+    @Override
+    public boolean isAutomaticPopupOnFocus() {
+        return false;
+    }
+
+    @Override
     public Consumer<String> getNewOptionHandler() {
         return newOptionHandler;
     }
