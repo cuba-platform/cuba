@@ -20,11 +20,13 @@ import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.cuba.core.app.keyvalue.KeyValueMetaClass;
 import com.haulmont.cuba.core.app.keyvalue.KeyValueMetaProperty;
 import com.haulmont.cuba.core.entity.KeyValueEntity;
+import com.haulmont.cuba.gui.model.CollectionChangeType;
 import com.haulmont.cuba.gui.model.KeyValueCollectionContainer;
 import com.haulmont.cuba.gui.model.KeyValueContainer;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
+import java.util.List;
 
 public class KeyValueCollectionContainerImpl
         extends CollectionContainerImpl<KeyValueEntity> implements KeyValueCollectionContainer {
@@ -73,10 +75,34 @@ public class KeyValueCollectionContainerImpl
     public void setItems(@Nullable Collection<KeyValueEntity> entities) {
         if (entities != null) {
             for (KeyValueEntity entity : entities) {
-                entity.setMetaClass(entityMetaClass);
+                updateEntityMetadata(entity);
             }
         }
         super.setItems(entities);
+    }
+
+    @Override
+    public List<KeyValueEntity> getMutableItems() {
+        return new ObservableList<>(collection, idMap, (changeType, changes) -> {
+            buildIdMap();
+            clearItemIfNotExists();
+            if (changeType == CollectionChangeType.ADD_ITEMS || changeType == CollectionChangeType.SET_ITEM) {
+                for (KeyValueEntity entity : changes) {
+                    updateEntityMetadata(entity);
+                }
+            } else if (changeType == CollectionChangeType.REFRESH) {
+                for (KeyValueEntity entity : collection) {
+                    updateEntityMetadata(entity);
+                }
+            }
+            fireCollectionChanged(changeType, changes);
+        });
+    }
+
+    protected void updateEntityMetadata(KeyValueEntity entity) {
+        entity.setMetaClass(entityMetaClass);
+        if (idName != null)
+            entity.setIdName(idName);
     }
 
     @Override

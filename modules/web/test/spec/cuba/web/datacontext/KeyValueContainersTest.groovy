@@ -138,4 +138,61 @@ class KeyValueContainersTest extends WebSpec {
         field2.getValue() == 'changed'
         entity.getValue('custName') == 'changed'
     }
+
+    def "entity has correct MetaClass when set to KeyValueContainer"() {
+        KeyValueContainer container = dataComponents.createKeyValueContainer()
+        container.addProperty('custName').addProperty('amount').setIdName('custName')
+
+
+        when:
+
+        KeyValueEntity entity = new KeyValueEntity()
+        entity.setValue('custName', 'customer1')
+        entity.setValue('amount', 100)
+
+        container.setItem(entity)
+
+        then:
+
+        entity.getMetaClass() != null
+        entity.getMetaClass().getProperty('custName') != null
+        entity.getMetaClass().getProperty('amount') != null
+        entity.getIdName() == 'custName'
+    }
+
+    def "entity has correct MetaClass when added to KeyValueCollectionContainer"() {
+
+        KeyValueCollectionContainer container = dataComponents.createKeyValueCollectionContainer()
+        container.addProperty('custName').addProperty('amount').setIdName('custName')
+
+        when:
+
+        KeyValueEntity entity = new KeyValueEntity()
+        entity.setValue('custName', 'customer1')
+        entity.setValue('amount', 100)
+
+        container.setItems([entity])
+
+        then:
+
+        entity.getMetaClass() != null
+        entity.getMetaClass().getProperty('custName') != null
+        entity.getMetaClass().getProperty('amount') != null
+        entity.getIdName() == 'custName'
+
+        when:
+
+        KeyValueEntity entity2 = new KeyValueEntity()
+        entity2.setValue('custName', 'customer2')
+        entity2.setValue('amount', 200)
+
+        container.getMutableItems().add(entity2)
+
+        then:
+
+        entity2.getMetaClass() != null
+        entity2.getMetaClass().getProperty('custName') != null
+        entity2.getMetaClass().getProperty('amount') != null
+        entity2.getIdName() == 'custName'
+    }
 }

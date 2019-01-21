@@ -70,8 +70,14 @@ public class KeyValueContainerImpl extends InstanceContainerImpl<KeyValueEntity>
     @Override
     public void setItem(@Nullable KeyValueEntity item) {
         if (item != null) {
-            item.setMetaClass(entityMetaClass);
+            updateEntityMetadata(item);
         }
         super.setItem(item);
+    }
+
+    protected void updateEntityMetadata(KeyValueEntity entity) {
+        entity.setMetaClass(entityMetaClass);
+        if (idName != null)
+            entity.setIdName(idName);
     }
 }
