@@ -59,6 +59,7 @@ $v-focus-color: #1075da;
 
 $v-focus-style: inset 0px 0px 3px 1px rgba($v-focus-color, 0.5);
 $v-default-field-width: $v-unit-size * 7;
+$v-error-focus-style: inset 0px 0px 3px 1px rgba($v-error-indicator-color, 0.5);
 
 $cuba-app-menubar-padding-top: 8px;
 $cuba-app-menubar-padding-bottom: 8px;
