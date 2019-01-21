@@ -460,12 +460,14 @@ public class FilterEditor extends AbstractWindow {
             Node<AbstractCondition> node = conditions.getNode(selectedCondition);
             if (node != null) {
                 node.addChild(newNode);
-                conditionsTree.expand(selectedCondition.getId());
+                // refresh ds before expand, because it tries to get id from ds
+                refreshConditionsDs();
+                conditionsTree.expand(selectedCondition);
             }
         } else {
             conditions.getRootNodes().add(newNode);
+            refreshConditionsDs();
         }
-        refreshConditionsDs();
         conditionsTree.setSelected(condition);
     }
 

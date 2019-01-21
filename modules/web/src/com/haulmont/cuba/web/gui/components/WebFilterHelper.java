@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.bali.datastruct.Node;
 import com.haulmont.cuba.core.entity.AbstractSearchFolder;
 import com.haulmont.cuba.core.entity.Folder;
 import com.haulmont.cuba.core.global.Configuration;
@@ -24,6 +25,8 @@ import com.haulmont.cuba.gui.UiComponents;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.filter.ConditionsTree;
 import com.haulmont.cuba.gui.components.filter.FilterHelper;
+import com.haulmont.cuba.gui.components.filter.condition.AbstractCondition;
+import com.haulmont.cuba.gui.components.filter.condition.GroupCondition;
 import com.haulmont.cuba.gui.components.mainwindow.FoldersPane;
 import com.haulmont.cuba.gui.presentations.Presentations;
 import com.haulmont.cuba.gui.screen.Screen;
@@ -34,14 +37,21 @@ import com.haulmont.cuba.web.app.folders.CubaFoldersPane;
 import com.haulmont.cuba.web.app.folders.FolderEditWindow;
 import com.haulmont.cuba.web.gui.components.util.ShortcutListenerDelegate;
 import com.haulmont.cuba.web.widgets.CubaTextField;
+import com.haulmont.cuba.web.widgets.CubaTree;
+import com.vaadin.shared.ui.grid.DropLocation;
+import com.vaadin.shared.ui.grid.DropMode;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.components.grid.*;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
-import java.util.Map;
+import java.util.*;
 
 @org.springframework.stereotype.Component(FilterHelper.NAME)
 public class WebFilterHelper implements FilterHelper {
+
+    protected static final String TREE_DRAGGED_ITEM_ID = "itemid";
+
     @Inject
     protected Configuration configuration;
     @Inject
@@ -82,114 +92,120 @@ public class WebFilterHelper implements FilterHelper {
         return configuration.getConfig(WebConfig.class).getFoldersPaneEnabled();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void initConditionsDragAndDrop(final Tree tree, final ConditionsTree conditions) {
-        /*com.vaadin.ui.Tree vTree = tree.unwrap(com.vaadin.ui.Tree.class);
-        // vaadin8
-//        vTree.setDragMode(com.vaadin.v7.ui.Tree.TreeDragMode.NODE);
-        vTree.setDropHandler(new DropHandler() {
-            @Override
-            public void drop(DragAndDropEvent event) {
-                Transferable t = event.getTransferable();
+        CubaTree vTree = tree.unwrap(CubaTree.class);
 
-                if (t.getSourceComponent() != vTree)
+        TreeGridDragSource<AbstractCondition> treeGridDragSource = new TreeGridDragSource<>(vTree.getCompositionRoot());
+        treeGridDragSource.setDragDataGenerator(TREE_DRAGGED_ITEM_ID, item -> item.getId().toString());
+
+        TreeGridDropTarget<AbstractCondition> treeGridDropTarget =
+                new TreeGridDropTarget<>(vTree.getCompositionRoot(), DropMode.ON_TOP_OR_BETWEEN);
+        treeGridDropTarget.addTreeGridDropListener(event -> {
+            if (!event.getDragSourceComponent().isPresent()
+                    || event.getDragSourceComponent().get() != vTree.getCompositionRoot()) {
+                return;
+            }
+
+            String sourceId = event.getDataTransferData(TREE_DRAGGED_ITEM_ID).isPresent() ?
+                    event.getDataTransferData(TREE_DRAGGED_ITEM_ID).get() : null;
+
+            if (sourceId == null) {
+                return;
+            }
+
+            Object sourceItemId = UUID.fromString(sourceId);
+            Object targetItemId = event.getDropTargetRow().isPresent() ? event.getDropTargetRow().get().getId() : null;
+
+            if (targetItemId == null) {
+                return;
+            }
+
+            // if we drop to itself
+            if (targetItemId.equals(sourceItemId)) {
+                return;
+            }
+
+            AbstractCondition sourceCondition = (AbstractCondition) tree.getItems().getItem(sourceItemId);
+            AbstractCondition targetCondition = (AbstractCondition) tree.getItems().getItem(targetItemId);
+
+            Node<AbstractCondition> sourceNode = conditions.getNode(sourceCondition);
+            Node<AbstractCondition> targetNode = conditions.getNode(targetCondition);
+
+            // if we drop parent to its child
+            if (isAncestorOf(targetNode, sourceNode)) {
+                return;
+            }
+
+            boolean moveToTheSameParent = Objects.equals(sourceNode.getParent(), targetNode.getParent());
+
+            DropLocation location = event.getDropLocation();
+            if (location == DropLocation.ON_TOP) {
+                // prevent drop to not group condition
+                if (!(targetCondition instanceof GroupCondition)) {
                     return;
+                }
 
-                com.vaadin.v7.ui.Tree.TreeTargetDetails target = (com.vaadin.v7.ui.Tree.TreeTargetDetails) event
-                        .getTargetDetails();
-
-                VerticalDropLocation location = target.getDropLocation();
-                Object sourceItemId = t.getData("itemId");
-                Object targetItemId = target.getItemIdOver();
-
-                if (targetItemId == null) return;
-
-                CollectionDatasource datasource = tree.getDatasource();
-
-                AbstractCondition sourceCondition = (AbstractCondition) datasource.getItem(sourceItemId);
-                AbstractCondition targetCondition = (AbstractCondition) datasource.getItem(targetItemId);
-
-                Node<AbstractCondition> sourceNode = conditions.getNode(sourceCondition);
-                Node<AbstractCondition> targetNode = conditions.getNode(targetCondition);
-
-                if (isAncestorOf(targetNode, sourceNode)) return;
-
-                boolean moveToTheSameParent = Objects.equals(sourceNode.getParent(), targetNode.getParent());
-
-                if (location == VerticalDropLocation.MIDDLE) {
-                    if (sourceNode.getParent() == null) {
-                        conditions.getRootNodes().remove(sourceNode);
-                    } else {
-                        sourceNode.getParent().getChildren().remove(sourceNode);
-                    }
-                    targetNode.addChild(sourceNode);
-                    refreshConditionsDs();
-                    tree.expand(targetCondition.getId());
+                if (sourceNode.getParent() == null) {
+                    conditions.getRootNodes().remove(sourceNode);
                 } else {
-                    List<Node<AbstractCondition>> siblings;
-                    if (targetNode.getParent() == null)
-                        siblings = conditions.getRootNodes();
-                    else
-                        siblings = targetNode.getParent().getChildren();
-
-                    int targetIndex = siblings.indexOf(targetNode);
-                    if (location == VerticalDropLocation.BOTTOM)
-                        targetIndex++;
-
-                    int sourceNodeIndex;
-                    if (sourceNode.getParent() == null) {
-                        sourceNodeIndex = conditions.getRootNodes().indexOf(sourceNode);
-                        conditions.getRootNodes().remove(sourceNode);
-                    } else {
-                        sourceNodeIndex = sourceNode.getParent().getChildren().indexOf(sourceNode);
-                        sourceNode.getParent().getChildren().remove(sourceNode);
-                    }
-
-                    //decrease drop position index if dragging from top to bottom inside the same parent node
-                    if (moveToTheSameParent && (sourceNodeIndex < targetIndex))
-                        targetIndex--;
-
-                    if (targetNode.getParent() == null) {
-                        sourceNode.parent = null;
-                        conditions.getRootNodes().add(targetIndex, sourceNode);
-                    } else {
-                        targetNode.getParent().insertChildAt(targetIndex, sourceNode);
-                    }
-
-                    refreshConditionsDs();
+                    sourceNode.getParent().getChildren().remove(sourceNode);
                 }
-            }
+                targetNode.addChild(sourceNode);
+                refreshConditionsDs(tree, conditions);
+                tree.expand(targetCondition);
+            } else {
+                List<Node<AbstractCondition>> siblings;
+                if (targetNode.getParent() == null)
+                    siblings = conditions.getRootNodes();
+                else
+                    siblings = targetNode.getParent().getChildren();
 
-            protected boolean isAncestorOf(Node childNode, Node possibleParentNode) {
-                while (childNode.getParent() != null) {
-                    if (childNode.getParent().equals(possibleParentNode)) return true;
-                    childNode = childNode.getParent();
+                int targetIndex = siblings.indexOf(targetNode);
+                if (location == DropLocation.BELOW)
+                    targetIndex++;
+
+                int sourceNodeIndex;
+                if (sourceNode.getParent() == null) {
+                    sourceNodeIndex = conditions.getRootNodes().indexOf(sourceNode);
+                    conditions.getRootNodes().remove(sourceNode);
+                } else {
+                    sourceNodeIndex = sourceNode.getParent().getChildren().indexOf(sourceNode);
+                    sourceNode.getParent().getChildren().remove(sourceNode);
                 }
-                return false;
-            }
 
-            protected void refreshConditionsDs() {
-                tree.getDatasource().refresh(Collections.singletonMap("conditions", conditions));
-            }
+                //decrease drop position index if dragging from top to bottom inside the same parent node
+                if (moveToTheSameParent && (sourceNodeIndex < targetIndex))
+                    targetIndex--;
 
-            @Override
-            public AcceptCriterion getAcceptCriterion() {
-                return new Or(
-                        new AbstractSelect.TargetItemIs(vTree, getGroupConditionIds().toArray()),
-                        new Not(AbstractSelect.VerticalLocationIs.MIDDLE)
-                );
-            }
-
-            protected List<UUID> getGroupConditionIds() {
-                List<UUID> groupConditions = new ArrayList<>();
-                List<AbstractCondition> list = conditions.toConditionsList();
-                for (AbstractCondition condition : list) {
-                    if (condition instanceof GroupCondition)
-                        groupConditions.add(condition.getId());
+                // if we drop source accurate below expanded target
+                if (tree.isExpanded(targetItemId) && location == DropLocation.BELOW) {
+                    targetNode.insertChildAt(0, sourceNode);
+                } else if (targetNode.getParent() == null) {
+                    sourceNode.parent = null;
+                    conditions.getRootNodes().add(targetIndex, sourceNode);
+                } else {
+                    targetNode.getParent().insertChildAt(targetIndex, sourceNode);
                 }
-                return groupConditions;
+
+                refreshConditionsDs(tree, conditions);
             }
-        });*/
+        });
+    }
+
+    protected boolean isAncestorOf(Node childNode, Node possibleParentNode) {
+        while (childNode.getParent() != null) {
+            if (childNode.getParent().equals(possibleParentNode)) {
+                return true;
+            }
+            childNode = childNode.getParent();
+        }
+        return false;
+    }
+
+    protected void refreshConditionsDs(Tree tree, ConditionsTree conditions) {
+        tree.getDatasource().refresh(Collections.singletonMap("conditions", conditions));
     }
 
     @Override
