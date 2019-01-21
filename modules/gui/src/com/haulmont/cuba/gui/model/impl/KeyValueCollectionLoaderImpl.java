@@ -172,11 +172,12 @@ public class KeyValueCollectionLoaderImpl implements KeyValueCollectionLoader {
 
     @Override
     public void setParameter(String name, Object value) {
-        if (value == null || (value instanceof String && value.equals(""))) {
-            parameters.remove(name);
-        } else {
-            parameters.put(name, value);
-        }
+        parameters.put(name, value);
+    }
+
+    @Override
+    public void removeParameter(String name) {
+        parameters.remove(name);
     }
 
     @Override

@@ -92,6 +92,11 @@ public interface DataLoader {
     void setParameter(String name, Object value);
 
     /**
+     * Removes a query parameter.
+     */
+    void removeParameter(String name);
+
+    /**
      * Returns true if the loader respects soft deletion, i.e. softly deleted instances are not loaded.
      */
     boolean isSoftDeletion();

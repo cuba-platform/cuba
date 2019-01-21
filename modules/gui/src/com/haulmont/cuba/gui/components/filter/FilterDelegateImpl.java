@@ -2935,7 +2935,7 @@ public class FilterDelegateImpl implements FilterDelegate {
         @Override
         public void refreshIfNotSuspended(Map<String, Object> parameters) {
             for (Map.Entry<String, Object> entry : parameters.entrySet()) {
-                loader.setParameter(entry.getKey(), entry.getValue());
+                setLoaderParameter(entry.getKey(), entry.getValue());
             }
 
             if (queryFilter != null) {
@@ -2950,7 +2950,7 @@ public class FilterDelegateImpl implements FilterDelegate {
                         parameterInfo.setType(ParameterInfo.Type.NONE);
                         parameterInfo.setPath(parameterInfo.getPath().replace(".", "_"));
 
-                        loader.setParameter(parameterInfo.getFlatName(), filter.getParamValue(name));
+                        setLoaderParameter(parameterInfo.getFlatName(), filter.getParamValue(name));
                     }
                 }
 
@@ -2972,6 +2972,14 @@ public class FilterDelegateImpl implements FilterDelegate {
                 preventDataLoading = false;
             } else {
                 loader.load();
+            }
+        }
+
+        protected void setLoaderParameter(String key, Object value) {
+            if (value == null || (value instanceof String && value.equals(""))) {
+                loader.removeParameter(key);
+            } else {
+                loader.setParameter(key, value);
             }
         }
 

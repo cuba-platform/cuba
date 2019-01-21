@@ -90,7 +90,11 @@ public class RdbmsQueryBuilder {
             this.queryParams.put("entityId", id);
         }
         if (condition != null) {
-            Condition actualized = condition.actualize(queryParams.keySet());
+            Set<String> nonNullParamNames = queryParams.entrySet().stream()
+                    .filter(e -> e.getValue() != null)
+                    .map(Map.Entry::getKey)
+                    .collect(Collectors.toSet());
+            Condition actualized = condition.actualize(nonNullParamNames);
             qs = conditionJpqlGenerator.processQuery(qs, actualized);
         }
         if (sort != null) {
@@ -163,8 +167,10 @@ public class RdbmsQueryBuilder {
                         query.setParameter(name, value);
                     }
                 }
-            } else
-                throw new DevelopmentException("Parameter '" + name + "' is not used in the query");
+            } else {
+                if (entry.getValue() != null)
+                    throw new DevelopmentException("Parameter '" + name + "' is not used in the query");
+            }
         }
 
         return query;
