@@ -153,11 +153,23 @@ public class ScreenBuilders {
     /**
      * Creates a screen builder.
      * <p>
-     * Example of building a lookup screen:
+     * Example of building a lookup screen for adding instance to data container:
      * <pre>{@code
      * SomeCustomerListScreen screen = screenBuilders.lookup(Customer.class, this)
      *         .withScreen(SomeCustomerListScreen.class)
-     *         .withLaunchMode(OpenMode.DIALOG)
+     *         .withOpenMode(OpenMode.DIALOG)
+     *         .withContainer(customersDc)
+     *         .build();
+     * }</pre>
+     * <p>
+     * Example of building a lookup screen with custom select handler:
+     * <pre>{@code
+     * SomeCustomerListScreen screen = screenBuilders.lookup(Customer.class, this)
+     *         .withScreen(SomeCustomerListScreen.class)
+     *         .withOpenMode(OpenMode.DIALOG)
+     *         .withSelectHandler(customers -> {
+     *             // customers contains selected values
+     *         })
      *         .build();
      * }</pre>
      *
@@ -175,11 +187,10 @@ public class ScreenBuilders {
     /**
      * Creates a screen builder using list component.
      * <p>
-     * Example of building a lookup screen:
+     * Example of building a lookup screen for adding row to table / tree component:
      * <pre>{@code
      * SomeCustomerListScreen screen = screenBuilders.lookup(customersTable)
      *         .withScreen(SomeCustomerListScreen.class)
-     *         .withLaunchMode(OpenMode.DIALOG)
      *         .build();
      * }</pre>
      *
@@ -208,11 +219,10 @@ public class ScreenBuilders {
     /**
      * Creates a screen builder using {@link PickerField} component.
      * <p>
-     * Example of building a lookup screen:
+     * Example of building a lookup screen for setting value to PickerField:
      * <pre>{@code
-     * SomeCustomerListScreen screen = screenBuilders.lookup(customersTable)
+     * SomeCustomerListScreen screen = screenBuilders.lookup(customerPickerField)
      *         .withScreen(SomeCustomerListScreen.class)
-     *         .withLaunchMode(OpenMode.DIALOG)
      *         .build();
      * }</pre>
      *
