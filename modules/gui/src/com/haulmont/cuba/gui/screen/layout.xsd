@@ -2280,6 +2280,7 @@
         <xs:complexContent>
             <xs:extension base="dataGridComponent">
                 <xs:attribute name="hierarchyProperty" type="xs:string"/>
+                <xs:attribute name="hierarchyColumn" type="xs:string"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
