@@ -447,6 +447,11 @@ public class UrlChangeHandler {
         }
 
         Screen screen = findActiveScreenByState(requestedState);
+        if (screen == null) {
+            log.debug("Unable to find info corresponding to state: {}", requestedState);
+
+            return true;
+        }
 
         Map<String, String> params = requestedState.getParams();
         if (params == null) {

@@ -73,6 +73,10 @@ public class UrlTools {
             return NavigationState.EMPTY;
         }
 
+        if (uriFragment.endsWith("/")) {
+            uriFragment = uriFragment.substring(0, uriFragment.lastIndexOf('/'));
+        }
+
         NavigationState navigationState = parseRootRoute(uriFragment);
 
         if (navigationState == null) {

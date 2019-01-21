@@ -20,10 +20,7 @@ import com.haulmont.bali.util.URLEncodeUtils;
 import com.haulmont.cuba.web.sys.WebUrlRouting;
 
 import javax.annotation.Nonnull;
-import java.math.BigInteger;
 import java.util.UUID;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
@@ -34,14 +31,11 @@ import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
  * <p>
  * UUID ids are serialized using Crockford Base32 encoding.
  *
- * @see CrockfordEncoder
+ * @see CrockfordUuidEncoder
  * @see WebUrlRouting
  * @see UrlChangeHandler
  */
 public final class UrlIdSerializer {
-
-    private static final String STRING_UUID_SPLIT_REGEX = "(\\w{8})(\\w{4})(\\w{4})(\\w{4})(\\w{12})";
-    private static final Pattern STRING_UUID_SPLIT_PATTERN = Pattern.compile(STRING_UUID_SPLIT_REGEX);
 
     private UrlIdSerializer() {
     }
@@ -68,13 +62,7 @@ public final class UrlIdSerializer {
             serialized = URLEncodeUtils.encodeUtf8(id.toString());
 
         } else if (UUID.class == idClass) {
-            String stringUuid = ((UUID) id).toString()
-                    .replaceAll("-", "");
-
-            BigInteger biUuid = new BigInteger(stringUuid, 16);
-
-            serialized = CrockfordEncoder.encode(biUuid)
-                    .toLowerCase();
+            serialized = CrockfordUuidEncoder.encode(((UUID) id));
         } else {
             throw new IllegalArgumentException(
                     String.format("Unable to serialize id '%s' of type '%s'", id, idClass));
@@ -112,24 +100,7 @@ public final class UrlIdSerializer {
                 deserialized = Long.valueOf(decoded);
 
             } else if (UUID.class == idClass) {
-                String stringUuid = CrockfordEncoder.decode(serializedId)
-                        .toString(16);
-
-                Matcher matcher = STRING_UUID_SPLIT_PATTERN.matcher(stringUuid);
-                if (!matcher.matches()) {
-                    throw new RuntimeException(
-                            String.format("An error occurred while deserializing UUID id: '%s'", serializedId));
-                }
-                StringBuilder sb = new StringBuilder();
-
-                for (int i = 1; i <= matcher.groupCount(); i++) {
-                    sb.append(matcher.group(i));
-                    if (i < matcher.groupCount()) {
-                        sb.append('-');
-                    }
-                }
-
-                deserialized = UUID.fromString(sb.toString());
+                deserialized = CrockfordUuidEncoder.decode(serializedId);
             } else {
                 throw new IllegalArgumentException(
                         String.format("Unable to deserialize id '%s' of type '%s'", serializedId, idClass));
