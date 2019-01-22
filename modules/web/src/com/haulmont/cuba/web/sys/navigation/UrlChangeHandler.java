@@ -274,11 +274,7 @@ public class UrlChangeHandler {
         if (windowInfo != null) {
 
             // should be changed
-            WindowInfo loginWindowInfo = windowConfig.getWindowInfo("loginWindow");
-            WindowInfo mainWindowInfo = windowConfig.getWindowInfo("mainWindow");
-
-            if (loginWindowInfo.equals(windowInfo)
-                    || mainWindowInfo.equals(windowInfo)) {
+            if (!screenCanBeNavigated(windowInfo)) {
                 revertNavigationState();
                 return true;
             }
@@ -301,10 +297,23 @@ public class UrlChangeHandler {
                 return true;
             }
 
+            // should be changed
+            if (!screenCanBeNavigated(windowInfo)) {
+                return true;
+            }
+
             openScreen(requestedState, windowInfo);
         }
 
         return true;
+    }
+
+    protected boolean screenCanBeNavigated(WindowInfo windowInfo) {
+        WindowInfo loginWindowInfo = windowConfig.getWindowInfo("loginWindow");
+        WindowInfo mainWindowInfo = windowConfig.getWindowInfo("mainWindow");
+
+        return !loginWindowInfo.equals(windowInfo)
+                && !mainWindowInfo.equals(windowInfo);
     }
 
     protected boolean screenChanged(NavigationState requestedState) {
