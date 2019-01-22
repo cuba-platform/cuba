@@ -26,7 +26,6 @@ import com.haulmont.cuba.gui.icons.Icons;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.exception.ExceptionDialog;
-import com.haulmont.cuba.web.gui.components.WebButton;
 import com.haulmont.cuba.web.gui.components.util.ShortcutListenerDelegate;
 import com.haulmont.cuba.web.gui.icons.IconResolver;
 import com.haulmont.cuba.web.widgets.CubaButton;
@@ -335,8 +334,8 @@ public class WebDialogs implements Dialogs {
 
                 if (ui.isTestMode()) {
                     button.setCubaId("optionDialog_" + action.getId());
-
-                    // todo check if performance mode enabled
+                }
+                if (ui.isPerformanceTestMode()) {
                     button.setId(ui.getTestIdManager().getTestId("optionDialog_" + action.getId()));
                 }
 
@@ -353,9 +352,10 @@ public class WebDialogs implements Dialogs {
 
             if (ui.isTestMode()) {
                 window.setCubaId("optionDialog");
-                window.setId(ui.getTestIdManager().getTestId("optionDialog"));
-
                 messageLabel.setCubaId("optionDialogLabel");
+            }
+            if (ui.isPerformanceTestMode()) {
+                window.setId(ui.getTestIdManager().getTestId("optionDialog"));
             }
 
             ui.addWindow(window);
@@ -364,9 +364,10 @@ public class WebDialogs implements Dialogs {
 
         @Nullable
         protected DialogAction findFirstActionWithType(Action[] actions, EnumSet<DialogAction.Type> types) {
-            for (DialogAction.Type type : types) {
-                for (Action action : actions) {
-                    if (action instanceof DialogAction && ((DialogAction) action).getType() == type) {
+            for (Action action : actions) {
+                if (action instanceof DialogAction) {
+                    DialogAction.Type actionType = ((DialogAction) action).getType();
+                    if (types.contains(actionType)) {
                         return (DialogAction) action;
                     }
                 }

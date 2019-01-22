@@ -30,6 +30,15 @@ public interface Notifications {
 
     /**
      * Creates a notification builder.
+     * <br>
+     * Example of showing a notification:
+     * <pre>{@code
+     * notifications.create()
+     *         .withType(NotificationType.WARNING)
+     *         .withCaption("Alert")
+     *         .withPosition(Notifications.Position.BOTTOM_RIGHT)
+     *         .show();
+     * }</pre>
      *
      * @return notification builder
      */
@@ -37,6 +46,15 @@ public interface Notifications {
 
     /**
      * Creates a notification builder with the passed notification type.
+     * <br>
+     * Example of showing a notification:
+     * <pre>{@code
+     * notifications.create(NotificationType.WARNING)
+     *         .withCaption("Alert")
+     *         .withDescription("Please specify name")
+     *         .withPosition(Notifications.Position.BOTTOM_RIGHT)
+     *         .show();
+     * }</pre>
      *
      * @param type notification type
      * @return notification builder
