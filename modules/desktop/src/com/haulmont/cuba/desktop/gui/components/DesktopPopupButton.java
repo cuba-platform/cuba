@@ -135,6 +135,21 @@ public class DesktopPopupButton extends DesktopAbstractActionsHolderComponent<JB
         }
     }
 
+    @Override
+    protected void updateEnabled() {
+        boolean resolvedEnabled = isEnabledWithParent();
+
+        getComposition().setEnabled(resolvedEnabled);
+        captionLabel.setEnabled(resolvedEnabled);
+        rightIcon.setEnabled(resolvedEnabled);
+
+        requestContainerUpdate();
+
+        if (parent instanceof DesktopFieldGroup) {
+            ((DesktopFieldGroup) parent).updateChildEnabled(this);
+        }
+    }
+
     protected void initAction(final Action action, final JMenuItem menuItem) {
         if (initializedActions.contains(action))
             return;
