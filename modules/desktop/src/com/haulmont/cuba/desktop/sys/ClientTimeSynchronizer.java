@@ -27,9 +27,10 @@ import com.haulmont.cuba.gui.executors.BackgroundWorker;
 import com.haulmont.cuba.gui.executors.TaskLifeCycle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.stereotype.Component;
+
 import javax.inject.Inject;
+import java.awt.*;
 import java.util.TimeZone;
 
 /**
@@ -61,6 +62,12 @@ public class ClientTimeSynchronizer {
      * @see com.haulmont.cuba.desktop.DesktopConfig#isUseServerTimeZone()
      */
     public void syncTimeZone() {
+        // access to shared UI state requires Swing EDT
+        if (!EventQueue.isDispatchThread()) {
+            EventQueue.invokeLater(this::syncTimeZone);
+            return;
+        }
+
         boolean useServerTimeZone = configuration.getConfig(DesktopConfig.class).isUseServerTimeZone();
         if (useServerTimeZone) {
             backgroundWorker.handle(new ObtainServerTimeZoneTask()).execute();
@@ -74,6 +81,12 @@ public class ClientTimeSynchronizer {
         if (!AppContext.isStarted()) {
             return;
         }
+        // access to shared UI state requires Swing EDT
+        if (!EventQueue.isDispatchThread()) {
+            EventQueue.invokeLater(this::syncTime);
+            return;
+        }
+
         boolean useServerTime = configuration.getConfig(DesktopConfig.class).isUseServerTime();
         boolean connected = App.getInstance() != null && App.getInstance().getConnection() != null
                 && App.getInstance().getConnection().isConnected();
@@ -89,7 +102,7 @@ public class ClientTimeSynchronizer {
         }
 
         @Override
-        public Void run(TaskLifeCycle<Void> taskLifeCycle) throws Exception {
+        public Void run(TaskLifeCycle<Void> taskLifeCycle) {
             TimeZone serverTimeZone = serverInfoService.getTimeZone();
 
             TimeZone.setDefault(serverTimeZone); // works OK from any thread
@@ -104,7 +117,7 @@ public class ClientTimeSynchronizer {
         }
 
         @Override
-        public Void run(TaskLifeCycle<Void> taskLifeCycle) throws Exception {
+        public Void run(TaskLifeCycle<Void> taskLifeCycle) {
             long serverTime = serverInfoService.getTimeMillis();
             long timeOffset = serverTime - System.currentTimeMillis();
 
