@@ -2221,9 +2221,11 @@ public class FilterDelegateImpl implements FilterDelegate {
                 });
             } else {
                 if (saveWithValues) {
-                    conditions.toConditionsList().forEach(condition -> {
-                        condition.getParam().setDefaultValue(condition.getParam().getValue());
-                    });
+                    for (AbstractCondition condition : conditions.toConditionsList()) {
+                        if (condition.getParam() != null) {
+                            condition.getParam().setDefaultValue(condition.getParam().getValue());
+                        }
+                    }
                 }
 
                 String xml = filterEntity.getFolder() == null ? filterParser.getXml(conditions, Param.ValueProperty.DEFAULT_VALUE)
