@@ -16,6 +16,7 @@
 
 package com.haulmont.cuba.gui.model.impl;
 
+import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.Entity;
@@ -116,6 +117,15 @@ public class CollectionPropertyContainerImpl<E extends Entity>
             } else {
                 masterCollection.clear();
                 masterCollection.addAll(newCollection);
+                if (master instanceof ItemPropertyChangeNotifier) {
+                    Instance.PropertyChangeEvent event = new Instance.PropertyChangeEvent(
+                            master.getItem(),
+                            metaProperty.getName(),
+                            masterCollection,
+                            masterCollection
+                    );
+                    ((ItemPropertyChangeNotifier) master).itemPropertyChanged(event);
+                }
             }
         }
     }

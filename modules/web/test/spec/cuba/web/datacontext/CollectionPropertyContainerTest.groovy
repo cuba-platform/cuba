@@ -110,7 +110,7 @@ class CollectionPropertyContainerTest extends WebSpec {
         !order.orderLines.contains(orderLine4)
     }
 
-    def "master container is NOT notified when the collection is changed"() {
+    def "master container is notified when the collection is changed"() {
 
         orderCt.setItem(order)
 
@@ -125,6 +125,6 @@ class CollectionPropertyContainerTest extends WebSpec {
 
         then:
 
-        0 * listener.accept(_)
+        1 * listener.accept(_)
     }
 }

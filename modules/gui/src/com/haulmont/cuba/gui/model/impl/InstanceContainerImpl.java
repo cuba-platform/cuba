@@ -37,7 +37,7 @@ import java.util.function.Consumer;
 /**
  *
  */
-public class InstanceContainerImpl<E extends Entity> implements InstanceContainer<E>, HasLoader {
+public class InstanceContainerImpl<E extends Entity> implements InstanceContainer<E>, HasLoader, ItemPropertyChangeNotifier {
 
     private static final Logger log = LoggerFactory.getLogger(InstanceContainerImpl.class);
 
@@ -162,8 +162,9 @@ public class InstanceContainerImpl<E extends Entity> implements InstanceContaine
         events.publish(ItemChangeEvent.class, itemChangeEvent);
     }
 
+    @Override
     @SuppressWarnings("unchecked")
-    protected void itemPropertyChanged(Instance.PropertyChangeEvent e) {
+    public void itemPropertyChanged(Instance.PropertyChangeEvent e) {
         if (!listenersEnabled) {
             return;
         }
