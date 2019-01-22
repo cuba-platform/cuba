@@ -272,6 +272,17 @@ public class UrlChangeHandler {
 
         WindowInfo windowInfo = windowConfig.findWindowInfoByRoute(requestedRoute);
         if (windowInfo != null) {
+
+            // should be changed
+            WindowInfo loginWindowInfo = windowConfig.getWindowInfo("loginWindow");
+            WindowInfo mainWindowInfo = windowConfig.getWindowInfo("mainWindow");
+
+            if (loginWindowInfo.equals(windowInfo)
+                    || mainWindowInfo.equals(windowInfo)) {
+                revertNavigationState();
+                return true;
+            }
+
             return openScreen(requestedState, windowInfo);
         }
 
