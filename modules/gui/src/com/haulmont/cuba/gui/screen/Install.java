@@ -40,13 +40,29 @@ import java.lang.annotation.RetentionPolicy;
 @Documented
 @java.lang.annotation.Target(ElementType.METHOD)
 public @interface Install {
+    /**
+     * @return type of target
+     */
     Target target() default Target.COMPONENT;
 
+    /**
+     * @return type of functional interface, can be used instead of {@link #subject()}
+     */
     Class type() default Object.class;
 
+    /**
+     * @return property name that will be set using annotated method
+     */
     String subject() default "";
 
+    /**
+     * @return id or path to target object
+     */
     String to() default "";
 
+    /**
+     * Declares whether the annotated dependency is required.
+     * <p>Defaults to {@code true}.
+     */
     boolean required() default true;
 }

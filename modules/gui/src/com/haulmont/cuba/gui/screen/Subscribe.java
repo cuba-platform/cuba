@@ -41,13 +41,26 @@ import java.lang.annotation.RetentionPolicy;
 @Retention(RetentionPolicy.RUNTIME)
 @java.lang.annotation.Target(ElementType.METHOD)
 public @interface Subscribe {
+    /**
+     * @return type of target
+     */
     Target target() default Target.COMPONENT;
 
+    /**
+     * @return id or path to target object
+     */
     @AliasFor("id")
     String value() default "";
 
+    /**
+     * @return id or path to target object
+     */
     @AliasFor("value")
     String id() default "";
 
+    /**
+     * Declares whether the annotated dependency is required.
+     * <p>Defaults to {@code true}.
+     */
     boolean required() default true;
 }
