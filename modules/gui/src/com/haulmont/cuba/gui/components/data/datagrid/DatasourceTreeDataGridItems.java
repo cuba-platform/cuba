@@ -16,11 +16,13 @@
 
 package com.haulmont.cuba.gui.components.data.datagrid;
 
+import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.data.TreeDataGridItems;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 
+import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.stream.Stream;
 
@@ -56,5 +58,13 @@ public class DatasourceTreeDataGridItems<E extends Entity<K>, K>
     @Override
     public boolean hasChildren(E item) {
         return getHierarchicalDatasource().hasChildren(item.getId());
+    }
+
+    @Nullable
+    @Override
+    public E getParent(E item) {
+        Preconditions.checkNotNullArgument(item);
+        K parentId = getHierarchicalDatasource().getParent(item.getId());
+        return getHierarchicalDatasource().getItem(parentId);
     }
 }

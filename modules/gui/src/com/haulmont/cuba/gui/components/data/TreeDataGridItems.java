@@ -16,6 +16,7 @@
 
 package com.haulmont.cuba.gui.components.data;
 
+import javax.annotation.Nullable;
 import java.util.stream.Stream;
 
 /**
@@ -42,4 +43,11 @@ public interface TreeDataGridItems<T> extends DataGridItems.Sortable<T> {
      * @return {@code true} if the item has children, {@code false} otherwise
      */
     boolean hasChildren(T item);
+
+    /**
+     * @param item the item to get parent
+     * @return the parent of the given item or {@code null} if no parent
+     */
+    @Nullable
+    T getParent(T item);
 }

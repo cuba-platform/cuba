@@ -382,12 +382,26 @@ public class ExcelExporter {
                 createDataGridRow(dataGrid, columns, 0, ++r, item.getId());
             }
         } else {
-            for (Object itemId : dataGridSource.getItems().map(Entity::getId).collect(Collectors.toList())) {
-                if (checkIsRowNumberExceed(r)) {
-                    break;
-                }
+            if (dataGrid instanceof TreeDataGrid) {
+                TreeDataGrid treeDataGrid = (TreeDataGrid) dataGrid;
+                @SuppressWarnings("unchecked")
+                TreeDataGridItems<Entity> treeDataGridItems = (TreeDataGridItems) dataGridSource;
+                List<Entity> items = treeDataGridItems.getChildren(null).collect(Collectors.toList());
+                for (Entity item: items) {
+                    if (checkIsRowNumberExceed(r)) {
+                        break;
+                    }
 
-                createDataGridRow(dataGrid, columns, 0, ++r, itemId);
+                    r = createDataGridHierarchicalRow(treeDataGrid, treeDataGridItems, columns, 0, r, item);
+                }
+            } else {
+                for (Object itemId : dataGridSource.getItems().map(Entity::getId).collect(Collectors.toList())) {
+                    if (checkIsRowNumberExceed(r)) {
+                        break;
+                    }
+
+                    createDataGridRow(dataGrid, columns, 0, ++r, itemId);
+                }
             }
         }
 
@@ -621,15 +635,33 @@ public class ExcelExporter {
         }
     }
 
+    protected int createDataGridHierarchicalRow(TreeDataGrid dataGrid, TreeDataGridItems<Entity> treeDataGridItems,
+                                                List<DataGrid.Column> columns, int startColumn,
+                                                int rowNumber, Entity item) {
+        if (!checkIsRowNumberExceed(rowNumber)) {
+            createDataGridRow(dataGrid, columns, startColumn, ++rowNumber, item.getId());
+
+            Collection<Entity> children = treeDataGridItems.getChildren(item).collect(Collectors.toList());
+            for (Entity child: children) {
+                rowNumber = createDataGridHierarchicalRow(dataGrid, treeDataGridItems, columns, startColumn, rowNumber, child);
+            }
+        }
+
+        return rowNumber;
+    }
+
     protected void createDataGridRow(DataGrid dataGrid, List<DataGrid.Column> columns,
                                      int startColumn, int rowNumber, Object itemId) {
         if (startColumn >= columns.size()) {
             return;
         }
         HSSFRow row = sheet.createRow(rowNumber);
-        Instance instance = (Instance) dataGrid.getItems().getItem(itemId);
+        Entity item = (Entity) dataGrid.getItems().getItem(itemId);
 
         int level = 0;
+        if (dataGrid instanceof TreeDataGrid) {
+            level = ((TreeDataGrid) dataGrid).getLevel(item);
+        }
         for (int c = startColumn; c < columns.size(); c++) {
             HSSFCell cell = row.createCell(c);
 
@@ -640,7 +672,7 @@ public class ExcelExporter {
             if (column.getPropertyPath() != null) {
                 propertyPath = column.getPropertyPath();
 
-                cellValue = InstanceUtils.getValueEx(instance, propertyPath.getPath());
+                cellValue = InstanceUtils.getValueEx(item, propertyPath.getPath());
 
                 if (column.getFormatter() != null) {
                     cellValue = column.getFormatter().apply(cellValue);
@@ -648,7 +680,7 @@ public class ExcelExporter {
             } else {
                 DataGrid.ColumnGenerator generator = dataGrid.getColumnGenerator(column.getId());
                 DataGrid.ColumnGeneratorEvent event =
-                        new DataGrid.ColumnGeneratorEvent(dataGrid, instance, column.getId());
+                        new DataGrid.ColumnGeneratorEvent(dataGrid, item, column.getId());
                 cellValue = generator.getValue(event);
 
                 if (cellValue == null && Boolean.class.equals(generator.getType())) {
