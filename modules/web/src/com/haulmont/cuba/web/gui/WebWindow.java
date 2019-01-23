@@ -104,6 +104,8 @@ public abstract class WebWindow implements Window, Component.Wrapper,
     protected int urlStateMark;
     protected NavigationState resolvedState;
 
+    protected boolean defaultScreenWindow = false;
+
     public WebWindow() {
         component = createLayout();
     }
@@ -1041,5 +1043,13 @@ public abstract class WebWindow implements Window, Component.Wrapper,
 
     public void setResolvedState(NavigationState resolvedState) {
         this.resolvedState = resolvedState;
+    }
+
+    public boolean isDefaultScreenWindow() {
+        return defaultScreenWindow;
+    }
+
+    public void setDefaultScreenWindow(boolean defaultScreenWindow) {
+        this.defaultScreenWindow = defaultScreenWindow;
     }
 }

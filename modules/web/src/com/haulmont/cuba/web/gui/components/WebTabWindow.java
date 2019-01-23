@@ -124,4 +124,16 @@ public class WebTabWindow extends WebWindow implements TabWindow {
 
         this.contentSwitchMode = mode;
     }
+
+    @Override
+    public void setCloseable(boolean closeable) {
+        super.setCloseable(closeable);
+
+        if (component.isAttached()) {
+            TabSheet.Tab tabWindow = findTab();
+            if (tabWindow != null) {
+                tabWindow.setClosable(closeable);
+            }
+        }
+    }
 }

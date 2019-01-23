@@ -199,8 +199,12 @@ public class WebScreens implements Screens, WindowManager {
         setWindowId(controller, windowInfo.getId());
         setFrame(controller, window);
         setScreenContext(controller,
-                new ScreenContextImpl(windowInfo, options, this,
-                        ui.getDialogs(), ui.getNotifications(), ui.getFragments(), ui.getUrlRouting())
+                new ScreenContextImpl(windowInfo, options,
+                        this,
+                        ui.getDialogs(),
+                        ui.getNotifications(),
+                        ui.getFragments(),
+                        ui.getUrlRouting())
         );
         setScreenData(controller, new ScreenDataImpl());
 
@@ -700,6 +704,7 @@ public class WebScreens implements Screens, WindowManager {
             }
 
             tabSheet.setTabIcon(tabId, iconResolver.getIconResource(currentWindow.getIcon()));
+            tabSheet.setTabClosable(tabId, currentWindow.isCloseable());
 
             ContentSwitchMode contentSwitchMode =
                     ContentSwitchMode.valueOf(tabWindow.getContentSwitchMode().name());
@@ -1041,25 +1046,6 @@ public class WebScreens implements Screens, WindowManager {
         ((WebWindow) window).fireBeforeClose(event);
 
         return event.isClosePrevented();
-    }
-
-    protected boolean canWindowBeClosed(Window window) {
-        if (!window.isCloseable()) {
-            return false;
-        }
-
-        if (webConfig.getDefaultScreenCanBeClosed()) {
-            return true;
-        }
-
-        String defaultScreenId = webConfig.getDefaultScreenId();
-
-        if (webConfig.getUserCanChooseDefaultScreen()) {
-            String userDefaultScreen = userSettingService.loadSetting(ClientType.WEB, "userDefaultScreen");
-            defaultScreenId = StringUtils.isEmpty(userDefaultScreen) ? defaultScreenId : userDefaultScreen;
-        }
-
-        return !Objects.equals(window.getId(), defaultScreenId);
     }
 
     /**
@@ -1638,7 +1624,7 @@ public class WebScreens implements Screens, WindowManager {
             }
 
             tabSheet.setTabIcon(tabId, iconResolver.getIconResource(window.getIcon()));
-            tabSheet.setTabClosable(tabId, true);
+            tabSheet.setTabClosable(tabId, window.isCloseable());
             tabSheet.setTabCloseHandler(windowContainer, this::handleTabWindowClose);
             tabSheet.setSelectedTab(windowContainer);
         } else {
@@ -1710,6 +1696,7 @@ public class WebScreens implements Screens, WindowManager {
             }
 
             tabSheet.setTabIcon(tabId, iconResolver.getIconResource(newWindow.getIcon()));
+            tabSheet.setTabClosable(tabId, newWindow.isCloseable());
 
             ContentSwitchMode contentSwitchMode = ContentSwitchMode.valueOf(tabWindow.getContentSwitchMode().name());
             tabSheet.setContentSwitchMode(tabId, contentSwitchMode);
@@ -1765,14 +1752,14 @@ public class WebScreens implements Screens, WindowManager {
     protected void handleTabWindowClose(HasTabSheetBehaviour targetTabSheet, com.vaadin.ui.Component tabContent) {
         WindowBreadCrumbs tabBreadCrumbs = ((TabWindowContainer) tabContent).getBreadCrumbs();
 
-        if (!canWindowBeClosed(tabBreadCrumbs.getCurrentWindow())) {
+        if (getConfiguredWorkArea().isNotCloseable(tabBreadCrumbs.getCurrentWindow())) {
             return;
         }
 
         Runnable closeTask = new TabCloseTask(tabBreadCrumbs);
         closeTask.run();
 
-        // it is needed to force redraw tabsheet if it has a lot of tabs and part of them are hidden
+        // it is needed to force redraw tabSheet if it has a lot of tabs and part of them are hidden
         targetTabSheet.markAsDirty();
     }
 
@@ -1787,7 +1774,8 @@ public class WebScreens implements Screens, WindowManager {
         public void run() {
             Window windowToClose = breadCrumbs.getCurrentWindow();
             if (windowToClose != null) {
-                if (!isWindowClosePrevented(windowToClose, CloseOriginType.CLOSE_BUTTON)) {
+                if (!getConfiguredWorkArea().isNotCloseable(breadCrumbs.getCurrentWindow())
+                        && !isWindowClosePrevented(windowToClose, CloseOriginType.CLOSE_BUTTON)) {
                     windowToClose.getFrameOwner()
                             .close(WINDOW_CLOSE_ACTION)
                             .then(new TabCloseTask(breadCrumbs));

@@ -163,6 +163,12 @@ public class UrlChangeHandler {
         }
 
         Screen lastOpenedScreen = findActiveScreenByState(currentState);
+        if (lastOpenedScreen != null
+                && isNotCloseable(lastOpenedScreen.getWindow())) {
+            revertNavigationState();
+            return;
+        }
+
         if (lastOpenedScreen != null) {
             NavigationState _requestedState = requestedState;
             OperationResult screenCloseResult = lastOpenedScreen
@@ -258,7 +264,7 @@ public class UrlChangeHandler {
             boolean closed = closeWindowStack(windowStack);
             if (!closed) {
                 revertNavigationState();
-                return false;
+                return true;
             }
         }
 
@@ -661,7 +667,8 @@ public class UrlChangeHandler {
         boolean closed = true;
 
         for (Screen screen : windowStack.getBreadcrumbs()) {
-            if (isWindowClosePrevented(screen.getWindow(), CloseOriginType.CLOSE_BUTTON)) {
+            if (isNotCloseable(screen.getWindow())
+                    || isWindowClosePrevented(screen.getWindow(), CloseOriginType.CLOSE_BUTTON)) {
                 closed = false;
 
                 windowStack.select();
@@ -679,6 +686,28 @@ public class UrlChangeHandler {
             }
         }
         return closed;
+    }
+
+    public boolean isNotCloseable(Window window) {
+        if (!window.isCloseable()) {
+            return true;
+        }
+
+        Configuration configuration = beanLocator.get(Configuration.NAME);
+        WebConfig webConfig = configuration.getConfig(WebConfig.class);
+
+        if (webConfig.getDefaultScreenCanBeClosed()) {
+            return false;
+        }
+
+        boolean windowIsDefault;
+        if (window instanceof Window.Wrapper) {
+            windowIsDefault = ((WebWindow) ((Window.Wrapper) window).getWrappedWindow()).isDefaultScreenWindow();
+        } else {
+            windowIsDefault = ((WebWindow) window).isDefaultScreenWindow();
+        }
+
+        return windowIsDefault;
     }
 
     // Copied from WebAppWorkArea

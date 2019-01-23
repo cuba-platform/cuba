@@ -17,9 +17,10 @@
 
 package com.haulmont.cuba.gui.components;
 
-import com.haulmont.cuba.core.global.BeanLocator;
 import com.haulmont.cuba.core.global.Events;
 import com.haulmont.cuba.core.global.FtsConfigHelper;
+import com.haulmont.cuba.gui.ScreenTools;
+import com.haulmont.cuba.gui.Screens;
 import com.haulmont.cuba.gui.components.dev.LayoutAnalyzerContextMenuProvider;
 import com.haulmont.cuba.gui.components.mainwindow.AppWorkArea;
 import com.haulmont.cuba.gui.components.mainwindow.FoldersPane;
@@ -45,7 +46,9 @@ public class AbstractMainWindow extends AbstractTopLevelWindow implements MainSc
     private FoldersPane foldersPane;
 
     @Inject
-    private BeanLocator beanLocator;
+    protected Screens screens;
+    @Inject
+    protected ScreenTools screenTools;
 
     @Override
     @Nullable
@@ -95,7 +98,7 @@ public class AbstractMainWindow extends AbstractTopLevelWindow implements MainSc
 
     protected void initLayoutAnalyzerContextMenu(Component contextMenuTarget) {
         LayoutAnalyzerContextMenuProvider laContextMenuProvider =
-                beanLocator.get(LayoutAnalyzerContextMenuProvider.NAME);
+                getBeanLocator().get(LayoutAnalyzerContextMenuProvider.NAME);
         laContextMenuProvider.initContextMenu(this, contextMenuTarget);
     }
 
@@ -121,6 +124,6 @@ public class AbstractMainWindow extends AbstractTopLevelWindow implements MainSc
     public void ready() {
         super.ready();
 
-        getWindowManager().openDefaultScreen();
+        screenTools.openDefaultScreen(screens);
     }
 }

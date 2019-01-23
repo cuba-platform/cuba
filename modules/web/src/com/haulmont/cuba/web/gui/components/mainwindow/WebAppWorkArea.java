@@ -19,7 +19,6 @@ package com.haulmont.cuba.web.gui.components.mainwindow;
 
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.global.BeanLocator;
-import com.haulmont.cuba.core.global.ClientType;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.Screens;
@@ -32,7 +31,6 @@ import com.haulmont.cuba.gui.screen.FrameOwner;
 import com.haulmont.cuba.gui.screen.Screen;
 import com.haulmont.cuba.gui.screen.UiControllerUtils;
 import com.haulmont.cuba.gui.util.OperationResult;
-import com.haulmont.cuba.security.app.UserSettingService;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.app.UserSettingsTools;
@@ -497,6 +495,10 @@ public class WebAppWorkArea extends WebAbstractComponent<CssLayout> implements A
         Collection<Screen> tabScreens = windowStack.getBreadcrumbs();
 
         for (Screen screen : tabScreens) {
+            if (isNotCloseable(screen.getWindow())) {
+                continue;
+            }
+
             if (isWindowClosePrevented(screen.getWindow(), CloseOriginType.CLOSE_BUTTON)) {
                 closed = false;
 
@@ -625,7 +627,7 @@ public class WebAppWorkArea extends WebAbstractComponent<CssLayout> implements A
 
                     Window currentWindow = breadCrumbs.getCurrentWindow();
 
-                    if (!canWindowBeClosed(currentWindow)) {
+                    if (isNotCloseable(currentWindow)) {
                         return;
                     }
 
@@ -713,28 +715,26 @@ public class WebAppWorkArea extends WebAbstractComponent<CssLayout> implements A
         }
     }
 
-    protected boolean canWindowBeClosed(Window window) {
+    public boolean isNotCloseable(Window window) {
         if (!window.isCloseable()) {
-            return false;
+            return true;
         }
 
         Configuration configuration = beanLocator.get(Configuration.NAME);
         WebConfig webConfig = configuration.getConfig(WebConfig.class);
 
         if (webConfig.getDefaultScreenCanBeClosed()) {
-            return true;
+            return false;
         }
 
-        String defaultScreenId = webConfig.getDefaultScreenId();
-
-        if (webConfig.getUserCanChooseDefaultScreen()) {
-            UserSettingService userSettingService = beanLocator.get(UserSettingService.NAME);
-
-            String userDefaultScreen = userSettingService.loadSetting(ClientType.WEB, "userDefaultScreen");
-            defaultScreenId = StringUtils.isEmpty(userDefaultScreen) ? defaultScreenId : userDefaultScreen;
+        boolean windowIsDefault;
+        if (window instanceof Window.Wrapper) {
+            windowIsDefault = ((WebWindow) ((Window.Wrapper) window).getWrappedWindow()).isDefaultScreenWindow();
+        } else {
+            windowIsDefault = ((WebWindow) window).isDefaultScreenWindow();
         }
 
-        return !Objects.equals(window.getId(), defaultScreenId);
+        return windowIsDefault;
     }
 
     protected boolean hasModalWindow() {

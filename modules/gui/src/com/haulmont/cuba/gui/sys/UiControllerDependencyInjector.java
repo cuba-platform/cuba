@@ -647,11 +647,11 @@ public class UiControllerDependencyInjector {
             return UiControllerUtils.getScreenContext(frameOwner).getScreens();
 
         } else if (Dialogs.class.isAssignableFrom(type)) {
-            // injecting screens
+            // injecting dialogs
             return UiControllerUtils.getScreenContext(frameOwner).getDialogs();
 
         } else if (Notifications.class.isAssignableFrom(type)) {
-            // injecting screens
+            // injecting notifications
             return UiControllerUtils.getScreenContext(frameOwner).getNotifications();
 
         } else if (Fragments.class.isAssignableFrom(type)) {
