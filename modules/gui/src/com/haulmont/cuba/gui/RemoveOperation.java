@@ -173,13 +173,14 @@ public class RemoveOperation {
 
         CollectionContainer<E> container = getCollectionContainer(builder);
 
+        commitIfNeeded(selectedItems, container, screenData);
+
         if (selectedItems.size() == 1) {
             container.getMutableItems().remove(selectedItems.get(0));
         } else {
             container.getMutableItems().removeAll(selectedItems);
         }
 
-        commitIfNeeded(selectedItems, container, screenData);
         focusListComponent(builder);
     }
 
@@ -205,10 +206,12 @@ public class RemoveOperation {
         if (needCommit) {
             CommitContext commitContext = new CommitContext();
             for (Entity entity : entitiesToRemove) {
-                screenData.getDataContext().evict(entity);
                 commitContext.addInstanceToRemove(entity);
             }
             dataManager.commit(commitContext);
+            for (Entity entity : entitiesToRemove) {
+                screenData.getDataContext().evict(entity);
+            }
         } else {
             for (Entity entity : entitiesToRemove) {
                 screenData.getDataContext().remove(entity);
