@@ -61,7 +61,7 @@ public class ContainerDataGridItems<E extends Entity>
         events.publish(DataGridItems.SelectedItemChangeEvent.class, new DataGridItems.SelectedItemChangeEvent<>(this, event.getItem()));
     }
 
-    protected void containerCollectionChanged(CollectionContainer.CollectionChangeEvent<E> e) {
+    protected void containerCollectionChanged(@SuppressWarnings("unused") CollectionContainer.CollectionChangeEvent<E> e) {
         events.publish(DataGridItems.ItemSetChangeEvent.class, new DataGridItems.ItemSetChangeEvent<>(this));
     }
 

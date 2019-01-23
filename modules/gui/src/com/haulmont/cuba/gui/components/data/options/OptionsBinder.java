@@ -24,8 +24,6 @@ import com.haulmont.cuba.gui.components.data.BindingState;
 import com.haulmont.cuba.gui.components.data.Options;
 import com.haulmont.cuba.gui.components.data.meta.EntityOptions;
 import com.haulmont.cuba.gui.components.data.meta.OptionsBinding;
-import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.context.annotation.Scope;
 
 import java.util.stream.Stream;
 
@@ -42,6 +40,7 @@ public class OptionsBinder {
         return binding;
     }
 
+    @FunctionalInterface
     public interface OptionsTarget<V> {
         void setOptions(Stream<V> options);
     }

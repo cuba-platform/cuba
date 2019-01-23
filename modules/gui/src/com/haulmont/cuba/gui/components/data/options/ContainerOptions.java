@@ -58,14 +58,17 @@ public class ContainerOptions<E extends Entity<K>, K> implements Options<E>, Ent
 
     protected void containerCollectionChanged(@SuppressWarnings("unused") CollectionContainer.CollectionChangeEvent<E> e) {
         if (deferredSelectedItem != null) {
-            container.setItem(deferredSelectedItem);
+            // UI components (e.g. LookupField) can have value that does not exist in container
+            if (container.containsItem(deferredSelectedItem)) {
+                container.setItem(deferredSelectedItem);
+            }
             deferredSelectedItem = null;
         }
         events.publish(OptionsChangeEvent.class, new OptionsChangeEvent<>(this));
     }
 
     @SuppressWarnings("unchecked")
-    protected void containerItemPropertyChanged(CollectionContainer.ItemPropertyChangeEvent<E> e) {
+    protected void containerItemPropertyChanged(@SuppressWarnings("unused") CollectionContainer.ItemPropertyChangeEvent<E> e) {
         events.publish(OptionsChangeEvent.class, new OptionsChangeEvent(this));
     }
 
@@ -80,7 +83,10 @@ public class ContainerOptions<E extends Entity<K>, K> implements Options<E>, Ent
             container.setItem(null);
         } else {
             if (container.getItems().size() > 0) {
-                container.setItem(item);
+                // UI components (e.g. LookupField) can have value that does not exist in container
+                if (container.containsItem(item)) {
+                    container.setItem(item);
+                }
             } else {
                 this.deferredSelectedItem = item;
             }
