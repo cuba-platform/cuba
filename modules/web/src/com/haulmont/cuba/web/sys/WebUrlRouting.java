@@ -22,6 +22,7 @@ import com.haulmont.cuba.gui.Screens;
 import com.haulmont.cuba.gui.UrlRouting;
 import com.haulmont.cuba.gui.components.DialogWindow;
 import com.haulmont.cuba.gui.components.RootWindow;
+import com.haulmont.cuba.gui.navigation.NavigationState;
 import com.haulmont.cuba.gui.screen.EditorScreen;
 import com.haulmont.cuba.gui.screen.OpenMode;
 import com.haulmont.cuba.gui.screen.Screen;
@@ -30,7 +31,6 @@ import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.gui.UrlHandlingMode;
 import com.haulmont.cuba.web.gui.WebWindow;
-import com.haulmont.cuba.gui.navigation.NavigationState;
 import com.haulmont.cuba.web.sys.navigation.UrlIdSerializer;
 import com.haulmont.cuba.web.sys.navigation.UrlTools;
 import com.vaadin.server.Page;
@@ -290,8 +290,8 @@ public class WebUrlRouting implements UrlRouting {
     }
 
     protected String getStateMark(Screen screen) {
-        WebWindow window = (WebWindow) screen.getWindow();
-        return String.valueOf(window.getUrlStateMark());
+        WebWindow webWindow = (WebWindow) screen.getWindow();
+        return String.valueOf(webWindow.getUrlStateMark());
     }
 
     protected boolean externalNavigation(NavigationState currentState, NavigationState newState) {

@@ -25,10 +25,12 @@ import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.Screens;
 import com.haulmont.cuba.gui.Screens.OpenedScreens;
 import com.haulmont.cuba.gui.UiComponents;
+import com.haulmont.cuba.gui.UrlRouting;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.mainwindow.AppWorkArea;
 import com.haulmont.cuba.gui.screen.FrameOwner;
 import com.haulmont.cuba.gui.screen.Screen;
+import com.haulmont.cuba.gui.screen.UiControllerUtils;
 import com.haulmont.cuba.gui.util.OperationResult;
 import com.haulmont.cuba.security.app.UserSettingService;
 import com.haulmont.cuba.web.AppUI;
@@ -42,7 +44,6 @@ import com.haulmont.cuba.web.gui.components.util.ShortcutListenerDelegate;
 import com.haulmont.cuba.web.sys.TabWindowContainer;
 import com.haulmont.cuba.web.sys.WindowBreadCrumbs;
 import com.haulmont.cuba.gui.navigation.NavigationState;
-import com.haulmont.cuba.web.sys.navigation.UrlTools;
 import com.haulmont.cuba.web.widgets.*;
 import com.haulmont.cuba.web.widgets.addons.dragdroplayouts.drophandlers.DefaultTabSheetDropHandler;
 import com.haulmont.cuba.web.widgets.client.addons.dragdroplayouts.ui.LayoutDragMode;
@@ -234,7 +235,7 @@ public class WebAppWorkArea extends WebAbstractComponent<CssLayout> implements A
 
             cubaTabSheet.setCloseOthersHandler(this::closeOtherTabWindows);
             cubaTabSheet.setCloseAllTabsHandler(this::closeAllTabWindows);
-            cubaTabSheet.addSelectedTabChangeListener(event -> reflectTabChangeToUrl());
+            cubaTabSheet.addSelectedTabChangeListener(event -> reflectTabChangeToUrl(event.isUserOriginated()));
         } else {
             CubaManagedTabSheet cubaManagedTabSheet = new CubaManagedTabSheet();
 
@@ -251,7 +252,7 @@ public class WebAppWorkArea extends WebAbstractComponent<CssLayout> implements A
 
             cubaManagedTabSheet.setCloseOthersHandler(this::closeOtherTabWindows);
             cubaManagedTabSheet.setCloseAllTabsHandler(this::closeAllTabWindows);
-            cubaManagedTabSheet.addSelectedTabChangeListener(event -> reflectTabChangeToUrl());
+            cubaManagedTabSheet.addSelectedTabChangeListener(event -> reflectTabChangeToUrl(event.isUserOriginated()));
         }
 
         tabbedContainer.setHeight(100, Sizeable.Unit.PERCENTAGE);
@@ -262,17 +263,38 @@ public class WebAppWorkArea extends WebAbstractComponent<CssLayout> implements A
         return tabbedContainer;
     }
 
-    protected void reflectTabChangeToUrl() {
+    protected void reflectTabChangeToUrl(boolean userOriginated) {
+        if (!userOriginated) {
+            return;
+        }
+
         Component selectedTab = tabbedContainer.getTabSheetBehaviour().getSelectedTab();
         if (selectedTab == null) {
             return;
         }
 
         Window selectedWindow = ((TabWindowContainer) selectedTab).getBreadCrumbs().getCurrentWindow();
-        NavigationState resolvedState = ((WebWindow) selectedWindow).getResolvedState();
+        WebWindow webWindow = (WebWindow) selectedWindow;
 
+        NavigationState resolvedState = webWindow.getResolvedState();
         if (resolvedState != null) {
-            UrlTools.replaceState(resolvedState.asRoute());
+            int stateMark = generateUrlStateMark();
+
+            NavigationState newState = new NavigationState(
+                    resolvedState.getRoot(),
+                    String.valueOf(stateMark),
+                    resolvedState.getNestedRoute(),
+                    resolvedState.getParams());
+
+            webWindow.setUrlStateMark(stateMark);
+            webWindow.setResolvedState(newState);
+
+            Screen screen = selectedWindow.getFrameOwner();
+
+            UrlRouting urlRouting = UiControllerUtils.getScreenContext(screen)
+                    .getUrlRouting();
+
+            urlRouting.pushState(screen, newState.getParams());
         }
     }
 

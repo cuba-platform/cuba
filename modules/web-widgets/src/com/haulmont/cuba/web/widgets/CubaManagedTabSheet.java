@@ -118,7 +118,7 @@ public class CubaManagedTabSheet extends CubaTabSheetCssLayout
 
         tabbedHeader.addSelectedTabChangeListener(event -> {
             setSelected(tabToContentMap.get(tabbedHeader.getSelectedTab()));
-            fireSelectedTabChange();
+            fireSelectedTabChange(event.isUserOriginated());
         });
         addComponent(tabbedHeader);
 
@@ -335,12 +335,19 @@ public class CubaManagedTabSheet extends CubaTabSheetCssLayout
 
     public static class SelectedTabChangeEvent extends Component.Event {
 
-        public SelectedTabChangeEvent(Component source) {
+        protected boolean userOriginated;
+
+        public SelectedTabChangeEvent(Component source, boolean userOriginated) {
             super(source);
+            this.userOriginated = userOriginated;
         }
 
         public CubaManagedTabSheet getTabSheet() {
             return (CubaManagedTabSheet) getSource();
+        }
+
+        public boolean isUserOriginated() {
+            return userOriginated;
         }
     }
 
@@ -367,8 +374,8 @@ public class CubaManagedTabSheet extends CubaTabSheetCssLayout
         removeSelectedTabChangeListener(listener);
     }
 
-    protected void fireSelectedTabChange() {
-        fireEvent(new CubaManagedTabSheet.SelectedTabChangeEvent(this));
+    protected void fireSelectedTabChange(boolean userOriginated) {
+        fireEvent(new CubaManagedTabSheet.SelectedTabChangeEvent(this, userOriginated));
     }
 
     public interface CloseHandler extends Serializable {

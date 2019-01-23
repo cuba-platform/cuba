@@ -125,8 +125,10 @@ public class UrlChangeHandler {
     }
 
     protected boolean handleHistoryNavigation(NavigationState requestedState) {
-        boolean backward = getHistory().searchBackward(requestedState)
+        boolean backward = Objects.equals(getHistory().getNow(), requestedState)
+                || getHistory().searchBackward(requestedState)
                 || (getHistory().searchBackward(requestedState) && findActiveScreenByState(requestedState) != null);
+
         boolean forward = getHistory().searchForward(requestedState);
 
         if (backward) {
@@ -139,6 +141,14 @@ public class UrlChangeHandler {
     }
 
     protected void handleHistoryBackward(NavigationState requestedState) {
+        NavigationState currentState = getHistory().getNow();
+
+        requestedState = findPreviousState(requestedState);
+        if (requestedState == null) {
+            revertNavigationState();
+            return;
+        }
+
         AccessCheckResult accessCheckResult = navigationAllowed(requestedState);
         if (accessCheckResult.isRejected()) {
             if (StringUtils.isNotEmpty(accessCheckResult.getMessage())) {
@@ -148,22 +158,17 @@ public class UrlChangeHandler {
             return;
         }
 
-        Screen prevScreen = findScreenByState(requestedState);
-        if (prevScreen == null && StringUtils.isNotEmpty(requestedState.getStateMark())) {
-            revertNavigationState();
-            return;
-        }
-
-        if (rootState(requestedState)) {
+        if (isRootState(requestedState)) {
             handleCurrentRootNavigation(requestedState);
         }
 
-        Screen lastOpenedScreen = findActiveScreenByState(getHistory().getNow());
+        Screen lastOpenedScreen = findActiveScreenByState(currentState);
         if (lastOpenedScreen != null) {
+            NavigationState _requestedState = requestedState;
             OperationResult screenCloseResult = lastOpenedScreen
                     .getWindow().getFrameOwner()
                     .close(FrameOwner.WINDOW_CLOSE_ACTION)
-                    .then(() -> proceedHistoryBackward(requestedState));
+                    .then(() -> proceedHistoryBackward(_requestedState));
 
             if (OperationResult.Status.FAIL == screenCloseResult.getStatus()
                     || OperationResult.Status.UNKNOWN == screenCloseResult.getStatus()) {
@@ -174,10 +179,45 @@ public class UrlChangeHandler {
         }
     }
 
+    protected NavigationState findPreviousState(NavigationState requestedState) {
+        if (isRootState(requestedState)) {
+            return requestedState;
+        }
+
+        if (Objects.equals(requestedState, getHistory().getNow())) {
+            requestedState = getHistory().getPrevious();
+        }
+
+        NavigationState prevState;
+        Screen prevStateScreen = findScreenByState(requestedState);
+
+        if (prevStateScreen == null
+                && !isRootState(requestedState)) {
+
+            while (getHistory().getPrevious() != null) {
+                getHistory().backward();
+                NavigationState previousState = getHistory().getPrevious();
+
+                if (findActiveScreenByState(previousState) != null
+                        || isRootState(previousState)) {
+                    break;
+                }
+            }
+
+            prevState = getHistory().getPrevious();
+        } else {
+            prevState = requestedState;
+        }
+
+        return prevState;
+    }
+
     protected void proceedHistoryBackward(NavigationState requestedState) {
-        getHistory().backward();
         selectScreen(findActiveScreenByState(requestedState));
+
         replaceState(requestedState.asRoute());
+
+        getHistory().backward();
     }
 
     protected void handleHistoryForward() {
@@ -226,7 +266,8 @@ public class UrlChangeHandler {
     }
 
     protected boolean currentRootNavigated(NavigationState requestedState) {
-        return !rootState(getHistory().getNow()) && rootState(requestedState);
+        return !isRootState(getHistory().getNow())
+                && isRootState(requestedState);
     }
 
     protected boolean handleRootChange(NavigationState requestedState) {
@@ -274,7 +315,7 @@ public class UrlChangeHandler {
         if (windowInfo != null) {
 
             // should be changed
-            if (!screenCanBeNavigated(windowInfo)) {
+            if (navigationIsNotPermitted(windowInfo)) {
                 revertNavigationState();
                 return true;
             }
@@ -290,34 +331,45 @@ public class UrlChangeHandler {
             return true;
         }
 
-        for (String subRoute : routeParts) {
-            windowInfo = windowConfig.findWindowInfoByRoute(subRoute);
-            if (windowInfo == null) {
-                handle404(subRoute);
+        Map<String, WindowInfo> routeWindowInfos = new LinkedHashMap<>(routeParts.length);
+        for (String routePart : routeParts) {
+            routeWindowInfos.put(routePart, windowConfig.findWindowInfoByRoute(routePart));
+        }
+
+        for (Map.Entry<String, WindowInfo> entry : routeWindowInfos.entrySet()) {
+            WindowInfo info = entry.getValue();
+            if (info == null) {
+                revertNavigationState();
+                handle404(entry.getKey());
                 return true;
             }
 
-            // should be changed
-            if (!screenCanBeNavigated(windowInfo)) {
+            if (navigationIsNotPermitted(info)) {
+                revertNavigationState();
                 return true;
             }
+        }
 
-            openScreen(requestedState, windowInfo);
+        for (Map.Entry<String, WindowInfo> entry : routeWindowInfos.entrySet()) {
+            if (entry.getValue() != null) {
+                openScreen(requestedState, entry.getValue());
+            }
         }
 
         return true;
     }
 
-    protected boolean screenCanBeNavigated(WindowInfo windowInfo) {
+    protected boolean navigationIsNotPermitted(WindowInfo windowInfo) {
         WindowInfo loginWindowInfo = windowConfig.getWindowInfo("loginWindow");
         WindowInfo mainWindowInfo = windowConfig.getWindowInfo("mainWindow");
 
-        return !loginWindowInfo.equals(windowInfo)
-                && !mainWindowInfo.equals(windowInfo);
+        return loginWindowInfo.equals(windowInfo)
+                || mainWindowInfo.equals(windowInfo);
     }
 
     protected boolean screenChanged(NavigationState requestedState) {
-        if (NavigationState.EMPTY == requestedState) {
+        if (NavigationState.EMPTY == requestedState
+                || isRootState(requestedState)) {
             return false;
         }
 
@@ -508,12 +560,13 @@ public class UrlChangeHandler {
         return getOpenedScreens().getRootScreenOrNull();
     }
 
-    protected boolean rootState(NavigationState requestedState) {
+    protected boolean isRootState(NavigationState requestedState) {
         return StringUtils.isEmpty(requestedState.getStateMark()) && StringUtils.isEmpty(requestedState.getNestedRoute());
     }
 
     protected String getStateMark(Screen screen) {
-        return String.valueOf(((WebWindow) screen.getWindow()).getUrlStateMark());
+        WebWindow webWindow = (WebWindow) screen.getWindow();
+        return String.valueOf(webWindow.getUrlStateMark());
     }
 
     protected Screen findActiveScreenByState(NavigationState requestedState) {
@@ -567,7 +620,7 @@ public class UrlChangeHandler {
             RedirectHandler redirectHandler = beanLocator.getPrototype(RedirectHandler.NAME, ui);
             redirectHandler.schedule(requestedState);
             App.getInstance().setRedirectHandler(redirectHandler);
-        } else if (rootState(requestedState)) {
+        } else if (isRootState(requestedState)) {
             Screen rootScreen = getOpenedScreens().getRootScreenOrNull();
             if (rootScreen != null) {
                 pushState(getResolvedState(rootScreen).asRoute());

@@ -69,15 +69,7 @@ public class WebHistory implements History {
             return NavigationState.EMPTY;
         }
 
-        NavigationState state = ui.getUrlRouting().getState();
-        if (!searchBackward(state)) {
-            log.debug("History doesn't contain state '{}'. History backward will not be performed", state);
-            return NavigationState.EMPTY;
-        }
-
-        do {
-            now--;
-        } while (!Objects.equals(state, history.get(now)));
+        now--;
 
         return history.get(now);
     }
