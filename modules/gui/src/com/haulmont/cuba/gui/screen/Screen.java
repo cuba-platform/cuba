@@ -346,6 +346,15 @@ public abstract class Screen implements FrameOwner {
     }
 
     /**
+     * Closes the screen with {@link #WINDOW_CLOSE_ACTION} action.
+     *
+     * @return result of close request
+     */
+    public OperationResult closeWithDefaultAction() {
+        return close(WINDOW_CLOSE_ACTION);
+    }
+
+    /**
      * @param action close action
      * @return true if the screen should be registered in UI history
      */

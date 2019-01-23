@@ -17,6 +17,9 @@
 
 package com.haulmont.cuba.gui.screen;
 
+/**
+ * Standard close action that supports checkForUnsavedChanges flag.
+ */
 public class StandardCloseAction implements CloseAction, ChangeTrackerCloseAction {
 
     private final String actionId;
