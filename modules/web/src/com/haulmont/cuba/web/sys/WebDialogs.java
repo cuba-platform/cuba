@@ -390,17 +390,18 @@ public class WebDialogs implements Dialogs {
             window.setModal(true);
             window.setResizable(false);
 
-            messageLabel = new CubaLabel();
-            messageLabel.setWidth(100, Sizeable.Unit.PERCENTAGE);
-
             layout = new VerticalLayout();
             layout.setStyleName("c-app-message-dialog");
             layout.setMargin(false);
             layout.setSpacing(true);
 
+            messageLabel = new CubaLabel();
+            messageLabel.setStyleName("c-app-message-dialog-text");
+            messageLabel.setWidth(100, Sizeable.Unit.PERCENTAGE);
+
             DialogAction action = new DialogAction(DialogAction.Type.OK);
             okButton = createButton(action);
-            okButton.setClickHandler(mouseEventDetails -> {
+            okButton.setClickHandler(me -> {
                 try {
                     action.actionPerform(ui.getTopLevelWindow());
                 } finally {

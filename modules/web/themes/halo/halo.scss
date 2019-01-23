@@ -106,6 +106,7 @@
 @import "app/localized-frame";
 @import "app/entity-inspector-browse";
 @import "app/fts-search-window";
+@import "app/dialogs";
 
 // Add-ons
 @import "addons/aceeditor/ace-gwt";
@@ -213,4 +214,5 @@
   @include cuba-localized-frame;
   @include cuba-entity-inspector-browse;
   @include fts-search-window;
+  @include cuba-dialogs;
 }
