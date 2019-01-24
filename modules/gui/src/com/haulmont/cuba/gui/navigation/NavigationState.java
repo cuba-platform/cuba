@@ -16,6 +16,7 @@
 
 package com.haulmont.cuba.gui.navigation;
 
+import com.haulmont.cuba.gui.UrlRouting;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -24,6 +25,27 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+/**
+ * Immutable object of this class represents some navigation state determined by URL fragment.
+ * <p>
+ * For example, if URL is:
+ * <pre>{@code
+ *   http://host:port/app/#main/12/orders/view?id=a9fc2d30b51ef30b7e4b5a1c2d
+ * }</pre>
+ * URL fragment will be:
+ * <pre>{@code
+ *   main/12/orders/view?id=a9fc2d30b51ef30b7e4b5a1c2d
+ * }</pre>
+ * Where:
+ * <pre>
+ *   {@code main} - root screen route (in this case route of {@code AppMainWindow})
+ *   {@code 12} - URL state mark
+ *   {@code orders/view} - route of nested screen (or screens)
+ *   {@code id=a9fc2d30b51ef30b7e4b5a1c2d} - parameter
+ * </pre>
+ *
+ * @see UrlRouting
+ */
 public class NavigationState {
 
     public static final NavigationState EMPTY =
@@ -57,6 +79,9 @@ public class NavigationState {
         return params;
     }
 
+    /**
+     * @return joined by "&" sign URL params, or empty string if no params for this state
+     */
     public String getParamsString() {
         if (MapUtils.isEmpty(params)) {
             return "";
@@ -68,6 +93,9 @@ public class NavigationState {
                 .collect(Collectors.joining("&"));
     }
 
+    /**
+     * @return current state combined into URL fragment, e.g. {@code main/0/orders?status=shipped}
+     */
     public String asRoute() {
         StringBuilder route = new StringBuilder(root);
 
