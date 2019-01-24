@@ -51,7 +51,7 @@
     <bean id="thymeleafMessageSource"
           class="com.haulmont.cuba.portal.sys.ThymeleafMessageSource"/>
 
-    <bean id="thymeleafTemplateResolver" class="org.thymeleaf.spring4.templateresolver.SpringResourceTemplateResolver">
+    <bean id="thymeleafTemplateResolver" class="org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver">
         <property name="prefix" value="${cuba.portal.templateLoaderPath}"/>
         <property name="order" value="2"/>
         <property name="suffix" value=".html"/>
@@ -60,19 +60,19 @@
     </bean>
 
     <bean id="thymeleafTemplateEngine"
-          class="org.thymeleaf.spring4.SpringTemplateEngine">
+          class="org.thymeleaf.spring5.SpringTemplateEngine">
         <property name="templateResolver"
                   ref="thymeleafTemplateResolver"/>
         <property name="templateEngineMessageSource"
                   ref="thymeleafMessageSource"/>
         <property name="additionalDialects">
             <set>
-                <bean class="org.thymeleaf.extras.springsecurity4.dialect.SpringSecurityDialect"/>
+                <bean class="org.thymeleaf.extras.springsecurity5.dialect.SpringSecurityDialect"/>
             </set>
         </property>
     </bean>
 
-    <bean id="thymeleafViewResolver" class="org.thymeleaf.spring4.view.ThymeleafViewResolver">
+    <bean id="thymeleafViewResolver" class="org.thymeleaf.spring5.view.ThymeleafViewResolver">
         <property name="templateEngine" ref="thymeleafTemplateEngine" />
         <property name="characterEncoding" value="UTF-8"/>
     </bean>
