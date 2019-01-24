@@ -869,8 +869,8 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
 
     @Override
     public Map<Object, Object> getAggregationResults() {
-        CollectionDatasource ds = WebAbstractTable.this.getDatasource();
-        return component.aggregate(new AggregationContainer.Context(ds.getItemIds()));
+        Collection<?> itemIds = WebAbstractTable.this.getItems().getItemIds();
+        return component.aggregate(new AggregationContainer.Context(itemIds));
     }
 
     @Override
