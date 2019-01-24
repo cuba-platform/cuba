@@ -20,6 +20,7 @@ package com.haulmont.cuba.web.gui.components;
 import com.google.common.base.Strings;
 import com.haulmont.bali.events.Subscription;
 import com.haulmont.chile.core.datatypes.Datatype;
+import com.haulmont.chile.core.datatypes.ValueConversionException;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.TextArea;
@@ -81,6 +82,8 @@ public abstract class WebAbstractTextArea<T extends com.vaadin.ui.TextArea, V>
         if (datatype != null) {
             try {
                 return datatype.parse(value, locale);
+            } catch (ValueConversionException e) {
+                throw new ConversionException(e.getLocalizedMessage(), e);
             } catch (ParseException e) {
                 throw new ConversionException(getConversionErrorMessage(), e);
             }
@@ -92,6 +95,8 @@ public abstract class WebAbstractTextArea<T extends com.vaadin.ui.TextArea, V>
             Datatype<V> propertyDataType = entityValueSource.getMetaPropertyPath().getRange().asDatatype();
             try {
                 return propertyDataType.parse(value, locale);
+            } catch (ValueConversionException e) {
+                throw new ConversionException(e.getLocalizedMessage(), e);
             } catch (ParseException e) {
                 throw new ConversionException(getConversionErrorMessage(), e);
             }

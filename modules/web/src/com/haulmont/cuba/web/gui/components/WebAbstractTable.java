@@ -22,6 +22,7 @@ import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.DatatypeRegistry;
 import com.haulmont.chile.core.datatypes.Datatypes;
+import com.haulmont.chile.core.datatypes.ValueConversionException;
 import com.haulmont.chile.core.model.*;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.client.sys.PersistenceManagerClient;
@@ -32,6 +33,7 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.LocaleHelper;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.ComponentsHelper;
+import com.haulmont.cuba.gui.Notifications;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.LookupComponent.LookupSelectionChangeNotifier;
 import com.haulmont.cuba.gui.components.actions.BaseAction;
@@ -55,9 +57,7 @@ import com.haulmont.cuba.gui.model.DataComponents;
 import com.haulmont.cuba.gui.model.InstanceContainer;
 import com.haulmont.cuba.gui.presentations.Presentations;
 import com.haulmont.cuba.gui.presentations.PresentationsImpl;
-import com.haulmont.cuba.gui.screen.FrameOwner;
-import com.haulmont.cuba.gui.screen.InstallTargetHandler;
-import com.haulmont.cuba.gui.screen.LookupScreen;
+import com.haulmont.cuba.gui.screen.*;
 import com.haulmont.cuba.gui.sys.UiTestIds;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
@@ -2987,8 +2987,11 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
                         new AggregationDistributionContext<E>(getColumn(columnId.toString()),
                                 parsedValue, getDatasource().getItems(), context.isTotalAggregation());
                 distributionProvider.onDistribution(distributionContext);
+            } catch (ValueConversionException e) {
+                showParseErrorNotification(e.getLocalizedMessage());
+                return false; // rollback to previous value
             } catch (ParseException e) {
-                showParseErrorNotification();
+                showParseErrorNotification(messages.getMainMessage("validationFail"));
                 return false; // rollback to previous value
             }
         }
@@ -3171,12 +3174,10 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
         return parsedValue;
     }
 
-    protected void showParseErrorNotification() {
-        Messages messages = AppBeans.get(Messages.NAME);
-
-        getFrame().showNotification(
-                messages.getMainMessage("validationFail.caption"),
-                messages.getMainMessage("validationFail"),
-                Frame.NotificationType.TRAY);
+    protected void showParseErrorNotification(String message) {
+        ScreenContext screenContext = UiControllerUtils.getScreenContext(getFrame().getFrameOwner());
+        screenContext.getNotifications().create(Notifications.NotificationType.TRAY)
+                .withDescription(message)
+                .show();
     }
 }

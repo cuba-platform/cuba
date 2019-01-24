@@ -21,6 +21,7 @@ import com.google.common.collect.Lists;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.DatatypeRegistry;
 import com.haulmont.chile.core.datatypes.Datatypes;
+import com.haulmont.chile.core.datatypes.ValueConversionException;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
@@ -714,9 +715,11 @@ public class Param {
                 Object v;
                 try {
                     v = datatype.parse(e.getValue(), userSessionSource1.getLocale());
+                } catch (ValueConversionException ex) {
+                    showParseExceptionNotification(ex.getLocalizedMessage());
+                    return;
                 } catch (ParseException ex) {
-                    WindowManager wm = AppBeans.get(WindowManagerProvider.class).get();
-                    wm.showNotification(messages.getMainMessage("filter.param.numberInvalid"), Frame.NotificationType.TRAY);
+                    showParseExceptionNotification(messages.getMainMessage("filter.param.numberInvalid"));
                     return;
                 }
                 _setValue(v, valueProperty);
@@ -730,6 +733,11 @@ public class Param {
         UserSessionSource sessionSource = AppBeans.get(UserSessionSource.NAME);
         field.setValue(datatype.format(_getValue(valueProperty), sessionSource.getLocale()));
         return field;
+    }
+
+    protected void showParseExceptionNotification(String message) {
+        WindowManager wm = AppBeans.get(WindowManagerProvider.class).get();
+        wm.showNotification(message, Frame.NotificationType.TRAY);
     }
 
     protected Component createBooleanField(ValueProperty valueProperty) {
