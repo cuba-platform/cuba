@@ -41,6 +41,7 @@ import java.util.function.Consumer;
 
 public class AccessGroupCompanion implements GroupBrowser.Companion {
 
+    // cross browser data type
     protected final static String TRANSFER_DATA_TYPE = "text";
 
     @Override
@@ -48,7 +49,7 @@ public class AccessGroupCompanion implements GroupBrowser.Companion {
                                 Consumer<UserGroupChangedEvent> userGroupChangedHandler,
                                 Consumer<GroupChangeEvent> groupChangeEventHandler) {
         CubaTable vTable = usersTable.unwrap(CubaTable.class);
-        CubaTableDragSourceExtension<CubaTable> dragTable = new CubaTableDragSourceExtension<>(vTable);
+        new CubaTableDragSourceExtension<>(vTable);
 
         //noinspection unchecked
         CubaTree<Group> vTree = groupsTree.unwrap(CubaTree.class);
