@@ -20,7 +20,9 @@ import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
-import org.thymeleaf.spring4.view.ThymeleafViewResolver;
+import org.thymeleaf.spring5.view.ThymeleafViewResolver;
+
+import javax.annotation.Nonnull;
 
 @Component(ThymeleafViewsCacheInvalidation.NAME)
 public class ThymeleafViewsCacheInvalidationBean implements ThymeleafViewsCacheInvalidation, ApplicationContextAware {
@@ -28,17 +30,14 @@ public class ThymeleafViewsCacheInvalidationBean implements ThymeleafViewsCacheI
     protected ApplicationContext applicationContext;
 
     @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+    public void setApplicationContext(@Nonnull ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
     }
 
     @Override
     public void clearViewsCache() {
         ThymeleafViewResolver viewResolver = applicationContext.getBean(ThymeleafViewResolver.class);
-
-        if (viewResolver != null) {
-            viewResolver.clearCache();
-            viewResolver.getTemplateEngine().getConfiguration().getTemplateManager().clearCaches();
-        }
+        viewResolver.clearCache();
+        viewResolver.getTemplateEngine().getConfiguration().getTemplateManager().clearCaches();
     }
 }

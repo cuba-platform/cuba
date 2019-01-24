@@ -21,16 +21,16 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.context.NoSuchMessageException;
 
+import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import java.util.Locale;
 
 public class ThymeleafMessageSource implements MessageSource {
-
     @Inject
     protected Messages messages;
 
     @Override
-    public String getMessage(String code, Object[] args, String defaultMessage, Locale locale) {
+    public String getMessage(@Nonnull String code, Object[] args, String defaultMessage, @Nonnull Locale locale) {
         if (args != null && args.length > 0) {
             return messages.formatMainMessage(code, args, locale);
         }
@@ -38,8 +38,9 @@ public class ThymeleafMessageSource implements MessageSource {
         return messages.getMainMessage(code, locale);
     }
 
+    @Nonnull
     @Override
-    public String getMessage(String code, Object[] args, Locale locale) throws NoSuchMessageException {
+    public String getMessage(@Nonnull String code, Object[] args, @Nonnull Locale locale) throws NoSuchMessageException {
         if (args != null && args.length > 0) {
             return messages.formatMainMessage(code, args, locale);
         }
@@ -47,8 +48,9 @@ public class ThymeleafMessageSource implements MessageSource {
         return messages.getMainMessage(code, locale);
     }
 
+    @Nonnull
     @Override
-    public String getMessage(MessageSourceResolvable resolvable, Locale locale) throws NoSuchMessageException {
+    public String getMessage(@Nonnull MessageSourceResolvable resolvable, @Nonnull Locale locale) throws NoSuchMessageException {
         throw new NoSuchMessageException("Unsupported message resolving mechanism");
     }
 }

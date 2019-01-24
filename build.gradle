@@ -916,8 +916,8 @@ configure(portalModule) {
         compile(bom['org.json:json'])
 
         compile(bom['org.thymeleaf:thymeleaf'])
-        compile(bom['org.thymeleaf:thymeleaf-spring4'])
-        compile(bom['org.thymeleaf.extras:thymeleaf-extras-springsecurity4'])
+        compile(bom['org.thymeleaf:thymeleaf-spring5'])
+        compile(bom['org.thymeleaf.extras:thymeleaf-extras-springsecurity5'])
 
         compileOnly(bom['javax.servlet:javax.servlet-api'])
 

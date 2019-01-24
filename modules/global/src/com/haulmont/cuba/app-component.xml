@@ -120,7 +120,7 @@
     <module name="portal" dependsOn="rest-api" blocks="portal">
         <artifact name="cuba-portal" appJar="true"/>
 
-        <property name="cuba.springContextConfig" value="+com/haulmont/cuba/portal-spring.xml"/>
+        <property name="cuba.springContextConfig" value="+com/haulmont/cuba/portal-spring.xml com/haulmont/cuba/portal-security-spring.xml"/>
         <property name="cuba.mainMessagePack" value="com.haulmont.cuba.core"/>
         <property name="cuba.dispatcherSpringContextConfig" value="+com/haulmont/cuba/portal-dispatcher-spring.xml"/>
 
