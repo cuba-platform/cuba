@@ -80,7 +80,7 @@ public class NavigationState {
     }
 
     /**
-     * @return joined by "&" sign URL params, or empty string if no params for this state
+     * @return joined by "&amp;" sign URL params, or empty string if no params for this state
      */
     public String getParamsString() {
         if (MapUtils.isEmpty(params)) {
