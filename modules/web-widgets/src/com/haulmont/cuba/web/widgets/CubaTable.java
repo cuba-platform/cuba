@@ -818,6 +818,11 @@ public class CubaTable extends com.vaadin.v7.ui.Table implements TableSortableCo
         }
     }
 
+    @Override
+    public Object getItemByRowKey(String rowKey) {
+        return itemIdMapper.get(rowKey);
+    }
+
     protected void updateFooterAggregation() {
         if (!isFooterVisible()) {
             setFooterVisible(true);

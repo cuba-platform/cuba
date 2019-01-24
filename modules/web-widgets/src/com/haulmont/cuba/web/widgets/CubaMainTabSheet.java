@@ -150,6 +150,11 @@ public class CubaMainTabSheet extends DDTabSheet implements Action.Container, Ha
     }
 
     @Override
+    protected CubaMainTabSheetState getState(boolean markAsDirty) {
+        return (CubaMainTabSheetState) super.getState(markAsDirty);
+    }
+
+    @Override
     public void beforeClientResponse(boolean initial) {
         super.beforeClientResponse(initial);
 
@@ -348,6 +353,23 @@ public class CubaMainTabSheet extends DDTabSheet implements Action.Container, Ha
         }
 
         closeAllTabsHandler.accept(null);
+    }
+
+    /**
+     * Important! If Tab in TabSheet contains components that provide drag and drop features, users may face with
+     * freeze UI in case of dragging elements to TabSheet or Tab layout.
+     *
+     * @param enable enable html5 drag and drop
+     */
+    public void setDDHtml5Enabled(boolean enable) {
+        getState().ddHtmlEnable = enable;
+    }
+
+    /**
+     * @return true if html5 drag and drop is enabled
+     */
+    public boolean isDDHtml5Enabled() {
+        return getState(false).ddHtmlEnable;
     }
 
     protected static class TabSheetBehaviourImpl implements TabSheetBehaviour {

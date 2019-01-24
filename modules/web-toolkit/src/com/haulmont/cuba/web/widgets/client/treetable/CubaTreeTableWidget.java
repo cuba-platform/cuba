@@ -837,4 +837,39 @@ public class CubaTreeTableWidget extends VTreeTable implements TableWidget {
                     .setOverflowY(Style.Overflow.HIDDEN);
         }
     }
+
+    @Override
+    public void updateBody(UIDL uidl, int firstRow, int reqRows) {
+        super.updateBody(uidl, firstRow, reqRows);
+
+        handleUpdateBodyRows();
+    }
+
+    @Override
+    public void initializeRows(UIDL uidl, UIDL rowData) {
+        super.initializeRows(uidl, rowData);
+
+        handleUpdateBodyRows();
+    }
+
+    @Override
+    public void updateRowsInBody(UIDL partialRowUpdates) {
+        super.updateRowsInBody(partialRowUpdates);
+
+        handleUpdateBodyRows();
+    }
+
+    protected void handleUpdateBodyRows() {
+        _delegate.handleUpdateBody();
+    }
+
+    @Override
+    public void addAfterBodyUpdateListener(AfterBodyUpdateListener listener) {
+        _delegate.addAfterUpdateBodyListener(listener);
+    }
+
+    @Override
+    public void removeAfterBodyUpdateListener(AfterBodyUpdateListener listener) {
+        _delegate.removeAfterUpdateListener(listener);
+    }
 }

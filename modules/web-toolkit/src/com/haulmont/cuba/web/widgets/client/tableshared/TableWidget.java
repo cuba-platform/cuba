@@ -58,4 +58,12 @@ public interface TableWidget extends HasEnabled, ShortcutActionHandler.ShortcutA
     boolean isTextSelectionEnabled();
 
     List<Widget> getRenderedRows();
+
+    void addAfterBodyUpdateListener(AfterBodyUpdateListener listener);
+    void removeAfterBodyUpdateListener(AfterBodyUpdateListener listener);
+
+    interface AfterBodyUpdateListener {
+        void onAfterBodyUpdate();
+    }
+
 }

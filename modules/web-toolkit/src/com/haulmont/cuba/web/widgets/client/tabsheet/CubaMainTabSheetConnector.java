@@ -20,7 +20,11 @@ package com.haulmont.cuba.web.widgets.client.tabsheet;
 import com.haulmont.cuba.web.widgets.CubaMainTabSheet;
 import com.haulmont.cuba.web.widgets.client.action.RemoteAction;
 import com.haulmont.cuba.web.widgets.client.action.StaticActionOwner;
+import com.haulmont.cuba.web.widgets.client.addons.dragdroplayouts.ui.VDragDropUtil;
 import com.haulmont.cuba.web.widgets.client.addons.dragdroplayouts.ui.tabsheet.DDTabsheetConnector;
+import com.haulmont.cuba.web.widgets.client.addons.dragdroplayouts.ui.tabsheet.VDDTabsheetDropHandler;
+import com.vaadin.client.ApplicationConnection;
+import com.vaadin.client.UIDL;
 import com.vaadin.client.WidgetUtil;
 import com.vaadin.client.communication.RpcProxy;
 import com.vaadin.client.communication.StateChangeEvent;
@@ -95,9 +99,25 @@ public class CubaMainTabSheetConnector extends DDTabsheetConnector {
     }
 
     @Override
+    public void updateFromUIDL(UIDL uidl, ApplicationConnection client) {
+        VDragDropUtil.updateDropHandlerFromUIDL(uidl, this, new VDDTabsheetDropHandler(this));
+        if (getState().ddHtmlEnable) {
+            enableDDHtml5();
+        }
+    }
+
+    @Override
     public void onStateChanged(StateChangeEvent stateChangeEvent) {
         super.onStateChanged(stateChangeEvent);
 
         getWidget().assignAdditionalCellStyles();
+
+        if (stateChangeEvent.hasPropertyChanged("ddHtmlEnable")) {
+            if (getState().ddHtmlEnable) {
+                enableDDHtml5();
+            } else {
+                disableDDHtml5();
+            }
+        }
     }
 }
