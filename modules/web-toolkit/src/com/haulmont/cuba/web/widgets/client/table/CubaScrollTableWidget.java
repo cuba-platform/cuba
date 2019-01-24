@@ -912,6 +912,41 @@ public class CubaScrollTableWidget extends VScrollTable implements TableWidget {
     }
 
     @Override
+    public void updateBody(UIDL uidl, int firstRow, int reqRows) {
+        super.updateBody(uidl, firstRow, reqRows);
+
+        handleUpdateBodyRows();
+    }
+
+    @Override
+    public void updateRowsInBody(UIDL partialRowUpdates) {
+        super.updateRowsInBody(partialRowUpdates);
+
+        handleUpdateBodyRows();
+    }
+
+    @Override
+    public void initializeRows(UIDL uidl, UIDL rowData) {
+        super.initializeRows(uidl, rowData);
+
+        handleUpdateBodyRows();
+    }
+
+    protected void handleUpdateBodyRows() {
+        _delegate.handleUpdateBody();
+    }
+
+    @Override
+    public void addAfterBodyUpdateListener(AfterBodyUpdateListener listener) {
+        _delegate.addAfterUpdateBodyListener(listener);
+    }
+
+    @Override
+    public void removeAfterBodyUpdateListener(AfterBodyUpdateListener listener) {
+        _delegate.removeAfterUpdateListener(listener);
+    }
+
+    @Override
     protected void reOrderColumn(String columnKey, int newIndex) {
         if (_delegate.aggregationRow != null) {
             client.updateVariable(paintableId, "updateAggregationRow", true, false);

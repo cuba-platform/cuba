@@ -1021,6 +1021,11 @@ public class CubaTreeTable extends com.vaadin.v7.ui.TreeTable implements TreeTab
         return aggregationDistributionProvider;
     }
 
+    @Override
+    public Object getItemByRowKey(String rowKey) {
+        return itemIdMapper.get(rowKey);
+    }
+
     public void expandAllHierarchical(List<Object> collapsedItemIds, List<Object> preOrder, List<Object> openItems) {
         if (getContainerStrategy() instanceof HierarchicalStrategy) {
             HierarchicalStrategy hierarchicalStrategy = (HierarchicalStrategy) getContainerStrategy();

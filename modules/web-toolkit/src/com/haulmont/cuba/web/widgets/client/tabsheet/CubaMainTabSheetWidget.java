@@ -66,6 +66,11 @@ public class CubaMainTabSheetWidget extends VDDTabSheet {
         }, DragLeaveEvent.getType());
     }
 
+    @Override
+    protected boolean postDropHook(VDragEvent drag) {
+        return drag != null;
+    }
+
     protected void handleBadDD(NativeEvent event) {
         Element target = WidgetUtil.getElementUnderMouse(event);
         if (target == null) {

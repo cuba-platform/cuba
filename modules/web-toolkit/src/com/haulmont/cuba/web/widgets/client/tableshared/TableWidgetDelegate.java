@@ -24,6 +24,7 @@ import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.*;
 import com.haulmont.cuba.web.widgets.client.Tools;
 import com.haulmont.cuba.web.widgets.client.aggregation.TableAggregationRow;
+import com.haulmont.cuba.web.widgets.client.tableshared.TableWidget.AfterBodyUpdateListener;
 import com.vaadin.client.*;
 import com.vaadin.client.Focusable;
 import com.vaadin.client.ui.AbstractLayoutConnector;
@@ -32,7 +33,9 @@ import com.vaadin.client.ui.ShortcutActionHandler;
 import com.vaadin.client.ui.VOverlay;
 import com.vaadin.v7.client.ui.VScrollTable;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 
 public class TableWidgetDelegate {
@@ -80,6 +83,8 @@ public class TableWidgetDelegate {
     public String tableSortResetLabel;
     public String tableSortAscendingLabel;
     public String tableSortDescendingLabel;
+
+    public List<AfterBodyUpdateListener> afterBodyUpdateListeners;
 
     public void requestFocus(final String itemKey, final String columnKey) {
         Scheduler.get().scheduleDeferred(() -> {
@@ -341,5 +346,38 @@ public class TableWidgetDelegate {
 
     private void updateVariable(String variableName,  boolean newValue, boolean immediate) {
         tableWidget.getClient().updateVariable(tableWidget.getPaintableId(), variableName, newValue, immediate);
+    }
+
+    public void addAfterUpdateBodyListener(AfterBodyUpdateListener listener) {
+        if (afterBodyUpdateListeners == null) {
+            afterBodyUpdateListeners = new ArrayList<>();
+        }
+
+        if (!afterBodyUpdateListeners.contains(listener)) {
+            afterBodyUpdateListeners.add(listener);
+        }
+    }
+
+    public void removeAfterUpdateListener(AfterBodyUpdateListener listener) {
+        if (afterBodyUpdateListeners == null) {
+            return;
+        }
+
+        afterBodyUpdateListeners.remove(listener);
+
+        if (afterBodyUpdateListeners.isEmpty()) {
+            afterBodyUpdateListeners = null;
+        }
+    }
+
+    public void handleUpdateBody() {
+        if (afterBodyUpdateListeners == null
+                || afterBodyUpdateListeners.isEmpty()) {
+            return;
+        }
+
+        for (AfterBodyUpdateListener listener : afterBodyUpdateListeners) {
+            listener.onAfterBodyUpdate();
+        }
     }
 }

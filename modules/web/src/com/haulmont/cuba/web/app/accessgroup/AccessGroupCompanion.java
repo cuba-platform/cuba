@@ -21,128 +21,135 @@ import com.haulmont.cuba.gui.app.security.group.browse.GroupChangeEvent;
 import com.haulmont.cuba.gui.app.security.group.browse.UserGroupChangedEvent;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.components.Tree;
+import com.haulmont.cuba.gui.components.data.TableItems;
 import com.haulmont.cuba.security.entity.Group;
 import com.haulmont.cuba.security.entity.User;
+import com.haulmont.cuba.web.widgets.CubaTable;
+import com.haulmont.cuba.web.widgets.CubaTableDragSourceExtension;
 import com.haulmont.cuba.web.widgets.CubaTree;
+import com.vaadin.server.Page;
+import com.vaadin.shared.ui.grid.DropLocation;
+import com.vaadin.shared.ui.grid.DropMode;
+import com.vaadin.ui.components.grid.TreeGridDragSource;
+import com.vaadin.ui.components.grid.TreeGridDropTarget;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
+import java.util.UUID;
 import java.util.function.Consumer;
 
 public class AccessGroupCompanion implements GroupBrowser.Companion {
+
+    protected final static String TRANSFER_DATA_TYPE = "text";
 
     @Override
     public void initDragAndDrop(Table<User> usersTable, Tree<Group> groupsTree,
                                 Consumer<UserGroupChangedEvent> userGroupChangedHandler,
                                 Consumer<GroupChangeEvent> groupChangeEventHandler) {
-        com.vaadin.v7.ui.Table vTable = usersTable.unwrap(com.vaadin.v7.ui.Table.class);
-        vTable.setDragMode(com.vaadin.v7.ui.Table.TableDragMode.MULTIROW);
+        CubaTable vTable = usersTable.unwrap(CubaTable.class);
+        CubaTableDragSourceExtension<CubaTable> dragTable = new CubaTableDragSourceExtension<>(vTable);
 
-        /*CubaTree<Group> vTree = groupsTree.unwrap(CubaTree.class);
-        // TODO: gg, re-implement
-//        vTree.setDragMode(com.vaadin.v7.ui.Tree.TreeDragMode.NODE);
-        vTree.setDropHandler(new DropHandler() {
-            @Override
-            public void drop(DragAndDropEvent dropEvent) {
-                DataBoundTransferable transferable = (DataBoundTransferable) dropEvent.getTransferable();
+        //noinspection unchecked
+        CubaTree<Group> vTree = groupsTree.unwrap(CubaTree.class);
 
-                AbstractSelect.AbstractSelectTargetDetails dropData =
-                        ((AbstractSelect.AbstractSelectTargetDetails) dropEvent.getTargetDetails());
+        // tree as drag source
+        TreeGridDragSource<Group> treeGridDragSource = new TreeGridDragSource<>(vTree.getCompositionRoot());
+        treeGridDragSource.setDragDataGenerator(TRANSFER_DATA_TYPE, group -> group.getId().toString());
 
-                Component sourceComponent = transferable.getSourceComponent();
+        // tree as drop target
+        TreeGridDropTarget<Group> treeGridDropTarget = new TreeGridDropTarget<>(vTree.getCompositionRoot(), DropMode.ON_TOP);
+        treeGridDropTarget.addTreeGridDropListener(event -> {
+            // if we drop users from table
+            if (event.getDragSourceExtension().isPresent() &&
+                    event.getDragSourceExtension().get() instanceof CubaTableDragSourceExtension) {
+                // return if we drop user between rows
+                if (event.getDropLocation() == DropLocation.BELOW) {
+                    return;
+                }
 
-                Object dropOverId = dropData.getItemIdOver();
-                Object itemId = transferable.getItemId();
+                //noinspection unchecked
+                CubaTableDragSourceExtension<CubaTable> sourceExtension =
+                        (CubaTableDragSourceExtension<CubaTable>) event.getDragSourceExtension().get();
 
-                List<User> users = null;
-                if (sourceComponent instanceof com.vaadin.v7.ui.Table) {
-                    users = new ArrayList<>(usersTable.getSelected());
-                } else if (sourceComponent instanceof com.vaadin.v7.ui.Tree) {
-                    if (itemId == null) {
+                List<Object> itemIds = sourceExtension.getLastDraggedItemIds();
+                TableItems<User> tableItems = usersTable.getItems();
+
+                List<User> users = new ArrayList<>();
+                for (Object id : itemIds) {
+                    users.add(tableItems.getItem(id));
+                }
+
+                if (event.getDropTargetRow().isPresent()) {
+                    Group group = event.getDropTargetRow().get();
+                    userGroupChangedHandler.accept(new UserGroupChangedEvent(groupsTree, users, group));
+                }
+                // if we reorder groups inside tree
+            } else {
+                String draggedItemId = event.getDataTransferData().get(TRANSFER_DATA_TYPE);
+                if (isEdgeOrIE() && draggedItemId == null) {
+                    draggedItemId = event.getDataTransferText();
+                }
+
+                if (draggedItemId == null) {
+                    return;
+                }
+
+                Group draggedGroup = groupsTree.getItems().getItem(UUID.fromString(draggedItemId));
+
+                if (event.getDropTargetRow().isPresent()) {
+                    Group targetGroup = event.getDropTargetRow().get();
+
+                    // if we drop to itself
+                    if (targetGroup.getId().equals(draggedGroup.getId())) {
                         return;
                     }
 
-                    // if we don't drop to itself and don't drop parent to child
-                    if (!itemId.equals(dropOverId) && isNotContainDropOver(itemId, dropOverId, vTree)) {
-
-                        Group itemGroup = convertToEntity(vTree.getItem(itemId), Group.class);
-                        Group dropOverGroup = convertToEntity(vTree.getItem(dropOverId), Group.class);
-
-                        if (itemGroup != null) {
-
-                            // if we drop to the same parent
-                            if ((itemGroup.getParent() != null && dropOverGroup != null)
-                                    && (itemGroup.getParent().getId().equals(dropOverGroup.getId()))) {
-                                return;
-                            }
-
-                            groupChangeEventHandler.accept(new GroupChangeEvent(groupsTree, itemGroup.getId(),
-                                    dropOverGroup == null ? null : dropOverGroup.getId()));
-                        }
+                    // if we drop parent to its child
+                    if (isParentDroppedToChild(draggedGroup, targetGroup, vTree)) {
+                        return;
                     }
-                }
 
-                if (users == null) {
-                    return;
-                }
+                    // if we drop child to the same parent
+                    if (draggedGroup.getParent() != null
+                            && (draggedGroup.getParent().getId().equals(targetGroup.getId()))) {
+                        return;
+                    }
 
-                if (users.isEmpty()) {
-                    User user = convertToEntity(vTable.getItem(transferable.getItemId()), User.class);
-                    users.add(user);
-                }
+                    groupChangeEventHandler.accept(new GroupChangeEvent(groupsTree, draggedGroup.getId(), targetGroup.getId()));
 
-                final Object targetItemId = dropData.getItemIdOver();
-                if (targetItemId == null) {
-                    return;
+                    // if we drop group to empty space make it root
+                } else if (event.getDropLocation() == DropLocation.EMPTY) {
+                    groupChangeEventHandler.accept(new GroupChangeEvent(groupsTree, draggedGroup.getId(), null));
                 }
-                Group group = convertToEntity(vTree.getItem(targetItemId), Group.class);
-                if (group == null) {
-                    return;
-                }
-
-                userGroupChangedHandler.accept(new UserGroupChangedEvent(groupsTree, users, group));
             }
-
-            @Override
-            public AcceptCriterion getAcceptCriterion() {
-                return new And(
-                        new Not(AbstractSelect.VerticalLocationIs.BOTTOM),
-                        new Not(AbstractSelect.VerticalLocationIs.TOP));
-            }
-        });*/
+        });
     }
 
-    protected boolean isNotContainDropOver(Group group, Group dropOver, CubaTree<Group> vTree) {
-        if (!vTree.hasChildren(group)) {
-            return true;
+    protected boolean isParentDroppedToChild(Group parent, Group child, CubaTree<Group> vTree) {
+        if (!vTree.hasChildren(parent)) {
+            return false;
         }
 
-        return checkAllChildrenRecursively(vTree.getChildren(group), dropOver, vTree);
+        return checkAllChildrenRecursively(vTree.getChildren(parent), child, vTree);
     }
 
     protected boolean checkAllChildrenRecursively(Collection<Group> children, Group dropOver, CubaTree<Group> vTree) {
         for (Group group : children) {
             if (group.equals(dropOver)) {
-                return false;
+                return true;
             } else if (vTree.hasChildren(group)) {
-                if (!checkAllChildrenRecursively(vTree.getChildren(group), dropOver, vTree)) {
-                    return false;
+                if (checkAllChildrenRecursively(vTree.getChildren(group), dropOver, vTree)) {
+                    return true;
                 }
             }
         }
 
-        return true;
+        return false;
     }
 
-    /*@Nullable
-    protected <T extends Entity> T convertToEntity(@Nullable Item item, Class<T> entityClass) {
-        if (!(item instanceof ItemWrapper)) {
-            return null;
-        }
-        Entity entity = ((ItemWrapper) item).getItem();
-        if (!entityClass.isAssignableFrom(entity.getClass())) {
-            return null;
-        }
-        //noinspection unchecked
-        return (T) entity;
-    }*/
+    protected boolean isEdgeOrIE() {
+        return Page.getCurrent().getWebBrowser().isIE()
+                || Page.getCurrent().getWebBrowser().isEdge();
+    }
 }
