@@ -17,6 +17,7 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.google.common.collect.Lists;
+import com.haulmont.chile.core.datatypes.ValueConversionException;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
@@ -636,8 +637,11 @@ public class WebGroupTable<E extends Entity> extends WebAbstractTable<CubaGroupT
                         new GroupAggregationDistributionContext(getColumnNN(columnId.toString()),
                                 parsedValue, scope, groupInfo, context.isTotalAggregation());
                 distributionProvider.onDistribution(aggregationDistribution);
+            } catch (ValueConversionException e) {
+                showParseErrorNotification(e.getLocalizedMessage());
+                return false; // rollback to previous value
             } catch (ParseException e) {
-                showParseErrorNotification();
+                showParseErrorNotification(messages.getMainMessage("validationFail"));
                 return false; // rollback to previous value
             }
         }

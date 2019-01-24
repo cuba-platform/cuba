@@ -19,6 +19,7 @@ package com.haulmont.cuba.web.gui.components;
 import com.google.common.base.Strings;
 import com.haulmont.bali.events.Subscription;
 import com.haulmont.chile.core.datatypes.Datatype;
+import com.haulmont.chile.core.datatypes.ValueConversionException;
 import com.haulmont.chile.core.model.Range;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.Messages;
@@ -151,6 +152,8 @@ public class WebTextField<V> extends WebV8AbstractField<CubaTextField, String, V
         if (datatype != null) {
             try {
                 return datatype.parse(value, locale);
+            } catch (ValueConversionException e) {
+                throw new ConversionException(e.getLocalizedMessage(), e);
             } catch (ParseException e) {
                 throw new ConversionException(getConversionErrorMessage(), e);
             }
@@ -162,6 +165,8 @@ public class WebTextField<V> extends WebV8AbstractField<CubaTextField, String, V
             Datatype<V> propertyDataType = entityValueSource.getMetaPropertyPath().getRange().asDatatype();
             try {
                 return propertyDataType.parse(value, locale);
+            } catch (ValueConversionException e) {
+                throw new ConversionException(e.getLocalizedMessage(), e);
             } catch (ParseException e) {
                 throw new ConversionException(getConversionErrorMessage(), e);
             }
