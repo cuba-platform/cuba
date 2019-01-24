@@ -50,7 +50,8 @@ import java.util.function.Supplier;
 
 import static com.haulmont.cuba.gui.WindowManager.OpenType;
 
-public class WebTokenList<V extends Entity> extends WebV8AbstractField<CubaTokenList<V>, V, Collection<V>>
+public class WebTokenList<V extends Entity>
+        extends WebV8AbstractField<CubaTokenList<V>, Collection<V>, Collection<V>>
         implements TokenList<V>, InitializingBean {
 
     private static final Logger log = LoggerFactory.getLogger(WebTokenList.class);
@@ -149,15 +150,49 @@ public class WebTokenList<V extends Entity> extends WebV8AbstractField<CubaToken
     }
 
     @Override
-    public void setValueSource(ValueSource<Collection<V>> valueSource) {
-        super.setValueSource(valueSource);
+    public void setValue(Collection<V> value) {
+        Collection<V> oldValue = getOldValue(value);
 
-        if (valueSource != null) {
-            valueSource.addValueChangeListener(e -> {
-                component.refreshComponent();
-                component.refreshClickListeners(itemClickListener);
-            });
+        oldValue = new ArrayList<>(oldValue != null
+                ? oldValue
+                : Collections.emptyList());
+
+        setValueToPresentation(convertToPresentation(value));
+
+        component.refreshTokens(value);
+        component.refreshClickListeners(itemClickListener);
+
+        this.internalValue = value;
+
+        fireValueChange(oldValue, value);
+    }
+
+    protected Collection<V> getOldValue(Collection<V> newValue) {
+        return equalCollections(newValue, internalValue)
+                ? component.getValue()
+                : internalValue;
+    }
+
+    protected void fireValueChange(Collection<V> oldValue, Collection<V> value) {
+        if (!equalCollections(oldValue, value)) {
+            ValueChangeEvent<Collection<V>> event =
+                    new ValueChangeEvent<>(this, oldValue, value, false);
+            publish(ValueChangeEvent.class, event);
         }
+    }
+
+    protected boolean equalCollections(Collection<V> a, Collection<V> b) {
+        if (CollectionUtils.isEmpty(a)
+                && CollectionUtils.isEmpty(b)) {
+            return true;
+        }
+
+        if ((CollectionUtils.isEmpty(a) && CollectionUtils.isNotEmpty(b))
+                || (CollectionUtils.isNotEmpty(a) && CollectionUtils.isEmpty(b))) {
+            return false;
+        }
+
+        return CollectionUtils.isEqualCollection(a, b);
     }
 
     @Override
@@ -438,6 +473,15 @@ public class WebTokenList<V extends Entity> extends WebV8AbstractField<CubaToken
                 }
 
                 valueSource.setValue(modelValue);
+            } else {
+                Collection<V> value = getValue();
+                if (value == null) {
+                    value = new ArrayList<>();
+                }
+
+                value.addAll(selected);
+
+                setValue(value);
             }
         }
     }

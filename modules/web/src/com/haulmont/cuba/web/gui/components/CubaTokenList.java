@@ -32,9 +32,8 @@ import com.vaadin.ui.VerticalLayout;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.*;
-import java.util.function.Function;
 
-public class CubaTokenList<T> extends CustomField<T> {
+public class CubaTokenList<T extends Entity> extends CustomField<Collection<T>> {
 
     protected static final String TOKENLIST_STYLENAME = "c-tokenlist";
     protected static final String TOKENLIST_SCROLLBOX_STYLENAME = "c-tokenlist-scrollbox";
@@ -44,18 +43,18 @@ public class CubaTokenList<T> extends CustomField<T> {
     protected static final String INLINE_STYLENAME = "inline";
     protected static final String READONLY_STYLENAME = "readonly";
 
-    protected WebTokenList owner;
+    protected WebTokenList<T> owner;
 
     protected VerticalLayout composition;
     protected CubaScrollBoxLayout tokenContainer;
     protected HorizontalLayout editor;
 
-    protected Map<Entity, CubaTokenListLabel> itemComponents = new HashMap<>();
-    protected Map<CubaTokenListLabel, Entity> componentItems = new HashMap<>();
+    protected Map<T, CubaTokenListLabel> itemComponents = new HashMap<>();
+    protected Map<CubaTokenListLabel, T> componentItems = new HashMap<>();
 
     protected Subscription addButtonSub;
 
-    public CubaTokenList(WebTokenList owner) {
+    public CubaTokenList(WebTokenList<T> owner) {
         this.owner = owner;
 
         composition = new VerticalLayout();
@@ -76,19 +75,20 @@ public class CubaTokenList<T> extends CustomField<T> {
     }
 
     @Override
-    public T getValue() {
-        return null;
+    protected void doSetValue(Collection<T> value) {
+        refreshTokens(value);
     }
 
     @Override
-    protected void doSetValue(T value) {
+    public Collection<T> getValue() {
+        return itemComponents.keySet();
     }
 
     @Override
     public boolean isEmpty() {
         return owner.getValueSource() != null
-                ? owner.getValueSourceValue().isEmpty()
-                : super.isEmpty();
+                ? CollectionUtils.isEmpty(owner.getValueSource().getValue())
+                : CollectionUtils.isEmpty(getValue());
     }
 
     @Override
@@ -174,9 +174,7 @@ public class CubaTokenList<T> extends CustomField<T> {
         owner.clearButton.setVisible(owner.clearEnabled);
         owner.clearButton.setStyleName(CLEAR_BTN_STYLENAME);
         owner.clearButton.addClickListener(e -> {
-            for (CubaTokenListLabel item : new ArrayList<>(itemComponents.values())) {
-                doRemove(item);
-            }
+            clearValue();
             owner.clearButton.focus();
         });
 
@@ -191,7 +189,35 @@ public class CubaTokenList<T> extends CustomField<T> {
         }
     }
 
-    @SuppressWarnings("unchecked")
+    protected void clearValue() {
+        for (CubaTokenListLabel label : new ArrayList<>(itemComponents.values())) {
+            T item = componentItems.get(label);
+            if (item != null) {
+                itemComponents.remove(item);
+                componentItems.remove(label);
+            }
+
+            if (owner.itemChangeHandler != null) {
+                owner.itemChangeHandler.removeItem(item);
+            }
+        }
+
+        if (owner.itemChangeHandler == null) {
+            ValueSource<Collection<T>> valueSource = owner.getValueSource();
+            if (valueSource != null) {
+                Collection<T> vsv = owner.getValueSourceValue();
+
+                if (Set.class.isAssignableFrom(vsv.getClass())) {
+                    valueSource.setValue(new LinkedHashSet<>());
+                } else {
+                    valueSource.setValue(new ArrayList<>());
+                }
+            } else {
+                owner.setValue(new ArrayList<>());
+            }
+        }
+    }
+
     public void refreshComponent() {
         if (owner.inline) {
             addStyleName(INLINE_STYLENAME);
@@ -219,49 +245,57 @@ public class CubaTokenList<T> extends CustomField<T> {
             }
         }
 
+        updateTokenContainerVisibility();
+        updateEditorMargins();
+        updateSizes();
+    }
+
+    public void refreshTokens(Collection<T> newValue) {
         tokenContainer.removeAllComponents();
 
-        //noinspection unchecked
-        ValueSource<Collection<Entity>> valueSource = owner.getValueSource();
+        if (newValue == null) {
+            newValue = Collections.emptyList();
+        }
 
-        if (valueSource != null && CollectionUtils.isNotEmpty(valueSource.getValue())) {
-            List<Entity> usedItems = new ArrayList<>();
+        List<T> usedItems = new ArrayList<>();
 
-            // New tokens
-            for (Entity entity : valueSource.getValue()) {
-                CubaTokenListLabel f = itemComponents.get(entity);
-                if (f == null) {
-                    f = createToken();
-                    itemComponents.put(entity, f);
-                    componentItems.put(f, entity);
-                }
-                f.setEditable(owner.isEditable());
-                f.setText(owner.getInstanceCaption(entity));
-                f.setWidthUndefined();
+        for (T entity : newValue) {
+            CubaTokenListLabel label = itemComponents.get(entity);
 
-                setTokenStyle(f, entity.getId());
-                tokenContainer.addComponent(f);
-                usedItems.add(entity);
+            if (label == null) {
+                label = createToken();
+                itemComponents.put(entity, label);
+                componentItems.put(label, entity);
             }
 
-            // Remove obsolete items
-            for (Entity componentItem : new ArrayList<>(itemComponents.keySet())) {
-                if (!usedItems.contains(componentItem)) {
-                    componentItems.remove(itemComponents.get(componentItem));
-                    itemComponents.remove(componentItem);
-                }
+            label.setEditable(owner.isEditable());
+            label.setText(owner.getInstanceCaption(entity));
+            label.setWidthUndefined();
+
+            setTokenStyle(label, entity.getId());
+
+            tokenContainer.addComponent(label);
+
+            usedItems.add(entity);
+        }
+
+        for (T componentItem : new ArrayList<>(itemComponents.keySet())) {
+            if (!usedItems.contains(componentItem)) {
+                componentItems.remove(itemComponents.get(componentItem));
+                itemComponents.remove(componentItem);
             }
         }
 
+        updateTokenContainerVisibility();
+        updateEditorMargins();
+    }
+
+    protected void updateTokenContainerVisibility() {
         if (getHeight() < 0) {
             tokenContainer.setVisible(!isEmpty());
         } else {
             tokenContainer.setVisible(true);
         }
-
-        updateEditorMargins();
-
-        updateSizes();
     }
 
     protected void updateEditorMargins() {
@@ -307,21 +341,22 @@ public class CubaTokenList<T> extends CustomField<T> {
     }
 
     public void refreshClickListeners(TokenList.ItemClickListener listener) {
-        //noinspection unchecked
-        ValueSource<Collection<Entity>> valueSource = owner.getValueSource();
-        if (valueSource != null
-                && CollectionUtils.isNotEmpty(valueSource.getValue())
-                && BindingState.ACTIVE == valueSource.getState()) {
+        Collection<T> value;
 
-            for (Entity entity : valueSource.getValue()) {
-                CubaTokenListLabel label = itemComponents.get(entity);
-                if (label != null) {
-                    if (listener != null) {
-                        label.setClickListener(source ->
-                                doClick(label));
-                    } else {
-                        label.setClickListener(null);
-                    }
+        if (owner.getValueSource() != null) {
+            value = owner.getValueSourceValue();
+        } else {
+            value = getValue();
+        }
+
+        for (T entity : value) {
+            CubaTokenListLabel label = itemComponents.get(entity);
+            if (label != null) {
+                if (listener != null) {
+                    label.setClickListener(source ->
+                            doClick(label));
+                } else {
+                    label.setClickListener(null);
                 }
             }
         }
@@ -338,9 +373,8 @@ public class CubaTokenList<T> extends CustomField<T> {
         return label;
     }
 
-    @SuppressWarnings("unchecked")
     protected void doRemove(CubaTokenListLabel source) {
-        Instance item = componentItems.get(source);
+        T item = componentItems.get(source);
         if (item != null) {
             itemComponents.remove(item);
             componentItems.remove(source);
@@ -348,13 +382,18 @@ public class CubaTokenList<T> extends CustomField<T> {
             if (owner.itemChangeHandler != null) {
                 owner.itemChangeHandler.removeItem(item);
             } else {
-                ValueSource<Collection<? extends Entity>> valueSource = owner.getValueSource();
-                if (valueSource != null) {
-                    Collection<Entity> value = owner.getValueSourceValue();
+                if (owner.getValueSource() != null) {
+                    Collection<T> value = owner.getValueSourceValue();
 
                     value.remove(item);
 
-                    valueSource.setValue(value);
+                    owner.getValueSource().setValue(value);
+                } else {
+                    Collection<T> value = new ArrayList<>(owner.getValue());
+
+                    value.remove(item);
+
+                    owner.setValue(value);
                 }
             }
         }
@@ -371,8 +410,7 @@ public class CubaTokenList<T> extends CustomField<T> {
 
     protected void setTokenStyle(CubaTokenListLabel label, Object itemId) {
         if (owner.tokenStyleGenerator != null) {
-            //noinspection unchecked
-            String styleName = ((Function<Object, String>) owner.getTokenStyleGenerator()).apply(itemId);
+            String styleName = owner.getTokenStyleGenerator().apply(itemId);
             if (styleName != null && !styleName.isEmpty()) {
                 label.setStyleName(styleName);
             }
