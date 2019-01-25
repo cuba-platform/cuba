@@ -1,5 +1,5 @@
 /*!
- * Copyright (c) 2008-2018 Haulmont.
+ * Copyright (c) 2008-2019 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,18 @@
  * limitations under the License.
  */
 
-@import "../halo/halo";
+@mixin hover-cuba-table-paging {
+  .c-paging-count {
+    height: round($v-unit-size/1.2);
+  }
 
-@import "app/table-paging";
+  .v-button.v-button-link.c-paging-count-number {
+    text-decoration: none;
+    opacity: inherit;
 
-@mixin hover {
-  @include halo;
-
-  @include hover-cuba-table-paging;
+    .v-button-wrap .v-button-caption {
+      text-decoration: none;
+      color: $v-font-color;
+    }
+  }
 }
