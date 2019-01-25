@@ -108,7 +108,12 @@ public class Scheduling implements SchedulingAPI {
         authentication.begin();
         try {
             StopWatch sw = new Slf4JStopWatch("Scheduling.processTasks");
-            Coordinator.Context context = coordinator.begin();
+            Coordinator.Context context;
+            try {
+                context = coordinator.begin();
+            } catch (SchedulingLockException e) {
+                return;
+            }
             try {
                 for (ScheduledTask task : context.getTasks()) {
                     processTask(task);

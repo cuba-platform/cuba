@@ -28,6 +28,7 @@ import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 import javax.persistence.LockModeType;
+import javax.persistence.PessimisticLockException;
 import java.util.Date;
 import java.util.List;
 
@@ -70,7 +71,12 @@ public class DbBasedCoordinator implements Coordinator {
         try {
             List<ScheduledTask> tasks = getTasks();
             return new ContextImpl(tasks, tx);
+        } catch (SchedulingLockException e) {
+            //noinspection IncorrectClosingTransaction
+            tx.end();
+            throw e;
         } catch (Exception e) {
+            //noinspection IncorrectClosingTransaction
             tx.end();
             throw new RuntimeException(e);
         }
@@ -119,8 +125,17 @@ public class DbBasedCoordinator implements Coordinator {
     protected synchronized List<ScheduledTask> getTasks() {
         log.trace("Read all active tasks from DB and lock them");
         EntityManager em = persistence.getEntityManager();
-        Query query = em.createQuery("select t from sys$ScheduledTask t where t.active = true");
-        query.setLockMode(LockModeType.PESSIMISTIC_WRITE);
-        return query.getResultList();
+        try {
+            //noinspection unchecked
+            return em.createQuery("select t from sys$ScheduledTask t where t.active = true")
+                    .setLockMode(LockModeType.PESSIMISTIC_WRITE)
+                    .getResultList();
+        } catch (PessimisticLockException e) {
+            log.info("Unable to acquire lock on tasks");
+            if (log.isTraceEnabled()) {
+                log.trace("Unable to acquire lock on tasks. Error:", e);
+            }
+            throw new SchedulingLockException("Lock exception while acquiring tasks");
+        }
     }
 }
