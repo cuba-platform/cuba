@@ -18,7 +18,6 @@
 package com.haulmont.cuba.gui.components.filter.condition;
 
 import com.google.common.base.Strings;
-import com.haulmont.bali.util.Dom4j;
 import com.haulmont.chile.core.annotations.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
@@ -34,7 +33,6 @@ import com.haulmont.cuba.gui.components.filter.Param;
 import com.haulmont.cuba.gui.components.filter.descriptor.AbstractConditionDescriptor;
 import com.haulmont.cuba.gui.components.filter.operationedit.AbstractOperationEditor;
 import com.haulmont.cuba.gui.components.filter.operationedit.DynamicAttributesOperationEditor;
-import com.haulmont.cuba.gui.data.Datasource;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
@@ -96,7 +94,7 @@ public class DynamicAttributesCondition extends AbstractCondition {
             categoryAttributeId = UUID.fromString(categoryAttributeValue);
         } else {
             //for backward compatibility
-            List<Element> paramElements = Dom4j.elements(element, "param");
+            List<Element> paramElements = element.elements("param");
             for (Element paramElement : paramElements) {
                 if (BooleanUtils.toBoolean(paramElement.attributeValue("hidden", "false"), "true", "false")) {
                     categoryAttributeId = UUID.fromString(paramElement.getText());

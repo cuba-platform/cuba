@@ -16,10 +16,7 @@
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
-import com.haulmont.bali.util.Dom4j;
-import com.haulmont.cuba.gui.components.ActionsHolder;
-import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.PopupButton;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.PopupButton.PopupOpenDirection;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoader;
@@ -84,14 +81,37 @@ public class PopupButtonLoader extends AbstractComponentLoader<PopupButton> {
     @Override
     protected void loadActions(ActionsHolder actionsHolder, Element element) {
         Element actionsEl = element.element("actions");
-        if (actionsEl == null)
+        if (actionsEl == null) {
             return;
-
-        for (Element actionEl : Dom4j.elements(actionsEl, "action")) {
-            actionsHolder.addAction(loadDeclarativeAction(actionsHolder, actionEl));
-            String actionId = actionEl.attributeValue("id");
-            context.addPostInitTask(new ActionHolderAssignActionPostInitTask(actionsHolder, actionId, context.getFrame()));
         }
+
+        for (Element actionEl : actionsEl.elements("action")) {
+            Action action = loadDeclarativeAction(actionsHolder, actionEl);
+            actionsHolder.addAction(action);
+
+            context.addPostInitTask(new ActionHolderAssignActionPostInitTask(actionsHolder, action.getId(), context.getFrame()));
+        }
+    }
+
+    @Override
+    protected Action loadDeclarativeAction(ActionsHolder actionsHolder, Element element) {
+        String id = loadActionId(element);
+
+        if (StringUtils.isBlank(element.attributeValue("invoke"))) {
+            if (!isLegacyFrame()) {
+                String type = element.attributeValue("type");
+                if (StringUtils.isNotEmpty(type)) {
+                    Actions actions = beanLocator.get(Actions.NAME);
+
+                    Action action = actions.create(type, id);
+                    initAction(element, action);
+
+                    return action;
+                }
+            }
+        }
+
+        return loadDeclarativeActionDefault(actionsHolder, element);
     }
 
     protected void loadAutoClose(PopupButton component, Element element) {

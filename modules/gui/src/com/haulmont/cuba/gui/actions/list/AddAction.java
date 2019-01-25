@@ -93,6 +93,10 @@ public class AddAction extends ListAction {
     public void actionPerform(Component component) {
         // if standard behaviour
         if (!hasSubscriptions(ActionPerformedEvent.class)) {
+            if (target == null) {
+                throw new IllegalStateException("AddAction target is not set");
+            }
+
             Screen lookupScreen = screenBuilders.lookup(target)
                     .build();
             lookupScreen.show();

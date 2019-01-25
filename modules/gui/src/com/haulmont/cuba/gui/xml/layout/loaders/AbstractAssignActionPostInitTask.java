@@ -39,7 +39,7 @@ public abstract class AbstractAssignActionPostInitTask implements ComponentLoade
     public void execute(ComponentLoader.Context context, Frame window) {
         String[] elements = ValuePathHelper.parse(actionId);
         if (elements.length > 1) {
-            final String id = elements[elements.length - 1];
+            String id = elements[elements.length - 1];
             String[] subPath = ArrayUtils.subarray(elements, 0, elements.length - 1);
 
             // using this.frame to look up the component inside the actual frame
@@ -65,7 +65,7 @@ public abstract class AbstractAssignActionPostInitTask implements ComponentLoade
 
             addAction(action);
         } else if (elements.length == 1) {
-            final String id = elements[0];
+            String id = elements[0];
             Action action = getActionRecursively(frame, id);
 
             if (action == null) {

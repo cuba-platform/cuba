@@ -91,6 +91,10 @@ public class CreateAction extends ListAction {
     public void actionPerform(Component component) {
         // if standard behaviour
         if (!hasSubscriptions(ActionPerformedEvent.class)) {
+            if (target == null) {
+                throw new IllegalStateException("CreateAction target is not set");
+            }
+
             if (!(target.getItems() instanceof EntityDataUnit)) {
                 throw new IllegalStateException("CreateAction target items is null or does not implement EntityDataUnit");
             }

@@ -16,7 +16,6 @@
 
 package com.haulmont.cuba.gui.sys;
 
-import com.haulmont.bali.util.Dom4j;
 import com.haulmont.cuba.core.global.Resources;
 import com.haulmont.cuba.core.sys.AbstractViewRepository;
 import org.apache.commons.io.IOUtils;
@@ -49,7 +48,7 @@ public class ScreenViewsLoader {
     public void deployViews(Element rootElement) {
         Element metadataContextEl = rootElement.element("metadataContext");
         if (metadataContextEl != null) {
-            for (Element fileEl : Dom4j.elements(metadataContextEl, "deployViews")) {
+            for (Element fileEl : metadataContextEl.elements("deployViews")) {
                 String resource = fileEl.attributeValue("name");
                 InputStream resourceInputStream = getInputStream(resource);
                 try {
@@ -59,7 +58,7 @@ public class ScreenViewsLoader {
                 }
             }
 
-            for (Element viewEl : Dom4j.elements(metadataContextEl, "view")) {
+            for (Element viewEl : metadataContextEl.elements("view")) {
                 viewRepository.deployView(metadataContextEl, viewEl);
             }
         }

@@ -110,6 +110,10 @@ public class RemoveAction extends SecuredListAction {
     @Override
     public void actionPerform(Component component) {
         if (!hasSubscriptions(ActionPerformedEvent.class)) {
+            if (target == null) {
+                throw new IllegalStateException("RemoveAction target is not set");
+            }
+
             if (!(target.getItems() instanceof ContainerDataUnit)) {
                 throw new IllegalStateException("RemoveAction target items is null or does not implement ContainerDataUnit");
             }

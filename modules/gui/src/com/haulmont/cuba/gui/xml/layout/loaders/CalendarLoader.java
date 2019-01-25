@@ -17,7 +17,6 @@
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.google.common.base.Strings;
-import com.haulmont.bali.util.Dom4j;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.Calendar;
 import com.haulmont.cuba.gui.components.calendar.ContainerCalendarEventProvider;
@@ -264,7 +263,7 @@ public class CalendarLoader extends AbstractComponentLoader<Calendar> {
         }
 
         Map<DayOfWeek, String> dayNamesMap = new HashMap<>();
-        for (Element dayName : Dom4j.elements(dayNames, "day")) {
+        for (Element dayName : dayNames.elements("day")) {
 
             String dayKey = dayName.attributeValue("dayOfWeek");
             DayOfWeek dayOfWeek = null;
@@ -290,7 +289,7 @@ public class CalendarLoader extends AbstractComponentLoader<Calendar> {
         }
 
         Map<Month, String> monthNamesMap = new HashMap<>();
-        for (Element monthName : Dom4j.elements(monthNames, "month")) {
+        for (Element monthName : monthNames.elements("month")) {
 
             String monthKey = monthName.attributeValue("month");
             Month monthOfYear = null;
