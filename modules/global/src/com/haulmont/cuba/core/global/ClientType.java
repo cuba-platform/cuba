@@ -16,7 +16,9 @@
  */
 package com.haulmont.cuba.core.global;
 
-public enum ClientType {
+import com.haulmont.chile.core.datatypes.impl.EnumClass;
+
+public enum ClientType implements EnumClass<String> {
     WEB("W", "web"),
     PORTAL("P", "portal"),
     DESKTOP("D", "desktop"),
