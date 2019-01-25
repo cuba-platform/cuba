@@ -51,6 +51,18 @@ $cuba-checkbox-size: null !default;
     }
   }
 
+  .v-edge &,
+  .v-ie & {
+    .#{$primary-stylename}.v-disabled {
+      @include opacity($v-disabled-opacity);
+
+      & > label,
+      & > .v-icon {
+        @include opacity(1);
+      }
+    }
+  }
+
   .#{$primary-stylename}-small {
     line-height: $cuba-checkbox-line-height--small;
     height: $cuba-checkbox-line-height--small + $cuba-checkbox-extra-height;
