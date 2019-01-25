@@ -62,6 +62,10 @@ public class RefreshAction extends ListAction {
     @Override
     public void actionPerform(Component component) {
         if (!hasSubscriptions(ActionPerformedEvent.class)) {
+            if (target == null) {
+                throw new IllegalStateException("RefreshAction target is not set");
+            }
+
             if (!(target.getItems() instanceof ContainerDataUnit)) {
                 throw new IllegalStateException("RefreshAction target is null or does not implement SupportsContainerBinding");
             }

@@ -56,6 +56,7 @@ import org.apache.commons.lang3.reflect.MethodUtils;
 import org.dom4j.Attribute;
 import org.dom4j.Element;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -464,7 +465,7 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
     }
 
     protected void loadAction(ActionOwner component, Element element) {
-        final String actionId = element.attributeValue("action");
+        String actionId = element.attributeValue("action");
         if (!StringUtils.isEmpty(actionId)) {
             context.addPostInitTask(new ActionOwnerAssignActionPostInitTask(component, actionId, context.getFrame()));
         }
@@ -571,8 +572,9 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
 
     protected void loadActions(ActionsHolder actionsHolder, Element element) {
         Element actionsEl = element.element("actions");
-        if (actionsEl == null)
+        if (actionsEl == null) {
             return;
+        }
 
         for (Element actionEl : actionsEl.elements("action")) {
             actionsHolder.addAction(loadDeclarativeAction(actionsHolder, actionEl));
@@ -584,6 +586,22 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
     }
 
     protected Action loadDeclarativeActionDefault(ActionsHolder actionsHolder, Element element) {
+        String id = loadActionId(element);
+
+        String trackSelection = element.attributeValue("trackSelection");
+
+        boolean shouldTrackSelection = Boolean.parseBoolean(trackSelection);
+        String invokeMethod = element.attributeValue("invoke");
+
+        if (StringUtils.isEmpty(invokeMethod)) {
+            return loadStubAction(element, id, shouldTrackSelection);
+        }
+
+        return loadInvokeAction(actionsHolder, element, id, shouldTrackSelection, invokeMethod);
+    }
+
+    @Nonnull
+    protected String loadActionId(Element element) {
         String id = element.attributeValue("id");
         if (id == null) {
             Element component = element;
@@ -596,17 +614,7 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
             throw new GuiDevelopmentException("No action ID provided", context.getFullFrameId(),
                     "Component ID", component.attributeValue("id"));
         }
-
-        String trackSelection = element.attributeValue("trackSelection");
-
-        boolean shouldTrackSelection = Boolean.parseBoolean(trackSelection);
-        String invokeMethod = element.attributeValue("invoke");
-
-        if (StringUtils.isEmpty(invokeMethod)) {
-            return loadStubAction(element, id, shouldTrackSelection);
-        }
-
-        return loadInvokeAction(actionsHolder, element, id, shouldTrackSelection, invokeMethod);
+        return id;
     }
 
     protected Action loadInvokeAction(ActionsHolder actionsHolder, Element element, String id, boolean shouldTrackSelection, String invokeMethod) {
@@ -795,19 +803,7 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
     }
 
     protected Action loadPickerDeclarativeAction(ActionsHolder actionsHolder, Element element) {
-        String id = element.attributeValue("id");
-        if (id == null) {
-            Element component = element;
-            for (int i = 0; i < 2; i++) {
-                if (component.getParent() != null) {
-                    component = component.getParent();
-                } else {
-                    throw new GuiDevelopmentException("No action ID provided for " + element.getName(), context.getFullFrameId());
-                }
-            }
-            throw new GuiDevelopmentException("No action ID provided for " + element.getName(), context.getFullFrameId(),
-                    "PickerField ID", component.attributeValue("id"));
-        }
+        String id = loadActionId(element);
 
         if (StringUtils.isBlank(element.attributeValue("invoke"))) {
             if (isLegacyFrame()) {
@@ -820,7 +816,10 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
                 if (StringUtils.isNotEmpty(type)) {
                     Actions actions = beanLocator.get(Actions.NAME);
 
-                    return actions.create(type, id);
+                    Action action = actions.create(type, id);
+                    initAction(element, action);
+
+                    return action;
                 }
             }
         }

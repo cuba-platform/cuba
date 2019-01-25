@@ -1195,11 +1195,12 @@
 
     <xs:complexType name="popupButtonAction">
         <xs:attributeGroup ref="requiresId"/>
-        <xs:attributeGroup ref="hasCaptionProp"/>
+        <xs:attributeGroup ref="hasCaption"/>
         <xs:attributeGroup ref="hasEnableProp"/>
         <xs:attributeGroup ref="hasVisibility"/>
         <xs:attributeGroup ref="hasIcon"/>
         <xs:attribute name="invoke" type="xs:string"/>
+        <xs:attribute name="type" type="xs:string"/>
     </xs:complexType>
 
     <xs:complexType name="suggestionFieldQuery">

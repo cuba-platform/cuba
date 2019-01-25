@@ -78,6 +78,10 @@ public class ExcelAction extends ListAction {
     @Override
     public void actionPerform(Component component) {
         if (!hasSubscriptions(ActionPerformedEvent.class)) {
+            if (target == null) {
+                throw new IllegalStateException("ExcelAction target is not set");
+            }
+
             if (needExportAll()) {
                 export(ExcelExporter.ExportMode.ALL_ROWS);
             } else {

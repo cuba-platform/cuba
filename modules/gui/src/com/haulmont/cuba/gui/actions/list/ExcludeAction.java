@@ -97,6 +97,10 @@ public class ExcludeAction extends SecuredListAction {
     public void actionPerform(Component component) {
         // if standard behaviour
         if (!hasSubscriptions(ActionPerformedEvent.class)) {
+            if (target == null) {
+                throw new IllegalStateException("ExcludeAction target is not set");
+            }
+
             if (!(target.getItems() instanceof ContainerDataUnit)) {
                 throw new IllegalStateException("ExcludeAction target items is null or does not implement ContainerDataUnit");
             }

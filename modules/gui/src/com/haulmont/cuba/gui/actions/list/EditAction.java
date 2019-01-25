@@ -120,6 +120,10 @@ public class EditAction extends SecuredListAction {
     public void actionPerform(Component component) {
         // if standard behaviour
         if (!hasSubscriptions(ActionPerformedEvent.class)) {
+            if (target == null) {
+                throw new IllegalStateException("EditAction target is not set");
+            }
+
             if (!(target.getItems() instanceof EntityDataUnit)) {
                 throw new IllegalStateException("EditAction target dataSource is null or does not implement EntityDataUnit");
             }

@@ -16,7 +16,6 @@
  */
 package com.haulmont.cuba.gui.config;
 
-import com.haulmont.bali.util.Dom4j;
 import com.haulmont.cuba.gui.components.KeyCombination;
 import com.haulmont.cuba.security.entity.PermissionType;
 import com.haulmont.cuba.security.global.UserSession;
@@ -111,7 +110,7 @@ public class MenuItem {
             if (screenPermitted) {
                 Element permissionsElem = descriptor.element("permissions");
                 if (permissionsElem != null) {
-                    for (Element element : Dom4j.elements(permissionsElem, "permission")) {
+                    for (Element element : permissionsElem.elements("permission")) {
                         PermissionType type = PermissionType.valueOf(element.attributeValue("type"));
                         String target = element.attributeValue("target");
                         screenPermitted = session.isPermitted(type, target);

@@ -18,7 +18,6 @@
 package com.haulmont.cuba.gui.components.filter.condition;
 
 import com.google.common.base.Strings;
-import com.haulmont.bali.util.Dom4j;
 import com.haulmont.chile.core.annotations.MetaClass;
 import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
@@ -169,7 +168,7 @@ public abstract class AbstractCondition extends BaseUuidEntity {
             operator = Op.valueOf(operatorName);
         }
 
-        List<Element> paramElements = Dom4j.elements(element, "param");
+        List<Element> paramElements = element.elements("param");
         if (!paramElements.isEmpty()) {
             Element paramElem = paramElements.iterator().next();
 

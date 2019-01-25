@@ -31,8 +31,8 @@ import com.haulmont.cuba.gui.app.security.entity.BasicPermissionTarget;
 import com.haulmont.cuba.gui.app.security.entity.MultiplePermissionTarget;
 import com.haulmont.cuba.gui.app.security.entity.OperationPermissionTarget;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.apache.commons.text.StringTokenizer;
 import org.dom4j.Document;
 import org.dom4j.Element;
@@ -213,15 +213,11 @@ public class PermissionConfig {
             for (String location : tokenizer.getTokenArray()) {
                 Resource resource = resources.getResource(location);
                 if (resource.exists()) {
-                    InputStream stream = null;
-                    try {
-                        stream = resource.getInputStream();
+                    try (InputStream stream = resource.getInputStream()) {
                         String xml = IOUtils.toString(stream, StandardCharsets.UTF_8);
                         compileSpecific(xml, root);
                     } catch (IOException e) {
                         throw new RuntimeException("Unable to read permission config", e);
-                    } finally {
-                        IOUtils.closeQuietly(stream);
                     }
                 } else {
                     log.warn("Resource {} not found, ignore it", location);
@@ -233,7 +229,7 @@ public class PermissionConfig {
             Document doc = Dom4j.readDocument(xml);
             Element rootElem = doc.getRootElement();
 
-            for (Element element : Dom4j.elements(rootElem, "include")) {
+            for (Element element : rootElem.elements("include")) {
                 String fileName = element.attributeValue("file");
                 if (!StringUtils.isBlank(fileName)) {
                     String incXml = resources.getResourceAsString(fileName);
@@ -252,7 +248,7 @@ public class PermissionConfig {
         }
 
         private void walkSpecific(Element element, Node<BasicPermissionTarget> node) {
-            for (Element elem : (List<Element>) element.elements()) {
+            for (Element elem : element.elements()) {
                 String id = elem.attributeValue("id");
                 String caption = getMessage("permission-config." + id);
                 if ("category".equals(elem.getName())) {
