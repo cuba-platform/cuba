@@ -16,6 +16,8 @@
 
 package com.haulmont.cuba.gui.screen;
 
+import com.haulmont.cuba.core.global.Messages;
+
 /**
  * Interface that provides messages from a message pack bound to screen controller.
  */
@@ -23,23 +25,34 @@ public interface MessageBundle {
 
     String NAME = "cuba_MessageBundle";
 
+    /**
+     * Sets source message pack.
+     *
+     * @param messagePack associated message pack
+     */
     void setMessagesPack(String messagePack);
+    /**
+     * @return associated message pack
+     */
     String getMessagesPack();
 
     /**
+     * Get localized message from the message pack associated with this frame or window.
      *
-     *
-     * @param key
-     * @return
+     * @param key message key
+     * @return localized message
+     * @see Messages#getMessage(String, String)
      */
     String getMessage(String key);
 
     /**
+     * Get localized message from the message pack associated with this frame or window, and use it as a format string
+     * for parameters provided.
      *
-     *
-     * @param key
-     * @param params
-     * @return
+     * @param key    message key
+     * @param params parameter values
+     * @return formatted string or the key in case of IllegalFormatException
+     * @see Messages#formatMessage(String, String, Object...)
      */
     String formatMessage(String key, Object... params);
 }
