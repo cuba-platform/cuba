@@ -356,8 +356,8 @@ public class CubaMainTabSheet extends DDTabSheet implements Action.Container, Ha
     }
 
     /**
-     * Important! If Tab in TabSheet contains components that provide drag and drop features, users may face with
-     * freeze UI in case of dragging elements to TabSheet or Tab layout.
+     * Important! If Tab in TabSheet contains components that provide drag and drop features, users may face UI freezes
+     * in case of dragging elements to TabSheet or Tab layout.
      *
      * @param enable enable html5 drag and drop
      */
