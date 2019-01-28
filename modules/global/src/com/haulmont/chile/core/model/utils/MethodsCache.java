@@ -29,6 +29,7 @@ public class MethodsCache {
 
     private final transient Map<String, Function> getters = new HashMap<>();
     private final transient Map<String, BiConsumer> setters = new HashMap<>();
+    private transient String className;
 
     public MethodsCache(Class clazz) {
         final Method[] methods = clazz.getMethods();
@@ -48,6 +49,7 @@ public class MethodsCache {
                 setters.put(name, setter);
             }
         }
+        className = clazz.toString();
     }
 
     protected Function createGetter(Class clazz, Method method) {
@@ -88,21 +90,31 @@ public class MethodsCache {
         return setter;
     }
 
+    @SuppressWarnings("unchecked")
     public Object invokeGetter(Object object, String property) {
+        return getGetterNN(property).apply(object);
+    }
+
+    @SuppressWarnings("unchecked")
+    public void invokeSetter(Object object, String property, Object value) {
+        getSetterNN(property).accept(object, value);
+    }
+
+    public Function getGetterNN(String property) {
         Function getter = getters.get(property);
         if (getter == null) {
             throw new IllegalArgumentException(
-                    String.format("Can't find getter for property '%s' at %s", property, object.getClass()));
+                    String.format("Can't find getter for property '%s' at %s", property, className));
         }
-        return getter.apply(object);
+        return getter;
     }
 
-    public void invokeSetter(Object object, String property, Object value) {
+    public BiConsumer getSetterNN(String property) {
         BiConsumer setter = setters.get(property);
         if (setter == null) {
             throw new IllegalArgumentException(
-                    String.format("Can't find setter for property '%s' at %s", property, object.getClass()));
+                    String.format("Can't find setter for property '%s' at %s", property, className));
         }
-        setter.accept(object, value);
+        return setter;
     }
 }

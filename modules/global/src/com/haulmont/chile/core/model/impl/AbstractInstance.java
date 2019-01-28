@@ -93,7 +93,7 @@ public abstract class AbstractInstance implements Instance {
     @SuppressWarnings("unchecked")
     @Override
     public <T> T getValue(String name) {
-        return (T) getMethodsCache().invokeGetter(this, name);
+        return (T) getMethodsCache().getGetterNN(name).apply(this);
     }
 
     protected MethodsCache getMethodsCache() {
@@ -121,10 +121,11 @@ public abstract class AbstractInstance implements Instance {
      * @param checkEquals check equals for previous and new value.
      *                    If flag is true and objects equals, then setter will not be invoked
      */
+    @SuppressWarnings("unchecked")
     public void setValue(String name, Object value, boolean checkEquals) {
         Object oldValue = getValue(name);
         if ((!checkEquals) || (!InstanceUtils.propertyValueEquals(oldValue, value))) {
-            getMethodsCache().invokeSetter(this, name, value);
+            getMethodsCache().getSetterNN(name).accept(this, value);
         }
     }
 

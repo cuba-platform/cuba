@@ -77,11 +77,12 @@ public abstract class AbstractNotPersistentEntity
         this.id = id;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void setValue(String property, Object obj, boolean checkEquals) {
         Object oldValue = getValue(property);
         if ((!checkEquals) || (!InstanceUtils.propertyValueEquals(oldValue, obj))) {
-            getMethodsCache().invokeSetter(this, property, obj);
+            getMethodsCache().getSetterNN(property).accept(this, obj);
             if (!(this instanceof CubaEnhanced)) {
                 propertyChanged(property, oldValue, obj);
             }

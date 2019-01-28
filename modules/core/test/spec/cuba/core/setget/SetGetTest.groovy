@@ -57,9 +57,8 @@ class SetGetTest extends Specification {
         map.put("key", 12)
         setGetEntity.setValue("map", map)
         Map<String, Integer> afterMap = setGetEntity.getValue("map")
-
         then:
-        map == afterMap
+        map.identity { afterMap }
     }
 
     def "Array"() {
@@ -102,7 +101,7 @@ class SetGetTest extends Specification {
         Map<String, Integer> afterGenericMap = setGetEntity.getValue("genericMap")
 
         then:
-        genericMap == afterGenericMap
+        genericMap.identity { afterGenericMap }
     }
 
     def "Generic array"() {
