@@ -588,6 +588,9 @@ create table SEC_SCREEN_HISTORY (
     CAPTION varchar(255),
     URL varchar(4000),
     ENTITY_ID varchar(36),
+    STRING_ENTITY_ID varchar(255),
+    INT_ENTITY_ID integer,
+    LONG_ENTITY_ID bigint,
     SUBSTITUTED_USER_ID varchar(36),
     --
     primary key (ID),

@@ -53,6 +53,27 @@ public class ReferenceToEntitySupport {
     }
 
     /**
+     * @param entity entity
+     * @return entity id for links
+     */
+    public Object getReferenceIdForLink(Entity entity) {
+        Object entityId = entity.getId();
+        if (entityId instanceof IdProxy) {
+            entityId = ((IdProxy) entityId).get();
+        }
+        if (entityId == null)
+            return null;
+        if (metadata.getTools().hasCompositePrimaryKey(entity.getMetaClass())) {
+            if (entity instanceof HasUuid)
+                return ((HasUuid) entity).getUuid();
+            else
+                throw new IllegalArgumentException(
+                        String.format("Unsupported primary key type: %s", entityId.getClass().getSimpleName()));
+        }
+        return entityId;
+    }
+
+    /**
      * @param metaClass of entity
      * @return metaProperty name for storing corresponding primary key in the database
      */
@@ -93,5 +114,21 @@ public class ReferenceToEntitySupport {
                 return "uuid";
         }
         return metadata.getTools().getPrimaryKeyName(metaClass);
+    }
+
+    /**
+     * @param metaClass of entity
+     * @return metaProperty name for loading entity from database by primary key for links
+     */
+    public String getPrimaryKeyForLoadingEntityFromLink(MetaClass metaClass) {
+        if (!metadata.getTools().hasCompositePrimaryKey(metaClass))
+            return metadata.getTools().getPrimaryKeyName(metaClass);
+        if (HasUuid.class.isAssignableFrom(metaClass.getJavaClass())) {
+            MetaProperty primaryKeyProperty = metadata.getTools().getPrimaryKeyProperty(metaClass);
+            if (primaryKeyProperty != null && !UUID.class.isAssignableFrom(primaryKeyProperty.getJavaType()))
+                return "uuid";
+        }
+        throw new IllegalStateException(
+                String.format("Unsupported primary key type for %s", metaClass.getName()));
     }
 }

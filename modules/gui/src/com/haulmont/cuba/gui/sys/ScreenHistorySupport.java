@@ -62,6 +62,8 @@ public class ScreenHistorySupport {
     protected DataManager dataManager;
     @Inject
     protected WindowConfig windowConfig;
+    @Inject
+    protected ReferenceToEntitySupport referenceToEntitySupport;
 
     @EventListener(AppContextInitializedEvent.class)
     @Order(Events.HIGHEST_PLATFORM_PRECEDENCE + 300)
@@ -87,10 +89,9 @@ public class ScreenHistorySupport {
         if (security.isEntityOpPermitted(ScreenHistoryEntity.class, EntityOp.CREATE)
                 && (frameOwner instanceof EditorScreen)
                 && windowContext.getLaunchMode() != OpenMode.DIALOG
-                && (screenIds.contains(frameOwner.getId())))
-        {
+                && (screenIds.contains(frameOwner.getId()))) {
             String caption = frameOwner.getWindow().getCaption();
-            UUID entityId = null;
+            Object entityId = null;
 
             Entity entity = ((EditorScreen) frameOwner).getEditedEntity();
             if (entity != null) {
@@ -102,13 +103,13 @@ public class ScreenHistorySupport {
                     caption = messages.getTools().getEntityCaption(entity.getMetaClass()) + " " +
                             metadata.getTools().getInstanceName(entity);
                 }
-                entityId = (UUID) entity.getId();
+                entityId = referenceToEntitySupport.getReferenceIdForLink(entity);
             }
 
             ScreenHistoryEntity screenHistoryEntity = metadata.create(ScreenHistoryEntity.class);
             screenHistoryEntity.setCaption(StringUtils.abbreviate(caption, 255));
             screenHistoryEntity.setUrl(makeLink(frameOwner));
-            screenHistoryEntity.setEntityId(entityId);
+            screenHistoryEntity.setObjectEntityId(entityId);
             addAdditionalFields(screenHistoryEntity, entity);
 
             CommitContext cc = new CommitContext(Collections.singleton(screenHistoryEntity));
@@ -131,8 +132,15 @@ public class ScreenHistorySupport {
         GlobalConfig globalConfig = configuration.getConfig(GlobalConfig.class);
         String url = String.format("%s/open?screen=%s", globalConfig.getWebAppUrl(), frameOwner.getId());
 
+        Object entityId = referenceToEntitySupport.getReferenceIdForLink(entity);
+
         if (entity != null) {
-            String item = metadata.getClassNN(entity.getClass()).getName() + "-" + entity.getId();
+            String item;
+            if (entityId instanceof String) {
+                item = metadata.getClassNN(entity.getClass()).getName() + "-{" + entityId + "}";
+            } else {
+                item = metadata.getClassNN(entity.getClass()).getName() + "-" + entityId;
+            }
 
             url += String.format("&item=%s&params=item:%s", item, item);
         }
