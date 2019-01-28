@@ -27,9 +27,9 @@ import java.util.function.Function;
 
 public class MethodsCache {
 
-    private final transient Map<String, Function> getters = new HashMap<>();
-    private final transient Map<String, BiConsumer> setters = new HashMap<>();
-    private transient String className;
+    private final Map<String, Function> getters = new HashMap<>();
+    private final Map<String, BiConsumer> setters = new HashMap<>();
+    private String className;
 
     public MethodsCache(Class clazz) {
         final Method[] methods = clazz.getMethods();
@@ -100,6 +100,11 @@ public class MethodsCache {
         getSetterNN(property).accept(object, value);
     }
 
+    /**
+     * @param property name of property associated with getter
+     * @return lambda {@link Function} which represents getter
+     * @throws IllegalArgumentException if getter for property not found
+     */
     public Function getGetterNN(String property) {
         Function getter = getters.get(property);
         if (getter == null) {
@@ -109,6 +114,11 @@ public class MethodsCache {
         return getter;
     }
 
+    /**
+     * @param property name of property associated with setter
+     * @return lambda {@link BiConsumer} which represents setter
+     * @throws IllegalArgumentException if setter for property not found
+     */
     public BiConsumer getSetterNN(String property) {
         BiConsumer setter = setters.get(property);
         if (setter == null) {

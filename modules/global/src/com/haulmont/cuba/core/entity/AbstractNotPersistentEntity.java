@@ -28,6 +28,7 @@ import com.haulmont.cuba.core.sys.CubaEnhanced;
 import com.haulmont.cuba.core.sys.CubaEnhancingDisabled;
 
 import java.util.UUID;
+import java.util.function.BiConsumer;
 
 /**
  * Base class for not persistent entities.
@@ -82,7 +83,8 @@ public abstract class AbstractNotPersistentEntity
     public void setValue(String property, Object obj, boolean checkEquals) {
         Object oldValue = getValue(property);
         if ((!checkEquals) || (!InstanceUtils.propertyValueEquals(oldValue, obj))) {
-            getMethodsCache().getSetterNN(property).accept(this, obj);
+            BiConsumer setter = getMethodsCache().getSetterNN(property);
+            setter.accept(this, obj);
             if (!(this instanceof CubaEnhanced)) {
                 propertyChanged(property, oldValue, obj);
             }

@@ -29,6 +29,8 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.BiConsumer;
+import java.util.function.Function;
 
 public abstract class AbstractInstance implements Instance {
 
@@ -93,7 +95,8 @@ public abstract class AbstractInstance implements Instance {
     @SuppressWarnings("unchecked")
     @Override
     public <T> T getValue(String name) {
-        return (T) getMethodsCache().getGetterNN(name).apply(this);
+        Function getter = getMethodsCache().getGetterNN(name);
+        return (T) getter.apply(this);
     }
 
     protected MethodsCache getMethodsCache() {
@@ -125,7 +128,8 @@ public abstract class AbstractInstance implements Instance {
     public void setValue(String name, Object value, boolean checkEquals) {
         Object oldValue = getValue(name);
         if ((!checkEquals) || (!InstanceUtils.propertyValueEquals(oldValue, value))) {
-            getMethodsCache().getSetterNN(name).accept(this, value);
+            BiConsumer setter = getMethodsCache().getSetterNN(name);
+            setter.accept(this, value);
         }
     }
 
