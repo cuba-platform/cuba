@@ -63,7 +63,7 @@ public class ReferenceToEntitySupport {
         }
         if (entityId == null)
             return null;
-        if (!(entityId instanceof UUID || entityId instanceof String || entityId instanceof Integer || entityId instanceof Long)) {
+        if (metadata.getTools().hasCompositePrimaryKey(entity.getMetaClass())) {
             if (entity instanceof HasUuid)
                 return ((HasUuid) entity).getUuid();
             else
@@ -121,13 +121,8 @@ public class ReferenceToEntitySupport {
      * @return metaProperty name for loading entity from database by primary key for links
      */
     public String getPrimaryKeyForLoadingEntityFromLink(MetaClass metaClass) {
-        MetaProperty primaryKey = metadata.getTools().getPrimaryKeyProperty(metaClass);
-        if (primaryKey != null) {
-            Class type = primaryKey.getJavaType();
-            if (UUID.class.equals(type) || Long.class.equals(type) || IdProxy.class.equals(type)
-                    || Integer.class.equals(type) || String.class.equals(type))
-                return metadata.getTools().getPrimaryKeyName(metaClass);
-        }
+        if (!metadata.getTools().hasCompositePrimaryKey(metaClass))
+            return metadata.getTools().getPrimaryKeyName(metaClass);
         if (HasUuid.class.isAssignableFrom(metaClass.getJavaClass())) {
             MetaProperty primaryKeyProperty = metadata.getTools().getPrimaryKeyProperty(metaClass);
             if (primaryKeyProperty != null && !UUID.class.isAssignableFrom(primaryKeyProperty.getJavaType()))
