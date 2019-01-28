@@ -17,15 +17,13 @@
 
  package com.haulmont.cuba.testmodel.setget;
 
+ import com.haulmont.chile.core.annotations.MetaClass;
  import com.haulmont.cuba.core.entity.StandardEntity;
 
- import javax.persistence.Entity;
- import javax.persistence.Table;
  import javax.persistence.Transient;
  import java.util.Map;
 
- @Entity(name = "test$SetGetEntity")
- @Table(name = "TEST_SET_GET_ENTITY")
+ @MetaClass(name = "test$SetGetEntity")
  public class SetGetEntity<T> extends StandardEntity {
 
      @Transient
