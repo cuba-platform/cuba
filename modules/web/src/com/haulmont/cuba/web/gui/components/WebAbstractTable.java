@@ -533,9 +533,10 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
             return (Datasource) fieldDatasource;
         }
 
-       Datasource datasource = DsBuilder.create()
+        EntityTableItems containerTableItems = (EntityTableItems) getItems();
+        Datasource datasource = DsBuilder.create()
                 .setAllowCommit(false)
-                .setMetaClass(getDatasource().getMetaClass())
+                .setMetaClass(containerTableItems.getEntityMetaClass())
                 .setRefreshMode(CollectionDatasource.RefreshMode.NEVER)
                 .setViewName("_local")
                 .buildDatasource();
