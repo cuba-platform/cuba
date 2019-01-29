@@ -21,10 +21,13 @@ import com.haulmont.cuba.web.widgets.CubaUI;
 import com.haulmont.cuba.web.widgets.client.clientmanager.CubaUIClientRpc;
 import com.haulmont.cuba.web.widgets.client.tooltip.CubaTooltip;
 import com.vaadin.client.ApplicationConfiguration;
+import com.vaadin.client.UIDL;
 import com.vaadin.client.communication.StateChangeEvent;
 import com.vaadin.client.ui.VNotification;
 import com.vaadin.client.ui.ui.UIConnector;
 import com.vaadin.shared.ui.Connect;
+import com.vaadin.shared.ui.ui.UIConstants;
+import elemental.client.Browser;
 
 import java.util.Map;
 
@@ -62,6 +65,20 @@ public class CubaUIConnector extends UIConnector {
             // check mode of required indicator icon/hidden
             // performed on page open or full refresh
             CubaTooltip.checkRequiredIndicatorMode();
+        }
+    }
+
+    @Override
+    protected void updateBrowserHistory(UIDL uidl) {
+        if (uidl.hasAttribute(UIConstants.ATTRIBUTE_REPLACE_STATE)) {
+            Browser.getWindow().getHistory().replaceState(null,
+                    getState().pageState.title, uidl.getStringAttribute(
+                            UIConstants.ATTRIBUTE_REPLACE_STATE));
+        }
+        if (uidl.hasAttribute(UIConstants.ATTRIBUTE_PUSH_STATE)) {
+            Browser.getWindow().getHistory().pushState(null,
+                    getState().pageState.title,
+                    uidl.getStringAttribute(UIConstants.ATTRIBUTE_PUSH_STATE));
         }
     }
 }
