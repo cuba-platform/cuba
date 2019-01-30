@@ -21,14 +21,13 @@ import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.DatatypeRegistry;
 import com.haulmont.chile.core.datatypes.ValueConversionException;
 import com.haulmont.chile.core.model.MetaProperty;
-import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.entity.annotation.CurrencyValue;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.CurrencyField;
 import com.haulmont.cuba.gui.components.data.ConversionException;
+import com.haulmont.cuba.gui.components.data.ValueSource;
 import com.haulmont.cuba.gui.components.data.meta.EntityValueSource;
-import com.haulmont.cuba.gui.data.Datasource;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.inject.Inject;
@@ -159,13 +158,12 @@ public class WebCurrencyField<V extends Number> extends WebV8AbstractField<CubaC
     }
 
     @Override
-    public void setDatasource(Datasource datasource, String property) {
-        super.setDatasource(datasource, property);
+    protected void valueBindingConnected(ValueSource<V> valueSource) {
+        super.valueBindingConnected(valueSource);
 
-        // vaadin8 support in value source
-        if (datasource != null && !DynamicAttributesUtils.isDynamicAttribute(property)) {
-            MetaProperty metaProperty = datasource.getMetaClass()
-                    .getPropertyNN(property);
+        if (valueSource instanceof EntityValueSource) {
+            MetaProperty metaProperty = ((EntityValueSource) valueSource).getMetaPropertyPath()
+                    .getMetaProperty();
 
             Object annotation = metaProperty.getAnnotations()
                     .get(CurrencyValue.class.getName());
