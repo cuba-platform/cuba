@@ -53,7 +53,7 @@ public class UserSessions implements UserSessionsMBean {
 
     @Override
     public int getCount() {
-        return userSessions.getUserSessionInfo().size();
+        return (int) userSessions.getUserSessionsStream().count();
     }
 
     @Override
