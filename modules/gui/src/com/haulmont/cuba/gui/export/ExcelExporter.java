@@ -227,7 +227,8 @@ public class ExcelExporter {
                 createRow(table, columns, 0, ++r, item.getId());
             }
         } else {
-            if (table.isAggregatable() && exportAggregation) {
+            if (table.isAggregatable() && exportAggregation
+                    && hasAggregatableColumn(table)) {
                 if(table.getAggregationStyle() == Table.AggregationStyle.TOP) {
                     r = createAggregatableRow(table, columns, ++r, 1);
                 }
@@ -262,7 +263,8 @@ public class ExcelExporter {
                     createRow(table, columns, 0, ++r, itemId);
                 }
             }
-            if (table.isAggregatable() && exportAggregation) {
+            if (table.isAggregatable() && exportAggregation
+                    && hasAggregatableColumn(table)) {
                 if(table.getAggregationStyle() == Table.AggregationStyle.BOTTOM) {
                     r = createAggregatableRow(table, columns, ++r, 1);
                 }
@@ -870,5 +872,22 @@ public class ExcelExporter {
 
     public boolean getExportAggregation() {
         return exportAggregation;
+    }
+
+    /**
+     * Checks that at least one column in table is aggregatable.
+     *
+     * @param table table
+     * @return true if at least one column is aggregatable
+     */
+    protected boolean hasAggregatableColumn(Table table) {
+        //noinspection unchecked
+        List<Table.Column> columns = table.getColumns();
+        for (Table.Column column : columns) {
+            if (column.getAggregation() != null) {
+                return true;
+            }
+        }
+        return false;
     }
 }
