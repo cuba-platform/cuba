@@ -23,6 +23,7 @@ import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.Notifications.NotificationType;
 import com.haulmont.cuba.gui.Screens;
 import com.haulmont.cuba.gui.WindowParams;
+import com.haulmont.cuba.gui.components.AbstractEditor;
 import com.haulmont.cuba.gui.components.CloseOriginType;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.config.WindowConfig;
@@ -50,6 +51,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -456,47 +458,47 @@ public class UrlChangeHandler {
                 : OpenMode.THIS_TAB;
     }
 
-    protected boolean isEditor(WindowInfo windowInfo) {
-        return EditorScreen.class.isAssignableFrom(windowInfo.getControllerClass());
-    }
-
     protected Screen createEditor(WindowInfo windowInfo, NavigationState requestedState) {
-        Map<String, Object> screenOptions = createEditorScreenOptions(windowInfo, requestedState);
-        if (screenOptions.isEmpty()) {
-            return null;
+        Map<String, Object> options = createEditorScreenOptions(windowInfo, requestedState);
+
+        if (MapUtils.isEmpty(options)) {
+            log.info("Unable to load entity for editor: '{}'. " +
+                    "Subscribe for 'UrlParamsChangedEvent' to obtain its serialized id", windowInfo.getId());
         }
 
         Screen editor;
         OpenMode openMode = getScreenOpenMode(requestedState.getNestedRoute(), windowInfo);
 
-        if (LegacyFrame.class.isAssignableFrom(windowInfo.getControllerClass())) {
-            editor = getScreens().create(windowInfo.getId(), openMode, new MapScreenOptions(screenOptions));
+        if (isLegacyScreen(windowInfo.getControllerClass())) {
+            editor = getScreens().create(windowInfo.getId(), openMode, new MapScreenOptions(options));
         } else {
             editor = getScreens().create(windowInfo.getId(), openMode);
         }
 
-        Entity entity = (Entity) screenOptions.get(WindowParams.ITEM.name());
-        //noinspection unchecked
-        ((EditorScreen<Entity>) editor).setEntityToEdit(entity);
+        if (MapUtils.isNotEmpty(options)) {
+            Entity entity = (Entity) options.get(WindowParams.ITEM.name());
+            //noinspection unchecked
+            ((EditorScreen<Entity>) editor).setEntityToEdit(entity);
+        }
 
         return editor;
     }
 
+    @Nullable
     protected Map<String, Object> createEditorScreenOptions(WindowInfo windowInfo, NavigationState requestedState) {
-        Type screenSuperclass = windowInfo.getControllerClass().getGenericSuperclass();
+        String idParam = MapUtils.isNotEmpty(requestedState.getParams())
+                ? requestedState.getParams().get("id")
+                : null;
 
-        if (!(screenSuperclass instanceof ParameterizedType)) {
-            return Collections.emptyMap();
-        }
-
-        String idParam = requestedState.getParams().get("id");
         if (StringUtils.isEmpty(idParam)) {
-            return Collections.emptyMap();
+            return null;
         }
 
-        ParameterizedType parameterizedEditor = (ParameterizedType) screenSuperclass;
-        //noinspection unchecked
-        Class<? extends Entity> entityClass = (Class<? extends Entity>) parameterizedEditor.getActualTypeArguments()[0];
+        Class<? extends Entity> entityClass = extractEntityClass(windowInfo);
+        if (entityClass == null) {
+            return null;
+        }
+
         MetaClass metaClass = metadata.getClassNN(entityClass);
 
         if (!security.isEntityOpPermitted(metaClass, EntityOp.READ)) {
@@ -504,7 +506,8 @@ public class UrlChangeHandler {
             throw new AccessDeniedException(PermissionType.ENTITY_OP, EntityOp.READ, entityClass.getSimpleName());
         }
 
-        Class<?> idType = metaClass.getPropertyNN("id").getJavaType();
+        Class<?> idType = metaClass.getPropertyNN("id")
+                .getJavaType();
         Object id = UrlIdSerializer.deserializeId(idType, idParam);
 
         LoadContext<?> ctx = new LoadContext(metaClass);
@@ -513,10 +516,95 @@ public class UrlChangeHandler {
 
         Entity entity = dataManager.load(ctx);
         if (entity == null) {
-            return Collections.emptyMap();
+            return null;
         }
 
         return ParamsMap.of(WindowParams.ITEM.name(), entity);
+    }
+
+    @Nullable
+    protected Class<? extends Entity> extractEntityClass(WindowInfo windowInfo) {
+        Class controllerClass = windowInfo.getControllerClass();
+
+        Class<? extends Entity> entityClass = extractEntityTypeByInterface(controllerClass);
+        if (entityClass == null) {
+            entityClass = extractEntityTypeByClass(controllerClass);
+        }
+
+        return entityClass;
+    }
+
+    @Nullable
+    protected Class<? extends Entity> extractEntityTypeByInterface(Class controllerClass) {
+        while (controllerClass != null
+                && !Arrays.asList(controllerClass.getInterfaces()).contains(EditorScreen.class)) {
+            controllerClass = controllerClass.getSuperclass();
+        }
+
+        if (controllerClass == null) {
+            return null;
+        }
+
+        Class<? extends Entity> entityClass = null;
+
+        for (Type genericInterface : controllerClass.getGenericInterfaces()) {
+            if (!(genericInterface instanceof ParameterizedType)) {
+                continue;
+            }
+
+            ParameterizedType paramType = (ParameterizedType) genericInterface;
+            String typeName = paramType.getRawType().getTypeName();
+
+            if (!EditorScreen.class.getName().equals(typeName)) {
+                continue;
+            }
+
+            if (paramType.getActualTypeArguments().length > 0) {
+                Type typeArg = paramType.getActualTypeArguments()[0];
+
+                if (typeArg instanceof Class
+                        && Entity.class.isAssignableFrom((Class<?>) typeArg)) {
+                    //noinspection unchecked
+                    entityClass = (Class<? extends Entity>) typeArg;
+
+                    break;
+                }
+            }
+        }
+
+        return entityClass;
+    }
+
+    @Nullable
+    protected Class<? extends Entity> extractEntityTypeByClass(Class controllerClass) {
+        while (controllerClass != null
+                && !isAbstractEditor(controllerClass.getSuperclass())
+                && !isStandardEditor(controllerClass.getSuperclass())) {
+            controllerClass = controllerClass.getSuperclass();
+        }
+
+        if (controllerClass == null
+                || (!isAbstractEditor(controllerClass.getSuperclass())
+                && !isStandardEditor(controllerClass.getSuperclass()))) {
+            return null;
+        }
+
+        if (!(controllerClass.getGenericSuperclass() instanceof ParameterizedType)) {
+            return null;
+        }
+
+        Class<? extends Entity> entityClass = null;
+
+        ParameterizedType paramType = (ParameterizedType) controllerClass.getGenericSuperclass();
+        Type typeArg = paramType.getActualTypeArguments()[0];
+
+        if (typeArg instanceof Class
+                && Entity.class.isAssignableFrom((Class<?>) typeArg)) {
+            //noinspection unchecked
+            entityClass = (Class<? extends Entity>) typeArg;
+        }
+
+        return entityClass;
     }
 
     protected boolean handleParamsChange(NavigationState requestedState) {
@@ -545,6 +633,22 @@ public class UrlChangeHandler {
     protected boolean paramsChanged(NavigationState requestedState) {
         String currentParams = getResolvedState(getAnyCurrentScreen()).getParamsString();
         return !Objects.equals(currentParams, requestedState.getParamsString());
+    }
+
+    protected boolean isEditor(WindowInfo windowInfo) {
+        return EditorScreen.class.isAssignableFrom(windowInfo.getControllerClass());
+    }
+
+    protected boolean isAbstractEditor(Class controllerClass) {
+        return AbstractEditor.class == controllerClass;
+    }
+
+    protected boolean isStandardEditor(Class controllerClass) {
+        return StandardEditor.class == controllerClass;
+    }
+
+    protected boolean isLegacyScreen(Class<? extends FrameOwner> controllerClass) {
+        return LegacyFrame.class.isAssignableFrom(controllerClass);
     }
 
     protected void reloadApp() {

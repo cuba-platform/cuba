@@ -16,6 +16,7 @@
 
 package com.haulmont.cuba.web.sys;
 
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.Events;
 import com.haulmont.cuba.gui.Route;
 import com.haulmont.cuba.gui.Screens;
@@ -231,11 +232,14 @@ public class WebUrlRouting implements UrlRouting {
         Map<String, String> params = new LinkedHashMap<>();
 
         if (isEditor(screen)) {
-            Object entityId = ((EditorScreen) screen).getEditedEntity().getId();
-            if (entityId != null) {
-                String serializedId = UrlIdSerializer.serializeId(entityId);
-                if (!"".equals(serializedId)) {
-                    params.put("id", serializedId);
+            Entity editedEntity = ((EditorScreen) screen).getEditedEntity();
+            if (editedEntity != null) {
+                Object entityId = editedEntity.getId();
+                if (entityId != null) {
+                    String serializedId = UrlIdSerializer.serializeId(entityId);
+                    if (!"".equals(serializedId)) {
+                        params.put("id", serializedId);
+                    }
                 }
             }
         }
