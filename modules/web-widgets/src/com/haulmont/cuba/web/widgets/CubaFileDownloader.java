@@ -30,6 +30,12 @@ public class CubaFileDownloader extends AbstractExtension {
 
     protected boolean overrideContentType = true;
 
+    protected FileNotFoundExceptionListener fileNotFoundExceptionListener;
+
+    public interface FileNotFoundExceptionListener {
+        boolean onHandle(Exception e, VaadinResponse response);
+    }
+
     public void downloadFile(Resource resource) {
         String resourceId = DOWNLOAD_RESOURCE_PREFIX + UUID.randomUUID().toString();
         setResource(resourceId, resource);
@@ -105,7 +111,19 @@ public class CubaFileDownloader extends AbstractExtension {
 
             boolean isViewDocumentRequest = targetResourceKey.startsWith(VIEW_RESOURCE_PREFIX);
 
-            stream = ((ConnectorResource) resource).getStream();
+            try {
+                stream = ((ConnectorResource) resource).getStream();
+            } catch (RuntimeException e) {
+                if (!isViewDocumentRequest
+                        || fileNotFoundExceptionListener == null
+                        || !fileNotFoundExceptionListener.onHandle(e, response)) {
+                    // send exception further
+                    throw e;
+                } else {
+                    // exception is handled in listener
+                    return true;
+                }
+            }
 
             String contentDisposition = stream.getParameter(DownloadStream.CONTENT_DISPOSITION);
             if (contentDisposition == null) {
@@ -137,5 +155,13 @@ public class CubaFileDownloader extends AbstractExtension {
     protected boolean isSafariOrIOS() {
         return Page.getCurrent().getWebBrowser().isSafari()
                 || Page.getCurrent().getWebBrowser().isIOS();
+    }
+
+    public FileNotFoundExceptionListener getFileNotFoundExceptionListener() {
+        return fileNotFoundExceptionListener;
+    }
+
+    public void setFileNotFoundExceptionListener(FileNotFoundExceptionListener notFoundExceptionListener) {
+        this.fileNotFoundExceptionListener = notFoundExceptionListener;
     }
 }
