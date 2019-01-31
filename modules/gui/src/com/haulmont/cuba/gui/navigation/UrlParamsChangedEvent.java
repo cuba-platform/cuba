@@ -34,8 +34,6 @@ import java.util.function.Consumer;
  *         // handle new params
  *     }
  * </pre>
- *
- * @see Screen#addUrlParamsChangeListener(Consumer)
  */
 public class UrlParamsChangedEvent extends EventObject {
 
