@@ -799,7 +799,7 @@ public interface Table<E extends Entity>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    class Column<T extends Entity> implements HasXmlDescriptor, HasCaption, HasHtmlCaption, HasFormatter {
+    class Column<T extends Entity> implements HasXmlDescriptor, HasCaption, HasHtmlCaption, HasFormatter<Object> {
 
         private static final Logger log = LoggerFactory.getLogger(Table.class);
 
@@ -808,7 +808,7 @@ public interface Table<E extends Entity>
         protected String description;
         protected String valueDescription;
         protected boolean editable;
-        protected Function<Object, String> formatter;
+        protected Function<? super Object, String> formatter;
         protected Integer width;
         protected boolean collapsed;
         protected boolean groupAllowed = true;
@@ -824,7 +824,7 @@ public interface Table<E extends Entity>
         protected Element element;
 
         // vaadin8 add a separate interface for notifying parent
-        protected Table owner;
+        protected Table<T> owner;
 
         public Column(Object id) {
             this.id = id;
@@ -895,9 +895,8 @@ public interface Table<E extends Entity>
             return String.valueOf(id);
         }
 
-        public void setColumnGenerator(Function<? super Entity, Component> columnGenerator) {
+        public void setColumnGenerator(Function<T, Component> columnGenerator) {
             if (owner != null) {
-                //noinspection unchecked
                 owner.addGeneratedColumn(getStringId(), columnGenerator::apply);
             }
         }
@@ -991,7 +990,7 @@ public interface Table<E extends Entity>
         }
 
         @Override
-        public void setFormatter(Function formatter) {
+        public void setFormatter(Function<? super Object, String> formatter) {
             this.formatter = formatter;
         }
 
