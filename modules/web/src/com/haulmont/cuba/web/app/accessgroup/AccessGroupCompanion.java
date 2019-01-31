@@ -43,6 +43,7 @@ public class AccessGroupCompanion implements GroupBrowser.Companion {
 
     // cross browser data type
     protected final static String TRANSFER_DATA_TYPE = "text";
+    protected final static String TEXT_PLAIN_DATA_TYPE = "text/plain";
 
     @Override
     public void initDragAndDrop(Table<User> usersTable, Tree<Group> groupsTree,
@@ -87,7 +88,8 @@ public class AccessGroupCompanion implements GroupBrowser.Companion {
                 }
                 // if we reorder groups inside tree
             } else {
-                String draggedItemId = event.getDataTransferData().get(TRANSFER_DATA_TYPE);
+                String draggedItemId = event.getDataTransferData().get(TEXT_PLAIN_DATA_TYPE);
+
                 if (isEdgeOrIE() && draggedItemId == null) {
                     draggedItemId = event.getDataTransferText();
                 }
