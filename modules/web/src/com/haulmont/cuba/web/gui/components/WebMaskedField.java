@@ -25,6 +25,7 @@ import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.MaskedField;
 import com.haulmont.cuba.gui.components.data.ConversionException;
+import com.haulmont.cuba.gui.components.data.DataAwareComponentsTools;
 import com.haulmont.cuba.gui.components.data.meta.EntityValueSource;
 import com.haulmont.cuba.web.gui.components.util.ShortcutListenerDelegate;
 import com.haulmont.cuba.web.widgets.CubaMaskedTextField;
@@ -55,10 +56,17 @@ public class WebMaskedField<V> extends WebV8AbstractField<CubaMaskedTextField, S
     protected Datatype<V> datatype;
     protected Locale locale;
 
+    protected DataAwareComponentsTools dataAwareComponentsTools;
+
     public WebMaskedField() {
         this.component = createComponent();
 
         attachValueChangeListener(component);
+    }
+
+    @Inject
+    public void setDataAwareComponentsTools(DataAwareComponentsTools dataAwareComponentsTools) {
+        this.dataAwareComponentsTools = dataAwareComponentsTools;
     }
 
     @Inject
@@ -137,6 +145,8 @@ public class WebMaskedField<V> extends WebV8AbstractField<CubaMaskedTextField, S
 
     @Override
     public void setDatatype(Datatype<V> datatype) {
+        dataAwareComponentsTools.checkValueSourceDatatypeMismatch(datatype, getValueSource());
+
         this.datatype = datatype;
     }
 

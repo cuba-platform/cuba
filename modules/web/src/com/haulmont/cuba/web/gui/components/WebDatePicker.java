@@ -43,10 +43,17 @@ public class WebDatePicker<V> extends WebV8AbstractField<InlineDateField, LocalD
     protected V rangeStart;
     protected V rangeEnd;
 
+    protected DataAwareComponentsTools dataAwareComponentsTools;
+
     public WebDatePicker() {
         this.component = new CubaDatePicker();
 
         attachValueChangeListener(component);
+    }
+
+    @Inject
+    public void setDataAwareComponentsTools(DataAwareComponentsTools dataAwareComponentsTools) {
+        this.dataAwareComponentsTools = dataAwareComponentsTools;
     }
 
     @Inject
@@ -165,6 +172,8 @@ public class WebDatePicker<V> extends WebV8AbstractField<InlineDateField, LocalD
 
     @Override
     public void setDatatype(Datatype<V> datatype) {
+        dataAwareComponentsTools.checkValueSourceDatatypeMismatch(datatype, getValueSource());
+
         this.datatype = datatype;
     }
 

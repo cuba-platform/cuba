@@ -48,6 +48,13 @@ public abstract class WebAbstractTextArea<T extends com.vaadin.ui.TextArea, V>
 
     protected int columns;
 
+    protected DataAwareComponentsTools dataAwareComponentsTools;
+
+    @Inject
+    public void setDataAwareComponentsTools(DataAwareComponentsTools dataAwareComponentsTools) {
+        this.dataAwareComponentsTools = dataAwareComponentsTools;
+    }
+
     @Override
     public void focus() {
         component.focus();
@@ -197,6 +204,8 @@ public abstract class WebAbstractTextArea<T extends com.vaadin.ui.TextArea, V>
 
     @Override
     public void setDatatype(Datatype<V> datatype) {
+        dataAwareComponentsTools.checkValueSourceDatatypeMismatch(datatype, getValueSource());
+
         this.datatype = datatype;
     }
 

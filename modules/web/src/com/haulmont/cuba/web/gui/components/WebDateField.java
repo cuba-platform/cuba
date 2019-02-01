@@ -81,6 +81,8 @@ public class WebDateField<V extends Comparable<V>>
 
     protected Subscription parentEditableChangeSubscription;
 
+    protected DataAwareComponentsTools dataAwareComponentsTools;
+
     public WebDateField() {
         component = createComponent();
         component.setPrimaryStyleName("c-datefield-layout");
@@ -118,6 +120,11 @@ public class WebDateField<V extends Comparable<V>>
 
     protected void initTimeField(CubaTimeField timeField) {
         timeField.setCaptionManagedByLayout(false);
+    }
+
+    @Inject
+    public void setDataAwareComponentsTools(DataAwareComponentsTools dataAwareComponentsTools) {
+        this.dataAwareComponentsTools = dataAwareComponentsTools;
     }
 
     @Inject
@@ -219,6 +226,8 @@ public class WebDateField<V extends Comparable<V>>
 
     @Override
     public void setDatatype(Datatype<V> datatype) {
+        dataAwareComponentsTools.checkValueSourceDatatypeMismatch(datatype, getValueSource());
+
         this.datatype = datatype;
     }
 

@@ -26,6 +26,7 @@ import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.CurrencyField;
 import com.haulmont.cuba.gui.components.data.ConversionException;
+import com.haulmont.cuba.gui.components.data.DataAwareComponentsTools;
 import com.haulmont.cuba.gui.components.data.ValueSource;
 import com.haulmont.cuba.gui.components.data.meta.EntityValueSource;
 import org.apache.commons.lang3.StringUtils;
@@ -46,11 +47,18 @@ public class WebCurrencyField<V extends Number> extends WebV8AbstractField<CubaC
     protected Datatype<V> datatype;
     protected Datatype<V> defaultDatatype;
 
+    protected DataAwareComponentsTools dataAwareComponentsTools;
+
     public WebCurrencyField() {
         component = new CubaCurrencyField();
         component.setCurrencyLabelPosition(toWidgetLabelPosition(CurrencyLabelPosition.RIGHT));
 
         attachValueChangeListener(component);
+    }
+
+    @Inject
+    public void setDataAwareComponentsTools(DataAwareComponentsTools dataAwareComponentsTools) {
+        this.dataAwareComponentsTools = dataAwareComponentsTools;
     }
 
     @Inject
@@ -185,6 +193,7 @@ public class WebCurrencyField<V extends Number> extends WebV8AbstractField<CubaC
     @Override
     public void setDatatype(Datatype<V> datatype) {
         Preconditions.checkNotNullArgument(datatype);
+        dataAwareComponentsTools.checkValueSourceDatatypeMismatch(datatype, getValueSource());
 
         this.datatype = datatype;
     }

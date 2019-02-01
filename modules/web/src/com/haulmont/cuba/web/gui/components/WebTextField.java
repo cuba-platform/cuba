@@ -60,10 +60,17 @@ public class WebTextField<V> extends WebV8AbstractField<CubaTextField, String, V
 
     protected ShortcutListener enterShortcutListener;
 
+    protected DataAwareComponentsTools dataAwareComponentsTools;
+
     public WebTextField() {
         this.component = createComponent();
 
         attachValueChangeListener(this.component);
+    }
+
+    @Inject
+    public void setDataAwareComponentsTools(DataAwareComponentsTools dataAwareComponentsTools) {
+        this.dataAwareComponentsTools = dataAwareComponentsTools;
     }
 
     @Inject
@@ -204,6 +211,8 @@ public class WebTextField<V> extends WebV8AbstractField<CubaTextField, String, V
 
     @Override
     public void setDatatype(Datatype<V> datatype) {
+        dataAwareComponentsTools.checkValueSourceDatatypeMismatch(datatype, getValueSource());
+
         this.datatype = datatype;
     }
 

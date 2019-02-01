@@ -23,6 +23,7 @@ import com.haulmont.cuba.core.global.DateTimeTransformations;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.TimeField;
 import com.haulmont.cuba.gui.components.data.ConversionException;
+import com.haulmont.cuba.gui.components.data.DataAwareComponentsTools;
 import com.haulmont.cuba.gui.components.data.ValueSource;
 import com.haulmont.cuba.gui.components.data.meta.EntityValueSource;
 import com.haulmont.cuba.web.widgets.CubaTimeField;
@@ -44,10 +45,17 @@ public class WebTimeField<V> extends WebV8AbstractField<CubaTimeField, LocalTime
     protected Resolution resolution = Resolution.MIN;
     protected Datatype<V> datatype;
 
+    protected DataAwareComponentsTools dataAwareComponentsTools;
+
     public WebTimeField() {
         component = new CubaTimeField();
 
         attachValueChangeListener(component);
+    }
+
+    @Inject
+    public void setDataAwareComponentsTools(DataAwareComponentsTools dataAwareComponentsTools) {
+        this.dataAwareComponentsTools = dataAwareComponentsTools;
     }
 
     @Override
@@ -115,6 +123,8 @@ public class WebTimeField<V> extends WebV8AbstractField<CubaTimeField, LocalTime
 
     @Override
     public void setDatatype(Datatype<V> datatype) {
+        dataAwareComponentsTools.checkValueSourceDatatypeMismatch(datatype, getValueSource());
+
         this.datatype = datatype;
     }
 

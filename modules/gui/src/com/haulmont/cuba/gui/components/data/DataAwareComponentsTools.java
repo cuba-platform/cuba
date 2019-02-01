@@ -16,6 +16,7 @@
 
 package com.haulmont.cuba.gui.components.data;
 
+import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.annotation.CaseConversion;
 import com.haulmont.cuba.core.entity.annotation.ConversionType;
@@ -164,5 +165,20 @@ public class DataAwareComponentsTools {
             temporalType = (TemporalType) metaProperty.getAnnotations().get(MetadataTools.TEMPORAL_ANN_NAME);
         }
         return temporalType;
+    }
+
+    /**
+     * Throws IllegalArgumentException if component's {@link ValueSource} and {@link Datatype} have different types.
+     *
+     * @param datatype    datatype
+     * @param valueSource component's value source
+     */
+    public void checkValueSourceDatatypeMismatch(Datatype datatype, ValueSource valueSource) {
+        if (valueSource != null && datatype != null) {
+            if (!valueSource.getType().equals(datatype.getJavaClass())) {
+                throw new IllegalArgumentException("ValueSource and Datatype have different types. ValueSource:"
+                        + valueSource.getType() + "; Datatype: " + datatype.getJavaClass());
+            }
+        }
     }
 }
