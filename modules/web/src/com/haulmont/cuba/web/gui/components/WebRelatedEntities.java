@@ -49,8 +49,14 @@ public class WebRelatedEntities extends WebPopupButton implements RelatedEntitie
 
     protected String excludeRegex;
     protected ScreensHelper screensHelper;
+    protected RelatedEntitiesSecurity relatedEntitiesSecurity;
 
     public WebRelatedEntities() {
+    }
+
+    @Inject
+    public void setRelatedEntitiesSecurity(RelatedEntitiesSecurity relatedEntitiesSecurity) {
+        this.relatedEntitiesSecurity = relatedEntitiesSecurity;
     }
 
     @Inject
@@ -138,7 +144,7 @@ public class WebRelatedEntities extends WebPopupButton implements RelatedEntitie
             }
 
             for (MetaProperty metaProperty : metaClass.getProperties()) {
-                if (RelatedEntitiesSecurity.isSuitableProperty(metaProperty, metaClass)
+                if (relatedEntitiesSecurity.isSuitableProperty(metaProperty, metaClass)
                         && (excludePattern == null || !excludePattern.matcher(metaProperty.getName()).matches())) {
                     addNavigationAction(metaClass, metaProperty);
                 }

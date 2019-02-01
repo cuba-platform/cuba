@@ -19,22 +19,59 @@ package com.haulmont.cuba.gui.components.security;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.Category;
-import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.core.global.Security;
+import com.haulmont.cuba.gui.components.RelatedEntities;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
 import com.haulmont.cuba.security.entity.EntityOp;
+import org.springframework.stereotype.Component;
 
-// todo convert to bean
+import javax.inject.Inject;
+import java.util.Objects;
+
+/**
+ * Class that is used for checking suitable property for {@link RelatedEntities} component.
+ */
+@Component(RelatedEntitiesSecurity.NAME)
 public final class RelatedEntitiesSecurity {
+
+    public static final String NAME = "cuba_RelatedEntitiesSecurity";
+
+    protected MetadataTools metadataTools;
+    protected Security security;
 
     private RelatedEntitiesSecurity() {
     }
 
-    public static boolean isSuitableProperty(MetaProperty metaProperty, MetaClass effectiveMetaClass) {
+    @Inject
+    public void setMetadataTools(MetadataTools metadataTools) {
+        this.metadataTools = metadataTools;
+    }
+
+    @Inject
+    public void setSecurity(Security security) {
+        this.security = security;
+    }
+
+    /**
+     * Checks suitable property for {@link RelatedEntities} component.
+     *
+     * @param metaProperty       added meta property
+     * @param effectiveMetaClass meta class of entity from which we add property
+     * @return true if property can be added to related entities component
+     */
+    public boolean isSuitableProperty(MetaProperty metaProperty, MetaClass effectiveMetaClass) {
         if (metaProperty.getRange().isClass()
                 && !Category.class.isAssignableFrom(metaProperty.getJavaType())) {
 
-            Security security = AppBeans.get(Security.NAME);
+            // check that entities are placed in the same data store
+            MetaClass propertyMetaClass = metaProperty.getRange().asClass();
+            String propertyStore = metadataTools.getStoreName(propertyMetaClass);
+            String effectiveStore = metadataTools.getStoreName(effectiveMetaClass);
+            if (!Objects.equals(effectiveStore, propertyStore)) {
+                return false;
+            }
+
             // check security
             if (security.isEntityAttrPermitted(effectiveMetaClass, metaProperty.getName(), EntityAttrAccess.VIEW)
                     && security.isEntityOpPermitted(metaProperty.getRange().asClass(), EntityOp.READ)) {
