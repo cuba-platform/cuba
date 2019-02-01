@@ -21,6 +21,7 @@ import com.google.common.collect.ImmutableMap;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.TextFieldTest;
+import com.haulmont.cuba.gui.components.data.DataAwareComponentsTools;
 import com.haulmont.cuba.web.gui.components.WebTextField;
 import com.haulmont.cuba.web.test.stubs.TestUiComponents;
 import com.vaadin.server.VaadinSession;
@@ -33,6 +34,9 @@ public class WebTextFieldTest extends TextFieldTest {
 
     @Mocked
     protected VaadinSession vaadinSession;
+
+    @Mocked
+    protected DataAwareComponentsTools dataAwareComponentsTools;
 
     @Override
     protected void initExpectations() {
@@ -58,5 +62,6 @@ public class WebTextFieldTest extends TextFieldTest {
         WebTextField textField = (WebTextField) component;
         textField.setUserSessionSource(userSessionSource);
         textField.setBeanLocator(beanLocator);
+        textField.setDataAwareComponentsTools(dataAwareComponentsTools);
     }
 }
