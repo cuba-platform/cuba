@@ -219,7 +219,8 @@ public class FetchGroupManager {
             QueryParser parser = QueryTransformerFactory.createParser(queryString);
 
             List<FetchGroupField> isNullFields = joinFields.stream()
-                    .filter(f -> f.fetchMode == FetchMode.AUTO && parser.hasIsNullCondition(f.path()))
+                    .filter(f -> f.fetchMode == FetchMode.AUTO &&
+                            (parser.hasIsNullCondition(f.path()) || parser.hasIsNotNullCondition(f.path())))
                     .collect(Collectors.toList());
             if (!isNullFields.isEmpty()) {
                 for (Iterator<FetchGroupField> fieldIt = joinFields.iterator(); fieldIt.hasNext(); ) {

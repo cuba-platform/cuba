@@ -166,6 +166,22 @@ public class QueryTreeAnalyzer {
         return false;
     }
 
+    public boolean isConditionISNOTNULL(SimpleConditionNode condition) {
+        for (int i = 0; i < condition.getChildCount(); i++) {
+            Tree child = condition.getChild(i);
+            if (i < condition.getChildCount() - 2) {
+                Tree notChild = condition.getChild(i + 1);
+                Tree nullChild = condition.getChild(i + 2);
+                if ("is".equalsIgnoreCase(child.getText()) &&
+                        "not".equalsIgnoreCase(notChild.getText()) &&
+                        "null".equalsIgnoreCase(nullChild.getText())) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     public boolean isVariablePathNode(PathNode pathNode) {
         return pathNode.getChildCount() == 0;
     }

@@ -136,6 +136,11 @@ public class QueryParserRegex implements QueryParser {
     }
 
     @Override
+    public boolean hasIsNotNullCondition(String attribute) {
+        return false;
+    }
+
+    @Override
     public boolean isQueryWithJoins() {
         return false;
     }

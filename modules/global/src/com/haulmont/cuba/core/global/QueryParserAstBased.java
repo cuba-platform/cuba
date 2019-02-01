@@ -139,6 +139,18 @@ public class QueryParserAstBased implements QueryParser {
     }
 
     @Override
+    public boolean hasIsNotNullCondition(String attribute) {
+        IdentificationVariableNode identificationVariable = getAnalyzer().getMainIdentificationVariableNode();
+        if (identificationVariable != null) {
+            String variableName = identificationVariable.getVariableName();
+            return queryTree.visit(NodesFinder.of(SimpleConditionNode.class)).getFoundNodes().stream()
+                    .filter(condition -> getAnalyzer().isConditionForEntityProperty(condition, variableName, attribute))
+                    .anyMatch(condition -> getAnalyzer().isConditionISNOTNULL(condition));
+        }
+        return false;
+    }
+
+    @Override
     public boolean isQueryWithJoins() {
         return getAnalyzer().isQueryWithJoins();
     }
