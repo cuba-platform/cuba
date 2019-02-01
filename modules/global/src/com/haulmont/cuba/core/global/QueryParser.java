@@ -53,6 +53,8 @@ public interface QueryParser {
 
     boolean hasIsNullCondition(String attribute);
 
+    boolean hasIsNotNullCondition(String attribute);
+
     /**
      * Returns true if SELECT query contains joins
      */

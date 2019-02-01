@@ -160,6 +160,24 @@ public class QueryParserAstBased implements QueryParser {
     }
 
     @Override
+    public boolean hasIsNotNullCondition(String attribute) {
+        List<SimpleConditionNode> allConditions = getQueryAnalyzer().findAllConditionsForMainEntityAttribute(attribute);
+        for (SimpleConditionNode allCondition : allConditions) {
+            List<?> children = allCondition.getChildren();
+            for (int i = 0; i < children.size(); i++) {
+                Object child = children.get(i);
+                if (i < children.size() - 2
+                        && child.toString().equalsIgnoreCase("is")
+                        && children.get(i + 1).toString().equalsIgnoreCase("not")
+                        && children.get(i + 2).toString().equalsIgnoreCase("null")) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    @Override
     public boolean hasJoins() {
         return getQueryAnalyzer().hasJoins();
     }
