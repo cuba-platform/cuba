@@ -1205,6 +1205,8 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
                         .withHandler(actionHandler)
         );
 
+        removeAllClickListeners();
+
         if (isEditable()) {
             EntityTableItems<E> entityTableSource = (EntityTableItems<E>) getItems();
             com.vaadin.v7.data.Container ds = component.getContainerDataSource();
@@ -1216,6 +1218,12 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
 
         if (buttonsPanel != null && !buttonsPanel.isAlwaysVisible()) {
             buttonsPanel.setVisible(false);
+        }
+    }
+
+    protected void removeAllClickListeners() {
+        for (Column column : columnsOrder) {
+            component.removeClickListener(column.getId());
         }
     }
 
@@ -1241,9 +1249,6 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
         @SuppressWarnings("unchecked")
         Collection<MetaPropertyPath> properties = (Collection<MetaPropertyPath>) ds.getContainerPropertyIds();
 
-        Window window = ComponentsHelper.getWindow(this);
-        boolean isLookup = window != null && window.getFrameOwner() instanceof LookupScreen;
-
         for (MetaPropertyPath propertyPath : properties) {
             Table.Column column = columns.get(propertyPath);
 
@@ -1252,11 +1257,11 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
                                 null : column.getXmlDescriptor().attributeValue("link");
 
                 if (propertyPath.getRange().isClass()) {
-                    if (!isLookup && StringUtils.isNotEmpty(isLink)) {
+                    if (StringUtils.isNotEmpty(isLink)) {
                         setClickListener(propertyPath.toString(), new LinkCellClickListener(this, applicationContext));
                     }
                 } else if (propertyPath.getRange().isDatatype()) {
-                    if (!isLookup && !StringUtils.isEmpty(isLink)) {
+                    if (StringUtils.isNotEmpty(isLink)) {
                         setClickListener(propertyPath.toString(), new LinkCellClickListener(this, applicationContext));
                     } else {
                         if (column.getMaxTextLength() != null) {
