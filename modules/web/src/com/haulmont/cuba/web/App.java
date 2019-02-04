@@ -50,6 +50,7 @@ import com.haulmont.cuba.web.settings.WebSettingsClient;
 import com.haulmont.cuba.web.sys.*;
 import com.vaadin.server.AbstractClientConnector;
 import com.vaadin.server.VaadinSession;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 import org.apache.commons.lang3.StringUtils;
@@ -61,6 +62,7 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.*;
 import java.util.concurrent.Future;
+import java.util.stream.Collectors;
 
 /**
  * Central class of the web application. An instance of this class is created for each client's session and is bound
@@ -504,7 +506,14 @@ public abstract class App {
                     ui.removeWindow(win);
                 }
 
-                // todo also remove all notifications
+                List<Notification> notifications = ui.getExtensions()
+                        .stream()
+                        .filter(ext -> ext instanceof Notification)
+                        .map(ext -> (Notification) ext)
+                        .collect(Collectors.toList());
+
+                notifications.forEach(Notification::close);
+
             }
         } catch (Throwable e) {
             log.error("Error closing all windows", e);
