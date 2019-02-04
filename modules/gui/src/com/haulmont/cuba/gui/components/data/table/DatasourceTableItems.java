@@ -147,6 +147,11 @@ public class DatasourceTableItems<E extends Entity<K>, K>
     }
 
     @Override
+    public Collection<E> getItems() {
+        return datasource.getItems();
+    }
+
+    @Override
     public Subscription addStateChangeListener(Consumer<StateChangeEvent> listener) {
         return events.subscribe(StateChangeEvent.class, listener);
     }

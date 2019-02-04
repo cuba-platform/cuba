@@ -98,6 +98,11 @@ public class ContainerTableItems<E extends Entity> implements EntityTableItems<E
         return container.getItems().stream().map(Entity::getId).collect(Collectors.toList());
     }
 
+    @Override
+    public Collection<E> getItems() {
+        return container.getItems();
+    }
+
     @Nullable
     @Override
     public E getItem(Object itemId) {

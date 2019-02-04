@@ -53,6 +53,11 @@ public interface TableItems<I> extends DataUnit {
     boolean supportsProperty(Object propertyId);
 
     /**
+     * @return unmodifiable collection of items
+     */
+    Collection<I> getItems();
+
+    /**
      * Registers a new value change listener.
      *
      * @param listener the listener to be added
