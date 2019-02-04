@@ -43,6 +43,7 @@ import com.haulmont.cuba.gui.components.data.TableItems;
 import com.haulmont.cuba.gui.components.data.meta.ContainerDataUnit;
 import com.haulmont.cuba.gui.components.data.meta.DatasourceDataUnit;
 import com.haulmont.cuba.gui.components.data.meta.EntityTableItems;
+import com.haulmont.cuba.gui.components.data.table.ContainerTableItems;
 import com.haulmont.cuba.gui.components.data.table.DatasourceTableItems;
 import com.haulmont.cuba.gui.components.data.table.SortableDatasourceTableItems;
 import com.haulmont.cuba.gui.components.sys.ShowInfoAction;
@@ -175,7 +176,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
 
     protected com.vaadin.v7.ui.Table.ColumnCollapseListener columnCollapseListener;
 
-    protected AggregationDistributionProvider distributionProvider;
+    protected AggregationDistributionProvider<E> distributionProvider;
 
     // Map column id to Printable representation
     // todo this functionality should be moved to Excel action
@@ -2976,22 +2977,27 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
     }
 
     @Override
-    public void setAggregationDistributionProvider(AggregationDistributionProvider distributionProvider) {
+    public void setAggregationDistributionProvider(AggregationDistributionProvider<E> distributionProvider) {
         this.distributionProvider = distributionProvider;
 
         component.setAggregationDistributionProvider(this::distributeAggregation);
     }
 
+    @SuppressWarnings("unchecked")
     protected boolean distributeAggregation(AggregationInputValueChangeContext context) {
         if (distributionProvider != null) {
             String value = context.getValue();
             Object columnId = context.getColumnId();
             try {
                 Object parsedValue = getParsedAggregationValue(value, columnId);
-                //noinspection unchecked
+                TableItems<E> tableItems = getItems();
+                Collection<E> items = tableItems == null ?
+                        Collections.emptyList() : tableItems.getItems();
+
                 AggregationDistributionContext<E> distributionContext =
-                        new AggregationDistributionContext<E>(getColumn(columnId.toString()),
-                                parsedValue, getDatasource().getItems(), context.isTotalAggregation());
+                        new AggregationDistributionContext<>(getColumn(columnId.toString()),
+                                parsedValue, items, context.isTotalAggregation());
+
                 distributionProvider.onDistribution(distributionContext);
             } catch (ValueConversionException e) {
                 showParseErrorNotification(e.getLocalizedMessage());
@@ -3005,7 +3011,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
     }
 
     @Override
-    public AggregationDistributionProvider getAggregationDistributionProvider() {
+    public AggregationDistributionProvider<E> getAggregationDistributionProvider() {
         return distributionProvider;
     }
 
