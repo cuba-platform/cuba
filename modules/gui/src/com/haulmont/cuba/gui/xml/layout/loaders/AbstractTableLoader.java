@@ -16,6 +16,8 @@
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
+import com.haulmont.chile.core.datatypes.Datatype;
+import com.haulmont.chile.core.datatypes.DatatypeRegistry;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
@@ -463,7 +465,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
             column.setType(metaPropertyPath.getRangeJavaClass());
 
         String width = loadThemeString(element.attributeValue("width"));
-        if (!StringUtils.isBlank(width)) {
+        if (StringUtils.isNotEmpty(width)) {
             if (StringUtils.endsWith(width, "px")) {
                 width = StringUtils.substring(width, 0, width.length() - 2);
             }
@@ -475,8 +477,13 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
             }
         }
         String align = element.attributeValue("align");
-        if (StringUtils.isNotBlank(align)) {
+        if (StringUtils.isNotEmpty(align)) {
             column.setAlignment(Table.ColumnAlignment.valueOf(align));
+        }
+
+        String type = element.attributeValue("type");
+        if (StringUtils.isNotEmpty(type)) {
+            setColumnType(column, type);
         }
 
         column.setFormatter(loadFormatter(element));
@@ -486,6 +493,12 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
         loadCaptionAsHtml(column, element);
 
         return column;
+    }
+
+    protected void setColumnType(Table.Column column, String datatypeName) {
+        DatatypeRegistry datatypeRegistry = beanLocator.get(DatatypeRegistry.class);
+        Datatype datatype = datatypeRegistry.get(datatypeName);
+        column.setType(datatype.getJavaClass());
     }
 
     protected void loadCaptionAsHtml(Table.Column component, Element element) {

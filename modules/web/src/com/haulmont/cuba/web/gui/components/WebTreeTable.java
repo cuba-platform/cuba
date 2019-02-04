@@ -22,9 +22,6 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.TreeTable;
 import com.haulmont.cuba.gui.components.data.TableItems;
 import com.haulmont.cuba.gui.components.data.TreeTableItems;
-import com.haulmont.cuba.gui.components.data.table.DatasourceTreeTableItems;
-import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 import com.haulmont.cuba.web.gui.components.table.TableDataContainer;
 import com.haulmont.cuba.web.gui.components.table.TableItemsEventsDelegate;
 import com.haulmont.cuba.web.gui.components.table.TreeTableDataContainer;
@@ -48,20 +45,6 @@ public class WebTreeTable<E extends Entity> extends WebAbstractTable<CubaTreeTab
     @Override
     public void setRowHeaderMode(RowHeaderMode rowHeaderMode) {
         // Row Header mode for TreeTable ignored
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public void setDatasource(CollectionDatasource datasource) {
-        if (datasource == null) {
-            setItems(null);
-        } else {
-            if (!(datasource instanceof HierarchicalDatasource)) {
-                throw new IllegalArgumentException("TreeTable supports only HierarchicalDatasource");
-            }
-
-            setItems(new DatasourceTreeTableItems((HierarchicalDatasource) datasource));
-        }
     }
 
     @Override
@@ -98,11 +81,6 @@ public class WebTreeTable<E extends Entity> extends WebAbstractTable<CubaTreeTab
         }
 
         @Override
-        public Type getContainerPropertyAggregation(Object propertyId) {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
         public void addContainerPropertyAggregation(Object propertyId, Type type) {
             if (aggregationProperties == null) {
                 aggregationProperties = new ArrayList<>();
@@ -128,7 +106,6 @@ public class WebTreeTable<E extends Entity> extends WebAbstractTable<CubaTreeTab
         }
     }
 
-    @SuppressWarnings("unchecked")
     protected TreeTableItems<E> getTreeTableSource() {
         return ((TreeTableItems) getItems());
     }

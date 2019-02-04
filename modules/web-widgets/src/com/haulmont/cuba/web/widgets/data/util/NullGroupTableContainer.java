@@ -119,11 +119,6 @@ public class NullGroupTableContainer extends ContainerOrderedWrapper
     }
 
     @Override
-    public Type getContainerPropertyAggregation(Object propertyId) {
-        throw new IllegalStateException(ERROR_MESSAGE);
-    }
-
-    @Override
     public void addContainerPropertyAggregation(Object propertyId, Type type) {
         throw new IllegalStateException(ERROR_MESSAGE);
     }

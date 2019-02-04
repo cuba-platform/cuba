@@ -19,6 +19,7 @@ package com.haulmont.cuba.web.gui.components.table;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.SoftDelete;
+import com.haulmont.cuba.core.global.BeanLocator;
 import com.haulmont.cuba.core.global.DataManager;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.View;
@@ -35,7 +36,6 @@ import com.haulmont.cuba.gui.screen.FrameOwner;
 import com.haulmont.cuba.gui.screen.compatibility.LegacyFrame;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.MethodUtils;
-import org.springframework.context.ApplicationContext;
 
 import java.lang.reflect.Method;
 
@@ -44,15 +44,15 @@ import static com.haulmont.cuba.gui.WindowManager.OpenType;
 public class LinkCellClickListener implements Table.CellClickListener {
 
     protected Table table;
-    protected ApplicationContext applicationContext;
+    protected BeanLocator beanLocator;
 
-    public LinkCellClickListener(Table table, ApplicationContext applicationContext) {
+    public LinkCellClickListener(Table table, BeanLocator beanLocator) {
         this.table = table;
-        this.applicationContext = applicationContext;
+        this.beanLocator = beanLocator;
     }
 
     @Override
-    public void onClick(final Entity rowItem, final String columnId) {
+    public void onClick(Entity rowItem, String columnId) {
         Table.Column column = table.getColumn(columnId);
         if (column.getXmlDescriptor() != null) {
             String invokeMethodName = column.getXmlDescriptor().attributeValue("linkInvoke");
@@ -80,7 +80,7 @@ public class LinkCellClickListener implements Table.CellClickListener {
             wm = window.getWindowManager();
         }
 
-        Messages messages = applicationContext.getBean(Messages.NAME, Messages.class);
+        Messages messages = beanLocator.get(Messages.NAME, Messages.class);
 
         if (entity instanceof SoftDelete && ((SoftDelete) entity).isDeleted()) {
             wm.showNotification(messages.getMainMessage("OpenAction.objectIsDeleted"),
@@ -94,11 +94,11 @@ public class LinkCellClickListener implements Table.CellClickListener {
             DataSupplier dataSupplier = frameOwner.getDsContext().getDataSupplier();
             entity = dataSupplier.reload(entity, View.MINIMAL);
         } else {
-            DataManager dataManager = applicationContext.getBean(DataManager.NAME, DataManager.class);
+            DataManager dataManager = beanLocator.get(DataManager.NAME, DataManager.class);
             entity = dataManager.reload(entity, View.MINIMAL);
         }
 
-        WindowConfig windowConfig = applicationContext.getBean(WindowConfig.NAME, WindowConfig.class);
+        WindowConfig windowConfig = beanLocator.get(WindowConfig.NAME, WindowConfig.class);
 
         String windowAlias = null;
         if (column.getXmlDescriptor() != null) {
@@ -155,7 +155,6 @@ public class LinkCellClickListener implements Table.CellClickListener {
             }
             ds.setModified(ownerDsModified);
         } else {
-            //noinspection unchecked
             table.getDatasource().updateItem(editorItem);
         }
     }

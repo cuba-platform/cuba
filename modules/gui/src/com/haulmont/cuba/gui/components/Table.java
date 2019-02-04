@@ -28,6 +28,7 @@ import com.haulmont.cuba.gui.components.compatibility.TableCellClickListenerWrap
 import com.haulmont.cuba.gui.components.compatibility.TableColumnCollapseListenerWrapper;
 import com.haulmont.cuba.gui.components.data.TableItems;
 import com.haulmont.cuba.gui.components.data.table.DatasourceTableItems;
+import com.haulmont.cuba.gui.components.data.table.SortableDatasourceTableItems;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.model.InstanceContainer;
@@ -63,7 +64,7 @@ public interface Table<E extends Entity>
 
     String NAME = "table";
 
-    static <T extends Entity> TypeToken<Table<T>> of(Class<T> itemClass) {
+    static <T extends Entity> TypeToken<Table<T>> of(@SuppressWarnings("unused") Class<T> itemClass) {
         return new TypeToken<Table<T>>() {};
     }
 
@@ -81,10 +82,29 @@ public interface Table<E extends Entity>
     @Override
     TableItems<E> getItems();
 
-    // todo convert to default method
+    /**
+     * @param datasource datasource
+     * @deprecated Use {@link #setItems(TableItems)} instead
+     */
     @Deprecated
-    void setDatasource(CollectionDatasource datasource);
+    default void setDatasource(CollectionDatasource datasource) {
+        if (datasource == null) {
+            setItems(null);
+        } else {
+            TableItems<E> tableItems;
+            if (datasource instanceof CollectionDatasource.Sortable) {
+                tableItems = new SortableDatasourceTableItems((CollectionDatasource.Sortable) datasource);
+            } else {
+                tableItems = new DatasourceTableItems(datasource);
+            }
+            setItems(tableItems);
+        }
+    }
 
+    /**
+     * @return datasource
+     * @deprecated Use {@link #getItems()} instead
+     */
     @Deprecated
     @Override
     default CollectionDatasource getDatasource() {
@@ -818,7 +838,7 @@ public interface Table<E extends Entity>
         protected ColumnAlignment alignment;
         protected boolean captionAsHtml;
 
-        protected Function<T, Object> valueProvider; // todo
+        protected Function<T, Object> valueProvider;
 
         protected Class type;
         protected Element element;
@@ -855,7 +875,7 @@ public interface Table<E extends Entity>
             this.caption = caption;
         }
 
-        // todo convert to Table instance method
+        // todo provide Table instance method as replacement
         @Deprecated
         public Column(Class<T> entityClass, String propertyPath) {
             MetaClass metaClass = AppBeans.get(Metadata.class).getClassNN(entityClass);
@@ -901,10 +921,19 @@ public interface Table<E extends Entity>
             }
         }
 
+        /**
+         * @return value provider function
+         */
         public Function<T, Object> getValueProvider() {
             return valueProvider;
         }
 
+        /**
+         * Sets value provider for the column. Value provider can be called 0 or more times depending on visibility
+         * of a cell and value type. Return type must be the same as {@link #getType()} of the column.
+         *
+         * @param valueProvider a callback interface for providing column values from a given source
+         */
         public void setValueProvider(Function<T, Object> valueProvider) {
             this.valueProvider = valueProvider;
         }

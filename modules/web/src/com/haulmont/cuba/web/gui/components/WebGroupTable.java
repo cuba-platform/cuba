@@ -28,9 +28,6 @@ import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.components.data.GroupTableItems;
 import com.haulmont.cuba.gui.components.data.TableItems;
 import com.haulmont.cuba.gui.components.data.meta.EntityTableItems;
-import com.haulmont.cuba.gui.components.data.table.DatasourceGroupTableItems;
-import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.gui.data.GroupDatasource;
 import com.haulmont.cuba.gui.data.GroupInfo;
 import com.haulmont.cuba.web.gui.components.table.GroupTableDataContainer;
 import com.haulmont.cuba.web.gui.components.table.TableDataContainer;
@@ -78,20 +75,6 @@ public class WebGroupTable<E extends Entity> extends WebAbstractTable<CubaGroupT
         super.setItems(tableItems);
     }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public void setDatasource(CollectionDatasource datasource) {
-        if (datasource == null) {
-            setItems(null);
-        } else {
-            if (!(datasource instanceof GroupDatasource)) {
-                throw new IllegalArgumentException("GroupTable supports only GroupDatasource");
-            }
-
-            setItems(new DatasourceGroupTableItems((GroupDatasource) datasource));
-        }
-    }
-
     @Override
     protected TableDataContainer<E> createTableDataContainer(TableItems<E> tableItems) {
         return new AggregatableGroupTableDataContainer<>((GroupTableItems<E>) tableItems, this);
@@ -126,14 +109,14 @@ public class WebGroupTable<E extends Entity> extends WebAbstractTable<CubaGroupT
         }
 
         protected void fillGroupAggregationCells(Map<Table.Column, GroupAggregationCells> cells) {
-            final Collection roots = rootGroups();
+            Collection roots = rootGroups();
             for (final Object rootGroup : roots) {
                 __fillGroupAggregationCells(rootGroup, cells);
             }
         }
 
         protected void __fillGroupAggregationCells(Object groupId, Map<Table.Column, GroupAggregationCells> cells) {
-            final Set<Table.Column> aggregatableColumns = aggregationCells.keySet();
+            Set<Table.Column> aggregatableColumns = aggregationCells.keySet();
 
             for (final Column column : aggregatableColumns) {
                 if (!columns.get(getGroupProperty(groupId)).equals(column)) {
@@ -147,8 +130,8 @@ public class WebGroupTable<E extends Entity> extends WebAbstractTable<CubaGroupT
             }
 
             if (hasChildren(groupId)) {
-                final Collection children = getChildren(groupId);
-                for (final Object child : children) {
+                Collection children = getChildren(groupId);
+                for (Object child : children) {
                     __fillGroupAggregationCells(child, cells);
                 }
             }
@@ -160,11 +143,6 @@ public class WebGroupTable<E extends Entity> extends WebAbstractTable<CubaGroupT
                 return Collections.unmodifiableList(aggregationProperties);
             }
             return Collections.emptyList();
-        }
-
-        @Override
-        public Type getContainerPropertyAggregation(Object propertyId) {
-            throw new UnsupportedOperationException();
         }
 
         @Override
@@ -193,7 +171,6 @@ public class WebGroupTable<E extends Entity> extends WebAbstractTable<CubaGroupT
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     protected void initComponent(CubaGroupTable component) {
         super.initComponent(component);
@@ -265,8 +242,7 @@ public class WebGroupTable<E extends Entity> extends WebAbstractTable<CubaGroupT
             return true;
         }
 
-        @SuppressWarnings("unchecked")
-        List groupProperties = new ArrayList(component.getGroupProperties());
+        List<Object> groupProperties = new ArrayList<>(component.getGroupProperties());
 
         for (int i = 0; i < groupProperties.size(); i++) {
             String columnId = groupProperties.get(i).toString();
@@ -475,7 +451,6 @@ public class WebGroupTable<E extends Entity> extends WebAbstractTable<CubaGroupT
         component.expand(groupId);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public void expandPath(Entity item) {
         if (component.hasGroups()) {
@@ -483,7 +458,6 @@ public class WebGroupTable<E extends Entity> extends WebAbstractTable<CubaGroupT
         }
     }
 
-    @SuppressWarnings("unchecked")
     protected void expandGroupsFor(Collection<GroupInfo> groupSlice, Object itemId) {
         for (GroupInfo g: groupSlice) {
             if (component.getGroupItemIds(g).contains(itemId)) {
@@ -658,7 +632,6 @@ public class WebGroupTable<E extends Entity> extends WebAbstractTable<CubaGroupT
                     })
                     .collect(Collectors.toList());
 
-            @SuppressWarnings("unchecked")
             GroupCellContext<E> context = new GroupCellContext<>(groupId, value, formattedValue, (List<E>) groupItems);
             return groupCellValueFormatter.format(context);
         }
@@ -678,24 +651,27 @@ public class WebGroupTable<E extends Entity> extends WebAbstractTable<CubaGroupT
 
         MetaPropertyPath propertyPath = groupId.getProperty();
         Table.Column<E> column = columns.get(propertyPath);
-        if (column != null && column.getXmlDescriptor() != null) {
-            String captionProperty = column.getXmlDescriptor().attributeValue("captionProperty"); // vaadin8 move to Column
+        if (column != null) {
             if (column.getFormatter() != null) {
                 return column.getFormatter().apply(value);
-            } else if (StringUtils.isNotEmpty(captionProperty)) {
-                Collection<?> children = component.getGroupItemIds(groupId);
-                if (children.isEmpty()) {
-                    return null;
+            } else if (column.getXmlDescriptor() != null) {
+                String captionProperty = column.getXmlDescriptor().attributeValue("captionProperty"); // vaadin8 move to Column
+                if (StringUtils.isNotEmpty(captionProperty)) {
+                    Collection<?> children = component.getGroupItemIds(groupId);
+                    if (children.isEmpty()) {
+                        return null;
+                    }
+
+                    Object itemId = children.iterator().next();
+
+                    TableDataContainer container = (TableDataContainer) component.getContainerDataSource();
+
+                    Instance item = (Instance) container.getInternalItem(itemId);
+                    Object captionValue = item.getValueEx(captionProperty);
+
+                    // vaadin8 use metadataTools format with metaproperty
+                    return metadataTools.format(captionValue);
                 }
-
-                Object itemId = children.iterator().next();
-
-                TableDataContainer container = (TableDataContainer) component.getContainerDataSource();
-
-                Instance item = (Instance) container.getInternalItem(itemId);
-                Object captionValue = item.getValueEx(captionProperty);
-                // vaadin8 use metadataTools format with metaproperty
-                return metadataTools.format(captionValue);
             }
         }
 
@@ -744,7 +720,6 @@ public class WebGroupTable<E extends Entity> extends WebAbstractTable<CubaGroupT
                         expand(itemId, true);
                     }
 
-                    @SuppressWarnings("unchecked")
                     List<GroupInfo> children = (List<GroupInfo>) getChildren(itemId);
                     for (GroupInfo groupInfo : children) {
                         if (!isExpanded(groupInfo)) {

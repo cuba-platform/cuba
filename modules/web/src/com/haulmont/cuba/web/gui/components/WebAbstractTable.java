@@ -21,7 +21,6 @@ import com.haulmont.bali.events.Subscription;
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.DatatypeRegistry;
-import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.datatypes.ValueConversionException;
 import com.haulmont.chile.core.model.*;
 import com.haulmont.cuba.client.ClientConfig;
@@ -32,7 +31,6 @@ import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.LocaleHelper;
 import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.Notifications;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.LookupComponent.LookupSelectionChangeNotifier;
@@ -44,7 +42,6 @@ import com.haulmont.cuba.gui.components.data.meta.ContainerDataUnit;
 import com.haulmont.cuba.gui.components.data.meta.DatasourceDataUnit;
 import com.haulmont.cuba.gui.components.data.meta.EntityTableItems;
 import com.haulmont.cuba.gui.components.data.table.DatasourceTableItems;
-import com.haulmont.cuba.gui.components.data.table.SortableDatasourceTableItems;
 import com.haulmont.cuba.gui.components.sys.ShowInfoAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -57,7 +54,10 @@ import com.haulmont.cuba.gui.model.DataComponents;
 import com.haulmont.cuba.gui.model.InstanceContainer;
 import com.haulmont.cuba.gui.presentations.Presentations;
 import com.haulmont.cuba.gui.presentations.PresentationsImpl;
-import com.haulmont.cuba.gui.screen.*;
+import com.haulmont.cuba.gui.screen.FrameOwner;
+import com.haulmont.cuba.gui.screen.InstallTargetHandler;
+import com.haulmont.cuba.gui.screen.ScreenContext;
+import com.haulmont.cuba.gui.screen.UiControllerUtils;
 import com.haulmont.cuba.gui.sys.UiTestIds;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
@@ -94,7 +94,6 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.context.ApplicationContext;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -116,18 +115,23 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
 
     public static final int MAX_TEXT_LENGTH_GAP = 10;
 
+    public static final String BOOLEAN_CELL_STYLE_TRUE = "boolean-cell boolean-cell-true";
+    public static final String BOOLEAN_CELL_STYLE_FALSE = "boolean-cell boolean-cell-false";
+
     protected static final com.vaadin.v7.ui.Table.ColumnGenerator VOID_COLUMN_GENERATOR =
             (source, itemId, columnId) -> null;
 
     protected static final String HAS_TOP_PANEL_STYLENAME = "has-top-panel";
     protected static final String CUSTOM_STYLE_NAME_PREFIX = "cs ";
 
+    protected static final String EDIT_ACTION_ID = "edit";
+    protected static final String VIEW_ACTION_ID = "view";
+
     // Vaadin considers null as row header property id
     protected static final Object ROW_HEADER_PROPERTY_ID = null;
 
     // Beans
 
-    protected ApplicationContext applicationContext;
     protected Configuration configuration;
     protected IconResolver iconResolver;
     protected MetadataTools metadataTools;
@@ -187,17 +191,15 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
 
     protected boolean ignoreUnfetchedAttributes;
 
+    protected com.vaadin.v7.ui.Table.ColumnGenerator VALUE_PROVIDER_GENERATOR =
+            (source, itemId, columnId) -> formatCellValue(itemId, columnId, null);
+
     protected WebAbstractTable() {
     }
 
     @Override
     public void afterPropertiesSet() {
         initComponent(component);
-    }
-
-    @Inject
-    public void setApplicationContext(ApplicationContext applicationContext) {
-        this.applicationContext = applicationContext;
     }
 
     @Inject
@@ -271,8 +273,6 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
         return Collections.emptyList();
     }
 
-    @SuppressWarnings("unchecked")
-    @Nullable
     protected Set<Object> getSelectedItemIds() {
         Object value = component.getValue();
         if (value == null) {
@@ -299,7 +299,6 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
                 null : tableItems.getItem(selected.iterator().next());
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public Set<E> getSelected() {
         TableItems<E> tableItems = getItems();
@@ -337,7 +336,6 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public void setSelected(Collection<E> items) {
         TableItems<E> tableItems = getItems();
@@ -521,7 +519,6 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
         column.setOwner(null);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public Datasource getItemDatasource(Entity item) {
         if (fieldDatasources == null) {
@@ -557,7 +554,6 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
 
         Object fieldDatasource = fieldDatasources.get(item);
         if (fieldDatasource instanceof InstanceContainer) {
-            //noinspection unchecked
             return (InstanceContainer<E>) fieldDatasource;
         }
 
@@ -648,7 +644,6 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
             if (entityTableSource != null) {
                 com.vaadin.v7.data.Container ds = component.getContainerDataSource();
 
-                @SuppressWarnings("unchecked")
                 Collection<MetaPropertyPath> propertyIds = (Collection<MetaPropertyPath>) ds.getContainerPropertyIds();
 
                 if (editable) {
@@ -707,11 +702,11 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
                 if (component.getColumnGenerator(column.getId()) == null) {
                     if (propertyId.getRange().isClass()) {
                         if (StringUtils.isNotEmpty(isLink)) {
-                            setClickListener(propertyId.toString(), new LinkCellClickListener(this, applicationContext));
+                            setClickListener(propertyId.toString(), new LinkCellClickListener(this, beanLocator));
                         }
                     } else if (propertyId.getRange().isDatatype()) {
                         if (StringUtils.isNotEmpty(isLink)) {
-                            setClickListener(propertyId.toString(), new LinkCellClickListener(this, applicationContext));
+                            setClickListener(propertyId.toString(), new LinkCellClickListener(this, beanLocator));
                         } else {
                             if (column.getMaxTextLength() != null) {
                                 addGeneratedColumnInternal(propertyId, new AbbreviatedColumnGenerator(column, dynamicAttributesTools));
@@ -941,7 +936,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
 
         int defaultRowHeaderWidth = 16;
         ThemeConstantsManager themeConstantsManager =
-                applicationContext.getBean(ThemeConstantsManager.NAME, ThemeConstantsManager.class);
+                beanLocator.get(ThemeConstantsManager.NAME, ThemeConstantsManager.class);
         ThemeConstants theme = themeConstantsManager.getConstants();
         if (theme != null) {
             defaultRowHeaderWidth = theme.getInt("cuba.web.Table.defaultRowHeaderWidth", 16);
@@ -1063,12 +1058,24 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
         publish(SelectionEvent.class, event);
     }
 
-    @SuppressWarnings("unchecked")
-    protected String formatCellValue(@SuppressWarnings("unused") Object rowId, Object colId, Property<?> property) {
+    protected String formatCellValue(Object rowId, Object colId, @Nullable Property<?> property) {
         TableItems<E> tableItems = getItems();
         if (tableItems == null
                 || tableItems.getState() == BindingState.INACTIVE) {
             return null;
+        }
+
+        Column<E> column = columns.get(colId);
+        if (column != null && column.getValueProvider() != null) {
+            E item = tableItems.getItem(rowId);
+            Object generatedValue = column.getValueProvider().apply(item);
+            Function<Object, String> formatter = column.getFormatter();
+
+            if (formatter != null) {
+                return column.getFormatter().apply(generatedValue);
+            }
+
+            return metadataTools.format(generatedValue);
         }
 
         Object cellValue;
@@ -1076,14 +1083,15 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
                 && colId instanceof MetaPropertyPath) {
             E item = tableItems.getItem(rowId);
             cellValue = getValueExIgnoreUnfetched(item, ((MetaPropertyPath) colId).getPath());
-        } else {
+        } else if (property != null) {
             cellValue = property.getValue();
+        } else {
+            cellValue = null;
         }
 
         if (colId instanceof MetaPropertyPath) {
             MetaPropertyPath propertyPath = (MetaPropertyPath) colId;
 
-            Table.Column<E> column = this.columns.get(propertyPath);
             if (column != null) {
                 if (column.getFormatter() != null) {
                     return column.getFormatter().apply(cellValue);
@@ -1101,8 +1109,15 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
             return metadataTools.format(cellValue, propertyPath.getMetaProperty());
         }
 
-        // fallback to Vaadin formatting
+        if (cellValue == null) {
+            return "";
+        }
 
+        if (!(cellValue instanceof Component)) {
+            return metadataTools.format(cellValue);
+        }
+
+        // fallback to Vaadin formatting
         UI ui = component.getUI();
         VaadinSession session = ui != null ? ui.getSession() : null;
         Converter converter = ConverterUtil.getConverter(String.class, property.getType(), session);
@@ -1110,7 +1125,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
             return (String) converter.convertToPresentation(cellValue, String.class, locale);
         }
 
-        return (null != cellValue) ? cellValue.toString() : "";
+        return cellValue.toString();
     }
 
     protected WebTableFieldFactory createFieldFactory() {
@@ -1139,8 +1154,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
         return new StyleGeneratorAdapter();
     }
 
-    @SuppressWarnings("unchecked")
-    protected String getGeneratedCellStyle(Object itemId, Object propertyId) { // vaadin8 return StringBuilder
+    protected String getGeneratedCellStyle(Object itemId, Object propertyId) {
         if (styleProviders == null) {
             return null;
         }
@@ -1176,9 +1190,9 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
         if (action == null) {
             action = getEnterAction();
             if (action == null) {
-                action = getAction("edit");
+                action = getAction(EDIT_ACTION_ID);
                 if (action == null) {
-                    action = getAction("view");
+                    action = getAction(VIEW_ACTION_ID);
                 }
             }
         }
@@ -1210,7 +1224,6 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
         if (isEditable()) {
             EntityTableItems<E> entityTableSource = (EntityTableItems<E>) getItems();
             com.vaadin.v7.data.Container ds = component.getContainerDataSource();
-            @SuppressWarnings("unchecked")
             Collection<MetaPropertyPath> propertyIds = (Collection<MetaPropertyPath>) ds.getContainerPropertyIds();
 
             disableEditableColumns(entityTableSource, propertyIds);
@@ -1235,18 +1248,16 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
     protected Action getEnterAction() {
         for (Action action : getActions()) {
             KeyCombination kc = action.getShortcutCombination();
-            if (kc != null) {
-                if ((kc.getModifiers() == null || kc.getModifiers().length == 0)
-                        && kc.getKey() == KeyCombination.Key.ENTER) {
-                    return action;
-                }
+            if (kc != null
+                    && (kc.getModifiers() == null || kc.getModifiers().length == 0)
+                    && kc.getKey() == KeyCombination.Key.ENTER) {
+                return action;
             }
         }
         return null;
     }
 
     protected void createColumns(com.vaadin.v7.data.Container ds) {
-        @SuppressWarnings("unchecked")
         Collection<MetaPropertyPath> properties = (Collection<MetaPropertyPath>) ds.getContainerPropertyIds();
 
         for (MetaPropertyPath propertyPath : properties) {
@@ -1258,19 +1269,17 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
 
                 if (propertyPath.getRange().isClass()) {
                     if (StringUtils.isNotEmpty(isLink)) {
-                        setClickListener(propertyPath.toString(), new LinkCellClickListener(this, applicationContext));
+                        setClickListener(propertyPath.toString(), new LinkCellClickListener(this, beanLocator));
                     }
                 } else if (propertyPath.getRange().isDatatype()) {
                     if (StringUtils.isNotEmpty(isLink)) {
-                        setClickListener(propertyPath.toString(), new LinkCellClickListener(this, applicationContext));
+                        setClickListener(propertyPath.toString(), new LinkCellClickListener(this, beanLocator));
                     } else {
                         if (column.getMaxTextLength() != null) {
                             addGeneratedColumnInternal(propertyPath, new AbbreviatedColumnGenerator(column, dynamicAttributesTools));
                             setClickListener(propertyPath.toString(), new AbbreviatedCellClickListener(this, dynamicAttributesTools));
                         }
                     }
-                } else if (!propertyPath.getRange().isEnum()) {
-                    throw new UnsupportedOperationException();
                 }
             }
         }
@@ -1537,11 +1546,6 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
         }
 
         @Override
-        public Type getContainerPropertyAggregation(Object propertyId) {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
         public void addContainerPropertyAggregation(Object propertyId, Type type) {
             if (aggregationProperties == null) {
                 aggregationProperties = new ArrayList<>();
@@ -1572,7 +1576,6 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
 
         protected Collection<Object> aggregationProperties = null;
 
-
         public AggregatableSortableDataContainer(TableItems.Sortable<I> tableDataSource,
                                                  TableItemsEventsDelegate<I> dataEventsDelegate) {
             super(tableDataSource, dataEventsDelegate);
@@ -1584,11 +1587,6 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
                 return Collections.unmodifiableCollection(aggregationProperties);
             }
             return Collections.emptyList();
-        }
-
-        @Override
-        public AggregationContainer.Type getContainerPropertyAggregation(Object propertyId) {
-            throw new UnsupportedOperationException();
         }
 
         @Override
@@ -1614,22 +1612,6 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
         @Override
         public Map<Object, Object> aggregate(AggregationContainer.Context context) {
             return __aggregate(this, context);
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public void setDatasource(CollectionDatasource datasource) {
-        if (datasource == null) {
-            setItems(null);
-        } else {
-            TableItems<E> tableItems;
-            if (datasource instanceof CollectionDatasource.Sortable) {
-                tableItems = new SortableDatasourceTableItems((CollectionDatasource.Sortable) datasource);
-            } else {
-                tableItems = new DatasourceTableItems(datasource);
-            }
-            setItems(tableItems);
         }
     }
 
@@ -1699,7 +1681,12 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
         for (Column column : columnsOrder) {
             if (!(column.getId() instanceof MetaPropertyPath)
                     && component.getColumnGenerator(column.getId()) == null) {
-                component.addGeneratedColumn(column.getId(), VOID_COLUMN_GENERATOR);
+
+                if (column.getValueProvider() == null && column.getType() == null) {
+                    component.addGeneratedColumn(column.getId(), VOID_COLUMN_GENERATOR);
+                } else {
+                    component.addGeneratedColumn(column.getId(), VALUE_PROVIDER_GENERATOR);
+                }
             }
         }
     }
@@ -1949,7 +1936,6 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
             //apply sorting
             String sortProp = columnsElem.attributeValue("sortProperty");
             if (!StringUtils.isEmpty(sortProp)) {
-                @SuppressWarnings("unchecked")
                 EntityTableItems<E> entityTableSource = (EntityTableItems) getItems();
 
                 MetaPropertyPath sortProperty = entityTableSource.getEntityMetaClass().getPropertyPath(sortProp);
@@ -2244,7 +2230,6 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
         component.addGeneratedColumn(
                 generatedColumnId,
                 new CustomColumnGenerator(generator, associatedRuntimeColumn) {
-                    @SuppressWarnings("unchecked")
                     @Override
                     public Object generateCell(com.vaadin.v7.ui.Table source, Object itemId, Object columnId) {
                         EntityTableItems<E> entityTableSource = (EntityTableItems<E>) getItems();
@@ -2277,7 +2262,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
                         // wrap field for show required asterisk
                         if ((vComponent instanceof com.vaadin.v7.ui.Field)
                                 && (((com.vaadin.v7.ui.Field) vComponent).isRequired())) {
-                            VerticalLayout layout = new VerticalLayout(); // vaadin8 replace with CssLayout
+                            VerticalLayout layout = new VerticalLayout();
                             layout.setMargin(false);
                             layout.setSpacing(false);
                             layout.addComponent(vComponent);
@@ -2815,7 +2800,6 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
         component.removeClickListener(getColumn(columnId).getId());
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public Subscription addSelectionListener(Consumer<SelectionEvent<E>> listener) {
         return getEventHub().subscribe(SelectionEvent.class, (Consumer) listener);
@@ -2876,7 +2860,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
         if (propertyId != null && itemId != null
                 && !component.isColumnEditable(propertyId)
                 && (component.getColumnGenerator(propertyId) == null
-                || component.getColumnGenerator(propertyId) instanceof AbbreviatedColumnGenerator)) {
+                    || isValueGeneratedColumn(propertyId))) {
 
             MetaPropertyPath propertyPath;
             if (propertyId instanceof MetaPropertyPath) {
@@ -2888,9 +2872,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
                         entityTableSource.getEntityMetaClass().getPropertyPath(propertyId.toString()) : null;
             }
 
-            if (propertyPath != null) {
-                style = generateDefaultCellStyle(itemId, propertyId, propertyPath);
-            }
+            style = generateDefaultCellStyle(itemId, propertyId, propertyPath);
         }
 
         if (styleProviders != null) {
@@ -2909,70 +2891,102 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
         return style == null ? null : (CUSTOM_STYLE_NAME_PREFIX + style);
     }
 
-    protected String generateDefaultCellStyle(Object itemId, Object propertyId, MetaPropertyPath propertyPath) {
+    protected boolean isValueGeneratedColumn(Object propertyId) {
+        return component.getColumnGenerator(propertyId) instanceof AbbreviatedColumnGenerator
+                    || component.getColumnGenerator(propertyId) == VALUE_PROVIDER_GENERATOR;
+    }
+
+    protected String generateDefaultCellStyle(Object itemId, Object propertyId,
+                                              @Nullable MetaPropertyPath propertyPath) {
         String style = null;
 
         String stringPropertyId = propertyId.toString();
 
         Column column = getColumn(stringPropertyId);
-        if (column != null) {
-            String isLink = column.getXmlDescriptor() == null ?
-                    null : column.getXmlDescriptor().attributeValue("link");
+        if (column != null)
+            if (column.getValueProvider() != null) {
+                // column ValueProvider supports Boolean type
+                if (dataBinding != null
+                        && column.getType() == Boolean.class
+                        && column.getFormatter() == null) {
 
-            if (propertyPath.getRange().isClass()) {
-                if (StringUtils.isNotEmpty(isLink) && Boolean.valueOf(isLink)) {
-                    style = "c-table-cell-link";
-                }
-            } else if (propertyPath.getRange().isDatatype()) {
-                if (StringUtils.isNotEmpty(isLink) && Boolean.valueOf(isLink)) {
-                    style = "c-table-cell-link";
-                } else if (column.getMaxTextLength() != null) {
-                    EntityTableItems<E> entityTableSource = (EntityTableItems<E>) getItems();
-
-                    if (entityTableSource == null) {
-                        throw new IllegalStateException("TableItems is not set");
-                    }
-
-                    E item = entityTableSource.getItemNN(itemId);
-
-                    Object value = item.getValueEx(propertyPath);
-                    String stringValue;
-                    if (value instanceof String) {
-                        stringValue = item.getValueEx(propertyPath);
-                    } else {
-                        if (DynamicAttributesUtils.isDynamicAttribute(propertyPath.getMetaProperty())) {
-                            stringValue = dynamicAttributesTools.getDynamicAttributeValueAsString(propertyPath.getMetaProperty(), value);
+                    Entity item = dataBinding.getTableItems().getItem(itemId);
+                    if (item != null) {
+                        Boolean value = (Boolean) column.getValueProvider().apply(item);
+                        if (BooleanUtils.isTrue(value)) {
+                            style = BOOLEAN_CELL_STYLE_TRUE;
                         } else {
-                            stringValue = value == null ? null : value.toString();
+                            style = BOOLEAN_CELL_STYLE_FALSE;
                         }
                     }
-                    if (column.getMaxTextLength() != null) {
-                        boolean isMultiLineCell = StringUtils.contains(stringValue, "\n");
-                        if ((stringValue != null && stringValue.length() > column.getMaxTextLength() + MAX_TEXT_LENGTH_GAP)
-                                || isMultiLineCell) {
-                            style = "c-table-cell-textcut";
+                }
+            } else if (propertyPath != null) {
+                String isLink = column.getXmlDescriptor() == null ?
+                        null : column.getXmlDescriptor().attributeValue("link");
+
+                if (propertyPath.getRange().isClass()) {
+                    if (StringUtils.isNotEmpty(isLink) && Boolean.valueOf(isLink)) {
+                        style = "c-table-cell-link";
+                    }
+                } else if (propertyPath.getRange().isDatatype()) {
+                    if (StringUtils.isNotEmpty(isLink) && Boolean.valueOf(isLink)) {
+                        style = "c-table-cell-link";
+                    } else if (column.getMaxTextLength() != null) {
+                        style = generateClickableCellStyles(itemId, column, propertyPath);
+                    }
+                }
+
+                if (propertyPath.getRangeJavaClass() == Boolean.class
+                        && column.getFormatter() == null
+                        && dataBinding != null) {
+                    Entity item = dataBinding.getTableItems().getItem(itemId);
+                    if (item != null) {
+                        Boolean value = item.getValueEx(propertyPath);
+                        if (BooleanUtils.isTrue(value)) {
+                            style = BOOLEAN_CELL_STYLE_TRUE;
                         } else {
-                            // use special marker stylename
-                            style = "c-table-clickable-text";
+                            style = BOOLEAN_CELL_STYLE_FALSE;
                         }
                     }
                 }
             }
-        }
 
-        if (propertyPath.getRangeJavaClass() == Boolean.class
-                && dataBinding != null) {
-            Entity item = dataBinding.getTableItems().getItem(itemId);
-            if (item != null) {
-                Boolean value = item.getValueEx(propertyPath);
-                if (BooleanUtils.isTrue(value)) {
-                    style = "boolean-cell boolean-cell-true";
-                } else {
-                    style = "boolean-cell boolean-cell-false";
-                }
-            }
-        }
         return style;
+    }
+
+    protected String generateClickableCellStyles(Object itemId, Column column, MetaPropertyPath propertyPath) {
+        EntityTableItems<E> entityTableSource = (EntityTableItems<E>) getItems();
+        if (entityTableSource == null) {
+            throw new IllegalStateException("TableItems is not set");
+        }
+
+        E item = entityTableSource.getItemNN(itemId);
+
+        Object value = item.getValueEx(propertyPath);
+        String stringValue;
+        if (value instanceof String) {
+            stringValue = item.getValueEx(propertyPath);
+        } else {
+            MetaProperty metaProperty = propertyPath.getMetaProperty();
+
+            if (DynamicAttributesUtils.isDynamicAttribute(metaProperty)) {
+                stringValue = dynamicAttributesTools.getDynamicAttributeValueAsString(metaProperty, value);
+            } else {
+                stringValue = value == null ? null : value.toString();
+            }
+        }
+
+        if (column.getMaxTextLength() != null) {
+            boolean isMultiLineCell = StringUtils.contains(stringValue, "\n");
+            if ((stringValue != null && stringValue.length() > column.getMaxTextLength() + MAX_TEXT_LENGTH_GAP)
+                    || isMultiLineCell) {
+                return "c-table-cell-textcut";
+            } else {
+                // use special marker stylename
+                return "c-table-clickable-text";
+            }
+        }
+        return null;
     }
 
     @Override
@@ -2982,7 +2996,6 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
         component.setAggregationDistributionProvider(this::distributeAggregation);
     }
 
-    @SuppressWarnings("unchecked")
     protected boolean distributeAggregation(AggregationInputValueChangeContext context) {
         if (distributionProvider != null) {
             String value = context.getValue();
@@ -3039,7 +3052,6 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
         columns.get(propertyId).setCollapsed(columnCollapsed);
     }
 
-    @SuppressWarnings("unchecked")
     protected void beforeComponentPaint() {
         com.vaadin.v7.ui.Table.CellStyleGenerator generator = component.getCellStyleGenerator();
         if (generator instanceof WebAbstractTable.StyleGeneratorAdapter) {
@@ -3095,13 +3107,11 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
         return currentValue;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public Subscription addLookupValueChangeListener(Consumer<LookupSelectionChangeEvent<E>> listener) {
         return getEventHub().subscribe(LookupSelectionChangeEvent.class, (Consumer) listener);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public void removeLookupValueChangeListener(Consumer<LookupSelectionChangeEvent<E>> listener) {
         unsubscribe(LookupSelectionChangeEvent.class, (Consumer) listener);
@@ -3177,7 +3187,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
 
                 UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.NAME);
                 Locale locale = userSessionSource.getLocale();
-                parsedValue = Datatypes.getNN(resultClass).parse(value, locale);
+                parsedValue = datatypeRegistry.getNN(resultClass).parse(value, locale);
 
                 break;
             }
