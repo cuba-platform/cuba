@@ -2125,6 +2125,8 @@
 
         <xs:attribute name="generator" type="xs:string"/>
 
+        <xs:attribute name="type" type="datatypeEnum"/>
+
         <xs:attribute name="collapsed" type="xs:boolean"/>
         <xs:attribute name="groupAllowed" type="xs:boolean"/>
         <xs:attribute name="sortable" type="xs:boolean"/>

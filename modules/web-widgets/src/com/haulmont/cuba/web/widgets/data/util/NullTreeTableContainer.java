@@ -333,11 +333,6 @@ public class NullTreeTableContainer extends ContainerHierarchicalWrapper
     }
 
     @Override
-    public Type getContainerPropertyAggregation(Object propertyId) {
-        throw new IllegalStateException("Wrapped container is not AggregationContainer: " + _container().getClass());
-    }
-
-    @Override
     public void addContainerPropertyAggregation(Object propertyId, Type type) {
         throw new IllegalStateException("Wrapped container is not AggregationContainer: " + _container().getClass());
     }

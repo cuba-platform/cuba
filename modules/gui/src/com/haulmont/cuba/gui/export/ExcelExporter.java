@@ -32,7 +32,10 @@ import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.data.*;
+import com.haulmont.cuba.gui.components.data.GroupTableItems;
+import com.haulmont.cuba.gui.components.data.TableItems;
+import com.haulmont.cuba.gui.components.data.TreeDataGridItems;
+import com.haulmont.cuba.gui.components.data.TreeTableItems;
 import com.haulmont.cuba.gui.components.data.meta.EntityDataGridItems;
 import com.haulmont.cuba.gui.components.data.meta.EntityTableItems;
 import com.haulmont.cuba.gui.data.GroupInfo;
@@ -51,7 +54,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -69,33 +71,24 @@ public class ExcelExporter {
     protected HSSFWorkbook wb;
 
     protected HSSFFont boldFont;
-
     protected HSSFFont stdFont;
-
     protected HSSFSheet sheet;
 
     protected HSSFCellStyle timeFormatCellStyle;
-
     protected HSSFCellStyle dateFormatCellStyle;
-
     protected HSSFCellStyle dateTimeFormatCellStyle;
-
     protected HSSFCellStyle integerFormatCellStyle;
-
     protected HSSFCellStyle doubleFormatCellStyle;
 
     protected ExcelAutoColumnSizer[] sizers;
 
     protected String trueStr;
-
     protected String falseStr;
 
     protected boolean exportAggregation = true;
 
     protected final Messages messages;
-
     protected final UserSessionSource userSessionSource;
-
     protected final MetadataTools metadataTools;
 
     protected boolean isRowNumberExceeded = false;
@@ -366,7 +359,6 @@ public class ExcelExporter {
             cell.setCellStyle(headerCellStyle);
         }
 
-        @SuppressWarnings("unchecked")
         EntityDataGridItems<Entity> dataGridSource = (EntityDataGridItems) dataGrid.getItems();
         if (dataGridSource == null) {
             throw new IllegalStateException("DataGrid is not bound to data");
@@ -386,7 +378,6 @@ public class ExcelExporter {
         } else {
             if (dataGrid instanceof TreeDataGrid) {
                 TreeDataGrid treeDataGrid = (TreeDataGrid) dataGrid;
-                @SuppressWarnings("unchecked")
                 TreeDataGridItems<Entity> treeDataGridItems = (TreeDataGridItems) dataGridSource;
                 List<Entity> items = treeDataGridItems.getChildren(null).collect(Collectors.toList());
                 for (Entity item: items) {
@@ -463,7 +454,6 @@ public class ExcelExporter {
         return rowNumber;
     }
 
-    @SuppressWarnings("unchecked")
     protected int createAggregatableRow(Table table, List<Table.Column> columns, int rowNumber,
                                         int aggregatableRow) {
         HSSFRow row = sheet.createRow(rowNumber);
@@ -485,7 +475,6 @@ public class ExcelExporter {
         return rowNumber;
     }
 
-    @SuppressWarnings("unchecked")
     protected int createGroupRow(GroupTable table, List<Table.Column> columns, int rowNumber,
                                  GroupInfo groupInfo, int groupNumber) {
         GroupTableItems<Entity> groupTableSource = (GroupTableItems) table.getItems();
@@ -506,7 +495,7 @@ public class ExcelExporter {
                     val = messages.getMessage(getClass(), "excelExporter.empty");
                 }
 
-                Collection children = table.getDatasource().getGroupItemIds(groupInfo);
+                Collection children = groupTableSource.getGroupItemIds(groupInfo);
                 if (children.isEmpty()) {
                     return rowNumber;
                 }
@@ -527,7 +516,6 @@ public class ExcelExporter {
                     captionValue = item.getValueEx(captionProperty);
                 }
 
-                @SuppressWarnings("unchecked")
                 GroupTable.GroupCellValueFormatter<Entity> groupCellValueFormatter =
                         table.getGroupCellValueFormatter();
 
@@ -536,7 +524,7 @@ public class ExcelExporter {
                     groupChildCount = null;
 
                     List<Entity> groupItems = ((Collection<Object>) groupTableSource.getGroupItemIds(groupInfo)).stream()
-                            .map((Function<Object, Entity>) groupTableSource::getItem)
+                            .map(groupTableSource::getItem)
                             .collect(Collectors.toList());
 
                     GroupTable.GroupCellContext<Entity> cellContext = new GroupTable.GroupCellContext<>(
@@ -585,7 +573,6 @@ public class ExcelExporter {
         return rowNumber;
     }
 
-    @SuppressWarnings("unchecked")
     protected void createRow(Table table, List<Table.Column> columns, int startColumn, int rowNumber, Object itemId) {
         if (startColumn >= columns.size()) {
             return;
@@ -596,12 +583,13 @@ public class ExcelExporter {
         }
 
         HSSFRow row = sheet.createRow(rowNumber);
-        Instance instance = (Instance) table.getItems().getItem(itemId);
+        Entity instance = (Entity) table.getItems().getItem(itemId);
 
         int level = 0;
         if (table instanceof TreeTable) {
             level = ((TreeTable) table).getLevel(itemId);
         }
+
         for (int c = startColumn; c < columns.size(); c++) {
             HSSFCell cell = row.createCell(c);
 
@@ -614,7 +602,7 @@ public class ExcelExporter {
 
                 Table.Printable printable = table.getPrintable(column);
                 if (printable != null) {
-                    cellValue = printable.getValue((Entity) instance);
+                    cellValue = printable.getValue(instance);
                 } else {
                     Element xmlDescriptor = column.getXmlDescriptor();
                     if (xmlDescriptor != null && StringUtils.isNotEmpty(xmlDescriptor.attributeValue("captionProperty"))) {
@@ -629,7 +617,9 @@ public class ExcelExporter {
             } else {
                 Table.Printable printable = table.getPrintable(column);
                 if (printable != null) {
-                    cellValue = printable.getValue((Entity) instance);
+                    cellValue = printable.getValue(instance);
+                } else if (column.getValueProvider() != null) {
+                    cellValue = column.getValueProvider().apply(instance);
                 }
             }
 
@@ -822,7 +812,7 @@ public class ExcelExporter {
             }
         } else if (cellValue instanceof EnumClass) {
             String nameKey = cellValue.getClass().getSimpleName() + "." + cellValue.toString();
-            final String message = sizersIndex == 0 ? createSpaceString(level) + messages.getMessage(cellValue.getClass(), nameKey)
+            String message = sizersIndex == 0 ? createSpaceString(level) + messages.getMessage(cellValue.getClass(), nameKey)
                     : messages.getMessage(cellValue.getClass(), nameKey);
 
             cell.setCellValue(message + childCountValue);
@@ -831,7 +821,7 @@ public class ExcelExporter {
             }
         } else if (cellValue instanceof Entity) {
             Entity entityVal = (Entity) cellValue;
-            String instanceName = entityVal.getInstanceName();
+            String instanceName = metadataTools.getInstanceName(entityVal);
             String str = sizersIndex == 0 ? createSpaceString(level) + instanceName : instanceName;
             str = str + childCountValue;
             cell.setCellValue(new HSSFRichTextString(str));
@@ -881,7 +871,6 @@ public class ExcelExporter {
      * @return true if at least one column is aggregatable
      */
     protected boolean hasAggregatableColumn(Table table) {
-        //noinspection unchecked
         List<Table.Column> columns = table.getColumns();
         for (Table.Column column : columns) {
             if (column.getAggregation() != null) {

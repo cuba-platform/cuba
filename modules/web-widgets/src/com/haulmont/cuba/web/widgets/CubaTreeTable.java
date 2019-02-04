@@ -44,6 +44,7 @@ import com.vaadin.v7.data.util.IndexedContainer;
 import com.vaadin.v7.ui.Field;
 import org.apache.commons.collections4.CollectionUtils;
 
+import javax.annotation.Nonnull;
 import java.util.*;
 import java.util.function.Function;
 
@@ -91,7 +92,6 @@ public class CubaTreeTable extends com.vaadin.v7.ui.TreeTable implements TreeTab
     protected Function<AggregationInputValueChangeContext, Boolean> aggregationDistributionProvider;
 
     public CubaTreeTable() {
-        //noinspection Convert2Lambda
         registerRpc(new CubaTableServerRpc() {
             @Override
             public void onClick(String columnKey, String rowKey) {
@@ -523,6 +523,7 @@ public class CubaTreeTable extends com.vaadin.v7.ui.TreeTable implements TreeTab
     }
 
     @Override
+    @Nonnull
     public Iterator<Component> iterator() {
         List<Component> additionalConnectors = null;
 
@@ -617,14 +618,6 @@ public class CubaTreeTable extends com.vaadin.v7.ui.TreeTable implements TreeTab
     public Collection getAggregationPropertyIds() {
         if (items instanceof AggregationContainer) {
             return ((AggregationContainer) items).getAggregationPropertyIds();
-        }
-        throw new IllegalStateException("Table container is not AggregationContainer: " + items.getClass());
-    }
-
-    @Override
-    public Type getContainerPropertyAggregation(Object propertyId) {
-        if (items instanceof AggregationContainer) {
-            return ((AggregationContainer) items).getContainerPropertyAggregation(propertyId);
         }
         throw new IllegalStateException("Table container is not AggregationContainer: " + items.getClass());
     }

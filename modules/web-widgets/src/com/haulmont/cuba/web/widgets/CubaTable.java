@@ -86,7 +86,6 @@ public class CubaTable extends com.vaadin.v7.ui.Table implements TableSortableCo
     protected Function<AggregationInputValueChangeContext, Boolean> aggregationDistributionProvider;
 
     public CubaTable() {
-        //noinspection Convert2Lambda
         registerRpc(new CubaTableServerRpc() {
             @Override
             public void onClick(String columnKey, String rowKey) {
@@ -604,14 +603,6 @@ public class CubaTable extends com.vaadin.v7.ui.Table implements TableSortableCo
     public Collection getAggregationPropertyIds() {
         if (items instanceof AggregationContainer) {
             return ((AggregationContainer) items).getAggregationPropertyIds();
-        }
-        throw new IllegalStateException("Table container is not AggregationContainer: " + items.getClass());
-    }
-
-    @Override
-    public Type getContainerPropertyAggregation(Object propertyId) {
-        if (items instanceof AggregationContainer) {
-            return ((AggregationContainer) items).getContainerPropertyAggregation(propertyId);
         }
         throw new IllegalStateException("Table container is not AggregationContainer: " + items.getClass());
     }

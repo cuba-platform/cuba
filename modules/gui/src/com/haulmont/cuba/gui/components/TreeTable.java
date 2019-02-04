@@ -27,7 +27,7 @@ public interface TreeTable<E extends Entity> extends Table<E> {
 
     String NAME = "treeTable";
 
-    static <T extends Entity> TypeToken<TreeTable<T>> of(Class<T> itemClass) {
+    static <T extends Entity> TypeToken<TreeTable<T>> of(@SuppressWarnings("unused") Class<T> itemClass) {
         return new TypeToken<TreeTable<T>>() {};
     }
 
@@ -63,6 +63,19 @@ public interface TreeTable<E extends Entity> extends Table<E> {
         }
 
         return null;
+    }
+
+    @Override
+    default void setDatasource(CollectionDatasource datasource) {
+        if (datasource == null) {
+            setItems(null);
+        } else {
+            if (!(datasource instanceof HierarchicalDatasource)) {
+                throw new IllegalArgumentException("TreeTable supports only HierarchicalDatasource");
+            }
+
+            setItems(new DatasourceTreeTableItems((HierarchicalDatasource) datasource));
+        }
     }
 
     @Deprecated

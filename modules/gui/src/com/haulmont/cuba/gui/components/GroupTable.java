@@ -20,7 +20,9 @@ import com.google.common.reflect.TypeToken;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.data.TableItems;
+import com.haulmont.cuba.gui.components.data.table.DatasourceGroupTableItems;
 import com.haulmont.cuba.gui.components.data.table.DatasourceTableItems;
+import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.GroupDatasource;
 import com.haulmont.cuba.gui.data.GroupInfo;
 
@@ -38,7 +40,7 @@ public interface GroupTable<E extends Entity> extends Table<E> {
 
     String NAME = "groupTable";
 
-    static <T extends Entity> TypeToken<GroupTable<T>> of(Class<T> itemClass) {
+    static <T extends Entity> TypeToken<GroupTable<T>> of(@SuppressWarnings("unused") Class<T> itemClass) {
         return new TypeToken<GroupTable<T>>() {};
     }
 
@@ -56,6 +58,20 @@ public interface GroupTable<E extends Entity> extends Table<E> {
         }
 
         return null;
+    }
+
+    @Deprecated
+    @Override
+    default void setDatasource(CollectionDatasource datasource) {
+        if (datasource == null) {
+            setItems(null);
+        } else {
+            if (!(datasource instanceof GroupDatasource)) {
+                throw new IllegalArgumentException("GroupTable supports only GroupDatasource");
+            }
+
+            setItems(new DatasourceGroupTableItems((GroupDatasource) datasource));
+        }
     }
 
     /**

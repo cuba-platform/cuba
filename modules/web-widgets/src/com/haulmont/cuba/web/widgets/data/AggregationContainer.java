@@ -34,7 +34,6 @@ public interface AggregationContainer extends Container {
 
     Collection getAggregationPropertyIds();
 
-    Type getContainerPropertyAggregation(Object propertyId);
     void addContainerPropertyAggregation(Object propertyId, Type type);
     void removeContainerPropertyAggregation(Object propertyId);
 

@@ -30,12 +30,10 @@ public class DatasourceGroupTableItems<E extends Entity<K>, K>
         extends SortableDatasourceTableItems<E, K>
         implements GroupTableItems<E> {
 
-    @SuppressWarnings("unchecked")
     public DatasourceGroupTableItems(GroupDatasource<E, K> datasource) {
         super((CollectionDatasource.Sortable<E, K>) datasource);
     }
 
-    @SuppressWarnings("unchecked")
     public GroupDatasource<E, K> getGroupDatasource() {
         return (GroupDatasource<E, K>) datasource;
     }
