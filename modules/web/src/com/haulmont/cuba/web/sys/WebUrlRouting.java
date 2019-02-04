@@ -32,6 +32,7 @@ import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.gui.UrlHandlingMode;
 import com.haulmont.cuba.web.gui.WebWindow;
+import com.haulmont.cuba.web.gui.components.mainwindow.WebAppWorkArea;
 import com.haulmont.cuba.web.sys.navigation.UrlIdSerializer;
 import com.haulmont.cuba.web.sys.navigation.UrlTools;
 import com.vaadin.server.Page;
@@ -40,6 +41,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.*;
 
@@ -303,13 +305,33 @@ public class WebUrlRouting implements UrlRouting {
             return false;
         }
 
-        boolean notInHistory = !ui.getHistory().has(currentState);
+        boolean notInHistory = !ui.getHistory().has(currentState)
+                || findActiveScreenByState(currentState) == null;
 
         boolean sameRoot = Objects.equals(currentState.getRoot(), newState.getRoot());
         boolean sameNestedRoute = Objects.equals(currentState.getNestedRoute(), newState.getNestedRoute());
         boolean sameParams = Objects.equals(currentState.getParamsString(), newState.getParamsString());
 
         return notInHistory && sameRoot && sameNestedRoute && sameParams;
+    }
+
+    protected Screen findActiveScreenByState(NavigationState requestedState) {
+        WebAppWorkArea workArea = ((WebScreens) ui.getScreens()).getConfiguredWorkAreaOrNull();
+
+        return workArea != null
+                ? findScreenByState(getOpenedScreens().getActiveScreens(), requestedState)
+                : null;
+    }
+
+    protected Screens.OpenedScreens getOpenedScreens() {
+        return ui.getScreens().getOpenedScreens();
+    }
+
+    @Nullable
+    protected Screen findScreenByState(Collection<Screen> screens, NavigationState requestedState) {
+        return screens.stream()
+                .filter(s -> Objects.equals(requestedState.getStateMark(), getStateMark(s)))
+                .findFirst().orElse(null);
     }
 
     protected boolean checkConditions(Screen screen, Map<String, String> urlParams) {

@@ -127,10 +127,7 @@ public class UrlChangeHandler {
     }
 
     protected boolean handleHistoryNavigation(NavigationState requestedState) {
-        boolean backward = Objects.equals(getHistory().getNow(), requestedState)
-                || getHistory().searchBackward(requestedState)
-                || (getHistory().searchBackward(requestedState) && findActiveScreenByState(requestedState) != null);
-
+        boolean backward = getHistory().searchBackward(requestedState);
         boolean forward = getHistory().searchForward(requestedState);
 
         if (backward) {
@@ -451,8 +448,10 @@ public class UrlChangeHandler {
 
     protected OpenMode getScreenOpenMode(String route, WindowInfo windowInfo) {
         String screenRoute = windowConfig.findRoute(windowInfo.getId());
+        if (StringUtils.isEmpty(screenRoute)) {
+            return OpenMode.NEW_TAB;
+        }
 
-        //noinspection ConstantConditions
         return route.startsWith(screenRoute)
                 ? OpenMode.NEW_TAB
                 : OpenMode.THIS_TAB;
