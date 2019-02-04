@@ -16,26 +16,20 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
-import com.haulmont.chile.core.model.MetaProperty;
-import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.client.ClientConfig;
-import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
-import com.haulmont.cuba.core.app.dynamicattributes.PropertyType;
-import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.LookupField;
+import com.haulmont.cuba.gui.components.data.DataAwareComponentsTools;
 import com.haulmont.cuba.gui.components.data.Options;
 import com.haulmont.cuba.gui.components.data.ValueSource;
 import com.haulmont.cuba.gui.components.data.meta.EntityValueSource;
 import com.haulmont.cuba.gui.components.data.meta.OptionsBinding;
-import com.haulmont.cuba.gui.components.data.options.EnumOptions;
 import com.haulmont.cuba.gui.components.data.options.OptionsBinder;
 import com.haulmont.cuba.web.gui.components.util.ShortcutListenerDelegate;
 import com.haulmont.cuba.web.gui.icons.IconResolver;
 import com.haulmont.cuba.web.widgets.CubaComboBox;
-import com.vaadin.server.ErrorMessage;
 import com.vaadin.server.Resource;
 import com.vaadin.ui.IconGenerator;
 import com.vaadin.ui.StyleGenerator;
@@ -177,29 +171,13 @@ public class WebLookupField<V> extends WebV8AbstractField<CubaComboBox<V>, V, V>
                 .contains(filterText.toLowerCase(locale));
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     protected void valueBindingConnected(ValueSource<V> valueSource) {
         super.valueBindingConnected(valueSource);
 
         if (valueSource instanceof EntityValueSource) {
-            MetaPropertyPath propertyPath = ((EntityValueSource) valueSource).getMetaPropertyPath();
-            MetaProperty metaProperty = propertyPath.getMetaProperty();
-
-            if (metaProperty.getRange().isEnum()) {
-                //noinspection unchecked
-                setOptions(new EnumOptions(metaProperty.getJavaType()));
-            }
-
-            if (DynamicAttributesUtils.isDynamicAttribute(metaProperty)) {
-                CategoryAttribute categoryAttribute = DynamicAttributesUtils.getCategoryAttribute(metaProperty);
-
-                if (categoryAttribute != null
-                        && categoryAttribute.getDataType() == PropertyType.ENUMERATION) {
-
-                    setOptionsMap((Map<String, V>) categoryAttribute.getLocalizedEnumerationMap());
-                }
-            }
+            DataAwareComponentsTools dataAwareComponentsTools = beanLocator.get(DataAwareComponentsTools.class);
+            dataAwareComponentsTools.setupOptions(this, (EntityValueSource) valueSource);
         }
     }
 

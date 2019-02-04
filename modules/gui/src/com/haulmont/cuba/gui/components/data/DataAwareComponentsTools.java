@@ -17,14 +17,20 @@
 package com.haulmont.cuba.gui.components.data;
 
 import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
+import com.haulmont.cuba.core.app.dynamicattributes.PropertyType;
+import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.entity.annotation.CaseConversion;
 import com.haulmont.cuba.core.entity.annotation.ConversionType;
 import com.haulmont.cuba.core.entity.annotation.IgnoreUserTimeZone;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.components.DateField;
 import com.haulmont.cuba.gui.components.HasRange;
+import com.haulmont.cuba.gui.components.OptionsField;
 import com.haulmont.cuba.gui.components.TextInputField;
 import com.haulmont.cuba.gui.components.data.meta.EntityValueSource;
+import com.haulmont.cuba.gui.components.data.options.EnumOptions;
 import org.apache.commons.collections4.MapUtils;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.stereotype.Component;
@@ -164,5 +170,24 @@ public class DataAwareComponentsTools {
             temporalType = (TemporalType) metaProperty.getAnnotations().get(MetadataTools.TEMPORAL_ANN_NAME);
         }
         return temporalType;
+    }
+
+    public void setupOptions(OptionsField optionsField, EntityValueSource valueSource) {
+        MetaPropertyPath propertyPath = valueSource.getMetaPropertyPath();
+        MetaProperty metaProperty = propertyPath.getMetaProperty();
+
+        if (metaProperty.getRange().isEnum()) {
+            //noinspection unchecked
+            optionsField.setOptions(new EnumOptions(metaProperty.getJavaType()));
+        } else if (DynamicAttributesUtils.isDynamicAttribute(metaProperty)) {
+            CategoryAttribute categoryAttribute = DynamicAttributesUtils.getCategoryAttribute(metaProperty);
+
+            if (categoryAttribute != null
+                    && categoryAttribute.getDataType() == PropertyType.ENUMERATION) {
+
+                //noinspection unchecked
+                optionsField.setOptionsMap(categoryAttribute.getLocalizedEnumerationMap());
+            }
+        }
     }
 }

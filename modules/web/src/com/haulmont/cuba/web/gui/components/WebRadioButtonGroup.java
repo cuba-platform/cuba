@@ -2,7 +2,9 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.gui.components.RadioButtonGroup;
+import com.haulmont.cuba.gui.components.data.DataAwareComponentsTools;
 import com.haulmont.cuba.gui.components.data.Options;
+import com.haulmont.cuba.gui.components.data.ValueSource;
 import com.haulmont.cuba.gui.components.data.meta.EntityValueSource;
 import com.haulmont.cuba.gui.components.data.meta.OptionsBinding;
 import com.haulmont.cuba.gui.components.data.options.OptionsBinder;
@@ -138,6 +140,16 @@ public class WebRadioButtonGroup<V> extends WebV8AbstractField<CubaRadioButtonGr
             OptionsBinder optionsBinder = beanLocator.get(OptionsBinder.NAME);
             this.optionsBinding = optionsBinder.bind(options, this, this::setItemsToPresentation);
             this.optionsBinding.activate();
+        }
+    }
+
+    @Override
+    protected void valueBindingConnected(ValueSource<V> valueSource) {
+        super.valueBindingConnected(valueSource);
+
+        if (valueSource instanceof EntityValueSource) {
+            DataAwareComponentsTools dataAwareComponentsTools = beanLocator.get(DataAwareComponentsTools.class);
+            dataAwareComponentsTools.setupOptions(this, (EntityValueSource) valueSource);
         }
     }
 
