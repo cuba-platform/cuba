@@ -44,12 +44,7 @@ public class WebResizableTextArea<V> extends WebAbstractTextArea<CubaTextArea, V
         attachValueChangeListener(component);
 
         wrapper = new CubaResizableTextAreaWrapper(component);
-        wrapper.addResizeListener((oldWidth, oldHeight, width, height) -> {
-            ResizeEvent e = new ResizeEvent(this, oldWidth, width, oldHeight, height);
-            publish(ResizeEvent.class, e);
-
-            settingsChanged = true;
-        });
+        wrapper.setResizeListener(this::onResize);
     }
 
     @Override
@@ -73,7 +68,7 @@ public class WebResizableTextArea<V> extends WebAbstractTextArea<CubaTextArea, V
     }
 
     @Override
-    public void afterPropertiesSet() throws Exception {
+    public void afterPropertiesSet() {
         initComponent(component);
     }
 
@@ -129,12 +124,12 @@ public class WebResizableTextArea<V> extends WebAbstractTextArea<CubaTextArea, V
 
     @Override
     public boolean isRequired() {
-        return wrapper.isRequired();
+        return wrapper.isRequiredIndicatorVisible();
     }
 
     @Override
     public void setRequired(boolean required) {
-        wrapper.setRequired(required);
+        wrapper.setRequiredIndicatorVisible(required);
     }
 
     @Override
@@ -175,8 +170,8 @@ public class WebResizableTextArea<V> extends WebAbstractTextArea<CubaTextArea, V
             return false;
         }
 
-        String width = String.valueOf(getWidth()) + wrapper.getWidthUnits().toString();
-        String height = String.valueOf(getHeight()) + wrapper.getHeightUnits().toString();
+        String width = getWidth() + wrapper.getWidthUnits().toString();
+        String height = getHeight() + wrapper.getHeightUnits().toString();
         element.addAttribute("width", width);
         element.addAttribute("height", height);
 
@@ -224,5 +219,12 @@ public class WebResizableTextArea<V> extends WebAbstractTextArea<CubaTextArea, V
     public void setResizableDirection(ResizeDirection direction) {
         Preconditions.checkNotNullArgument(direction);
         wrapper.setResizableDirection(WebWrapperUtils.toVaadinResizeDirection(direction));
+    }
+
+    protected void onResize(String oldWidth, String oldHeight, String width, String height) {
+        ResizeEvent e = new ResizeEvent(this, oldWidth, width, oldHeight, height);
+        publish(ResizeEvent.class, e);
+
+        settingsChanged = true;
     }
 }

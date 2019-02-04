@@ -19,7 +19,7 @@ package com.haulmont.cuba.web.widgets.client.resizabletextarea;
 
 import com.haulmont.cuba.web.widgets.CubaResizableTextAreaWrapper;
 import com.vaadin.client.communication.StateChangeEvent;
-import com.vaadin.v7.client.ui.customfield.CustomFieldConnector;
+import com.vaadin.client.ui.customfield.CustomFieldConnector;
 import com.vaadin.shared.ui.Connect;
 
 @Connect(CubaResizableTextAreaWrapper.class)

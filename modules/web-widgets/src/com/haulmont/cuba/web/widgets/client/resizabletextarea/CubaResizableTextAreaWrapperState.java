@@ -17,9 +17,9 @@
 
 package com.haulmont.cuba.web.widgets.client.resizabletextarea;
 
-import com.vaadin.v7.shared.AbstractFieldState;
+import com.vaadin.shared.ui.customfield.CustomFieldState;
 
-public class CubaResizableTextAreaWrapperState extends AbstractFieldState {
+public class CubaResizableTextAreaWrapperState extends CustomFieldState {
     {
         primaryStyleName = "c-resizabletextarea-wrapper";
     }

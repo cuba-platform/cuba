@@ -36,7 +36,7 @@ public class WebTextArea<V> extends WebAbstractTextArea<CubaTextArea, V>
     }
 
     @Override
-    public void afterPropertiesSet() throws Exception {
+    public void afterPropertiesSet() {
         initComponent(component);
     }
 

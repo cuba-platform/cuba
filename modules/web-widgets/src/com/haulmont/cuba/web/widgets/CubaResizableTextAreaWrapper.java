@@ -23,16 +23,13 @@ import com.vaadin.server.AbstractErrorMessage;
 import com.vaadin.server.CompositeErrorMessage;
 import com.vaadin.server.ErrorMessage;
 import com.vaadin.ui.Component;
-import com.vaadin.v7.ui.CustomField;
+import com.vaadin.ui.CustomField;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class CubaResizableTextAreaWrapper extends CustomField {
 
-    protected List<ResizeListener> listeners = new ArrayList<>();
+    protected ResizeListener resizeListener = null;
 
     public interface ResizeListener {
         void onResize(String oldWidth, String oldHeight, String width, String height);
@@ -44,10 +41,6 @@ public class CubaResizableTextAreaWrapper extends CustomField {
         this.textArea = txtArea;
 
         setWidthUndefined();
-
-        setValidationVisible(false);
-        setShowBufferedSourceException(false);
-        setShowErrorForDisabledState(false);
         setFocusDelegate(textArea);
 
         CubaResizableTextAreaWrapperServerRpc rpc = new CubaResizableTextAreaWrapperServerRpc() {
@@ -66,12 +59,15 @@ public class CubaResizableTextAreaWrapper extends CustomField {
                 setWidth(width);
                 setHeight(height);
 
-                for (ResizeListener listener : listeners) {
-                    listener.onResize(oldWidth, oldHeight, width, height);
-                }
+                String prevWidth = oldWidth;
+                String prevHeight = oldHeight;
 
                 oldWidth = width;
                 oldHeight = height;
+
+                if (resizeListener != null) {
+                    resizeListener.onResize(prevWidth, prevHeight, width, height);
+                }
             }
 
             @Override
@@ -87,7 +83,7 @@ public class CubaResizableTextAreaWrapper extends CustomField {
     @Override
     public ErrorMessage getErrorMessage() {
         ErrorMessage superError = super.getErrorMessage();
-        if (!textArea.isReadOnly() && isRequired() && textArea.isEmpty()) {
+        if (!textArea.isReadOnly() && isRequiredIndicatorVisible() && textArea.isEmpty()) {
             ErrorMessage error = AbstractErrorMessage.getErrorMessageForException(
                     new com.vaadin.v7.data.Validator.EmptyValueException(getRequiredError()));
             if (error != null) {
@@ -103,28 +99,6 @@ public class CubaResizableTextAreaWrapper extends CustomField {
         return textArea;
     }
 
-    @Override
-    public Class getType() {
-        return Object.class;
-    }
-
-    /**
-     * @deprecated Use {@link CubaResizableTextAreaWrapper#getResizableDirection()} instead
-     */
-    @Deprecated
-    public boolean isResizable() {
-        return getState(false).resizableDirection != ResizeDirection.NONE;
-    }
-
-    /**
-     * @deprecated Use {@link CubaResizableTextAreaWrapper#setResizableDirection(ResizeDirection)} instead
-     */
-    @Deprecated
-    public void setResizable(boolean resizable) {
-        ResizeDirection value = resizable ? ResizeDirection.BOTH : ResizeDirection.NONE;
-        setResizableDirection(value);
-    }
-
     public boolean isEditable() {
         return !super.isReadOnly();
     }
@@ -132,6 +106,16 @@ public class CubaResizableTextAreaWrapper extends CustomField {
     public void setEditable(boolean editable) {
         super.setReadOnly(!editable);
         textArea.setReadOnly(!editable);
+    }
+
+    @Override
+    protected void doSetValue(Object value) {
+        // do nothing
+    }
+
+    @Override
+    public Object getValue() {
+        return null;
     }
 
     @Override
@@ -145,9 +129,9 @@ public class CubaResizableTextAreaWrapper extends CustomField {
     }
 
     @Override
-    public void setRequired(boolean required) {
-        super.setRequired(required);
-        textArea.setRequiredIndicatorVisible(required);
+    public void setRequiredIndicatorVisible(boolean visible) {
+        super.setRequiredIndicatorVisible(visible);
+        textArea.setRequiredIndicatorVisible(visible);
     }
 
     @Override
@@ -202,14 +186,12 @@ public class CubaResizableTextAreaWrapper extends CustomField {
         return Unit.PERCENTAGE.equals(getHeightUnits()) || Unit.PERCENTAGE.equals(getWidthUnits());
     }
 
-    public void addResizeListener(ResizeListener resizeListener) {
-        if (!listeners.contains(resizeListener)) {
-            listeners.add(resizeListener);
-        }
+    public ResizeListener getResizeListener() {
+        return resizeListener;
     }
 
-    public void removeResizeListener(ResizeListener resizeListener) {
-        listeners.remove(resizeListener);
+    public void setResizeListener(ResizeListener resizeListener) {
+        this.resizeListener = resizeListener;
     }
 
     public void setResizableDirection(ResizeDirection direction) {
