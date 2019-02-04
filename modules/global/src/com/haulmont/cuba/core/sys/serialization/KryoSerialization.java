@@ -111,7 +111,7 @@ public class KryoSerialization implements Serialization {
         kryo.register(InvocationHandler.class, new JdkProxySerializer());
         UnmodifiableCollectionsSerializer.registerSerializers(kryo);
         SynchronizedCollectionsSerializer.registerSerializers(kryo);
-        kryo.register(Pattern.class, new CubaJavaSerializer());
+        kryo.register(Pattern.class, new RegexSerializer());
 
         kryo.register(CGLibProxySerializer.CGLibProxyMarker.class, new CGLibProxySerializer());
         ImmutableListSerializer.registerSerializers(kryo);
