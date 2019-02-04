@@ -29,6 +29,9 @@ import org.junit.ClassRule
 import spock.lang.Shared
 import spock.lang.Specification
 
+import java.util.regex.Matcher
+import java.util.regex.Pattern
+
 class KryoSerializationTest extends Specification {
 
     @Shared
@@ -74,5 +77,18 @@ class KryoSerializationTest extends Specification {
         Set result = (Set) kryoSerialization.deserialize(kryoSerialization.serialize(set))
         then:
         result[1].lineSet.contains(result[0])
+    }
+
+
+    def "java.Pattern serialization issue"() {
+        setup:
+        Pattern pattern = Pattern.compile("^[A-Z]{1,2}\\d[A-Z0-9]? ")
+        KryoSerialization kryoSerialization = new KryoSerialization()
+        pattern = (Pattern) kryoSerialization.deserialize(kryoSerialization.serialize(pattern))
+        when:
+        Matcher matcher = pattern.matcher("SO51 4DK")
+        then:
+        matcher.find()
+        matcher.group() != null
     }
 }
