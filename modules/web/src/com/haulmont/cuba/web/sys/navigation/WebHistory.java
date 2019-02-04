@@ -69,7 +69,9 @@ public class WebHistory implements History {
             return NavigationState.EMPTY;
         }
 
-        now--;
+        if (now > 0) {
+            now--;
+        }
 
         return history.get(now);
     }
@@ -80,7 +82,9 @@ public class WebHistory implements History {
             return NavigationState.EMPTY;
         }
 
-        return now >= 0 ? history.get(now) : null;
+        return now >= 0
+                ? history.get(now)
+                : null;
     }
 
     @Override
@@ -89,7 +93,9 @@ public class WebHistory implements History {
             return NavigationState.EMPTY;
         }
 
-        return now - 1 >= 0 ? history.get(now - 1) : null;
+        return now - 1 >= 0
+                ? history.get(now - 1)
+                : null;
     }
 
     @Override
@@ -98,7 +104,9 @@ public class WebHistory implements History {
             return NavigationState.EMPTY;
         }
 
-        return now + 1 < history.size() ? history.get(now + 1) : null;
+        return now + 1 < history.size()
+                ? history.get(now + 1)
+                : null;
     }
 
     @Override
@@ -114,6 +122,7 @@ public class WebHistory implements History {
                 return true;
             }
         }
+
         return false;
     }
 
@@ -130,6 +139,7 @@ public class WebHistory implements History {
                 return true;
             }
         }
+
         return false;
     }
 
