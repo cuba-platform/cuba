@@ -21,6 +21,7 @@ import com.haulmont.cuba.web.widgets.client.fileupload.CubaFileUploadServerRpc;
 import com.haulmont.cuba.web.widgets.client.fileupload.CubaFileUploadState;
 import com.vaadin.server.*;
 import com.vaadin.server.communication.FileUploadHandler;
+import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.LegacyComponent;
 import com.vaadin.util.ReflectTools;
@@ -43,8 +44,8 @@ import java.util.Set;
         "jquery-file-upload:jquery-fileupload.min.js",
         "jquery-file-upload:jquery-iframe-transport.min.js"
 })
-public class CubaFileUpload extends CubaAbstractUploadComponent
-        implements Component.Focusable, LegacyComponent {
+public class CubaFileUpload extends AbstractComponent
+        implements Component.Focusable, UploadComponent, LegacyComponent {
 
     /**
      * The output of the upload is redirected to this receiver.
@@ -907,5 +908,10 @@ public class CubaFileUpload extends CubaAbstractUploadComponent
 
     public void removeQueueUploadFinishedListener(QueueFinishedListener listener) {
         removeListener(QueueFinishedEvent.class, listener, QUEUE_UPLOAD_FINISHED_METHOD);
+    }
+
+    @Override
+    public void focus() {
+        super.focus();
     }
 }
