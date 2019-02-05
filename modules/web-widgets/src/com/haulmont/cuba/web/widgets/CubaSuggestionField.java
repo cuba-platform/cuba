@@ -69,7 +69,7 @@ public class CubaSuggestionField<T> extends AbstractField<T> {
             @Override
             public void selectSuggestion(String suggestionId) {
                 T suggestion = keyMapper.get(suggestionId);
-                setValue(suggestion);
+                setValue(suggestion, true);
 
                 updateTextPresentation(getValue());
             }
