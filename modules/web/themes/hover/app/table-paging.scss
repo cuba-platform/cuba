@@ -16,7 +16,7 @@
 
 @mixin hover-cuba-table-paging {
   .c-paging-count {
-    height: round($v-unit-size/1.2);
+    height: round(($v-unit-size / 7) * 6);
   }
 
   .v-button.v-button-link.c-paging-count-number {
