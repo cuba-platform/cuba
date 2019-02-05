@@ -36,10 +36,11 @@
                       spacing="true"
                       stylename="c-login-title">
                     <image id="logoImage"
-                              align="MIDDLE_LEFT"
-                              height="AUTO"
-                              stylename="c-login-icon"
-                              width="AUTO"/>
+                           align="MIDDLE_LEFT"
+                           height="AUTO"
+                           scaleMode="SCALE_DOWN"
+                           stylename="c-login-icon"
+                           width="AUTO"/>
 
                     <label id="welcomeLabel"
                            align="MIDDLE_LEFT"
