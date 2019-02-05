@@ -161,6 +161,7 @@ public interface Screens {
      * Each method obtains current info from UI components tree.
      */
     interface OpenedScreens {
+
         /**
          * @return the root screen of UI
          * @throws IllegalStateException in case there is no root screen in UI
@@ -175,26 +176,26 @@ public interface Screens {
         Screen getRootScreenOrNull();
 
         /**
-         * @return all opened screens excluding the root screen
-         * @throws IllegalStateException if there is no root screen or root screen does not have {@link AppWorkArea}
+         * @return all opened screens excluding the root screen or empty collection if there is no root screen
+         * or root screen does not have {@link AppWorkArea}
          */
         Collection<Screen> getAll();
 
         /**
-         * @return all opened screens excluding the root screen
-         * @throws IllegalStateException if there is no root screen or root screen does not have {@link AppWorkArea}
+         * @return all opened screens excluding the root screen and dialogs or empty collection
+         * if there is no root screen or root screen does not have {@link AppWorkArea}
          */
         Collection<Screen> getWorkAreaScreens();
 
         /**
-         * @return top screens from work area tabs and all dialog windows
-         * @throws IllegalStateException if there is no root screen or root screen does not have {@link AppWorkArea}
+         * @return top screens from work area tabs and all dialog windows or empty collection if there is no root screen
+         * or root screen does not have {@link AppWorkArea}
          */
         Collection<Screen> getActiveScreens();
 
         /**
-         * @return top screens from work area tabs
-         * @throws IllegalStateException if there is no root screen or root screen does not have {@link AppWorkArea}
+         * @return top screens from work area tabs or empty collection if there is no root screen
+         * or root screen does not have {@link AppWorkArea}
          */
         Collection<Screen> getActiveWorkAreaScreens();
 
@@ -204,13 +205,14 @@ public interface Screens {
         Collection<Screen> getDialogScreens();
 
         /**
-         * @return screens of the currently opened tab of work area in descending order, first element is active screen
-         * @throws IllegalStateException if there is no root screen or root screen does not have {@link AppWorkArea}
+         * @return screens of the currently opened tab of work area in descending order (first element is active screen)
+         * or empty collection if there is no root screen or root screen does not have {@link AppWorkArea}
          */
         Collection<Screen> getCurrentBreadcrumbs();
 
         /**
-         * @return tab containers or single window container with access to breadcrumbs
+         * @return tab containers or single window container with access to breadcrumbs or empty collection
+         * if there is no root screen or root screen does not have {@link AppWorkArea}
          */
         Collection<WindowStack> getWorkAreaStacks();
     }

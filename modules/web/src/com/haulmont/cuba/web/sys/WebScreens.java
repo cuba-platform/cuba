@@ -805,12 +805,14 @@ public class WebScreens implements Screens, WindowManager {
 
     protected Stream<Screen> getOpenedWorkAreaScreensStream() {
         Screen rootScreen = getRootScreenOrNull();
-
         if (rootScreen == null) {
-            throw new IllegalStateException("There is no root screen in UI");
+            return Stream.empty();
         }
 
-        WebAppWorkArea workArea = getConfiguredWorkArea();
+        WebAppWorkArea workArea = getConfiguredWorkAreaOrNull();
+        if (workArea == null) {
+            return Stream.empty();
+        }
 
         return workArea.getOpenedWorkAreaScreensStream();
     }
@@ -818,10 +820,14 @@ public class WebScreens implements Screens, WindowManager {
     protected Stream<Screen> getActiveWorkAreaScreensStream() {
         Screen rootScreen = getRootScreenOrNull();
         if (rootScreen == null) {
-            throw new IllegalStateException("There is no root screen in UI");
+            return Stream.empty();
         }
 
-        WebAppWorkArea workArea = getConfiguredWorkArea();
+        WebAppWorkArea workArea = getConfiguredWorkAreaOrNull();
+        if (workArea == null) {
+            return Stream.empty();
+        }
+
         return workArea.getActiveWorkAreaScreensStream();
     }
 
@@ -837,7 +843,10 @@ public class WebScreens implements Screens, WindowManager {
     }
 
     protected Collection<Screen> getCurrentBreadcrumbs() {
-        WebAppWorkArea workArea = getConfiguredWorkArea();
+        WebAppWorkArea workArea = getConfiguredWorkAreaOrNull();
+        if (workArea == null) {
+            return Collections.emptyList();
+        }
 
         return workArea.getCurrentBreadcrumbs();
     }
@@ -1988,7 +1997,10 @@ public class WebScreens implements Screens, WindowManager {
 
         @Override
         public Collection<WindowStack> getWorkAreaStacks() {
-            WebAppWorkArea workArea = getConfiguredWorkArea();
+            WebAppWorkArea workArea = getConfiguredWorkAreaOrNull();
+            if (workArea == null) {
+                return Collections.emptyList();
+            }
 
             return WebScreens.this.getWorkAreaStacks(workArea);
         }
