@@ -19,12 +19,12 @@
       Online Demo
     </a>
     <span> | </span>
-    <a href="https://www.cuba-platform.com/tutorials" target="_blank">
-      Tutorials
-    </a>
-    <span> | </span>
     <a href="https://www.cuba-platform.com/documentation" target="_blank">
       Documentation
+    </a>
+    <span> | </span>
+    <a href="https://www.cuba-platform.com/guides" target="_blank">
+      Guides
     </a>
     <span> | </span>
     <a href="https://www.cuba-platform.com/discuss/" target="_blank">
