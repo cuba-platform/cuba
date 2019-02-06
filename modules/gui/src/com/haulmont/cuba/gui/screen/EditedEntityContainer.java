@@ -20,7 +20,7 @@ import java.lang.annotation.*;
 import java.lang.annotation.Target;
 
 /**
- * Annotation for screen controllers, specifies a data container that contains edited entity.
+ * Annotation for edit screen controllers which specifies a data container that contains the edited entity.
  *
  * @see StandardEditor
  */

@@ -23,7 +23,7 @@ import java.lang.annotation.*;
 import java.lang.annotation.Target;
 
 /**
- * Specifies parameters of {@link DialogWindow} if window is opened as {@link OpenMode#DIALOG}.
+ * Specifies parameters of {@link DialogWindow} if the window is opened as {@link OpenMode#DIALOG}.
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)

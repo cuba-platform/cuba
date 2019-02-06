@@ -20,9 +20,9 @@ import java.lang.annotation.Target;
 import java.lang.annotation.*;
 
 /**
- * Annotation for screen controllers which disable applying of attribute access rules.
+ * Annotation for screen controllers which disables applying of attribute access control rules.
  * <p>
- * If you don't want to apply attribute access rules to a screen, set annotation on screen controller
+ * If you don't want to apply attribute access rules to a screen, add this annotation to the screen controller.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
