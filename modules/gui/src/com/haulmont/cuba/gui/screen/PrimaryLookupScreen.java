@@ -24,14 +24,18 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotation for {@link LookupScreen} controllers that sets this controller as default lookup screen for entity type.
+ * Annotation for lookup screen controllers that sets this controller as default lookup screen for entities
+ * of the specified type.
+ *
+ * @see LookupScreen
+ * @see StandardLookup
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface PrimaryLookupScreen {
 
     /**
-     * @return entity class
+     * Entity class for which the screen is a default lookup screen.
      */
     Class<? extends Entity> value();
 }

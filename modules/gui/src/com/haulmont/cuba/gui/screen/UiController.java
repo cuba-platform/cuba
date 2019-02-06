@@ -22,8 +22,8 @@ import java.lang.annotation.*;
 import java.lang.annotation.Target;
 
 /**
- * Indicates that an annotated class is a "UiController" (e.g. a screen controller or fragment controller).
- * Annotated class must by a direct or indirect subclass of either {@link Screen} or {@link ScreenFragment}.
+ * Indicates that the annotated class is a screen or fragment controller.
+ * The annotated class must be a direct or indirect subclass of either {@link Screen} or {@link ScreenFragment}.
  *
  * @see Screen
  * @see ScreenFragment
@@ -35,9 +35,15 @@ public @interface UiController {
     String ID_ATTRIBUTE = "id";
     String VALUE_ATTRIBUTE = "value";
 
+    /**
+     * Screen identifier.
+     */
     @AliasFor(ID_ATTRIBUTE)
     String value() default "";
 
+    /**
+     * Screen identifier.
+     */
     @AliasFor(VALUE_ATTRIBUTE)
     String id() default "";
 }

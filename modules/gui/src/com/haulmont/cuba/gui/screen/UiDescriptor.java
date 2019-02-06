@@ -22,8 +22,8 @@ import java.lang.annotation.*;
 import java.lang.annotation.Target;
 
 /**
- * Indicates that an annotated {@link UiController} is related with XML template.
- * Annotated class must by a direct or indirect subclass of either {@link Screen} or {@link ScreenFragment}.
+ * Indicates that the annotated {@link UiController} is linked to an XML template.
+ * The annotated class must be a direct or indirect subclass of either {@link Screen} or {@link ScreenFragment}.
  * This annotation is inherited by subclasses.
  *
  * @see Screen
@@ -34,9 +34,18 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 @Inherited
 public @interface UiDescriptor {
+
+    /**
+     * Path to the XML descriptor. If the value contains a file name only, it is assumed that the file is located
+     * in the package of the controller class.
+     */
     @AliasFor("path")
     String value() default "";
 
+    /**
+     * Path to the XML descriptor. If the value contains a file name only, it is assumed that the file is located
+     * in the package of the controller class.
+     */
     @AliasFor("value")
     String path() default "";
 }

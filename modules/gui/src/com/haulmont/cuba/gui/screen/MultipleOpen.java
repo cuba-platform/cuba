@@ -22,14 +22,14 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * Annotation for screen controllers that specifies if UI screen can be opened multiple times from a navigation menu.
+ * Annotation for screen controllers that specifies if the screen can be opened multiple times from the main menu.
  */
 @Documented
 @Inherited
 @Retention(RetentionPolicy.RUNTIME)
 public @interface MultipleOpen {
     /**
-     * Set to false to disable multiple open of the screen from menu.
+     * Set to false to disable multiple open of the screen from the menu.
      */
     boolean value() default true;
 }
