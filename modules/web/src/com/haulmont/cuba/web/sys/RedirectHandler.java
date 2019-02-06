@@ -128,7 +128,8 @@ public class RedirectHandler {
         NavigationState currentState = ui.getUrlRouting().getState();
         NavigationState newState = new NavigationState(currentState.getRoot(), "", redirectTarget, params);
 
-        ui.getUrlChangeHandler().handleUrlChangeInternal(newState);
+        ui.getUrlChangeHandler().getScreenNavigator()
+                .handleScreenNavigation(newState);
 
         redirect = null;
     }

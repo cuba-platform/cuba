@@ -354,15 +354,15 @@ public class AppUI extends CubaUI implements ErrorHandler, EnhancedUI, UiExcepti
         autowireContext(urlRouting, applicationContext);
         setUrlRouting(urlRouting);
 
+        History history = new WebHistory(this);
+        autowireContext(history, applicationContext);
+        setHistory(history);
+
         UrlChangeHandler urlChangeHandler = new UrlChangeHandler(this);
         autowireContext(urlChangeHandler, applicationContext);
         setUrlChangeHandler(urlChangeHandler);
 
         getPage().addPopStateListener(urlChangeHandler::handleUrlChange);
-
-        History history = new WebHistory(this);
-        autowireContext(history, applicationContext);
-        setHistory(history);
     }
 
     protected void autowireContext(Object instance, ApplicationContext applicationContext) {
@@ -621,7 +621,8 @@ public class AppUI extends CubaUI implements ErrorHandler, EnhancedUI, UiExcepti
             redirectHandler.schedule(navigationState);
             app.redirectHandler = redirectHandler;
         } else {
-            urlChangeHandler.handleUrlChangeInternal(navigationState);
+            urlChangeHandler.getScreenNavigator()
+                    .handleScreenNavigation(navigationState);
         }
     }
 
