@@ -35,6 +35,7 @@ import com.haulmont.cuba.web.gui.WebWindow;
 import com.haulmont.cuba.web.gui.components.mainwindow.WebAppWorkArea;
 import com.haulmont.cuba.web.sys.navigation.UrlIdSerializer;
 import com.haulmont.cuba.web.sys.navigation.UrlTools;
+import com.haulmont.cuba.web.widgets.client.ui.CubaUIConstants;
 import com.vaadin.server.Page;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -62,6 +63,8 @@ public class WebUrlRouting implements UrlRouting {
     protected WebConfig webConfig;
 
     protected AppUI ui;
+
+    protected String lastHistoryOperation = CubaUIConstants.HISTORY_PUSH_OP;
 
     public WebUrlRouting(AppUI ui) {
         this.ui = ui;
@@ -107,8 +110,12 @@ public class WebUrlRouting implements UrlRouting {
         // do not push copy-pasted requested state to avoid double state pushing into browser history
         if (!pushState || externalNavigation(currentState, newState)) {
             UrlTools.replaceState(newState.asRoute());
+
+            lastHistoryOperation = CubaUIConstants.HISTORY_REPLACE_OP;
         } else {
             UrlTools.pushState(newState.asRoute());
+
+            lastHistoryOperation = CubaUIConstants.HISTORY_PUSH_OP;
         }
 
         ((WebWindow) screen.getWindow()).setResolvedState(newState);
@@ -368,5 +375,9 @@ public class WebUrlRouting implements UrlRouting {
         }
 
         return notAttached;
+    }
+
+    public String getLastHistoryOperation() {
+        return lastHistoryOperation;
     }
 }

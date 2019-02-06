@@ -44,9 +44,12 @@ import com.haulmont.cuba.gui.navigation.NavigationState;
 import com.haulmont.cuba.web.sys.navigation.UrlChangeHandler;
 import com.haulmont.cuba.web.sys.navigation.WebHistory;
 import com.haulmont.cuba.web.widgets.*;
+import com.haulmont.cuba.web.widgets.client.ui.CubaUIConstants;
 import com.vaadin.annotations.PreserveOnRefresh;
 import com.vaadin.annotations.Push;
 import com.vaadin.server.ErrorHandler;
+import com.vaadin.server.PaintException;
+import com.vaadin.server.PaintTarget;
 import com.vaadin.server.Resource;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.WrappedSession;
@@ -739,5 +742,13 @@ public class AppUI extends CubaUI implements ErrorHandler, EnhancedUI, UiExcepti
     @Override
     public String translateToWebPath(String fullWebJarPath) {
         return webJarResourceResolver.translateToWebPath(fullWebJarPath);
+    }
+
+    @Override
+    public void paintContent(PaintTarget target) throws PaintException {
+        super.paintContent(target);
+
+        String lastHistoryOp = ((WebUrlRouting) getUrlRouting()).getLastHistoryOperation();
+        target.addAttribute(CubaUIConstants.LAST_HISTORY_OP, lastHistoryOp);
     }
 }

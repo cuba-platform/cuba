@@ -20,6 +20,7 @@ package com.haulmont.cuba.web.widgets.client.appui;
 import com.haulmont.cuba.web.widgets.CubaUI;
 import com.haulmont.cuba.web.widgets.client.clientmanager.CubaUIClientRpc;
 import com.haulmont.cuba.web.widgets.client.tooltip.CubaTooltip;
+import com.haulmont.cuba.web.widgets.client.ui.CubaUIConstants;
 import com.vaadin.client.ApplicationConfiguration;
 import com.vaadin.client.UIDL;
 import com.vaadin.client.communication.StateChangeEvent;
@@ -28,6 +29,7 @@ import com.vaadin.client.ui.ui.UIConnector;
 import com.vaadin.shared.ui.Connect;
 import com.vaadin.shared.ui.ui.UIConstants;
 import elemental.client.Browser;
+import elemental.html.History;
 
 import java.util.Map;
 
@@ -70,15 +72,28 @@ public class CubaUIConnector extends UIConnector {
 
     @Override
     protected void updateBrowserHistory(UIDL uidl) {
-        if (uidl.hasAttribute(UIConstants.ATTRIBUTE_REPLACE_STATE)) {
-            Browser.getWindow().getHistory().replaceState(null,
-                    getState().pageState.title, uidl.getStringAttribute(
-                            UIConstants.ATTRIBUTE_REPLACE_STATE));
-        }
-        if (uidl.hasAttribute(UIConstants.ATTRIBUTE_PUSH_STATE)) {
-            Browser.getWindow().getHistory().pushState(null,
-                    getState().pageState.title,
-                    uidl.getStringAttribute(UIConstants.ATTRIBUTE_PUSH_STATE));
+        String lastHistoryOp = uidl.getStringAttribute(CubaUIConstants.LAST_HISTORY_OP);
+
+        History history = Browser.getWindow().getHistory();
+        String pageTitle = getState().pageState.title;
+
+        String replace = uidl.getStringAttribute(UIConstants.ATTRIBUTE_REPLACE_STATE);
+        String push = uidl.getStringAttribute(UIConstants.ATTRIBUTE_PUSH_STATE);
+
+        if (CubaUIConstants.HISTORY_PUSH_OP.equals(lastHistoryOp)) {
+            if (uidl.hasAttribute(UIConstants.ATTRIBUTE_REPLACE_STATE)) {
+                history.replaceState(null, pageTitle, replace);
+            }
+            if (uidl.hasAttribute(UIConstants.ATTRIBUTE_PUSH_STATE)) {
+                history.pushState(null, pageTitle, push);
+            }
+        } else {
+            if (uidl.hasAttribute(UIConstants.ATTRIBUTE_PUSH_STATE)) {
+                history.pushState(null, pageTitle, push);
+            }
+            if (uidl.hasAttribute(UIConstants.ATTRIBUTE_REPLACE_STATE)) {
+                history.replaceState(null, pageTitle, replace);
+            }
         }
     }
 }

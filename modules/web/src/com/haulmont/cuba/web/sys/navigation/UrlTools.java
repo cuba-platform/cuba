@@ -54,7 +54,7 @@ public class UrlTools {
             return;
         }
 
-        Page.getCurrent().setUriFragment(navigationState, false);
+        Page.getCurrent().pushState("#" + navigationState);
     }
 
     public static void replaceState(String navigationState) {
