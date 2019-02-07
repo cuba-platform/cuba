@@ -351,7 +351,8 @@ public class ScreenNavigator {
 
         Entity entity = dataManager.load(ctx);
         if (entity == null) {
-            return null;
+            owner.revertNavigationState();
+            throw new EntityAccessException(metaClass, id);
         }
 
         return ParamsMap.of(WindowParams.ITEM.name(), entity);
