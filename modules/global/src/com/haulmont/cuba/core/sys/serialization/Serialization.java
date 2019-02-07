@@ -32,21 +32,25 @@ public interface Serialization {
      *
      * @param object object
      * @param os output stream
+     * @throws SerializationException in case of serialization problems
      */
     void serialize(Object object, OutputStream os);
 
     /**
      * Deserialize object from stream
+     * @throws SerializationException in case of serialization problems
      */
     Object deserialize(InputStream is);
 
     /**
      * Serialize object to byte array
+     * @throws SerializationException in case of serialization problems
      */
     byte[] serialize(Object object);
 
     /**
      * Deserialize object from byte array
+     * @throws SerializationException in case of serialization problems
      */
     Object deserialize(byte[] bytes);
 }
