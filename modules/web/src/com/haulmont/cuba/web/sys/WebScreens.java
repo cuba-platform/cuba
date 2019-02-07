@@ -1653,6 +1653,9 @@ public class WebScreens implements Screens, WindowManager {
                     Window oldWindow = iterator.next();
                     remove(oldWindow.getFrameOwner());
                 }
+
+                // after last window closed we need to switch back to window container
+                workArea.switchTo(AppWorkArea.State.WINDOW_CONTAINER);
             }
 
             mainLayout.setWindowContainer(windowContainer);
