@@ -157,7 +157,9 @@ public class DesktopRowsCount extends DesktopAbstractComponent<DesktopRowsCount.
                 impl.getNextButton().setVisible(false);
                 impl.getFirstButton().setVisible(false);
                 impl.getLastButton().setVisible(false);
-                if (size % 100 > 10 && size % 100 < 20) {
+                if (size == 1) {
+                    msgKey = "table.rowsCount.msg2Singular1";
+                } else if (size % 100 > 10 && size % 100 < 20) {
                     msgKey = "table.rowsCount.msg2Plural1";
                 } else {
                     switch (size % 10) {

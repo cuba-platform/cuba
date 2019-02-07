@@ -289,7 +289,9 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
                 component.getNextButton().setVisible(false);
                 component.getFirstButton().setVisible(false);
                 component.getLastButton().setVisible(false);
-                if (size % 100 > 10 && size % 100 < 20) {
+                if (size == 1) {
+                    msgKey = "table.rowsCount.msg2Singular1";
+                } else if (size % 100 > 10 && size % 100 < 20) {
                     msgKey = "table.rowsCount.msg2Plural1";
                 } else {
                     switch (size % 10) {
