@@ -17,7 +17,9 @@
 
 package com.haulmont.cuba.core.sys.remoting;
 
+import com.google.common.base.Joiner;
 import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.core.sys.serialization.SerializationException;
 import com.haulmont.cuba.core.sys.serialization.SerializationSupport;
 import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter;
@@ -72,15 +74,32 @@ public class HttpServiceExporter extends HttpInvokerServiceExporter implements B
     public void handleRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try {
             RemoteInvocationResult result;
+            RemoteInvocation invocation = null;
             try {
-                RemoteInvocation invocation = readRemoteInvocation(request);
+                invocation = readRemoteInvocation(request);
                 result = invokeAndCreateResult(invocation, getProxy());
             } catch (OptionalDataException | ClassCastException e) { // typical binary incompatibility exceptions
                 logger.error("Failed to read remote invocation request", e);
                 result = new RemoteInvocationResult(e);
             }
-
-            writeRemoteInvocationResult(request, response, result);
+            try {
+                writeRemoteInvocationResult(request, response, result);
+            } catch (SerializationException e) {
+                String serviceName = null;
+                if (getServiceInterface() != null) {
+                    serviceName = getServiceInterface().getSimpleName();
+                }
+                String methodName = null;
+                String paramTypes = null;
+                if (invocation != null) {
+                    methodName = invocation.getMethodName();
+                    if (invocation.getParameterTypes() != null) {
+                        paramTypes = Joiner.on(",").join(invocation.getParameterTypes());
+                    }
+                }
+                throw new NestedServletException(
+                        String.format("Failed to write result for service [%s.%s(%s)]", serviceName, methodName, paramTypes), e);
+            }
         } catch (ClassNotFoundException ex) {
             throw new NestedServletException("Class not found during deserialization", ex);
         }
