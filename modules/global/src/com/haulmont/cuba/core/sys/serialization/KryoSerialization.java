@@ -143,6 +143,8 @@ public class KryoSerialization implements Serialization {
                 BaseEntityInternalAccess.setDetached((BaseGenericIdEntity) object, true);
             }
             kryos.get().writeClassAndObject(output, object);
+        } catch (Exception e) {
+            throw new SerializationException(e);
         }
     }
 
@@ -150,6 +152,8 @@ public class KryoSerialization implements Serialization {
     public Object deserialize(InputStream is) {
         try (Input input = new Input(is)) {
             return kryos.get().readClassAndObject(input);
+        } catch (Exception e) {
+            throw new SerializationException(e);
         }
     }
 
