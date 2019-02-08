@@ -18,12 +18,16 @@
 package com.haulmont.cuba.web.widgets.client.textfield;
 
 import com.haulmont.cuba.web.widgets.CubaMaskedTextField;
+import com.vaadin.client.ApplicationConnection;
+import com.vaadin.client.Paintable;
+import com.vaadin.client.UIDL;
 import com.vaadin.client.communication.StateChangeEvent;
+import com.vaadin.client.ui.ShortcutActionHandler;
 import com.vaadin.client.ui.textfield.TextFieldConnector;
 import com.vaadin.shared.ui.Connect;
 
 @Connect(CubaMaskedTextField.class)
-public class CubaMaskedFieldConnector extends TextFieldConnector {
+public class CubaMaskedFieldConnector extends TextFieldConnector implements Paintable {
 
     @Override
     public CubaMaskedTextFieldState getState() {
@@ -54,5 +58,22 @@ public class CubaMaskedFieldConnector extends TextFieldConnector {
     @Override
     protected String getTextFieldValue() {
         return getWidget().getValueConsideringMaskedMode();
+    }
+
+    @Override
+    public void updateFromUIDL(UIDL uidl, ApplicationConnection client) {
+        // We may have actions attached to this text field
+        if (uidl.getChildCount() > 0) {
+            final int cnt = uidl.getChildCount();
+            for (int i = 0; i < cnt; i++) {
+                UIDL childUidl = uidl.getChildUIDL(i);
+                if (childUidl.getTag().equals("actions")) {
+                    if (getWidget().getShortcutActionHandler() == null) {
+                        getWidget().setShortcutActionHandler(new ShortcutActionHandler(uidl.getId(), client));
+                    }
+                    getWidget().getShortcutActionHandler().updateActionMap(childUidl);
+                }
+            }
+        }
     }
 }
