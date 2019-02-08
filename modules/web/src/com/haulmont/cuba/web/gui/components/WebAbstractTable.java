@@ -35,6 +35,7 @@ import com.haulmont.cuba.gui.Notifications;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.LookupComponent.LookupSelectionChangeNotifier;
 import com.haulmont.cuba.gui.components.actions.BaseAction;
+import com.haulmont.cuba.gui.components.columnmanager.ColumnManager;
 import com.haulmont.cuba.gui.components.data.AggregatableTableItems;
 import com.haulmont.cuba.gui.components.data.BindingState;
 import com.haulmont.cuba.gui.components.data.TableItems;
@@ -111,7 +112,7 @@ import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEnhancedTable, E extends Entity>
         extends WebAbstractActionsHolderComponent<T>
         implements Table<E>, TableItemsEventsDelegate<E>, LookupSelectionChangeNotifier<E>,
-        HasInnerComponents, InstallTargetHandler, InitializingBean {
+        HasInnerComponents, InstallTargetHandler, InitializingBean, ColumnManager {
 
     public static final int MAX_TEXT_LENGTH_GAP = 10;
 
