@@ -56,8 +56,7 @@ public interface Table<E extends Entity>
             ListComponent<E>, Component.Editable, HasSettings,
             HasButtonsPanel, HasPresentations, Component.HasCaption, HasContextHelp,
             Component.HasIcon, HasRowsCount, LookupComponent<E>, Component.Focusable,
-            RowsCount.RowsCountTarget, HasSubParts, HasHtmlCaption, HasHtmlDescription,
-            ColumnManager {
+            RowsCount.RowsCountTarget, HasSubParts, HasHtmlCaption, HasHtmlDescription {
 
     enum ColumnAlignment {
         LEFT,
@@ -135,24 +134,6 @@ public interface Table<E extends Entity>
     }
 
     /**
-     * Assign caption for column in runtime.
-     *
-     * @see #getColumn(String)
-     * @deprecated Use {@link Column#setCaption(String)} instead.
-     */
-    @Deprecated
-    void setColumnCaption(String columnId, String caption);
-
-    /**
-     * Assign caption for column in runtime.
-     *
-     * @see #getColumn(String)
-     * @deprecated Use {@link Column#setCaption(String)} instead.
-     */
-    @Deprecated
-    void setColumnCaption(Table.Column column, String caption);
-
-    /**
      * Enable or disable text selection in Table cells.
      * Set true to enable.
      */
@@ -161,95 +142,6 @@ public interface Table<E extends Entity>
      * @return true if text selection is enabled.
      */
     boolean isTextSelectionEnabled();
-
-    /**
-     * Assign description for column in runtime.
-     *
-     * @see #getColumn(String)
-     * @deprecated Use {@link Column#setDescription(String)} instead.
-     */
-    @Deprecated
-    void setColumnDescription(String columnId, String description);
-
-    /**
-     * Assign description for column in runtime.
-     *
-     * @see #getColumn(String)
-     * @deprecated Use {@link Column#setDescription(String)} instead.
-     */
-    @Deprecated
-    void setColumnDescription(Table.Column column, String description);
-
-    /**
-     * Show/hide column in runtime. Hidden column will be available in column control.
-     *
-     * @see #getColumn(String)
-     * @deprecated Use {@link Column#setCollapsed(boolean)} instead.
-     */
-    @Deprecated
-    void setColumnCollapsed(String columnId, boolean collapsed);
-
-    /**
-     * Show/hide column in runtime. Hidden column will be available in column control.
-     *
-     * @see #getColumn(String)
-     * @deprecated Use {@link Column#setCollapsed(boolean)} instead.
-     */
-    @Deprecated
-    void setColumnCollapsed(Table.Column column, boolean collapsed);
-
-    /**
-     * Set column width in runtime.
-     *
-     * @see #getColumn(String)
-     * @deprecated Use {@link Column#setWidth(Integer)} instead.
-     */
-    @Deprecated
-    void setColumnWidth(String columnId, int width);
-
-    /**
-     * Set column width in runtime.
-     *
-     * @see #getColumn(String)
-     * @deprecated Use {@link Column#setWidth(Integer)} instead.
-     */
-    @Deprecated
-    void setColumnWidth(Table.Column column, int width);
-
-    /**
-     * @see #getColumn(String)
-     * @deprecated Use {@link Column#setAlignment(ColumnAlignment)} instead.
-     */
-    @Deprecated
-    void setColumnAlignment(String columnId, ColumnAlignment alignment);
-
-    /**
-     * @see #getColumn(String)
-     * @deprecated Use {@link Column#setAlignment(ColumnAlignment)} instead.
-     */
-    @Deprecated
-    void setColumnAlignment(Column column, ColumnAlignment alignment);
-
-    /**
-     * @see #getColumn(String)
-     * @deprecated Use {@link Column#setAggregation(AggregationInfo)} instead.
-     */
-    @Deprecated
-    void addAggregationProperty(String columnId, AggregationInfo.Type type);
-
-    /**
-     * @see #getColumn(String)
-     * @deprecated Use {@link Column#setAggregation(AggregationInfo)} instead.
-     */
-    @Deprecated
-    void addAggregationProperty(Column columnId, AggregationInfo.Type type);
-
-    /**
-     * @see #getColumn(String)
-     * @deprecated Use {@link Column#removeAggregationProperty()} instead.
-     */
-    @Deprecated
-    void removeAggregationProperty(String columnId);
 
     /**
      * Assign action to be executed on double click inside a table row.
@@ -296,74 +188,6 @@ public interface Table<E extends Entity>
 
     void setColumnControlVisible(boolean columnCollapsingAllowed);
     boolean getColumnControlVisible();
-
-    /**
-     * @see #getColumn(String)
-     * @deprecated Use {@link Column#setSortable(boolean)} instead.
-     */
-    @Deprecated
-    void setColumnSortable(String columnId, boolean sortable);
-
-    /**
-     * @see #getColumn(String)
-     * @deprecated Use {@link Column#isSortable()} instead.
-     */
-    @Deprecated
-    boolean getColumnSortable(String columnId);
-
-    /**
-     * @see #getColumn(String)
-     * @deprecated Use {@link Column#setSortable(boolean)} instead.
-     */
-    @Deprecated
-    void setColumnSortable(Column column, boolean sortable);
-
-    /**
-     * @see #getColumn(String)
-     * @deprecated User {@link Column#isSortable()} instead.
-     */
-    @Deprecated
-    boolean getColumnSortable(Column column);
-
-    /**
-     * Sets whether caption of column with the given {@code columnId} should be interpreted as HTML or not.
-     *
-     * @param columnId      column id
-     * @param captionAsHtml interpret caption as HTML or not
-     * @see #getColumn(String)
-     * @deprecated Use {@link Column#setCaptionAsHtml(boolean)} instead.
-     */
-    @Deprecated
-    void setColumnCaptionAsHtml(String columnId, boolean captionAsHtml);
-
-    /**
-     * Sets whether caption of the given {@code column} should be interpreted as HTML or not.
-     *
-     * @param column        column
-     * @param captionAsHtml interpret caption as HTML or not
-     * @see #getColumn(String)
-     * @deprecated Use {@link Column#setCaptionAsHtml(boolean)} instead.
-     */
-    @Deprecated
-    void setColumnCaptionAsHtml(Table.Column column, boolean captionAsHtml);
-
-    /**
-     * @param columnId column id
-     * @return whether caption of column with the given {@code columnId} should be interpreted as HTML or not
-     * @see #getColumn(String)
-     * @deprecated Use {@link Column#isCaptionAsHtml()} instead.
-     */
-    @Deprecated
-    boolean getColumnCaptionAsHtml(String columnId);
-
-    /**
-     * @param column column
-     * @return whether caption of the given {@code column} should be interpreted as HTML or not
-     * @see #getColumn(String)
-     * @deprecated Use {@link Column#isCaptionAsHtml()} instead.
-     */
-    @Deprecated
-    boolean getColumnCaptionAsHtml(Table.Column column);
 
     /**
      * Set focus on inner field of editable/generated column.

@@ -25,6 +25,7 @@ import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.GroupTable;
 import com.haulmont.cuba.gui.components.Table;
+import com.haulmont.cuba.gui.components.columnmanager.GroupColumnManager;
 import com.haulmont.cuba.gui.components.data.GroupTableItems;
 import com.haulmont.cuba.gui.components.data.TableItems;
 import com.haulmont.cuba.gui.components.data.meta.EntityTableItems;
@@ -52,7 +53,8 @@ import static com.google.common.base.Strings.emptyToNull;
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
 @SuppressWarnings("deprecation")
-public class WebGroupTable<E extends Entity> extends WebAbstractTable<CubaGroupTable, E> implements GroupTable<E> {
+public class WebGroupTable<E extends Entity> extends WebAbstractTable<CubaGroupTable, E>
+        implements GroupTable<E>, GroupColumnManager {
 
     protected Map<Table.Column, GroupAggregationCells> groupAggregationCells = null;
 
@@ -390,19 +392,6 @@ public class WebGroupTable<E extends Entity> extends WebAbstractTable<CubaGroupT
     protected boolean uselessGrouping(Object[] newGroupProperties) {
         return (newGroupProperties == null || newGroupProperties.length == 0) &&
                 component.getGroupProperties().isEmpty();
-    }
-
-    @Override
-    public boolean getColumnGroupAllowed(String columnId) {
-        Column column = getColumnNN(columnId);
-        return getColumnGroupAllowed(column);
-    }
-
-    @Override
-    public boolean getColumnGroupAllowed(Column column) {
-        checkNotNullArgument(column, "column must be non null");
-
-        return component.getColumnGroupAllowed(column.getId());
     }
 
     @Override

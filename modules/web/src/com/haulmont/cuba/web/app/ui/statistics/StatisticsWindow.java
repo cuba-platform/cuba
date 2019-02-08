@@ -126,7 +126,7 @@ public class StatisticsWindow extends AbstractWindow {
 
         StatisticsDatasource.DurationFormatter formatter = new StatisticsDatasource.DurationFormatter();
         String dur = formatter.apply((double) (System.currentTimeMillis() - startTime));
-        paramsTable.setColumnCaption("recentStringValue", formatMessage("recentAverage", dur));
+        paramsTable.getColumn("recentStringValue").setCaption(formatMessage("recentAverage", dur));
     }
 
     protected void setNode(JmxInstance currentNode) {

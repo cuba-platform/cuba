@@ -37,7 +37,7 @@ import java.util.Map;
  *
  * @param <E> row item type
  */
-public interface GroupTable<E extends Entity> extends Table<E>, GroupColumnManager {
+public interface GroupTable<E extends Entity> extends Table<E> {
 
     String NAME = "groupTable";
 
@@ -100,29 +100,6 @@ public interface GroupTable<E extends Entity> extends Table<E>, GroupColumnManag
      * Resets grouping at all.
      */
     void ungroup();
-
-    boolean getColumnGroupAllowed(String columnId);
-
-    /**
-     * @see #getColumn(String)
-     * @deprecated Use {@link com.haulmont.cuba.gui.components.Table.Column#setGroupAllowed(boolean)} instead.
-     */
-    @Deprecated
-    void setColumnGroupAllowed(String columnId, boolean allowed);
-
-    /**
-     * @see #getColumn(String)
-     * @deprecated Use {@link com.haulmont.cuba.gui.components.Table.Column#isGroupAllowed} instead.
-     */
-    @Deprecated
-    boolean getColumnGroupAllowed(Table.Column column);
-
-    /**
-     * @see #getColumn(String)
-     * @deprecated Use {@link com.haulmont.cuba.gui.components.Table.Column#setGroupAllowed(boolean)} instead.
-     */
-    @Deprecated
-    void setColumnGroupAllowed(Table.Column column, boolean allowed);
 
     GroupCellValueFormatter<E> getGroupCellValueFormatter();
     void setGroupCellValueFormatter(GroupCellValueFormatter<E> formatter);

@@ -74,7 +74,7 @@ public class LocalizedEnumerationWindow extends AbstractWindow implements ListEd
             });
             return delItemBtn;
         });
-        enumValuesTable.setColumnWidth("cancel", 30);
+        enumValuesTable.getColumn("cancel").setWidth(30);
 
         enumValuesDs.addItemChangeListener(e -> {
             if (e.getPrevItem() == null) { // if the first time selected

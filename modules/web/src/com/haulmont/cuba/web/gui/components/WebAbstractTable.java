@@ -35,6 +35,7 @@ import com.haulmont.cuba.gui.Notifications;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.LookupComponent.LookupSelectionChangeNotifier;
 import com.haulmont.cuba.gui.components.actions.BaseAction;
+import com.haulmont.cuba.gui.components.columnmanager.ColumnManager;
 import com.haulmont.cuba.gui.components.data.AggregatableTableItems;
 import com.haulmont.cuba.gui.components.data.BindingState;
 import com.haulmont.cuba.gui.components.data.TableItems;
@@ -111,7 +112,7 @@ import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEnhancedTable, E extends Entity>
         extends WebAbstractActionsHolderComponent<T>
         implements Table<E>, TableItemsEventsDelegate<E>, LookupSelectionChangeNotifier<E>,
-        HasInnerComponents, InstallTargetHandler, InitializingBean {
+        HasInnerComponents, InstallTargetHandler, InitializingBean, ColumnManager {
 
     public static final int MAX_TEXT_LENGTH_GAP = 10;
 
@@ -2380,24 +2381,12 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
     }
 
     @Override
-    public boolean getColumnSortable(String columnId) {
-        Column column = getColumn(columnId);
-        return getColumnSortable(column);
-    }
-
-    @Override
     public void setColumnSortable(Column column, boolean sortable) {
         checkNotNullArgument(column, "column must be non null");
         if (column.isSortable() != sortable) {
             column.setSortable(sortable);
         }
         component.setColumnSortable(column.getId(), sortable);
-    }
-
-    @Override
-    public boolean getColumnSortable(Column column) {
-        checkNotNullArgument(column, "column must be non null");
-        return component.getColumnSortable(column.getId());
     }
 
     @Override
@@ -2482,23 +2471,6 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
             column.setCaptionAsHtml(captionAsHtml);
         }
         component.setColumnCaptionAsHtml(column.getId(), captionAsHtml);
-    }
-
-    @Override
-    public boolean getColumnCaptionAsHtml(String columnId) {
-        Column<E> column = getColumn(columnId);
-        if (column == null) {
-            throw new IllegalStateException(String.format("Column with id '%s' not found", columnId));
-        }
-
-        return getColumnCaptionAsHtml(column);
-    }
-
-    @Override
-    public boolean getColumnCaptionAsHtml(Column column) {
-        checkNotNullArgument(column, "Column must be non null");
-
-        return component.getColumnCaptionAsHtml(column.getId());
     }
 
     @Deprecated
