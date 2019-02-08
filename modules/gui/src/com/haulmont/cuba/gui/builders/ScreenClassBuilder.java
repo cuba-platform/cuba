@@ -50,7 +50,7 @@ public class ScreenClassBuilder<S extends Screen> extends ScreenBuilder {
     }
 
     @Override
-    public ScreenBuilder withOptions(ScreenOptions options) {
+    public ScreenClassBuilder<S> withOptions(ScreenOptions options) {
         super.withOptions(options);
         return this;
     }
@@ -84,7 +84,6 @@ public class ScreenClassBuilder<S extends Screen> extends ScreenBuilder {
         return closeListener;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public S build() {
         return (S) super.build();
