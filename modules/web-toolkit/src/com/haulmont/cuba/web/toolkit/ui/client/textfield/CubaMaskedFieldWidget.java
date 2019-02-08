@@ -20,18 +20,19 @@ package com.haulmont.cuba.web.toolkit.ui.client.textfield;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.*;
+import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.ui.Widget;
 import com.vaadin.client.BrowserInfo;
+import com.vaadin.client.ui.ShortcutActionHandler;
 import com.vaadin.client.ui.VTextField;
 import com.vaadin.shared.EventId;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class CubaMaskedFieldWidget extends VTextField {
+public class CubaMaskedFieldWidget extends VTextField implements ShortcutActionHandler.ShortcutActionHandlerOwner {
 
     public static final String CLASSNAME = "c-maskedfield";
 
@@ -61,6 +62,8 @@ public class CubaMaskedFieldWidget extends VTextField {
     protected int shiftPressPos = -1;
 
     protected boolean isTimeMask = false;
+
+    protected ShortcutActionHandler shortcutHandler;
 
     public CubaMaskedFieldWidget() {
         setStylePrimaryName(CLASSNAME);
@@ -107,6 +110,44 @@ public class CubaMaskedFieldWidget extends VTextField {
         this.shiftPressed = false;
         this.shiftPressPos = -1;
         this.focused = false;
+    }
+
+    @Override
+    public void onBrowserEvent(Event event) {
+        super.onBrowserEvent(event);
+
+        final int type = DOM.eventGetType(event);
+
+        if (type == Event.ONKEYDOWN && shortcutHandler != null) {
+            shortcutHandler.handleKeyboardEvent(event);
+        }
+    }
+
+    public void setShortcutActionHandler(ShortcutActionHandler handler) {
+        this.shortcutHandler = handler;
+    }
+
+    @Override
+    public ShortcutActionHandler getShortcutActionHandler() {
+        return shortcutHandler;
+    }
+
+    @Override
+    public void add(Widget w) {
+    }
+
+    @Override
+    public void clear() {
+    }
+
+    @Override
+    public Iterator<Widget> iterator() {
+        return new LinkedList<Widget>().iterator();
+    }
+
+    @Override
+    public boolean remove(Widget w) {
+        return false;
     }
 
     public boolean isMaskedMode() {
