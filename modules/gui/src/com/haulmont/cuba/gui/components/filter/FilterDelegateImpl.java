@@ -921,6 +921,9 @@ public class FilterDelegateImpl implements FilterDelegate {
             }
             if (paramEditComponentCellContent != null) {
                 paramEditComponentCellContent.addStyleName("param-field-layout");
+                if (condition.getParam().getType() == Param.Type.UNARY) {
+                    paramEditComponentCellContent.addStyleName("unary-param-type");
+                }
                 grid.add(paramEditComponentCellContent, nextColumnStart * 2 + 1, row, nextColumnEnd * 2 + 1, row);
             }
 
