@@ -19,6 +19,7 @@ package com.haulmont.cuba.gui.components;
 import com.google.common.reflect.TypeToken;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.gui.components.columnmanager.GroupColumnManager;
 import com.haulmont.cuba.gui.components.data.TableItems;
 import com.haulmont.cuba.gui.components.data.table.DatasourceGroupTableItems;
 import com.haulmont.cuba.gui.components.data.table.DatasourceTableItems;
@@ -36,7 +37,7 @@ import java.util.Map;
  *
  * @param <E> row item type
  */
-public interface GroupTable<E extends Entity> extends Table<E> {
+public interface GroupTable<E extends Entity> extends Table<E>, GroupColumnManager {
 
     String NAME = "groupTable";
 
@@ -101,9 +102,26 @@ public interface GroupTable<E extends Entity> extends Table<E> {
     void ungroup();
 
     boolean getColumnGroupAllowed(String columnId);
+
+    /**
+     * @see #getColumn(String)
+     * @deprecated Use {@link com.haulmont.cuba.gui.components.Table.Column#setGroupAllowed(boolean)} instead.
+     */
+    @Deprecated
     void setColumnGroupAllowed(String columnId, boolean allowed);
 
+    /**
+     * @see #getColumn(String)
+     * @deprecated Use {@link com.haulmont.cuba.gui.components.Table.Column#isGroupAllowed} instead.
+     */
+    @Deprecated
     boolean getColumnGroupAllowed(Table.Column column);
+
+    /**
+     * @see #getColumn(String)
+     * @deprecated Use {@link com.haulmont.cuba.gui.components.Table.Column#setGroupAllowed(boolean)} instead.
+     */
+    @Deprecated
     void setColumnGroupAllowed(Table.Column column, boolean allowed);
 
     GroupCellValueFormatter<E> getGroupCellValueFormatter();
