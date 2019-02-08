@@ -1,0 +1,14 @@
+<window xmlns="http://schemas.haulmont.com/cuba/screen/window.xsd">
+    <layout spacing="true">
+        <dateField id="dateField"
+                   datatype="date"/>
+        <dateField id="dateTimeField"
+                   datatype="dateTime"/>
+        <dateField id="localDateField"
+                   datatype="localDate"/>
+        <dateField id="localDateTimeField"
+                   datatype="localDateTime"/>
+        <dateField id="offsetDateTimeField"
+                   datatype="offsetDateTime"/>
+    </layout>
+</window>

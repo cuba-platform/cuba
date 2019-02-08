@@ -21,6 +21,7 @@ import com.google.common.reflect.TypeToken;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.time.OffsetTime;
 
 public interface DatePicker<V> extends Field<V>, HasDatatype<V>, Component.Focusable, HasRange<V>, Buffered {
@@ -32,8 +33,7 @@ public interface DatePicker<V> extends Field<V>, HasDatatype<V>, Component.Focus
     TypeToken<DatePicker<java.util.Date>> TYPE_DATETIME = new TypeToken<DatePicker<java.util.Date>>(){};
     TypeToken<DatePicker<LocalDate>> TYPE_LOCALDATE = new TypeToken<DatePicker<LocalDate>>(){};
     TypeToken<DatePicker<LocalDateTime>> TYPE_LOCALDATETIME = new TypeToken<DatePicker<LocalDateTime>>(){};
-    TypeToken<DatePicker<java.sql.Time>> TYPE_TIME = new TypeToken<DatePicker<java.sql.Time>>(){};
-    TypeToken<DatePicker<OffsetTime>> TYPE_OFFSETTIME = new TypeToken<DatePicker<OffsetTime>>(){};
+    TypeToken<DatePicker<OffsetDateTime>> TYPE_OFFSETDATETIME = new TypeToken<DatePicker<OffsetDateTime>>(){};
 
     enum Resolution {
         DAY,

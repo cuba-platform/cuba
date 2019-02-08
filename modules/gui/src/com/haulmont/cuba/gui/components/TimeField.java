@@ -19,6 +19,8 @@ package com.haulmont.cuba.gui.components;
 import com.google.common.reflect.TypeToken;
 
 import java.sql.Date;
+import java.time.LocalTime;
+import java.time.OffsetTime;
 
 public interface TimeField<V> extends Field<V>, HasDatatype<V>, Buffered, Component.Focusable {
     String NAME = "timeField";
@@ -26,6 +28,8 @@ public interface TimeField<V> extends Field<V>, HasDatatype<V>, Buffered, Compon
     TypeToken<TimeField<Date>> TYPE_DEFAULT = new TypeToken<TimeField<Date>>(){};
 
     TypeToken<TimeField<java.sql.Time>> TYPE_TIME = new TypeToken<TimeField<java.sql.Time>>(){};
+    TypeToken<TimeField<LocalTime>> TYPE_LOCALTIME = new TypeToken<TimeField<LocalTime>>(){};
+    TypeToken<TimeField<OffsetTime>> TYPE_OFFSETTIME = new TypeToken<TimeField<OffsetTime>>(){};
 
     enum Resolution {
         SEC,

@@ -68,7 +68,12 @@
                     <xs:enumeration value="decimal"/>
                     <xs:enumeration value="double"/>
                     <xs:enumeration value="int"/>
+                    <xs:enumeration value="localDate"/>
+                    <xs:enumeration value="localDateTime"/>
+                    <xs:enumeration value="localTime"/>
                     <xs:enumeration value="long"/>
+                    <xs:enumeration value="offsetDateTime"/>
+                    <xs:enumeration value="offsetTime"/>
                     <xs:enumeration value="string"/>
                     <xs:enumeration value="time"/>
                     <xs:enumeration value="uuid"/>
@@ -88,6 +93,38 @@
                     <xs:enumeration value="double"/>
                     <xs:enumeration value="int"/>
                     <xs:enumeration value="long"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:union>
+    </xs:simpleType>
+
+    <xs:simpleType name="dateTimeDatatypeEnum">
+        <xs:union>
+            <xs:simpleType>
+                <xs:restriction base="xs:string"/>
+            </xs:simpleType>
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:enumeration value="date"/>
+                    <xs:enumeration value="dateTime"/>
+                    <xs:enumeration value="localDate"/>
+                    <xs:enumeration value="localDateTime"/>
+                    <xs:enumeration value="offsetDateTime"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:union>
+    </xs:simpleType>
+
+    <xs:simpleType name="timeDatatypeEnum">
+        <xs:union>
+            <xs:simpleType>
+                <xs:restriction base="xs:string"/>
+            </xs:simpleType>
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:enumeration value="localTime"/>
+                    <xs:enumeration value="offsetTime"/>
+                    <xs:enumeration value="time"/>
                 </xs:restriction>
             </xs:simpleType>
         </xs:union>
@@ -1293,6 +1330,7 @@
 
                 <xs:attribute name="rangeStart" type="xs:string"/>
                 <xs:attribute name="rangeEnd" type="xs:string"/>
+                <xs:attribute name="datatype" type="dateTimeDatatypeEnum"/>
 
                 <xs:attributeGroup ref="hasTabIndex"/>
                 <xs:attributeGroup ref="hasEditable"/>
@@ -1525,6 +1563,7 @@
 
                 <xs:attribute name="resolution" type="dateFieldResolution"/>
                 <xs:attribute name="dateFormat" type="xs:string"/>
+                <xs:attribute name="datatype" type="dateTimeDatatypeEnum"/>
 
                 <xs:attributeGroup ref="hasBuffered"/>
                 <xs:attributeGroup ref="hasTabIndex"/>
@@ -1575,6 +1614,7 @@
                 <xs:attribute name="showSeconds" type="xs:boolean"/>
                 <xs:attribute name="timeFormat" type="xs:string"/>
                 <xs:attribute name="resolution" type="timeFieldResolution"/>
+                <xs:attribute name="datatype" type="timeDatatypeEnum"/>
 
                 <xs:attributeGroup ref="hasBuffered"/>
                 <xs:attributeGroup ref="hasTabIndex"/>
