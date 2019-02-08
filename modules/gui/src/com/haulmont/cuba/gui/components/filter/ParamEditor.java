@@ -56,6 +56,12 @@ public class ParamEditor implements AbstractCondition.Listener {
         operationEditor.setEnabled(operationEditable);
         labelAndOperationLayout.add(operationEditor);
 
+        // if we add a condition without operation
+        if (operationEditor instanceof VBoxLayout
+                && ((VBoxLayout) operationEditor).getOwnComponents().isEmpty()) {
+            labelAndOperationLayout.addStyleName("no-operation");
+        }
+
         createParamEditLayout();
 
         condition.addListener(this);
