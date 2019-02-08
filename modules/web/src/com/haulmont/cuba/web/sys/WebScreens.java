@@ -178,7 +178,6 @@ public class WebScreens implements Screens, WindowManager {
             );
         }
 
-        @SuppressWarnings("unchecked")
         Class<T> resolvedScreenClass = (Class<T>) windowInfo.getControllerClass();
 
         // load XML document here in order to get metadata before Window creation, e.g. forceDialog from <dialogMode>
@@ -268,25 +267,24 @@ public class WebScreens implements Screens, WindowManager {
         boolean forceDialog = false;
         OpenMode launchMode = (OpenMode) requiredLaunchMode;
 
+        if (element != null && element.element("dialogMode") != null) {
+            String forceDialogAttr = element.element("dialogMode").attributeValue("forceDialog");
+            if (StringUtils.isNotEmpty(forceDialogAttr)
+                    && Boolean.parseBoolean(forceDialogAttr)) {
+                launchMode = OpenMode.DIALOG;
+            }
+        }
+
+        DialogMode dialogMode = resolvedScreenClass.getAnnotation(DialogMode.class);
+        if (dialogMode != null && dialogMode.forceDialog()) {
+            launchMode = OpenMode.DIALOG;
+        }
+
         if (launchMode != OpenMode.DIALOG
                 && launchMode != OpenMode.ROOT) {
-
             if (hasModalDialogWindow()) {
                 launchMode = OpenMode.DIALOG;
                 forceDialog = true;
-            } else {
-                if (element != null && element.element("dialogMode") != null) {
-                    String forceDialogAttr = element.element("dialogMode").attributeValue("forceDialog");
-                    if (StringUtils.isNotEmpty(forceDialogAttr)
-                            && Boolean.parseBoolean(forceDialogAttr)) {
-                        launchMode = OpenMode.DIALOG;
-                    }
-                }
-
-                DialogMode dialogMode = resolvedScreenClass.getAnnotation(DialogMode.class);
-                if (dialogMode != null && dialogMode.forceDialog()) {
-                    launchMode = OpenMode.DIALOG;
-                }
             }
         }
 
@@ -1127,7 +1125,7 @@ public class WebScreens implements Screens, WindowManager {
         return screen instanceof Window ? (Window) screen : new ScreenWrapper(screen);
     }
 
-    @SuppressWarnings({"unchecked", "deprecation", "IncorrectCreateGuiComponent"})
+    @SuppressWarnings({"deprecation", "IncorrectCreateGuiComponent"})
     @Override
     public Window.Editor openEditor(WindowInfo windowInfo, Entity item, OpenType openType, Datasource parentDs) {
         Map<String, Object> params = createParametersMap(windowInfo,
@@ -1147,7 +1145,7 @@ public class WebScreens implements Screens, WindowManager {
         return screen instanceof Window.Editor ? (Window.Editor) screen : new ScreenEditorWrapper(screen);
     }
 
-    @SuppressWarnings({"unchecked", "deprecation", "IncorrectCreateGuiComponent"})
+    @SuppressWarnings({"deprecation", "IncorrectCreateGuiComponent"})
     @Override
     public Window.Editor openEditor(WindowInfo windowInfo, Entity item, OpenType openType) {
         Map<String, Object> params = createParametersMap(windowInfo,
@@ -1165,7 +1163,7 @@ public class WebScreens implements Screens, WindowManager {
         return screen instanceof Window.Editor ? (Window.Editor) screen : new ScreenEditorWrapper(screen);
     }
 
-    @SuppressWarnings({"unchecked", "deprecation", "IncorrectCreateGuiComponent"})
+    @SuppressWarnings({"deprecation", "IncorrectCreateGuiComponent"})
     @Override
     public Window.Editor openEditor(WindowInfo windowInfo, Entity item, OpenType openType, Map<String, Object> params) {
         params = createParametersMap(windowInfo, params);
@@ -1182,7 +1180,7 @@ public class WebScreens implements Screens, WindowManager {
         return screen instanceof Window.Editor ? (Window.Editor) screen : new ScreenEditorWrapper(screen);
     }
 
-    @SuppressWarnings({"unchecked", "deprecation", "IncorrectCreateGuiComponent"})
+    @SuppressWarnings({"deprecation", "IncorrectCreateGuiComponent"})
     @Override
     public Window.Editor openEditor(WindowInfo windowInfo, Entity item, OpenType openType, Map<String, Object> params,
                                     Datasource parentDs) {
@@ -1203,7 +1201,7 @@ public class WebScreens implements Screens, WindowManager {
         return screen instanceof Window.Editor ? (Window.Editor) screen : new ScreenEditorWrapper(screen);
     }
 
-    @SuppressWarnings({"deprecation", "unchecked", "IncorrectCreateGuiComponent"})
+    @SuppressWarnings({"deprecation", "IncorrectCreateGuiComponent"})
     @Override
     public Window.Lookup openLookup(WindowInfo windowInfo, Window.Lookup.Handler handler, OpenType openType,
                                     Map<String, Object> params) {
@@ -1220,7 +1218,7 @@ public class WebScreens implements Screens, WindowManager {
         return screen instanceof Window.Lookup ? (Window.Lookup) screen : new ScreenLookupWrapper(screen);
     }
 
-    @SuppressWarnings({"deprecation", "unchecked", "IncorrectCreateGuiComponent"})
+    @SuppressWarnings({"deprecation", "IncorrectCreateGuiComponent"})
     @Override
     public Window.Lookup openLookup(WindowInfo windowInfo, Window.Lookup.Handler handler, OpenType openType) {
         Map<String, Object> params = createParametersMap(windowInfo, Collections.emptyMap());
