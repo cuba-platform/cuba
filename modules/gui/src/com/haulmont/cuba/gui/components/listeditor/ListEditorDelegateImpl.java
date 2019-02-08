@@ -128,9 +128,17 @@ public class ListEditorDelegateImpl<V> implements ListEditorDelegate<V> {
         Screen screen = screenContext.getScreens().create(editorWindowId, OpenMode.DIALOG, new MapScreenOptions(params));
         screen.addAfterCloseListener(event -> {
             CloseAction closeAction = event.getCloseAction();
-            if (closeAction instanceof StandardCloseAction
-                    && ((StandardCloseAction) closeAction).getActionId().equals(Window.COMMIT_ACTION_ID)) {
-                actualField.setValue(((ListEditorWindowController) screen).getValue());
+            if (closeAction instanceof StandardCloseAction) {
+                String actionId = ((StandardCloseAction) closeAction).getActionId();
+                ListEditorWindowController listEditorWindow = (ListEditorWindowController) screen;
+                if (Window.COMMIT_ACTION_ID.equals(actionId)) {
+                    //noinspection unchecked
+                    actualField.setValue((listEditorWindow).getValue());
+                }
+
+                ListEditor.EditorCloseEvent editorCloseEvent =
+                        new ListEditor.EditorCloseEvent(actionId, listEditorWindow);
+                getEventHub().publish(ListEditor.EditorCloseEvent.class, editorCloseEvent);
             }
         });
         screen.show();
