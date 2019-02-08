@@ -19,10 +19,7 @@ package com.haulmont.cuba.gui.components;
 import com.google.common.reflect.TypeToken;
 
 import java.sql.Date;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.OffsetTime;
-import java.time.ZoneId;
+import java.time.*;
 import java.util.TimeZone;
 
 public interface DateField<V> extends Field<V>, HasDatatype<V>, Buffered, Component.Focusable, HasRange<V> {
@@ -34,8 +31,7 @@ public interface DateField<V> extends Field<V>, HasDatatype<V>, Buffered, Compon
     TypeToken<DateField<java.util.Date>> TYPE_DATETIME = new TypeToken<DateField<java.util.Date>>(){};
     TypeToken<DateField<LocalDate>> TYPE_LOCALDATE = new TypeToken<DateField<LocalDate>>(){};
     TypeToken<DateField<LocalDateTime>> TYPE_LOCALDATETIME = new TypeToken<DateField<LocalDateTime>>(){};
-    TypeToken<DateField<java.sql.Time>> TYPE_TIME = new TypeToken<DateField<java.sql.Time>>(){};
-    TypeToken<DateField<OffsetTime>> TYPE_OFFSETTIME = new TypeToken<DateField<OffsetTime>>(){};
+    TypeToken<DateField<OffsetDateTime>> TYPE_OFFSETDATETIME = new TypeToken<DateField<OffsetDateTime>>(){};
 
     enum Resolution {
         SEC,

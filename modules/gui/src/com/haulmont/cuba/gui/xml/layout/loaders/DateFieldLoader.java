@@ -79,6 +79,8 @@ public class DateFieldLoader extends AbstractFieldLoader<DateField> {
             resultComponent.setResolution(resolution);
         }
 
+        loadDatatype(resultComponent, element);
+
         loadBuffered(resultComponent, element);
 
         loadRangeStart(resultComponent, element);
