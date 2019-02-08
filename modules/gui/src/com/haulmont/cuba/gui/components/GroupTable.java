@@ -101,6 +101,11 @@ public interface GroupTable<E extends Entity> extends Table<E>, GroupColumnManag
      */
     void ungroup();
 
+    /**
+     * @see #getColumn(String)
+     * @deprecated Use {@link com.haulmont.cuba.gui.components.Table.Column#isGroupAllowed} instead.
+     */
+    @Deprecated
     boolean getColumnGroupAllowed(String columnId);
 
     /**
