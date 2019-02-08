@@ -200,23 +200,15 @@ public class DesktopTabSheet extends DesktopAbstractComponent<JTabbedPane>
     }
 
     protected void setTabComponent(TabImpl tab, int componentIndex) {
-        ButtonTabComponent.CloseListener closeListener = new ButtonTabComponent.CloseListener(){
-            @Override
-            public void onTabClose(int tabIndex) {
-                if (tab.getCloseHandler() != null) {
-                    tab.getCloseHandler().onTabClose(tab);
-                } else {
-                    removeTab(tab.getName());
-                }
+        ButtonTabComponent.CloseListener closeListener = tabIndex -> {
+            if (tab.getCloseHandler() != null) {
+                tab.getCloseHandler().onTabClose(tab);
+            } else {
+                removeTab(tab.getName());
             }
         };
 
-        ButtonTabComponent.DetachListener detachListener = new ButtonTabComponent.DetachListener() {
-            @Override
-            public void onDetach(int tabIndex) {
-                detachTab(tabIndex);
-            }
-        };
+        ButtonTabComponent.DetachListener detachListener = this::detachTab;
 
         ButtonTabComponent btnTabComponent = new ButtonTabComponent(impl, false, false, closeListener, detachListener);
         tab.setButtonTabComponent(btnTabComponent);
@@ -225,6 +217,7 @@ public class DesktopTabSheet extends DesktopAbstractComponent<JTabbedPane>
 
     @Override
     public Tab addLazyTab(String name, Element descriptor, ComponentLoader loader) {
+        //noinspection IncorrectCreateGuiComponent
         DesktopVBox tabContent = new DesktopVBox();
         adjustTabSize(tabContent);
 
@@ -281,8 +274,13 @@ public class DesktopTabSheet extends DesktopAbstractComponent<JTabbedPane>
     public void removeTab(String name) {
         TabImpl tab = getTabImpl(name);
         Component component = tab.getComponent();
+
         components.remove(component);
-        impl.remove(DesktopComponentsHelper.getComposition(component));
+        tabs.remove(tab);
+
+        JComponent componentComposition = DesktopComponentsHelper.getComposition(component);
+        impl.remove(componentComposition);
+        tabContents.remove(componentComposition);
 
         DesktopContainerHelper.assignContainer(component, null);
         if (component instanceof DesktopAbstractComponent && !isEnabledWithParent()) {
@@ -298,6 +296,8 @@ public class DesktopTabSheet extends DesktopAbstractComponent<JTabbedPane>
 
         List<Component> innerComponents = new ArrayList<>(components.keySet());
         components.clear();
+        tabs.clear();
+        tabContents.clear();
 
         for (Component component : innerComponents) {
             DesktopContainerHelper.assignContainer(component, null);
@@ -516,7 +516,7 @@ public class DesktopTabSheet extends DesktopAbstractComponent<JTabbedPane>
 
     protected void fireTabChanged() {
         for (SelectedTabChangeListener listener : listeners) {
-            listener.selectedTabChanged(new SelectedTabChangeEvent(this, getTab()));
+            listener.selectedTabChanged(new SelectedTabChangeEvent(this, getSelectedTab()));
         }
     }
 
