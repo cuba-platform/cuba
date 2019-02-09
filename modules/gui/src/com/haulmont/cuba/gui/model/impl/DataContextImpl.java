@@ -204,6 +204,10 @@ public class DataContextImpl implements DataContext {
             }
             return managed;
         } else {
+            if (managed.getId() == null) {
+                throw new IllegalStateException("DataContext already contains an instance with null id: " + managed);
+            }
+
             if (managed != entity) {
                 mergeState(entity, managed, mergedSet);
             }
@@ -686,6 +690,16 @@ public class DataContextImpl implements DataContext {
         @Override
         public void propertyChanged(Instance.PropertyChangeEvent e) {
             if (!disableListeners) {
+                // if id has been changed, update put the entity to the content with the new id
+                MetaProperty primaryKeyProperty = getMetadataTools().getPrimaryKeyProperty(e.getItem().getClass());
+                if (primaryKeyProperty != null && e.getProperty().equals(primaryKeyProperty.getName())) {
+                    Map<Object, Entity> entityMap = content.get(e.getItem().getClass());
+                    if (entityMap != null) {
+                        entityMap.remove(e.getPrevValue());
+                        entityMap.put(e.getValue(), (Entity) e.getItem());
+                    }
+                }
+
                 modifiedInstances.add((Entity) e.getItem());
                 fireChangeListener((Entity) e.getItem());
             }
