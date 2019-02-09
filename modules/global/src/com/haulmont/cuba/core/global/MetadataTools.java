@@ -310,6 +310,15 @@ public class MetadataTools {
     }
 
     /**
+     * @return MetaProperty representing a primary key attribute, or null if the entity has no primary key (e.g.
+     * embeddable)
+     */
+    @Nullable
+    public MetaProperty getPrimaryKeyProperty(Class<?> entityClass) {
+        return getPrimaryKeyProperty(metadata.getClassNN(entityClass));
+    }
+
+    /**
      * @return true if passed MetaClass has a composite primary key
      */
     public boolean hasCompositePrimaryKey(MetaClass metaClass) {

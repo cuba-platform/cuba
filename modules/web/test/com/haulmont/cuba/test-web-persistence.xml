@@ -22,6 +22,7 @@
     <persistence-unit name="cuba" transaction-type="RESOURCE_LOCAL">
         <class>com.haulmont.cuba.web.testmodel.sample.Sample</class>
         <class>com.haulmont.cuba.web.testmodel.datacontext.Foo</class>
+        <class>com.haulmont.cuba.web.testmodel.datacontext.TestStringIdEntity</class>
 
         <class>com.haulmont.cuba.web.testmodel.sales.Address</class>
         <class>com.haulmont.cuba.web.testmodel.sales.Customer</class>
