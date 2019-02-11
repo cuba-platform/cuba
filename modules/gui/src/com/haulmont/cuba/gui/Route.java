@@ -58,6 +58,9 @@ import java.lang.annotation.*;
  *
  * It allows to specify clear routes for each screen and avoid repeats in URL.
  * Annotated class must be a direct or indirect subclass of {@link Screen}.
+ * <p><br>
+ *
+ * The "root" property enables to specify that the route is for root window (like LoginWindow or MainWindow).
  *
  * @see Screen
  */
@@ -70,6 +73,7 @@ public @interface Route {
     String VALUE_ATTRIBUTE = "value";
     String PATH_ATTRIBUTE = "path";
     String PARENT_PREFIX_ATTRIBUTE = "parentPrefix";
+    String ROOT_ATTRIBUTE = "root";
 
     @AliasFor(PATH_ATTRIBUTE)
     String value() default "";
@@ -78,4 +82,6 @@ public @interface Route {
     String path() default "";
 
     String parentPrefix() default "";
+
+    boolean root() default false;
 }

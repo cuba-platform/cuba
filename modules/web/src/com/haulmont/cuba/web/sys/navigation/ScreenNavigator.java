@@ -160,21 +160,9 @@ public class ScreenNavigator {
             return true;
         }
 
-        WindowInfo windowInfo = windowConfig.findWindowInfoByRoute(requestedRoute);
-        if (windowInfo != null) {
-
-            // should be changed
-            if (navigationIsNotPermitted(windowInfo)) {
-                owner.revertNavigationState();
-                return true;
-            }
-
-            return openScreen(requestedState, windowInfo);
-        }
-
         String[] routeParts = requestedRoute.split("/");
         if (routeParts.length > 2) {
-            log.debug("Unable to perform navigation to requested state '{}'. " +
+            log.info("Unable to perform navigation to requested state '{}'. " +
                     "Only two nested routes navigation is supported", requestedRoute);
             owner.revertNavigationState();
             return true;
@@ -186,26 +174,51 @@ public class ScreenNavigator {
         }
 
         for (Map.Entry<String, WindowInfo> entry : routeWindowInfos.entrySet()) {
-            WindowInfo info = entry.getValue();
-            if (info == null) {
+            if (entry.getValue() == null) {
+                log.info("No registered screen found for route: '{}'", entry.getKey());
+
                 owner.revertNavigationState();
                 handle404(entry.getKey());
+
                 return true;
             }
 
-            if (navigationIsNotPermitted(info)) {
+            if (isRootRoute(entry.getValue())) {
+                log.info("Unable navigate to '{}' as nested screen", entry.getValue().getId());
                 owner.revertNavigationState();
+
                 return true;
             }
         }
 
+        int subRouteIdx = 0;
+        NavigationState currentState = ui.getHistory().getNow();
+        String[] currentRouteParts = currentState.getNestedRoute()
+                .split("/");
+
         for (Map.Entry<String, WindowInfo> entry : routeWindowInfos.entrySet()) {
-            if (entry.getValue() != null) {
-                openScreen(requestedState, entry.getValue());
+            if (skipNavigation(requestedState, subRouteIdx, currentState, currentRouteParts, entry.getKey())) {
+                subRouteIdx++;
+
+                continue;
             }
+
+            openScreen(requestedState, entry.getKey(), entry.getValue());
+
+            subRouteIdx++;
         }
 
         return true;
+    }
+
+    protected boolean skipNavigation(NavigationState requestedState, int i, NavigationState currentState,
+                                     String[] currentRouteParts, String screenRoute) {
+        if (!requestedState.asRoute().startsWith(currentState.asRoute() + '/')) {
+            return false;
+        }
+
+        return i < currentRouteParts.length
+                && currentRouteParts[i].equals(screenRoute);
     }
 
     protected boolean screenChanged(NavigationState requestedState) {
@@ -232,7 +245,37 @@ public class ScreenNavigator {
                 || !Objects.equals(currentState.getNestedRoute(), requestedState.getNestedRoute());
     }
 
-    protected boolean openScreen(NavigationState requestedState, WindowInfo windowInfo) {
+    protected void openScreen(NavigationState requestedState, String screenRoute, WindowInfo windowInfo) {
+        if (isNotPermittedToNavigate(requestedState, windowInfo)) {
+            return;
+        }
+
+        Screen screen = createScreen(requestedState, screenRoute, windowInfo);
+
+        if (screen == null) {
+            log.debug("Unable to open screen '{}' for requested route '{}'", windowInfo.getId(),
+                    requestedState.getNestedRoute());
+
+            owner.revertNavigationState();
+            return;
+        }
+
+        if (StringUtils.isNotEmpty(screenRoute)
+                && requestedState.getNestedRoute().endsWith(screenRoute)) {
+
+            if (MapUtils.isNotEmpty(requestedState.getParams())) {
+                UiControllerUtils.fireEvent(screen, UrlParamsChangedEvent.class,
+                        new UrlParamsChangedEvent(screen, requestedState.getParams()));
+            }
+
+            ((WebWindow) screen.getWindow())
+                    .setResolvedState(requestedState);
+        }
+
+        screen.show();
+    }
+
+    protected boolean isNotPermittedToNavigate(NavigationState requestedState, WindowInfo windowInfo) {
         boolean screenPermitted = security.isScreenPermitted(windowInfo.getId());
         if (!screenPermitted) {
             owner.revertNavigationState();
@@ -248,52 +291,35 @@ public class ScreenNavigator {
 
             return true;
         }
+        return false;
+    }
 
+    protected Screen createScreen(NavigationState requestedState, String screenRoute, WindowInfo windowInfo) {
         Screen screen;
 
         if (isEditor(windowInfo)) {
-            screen = createEditor(windowInfo, requestedState);
-            if (screen == null) {
-                log.debug("Unable to open screen '{}' for requested route '{}'",
-                        windowInfo.getId(), requestedState.getNestedRoute());
-                owner.revertNavigationState();
-                return true;
-            }
+            screen = createEditor(windowInfo, screenRoute, requestedState);
         } else {
-            OpenMode openMode = getScreenOpenMode(requestedState.getNestedRoute(), windowInfo);
+            OpenMode openMode = getScreenOpenMode(requestedState.getNestedRoute(), screenRoute);
             screen = ui.getScreens().create(windowInfo.getId(), openMode);
         }
 
-        String screenRoute = windowConfig.findRoute(windowInfo.getId());
-
-        if (StringUtils.isNotEmpty(screenRoute)
-                && requestedState.getNestedRoute().endsWith(screenRoute)) {
-
-            if (MapUtils.isNotEmpty(requestedState.getParams())) {
-                UiControllerUtils.fireEvent(screen, UrlParamsChangedEvent.class,
-                        new UrlParamsChangedEvent(screen, requestedState.getParams()));
-            }
-
-            ((WebWindow) screen.getWindow()).setResolvedState(requestedState);
-        }
-
-        screen.show();
-
-        return true;
+        return screen;
     }
 
-    protected OpenMode getScreenOpenMode(String route, WindowInfo windowInfo) {
-        String screenRoute = windowConfig.findRoute(windowInfo.getId());
+    protected OpenMode getScreenOpenMode(String requestedRoute, String screenRoute) {
         if (StringUtils.isEmpty(screenRoute)) {
             return OpenMode.NEW_TAB;
         }
 
-        return route.startsWith(screenRoute)
-                ? OpenMode.NEW_TAB
-                : OpenMode.THIS_TAB;
+        String currentRoute = ui.getHistory().getNow().getNestedRoute();
+
+        return requestedRoute.startsWith(currentRoute + '/')
+                ? OpenMode.THIS_TAB
+                : OpenMode.NEW_TAB;
     }
 
-    protected Screen createEditor(WindowInfo windowInfo, NavigationState requestedState) {
+    protected Screen createEditor(WindowInfo windowInfo, String screenRoute, NavigationState requestedState) {
         Map<String, Object> options = createEditorScreenOptions(windowInfo, requestedState);
 
         if (MapUtils.isEmpty(options)) {
@@ -302,7 +328,7 @@ public class ScreenNavigator {
         }
 
         Screen editor;
-        OpenMode openMode = getScreenOpenMode(requestedState.getNestedRoute(), windowInfo);
+        OpenMode openMode = getScreenOpenMode(requestedState.getNestedRoute(), screenRoute);
 
         if (isLegacyScreen(windowInfo.getControllerClass())) {
             editor = ui.getScreens().create(windowInfo.getId(), openMode, new MapScreenOptions(options));
@@ -503,5 +529,9 @@ public class ScreenNavigator {
 
     protected boolean isLegacyScreen(Class<? extends FrameOwner> controllerClass) {
         return LegacyFrame.class.isAssignableFrom(controllerClass);
+    }
+
+    protected boolean isRootRoute(WindowInfo windowInfo) {
+        return windowInfo != null && windowInfo.getRouteDefinition().isRoot();
     }
 }

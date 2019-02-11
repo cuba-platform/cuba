@@ -74,10 +74,10 @@
 
     <screen id="mainWindow"
             template="/com/haulmont/cuba/web/app/mainwindow/mainwindow.xml"
-            route="main"/>
+            route="main" rootRoute="true"/>
 
     <screen id="loginWindow"
             template="/com/haulmont/cuba/web/app/loginwindow/loginwindow.xml"
-            route="login"/>
+            route="login" rootRoute="true"/>
 
 </screen-config>

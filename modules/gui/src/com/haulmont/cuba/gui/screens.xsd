@@ -42,6 +42,7 @@
         <!-- Route annotation replacement -->
         <xs:attribute name="route" type="xs:string"/>
         <xs:attribute name="routeParentPrefix" type="xs:string"/>
+        <xs:attribute name="rootRoute" type="xs:boolean"/>
     </xs:complexType>
 
     <xs:complexType name="includeType">

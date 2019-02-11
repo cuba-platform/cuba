@@ -289,6 +289,7 @@ public class WindowConfig {
         String screenId = screenElement.attributeValue("id");
         String route = screenElement.attributeValue("route");
         String parentPrefix = screenElement.attributeValue("routeParentPrefix");
+        boolean rootRoute = Boolean.parseBoolean(screenElement.attributeValue("rootRoute"));
 
         RouteDefinition routeDefinition;
 
@@ -310,7 +311,7 @@ public class WindowConfig {
                     parentPrefix = superScreenParentPrefix;
                 }
             }
-            routeDefinition = new RouteDefinition(route, parentPrefix);
+            routeDefinition = new RouteDefinition(route, parentPrefix, rootRoute);
         } else {
             routeDefinition = superScreenRouteDefinition;
         }
