@@ -66,6 +66,9 @@ public class DynamicAttributesManager implements DynamicAttributesManagerAPI {
     @Inject
     protected ReferenceToEntitySupport referenceToEntitySupport;
 
+    @Inject
+    protected PersistentAttributesLoadChecker persistentAttributesLoadChecker;
+
     protected ClusterManagerAPI clusterManager;
 
     protected ReentrantLock loadCacheLock = new ReentrantLock();
@@ -201,17 +204,27 @@ public class DynamicAttributesManager implements DynamicAttributesManagerAPI {
             if (!dependentClasses.isEmpty()) {
                 metadata.getTools().traverseAttributes(entity, new EntityAttributeVisitor() {
                     @Override
-                    public void visit(Entity dependentEntity, MetaProperty property) {
-                        if (dependentEntity instanceof BaseGenericIdEntity) {
-                            toProcess.add((BaseGenericIdEntity) dependentEntity);
+                    public void visit(Entity visitedEntity, MetaProperty property) {
+                        if (dependentClasses.contains(property.getRange().asClass().getJavaClass()) &&
+                                persistentAttributesLoadChecker.isLoaded(visitedEntity, property.getName())) {
+                            Object value = visitedEntity.getValue(property.getName());
+                            if (value != null) {
+                                if (value instanceof Collection) {
+                                    for (Object item : ((Collection) value)) {
+                                        if (item instanceof BaseGenericIdEntity) {
+                                            toProcess.add((BaseGenericIdEntity) item);
+                                        }
+                                    }
+                                } else if (value instanceof BaseGenericIdEntity) {
+                                    toProcess.add((BaseGenericIdEntity) value);
+                                }
+                            }
                         }
                     }
 
                     @Override
                     public boolean skip(MetaProperty property) {
-                        return metadata.getTools().isPersistent(property)
-                                && property.getRange().isClass()
-                                && dependentClasses.contains(property.getJavaType());
+                        return metadata.getTools().isNotPersistent(property) || !property.getRange().isClass();
                     }
                 });
             }

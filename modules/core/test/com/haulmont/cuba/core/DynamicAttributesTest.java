@@ -44,8 +44,8 @@ public class DynamicAttributesTest {
     protected Metadata metadata;
     protected DynamicAttributesManagerAPI dynamicAttributesManagerAPI;
 
-    protected Category userCategory, userRoleCategory;
-    protected CategoryAttribute userAttribute, userRoleAttribute, userGroupAttribute, userGroupCollectionAttribute, userIntCollectionAttribute;
+    protected Category userCategory, userRoleCategory, roleCategory;
+    protected CategoryAttribute userAttribute, userRoleAttribute, roleAttribute, userGroupAttribute, userGroupCollectionAttribute, userIntCollectionAttribute;
     protected Group group, group2;
 
     protected User user, user2;
@@ -85,6 +85,19 @@ public class DynamicAttributesTest {
             userRoleAttribute.setCategoryEntityType("sec$UserRole");
             userRoleAttribute.setDataType(PropertyType.STRING);
             em.persist(userRoleAttribute);
+
+            roleCategory = metadata.create(Category.class);
+            roleCategory.setName("role");
+            roleCategory.setEntityType("sec$Role");
+            em.persist(roleCategory);
+
+            roleAttribute = metadata.create(CategoryAttribute.class);
+            roleAttribute.setName("roleAttribute");
+            roleAttribute.setCode("roleAttribute");
+            roleAttribute.setCategory(roleCategory);
+            roleAttribute.setCategoryEntityType("sec$Role");
+            roleAttribute.setDataType(PropertyType.STRING);
+            em.persist(roleAttribute);
 
             group = metadata.create(Group.class);
             group.setName("group");
@@ -163,6 +176,10 @@ public class DynamicAttributesTest {
         userRole = dataManager.load(LoadContext.create(UserRole.class).setId(userRole.getId()).setLoadDynamicAttributes(true));
         userRole.setValue("+userRoleAttribute", "userRole");
         dataManager.commit(userRole);
+
+        role = dataManager.load(LoadContext.create(Role.class).setId(role.getId()).setLoadDynamicAttributes(true));
+        role.setValue("+roleAttribute", "role");
+        dataManager.commit(role);
     }
 
     @After
@@ -170,8 +187,8 @@ public class DynamicAttributesTest {
         QueryRunner runner = new QueryRunner(cont.persistence().getDataSource());
         runner.update("delete from SYS_ATTR_VALUE");
         cont.deleteRecord(userRole, role, user, user2, group, group2);
-        cont.deleteRecord(userAttribute, userRoleAttribute, userGroupAttribute, userGroupCollectionAttribute, userIntCollectionAttribute);
-        cont.deleteRecord(userCategory, userRoleCategory);
+        cont.deleteRecord(userAttribute, userRoleAttribute, roleAttribute, userGroupAttribute, userGroupCollectionAttribute, userIntCollectionAttribute);
+        cont.deleteRecord(userCategory, userRoleCategory, roleCategory);
     }
 
     @Test
@@ -191,11 +208,17 @@ public class DynamicAttributesTest {
         View view = new View(User.class, "testView")
                 .addProperty("login")
                 .addProperty("userRoles",
-                        new View(UserRole.class, "testView"));
+                        new View(UserRole.class, "testView")
+                                .addProperty("role", new View(Role.class)));
 
         User loadedUser = dataManager.load(LoadContext.create(User.class).setId(user.getId()).setLoadDynamicAttributes(true).setView(view));
         assertEquals("userName", loadedUser.getValue("+userAttribute"));
-        assertEquals("userRole", loadedUser.getUserRoles().get(0).getValue("+userRoleAttribute"));
+
+        UserRole loadedUserRole = loadedUser.getUserRoles().get(0);
+        assertEquals("userRole", loadedUserRole.getValue("+userRoleAttribute"));
+
+        Role loadedRole = loadedUserRole.getRole();
+        assertEquals("role", loadedRole.getValue("+roleAttribute"));
     }
 
     @Test
