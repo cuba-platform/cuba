@@ -19,13 +19,13 @@ package com.haulmont.cuba.core.sys.logging;
 
 import ch.qos.logback.classic.Level;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 public class LoggingHelper {
 
     public static List<Level> getLevels() {
-        List<Level> levels = new LinkedList<>();
+        List<Level> levels = new ArrayList<>();
         levels.add(Level.ALL);
         levels.add(Level.TRACE);
         levels.add(Level.DEBUG);
@@ -38,8 +38,9 @@ public class LoggingHelper {
 
     public static Level getLevelFromString(String levelString) {
         for (Level logLevel : getLevels()) {
-            if (logLevel.toString().equalsIgnoreCase(levelString))
+            if (logLevel.toString().equalsIgnoreCase(levelString)) {
                 return logLevel;
+            }
         }
         return null;
     }

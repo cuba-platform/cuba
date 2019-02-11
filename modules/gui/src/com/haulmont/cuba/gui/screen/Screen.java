@@ -408,7 +408,6 @@ public abstract class Screen implements FrameOwner {
     /**
      * @return screen settings
      */
-    @Nullable
     protected Settings getSettings() {
         return settings;
     }
