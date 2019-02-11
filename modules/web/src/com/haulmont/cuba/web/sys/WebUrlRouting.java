@@ -316,7 +316,13 @@ public class WebUrlRouting implements UrlRouting {
                 || findActiveScreenByState(currentState) == null;
 
         boolean sameRoot = Objects.equals(currentState.getRoot(), newState.getRoot());
-        boolean sameNestedRoute = Objects.equals(currentState.getNestedRoute(), newState.getNestedRoute());
+
+        String currentNested = currentState.getNestedRoute();
+        String newNested = newState.getNestedRoute();
+        boolean sameNestedRoute = Objects.equals(currentNested, newNested)
+                || (StringUtils.isNotEmpty(currentNested) && StringUtils.isNotEmpty(newNested)
+                        && (currentNested.startsWith(newNested) || newNested.startsWith(currentNested + '/')));
+
         boolean sameParams = Objects.equals(currentState.getParamsString(), newState.getParamsString());
 
         return notInHistory && sameRoot && sameNestedRoute && sameParams;

@@ -20,12 +20,14 @@ import org.springframework.util.StringUtils;
 
 public class RouteDefinition {
 
-    private final String path;
-    private final String parentPrefix;
+    protected final String path;
+    protected final String parentPrefix;
+    protected final boolean root;
 
-    public RouteDefinition(String path, String parentPrefix) {
+    public RouteDefinition(String path, String parentPrefix, boolean root) {
         this.path = path;
         this.parentPrefix = parentPrefix;
+        this.root = root;
     }
 
     public String getPath() {
@@ -36,12 +38,17 @@ public class RouteDefinition {
         return parentPrefix;
     }
 
+    public boolean isRoot() {
+        return root;
+    }
+
     @Override
     public String toString() {
         return "RouteDefinition{" +
                 "path='" + path + '\'' +
                 (StringUtils.isEmpty(parentPrefix) ? ""
                         : ", parentPrefix='" + parentPrefix + '\'') +
+                "root='" + root + '\'' +
                 '}';
     }
 }
