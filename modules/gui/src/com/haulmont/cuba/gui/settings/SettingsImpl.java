@@ -22,6 +22,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
+import javax.annotation.Nonnull;
+
 public class SettingsImpl implements Settings {
 
     protected final String name;
@@ -53,17 +55,20 @@ public class SettingsImpl implements Settings {
     }
 
     @Override
+    @Nonnull
     public Element get() {
         checkLoaded();
         Element e = root.element("window");
         if (e == null) {
             e = root.addElement("window");
         }
-        return e;
+        // automatically track changes on top level
+        return new SettingsElementWrapper(e, this);
     }
 
+    @Nonnull
     @Override
-    public Element get(final String componentId) {
+    public Element get(String componentId) {
         checkLoaded();
         Element componentsRoot = root.element("components");
         if (componentsRoot == null) {
@@ -71,17 +76,17 @@ public class SettingsImpl implements Settings {
         }
         for (Element e : componentsRoot.elements()) {
             if (componentId.equals(e.attributeValue("name"))) {
-                return e;
+                return new SettingsElementWrapper(e, this);
             }
         }
         Element e = componentsRoot.addElement("component");
         e.addAttribute("name", componentId);
-        return e;
+        return new SettingsElementWrapper(e, this);
     }
 
     @Override
     public void setModified(boolean modified) {
-        this.modified = this.modified || modified;
+        this.modified = modified;
     }
 
     @Override

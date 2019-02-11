@@ -99,7 +99,9 @@ public class ScreenSettings {
                                 presentations.commit();
                             }
                         }
-                        settings.setModified(modified);
+                        if (modified) {
+                            settings.setModified(true);
+                        }
                     }
                 }
         );

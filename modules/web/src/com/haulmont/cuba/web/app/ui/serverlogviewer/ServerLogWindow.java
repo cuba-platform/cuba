@@ -28,8 +28,8 @@ import com.haulmont.cuba.core.sys.logging.LoggingHelper;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.PickerField.LookupAction;
 import com.haulmont.cuba.gui.components.Timer;
+import com.haulmont.cuba.gui.components.PickerField.LookupAction;
 import com.haulmont.cuba.gui.components.actions.BaseAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.export.ExportDisplay;
@@ -45,9 +45,10 @@ import com.haulmont.cuba.web.widgets.CubaScrollBoxLayout;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.event.ShortcutAction.ModifierKey;
 import com.vaadin.ui.ComboBox;
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.commons.text.StringEscapeUtils;
+import org.dom4j.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -83,16 +84,12 @@ public class ServerLogWindow extends AbstractWindow {
 
     @Inject
     protected LookupField<String> logFileNameField;
-
     @Inject
     protected LookupField<Level> loggerLevelField;
-
     @Inject
     protected LookupField<String> loggerNameField;
-
     @Inject
     protected LookupField<String> appenderNameField;
-
     @Inject
     protected LookupField<Level> appenderLevelField;
 
@@ -107,7 +104,6 @@ public class ServerLogWindow extends AbstractWindow {
 
     @Inject
     protected Button downloadButton;
-
     @Inject
     protected Button showTailButton;
 
@@ -116,7 +112,6 @@ public class ServerLogWindow extends AbstractWindow {
 
     @Inject
     protected Metadata metadata;
-
     @Inject
     protected Security security;
 
@@ -138,7 +133,7 @@ public class ServerLogWindow extends AbstractWindow {
         jmxConnectionField.setValue(localJmxInstance);
         jmxConnectionField.setRequired(true);
         jmxConnectionField.addValueChangeListener(e -> {
-            JmxInstance jmxInstance = (JmxInstance) e.getValue();
+            JmxInstance jmxInstance = e.getValue();
             try {
                 refreshHostInfo();
             } catch (JmxControlException ex) {
@@ -190,7 +185,7 @@ public class ServerLogWindow extends AbstractWindow {
         loggerNameField.addValueChangeListener(e -> {
             List<String> currentLoggers = new ArrayList<>(jmxRemoteLoggingAPI.getLoggerNames(getSelectedConnection()));
 
-            Collections.sort(currentLoggers);
+            currentLoggers.sort(null);
             currentLoggers.add(0, getMessage("logger.new"));
             if (e.getValue() != null && e.getValue().equals(currentLoggers.get(0))) {
                 openAddLoggerDialog();
@@ -227,7 +222,7 @@ public class ServerLogWindow extends AbstractWindow {
         }
     }
 
-    private void refreshHostInfo() {
+    protected void refreshHostInfo() {
         JmxRemoteLoggingAPI.LoggingHostInfo hostInfo = jmxRemoteLoggingAPI.getHostInfo(getSelectedConnection());
         refreshLoggers(hostInfo);
         refreshAppenders(hostInfo);
@@ -279,20 +274,20 @@ public class ServerLogWindow extends AbstractWindow {
             value = StringEscapeUtils.escapeHtml4(value);
             value = replaceSpaces(value);
 
+            // init log levels
+            List<String> logLevels = new ArrayList<>(10);
+            // highlight tomcat catalina levels
+            logLevels.add("WARNING");
+            logLevels.add("SEVERE");
+            // highlight log4j levels
+            for (Level level : LoggingHelper.getLevels()) {
+                logLevels.add(level.toString());
+            }
 
             // highlight log
             StringBuilder coloredLog = new StringBuilder();
             BufferedReader reader = new BufferedReader(new StringReader(value));
             try {
-                List<String> logLevels = new LinkedList<>();
-                // highlight tomcat catalina levels
-                logLevels.add("WARNING");
-                logLevels.add("SEVERE");
-                // highlight log4j levels
-                for (Level level : LoggingHelper.getLevels()) {
-                    logLevels.add(level.toString());
-                }
-
                 String line;
                 while ((line = reader.readLine()) != null) {
                     // replace one level per line
@@ -366,7 +361,7 @@ public class ServerLogWindow extends AbstractWindow {
     }
 
     public void setLoggerLevel() {
-        if (StringUtils.isNotEmpty(loggerNameField.<String>getValue())) {
+        if (StringUtils.isNotEmpty(loggerNameField.getValue())) {
             if (loggerLevelField.getValue() != null) {
                 String loggerName = loggerNameField.getValue();
                 Level level = loggerLevelField.getValue();
@@ -439,7 +434,7 @@ public class ServerLogWindow extends AbstractWindow {
         final String fileName = logFileNameField.getValue();
         if (fileName != null) {
             try {
-                final JmxInstance selectedConnection = getSelectedConnection();
+                JmxInstance selectedConnection = getSelectedConnection();
                 // check if we have many suitable JmxControlBean instances
                 // show dialog with context select and size options if needed
                 List<String> availableContexts = jmxRemoteLoggingAPI.getAvailableContexts(selectedConnection);
@@ -563,22 +558,24 @@ public class ServerLogWindow extends AbstractWindow {
         }
 
         logTailLabel.setValue("");
-
     }
 
     @Override
     public void applySettings(Settings settings) {
         super.applySettings(settings);
-        if (settings.get().attribute(LAST_SELECTED_JMX_CONNECTION_ID) != null) {
+
+        Element settingsElement = settings.get();
+
+        if (settingsElement.attribute(LAST_SELECTED_JMX_CONNECTION_ID) != null) {
             UUID lastJmxConnectionId = UUID.fromString(
-                    settings.get().attributeValue(LAST_SELECTED_JMX_CONNECTION_ID));
+                    settingsElement.attributeValue(LAST_SELECTED_JMX_CONNECTION_ID));
             if (jmxInstancesDs.containsItem(lastJmxConnectionId)) {
                 jmxConnectionField.setValue(jmxInstancesDs.getItem(lastJmxConnectionId));
             }
         }
-        if (settings.get().attribute(LAST_SELECTED_LOG_FILE_NAME) != null) {
-            String lastFileName = settings.get().attributeValue(LAST_SELECTED_LOG_FILE_NAME);
-            @SuppressWarnings("unchecked")
+
+        if (settingsElement.attribute(LAST_SELECTED_LOG_FILE_NAME) != null) {
+            String lastFileName = settingsElement.attributeValue(LAST_SELECTED_LOG_FILE_NAME);
             List<String> logFileNamesList = logFileNameField.getOptionsList();
             if (logFileNamesList.contains(lastFileName)) {
                 logFileNameField.setValue(lastFileName);
@@ -590,13 +587,16 @@ public class ServerLogWindow extends AbstractWindow {
     @Override
     public void saveSettings() {
         String lastFileName = logFileNameField.getValue();
-        getSettings().get().addAttribute(LAST_SELECTED_LOG_FILE_NAME, lastFileName);
+        Element settingsElement = getSettings().get();
+
+        settingsElement.addAttribute(LAST_SELECTED_LOG_FILE_NAME, lastFileName);
         if (!getSelectedConnection().equals(localJmxInstance)) {
             String lastJmxConnectionId = String.valueOf(getSelectedConnection().getId());
-            getSettings().get().addAttribute(LAST_SELECTED_JMX_CONNECTION_ID, lastJmxConnectionId);
+            settingsElement.addAttribute(LAST_SELECTED_JMX_CONNECTION_ID, lastJmxConnectionId);
         } else {
-            getSettings().get().addAttribute(LAST_SELECTED_JMX_CONNECTION_ID, null);
+            settingsElement.addAttribute(LAST_SELECTED_JMX_CONNECTION_ID, null);
         }
+
         super.saveSettings();
     }
 }
