@@ -31,7 +31,8 @@ public interface TextArea<V> extends TextInputField<V>,
                                   TextInputField.TextChangeNotifier,
                                   TextInputField.TextSelectionSupported,
                                   TextInputField.CaseConversionSupported,
-                                  HasInputPrompt {
+                                  HasInputPrompt,
+                                  HasConversionErrorMessage {
 
     String NAME = "textArea";
 

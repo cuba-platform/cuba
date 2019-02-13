@@ -516,4 +516,13 @@ public class TestTextField implements TextField<String> {
     public String getHtmlName() {
         return null;
     }
+
+    @Override
+    public void setConversionErrorMessage(String conversionErrorMessage) {
+    }
+
+    @Override
+    public String getConversionErrorMessage() {
+        return null;
+    }
 }
