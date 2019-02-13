@@ -20,6 +20,7 @@ import com.haulmont.cuba.core.entity.annotation.CurrencyLabelPosition;
 import com.haulmont.cuba.core.entity.annotation.CurrencyValue;
 import com.haulmont.cuba.gui.components.CurrencyField;
 import com.haulmont.cuba.gui.components.DatasourceComponent;
+import com.haulmont.cuba.gui.components.HasConversionErrorMessage;
 import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
 
@@ -41,6 +42,7 @@ public class CurrencyFieldLoader extends AbstractFieldLoader<CurrencyField> {
         loadShowCurrencyLabel(resultComponent, element);
         loadCurrencyLabelPosition(resultComponent, element);
         loadDatatype(resultComponent, element);
+        loadConversionErrorMessage(resultComponent, element);
         loadBuffered(resultComponent, element);
     }
 
@@ -87,5 +89,12 @@ public class CurrencyFieldLoader extends AbstractFieldLoader<CurrencyField> {
 
         String labelPosition = ((CurrencyLabelPosition) annotationProperties.get("labelPosition")).name();
         ((CurrencyField) component).setCurrencyLabelPosition(CurrencyField.CurrencyLabelPosition.valueOf(labelPosition));
+    }
+
+    protected void loadConversionErrorMessage(HasConversionErrorMessage component, Element element) {
+        String conversionErrorMessage = element.attributeValue("conversionErrorMessage");
+        if (StringUtils.isNotEmpty(conversionErrorMessage)) {
+            component.setConversionErrorMessage(loadResourceString(conversionErrorMessage));
+        }
     }
 }

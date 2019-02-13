@@ -46,6 +46,7 @@ public class WebCurrencyField<V extends Number> extends WebV8AbstractField<CubaC
     protected Locale locale;
     protected Datatype<V> datatype;
     protected Datatype<V> defaultDatatype;
+    protected String conversionErrorMessage;
 
     protected DataAwareComponentsTools dataAwareComponentsTools;
 
@@ -108,7 +109,7 @@ public class WebCurrencyField<V extends Number> extends WebV8AbstractField<CubaC
             } catch (ValueConversionException e) {
                 throw new ConversionException(e.getLocalizedMessage(), e);
             } catch (ParseException e) {
-                throw new ConversionException(getConversionErrorMessage(), e);
+                throw new ConversionException(getConversionErrorMessageInternal(), e);
             }
         }
 
@@ -121,16 +122,48 @@ public class WebCurrencyField<V extends Number> extends WebV8AbstractField<CubaC
             } catch (ValueConversionException e) {
                 throw new ConversionException(e.getLocalizedMessage(), e);
             } catch (ParseException e) {
-                throw new ConversionException(getConversionErrorMessage(), e);
+                throw new ConversionException(getConversionErrorMessageInternal(), e);
             }
         }
 
         return super.convertToModel(componentRawValue);
     }
 
-    protected String getConversionErrorMessage() {
-        Messages messages = beanLocator.get(Messages.NAME);
-        return messages.getMainMessage("databinding.conversion.error");
+    @Override
+    public void setConversionErrorMessage(String conversionErrorMessage) {
+        this.conversionErrorMessage = conversionErrorMessage;
+    }
+
+    @Override
+    public String getConversionErrorMessage() {
+        return conversionErrorMessage;
+    }
+
+    protected String getConversionErrorMessageInternal() {
+        String customErrorMessage = getConversionErrorMessage();
+        if (StringUtils.isNotEmpty(customErrorMessage)) {
+            return customErrorMessage;
+        }
+
+        Datatype<V> datatype = this.datatype;
+
+        if (datatype == null
+                && valueBinding != null
+                && valueBinding.getSource() instanceof EntityValueSource) {
+
+            EntityValueSource entityValueSource = (EntityValueSource) valueBinding.getSource();
+            datatype = entityValueSource.getMetaPropertyPath().getRange().asDatatype();
+        }
+
+        if (datatype != null) {
+            String msg = getDatatypeConversionErrorMsg(datatype);
+            if (StringUtils.isNotEmpty(msg)) {
+                return msg;
+            }
+        }
+
+        return beanLocator.get(Messages.class)
+                .getMainMessage("databinding.conversion.error");
     }
 
     @Override

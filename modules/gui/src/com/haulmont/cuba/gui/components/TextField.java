@@ -36,6 +36,7 @@ public interface TextField<V>
             TextInputField.CursorPositionSupported,
             TextInputField.CaseConversionSupported,
             HasInputPrompt,
+            HasConversionErrorMessage,
             TextInputField.HtmlNameSupported {
 
     String NAME = "textField";

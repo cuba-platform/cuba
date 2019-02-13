@@ -18,6 +18,7 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.core.entity.annotation.CaseConversion;
 import com.haulmont.cuba.core.entity.annotation.ConversionType;
+import com.haulmont.cuba.gui.components.HasConversionErrorMessage;
 import com.haulmont.cuba.gui.components.TextInputField;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -78,6 +79,13 @@ public abstract class AbstractTextFieldLoader<T extends TextInputField> extends 
         String textChangeTimeout = element.attributeValue("textChangeTimeout");
         if (StringUtils.isNotEmpty(textChangeTimeout)) {
             component.setTextChangeTimeout(Integer.parseInt(textChangeTimeout));
+        }
+    }
+
+    protected void loadConversionErrorMessage(HasConversionErrorMessage component, Element element) {
+        String conversionErrorMessage = element.attributeValue("conversionErrorMessage");
+        if (StringUtils.isNotEmpty(conversionErrorMessage)) {
+            component.setConversionErrorMessage(loadResourceString(conversionErrorMessage));
         }
     }
 }

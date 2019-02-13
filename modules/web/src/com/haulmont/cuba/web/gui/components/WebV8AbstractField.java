@@ -15,7 +15,10 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.google.common.base.Strings;
 import com.haulmont.bali.events.Subscription;
+import com.haulmont.chile.core.datatypes.Datatype;
+import com.haulmont.chile.core.datatypes.DatatypeRegistry;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.data.ConversionException;
@@ -24,6 +27,7 @@ import com.vaadin.server.UserError;
 import com.vaadin.ui.AbstractComponent;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -228,5 +232,24 @@ public abstract class WebV8AbstractField<T extends com.vaadin.ui.Component & com
 
     protected boolean isEmpty(Object value) {
         return value == null;
+    }
+
+    @Nullable
+    protected String getDatatypeConversionErrorMsg(Datatype<V> datatype) {
+        if (datatype == null) {
+            return null;
+        }
+
+        String datatypeId = beanLocator.get(DatatypeRegistry.class)
+                .getId(datatype);
+
+        if (Strings.isNullOrEmpty(datatypeId)) {
+            return null;
+        }
+
+        String msgKey = String.format("databinding.conversion.error.%s", datatypeId);
+
+        return beanLocator.get(Messages.class)
+                .getMainMessage(msgKey);
     }
 }

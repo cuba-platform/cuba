@@ -139,7 +139,7 @@ public abstract class WebAbstractValueComponent<T extends com.vaadin.ui.Componen
 
                 setValidationError(ce.getLocalizedMessage());
 
-                // todo show notification here ?
+                // notification displaying: cuba-platform/cuba#1877
 
                 return;
             }

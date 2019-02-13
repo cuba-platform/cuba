@@ -16,8 +16,6 @@
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
-import com.haulmont.chile.core.datatypes.Datatype;
-import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.cuba.gui.components.TextArea;
 import org.apache.commons.lang3.StringUtils;
 
@@ -52,6 +50,7 @@ public class TextAreaLoader extends AbstractTextFieldLoader<TextArea> {
         loadWordWrap();
 
         loadDatatype(resultComponent, element);
+        loadConversionErrorMessage(resultComponent, element);
     }
 
     protected void loadWordWrap() {

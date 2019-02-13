@@ -1039,6 +1039,10 @@
         <xs:attribute name="datatype" type="datatypeEnum"/>
     </xs:attributeGroup>
 
+    <xs:attributeGroup name="hasConversionErrorMessage">
+        <xs:attribute name="conversionErrorMessage" type="resourceString"/>
+    </xs:attributeGroup>
+
     <xs:attributeGroup name="hasOptions">
         <xs:attribute name="optionsDatasource" type="xs:string"/>
         <xs:attribute name="optionsContainer" type="xs:string"/>
@@ -1430,6 +1434,7 @@
 
                 <xs:attributeGroup ref="hasBuffered"/>
                 <xs:attributeGroup ref="hasDatatype"/>
+                <xs:attributeGroup ref="hasConversionErrorMessage"/>
 
                 <xs:attribute name="stylename" type="textFieldStylename"/>
                 <xs:attribute name="maxLength" type="xs:int"/>
@@ -1454,13 +1459,14 @@
     <xs:complexType name="currencyFieldComponent">
         <xs:complexContent>
             <xs:extension base="baseFieldComponent">
+                <xs:attributeGroup ref="hasConversionErrorMessage"/>
+                <xs:attributeGroup ref="hasBuffered"/>
+
                 <xs:attribute name="currency" type="xs:string"/>
                 <xs:attribute name="showCurrencyLabel" type="xs:boolean"/>
                 <xs:attribute name="currencyLabelPosition" type="currencyAlignMode"/>
                 <xs:attribute name="datatype" type="numericDatatypeEnum"/>
                 <xs:attribute name="stylename" type="currencyFieldStylename"/>
-
-                <xs:attributeGroup ref="hasBuffered"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -1476,6 +1482,7 @@
 
                 <xs:attributeGroup ref="hasBuffered"/>
                 <xs:attributeGroup ref="hasDatatype"/>
+                <xs:attributeGroup ref="hasConversionErrorMessage"/>
                 <xs:attributeGroup ref="hasSettings"/>
 
                 <xs:attribute name="stylename" type="textAreaStylename"/>
