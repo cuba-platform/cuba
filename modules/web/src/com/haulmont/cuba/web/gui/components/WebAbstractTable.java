@@ -422,6 +422,20 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
 
     @Override
     public void addColumn(Table.Column<E> column) {
+        addColumnInternal(column, columnsOrder.size());
+    }
+
+    @Override
+    public void addColumn(Column<E> column, int index) {
+        addColumnInternal(column, index);
+
+        // Update column order only if we add a column to an arbitrary position.
+        component.setVisibleColumns(columnsOrder.stream()
+                .map(Table.Column::getId)
+                .toArray());
+    }
+
+    protected void addColumnInternal(Column<E> column, int index) {
         checkNotNullArgument(column, "Column must be non null");
 
         Object columnId = column.getId();
@@ -443,7 +457,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
         }
 
         columns.put(columnId, column);
-        columnsOrder.add(column);
+        columnsOrder.add(index, column);
         if (column.getWidth() != null) {
             component.setColumnWidth(columnId, column.getWidth());
         }

@@ -74,8 +74,28 @@ public interface Table<E extends Entity>
 
     Column<E> getColumn(String id);
 
+    /**
+     * Adds the given column to Table.
+     *
+     * @param column the column to add
+     * @see #addColumn(Column, int)
+     */
     void addColumn(Column<E> column);
 
+    /**
+     * Adds the given column at the specified index to Table.
+     *
+     * @param column the column to add
+     * @param index  index of a new column
+     * @see #addColumn(Column)
+     */
+    void addColumn(Column<E> column, int index);
+
+    /**
+     * Removes the given column from Table or do nothing if column is {@code null}.
+     *
+     * @param column the column to remove
+     */
     void removeColumn(Column<E> column);
 
     Map<Object, Object> getAggregationResults();
