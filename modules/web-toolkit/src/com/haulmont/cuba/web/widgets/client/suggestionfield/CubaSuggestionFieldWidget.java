@@ -421,6 +421,8 @@ public class CubaSuggestionFieldWidget extends Composite implements HasEnabled, 
 
             setPopupPosition(x, topPosition);
             setPopupPositionAndShow(this);
+
+            suggestionsContainer.initPaging();
         }
 
         @Override
