@@ -31,6 +31,7 @@ import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.client.ui.impl.FocusImpl;
 import com.haulmont.cuba.web.toolkit.ui.client.suggestionfield.CubaSuggestionFieldWidget;
 import com.vaadin.client.BrowserInfo;
+import com.vaadin.client.ComputedStyle;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +39,6 @@ import java.util.List;
 public class SuggestionsContainer extends Widget {
 
     protected static final String STYLENAME = "c-suggestionfield-popup";
-    protected static final int OUTER_PADDING = 3;
 
     protected final List<SuggestionItem> items = new ArrayList<>();
     protected SuggestionItem selectedItem;
@@ -108,6 +108,11 @@ public class SuggestionsContainer extends Widget {
         int itemTop = item.getElement().getOffsetTop();
         int containerScrollTop = getElement().getScrollTop();
 
+        ComputedStyle popupStyle = new ComputedStyle(getElement());
+        int popupPaddingTop = popupStyle.getPadding()[0];
+        int popupPaddingBottom = popupStyle.getPadding()[2];
+        int popupPadding = Math.max(popupPaddingTop, popupPaddingBottom);
+
         boolean itemIsVisible = itemTop >= containerScrollTop
                 && (itemTop + itemHeight) <= (containerScrollTop + itemHeight * itemsPerPage);
 
@@ -116,7 +121,7 @@ public class SuggestionsContainer extends Widget {
         if (!itemIsVisible) {
             SuggestionItem firstOnPage = items.get(page * itemsPerPage);
 
-            int newScrollTop = firstOnPage.getElement().getOffsetTop() - OUTER_PADDING;
+            int newScrollTop = firstOnPage.getElement().getOffsetTop() - popupPadding;
 
             getElement().setScrollTop(newScrollTop);
         }

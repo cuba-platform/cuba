@@ -30,7 +30,7 @@ $cuba-suggestionfield-edit-color: #dceeff !default;
   }
 
   .#{$primary-stylename}-popup {
-    max-height: 330px;
+    max-height: 300px;
     min-width: 200px;
     max-width: 400px;
     overflow-y: auto;
@@ -44,10 +44,10 @@ $cuba-suggestionfield-edit-color: #dceeff !default;
 
   .#{$primary-stylename}-item {
     cursor: pointer;
-    height: $v-selection-item-height;
-    line-height: $v-selection-item-height;
+    height: 20px;
+    line-height: 20px;
     overflow: hidden;
-    padding: 1px 6px;
+    padding: 0 6px;
     text-overflow: ellipsis;
     white-space: nowrap;
   }

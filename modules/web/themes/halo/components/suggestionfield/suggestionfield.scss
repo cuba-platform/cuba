@@ -60,6 +60,14 @@ $cuba-suggestionfield-edit-color: scale-color(lighten($v-focus-color, 35%), $sat
       min-width: auto;
       max-width: none;
     }
+
+    & > div {
+      padding-bottom: $v-overlay-padding-vertical;
+
+      .v-ch & {
+        padding-bottom: 0;
+      }
+    }
   }
 
   .#{$primary-stylename}-item {
