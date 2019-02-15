@@ -705,8 +705,9 @@ public class CubaGroupTableWidget extends CubaScrollTableWidget {
                 for (int i = groupColIndex; i < cells; i++) {
                     HeaderCell headerCell = tHead.getHeaderCell(i);
 
-                    int headerWidth = headerCell.getOffsetWidth() > headerCell.getWidth() + MAX_ROUNDING_DIFF ?
-                            headerCell.getWidth() : headerCell.getOffsetWidth();
+                    int headerWidth = headerCell.getOffsetWidth() > headerCell.getWidth() + MAX_ROUNDING_DIFF
+                            ? headerCell.getWidth()
+                            : headerCell.getOffsetWidth();
 
                     totalSpannedWidth += headerWidth;
                 }
@@ -730,26 +731,17 @@ public class CubaGroupTableWidget extends CubaScrollTableWidget {
                     wrapperWidth = totalSpannedWidth - 1;
                 }
 
-                if (BrowserInfo.get().isWebkit()
-                        || BrowserInfo.get().isOpera10()) {
-                            /*
-                             * Some versions of Webkit and Opera ignore the width
-                             * definition of zero width table cells. Instead, use 1px
-                             * and compensate with a negative margin.
-                             */
+                if (BrowserInfo.get().isWebkit() || BrowserInfo.get().isOpera10()) {
+                    /*
+                     * Some versions of Webkit and Opera ignore the width definition of zero width table cells.
+                     * Instead, use 1px and compensate with a negative margin.
+                     */
                     if (totalSpannedWidth == 0) {
                         wrapperWidth = 1;
                         wrapperStyle.setMarginRight(-1, Style.Unit.PX);
                     } else {
                         wrapperStyle.clearMarginRight();
                     }
-                }
-
-                if (BrowserInfo.get().isChrome()) {
-                    if (groupColIndex == groupColumns.size() - 1) {
-                        wrapperWidth -= groupColIndex * 2;
-                    }
-                    wrapperWidth++;
                 }
 
                 wrapperStyle.setPropertyPx("width", wrapperWidth);
