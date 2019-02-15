@@ -50,7 +50,7 @@ $cuba-suggestionfield-edit-color: scale-color(lighten($v-focus-color, 35%), $sat
   .#{$primary-stylename}-popup {
     @include valo-selection-overlay-style;
 
-    max-height: 330px;
+    max-height: $v-selection-item-height * 15;
     min-width: 200px;
     max-width: 400px;
     overflow-y: auto;
