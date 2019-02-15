@@ -40,7 +40,6 @@ import elemental.json.JsonObject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 public class CubaSuggestionFieldWidget extends Composite implements HasEnabled, Focusable, HasAllKeyHandlers,
         HasValue<String>, HasSelectionHandlers<CubaSuggestionFieldWidget.Suggestion> {
@@ -382,8 +381,7 @@ public class CubaSuggestionFieldWidget extends Composite implements HasEnabled, 
         popupStylename = null;
 
         if (styleName != null) {
-            popupStylename = styleName.stream()
-                    .collect(Collectors.joining(" "));
+            popupStylename = String.join(" ", styleName);
 
             suggestionsContainer.addStyleName(popupStylename);
         }
@@ -425,6 +423,8 @@ public class CubaSuggestionFieldWidget extends Composite implements HasEnabled, 
 
             setPopupPosition(x, topPosition);
             setPopupPositionAndShow(this);
+
+            suggestionsContainer.initPaging();
         }
 
         @Override

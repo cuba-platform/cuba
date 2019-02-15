@@ -36,7 +36,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SuggestionsContainer extends Widget {
+
     protected static final String STYLENAME = "c-suggestionfield-popup";
+    protected static final int OUTER_PADDING = 3;
 
     protected final List<SuggestionItem> items = new ArrayList<>();
     protected SuggestionItem selectedItem;
@@ -44,6 +46,8 @@ public class SuggestionsContainer extends Widget {
     protected final Element container;
 
     protected final CubaSuggestionFieldWidget suggestionFieldWidget;
+
+    protected int itemsPerPage = 0;
 
     public SuggestionsContainer(CubaSuggestionFieldWidget suggestionFieldWidget) {
         this.suggestionFieldWidget = suggestionFieldWidget;
@@ -53,7 +57,13 @@ public class SuggestionsContainer extends Widget {
         DOM.appendChild(outer, container);
         setElement(outer);
 
-        sinkEvents(Event.ONCLICK | Event.ONMOUSEDOWN | Event.ONMOUSEOVER | Event.ONMOUSEOUT | Event.ONFOCUS | Event.ONKEYDOWN);
+        sinkEvents(Event.ONCLICK
+                | Event.ONMOUSEDOWN
+                | Event.ONMOUSEOVER
+                | Event.ONMOUSEOUT
+                | Event.ONFOCUS
+                | Event.ONKEYDOWN);
+
         addDomHandler(event ->
                 selectItem(null), BlurEvent.getType());
 
@@ -85,16 +95,40 @@ public class SuggestionsContainer extends Widget {
         }
 
         selectedItem = item;
+
+        updateContainerScroll(item);
     }
 
-    public SuggestionItem addItem(SuggestionItem item) {
+    protected void updateContainerScroll(SuggestionItem item) {
+        if (item == null) {
+            return;
+        }
+
+        int itemHeight = container.getFirstChildElement().getOffsetHeight();
+        int itemTop = item.getElement().getOffsetTop();
+        int containerScrollTop = getElement().getScrollTop();
+
+        boolean itemIsVisible = itemTop >= containerScrollTop
+                && (itemTop + itemHeight) <= (containerScrollTop + itemHeight * itemsPerPage);
+
+        int page = items.indexOf(item) / itemsPerPage;
+
+        if (!itemIsVisible) {
+            SuggestionItem firstOnPage = items.get(page * itemsPerPage);
+
+            int newScrollTop = firstOnPage.getElement().getOffsetTop() - OUTER_PADDING;
+
+            getElement().setScrollTop(newScrollTop);
+        }
+    }
+
+    public void addItem(SuggestionItem item) {
         int idx = items.size();
         items.add(idx, item);
 
         DOM.appendChild(container, item.getElement());
         item.setSuggestionsContainer(this);
         item.updateSelection(false);
-        return item;
     }
 
     public void clearItems() {
@@ -232,6 +266,15 @@ public class SuggestionsContainer extends Widget {
             FocusImpl.getFocusImplForPanel().blur(getElement());
 
             Scheduler.get().scheduleFinally(cmd);
+        }
+    }
+
+    public void initPaging() {
+        int containerHeight = getElement().getOffsetHeight();
+        Element childEl = container.getFirstChildElement();
+
+        if (childEl != null) {
+            itemsPerPage = containerHeight / childEl.getOffsetHeight();
         }
     }
 }
