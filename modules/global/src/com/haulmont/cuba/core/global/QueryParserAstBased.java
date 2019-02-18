@@ -19,7 +19,7 @@ package com.haulmont.cuba.core.global;
 import com.haulmont.cuba.core.sys.jpql.*;
 import com.haulmont.cuba.core.sys.jpql.model.Attribute;
 import com.haulmont.cuba.core.sys.jpql.model.JpqlEntityModel;
-import com.haulmont.cuba.core.sys.jpql.transform.NodesFinder;
+import com.haulmont.cuba.core.sys.jpql.NodesFinder;
 import com.haulmont.cuba.core.sys.jpql.tree.IdentificationVariableNode;
 import com.haulmont.cuba.core.sys.jpql.tree.PathNode;
 import com.haulmont.cuba.core.sys.jpql.tree.SimpleConditionNode;

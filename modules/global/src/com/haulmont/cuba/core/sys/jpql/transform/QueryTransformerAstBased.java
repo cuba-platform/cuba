@@ -19,11 +19,7 @@ package com.haulmont.cuba.core.sys.jpql.transform;
 
 import com.haulmont.cuba.core.global.QueryTransformer;
 import com.haulmont.cuba.core.sys.jpql.*;
-import com.haulmont.cuba.core.sys.jpql.antlr2.JPA2Lexer;
-import com.haulmont.cuba.core.sys.jpql.tree.IdentificationVariableNode;
-import com.haulmont.cuba.core.sys.jpql.tree.JoinVariableNode;
-import com.haulmont.cuba.core.sys.jpql.tree.PathNode;
-import com.haulmont.cuba.core.sys.jpql.tree.SimpleConditionNode;
+import com.haulmont.cuba.core.sys.jpql.tree.*;
 import org.antlr.runtime.RecognitionException;
 import org.antlr.runtime.tree.CommonTree;
 import org.antlr.runtime.tree.TreeVisitor;
@@ -105,45 +101,25 @@ public class QueryTransformerAstBased implements QueryTransformer {
      */
     @Override
     public void addWhere(String where) {
-        EntityReference entityReference = createMainIdentificationVariableReference();
-        if (where.contains("{E}")) {
-            where = entityReference.replaceEntries(where, "\\{E\\}");
-        }
-        addWhere(parseWhereCondition(where), entityReference, false);
+        EntityVariable entityReference = createMainIdentificationVariable();
+
+        where = replaceEntityPlaceholder(where, entityReference.getVariableName());
+
+        addWhereInternal(parseWhereCondition(where));
     }
 
     @Override
     public void addWhereAsIs(String where) {
-        addWhere(parseWhereCondition(where), null, false);
-    }
-
-    /**
-     * copy from another statement
-     *
-     * @param statement from we copy where clause
-     */
-    @Override
-    @Deprecated
-    public void mergeWhere(String statement) {
-        try {
-            EntityReference entityReference = createMainIdentificationVariableReference();
-            CommonTree whereTree = Parser.parse(statement, true);
-            CommonTree whereClause = (CommonTree) whereTree.getFirstChildWithType(JPA2Lexer.T_CONDITION);
-            addWhere(whereClause, entityReference, true);
-        } catch (RecognitionException e) {
-            throw new RuntimeException(e);
-        }
+        addWhereInternal(parseWhereCondition(where));
     }
 
     @Override
     public void addJoinAndWhere(String join, String where) {
-        EntityReference entityReference = createMainIdentificationVariableReference();
-        if (where.contains("{E}")) {
-            where = entityReference.replaceEntries(where, "\\{E\\}");
-        }
-        if (join.contains("{E}")) {
-            join = entityReference.replaceEntries(join, "\\{E\\}");
-        }
+        EntityVariable entityReference = createMainIdentificationVariable();
+
+        where = replaceEntityPlaceholder(where, entityReference.getVariableName());
+        join = replaceEntityPlaceholder(join, entityReference.getVariableName());
+
         String[] strings = join.split(",");
         join = strings[0];
         if (StringUtils.isNotBlank(join)) {
@@ -158,23 +134,7 @@ public class QueryTransformerAstBased implements QueryTransformer {
             CommonTree selectionSource = parseSelectionSource(strings[i]);
             getTransformer().addSelectionSource(selectionSource);
         }
-        addWhere(parseWhereCondition(where), entityReference, false);
-    }
-
-    @Override
-    public void addJoinAsIs(String join) {
-        String[] strings = join.split(",");
-        join = strings[0];
-        List<JoinVariableNode> joinVariableNodes = parseJoinCondition(join);
-        IdentificationVariableNode identificationVariable = getAnalyzer().getMainIdentificationVariableNode();
-        String entityName = getAnalyzer().getMainEntityName(identificationVariable);
-        for (JoinVariableNode joinVariableNode : joinVariableNodes) {
-            getTransformer().mixinJoinIntoTree(joinVariableNode, new EntityNameEntityReference(entityName), false);
-        }
-        for (int i = 1; i < strings.length; i++) {
-            CommonTree selectionSource = parseSelectionSource(strings[i]);
-            getTransformer().addSelectionSource(selectionSource);
-        }
+        addWhereInternal(parseWhereCondition(where));
     }
 
     @Override
@@ -188,18 +148,16 @@ public class QueryTransformerAstBased implements QueryTransformer {
 
     @Override
     public void replaceWithCount() {
-        EntityReference entityReference = createMainSelectedPathNodeReference();
-        getTransformer().replaceWithCount(entityReference.createNode());
-    }
-
-    @Override
-    public void replaceWithSelectId() {
-        getTransformer().replaceWithSelectId("id", getAnalyzer().getMainSelectedPathNode());
+        EntityVariable entityReference = createMainSelectedPathNodeVariable();
+        getTransformer().replaceWithCount(entityReference.getVariableName());
     }
 
     @Override
     public void replaceWithSelectId(String pkName) {
-        getTransformer().replaceWithSelectId(pkName, getAnalyzer().getMainSelectedPathNode());
+        PathNode pathNode = getAnalyzer().getMainSelectedPathNode();
+        if (pathNode != null) {
+            pathNode.addDefaultChild(pkName);
+        }
     }
 
     @Override
@@ -218,19 +176,20 @@ public class QueryTransformerAstBased implements QueryTransformer {
     }
 
     @Override
-    public void replaceOrderBy(boolean desc, String... properties) {
-        EntityReference entityReference = createMainSelectedPathNodeReference();
-        PathEntityReference[] paths = Arrays.stream(properties)
-                .map(entityReference::addFieldPath)
-                .toArray(PathEntityReference[]::new);
-        getTransformer().replaceOrderBy(desc, paths);
+    public void replaceOrderByExpressions(boolean directionDesc, String... sortExpressions) {
+        EntityVariable entityReference = createMainSelectedPathNodeVariable();
+        List<OrderByFieldNode> parsedNodes = new ArrayList<>(sortExpressions.length);
+        for (String expression: sortExpressions) {
+            expression = replaceEntityPlaceholder(expression, entityReference.getVariableName());
+            parsedNodes.add(parseOrderByItem(expression));
+        }
+        getTransformer().replaceOrderByItems(entityReference.getEntityName(), parsedNodes, directionDesc);
     }
 
     @Override
-    public void addOrderByIdIfNotExists(String idProperty) {
-        EntityReference entityReference = createMainSelectedPathNodeReference();
-        PathEntityReference idReference = entityReference.addFieldPath(idProperty);
-        getTransformer().addOrderByIdIfNotExists(idReference);
+    public void addOrderByIdIfNotExists(String pkName) {
+        EntityVariable entityReference = createMainSelectedPathNodeVariable();
+        getTransformer().orderById(entityReference.getVariableName(), pkName);
     }
 
     @Override
@@ -292,20 +251,25 @@ public class QueryTransformerAstBased implements QueryTransformer {
         }
     }
 
-    protected void addWhere(CommonTree whereTree, EntityReference ref, boolean replaceVariableName) {
-        TreeVisitor visitor = new TreeVisitor();
-        VariableManipulator variableManipulator = new VariableManipulator();
-        visitor.visit(whereTree, variableManipulator);
-        if (replaceVariableName) {
-            Set<String> variables = variableManipulator.getUsedVariableNames();
-            if (variables.size() > 1) {
-                // we assume that adding where that use only one variable and does not add its own variables
-                throw new IllegalStateException("Multiple variables used in condition");
-            }
-            String assumedEntityVariableInWhere = variableManipulator.getVariableNameInUse(0);
-            variableManipulator.renameVariable(assumedEntityVariableInWhere, ref);
+    protected OrderByFieldNode parseOrderByItem(String sortExpression) {
+        try {
+            return Parser.parseOrderByItem(sortExpression);
+        } catch (RecognitionException | JPA2RecognitionException e) {
+            throw new JpqlSyntaxException(format("Errors found while parsing sort expression:[%s] for query:[%s]\n%s",
+                    StringUtils.strip(sortExpression), StringUtils.strip(query), e.getMessage()));
         }
+    }
 
+    protected String replaceEntityPlaceholder(String value, String variableName) {
+        if (value.contains(ALIAS_PLACEHOLDER)) {
+             return value.replace(ALIAS_PLACEHOLDER, variableName);
+        } else {
+            return value;
+        }
+    }
+
+    protected void addWhereInternal(CommonTree whereTree) {
+        TreeVisitor visitor = new TreeVisitor();
         ParameterCounter parameterCounter = new ParameterCounter(true);
         visitor.visit(whereTree, parameterCounter);
         addedParams.addAll(parameterCounter.getParameterNames());
@@ -313,17 +277,17 @@ public class QueryTransformerAstBased implements QueryTransformer {
         getTransformer().mixinWhereConditionsIntoTree(whereTree);
     }
 
-    protected EntityReference createMainIdentificationVariableReference() {
+    protected EntityVariable createMainIdentificationVariable() {
         IdentificationVariableNode identificationVariable = getAnalyzer().getMainIdentificationVariableNode();
         String entityName = getAnalyzer().getMainEntityName(identificationVariable);
         String variableName = getAnalyzer().getMainEntityVariable(identificationVariable);
-        return new VariableEntityReference(entityName, variableName);
+        return new EntityVariable(entityName, variableName);
     }
 
-    protected EntityReference createMainSelectedPathNodeReference() {
+    protected EntityVariable createMainSelectedPathNodeVariable() {
         PathNode pathNode = getAnalyzer().getMainSelectedPathNode();
         String entityName = getAnalyzer().getMainSelectedEntityName(pathNode);
         String variableName = getAnalyzer().getMainSelectedEntityVariable(pathNode);
-        return new VariableEntityReference(entityName, variableName);
+        return new EntityVariable(entityName, variableName);
     }
 }

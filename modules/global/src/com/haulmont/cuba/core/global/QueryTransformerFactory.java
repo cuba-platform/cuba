@@ -30,17 +30,10 @@ public class QueryTransformerFactory {
 
     public static final String NAME = "cuba_QueryTransformerFactory";
 
-    protected boolean useAst = true;
-
     protected volatile DomainModel domainModel;
 
     @Inject
     protected BeanLocator beanLocator;
-
-    @Inject
-    public void setConfiguration(Configuration configuration) {
-        useAst = configuration.getConfig(GlobalConfig.class).getUseAstBasedJpqlTransformer();
-    }
 
     public static QueryTransformer createTransformer(String query) {
         return AppBeans.get(NAME, QueryTransformerFactory.class).transformer(query);
@@ -51,26 +44,18 @@ public class QueryTransformerFactory {
     }
 
     public QueryTransformer transformer(String query) {
-        if (useAst) {
-            if (domainModel == null) {
-                DomainModelBuilder builder = beanLocator.get(DomainModelBuilder.NAME);
-                domainModel = builder.produce();
-            }
-            return beanLocator.getPrototype(QueryTransformer.NAME, domainModel, query);
-        } else {
-            return new QueryTransformerRegex(query);
+        if (domainModel == null) {
+            DomainModelBuilder builder = beanLocator.get(DomainModelBuilder.NAME);
+            domainModel = builder.produce();
         }
+        return beanLocator.getPrototype(QueryTransformer.NAME, domainModel, query);
     }
 
     public QueryParser parser(String query) {
-        if (useAst) {
-            if (domainModel == null) {
-                DomainModelBuilder builder = AppBeans.get(DomainModelBuilder.NAME);
-                domainModel = builder.produce();
-            }
-            return beanLocator.getPrototype(QueryParser.NAME, domainModel, query);
-        } else {
-            return new QueryParserRegex(query);
+        if (domainModel == null) {
+            DomainModelBuilder builder = AppBeans.get(DomainModelBuilder.NAME);
+            domainModel = builder.produce();
         }
+        return beanLocator.getPrototype(QueryParser.NAME, domainModel, query);
     }
 }

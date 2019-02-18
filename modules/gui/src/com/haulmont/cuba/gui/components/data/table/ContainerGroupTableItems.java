@@ -18,16 +18,10 @@ package com.haulmont.cuba.gui.components.data.table;
 
 import com.google.common.collect.ImmutableList;
 import com.haulmont.bali.util.Preconditions;
-import com.haulmont.chile.core.model.Instance;
-import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.entity.IdProxy;
-import com.haulmont.cuba.core.global.Sort;
 import com.haulmont.cuba.gui.components.data.GroupTableItems;
 import com.haulmont.cuba.gui.data.GroupInfo;
-import com.haulmont.cuba.gui.data.impl.AbstractComparator;
-import com.haulmont.cuba.gui.data.impl.GroupInfoComparator;
 import com.haulmont.cuba.gui.model.CollectionContainer;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.map.LinkedMap;
@@ -69,39 +63,6 @@ public class ContainerGroupTableItems<E extends Entity<K>, K>
         super.sort(propertyId, ascending);
     }
 
-    protected void doGroupSort(Sort sort) {
-        if (hasGroups()) {
-            Sort.Order order = sort.getOrders().get(0);
-            MetaPropertyPath propertyPath = container.getEntityMetaClass().getPropertyPath(order.getProperty());
-            if (propertyPath == null)
-                throw new IllegalStateException("Cannot create property path from " + order.getProperty());
-            boolean asc = order.getDirection().equals(Sort.Direction.ASC);
-
-            int index = ArrayUtils.indexOf(groupProperties, propertyPath);
-            if (index > -1) {
-                if (index == 0) { // Sort roots
-                    roots.sort(new GroupInfoComparator(asc));
-                } else {
-                    Object parentProperty = groupProperties[index - 1];
-                    for (Map.Entry<GroupInfo, List<GroupInfo>> entry : children.entrySet()) {
-                        Object property = entry.getKey().getProperty();
-                        if (property.equals(parentProperty)) {
-                            entry.getValue().sort(new GroupInfoComparator(asc));
-                        }
-                    }
-                }
-            } else {
-                Set<GroupInfo> groups = parents.keySet();
-                for (GroupInfo groupInfo : groups) {
-                    List<K> items = groupItems.get(groupInfo);
-                    if (items != null) {
-                        items.sort(new EntityByIdComparator<>(propertyPath, container, asc));
-                    }
-                }
-            }
-        }
-    }
-
     @Override
     public void groupBy(Object[] properties) {
         if (isGrouping) {
@@ -124,13 +85,8 @@ public class ContainerGroupTableItems<E extends Entity<K>, K>
             }
         } finally {
             isGrouping = false;
-
-            if (sortProperties != null && sortProperties.length > 0) {
-                if (hasGroups()) {
-                    doGroupSort(createSort(sortProperties, sortAscending));
-                } else {
-                    super.sort(sortProperties, sortAscending);
-                }
+            if (sortProperties != null && sortProperties.length > 0 && !hasGroups()) {
+                super.sort(sortProperties, sortAscending);
             }
         }
     }
@@ -138,7 +94,7 @@ public class ContainerGroupTableItems<E extends Entity<K>, K>
     protected void doGroup() {
         roots = new LinkedList<>();
         parents = new LinkedHashMap<>();
-        children = new HashMap<>();
+        children = new LinkedHashMap<>();
         groupItems = new HashMap<>();
         itemGroups = new HashMap<>();
 
@@ -368,47 +324,5 @@ public class ContainerGroupTableItems<E extends Entity<K>, K>
     @Override
     public boolean containsGroup(GroupInfo groupId) {
         return hasGroups() && parents.keySet().contains(groupId);
-    }
-
-    public static class EntityByIdComparator<T extends Entity<K>, K> extends AbstractComparator<K> {
-        private MetaPropertyPath propertyPath;
-        private MetaProperty property;
-        private CollectionContainer<T> container;
-
-        public EntityByIdComparator(MetaPropertyPath propertyPath, CollectionContainer<T> container, boolean asc) {
-            super(asc);
-            this.propertyPath = propertyPath;
-            if (propertyPath.getMetaProperties().length == 1) {
-                property = this.propertyPath.getMetaProperty();
-            }
-            this.container = container;
-        }
-
-        @Override
-        public int compare(K key1, K key2) {
-            Object o1 = getValue(container.getItem(key1));
-            Object o2 = getValue(container.getItem(key2));
-
-            return __compare(o1, o2);
-        }
-
-        private Object getValue(Instance instance) {
-            Object value;
-            if (property != null) {
-                value = instance.getValue(property.getName());
-            } else {
-                value = instance.getValueEx(propertyPath);
-            }
-
-            if (!(value == null || value instanceof Comparable || value instanceof Instance)) {
-                if (value instanceof IdProxy) {
-                    value = ((IdProxy) value).get();
-                } else {
-                    value = value.toString();
-                }
-            }
-
-            return value;
-        }
     }
 }

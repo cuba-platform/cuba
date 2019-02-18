@@ -39,18 +39,6 @@ public class QueryFilterTest {
     @ClassRule
     public static TestContainer cont = TestContainer.Common.INSTANCE;
 
-    @Before
-    public void setUp() {
-        new MockUp<QueryTransformerFactory>(){
-            // Redefine the method here
-            // But With No static modifier
-            @Mock
-            public QueryTransformer createTransformer(String query) {
-                return new QueryTransformerRegex(query);
-            }
-        };
-    }
-
     private QueryFilter createFilter(String name) {
         InputStream stream = QueryFilterTest.class.getResourceAsStream("/com/haulmont/cuba/core/global/filter/" + name);
         Document doc = Dom4j.readDocument(stream);
@@ -64,7 +52,7 @@ public class QueryFilterTest {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("p1", "v1");
         String s = filter.processQuery("select distinct d from saneco$GenDoc d", params);
-        assertEquals("select distinct d from saneco$GenDoc d where (d.processState <> 'Version')", s);
+        assertEquals("select distinct d from saneco$GenDoc d where d.processState <> 'Version'", s);
     }
 
     @Test
@@ -78,7 +66,7 @@ public class QueryFilterTest {
 
         params.put("custom$filter_state", "v1");
         s = filter.processQuery("select distinct d from saneco$GenDoc d", params);
-        assertEquals("select distinct d from saneco$GenDoc d where (d.processState = :custom$filter_state)", s);
+        assertEquals("select distinct d from saneco$GenDoc d where d.processState = :custom$filter_state", s);
     }
 
     @Test
@@ -92,11 +80,11 @@ public class QueryFilterTest {
 
         params.put("custom$filter_state", "v1");
         s = filter.processQuery("select distinct d from saneco$GenDoc d", params);
-        assertEquals("select distinct d from saneco$GenDoc d where (d.processState = :custom$filter_state)", s);
+        assertEquals("select distinct d from saneco$GenDoc d where d.processState = :custom$filter_state", s);
 
         params.put("custom$filter_barCode", "v1");
         s = filter.processQuery("select distinct d from saneco$GenDoc d", params);
-        assertEquals("select distinct d from saneco$GenDoc d where ((d.processState = :custom$filter_state and d.barCode like :custom$filter_barCode))", s);
+        assertEquals("select distinct d from saneco$GenDoc d where (d.processState = :custom$filter_state and d.barCode like :custom$filter_barCode)", s);
     }
 
     @Test
@@ -110,15 +98,15 @@ public class QueryFilterTest {
 
         params.put("custom$filter_state", "v1");
         s = filter.processQuery("select distinct d from saneco$GenDoc d", params);
-        assertEquals("select distinct d from saneco$GenDoc d where (d.processState = :custom$filter_state)", s);
+        assertEquals("select distinct d from saneco$GenDoc d where d.processState = :custom$filter_state", s);
 
         params.put("custom$filter_barCode", "v1");
         s = filter.processQuery("select distinct d from saneco$GenDoc d", params);
-        assertEquals("select distinct d from saneco$GenDoc d where ((d.processState = :custom$filter_state and d.barCode like :custom$filter_barCode))", s);
+        assertEquals("select distinct d from saneco$GenDoc d where (d.processState = :custom$filter_state and d.barCode like :custom$filter_barCode)", s);
 
         params.put("custom$filter_notSigned", "v1");
         s = filter.processQuery("select distinct d from saneco$GenDoc d", params);
-        assertEquals("select distinct d from saneco$GenDoc d where (((d.processState = :custom$filter_state and d.barCode like :custom$filter_barCode) or d.processState <> :custom$filter_notSigned))", s);
+        assertEquals("select distinct d from saneco$GenDoc d where ((d.processState = :custom$filter_state and d.barCode like :custom$filter_barCode) or d.processState <> :custom$filter_notSigned)", s);
     }
 
     @Test
@@ -132,15 +120,15 @@ public class QueryFilterTest {
 
         params.put("custom$filter_state", "v1");
         s = filter.processQuery("select distinct d from saneco$GenDoc d", params);
-        assertEquals("select distinct d from saneco$GenDoc d where (d.processState = :custom$filter_state)", s);
+        assertEquals("select distinct d from saneco$GenDoc d where d.processState = :custom$filter_state", s);
 
         params.put("custom$filter_barCode", "v1");
         s = filter.processQuery("select distinct d from saneco$GenDoc d", params);
-        assertEquals("select distinct d from saneco$GenDoc d where ((d.processState = :custom$filter_state and d.barCode like :custom$filter_barCode))", s);
+        assertEquals("select distinct d from saneco$GenDoc d where (d.processState = :custom$filter_state and d.barCode like :custom$filter_barCode)", s);
 
         params.put("custom$filter_notSigned", "v1");
         s = filter.processQuery("select distinct d from saneco$GenDoc d where 1=1", params);
-        assertEquals("select distinct d from saneco$GenDoc d where 1=1 and (((d.processState = :custom$filter_state and d.barCode like :custom$filter_barCode) or d.processState <> :custom$filter_notSigned))", s);
+        assertEquals("select distinct d from saneco$GenDoc d where (1 = 1) and (((d.processState = :custom$filter_state and d.barCode like :custom$filter_barCode) or d.processState <> :custom$filter_notSigned))", s);
     }
 
     @Test
@@ -154,15 +142,14 @@ public class QueryFilterTest {
 
         params.put("custom$filter_state", "v1");
         s = filter.processQuery("select distinct d from saneco$GenDoc d", params);
-        assertEquals("select distinct d from saneco$GenDoc d , docflow$DocumentRole dr where (d.processState = :custom$filter_state)", s);
+        assertEquals("select distinct d from saneco$GenDoc d, docflow$DocumentRole dr where d.processState = :custom$filter_state", s);
 
         params.put("custom$filter_barCode", "v1");
         s = filter.processQuery("select distinct d from saneco$GenDoc d", params);
-        assertEquals("select distinct d from saneco$GenDoc d , docflow$DocumentRole dr where ((d.processState = :custom$filter_state and d.barCode like :custom$filter_barCode))", s);
+        assertEquals("select distinct d from saneco$GenDoc d, docflow$DocumentRole dr where (d.processState = :custom$filter_state and d.barCode like :custom$filter_barCode)", s);
 
         params.put("custom$filter_notSigned", "v1");
         s = filter.processQuery("select distinct d from saneco$GenDoc d where 1=1", params);
-        assertEquals("select distinct d from saneco$GenDoc d , docflow$DocumentRole dr where 1=1 and (((d.processState = :custom$filter_state and d.barCode like :custom$filter_barCode) or d.processState <> :custom$filter_notSigned))", s);
+        assertEquals("select distinct d from saneco$GenDoc d, docflow$DocumentRole dr where (1 = 1) and (((d.processState = :custom$filter_state and d.barCode like :custom$filter_barCode) or d.processState <> :custom$filter_notSigned))", s);
     }
-
 }

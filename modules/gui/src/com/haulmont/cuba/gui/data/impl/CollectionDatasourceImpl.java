@@ -16,6 +16,7 @@
  */
 package com.haulmont.cuba.gui.data.impl;
 
+import com.google.common.base.Preconditions;
 import com.haulmont.bali.collections.ReadOnlyLinkedMapValuesView;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaPropertyPath;
@@ -57,7 +58,8 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
             CollectionDatasource.Aggregatable<T, K>,
             CollectionDatasource.Suspendable<T, K>,
             CollectionDatasource.SupportsPaging<T, K>,
-            CollectionDatasource.SupportsApplyToSelected<T, K> {
+            CollectionDatasource.SupportsApplyToSelected<T, K>,
+            CollectionDatasource.SupportsSortDelegate<T, K> {
 
     protected LinkedMap data = new LinkedMap();
 
@@ -74,6 +76,8 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
             return CollectionDatasourceImpl.this.getItemValue(property, itemId);
         }
     };
+
+    protected SortDelegate<T, K> sortDelegate = (entities, sortInfo) -> entities.sort(createEntityComparator());
 
     protected boolean suspended;
 
@@ -275,13 +279,19 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
     }
 
     protected void doSort() {
+        Preconditions.checkNotNull(sortDelegate, "Sort delegate is null");
         @SuppressWarnings("unchecked")
         List<T> list = new ArrayList<>(data.values());
-        list.sort(createEntityComparator());
+        sortDelegate.sort(list, sortInfos);
         data.clear();
         for (T t : list) {
             data.put(t.getId(), t);
         }
+    }
+
+    @Override
+    public void setSortDelegate(SortDelegate<T, K> sortDelegate) {
+        this.sortDelegate = sortDelegate;
     }
 
     @Override
@@ -341,7 +351,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
     }
 
     protected void checkState() {
-        if (state != State.VALID ) {
+        if (state != State.VALID) {
             refresh();
         }
     }

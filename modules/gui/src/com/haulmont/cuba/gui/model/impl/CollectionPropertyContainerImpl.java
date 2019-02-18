@@ -39,7 +39,6 @@ public class CollectionPropertyContainerImpl<E extends Entity>
         super(metaClass);
         this.master = master;
         this.property = property;
-        sorter = new CollectionPropertyContainerSorter(this);
     }
 
     @Override

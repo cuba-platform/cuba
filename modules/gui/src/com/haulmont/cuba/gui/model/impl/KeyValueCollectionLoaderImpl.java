@@ -23,10 +23,7 @@ import com.haulmont.cuba.core.global.Sort;
 import com.haulmont.cuba.core.global.Stores;
 import com.haulmont.cuba.core.global.ValueLoadContext;
 import com.haulmont.cuba.core.global.queryconditions.Condition;
-import com.haulmont.cuba.gui.model.DataContext;
-import com.haulmont.cuba.gui.model.HasLoader;
-import com.haulmont.cuba.gui.model.KeyValueCollectionContainer;
-import com.haulmont.cuba.gui.model.KeyValueCollectionLoader;
+import com.haulmont.cuba.gui.model.*;
 import org.springframework.context.ApplicationContext;
 
 import javax.annotation.Nullable;
@@ -59,6 +56,10 @@ public class KeyValueCollectionLoaderImpl implements KeyValueCollectionLoader {
 
     protected DataManager getDataManager() {
         return applicationContext.getBean(DataManager.NAME, DataManager.class);
+    }
+
+    protected SorterFactory getSorterFactory() {
+        return applicationContext.getBean(SorterFactory.NAME, SorterFactory.class);
     }
 
     @Nullable
@@ -129,7 +130,7 @@ public class KeyValueCollectionLoaderImpl implements KeyValueCollectionLoader {
     @Override
     public void setContainer(KeyValueCollectionContainer container) {
         this.container = container;
-        container.setSorter(new CollectionContainerSorter(container, this));
+        container.setSorter(getSorterFactory().createCollectionContainerSorter(container, this));
     }
 
     @Override

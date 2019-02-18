@@ -16,6 +16,7 @@
  */
 package com.haulmont.cuba.gui.data;
 
+import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
 
 import javax.annotation.Nullable;
@@ -104,4 +105,18 @@ public interface GroupDatasource<T extends Entity<K>, K> extends CollectionDatas
      * Indicates that a group is contained in the groups tree
      */
     boolean containsGroup(GroupInfo groupId);
+
+    /**
+     * Sorts groups and items in-memory after DB sorting
+     */
+    interface GroupSortDelegate {
+        void sortGroups(List<GroupInfo> groups, Sortable.SortInfo<MetaPropertyPath>[] sortInfo);
+    }
+
+    /**
+     * Set ability to override in-memory sorting of groups in a GroupCollectionDatasource
+     */
+    interface SupportsGroupSortDelegate {
+        void setGroupSortDelegate(GroupSortDelegate sortDelegate);
+    }
 }

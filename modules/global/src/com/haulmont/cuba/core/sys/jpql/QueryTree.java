@@ -134,6 +134,13 @@ public class QueryTree {
         return tree.getFirstChildWithType(JPA2Lexer.T_GROUP_BY);
     }
 
+    /**
+     * @return returns tree for ORDER BY statement
+     */
+    public Tree getAstOrderByNode() {
+        return tree.getFirstChildWithType(JPA2Lexer.T_ORDER_BY);
+    }
+
 
     public <T extends TreeVisitorAction> T visit(T visitor) {
         new TreeVisitor().visit(tree, visitor);

@@ -36,10 +36,10 @@ public abstract class AbstractComparator<T> implements Comparator<T> {
     protected Metadata metadata;
 
     protected AbstractComparator(boolean asc) {
+        PersistenceManagerClient persistenceManager = AppBeans.get(PersistenceManagerClient.NAME, PersistenceManagerClient.class);
+        this.metadata = AppBeans.get(Metadata.NAME);
         this.asc = asc;
-        nullsLast = AppBeans.get(PersistenceManagerClient.NAME, PersistenceManagerClient.class).isNullsLastSorting() ?
-                1 : -1;
-        metadata = AppBeans.get(Metadata.NAME);
+        this.nullsLast = persistenceManager.isNullsLastSorting() ? 1 : -1;
     }
 
     protected int __compare(Object o1, Object o2) {

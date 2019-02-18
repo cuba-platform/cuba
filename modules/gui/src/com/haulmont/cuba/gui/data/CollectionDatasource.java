@@ -16,10 +16,11 @@
  */
 package com.haulmont.cuba.gui.data;
 
+import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.LoadContext;
-import com.haulmont.cuba.gui.components.AggregationInfo;
 import com.haulmont.cuba.core.global.filter.QueryFilter;
+import com.haulmont.cuba.gui.components.AggregationInfo;
 import com.haulmont.cuba.gui.model.CollectionChangeType;
 import com.haulmont.cuba.gui.model.CollectionContainer;
 
@@ -33,7 +34,6 @@ import java.util.Map;
  *
  * @param <T> type of entity
  * @param <K> type of entity ID
- *
  * @see #setQuery(String)
  */
 public interface CollectionDatasource<T extends Entity<K>, K> extends Datasource<T> {
@@ -50,7 +50,7 @@ public interface CollectionDatasource<T extends Entity<K>, K> extends Datasource
     T getItemNN(K id);
 
     /**
-     * @return  all item IDs
+     * @return all item IDs
      */
     Collection<K> getItemIds();
 
@@ -116,13 +116,13 @@ public interface CollectionDatasource<T extends Entity<K>, K> extends Datasource
      * <br>Usage example:
      * <pre>
      * ds.suspendListeners();
-       try {
-           for (Object item : items) {
-               ds.addItem(item);
-           }
-       } finally {
-           ds.resumeListeners();
-       }
+     * try {
+     * for (Object item : items) {
+     * ds.addItem(item);
+     * }
+     * } finally {
+     * ds.resumeListeners();
+     * }
      * </pre>
      */
     void suspendListeners();
@@ -206,7 +206,7 @@ public interface CollectionDatasource<T extends Entity<K>, K> extends Datasource
     void setQuery(String query);
 
     /**
-     * Set query string and associated filter which is used to load data. 
+     * Set query string and associated filter which is used to load data.
      * Query is implementation-dependent (JPQL, Groovy, etc.).
      * <br>See {@link #setQuery(String)} for the list of supported query parameters.
      */
@@ -233,7 +233,8 @@ public interface CollectionDatasource<T extends Entity<K>, K> extends Datasource
     /**
      * Refresh datasource passing specified parameters to the query.
      * <p>These parameters may be referenced in the query text by "custom$" prefix.</p>
-     * @param parameters    parameters map
+     *
+     * @param parameters parameters map
      */
     void refresh(Map<String, Object> parameters);
 
@@ -269,21 +270,25 @@ public interface CollectionDatasource<T extends Entity<K>, K> extends Datasource
     /**
      * CollectionDatasource which underlying collection is ordered.
      * Supports predictable navigation between items.
+     *
      * @param <T> type of entity
      * @param <K> type of entity ID
      */
     interface Ordered<T extends Entity<K>, K> extends CollectionDatasource<T, K> {
         @Nullable
         K firstItemId();
+
         @Nullable
         K lastItemId();
 
         @Nullable
         K nextItemId(K itemId);
+
         @Nullable
         K prevItemId(K itemId);
 
         boolean isFirstId(K itemId);
+
         boolean isLastId(K itemId);
 
         /**
@@ -308,18 +313,23 @@ public interface CollectionDatasource<T extends Entity<K>, K> extends Datasource
 
     /**
      * Ordered CollectionDatasource supporting order change.
+     *
      * @param <T> type of entity
      * @param <K> type of entity ID
      */
     interface Sortable<T extends Entity<K>, K> extends Ordered<T, K> {
 
-        /** Sort order */
+        /**
+         * Sort order
+         */
         enum Order {
             ASC,
             DESC
         }
 
-        /** How to sort */
+        /**
+         * How to sort
+         */
         class SortInfo<P> {
             P propertyPath;
             Order order;
@@ -372,7 +382,22 @@ public interface CollectionDatasource<T extends Entity<K>, K> extends Datasource
     }
 
     /**
+     * Sorts items in-memory after DB sorting
+     */
+    interface SortDelegate<T extends Entity<K>, K> {
+        void sort(List<T> entities, Sortable.SortInfo<MetaPropertyPath>[] sortInfo);
+    }
+
+    /**
+     * Set ability to override in-memory sorting in CollectionDatasource
+     */
+    interface SupportsSortDelegate<T extends Entity<K>, K> {
+        void setSortDelegate(SortDelegate<T, K> sortDelegate);
+    }
+
+    /**
      * CollectionDatasource which supports data aggregation.
+     *
      * @param <T> type of entity
      * @param <K> type of entity ID
      */
@@ -386,6 +411,7 @@ public interface CollectionDatasource<T extends Entity<K>, K> extends Datasource
 
     /**
      * CollectionDatasource with lazy loading.
+     *
      * @param <T> type of entity
      * @param <K> type of entity ID
      */
@@ -396,16 +422,22 @@ public interface CollectionDatasource<T extends Entity<K>, K> extends Datasource
 
     /**
      * CollectionDatasource that supports counting records in database and loading by pages.
+     *
      * @param <T> type of entity
      * @param <K> type of entity ID
      */
     interface SupportsPaging<T extends Entity<K>, K> extends CollectionDatasource<T, K> {
 
-        /** Returns count of records in database for the current query and filter */
+        /**
+         * Returns count of records in database for the current query and filter
+         */
         int getCount();
 
-        /**  */
+        /**
+         *
+         */
         int getFirstResult();
+
         void setFirstResult(int startPosition);
     }
 
@@ -417,6 +449,7 @@ public interface CollectionDatasource<T extends Entity<K>, K> extends Datasource
     interface Suspendable<T extends Entity<K>, K> extends CollectionDatasource<T, K> {
 
         boolean isSuspended();
+
         void setSuspended(boolean suspended);
 
         void refreshIfNotSuspended();
@@ -430,7 +463,9 @@ public interface CollectionDatasource<T extends Entity<K>, K> extends Datasource
     interface SupportsApplyToSelected<T extends Entity<K>, K> extends CollectionDatasource<T, K> {
 
         void pinQuery();
+
         void unpinLastQuery();
+
         void unpinAllQuery();
     }
 
@@ -448,12 +483,15 @@ public interface CollectionDatasource<T extends Entity<K>, K> extends Datasource
         NEVER
     }
 
-    interface SupportsRefreshMode<T extends Entity<K>, K> extends CollectionDatasource<T,K> {
+    interface SupportsRefreshMode<T extends Entity<K>, K> extends CollectionDatasource<T, K> {
         RefreshMode getRefreshMode();
+
         void setRefreshMode(RefreshMode refreshMode);
     }
 
-    /** Operation which caused the datasource change. */
+    /**
+     * Operation which caused the datasource change.
+     */
     enum Operation {
         REFRESH,
         CLEAR,
@@ -505,5 +543,6 @@ public interface CollectionDatasource<T extends Entity<K>, K> extends Datasource
     }
 
     void addCollectionChangeListener(CollectionChangeListener<? super T, K> listener);
+
     void removeCollectionChangeListener(CollectionChangeListener<? super T, K> listener);
 }

@@ -42,6 +42,9 @@ public class DataComponents implements ApplicationContextAware {
     @Inject
     protected Security security;
 
+    @Inject
+    protected SorterFactory sorterFactory;
+
     private ApplicationContext applicationContext;
 
     @Override
@@ -106,6 +109,7 @@ public class DataComponents implements ApplicationContextAware {
                                                                                        String property) {
         CollectionPropertyContainerImpl<E> container = new CollectionPropertyContainerImpl<>(
                 metadata.getClassNN(entityClass), masterContainer, property);
+        container.setSorter(sorterFactory.createCollectionPropertyContainerSorter(container));
 
         if (security.isEntityAttrReadPermitted(masterContainer.getEntityMetaClass(), property)
                 && security.isEntityOpPermitted(entityClass, EntityOp.READ)) {

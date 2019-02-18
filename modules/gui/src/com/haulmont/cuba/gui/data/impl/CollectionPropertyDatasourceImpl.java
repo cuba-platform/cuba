@@ -26,6 +26,7 @@ import com.haulmont.cuba.core.global.filter.QueryFilter;
 import com.haulmont.cuba.gui.components.AggregationInfo;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.model.impl.EntityValuesComparator;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
 import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.entity.PermissionType;
@@ -44,7 +45,8 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
             CollectionDatasource<T, K>,
             CollectionDatasource.Indexed<T, K>,
             CollectionDatasource.Sortable<T, K>,
-            CollectionDatasource.Aggregatable<T, K> {
+            CollectionDatasource.Aggregatable<T, K>,
+            CollectionDatasource.SupportsSortDelegate<T, K> {
 
     private static final Logger log = LoggerFactory.getLogger(CollectionPropertyDatasourceImpl.class);
 
@@ -58,6 +60,8 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
     protected boolean doNotModify;
 
     protected List<CollectionChangeListener<? super T, K>> collectionChangeListeners;
+
+    protected SortDelegate<T, K> sortDelegate = (entities, sortInfo) -> entities.sort(createEntityComparator());
 
     protected AggregatableDelegate<K> aggregatableDelegate = new AggregatableDelegate<K>() {
         @Override
@@ -871,15 +875,20 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
             return;
 
         List<T> list = new LinkedList<>(collection);
-        list.sort(createEntityComparator());
+        sortDelegate.sort(list, sortInfos);
         collection.clear();
         collection.addAll(list);
     }
 
-    protected EntityComparator<T> createEntityComparator() {
+    @Override
+    public void setSortDelegate(SortDelegate<T, K> sortDelegate) {
+        this.sortDelegate = sortDelegate;
+    }
+
+    protected Comparator<T> createEntityComparator() {
         MetaPropertyPath propertyPath = sortInfos[0].getPropertyPath();
         boolean asc = Order.ASC.equals(sortInfos[0].getOrder());
-        return new EntityComparator<>(propertyPath, asc);
+        return Comparator.comparing(e -> e.getValueEx(propertyPath), EntityValuesComparator.asc(asc));
     }
 
     @Override

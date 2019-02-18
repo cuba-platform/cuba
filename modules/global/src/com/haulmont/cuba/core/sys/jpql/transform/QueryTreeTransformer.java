@@ -17,18 +17,21 @@
 
 package com.haulmont.cuba.core.sys.jpql.transform;
 
-import com.haulmont.cuba.core.sys.jpql.DomainModel;
+import com.haulmont.cuba.core.sys.jpql.NodesFinder;
 import com.haulmont.cuba.core.sys.jpql.QueryTree;
 import com.haulmont.cuba.core.sys.jpql.UnknownEntityNameException;
+import com.haulmont.cuba.core.sys.jpql.EntityVariable;
 import com.haulmont.cuba.core.sys.jpql.antlr2.JPA2Lexer;
 import com.haulmont.cuba.core.sys.jpql.model.Attribute;
 import com.haulmont.cuba.core.sys.jpql.model.JpqlEntityModel;
 import com.haulmont.cuba.core.sys.jpql.tree.*;
-import org.antlr.runtime.CommonToken;
 import org.antlr.runtime.tree.CommonTree;
 import org.antlr.runtime.tree.Tree;
+import org.antlr.runtime.tree.TreeVisitor;
 
 import java.util.*;
+
+import static com.haulmont.cuba.core.sys.jpql.JPATreeNodes.*;
 
 public class QueryTreeTransformer {
     protected QueryTree queryTree;
@@ -61,24 +64,24 @@ public class QueryTreeTransformer {
             List<Tree> existingChildren = (List<Tree>) sourceWhere.getChildren();
 
             CommonTree existingChildrenWithBraces = new CommonTree();
-            existingChildrenWithBraces.addChild(new CommonTree(new CommonToken(JPA2Lexer.LPAREN, "(")));
+            existingChildrenWithBraces.addChild(createLPAREN());
             existingChildrenWithBraces.addChildren(existingChildren);
-            existingChildrenWithBraces.addChild(new CommonTree(new CommonToken(JPA2Lexer.RPAREN, ")")));
+            existingChildrenWithBraces.addChild(createRPAREN());
             sourceWhere.replaceChildren(0, sourceWhere.getChildCount() - 1, existingChildrenWithBraces);
 
-            CommonTree and = new CommonTree(new CommonToken(JPA2Lexer.AND, "and"));
-            sourceWhere.addChild(and);
-            sourceWhere.addChild(new CommonTree(new CommonToken(JPA2Lexer.LPAREN, "(")));
+            sourceWhere.addChild(createAnd());
+            sourceWhere.addChild(createLPAREN());
             for (Object o : targetWhere.getChildren()) {
                 CommonTree t = (CommonTree) o;
                 sourceWhere.addChild(t.dupNode());
             }
-            sourceWhere.addChild(new CommonTree(new CommonToken(JPA2Lexer.RPAREN, ")")));
+            sourceWhere.addChild(createRPAREN());
+
             sourceWhere.freshenParentAndChildIndexes();
         }
     }
 
-    public void mixinJoinIntoTree(CommonTree joinClause, EntityReference entityReference, boolean renameVariable) {
+    public void mixinJoinIntoTree(CommonTree joinClause, EntityVariable entityReference, boolean renameVariable) {
         CommonTree from = queryTree.getAstFromNode();
         for (int i = 0; i < from.getChildCount(); i++) {
             SelectionSourceNode selectionSource = (SelectionSourceNode) from.getChild(i);
@@ -124,7 +127,7 @@ public class QueryTreeTransformer {
         from.freshenParentAndChildIndexes();
     }
 
-    public void replaceWithCount(Tree node) {
+    public void replaceWithCount(String entityName) {
         Tree selectedItems = queryTree.getAstSelectedItemsNode();
         boolean isDistinct = "distinct".equalsIgnoreCase(selectedItems.getChild(0).getText());
         if (!(isDistinct && selectedItems.getChildCount() == 2 ||
@@ -136,7 +139,7 @@ public class QueryTreeTransformer {
             selectedItems.deleteChild(0);
 
         selectedItemNode = (SelectedItemNode) selectedItems.getChild(0);
-        AggregateExpressionNode countNode = createCountNode(node, isDistinct);
+        AggregateExpressionNode countNode = createAggregateCount(createWord(entityName), isDistinct);
         selectedItemNode.deleteChild(0);
         selectedItemNode.addChild(countNode);
 
@@ -148,7 +151,7 @@ public class QueryTreeTransformer {
     }
 
     public void removeOrderBy() {
-        Tree orderBy = queryTree.getAstTree().getFirstChildWithType(JPA2Lexer.T_ORDER_BY);
+        Tree orderBy = queryTree.getAstOrderByNode();
         if (orderBy != null) {
             queryTree.getAstTree().deleteChild(orderBy.getChildIndex());
         }
@@ -171,7 +174,7 @@ public class QueryTreeTransformer {
         CommonTree selectedItems = queryTree.getAstSelectedItemsNode();
         boolean isDistinct = "distinct".equalsIgnoreCase(selectedItems.getChild(0).getText());
         if (!isDistinct) {
-            selectedItems.insertChild(0, new CommonTree(new CommonToken(JPA2Lexer.DISTINCT, "distinct")));
+            selectedItems.insertChild(0, createDistinct());
             selectedItems.freshenParentAndChildIndexes();
         }
     }
@@ -179,79 +182,78 @@ public class QueryTreeTransformer {
     public void replaceEntityName(String newEntityName, IdentificationVariableNode identificationVariable) {
         if (identificationVariable != null) {
             identificationVariable.deleteChild(0);
-            identificationVariable.addChild(new CommonTree(new CommonToken(JPA2Lexer.WORD, newEntityName)));
+            identificationVariable.addChild(createWord(newEntityName));
             identificationVariable.freshenParentAndChildIndexes();
         }
     }
 
-    public void replaceOrderBy(boolean desc, PathEntityReference... orderingFieldRefs) {
+    public void replaceOrderByItems(String mainEntityName, List<OrderByFieldNode> orderByItems, boolean directionDesc) {
         removeOrderBy();
-        CommonTree orderBy = new OrderByNode(JPA2Lexer.T_ORDER_BY);
+
+        OrderByNode orderBy = createOrderBy();
         queryTree.getAstTree().addChild(orderBy);
-        orderBy.addChild(new CommonTree(new CommonToken(JPA2Lexer.ORDER, "order")));
-        orderBy.addChild(new CommonTree(new CommonToken(JPA2Lexer.BY, "by")));
 
-        Set<String> addedJoinVariables = new HashSet<>();
-        for (PathEntityReference orderingFieldRef : orderingFieldRefs) {
-            OrderByFieldNode orderByField = new OrderByFieldNode(JPA2Lexer.T_ORDER_BY_FIELD);
-            orderBy.addChild(orderByField);
+        Set<String> joinVariables = new HashSet<>();
+        for (OrderByFieldNode orderByItem : orderByItems) {
 
-            PathNode pathNode = orderingFieldRef.getPathNode();
-            if (pathNode.getChildCount() > 1) {
-                List<PathNode> pathNodes = getPathNodesForOrderBy(orderingFieldRef);
-                if (pathNodes.size() > 1) {
-                    orderByField.addChild(pathNodes.remove(pathNodes.size() - 1));
-                    for (PathNode joinPathNode : pathNodes) {
-                        String joinPathNodeVariableName = joinPathNode.asPathString('_');
-                        if (!addedJoinVariables.contains(joinPathNodeVariableName)) {
-                            JoinVariableNode joinNode = new JoinVariableNode(JPA2Lexer.T_JOIN_VAR, "left join", joinPathNodeVariableName);
-                            joinNode.addChild(joinPathNode);
+            NodesFinder<PathNode> finder = NodesFinder.of(PathNode.class);
+            new TreeVisitor().visit(orderByItem, finder);
 
-                            CommonTree from = queryTree.getAstFromNode();
-                            from.getChild(0).addChild(joinNode); // assumption
-                            addedJoinVariables.add(joinPathNodeVariableName);
+            for (PathNode node : finder.getFoundNodes()) {
+                if (node.getChildCount() > 1) {
+                    int nodeIdx = node.getChildIndex();
+                    List<PathNode> transitPaths = extractTransitPaths(node, mainEntityName);
+
+                    //replace path expression in the order item to the last path expression from transit paths
+                    PathNode lastNode = transitPaths.remove(transitPaths.size() - 1);
+                    node.getParent().replaceChildren(nodeIdx, nodeIdx, lastNode);
+
+                    //add left join for
+                    for (PathNode joinPathNode : transitPaths) {
+                        String joinVariable = joinPathNode.asPathString('_');
+                        if (!joinVariables.contains(joinVariable)) {
+                            JoinVariableNode join = createLeftJoinByPath(joinVariable, joinPathNode);
+
+                            queryTree.getAstFromNode().getChild(0).addChild(join);
+                            joinVariables.add(joinVariable);
                         }
                     }
-                } else {
-                    orderByField.addChild(orderingFieldRef.createNode());
                 }
-            } else {
-                orderByField.addChild(orderingFieldRef.createNode());
             }
 
-            if (desc) {
-                orderByField.addChild(new CommonTree(new CommonToken(JPA2Lexer.DESC, "desc")));
+            boolean anyDirection = orderByItem.getChildren().stream()
+                    .map(item -> (Tree) item)
+                    .anyMatch(item -> item.getType() == JPA2Lexer.ASC || item.getType() == JPA2Lexer.DESC);
+
+            if (!anyDirection && directionDesc) {
+                orderByItem.addChild(createDesc());
             }
+
+            orderBy.addChild(orderByItem);
+        }
+    }
+
+    public void orderById(String entityVariable, String pkName) {
+        if (queryTree.getAstOrderByNode() == null) {
+            Tree orderBy = createOrderBy();
+            queryTree.getAstTree().addChild(orderBy);
+            queryTree.getAstTree().freshenParentAndChildIndexes();
+
+            OrderByFieldNode orderByField = new OrderByFieldNode(JPA2Lexer.T_ORDER_BY_FIELD);
+            orderByField.addChild(createPathNode(entityVariable, pkName));
+            orderByField.addChild(createDesc());
             orderByField.freshenParentAndChildIndexes();
+
+            orderBy.addChild(orderByField);
+            orderBy.freshenParentAndChildIndexes();
         }
     }
 
-    public void addOrderByIdIfNotExists(PathEntityReference idReference) {
-        Tree orderBy = queryTree.getAstTree().getFirstChildWithType(JPA2Lexer.T_ORDER_BY);
-        if (orderBy != null) {
-            return;
-        }
-        orderBy = new OrderByNode(JPA2Lexer.T_ORDER_BY);
-        queryTree.getAstTree().addChild(orderBy);
-        queryTree.getAstTree().freshenParentAndChildIndexes();
 
-        orderBy.addChild(new CommonTree(new CommonToken(JPA2Lexer.ORDER, "order")));
-        orderBy.addChild(new CommonTree(new CommonToken(JPA2Lexer.BY, "by")));
-
-        OrderByFieldNode orderByField = new OrderByFieldNode(JPA2Lexer.T_ORDER_BY_FIELD);
-        orderByField.addChild(idReference.createNode());
-        orderByField.addChild(new CommonTree(new CommonToken(JPA2Lexer.DESC, "asc")));
-        orderByField.freshenParentAndChildIndexes();
-
-        orderBy.addChild(orderByField);
-        orderBy.freshenParentAndChildIndexes();
-    }
-
-
-    public void addEntityInGroupBy(String entityAlias) {
+    public void addEntityInGroupBy(String entityVariable) {
         Tree groupBy = queryTree.getAstGroupByNode();
         if (groupBy != null) {
-            groupBy.addChild(new PathNode(JPA2Lexer.T_SELECTED_ENTITY, entityAlias));
+            groupBy.addChild(createPathNode(entityVariable));
             groupBy.freshenParentAndChildIndexes();
         }
     }
@@ -270,10 +272,10 @@ public class QueryTreeTransformer {
                     Tree child = condition.getChild(idx);
                     if (child == pathNode) {
                         CommonTree loweredPathNode = new CommonTree();
-                        loweredPathNode.addChild(new CommonTree(new CommonToken(JPA2Lexer.LOWER, "lower")));
-                        loweredPathNode.addChild(new CommonTree(new CommonToken(JPA2Lexer.LPAREN, "(")));
+                        loweredPathNode.addChild(createLower());
+                        loweredPathNode.addChild(createLPAREN());
                         loweredPathNode.addChild(pathNode);
-                        loweredPathNode.addChild(new CommonTree(new CommonToken(JPA2Lexer.RPAREN, ")")));
+                        loweredPathNode.addChild(createRPAREN());
                         condition.replaceChildren(idx, idx, loweredPathNode);
                         break;
                     }
@@ -289,15 +291,9 @@ public class QueryTreeTransformer {
             if (inToken != null) {
                 Tree notToken = condition.getFirstChildWithType(JPA2Lexer.NOT);
                 condition.getChildren().clear();
-                condition.addChild(new CommonTree(new CommonToken(JPA2Lexer.WORD, notToken == null ? "1=0" : "1=1")));
+                condition.addChild(createWord(notToken == null ? "1=0" : "1=1"));
                 condition.freshenParentAndChildIndexes();
             }
-        }
-    }
-
-    public void replaceWithSelectId(String idProperty, PathNode pathNode) {
-        if (pathNode != null) {
-            pathNode.addChild(new CommonTree(new CommonToken(JPA2Lexer.WORD, idProperty)));
         }
     }
 
@@ -311,19 +307,6 @@ public class QueryTreeTransformer {
         }
     }
 
-    protected AggregateExpressionNode createCountNode(Tree tree, boolean distinct) {
-        AggregateExpressionNode result = new AggregateExpressionNode(JPA2Lexer.T_AGGREGATE_EXPR);
-
-        result.addChild(new CommonTree(new CommonToken(JPA2Lexer.COUNT, "count")));
-        result.addChild(new CommonTree(new CommonToken(JPA2Lexer.LPAREN, "(")));
-        if (distinct) {
-            result.addChild(new CommonTree(new CommonToken(JPA2Lexer.DISTINCT, "distinct")));
-        }
-        result.addChild(tree);
-        result.addChild(new CommonTree(new CommonToken(JPA2Lexer.RPAREN, ")")));
-        return result;
-    }
-
     protected boolean hasJoinNode(JoinVariableNode joinNode, SelectionSourceNode selectionSource) {
         JoinVariableNode existingJoinNode = selectionSource.getChildren().stream()
                 .filter(e -> e instanceof JoinVariableNode)
@@ -335,44 +318,42 @@ public class QueryTreeTransformer {
             PathNode existingPathNode = existingJoinNode.findPathNode();
             PathNode pathNode = joinNode.findPathNode();
             if (existingPathNode != null && pathNode != null) {
-                if (Objects.equals(existingPathNode.asPathString(), pathNode.asPathString())) {
-                    return true;
-                }
+                return Objects.equals(existingPathNode.asPathString(), pathNode.asPathString());
             }
         }
 
         return false;
     }
 
-    protected List<PathNode> getPathNodesForOrderBy(PathEntityReference pathEntityReference) {
-        List<PathNode> pathNodes = new ArrayList<>();
-        String entityName = pathEntityReference.getPathStartingEntityName();
-        PathNode pathNode = pathEntityReference.getPathNode();
+    protected List<PathNode> extractTransitPaths(PathNode pathNode, String entityName) {
+        List<PathNode> nodes = new ArrayList<>();
         try {
-            DomainModel model = queryTree.getModel();
-            JpqlEntityModel entity = model.getEntityByName(entityName);
-            String currentVariableName = pathNode.getEntityVariableName();
-            PathNode currentPathNode = new PathNode(pathNode.getToken(), currentVariableName);
-            for (int i = 0; i < pathNode.getChildCount(); i++) {
-                String fieldName = pathNode.getChild(i).toString();
-                Attribute entityAttribute = entity.getAttributeByName(fieldName);
-                if (entityAttribute.isEntityReferenceAttribute() && !entityAttribute.isEmbedded()) {
-                    currentPathNode.addDefaultChild(fieldName);
-                    pathNodes.add(currentPathNode);
-                    currentVariableName = currentPathNode.asPathString('_');
-                    currentPathNode = new PathNode(pathNode.getToken(), currentVariableName);
-                } else {
-                    currentPathNode.addDefaultChild(fieldName);
-                }
+            JpqlEntityModel entity = queryTree.getModel().getEntityByName(entityName);
+            PathNode currentPathNode = new PathNode(pathNode.getToken(), pathNode.getEntityVariableName());
+
+            for (Object child : pathNode.getChildren()) {
+                Attribute entityAttribute = entity.getAttributeByName(child.toString());
                 if (entityAttribute.isEntityReferenceAttribute()) {
+
+                    if (!entityAttribute.isEmbedded()) {
+                        nodes.add(currentPathNode);
+                        currentPathNode.addDefaultChild(child.toString());
+                        currentPathNode = new PathNode(pathNode.getToken(), currentPathNode.asPathString('_'));
+                    } else {
+                        currentPathNode.addDefaultChild(child.toString());
+                    }
+
                     entityName = entityAttribute.getReferencedEntityName();
-                    entity = model.getEntityByName(entityName);
+                    entity = queryTree.getModel().getEntityByName(entityName);
+
+                } else {
+                    currentPathNode.addDefaultChild(child.toString());
                 }
             }
-            pathNodes.add(currentPathNode);
+            nodes.add(currentPathNode);
         } catch (UnknownEntityNameException e) {
             throw new RuntimeException(String.format("Could not find entity by name %s", entityName), e);
         }
-        return pathNodes;
+        return nodes;
     }
 }

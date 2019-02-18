@@ -450,15 +450,6 @@ public class QueryTransformerAstBasedTest {
                 res);
         set = transformer.getAddedParams();
         assertEquals(3, set.size());
-
-        transformer.reset();
-
-        transformer.mergeWhere("select gh from sec$GroupHierarchy gh where gh.version between 1 and 2");
-        res = transformer.getResult();
-        assertEquals(
-                "select c from sec$GroupHierarchy h join h.parent.constraints c where (h.userGroup = ?1) " +
-                        "and (h.version between 1 and 2) group by c.level having c.level > 0 order by c.level",
-                res);
     }
 
     @Test
@@ -646,36 +637,6 @@ public class QueryTransformerAstBasedTest {
     }
 
     @Test
-    public void addJoinAsId() throws RecognitionException {
-        DomainModel model = prepareDomainModel();
-
-        QueryTransformerAstBased transformer = new QueryTransformerAstBased(model,
-                "select h from sec$Constraint u, sec$GroupHierarchy h where h.userGroup = :par"
-        );
-
-        transformer.addJoinAsIs("join a.parent.constraints c");
-        String res = transformer.getResult();
-        assertEquals(
-                "select h from sec$Constraint u, sec$GroupHierarchy h join a.parent.constraints c where h.userGroup = :par",
-                res);
-    }
-
-    @Test
-    public void addJoinOn() throws RecognitionException {
-        DomainModel model = prepareDomainModel();
-
-        QueryTransformerAstBased transformer = new QueryTransformerAstBased(model,
-                "select h from sec$Constraint u, sec$GroupHierarchy h where h.userGroup = :par"
-        );
-
-        transformer.addJoinAsIs("join sec$Constraint c on c.group.id = h.parent.id");
-        String res = transformer.getResult();
-        assertEquals(
-                "select h from sec$Constraint u, sec$GroupHierarchy h join sec$Constraint c on c.group.id = h.parent.id where h.userGroup = :par",
-                res);
-    }
-
-    @Test
     public void addWhere_with_child_select() throws RecognitionException {
         EntityBuilder builder = new EntityBuilder();
         builder.startNewEntity("Car");
@@ -781,7 +742,7 @@ public class QueryTransformerAstBasedTest {
 //                "select c from sec$GroupHierarchy h join h.parent.constraints c where h.group = ?1 " +
 //                        "group by c.level having c.level > 0 order by c.level");
 //        try {
-//            transformer.addWhere("a.createdBy = :par1");
+//            transformer.addWhereInternal("a.createdBy = :par1");
 //            fail();
 //        } catch (Exception e) {
 //            assertTrue(e instanceof RuntimeException);
@@ -907,15 +868,6 @@ public class QueryTransformerAstBasedTest {
         assertEquals(
                 "select h from sec$GroupHierarchy h join h.parent.constraints pco, sec$Constraint sc where (h.group = :par) and (1 = 1)",
                 res);
-
-
-        transformer.reset();
-        transformer.addJoinAsIs("join h.parent.constraints pco, sec$Constraint sc");
-        res = transformer.getResult();
-        assertEquals(
-                "select h from sec$GroupHierarchy h join h.parent.constraints pco, sec$Constraint sc where h.group = :par",
-                res);
-
     }
 
     // todo eude : fix the following
@@ -1062,20 +1014,20 @@ public class QueryTransformerAstBasedTest {
 
         QueryTransformerAstBased transformer = new QueryTransformerAstBased(model,
                 "select h from sec$GroupHierarchy h order by h.level desc");
-        transformer.replaceOrderBy(false, "group");
+        transformer.replaceOrderByExpressions(false, "{E}.group");
         String res = transformer.getResult();
         assertEquals("select h from sec$GroupHierarchy h order by h.group", res);
 
         transformer = new QueryTransformerAstBased(model,
                 "select c from sec$GroupHierarchy h join h.parent.constraints c where h.group = ?1 " +
                         "group by h.level having h.level > 0 order by h.level desc");
-        transformer.replaceOrderBy(false, "group");
+        transformer.replaceOrderByExpressions(false, "{E}.group");
         res = transformer.getResult();
         assertEquals(
                 "select c from sec$GroupHierarchy h join h.parent.constraints c where h.group = ?1 " +
                         "group by h.level having h.level > 0 order by c.group",
                 res);
-        transformer.replaceOrderBy(true, "group");
+        transformer.replaceOrderByExpressions(true, "{E}.group");
         res = transformer.getResult();
         assertEquals(
                 "select c from sec$GroupHierarchy h join h.parent.constraints c where h.group = ?1 " +
@@ -1086,7 +1038,7 @@ public class QueryTransformerAstBasedTest {
         transformer = new QueryTransformerAstBased(model,
                 "select c from sec$GroupHierarchy h join h.parent.constraints c where h.group = ?1 " +
                         "group by h.level having h.level > 0 order by h.level desc, h.createdBy");
-        transformer.replaceOrderBy(false, "group");
+        transformer.replaceOrderByExpressions(false, "{E}.group");
         res = transformer.getResult();
         assertEquals(
                 "select c from sec$GroupHierarchy h join h.parent.constraints c where h.group = ?1 " +
@@ -1096,7 +1048,7 @@ public class QueryTransformerAstBasedTest {
         transformer = new QueryTransformerAstBased(model,
                 "select c from sec$GroupHierarchy h join h.parent.constraints c where h.group = ?1 " +
                         "group by h.level having h.level > 0 order by h.level desc, h.createdBy");
-        transformer.replaceOrderBy(true, "group", "createdBy");
+        transformer.replaceOrderByExpressions(true, "{E}.group", "{E}.createdBy");
         res = transformer.getResult();
         assertEquals(
                 "select c from sec$GroupHierarchy h join h.parent.constraints c where h.group = ?1 " +
@@ -1105,27 +1057,27 @@ public class QueryTransformerAstBasedTest {
 
         transformer = new QueryTransformerAstBased(model,
                 "select h from sec$GroupHierarchy h where h.group = ?1 order by h.level desc, h.createdBy");
-        transformer.replaceOrderBy(true, "token.name", "token.code");
+        transformer.replaceOrderByExpressions(true, "{E}.token.name", "{E}.token.code");
         res = transformer.getResult();
         assertEquals("select h from sec$GroupHierarchy h where h.group = ?1 " +
                 "order by h.token.name desc, h.token.code desc", res);
 
         transformer = new QueryTransformerAstBased(model,
                 "select h from sec$GroupHierarchy h where h.group = ?1 order by h.level desc, h.createdBy");
-        transformer.replaceOrderBy(true, "token.manager.login");
+        transformer.replaceOrderByExpressions(true, "{E}.token.manager.login");
         res = transformer.getResult();
         assertEquals("select h from sec$GroupHierarchy h left join h.token.manager h_token_manager " +
                 "where h.group = ?1 order by h_token_manager.login desc", res);
 
         transformer = new QueryTransformerAstBased(model,
                 "select h from sec$GroupHierarchy h where h.group = ?1 order by h.level desc, h.createdBy");
-        transformer.replaceOrderBy(true, "token.parentToken.name");
+        transformer.replaceOrderByExpressions(true, "{E}.token.parentToken.name");
         res = transformer.getResult();
         assertEquals("select h from sec$GroupHierarchy h where h.group = ?1 order by h.token.parentToken.name desc", res);
 
         transformer = new QueryTransformerAstBased(model,
                 "select h from sec$GroupHierarchy h order by h.level desc");
-        transformer.replaceOrderBy(false, "parent.other.createdBy");
+        transformer.replaceOrderByExpressions(false, "{E}.parent.other.createdBy");
         res = transformer.getResult();
         assertEquals(
                 "select h from sec$GroupHierarchy h left join h.parent h_parent left join h_parent.other h_parent_other order by h_parent_other.createdBy",
@@ -1133,10 +1085,42 @@ public class QueryTransformerAstBasedTest {
 
         transformer = new QueryTransformerAstBased(model,
                 "select h from sec$GroupHierarchy h order by h.level desc");
-        transformer.replaceOrderBy(false, "parent.other.token.name");
+        transformer.replaceOrderByExpressions(false, "{E}.parent.other.token.name");
         res = transformer.getResult();
         assertEquals(
                 "select h from sec$GroupHierarchy h left join h.parent h_parent left join h_parent.other h_parent_other order by h_parent_other.token.name",
+                res);
+
+        transformer = new QueryTransformerAstBased(model,
+                "select h from sec$GroupHierarchy h order by h.level desc");
+        transformer.replaceOrderByExpressions(false, "function('convert_to', {E}.parent.other.token.name, 'GB18030')");
+        res = transformer.getResult();
+        assertEquals(
+                "select h from sec$GroupHierarchy h left join h.parent h_parent left join h_parent.other h_parent_other order by function( 'convert_to', h_parent_other.token.name, 'GB18030')",
+                res);
+
+        transformer = new QueryTransformerAstBased(model,
+                "select h from sec$GroupHierarchy h");
+        transformer.replaceOrderByExpressions(false, "function('convert_to', {E}.level, 'GB18030')");
+        res = transformer.getResult();
+        assertEquals(
+                "select h from sec$GroupHierarchy h order by function( 'convert_to', h.level, 'GB18030')",
+                res);
+
+        transformer = new QueryTransformerAstBased(model,
+                "select h from sec$GroupHierarchy h");
+        transformer.replaceOrderByExpressions(true, "function('convert_to', {E}.level, 'GB18030') asc nulls last");
+        res = transformer.getResult();
+        assertEquals(
+                "select h from sec$GroupHierarchy h order by function( 'convert_to', h.level, 'GB18030') asc nulls last",
+                res);
+
+        transformer = new QueryTransformerAstBased(model,
+                "select h from sec$GroupHierarchy h");
+        transformer.replaceOrderByExpressions(false, "upper({E}.level)");
+        res = transformer.getResult();
+        assertEquals(
+                "select h from sec$GroupHierarchy h order by upper( h.level)",
                 res);
 
         transformer = new QueryTransformerAstBased(model,
@@ -1159,14 +1143,14 @@ public class QueryTransformerAstBasedTest {
         DomainModel model = prepareDomainModel();
         QueryTransformerAstBased transformer = new QueryTransformerAstBased(model,
                 "select h from sec$GroupHierarchy h");
-        transformer.replaceOrderBy(false, "parent.group");
+        transformer.replaceOrderByExpressions(false, "{E}.parent.group");
         String res = transformer.getResult();
         assertEquals(
                 "select h from sec$GroupHierarchy h left join h.parent h_parent order by h_parent.group",
                 res);
         transformer.reset();
 
-        transformer.replaceOrderBy(true, "parent.other.group");
+        transformer.replaceOrderByExpressions(true, "{E}.parent.other.group");
         res = transformer.getResult();
         assertEquals(
                 "select h from sec$GroupHierarchy h left join h.parent h_parent left join h_parent.other h_parent_other order by h_parent_other.group desc",
@@ -1175,12 +1159,19 @@ public class QueryTransformerAstBasedTest {
 
         transformer = new QueryTransformerAstBased(model,
                 "select h from sec$GroupHierarchy h");
-        transformer.replaceOrderBy(false, "parent.group", "parent.createdBy");
+        transformer.replaceOrderByExpressions(false, "{E}.parent.group", "{E}.parent.createdBy");
         res = transformer.getResult();
         assertEquals(
                 "select h from sec$GroupHierarchy h left join h.parent h_parent order by h_parent.group, h_parent.createdBy",
                 res);
 
+        transformer = new QueryTransformerAstBased(model,
+                "select h from sec$GroupHierarchy h");
+        transformer.replaceOrderByExpressions(false, "{E}.parent.group", "function('convert_to', {E}.parent.createdBy, 'GB18030')");
+        res = transformer.getResult();
+        assertEquals(
+                "select h from sec$GroupHierarchy h left join h.parent h_parent order by h_parent.group, function( 'convert_to', h_parent.createdBy, 'GB18030')",
+                res);
     }
 
     @Test
@@ -1347,7 +1338,7 @@ public class QueryTransformerAstBasedTest {
     }
 
     @Test
-    public void testAddWrongWhere() throws RecognitionException {
+    public void testAddWrongWhere() {
         try {
             DomainModel model = prepareDomainModel();
 

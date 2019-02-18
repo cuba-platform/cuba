@@ -34,24 +34,17 @@ public interface QueryTransformer {
     /** Adds 'where' clause */
     void addWhereAsIs(String where);
 
-    /** Adds 'join' clause */
-    void addJoinAsIs(String join);
-
     /** Adds 'join' and 'where' clauses. Replaces alias in 'join' but doesn't replace it in 'where'*/
     void addJoinAndWhere(String join, String where);
+
+    /** Adds or replaces 'order by' clause */
+    void replaceOrderByExpressions(boolean directionDesc, String... sortExpressions);
 
     /* Adds 'selection' to from clause. It will be inserted as first selection after FROM keyword*/
     void addFirstSelectionSource(String selection);
 
-    /** Adds 'where' clause from the query provided. Replaces entity alias */
-    @Deprecated
-    void mergeWhere(String query);
-
     /** Replaces <code>select e.f1, e.f2, ...</code> clause with <code>select count(e) ...</code> */
     void replaceWithCount();
-
-    /** Replaces <code>select e from ...</code> clause with <code>select e.id from ...</code> */
-    void replaceWithSelectId();
 
     /** Replaces <code>select e from ...</code> clause with <code>select e.pkName from ...</code> */
     void replaceWithSelectId(String pkName);
@@ -69,9 +62,6 @@ public interface QueryTransformer {
      * Replaces 'select' with 'select distinct'.
      */
     void addDistinct();
-
-    /** Adds or replaces 'order by' clause */
-    void replaceOrderBy(boolean desc, String... properties);
 
     /** Adds 'order by' clause if it doesn't exists */
     void addOrderByIdIfNotExists(String idProperty);

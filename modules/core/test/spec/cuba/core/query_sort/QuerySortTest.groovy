@@ -1,9 +1,12 @@
 package spec.cuba.core.query_sort
 
+import com.haulmont.cuba.core.app.JpqlSortExpressionProvider
 import com.haulmont.cuba.core.app.RdbmsQueryBuilder
 import com.haulmont.cuba.core.global.AppBeans
+import com.haulmont.cuba.core.global.Metadata
 import com.haulmont.cuba.core.global.Sort
 import com.haulmont.cuba.testsupport.TestContainer
+import com.haulmont.cuba.testsupport.TestJpqlSortExpressionProvider
 import org.junit.ClassRule
 import spock.lang.Shared
 import spock.lang.Specification
@@ -66,6 +69,30 @@ class QuerySortTest extends Specification {
         then:
 
         queryBuilder.getQueryString() == 'select u from sec$User u left join u.group u_group order by u_group.name desc'
+    }
+
+    def "sort by single property with order function and nulls first"() {
+
+        RdbmsQueryBuilder queryBuilder
+        TestJpqlSortExpressionProvider sortExpressionProvider
+
+        setup:
+        sortExpressionProvider =  AppBeans.get(JpqlSortExpressionProvider)
+        Metadata metadata = AppBeans.get(Metadata)
+        sortExpressionProvider.addToUpperPath(metadata.getClassNN('test$Order').getPropertyPath('number'))
+
+        when:
+
+        queryBuilder = AppBeans.get(RdbmsQueryBuilder)
+        queryBuilder.init('select e from test$Order e', null,
+                Sort.by('number'), [:], null, null, 'test$Order')
+
+        then:
+
+        queryBuilder.getQueryString() == 'select e from test$Order e order by upper( e.number) asc nulls first'
+
+        cleanup:
+        sortExpressionProvider.resetToUpperPaths()
     }
 
     def "sort by multiple properties in different directions is not supported"() {

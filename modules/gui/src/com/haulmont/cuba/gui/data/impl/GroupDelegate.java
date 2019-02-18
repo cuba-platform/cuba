@@ -20,10 +20,7 @@ import com.google.common.collect.ImmutableList;
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.GroupInfo;
-import com.haulmont.cuba.gui.data.PropertyDatasource;
+import com.haulmont.cuba.gui.data.*;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.map.LinkedMap;
 import org.apache.commons.lang3.ArrayUtils;
@@ -48,9 +45,15 @@ public abstract class GroupDelegate<T extends Entity<K>, K> {
     protected boolean isGrouping;
 
     protected CollectionDatasource<T, K> datasource;
+    protected CollectionDatasource.SortDelegate<T, K> sortDelegate;
+    protected GroupDatasource.GroupSortDelegate groupSortDelegate;
 
-    protected GroupDelegate(CollectionDatasource<T, K> datasource) {
+    protected GroupDelegate(CollectionDatasource<T, K> datasource,
+                            CollectionDatasource.SortDelegate<T, K> sortDelegate,
+                            GroupDatasource.GroupSortDelegate groupSortDelegate) {
         this.datasource = datasource;
+        this.sortDelegate = sortDelegate;
+        this.groupSortDelegate = groupSortDelegate;
     }
 
     public void groupBy(Object[] properties, CollectionDatasource.Sortable.SortInfo<MetaPropertyPath>[] sortInfos) {
@@ -152,18 +155,17 @@ public abstract class GroupDelegate<T extends Entity<K>, K> {
     protected void doGroupSort(CollectionDatasource.Sortable.SortInfo<MetaPropertyPath>[] sortInfo) {
         if (hasGroups()) {
             MetaPropertyPath propertyPath = sortInfo[0].getPropertyPath();
-            boolean asc = CollectionDatasource.Sortable.Order.ASC.equals(sortInfo[0].getOrder());
 
             int index = ArrayUtils.indexOf(groupProperties, propertyPath);
             if (index > -1) {
                 if (index == 0) { // Sort roots
-                    roots.sort(new GroupInfoComparator(asc));
+                    groupSortDelegate.sortGroups(roots, sortInfo);
                 } else {
                     Object parentProperty = groupProperties[index - 1];
                     for (Map.Entry<GroupInfo, List<GroupInfo>> entry : children.entrySet()) {
                         Object property = entry.getKey().getProperty();
                         if (property.equals(parentProperty)) {
-                            entry.getValue().sort(new GroupInfoComparator(asc));
+                            groupSortDelegate.sortGroups(entry.getValue(), sortInfo);
                         }
                     }
                 }
@@ -172,7 +174,16 @@ public abstract class GroupDelegate<T extends Entity<K>, K> {
                 for (GroupInfo groupInfo : groups) {
                     List<K> items = groupItems.get(groupInfo);
                     if (items != null) {
-                        items.sort(new EntityByIdComparator<>(propertyPath, datasource, asc));
+                        List<T> entities = items.stream()
+                                .map(item -> datasource.getItem(item))
+                                .collect(Collectors.toList());
+
+                        sortDelegate.sort(entities, sortInfo);
+
+                        items.clear();
+                        for (T entity : entities) {
+                            items.add(entity.getId());
+                        }
                     }
                 }
             }
@@ -355,5 +366,13 @@ public abstract class GroupDelegate<T extends Entity<K>, K> {
         }
 
         return parentGroups;
+    }
+
+    public void setSortDelegate(CollectionDatasource.SortDelegate<T, K> sortDelegate) {
+        this.sortDelegate = sortDelegate;
+    }
+
+    public void setGroupSortDelegate(GroupDatasource.GroupSortDelegate groupSortDelegate) {
+        this.groupSortDelegate = groupSortDelegate;
     }
 }

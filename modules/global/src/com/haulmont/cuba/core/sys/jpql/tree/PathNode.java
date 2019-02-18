@@ -27,6 +27,8 @@ import org.antlr.runtime.tree.CommonTree;
 import java.util.Collections;
 import java.util.List;
 
+import static com.haulmont.cuba.core.sys.jpql.JPATreeNodes.createWord;
+
 public class PathNode extends BaseCustomNode {
     private String entityVariableName;
 
@@ -89,15 +91,15 @@ public class PathNode extends BaseCustomNode {
         entityVariableName = newVariableName;
     }
 
-    public void addDefaultChildren(String fieldPath) {
-        String[] strings = fieldPath.split("\\.");
-        for (String string : strings) {
-            addChild(new CommonTree(new CommonToken(JPA2Lexer.WORD, string)));
+    public void addDefaultChildren(String path) {
+        String[] fields = path.split("\\.");
+        for (String field : fields) {
+            addChild(createWord(field));
         }
     }
 
     public void addDefaultChild(String field) {
-        addChild(new CommonTree(new CommonToken(JPA2Lexer.WORD, field)));
+        addChild(createWord(field));
     }
 
     protected EntityPath createEntityPath() {

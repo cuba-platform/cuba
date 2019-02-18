@@ -19,8 +19,6 @@ package com.haulmont.cuba.core.sys.jpql;
 
 import com.haulmont.cuba.core.sys.jpql.antlr2.JPA2Lexer;
 import com.haulmont.cuba.core.sys.jpql.model.JpqlEntityModel;
-import com.haulmont.cuba.core.sys.jpql.transform.NodesFinder;
-import com.haulmont.cuba.core.sys.jpql.transform.ParameterCounter;
 import com.haulmont.cuba.core.sys.jpql.tree.IdentificationVariableNode;
 import com.haulmont.cuba.core.sys.jpql.tree.ParameterNode;
 import com.haulmont.cuba.core.sys.jpql.tree.PathNode;

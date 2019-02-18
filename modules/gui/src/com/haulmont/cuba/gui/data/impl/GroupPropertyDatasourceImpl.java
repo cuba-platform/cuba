@@ -18,17 +18,25 @@ package com.haulmont.cuba.gui.data.impl;
 
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.GroupDatasource;
 import com.haulmont.cuba.gui.data.GroupInfo;
+import com.haulmont.cuba.gui.model.impl.EntityValuesComparator;
 
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 
 public class GroupPropertyDatasourceImpl<T extends Entity<K>, K>
         extends CollectionPropertyDatasourceImpl<T, K>
-        implements GroupDatasource<T, K> {
+        implements GroupDatasource<T, K>, GroupDatasource.SupportsGroupSortDelegate {
 
-    protected GroupDelegate<T, K> groupDelegate = new GroupDelegate<T, K>(this) {
+    protected GroupSortDelegate groupSortDelegate = (groups, sortInfo) -> {
+        boolean asc = CollectionDatasource.Sortable.Order.ASC.equals(sortInfo[0].getOrder());
+        groups.sort(Comparator.comparing(GroupInfo::getValue, EntityValuesComparator.asc(asc)));
+    };
+
+    protected GroupDelegate<T, K> groupDelegate = new GroupDelegate<T, K>(this, sortDelegate, groupSortDelegate) {
         @Override
         protected void doSort(SortInfo<MetaPropertyPath>[] sortInfo) {
             GroupPropertyDatasourceImpl.super.doSort();
@@ -38,6 +46,12 @@ public class GroupPropertyDatasourceImpl<T extends Entity<K>, K>
     @Override
     public void groupBy(Object[] properties) {
         groupDelegate.groupBy(properties, sortInfos);
+    }
+
+    @Override
+    public void setGroupSortDelegate(GroupSortDelegate sortDelegate) {
+        this.groupSortDelegate = sortDelegate;
+        groupDelegate.setGroupSortDelegate(sortDelegate);
     }
 
     @Override

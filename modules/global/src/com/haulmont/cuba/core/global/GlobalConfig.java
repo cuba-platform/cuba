@@ -138,15 +138,6 @@ public interface GlobalConfig extends Config {
     boolean getLocaleSelectVisible();
 
     /**
-     * Whether to use {@link com.haulmont.cuba.core.sys.jpql.transform.QueryTransformerAstBased} instead of
-     * {@link QueryTransformerRegex}
-     * @return true or false
-     */
-    @Property("cuba.useAstBasedJpqlTransformer")
-    @DefaultBoolean(true)
-    boolean getUseAstBasedJpqlTransformer();
-
-    /**
      * @return Overridden AppFolderEditWindow class name
      */
     @Property("cuba.web.appFolderEditWindow")

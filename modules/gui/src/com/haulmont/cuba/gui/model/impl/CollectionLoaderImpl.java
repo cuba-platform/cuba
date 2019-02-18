@@ -19,10 +19,7 @@ package com.haulmont.cuba.gui.model.impl;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.global.queryconditions.Condition;
-import com.haulmont.cuba.gui.model.CollectionContainer;
-import com.haulmont.cuba.gui.model.CollectionLoader;
-import com.haulmont.cuba.gui.model.DataContext;
-import com.haulmont.cuba.gui.model.HasLoader;
+import com.haulmont.cuba.gui.model.*;
 import org.springframework.context.ApplicationContext;
 
 import javax.annotation.Nullable;
@@ -61,6 +58,10 @@ public class CollectionLoaderImpl<E extends Entity> implements CollectionLoader<
 
     protected DataManager getDataManager() {
         return applicationContext.getBean(DataManager.NAME, DataManager.class);
+    }
+
+    protected SorterFactory getSorterFactory() {
+        return applicationContext.getBean(SorterFactory.NAME, SorterFactory.class);
     }
 
     @Nullable
@@ -147,7 +148,7 @@ public class CollectionLoaderImpl<E extends Entity> implements CollectionLoader<
         if (container instanceof HasLoader) {
             ((HasLoader) container).setLoader(this);
         }
-        container.setSorter(new CollectionContainerSorter(container, this));
+        container.setSorter(getSorterFactory().createCollectionContainerSorter(container, this));
     }
 
     @Override
