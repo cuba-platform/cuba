@@ -27,6 +27,7 @@ import com.haulmont.cuba.gui.components.data.datagrid.SortableDatasourceDataGrid
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.CollectionDatasource.Sortable;
 import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.icons.CubaIcon;
 
 import javax.annotation.Nullable;
 import java.io.Serializable;
@@ -1488,6 +1489,12 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
      * A renderer for UI components.
      */
     interface ComponentRenderer extends Renderer {
+    }
+
+    /**
+     * A renderer that represents {@link CubaIcon}.
+     */
+    interface IconRenderer<T extends Entity> extends Renderer {
     }
 
     /**
