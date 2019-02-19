@@ -17,6 +17,7 @@
 package com.haulmont.cuba.web.widgets.client.html;
 
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.NodeList;
 import com.google.gwt.user.client.ui.Widget;
 import com.haulmont.cuba.web.widgets.HtmlAttributesExtension;
 import com.vaadin.client.ServerConnector;
@@ -29,26 +30,32 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 
+import static com.haulmont.cuba.web.widgets.client.html.HtmlAttributesExtensionState.DEFAULT_SELECTOR;
+
 @Connect(HtmlAttributesExtension.class)
 public class HtmlAttributesExtensionConnector extends AbstractExtensionConnector {
 
     protected HtmlAttributesClientRpc rpc = new HtmlAttributesClientRpc() {
         @Override
-        public void removeCssProperties(Set<String> propertyNames) {
-            withElement(element -> {
-                for (String property : propertyNames) {
-                    element.getStyle().clearProperty(property);
-                }
-            });
+        public void removeCssProperties(Map<String, Set<String>> propertiesToRemove) {
+            for (Map.Entry<String, Set<String>> entry : propertiesToRemove.entrySet()) {
+                withElement(entry.getKey(), element -> {
+                    for (String property : entry.getValue()) {
+                        element.getStyle().clearProperty(property);
+                    }
+                });
+            }
         }
 
         @Override
-        public void removeDomAttributes(Set<String> attributeNames) {
-            withElement(element -> {
-                for (String attributeName : attributeNames) {
-                    element.removeAttribute(attributeName);
-                }
-            });
+        public void removeDomAttributes(Map<String, Set<String>> attributesToRemove) {
+            for (Map.Entry<String, Set<String>> entry : attributesToRemove.entrySet()) {
+                withElement(entry.getKey(), element -> {
+                    for (String attribute : entry.getValue()) {
+                        element.removeAttribute(attribute);
+                    }
+                });
+            }
         }
     };
 
@@ -70,26 +77,46 @@ public class HtmlAttributesExtensionConnector extends AbstractExtensionConnector
     public void onStateChanged(StateChangeEvent stateChangeEvent) {
         super.onStateChanged(stateChangeEvent);
 
-        withElement(element -> {
-            HtmlAttributesExtensionState state = getState();
+        HtmlAttributesExtensionState state = getState();
 
-            for (Map.Entry<String, String> entry : state.dom.entrySet()) {
-                element.setAttribute(entry.getKey(), entry.getValue());
-            }
-            for (Map.Entry<String, String> entry : state.css.entrySet()) {
-                element.getStyle().setProperty(entry.getKey(), entry.getValue());
-            }
-        });
+        for (Map.Entry<String, Set<AttributeInfo>> entry : state.attributes.entrySet()) {
+            withElement(entry.getKey(), element -> {
+                for (AttributeInfo attributeInfo : entry.getValue()) {
+                    String name = attributeInfo.getName();
+                    String value = attributeInfo.getValue();
+                    switch (attributeInfo.getType()) {
+                        case DOM:
+                            element.setAttribute(name, value);
+                            break;
+                        case CSS:
+                            element.getStyle().setProperty(name, value);
+                            break;
+                    }
+                }
+            });
+        }
     }
 
-    protected void withElement(Consumer<Element> action) {
+    protected void withElement(String querySelector, Consumer<Element> action) {
         ServerConnector parent = getParent();
 
         if (parent instanceof AbstractComponentConnector) {
             Widget widget = ((AbstractComponentConnector) parent).getWidget();
             if (widget != null) {
-                action.accept(widget.getElement());
+                Element element = widget.getElement();
+                if (DEFAULT_SELECTOR.equals(querySelector)) {
+                    action.accept(element);
+                } else {
+                    NodeList<Element> subElements = findSubElements(element, querySelector);
+                    for (int i = 0; i < subElements.getLength(); i++) {
+                        action.accept(subElements.getItem(i));
+                    }
+                }
             }
         }
     }
+
+    private static native NodeList<Element> findSubElements(Element parent, String querySelector) /*-{
+        return parent.querySelectorAll(querySelector);
+    }-*/;
 }

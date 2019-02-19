@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2018 Haulmont.
+ * Copyright (c) 2008-2019 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,7 @@
 
 package com.haulmont.cuba.web.widgets.client.html;
 
-import com.vaadin.shared.communication.ClientRpc;
-
-import java.util.Map;
-import java.util.Set;
-
-public interface HtmlAttributesClientRpc extends ClientRpc {
-    void removeCssProperties(Map<String, Set<String>> propertiesToRemove);
-    void removeDomAttributes(Map<String, Set<String>> attributesToRemove);
+public enum AttributeType {
+    DOM,
+    CSS
 }

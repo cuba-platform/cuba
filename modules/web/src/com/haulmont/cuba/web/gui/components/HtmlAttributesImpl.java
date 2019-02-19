@@ -22,72 +22,114 @@ import com.haulmont.cuba.web.widgets.HtmlAttributesExtension;
 import org.apache.commons.lang3.StringUtils;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
+import static com.haulmont.cuba.web.widgets.client.html.HtmlAttributesExtensionState.DEFAULT_SELECTOR;
 import static org.apache.commons.lang3.StringUtils.trimToEmpty;
 
 @org.springframework.stereotype.Component(HtmlAttributes.NAME)
 public class HtmlAttributesImpl implements HtmlAttributes {
     @Override
     public void setDomAttribute(Component component, String attributeName, String value) {
+        setDomAttribute(component, DEFAULT_SELECTOR, attributeName, value);
+    }
+
+    @Override
+    public void setDomAttribute(Component component, String querySelector, String attributeName, String value) {
         checkNotNullArgument(component);
+        checkNotNullArgument(querySelector);
         checkNotNullArgument(attributeName);
 
         com.vaadin.ui.Component vComponent = component.unwrapComposition(com.vaadin.ui.Component.class);
         HtmlAttributesExtension.get(vComponent)
-                .setDomAttribute(attributeName, value);
+                .setDomAttribute(querySelector, attributeName, value);
     }
 
     @Override
     public String getDomAttribute(Component component, String attributeName) {
+        return getDomAttribute(component, DEFAULT_SELECTOR, attributeName);
+    }
+
+    @Override
+    public String getDomAttribute(Component component, String querySelector, String attributeName) {
         checkNotNullArgument(component);
+        checkNotNullArgument(querySelector);
         checkNotNullArgument(attributeName);
 
         com.vaadin.ui.Component vComponent = component.unwrapComposition(com.vaadin.ui.Component.class);
         return HtmlAttributesExtension.get(vComponent)
-                .getDomAttribute(attributeName);
+                .getDomAttribute(querySelector, attributeName);
     }
 
     @Override
     public void removeDomAttribute(Component component, String attributeName) {
+        removeDomAttribute(component, DEFAULT_SELECTOR, attributeName);
+    }
+
+    @Override
+    public void removeDomAttribute(Component component, String querySelector, String attributeName) {
         checkNotNullArgument(component);
+        checkNotNullArgument(querySelector);
         checkNotNullArgument(attributeName);
 
         com.vaadin.ui.Component vComponent = component.unwrapComposition(com.vaadin.ui.Component.class);
         HtmlAttributesExtension.get(vComponent)
-                .removeDomAttribute(attributeName);
+                .removeDomAttribute(querySelector, attributeName);
     }
 
     @Override
     public void setCssProperty(Component component, String propertyName, String value) {
+        setCssProperty(component, DEFAULT_SELECTOR, propertyName, value);
+    }
+
+    @Override
+    public void setCssProperty(Component component, String querySelector, String propertyName, String value) {
         checkNotNullArgument(component);
+        checkNotNullArgument(querySelector);
         checkNotNullArgument(propertyName);
 
         com.vaadin.ui.Component vComponent = component.unwrapComposition(com.vaadin.ui.Component.class);
         HtmlAttributesExtension.get(vComponent)
-                .setCssProperty(propertyName, value);
+                .setCssProperty(querySelector, propertyName, value);
     }
 
     @Override
     public String getCssProperty(Component component, String propertyName) {
+        return getCssProperty(component, DEFAULT_SELECTOR, propertyName);
+    }
+
+    @Override
+    public String getCssProperty(Component component, String querySelector, String propertyName) {
         checkNotNullArgument(component);
+        checkNotNullArgument(querySelector);
         checkNotNullArgument(propertyName);
 
         com.vaadin.ui.Component vComponent = component.unwrapComposition(com.vaadin.ui.Component.class);
         return HtmlAttributesExtension.get(vComponent)
-                .getCssProperty(propertyName);
+                .getCssProperty(querySelector, propertyName);
     }
 
     @Override
     public void removeCssProperty(Component component, String propertyName) {
+        removeCssProperty(component, DEFAULT_SELECTOR, propertyName);
+    }
+
+    @Override
+    public void removeCssProperty(Component component, String querySelector, String propertyName) {
         checkNotNullArgument(component);
+        checkNotNullArgument(querySelector);
         checkNotNullArgument(propertyName);
 
         com.vaadin.ui.Component vComponent = component.unwrapComposition(com.vaadin.ui.Component.class);
         HtmlAttributesExtension.get(vComponent)
-                .removeCssProperty(propertyName);
+                .removeCssProperty(querySelector, propertyName);
     }
 
     @Override
     public void applyCss(Component component, String css) {
+        applyCss(component, DEFAULT_SELECTOR, css);
+    }
+
+    @Override
+    public void applyCss(Component component, String querySelector, String css) {
         String[] propertyStatements = StringUtils.split(css, ';');
         for (String propertyStatement : propertyStatements) {
             if (StringUtils.isBlank(propertyStatement)) {
@@ -106,7 +148,7 @@ public class HtmlAttributesImpl implements HtmlAttributes {
                 throw new IllegalArgumentException("Incorrect CSS string, empty property name: " + css);
             }
 
-            setCssProperty(component, propertyName, propertyValue);
+            setCssProperty(component, querySelector, propertyName, propertyValue);
         }
     }
 }

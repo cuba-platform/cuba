@@ -16,22 +16,24 @@
 
 package com.haulmont.cuba.web.widgets;
 
+import com.haulmont.cuba.web.widgets.client.html.AttributeInfo;
+import com.haulmont.cuba.web.widgets.client.html.AttributeType;
 import com.haulmont.cuba.web.widgets.client.html.HtmlAttributesClientRpc;
 import com.haulmont.cuba.web.widgets.client.html.HtmlAttributesExtensionState;
 import com.vaadin.server.AbstractClientConnector;
 import com.vaadin.server.AbstractExtension;
 import com.vaadin.server.Extension;
 import com.vaadin.ui.Component;
+import org.apache.commons.collections4.CollectionUtils;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
+
+import static com.haulmont.cuba.web.widgets.client.html.HtmlAttributesExtensionState.DEFAULT_SELECTOR;
 
 public class HtmlAttributesExtension extends AbstractExtension {
 
-    protected Set<String> removeDomAttributes = Collections.emptySet();
-    protected Set<String> removeCssProperties = Collections.emptySet();
+    protected Map<String, Set<String>> removeDomAttributes = Collections.emptyMap();
+    protected Map<String, Set<String>> removeCssProperties = Collections.emptyMap();
 
     public HtmlAttributesExtension(AbstractClientConnector target) {
         super(target);
@@ -57,58 +59,120 @@ public class HtmlAttributesExtension extends AbstractExtension {
     }
 
     public void setDomAttribute(String attributeName, String value) {
+        setDomAttribute(DEFAULT_SELECTOR, attributeName, value);
+    }
+
+    public void setDomAttribute(String querySelector, String attributeName, String value) {
         if (!removeDomAttributes.isEmpty()) {
-            removeDomAttributes.remove(attributeName);
+            Set<String> attributes = removeDomAttributes.get(querySelector);
+            if (CollectionUtils.isNotEmpty(attributes)) {
+                attributes.remove(attributeName);
+            }
         }
 
         HtmlAttributesExtensionState state = getState();
 
-        if (state.dom.isEmpty()) {
-            state.dom = new HashMap<>();
+        if (state.attributes.isEmpty()) {
+            state.attributes = new HashMap<>();
         }
-        state.dom.put(attributeName, value);
+        Set<AttributeInfo> attributes = state.attributes.computeIfAbsent(querySelector, k -> new HashSet<>());
+
+        addOrUpdate(attributes, AttributeInfo.dom(attributeName, value));
     }
 
-    public String getDomAttribute( String attributeName) {
-        return getState(false).dom.get(attributeName);
+    public String getDomAttribute(String attributeName) {
+        return getDomAttribute(DEFAULT_SELECTOR, attributeName);
+    }
+
+    public String getDomAttribute(String querySelector, String attributeName) {
+        return getAttributeValue(querySelector, attributeName, AttributeType.DOM);
     }
 
     public void removeDomAttribute(String attributeName) {
-        if (!getState().dom.isEmpty()) {
-            getState().dom.remove(attributeName);
+        removeDomAttribute(DEFAULT_SELECTOR, attributeName);
+    }
+
+    public void removeDomAttribute(String querySelector, String attributeName) {
+        if (!getState().attributes.isEmpty()) {
+            getState().attributes.getOrDefault(querySelector, Collections.emptySet())
+                    .removeIf(attributeInfo -> attributeInfo.getType() == AttributeType.DOM
+                            && attributeInfo.getName().equals(attributeName));
 
             if (removeDomAttributes.isEmpty()) {
-                removeDomAttributes = new HashSet<>();
+                removeDomAttributes = new HashMap<>();
             }
-            removeDomAttributes.add(attributeName);
+            removeDomAttributes
+                    .computeIfAbsent(querySelector, k -> new HashSet<>())
+                    .add(attributeName);
         }
     }
 
     public void setCssProperty(String propertyName, String value) {
+        setCssProperty(DEFAULT_SELECTOR, propertyName, value);
+    }
+
+    public void setCssProperty(String querySelector, String propertyName, String value) {
         if (!removeCssProperties.isEmpty()) {
-            removeCssProperties.remove(propertyName);
+            Set<String> properties = removeCssProperties.get(querySelector);
+            if (CollectionUtils.isNotEmpty(properties)) {
+                properties.remove(propertyName);
+            }
         }
 
         HtmlAttributesExtensionState state = getState();
 
-        if (state.css.isEmpty()) {
-            state.css = new HashMap<>();
+        if (state.attributes.isEmpty()) {
+            state.attributes = new HashMap<>();
         }
-        state.css.put(propertyName, value);
+        Set<AttributeInfo> attributes = state.attributes.computeIfAbsent(querySelector, k -> new HashSet<>());
+
+        addOrUpdate(attributes, AttributeInfo.css(propertyName, value));
     }
 
     public String getCssProperty(String propertyName) {
-        return getState(false).css.get(propertyName);
+        return getCssProperty(DEFAULT_SELECTOR, propertyName);
+    }
+
+    public String getCssProperty(String querySelector, String propertyName) {
+        return getAttributeValue(querySelector, propertyName, AttributeType.CSS);
     }
 
     public void removeCssProperty(String propertyName) {
-        if (!getState().css.isEmpty()) {
-            getState().css.remove(propertyName);
+        removeCssProperty(DEFAULT_SELECTOR, propertyName);
+    }
+
+    public void removeCssProperty(String querySelector, String propertyName) {
+        if (!getState().attributes.isEmpty()) {
+            getState().attributes.getOrDefault(querySelector, Collections.emptySet())
+                    .removeIf(attributeInfo -> attributeInfo.getType() == AttributeType.CSS
+                            && attributeInfo.getName().equals(propertyName));
 
             if (removeCssProperties.isEmpty()) {
-                removeCssProperties = new HashSet<>();
+                removeCssProperties = new HashMap<>();
             }
-            removeCssProperties.add(propertyName);
+            removeCssProperties
+                    .computeIfAbsent(querySelector, k -> new HashSet<>())
+                    .add(propertyName);
+        }
+    }
+
+    protected String getAttributeValue(String querySelector, String attributeName, AttributeType type) {
+        Set<AttributeInfo> attributes = getState(false).attributes.get(querySelector);
+        if (CollectionUtils.isNotEmpty(attributes)) {
+            return attributes.stream().filter(attributeInfo ->
+                    attributeInfo.getType() == type
+                            && attributeInfo.getName().equals(attributeName))
+                    .map(AttributeInfo::getValue)
+                    .findFirst().orElse(null);
+        }
+
+        return null;
+    }
+
+    protected void addOrUpdate(Set<AttributeInfo> attributes, AttributeInfo item) {
+        if (!attributes.add(item)) {
+            attributes.remove(item);
+            attributes.add(item);
         }
     }
 
@@ -122,13 +186,13 @@ public class HtmlAttributesExtension extends AbstractExtension {
             if (!removeDomAttributes.isEmpty()) {
                 clientRpc.removeDomAttributes(removeDomAttributes);
 
-                this.removeDomAttributes = Collections.emptySet();
+                this.removeDomAttributes = Collections.emptyMap();
             }
 
             if (!removeCssProperties.isEmpty()) {
                 clientRpc.removeCssProperties(removeCssProperties);
 
-                this.removeCssProperties = Collections.emptySet();
+                this.removeCssProperties = Collections.emptyMap();
             }
         }
     }

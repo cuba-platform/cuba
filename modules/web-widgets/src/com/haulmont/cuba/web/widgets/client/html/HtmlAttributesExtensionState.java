@@ -20,8 +20,11 @@ import com.vaadin.shared.communication.SharedState;
 
 import java.util.Collections;
 import java.util.Map;
+import java.util.Set;
 
 public class HtmlAttributesExtensionState extends SharedState {
-    public Map<String, String> dom = Collections.emptyMap();
-    public Map<String, String> css = Collections.emptyMap();
+
+    public static final String DEFAULT_SELECTOR = "_";  // query selector that represents the most top element of UI component
+
+    public Map<String, Set<AttributeInfo>> attributes = Collections.emptyMap();
 }

@@ -28,62 +28,158 @@ public interface HtmlAttributes {
     /**
      * Sets DOM attribute on the top most element of UI component.
      *
-     * @param component UI component
+     * @param component     UI component
      * @param attributeName DOM attribute name, e.g. "title"
-     * @param value attribute value
+     * @param value         attribute value
      * @see DOM
+     * @see #setDomAttribute(Component, String, String, String)
      */
     void setDomAttribute(Component component, String attributeName, String value);
+
+    /**
+     * Sets DOM attribute for all nested elements of UI component corresponding to the given query selector.
+     *
+     * @param component     UI component
+     * @param querySelector a string containing one or more selectors to match.
+     *                      This string must be a valid CSS selector string
+     * @param attributeName DOM attribute name, e.g. "title"
+     * @param value         attribute value
+     * @see DOM
+     * @see #setDomAttribute(Component, String, String)
+     * @see <a href="https://www.w3.org/TR/selectors-api/#queryselectorall">Selectors API</a>
+     */
+    void setDomAttribute(Component component, String querySelector, String attributeName, String value);
+
     /**
      * Gets DOM attribute value assigned using {@link HtmlAttributes}. Does not reflect a real value from DOM.
      *
-     * @param component UI component
+     * @param component     UI component
      * @param attributeName DOM attribute name
      * @return previously assigned DOM attribute value
+     * @see #getDomAttribute(Component, String, String)
      */
     String getDomAttribute(Component component, String attributeName);
 
     /**
+     * Gets DOM attribute value assigned using {@link HtmlAttributes}. Does not reflect a real value from DOM.
+     *
+     * @param component     UI component
+     * @param querySelector a string containing one or more selectors to match.
+     *                      This string must be a valid CSS selector string
+     * @param attributeName DOM attribute name
+     * @return previously assigned DOM attribute value
+     * @see #getDomAttribute(Component, String)
+     */
+    String getDomAttribute(Component component, String querySelector, String attributeName);
+
+    /**
      * Removes DOM attribute from the top most element of UI component.
      *
-     * @param component UI component
+     * @param component     UI component
      * @param attributeName DOM attribute name
+     * @see #removeDomAttribute(Component, String, String)
      */
     void removeDomAttribute(Component component, String attributeName);
 
     /**
+     * Removes DOM attribute for all nested elements of UI component corresponding to the given query selector.
+     *
+     * @param component     UI component
+     * @param querySelector a string containing one or more selectors to match.
+     *                      This string must be a valid CSS selector string
+     * @param attributeName DOM attribute name
+     * @see #removeDomAttribute(Component, String)
+     * @see <a href="https://www.w3.org/TR/selectors-api/#queryselectorall">Selectors API</a>
+     */
+    void removeDomAttribute(Component component, String querySelector, String attributeName);
+
+    /**
      * Sets CSS property value on the top most element of UI component.
      *
-     * @param component UI component
+     * @param component    UI component
      * @param propertyName CSS property name, e.g. "border-color"
-     * @param value property value
+     * @param value        property value
      * @see CSS
+     * @see #setCssProperty(Component, String, String, String)
      */
     void setCssProperty(Component component, String propertyName, String value);
+
+    /**
+     * Sets CSS property value for all nested elements of UI component corresponding to the given query selector.
+     *
+     * @param component     UI component
+     * @param querySelector a string containing one or more selectors to match.
+     *                      This string must be a valid CSS selector string
+     * @param propertyName  CSS property name, e.g. "border-color"
+     * @param value         property value
+     * @see CSS
+     * @see #setCssProperty(Component, String, String)
+     * @see <a href="https://www.w3.org/TR/selectors-api/#queryselectorall">Selectors API</a>
+     */
+    void setCssProperty(Component component, String querySelector, String propertyName, String value);
+
     /**
      * Gets CSS property value assigned using {@link HtmlAttributes}. Does not reflect a real value from DOM.
      *
-     * @param component UI component
+     * @param component    UI component
      * @param propertyName CSS property name
      * @return previously assigned CSS property value
+     * @see #getCssProperty(Component, String, String)
      */
     String getCssProperty(Component component, String propertyName);
 
     /**
+     * Gets CSS property value assigned using {@link HtmlAttributes}. Does not reflect a real value from DOM.
+     *
+     * @param component     UI component
+     * @param querySelector a string containing one or more selectors to match.
+     *                      This string must be a valid CSS selector string
+     * @param propertyName  CSS property name
+     * @return previously assigned CSS property value
+     * @see #getCssProperty(Component, String)
+     */
+    String getCssProperty(Component component, String querySelector, String propertyName);
+
+    /**
      * Clears CSS property value from the top most element of UI component.
      *
-     * @param component UI component
+     * @param component    UI component
      * @param propertyName CSS property name
+     * @see #removeCssProperty(Component, String, String)
      */
     void removeCssProperty(Component component, String propertyName);
+
+    /**
+     * Clears CSS property value for all nested elements of UI component corresponding to the given query selector.
+     *
+     * @param component     UI component
+     * @param querySelector a string containing one or more selectors to match.
+     *                      This string must be a valid CSS selector string
+     * @param propertyName  CSS property name
+     * @see #removeCssProperty(Component, String)
+     * @see <a href="https://www.w3.org/TR/selectors-api/#queryselectorall">Selectors API</a>
+     */
+    void removeCssProperty(Component component, String querySelector, String propertyName);
 
     /**
      * Apply CSS properties from CSS string;
      *
      * @param component UI component
-     * @param css CSS string
+     * @param css       CSS string
+     * @see #applyCss(Component, String, String)
      */
     void applyCss(Component component, String css);
+
+    /**
+     * Apply CSS properties from CSS string;
+     *
+     * @param component     UI component
+     * @param querySelector a string containing one or more selectors to match.
+     *                      This string must be a valid CSS selector string
+     * @param css           CSS string
+     * @see #applyCss(Component, String)
+     */
+    void applyCss(Component component, String querySelector, String css);
 
     /**
      * Common CSS property names.
