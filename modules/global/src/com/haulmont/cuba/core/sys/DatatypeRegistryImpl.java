@@ -27,6 +27,7 @@ import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 @Component(DatatypeRegistry.NAME)
@@ -82,6 +83,15 @@ public class DatatypeRegistryImpl implements DatatypeRegistry {
                 return entry.getKey();
         }
         throw new IllegalArgumentException("Datatype not registered: " + datatype);
+    }
+
+    @Override
+    public Optional<String> getOptionalId(Datatype datatype) {
+        for (Map.Entry<String, Datatype> entry : datatypeById.entrySet()) {
+            if (entry.getValue().equals(datatype))
+                return Optional.of(entry.getKey());
+        }
+        return Optional.empty();
     }
 
     @Override

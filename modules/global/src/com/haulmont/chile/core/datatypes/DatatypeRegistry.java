@@ -17,6 +17,7 @@
 package com.haulmont.chile.core.datatypes;
 
 import javax.annotation.Nullable;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -52,6 +53,12 @@ public interface DatatypeRegistry {
      * @throws IllegalArgumentException if the datatype is not registered
      */
     String getId(Datatype datatype);
+
+    /**
+     * @param datatype {@link Datatype} instance
+     * @return {@link Optional} of the given {@code datatype} id
+     */
+    Optional<String> getOptionalId(Datatype datatype);
 
     /**
      * Returns an ID of a first datatype handling the given Java class.

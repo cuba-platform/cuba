@@ -100,4 +100,8 @@ public class StringToDatatypeConverter implements Converter<String, Object> {
     public void setTrimming(boolean trimming) {
         this.trimming = trimming;
     }
+
+    public Datatype getDatatype() {
+        return datatype;
+    }
 }
