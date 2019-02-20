@@ -18,23 +18,18 @@
 package com.haulmont.cuba.web.widgets.client.table;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.Element;
-import com.google.gwt.dom.client.NativeEvent;
-import com.google.gwt.dom.client.Style;
-import com.google.gwt.dom.client.TableCellElement;
+import com.google.gwt.dom.client.*;
 import com.google.gwt.event.dom.client.*;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.HasWidgets;
-import com.google.gwt.user.client.ui.Panel;
-import com.google.gwt.user.client.ui.SimplePanel;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.*;
 import com.haulmont.cuba.web.widgets.client.Tools;
 import com.haulmont.cuba.web.widgets.client.aggregation.TableAggregationRow;
 import com.haulmont.cuba.web.widgets.client.image.CubaImageWidget;
 import com.haulmont.cuba.web.widgets.client.tableshared.TableWidget;
 import com.haulmont.cuba.web.widgets.client.tableshared.TableWidgetDelegate;
+import com.vaadin.client.Focusable;
 import com.vaadin.client.*;
 import com.vaadin.client.ui.ShortcutActionHandler;
 import com.vaadin.client.ui.VEmbedded;
@@ -138,6 +133,22 @@ public class CubaScrollTableWidget extends VScrollTable implements TableWidget {
             }
         }
         return false;
+    }
+
+    @Override
+    protected boolean isShowBrowserContextMenu(Event event) {
+        if (event != null) {
+            EventTarget target = event.getEventTarget();
+            if (Element.is(target)) {
+                Element element = Element.as(target);
+                Widget widget = WidgetUtil.findWidget(element);
+                if (widget instanceof TextBoxBase) {
+                    return true;
+                }
+            }
+        }
+
+        return super.isShowBrowserContextMenu(event);
     }
 
     @Override
