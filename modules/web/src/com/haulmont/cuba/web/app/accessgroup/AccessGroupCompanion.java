@@ -98,32 +98,37 @@ public class AccessGroupCompanion implements GroupBrowser.Companion {
                     return;
                 }
 
-                Group draggedGroup = groupsTree.getItems().getItem(UUID.fromString(draggedItemId));
+                String[] draggedItemIds = draggedItemId.split("\\r?\\n");
 
-                if (event.getDropTargetRow().isPresent()) {
-                    Group targetGroup = event.getDropTargetRow().get();
+                for (String itemId : draggedItemIds) {
 
-                    // if we drop to itself
-                    if (targetGroup.getId().equals(draggedGroup.getId())) {
-                        return;
+                    Group draggedGroup = groupsTree.getItems().getItem(UUID.fromString(itemId));
+
+                    if (event.getDropTargetRow().isPresent()) {
+                        Group targetGroup = event.getDropTargetRow().get();
+
+                        // if we drop to itself
+                        if (targetGroup.getId().equals(draggedGroup.getId())) {
+                            continue;
+                        }
+
+                        // if we drop parent to its child
+                        if (isParentDroppedToChild(draggedGroup, targetGroup, vTree)) {
+                            continue;
+                        }
+
+                        // if we drop child to the same parent
+                        if (draggedGroup.getParent() != null
+                                && (draggedGroup.getParent().getId().equals(targetGroup.getId()))) {
+                            continue;
+                        }
+
+                        groupChangeEventHandler.accept(new GroupChangeEvent(groupsTree, draggedGroup.getId(), targetGroup.getId()));
+
+                        // if we drop group to empty space make it root
+                    } else if (event.getDropLocation() == DropLocation.EMPTY) {
+                        groupChangeEventHandler.accept(new GroupChangeEvent(groupsTree, draggedGroup.getId(), null));
                     }
-
-                    // if we drop parent to its child
-                    if (isParentDroppedToChild(draggedGroup, targetGroup, vTree)) {
-                        return;
-                    }
-
-                    // if we drop child to the same parent
-                    if (draggedGroup.getParent() != null
-                            && (draggedGroup.getParent().getId().equals(targetGroup.getId()))) {
-                        return;
-                    }
-
-                    groupChangeEventHandler.accept(new GroupChangeEvent(groupsTree, draggedGroup.getId(), targetGroup.getId()));
-
-                    // if we drop group to empty space make it root
-                } else if (event.getDropLocation() == DropLocation.EMPTY) {
-                    groupChangeEventHandler.accept(new GroupChangeEvent(groupsTree, draggedGroup.getId(), null));
                 }
             }
         });
