@@ -468,6 +468,8 @@ public class CubaSuggestionFieldWidget extends Composite implements HasEnabled, 
 
         protected void updateWidth() {
             setWidth("");
+            suggestionsContainer.removeStyleName(C_HAS_WIDTH);
+
 
             int fieldWidth = CubaSuggestionFieldWidget.this.getOffsetWidth();
             double popupMarginBorderPaddingWidth = getMarginBorderPaddingWidth(getWidget().getElement());
