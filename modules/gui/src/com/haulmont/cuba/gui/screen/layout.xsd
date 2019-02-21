@@ -2860,13 +2860,29 @@
         </xs:complexContent>
     </xs:complexType>
 
-    <!-- Frame -->
+    <!-- Fragment -->
     <xs:complexType name="fragmentContainer">
         <xs:complexContent>
             <xs:extension base="baseComponent">
+                <xs:all>
+                    <xs:element name="properties" type="fragmentProperties"/>
+                </xs:all>
+
                 <xs:attribute name="screen" type="xs:string"/>
             </xs:extension>
         </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="fragmentProperties">
+        <xs:sequence>
+            <xs:element name="property" type="fragmentProperty"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="fragmentProperty">
+        <xs:attribute name="name" type="xs:string" use="required"/>
+        <xs:attribute name="value" type="xs:string"/>
+        <xs:attribute name="ref" type="xs:string"/>
     </xs:complexType>
 
     <!-- RuntimeProperty -->

@@ -67,6 +67,7 @@
         <xs:sequence>
             <xs:element type="paramType" name="param" minOccurs="0" maxOccurs="unbounded"/>
             <xs:element type="permissionsType" name="permissions" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="properties" type="screenProperties" minOccurs="0"/>
         </xs:sequence>
         <xs:attribute type="xs:string" name="id"/>
         <xs:attribute type="xs:string" name="screen"/>
@@ -80,6 +81,17 @@
         <xs:attribute type="xs:string" name="stylename"/>
         <xs:attribute type="xs:string" name="icon"/>
         <xs:attributeGroup ref="insertGroup"/>
+    </xs:complexType>
+
+    <xs:complexType name="screenProperties">
+        <xs:sequence>
+            <xs:element name="property" type="screenProperty" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="screenProperty">
+        <xs:attribute name="name" type="xs:string" use="required"/>
+        <xs:attribute name="value" type="xs:string" use="required"/>
     </xs:complexType>
 
     <xs:complexType name="separatorType">

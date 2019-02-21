@@ -33,6 +33,7 @@ import com.haulmont.cuba.gui.screen.ScreenContext;
 import com.haulmont.cuba.gui.screen.ScreenFragment;
 import com.haulmont.cuba.gui.sys.FrameContextImpl;
 import com.haulmont.cuba.gui.sys.ScreenContextImpl;
+import com.haulmont.cuba.gui.sys.UiControllerProperty;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoader;
 import com.haulmont.cuba.gui.xml.layout.ScreenXmlLoader;
@@ -44,7 +45,9 @@ import org.perf4j.StopWatch;
 import javax.annotation.Nonnull;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import static com.haulmont.cuba.gui.logging.UIPerformanceLogger.createStopWatch;
 import static com.haulmont.cuba.gui.screen.UiControllerUtils.*;
@@ -132,6 +135,7 @@ public class FragmentComponentLoader extends ContainerLoader<Fragment> {
             innerContext.setFullFrameId(frameId);
             innerContext.setFrame(fragment);
             innerContext.setParent(parentContext);
+            innerContext.setProperties(loadProperties(element));
 
             LayoutLoader layoutLoader = beanLocator.getPrototype(LayoutLoader.NAME, innerContext);
             layoutLoader.setLocale(getLocale());
@@ -275,13 +279,53 @@ public class FragmentComponentLoader extends ContainerLoader<Fragment> {
 
         // propagate init phases
 
-        if (innerContext != null) {
-            ComponentLoaderContext parentContext = (ComponentLoaderContext) getContext();
+        ComponentLoaderContext parentContext = (ComponentLoaderContext) getContext();
 
+        if (innerContext != null) {
             parentContext.getInjectTasks().addAll(innerContext.getInjectTasks());
             parentContext.getInitTasks().addAll(innerContext.getInitTasks());
             parentContext.getPostInitTasks().addAll(innerContext.getPostInitTasks());
         }
+    }
+
+    protected List<UiControllerProperty> loadProperties(Element element) {
+        Element propsEl = element.element("properties");
+        if (propsEl == null) {
+            return Collections.emptyList();
+        }
+
+        List<Element> propElements = propsEl.elements("property");
+        if (propElements.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<UiControllerProperty> properties = new ArrayList<>(propElements.size());
+
+        for (Element property : propElements) {
+            String name = property.attributeValue("name");
+            if (name == null || name.isEmpty()) {
+                throw new GuiDevelopmentException("Screen fragment property cannot have empty name", context.getFullFrameId());
+            }
+
+            String value = property.attributeValue("value");
+            String ref = property.attributeValue("ref");
+
+            if (StringUtils.isNotEmpty(value) && StringUtils.isNotEmpty(ref)) {
+                throw new GuiDevelopmentException("Screen fragment property can have either a value or a reference. Property: " +
+                        name, context.getFullFrameId());
+            }
+
+            if (StringUtils.isNotEmpty(value)) {
+                properties.add(new UiControllerProperty(name, value, UiControllerProperty.Type.VALUE));
+            } else if (StringUtils.isNotEmpty(ref)) {
+                properties.add(new UiControllerProperty(name, ref, UiControllerProperty.Type.REFERENCE));
+            } else {
+                throw new GuiDevelopmentException("No value or reference found for screen fragment property: " + name,
+                        context.getFullFrameId());
+            }
+        }
+
+        return properties;
     }
 
     protected void loadAliases() {

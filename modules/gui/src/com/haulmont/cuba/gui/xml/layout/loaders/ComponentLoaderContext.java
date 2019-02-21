@@ -22,6 +22,7 @@ import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.model.ScreenData;
 import com.haulmont.cuba.gui.screen.MapScreenOptions;
 import com.haulmont.cuba.gui.screen.ScreenOptions;
+import com.haulmont.cuba.gui.sys.UiControllerProperty;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader.InitTask;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader.InjectTask;
@@ -44,6 +45,7 @@ public class ComponentLoaderContext implements ComponentLoader.Context {
     protected List<InitTask> initTasks = new ArrayList<>();
 
     protected Map<String, Object> parameters;
+    protected List<UiControllerProperty> properties = Collections.emptyList();
     protected Map<String, String> aliasesMap = new HashMap<>();
 
     protected ComponentLoader.Context parent;
@@ -127,6 +129,14 @@ public class ComponentLoaderContext implements ComponentLoader.Context {
     @Override
     public void setParent(ComponentLoader.Context parent) {
         this.parent = parent;
+    }
+
+    public List<UiControllerProperty> getProperties() {
+        return properties;
+    }
+
+    public void setProperties(List<UiControllerProperty> properties) {
+        this.properties = properties;
     }
 
     @Override

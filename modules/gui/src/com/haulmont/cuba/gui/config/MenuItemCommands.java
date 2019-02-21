@@ -32,6 +32,8 @@ import com.haulmont.cuba.gui.screen.FrameOwner;
 import com.haulmont.cuba.gui.screen.MapScreenOptions;
 import com.haulmont.cuba.gui.screen.OpenMode;
 import com.haulmont.cuba.gui.screen.Screen;
+import com.haulmont.cuba.gui.sys.UiControllerPropertyInjector;
+import com.haulmont.cuba.gui.sys.UiControllerProperty;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.MethodUtils;
 import org.dom4j.Element;
@@ -44,7 +46,10 @@ import javax.inject.Inject;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
@@ -77,9 +82,10 @@ public class MenuItemCommands {
      */
     public MenuItemCommand create(FrameOwner origin, MenuItem item) {
         Map<String, Object> params = loadParams(item.getDescriptor(), item.getScreen());
+        List<UiControllerProperty> properties = loadProperties(item.getDescriptor());
 
         if (StringUtils.isNotEmpty(item.getScreen())) {
-            return new ScreenCommand(origin, item, item.getScreen(), item.getDescriptor(), params);
+            return new ScreenCommand(origin, item, item.getScreen(), item.getDescriptor(), params, properties);
         }
 
         if (StringUtils.isNotEmpty(item.getRunnableClass())) {
@@ -130,6 +136,36 @@ public class MenuItemCommands {
         return builder.build();
     }
 
+    protected List<UiControllerProperty> loadProperties(Element element) {
+        Element propsEl = element.element("properties");
+        if (propsEl == null) {
+            return Collections.emptyList();
+        }
+
+        List<Element> propElements = propsEl.elements("property");
+        if (propElements.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<UiControllerProperty> properties = new ArrayList<>(propElements.size());
+
+        for (Element property : propElements) {
+            String name = property.attributeValue("name");
+            if (StringUtils.isEmpty(name)) {
+                throw new IllegalStateException("Screen property cannot have empty name");
+            }
+
+            String value = property.attributeValue("value");
+            if (StringUtils.isEmpty(value)) {
+                throw new IllegalStateException("Screen property cannot have empty value");
+            }
+
+            properties.add(new UiControllerProperty(name, value, UiControllerProperty.Type.VALUE));
+        }
+
+        return properties;
+    }
+
     protected Entity loadEntityInstance(EntityLoadInfo info) {
         LoadContext ctx = new LoadContext(info.getMetaClass()).setId(info.getId());
         if (info.getViewName() != null) {
@@ -151,14 +187,16 @@ public class MenuItemCommands {
         protected String screen;
         protected Element descriptor;
         protected Map<String, Object> params;
+        protected List<UiControllerProperty> properties;
 
         protected ScreenCommand(FrameOwner origin, MenuItem item,
-                                String screen, Element descriptor, Map<String, Object> params) {
+                                String screen, Element descriptor, Map<String, Object> params, List<UiControllerProperty> properties) {
             this.origin = origin;
             this.item = item;
             this.screen = screen;
             this.descriptor = descriptor;
             this.params = new HashMap<>(params); // copy map values only for compatibility with legacy screens
+            this.properties = properties;
         }
 
         @Override
@@ -210,6 +248,12 @@ public class MenuItemCommands {
 
             } else {
                 Screen screen = screens.create(screenId, openType.getOpenMode(), new MapScreenOptions(params));
+
+                // inject declarative properties
+                UiControllerPropertyInjector propertyInjector = beanLocator.getPrototype(UiControllerPropertyInjector.NAME,
+                        screen, properties);
+                propertyInjector.inject();
+
                 screens.showFromNavigation(screen);
             }
 

@@ -157,6 +157,10 @@ public class UiControllerReflectionInspector {
         return screenIntrospectionCache.getUnchecked(clazz).getInjectElements();
     }
 
+    public List<Method> getPropertySetters(Class<?> clazz) {
+        return screenIntrospectionCache.getUnchecked(clazz).getPropertySetters();
+    }
+
     @Nullable
     public MethodHandle getAddListenerMethod(Class<?> clazz, Class<?> eventType) {
         Map<Class, MethodHandle> methods = targetIntrospectionCache.getUnchecked(clazz).getAddListenerMethods();
@@ -211,8 +215,9 @@ public class UiControllerReflectionInspector {
         List<AnnotatedMethod<Subscribe>> subscribeMethods = getAnnotatedSubscribeMethodsNotCached(concreteClass, methods);
         List<AnnotatedMethod<Install>> installMethods = getAnnotatedInstallMethodsNotCached(concreteClass, methods);
         List<Method> eventListenerMethods = getAnnotatedListenerMethodsNotCached(concreteClass, methods);
+        List<Method> propertySetters = getPropertySettersNotCached(methods);
 
-        return new ScreenIntrospectionData(injectElements, eventListenerMethods, subscribeMethods, installMethods);
+        return new ScreenIntrospectionData(injectElements, eventListenerMethods, subscribeMethods, installMethods, propertySetters);
     }
 
     protected TargetIntrospectionData getTargetIntrospectionDataNotCached(Class<?> concreteClass) {
@@ -296,6 +301,14 @@ public class UiControllerReflectionInspector {
         }
 
         return null;
+    }
+
+    protected List<Method> getPropertySettersNotCached(Method[] methods) {
+        return Arrays.stream(methods)
+                .filter(m -> Modifier.isPublic(m.getModifiers())
+                        && m.getName().startsWith("set")
+                        && m.getParameterCount() == 1)
+                .collect(ImmutableList.toImmutableList());
     }
 
     protected List<Method> getAnnotatedListenerMethodsNotCached(Class<?> clazz, Method[] uniqueDeclaredMethods) {
@@ -643,14 +656,18 @@ public class UiControllerReflectionInspector {
 
         private final List<AnnotatedMethod<Install>> installMethods;
 
+        private final List<Method> propertySetters;
+
         public ScreenIntrospectionData(List<InjectElement> injectElements,
                                        List<Method> eventListenerMethods,
                                        List<AnnotatedMethod<Subscribe>> subscribeMethods,
-                                       List<AnnotatedMethod<Install>> installMethods) {
+                                       List<AnnotatedMethod<Install>> installMethods,
+                                       List<Method> propertySetters) {
             this.injectElements = injectElements;
             this.eventListenerMethods = eventListenerMethods;
             this.subscribeMethods = subscribeMethods;
             this.installMethods = installMethods;
+            this.propertySetters = propertySetters;
         }
 
         public List<InjectElement> getInjectElements() {
@@ -667,6 +684,10 @@ public class UiControllerReflectionInspector {
 
         public List<AnnotatedMethod<Install>> getInstallMethods() {
             return installMethods;
+        }
+
+        public List<Method> getPropertySetters() {
+            return propertySetters;
         }
     }
 

@@ -259,4 +259,32 @@ class UiControllerReflectionInspectorTest extends Specification {
 
         consumer.class.is(consumer2.class)
     }
+
+    def "Get property setters"() {
+        def inspector = new UiControllerReflectionInspector()
+
+        when: "screen is inspected for setters"
+
+        def setters = inspector.getPropertySetters(ScreenWithProperties)
+
+        then: "public methods with single argument should be returned"
+
+        setters.size() == 3
+
+        setters.find({ it.name == 'setIntProperty' }) != null
+        setters.find({ it.name == 'setStringProperty' }) != null
+        setters.find({ it.name == 'setTableProperty' }) != null
+
+        when: "subclass is inspected"
+
+        def childSetters = inspector.getPropertySetters(ScreenWithParentProperties)
+
+        then: "the same methods list should be returned"
+
+        childSetters.size() == 3
+
+        childSetters.find({ it.name == 'setIntProperty' }) != null
+        childSetters.find({ it.name == 'setStringProperty' }) != null
+        childSetters.find({ it.name == 'setTableProperty' }) != null
+    }
 }

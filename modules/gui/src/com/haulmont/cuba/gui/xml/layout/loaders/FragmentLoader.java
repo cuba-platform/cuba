@@ -16,6 +16,7 @@
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
+import com.haulmont.cuba.core.global.BeanLocator;
 import com.haulmont.cuba.core.global.DevelopmentException;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ComponentsHelper;
@@ -38,6 +39,8 @@ import com.haulmont.cuba.gui.screen.compatibility.LegacyFrame;
 import com.haulmont.cuba.gui.sys.CompanionDependencyInjector;
 import com.haulmont.cuba.gui.sys.ScreenViewsLoader;
 import com.haulmont.cuba.gui.sys.UiControllerDependencyInjector;
+import com.haulmont.cuba.gui.sys.UiControllerPropertyInjector;
+import com.haulmont.cuba.gui.sys.UiControllerProperty;
 import com.haulmont.cuba.gui.xml.data.DsContextLoader;
 import com.haulmont.cuba.gui.xml.layout.ComponentRootLoader;
 import org.apache.commons.lang3.StringUtils;
@@ -45,6 +48,7 @@ import org.dom4j.Element;
 import org.perf4j.StopWatch;
 
 import javax.annotation.Nullable;
+import java.util.List;
 
 import static com.haulmont.cuba.gui.logging.UIPerformanceLogger.createStopWatch;
 
@@ -141,7 +145,7 @@ public class FragmentLoader extends ContainerLoader<Fragment> implements Compone
 
         // add inject / init tasks before nested fragments
         parentContext.addInjectTask(new FragmentLoaderInjectTask(resultComponent, options));
-        parentContext.addInitTask(new FragmentLoaderInitTask(resultComponent, options));
+        parentContext.addInitTask(new FragmentLoaderInitTask(resultComponent, options, (ComponentLoaderContext) context, beanLocator));
 
         loadSubComponentsAndExpand(resultComponent, layoutElement);
     }
@@ -239,10 +243,15 @@ public class FragmentLoader extends ContainerLoader<Fragment> implements Compone
     protected static class FragmentLoaderInitTask implements InitTask {
         protected Fragment fragment;
         protected ScreenOptions options;
+        protected ComponentLoaderContext fragmentLoaderContext;
+        protected BeanLocator beanLocator;
 
-        public FragmentLoaderInitTask(Fragment fragment, ScreenOptions options) {
+        public FragmentLoaderInitTask(Fragment fragment, ScreenOptions options,
+                                      ComponentLoaderContext fragmentLoaderContext, BeanLocator beanLocator) {
             this.fragment = fragment;
             this.options = options;
+            this.fragmentLoaderContext = fragmentLoaderContext;
+            this.beanLocator = beanLocator;
         }
 
         @Override
@@ -262,6 +271,13 @@ public class FragmentLoader extends ContainerLoader<Fragment> implements Compone
             UiControllerUtils.fireEvent(frameOwner,
                     ScreenFragment.AfterInitEvent.class,
                     new ScreenFragment.AfterInitEvent(frameOwner, options));
+
+            List<UiControllerProperty> properties = fragmentLoaderContext.getProperties();
+            if (!properties.isEmpty()) {
+                UiControllerPropertyInjector propertyInjector = beanLocator.getPrototype(UiControllerPropertyInjector.NAME,
+                        frameOwner, properties);
+                propertyInjector.inject();
+            }
         }
     }
 }
