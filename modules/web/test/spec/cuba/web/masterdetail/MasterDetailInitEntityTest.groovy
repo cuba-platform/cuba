@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2018 Haulmont.
+ * Copyright (c) 2008-2019 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,23 +14,25 @@
  * limitations under the License.
  */
 
-package spec.cuba.web.datacontext
+package spec.cuba.web.masterdetail
 
+import com.haulmont.cuba.gui.components.Table
 import com.haulmont.cuba.gui.config.WindowConfig
+import com.haulmont.cuba.gui.screen.MasterDetailScreen
 import com.haulmont.cuba.gui.screen.OpenMode
-import com.haulmont.cuba.gui.screen.UiControllerUtils
 import com.haulmont.cuba.gui.sys.UiControllersConfiguration
 import com.haulmont.cuba.security.app.UserManagementService
-import com.haulmont.cuba.web.testmodel.sales.Order
+import com.haulmont.cuba.security.entity.User
 import com.haulmont.cuba.web.testsupport.TestServiceProxy
 import org.springframework.core.type.classreading.MetadataReaderFactory
 import spec.cuba.web.UiScreenSpec
-import spec.cuba.web.datacontext.screens.OrderScreen
-import spock.lang.Unroll
+import spec.cuba.web.masterdetail.screens.UserMasterDetail
 
-class CompositionScreensTest extends UiScreenSpec {
+import java.util.function.Consumer
 
-    @SuppressWarnings(["GroovyAssignabilityCheck", "GroovyAccessibility"])
+@SuppressWarnings(["GroovyAccessibility", "GroovyAssignabilityCheck"])
+class MasterDetailInitEntityTest extends UiScreenSpec {
+
     void setup() {
         TestServiceProxy.mock(UserManagementService, Mock(UserManagementService) {
             getSubstitutedUsers(_) >> Collections.emptyList()
@@ -41,13 +43,12 @@ class CompositionScreensTest extends UiScreenSpec {
         def configuration = new UiControllersConfiguration()
         configuration.applicationContext = cont.getApplicationContext()
         configuration.metadataReaderFactory = cont.getBean(MetadataReaderFactory)
-        configuration.basePackages = ['spec.cuba.web.datacontext.screens']
+        configuration.basePackages = ['spec.cuba.web.masterdetail.screens']
 
         windowConfig.configurations = [configuration]
         windowConfig.initialized = false
     }
 
-    @SuppressWarnings(["GroovyAccessibility"])
     def cleanup() {
         TestServiceProxy.clear()
 
@@ -56,53 +57,31 @@ class CompositionScreensTest extends UiScreenSpec {
         windowConfig.initialized = false
     }
 
-    @Unroll
-    def "create and immediate edit of the same nested instance"(boolean explicitParentDc) {
-
+    def "MasterDetailScreen fires InitEntityEvent on Create"() {
         def screens = vaadinUi.screens
 
         def mainWindow = screens.create("mainWindow", OpenMode.ROOT)
         screens.show(mainWindow)
 
-        def orderScreen = screens.create(OrderScreen)
-        def order = metadata.create(Order)
-        orderScreen.order = order
-        orderScreen.show()
+        def initEntityListener = Mock(Consumer)
 
-        def orderScreenDc = UiControllerUtils.getScreenData(orderScreen).dataContext
+        def masterDetail = screens.create(UserMasterDetail)
+        masterDetail.addInitEntityListener(initEntityListener)
+        masterDetail.show()
 
-        when: "create entity"
+        def table = masterDetail.getWindow().getComponentNN("table") as Table
+        def createAction = table.getAction("create")
 
-        def lineScreenForCreate = orderScreen.buildLineScreenForCreate(explicitParentDc)
-        lineScreenForCreate.show()
-
-        lineScreenForCreate.changeCommitAndClose(1)
-
-        then:
-
-        def order1 = orderScreenDc.find(Order, order.id)
-        order1.orderLines.size() == 1
-        def line1 = order1.orderLines[0]
-        line1.order.is(order1)
-
-        when: "edit same entity"
-
-        def lineScreenForEdit = orderScreen.buildLineScreenForEdit(explicitParentDc)
-        lineScreenForEdit.show()
-
-        lineScreenForEdit.changeCommitAndClose(2)
+        when:
+        createAction.actionPerform(table)
+        def user = masterDetail.getEditedUser()
 
         then:
+        user != null
+        user.name == "New user"
 
-        def order2 = orderScreenDc.find(Order, order.id)
-        order2.is(order1)
-        order2.orderLines.size() == 1
-        def line2 = order2.orderLines[0]
-        line2.is(line1)
-        line2.order.is(order2)
-
-        where:
-
-        explicitParentDc << [true, false]
+        1 * initEntityListener.accept(_) >> { MasterDetailScreen.InitEntityEvent event ->
+            assert event.getEntity() != null
+        }
     }
 }

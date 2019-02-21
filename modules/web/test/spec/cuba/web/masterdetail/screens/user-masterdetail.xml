@@ -1,0 +1,76 @@
+<window xmlns="http://schemas.haulmont.com/cuba/screen/window.xsd"
+        focusComponent="table">
+    <data>
+        <collection id="usersDc"
+                    class="com.haulmont.cuba.security.entity.User"
+                    view="_local">
+            <loader id="usersLd">
+                <query>
+                    <![CDATA[select e from sec$User e]]>
+                </query>
+            </loader>
+        </collection>
+        <instance id="userDc"
+                  class="com.haulmont.cuba.security.entity.User"
+                  view="_local">
+            <loader/>
+        </instance>
+    </data>
+
+    <actions>
+        <action id="save" icon="icons/ok.png" caption="mainMsg://actions.Ok" shortcut="CTRL-ENTER"/>
+        <action id="cancel" icon="icons/cancel.png" caption="mainMsg://actions.Cancel" description="Esc"/>
+    </actions>
+
+    <dialogMode height="600" width="800"/>
+
+    <layout>
+        <split id="split" height="100%" orientation="horizontal" reversePosition="true" width="100%">
+            <vbox id="lookupBox" expand="table" height="100%" margin="false,true,false,false" spacing="true">
+                <filter id="filter" applyTo="table" dataLoader="usersLd">
+                    <properties include=".*"/>
+                </filter>
+                <table id="table"
+                       width="100%"
+                       dataContainer="usersDc">
+                    <actions>
+                        <action id="create" type="create"/>
+                        <action id="edit" type="edit"/>
+                        <action id="remove" type="remove"/>
+                    </actions>
+                    <columns>
+                        <column id="login"/>
+                        <column id="name"/>
+                        <column id="active"/>
+                    </columns>
+                    <rowsCount/>
+                    <buttonsPanel id="buttonsPanel"
+                                  alwaysVisible="true">
+                        <button id="createBtn" action="table.create"/>
+                        <button id="editBtn" action="table.edit"/>
+                        <button id="removeBtn" action="table.remove"/>
+                    </buttonsPanel>
+                </table>
+                <hbox id="lookupActions" spacing="true" visible="false">
+                    <button action="lookupSelectAction"/>
+                    <button action="lookupCancelAction"/>
+                </hbox>
+            </vbox>
+            <vbox id="editBox" height="100%" margin="false,false,false,true" expand="fieldGroupBox" spacing="true">
+                <scrollBox id="fieldGroupBox">
+                    <form id="form" dataContainer="userDc">
+                        <column width="250px">
+                            <textField id="loginField" property="login"/>
+                            <textField id="nameField" property="name"/>
+                            <checkBox id="activeField" property="active"/>
+                        </column>
+                    </form>
+                </scrollBox>
+                <hbox id="actionsPane" spacing="true" visible="false">
+                    <button id="saveBtn" action="save"/>
+                    <button id="cancelBtn" action="cancel"/>
+                </hbox>
+            </vbox>
+        </split>
+    </layout>
+</window>

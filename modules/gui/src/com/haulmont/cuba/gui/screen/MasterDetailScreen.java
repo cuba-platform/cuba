@@ -120,6 +120,7 @@ public abstract class MasterDetailScreen<T extends Entity> extends StandardLooku
     /**
      * Returns the table's data container.
      */
+    @SuppressWarnings("unchecked")
     protected CollectionContainer<T> getBrowseContainer() {
         DataUnit items = getTable().getItems();
         if (items instanceof ContainerDataUnit)
@@ -142,8 +143,9 @@ public abstract class MasterDetailScreen<T extends Entity> extends StandardLooku
     @SuppressWarnings("unchecked")
     protected InstanceLoader<T> getEditLoader() {
         DataLoader loader = ((HasLoader) getEditContainer()).getLoader();
-        if (loader == null)
+        if (loader == null) {
             throw new IllegalStateException("Cannot find loader of editing container");
+        }
         return (InstanceLoader<T>) loader;
     }
 
@@ -230,7 +232,7 @@ public abstract class MasterDetailScreen<T extends Entity> extends StandardLooku
                 tools.initDefaultAttributeValues((BaseGenericIdEntity) trackedEntity, trackedEntity.getMetaClass());
             }
 
-            fireEvent(StandardEditor.InitEntityEvent.class, new StandardEditor.InitEntityEvent<>(this, trackedEntity));
+            fireEvent(InitEntityEvent.class, new InitEntityEvent<>(this, trackedEntity));
 
             getEditContainer().setItem(trackedEntity);
             refreshOptionsForLookupFields();
