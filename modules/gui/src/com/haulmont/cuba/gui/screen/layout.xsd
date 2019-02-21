@@ -1116,6 +1116,7 @@
         <xs:attributeGroup ref="hasVisibility"/>
         <xs:attributeGroup ref="hasIcon"/>
 
+        <xs:attribute name="invoke" type="xs:string"/>
         <xs:attribute name="primary" type="xs:boolean"/>
         <xs:attribute name="shortcut" type="shortcut"/>
     </xs:complexType>
