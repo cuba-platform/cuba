@@ -162,26 +162,29 @@ public class SequencesImpl implements Sequences {
         lock.readLock().unlock();
         lock.writeLock().lock();
         try {
-            // Create sequence in separate transaction because it's name is cached and we want to be sure it is created
-            // regardless of possible errors in the invoking code
-            String storeName = getDataStore(sequence);
-            Transaction tx = persistence.createTransaction(storeName);
             try {
-                EntityManager em = persistence.getEntityManager(storeName);
-                SequenceSupport sequenceSupport = getSequenceSupport(sequence);
-                Query query = em.createNativeQuery(sequenceSupport.sequenceExistsSql(sequenceName));
-                List list = query.getResultList();
-                if (list.isEmpty()) {
-                    query = em.createNativeQuery(sequenceSupport.createSequenceSql(sequenceName, sequence.getStartValue(), sequence.getIncrement()));
-                    query.executeUpdate();
-                }
-                existingSequences.add(sequenceName);
+                // Create sequence in separate transaction because it's name is cached and we want to be sure it is created
+                // regardless of possible errors in the invoking code
+                String storeName = getDataStore(sequence);
+                Transaction tx = persistence.createTransaction(storeName);
+                try {
+                    EntityManager em = persistence.getEntityManager(storeName);
+                    SequenceSupport sequenceSupport = getSequenceSupport(sequence);
+                    Query query = em.createNativeQuery(sequenceSupport.sequenceExistsSql(sequenceName));
+                    List list = query.getResultList();
+                    if (list.isEmpty()) {
+                        query = em.createNativeQuery(sequenceSupport.createSequenceSql(sequenceName, sequence.getStartValue(), sequence.getIncrement()));
+                        query.executeUpdate();
+                    }
+                    existingSequences.add(sequenceName);
 
-                tx.commit();
+                    tx.commit();
+                } finally {
+                    tx.end();
+                }
             } finally {
-                tx.end();
+                lock.readLock().lock();
             }
-            lock.readLock().lock();
         } finally {
             lock.writeLock().unlock();
         }
