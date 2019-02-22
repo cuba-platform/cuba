@@ -145,6 +145,7 @@ public class LegacyCollectionDsValueSource<V extends Entity> implements ValueSou
 
     protected void setPropertyDatasourceValue(Collection<V> value) {
         if (!canUpdateMasterRefs()) {
+            setDatasourceValue(value);
             return;
         }
 
