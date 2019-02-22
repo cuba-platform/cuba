@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.gui.components.filter;
 
+import com.haulmont.bali.events.EventHub;
 import com.haulmont.bali.events.Subscription;
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import com.haulmont.cuba.core.entity.Entity;
@@ -32,7 +33,6 @@ import com.haulmont.cuba.gui.components.filter.condition.DynamicAttributesCondit
 import com.haulmont.cuba.gui.components.filter.condition.PropertyCondition;
 import org.apache.commons.lang3.StringUtils;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -50,9 +50,19 @@ public class ParamWrapper implements Component, HasValue<Object> {
 
     protected Component parent;
 
+    private EventHub eventHub;
+
     public ParamWrapper(AbstractCondition condition, Param param) {
         this.condition = condition;
         this.param = param;
+        this.param.addValueChangeListener(this::fireValueChange);
+    }
+
+    protected EventHub getEventHub() {
+        if (eventHub == null) {
+            eventHub = new EventHub();
+        }
+        return eventHub;
     }
 
     @Override
@@ -130,53 +140,24 @@ public class ParamWrapper implements Component, HasValue<Object> {
         param.setValue(value);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public Subscription addValueChangeListener(Consumer<ValueChangeEvent<Object>> listener) {
-        param.addValueChangeListener(new ParamValueChangeListenerWrapper(this, (Consumer) listener));
-
-        return () -> removeValueChangeListener(listener);
+        return getEventHub().subscribe(ValueChangeEvent.class, (Consumer) listener);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public void removeValueChangeListener(Consumer listener) {
-        param.removeValueChangeListener(new ParamValueChangeListenerWrapper(this, listener));
+    public void removeValueChangeListener(Consumer<ValueChangeEvent<Object>> listener) {
+        if (eventHub != null) {
+            eventHub.unsubscribe(ValueChangeEvent.class, (Consumer) listener);
+        }
     }
 
-    protected static class ParamValueChangeListenerWrapper implements Param.ParamValueChangeListener {
-
-        protected final ParamWrapper paramWrapper;
-        protected final Consumer<ValueChangeEvent> valueChangeListener;
-
-        public ParamValueChangeListenerWrapper(ParamWrapper paramWrapper,
-                                               Consumer<ValueChangeEvent> valueChangeListener) {
-            this.paramWrapper = paramWrapper;
-            this.valueChangeListener = valueChangeListener;
-        }
-
-        @Override
-        public void valueChanged(@Nullable Object prevValue, @Nullable Object value) {
-            valueChangeListener.accept(new ValueChangeEvent(paramWrapper, prevValue, value));
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            if (obj == null) {
-                return false;
-            }
-
-            if (obj.getClass() != getClass()) {
-                return false;
-            }
-
-            ParamValueChangeListenerWrapper that = (ParamValueChangeListenerWrapper) obj;
-
-            return this.valueChangeListener.equals(that.valueChangeListener);
-        }
-
-        @Override
-        public int hashCode() {
-            return valueChangeListener.hashCode();
-        }
+    protected void fireValueChange(Param.ParamValueChangedEvent event) {
+        @SuppressWarnings("unchecked")
+        ValueChangeEvent valueChangeEvent = new ValueChangeEvent(this, event.getPrevValue(), event.getValue());
+        getEventHub().publish(ValueChangeEvent.class, valueChangeEvent);
     }
 
     @Override

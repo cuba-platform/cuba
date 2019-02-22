@@ -32,7 +32,6 @@ import com.haulmont.cuba.gui.components.filter.dateinterval.DateIntervalValue;
 import com.haulmont.cuba.gui.components.filter.descriptor.AbstractConditionDescriptor;
 import com.haulmont.cuba.gui.components.filter.operationedit.AbstractOperationEditor;
 import com.haulmont.cuba.gui.components.filter.operationedit.PropertyOperationEditor;
-import com.haulmont.cuba.gui.data.Datasource;
 import org.apache.commons.lang3.BooleanUtils;
 import org.dom4j.Element;
 
@@ -88,7 +87,6 @@ public class PropertyCondition extends AbstractCondition {
 
     @Override
     protected void updateText() {
-
         Metadata metadata = AppBeans.get(Metadata.class);
         MetadataTools metadataTools = metadata.getTools();
 
@@ -201,8 +199,8 @@ public class PropertyCondition extends AbstractCondition {
                 inExpr = operator.equals(Op.IN) || operator.equals(Op.NOT_IN);
                 Param param = paramBuilder.createParam(this);
                 if (operator == Op.DATE_INTERVAL) {
-                    //each parameter value change must modify the condition text
-                    param.addValueChangeListener((prevValue, value) -> updateText());
+                    // each parameter value change must modify the condition text
+                    param.addValueChangeListener(event -> updateText());
                 }
                 setParam(param);
             }
