@@ -93,6 +93,9 @@ public class EntityInspectorEditor extends AbstractWindow {
     @Inject
     protected ThemeConstants themeConstants;
 
+    @Inject
+    protected EntityStates entityStates;
+
     @WindowParam(name = "item")
     protected Entity item;
 
@@ -303,7 +306,8 @@ public class EntityInspectorEditor extends AbstractWindow {
      * @return true if embedded, false otherwise
      */
     protected boolean isEmbedded(MetaProperty metaProperty) {
-        return metaProperty.getAnnotatedElement().isAnnotationPresent(javax.persistence.Embedded.class);
+        return metaProperty.getAnnotatedElement().isAnnotationPresent(javax.persistence.Embedded.class)
+                || metaProperty.getAnnotatedElement().isAnnotationPresent(javax.persistence.EmbeddedId.class);
     }
 
     /**
@@ -383,7 +387,9 @@ public class EntityInspectorEditor extends AbstractWindow {
                     } else {
                         if (isEmbedded(metaProperty)) {
                             Entity propertyValue = item.getValue(metaProperty.getName());
-                            addEmbeddedFieldGroup(metaProperty, "", propertyValue);
+                            addEmbeddedFieldGroup(metaProperty, "", propertyValue,
+                                    (!metaProperty.getAnnotatedElement().isAnnotationPresent(javax.persistence.EmbeddedId.class)
+                                    || entityStates.isNew(item)));
                         } else {
                             addField(metaClass, metaProperty, item, fieldGroup, isRequired, true, isReadonly, customFields);
                         }
@@ -405,7 +411,7 @@ public class EntityInspectorEditor extends AbstractWindow {
      * @param embeddedMetaProperty meta property of the embedded property
      * @param embeddedItem         current value of the embedded property
      */
-    protected void addEmbeddedFieldGroup(MetaProperty embeddedMetaProperty, String fqnPrefix, Entity embeddedItem) {
+    protected void addEmbeddedFieldGroup(MetaProperty embeddedMetaProperty, String fqnPrefix, Entity embeddedItem, boolean editable) {
         String fqn = fqnPrefix.isEmpty() ? embeddedMetaProperty.getName()
                 : fqnPrefix + "." + embeddedMetaProperty.getName();
         Datasource embedDs = datasources.get(fqn);
@@ -419,6 +425,8 @@ public class EntityInspectorEditor extends AbstractWindow {
 
         contentPane.add(fieldGroup);
         fieldGroup.setFrame(frame);
+
+        fieldGroup.setEditable(editable);
 
         MetaClass embeddableMetaClass = embeddedMetaProperty.getRange().asClass();
         Collection<FieldGroup.FieldConfig> customFields = new LinkedList<>();
@@ -457,7 +465,7 @@ public class EntityInspectorEditor extends AbstractWindow {
                     } else {
                         if (isEmbedded(metaProperty)) {
                             Entity propertyValue = embeddedItem.getValue(metaProperty.getName());
-                            addEmbeddedFieldGroup(metaProperty, fqn, propertyValue);
+                            addEmbeddedFieldGroup(metaProperty, fqn, propertyValue, editable);
                         } else {
                             addField(embeddableMetaClass, metaProperty, embeddedItem, fieldGroup, isRequired, true, isReadonly, customFields);
                         }
