@@ -85,6 +85,7 @@ public class InstanceContainerImpl<E extends Entity> implements InstanceContaine
                 throw new DevelopmentException(String.format("Invalid item's metaClass '%s'", aClass),
                         ParamsMap.of("container", toString(), "metaClass", aClass));
             }
+            detachListener(item);
             attachListener(item);
         }
 
