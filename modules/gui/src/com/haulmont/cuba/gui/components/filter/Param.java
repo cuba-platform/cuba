@@ -18,6 +18,8 @@
 package com.haulmont.cuba.gui.components.filter;
 
 import com.google.common.collect.Lists;
+import com.haulmont.bali.events.EventHub;
+import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.DatatypeRegistry;
 import com.haulmont.chile.core.datatypes.Datatypes;
@@ -26,7 +28,6 @@ import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.client.ClientConfig;
-import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.app.PersistenceManagerService;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.app.dynamicattributes.PropertyType;
@@ -36,6 +37,7 @@ import com.haulmont.cuba.core.entity.annotation.IgnoreUserTimeZone;
 import com.haulmont.cuba.core.entity.annotation.Lookup;
 import com.haulmont.cuba.core.entity.annotation.LookupType;
 import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.gui.UiComponents;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.WindowManagerProvider;
 import com.haulmont.cuba.gui.components.*;
@@ -47,23 +49,25 @@ import com.haulmont.cuba.gui.data.DsBuilder;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
-import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.TextStringBuilder;
 import org.dom4j.Element;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 
-import javax.annotation.Nullable;
+import javax.inject.Inject;
 import javax.persistence.TemporalType;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.*;
 import java.util.*;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 @org.springframework.stereotype.Component(Param.NAME)
-@Scope("prototype")
+@Scope(BeanDefinition.SCOPE_PROTOTYPE)
 public class Param {
 
     public enum Type {
@@ -82,8 +86,9 @@ public class Param {
     public static final String NAME = "cuba_FilterParam";
     public static final String NULL = "NULL";
 
-    protected static final List<Class> dateTimeClasses = Lists.newArrayList(Date.class, LocalDate.class, LocalDateTime.class,
-            OffsetDateTime.class);
+    protected static final List<Class> dateTimeClasses = Lists.newArrayList(
+            Date.class, LocalDate.class, LocalDateTime.class, OffsetDateTime.class);
+
     protected static final List<Class> timeClasses = Lists.newArrayList(LocalTime.class, OffsetTime.class);
 
     protected String name;
@@ -103,14 +108,37 @@ public class Param {
     protected Component editComponent;
     protected boolean isFoldersFilterEntitiesSet = false;
 
-    protected Messages messages = AppBeans.get(Messages.NAME);
-    protected UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.NAME);
-    protected ComponentsFactory componentsFactory = AppBeans.get(ComponentsFactory.NAME);
-    protected MetadataTools metadataTools = AppBeans.get(MetadataTools.class);
-    protected DatatypeRegistry datatypeRegistry = AppBeans.get(DatatypeRegistry.class);
-    protected ThemeConstants theme = AppBeans.get(ThemeConstantsManager.class).getConstants();
+    @Inject
+    protected BeanLocator beanLocator;
 
-    protected List<ParamValueChangeListener> listeners = new ArrayList<>();
+    @Inject
+    protected Metadata metadata;
+    @Inject
+    protected Messages messages;
+    @Inject
+    protected UserSessionSource userSessionSource;
+    @Inject
+    protected UiComponents uiComponents;
+    @Inject
+    protected MetadataTools metadataTools;
+    @Inject
+    protected DataManager dataManager;
+    @Inject
+    protected Configuration configuration;
+
+    @Inject
+    protected DatatypeRegistry datatypeRegistry;
+
+    protected ThemeConstants theme;
+
+    private EventHub eventHub;
+
+    protected EventHub getEventHub() {
+        if (eventHub == null) {
+            eventHub = new EventHub();
+        }
+        return eventHub;
+    }
 
     public static class Builder {
         private String name;
@@ -211,6 +239,11 @@ public class Param {
         }
     }
 
+    @Inject
+    protected void setThemeConstantsManager(ThemeConstantsManager themeManager) {
+        this.theme = themeManager.getConstants();
+    }
+
     public String getName() {
         return name;
     }
@@ -287,23 +320,34 @@ public class Param {
         setValue(value, true);
     }
 
+    @SuppressWarnings("unchecked")
     protected void setValue(Object value, boolean updateEditComponent) {
         if (!Objects.equals(value, this.value)) {
             Object prevValue = this.value;
+
             this.value = value;
-            for (ParamValueChangeListener listener : new ArrayList<>(listeners)) {
-                listener.valueChanged(prevValue, value);
-            }
+
             if (updateEditComponent && this.editComponent instanceof HasValue) {
-                if (value instanceof Collection && editComponent instanceof TextField) {
-                    //if the value type is an array and the editComponent is a textField ('IN' condition for String attribute)
-                    //then we should set the string value (not the array) to the text field
-                    String caption = new TextStringBuilder().appendWithSeparators((Collection) value, ",").toString();
-                    ((TextField) editComponent).setValue(caption);
+                if (editComponent instanceof TextField) {
+                    TextField textField = (TextField) this.editComponent;
+
+                    if (value instanceof Collection) {
+                        //if the value type is an array and the editComponent is a textField ('IN' condition for String attribute)
+                        //then we should set the string value (not the array) to the text field
+                        String caption = new TextStringBuilder().appendWithSeparators((Collection) value, ",").toString();
+                        textField.setValue(caption);
+                    } else if (textField.getDatatype() == null) {
+                        // it shows String
+                        textField.setValue(formatValue(value));
+                    } else {
+                        textField.setValue(value);
+                    }
                 } else {
                     ((HasValue) editComponent).setValue(value);
                 }
             }
+
+            getEventHub().publish(ParamValueChangedEvent.class, new ParamValueChangedEvent(this, prevValue, value));
         }
     }
 
@@ -315,6 +359,13 @@ public class Param {
         this.defaultValue = defaultValue;
         if (value == null) {
             setValue(defaultValue, true);
+        }
+    }
+
+    public void setDefaultValue(Object defaultValue, boolean updateEditComponent) {
+        this.defaultValue = defaultValue;
+        if (value == null) {
+            setValue(defaultValue, updateEditComponent);
         }
     }
 
@@ -395,17 +446,16 @@ public class Param {
     }
 
     protected List<Entity> loadEntityList(String[] ids) {
-        Metadata metadata = AppBeans.get(Metadata.class);
         MetaClass metaClass = metadata.getSession().getClassNN(javaClass);
         LoadContext ctx = new LoadContext(javaClass);
-        LoadContext.Query query = ctx.setQueryString("select e from " + metaClass.getName() + " e where e.id in :ids");
+        LoadContext.Query query = ctx.setQueryString(
+                String.format("select e from %s e where e.id in :ids", metaClass.getName())
+        );
         query.setParameter("ids", Arrays.asList(ids));
-        DataManager dataManager = AppBeans.get(DataManager.class);
         return dataManager.loadList(ctx);
     }
 
     protected Object loadEntity(String id) {
-        Metadata metadata = AppBeans.get(Metadata.class);
         MetaProperty pkProp = metadata.getTools().getPrimaryKeyProperty(metadata.getClassNN(javaClass));
         Object objectId = null;
         if (pkProp != null) {
@@ -417,43 +467,43 @@ public class Param {
             }
         }
         LoadContext ctx = new LoadContext(javaClass).setId(objectId);
-        DataService dataService = AppBeans.get(DataService.NAME);
-        return dataService.load(ctx);
+        return dataManager.load(ctx);
     }
 
     public String formatValue(Object value) {
-        if (value == null)
+        if (value == null) {
             return NULL;
+        }
 
         if (value instanceof Collection) {
-            StringBuilder sb = new StringBuilder();
-            for (Iterator iterator = ((Collection) value).iterator(); iterator.hasNext(); ) {
-                Object v = iterator.next();
-                sb.append(formatSingleValue(v));
-                if (iterator.hasNext())
-                    sb.append(",");
-            }
-            return sb.toString();
-        } else {
-            return formatSingleValue(value);
+            @SuppressWarnings("unchecked")
+            Collection<Object> collection = (Collection) value;
+            return collection.stream()
+                    .map(this::formatSingleValue)
+                    .collect(Collectors.joining(","));
         }
+
+        return formatSingleValue(value);
     }
 
     protected String formatSingleValue(Object v) {
         switch (type) {
             case ENTITY:
-                if (v instanceof UUID)
+                if (v instanceof UUID) {
                     return v.toString();
-                else if (v instanceof Entity)
+                } else if (v instanceof Entity) {
                     return ((Entity) v).getId().toString();
+                }
 
             case ENUM:
                 return ((Enum) v).name();
             case RUNTIME_ENUM:
             case DATATYPE:
             case UNARY:
-                if (isDateInterval) return (String) v;
-                //noinspection unchecked
+                if (isDateInterval) {
+                    return (String) v;
+                }
+                @SuppressWarnings("unchecked")
                 Datatype<Object> datatype = Datatypes.getNN(javaClass);
                 return datatype.format(v);
 
@@ -463,15 +513,17 @@ public class Param {
     }
 
     protected String getValueCaption(Object v) {
-        if (v == null)
+        if (v == null) {
             return null;
+        }
 
         switch (type) {
             case ENTITY:
-                if (v instanceof Instance)
-                    return ((Instance) v).getInstanceName();
-                else
+                if (v instanceof Instance) {
+                    return metadata.getTools().getInstanceName((Instance) v);
+                } else {
                     return v.toString();
+                }
 
             case ENUM:
                 return messages.getMessage((Enum) v);
@@ -502,7 +554,7 @@ public class Param {
         switch (type) {
             case DATATYPE:
                 if (isDateInterval) {
-                    DateInIntervalComponent dateInIntervalComponent = AppBeans.get(DateInIntervalComponent.class);
+                    DateInIntervalComponent dateInIntervalComponent = beanLocator.get(DateInIntervalComponent.class);
                     dateInIntervalComponent.addValueChangeListener(newValue -> {
                         _setValue(newValue == null ? null : newValue.getDescription(), valueProperty);
                     });
@@ -532,10 +584,10 @@ public class Param {
         return component;
     }
 
-    protected CheckBox createUnaryField(final ValueProperty valueProperty) {
-        CheckBox field = componentsFactory.createComponent(CheckBox.class);
+    protected CheckBox createUnaryField(ValueProperty valueProperty) {
+        CheckBox field = uiComponents.create(CheckBox.NAME);
         field.addValueChangeListener(e -> {
-            Object newValue = BooleanUtils.isTrue((Boolean) e.getValue()) ? true : null;
+            Boolean newValue = BooleanUtils.isTrue(e.getValue()) ? true : null;
             _setValue(newValue, valueProperty);
         });
         field.setValue((Boolean) _getValue(valueProperty));
@@ -570,10 +622,10 @@ public class Param {
                 setValue(value, false);
                 break;
             case DEFAULT_VALUE:
-                setDefaultValue(value);
+                setDefaultValue(value, false);
                 break;
             default:
-                throw new IllegalArgumentException("Value property " + valueProperty + " not supported");
+                throw new IllegalArgumentException(String.format("Value property %s not supported", valueProperty));
         }
     }
 
@@ -584,34 +636,29 @@ public class Param {
             case DEFAULT_VALUE:
                 return defaultValue;
             default:
-                throw new IllegalArgumentException("Value property " + valueProperty + " not supported");
+                throw new IllegalArgumentException(String.format("Value property %s not supported", valueProperty));
         }
     }
 
-
-    protected Component createTextField(final ValueProperty valueProperty) {
+    protected Component createTextField(ValueProperty valueProperty) {
         if (inExpr) {
-            ListEditor listEditor = componentsFactory.createComponent(ListEditor.class);
+            ListEditor listEditor = uiComponents.create(ListEditor.class);
             listEditor.setItemType(ListEditor.ItemType.STRING);
             initListEditor(listEditor, valueProperty);
             return listEditor;
         }
 
-        TextField<String> field = componentsFactory.createComponent(TextField.class);
+        TextField<String> field = uiComponents.create(TextField.NAME);
         field.setWidth(theme.get("cuba.gui.filter.Param.textComponent.width"));
 
         field.addValueChangeListener(e -> {
-            Object paramValue = null;
-            if (!StringUtils.isBlank((String) e.getValue())) {
+            String paramValue = null;
+            if (!StringUtils.isBlank(e.getValue())) {
                 paramValue = e.getValue();
             }
-            if (paramValue instanceof String) {
-                Configuration configuration = AppBeans.get(Configuration.NAME);
-                if (configuration.getConfig(ClientConfig.class).getGenericFilterTrimParamValues()) {
-                    _setValue(StringUtils.trimToNull((String) paramValue), valueProperty);
-                } else {
-                    _setValue(paramValue, valueProperty);
-                }
+
+            if (configuration.getConfig(ClientConfig.class).getGenericFilterTrimParamValues()) {
+                _setValue(StringUtils.trimToNull(paramValue), valueProperty);
             } else {
                 _setValue(paramValue, valueProperty);
             }
@@ -630,7 +677,7 @@ public class Param {
         return field;
     }
 
-    protected Component createDateField(Class javaClass, final ValueProperty valueProperty) {
+    protected Component createDateField(Class javaClass, ValueProperty valueProperty) {
         UserSession userSession = userSessionSource.getUserSession();
         boolean supportTimezones = false;
         boolean dateOnly = false;
@@ -650,7 +697,7 @@ public class Param {
             supportTimezones = true;
         }
         if (inExpr) {
-            ListEditor listEditor = componentsFactory.createComponent(ListEditor.class);
+            ListEditor listEditor = uiComponents.create(ListEditor.class);
             ListEditor.ItemType itemType = dateOnly ? ListEditor.ItemType.DATE : ListEditor.ItemType.DATETIME;
             listEditor.setItemType(itemType);
             if (userSession.getTimeZone() != null && supportTimezones) {
@@ -660,12 +707,11 @@ public class Param {
             return listEditor;
         }
 
-        DateField<Date> dateField = componentsFactory.createComponent(DateField.class);
-        dateField.setDatatype(datatypeRegistry.get(javaClass));
+        DateField<Object> dateField = uiComponents.create(DateField.NAME);
+        dateField.setDatatype(datatypeRegistry.getNN(javaClass));
 
         DateField.Resolution resolution;
         String formatStr;
-        Messages messages = AppBeans.get(Messages.NAME);
         if (dateOnly) {
             resolution = com.haulmont.cuba.gui.components.DateField.Resolution.DAY;
             formatStr = messages.getMainMessage("dateFormat");
@@ -682,39 +728,37 @@ public class Param {
         dateField.addValueChangeListener(e ->
                 _setValue(e.getValue(), valueProperty));
 
-        dateField.setValue((Date) _getValue(valueProperty));
+        dateField.setValue(_getValue(valueProperty));
         return dateField;
     }
 
-    protected Component createTimeField(Class javaClass, final ValueProperty valueProperty) {
-        TimeField<Object> timeField = componentsFactory.createComponent(TimeField.NAME);
+    protected Component createTimeField(Class javaClass, ValueProperty valueProperty) {
+        TimeField<Object> timeField = uiComponents.create(TimeField.NAME);
         timeField.setDatatype(datatypeRegistry.get(javaClass));
-        String formatStr = messages.getMainMessage("timeFormat");
-        timeField.setFormat(formatStr);
+        timeField.setFormat(messages.getMainMessage("timeFormat"));
         timeField.addValueChangeListener(e -> _setValue(e.getValue(), valueProperty));
         timeField.setValue(_getValue(valueProperty));
         timeField.setWidth(theme.get("cuba.gui.filter.Param.timeComponent.width"));
         return timeField;
     }
 
-    protected Component createNumberField(final Datatype datatype, final ValueProperty valueProperty) {
+    protected Component createNumberField(Datatype datatype, ValueProperty valueProperty) {
         if (inExpr) {
-            ListEditor listEditor = componentsFactory.createComponent(ListEditor.class);
+            ListEditor listEditor = uiComponents.create(ListEditor.class);
             listEditor.setItemType(ListEditorHelper.itemTypeFromDatatype(datatype));
             initListEditor(listEditor, valueProperty);
             return listEditor;
         }
-        TextField<String> field = componentsFactory.createComponent(TextField.class);
+        TextField<String> field = uiComponents.create(TextField.NAME);
 
         field.addValueChangeListener(e -> {
             if (e.getValue() == null) {
                 _setValue(e.getValue(), valueProperty);
             } else if (!StringUtils.isBlank(e.getValue())) {
-                UserSessionSource userSessionSource1 = AppBeans.get(UserSessionSource.NAME);
 
                 Object v;
                 try {
-                    v = datatype.parse(e.getValue(), userSessionSource1.getLocale());
+                    v = datatype.parse(e.getValue(), userSessionSource.getLocale());
                 } catch (ValueConversionException ex) {
                     showParseExceptionNotification(ex.getLocalizedMessage());
                     return;
@@ -730,26 +774,23 @@ public class Param {
             }
         });
 
-        UserSessionSource sessionSource = AppBeans.get(UserSessionSource.NAME);
-        field.setValue(datatype.format(_getValue(valueProperty), sessionSource.getLocale()));
+        field.setValue(datatype.format(_getValue(valueProperty), userSessionSource.getLocale()));
         return field;
     }
 
     protected void showParseExceptionNotification(String message) {
-        WindowManager wm = AppBeans.get(WindowManagerProvider.class).get();
+        WindowManager wm = beanLocator.get(WindowManagerProvider.class).get();
         wm.showNotification(message, Frame.NotificationType.TRAY);
     }
 
     protected Component createBooleanField(ValueProperty valueProperty) {
-        Messages messages = AppBeans.get(Messages.NAME);
-        ThemeConstants theme = AppBeans.get(ThemeConstantsManager.class).getConstants();
-
-        LookupField<Object> field = componentsFactory.createComponent(LookupField.class);
+        LookupField<Object> field = uiComponents.create(LookupField.NAME);
         field.setWidth(theme.get("cuba.gui.filter.Param.booleanLookup.width"));
 
-        Map<String, Object> values = new HashMap<>();
-        values.put(messages.getMainMessage("filter.param.boolean.true"), Boolean.TRUE);
-        values.put(messages.getMainMessage("filter.param.boolean.false"), Boolean.FALSE);
+        Map<String, Object> values = ParamsMap.of(
+            messages.getMainMessage("filter.param.boolean.true"), Boolean.TRUE,
+            messages.getMainMessage("filter.param.boolean.false"), Boolean.FALSE
+        );
 
         field.setOptionsMap(values);
         field.addValueChangeListener(e ->
@@ -759,27 +800,26 @@ public class Param {
         return field;
     }
 
-    protected Component createUuidField(final ValueProperty valueProperty) {
+    protected Component createUuidField(ValueProperty valueProperty) {
         if (inExpr) {
-            ListEditor listEditor = componentsFactory.createComponent(ListEditor.class);
+            ListEditor listEditor = uiComponents.create(ListEditor.class);
             listEditor.setItemType(ListEditor.ItemType.UUID);
             initListEditor(listEditor, valueProperty);
             return listEditor;
         }
 
-        TextField<String> field = componentsFactory.createComponent(TextField.NAME);
+        TextField<String> field = uiComponents.create(TextField.NAME);
 
         field.addValueChangeListener(e -> {
             String strValue = e.getValue();
             if (strValue == null) {
                 _setValue(null, valueProperty);
             } else if ((!StringUtils.isBlank(strValue))) {
-                Messages messages1 = AppBeans.get(Messages.NAME);
-
                 try {
                     _setValue(UUID.fromString(strValue), valueProperty);
                 } catch (IllegalArgumentException ie) {
-                    AppBeans.get(WindowManagerProvider.class).get().showNotification(messages1.getMainMessage("filter.param.uuid.Err"), Frame.NotificationType.TRAY);
+                    beanLocator.get(WindowManagerProvider.class).get()
+                            .showNotification(messages.getMainMessage("filter.param.uuid.Err"), Frame.NotificationType.TRAY);
                 }
             } else if (StringUtils.isBlank(strValue)) {
                 _setValue(null, valueProperty);
@@ -797,13 +837,8 @@ public class Param {
         return field;
     }
 
-
-    protected Component createEntityLookup(final ValueProperty valueProperty) {
-        Metadata metadata = AppBeans.get(Metadata.NAME);
+    protected Component createEntityLookup(ValueProperty valueProperty) {
         MetaClass metaClass = metadata.getSession().getClassNN(javaClass);
-
-        ThemeConstants theme = AppBeans.get(ThemeConstantsManager.class).getConstants();
-        PersistenceManagerService persistenceManager = AppBeans.get(PersistenceManagerService.NAME);
 
         LookupType type = null;
         if (property != null && property.getRange().isClass()) {
@@ -811,18 +846,19 @@ public class Param {
                     .getMetaAnnotationAttributes(property.getAnnotations(), Lookup.class)
                     .get("type");
         }
+        PersistenceManagerService persistenceManager = beanLocator.get(PersistenceManagerService.NAME);
         boolean useLookupScreen = type != null ?
                 type == LookupType.SCREEN : persistenceManager.useLookupScreen(metaClass.getName());
 
         if (useLookupScreen) {
             if (inExpr) {
-                ListEditor listEditor = componentsFactory.createComponent(ListEditor.class);
+                ListEditor listEditor = uiComponents.create(ListEditor.class);
                 listEditor.setItemType(ListEditor.ItemType.ENTITY);
                 listEditor.setEntityName(metaClass.getName());
                 initListEditor(listEditor, valueProperty);
                 return listEditor;
             } else {
-                PickerField<Entity> picker = componentsFactory.createComponent(PickerField.class);
+                PickerField<Entity> picker = uiComponents.create(PickerField.NAME);
                 picker.setMetaClass(metaClass);
 
                 picker.setWidth(theme.get("cuba.gui.filter.Param.textComponent.width"));
@@ -841,17 +877,18 @@ public class Param {
             CollectionDatasource<Entity<Object>, Object> optionsDataSource = createOptionsDataSource(metaClass);
 
             if (inExpr) {
-                ListEditor listEditor = componentsFactory.createComponent(ListEditor.class);
+                ListEditor listEditor = uiComponents.create(ListEditor.class);
                 listEditor.setItemType(ListEditor.ItemType.ENTITY);
                 listEditor.setEntityName(metaClass.getName());
                 listEditor.setUseLookupField(true);
                 listEditor.setEntityWhereClause(entityWhere);
                 initListEditor(listEditor, valueProperty);
+
                 return listEditor;
             } else {
-                final LookupPickerField<Entity> lookup = componentsFactory.createComponent(LookupPickerField.class);
-                lookup.addClearAction();
+                LookupPickerField<Entity> lookup = uiComponents.create(LookupPickerField.NAME);
                 lookup.setWidth(theme.get("cuba.gui.filter.Param.textComponent.width"));
+                lookup.addClearAction();
                 lookup.setOptionsDatasource(optionsDataSource);
 
                 optionsDataSource.addCollectionChangeListener(e -> lookup.setValue(null));
@@ -876,7 +913,7 @@ public class Param {
 
         if (!StringUtils.isBlank(entityWhere)) {
             QueryTransformer transformer = QueryTransformerFactory.createTransformer(
-                    "select e from " + metaClass.getName() + " e");
+                    String.format("select e from %s e", metaClass.getName()));
             transformer.addWhere(entityWhere);
             String q = transformer.getResult();
             ds.setQuery(q);
@@ -893,18 +930,17 @@ public class Param {
         return ds;
     }
 
-    protected Component createEnumLookup(final ValueProperty valueProperty) {
+    protected Component createEnumLookup(ValueProperty valueProperty) {
         if (inExpr) {
-            ListEditor listEditor = componentsFactory.createComponent(ListEditor.class);
+            ListEditor listEditor = uiComponents.create(ListEditor.class);
             listEditor.setItemType(ListEditor.ItemType.ENUM);
             listEditor.setEnumClass(javaClass);
             initListEditor(listEditor, valueProperty);
             return listEditor;
 
         } else {
-            LookupField<Object> lookup = componentsFactory.createComponent(LookupField.class);
-            List options = Arrays.asList(javaClass.getEnumConstants());
-            lookup.setOptionsList(options);
+            LookupField<Object> lookup = uiComponents.create(LookupField.NAME);
+            lookup.setOptionsEnum(javaClass);
 
             lookup.addValueChangeListener(e -> _setValue(e.getValue(), valueProperty));
             lookup.setValue(_getValue(valueProperty));
@@ -913,23 +949,22 @@ public class Param {
         }
     }
 
-    protected Component createRuntimeEnumLookup(final ValueProperty valueProperty) {
+    protected Component createRuntimeEnumLookup(ValueProperty valueProperty) {
         if (javaClass == Boolean.class) {
             return createBooleanField(valueProperty);
         }
-        DataService dataService = AppBeans.get(DataService.NAME);
         LoadContext<CategoryAttribute> context = new LoadContext<>(CategoryAttribute.class);
         LoadContext.Query q = context.setQueryString("select a from sys$CategoryAttribute a where a.id = :id");
         context.setView("_local");
         q.setParameter("id", categoryAttrId);
-        CategoryAttribute categoryAttribute = dataService.load(context);
+        CategoryAttribute categoryAttribute = dataManager.load(context);
         if (categoryAttribute == null) {
             throw new EntityAccessException(CategoryAttribute.class, categoryAttrId);
         }
 
-        runtimeEnum = new LinkedList<>();
         String enumerationString = categoryAttribute.getEnumeration();
         String[] array = StringUtils.split(enumerationString, ',');
+        runtimeEnum = new ArrayList<>(array.length);
         for (String s : array) {
             String trimmedValue = StringUtils.trimToNull(s);
             if (trimmedValue != null) {
@@ -938,13 +973,13 @@ public class Param {
         }
 
         if (inExpr) {
-            ListEditor listEditor = componentsFactory.createComponent(ListEditor.class);
+            ListEditor listEditor = uiComponents.create(ListEditor.class);
             listEditor.setItemType(ListEditor.ItemType.STRING);
             listEditor.setOptionsMap(categoryAttribute.getLocalizedEnumerationMap());
             initListEditor(listEditor, valueProperty);
             return listEditor;
         } else {
-            LookupField<Object> lookup = componentsFactory.createComponent(LookupField.class);
+            LookupField<Object> lookup = uiComponents.create(LookupField.NAME);
             lookup.setOptionsMap(categoryAttribute.getLocalizedEnumerationMap());
 
             lookup.addValueChangeListener(e -> {
@@ -960,7 +995,7 @@ public class Param {
     protected void initListEditor(ListEditor<List<?>> listEditor, ValueProperty valueProperty) {
         listEditor.addValueChangeListener(e -> {
             Object value = e.getValue();
-            if (value instanceof List && ((List) value).isEmpty()) {
+            if (value != null && ((List) value).isEmpty()) {
                 value = null;
             }
             _setValue(value, valueProperty);
@@ -987,22 +1022,35 @@ public class Param {
         paramElem.setText(formatValue(_getValue(valueProperty)));
     }
 
-    public void addValueChangeListener(ParamValueChangeListener listener) {
-        if (!listeners.contains(listener)) {
-            listeners.add(listener);
-        }
-    }
-
-    public void removeValueChangeListener(ParamValueChangeListener listener) {
-        listeners.remove(listener);
+    public void addValueChangeListener(Consumer<ParamValueChangedEvent> valueChangeHandler) {
+        getEventHub().subscribe(ParamValueChangedEvent.class, valueChangeHandler);
     }
 
     public MetaProperty getProperty() {
         return property;
     }
 
-    public interface ParamValueChangeListener {
+    public static class ParamValueChangedEvent extends EventObject {
+        protected final Object prevValue;
+        protected final Object value;
 
-        void valueChanged(@Nullable Object prevValue, @Nullable Object value);
+        public ParamValueChangedEvent(Param source, Object prevValue, Object value) {
+            super(source);
+            this.prevValue = prevValue;
+            this.value = value;
+        }
+
+        public Object getPrevValue() {
+            return prevValue;
+        }
+
+        public Object getValue() {
+            return value;
+        }
+
+        @Override
+        public Param getSource() {
+            return (Param) super.getSource();
+        }
     }
 }
