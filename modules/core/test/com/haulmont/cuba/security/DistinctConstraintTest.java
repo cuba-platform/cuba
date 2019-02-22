@@ -19,7 +19,9 @@ package com.haulmont.cuba.security;
 import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.security.app.LoginWorker;
+import com.haulmont.cuba.security.auth.AuthenticationManager;
+import com.haulmont.cuba.security.auth.Credentials;
+import com.haulmont.cuba.security.auth.LoginPasswordCredentials;
 import com.haulmont.cuba.security.entity.*;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
@@ -49,11 +51,9 @@ public class DistinctConstraintTest {
             userRole1Id, userRole2Id,
             role1Id, role2Id;
 
-    private PasswordEncryption passwordEncryption;
-
     @Before
     public void setUp() throws Exception {
-        passwordEncryption = AppBeans.get(PasswordEncryption.class);
+        PasswordEncryption passwordEncryption = AppBeans.get(PasswordEncryption.class);
 
         Transaction tx = cont.persistence().createTransaction();
         try {
@@ -139,9 +139,9 @@ public class DistinctConstraintTest {
 
     @Test
     public void test() throws LoginException {
-        LoginWorker lw = AppBeans.get(LoginWorker.NAME);
-
-        UserSession userSession = lw.login(USER_LOGIN, USER_PASSW, Locale.getDefault());
+        AuthenticationManager lw = AppBeans.get(AuthenticationManager.NAME);
+        Credentials credentials = new LoginPasswordCredentials(USER_LOGIN, USER_PASSW, Locale.getDefault());
+        UserSession userSession = lw.login(credentials).getSession();
         assertNotNull(userSession);
 
         UserSessionSource uss = AppBeans.get(UserSessionSource.class);

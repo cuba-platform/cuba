@@ -20,7 +20,9 @@ import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.entity.Server;
 import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.security.app.LoginWorker;
+import com.haulmont.cuba.security.auth.AuthenticationManager;
+import com.haulmont.cuba.security.auth.Credentials;
+import com.haulmont.cuba.security.auth.LoginPasswordCredentials;
 import com.haulmont.cuba.security.entity.*;
 import com.haulmont.cuba.security.global.ConstraintData;
 import com.haulmont.cuba.security.global.LoginException;
@@ -156,9 +158,10 @@ public class ConstraintTest {
 
     @Test
     public void test() throws LoginException {
-        LoginWorker lw = AppBeans.get(LoginWorker.NAME);
+        AuthenticationManager lw = AppBeans.get(AuthenticationManager.NAME);
+        Credentials credentials = new LoginPasswordCredentials(USER_LOGIN, USER_PASSW, Locale.getDefault());
+        UserSession userSession = lw.login(credentials).getSession();
 
-        UserSession userSession = lw.login(USER_LOGIN, USER_PASSW, Locale.getDefault());
         assertNotNull(userSession);
 
         List<ConstraintData> constraints = userSession.getConstraints("sys$Server");
@@ -172,7 +175,7 @@ public class ConstraintTest {
         ((TestUserSessionSource) uss).setUserSession(userSession);
         try {
             DataManager dm = AppBeans.get(DataManager.NAME);
-            LoadContext loadContext = new LoadContext(Server.class)
+            LoadContext<Server> loadContext = new LoadContext<>(Server.class)
                     .setQuery(new LoadContext.Query("select s from sys$Server s"));
             List<Server> list = dm.loadList(loadContext);
             for (Server server : list) {
@@ -181,9 +184,9 @@ public class ConstraintTest {
             }
 
             //test constraint that contains session parameter
-            loadContext = new LoadContext(UserRole.class)
+            LoadContext<UserRole> loadContext2 = new LoadContext<>(UserRole.class)
                     .setQuery(new LoadContext.Query("select ur from sec$UserRole ur"));
-            List<UserRole> userRoles = dm.loadList(loadContext);
+            List<UserRole> userRoles = dm.loadList(loadContext2);
             if (!userRoles.isEmpty()) {
                 fail("Constraint with session attribute failed");
             }

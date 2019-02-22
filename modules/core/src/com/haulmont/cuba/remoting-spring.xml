@@ -25,11 +25,6 @@
 
     <bean id="servicesExporter" class="com.haulmont.cuba.core.sys.remoting.RemoteServicesBeanCreator"/>
 
-    <bean name="/cuba_LoginService" class="com.haulmont.cuba.core.sys.remoting.HttpServiceExporter">
-        <property name="service" ref="cuba_LoginService"/>
-        <property name="serviceInterface" value="com.haulmont.cuba.security.app.LoginService"/>
-    </bean>
-
     <bean name="/cuba_AuthenticationService" class="com.haulmont.cuba.core.sys.remoting.HttpServiceExporter">
         <property name="service" ref="cuba_AuthenticationService"/>
         <property name="serviceInterface" value="com.haulmont.cuba.security.auth.AuthenticationService"/>

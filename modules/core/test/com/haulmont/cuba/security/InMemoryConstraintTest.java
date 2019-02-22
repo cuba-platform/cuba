@@ -19,13 +19,18 @@ package com.haulmont.cuba.security;
 import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.security.app.LoginWorker;
+import com.haulmont.cuba.security.auth.AuthenticationManager;
+import com.haulmont.cuba.security.auth.Credentials;
+import com.haulmont.cuba.security.auth.LoginPasswordCredentials;
 import com.haulmont.cuba.security.entity.*;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.testsupport.TestContainer;
 import com.haulmont.cuba.testsupport.TestUserSessionSource;
-import org.junit.*;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.ClassRule;
+import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,14 +49,13 @@ public class InMemoryConstraintTest {
     private Constraint constraint1, constraint2, constraint3, constraint4;
     private List<User> usersList = new ArrayList<>(USERS_SIZE);
     private User constraintUser1, constraintUser2, constraintUser3, constraintUser4;
-    private PasswordEncryption passwordEncryption;
 
     private static final int USERS_SIZE = 200;
     private static final String PASSWORD = "1";
 
     @Before
     public void setUp() {
-        passwordEncryption = AppBeans.get(PasswordEncryption.class);
+        PasswordEncryption passwordEncryption = AppBeans.get(PasswordEncryption.class);
 
         Transaction tx = cont.persistence().createTransaction();
         try {
@@ -153,9 +157,9 @@ public class InMemoryConstraintTest {
 
     @Test
     public void testConstraintsOnMiddlePage() throws LoginException {
-        LoginWorker lw = AppBeans.get(LoginWorker.NAME);
-
-        UserSession userSession = lw.login("constraintUser1", PASSWORD, Locale.getDefault());
+        AuthenticationManager lw = AppBeans.get(AuthenticationManager.NAME);
+        Credentials credentials = new LoginPasswordCredentials("constraintUser1", PASSWORD, Locale.getDefault());
+        UserSession userSession = lw.login(credentials).getSession();
         assertNotNull(userSession);
 
         UserSessionSource uss = AppBeans.get(UserSessionSource.class);
@@ -178,9 +182,9 @@ public class InMemoryConstraintTest {
 
     @Test
     public void testConstraintsOnFirst() throws LoginException {
-        LoginWorker lw = AppBeans.get(LoginWorker.NAME);
-
-        UserSession userSession = lw.login("constraintUser2", PASSWORD, Locale.getDefault());
+        AuthenticationManager lw = AppBeans.get(AuthenticationManager.NAME);
+        Credentials credentials = new LoginPasswordCredentials("constraintUser2", PASSWORD, Locale.getDefault());
+        UserSession userSession = lw.login(credentials).getSession();
         assertNotNull(userSession);
 
         UserSessionSource uss = AppBeans.get(UserSessionSource.class);
@@ -203,9 +207,9 @@ public class InMemoryConstraintTest {
 
     @Test
     public void testConstraintsOnFirstForNotSecureDataManager() throws LoginException {
-        LoginWorker lw = AppBeans.get(LoginWorker.NAME);
-
-        UserSession userSession = lw.login("constraintUser2", PASSWORD, Locale.getDefault());
+        AuthenticationManager lw = AppBeans.get(AuthenticationManager.NAME);
+        Credentials credentials = new LoginPasswordCredentials("constraintUser2", PASSWORD, Locale.getDefault());
+        UserSession userSession = lw.login(credentials).getSession();
         assertNotNull(userSession);
 
         UserSessionSource uss = AppBeans.get(UserSessionSource.class);
@@ -228,9 +232,9 @@ public class InMemoryConstraintTest {
 
     @Test
     public void testConstraintsOnEnd() throws LoginException {
-        LoginWorker lw = AppBeans.get(LoginWorker.NAME);
-
-        UserSession userSession = lw.login("constraintUser2", PASSWORD, Locale.getDefault());
+        AuthenticationManager lw = AppBeans.get(AuthenticationManager.NAME);
+        Credentials credentials = new LoginPasswordCredentials("constraintUser2", PASSWORD, Locale.getDefault());
+        UserSession userSession = lw.login(credentials).getSession();
         assertNotNull(userSession);
 
         UserSessionSource uss = AppBeans.get(UserSessionSource.class);
@@ -253,9 +257,9 @@ public class InMemoryConstraintTest {
 
     @Test
     public void testConstraintsOnMoreThanOnePage() throws LoginException {
-        LoginWorker lw = AppBeans.get(LoginWorker.NAME);
-
-        UserSession userSession = lw.login("constraintUser3", PASSWORD, Locale.getDefault());
+        AuthenticationManager lw = AppBeans.get(AuthenticationManager.NAME);
+        Credentials credentials = new LoginPasswordCredentials("constraintUser3", PASSWORD, Locale.getDefault());
+        UserSession userSession = lw.login(credentials).getSession();
         assertNotNull(userSession);
 
         UserSessionSource uss = AppBeans.get(UserSessionSource.class);
@@ -278,9 +282,9 @@ public class InMemoryConstraintTest {
 
     @Test
     public void testLoadingLastPage() throws LoginException {
-        LoginWorker lw = AppBeans.get(LoginWorker.NAME);
-
-        UserSession userSession = lw.login("constraintUser3", PASSWORD, Locale.getDefault());
+        AuthenticationManager lw = AppBeans.get(AuthenticationManager.NAME);
+        Credentials credentials = new LoginPasswordCredentials("constraintUser3", PASSWORD, Locale.getDefault());
+        UserSession userSession = lw.login(credentials).getSession();
         assertNotNull(userSession);
 
         UserSessionSource uss = AppBeans.get(UserSessionSource.class);
@@ -305,9 +309,9 @@ public class InMemoryConstraintTest {
 
     @Test
     public void testConstraintByAttributeNotInView() throws LoginException {
-        LoginWorker lw = AppBeans.get(LoginWorker.NAME);
-
-        UserSession userSession = lw.login("constraintUser4", PASSWORD, Locale.getDefault());
+        AuthenticationManager lw = AppBeans.get(AuthenticationManager.NAME);
+        Credentials credentials = new LoginPasswordCredentials("constraintUser4", PASSWORD, Locale.getDefault());
+        UserSession userSession = lw.login(credentials).getSession();
         assertNotNull(userSession);
 
         UserSessionSource uss = AppBeans.get(UserSessionSource.class);
@@ -331,9 +335,9 @@ public class InMemoryConstraintTest {
 
     @Test
     public void testConstraintByAttributeNotInViewForNotSecureDataManager() throws LoginException {
-        LoginWorker lw = AppBeans.get(LoginWorker.NAME);
-
-        UserSession userSession = lw.login("constraintUser4", PASSWORD, Locale.getDefault());
+        AuthenticationManager lw = AppBeans.get(AuthenticationManager.NAME);
+        Credentials credentials = new LoginPasswordCredentials("constraintUser4", PASSWORD, Locale.getDefault());
+        UserSession userSession = lw.login(credentials).getSession();
         assertNotNull(userSession);
 
         UserSessionSource uss = AppBeans.get(UserSessionSource.class);

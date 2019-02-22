@@ -21,7 +21,9 @@ import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.PasswordEncryption;
 import com.haulmont.cuba.core.global.UserSessionSource;
-import com.haulmont.cuba.security.app.LoginWorker;
+import com.haulmont.cuba.security.auth.AuthenticationManager;
+import com.haulmont.cuba.security.auth.Credentials;
+import com.haulmont.cuba.security.auth.LoginPasswordCredentials;
 import com.haulmont.cuba.security.entity.Group;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.entity.UserSubstitution;
@@ -43,9 +45,7 @@ public class LoginTest {
     @ClassRule
     public static TestContainer cont = TestContainer.Common.INSTANCE;
 
-    private PasswordEncryption passwordEncryption;
-
-    private LoginWorker loginWorker;
+    private AuthenticationManager authenticationManager;
 
     private UUID user1Id;
     private UUID user2Id;
@@ -55,8 +55,8 @@ public class LoginTest {
 
     @Before
     public void setUp() throws Exception {
-        passwordEncryption = AppBeans.get(PasswordEncryption.NAME);
-        loginWorker = AppBeans.get(LoginWorker.NAME);
+        PasswordEncryption passwordEncryption = AppBeans.get(PasswordEncryption.NAME);
+        authenticationManager = AppBeans.get(AuthenticationManager.NAME);
         userSessionSource = AppBeans.get(UserSessionSource.NAME);
         standardTestUserSession = userSessionSource.getUserSession();
 
@@ -107,13 +107,14 @@ public class LoginTest {
     @Test
     public void testUserSubstitution() throws Exception {
         // Log in
-        UserSession session1 = loginWorker.login("user1", "1", Locale.forLanguageTag("en"));
+        Credentials credentials = new LoginPasswordCredentials("user1", "1", Locale.ENGLISH);
+        UserSession session1 = authenticationManager.login(credentials).getSession();
         userSessionSource.setUserSession(session1);
 
         // Substitute a user that is not in our substitutions list - fail
         User user2 = loadUser(user2Id);
         try {
-            loginWorker.substituteUser(user2);
+            authenticationManager.substituteUser(user2);
             fail();
         } catch (Exception e) {
             // ok
@@ -132,7 +133,7 @@ public class LoginTest {
         });
 
         // Try again - succeed
-        UserSession session2 = loginWorker.substituteUser(user2);
+        UserSession session2 = authenticationManager.substituteUser(user2);
         userSessionSource.setUserSession(session2);
         assertEquals(session1.getId(), session2.getId());
         assertEquals(user1Id, session2.getUser().getId());
@@ -140,43 +141,38 @@ public class LoginTest {
 
         // Switch back to the logged in user
         User user1 = loadUser(user1Id);
-        UserSession session3 = loginWorker.substituteUser(user1);
+        UserSession session3 = authenticationManager.substituteUser(user1);
         assertEquals(session1.getId(), session3.getId());
         assertEquals(user1Id, session3.getUser().getId());
         assertNull(session3.getSubstitutedUser());
     }
 
     @Test
-    public void testUserSubstitutionSoftDelete() throws Exception {
+    public void testUserSubstitutionSoftDelete() {
         // Create a substitution
-        cont.persistence().createTransaction().execute(new Transaction.Runnable() {
-            @Override
-            public void run(EntityManager em) {
-                UserSubstitution substitution = new UserSubstitution();
-                substitutionId = substitution.getId();
-                substitution.setUser(em.getReference(User.class, user1Id));
-                substitution.setSubstitutedUser(em.getReference(User.class, user2Id));
-                em.persist(substitution);
-            }
+        cont.persistence().createTransaction().execute(em -> {
+            UserSubstitution substitution = new UserSubstitution();
+            substitutionId = substitution.getId();
+            substitution.setUser(em.getReference(User.class, user1Id));
+            substitution.setSubstitutedUser(em.getReference(User.class, user2Id));
+            em.persist(substitution);
         });
 
         // Soft delete it
-        cont.persistence().createTransaction().execute(new Transaction.Runnable() {
-            @Override
-            public void run(EntityManager em) {
-                UserSubstitution substitution = em.getReference(UserSubstitution.class, substitutionId);
-                em.remove(substitution);
-            }
+        cont.persistence().createTransaction().execute(em -> {
+            UserSubstitution substitution = em.getReference(UserSubstitution.class, substitutionId);
+            em.remove(substitution);
         });
 
         // Log in
-        UserSession session1 = loginWorker.login("user1", "1", Locale.forLanguageTag("en"));
+        Credentials credentials = new LoginPasswordCredentials("user1", "1", Locale.ENGLISH);
+        UserSession session1 = authenticationManager.login(credentials).getSession();
         userSessionSource.setUserSession(session1);
 
         // Try to substitute - fail
         User user2 = loadUser(user2Id);
         try {
-            loginWorker.substituteUser(user2);
+            authenticationManager.substituteUser(user2);
             fail();
         } catch (Exception e) {
             // ok

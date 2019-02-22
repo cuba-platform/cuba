@@ -21,7 +21,9 @@ import com.haulmont.cuba.core.Query;
 import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.PasswordEncryption;
-import com.haulmont.cuba.security.app.LoginWorker;
+import com.haulmont.cuba.security.auth.AuthenticationManager;
+import com.haulmont.cuba.security.auth.Credentials;
+import com.haulmont.cuba.security.auth.LoginPasswordCredentials;
 import com.haulmont.cuba.security.entity.*;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
@@ -158,9 +160,9 @@ public class PermissionTest {
 
     @Test
     public void test() throws LoginException {
-        LoginWorker lw = AppBeans.get(LoginWorker.NAME);
-
-        UserSession userSession = lw.login(USER_NAME, USER_PASSW, Locale.getDefault());
+        AuthenticationManager lw = AppBeans.get(AuthenticationManager.NAME);
+        Credentials credentials = new LoginPasswordCredentials(USER_NAME, USER_PASSW, Locale.getDefault());
+        UserSession userSession = lw.login(credentials).getSession();
         assertNotNull(userSession);
 
         boolean permitted = userSession.isPermitted(PermissionType.SCREEN, PERM_TARGET_SCREEN);
@@ -178,9 +180,9 @@ public class PermissionTest {
 
     @Test
     public void testNullPermissionsOnUser() throws LoginException {
-        LoginWorker lw = AppBeans.get(LoginWorker.NAME);
-
-        UserSession userSession = lw.login(USER_NAME, USER_PASSW, Locale.getDefault());
+        AuthenticationManager lw = AppBeans.get(AuthenticationManager.NAME);
+        Credentials credentials = new LoginPasswordCredentials(USER_NAME, USER_PASSW, Locale.getDefault());
+        UserSession userSession = lw.login(credentials).getSession();
         assertNotNull(userSession);
 
         //permission is empty on user

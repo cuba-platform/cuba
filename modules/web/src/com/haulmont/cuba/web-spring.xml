@@ -93,7 +93,6 @@
         <property name="serverSelector" ref="cuba_ServerSelector"/>
         <property name="remoteServices">
             <map>
-                <entry key="cuba_LoginService" value="com.haulmont.cuba.security.app.LoginService"/>
                 <entry key="cuba_AuthenticationService" value="com.haulmont.cuba.security.auth.AuthenticationService"/>
                 <entry key="cuba_TrustedClientService" value="com.haulmont.cuba.security.app.TrustedClientService"/>
                 <entry key="cuba_ServerInfoService" value="com.haulmont.cuba.core.app.ServerInfoService"/>

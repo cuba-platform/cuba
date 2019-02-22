@@ -22,7 +22,9 @@ import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.entity.Server;
 import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.security.app.LoginWorker;
+import com.haulmont.cuba.security.auth.AuthenticationManager;
+import com.haulmont.cuba.security.auth.Credentials;
+import com.haulmont.cuba.security.auth.LoginPasswordCredentials;
 import com.haulmont.cuba.security.entity.*;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.testsupport.TestContainer;
@@ -106,10 +108,10 @@ public class DataManagerSecurityTest {
     }
 
     @Test
-    public void test() throws Exception {
-        LoginWorker lw = AppBeans.get(LoginWorker.NAME);
-
-        UserSession userSession = lw.login(USER_NAME, USER_PASSW, Locale.getDefault());
+    public void test() {
+        AuthenticationManager lw = AppBeans.get(AuthenticationManager.NAME);
+        Credentials credentials = new LoginPasswordCredentials(USER_NAME, USER_PASSW, Locale.getDefault());
+        UserSession userSession = lw.login(credentials).getSession();
         assertNotNull(userSession);
 
         UserSessionSource uss = AppBeans.get(UserSessionSource.class);

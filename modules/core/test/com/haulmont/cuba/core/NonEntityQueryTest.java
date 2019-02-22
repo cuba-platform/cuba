@@ -22,7 +22,9 @@ import com.haulmont.cuba.core.entity.EntitySnapshot;
 import com.haulmont.cuba.core.entity.KeyValueEntity;
 import com.haulmont.cuba.core.entity.Server;
 import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.security.app.LoginWorker;
+import com.haulmont.cuba.security.auth.AuthenticationManager;
+import com.haulmont.cuba.security.auth.Credentials;
+import com.haulmont.cuba.security.auth.LoginPasswordCredentials;
 import com.haulmont.cuba.security.entity.*;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.testsupport.TestContainer;
@@ -173,7 +175,7 @@ public class NonEntityQueryTest {
     }
 
     @Test
-    public void testScalars() throws Exception {
+    public void testScalars() {
         ValueLoadContext context = ValueLoadContext.create()
                 .setQuery(ValueLoadContext.createQuery("select u.id, u.login from sec$User u where u.id = :id1 or u.id = :id2 order by u.login")
                         .setParameter("id1", TestSupport.ADMIN_USER_ID)
@@ -192,7 +194,7 @@ public class NonEntityQueryTest {
     }
 
     @Test
-    public void testExtract() throws Exception {
+    public void testExtract() {
         ValueLoadContext context = ValueLoadContext.create()
                 .setQuery(ValueLoadContext.createQuery("select extract(DAY from u.createTs), count(u.id) from sec$User u group by extract(DAY from u.createTs)"))
                 .addProperty("date").addProperty("count");
@@ -200,7 +202,7 @@ public class NonEntityQueryTest {
     }
 
     @Test
-    public void testAggregates() throws Exception {
+    public void testAggregates() {
         ValueLoadContext context = ValueLoadContext.create();
         ValueLoadContext.Query query = context.setQueryString("select count(u) from sec$User u where u.id = :id1 or u.id = :id2");
         query.setParameter("id1", TestSupport.ADMIN_USER_ID);
@@ -215,7 +217,7 @@ public class NonEntityQueryTest {
     }
 
     @Test
-    public void testIdentificationVariable() throws Exception {
+    public void testIdentificationVariable() {
         ValueLoadContext context = ValueLoadContext.create();
         ValueLoadContext.Query query = context.setQueryString("select u, u.id from sec$User u where u.id = :id1");
         query.setParameter("id1", TestSupport.ADMIN_USER_ID);
@@ -230,7 +232,7 @@ public class NonEntityQueryTest {
     }
 
     @Test
-    public void testScalarWithSubQuery() throws Exception {
+    public void testScalarWithSubQuery() {
         ValueLoadContext context = ValueLoadContext.create();
         context.setQueryString("select s.name from sys$Server s where s.name in (select u.login from sec$User u) ");
         context.addProperty("name");
@@ -240,11 +242,11 @@ public class NonEntityQueryTest {
         assertEquals(0, list.size());
     }
 
-
     @Test
-    public void testDeniedAttribute() throws Exception {
-        LoginWorker lw = AppBeans.get(LoginWorker.NAME);
-        UserSession userSession = lw.login(USER_NAME_1, USER_PASSWORD, Locale.getDefault());
+    public void testDeniedAttribute() {
+        AuthenticationManager lw = AppBeans.get(AuthenticationManager.NAME);
+        Credentials credentials = new LoginPasswordCredentials(USER_NAME_1, USER_PASSWORD, Locale.getDefault());
+        UserSession userSession = lw.login(credentials).getSession();
         assertNotNull(userSession);
 
         UserSessionSource uss = AppBeans.get(UserSessionSource.class);
@@ -268,7 +270,7 @@ public class NonEntityQueryTest {
             try {
                 dataManager.secure().loadValues(context);
                 fail();
-            } catch (AccessDeniedException e1) {
+            } catch (AccessDeniedException ignored) {
             }
 
             context = ValueLoadContext.create();
@@ -279,7 +281,7 @@ public class NonEntityQueryTest {
             try {
                 dataManager.secure().loadValues(context);
                 fail();
-            } catch (AccessDeniedException e1) {
+            } catch (AccessDeniedException ignored) {
             }
 
             context = ValueLoadContext.create();
@@ -289,7 +291,7 @@ public class NonEntityQueryTest {
             try {
                 dataManager.secure().loadValues(context);
                 fail();
-            } catch (AccessDeniedException e1) {
+            } catch (AccessDeniedException ignored) {
             }
 
             context = ValueLoadContext.create();
@@ -304,9 +306,11 @@ public class NonEntityQueryTest {
     }
 
     @Test
-    public void testConstraints() throws Exception {
-        LoginWorker lw = AppBeans.get(LoginWorker.NAME);
-        UserSession userSession = lw.login(USER_NAME_2, USER_PASSWORD, Locale.getDefault());
+    public void testConstraints() {
+        AuthenticationManager lw = AppBeans.get(AuthenticationManager.NAME);
+        Credentials credentials = new LoginPasswordCredentials(USER_NAME_2, USER_PASSWORD, Locale.getDefault());
+        UserSession userSession = lw.login(credentials).getSession();
+
         assertNotNull(userSession);
 
         UserSessionSource uss = AppBeans.get(UserSessionSource.class);
@@ -325,12 +329,14 @@ public class NonEntityQueryTest {
     }
 
     @Test
-    public void testInMemoryAndSeveralConstraints() throws Exception {
+    public void testInMemoryAndSeveralConstraints() {
         ConfigStorageService configStorageService = AppBeans.get(ConfigStorageService.class);
         configStorageService.setDbProperty("cuba.disableLoadValuesIfConstraints", "false");
 
-        LoginWorker lw = AppBeans.get(LoginWorker.NAME);
-        UserSession userSession = lw.login(USER_NAME_2, USER_PASSWORD, Locale.getDefault());
+        AuthenticationManager lw = AppBeans.get(AuthenticationManager.NAME);
+        Credentials credentials = new LoginPasswordCredentials(USER_NAME_2, USER_PASSWORD, Locale.getDefault());
+        UserSession userSession = lw.login(credentials).getSession();
+
         assertNotNull(userSession);
 
         UserSessionSource uss = AppBeans.get(UserSessionSource.class);
@@ -357,12 +363,14 @@ public class NonEntityQueryTest {
     }
 
     @Test
-    public void testInMemoryAndSeveralConstraintsWithError() throws Exception {
+    public void testInMemoryAndSeveralConstraintsWithError() {
         ConfigStorageService configStorageService = AppBeans.get(ConfigStorageService.class);
         configStorageService.setDbProperty("cuba.disableLoadValuesIfConstraints", "true");
 
-        LoginWorker lw = AppBeans.get(LoginWorker.NAME);
-        UserSession userSession = lw.login(USER_NAME_2, USER_PASSWORD, Locale.getDefault());
+        AuthenticationManager lw = AppBeans.get(AuthenticationManager.NAME);
+        Credentials credentials = new LoginPasswordCredentials(USER_NAME_2, USER_PASSWORD, Locale.getDefault());
+        UserSession userSession = lw.login(credentials).getSession();
+
         assertNotNull(userSession);
 
         UserSessionSource uss = AppBeans.get(UserSessionSource.class);
@@ -394,12 +402,14 @@ public class NonEntityQueryTest {
     }
 
     @Test
-    public void testIdentificationVariableDeniedSecurity() throws Exception {
+    public void testIdentificationVariableDeniedSecurity() {
         ConfigStorageService configStorageService = AppBeans.get(ConfigStorageService.class);
         configStorageService.setDbProperty("cuba.disableLoadValuesIfConstraints", "true");
 
-        LoginWorker lw = AppBeans.get(LoginWorker.NAME);
-        UserSession userSession = lw.login(USER_NAME_1, USER_PASSWORD, Locale.getDefault());
+        AuthenticationManager lw = AppBeans.get(AuthenticationManager.NAME);
+        Credentials credentials = new LoginPasswordCredentials(USER_NAME_1, USER_PASSWORD, Locale.getDefault());
+        UserSession userSession = lw.login(credentials).getSession();
+
         assertNotNull(userSession);
 
         UserSessionSource uss = AppBeans.get(UserSessionSource.class);
@@ -419,12 +429,14 @@ public class NonEntityQueryTest {
     }
 
     @Test
-    public void testIncorrectPathInWhere() throws Exception {
+    public void testIncorrectPathInWhere() {
         ConfigStorageService configStorageService = AppBeans.get(ConfigStorageService.class);
         configStorageService.setDbProperty("cuba.disableLoadValuesIfConstraints", "true");
 
-        LoginWorker lw = AppBeans.get(LoginWorker.NAME);
-        UserSession userSession = lw.login(USER_NAME_1, USER_PASSWORD, Locale.getDefault());
+        AuthenticationManager lw = AppBeans.get(AuthenticationManager.NAME);
+        Credentials credentials = new LoginPasswordCredentials(USER_NAME_1, USER_PASSWORD, Locale.getDefault());
+        UserSession userSession = lw.login(credentials).getSession();
+
         assertNotNull(userSession);
 
         UserSessionSource uss = AppBeans.get(UserSessionSource.class);
@@ -442,8 +454,7 @@ public class NonEntityQueryTest {
             if (!"query path 's.name1' is unresolved".equals(e.getMessage())) {
                 throw e;
             }
-        }
-        finally {
+        } finally {
             ((TestUserSessionSource) uss).setUserSession(savedUserSession);
         }
     }
