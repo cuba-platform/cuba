@@ -43,10 +43,6 @@ public class CollectionContainerSorter extends BaseContainerSorter {
 
     @Override
     public void sort(Sort sort) {
-        List items = getContainer().getItems();
-        if (items.isEmpty()) {
-            return;
-        }
         if (loader == null) {
             sortInMemory(sort);
         } else {

@@ -45,16 +45,12 @@ public abstract class BaseContainerSorter implements Sorter {
 
     @Override
     public void sort(Sort sort) {
-        List items = container.getItems();
-        if (items.isEmpty()) {
-            return;
-        }
         sortInMemory(sort);
     }
 
     @SuppressWarnings("unchecked")
     protected void sortInMemory(Sort sort) {
-        if (sort.getOrders().isEmpty()) {
+        if (sort.getOrders().isEmpty() || container.getItems().isEmpty()) {
             return;
         }
         List list = new ArrayList(container.getItems());
