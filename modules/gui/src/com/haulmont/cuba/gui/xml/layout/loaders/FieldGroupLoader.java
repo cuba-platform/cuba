@@ -608,15 +608,9 @@ public class FieldGroupLoader extends AbstractComponentLoader<FieldGroup> {
             }
 
             String requiredMsg = element.attributeValue("requiredMessage");
-            if (StringUtils.isEmpty(requiredMsg) && metaClass != null) {
-                MetaPropertyPath propertyPath = metaClass.getPropertyPath(field.getProperty());
-
-                checkNotNullArgument(propertyPath, "Could not resolve property path '%s' in '%s'", field.getProperty(), metaClass);
-
-                requiredMsg = getMessageTools().getDefaultRequiredMessage(metaClass, propertyPath.toString());
+            if (requiredMsg != null) {
+                field.setRequiredMessage(loadResourceString(requiredMsg));
             }
-
-            field.setRequiredMessage(loadResourceString(requiredMsg));
         }
     }
 

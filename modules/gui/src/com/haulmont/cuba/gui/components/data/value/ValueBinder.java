@@ -114,12 +114,12 @@ public class ValueBinder {
 
         if (newRequired) {
             component.setRequired(true);
+        }
 
-            if (Strings.isNullOrEmpty(component.getRequiredMessage())) {
-                component.setRequiredMessage(messageTools.getDefaultRequiredMessage(
-                        metaPropertyPath.getMetaClass(), metaPropertyPath.toPathString())
-                );
-            }
+        if (Strings.isNullOrEmpty(component.getRequiredMessage())) {
+            component.setRequiredMessage(messageTools.getDefaultRequiredMessage(
+                    metaPropertyPath.getMetaClass(), metaPropertyPath.toPathString())
+            );
         }
     }
 

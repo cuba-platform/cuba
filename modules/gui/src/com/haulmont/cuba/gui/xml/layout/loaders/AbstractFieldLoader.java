@@ -69,12 +69,6 @@ public abstract class AbstractFieldLoader<T extends Field> extends AbstractDatas
         String requiredMessage = element.attributeValue("requiredMessage");
         if (requiredMessage != null) {
             component.setRequiredMessage(loadResourceString(requiredMessage));
-        } else if (component.isRequired() && component.getDatasource() != null) {
-            MetaPropertyPath propertyPath = component.getMetaPropertyPath();
-            String defaultRequiredMessage = getMessageTools()
-                    .getDefaultRequiredMessage(propertyPath.getMetaClass(), propertyPath.toString());
-
-            component.setRequiredMessage(defaultRequiredMessage);
         }
     }
 
