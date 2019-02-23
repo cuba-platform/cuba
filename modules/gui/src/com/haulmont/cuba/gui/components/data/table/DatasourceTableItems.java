@@ -120,6 +120,11 @@ public class DatasourceTableItems<E extends Entity<K>, K>
     }
 
     @Override
+    public void updateItem(E item) {
+        datasource.updateItem(item);
+    }
+
+    @Override
     public int size() {
         return datasource.size();
     }
