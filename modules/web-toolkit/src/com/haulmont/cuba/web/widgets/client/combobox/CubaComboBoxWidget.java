@@ -18,6 +18,7 @@
 package com.haulmont.cuba.web.widgets.client.combobox;
 
 import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
@@ -87,6 +88,12 @@ public class CubaComboBoxWidget extends VComboBox implements ShortcutActionHandl
                     break;
             }
         }
+    }
+
+    @Override
+    protected boolean isAllowNewItemsOnInputFieldKeyDown(KeyDownEvent event) {
+        return super.isAllowNewItemsOnInputFieldKeyDown(event)
+                && !event.isAnyModifierKeyDown();
     }
 
     public void setShortcutActionHandler(ShortcutActionHandler handler) {
