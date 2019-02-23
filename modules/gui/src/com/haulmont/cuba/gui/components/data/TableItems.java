@@ -58,6 +58,15 @@ public interface TableItems<I> extends DataUnit {
     Collection<I> getItems();
 
     /**
+     * Update an item in the collection if it is already there.
+     * <p>
+     * Sends {@link ItemSetChangeEvent}.
+     *
+     * @param item the item to update
+     */
+    void updateItem(I item);
+
+    /**
      * Registers a new value change listener.
      *
      * @param listener the listener to be added

@@ -41,6 +41,8 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
+
 public class ContainerTableItems<E extends Entity> implements EntityTableItems<E>, TableItems.Sortable<E>,
         ContainerDataUnit<E>, AggregatableTableItems<E> {
 
@@ -112,6 +114,15 @@ public class ContainerTableItems<E extends Entity> implements EntityTableItems<E
     @Override
     public E getItemNN(Object itemId) {
         return container.getItem(itemId);
+    }
+
+    @Override
+    public void updateItem(E item) {
+        checkNotNullArgument(item, "item is null");
+
+        if (container.containsItem(item.getId())) {
+            container.replaceItem(item);
+        }
     }
 
     @Override

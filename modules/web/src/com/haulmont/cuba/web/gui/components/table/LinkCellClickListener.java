@@ -141,21 +141,27 @@ public class LinkCellClickListener implements Table.CellClickListener {
         }
 
         if (mpp.getRange().isClass()) {
+            boolean modifiedInTable = false;
+            boolean ownerDsModified = false;
             DatasourceImplementation ds = ((DatasourceImplementation) table.getDatasource());
-            boolean modifiedInTable = ds.getItemsToUpdate().contains(rowItem);
-            boolean ownerDsModified = ds.isModified();
+            if (ds != null) {
+                modifiedInTable = ds.getItemsToUpdate().contains(rowItem);
+                ownerDsModified = ds.isModified();
+            }
 
             rowItem.setValueEx(columnId, null);
             rowItem.setValueEx(columnId, editorItem);
 
-            // restore modified for owner datasource
-            // remove from items to update if it was not modified before setValue
-            if (!modifiedInTable) {
-                ds.getItemsToUpdate().remove(rowItem);
+            if (ds != null) {
+                // restore modified for owner datasource
+                // remove from items to update if it was not modified before setValue
+                if (!modifiedInTable) {
+                    ds.getItemsToUpdate().remove(rowItem);
+                }
+                ds.setModified(ownerDsModified);
             }
-            ds.setModified(ownerDsModified);
         } else {
-            table.getDatasource().updateItem(editorItem);
+            table.getItems().updateItem(editorItem);
         }
     }
 
