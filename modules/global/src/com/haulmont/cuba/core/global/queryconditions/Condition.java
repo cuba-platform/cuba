@@ -9,7 +9,7 @@ import java.util.Set;
  * The tree of {@code Condition}s represents an optional part of a query that is added if the corresponding parameters
  * are present.
  */
-public interface Condition extends Serializable, Cloneable {
+public interface Condition extends Serializable {
 
     /**
      * Returns parameters specified in the condition.
@@ -21,4 +21,9 @@ public interface Condition extends Serializable, Cloneable {
      */
     @Nullable
     Condition actualize(Set<String> actualParameters);
+
+    /**
+     * Returns a deep copy of this condition.
+     */
+    Condition copy();
 }

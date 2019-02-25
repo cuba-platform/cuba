@@ -501,6 +501,8 @@ public class LoadContext<E extends Entity> implements DataLoadContext, Serializa
             query.firstResult = firstResult;
             query.maxResults = maxResults;
             query.cacheable = cacheable;
+            query.condition = condition == null ? null : condition.copy();
+            query.sort = sort;
             return query;
         }
 

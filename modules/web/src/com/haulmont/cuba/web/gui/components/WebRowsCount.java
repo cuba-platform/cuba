@@ -30,6 +30,7 @@ import com.haulmont.cuba.gui.data.impl.WeakCollectionChangeListener;
 import com.haulmont.cuba.gui.model.*;
 import com.haulmont.cuba.web.gui.icons.IconResolver;
 import com.haulmont.cuba.web.widgets.CubaRowsCount;
+import com.vaadin.shared.Registration;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,6 +65,12 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
     protected boolean samePage;
 
     protected RowsCountTarget target;
+
+    protected Registration onLinkClickRegistration;
+    protected Registration onPrevClickRegistration;
+    protected Registration onNextClickRegistration;
+    protected Registration onFirstClickRegistration;
+    protected Registration onLastClickRegistration;
 
     public WebRowsCount() {
         component = new CubaRowsCount();
@@ -107,11 +114,29 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
     }
 
     protected void initButtonListeners() {
-        component.getCountButton().addClickListener(event -> onLinkClick());
-        component.getPrevButton().addClickListener(event -> onPrevClick());
-        component.getNextButton().addClickListener(event -> onNextClick());
-        component.getFirstButton().addClickListener(event -> onFirstClick());
-        component.getLastButton().addClickListener(event -> onLastClick());
+        unregisterListeners();
+        onLinkClickRegistration = component.getCountButton().addClickListener(event -> onLinkClick());
+        onPrevClickRegistration = component.getPrevButton().addClickListener(event -> onPrevClick());
+        onNextClickRegistration = component.getNextButton().addClickListener(event -> onNextClick());
+        onFirstClickRegistration = component.getFirstButton().addClickListener(event -> onFirstClick());
+        onLastClickRegistration = component.getLastButton().addClickListener(event -> onLastClick());
+    }
+
+    protected void unregisterListeners() {
+        if (onLinkClickRegistration != null)
+            onLinkClickRegistration.remove();
+
+        if (onPrevClickRegistration != null)
+            onPrevClickRegistration.remove();
+
+        if (onNextClickRegistration != null)
+            onNextClickRegistration.remove();
+
+        if (onFirstClickRegistration != null)
+            onFirstClickRegistration.remove();
+
+        if (onLastClickRegistration != null)
+            onLastClickRegistration.remove();
     }
 
     @Override
