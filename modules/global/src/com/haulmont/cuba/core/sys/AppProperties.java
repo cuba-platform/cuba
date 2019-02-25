@@ -45,7 +45,6 @@ public class AppProperties {
     private final List<Pair<String, String>> DEPRECATED_PROPERTIES = Arrays.asList(
             new Pair<>("cuba.connectionUrlList", "cuba.connectionUrl"),
             new Pair<>("cuba.entityLog.enabled", "cuba.security.EntityLog.enabled"), // 6.1
-            new Pair<>("cuba.web.externalAuthentication", "cuba.web.ExternalAuthentication"), // 6.1
             new Pair<>("cuba.cluster.messageSendingThreadPoolSize", "cuba.clusterMessageSendingThreadPoolSize"), // 6.1
             new Pair<>("reporting.entityTreeModelMaxDepth", "cuba.reporting.entityTreeModelMaxDeep"), // 6.1
             new Pair<>("reporting.openoffice.docx.useOfficeForDocumentConversion", "reporting.openoffice.docx.useOfficeForPdfConversion"), // 6.7

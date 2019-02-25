@@ -25,46 +25,17 @@ import com.haulmont.cuba.core.config.defaults.DefaultString;
 import com.haulmont.cuba.core.config.type.CommaSeparatedStringListTypeFactory;
 import com.haulmont.cuba.core.config.type.Factory;
 import com.haulmont.cuba.security.app.TrustedClientService;
-import com.haulmont.cuba.web.security.HttpRequestFilter;
-import com.haulmont.cuba.web.security.LoginProvider;
 
 import java.util.List;
 
 @Source(type = SourceType.APP)
 public interface WebAuthConfig extends Config {
-
-    /**
-     * @return Short/User-friendly domain aliases for login window form
-     */
-    @Property("cuba.web.activeDirectoryAliases")
-    String getActiveDirectoryAliases();
-
-    /**
-     * @deprecated Use {@link LoginProvider} and/or {@link HttpRequestFilter} instead.
-     *
-     * @return Whether to use an external authentication
-     */
-    @Property("cuba.web.externalAuthentication")
-    @DefaultBoolean(false)
-    @Deprecated
-    boolean getExternalAuthentication();
-
     /**
      * @return true if password is mandatory for new users
      */
     @Property("cuba.web.requirePasswordForNewUsers")
     @DefaultBoolean(true)
     boolean getRequirePasswordForNewUsers();
-
-    /**
-     * @deprecated Use {@link LoginProvider} and/or {@link HttpRequestFilter} instead.
-     *
-     * @return external authentication provider
-     */
-    @Deprecated
-    @Property("cuba.web.externalAuthenticationProviderClass")
-    @DefaultString("com.haulmont.cuba.web.auth.NoOpAuthProvider")
-    String getExternalAuthenticationProviderClass();
 
     /**
      * @return list of users that are not allowed to use external authentication. They can use only standard authentication.

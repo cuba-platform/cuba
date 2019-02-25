@@ -51,7 +51,6 @@ public class DeprecatedPropertyTest {
         AppContext.setProperty("cuba.entityLog.enabled", null);
         AppContext.setProperty("cuba.security.EntityLog.enabled", null);
         AppContext.setProperty("cuba.web.ExternalAuthentication", null);
-        AppContext.setProperty("cuba.web.externalAuthentication", null);
         AppContext.setProperty("cuba.reporting.entityTreeModelMaxDeep", null);
         AppContext.setProperty("reporting.entityTreeModelMaxDepth", null);
         AppContext.setProperty("cuba.client.maxUploadSizeMb", null);
@@ -65,19 +64,18 @@ public class DeprecatedPropertyTest {
     }
 
     @Test
-    public void testConnectionUrlProperty() throws Exception {
+    public void testConnectionUrlProperty() {
         propertyTest("cuba.connectionUrl", "cuba.connectionUrlList");
     }
 
     @Test
-    public void testFtsProperties() throws Exception {
+    public void testFtsProperties() {
         propertyTest("cuba.fts.indexingBatchSize", "fts.indexingBatchSize");
     }
 
     @Test
-    public void testOtherProperties() throws Exception {
+    public void testOtherProperties() {
         propertyTest("cuba.security.EntityLog.enabled", "cuba.entityLog.enabled");
-        propertyTest("cuba.web.ExternalAuthentication", "cuba.web.externalAuthentication");
         propertyTest("cuba.reporting.entityTreeModelMaxDeep", "reporting.entityTreeModelMaxDepth");
         propertyTest("cuba.client.maxUploadSizeMb", "cuba.maxUploadSizeMb");
         propertyTest("cuba.reporting.useBackgroundReportProcessing", "reporting.useBackgroundReportProcessing");

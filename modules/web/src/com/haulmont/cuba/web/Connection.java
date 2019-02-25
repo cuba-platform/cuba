@@ -16,15 +16,12 @@
  */
 package com.haulmont.cuba.web;
 
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.PasswordEncryption;
 import com.haulmont.cuba.security.auth.Credentials;
 import com.haulmont.cuba.security.auth.LoginPasswordCredentials;
 import com.haulmont.cuba.security.auth.RememberMeCredentials;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
-import com.haulmont.cuba.web.auth.ExternallyAuthenticatedConnection;
 import com.haulmont.cuba.web.security.AnonymousUserCredentials;
 
 import javax.annotation.Nonnull;
@@ -36,7 +33,7 @@ import java.util.function.Consumer;
 /**
  * Interface to be implemented by objects that connect web-client to the middleware.
  */
-public interface Connection extends ExternallyAuthenticatedConnection {
+public interface Connection {
 
     String NAME = "cuba_Connection";
 

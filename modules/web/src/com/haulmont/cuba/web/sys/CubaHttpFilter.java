@@ -19,8 +19,6 @@ package com.haulmont.cuba.web.sys;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.web.WebConfig;
-import com.haulmont.cuba.web.auth.CubaAuthProvider;
-import com.haulmont.cuba.web.auth.WebAuthConfig;
 import com.haulmont.cuba.web.security.HttpRequestFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,20 +48,7 @@ public class CubaHttpFilter extends CompositeFilter implements Filter {
             bypassUrls.addAll(webConfig.getCubaHttpFilterBypassUrls());
             bypassUrls.addAll(webConfig.getExternalHttpFilterBypassUrls());
 
-            List<Filter> filters = new ArrayList<>();
-
-            if (configuration.getConfig(WebAuthConfig.class).getExternalAuthentication()) {
-                try {
-                    CubaAuthProvider authProvider = AppBeans.get(CubaAuthProvider.NAME);
-                    filters.add(authProvider);
-                } catch (Exception e) {
-                    throw new ServletException(e);
-                }
-            }
-
-            filters.addAll(getHttpRequestFilterBeans());
-
-            setFilters(filters);
+            setFilters(new ArrayList<Filter>(getHttpRequestFilterBeans()));
 
             super.init(filterConfig);
 

@@ -49,7 +49,6 @@ import static com.haulmont.cuba.web.security.ExternalUserCredentials.EXTERNAL_AU
  * @see WebLdapConfig
  */
 @ConditionalOnAppProperty(property = "cuba.web.ldap.enabled", value = "true")
-@ConditionalOnAppProperty(property = "cuba.web.externalAuthentication", value = "false", defaultValue = "false")
 @Component("cuba_LdapLoginProvider")
 public class LdapLoginProvider implements LoginProvider, Ordered {
 
@@ -123,7 +122,6 @@ public class LdapLoginProvider implements LoginProvider, Ordered {
         return authenticationService.login(credentials);
     }
 
-    @SuppressWarnings("RedundantThrows")
     protected boolean authenticateInLdap(LoginPasswordCredentials credentials) throws LoginException {
         String login = credentials.getLogin();
         String password = credentials.getPassword();
