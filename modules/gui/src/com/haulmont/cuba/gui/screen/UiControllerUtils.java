@@ -26,6 +26,7 @@ import com.haulmont.cuba.gui.settings.Settings;
 import org.springframework.context.ApplicationListener;
 
 import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
@@ -33,6 +34,7 @@ import java.util.function.Consumer;
 /**
  * Internal methods used in Screens and Fragments implementations.
  */
+@ParametersAreNonnullByDefault
 public final class UiControllerUtils {
 
     public static void setWindowId(FrameOwner screen, String id) {

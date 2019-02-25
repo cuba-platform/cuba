@@ -28,6 +28,7 @@ import com.haulmont.cuba.gui.screen.Screen;
 import com.haulmont.cuba.gui.screen.ScreenOptions;
 
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * Editor screen builder that knows the concrete screen class. It's {@link #build()} method returns that class.
@@ -125,6 +126,12 @@ public class EditorClassBuilder<E extends Entity, S extends Screen & EditorScree
     }
 
     @Override
+    public EditorClassBuilder<E, S> withTransformation(Function<E, E> transformation) {
+        super.withTransformation(transformation);
+        return this;
+    }
+
+    @Override
     public <T extends HasValue<E>> EditorClassBuilder<E, S> withField(T field) {
         super.withField(field);
         return this;
@@ -148,5 +155,11 @@ public class EditorClassBuilder<E extends Entity, S extends Screen & EditorScree
     @Override
     public S build() {
         return (S) handler.apply(this);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public S show() {
+        return (S) super.show();
     }
 }
