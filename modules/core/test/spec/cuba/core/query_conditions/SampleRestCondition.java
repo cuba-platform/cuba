@@ -1,5 +1,6 @@
 package spec.cuba.core.query_conditions;
 
+import com.haulmont.cuba.core.global.queryconditions.Condition;
 import com.haulmont.cuba.core.global.queryconditions.PropertyCondition;
 
 import java.util.Collections;
@@ -24,5 +25,10 @@ public class SampleRestCondition extends PropertyCondition {
                     parameters.add(parameter);
             }
         }
+    }
+
+    @Override
+    public Condition copy() {
+        return new SampleRestCondition(entries.get(0).value);
     }
 }

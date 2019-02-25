@@ -55,4 +55,13 @@ public class JpqlCondition extends PropertyCondition {
             }
         }
     }
+
+    @Override
+    public Condition copy() {
+        List<Entry> entriesCopy = new ArrayList<>(entries.size());
+        for (Entry entry : entries) {
+            entriesCopy.add(new Entry(entry.name, entry.value));
+        }
+        return new JpqlCondition(entriesCopy);
+    }
 }

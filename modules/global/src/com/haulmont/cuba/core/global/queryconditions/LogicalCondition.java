@@ -80,6 +80,16 @@ public class LogicalCondition implements Condition {
     }
 
     @Override
+    public Condition copy() {
+        LogicalCondition copy = new LogicalCondition(type);
+        copy.conditions = new ArrayList<>(conditions.size());
+        for (Condition nestedCondition : conditions) {
+            copy.add(nestedCondition.copy());
+        }
+        return copy;
+    }
+
+    @Override
     public String toString() {
         return type.toString() + " " + conditions.toString();
     }
