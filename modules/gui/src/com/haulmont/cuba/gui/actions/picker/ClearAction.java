@@ -16,13 +16,20 @@
 
 package com.haulmont.cuba.gui.actions.picker;
 
+import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.ActionType;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.SupportsUserAction;
 import com.haulmont.cuba.gui.components.PickerField;
 import com.haulmont.cuba.gui.components.actions.BaseAction;
+import com.haulmont.cuba.gui.components.data.ValueSource;
+import com.haulmont.cuba.gui.components.data.meta.EntityValueSource;
 import com.haulmont.cuba.gui.icons.CubaIcon;
 import com.haulmont.cuba.gui.icons.Icons;
+import com.haulmont.cuba.gui.model.DataContext;
+import com.haulmont.cuba.gui.screen.FrameOwner;
+import com.haulmont.cuba.gui.screen.UiControllerUtils;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -85,7 +92,19 @@ public class ClearAction extends BaseAction implements PickerField.PickerFieldAc
     public void actionPerform(Component component) {
         // if standard behaviour
         if (!hasSubscriptions(ActionPerformedEvent.class)) {
-            // todo composition
+            // remove entity if it is a composition
+            Object value = pickerField.getValue();
+            ValueSource valueSource = pickerField.getValueSource();
+            if (value != null && !value.equals(pickerField.getEmptyValue()) && valueSource instanceof EntityValueSource) {
+                EntityValueSource entityValueSource = (EntityValueSource) pickerField.getValueSource();
+                Entity entity = (Entity) pickerField.getValue();
+                if (entityValueSource.getMetaPropertyPath() != null
+                        && entityValueSource.getMetaPropertyPath().getMetaProperty().getType() == MetaProperty.Type.COMPOSITION) {
+                    FrameOwner screen = pickerField.getFrame().getFrameOwner();
+                    DataContext dataContext = UiControllerUtils.getScreenData(screen).getDataContext();
+                    dataContext.remove(entity);
+                }
+            }
             // Set the value as if the user had set it
             ((SupportsUserAction) pickerField).setValueFromUser(pickerField.getEmptyValue());
         } else {
