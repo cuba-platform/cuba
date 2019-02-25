@@ -60,7 +60,7 @@ public class UserEntityListener implements BeforeInsertEntityListener<User>, Bef
     }
 
     protected void addDefaultRoles(User user, EntityManager entityManager) {
-        if (user.isCreatedByEditor())
+        if (user.isDisabledDefaultRoles())
             return;
 
         List<Role> defaultRoles = entityManager.createQuery(

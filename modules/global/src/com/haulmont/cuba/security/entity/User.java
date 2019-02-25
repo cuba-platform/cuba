@@ -107,14 +107,14 @@ public class User extends StandardEntity {
     protected String ipMask;
 
     @Transient
-    protected boolean createdByEditor;
+    protected boolean disabledDefaultRoles;
 
-    public boolean isCreatedByEditor() {
-        return createdByEditor;
+    public boolean isDisabledDefaultRoles() {
+        return disabledDefaultRoles;
     }
 
-    public void setCreatedByEditor(boolean createdByEditor) {
-        this.createdByEditor = createdByEditor;
+    public void setDisabledDefaultRoles(boolean disabledDefaultRoles) {
+        this.disabledDefaultRoles = disabledDefaultRoles;
     }
 
     public String getLogin() {
