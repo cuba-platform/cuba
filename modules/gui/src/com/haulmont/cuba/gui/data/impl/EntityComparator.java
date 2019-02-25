@@ -33,12 +33,6 @@ public class EntityComparator<T extends Entity> extends AbstractComparator<T> {
         if (propertyPath.getMetaProperties().length == 1) {
             property = this.propertyPath.getMetaProperty();
         }
-
-/*
-        Class<?> javaClass = this.propertyPath.getRangeJavaClass();
-        if (!Comparable.class.isAssignableFrom(javaClass))
-            throw new UnsupportedOperationException(javaClass + " is not comparable");
-*/
     }
 
     @Override

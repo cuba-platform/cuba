@@ -20,6 +20,7 @@ import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.entity.IdProxy;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 
 public class EntityByIdComparator<T extends Entity<K>, K> extends AbstractComparator<K> {
@@ -52,8 +53,12 @@ public class EntityByIdComparator<T extends Entity<K>, K> extends AbstractCompar
             value = instance.getValueEx(propertyPath);
         }
 
-        if (!(value == null || value instanceof Comparable)) {
-            value = value.toString();
+        if (!(value == null || value instanceof Comparable || value instanceof Instance)) {
+            if (value instanceof IdProxy) {
+                value = ((IdProxy) value).get();
+            } else {
+                value = value.toString();
+            }
         }
 
         return value;

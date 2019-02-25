@@ -22,6 +22,7 @@ import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.entity.IdProxy;
 import com.haulmont.cuba.core.global.Sort;
 import com.haulmont.cuba.gui.components.data.GroupTableItems;
 import com.haulmont.cuba.gui.data.GroupInfo;
@@ -405,8 +406,12 @@ public class ContainerGroupTableItems<E extends Entity<K>, K>
                 value = instance.getValueEx(propertyPath);
             }
 
-            if (!(value == null || value instanceof Comparable)) {
-                value = value.toString();
+            if (!(value == null || value instanceof Comparable || value instanceof Instance)) {
+                if (value instanceof IdProxy) {
+                    value = ((IdProxy) value).get();
+                } else {
+                    value = value.toString();
+                }
             }
 
             return value;
