@@ -19,7 +19,9 @@ package com.haulmont.cuba.gui.components.filter;
 
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Streams;
 import com.haulmont.bali.datastruct.Node;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.bali.util.ParamsMap;
@@ -1605,6 +1607,9 @@ public class FilterDelegateImpl implements FilterDelegate {
 
                 ftsLastDatasourceRefreshParamsNames.add(ftsCondition.getSessionIdParamName());
                 ftsLastDatasourceRefreshParamsNames.add(ftsCondition.getQueryKeyParamName());
+                adapter.addFtsComponentParameter(ftsCondition.getParamName());
+                adapter.addFtsCustomParameter(ftsCondition.getSessionIdParamName());
+                adapter.addFtsCustomParameter(ftsCondition.getQueryKeyParamName());
             }
         }
         return lastRefreshParameters;
@@ -1645,7 +1650,7 @@ public class FilterDelegateImpl implements FilterDelegate {
 
         applyDatasourceFilter();
         initDatasourceMaxResults();
-        adapter.refresh(params);
+        adapter.refreshIfNotSuspended(params);
 
         if (afterFilterAppliedHandler != null) {
             afterFilterAppliedHandler.afterFilterApplied();
@@ -1660,7 +1665,7 @@ public class FilterDelegateImpl implements FilterDelegate {
     protected void initDatasourceMaxResults() {
         checkState();
 
-        if (this.maxResults != -1  && !useMaxResults) {
+        if (this.maxResults != -1 && !useMaxResults) {
             adapter.setMaxResults(maxResults);
         } else if (maxResultsAddedToLayout && useMaxResults) {
             Integer maxResults = maxResultsField.getValue();
@@ -2853,19 +2858,37 @@ public class FilterDelegateImpl implements FilterDelegate {
     protected interface Adapter {
 
         MetaClass getMetaClass();
+
         int getMaxResults();
+
         void setMaxResults(int maxResults);
+
         int getFirstResult();
+
         void setFirstResult(int firstResult);
+
         void setQueryFilter(QueryFilter filter);
+
         void setDataLoaderCondition(com.haulmont.cuba.core.global.queryconditions.Condition dataLoaderCondition);
+
         Map<String, Object> getLastRefreshParameters();
+
+        void addFtsComponentParameter(String parameterName);
+
+        void addFtsCustomParameter(String parameterName);
+
         void refresh(Map<String, Object> parameters);
+
         void refreshIfNotSuspended(Map<String, Object> parameters);
+
         boolean supportsApplyToSelected();
+
         void pinQuery();
+
         void unpinAllQuery();
+
         String getQuery();
+
         void preventNextDataLoading();
     }
 
@@ -2876,13 +2899,16 @@ public class FilterDelegateImpl implements FilterDelegate {
         protected QueryFilter queryFilter;
         protected boolean preventDataLoading;
         protected List<String> lastQueryFilterParameters = new ArrayList<>();
+        protected Set<String> ftsComponentParameters = new HashSet<>();
+        protected Set<String> ftsCustomParameters = new HashSet<>();
 
         /**
          * Condition which was set on DataLoader before applying the filter
          */
         protected com.haulmont.cuba.core.global.queryconditions.Condition dataLoaderCondition;
 
-        protected static final Pattern PARAM_PATTERN = Pattern.compile("(:)component\\$([\\w.]+)");
+        protected static final Pattern COMPONENT_PARAM_PATTERN = Pattern.compile("(:)component\\$([\\w.]+)");
+        protected static final Pattern CUSTOM_PARAM_PATTERN = Pattern.compile("(:)custom\\$([\\w.]+)");
 
         public LoaderAdapter(CollectionLoader loader, Filter filter) {
             this.filter = filter;
@@ -2933,6 +2959,16 @@ public class FilterDelegateImpl implements FilterDelegate {
         }
 
         @Override
+        public void addFtsComponentParameter(String parameterName) {
+            ftsComponentParameters.add(parameterName);
+        }
+
+        @Override
+        public void addFtsCustomParameter(String parameterName) {
+            ftsCustomParameters.add(parameterName);
+        }
+
+        @Override
         public void refresh(Map<String, Object> parameters) {
             loader.setParameters(parameters);
             loader.load();
@@ -2945,6 +2981,7 @@ public class FilterDelegateImpl implements FilterDelegate {
             }
             lastQueryFilterParameters.clear();
 
+
             for (Map.Entry<String, Object> entry : parameters.entrySet()) {
                 setLoaderParameter(entry.getKey(), entry.getValue());
             }
@@ -2955,6 +2992,9 @@ public class FilterDelegateImpl implements FilterDelegate {
                 for (ParameterInfo parameterInfo : queryFilter.getParameters()) {
                     if (parameterInfo.getType() == ParameterInfo.Type.COMPONENT) {
                         String fullName = parameterInfo.getPath();
+                        if (ftsComponentParameters.contains(parameterInfo.getName())) {
+                            continue;
+                        }
                         int i = fullName.lastIndexOf('.');
                         String name = i == -1 ? fullName : fullName.substring(i + 1);
 
@@ -2963,8 +3003,15 @@ public class FilterDelegateImpl implements FilterDelegate {
 
                         setLoaderParameter(parameterInfo.getFlatName(), filter.getParamValue(name));
                         lastQueryFilterParameters.add(parameterInfo.getFlatName());
+                    } else if (parameterInfo.getType() == ParameterInfo.Type.CUSTOM) {
+                        if (ftsCustomParameters.contains(parameterInfo.getPath())) {
+                            parameterInfo.setType(ParameterInfo.Type.NONE);
+                            lastQueryFilterParameters.add(parameterInfo.getFlatName());
+                        }
                     }
                 }
+                ftsComponentParameters.clear();
+                ftsCustomParameters.clear();
 
                 com.haulmont.cuba.core.global.queryconditions.Condition condition = queryFilter.toQueryCondition();
 
@@ -2998,18 +3045,15 @@ public class FilterDelegateImpl implements FilterDelegate {
         /**
          * Recursively replaces parameter names in condition's text, e.g.
          * "u.name like :component$usersFilter.name26607" -&gt; "u.name like :usersFilter_name26607"
+         * "u.name like :custom$usersFilter.name26607" -&gt; "u.name like :usersFilter_name26607"
          */
         protected void replaceParamNames(Condition condition) {
             if (condition instanceof Clause) {
                 for (ParameterInfo parameterInfo : condition.getParameters()) {
                     if (parameterInfo.getType() == ParameterInfo.Type.COMPONENT) {
-                        Matcher m = PARAM_PATTERN.matcher(((Clause) condition).getContent());
-                        StringBuffer sb = new StringBuffer();
-                        while (m.find()) {
-                            m.appendReplacement(sb, m.group(1) + m.group(2).replace('.', '_'));
-                        }
-                        m.appendTail(sb);
-                        ((Clause) condition).setContent(sb.toString());
+                        replaceParamName(condition, COMPONENT_PARAM_PATTERN);
+                    } else if (parameterInfo.getType() == ParameterInfo.Type.CUSTOM) {
+                        replaceParamName(condition, CUSTOM_PARAM_PATTERN);
                     }
                 }
             } else if (condition instanceof LogicalCondition) {
@@ -3017,6 +3061,16 @@ public class FilterDelegateImpl implements FilterDelegate {
                     replaceParamNames(nestedCond);
                 }
             }
+        }
+
+        protected void replaceParamName(Condition condition, Pattern pattern) {
+            Matcher m = pattern.matcher(((Clause) condition).getContent());
+            StringBuffer sb = new StringBuffer();
+            while (m.find()) {
+                m.appendReplacement(sb, m.group(1) + m.group(2).replace('.', '_'));
+            }
+            m.appendTail(sb);
+            ((Clause) condition).setContent(sb.toString());
         }
 
         @Override
@@ -3095,6 +3149,14 @@ public class FilterDelegateImpl implements FilterDelegate {
         @Override
         public Map<String, Object> getLastRefreshParameters() {
             return datasource.getLastRefreshParameters();
+        }
+
+        @Override
+        public void addFtsComponentParameter(String parameterName) {
+        }
+
+        @Override
+        public void addFtsCustomParameter(String parameterName) {
         }
 
         @Override

@@ -28,7 +28,6 @@ import com.haulmont.cuba.gui.components.filter.Param;
 import com.haulmont.cuba.gui.components.filter.descriptor.FtsConditionDescriptor;
 import com.haulmont.cuba.gui.components.filter.operationedit.AbstractOperationEditor;
 import com.haulmont.cuba.gui.components.filter.operationedit.FtsOperationEditor;
-import com.haulmont.cuba.gui.data.Datasource;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.dom4j.Element;
 
