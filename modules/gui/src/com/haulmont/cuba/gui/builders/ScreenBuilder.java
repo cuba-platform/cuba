@@ -128,9 +128,17 @@ public class ScreenBuilder {
     }
 
     /**
-     * Builds the screen.
+     * Builds the screen. Screen should be shown using {@link Screen#show()}.
      */
     public Screen build() {
         return handler.apply(this);
+    }
+
+    /**
+     * Builds and shows the editor screen.
+     */
+    public Screen show() {
+        return handler.apply(this)
+                .show();
     }
 }

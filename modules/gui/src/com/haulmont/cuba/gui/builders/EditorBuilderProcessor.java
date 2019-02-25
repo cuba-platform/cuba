@@ -31,7 +31,10 @@ import com.haulmont.cuba.gui.components.data.meta.ContainerDataUnit;
 import com.haulmont.cuba.gui.components.data.meta.EntityOptions;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
-import com.haulmont.cuba.gui.model.*;
+import com.haulmont.cuba.gui.model.CollectionContainer;
+import com.haulmont.cuba.gui.model.DataContext;
+import com.haulmont.cuba.gui.model.InstanceContainer;
+import com.haulmont.cuba.gui.model.Nested;
 import com.haulmont.cuba.gui.screen.*;
 import com.haulmont.cuba.gui.screen.compatibility.LegacyFrame;
 import org.springframework.stereotype.Component;
@@ -91,6 +94,9 @@ public class EditorBuilderProcessor {
             screen.addAfterCloseListener(event -> {
                 CloseAction closeAction = event.getCloseAction();
                 if (isCommitCloseAction(closeAction)) {
+                    E entityFromEditor = getCommittedEntity(editorScreen, parentDataContext);
+                    E committedEntity = transform(entityFromEditor, builder);
+
                     if (builder.getMode() == EditMode.CREATE) {
                         boolean addsFirst;
 
@@ -104,12 +110,12 @@ public class EditorBuilderProcessor {
                         }
 
                         if (ct instanceof Nested || !addsFirst) {
-                            ct.getMutableItems().add(getCommittedEntity(editorScreen, parentDataContext));
+                            ct.getMutableItems().add(committedEntity);
                         } else {
-                            ct.getMutableItems().add(0, getCommittedEntity(editorScreen, parentDataContext));
+                            ct.getMutableItems().add(0, committedEntity);
                         }
                     } else {
-                        ct.replaceItem(getCommittedEntity(editorScreen, parentDataContext));
+                        ct.replaceItem(committedEntity);
                     }
                 }
                 if (listComponent instanceof com.haulmont.cuba.gui.components.Component.Focusable) {
@@ -123,7 +129,8 @@ public class EditorBuilderProcessor {
             screen.addAfterCloseListener(event -> {
                 CloseAction closeAction = event.getCloseAction();
                 if (isCommitCloseAction(closeAction)) {
-                    E editedEntity = editorScreen.getEditedEntity();
+                    E entityFromEditor = editorScreen.getEditedEntity();
+                    E editedEntity = transform(entityFromEditor, builder);
 
                     if (field instanceof LookupPickerField) {
                         LookupPickerField lookupPickerField = ((LookupPickerField) field);
@@ -160,12 +167,20 @@ public class EditorBuilderProcessor {
         return (S) screen;
     }
 
+    protected  <E extends Entity> E transform(E entity, EditorBuilder<E> builder) {
+        if (builder.getTransformation() != null) {
+            return builder.getTransformation().apply(entity);
+        }
+        return entity;
+    }
+
     protected <E extends Entity> E getCommittedEntity(EditorScreen<E> editorScreen, @Nullable DataContext parentDataContext) {
         E editedEntity = editorScreen.getEditedEntity();
         if (parentDataContext != null) {
             E trackedEntity = parentDataContext.find(editedEntity);
-            if (trackedEntity != null) // makes sense for NoopDataContext
+            if (trackedEntity != null) { // makes sense for NoopDataContext
                 return trackedEntity;
+            }
         }
         return editedEntity;
     }
@@ -257,7 +272,8 @@ public class EditorBuilderProcessor {
     }
 
     @Nullable
-    protected DataContext setupParentDataContext(FrameOwner origin, Screen screen, InstanceContainer container, DataContext parentContext) {
+    protected DataContext setupParentDataContext(FrameOwner origin, Screen screen, InstanceContainer container,
+                                                 @Nullable DataContext parentContext) {
         DataContext dataContext = parentContext;
         if (dataContext == null && container instanceof Nested) {
             InstanceContainer masterContainer = ((Nested) container).getMaster();

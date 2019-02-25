@@ -261,7 +261,7 @@ public class AppContext {
         Events events = (Events) getApplicationContext().getBean(Events.NAME);
         events.publish(new AppContextStoppedEvent(context));
 
-        if (context != null && context instanceof ConfigurableApplicationContext) {
+        if (context instanceof ConfigurableApplicationContext) {
             ((ConfigurableApplicationContext) context).close();
         }
     }

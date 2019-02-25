@@ -43,6 +43,7 @@ public class EditorBuilder<E extends Entity> {
     protected E editedEntity;
     protected CollectionContainer<E> container;
     protected Consumer<E> initializer;
+    protected Function<E, E> transformation;
     protected Screens.LaunchMode launchMode = OpenMode.THIS_TAB;
     protected ScreenOptions options = FrameOwner.NO_OPTIONS;
     protected ListComponent<E> listComponent;
@@ -73,6 +74,7 @@ public class EditorBuilder<E extends Entity> {
         this.field = builder.field;
         this.screenId = builder.screenId;
         this.addFirst = builder.addFirst;
+        this.transformation = builder.transformation;
     }
 
     public EditorBuilder(FrameOwner origin, Class<E> entityClass, Function<EditorBuilder<E>, Screen> handler) {
@@ -138,6 +140,21 @@ public class EditorBuilder<E extends Entity> {
     public EditorBuilder<E> withInitializer(Consumer<E> initializer) {
         this.initializer = initializer;
 
+        return this;
+    }
+
+    /**
+     * Sets code to transform the edited entity after editor commit and returns the builder for chaining.
+     * <br>
+     * Applied only if either field or container or listComponent is assigned.
+     *
+     * @param transformation edited entity transformation
+     * @see #withContainer(CollectionContainer)
+     * @see #withField(HasValue)
+     * @see #withListComponent(ListComponent)
+     */
+    public EditorBuilder<E> withTransformation(Function<E, E> transformation) {
+        this.transformation = transformation;
         return this;
     }
 
@@ -329,9 +346,24 @@ public class EditorBuilder<E extends Entity> {
     }
 
     /**
-     * Builds the editor screen.
+     * Returns edited entity transformation.
+     */
+    public Function<E, E> getTransformation() {
+        return transformation;
+    }
+
+    /**
+     * Builds the editor screen. Screen should be shown using {@link Screen#show()}.
      */
     public Screen build() {
         return handler.apply(this);
+    }
+
+    /**
+     * Builds and shows the editor screen.
+     */
+    public Screen show() {
+        return handler.apply(this)
+                .show();
     }
 }

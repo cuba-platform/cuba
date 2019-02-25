@@ -28,6 +28,7 @@ import com.haulmont.cuba.gui.screen.ScreenOptions;
 
 import java.util.Collection;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 /**
@@ -107,6 +108,12 @@ public class LookupClassBuilder<E extends Entity, S extends Screen & LookupScree
         return this;
     }
 
+    @Override
+    public LookupClassBuilder<E, S> withTransformation(Function<Collection<E>, Collection<E>> transformation) {
+        super.withTransformation(transformation);
+        return this;
+    }
+
     /**
      * Returns lookup screen class.
      */
@@ -122,7 +129,14 @@ public class LookupClassBuilder<E extends Entity, S extends Screen & LookupScree
     }
 
     @SuppressWarnings("unchecked")
+    @Override
     public S build() {
         return (S) this.handler.apply(this);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public S show() {
+        return (S) super.show();
     }
 }

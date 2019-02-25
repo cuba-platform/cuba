@@ -20,10 +20,10 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.ExtendedEntities;
 import com.haulmont.cuba.gui.Screens;
-import com.haulmont.cuba.gui.components.LookupPickerField;
-import com.haulmont.cuba.gui.components.SupportsUserAction;
 import com.haulmont.cuba.gui.components.HasValue;
 import com.haulmont.cuba.gui.components.ListComponent;
+import com.haulmont.cuba.gui.components.LookupPickerField;
+import com.haulmont.cuba.gui.components.SupportsUserAction;
 import com.haulmont.cuba.gui.components.data.Options;
 import com.haulmont.cuba.gui.components.data.meta.ContainerDataUnit;
 import com.haulmont.cuba.gui.components.data.meta.EntityOptions;
@@ -161,39 +161,45 @@ public class LookupBuilderProcessor {
 
     @SuppressWarnings("unchecked")
     protected <E extends Entity> void handleSelectionWithField(@SuppressWarnings("unused") LookupBuilder<E> builder,
-                                                               HasValue<E> field, Collection<E> selectedItems) {
-        if (!selectedItems.isEmpty()) {
-            Entity newValue = selectedItems.iterator().next();
+                                                               HasValue<E> field, Collection<E> itemsFromLookup) {
+        if (itemsFromLookup.isEmpty()) {
+            return;
+        }
 
-            if (field instanceof LookupPickerField) {
-                LookupPickerField lookupPickerField = (LookupPickerField) field;
-                Options options = lookupPickerField.getOptions();
-                if (options instanceof EntityOptions) {
-                    EntityOptions entityOptions = (EntityOptions) options;
-                    if (entityOptions.containsItem(newValue)) {
-                        entityOptions.updateItem(newValue);
-                    }
-                    if (lookupPickerField.isRefreshOptionsOnLookupClose()) {
-                        entityOptions.refresh();
-                    }
+        Collection<E> selectedItems = transform(itemsFromLookup, builder);
+
+        Entity newValue = selectedItems.iterator().next();
+
+        if (field instanceof LookupPickerField) {
+            LookupPickerField lookupPickerField = (LookupPickerField) field;
+            Options options = lookupPickerField.getOptions();
+            if (options instanceof EntityOptions) {
+                EntityOptions entityOptions = (EntityOptions) options;
+                if (entityOptions.containsItem(newValue)) {
+                    entityOptions.updateItem(newValue);
+                }
+                if (lookupPickerField.isRefreshOptionsOnLookupClose()) {
+                    entityOptions.refresh();
                 }
             }
+        }
 
-            // In case of PickerField set the value as if the user had set it
-            if (field instanceof SupportsUserAction) {
-                ((SupportsUserAction<E>) field).setValueFromUser((E) newValue);
-            } else {
-                field.setValue((E) newValue);
-            }
+        // In case of PickerField set the value as if the user had set it
+        if (field instanceof SupportsUserAction) {
+            ((SupportsUserAction<E>) field).setValueFromUser((E) newValue);
+        } else {
+            field.setValue((E) newValue);
         }
     }
 
     protected <E extends Entity> void handleSelectionWithContainer(LookupBuilder<E> builder,
                                                                    CollectionContainer<E> collectionDc,
-                                                                   Collection<E> selectedItems) {
-        if (selectedItems.isEmpty()) {
+                                                                   Collection<E> itemsFromLookup) {
+        if (itemsFromLookup.isEmpty()) {
             return;
         }
+
+        Collection<E> selectedItems = transform(itemsFromLookup, builder);
 
         boolean initializeMasterReference = false;
         Entity masterItem = null;
@@ -235,5 +241,12 @@ public class LookupBuilderProcessor {
         }
 
         collectionDc.getMutableItems().addAll(mergedItems);
+    }
+
+    protected <E extends Entity> Collection<E> transform(Collection<E> selectedItems, LookupBuilder<E> builder) {
+        if (builder.getTransformation() != null) {
+            return builder.getTransformation().apply(selectedItems);
+        }
+        return selectedItems;
     }
 }

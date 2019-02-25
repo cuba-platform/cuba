@@ -88,4 +88,9 @@ public class ScreenClassBuilder<S extends Screen> extends ScreenBuilder {
     public S build() {
         return (S) super.build();
     }
+
+    @Override
+    public S show() {
+        return (S) super.show();
+    }
 }

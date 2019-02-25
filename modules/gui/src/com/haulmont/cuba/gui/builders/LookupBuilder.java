@@ -42,6 +42,7 @@ public class LookupBuilder<E extends Entity> {
     protected final Function<LookupBuilder<E>, Screen> handler;
 
     protected Predicate<LookupScreen.ValidationContext<E>> selectValidator;
+    protected Function<Collection<E>, Collection<E>> transformation;
     protected Consumer<Collection<E>> selectHandler;
     protected Screens.LaunchMode launchMode = OpenMode.THIS_TAB;
     protected ScreenOptions options = FrameOwner.NO_OPTIONS;
@@ -64,6 +65,7 @@ public class LookupBuilder<E extends Entity> {
         this.listComponent = builder.listComponent;
         this.container = builder.container;
         this.screenId = builder.screenId;
+        this.transformation = builder.transformation;
     }
 
     public LookupBuilder(FrameOwner origin, Class<E> entityClass, Function<LookupBuilder<E>, Screen> handler) {
@@ -170,6 +172,21 @@ public class LookupBuilder<E extends Entity> {
     }
 
     /**
+     * Sets code to transform the edited entity after editor commit and returns the builder for chaining.
+     * <br>
+     * Applied only if either field or container or listComponent is assigned.
+     *
+     * @param transformation edited entity transformation
+     * @see #withContainer(CollectionContainer)
+     * @see #withField(HasValue)
+     * @see #withListComponent(ListComponent)
+     */
+    public LookupBuilder<E> withTransformation(Function<Collection<E>, Collection<E>> transformation) {
+        this.transformation = transformation;
+        return this;
+    }
+
+    /**
      * Returns screen id set by {@link #withScreenId(String)}.
      */
     public String getScreenId() {
@@ -240,10 +257,22 @@ public class LookupBuilder<E extends Entity> {
         return listComponent;
     }
 
+    public Function<Collection<E>, Collection<E>> getTransformation() {
+        return transformation;
+    }
+
     /**
-     * Builds the lookup screen.
+     * Builds the lookup screen. Screen should be shown using {@link Screen#show()}.
      */
     public Screen build() {
         return this.handler.apply(this);
+    }
+
+    /**
+     * Builds and shows the lookup screen.
+     */
+    public Screen show() {
+        return handler.apply(this)
+                .show();
     }
 }
