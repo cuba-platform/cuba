@@ -146,13 +146,13 @@ public class DataContextImpl implements DataContext {
     public <T extends Entity> T merge(T entity) {
         checkNotNullArgument(entity, "entity is null");
 
-        disableListeners = true;
+        boolean oldListenersState = enableListeners(false);
         T result;
         try {
             Set<Entity> merged = Sets.newIdentityHashSet();
             result = (T) internalMerge(entity, merged);
         } finally {
-            disableListeners = false;
+            enableListeners(oldListenersState);
         }
         return result;
     }
@@ -162,7 +162,7 @@ public class DataContextImpl implements DataContext {
         checkNotNullArgument(entities, "entity collection is null");
 
         List<Entity> managedList = new ArrayList<>(entities.size());
-        disableListeners = true;
+        boolean oldListenersState = enableListeners(false);
         try {
             Set<Entity> merged = Sets.newIdentityHashSet();
 
@@ -171,7 +171,7 @@ public class DataContextImpl implements DataContext {
                 managedList.add(managed);
             }
         } finally {
-            disableListeners = false;
+            enableListeners(oldListenersState);
         }
         return EntitySet.of(managedList);
     }
@@ -684,6 +684,18 @@ public class DataContextImpl implements DataContext {
 
     protected String printObject(Object object) {
         return "{" + object.getClass().getSimpleName() + "@" + Integer.toHexString(System.identityHashCode(object)) + "}";
+    }
+
+    /**
+     * INTERNAL.
+     * Enables or disables property change listeners.
+     * @param enable    true to enable, false to disable
+     * @return          previous state
+     */
+    public boolean enableListeners(boolean enable) {
+        boolean oldValue = !disableListeners;
+        disableListeners = !enable;
+        return oldValue;
     }
 
     protected class PropertyChangeListener implements Instance.PropertyChangeListener {
