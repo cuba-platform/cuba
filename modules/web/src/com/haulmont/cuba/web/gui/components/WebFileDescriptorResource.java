@@ -17,12 +17,11 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.bali.util.Preconditions;
-import com.haulmont.cuba.core.app.FileStorageService;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.FileLoader;
 import com.haulmont.cuba.core.global.FileStorageException;
 import com.haulmont.cuba.gui.components.FileDescriptorResource;
-import com.haulmont.cuba.gui.export.ByteArrayDataProvider;
 import com.vaadin.server.StreamResource;
 import org.apache.commons.lang.StringUtils;
 
@@ -59,8 +58,7 @@ public class WebFileDescriptorResource extends WebAbstractStreamSettingsResource
 
         resource = new StreamResource(() -> {
             try {
-                return new ByteArrayDataProvider(AppBeans.get(FileStorageService.class).loadFile(fileDescriptor))
-                        .provide();
+                return AppBeans.get(FileLoader.class).openStream(fileDescriptor);
             } catch (FileStorageException e) {
                 throw new RuntimeException(FILE_STORAGE_EXCEPTION_MESSAGE, e);
             }
