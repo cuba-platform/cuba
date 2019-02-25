@@ -106,6 +106,17 @@ public class User extends StandardEntity {
     @Column(name = "IP_MASK", length = 200)
     protected String ipMask;
 
+    @Transient
+    protected boolean createdByEditor;
+
+    public boolean isCreatedByEditor() {
+        return createdByEditor;
+    }
+
+    public void setCreatedByEditor(boolean createdByEditor) {
+        this.createdByEditor = createdByEditor;
+    }
+
     public String getLogin() {
         return login;
     }
