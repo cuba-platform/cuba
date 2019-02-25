@@ -512,36 +512,6 @@ public class Param {
         }
     }
 
-    protected String getValueCaption(Object v) {
-        if (v == null) {
-            return null;
-        }
-
-        switch (type) {
-            case ENTITY:
-                if (v instanceof Instance) {
-                    return metadata.getTools().getInstanceName((Instance) v);
-                } else {
-                    return v.toString();
-                }
-
-            case ENUM:
-                return messages.getMessage((Enum) v);
-
-            case RUNTIME_ENUM:
-                return (String) v;
-
-            case DATATYPE:
-                return FilterConditionUtils.formatParamValue(this, v);
-            case UNARY:
-                Datatype datatype = Datatypes.getNN(javaClass);
-                return datatype.format(v, userSessionSource.getLocale());
-
-            default:
-                throw new IllegalStateException("Param type unknown");
-        }
-    }
-
     /**
      * Creates an GUI component for condition parameter.
      *
