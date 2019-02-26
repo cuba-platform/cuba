@@ -1,7 +1,7 @@
 create table SYS_APP_FOLDER (
     FOLDER_ID varchar2(32) not null,
     FILTER_COMPONENT varchar2(200),
-    FILTER_XML varchar2(4000),
+    FILTER_XML clob,
     VISIBILITY_SCRIPT clob,
     QUANTITY_SCRIPT clob,
     APPLY_DEFAULT char(1),
@@ -576,7 +576,7 @@ create index IDX_SEC_SCREEN_HISTORY_LENTITY on SEC_SCREEN_HISTORY(LONG_ENTITY_ID
 create table SEC_SEARCH_FOLDER (
     FOLDER_ID varchar2(32) not null,
     FILTER_COMPONENT varchar2(200),
-    FILTER_XML varchar2(4000),
+    FILTER_XML clob,
     USER_ID varchar2(32),
     PRESENTATION_ID varchar2(32),
     APPLY_DEFAULT char(1),
