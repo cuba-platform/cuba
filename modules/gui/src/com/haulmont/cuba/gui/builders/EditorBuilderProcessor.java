@@ -18,6 +18,7 @@ package com.haulmont.cuba.gui.builders;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.ExtendedEntities;
@@ -26,9 +27,12 @@ import com.haulmont.cuba.gui.Screens;
 import com.haulmont.cuba.gui.WindowParams;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.data.DataUnit;
+import com.haulmont.cuba.gui.components.data.HasValueSource;
 import com.haulmont.cuba.gui.components.data.Options;
+import com.haulmont.cuba.gui.components.data.ValueSource;
 import com.haulmont.cuba.gui.components.data.meta.ContainerDataUnit;
 import com.haulmont.cuba.gui.components.data.meta.EntityOptions;
+import com.haulmont.cuba.gui.components.data.meta.EntityValueSource;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.model.CollectionContainer;
@@ -60,11 +64,6 @@ public class EditorBuilderProcessor {
 
     @SuppressWarnings("unchecked")
     public  <E extends Entity, S extends Screen> S buildEditor(EditorBuilder<E> builder) {
-        if (builder.getMode() == EditMode.EDIT && builder.getEditedEntity() == null) {
-            throw new IllegalStateException(String.format("Editor of %s cannot be open with mode EDIT, entity is not set",
-                    builder.getEntityClass()));
-        }
-
         FrameOwner origin = builder.getOrigin();
         Screens screens = getScreenContext(origin).getScreens();
 
@@ -80,6 +79,11 @@ public class EditorBuilderProcessor {
         }
 
         E entity = initEntity(builder, container);
+
+        if (builder.getMode() == EditMode.EDIT && entity == null) {
+            throw new IllegalStateException(String.format("Editor of %s cannot be open with mode EDIT, entity is not set",
+                    builder.getEntityClass()));
+        }
 
         Screen screen = createScreen(builder, screens, entity);
 
@@ -126,6 +130,17 @@ public class EditorBuilderProcessor {
 
         HasValue<E> field = builder.getField();
         if (field != null) {
+
+            if (parentDataContext == null && field instanceof HasValueSource) {
+                ValueSource fieldValueSource = ((HasValueSource) field).getValueSource();
+                if (fieldValueSource instanceof EntityValueSource) {
+                    if (isCompositionProperty((EntityValueSource) fieldValueSource)) {
+                        DataContext thisDataContext = UiControllerUtils.getScreenData(origin).getDataContext();
+                        UiControllerUtils.getScreenData(screen).getDataContext().setParent(thisDataContext);
+                    }
+                }
+            }
+
             screen.addAfterCloseListener(event -> {
                 CloseAction closeAction = event.getCloseAction();
                 if (isCommitCloseAction(closeAction)) {
@@ -188,7 +203,19 @@ public class EditorBuilderProcessor {
     protected <E extends Entity> E initEntity(EditorBuilder<E> builder, CollectionContainer<E> container) {
         E entity;
 
-        if (builder.getMode() == EditMode.CREATE) {
+        boolean oneToOneComposition = false;
+        EntityValueSource entityValueSource = null;
+
+        HasValue<E> field = builder.getField();
+        if (field instanceof HasValueSource) {
+            ValueSource valueSource = ((HasValueSource) field).getValueSource();
+            if (valueSource instanceof EntityValueSource) {
+                entityValueSource = (EntityValueSource) valueSource;
+                oneToOneComposition = isCompositionProperty(entityValueSource);
+            }
+        }
+
+        if (builder.getMode() == EditMode.CREATE || (oneToOneComposition && field.getValue() == null)) {
             if (builder.getNewEntity() == null) {
                 entity = metadata.create(builder.getEntityClass());
             } else {
@@ -196,6 +223,13 @@ public class EditorBuilderProcessor {
             }
             if (container instanceof Nested) {
                 initializeNestedEntity(entity, (Nested) container);
+            }
+            if (oneToOneComposition) {
+                Entity ownerEntity = entityValueSource.getItem();
+                MetaProperty inverseProp = entityValueSource.getMetaPropertyPath().getMetaProperty().getInverse();
+                if (inverseProp != null) {
+                    entity.setValue(inverseProp.getName(), ownerEntity);
+                }
             }
             if (builder.getInitializer() != null) {
                 builder.getInitializer().accept(entity);
@@ -205,6 +239,12 @@ public class EditorBuilderProcessor {
         }
 
         return entity;
+    }
+
+    protected boolean isCompositionProperty(EntityValueSource entityValueSource) {
+        MetaPropertyPath metaPropertyPath = entityValueSource.getMetaPropertyPath();
+        return metaPropertyPath != null
+                && metaPropertyPath.getMetaProperty().getType() == MetaProperty.Type.COMPOSITION;
     }
 
     protected <E extends Entity> Screen createScreen(EditorBuilder<E> builder, Screens screens, E entity) {
