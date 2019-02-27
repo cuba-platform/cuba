@@ -98,7 +98,9 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
 
     @Override
     public CollectionDatasource getDatasource() {
-        return adapter instanceof DatasourceAdapter ? ((DatasourceAdapter) adapter).getDatasource() : null;
+        return adapter instanceof AbstractDatasourceAdapter
+                ? ((AbstractDatasourceAdapter) adapter).getDatasource()
+                : null;
     }
 
     @Override
@@ -189,7 +191,7 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
         if (datasource instanceof CollectionDatasource.SupportsPaging) {
             return new DatasourceAdapter((CollectionDatasource.SupportsPaging) datasource);
         } else {
-            throw new UnsupportedOperationException("Datasource class does not support paging: " + datasource.getClass());
+            return new NoPagingDatasourceAdapter(datasource);
         }
     }
 
@@ -547,14 +549,88 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
         }
     }
 
-    protected class DatasourceAdapter implements Adapter {
+    protected class DatasourceAdapter extends AbstractDatasourceAdapter {
 
-        protected CollectionDatasource.SupportsPaging datasource;
+        public DatasourceAdapter(CollectionDatasource.SupportsPaging datasource) {
+            super(datasource);
+        }
+
+        @Override
+        public int getFirstResult() {
+            return ((CollectionDatasource.SupportsPaging) datasource).getFirstResult();
+        }
+
+        @Override
+        public int getMaxResults() {
+            return datasource.getMaxResults();
+        }
+
+        @Override
+        public void setFirstResult(int startPosition) {
+            ((CollectionDatasource.SupportsPaging) datasource).setFirstResult(startPosition);
+        }
+
+        @Override
+        public void setMaxResults(int maxResults) {
+            datasource.setMaxResults(maxResults);
+        }
+
+        @Override
+        public int getCount() {
+            return ((CollectionDatasource.SupportsPaging) datasource).getCount();
+        }
+
+        @Override
+        public void refresh() {
+            datasource.refresh();
+        }
+    }
+
+    protected class NoPagingDatasourceAdapter extends AbstractDatasourceAdapter {
+
+        public NoPagingDatasourceAdapter(CollectionDatasource datasource) {
+            super(datasource);
+        }
+
+        @Override
+        public int getFirstResult() {
+            return 0;
+        }
+
+        @Override
+        public int getMaxResults() {
+            return Integer.MAX_VALUE;
+        }
+
+        @Override
+        public void setFirstResult(int startPosition) {
+            // do nothing
+        }
+
+        @Override
+        public void setMaxResults(int maxResults) {
+            // do nothing
+        }
+
+        @Override
+        public int getCount() {
+            return size();
+        }
+
+        @Override
+        public void refresh() {
+            // do nothing
+        }
+    }
+
+    protected abstract class AbstractDatasourceAdapter implements Adapter {
+
+        protected CollectionDatasource datasource;
 
         protected CollectionDatasource.CollectionChangeListener datasourceCollectionChangeListener;
         protected WeakCollectionChangeListener weakDatasourceCollectionChangeListener;
 
-        public DatasourceAdapter(CollectionDatasource.SupportsPaging datasource) {
+        public AbstractDatasourceAdapter(CollectionDatasource datasource) {
             this.datasource = datasource;
 
             datasourceCollectionChangeListener = e -> {
@@ -580,38 +656,8 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
         }
 
         @Override
-        public int getFirstResult() {
-            return datasource.getFirstResult();
-        }
-
-        @Override
-        public int getMaxResults() {
-            return datasource.getMaxResults();
-        }
-
-        @Override
-        public void setFirstResult(int startPosition) {
-            datasource.setFirstResult(startPosition);
-        }
-
-        @Override
-        public void setMaxResults(int maxResults) {
-            datasource.setMaxResults(maxResults);
-        }
-
-        @Override
-        public int getCount() {
-            return datasource.getCount();
-        }
-
-        @Override
         public int size() {
             return datasource.size();
-        }
-
-        @Override
-        public void refresh() {
-            datasource.refresh();
         }
 
         public CollectionDatasource getDatasource() {
