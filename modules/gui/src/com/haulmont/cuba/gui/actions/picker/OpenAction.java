@@ -17,14 +17,10 @@
 package com.haulmont.cuba.gui.actions.picker;
 
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.chile.core.model.MetaProperty;
-import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.SoftDelete;
-import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.DevelopmentException;
 import com.haulmont.cuba.core.global.Messages;
-import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.Notifications;
 import com.haulmont.cuba.gui.Notifications.NotificationType;
@@ -32,13 +28,11 @@ import com.haulmont.cuba.gui.ScreenBuilders;
 import com.haulmont.cuba.gui.components.ActionType;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.PickerField;
-import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.actions.BaseAction;
-import com.haulmont.cuba.gui.components.data.meta.EntityValueSource;
 import com.haulmont.cuba.gui.icons.CubaIcon;
 import com.haulmont.cuba.gui.icons.Icons;
-import com.haulmont.cuba.gui.model.DataContext;
-import com.haulmont.cuba.gui.screen.*;
+import com.haulmont.cuba.gui.screen.Screen;
+import com.haulmont.cuba.gui.screen.ScreenContext;
 
 import javax.inject.Inject;
 
@@ -53,8 +47,6 @@ public class OpenAction extends BaseAction implements PickerField.PickerFieldAct
     protected Messages messages;
     @Inject
     protected ScreenBuilders screenBuilders;
-    @Inject
-    protected Metadata metadata;
 
     protected boolean editable = true;
 
@@ -111,21 +103,10 @@ public class OpenAction extends BaseAction implements PickerField.PickerFieldAct
     public void actionPerform(Component component) {
         // if standard behaviour
         if (!hasSubscriptions(ActionPerformedEvent.class)) {
-            EntityValueSource entityValueSource = (EntityValueSource) pickerField.getValueSource();
-            MetaPropertyPath metaPropertyPath = entityValueSource.getMetaPropertyPath();
-            boolean composition = metaPropertyPath != null
-                    && metaPropertyPath.getMetaProperty().getType() == MetaProperty.Type.COMPOSITION;
+            if (!checkFieldValue())
+                return;
 
             Entity entity = pickerField.getValue();
-            boolean createdEntity = false;
-            if (entity == null && composition) {
-                entity = initEntity();
-                pickerField.setValue(entity);
-                createdEntity = true;
-            }
-            if (entity == null) {
-                return;
-            }
 
             if (entity instanceof SoftDelete && ((SoftDelete) entity).isDeleted()) {
                 ScreenContext screenContext = ComponentsHelper.getScreenContext(pickerField);
@@ -147,21 +128,6 @@ public class OpenAction extends BaseAction implements PickerField.PickerFieldAct
             Screen editorScreen = screenBuilders.editor(pickerField)
                     .build();
 
-            if (composition) {
-                FrameOwner thisScreen = pickerField.getFrame().getFrameOwner();
-                DataContext thisDataContext = UiControllerUtils.getScreenData(thisScreen).getDataContext();
-                UiControllerUtils.getScreenData(editorScreen).getDataContext().setParent(thisDataContext);
-                if (createdEntity) {
-                    editorScreen.addAfterCloseListener(afterCloseEvent -> {
-                        CloseAction closeAction = afterCloseEvent.getCloseAction();
-                        if (closeAction instanceof StandardCloseAction
-                                && !((StandardCloseAction) closeAction).getActionId().equals(Window.COMMIT_ACTION_ID)) {
-                            pickerField.setValue(null);
-                        }
-                    });
-                }
-            }
-
             editorScreen.show();
         } else {
             // call action perform handlers from super, delegate execution
@@ -169,17 +135,8 @@ public class OpenAction extends BaseAction implements PickerField.PickerFieldAct
         }
     }
 
-    protected Entity initEntity() {
-        EntityValueSource entityValueSource = (EntityValueSource) pickerField.getValueSource();
-        Entity entity = metadata.create(
-                entityValueSource.getMetaPropertyPath().getMetaProperty().getRange().asClass());
-
-        Entity ownerEntity = entityValueSource.getItem();
-        MetaProperty inverseProp = entityValueSource.getMetaPropertyPath().getMetaProperty().getInverse();
-        if (inverseProp != null) {
-            entity.setValue(inverseProp.getName(), ownerEntity);
-        }
-
-        return entity;
+    protected boolean checkFieldValue() {
+        Entity entity = pickerField.getValue();
+        return entity != null;
     }
 }
