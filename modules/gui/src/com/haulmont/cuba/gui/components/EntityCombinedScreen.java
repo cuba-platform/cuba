@@ -297,9 +297,8 @@ public class EntityCombinedScreen extends AbstractLookup {
                     component.setEnabled(enabled);
                 }
             });
-        } else {
-            getFieldGroup().setEditable(enabled);
         }
+        getFieldGroup().setEditable(enabled);
         getActionsPane().setVisible(enabled);
         getLookupBox().setEnabled(!enabled);
     }
