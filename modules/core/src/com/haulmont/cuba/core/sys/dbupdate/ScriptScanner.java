@@ -56,25 +56,31 @@ public class ScriptScanner {
     public List<ScriptResource> getScripts(ScriptType scriptType, @Nullable String moduleName) {
         try {
             ResourcePatternResolver resourceResolver = createAppropriateResourceResolver();
-            String urlPattern = String.format("%s/%s/%s/%s/**/*%s.*",
+            String rootPath = String.format("%s/%s/%s/%s/",
                     dbScriptsDirectoryForSearch(),
                     moduleName != null ? moduleName : "**",
                     scriptType,
-                    dbmsType,
+                    dbmsType);
+            String urlPattern = String.format("%s**/*%s.*",
+                    rootPath,
                     scriptType == ScriptType.INIT ? "create-db" : "");
             String urlPatternWithDbmsVersion = null;
+            String rootPathWithDbmsVersion = null;
             if (StringUtils.isNotBlank(dbmsVersion)) {
-                urlPatternWithDbmsVersion = String.format("%s/%s/%s/%s-%s/**/*%s.*",
+                rootPathWithDbmsVersion = String.format("%s/%s/%s/%s-%s/",
                         dbScriptsDirectoryForSearch(),
                         moduleName != null ? moduleName : "**",
                         scriptType,
-                        dbmsType, dbmsVersion,
+                        dbmsType,
+                        dbmsVersion);
+                urlPatternWithDbmsVersion = String.format("%s**/*%s.*",
+                        rootPathWithDbmsVersion,
                         scriptType == ScriptType.INIT ? "create-db" : "");
             }
 
-            Map<String, ScriptResource> scriptResources = findResourcesByUrlPattern(resourceResolver, urlPattern);
+            Map<String, ScriptResource> scriptResources = findResourcesByUrlPattern(resourceResolver, urlPattern, rootPath);
             if (StringUtils.isNotBlank(urlPatternWithDbmsVersion)) {
-                Map<String, ScriptResource> additionalResources = findResourcesByUrlPattern(resourceResolver, urlPatternWithDbmsVersion);
+                Map<String, ScriptResource> additionalResources = findResourcesByUrlPattern(resourceResolver, urlPatternWithDbmsVersion, rootPathWithDbmsVersion);
                 scriptResources.putAll(additionalResources);
             }
 
@@ -138,16 +144,22 @@ public class ScriptScanner {
         }
     }
 
-    protected Map<String, ScriptResource> findResourcesByUrlPattern(ResourcePatternResolver resourceResolver, String urlPattern) throws IOException {
+    protected Map<String, ScriptResource> findResourcesByUrlPattern(ResourcePatternResolver resourceResolver, String urlPattern, String rootPath) throws IOException {
         try {
             return Arrays.stream(resourceResolver.getResources(urlPattern))
                     .map(ScriptResource::new)
-                    .collect(Collectors.toMap(ScriptResource::getName, Function.identity()));
+                    .collect(Collectors.toMap(sr -> getRelativePath(sr.getPath(), rootPath), Function.identity()));
         } catch (FileNotFoundException e) {
             //just return empty map
             return Collections.emptyMap();
         }
     }
+
+    protected String getRelativePath(String originalPath, String rootPath) {
+        String dir = rootPath.replaceFirst(".+?:", "");
+        return originalPath.replaceFirst(dir, "");
+    }
+
 
     protected ResourcePatternResolver createAppropriateResourceResolver() {
         if (dbScriptsDirectory.startsWith(WEB_INF_LABEL)) {
