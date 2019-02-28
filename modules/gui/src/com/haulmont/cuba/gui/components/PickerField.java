@@ -552,6 +552,7 @@ public interface PickerField<V extends Entity> extends Field<V>, ActionsHolder, 
 
                 EntityValueSource entityValueSource = (EntityValueSource) pickerField.getValueSource();
                 if (value != null
+                        && entityValueSource != null
                         && entityValueSource.getMetaPropertyPath() != null
                         && entityValueSource.getMetaPropertyPath().getMetaProperty().getType() == MetaProperty.Type.COMPOSITION) {
                     Datasource propertyDatasource = getPropertyDatasource();
