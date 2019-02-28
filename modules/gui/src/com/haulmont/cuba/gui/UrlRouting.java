@@ -16,6 +16,7 @@
 
 package com.haulmont.cuba.gui;
 
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.navigation.NavigationState;
 import com.haulmont.cuba.gui.screen.Screen;
 
@@ -95,4 +96,132 @@ public interface UrlRouting {
      * @return current state parsed from URI fragment.
      */
     NavigationState getState();
+
+    /**
+     * @return {@link RouteGenerator} instance
+     */
+    RouteGenerator getRouteGenerator();
+
+    /**
+     * Provides API to generate routes for screens with optional URL parameters.
+     */
+    interface RouteGenerator {
+
+        /**
+         * Generates route for screen with the given {@code screenId}.
+         *
+         * @param screenId screen id
+         *
+         * @return generated route
+         */
+        default String getRoute(String screenId) {
+            return getRoute(screenId, Collections.emptyMap());
+        }
+
+        /**
+         * Generates route for screen with the given {@code screenClass}.
+         *
+         * @param screenClass screen class
+         *
+         * @return generated route
+         */
+        default String getRoute(Class<? extends Screen> screenClass) {
+            return getRoute(screenClass, Collections.emptyMap());
+        }
+
+        /**
+         * Generates route for default editor with the given {@code entity}.
+         * <p>
+         * Entity id will be passed as URL param.
+         *
+         * @param entity entity to edit
+         *
+         * @return generated route
+         */
+        default String getEditorRoute(Entity entity) {
+            return getEditorRoute(entity, Collections.emptyMap());
+        }
+
+        /**
+         * Generates route for editor with the given {@code screenId} and {@code entity}.
+         * <p>
+         * Entity id will be passed as URL param.
+         *
+         * @param entity   entity to edit
+         * @param screenId editor screen id
+         *
+         * @return generated route
+         */
+        default String getEditorRoute(Entity entity, String screenId) {
+            return getEditorRoute(entity, screenId, Collections.emptyMap());
+        }
+
+        /**
+         * Generates route for editor with the given {@code screenClass} and {@code entity}.
+         *
+         * @param entity      entity to edit
+         * @param screenClass editor screen class
+         *
+         * @return generated route
+         */
+        default String getEditorRoute(Entity entity, Class<? extends Screen> screenClass) {
+            return getEditorRoute(entity, screenClass, Collections.emptyMap());
+        }
+
+        /**
+         * Generates route for screen with the given {@code screenId} and {@code urlParams}.
+         *
+         * @param screenId  screen id
+         * @param urlParams URL params
+         *
+         * @return generated route
+         */
+        String getRoute(String screenId, Map<String, String> urlParams);
+
+        /**
+         * Generates route for screen with the given {@code screenClass} and {@code urlParams}.
+         *
+         * @param screenClass screen class
+         * @param urlParams   URL params
+         *
+         * @return generated route
+         */
+        String getRoute(Class<? extends Screen> screenClass, Map<String, String> urlParams);
+
+        /**
+         * Generates route for default editor with the given {@code entity} and {@code urlParams}.
+         * <p>
+         * Entity id will be passed as URL param.
+         *
+         * @param entity    entity to edit
+         * @param urlParams URL params
+         *
+         * @return generated route
+         */
+        String getEditorRoute(Entity entity, Map<String, String> urlParams);
+
+        /**
+         * Generates route for editor with the given {@code screenId} and {@code entity} and {@code urlParams}.
+         * <p>
+         * Entity id will be passed as URL param.
+         *
+         * @param entity    entity to edit
+         * @param screenId  editor screen id
+         * @param urlParams URL params
+         *
+         * @return generated route
+         */
+        String getEditorRoute(Entity entity, String screenId, Map<String, String> urlParams);
+
+        /**
+         * Generates route for editor with the given {@code screenClass} and {@code entity} and {@code urlParams}.
+         *
+         * @param entity      entity to edit
+         * @param screenClass editor screen class
+         * @param urlParams   URL params
+         *
+         * @return generated route
+         */
+        String getEditorRoute(Entity entity, Class<? extends Screen> screenClass, Map<String, String> urlParams);
+    }
 }

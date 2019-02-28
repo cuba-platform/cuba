@@ -18,18 +18,24 @@ package com.haulmont.cuba.web.sys;
 
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.Events;
+import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.gui.Route;
 import com.haulmont.cuba.gui.Screens;
 import com.haulmont.cuba.gui.UrlRouting;
 import com.haulmont.cuba.gui.components.DialogWindow;
 import com.haulmont.cuba.gui.components.RootWindow;
+import com.haulmont.cuba.gui.config.WindowConfig;
+import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.navigation.NavigationState;
 import com.haulmont.cuba.gui.screen.EditorScreen;
 import com.haulmont.cuba.gui.screen.OpenMode;
 import com.haulmont.cuba.gui.screen.Screen;
+import com.haulmont.cuba.gui.screen.UiController;
 import com.haulmont.cuba.gui.sys.RouteDefinition;
+import com.haulmont.cuba.gui.sys.UiDescriptorUtils;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.WebConfig;
+import com.haulmont.cuba.web.controllers.ControllerUtils;
 import com.haulmont.cuba.web.gui.UrlHandlingMode;
 import com.haulmont.cuba.web.gui.WebWindow;
 import com.haulmont.cuba.web.gui.components.mainwindow.WebAppWorkArea;
@@ -45,8 +51,10 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.google.common.base.Strings.nullToEmpty;
+import static com.haulmont.bali.util.Preconditions.checkNotEmptyString;
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 import static com.haulmont.cuba.gui.screen.UiControllerUtils.getScreenContext;
 
@@ -58,9 +66,12 @@ public class WebUrlRouting implements UrlRouting {
 
     @Inject
     protected Events events;
-
     @Inject
     protected WebConfig webConfig;
+    @Inject
+    protected WindowConfig windowConfig;
+    @Inject
+    protected Metadata metadata;
 
     protected AppUI ui;
 
@@ -101,6 +112,11 @@ public class WebUrlRouting implements UrlRouting {
         }
 
         return UrlTools.parseState(Page.getCurrent().getLocation().getRawFragment());
+    }
+
+    @Override
+    public RouteGenerator getRouteGenerator() {
+        return new RouteGeneratorImpl();
     }
 
     protected void updateState(Screen screen, Map<String, String> urlParams, boolean pushState) {
@@ -385,5 +401,119 @@ public class WebUrlRouting implements UrlRouting {
 
     public String getLastHistoryOperation() {
         return lastHistoryOperation;
+    }
+
+    protected class RouteGeneratorImpl implements RouteGenerator {
+
+        @Override
+        public String getRoute(String screenId, Map<String, String> urlParams) {
+            checkNotEmptyString(screenId, "Screen id cannot be empty");
+            checkNotNullArgument(urlParams, "URL params cannot be null");
+
+            WindowInfo windowInfo = windowConfig.getWindowInfo(screenId);
+
+            RouteDefinition screenRouteDef = windowInfo.getRouteDefinition();
+            if (screenRouteDef == null || StringUtils.isEmpty(screenRouteDef.getPath())) {
+                throw new IllegalStateException(
+                        String.format("Unable to generate route for screen '%s' - no registered route found", screenId));
+            }
+
+            StringBuilder routeBuilder = new StringBuilder(ControllerUtils.getLocationWithoutParams());
+
+            if (screenRouteDef.isRoot()) {
+                routeBuilder.append('#')
+                        .append(screenRouteDef.getPath());
+            } else {
+                Screen rootScreen = getOpenedScreens().getRootScreenOrNull();
+                if (rootScreen == null) {
+                    throw new IllegalStateException("Unable to generate route for non-root screen when no root screen exists");
+                }
+
+                RouteDefinition rootScreenRouteDef = getScreenContext(rootScreen).getWindowInfo().getRouteDefinition();
+                if (rootScreenRouteDef == null || StringUtils.isEmpty(rootScreenRouteDef.getPath())) {
+                    throw new IllegalStateException(
+                            String.format("Unable to generate route - no registered route found for root screen: '%s'", rootScreen));
+                }
+
+                routeBuilder.append('#')
+                        .append(rootScreenRouteDef.getPath())
+                        .append('/')
+                        .append(screenRouteDef.getPath());
+            }
+
+            if (!urlParams.isEmpty()) {
+                String paramsString = urlParams.entrySet()
+                        .stream()
+                        .map(param -> String.format("%s=%s", param.getKey(), param.getValue()))
+                        .collect(Collectors.joining("&"));
+
+                routeBuilder.append('?')
+                        .append(paramsString);
+            }
+
+            return routeBuilder.toString();
+        }
+
+        @Override
+        public String getRoute(Class<? extends Screen> screenClass, Map<String, String> urlParams) {
+            checkNotNullArgument(screenClass, "Screen class cannot be null");
+            checkNotNullArgument(urlParams, "URL params cannot be null");
+
+            return getRoute(getScreenId(screenClass), urlParams);
+        }
+
+        @Override
+        public String getEditorRoute(Entity entity, Map<String, String> urlParams) {
+            checkNotNullArgument(entity, "Entity cannot be null");
+            checkNotNullArgument(urlParams, "URL params cannot be null");
+
+            String editorId = windowConfig.getEditorScreenId(metadata.getClassNN(entity.getClass()));
+            Map<String, String> params = prepareEditorUrlParams(entity, urlParams);
+
+            return getRoute(editorId, params);
+        }
+
+        @Override
+        public String getEditorRoute(Entity entity, String screenId, Map<String, String> urlParams) {
+            checkNotNullArgument(entity, "Entity cannot be null");
+            checkNotEmptyString(screenId, "Editor screen id cannot be empty");
+            checkNotNullArgument(urlParams, "URL params cannot be null");
+
+            Map<String, String> params = prepareEditorUrlParams(entity, urlParams);
+
+            return getRoute(screenId, params);
+        }
+
+        @Override
+        public String getEditorRoute(Entity entity, Class<? extends Screen> screenClass, Map<String, String> urlParams) {
+            checkNotNullArgument(entity, "Entity cannot be null");
+            checkNotNullArgument(screenClass, "Editor screen id cannot be empty");
+            checkNotNullArgument(urlParams, "URL params cannot be null");
+
+            String screenId = getScreenId(screenClass);
+            Map<String, String> params = prepareEditorUrlParams(entity, urlParams);
+
+            return getRoute(screenId, params);
+        }
+
+        protected String getScreenId(Class<? extends Screen> screenClass) {
+            UiController uiController = screenClass.getAnnotation(UiController.class);
+            if (uiController == null) {
+                throw new IllegalArgumentException("No @UiController annotation for class " + screenClass);
+            }
+            return UiDescriptorUtils.getInferredScreenId(uiController, screenClass);
+        }
+
+        protected Map<String, String> prepareEditorUrlParams(Entity entity, Map<String, String> urlParams) {
+            if (entity.getId() == null) {
+                throw new IllegalArgumentException("Unable to generate route for an entity without id: " + entity);
+            }
+
+            Map<String, String> params = new LinkedHashMap<>(1 + urlParams.size());
+            params.put("id", UrlIdSerializer.serializeId(entity.getId()));
+            params.putAll(urlParams);
+
+            return params;
+        }
     }
 }
