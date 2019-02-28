@@ -40,6 +40,8 @@ import static com.google.common.base.Preconditions.checkArgument;
 
 public class CubaTree<T> extends Tree<T> implements Action.ShortcutNotifier {
 
+    protected String debugId;
+
     @Override
     protected TreeGrid<T> createTreeGrid() {
         return new CubaTreeGrid<>();
@@ -50,6 +52,16 @@ public class CubaTree<T> extends Tree<T> implements Action.ShortcutNotifier {
         super.setCubaId(cubaId);
 
         getCompositionRoot().setCubaId(cubaId);
+    }
+
+    @Override
+    public void setId(String id) {
+        debugId = "cubaTree_" + id;
+    }
+
+    @Override
+    public String getId() {
+        return debugId;
     }
 
     @SuppressWarnings("unchecked")
