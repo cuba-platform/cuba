@@ -329,9 +329,8 @@ public abstract class MasterDetailScreen<T extends Entity> extends StandardLooku
                     component.setEnabled(enabled);
                 }
             });
-        } else {
-            getForm().setEditable(enabled);
         }
+        getForm().setEditable(enabled);
         getActionsPane().setVisible(enabled);
         getLookupBox().setEnabled(!enabled);
     }
