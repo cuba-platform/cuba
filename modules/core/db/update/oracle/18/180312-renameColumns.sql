@@ -1,7 +1,9 @@
 -- Rename VALUE columns
 
-alter table SEC_USER_SETTING rename column VALUE to VALUE_^
+alter table SEC_USER_SETTING add VALUE_ clob^
+alter table SYS_CONFIG add VALUE_ clob^
+alter table SEC_PERMISSION add VALUE_ integer^
 
-alter table SYS_CONFIG rename column VALUE to VALUE_^
-
-alter table SEC_PERMISSION rename column VALUE to VALUE_^
+update SEC_USER_SETTING set VALUE_ = VALUE^
+update SYS_CONFIG set VALUE_ = VALUE^
+update SEC_PERMISSION set VALUE_ = VALUE^
