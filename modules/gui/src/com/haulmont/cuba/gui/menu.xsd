@@ -85,14 +85,22 @@
 
     <xs:complexType name="screenProperties">
         <xs:sequence>
-            <xs:element name="property" type="screenProperty" maxOccurs="unbounded"/>
+            <xs:element name="property" type="screenProperty" minOccurs="0" maxOccurs="unbounded"/>
         </xs:sequence>
     </xs:complexType>
 
     <xs:complexType name="screenProperty">
         <xs:attribute name="name" type="xs:string" use="required"/>
-        <xs:attribute name="value" type="xs:string" use="required"/>
+        <xs:attribute name="value" type="xs:string"/>
+
+        <xs:attributeGroup ref="screenPropertyEntity"/>
     </xs:complexType>
+
+    <xs:attributeGroup name="screenPropertyEntity">
+        <xs:attribute name="entityClass" type="xs:string"/>
+        <xs:attribute name="entityId" type="xs:string"/>
+        <xs:attribute name="entityView" type="xs:string"/>
+    </xs:attributeGroup>
 
     <xs:complexType name="separatorType">
         <xs:attributeGroup ref="insertGroup"/>

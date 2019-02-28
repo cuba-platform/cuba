@@ -22,6 +22,7 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.screen.OpenMode;
+import com.haulmont.cuba.gui.screen.Screen;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
@@ -490,6 +491,9 @@ public interface WindowManager extends Screens {
     Window.Editor openEditor(WindowInfo windowInfo, Entity item,
                              OpenType openType, Map<String, Object> params,
                              Datasource parentDs);
+
+    // used only for legacy screens
+    Screen createEditor(WindowInfo windowInfo, Entity item, OpenType openType, Map<String, Object> params);
 
     Window.Lookup openLookup(WindowInfo windowInfo, Window.Lookup.Handler handler,
                              OpenType openType, Map<String, Object> params);

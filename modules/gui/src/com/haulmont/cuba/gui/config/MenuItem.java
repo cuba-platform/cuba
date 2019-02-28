@@ -53,6 +53,10 @@ public class MenuItem {
         this.id = id;
     }
 
+    public MenuItem(String id) {
+        this(null, id);
+    }
+
     public boolean isMenu() {
         return isMenu;
     }

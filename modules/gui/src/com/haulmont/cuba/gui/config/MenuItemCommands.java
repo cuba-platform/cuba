@@ -17,8 +17,12 @@
 package com.haulmont.cuba.gui.config;
 
 import com.google.common.collect.ImmutableMap;
+import com.haulmont.bali.util.ReflectionHelper;
+import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.entity.IdProxy;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.BeanLocatorAware;
@@ -32,26 +36,25 @@ import com.haulmont.cuba.gui.screen.FrameOwner;
 import com.haulmont.cuba.gui.screen.MapScreenOptions;
 import com.haulmont.cuba.gui.screen.OpenMode;
 import com.haulmont.cuba.gui.screen.Screen;
-import com.haulmont.cuba.gui.sys.UiControllerPropertyInjector;
 import com.haulmont.cuba.gui.sys.UiControllerProperty;
+import com.haulmont.cuba.gui.sys.UiControllerPropertyInjector;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.MethodUtils;
 import org.dom4j.Element;
 import org.perf4j.StopWatch;
 import org.perf4j.slf4j.Slf4JStopWatch;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import static com.haulmont.cuba.gui.screen.UiControllerUtils.getScreenContext;
 
@@ -59,6 +62,7 @@ import static com.haulmont.cuba.gui.screen.UiControllerUtils.getScreenContext;
 public class MenuItemCommands {
 
     private static final org.slf4j.Logger userActionsLog = LoggerFactory.getLogger(UserActionsLogger.class);
+    private static final Logger log = LoggerFactory.getLogger(MenuItemCommands.class);
 
     @Inject
     protected DataService dataService;
@@ -100,6 +104,10 @@ public class MenuItemCommands {
     }
 
     protected Map<String, Object> loadParams(Element descriptor, String screen) {
+        if (descriptor == null) {
+            return Collections.emptyMap();
+        }
+
         ImmutableMap.Builder<String, Object> builder = ImmutableMap.builder();
 
         for (Element element : descriptor.elements("param")) {
@@ -136,8 +144,12 @@ public class MenuItemCommands {
         return builder.build();
     }
 
-    protected List<UiControllerProperty> loadProperties(Element element) {
-        Element propsEl = element.element("properties");
+    protected List<UiControllerProperty> loadProperties(Element menuItemDescriptor) {
+        if (menuItemDescriptor == null) {
+            return Collections.emptyList();
+        }
+
+        Element propsEl = menuItemDescriptor.element("properties");
         if (propsEl == null) {
             return Collections.emptyList();
         }
@@ -147,23 +159,86 @@ public class MenuItemCommands {
             return Collections.emptyList();
         }
 
-        List<UiControllerProperty> properties = new ArrayList<>(propElements.size());
+        return propElements.stream()
+                .map(this::loadUiControllerProperty)
+                .collect(Collectors.toList());
+    }
 
-        for (Element property : propElements) {
-            String name = property.attributeValue("name");
-            if (StringUtils.isEmpty(name)) {
-                throw new IllegalStateException("Screen property cannot have empty name");
-            }
-
-            String value = property.attributeValue("value");
-            if (StringUtils.isEmpty(value)) {
-                throw new IllegalStateException("Screen property cannot have empty value");
-            }
-
-            properties.add(new UiControllerProperty(name, value, UiControllerProperty.Type.VALUE));
+    protected UiControllerProperty loadUiControllerProperty(Element propertyElement) {
+        String propertyName = propertyElement.attributeValue("name");
+        if (StringUtils.isEmpty(propertyName)) {
+            throw new IllegalStateException("Screen property cannot have empty name");
         }
 
-        return properties;
+        String propertyValue = propertyElement.attributeValue("value");
+        if (StringUtils.isNotEmpty(propertyValue)) {
+            return new UiControllerProperty(propertyName, propertyValue, UiControllerProperty.Type.VALUE);
+        }
+
+        String entityClass = propertyElement.attributeValue("entityClass");
+        if (StringUtils.isEmpty(entityClass)) {
+            throw new IllegalStateException(String.format("Screen property '%s' has neither value nor entity load info", propertyName));
+        }
+
+        String entityId = propertyElement.attributeValue("entityId");
+        if (StringUtils.isEmpty(entityId)) {
+            throw new IllegalStateException(String.format("Screen entity property '%s' doesn't have entity id", propertyName));
+        }
+
+        MetaClass metaClass = metadata.getClassNN(ReflectionHelper.getClass(entityClass));
+
+        Object id = parseEntityId(metaClass, entityId);
+        if (id == null) {
+            throw new RuntimeException(String.format("Unable to parse id value `%s` for entity '%s'",
+                    entityId, entityClass));
+        }
+
+        LoadContext ctx = new LoadContext(metaClass)
+                .setId(id);
+
+        String entityView = propertyElement.attributeValue("entityView");
+        if (StringUtils.isNotEmpty(entityView)) {
+            ctx.setView(entityView);
+        }
+
+        //noinspection unchecked
+        Entity entity = dataService.load(ctx);
+        if (entity == null) {
+            throw new RuntimeException(String.format("Unable to load entity of class '%s' with id '%s'",
+                    entityClass, entityId));
+        }
+
+        return new UiControllerProperty(propertyName, entity, UiControllerProperty.Type.REFERENCE);
+    }
+
+    @Nullable
+    protected Object parseEntityId(MetaClass entityMetaClass, String entityId) {
+        MetaProperty pkProperty = metadata.getTools().getPrimaryKeyProperty(entityMetaClass);
+        if (pkProperty == null) {
+            return null;
+        }
+
+        Class<?> pkType = pkProperty.getJavaType();
+
+        if (String.class.equals(pkType)) {
+            return entityId;
+        } else if (UUID.class.equals(pkType)) {
+            return UUID.fromString(entityId);
+        }
+
+        Object id = null;
+
+        try {
+            if (Long.class.equals(pkType) || IdProxy.class.equals(pkType)) {
+                id = Long.valueOf(entityId);
+            } else if (Integer.class.equals(pkType)) {
+                id = Integer.valueOf(entityId);
+            }
+        } catch (Exception e) {
+            log.debug("Failed to parse entity id: '{}'", entityId, e);
+        }
+
+        return id;
     }
 
     protected Entity loadEntityInstance(EntityLoadInfo info) {
@@ -187,16 +262,16 @@ public class MenuItemCommands {
         protected String screen;
         protected Element descriptor;
         protected Map<String, Object> params;
-        protected List<UiControllerProperty> properties;
+        protected List<UiControllerProperty> controllerProperties;
 
         protected ScreenCommand(FrameOwner origin, MenuItem item,
-                                String screen, Element descriptor, Map<String, Object> params, List<UiControllerProperty> properties) {
+                                String screen, Element descriptor, Map<String, Object> params, List<UiControllerProperty> controllerProperties) {
             this.origin = origin;
             this.item = item;
             this.screen = screen;
             this.descriptor = descriptor;
             this.params = new HashMap<>(params); // copy map values only for compatibility with legacy screens
-            this.properties = properties;
+            this.controllerProperties = controllerProperties;
         }
 
         @Override
@@ -218,17 +293,56 @@ public class MenuItemCommands {
                 }
             }
 
-            String screenId = this.screen;
-
             Screens screens = getScreenContext(origin).getScreens();
+
+            String screenId = this.screen;
+            Screen screen;
+            WindowInfo windowInfo = windowConfig.getWindowInfo(this.screen);
 
             if (screenId.endsWith(Window.CREATE_WINDOW_SUFFIX)
                     || screenId.endsWith(Window.EDITOR_WINDOW_SUFFIX)) {
-                // only for legacy screens
+                if (windowInfo.getDescriptor() != null) {
+                    // legacy editor
+                    screen = ((WindowManager) screens).createEditor(windowInfo, getEntityToEdit(screenId), openType, params);
+                } else {
+                    screen = screens.create(screenId, openType.getOpenMode(), new MapScreenOptions(params));
+                }
+            } else {
+                screen = screens.create(screenId, openType.getOpenMode(), new MapScreenOptions(params));
+            }
 
-                Entity entityItem;
-                if (params.containsKey("item")) {
-                    entityItem = (Entity) params.get("item");
+            // inject declarative properties
+
+            List<UiControllerProperty> properties = this.controllerProperties;
+            if (windowInfo.getDescriptor() != null) {
+                properties = properties.stream()
+                        .filter(prop -> !"entityToEdit".equals(prop.getName()))
+                        .collect(Collectors.toList());
+            }
+
+            UiControllerPropertyInjector propertyInjector = beanLocator.getPrototype(UiControllerPropertyInjector.NAME,
+                    screen, properties);
+            propertyInjector.inject();
+
+            screens.showFromNavigation(screen);
+
+            sw.stop();
+        }
+
+        protected Entity getEntityToEdit(String screenId) {
+            Entity entityItem;
+
+            if (params.containsKey("item")) {
+                entityItem = (Entity) params.get("item");
+            } else {
+                Object entityToEdit = controllerProperties.stream()
+                        .filter(prop -> "entityToEdit".equals(prop.getName()))
+                        .findFirst()
+                        .map(UiControllerProperty::getValue)
+                        .orElse(null);
+
+                if (entityToEdit instanceof Entity) {
+                    entityItem = (Entity) entityToEdit;
                 } else {
                     String[] strings = screenId.split("[.]");
                     String metaClassName;
@@ -242,22 +356,8 @@ public class MenuItemCommands {
 
                     entityItem = metadata.create(metaClassName);
                 }
-
-                WindowInfo windowInfo = windowConfig.getWindowInfo(this.screen);
-                ((WindowManager) screens).openEditor(windowInfo, entityItem, openType, params);
-
-            } else {
-                Screen screen = screens.create(screenId, openType.getOpenMode(), new MapScreenOptions(params));
-
-                // inject declarative properties
-                UiControllerPropertyInjector propertyInjector = beanLocator.getPrototype(UiControllerPropertyInjector.NAME,
-                        screen, properties);
-                propertyInjector.inject();
-
-                screens.showFromNavigation(screen);
             }
-
-            sw.stop();
+            return entityItem;
         }
 
         @Override

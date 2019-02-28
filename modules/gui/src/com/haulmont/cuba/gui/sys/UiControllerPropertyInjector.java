@@ -67,7 +67,6 @@ public class UiControllerPropertyInjector {
     public void inject() {
         for (UiControllerProperty property : properties) {
             String propName = property.getName();
-
             Method setter = findSuitableSetter(propName);
             if (setter == null) {
                 log.info("Unable to find suitable setter for property '{}'. Its value will not be injected into '{}'",
@@ -75,13 +74,17 @@ public class UiControllerPropertyInjector {
                 continue;
             }
 
-            Class<?> propType = setter.getParameterTypes()[0];
-            Object value = parseParamValue(property, propType);
+            Object value = property.getValue();
 
-            if (value == null) {
-                log.info("Unable to parse '{}' as '{}' for property '{}'. It will not be injected into '{}'",
-                        property.getValue(), propType, propName, frameOwner);
-                continue;
+            if (value instanceof String) {
+                Class<?> propType = setter.getParameterTypes()[0];
+                value = parseParamValue(property, propType);
+
+                if (value == null) {
+                    log.info("Unable to parse '{}' as '{}' for property '{}'. It will not be injected into '{}'",
+                            property.getValue(), propType, propName, frameOwner);
+                    continue;
+                }
             }
 
             try {
@@ -120,25 +123,26 @@ public class UiControllerPropertyInjector {
 
     protected Object parsePrimitive(UiControllerProperty property, Class propType) {
         Object value = null;
+        String stringProperty = ((String) property.getValue());
 
         try {
             if (Byte.class == propType || Byte.TYPE == propType) {
-                value = Byte.valueOf(property.getValue());
+                value = Byte.valueOf(stringProperty);
 
             } else if (Short.class == propType || Short.TYPE == propType) {
-                value = Short.valueOf(property.getValue());
+                value = Short.valueOf(stringProperty);
 
             } else if (Integer.class == propType || Integer.TYPE == propType) {
-                value = Integer.valueOf(property.getValue());
+                value = Integer.valueOf(stringProperty);
 
             } else if (Long.class == propType || Long.TYPE == propType) {
-                value = Long.valueOf(property.getValue());
+                value = Long.valueOf(stringProperty);
 
             } else if (Float.class == propType || Float.TYPE == propType) {
-                value = Float.valueOf(property.getValue());
+                value = Float.valueOf(stringProperty);
 
             } else if (Double.class == propType || Double.TYPE == propType) {
-                value = Double.valueOf(property.getValue());
+                value = Double.valueOf(stringProperty);
             }
         } catch (NumberFormatException e) {
             log.info("Unable to parse '{}' as '{}'. Property value '{}' will not be injected into '{}'",
@@ -146,7 +150,7 @@ public class UiControllerPropertyInjector {
         }
 
         if (Boolean.class == propType || Boolean.TYPE == propType) {
-            value = Boolean.valueOf(property.getValue());
+            value = Boolean.valueOf(stringProperty);
         } else if (String.class == propType) {
             value = property.getValue();
         }
@@ -157,23 +161,24 @@ public class UiControllerPropertyInjector {
     @Nullable
     protected Object findObjectByRef(UiControllerProperty property, Class<?> propType) {
         Object value = null;
+        String stringProp = (String) property.getValue();
 
         if (Component.class.isAssignableFrom(propType)) {
-            value = findComponent(property.getValue());
+            value = findComponent(stringProp);
             if (value == null) {
                 log.info("Unable to find component with id '{}'. Property value '{}' will not be injected into '{}'",
                         property.getValue(), property.getName(), frameOwner);
             }
 
         } else if (InstanceContainer.class.isAssignableFrom(propType)) {
-            value = findDataContainer(property.getValue());
+            value = findDataContainer(stringProp);
             if (value == null) {
                 log.info("Unable to find data container with id '{}'. Property value '{}' will not be injected into '{}'",
                         property.getValue(), property.getName(), frameOwner);
             }
 
         } else if (Datasource.class.isAssignableFrom(propType)) {
-            value = findDatasource(property.getValue());
+            value = findDatasource(stringProp);
             if (value == null) {
                 log.info("Unable to find datasource with id '{}'. Property value '{}' will not be injected into '{}'",
                         property.getValue(), property.getName(), frameOwner);

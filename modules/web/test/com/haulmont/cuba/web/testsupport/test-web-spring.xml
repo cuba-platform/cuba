@@ -19,4 +19,6 @@
 
     <bean id="cuba_UserSessionSource" class="com.haulmont.cuba.client.testsupport.TestUserSessionSource"/>
 
+    <bean id="cuba_TestWebBean" class="spec.cuba.web.menu.commandtargets.TestWebBean"/>
+
 </beans>

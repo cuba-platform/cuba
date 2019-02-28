@@ -1166,6 +1166,16 @@ public class WebScreens implements Screens, WindowManager {
     @SuppressWarnings({"deprecation", "IncorrectCreateGuiComponent"})
     @Override
     public Window.Editor openEditor(WindowInfo windowInfo, Entity item, OpenType openType, Map<String, Object> params) {
+        Screen editor = createEditor(windowInfo, item, openType, params);
+
+        editor.show();
+
+        return editor instanceof Window.Editor ? (Window.Editor) editor : new ScreenEditorWrapper(editor);
+    }
+
+    // used only for legacy screens
+    @Override
+    public Screen createEditor(WindowInfo windowInfo, Entity item, OpenType openType, Map<String, Object> params) {
         params = createParametersMap(windowInfo, params);
         params.put(WindowParams.ITEM.name(), item);
 
@@ -1175,9 +1185,11 @@ public class WebScreens implements Screens, WindowManager {
         applyOpenTypeParameters(screen.getWindow(), openType);
 
         EditorScreen editorScreen = (EditorScreen) screen;
+
+        //noinspection unchecked
         editorScreen.setEntityToEdit(item);
-        show(screen);
-        return screen instanceof Window.Editor ? (Window.Editor) screen : new ScreenEditorWrapper(screen);
+
+        return screen;
     }
 
     @SuppressWarnings({"deprecation", "IncorrectCreateGuiComponent"})

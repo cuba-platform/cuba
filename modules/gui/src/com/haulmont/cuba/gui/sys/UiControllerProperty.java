@@ -28,12 +28,12 @@ import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 public class UiControllerProperty {
 
     protected final String name;
-    protected final String value;
+    protected final Object value;
     protected final Type type;
 
-    public UiControllerProperty(String name, String value, Type type) {
+    public UiControllerProperty(String name, Object value, Type type) {
         checkNotEmptyString(name, "Controller property name cannot be empty");
-        checkNotEmptyString(value, "Controller property value cannot be empty");
+        checkNotNullArgument(value, "Controller property value cannot be null");
         checkNotNullArgument(type, "Controller property type cannot be null");
 
         this.name = name;
@@ -45,7 +45,7 @@ public class UiControllerProperty {
         return name;
     }
 
-    public String getValue() {
+    public Object getValue() {
         return value;
     }
 
