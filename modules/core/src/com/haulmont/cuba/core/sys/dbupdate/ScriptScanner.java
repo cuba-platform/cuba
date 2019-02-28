@@ -142,7 +142,7 @@ public class ScriptScanner {
         try {
             return Arrays.stream(resourceResolver.getResources(urlPattern))
                     .map(ScriptResource::new)
-                    .collect(Collectors.toMap(ScriptResource::getName, Function.identity()));
+                    .collect(Collectors.toMap(ScriptResource::getPath, Function.identity()));
         } catch (FileNotFoundException e) {
             //just return empty map
             return Collections.emptyMap();
