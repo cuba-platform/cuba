@@ -18,8 +18,8 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.bali.events.EventHub;
 import com.haulmont.cuba.core.global.BeanLocator;
+import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.ContentMode;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.HasContextHelp;
 import com.haulmont.cuba.gui.components.HasDebugId;
@@ -28,6 +28,7 @@ import com.haulmont.cuba.gui.components.HasHtmlDescription;
 import com.haulmont.cuba.gui.components.SizeUnit;
 import com.haulmont.cuba.gui.components.sys.FrameImplementation;
 import com.haulmont.cuba.gui.icons.Icons;
+import com.haulmont.cuba.gui.sys.TestIdManager;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.gui.icons.IconResolver;
 import com.vaadin.server.Resource;
@@ -37,6 +38,7 @@ import com.vaadin.shared.Registration;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Layout;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.dom4j.Element;
 
 import javax.inject.Inject;
@@ -110,6 +112,10 @@ public abstract class WebAbstractComponent<T extends com.vaadin.ui.Component>
         if (frame instanceof FrameImplementation) {
             ((FrameImplementation) frame).registerComponent(this);
         }
+
+        if (getDebugId() == null) {
+            assignDebugId();
+        }
     }
 
     @Override
@@ -151,9 +157,34 @@ public abstract class WebAbstractComponent<T extends com.vaadin.ui.Component>
                 }
             }
 
+            assignDebugId();
+
             if (frame != null) {
                 ((FrameImplementation) frame).registerComponent(this);
             }
+        }
+    }
+
+    protected void assignDebugId() {
+        AppUI ui = AppUI.getCurrent();
+        if (ui == null) {
+            return;
+        }
+
+        if (this.component == null
+                || frame == null
+                || StringUtils.isEmpty(frame.getId())) {
+            return;
+        }
+
+        if (ui.isPerformanceTestMode() && getDebugId() == null) {
+            String fullFrameId = ComponentsHelper.getFullFrameId(frame);
+            TestIdManager testIdManager = ui.getTestIdManager();
+
+            String alternativeId = id != null ? id : getClass().getSimpleName();
+            String candidateId = fullFrameId + "." + alternativeId;
+
+            setDebugId(testIdManager.getTestId(candidateId));
         }
     }
 

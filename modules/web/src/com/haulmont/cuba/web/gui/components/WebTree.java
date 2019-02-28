@@ -306,6 +306,20 @@ public class WebTree<E extends Entity>
     }
 
     @Override
+    public void setDebugId(String id) {
+        super.setDebugId(id);
+
+        AppUI ui = AppUI.getCurrent();
+        if (id != null
+                && ui != null
+                && ui.isPerformanceTestMode()) {
+            //noinspection unchecked
+            TreeComposition composition = (TreeComposition) getComposition();
+            composition.getTree().setId("cubaTree_" + ui.getTestIdManager().getTestId(id));
+        }
+    }
+
+    @Override
     public void setId(String id) {
         super.setId(id);
 
