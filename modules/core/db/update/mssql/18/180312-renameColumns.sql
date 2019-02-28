@@ -1,7 +1,9 @@
 -- Rename VALUE columns
 
-exec sp_rename 'SEC_USER_SETTING.VALUE',  'VALUE_', 'COLUMN';
-
-exec sp_rename 'SYS_CONFIG.VALUE', 'VALUE_', 'COLUMN';
-
-exec sp_rename 'SEC_PERMISSION.VALUE', 'VALUE_', 'COLUMN';
+alter table SEC_USER_SETTING add VALUE_ varchar(max);
+alter table SYS_CONFIG add VALUE_ varchar(max);
+alter table SEC_PERMISSION add VALUE_ integer;
+^
+update SEC_USER_SETTING set VALUE_ = VALUE;
+update SYS_CONFIG set VALUE_ = VALUE;
+update SEC_PERMISSION set VALUE_ = VALUE;
