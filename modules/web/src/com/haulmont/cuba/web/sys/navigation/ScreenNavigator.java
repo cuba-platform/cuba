@@ -16,6 +16,7 @@
 
 package com.haulmont.cuba.web.sys.navigation;
 
+import com.haulmont.bali.datastruct.Pair;
 import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
@@ -160,7 +161,11 @@ public class ScreenNavigator {
             return true;
         }
 
-        String[] routeParts = requestedRoute.split("/");
+        String[] routeParts = {requestedRoute};
+        if (windowConfig.findWindowInfoByRoute(requestedRoute) == null) {
+            routeParts = requestedRoute.split("/");
+        }
+
         if (routeParts.length > 2) {
             log.info("Unable to perform navigation to requested state '{}'. " +
                     "Only two nested routes navigation is supported", requestedRoute);
@@ -168,23 +173,23 @@ public class ScreenNavigator {
             return true;
         }
 
-        Map<String, WindowInfo> routeWindowInfos = new LinkedHashMap<>(routeParts.length);
+        List<Pair<String, WindowInfo>> routeWindowInfos = new ArrayList<>(routeParts.length);
         for (String routePart : routeParts) {
-            routeWindowInfos.put(routePart, windowConfig.findWindowInfoByRoute(routePart));
+            routeWindowInfos.add(new Pair<>(routePart, windowConfig.findWindowInfoByRoute(routePart)));
         }
 
-        for (Map.Entry<String, WindowInfo> entry : routeWindowInfos.entrySet()) {
-            if (entry.getValue() == null) {
-                log.info("No registered screen found for route: '{}'", entry.getKey());
+        for (Pair<String, WindowInfo> entry : routeWindowInfos) {
+            if (entry.getSecond() == null) {
+                log.info("No registered screen found for route: '{}'", entry.getFirst());
 
                 owner.revertNavigationState();
-                handle404(entry.getKey());
+                handle404(entry.getFirst());
 
                 return true;
             }
 
-            if (isRootRoute(entry.getValue())) {
-                log.info("Unable navigate to '{}' as nested screen", entry.getValue().getId());
+            if (isRootRoute(entry.getSecond())) {
+                log.info("Unable navigate to '{}' as nested screen", entry.getSecond().getId());
                 owner.revertNavigationState();
 
                 return true;
@@ -196,14 +201,14 @@ public class ScreenNavigator {
         String[] currentRouteParts = currentState.getNestedRoute()
                 .split("/");
 
-        for (Map.Entry<String, WindowInfo> entry : routeWindowInfos.entrySet()) {
-            if (skipNavigation(requestedState, subRouteIdx, currentState, currentRouteParts, entry.getKey())) {
+        for (Pair<String, WindowInfo> entry : routeWindowInfos) {
+            if (skipNavigation(requestedState, subRouteIdx, currentState, currentRouteParts, entry.getFirst())) {
                 subRouteIdx++;
 
                 continue;
             }
 
-            openScreen(requestedState, entry.getKey(), entry.getValue());
+            openScreen(requestedState, entry.getFirst(), entry.getSecond());
 
             subRouteIdx++;
         }
