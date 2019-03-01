@@ -18,15 +18,14 @@ package com.haulmont.cuba.fetchjoin;
 
 import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Transaction;
-import com.haulmont.cuba.core.global.FetchMode;
-import com.haulmont.cuba.core.global.Metadata;
-import com.haulmont.cuba.core.global.View;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.testmodel.fetchjoin.*;
 import com.haulmont.cuba.testsupport.TestContainer;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
+
 import java.math.BigDecimal;
 
 import static org.junit.Assert.assertEquals;
@@ -49,6 +48,10 @@ public class FetchJoinTest {
     protected Product product;
     protected Order order;
     protected OrderLine orderLine;
+
+    protected JoinUser user;
+    protected JoinType type;
+    protected JoinClassType classType;
 
     @Before
     public void setUp() throws Exception {
@@ -121,6 +124,20 @@ public class FetchJoinTest {
             orderLine.setQuantity(1);
             em.persist(orderLine);
 
+            classType = metadata.create(JoinClassType.class);
+            classType.setName("classType");
+            em.persist(classType);
+
+            type = metadata.create(JoinType.class);
+            type.setName("type");
+            type.setClassType(classType);
+            em.persist(type);
+
+            user = metadata.create(JoinUser.class);
+            user.setName("user");
+            user.setType(type);
+            em.persist(user);
+
             tx.commit();
         } finally {
             tx.end();
@@ -131,6 +148,7 @@ public class FetchJoinTest {
     public void tearDown() throws Exception {
         cont.deleteRecord(joinA, joinB, joinC, joinD, joinE, joinF);
         cont.deleteRecord(orderLine, order, product, salesPerson, customer, partyCustomer, partyPerson);
+        cont.deleteRecord(classType, type, user);
     }
 
     @Test
@@ -187,5 +205,28 @@ public class FetchJoinTest {
             assertEquals(partyPerson, reloadedOrderLine.getOrder().getSalesPerson().getParty());
             tx.commit();
         }
+    }
+
+    @Test
+    public void testLoadingJoinedInheritance() throws Exception {
+        View typeLocalView = new View(JoinType.class).addProperty("name");
+        View classTypeView = new View(JoinClassType.class)
+                .addProperty("name")
+                .addProperty("types", typeLocalView);
+        View typeView = new View(JoinType.class)
+                .addProperty("name")
+                .addProperty("classType", classTypeView);
+        View userView = new View(JoinUser.class)
+                .addProperty("name")
+                .addProperty("type", typeView);
+
+        DataManager dataManager = AppBeans.get(DataManager.class);
+        JoinUser reloadedUser = dataManager.load(JoinUser.class)
+                .id(user.getId())
+                .view(userView).one();
+
+        assertNotNull(reloadedUser);
+        assertEquals(type, reloadedUser.getType());
+        assertEquals(classType, reloadedUser.getType().getClassType());
     }
 }
