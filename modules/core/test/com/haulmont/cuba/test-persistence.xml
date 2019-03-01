@@ -113,5 +113,12 @@
         <class>com.haulmont.cuba.testmodel.entitycache_unfetched.CompositeTwo</class>
         <class>com.haulmont.cuba.testmodel.entitycache_unfetched.CompositePropertyOne</class>
         <class>com.haulmont.cuba.testmodel.entitycache_unfetched.CompositePropertyTwo</class>
+
+        <class>com.haulmont.cuba.testmodel.fetchjoin.BaseJoinType</class>
+        <class>com.haulmont.cuba.testmodel.fetchjoin.JoinType</class>
+        <class>com.haulmont.cuba.testmodel.fetchjoin.JoinClassType</class>
+        <class>com.haulmont.cuba.testmodel.fetchjoin.JoinUser</class>
+        <class>com.haulmont.cuba.testmodel.fetchjoin.ExtJoinUser</class>
+
     </persistence-unit>
 </persistence>

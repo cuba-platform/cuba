@@ -1129,3 +1129,57 @@ alter table TEST_COMPOSITE_PROPERTY_ONE add constraint FK_TEST_COMPOSITE_PROPERT
     foreign key (COMPOSITE_TWO_ID) references TEST_COMPOSITE_TWO(ID)^
 alter table TEST_COMPOSITE_PROPERTY_TWO add constraint FK_TEST_COMPOSITE_PROPERTY_TWO_TWO
     foreign key (COMPOSITE_TWO_ID) references TEST_COMPOSITE_TWO(ID)^
+
+------------------------------------------------------------------------------------------------------------------------
+create table TEST_BASE_JOIN_TYPE (
+    ID varchar(36),
+    VERSION integer not null,
+    CREATE_TS timestamp,
+    CREATED_BY varchar(50),
+    UPDATE_TS timestamp,
+    UPDATED_BY varchar(50),
+    DELETE_TS timestamp,
+    DELETED_BY varchar(50),
+    DTYPE varchar(31),
+    --
+    NAME varchar(255),
+    --
+    primary key (ID)
+)^
+
+create table TEST_JOIN_TYPE (
+    ID varchar(36),
+    --
+    CLASS_TYPE_ID varchar(36) not null,
+    --
+    primary key (ID)
+)^
+
+create table TEST_JOIN_CLASS_TYPE (
+    ID varchar(36),
+    --
+    primary key (ID)
+)^
+
+create table TEST_JOIN_USER (
+    ID varchar(36),
+    VERSION integer not null,
+    CREATE_TS timestamp,
+    CREATED_BY varchar(50),
+    UPDATE_TS timestamp,
+    UPDATED_BY varchar(50),
+    DELETE_TS timestamp,
+    DELETED_BY varchar(50),
+    DTYPE varchar(31),
+    --
+    TYPE_ID varchar(36),
+    NAME varchar(255),
+    --
+    primary key (ID)
+)^
+
+create table TEST_EXT_JOIN_USER (
+    ID varchar(36),
+    --
+    primary key (ID)
+)^
