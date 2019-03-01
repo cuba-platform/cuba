@@ -22,10 +22,7 @@ import com.haulmont.chile.core.model.MetaModel;
 import com.haulmont.chile.core.model.Session;
 import com.haulmont.chile.core.model.impl.MetaModelImpl;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class CachingMetadataSession implements Session {
 
@@ -88,6 +85,6 @@ public class CachingMetadataSession implements Session {
 
     @Override
     public Collection<MetaClass> getClasses() {
-        return new ArrayList<>(classByClass.values());
+        return new LinkedHashSet<>(classByClass.values());
     }
 }
