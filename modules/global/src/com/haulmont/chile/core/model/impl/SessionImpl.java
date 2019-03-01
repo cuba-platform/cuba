@@ -17,13 +17,15 @@
 
 package com.haulmont.chile.core.model.impl;
 
-import java.util.*;
-
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaModel;
 import com.haulmont.chile.core.model.Session;
 
 import javax.annotation.Nullable;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.Map;
 
 public class SessionImpl implements Session {
 
@@ -91,7 +93,7 @@ public class SessionImpl implements Session {
 
     @Override
     public Collection<MetaClass> getClasses() {
-        final List<MetaClass> classes = new ArrayList<>();
+        Collection<MetaClass> classes = new LinkedHashSet<>();
         for (MetaModel model : models.values()) {
             classes.addAll(model.getClasses());
         }
