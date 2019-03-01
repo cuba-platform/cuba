@@ -628,9 +628,10 @@ public class ExcelExporter {
             HSSFCell cell = row.createCell(c);
 
             DataGrid.Column column = columns.get(c);
-            Object cellValue;
+            Object cellValue = null;
 
             MetaPropertyPath propertyPath = null;
+            DataGrid.ColumnGenerator generator;
             if (column.getPropertyPath() != null) {
                 propertyPath = column.getPropertyPath();
 
@@ -639,8 +640,7 @@ public class ExcelExporter {
                 if (column.getFormatter() != null) {
                     cellValue = column.getFormatter().format(cellValue);
                 }
-            } else {
-                DataGrid.ColumnGenerator generator = dataGrid.getColumnGenerator(column.getId());
+            } else if ((generator = dataGrid.getColumnGenerator(column.getId())) != null) {
                 DataGrid.ColumnGeneratorEvent event =
                         new DataGrid.ColumnGeneratorEvent(dataGrid, instance, column.getId());
                 cellValue = generator.getValue(event);
