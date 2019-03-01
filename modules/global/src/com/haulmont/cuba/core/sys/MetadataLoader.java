@@ -308,7 +308,9 @@ public class MetadataLoader {
                 extendedEntities.registerReplacedMetaClass(replacedMetaClass);
 
                 MetaClassImpl effectiveMetaClass = (MetaClassImpl) replace.getSecond();
-                modelImpl.registerClass(replacedMetaClass.getName(), replacedMetaClass.getJavaClass(), effectiveMetaClass);
+                if (modelImpl.getClass(effectiveMetaClass.getName()) == null) {
+                    modelImpl.registerClass(replacedMetaClass.getName(), replacedMetaClass.getJavaClass(), effectiveMetaClass);
+                }
             }
         }
 
