@@ -503,7 +503,6 @@ public abstract class MasterDetailScreen<T extends Entity> extends StandardLooku
      * @param <E> type of entity
      * @see #addInitEntityListener(Consumer)
      */
-    @TriggerOnce
     public static class InitEntityEvent<E> extends EventObject {
         private final E entity;
 
