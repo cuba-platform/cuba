@@ -17,9 +17,8 @@
 
 package com.haulmont.cuba.web.widgets.client.combobox;
 
-import com.google.gwt.event.dom.client.KeyCodes;
-import com.google.gwt.event.dom.client.KeyDownEvent;
-import com.google.gwt.event.dom.client.KeyUpEvent;
+import com.google.gwt.event.dom.client.*;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.HasEnabled;
@@ -30,7 +29,8 @@ import com.vaadin.client.ui.VComboBox;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-public class CubaComboBoxWidget extends VComboBox implements ShortcutActionHandler.ShortcutActionHandlerOwner, HasEnabled {
+public class CubaComboBoxWidget extends VComboBox
+        implements ShortcutActionHandler.ShortcutActionHandlerOwner, HasEnabled, HasFocusHandlers {
 
     private static final String READONLY_STYLE_SUFFIX = "readonly";
     private static final String PROMPT_STYLE = "prompt";
@@ -156,5 +156,10 @@ public class CubaComboBoxWidget extends VComboBox implements ShortcutActionHandl
 
     public void setTabIndex(int tabIndex) {
         this.tabIndex = tabIndex;
+    }
+
+    @Override
+    public HandlerRegistration addFocusHandler(FocusHandler handler) {
+        return tb.addFocusHandler(handler);
     }
 }
