@@ -249,23 +249,23 @@ public abstract class AbstractDataGridLoader<T extends DataGrid> extends Actions
     }
 
     protected void loadBodyRowHeight(DataGrid dataGrid, Element element) {
-        String bodyRowHeight = element.attributeValue("bodyRowHeight");
-        if (StringUtils.isNotEmpty(bodyRowHeight)) {
-            dataGrid.setBodyRowHeight(Integer.parseInt(bodyRowHeight));
+        Integer bodyRowHeight = loadSizeInPx(element, "bodyRowHeight");
+        if (bodyRowHeight != null) {
+            dataGrid.setBodyRowHeight(bodyRowHeight);
         }
     }
 
     protected void loadHeaderRowHeight(DataGrid dataGrid, Element element) {
-        String headerRowHeight = element.attributeValue("headerRowHeight");
-        if (StringUtils.isNotEmpty(headerRowHeight)) {
-            dataGrid.setHeaderRowHeight(Integer.parseInt(headerRowHeight));
+        Integer headerRowHeight = loadSizeInPx(element, "headerRowHeight");
+        if (headerRowHeight != null) {
+            dataGrid.setHeaderRowHeight(headerRowHeight);
         }
     }
 
     protected void loadFooterRowHeight(DataGrid dataGrid, Element element) {
-        String footerRowHeight = element.attributeValue("footerRowHeight");
-        if (StringUtils.isNotEmpty(footerRowHeight)) {
-            dataGrid.setFooterRowHeight(Integer.parseInt(footerRowHeight));
+        Integer footerRowHeight = loadSizeInPx(element, "footerRowHeight");
+        if (footerRowHeight != null) {
+            dataGrid.setFooterRowHeight(footerRowHeight);
         }
     }
 
@@ -412,17 +412,17 @@ public abstract class AbstractDataGridLoader<T extends DataGrid> extends Actions
 
         ((Component.HasXmlDescriptor) column).setXmlDescriptor(element);
 
-        Integer width = loadWidth(element, "width");
+        Integer width = loadSizeInPx(element, "width");
         if (width != null) {
             column.setWidth(width);
         }
 
-        Integer minimumWidth = loadWidth(element, "minimumWidth");
+        Integer minimumWidth = loadSizeInPx(element, "minimumWidth");
         if (minimumWidth != null) {
             column.setMinimumWidth(minimumWidth);
         }
 
-        Integer maximumWidth = loadWidth(element, "maximumWidth");
+        Integer maximumWidth = loadSizeInPx(element, "maximumWidth");
         if (maximumWidth != null) {
             column.setMaximumWidth(maximumWidth);
         }
@@ -442,18 +442,18 @@ public abstract class AbstractDataGridLoader<T extends DataGrid> extends Actions
     }
 
     @Nullable
-    protected Integer loadWidth(Element element, String propertyName) {
-        String width = loadThemeString(element.attributeValue(propertyName));
-        if (!StringUtils.isBlank(width)) {
-            if (StringUtils.endsWith(width, "px")) {
-                width = StringUtils.substring(width, 0, width.length() - 2);
+    protected Integer loadSizeInPx(Element element, String propertyName) {
+        String value = loadThemeString(element.attributeValue(propertyName));
+        if (!StringUtils.isBlank(value)) {
+            if (StringUtils.endsWith(value, "px")) {
+                value = StringUtils.substring(value, 0, value.length() - 2);
             }
             try {
                 // Only integer allowed in XML
-                return Integer.parseInt(width);
+                return Integer.parseInt(value);
             } catch (NumberFormatException e) {
                 throw new GuiDevelopmentException("Property '" + propertyName + "' must contain only numeric value",
-                        context.getCurrentFrameId(), propertyName, element.attributeValue("width"));
+                        context.getCurrentFrameId(), propertyName, element.attributeValue(propertyName));
             }
         }
         return null;
