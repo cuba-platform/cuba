@@ -15,6 +15,49 @@
  *
  */
 
+/**
+ * The max width of range when menu toggle button caption is not shown
+ * @group sidemenu
+ */
+$cuba-responsive-sidemenu-togglebutton-caption-disappeared-max-width-range: 500px !default;
+
+/**
+ * The max width of range when menu toggle button is shown
+ * @group sidemenu
+ */
+$cuba-responsive-sidemenu-togglebutton-appeared-max-width-range: 800px !default;
+
+/**
+ * The max width of range when small style side menu is shown
+ * @group sidemenu
+ */
+$cuba-responsive-sidemenu-small-style-max-width-range: 1100px !default;
+
+/**
+ * Whether use custom width for side menu, small side menu and toggled side menu
+ * @group sidemenu
+ */
+$cuba-responsive-sidemenu-use-custom-width: false !default;
+
+/**
+ * Responsive sidemenu width
+ * @group sidemenu
+ */
+$cuba-responsive-sidemenu-width: auto !default;
+
+/**
+ * Responsive side menu width when it is in range between $cuba-responsive-sidemenu-togglebutton-appeared-max-width-range
+ * and $cuba-responsive-sidemenu-small-style-max-width-range
+ * @group sidemenu
+ */
+$cuba-responsive-sidemenu-small-width: $v-unit-size * 3 !default;
+
+/**
+ * Responsive side menu width when it is opened using a menu toggle button
+ * @group sidemenu
+ */
+$cuba-responsive-sidemenu-toggled-menu-width: $cuba-responsive-sidemenu-small-width !default;
+
 @mixin side-menu-large-icons-style($primary-stylename: c-sidemenu) {
   $bg: $cuba-sidemenu-background-color;
 
@@ -53,15 +96,26 @@
   & .#{$primary-stylename}-wrap > * {
     min-width: $v-unit-size * 3;
     max-width: $v-unit-size * 4;
+
+    @if $cuba-responsive-sidemenu-use-custom-width {
+      max-width: $cuba-responsive-sidemenu-small-width;
+    }
   }
 
   .v-ie & {
     max-width: $v-unit-size * 4 + 18px;
+    @if $cuba-responsive-sidemenu-use-custom-width {
+      max-width: $cuba-responsive-sidemenu-small-width;
+    }
 
     .#{$primary-stylename}-title,
     .#{$primary-stylename}-wrap,
     .#{$primary-stylename}-wrap > * {
       max-width: $v-unit-size * 4 + 18px;
+
+      @if $cuba-responsive-sidemenu-use-custom-width {
+        max-width: $cuba-responsive-sidemenu-small-width;
+      }
     }
   }
 
@@ -70,7 +124,7 @@
     font-size: round($v-font-size * 1.6);
     line-height: 1;
     padding: round($v-unit-size/3);
-    text-align: center;
+    text-align: left;
     border-top: valo-border($color: $bg, $strength: 0.2, $border: first-number($v-border) solid v-tone);
 
     &:first-child {
@@ -418,13 +472,17 @@ $cuba-sidemenu-userindicator-font-weight: $v-font-weight !default;
       }
     }
 
-    @include width-range($min: 801px, $max: 1100px) {
+    @include width-range($min: $cuba-responsive-sidemenu-togglebutton-appeared-max-width-range + 1px, $max: $cuba-responsive-sidemenu-small-style-max-width-range) {
       .#{$primary-stylename}-panel {
         @include side-menu-large-icons-style;
+
+        @if $cuba-responsive-sidemenu-use-custom-width {
+          width: $cuba-responsive-sidemenu-small-width;
+        }
       }
     }
 
-    @include width-range($max: 800px) {
+    @include width-range($max: $cuba-responsive-sidemenu-togglebutton-appeared-max-width-range) {
       padding-top: $cuba-sidemenu-top-height;
 
       .#{$primary-stylename}-panel {
@@ -480,6 +538,10 @@ $cuba-sidemenu-userindicator-font-weight: $v-font-weight !default;
           @include transition(transform 300ms);
         }
 
+        @if $cuba-responsive-sidemenu-use-custom-width {
+          width: $cuba-responsive-sidemenu-toggled-menu-width;
+        }
+
         .v-edge & {
           @include transition(none);
         }
@@ -490,9 +552,19 @@ $cuba-sidemenu-userindicator-font-weight: $v-font-weight !default;
       }
     }
 
-    @include width-range($max: 500px) {
+    @include width-range($max: $cuba-responsive-sidemenu-togglebutton-caption-disappeared-max-width-range) {
       .#{$primary-stylename}-toggle .v-button-caption {
         display: none;
+      }
+    }
+
+    @if $cuba-responsive-sidemenu-use-custom-width {
+      .#{$primary-stylename}-panel {
+        width: $cuba-responsive-sidemenu-width;
+
+        .#{$primary-stylename}-item [class*="caption"] {
+            max-width: initial;
+        }
       }
     }
   }
