@@ -29,6 +29,10 @@ $cuba-filter-friendly-search-button: false !default;
   .#{$primary-stylename} .filter-control-with-top-border {
     border-top: valo-border();
     padding-top: 5px;
+
+    .v-ff & {
+      min-height: $v-unit-size + 6px; // padding + border top
+    }
   }
 
   .#{$primary-stylename} > .border-hidden {
