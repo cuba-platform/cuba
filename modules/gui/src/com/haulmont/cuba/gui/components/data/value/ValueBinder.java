@@ -263,10 +263,12 @@ public class ValueBinder {
             }
         }
 
-        @SuppressWarnings("unchecked")
         protected void componentValueChanged(@SuppressWarnings("unused") HasValue.ValueChangeEvent event) {
             if (!isBuffered()) {
-                setValueToSource((V) event.getValue());
+                // do not use event.getValue() because it can be already stale due to another value change listener
+                // always read value from component instead
+                V componentValue = component.getValue();
+                setValueToSource(componentValue);
             }
         }
 
@@ -277,9 +279,12 @@ public class ValueBinder {
             }
         }
 
-        protected void sourceValueChanged(ValueSource.ValueChangeEvent<V> event) {
+        protected void sourceValueChanged(@SuppressWarnings("unused") ValueSource.ValueChangeEvent<V> event) {
             if (!isBuffered()) {
-                component.setValue(event.getValue());
+                // do not use event.getValue() because it can be already stale due to another value change listener
+                // always read value from source instead
+                V sourceValue = source.getValue();
+                component.setValue(sourceValue);
             }
         }
 
