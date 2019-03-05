@@ -1709,7 +1709,11 @@ public class WebScreens implements Screens, WindowManager {
 
     protected void showDialogWindow(Screen screen) {
         DialogWindow window = (DialogWindow) screen.getWindow();
-        ((WebWindow) window).setUrlStateMark(getConfiguredWorkArea().generateUrlStateMark());
+
+        WebAppWorkArea workArea = getConfiguredWorkAreaOrNull();
+        if (workArea != null) {
+            ((WebWindow) window).setUrlStateMark(workArea.generateUrlStateMark());
+        }
 
         CubaWindow vWindow = window.unwrapComposition(CubaWindow.class);
         vWindow.setErrorHandler(ui);
@@ -1754,7 +1758,8 @@ public class WebScreens implements Screens, WindowManager {
     protected void handleTabWindowClose(HasTabSheetBehaviour targetTabSheet, com.vaadin.ui.Component tabContent) {
         WindowBreadCrumbs tabBreadCrumbs = ((TabWindowContainer) tabContent).getBreadCrumbs();
 
-        if (getConfiguredWorkArea().isNotCloseable(tabBreadCrumbs.getCurrentWindow())) {
+        WebAppWorkArea workArea = getConfiguredWorkAreaOrNull();
+        if (workArea != null && workArea.isNotCloseable(tabBreadCrumbs.getCurrentWindow())) {
             return;
         }
 
@@ -1776,7 +1781,8 @@ public class WebScreens implements Screens, WindowManager {
         public void run() {
             Window windowToClose = breadCrumbs.getCurrentWindow();
             if (windowToClose != null) {
-                if (!getConfiguredWorkArea().isNotCloseable(breadCrumbs.getCurrentWindow())
+                WebAppWorkArea workArea = getConfiguredWorkAreaOrNull();
+                if ((workArea == null || !workArea.isNotCloseable(breadCrumbs.getCurrentWindow()))
                         && !isWindowClosePrevented(windowToClose, CloseOriginType.CLOSE_BUTTON)) {
                     windowToClose.getFrameOwner()
                             .close(WINDOW_CLOSE_ACTION)
