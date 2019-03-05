@@ -18,9 +18,7 @@
 package com.haulmont.cuba.web.app.mainwindow;
 
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.mainwindow.AppMenu;
-import com.haulmont.cuba.gui.components.mainwindow.FoldersPane;
-import com.haulmont.cuba.gui.components.mainwindow.FtsField;
+import com.haulmont.cuba.gui.components.mainwindow.*;
 import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.widgets.CubaHorizontalSplitPanel;
@@ -36,9 +34,6 @@ public class AppMainWindow extends AbstractMainWindow {
 
     @Inject
     protected BoxLayout titleBar;
-
-    @Inject
-    protected FoldersPane foldersPane;
 
     @Inject
     protected SplitPanel foldersSplit;
@@ -90,5 +85,20 @@ public class AppMainWindow extends AbstractMainWindow {
 
             expand(workArea);
         }
+    }
+
+    @Inject
+    public void setWorkArea(AppWorkArea workArea) {
+        this.workArea = workArea;
+    }
+
+    @Inject
+    public void setUserIndicator(UserIndicator userIndicator) {
+        this.userIndicator = userIndicator;
+    }
+
+    @Inject
+    public void setFoldersPane(FoldersPane foldersPane) {
+        this.foldersPane = foldersPane;
     }
 }
