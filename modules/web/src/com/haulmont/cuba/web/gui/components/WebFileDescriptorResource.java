@@ -25,6 +25,8 @@ import com.haulmont.cuba.gui.components.FileDescriptorResource;
 import com.vaadin.server.StreamResource;
 import org.apache.commons.lang.StringUtils;
 
+import java.util.UUID;
+
 public class WebFileDescriptorResource extends WebAbstractStreamSettingsResource
         implements WebResource, FileDescriptorResource {
 
@@ -54,7 +56,17 @@ public class WebFileDescriptorResource extends WebAbstractStreamSettingsResource
 
     @Override
     protected void createResource() {
-        String name = StringUtils.isNotEmpty(fileName) ? fileName : fileDescriptor.getName();
+        StringBuilder name = new StringBuilder();
+
+        if (StringUtils.isNotEmpty(fileName)) {
+            name.append(fileName)
+                    .append('-');
+        } else if (StringUtils.isNotEmpty(fileDescriptor.getName())) {
+            name.append(fileDescriptor.getName())
+                    .append('-');
+        }
+
+        name.append(UUID.randomUUID().toString());
 
         resource = new StreamResource(() -> {
             try {
@@ -62,7 +74,7 @@ public class WebFileDescriptorResource extends WebAbstractStreamSettingsResource
             } catch (FileStorageException e) {
                 throw new RuntimeException(FILE_STORAGE_EXCEPTION_MESSAGE, e);
             }
-        }, name);
+        }, name.toString());
 
         StreamResource streamResource = (StreamResource) this.resource;
 
