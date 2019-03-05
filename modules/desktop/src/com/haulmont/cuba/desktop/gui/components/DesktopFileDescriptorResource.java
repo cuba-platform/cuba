@@ -17,15 +17,15 @@
 package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.bali.util.Preconditions;
-import com.haulmont.cuba.core.app.FileStorageService;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.FileLoader;
 import com.haulmont.cuba.core.global.FileStorageException;
 import com.haulmont.cuba.gui.components.FileDescriptorResource;
-import com.haulmont.cuba.gui.export.ByteArrayDataProvider;
 
 import javax.imageio.ImageIO;
 import java.io.IOException;
+import java.io.InputStream;
 
 public class DesktopFileDescriptorResource extends DesktopAbstractStreamSettingsResource
         implements DesktopResource, FileDescriptorResource {
@@ -58,11 +58,10 @@ public class DesktopFileDescriptorResource extends DesktopAbstractStreamSettings
     @Override
     protected void createResource() {
         try {
-            byte[] file = AppBeans.get(FileStorageService.class)
-                    .loadFile(fileDescriptor);
-            ByteArrayDataProvider provider = new ByteArrayDataProvider(file);
+            InputStream stream = AppBeans.get(FileLoader.class)
+                    .openStream(fileDescriptor);
 
-            resource = ImageIO.read(provider.provide());
+            resource = ImageIO.read(stream);
         } catch (FileStorageException e) {
             throw new RuntimeException(FILE_STORAGE_EXCEPTION_MESSAGE, e);
         } catch (IOException e) {
