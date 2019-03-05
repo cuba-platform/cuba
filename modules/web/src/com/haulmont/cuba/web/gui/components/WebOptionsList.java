@@ -32,7 +32,10 @@ import com.vaadin.v7.data.util.IndexedContainer;
 import org.springframework.beans.factory.InitializingBean;
 
 import javax.inject.Inject;
-import java.util.*;
+import java.util.Collection;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -136,15 +139,15 @@ public class WebOptionsList<V, I> extends WebAbstractField<CubaListSelect, V>
 
     @Override
     public V getValue() {
-        return convertToModel(component.getValue());
+        return internalValue;
     }
 
     @Override
     public void setValue(V value) {
-        super.setValue(value);
-
         V oldValue = internalValue;
         internalValue = value;
+
+        setValueToPresentation(convertToPresentation(value));
 
         if (isMultiSelect()) {
             //noinspection unchecked
@@ -272,20 +275,6 @@ public class WebOptionsList<V, I> extends WebAbstractField<CubaListSelect, V>
     }
 
     protected boolean isCollectionValuesChanged(Collection<I> value, Collection<I> oldValue) {
-        if (value == null && oldValue == null) {
-            return false;
-        } else if (value == null || oldValue == null) {
-            return true;
-        }
-
-        if (value.size() != oldValue.size()) {
-            return true;
-        }
-        for (I item : value) {
-            if (!oldValue.contains(item)) {
-                return true;
-            }
-        }
-        return false;
+        return value != oldValue;
     }
 }
