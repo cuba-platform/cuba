@@ -24,6 +24,10 @@ import com.haulmont.cuba.core.config.defaults.*;
 import com.haulmont.cuba.core.config.type.CommaSeparatedStringListTypeFactory;
 import com.haulmont.cuba.core.config.type.Factory;
 import com.haulmont.cuba.core.config.type.StringListTypeFactory;
+import com.haulmont.cuba.web.app.login.LoginScreen;
+import com.haulmont.cuba.web.app.loginwindow.AppLoginWindow;
+import com.haulmont.cuba.web.app.main.MainScreen;
+import com.haulmont.cuba.web.app.mainwindow.AppMainWindow;
 import com.haulmont.cuba.web.gui.MainTabSheetMode;
 import com.haulmont.cuba.web.gui.MainTabSheetModeFactory;
 import com.haulmont.cuba.web.gui.ManagedMainTabSheetMode;
@@ -492,4 +496,28 @@ public interface WebConfig extends Config {
     @Property("cuba.web.unsupportedPagePath")
     @DefaultString("/com/haulmont/cuba/web/sys/unsupported-page-template.html")
     String getUnsupportedPagePath();
+
+    /**
+     * Defines the screen that will be used as Login screen: new {@link LoginScreen} or legacy {@link AppLoginWindow}.
+     * <p>
+     * Set the property to "{@code login}" to use new {@link LoginScreen} or "{@code loginWindow}" to use legacy
+     * {@link AppLoginWindow}.
+     *
+     * @return login screen id
+     */
+    @Property("cuba.web.loginScreenId")
+    @DefaultString("login")
+    String getLoginScreenId();
+
+    /**
+     * Defines the screen that will be used as Main screen: new {@link MainScreen} or legacy {@link AppMainWindow}.
+     * <p>
+     * Set the property to "{@code main}" to use new {@link MainScreen} or "{@code mainWindow}" to use legacy
+     * {@link AppMainWindow}.
+     *
+     * @return main screen id
+     */
+    @Property("cuba.web.mainScreenId")
+    @DefaultString("main")
+    String getMainScreenId();
 }

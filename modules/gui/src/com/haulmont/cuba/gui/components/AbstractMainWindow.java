@@ -28,7 +28,6 @@ import com.haulmont.cuba.gui.components.mainwindow.FtsField;
 import com.haulmont.cuba.gui.components.mainwindow.UserIndicator;
 import com.haulmont.cuba.gui.events.UserRemovedEvent;
 import com.haulmont.cuba.gui.events.UserSubstitutionsChangedEvent;
-import com.haulmont.cuba.gui.screen.MainScreen;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.annotation.Order;
@@ -37,18 +36,22 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 
 /**
- * Base class for a controller of application Main window.
+ * Legacy base class for a controller of application Main window.
  */
-public class AbstractMainWindow extends AbstractTopLevelWindow implements MainScreen {
-
-    private AppWorkArea workArea;
-    private UserIndicator userIndicator;
-    private FoldersPane foldersPane;
+public class AbstractMainWindow extends AbstractTopLevelWindow
+        implements Window.HasWorkArea, Window.HasUserIndicator, Window.HasFoldersPane {
 
     @Inject
     protected Screens screens;
     @Inject
     protected ScreenTools screenTools;
+
+    @Inject
+    protected AppWorkArea workArea;
+    @Inject
+    protected UserIndicator userIndicator;
+    @Inject
+    protected FoldersPane foldersPane;
 
     @Override
     @Nullable
@@ -57,30 +60,15 @@ public class AbstractMainWindow extends AbstractTopLevelWindow implements MainSc
     }
 
     @Override
-    public void setWorkArea(AppWorkArea workArea) {
-        this.workArea = workArea;
-    }
-
-    @Override
     @Nullable
     public UserIndicator getUserIndicator() {
         return userIndicator;
-    }
-
-    @Override
-    public void setUserIndicator(UserIndicator userIndicator) {
-        this.userIndicator = userIndicator;
     }
 
     @Nullable
     @Override
     public FoldersPane getFoldersPane() {
         return foldersPane;
-    }
-
-    @Override
-    public void setFoldersPane(FoldersPane foldersPane) {
-        this.foldersPane = foldersPane;
     }
 
     protected void initLogoImage(Image logoImage) {

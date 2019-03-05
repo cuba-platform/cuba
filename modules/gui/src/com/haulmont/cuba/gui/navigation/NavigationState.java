@@ -97,7 +97,11 @@ public class NavigationState {
      * @return current state combined into URL fragment, e.g. {@code main/0/orders?status=shipped}
      */
     public String asRoute() {
-        StringBuilder route = new StringBuilder(root);
+        StringBuilder route = new StringBuilder();
+
+        if (StringUtils.isNotEmpty(root)) {
+            route.append(root);
+        }
 
         if (StringUtils.isNotEmpty(stateMark)) {
             route.append('/').append(stateMark);

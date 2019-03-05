@@ -203,11 +203,10 @@ public class DefaultApp extends App {
 
     @Override
     protected String routeTopLevelWindowId() {
-        // todo demo only
         if (connection.isAuthenticated()) {
-            return "mainWindow";
+            return webConfig.getMainScreenId();
         } else {
-            return "loginWindow";
+            return webConfig.getLoginScreenId();
         }
     }
 

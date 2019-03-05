@@ -47,7 +47,7 @@ class MenuItemCommandsTest extends UiScreenSpec {
         def configuration = new UiControllersConfiguration()
         configuration.applicationContext = cont.getApplicationContext()
         configuration.metadataReaderFactory = cont.getBean(MetadataReaderFactory)
-        configuration.basePackages = ['spec.cuba.web.menu.commandtargets']
+        configuration.basePackages = ['spec.cuba.web.menu.commandtargets', 'com.haulmont.cuba.web.app.main']
 
         def windowConfig = cont.getBean(WindowConfig)
         windowConfig.configurations = [configuration]

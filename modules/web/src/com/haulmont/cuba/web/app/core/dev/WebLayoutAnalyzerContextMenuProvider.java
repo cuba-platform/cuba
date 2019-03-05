@@ -23,9 +23,9 @@ import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.app.core.dev.LayoutAnalyzer;
 import com.haulmont.cuba.gui.app.core.dev.LayoutTip;
-import com.haulmont.cuba.gui.components.AbstractWindow;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Frame.NotificationType;
+import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.dev.LayoutAnalyzerContextMenuProvider;
 import com.haulmont.cuba.web.widgets.addons.contextmenu.ContextMenu;
 import com.vaadin.ui.AbstractComponent;
@@ -36,6 +36,7 @@ import java.util.List;
 
 @org.springframework.stereotype.Component(LayoutAnalyzerContextMenuProvider.NAME)
 public class WebLayoutAnalyzerContextMenuProvider implements LayoutAnalyzerContextMenuProvider {
+
     @Inject
     protected Messages messages;
 
@@ -43,7 +44,7 @@ public class WebLayoutAnalyzerContextMenuProvider implements LayoutAnalyzerConte
     protected Configuration configuration;
 
     @Override
-    public void initContextMenu(AbstractWindow window, Component contextMenuTarget) {
+    public void initContextMenu(Window window, Component contextMenuTarget) {
         ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
         if (clientConfig.getLayoutAnalyzerEnabled()) {
             ContextMenu contextMenu = new ContextMenu(contextMenuTarget.unwrap(AbstractComponent.class), true);

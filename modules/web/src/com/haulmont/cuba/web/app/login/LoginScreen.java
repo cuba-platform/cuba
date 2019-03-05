@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2016 Haulmont.
+ * Copyright (c) 2008-2019 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,11 +14,19 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.web.app.loginwindow;
+package com.haulmont.cuba.web.app.login;
 
+import com.haulmont.bali.events.Subscription;
 import com.haulmont.bali.util.URLEncodeUtils;
 import com.haulmont.cuba.core.global.GlobalConfig;
+import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.gui.Notifications;
+import com.haulmont.cuba.gui.Route;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.screen.Screen;
+import com.haulmont.cuba.gui.screen.Subscribe;
+import com.haulmont.cuba.gui.screen.UiController;
+import com.haulmont.cuba.gui.screen.UiDescriptor;
 import com.haulmont.cuba.security.app.UserManagementService;
 import com.haulmont.cuba.security.auth.AbstractClientCredentials;
 import com.haulmont.cuba.security.auth.Credentials;
@@ -31,7 +39,6 @@ import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.Connection;
 import com.haulmont.cuba.web.WebConfig;
-import com.haulmont.cuba.web.app.login.LoginScreen;
 import com.haulmont.cuba.web.auth.WebAuthConfig;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
@@ -40,23 +47,25 @@ import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.util.Locale;
-import java.util.Map;
 import java.util.function.Consumer;
 
 /**
- * Legacy base class for a controller of application Login window.
- *
- * @see LoginScreen
+ * Base class for Login screen.
  */
-public class AppLoginWindow extends AbstractWindow implements Window.TopLevelWindow {
+@Route(path = "login", root = true)
+@UiDescriptor("login-screen.xml")
+@UiController("login")
+public class LoginScreen extends Screen {
 
-    private static final Logger log = LoggerFactory.getLogger(AppLoginWindow.class);
+    private static final Logger log = LoggerFactory.getLogger(LoginScreen.class);
 
     protected static final ThreadLocal<AuthInfo> authInfoThreadLocal = new ThreadLocal<>();
 
     public static final String COOKIE_REMEMBER_ME = "rememberMe";
     public static final String COOKIE_LOGIN = "rememberMe.Login";
     public static final String COOKIE_PASSWORD = "rememberMe.Password";
+    private Subscription loginFieldSubscription;
+    private Subscription passwordFieldSubscription;
 
     public static class AuthInfo {
         private String login;
@@ -84,34 +93,31 @@ public class AppLoginWindow extends AbstractWindow implements Window.TopLevelWin
 
     @Inject
     protected GlobalConfig globalConfig;
-
     @Inject
     protected WebConfig webConfig;
-
     @Inject
     protected WebAuthConfig webAuthConfig;
 
     @Inject
     protected UserManagementService userManagementService;
+    @Inject
+    protected Messages messages;
+    @Inject
+    protected Notifications notifications;
 
     @Inject
     protected App app;
-
     @Inject
     protected Connection connection;
 
     @Inject
     protected Image logoImage;
-
     @Inject
     protected TextField<String> loginField;
-
     @Inject
     protected CheckBox rememberMeCheckBox;
-
     @Inject
     protected PasswordField passwordField;
-
     @Inject
     protected LookupField<Locale> localesSelect;
 
@@ -119,10 +125,8 @@ public class AppLoginWindow extends AbstractWindow implements Window.TopLevelWin
 
     protected Consumer<HasValue.ValueChangeEvent<String>> loginChangeListener;
 
-    @Override
-    public void init(Map<String, Object> params) {
-        super.init(params);
-
+    @Subscribe
+    protected void onInit(InitEvent event) {
         loginField.focus();
 
         initPoweredByLink();
@@ -139,7 +143,7 @@ public class AppLoginWindow extends AbstractWindow implements Window.TopLevelWin
     }
 
     protected void initPoweredByLink() {
-        Component poweredByLink = getComponent("poweredByLink");
+        Component poweredByLink = getWindow().getComponent("poweredByLink");
         if (poweredByLink != null) {
             poweredByLink.setVisible(webConfig.getLoginDialogPoweredByLinkVisible());
         }
@@ -153,17 +157,18 @@ public class AppLoginWindow extends AbstractWindow implements Window.TopLevelWin
         localesSelect.setVisible(localeSelectVisible);
 
         // if old layout is used
-        Component localesSelectLabel = getComponent("localesSelectLabel");
+        Component localesSelectLabel = getWindow().getComponent("localesSelectLabel");
         if (localesSelectLabel != null) {
             localesSelectLabel.setVisible(localeSelectVisible);
         }
 
         localesSelect.addValueChangeListener(e -> {
-            Locale selectedLocale = (Locale) e.getValue();
+            Locale selectedLocale = e.getValue();
 
             app.setLocale(selectedLocale);
 
-            authInfoThreadLocal.set(new AuthInfo(loginField.getValue(), passwordField.getValue(),
+            authInfoThreadLocal.set(new AuthInfo(loginField.getValue(),
+                    passwordField.getValue(),
                     rememberMeCheckBox.getValue()));
             try {
                 app.createTopLevelWindow();
@@ -205,13 +210,13 @@ public class AppLoginWindow extends AbstractWindow implements Window.TopLevelWin
                 loginByRememberMe = true;
             }
 
-            loginField.addValueChangeListener(loginChangeListener);
-            passwordField.addValueChangeListener(loginChangeListener);
+            loginFieldSubscription = loginField.addValueChangeListener(loginChangeListener);
+            passwordFieldSubscription = passwordField.addValueChangeListener(loginChangeListener);
         }
     }
 
     protected void initRememberMeLocalesBox() {
-        Component rememberLocalesBox = getComponent("rememberLocalesBox");
+        Component rememberLocalesBox = getWindow().getComponent("rememberLocalesBox");
         if (rememberLocalesBox != null) {
             rememberLocalesBox.setVisible(rememberMeCheckBox.isVisible() || localesSelect.isVisible());
         }
@@ -250,19 +255,25 @@ public class AppLoginWindow extends AbstractWindow implements Window.TopLevelWin
         String title = messages.getMainMessage("loginWindow.loginFailed", app.getLocale());
         String message = messages.getMainMessage("loginWindow.pleaseContactAdministrator", app.getLocale());
 
-        showNotification(title, message, NotificationType.ERROR);
+        notifications.create(Notifications.NotificationType.ERROR)
+                .withCaption(title)
+                .withDescription(message)
+                .show();
     }
 
     protected void showLoginException(String message) {
         String title = messages.getMainMessage("loginWindow.loginFailed", app.getLocale());
 
-        showNotification(title, message, NotificationType.ERROR);
+        notifications.create(Notifications.NotificationType.ERROR)
+                .withCaption(title)
+                .withDescription(message)
+                .show();
 
         if (loginByRememberMe) {
             loginByRememberMe = false;
 
-            loginField.removeValueChangeListener(loginChangeListener);
-            passwordField.removeValueChangeListener(loginChangeListener);
+            loginFieldSubscription.remove();
+            passwordFieldSubscription.remove();
         }
     }
 
@@ -310,7 +321,9 @@ public class AppLoginWindow extends AbstractWindow implements Window.TopLevelWin
         String password = passwordField.getValue() != null ? passwordField.getValue() : "";
 
         if (StringUtils.isEmpty(login) || StringUtils.isEmpty(password)) {
-            showNotification(messages.getMainMessage("loginWindow.emptyLoginOrPassword"), NotificationType.WARNING);
+            notifications.create(Notifications.NotificationType.WARNING)
+                    .withCaption(messages.getMainMessage("loginWindow.emptyLoginOrPassword"))
+                    .show();
             return;
         }
 

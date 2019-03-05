@@ -19,7 +19,6 @@ package com.haulmont.cuba.web.app.mainwindow;
 
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.mainwindow.AppMenu;
-import com.haulmont.cuba.gui.components.mainwindow.AppWorkArea;
 import com.haulmont.cuba.gui.components.mainwindow.FoldersPane;
 import com.haulmont.cuba.gui.components.mainwindow.FtsField;
 import com.haulmont.cuba.web.WebConfig;
@@ -34,9 +33,6 @@ public class AppMainWindow extends AbstractMainWindow {
 
     @Inject
     protected AppMenu mainMenu;
-
-    @Inject
-    protected AppWorkArea workArea;
 
     @Inject
     protected BoxLayout titleBar;

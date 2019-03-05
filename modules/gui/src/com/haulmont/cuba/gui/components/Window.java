@@ -570,13 +570,6 @@ public interface Window extends Frame, Component.HasCaption, Component.HasIcon {
     }
 
     /**
-     * @deprecated Use {@link MainScreen}
-     */
-    @Deprecated
-    interface MainWindow extends MainScreen {
-    }
-
-    /**
      * Listener to be notified when a screen is closed.
      */
     interface CloseListener {

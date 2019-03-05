@@ -42,7 +42,7 @@ class TimeFieldDatatypeTest extends UiScreenSpec {
         def configuration = new UiControllersConfiguration()
         configuration.applicationContext = cont.getApplicationContext()
         configuration.metadataReaderFactory = cont.getBean(MetadataReaderFactory)
-        configuration.basePackages = ['spec.cuba.web.components.timefield.screens']
+        configuration.basePackages = ['spec.cuba.web.components.timefield.screens', 'com.haulmont.cuba.web.app.main']
 
         def windowConfig = cont.getBean(WindowConfig)
         windowConfig.configurations = [configuration]

@@ -40,7 +40,7 @@ class DateFieldDatatypeTest extends UiScreenSpec {
         def configuration = new UiControllersConfiguration()
         configuration.applicationContext = cont.getApplicationContext()
         configuration.metadataReaderFactory = cont.getBean(MetadataReaderFactory)
-        configuration.basePackages = ['spec.cuba.web.components.datefield.screens']
+        configuration.basePackages = ['spec.cuba.web.components.datefield.screens', 'com.haulmont.cuba.web.app.main']
 
         def windowConfig = cont.getBean(WindowConfig)
         windowConfig.configurations = [configuration]

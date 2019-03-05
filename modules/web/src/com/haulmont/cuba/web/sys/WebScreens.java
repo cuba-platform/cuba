@@ -32,8 +32,6 @@ import com.haulmont.cuba.gui.components.actions.BaseAction;
 import com.haulmont.cuba.gui.components.compatibility.SelectHandlerAdapter;
 import com.haulmont.cuba.gui.components.mainwindow.AppWorkArea;
 import com.haulmont.cuba.gui.components.mainwindow.AppWorkArea.Mode;
-import com.haulmont.cuba.gui.components.mainwindow.FoldersPane;
-import com.haulmont.cuba.gui.components.mainwindow.UserIndicator;
 import com.haulmont.cuba.gui.components.sys.WindowImplementation;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
@@ -93,7 +91,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
-import static com.haulmont.cuba.gui.ComponentsHelper.walkComponents;
 import static com.haulmont.cuba.gui.logging.UIPerformanceLogger.createStopWatch;
 import static com.haulmont.cuba.gui.screen.FrameOwner.WINDOW_CLOSE_ACTION;
 import static com.haulmont.cuba.gui.screen.UiControllerUtils.*;
@@ -1028,23 +1025,6 @@ public class WebScreens implements Screens, WindowManager {
     }
 
     protected void showRootWindow(Screen screen) {
-        if (screen instanceof MainScreen) {
-            MainScreen mainScreen = (MainScreen) screen;
-
-            // bind system UI components to AbstractMainWindow
-            walkComponents(screen.getWindow(), component -> {
-                if (component instanceof AppWorkArea) {
-                    mainScreen.setWorkArea((AppWorkArea) component);
-                } else if (component instanceof UserIndicator) {
-                    mainScreen.setUserIndicator((UserIndicator) component);
-                } else if (component instanceof FoldersPane) {
-                    mainScreen.setFoldersPane((FoldersPane) component);
-                }
-
-                return false;
-            });
-        }
-
         ui.setTopLevelWindow((RootWindow) screen.getWindow());
     }
 

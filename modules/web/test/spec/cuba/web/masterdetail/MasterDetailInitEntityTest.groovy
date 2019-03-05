@@ -43,7 +43,7 @@ class MasterDetailInitEntityTest extends UiScreenSpec {
         def configuration = new UiControllersConfiguration()
         configuration.applicationContext = cont.getApplicationContext()
         configuration.metadataReaderFactory = cont.getBean(MetadataReaderFactory)
-        configuration.basePackages = ['spec.cuba.web.masterdetail.screens']
+        configuration.basePackages = ['spec.cuba.web.masterdetail.screens', 'com.haulmont.cuba.web.app.main']
 
         windowConfig.configurations = [configuration]
         windowConfig.initialized = false
