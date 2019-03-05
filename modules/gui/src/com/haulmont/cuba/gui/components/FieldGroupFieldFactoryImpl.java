@@ -17,14 +17,22 @@
 package com.haulmont.cuba.gui.components;
 
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributes;
+import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
+import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.RuntimePropsDatasource;
+import com.haulmont.cuba.gui.dynamicattributes.DynamicAttributeCustomFieldGenerator;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
+import org.apache.commons.lang.BooleanUtils;
 
 import javax.inject.Inject;
 
 @org.springframework.stereotype.Component(FieldGroupFieldFactory.NAME)
 public class FieldGroupFieldFactoryImpl implements FieldGroupFieldFactory {
+
+    @Inject
+    protected DynamicAttributes dynamicAttributes;
 
     @Inject
     protected ComponentsFactory componentsFactory;
@@ -36,6 +44,16 @@ public class FieldGroupFieldFactoryImpl implements FieldGroupFieldFactory {
 
     protected GeneratedField createFieldComponent(FieldGroup.FieldConfig fc) {
         MetaClass metaClass = resolveMetaClass(fc.getTargetDatasource());
+
+        if (DynamicAttributesUtils.isDynamicAttribute(fc.getProperty())) {
+            CategoryAttribute attribute = dynamicAttributes.getAttributeForMetaClass(metaClass, fc.getProperty());
+            if (attribute != null && BooleanUtils.isTrue(attribute.getIsCollection())) {
+                FieldGroup.CustomFieldGenerator fieldGenerator = new DynamicAttributeCustomFieldGenerator();
+
+                Component fieldComponent = fieldGenerator.generateField(fc.getTargetDatasource(), fc.getProperty());
+                return new GeneratedField(fieldComponent);
+            }
+        }
 
         ComponentGenerationContext context = new ComponentGenerationContext(metaClass, fc.getProperty())
                 .setDatasource(fc.getTargetDatasource())

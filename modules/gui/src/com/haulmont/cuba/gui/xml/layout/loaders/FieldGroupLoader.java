@@ -188,24 +188,6 @@ public class FieldGroupLoader extends AbstractComponentLoader<FieldGroup> {
         }
     }
 
-    protected void applyPermissions(Component fieldComponent) {
-        if (fieldComponent instanceof DatasourceComponent) {
-            DatasourceComponent dsComponent = (DatasourceComponent) fieldComponent;
-            MetaPropertyPath propertyPath = dsComponent.getMetaPropertyPath();
-            Datasource datasource = dsComponent.getDatasource();
-
-            if (datasource != null && propertyPath != null) {
-                MetaClass metaClass = datasource.getMetaClass();
-                if (!security.isEntityAttrUpdatePermitted(metaClass, propertyPath.toString())) {
-                    dsComponent.setEditable(false);
-                }
-                if (!security.isEntityAttrReadPermitted(metaClass, propertyPath.toString())) {
-                    dsComponent.setVisible(false);
-                }
-            }
-        }
-    }
-
     protected List<FieldGroup.FieldConfig> loadDynamicAttributeFields(Datasource ds) {
         if (ds != null && metadataTools.isPersistent(ds.getMetaClass())) {
             String windowId = ComponentsHelper.getWindow(resultComponent).getId();
@@ -231,15 +213,6 @@ public class FieldGroupLoader extends AbstractComponentLoader<FieldGroup> {
                             attribute.getLocaleName()));
                     loadWidth(field, attribute.getWidth());
 
-                    // Currently, ListEditor does not support datasource binding so we create custom field
-                    if (BooleanUtils.isTrue(attribute.getIsCollection())) {
-                        CustomFieldGenerator fieldGenerator = new DynamicAttributeCustomFieldGenerator();
-
-                        Component fieldComponent = fieldGenerator.generateField(ds, DynamicAttributesUtils.encodeAttributeCode(attribute.getCode()));
-                        field.setCustom(true);
-                        field.setComponent(fieldComponent);
-                        applyPermissions(fieldComponent);
-                    }
                     fields.add(field);
                 }
 
