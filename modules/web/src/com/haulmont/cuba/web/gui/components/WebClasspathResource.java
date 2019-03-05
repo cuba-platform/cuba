@@ -24,6 +24,8 @@ import com.vaadin.server.StreamResource;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 
+import java.util.UUID;
+
 public class WebClasspathResource extends WebAbstractStreamSettingsResource implements WebResource, ClasspathResource {
 
     protected String path;
@@ -49,10 +51,22 @@ public class WebClasspathResource extends WebAbstractStreamSettingsResource impl
 
     @Override
     protected void createResource() {
-        String name = StringUtils.isNotEmpty(fileName) ? fileName : FilenameUtils.getName(path);
+        StringBuilder name = new StringBuilder();
+
+        if (StringUtils.isNotEmpty(fileName)) {
+            name.append(fileName)
+                    .append('-');
+        } else {
+            String nameByPath = FilenameUtils.getName(path);
+            if (StringUtils.isNotEmpty(nameByPath)) {
+                name.append(nameByPath)
+                        .append('-');
+            }
+        }
+        name.append(UUID.randomUUID().toString());
 
         resource = new StreamResource(() ->
-                AppBeans.get(Resources.class).getResourceAsStream(path), name);
+                AppBeans.get(Resources.class).getResourceAsStream(path), name.toString());
 
         StreamResource streamResource = (StreamResource) this.resource;
 

@@ -18,10 +18,10 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.gui.components.StreamResource;
-import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang.StringUtils;
 
 import java.io.InputStream;
+import java.util.UUID;
 import java.util.function.Supplier;
 
 public class WebStreamResource extends WebAbstractStreamSettingsResource implements WebResource, StreamResource {
@@ -49,10 +49,16 @@ public class WebStreamResource extends WebAbstractStreamSettingsResource impleme
 
     @Override
     protected void createResource() {
-        String name = StringUtils.isNotEmpty(fileName) ? fileName : RandomStringUtils.random(16, true, true);
+        StringBuilder name = new StringBuilder();
+
+        if (StringUtils.isNotEmpty(fileName)) {
+            name.append(fileName)
+                    .append('-');
+        }
+        name.append(UUID.randomUUID().toString());
 
         resource = new com.vaadin.server.StreamResource(() ->
-                streamSupplier.get(), name);
+                streamSupplier.get(), name.toString());
 
         com.vaadin.server.StreamResource vStreamResource = (com.vaadin.server.StreamResource) this.resource;
 
