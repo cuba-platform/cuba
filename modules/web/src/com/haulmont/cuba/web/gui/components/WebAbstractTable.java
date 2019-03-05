@@ -38,6 +38,7 @@ import com.haulmont.cuba.gui.components.actions.BaseAction;
 import com.haulmont.cuba.gui.components.columnmanager.ColumnManager;
 import com.haulmont.cuba.gui.components.data.AggregatableTableItems;
 import com.haulmont.cuba.gui.components.data.BindingState;
+import com.haulmont.cuba.gui.components.data.HasValueSource;
 import com.haulmont.cuba.gui.components.data.TableItems;
 import com.haulmont.cuba.gui.components.data.meta.ContainerDataUnit;
 import com.haulmont.cuba.gui.components.data.meta.DatasourceDataUnit;
@@ -157,11 +158,12 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
     protected Action itemClickAction;
     protected Action enterPressAction;
 
-    protected List<Table.StyleProvider> styleProviders; // lazily initialized List
     protected Function<? super E, String> iconProvider;
-
+    @Nullable
+    protected List<Table.StyleProvider> styleProviders; // lazily initialized List
+    @Nullable
     protected Map<Table.Column, String> requiredColumns; // lazily initialized Map
-
+    @Nullable
     protected Map<Entity, Object> fieldDatasources; // lazily initialized WeakHashMap;
 
     protected TableComposition componentComposition;
@@ -274,6 +276,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
         return Collections.emptyList();
     }
 
+    @SuppressWarnings("unchecked")
     protected Set<Object> getSelectedItemIds() {
         Object value = component.getValue();
         if (value == null) {
@@ -316,11 +319,12 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
                 return Collections.singleton(item);
             }
 
-            Set res = new LinkedHashSet<>();
+            Set<E> res = new LinkedHashSet<>();
             for (Object id : itemIds) {
-                Entity item = tableItems.getItem(id);
-                if (item != null)
+                E item = tableItems.getItem(id);
+                if (item != null) {
                     res.add(item);
+                }
             }
             return res;
         } else {
@@ -354,7 +358,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
             }
             setSelectedIds(Collections.singletonList(item.getId()));
         } else {
-            Set itemIds = new HashSet();
+            Set<Object> itemIds = new LinkedHashSet<>();
             for (Entity item : items) {
                 if (tableItems.getItem(item.getId()) == null) {
                     throw new IllegalArgumentException("Datasource doesn't contain item to select: " + item);
@@ -512,14 +516,10 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
         columns.remove(column.getId());
         columnsOrder.remove(column);
 
-        // vaadin8 it seems that it is not required
-        if (!(component.getContainerDataSource() instanceof com.vaadin.v7.data.Container.ItemSetChangeNotifier)) {
-            component.refreshRowCache();
-        }
-
         column.setOwner(null);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public Datasource getItemDatasource(Entity item) {
         if (fieldDatasources == null) {
@@ -536,7 +536,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
                 .setAllowCommit(false)
                 .setMetaClass(containerTableItems.getEntityMetaClass())
                 .setRefreshMode(CollectionDatasource.RefreshMode.NEVER)
-                .setViewName("_local")
+                .setViewName(View.LOCAL)
                 .buildDatasource();
 
         ((DatasourceImplementation) datasource).valid();
@@ -547,6 +547,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
         return datasource;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public InstanceContainer<E> getInstanceContainer(E item) {
         if (fieldDatasources == null) {
@@ -559,9 +560,13 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
         }
 
         EntityTableItems containerTableItems = (EntityTableItems) getItems();
+        if (containerTableItems == null) {
+            throw new IllegalStateException("Table is not bound to items");
+        }
+
         InstanceContainer<E> instanceContainer = dataComponents.createInstanceContainer(
                 containerTableItems.getEntityMetaClass().getJavaClass());
-        View view = viewRepository.getView(containerTableItems.getEntityMetaClass(), "_local");
+        View view = viewRepository.getView(containerTableItems.getEntityMetaClass(), View.LOCAL);
         instanceContainer.setView(view);
         instanceContainer.setItem(item);
 
@@ -645,6 +650,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
             if (entityTableSource != null) {
                 com.vaadin.v7.data.Container ds = component.getContainerDataSource();
 
+                @SuppressWarnings("unchecked")
                 Collection<MetaPropertyPath> propertyIds = (Collection<MetaPropertyPath>) ds.getContainerPropertyIds();
 
                 if (editable) {
@@ -689,6 +695,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
         setEditableColumns(editableColumns);
     }
 
+    @SuppressWarnings("unchecked")
     protected void disableEditableColumns(@SuppressWarnings("unused") EntityTableItems<E> entityTableSource,
                                           Collection<MetaPropertyPath> propertyIds) {
         setEditableColumns(Collections.emptyList());
@@ -1155,6 +1162,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
         return new StyleGeneratorAdapter();
     }
 
+    @SuppressWarnings("unchecked")
     protected String getGeneratedCellStyle(Object itemId, Object propertyId) {
         if (styleProviders == null) {
             return null;
@@ -1225,6 +1233,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
         if (isEditable()) {
             EntityTableItems<E> entityTableSource = (EntityTableItems<E>) getItems();
             com.vaadin.v7.data.Container ds = component.getContainerDataSource();
+            @SuppressWarnings("unchecked")
             Collection<MetaPropertyPath> propertyIds = (Collection<MetaPropertyPath>) ds.getContainerPropertyIds();
 
             disableEditableColumns(entityTableSource, propertyIds);
@@ -1258,6 +1267,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
         return null;
     }
 
+    @SuppressWarnings("unchecked")
     protected void createColumns(com.vaadin.v7.data.Container ds) {
         Collection<MetaPropertyPath> properties = (Collection<MetaPropertyPath>) ds.getContainerPropertyIds();
 
@@ -1297,7 +1307,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
             this.dataBinding.unbind();
             this.dataBinding = null;
 
-            fieldDatasources.clear();
+            clearFieldDatasources();
 
             this.component.setContainerDataSource(null);
         }
@@ -1472,6 +1482,8 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
 
     @Override
     public void tableSourceItemSetChanged(TableItems.ItemSetChangeEvent<E> event) {
+        clearFieldDatasources();
+
         // replacement for collectionChangeSelectionListener
         // #PL-2035, reload selection from ds
         Set<Object> selectedItemIds = getSelectedItemIds();
@@ -1479,7 +1491,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
             selectedItemIds = Collections.emptySet();
         }
 
-        Set<Object> newSelection = new HashSet<>();
+        Set<Object> newSelection = new LinkedHashSet<>();
 
         TableItems<E> tableItems = event.getSource();
         for (Object entityId : selectedItemIds) {
@@ -1505,6 +1517,25 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
         }
 
         refreshActionsState();
+    }
+
+    @SuppressWarnings("unchecked")
+    protected void clearFieldDatasources() {
+        if (fieldDatasources == null) {
+            return;
+        }
+
+        // detach instance containers from entities explicitly
+        for (Map.Entry<Entity, Object> entry : fieldDatasources.entrySet()) {
+            if (entry.getKey() instanceof InstanceContainer) {
+                InstanceContainer container = (InstanceContainer) entry.getKey();
+
+                container.mute();
+                container.setItem(null);
+            }
+        }
+
+        fieldDatasources.clear();
     }
 
     @Override
@@ -1625,7 +1656,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
         super.setDebugId(id);
 
         AppUI ui = AppUI.getCurrent();
-        if (id != null && ui != null) {
+        if (id != null && ui != null && ui.isPerformanceTestMode()) {
             componentComposition.setId(ui.getTestIdManager().getTestId(id + "_composition"));
         }
     }
@@ -1937,6 +1968,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
             //apply sorting
             String sortProp = columnsElem.attributeValue("sortProperty");
             if (!StringUtils.isEmpty(sortProp)) {
+                @SuppressWarnings("unchecked")
                 EntityTableItems<E> entityTableSource = (EntityTableItems) getItems();
 
                 MetaPropertyPath sortProperty = entityTableSource.getEntityMetaClass().getPropertyPath(sortProp);
@@ -2258,6 +2290,17 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
                         component.setParent(WebAbstractTable.this);
 
                         com.vaadin.ui.Component vComponent = component.unwrapComposition(Component.class);
+
+                        if (component instanceof HasValueSource) {
+                            HasValueSource<?> hasValueSource = (HasValueSource) component;
+
+                            // if it supports value binding and bound to ValueSource, we need to unsubscribe it on detach
+                            if (hasValueSource.getValueSource() != null) {
+                                vComponent.addDetachListener(event ->
+                                        hasValueSource.setValueSource(null)
+                                );
+                            }
+                        }
 
                         // vaadin8 rework
                         // wrap field for show required asterisk
@@ -2801,6 +2844,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
         component.removeClickListener(getColumn(columnId).getId());
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public Subscription addSelectionListener(Consumer<SelectionEvent<E>> listener) {
         return getEventHub().subscribe(SelectionEvent.class, (Consumer) listener);
@@ -3053,6 +3097,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
         columns.get(propertyId).setCollapsed(columnCollapsed);
     }
 
+    @SuppressWarnings("unchecked")
     protected void beforeComponentPaint() {
         com.vaadin.v7.ui.Table.CellStyleGenerator generator = component.getCellStyleGenerator();
         if (generator instanceof WebAbstractTable.StyleGeneratorAdapter) {
@@ -3108,11 +3153,13 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
         return currentValue;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public Subscription addLookupValueChangeListener(Consumer<LookupSelectionChangeEvent<E>> listener) {
         return getEventHub().subscribe(LookupSelectionChangeEvent.class, (Consumer) listener);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void removeLookupValueChangeListener(Consumer<LookupSelectionChangeEvent<E>> listener) {
         unsubscribe(LookupSelectionChangeEvent.class, (Consumer) listener);
@@ -3165,7 +3212,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
                 }
 
                 MetaPropertyPath propertyPath = aggregationInfo.getPropertyPath();
-                Class resultClass;
+                Class<?> resultClass;
                 Range range = propertyPath != null ? propertyPath.getRange() : null;
                 if (range != null && range.isDatatype()) {
                     if (aggregationInfo.getType() == AggregationInfo.Type.COUNT) {
@@ -3173,7 +3220,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
                     }
 
                     if (aggregationInfo.getStrategy() == null) {
-                        Class rangeJavaClass = propertyPath.getRangeJavaClass();
+                        Class<?> rangeJavaClass = propertyPath.getRangeJavaClass();
                         Aggregation aggregation = Aggregations.get(rangeJavaClass);
                         resultClass = aggregation.getResultClass();
                     } else {
@@ -3186,8 +3233,6 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
                     resultClass = aggregationInfo.getStrategy().getResultClass();
                 }
 
-                UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.NAME);
-                Locale locale = userSessionSource.getLocale();
                 parsedValue = datatypeRegistry.getNN(resultClass).parse(value, locale);
 
                 break;

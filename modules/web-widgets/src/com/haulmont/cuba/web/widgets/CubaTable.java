@@ -557,7 +557,7 @@ public class CubaTable extends com.vaadin.v7.ui.Table implements TableSortableCo
         boolean removed = super.removeContainerProperty(propertyId);
 
         if (removed) {
-            resetPageBuffer();
+            refreshRowCache();
         }
 
         return removed;
