@@ -459,11 +459,18 @@ public interface WindowManager extends Screens {
         }
     }
 
+    /**
+     * @deprecated Use {@link Screens#getOpenedScreens()} instead.
+     */
+    @Deprecated
     Collection<Window> getOpenWindows();
 
     /**
      * Select tab with window in main tabsheet.
+     *
+     * @deprecated Use {@link Screens#getOpenedScreens()} and {@link WindowStack#select()} instead.
      */
+    @Deprecated
     void selectWindowTab(Window window);
 
     /**
@@ -591,9 +598,9 @@ public interface WindowManager extends Screens {
     void showExceptionDialog(Throwable throwable, @Nullable String caption, @Nullable String message);
 
     /**
-     * WebPages bean!
-     *
      * Open a web page in browser.
+     * <br>
+     * It is recommended to use {@link WebBrowserTools} instead.
      *
      * @param url    URL of the page
      * @param params optional parameters.
@@ -608,6 +615,7 @@ public interface WindowManager extends Screens {
      *               Possible values are "DEFAULT", "MINIMAL", "NONE".</li>
      *               </ul>
      *               Desktop client doesn't support any parameters and just ignores them.
+     * @see WebBrowserTools#showWebPage(String, Map)
      */
     void showWebPage(String url, @Nullable Map<String, Object> params);
 }

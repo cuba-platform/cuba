@@ -88,10 +88,7 @@ public interface Frame
 
     /**
      * Message dialog type.
-     *
-     * @deprecated Use {@link com.haulmont.cuba.gui.Dialogs} instead.
      */
-    @Deprecated
     final class MessageType {
         /** Confirmation with plain text message */
         public static final MessageType CONFIRMATION = new MessageType(MessageMode.CONFIRMATION, false);
@@ -308,10 +305,7 @@ public interface Frame
 
     /**
      * Message dialog type.
-     *
-     * @deprecated Use {@link com.haulmont.cuba.gui.Dialogs} instead.
      */
-    @Deprecated
     enum MessageMode {
         /** Confirmation with plain text message */
         CONFIRMATION,
@@ -331,10 +325,7 @@ public interface Frame
 
     /**
      * Popup notification type.
-     *
-     * @deprecated Use {@link com.haulmont.cuba.gui.Notifications} instead.
      */
-    @Deprecated
     enum NotificationType {
         /** Tray popup with plain text message */
         TRAY,

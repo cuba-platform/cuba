@@ -37,22 +37,19 @@ import java.util.Map;
 public interface HasWindowManager {
 
     /**
-     * @deprecated Use {@link Screens} instead, it can be obtained from {@link ScreenContext} of {@link FrameOwner}.
+     * It is recommended to use {@link Screens} instead, it can be obtained from {@link ScreenContext}
+     * of {@link FrameOwner}.
      */
-    @Deprecated
     WindowManager getWindowManager();
 
     /**
-     * Open a simple screen.
+     * Open a simple screen. <br> It is recommended to use {@link ScreenBuilders} bean instead.
      *
      * @param windowAlias screen ID as defined in {@code screens.xml}
      * @param openType    how to open the screen
      * @param params      parameters to pass to {@code init()} method of the screen's controller
      * @return created window
-     *
-     * @deprecated Use {@link Screens} bean instead.
      */
-    @Deprecated
     default AbstractWindow openWindow(String windowAlias, WindowManager.OpenType openType, Map<String, Object> params) {
         WindowConfig windowConfig = AppBeans.get(WindowConfig.NAME);
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
@@ -60,15 +57,12 @@ public interface HasWindowManager {
     }
 
     /**
-     * Open a simple screen.
+     * Open a simple screen. <br> It is recommended to use {@link ScreenBuilders} bean instead.
      *
      * @param windowAlias screen ID as defined in {@code screens.xml}
      * @param openType    how to open the screen
      * @return created window
-     *
-     * @deprecated Use {@link Screens} bean instead.
      */
-    @Deprecated
     default AbstractWindow openWindow(String windowAlias, WindowManager.OpenType openType) {
         WindowConfig windowConfig = AppBeans.get(WindowConfig.NAME);
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
@@ -76,15 +70,12 @@ public interface HasWindowManager {
     }
 
     /**
-     * Open an edit screen for entity instance.
+     * Open an edit screen for entity instance. <br> It is recommended to use {@link ScreenBuilders} bean instead.
      *
      * @param item        entity to edit
      * @param openType    how to open the screen
      * @return created window
-     *
-     * @deprecated Use {@link ScreenBuilders} bean instead.
      */
-    @Deprecated
     default AbstractEditor openEditor(Entity item, WindowManager.OpenType openType) {
         WindowConfig windowConfig = AppBeans.get(WindowConfig.NAME);
         WindowInfo editorScreen = windowConfig.getEditorScreen(item);
@@ -92,16 +83,13 @@ public interface HasWindowManager {
     }
 
     /**
-     * Open an edit screen for entity instance.
+     * Open an edit screen for entity instance. <br> It is recommended to use {@link ScreenBuilders} bean instead.
      *
      * @param item        entity to edit
      * @param openType    how to open the screen
      * @param params      parameters to pass to {@code init()} method of the screen's controller
      * @return created window
-     *
-     * @deprecated Use {@link ScreenBuilders} bean instead.
      */
-    @Deprecated
     default AbstractEditor openEditor(Entity item, WindowManager.OpenType openType,
                                       Map<String, Object> params) {
         WindowConfig windowConfig = AppBeans.get(WindowConfig.NAME);
@@ -110,7 +98,7 @@ public interface HasWindowManager {
     }
 
     /**
-     * Open an edit screen for entity instance.
+     * Open an edit screen for entity instance. <br> It is recommended to use {@link ScreenBuilders} bean instead.
      *
      * @param item        entity to edit
      * @param openType    how to open the screen
@@ -118,10 +106,7 @@ public interface HasWindowManager {
      * @param parentDs    if this parameter is not null, the editor will commit edited instance into this
      *                    datasource instead of directly to database
      * @return created window
-     *
-     * @deprecated Use {@link ScreenBuilders} bean instead.
      */
-    @Deprecated
     default AbstractEditor openEditor(Entity item, WindowManager.OpenType openType,
                                       Map<String, Object> params, Datasource parentDs) {
         WindowConfig windowConfig = AppBeans.get(WindowConfig.NAME);
@@ -130,7 +115,7 @@ public interface HasWindowManager {
     }
 
     /**
-     * Open an edit screen.
+     * Open an edit screen. <br> It is recommended to use {@link ScreenBuilders} bean instead.
      *
      * @param windowAlias screen ID as defined in {@code screens.xml}
      * @param item        entity to edit
@@ -139,10 +124,7 @@ public interface HasWindowManager {
      * @param parentDs    if this parameter is not null, the editor will commit edited instance into this
      *                    datasource instead of directly to database
      * @return created window
-     *
-     * @deprecated Use {@link ScreenBuilders} bean instead.
      */
-    @Deprecated
     default AbstractEditor openEditor(String windowAlias, Entity item, WindowManager.OpenType openType,
                                       Map<String, Object> params, Datasource parentDs) {
         WindowConfig windowConfig = AppBeans.get(WindowConfig.NAME);
@@ -151,17 +133,14 @@ public interface HasWindowManager {
     }
 
     /**
-     * Open an edit screen.
+     * Open an edit screen. <br> It is recommended to use {@link ScreenBuilders} bean instead.
      *
      * @param windowAlias screen ID as defined in {@code screens.xml}
      * @param item        entity to edit
      * @param openType    how to open the screen
      * @param params      parameters to pass to {@code init()} method of the screen's controller
      * @return created window
-     *
-     * @deprecated Use {@link ScreenBuilders} bean instead.
      */
-    @Deprecated
     default AbstractEditor openEditor(String windowAlias, Entity item, WindowManager.OpenType openType,
                                       Map<String, Object> params) {
         WindowConfig windowConfig = AppBeans.get(WindowConfig.NAME);
@@ -170,7 +149,7 @@ public interface HasWindowManager {
     }
 
     /**
-     * Open an edit screen.
+     * Open an edit screen. <br> It is recommended to use {@link ScreenBuilders} bean instead.
      *
      * @param windowAlias screen ID as defined in {@code screens.xml}
      * @param item        entity to edit
@@ -178,10 +157,7 @@ public interface HasWindowManager {
      * @param parentDs    if this parameter is not null, the editor will commit edited instance into this
      *                    datasource instead of directly to database
      * @return created window
-     *
-     * @deprecated Use {@link ScreenBuilders} bean instead.
      */
-    @Deprecated
     default AbstractEditor openEditor(String windowAlias, Entity item, WindowManager.OpenType openType,
                                       Datasource parentDs) {
         WindowConfig windowConfig = AppBeans.get(WindowConfig.NAME);
@@ -190,16 +166,13 @@ public interface HasWindowManager {
     }
 
     /**
-     * Open an edit screen.
+     * Open an edit screen. <br> It is recommended to use {@link ScreenBuilders} bean instead.
      *
      * @param windowAlias screen ID as defined in {@code screens.xml}
      * @param item        entity to edit
      * @param openType    how to open the screen
      * @return created window
-     *
-     * @deprecated Use {@link ScreenBuilders} bean instead.
      */
-    @Deprecated
     default AbstractEditor openEditor(String windowAlias, Entity item, WindowManager.OpenType openType) {
         WindowConfig windowConfig = AppBeans.get(WindowConfig.NAME);
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
@@ -207,16 +180,13 @@ public interface HasWindowManager {
     }
 
     /**
-     * Open a lookup screen.
+     * Open a lookup screen. <br> It is recommended to use {@link ScreenBuilders} bean instead.
      *
      * @param entityClass required class of entity
      * @param handler     is invoked when selection confirmed and the lookup screen closes
      * @param openType    how to open the screen
      * @return created window
-     *
-     * @deprecated Use {@link ScreenBuilders} bean instead.
      */
-    @Deprecated
     default AbstractLookup openLookup(Class<? extends Entity> entityClass, Window.Lookup.Handler handler,
                                       WindowManager.OpenType openType) {
         WindowConfig windowConfig = AppBeans.get(WindowConfig.NAME);
@@ -225,17 +195,14 @@ public interface HasWindowManager {
     }
 
     /**
-     * Open a lookup screen.
+     * Open a lookup screen. <br> It is recommended to use {@link ScreenBuilders} bean instead.
      *
      * @param entityClass required class of entity
      * @param handler     is invoked when selection confirmed and the lookup screen closes
      * @param openType    how to open the screen
      * @param params      parameters to pass to {@code init()} method of the screen's controller
      * @return created window
-     *
-     * @deprecated Use {@link ScreenBuilders} bean instead.
      */
-    @Deprecated
     default AbstractLookup openLookup(Class<? extends Entity> entityClass, Window.Lookup.Handler handler,
                                       WindowManager.OpenType openType, Map<String, Object> params) {
         WindowConfig windowConfig = AppBeans.get(WindowConfig.NAME);
@@ -244,17 +211,14 @@ public interface HasWindowManager {
     }
 
     /**
-     * Open a lookup screen.
+     * Open a lookup screen. <br> It is recommended to use {@link ScreenBuilders} bean instead.
      *
      * @param windowAlias screen ID as defined in {@code screens.xml}
      * @param handler     is invoked when selection confirmed and the lookup screen closes
      * @param openType    how to open the screen
      * @param params      parameters to pass to {@code init()} method of the screen's controller
      * @return created window
-     *
-     * @deprecated Use {@link ScreenBuilders} bean instead.
      */
-    @Deprecated
     default AbstractLookup openLookup(String windowAlias, Window.Lookup.Handler handler,
                                       WindowManager.OpenType openType, Map<String, Object> params) {
         WindowConfig windowConfig = AppBeans.get(WindowConfig.NAME);
@@ -263,16 +227,13 @@ public interface HasWindowManager {
     }
 
     /**
-     * Open a lookup screen.
+     * Open a lookup screen. <br> It is recommended to use {@link ScreenBuilders} bean instead.
      *
      * @param windowAlias screen ID as defined in {@code screens.xml}
      * @param handler     is invoked when selection confirmed and the lookup screen closes
      * @param openType    how to open the screen
      * @return created window
-     *
-     * @deprecated Use {@link ScreenBuilders} bean instead.
      */
-    @Deprecated
     default AbstractLookup openLookup(String windowAlias, Window.Lookup.Handler handler,
                                       WindowManager.OpenType openType) {
         WindowConfig windowConfig = AppBeans.get(WindowConfig.NAME);
@@ -282,14 +243,12 @@ public interface HasWindowManager {
 
     /**
      * Load a frame registered in {@code screens.xml} and optionally show it inside a parent component of this
-     * frame.
+     * frame. <br> It is recommended to use {@link Fragments} bean instead.
+     *
      * @param parent        if specified, all parent's sub components will be removed and the frame will be added
      * @param windowAlias   frame ID as defined in {@code screens.xml}
      * @return              frame's controller instance
-     *
-     * @deprecated Use {@link Fragments} bean instead.
      */
-    @Deprecated
     default AbstractFrame openFrame(@Nullable Component parent, String windowAlias) {
         WindowConfig windowConfig = AppBeans.get(WindowConfig.NAME);
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
@@ -306,15 +265,13 @@ public interface HasWindowManager {
 
     /**
      * Load a frame registered in {@code screens.xml} and optionally show it inside a parent component of this
-     * frame.
+     * frame. <br> It is recommended to use {@link Fragments} bean instead.
+     *
      * @param parent        if specified, all parent's sub components will be removed and the frame will be added
      * @param windowAlias   frame ID as defined in {@code screens.xml}
      * @param params        parameters to be passed into the frame's controller {@code init} method
      * @return              frame's controller instance
-     *
-     * @deprecated Use {@link Fragments} bean instead.
      */
-    @Deprecated
     default AbstractFrame openFrame(@Nullable Component parent, String windowAlias, Map<String, Object> params) {
         WindowConfig windowConfig = AppBeans.get(WindowConfig.NAME);
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
@@ -333,16 +290,14 @@ public interface HasWindowManager {
 
     /**
      * Show message dialog with title and message. <br>
-     * Message supports line breaks ({@code \n}).
+     * Message supports line breaks ({@code \n}). <br>
+     * It is recommended to use {@link Dialogs} bean instead.
      *
      * @param title       dialog title
      * @param message     text
      * @param messageType defines how to display the dialog.
      *                    Don't forget to escape data from the database in case of {@code *_HTML} types!
-     *
-     * @deprecated Use {@link Dialogs} bean instead.
      */
-    @Deprecated
     default void showMessageDialog(String title, String message, Frame.MessageType messageType) {
         getWindowManager().showMessageDialog(title, message, messageType);
     }
@@ -357,17 +312,15 @@ public interface HasWindowManager {
      *                    Don't forget to escape data from the database in case of {@code *_HTML} types!
      * @param actions     array of actions that represent options. For standard options consider use of
      *                    {@link DialogAction} instances.
-     *
-     * @deprecated Use {@link Dialogs} bean instead.
      */
-    @Deprecated
     default void showOptionDialog(String title, String message, Frame.MessageType messageType, Action[] actions) {
         getWindowManager().showOptionDialog(title, message, messageType, actions);
     }
 
     /**
      * Show options dialog with title and message. <br>
-     * Message supports line breaks ({@code \n}).
+     * Message supports line breaks ({@code \n}). <br>
+     * It is recommended to use {@link Dialogs} bean instead.
      *
      * @param title       dialog title
      * @param message     text
@@ -375,10 +328,7 @@ public interface HasWindowManager {
      *                    Don't forget to escape data from the database in case of {@code *_HTML} types!
      * @param actions     list of actions that represent options. For standard options consider use of
      *                    {@link DialogAction} instances.
-     *
-     * @deprecated Use {@link Dialogs} bean instead.
      */
-    @Deprecated
     default void showOptionDialog(String title, String message, Frame.MessageType messageType, List<Action> actions) {
         getWindowManager().showOptionDialog(title, message, messageType, actions.toArray(new Action[0]));
     }
@@ -387,44 +337,38 @@ public interface HasWindowManager {
 
     /**
      * Show notification with {@link Frame.NotificationType#HUMANIZED}. <br>
-     * Supports line breaks ({@code \n}).
+     * Supports line breaks ({@code \n}). <br>
+     * It is recommended to use {@link Notifications} bean instead.
      *
      * @param caption notification text
-     *
-     * @deprecated Use {@link Notifications} bean instead.
      */
-    @Deprecated
     default void showNotification(String caption) {
         getWindowManager().showNotification(caption);
     }
 
     /**
      * Show notification. <br>
-     * Supports line breaks ({@code \n}) for non HTML type.
+     * Supports line breaks ({@code \n}) for non HTML type. <br>
+     * It is recommended to use {@link Notifications} bean instead.
      *
      * @param caption notification text
      * @param type    defines how to display the notification.
      *                Don't forget to escape data from the database in case of {@code *_HTML} types!
-     *
-     * @deprecated Use {@link Notifications} bean instead.
      */
-    @Deprecated
     default void showNotification(String caption, Frame.NotificationType type) {
         getWindowManager().showNotification(caption, type);
     }
 
     /**
      * Show notification with caption and description. <br>
-     * Supports line breaks ({@code \n}) for non HTML type.
+     * Supports line breaks ({@code \n}) for non HTML type. <br>
+     * It is recommended to use {@link Notifications} bean instead.
      *
      * @param caption     notification text
      * @param description notification description
      * @param type        defines how to display the notification.
      *                    Don't forget to escape data from the database in case of {@code *_HTML} types!
-     *
-     * @deprecated Use {@link Notifications} bean instead.
      */
-    @Deprecated
     default void showNotification(String caption, String description, Frame.NotificationType type) {
         getWindowManager().showNotification(caption, description, type);
     }
@@ -432,7 +376,7 @@ public interface HasWindowManager {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
-     * Open a web page in browser.
+     * Open a web page in browser. <br> It is recommended to use {@link WebBrowserTools} bean instead.
      *
      * @param url    URL of the page
      * @param params optional parameters.
@@ -446,10 +390,7 @@ public interface HasWindowManager {
      *               Possible values are "DEFAULT", "MINIMAL", "NONE".<br>
      *               <p>
      *               Desktop client doesn't support any parameters and just ignores them.
-     *
-     * @deprecated Use {@link WebBrowserTools} bean instead.
      */
-    @Deprecated
     default void showWebPage(String url, @Nullable Map<String, Object> params) {
         getWindowManager().showWebPage(url, params);
     }
