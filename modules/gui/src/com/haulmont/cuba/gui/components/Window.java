@@ -187,7 +187,6 @@ public interface Window extends Frame, Component.HasCaption, Component.HasIcon {
     /**
      * This method is called by the framework after opening the screen to apply user settings to all components.
      */
-    @Deprecated
     default void applySettings(Settings settings) {
         UiControllerUtils.applySettings(getFrameOwner(), settings);
     }
@@ -196,7 +195,6 @@ public interface Window extends Frame, Component.HasCaption, Component.HasIcon {
      * This method is called by the framework when closing the screen
      * to save user settings if they have been changed.
      */
-    @Deprecated
     default void saveSettings() {
         UiControllerUtils.saveSettings(getFrameOwner());
     }
@@ -204,7 +202,6 @@ public interface Window extends Frame, Component.HasCaption, Component.HasIcon {
     /**
      * This method is called by the framework on reset to defaults action
      */
-    @Deprecated
     default void deleteSettings() {
         UiControllerUtils.deleteSettings(getFrameOwner());
     }
@@ -224,7 +221,6 @@ public interface Window extends Frame, Component.HasCaption, Component.HasIcon {
     /**
      * @return object encapsulating user settings for the current screen
      */
-    @Deprecated
     default Settings getSettings() {
         return UiControllerUtils.getSettings(getFrameOwner());
     }
