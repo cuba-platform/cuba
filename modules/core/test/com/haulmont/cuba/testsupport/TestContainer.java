@@ -29,6 +29,7 @@ import com.haulmont.cuba.core.sys.*;
 import com.haulmont.cuba.core.sys.events.AppContextInitializedEvent;
 import com.haulmont.cuba.core.sys.persistence.EclipseLinkCustomizer;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.input.BOMInputStream;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrLookup;
 import org.apache.commons.lang.text.StrSubstitutor;
@@ -321,7 +322,8 @@ public class TestContainer extends ExternalResource {
                 InputStream stream = null;
                 try {
                     stream = resource.getInputStream();
-                    properties.load(stream);
+                    InputStream bomInputStream = new BOMInputStream(stream);
+                    properties.load(bomInputStream);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 } finally {

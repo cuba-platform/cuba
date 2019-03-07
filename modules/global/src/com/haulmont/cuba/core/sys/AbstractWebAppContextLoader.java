@@ -23,6 +23,7 @@ import com.haulmont.cuba.core.global.Events;
 import com.haulmont.cuba.core.sys.servlet.events.ServletContextDestroyedEvent;
 import com.haulmont.cuba.core.sys.servlet.events.ServletContextInitializedEvent;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.input.BOMInputStream;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrSubstitutor;
 import org.apache.commons.lang.text.StrTokenizer;
@@ -172,7 +173,8 @@ public abstract class AbstractWebAppContextLoader extends AbstractAppContextLoad
 
                 if (stream != null) {
                     log.info("Loading app properties from {}", str);
-                    try (Reader reader = new InputStreamReader(stream, StandardCharsets.UTF_8)) {
+                    BOMInputStream bomInputStream = new BOMInputStream(stream);
+                    try (Reader reader = new InputStreamReader(bomInputStream, StandardCharsets.UTF_8)) {
                         properties.load(reader);
                     }
                 } else {
