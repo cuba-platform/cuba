@@ -32,9 +32,6 @@ import com.haulmont.cuba.gui.screen.Subscribe;
 import com.haulmont.cuba.gui.screen.UiController;
 import com.haulmont.cuba.gui.screen.UiDescriptor;
 import com.haulmont.cuba.web.WebConfig;
-import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
-import com.haulmont.cuba.web.widgets.CubaHorizontalSplitPanel;
-import com.vaadin.server.Sizeable;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.annotation.Order;
@@ -55,8 +52,6 @@ public class MainScreen extends Screen implements Window.HasWorkArea, Window.Has
     @Inject
     protected BoxLayout titleBar;
     @Inject
-    protected SplitPanel foldersSplit;
-    @Inject
     protected FtsField ftsField;
     @Inject
     protected Image logoImage;
@@ -64,8 +59,6 @@ public class MainScreen extends Screen implements Window.HasWorkArea, Window.Has
     protected AppWorkArea workArea;
     @Inject
     protected UserIndicator userIndicator;
-    @Inject
-    protected FoldersPane foldersPane;
 
     @Inject
     protected WebConfig webConfig;
@@ -86,33 +79,6 @@ public class MainScreen extends Screen implements Window.HasWorkArea, Window.Has
 
         if (webConfig.getUseInverseHeader()) {
             titleBar.setStyleName("c-app-menubar c-inverse-header");
-        }
-
-        if (webConfig.getFoldersPaneEnabled()) {
-            if (webConfig.getFoldersPaneVisibleByDefault()) {
-                foldersSplit.setSplitPosition(webConfig.getFoldersPaneDefaultWidth(), SizeUnit.PIXELS);
-            } else {
-                foldersSplit.setSplitPosition(0);
-            }
-
-            CubaHorizontalSplitPanel vSplitPanel = (CubaHorizontalSplitPanel) WebComponentsHelper.unwrap(foldersSplit);
-            vSplitPanel.setDefaultPosition(webConfig.getFoldersPaneDefaultWidth() + "px");
-            vSplitPanel.setMaxSplitPosition(50, Sizeable.Unit.PERCENTAGE);
-            vSplitPanel.setDockable(true);
-        } else {
-            foldersPane.setEnabled(false);
-            foldersPane.setVisible(false);
-
-            foldersSplit.remove(workArea);
-
-            Window window = getWindow();
-
-            int foldersSplitIndex = window.indexOf(foldersSplit);
-
-            window.remove(foldersSplit);
-            window.add(workArea, foldersSplitIndex);
-
-            window.expand(workArea);
         }
     }
 

@@ -89,7 +89,8 @@ public class WebFilterHelper implements FilterHelper {
 
     @Override
     public boolean isFolderActionsEnabled() {
-        return configuration.getConfig(WebConfig.class).getFoldersPaneEnabled();
+        return configuration.getConfig(WebConfig.class).getFoldersPaneEnabled()
+                && getUiFoldersPane() != null;
     }
 
     @SuppressWarnings("unchecked")
@@ -247,7 +248,7 @@ public class WebFilterHelper implements FilterHelper {
     @Override
     public boolean isTableActionsEnabled() {
         WebConfig config = configuration.getConfig(WebConfig.class);
-        return config.getFoldersPaneEnabled();
+        return config.getFoldersPaneEnabled() && getUiFoldersPane() != null;
     }
 
     @Override
