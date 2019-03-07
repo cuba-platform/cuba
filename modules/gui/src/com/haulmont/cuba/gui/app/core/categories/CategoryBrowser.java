@@ -149,7 +149,6 @@ public class CategoryBrowser extends AbstractLookup {
     protected void initAttrDataTypeColumn() {
         attributesTable.removeGeneratedColumn("dataType");
         attributesTable.addGeneratedColumn("dataType", attribute -> {
-            Label dataTypeLabel = componentsFactory.createComponent(Label.class);
             String labelContent;
             if (BooleanUtils.isTrue(attribute.getIsEntity())) {
                 Class clazz = attribute.getJavaClassForEntity();
@@ -158,14 +157,13 @@ public class CategoryBrowser extends AbstractLookup {
                     MetaClass metaClass = metadata.getSession().getClass(clazz);
                     labelContent = messageTools.getEntityCaption(metaClass);
                 } else {
-                    labelContent = "classNotFound";
+                    labelContent = "";
                 }
             } else {
                 labelContent = getMessage(attribute.getDataType().name());
             }
 
-            dataTypeLabel.setValue(labelContent);
-            return dataTypeLabel;
+            return new Table.PlainTextCell(labelContent);
         });
     }
 }

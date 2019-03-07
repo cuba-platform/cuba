@@ -74,6 +74,7 @@
                         <column id="code"/>
                         <column id="dataType"/>
                         <column id="required"/>
+                        <column id="isCollection"/>
                     </columns>
                     <rows datasource="attributesDs"/>
                 </table>
