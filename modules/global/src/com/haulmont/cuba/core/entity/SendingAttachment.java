@@ -35,7 +35,6 @@ public class SendingAttachment extends StandardEntity {
     /**
      * Attachment data is stored either in this field or in {@link #contentFile}.
      */
-    @Basic(fetch = FetchType.LAZY)
     @Column(name = "CONTENT")
     protected byte[] content;
 
