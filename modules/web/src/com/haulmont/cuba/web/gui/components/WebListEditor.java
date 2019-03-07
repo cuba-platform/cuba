@@ -167,13 +167,14 @@ public class WebListEditor<V> extends WebV8AbstractField<WebListEditor.CubaListE
 
     @Override
     public void setValue(List<V> newValue) {
-        super.setValue(newValue);
+        setValueToPresentation(convertToPresentation(newValue));
+
         delegate.setValue(newValue);
 
-        Object oldValue = internalValue;
-        if (!Objects.equals(oldValue, newValue)) {
-            internalValue = newValue;
+        List<V> oldValue = internalValue;
+        this.internalValue = newValue;
 
+        if (!Objects.equals(oldValue, newValue)) {
             ValueChangeEvent event = new ValueChangeEvent<>(this, oldValue, newValue);
             publish(ValueChangeEvent.class, event);
         }
