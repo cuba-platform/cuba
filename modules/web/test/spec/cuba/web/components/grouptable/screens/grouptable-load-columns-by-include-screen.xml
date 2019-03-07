@@ -1,0 +1,68 @@
+<!--
+  ~ Copyright (c) 2008-2019 Haulmont.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<window xmlns="http://schemas.haulmont.com/cuba/screen/window.xsd">
+    <data>
+        <collection id="customersSystemDc"
+                    class="com.haulmont.cuba.web.testmodel.sales.Customer"
+                    view="customer-with-systems">
+            <loader id="customersLd">
+                <query><![CDATA[select e from test$Customer e]]></query>
+            </loader>
+        </collection>
+
+        <collection id="goodsInfoDc"
+                    class="com.haulmont.cuba.web.testmodel.sample.GoodInfo"/>
+    </data>
+
+    <layout spacing="true">
+        <groupTable id="groupTableAll" width="100%" height="100%" dataContainer="customersSystemDc">
+            <columns includeAll="true"/>
+        </groupTable>
+
+        <groupTable id="groupTableSystem" width="100%" height="100%" dataContainer="customersSystemDc">
+            <columns includeAll="true" includeSystem="true"/>
+        </groupTable>
+
+        <groupTable id="groupTableExclude" width="100%" height="100%" dataContainer="customersSystemDc">
+            <columns includeAll="true" includeSystem="true" exclude="createTs, address"/>
+        </groupTable>
+
+        <groupTable id="groupTableView" width="100%" height="100%" dataContainer="customersSystemDc">
+            <columns includeByView="customer-without-systems" includeSystem="true"/>
+        </groupTable>
+
+        <groupTable id="groupTableEmb" width="100%" height="100%" dataContainer="customersSystemDc">
+            <columns includeAll="true">
+                <column id="address.city"/>
+                <column id="address.zip"/>
+            </columns>
+        </groupTable>
+
+        <groupTable id="groupTableGrouping" width="100%" height="100%" dataContainer="customersSystemDc">
+            <columns includeByView="customer-with-systems">
+                <group>
+                    <column id="address"/>
+                </group>
+                <column id="name" sortable="false"/>
+            </columns>
+        </groupTable>
+
+        <groupTable id="groupTableNonPersist" width="100%" height="100%" dataContainer="goodsInfoDc">
+            <columns includeAll="true" exclude="isFragile"/>
+        </groupTable>
+    </layout>
+</window>

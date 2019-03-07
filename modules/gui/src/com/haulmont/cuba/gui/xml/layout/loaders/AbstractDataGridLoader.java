@@ -16,13 +16,18 @@
 
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
+import com.google.common.base.Splitter;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.chile.core.model.MetadataObject;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.entity.LocaleHelper;
 import com.haulmont.cuba.core.global.MetadataTools;
+import com.haulmont.cuba.core.global.View;
+import com.haulmont.cuba.core.global.ViewProperty;
+import com.haulmont.cuba.core.global.ViewRepository;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.DataGrid.Column;
@@ -38,12 +43,14 @@ import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.IterableUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.dom4j.DocumentFactory;
 import org.dom4j.Element;
+import org.dom4j.datatype.DatatypeElementFactory;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public abstract class AbstractDataGridLoader<T extends DataGrid> extends ActionsHolderLoader<T> {
 
@@ -157,7 +164,8 @@ public abstract class AbstractDataGridLoader<T extends DataGrid> extends Actions
 
         List<Column> availableColumns;
         if (columnsElement != null) {
-            availableColumns = loadColumns(resultComponent, columnsElement, metaClass);
+            View view = collectionContainer != null ? collectionContainer.getView() : datasource.getView();
+            availableColumns = loadColumns(resultComponent, columnsElement, metaClass, view);
         } else {
             availableColumns = new ArrayList<>();
         }
@@ -311,7 +319,76 @@ public abstract class AbstractDataGridLoader<T extends DataGrid> extends Actions
         }
     }
 
-    protected List<Column> loadColumns(DataGrid component, Element columnsElement, MetaClass metaClass) {
+    protected List<Column> loadColumnsByInclude(String viewName, DataGrid component, Element columnsElement, MetaClass metaClass, View view) {
+        View currentView = view;
+        if (viewName != null) {
+            ViewRepository viewRepository = beanLocator.get(ViewRepository.NAME);
+            currentView = viewRepository.getView(metaClass, viewName);
+        }
+
+        Collection<String> appliedProperties = getAppliedProperties(columnsElement, currentView, metaClass);
+
+        List<Column> columns = new ArrayList<>(appliedProperties.size());
+        List<Element> columnElements = columnsElement.elements("column");
+        Set<Element> overriddenColumns = new HashSet<>();
+
+        DocumentFactory documentFactory = DatatypeElementFactory.getInstance();
+
+        for (String property : appliedProperties) {
+            Element column = getOverriddenColumn(columnElements, property);
+            if (column == null) {
+                column = documentFactory.createElement("column");
+                column.add(documentFactory.createAttribute(column, "property", property));
+            } else {
+                overriddenColumns.add(column);
+            }
+
+            columns.add(loadColumn(component, column, metaClass));
+        }
+
+        // load remains columns
+        List<Element> remainedColumns = columnsElement.elements("column");
+        for (Element column : remainedColumns) {
+            if (overriddenColumns.contains(column)) {
+                continue;
+            }
+
+            // check property and add
+            String propertyId = column.attributeValue("property");
+            if (StringUtils.isNotEmpty(propertyId)) {
+                MetaPropertyPath dynamicAttributePath = DynamicAttributesUtils.getMetaPropertyPath(metaClass, propertyId);
+
+                MetaPropertyPath mpp = metaClass.getPropertyPath(propertyId);
+                boolean isViewContainsProperty = mpp != null && getMetadataTools().viewContainsProperty(currentView, mpp);
+
+                if (isViewContainsProperty || dynamicAttributePath != null) {
+                    columns.add(loadColumn(component, column, metaClass));
+                }
+            }
+        }
+
+        return columns;
+    }
+
+    protected List<Column> loadColumns(DataGrid component, Element columnsElement, MetaClass metaClass, View view) {
+        String includeByView = columnsElement.attributeValue("includeByView");
+        String includeAll = columnsElement.attributeValue("includeAll");
+
+        if (StringUtils.isNotBlank(includeByView) && StringUtils.isNotBlank(includeAll)) {
+            throw new GuiDevelopmentException("'includeByView' and 'includeAll' attributes cannot be defined simultaneously",
+                    getContext().getFullFrameId());
+        }
+
+        if (StringUtils.isNotBlank(includeByView)) {
+            return loadColumnsByInclude(includeByView, component, columnsElement, metaClass, view);
+        }
+
+        if (StringUtils.isNotBlank(includeAll)) {
+            if (Boolean.parseBoolean(includeAll)) {
+                return loadColumnsByInclude(null, component, columnsElement, metaClass, view);
+            }
+        }
+
         List<Element> columnElements = columnsElement.elements("column");
 
         List<Column> columns = new ArrayList<>(columnElements.size());
@@ -522,5 +599,49 @@ public abstract class AbstractDataGridLoader<T extends DataGrid> extends Actions
         if (StringUtils.isNotEmpty(frozenColumnCount)) {
             component.setFrozenColumnCount(Integer.parseInt(frozenColumnCount));
         }
+    }
+
+    protected Collection<String> getAppliedProperties(Element columnsElement, View view, MetaClass metaClass) {
+        String exclude = columnsElement.attributeValue("exclude");
+        List<String> excludes = StringUtils.isEmpty(exclude) ? Collections.emptyList() :
+                Splitter.on(",").omitEmptyStrings().trimResults().splitToList(exclude);
+
+        String includeSystem = columnsElement.attributeValue("includeSystem");
+        boolean isIncludeSystem = StringUtils.isNotBlank(includeSystem) && Boolean.parseBoolean(includeSystem);
+
+        MetadataTools metadataTools = getMetadataTools();
+
+        Stream<String> properties;
+        if (metadataTools.isPersistent(metaClass)) {
+            properties = view.getProperties().stream().map(ViewProperty::getName);
+        } else {
+            properties = metaClass.getOwnProperties().stream().map(MetadataObject::getName);
+        }
+
+        List<String> appliedProperties = properties.filter(s -> {
+            MetaProperty metaProperty = metaClass.getProperty(s);
+            if (isIncludeSystem || !metadataTools.isSystem(metaProperty)) {
+                return !excludes.contains(s);
+            } else {
+                return false;
+            }
+        }).collect(Collectors.toList());
+
+        return appliedProperties;
+    }
+
+    @Nullable
+    protected Element getOverriddenColumn(List<Element> columns, String property) {
+        if (CollectionUtils.isEmpty(columns)) {
+            return null;
+        }
+
+        for (Element element : columns) {
+            String propertyAttr = element.attributeValue("property");
+            if (StringUtils.isNotEmpty(propertyAttr) && propertyAttr.equals(property)) {
+                return element;
+            }
+        }
+        return null;
     }
 }

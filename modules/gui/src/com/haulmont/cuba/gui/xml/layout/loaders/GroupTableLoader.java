@@ -17,6 +17,7 @@
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.GroupTable;
 import com.haulmont.cuba.gui.components.Table;
@@ -48,12 +49,12 @@ public class GroupTableLoader extends AbstractTableLoader<GroupTable> {
     }
 
     @Override
-    protected List<Table.Column> loadColumns(Table component, Element columnsElement, MetaClass metaClasss) {
+    protected List<Table.Column> loadColumns(Table component, Element columnsElement, MetaClass metaClasss, View view) {
         List<Table.Column> columns = new ArrayList<>();
 
         Element groupElement = columnsElement.element("group");
         if (groupElement != null) {
-            columns.addAll(super.loadColumns(component, groupElement, metaClasss));
+            columns.addAll(super.loadColumns(component, groupElement, metaClasss, view));
             final List<Object> groupProperties = new ArrayList<>(columns.size());
             for (Table.Column column : columns) {
                 if (column.isCollapsed()) {
@@ -70,7 +71,19 @@ public class GroupTableLoader extends AbstractTableLoader<GroupTable> {
             );
         }
 
-        columns.addAll(super.loadColumns(component, columnsElement, metaClasss));
+        // check for duplicate
+        String includeAll = columnsElement.attributeValue("includeAll");
+        String includeByView = columnsElement.attributeValue("includeByView");
+        if (StringUtils.isNotBlank(includeAll) || StringUtils.isNotBlank(includeByView)) {
+            List<Table.Column> columnList = super.loadColumns(component, columnsElement, metaClasss, view);
+            for (Table.Column column : columnList) {
+                if (!columns.contains(column)) {
+                    columns.add(column);
+                }
+            }
+        } else {
+            columns.addAll(super.loadColumns(component, columnsElement, metaClasss, view));
+        }
 
         return columns;
     }

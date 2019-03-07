@@ -16,17 +16,19 @@
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
+import com.google.common.base.Splitter;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.DatatypeRegistry;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.chile.core.model.MetadataObject;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.app.dynamicattributes.PropertyType;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.entity.LocaleHelper;
-import com.haulmont.cuba.core.global.MetadataTools;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.data.table.ContainerTableItems;
@@ -42,15 +44,18 @@ import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.IterableUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.dom4j.DocumentFactory;
 import org.dom4j.Element;
+import org.dom4j.datatype.DatatypeElementFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nullable;
 import java.lang.reflect.Constructor;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public abstract class AbstractTableLoader<T extends Table> extends ActionsHolderLoader<T> {
 
@@ -171,7 +176,8 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
         List<Table.Column> availableColumns;
 
         if (columnsElement != null) {
-            availableColumns = loadColumns(resultComponent, columnsElement, metaClass);
+            View view = collectionContainer != null ? collectionContainer.getView() : datasource.getView();
+            availableColumns = loadColumns(resultComponent, columnsElement, metaClass, view);
         } else {
             availableColumns = new ArrayList<>();
         }
@@ -303,7 +309,82 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
         }
     }
 
-    protected List<Table.Column> loadColumns(Table component, Element columnsElement, MetaClass metaClass) {
+    protected List<Table.Column> loadColumnsByInclude(String viewName, Element columnsElement, MetaClass metaClass, View view) {
+        View currentView = view;
+        if (viewName != null) {
+            ViewRepository viewRepository = beanLocator.get(ViewRepository.NAME);
+            currentView = viewRepository.getView(metaClass, viewName);
+        }
+
+        Collection<String> appliedProperties = getAppliedProperties(columnsElement, currentView, metaClass);
+
+        List<Table.Column> columns = new ArrayList<>(appliedProperties.size());
+        List<Element> columnElements = columnsElement.elements("column");
+        Set<Element> overriddenColumns = new HashSet<>();
+
+        DocumentFactory documentFactory = DatatypeElementFactory.getInstance();
+
+        for (String property : appliedProperties) {
+            Element column = getOverriddenColumn(columnElements, property);
+            if (column == null) {
+                column = documentFactory.createElement("column");
+                column.add(documentFactory.createAttribute(column, "id", property));
+            } else {
+                overriddenColumns.add(column);
+            }
+
+            String visible = column.attributeValue("visible");
+            if (StringUtils.isEmpty(visible) || Boolean.parseBoolean(visible)) {
+                columns.add(loadColumn(column, metaClass));
+            }
+        }
+
+        // load remains columns
+        List<Element> remainedColumns = columnsElement.elements("column");
+        for (Element column : remainedColumns) {
+            if (overriddenColumns.contains(column)) {
+                continue;
+            }
+
+            // check property and add
+            String propertyId = column.attributeValue("id");
+            if (StringUtils.isNotEmpty(propertyId)) {
+                MetaPropertyPath dynamicAttributePath = DynamicAttributesUtils.getMetaPropertyPath(metaClass, propertyId);
+
+                MetaPropertyPath mpp = metaClass.getPropertyPath(propertyId);
+                boolean isViewContainsProperty = mpp != null && getMetadataTools().viewContainsProperty(currentView, mpp);
+
+                if (isViewContainsProperty || dynamicAttributePath != null) {
+                    String visible = column.attributeValue("visible");
+                    if (StringUtils.isEmpty(visible) || Boolean.parseBoolean(visible)) {
+                        columns.add(loadColumn(column, metaClass));
+                    }
+                }
+            }
+        }
+
+        return columns;
+    }
+
+    protected List<Table.Column> loadColumns(Table component, Element columnsElement, MetaClass metaClass, View view) {
+        String includeByView = columnsElement.attributeValue("includeByView");
+        String includeAll = columnsElement.attributeValue("includeAll");
+
+        if (StringUtils.isNotBlank(includeByView) && StringUtils.isNotBlank(includeAll)) {
+            throw new GuiDevelopmentException("'includeByView' and 'includeAll' attributes cannot be defined simultaneously",
+                    getContext().getFullFrameId());
+        }
+
+        if (StringUtils.isNotBlank(includeByView)) {
+            return loadColumnsByInclude(includeByView, columnsElement, metaClass, view);
+        }
+
+        if (StringUtils.isNotBlank(includeAll)) {
+            if (Boolean.parseBoolean(includeAll)) {
+                return loadColumnsByInclude(null, columnsElement, metaClass, view);
+            }
+        }
+
         List<Element> columnElements = columnsElement.elements("column");
 
         List<Table.Column> columns = new ArrayList<>(columnElements.size());
@@ -606,5 +687,49 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
         if (StringUtils.isNotEmpty(showSelection)) {
             component.setShowSelection(Boolean.parseBoolean(showSelection));
         }
+    }
+
+    protected Collection<String> getAppliedProperties(Element columnsElement, View view, MetaClass metaClass) {
+        String exclude = columnsElement.attributeValue("exclude");
+        List<String> excludes = StringUtils.isEmpty(exclude) ? Collections.emptyList() :
+                Splitter.on(",").omitEmptyStrings().trimResults().splitToList(exclude);
+
+        String includeSystem = columnsElement.attributeValue("includeSystem");
+        boolean isIncludeSystem = StringUtils.isNotBlank(includeSystem) && Boolean.parseBoolean(includeSystem);
+
+        MetadataTools metadataTools = getMetadataTools();
+
+        Stream<String> properties;
+        if (metadataTools.isPersistent(metaClass)) {
+            properties = view.getProperties().stream().map(ViewProperty::getName);
+        } else {
+            properties = metaClass.getOwnProperties().stream().map(MetadataObject::getName);
+        }
+
+        List<String> appliedProperties = properties.filter(s -> {
+            MetaProperty metaProperty = metaClass.getProperty(s);
+            if (isIncludeSystem || !metadataTools.isSystem(metaProperty)) {
+                return !excludes.contains(s);
+            } else {
+                return false;
+            }
+        }).collect(Collectors.toList());
+
+        return appliedProperties;
+    }
+
+    @Nullable
+    protected Element getOverriddenColumn(List<Element> columns, String property) {
+        if (CollectionUtils.isEmpty(columns)) {
+            return null;
+        }
+
+        for (Element element : columns) {
+            String id = element.attributeValue("id");
+            if (StringUtils.isNotEmpty(id) && id.equals(property)) {
+                return element;
+            }
+        }
+        return null;
     }
 }

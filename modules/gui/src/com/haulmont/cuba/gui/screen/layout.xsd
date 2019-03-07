@@ -1158,6 +1158,13 @@
         <xs:attribute name="pattern" type="xs:string"/>
     </xs:complexType>
 
+    <xs:attributeGroup name="columnsLoadType">
+        <xs:attribute name="includeByView" type="xs:string"/>
+        <xs:attribute name="includeAll" type="xs:boolean"/>
+        <xs:attribute name="includeSystem" type="xs:boolean"/>
+        <xs:attribute name="exclude" type="xs:string"/>
+    </xs:attributeGroup>
+
     <xs:complexType name="tableRowsType">
         <xs:attribute name="datasource" type="xs:string"/>
     </xs:complexType>
@@ -1171,6 +1178,7 @@
         <xs:sequence>
             <xs:element name="column" maxOccurs="unbounded" type="tableColumnComponent"/>
         </xs:sequence>
+        <xs:attributeGroup ref="columnsLoadType"/>
     </xs:complexType>
 
     <xs:complexType name="groupTableColumnsType">
@@ -1184,12 +1192,14 @@
             </xs:element>
             <xs:element name="column" maxOccurs="unbounded" type="tableColumnComponent"/>
         </xs:sequence>
+        <xs:attributeGroup ref="columnsLoadType"/>
     </xs:complexType>
 
     <xs:complexType name="dataGridColumnsList">
         <xs:sequence>
             <xs:element name="column" maxOccurs="unbounded" type="dataGridColumnComponent"/>
         </xs:sequence>
+        <xs:attributeGroup ref="columnsLoadType"/>
     </xs:complexType>
 
     <xs:complexType name="days">

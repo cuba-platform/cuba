@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright (c) 2008-2018 Haulmont.
+  ~ Copyright (c) 2008-2019 Haulmont.
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -15,11 +15,17 @@
   ~ limitations under the License.
   -->
 
-<metadata xmlns="http://schemas.haulmont.com/cuba/metadata.xsd">
+<views xmlns="http://schemas.haulmont.com/cuba/view.xsd">
 
-    <metadata-model root-package="com.haulmont.cuba">
-        <class>com.haulmont.cuba.web.testmodel.sample.SampleNonPersistent</class>
-        <class>com.haulmont.cuba.web.testmodel.sample.GoodInfo</class>
-    </metadata-model>
-
-</metadata>
+    <view class="com.haulmont.cuba.web.testmodel.sales.Customer"
+          name="customer-with-systems"
+          extends="_local"
+          systemProperties="true">
+        <property name="address" view="_local"/>
+    </view>
+    <view class="com.haulmont.cuba.web.testmodel.sales.Customer"
+          name="customer-without-systems"
+          extends="_local">
+        <property name="address" view="_local"/>
+    </view>
+</views>

@@ -3062,16 +3062,11 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
 
             visible = true;
 
-            width = -1;
-            maxWidth = -1;
-            minWidth = 10;
-            expandRatio = -1;
-
             ThemeConstants theme = App.getInstance().getThemeConstants();
-            width = theme.getInt("cuba.web.DataGrid.defaultColumnWidth");
-            maxWidth = theme.getInt("cuba.web.DataGrid.defaultColumnMaxWidth");
-            minWidth = theme.getInt("cuba.web.DataGrid.defaultColumnMinWidth");
-            expandRatio = theme.getInt("cuba.web.DataGrid.defaultColumnExpandRatio");
+            width = theme.getInt("cuba.web.DataGrid.defaultColumnWidth", -1);
+            maxWidth = theme.getInt("cuba.web.DataGrid.defaultColumnMaxWidth", -1);
+            minWidth = theme.getInt("cuba.web.DataGrid.defaultColumnMinWidth", 10);
+            expandRatio = theme.getInt("cuba.web.DataGrid.defaultColumnExpandRatio", -1);
         }
 
         @Override

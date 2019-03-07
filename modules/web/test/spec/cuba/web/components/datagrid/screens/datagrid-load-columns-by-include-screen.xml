@@ -1,0 +1,64 @@
+<!--
+  ~ Copyright (c) 2008-2019 Haulmont.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<window xmlns="http://schemas.haulmont.com/cuba/screen/window.xsd">
+    <data>
+        <collection id="customersDc"
+                    class="com.haulmont.cuba.web.testmodel.sales.Customer"
+                    view="customer-with-systems">
+            <loader id="customersLd">
+                <query><![CDATA[select e from test$Customer e]]></query>
+            </loader>
+        </collection>
+        <collection id="goodsInfoDc"
+                    class="com.haulmont.cuba.web.testmodel.sample.GoodInfo"/>
+    </data>
+
+    <layout spacing="true">
+        <dataGrid id="dataGridAll" width="100%" height="100%" dataContainer="customersDc">
+            <columns includeAll="true"/>
+        </dataGrid>
+
+        <dataGrid id="dataGridSystem" width="100%" height="100%" dataContainer="customersDc">
+            <columns includeAll="true" includeSystem="true"/>
+        </dataGrid>
+
+        <groupTable id="dataGridExclude" width="100%" height="100%" dataContainer="customersDc">
+            <columns includeAll="true" includeSystem="true" exclude="createTs, address"/>
+        </groupTable>
+
+        <groupTable id="dataGridView" width="100%" height="100%" dataContainer="customersDc">
+            <columns includeByView="customer-without-systems" includeSystem="true"/>
+        </groupTable>
+
+        <dataGrid id="dataGridEmb" width="100%" height="100%" dataContainer="customersDc">
+            <columns includeAll="true">
+                <column property="address.city"/>
+                <column property="address.zip"/>
+            </columns>
+        </dataGrid>
+
+        <dataGrid id="dataGridOverriding" width="100%" height="100%" dataContainer="customersDc">
+            <columns includeByView="customer-with-systems">
+                <column property="name" sortable="false"/>
+            </columns>
+        </dataGrid>
+
+        <dataGrid id="dataGridNonPersist" width="100%" height="100%" dataContainer="goodsInfoDc">
+            <columns includeAll="true" exclude="isFragile"/>
+        </dataGrid>
+    </layout>
+</window>
