@@ -594,5 +594,24 @@ public class WindowConfig {
         public WindowInfo resolve() {
             return this;
         }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) {
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
+            ResolvedWindowInfo that = (ResolvedWindowInfo) o;
+            return Objects.equals(template, that.template) &&
+                    Objects.equals(controllerClass, that.controllerClass) &&
+                    type == that.type;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(template, controllerClass, type);
+        }
     }
 }
