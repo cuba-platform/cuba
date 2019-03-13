@@ -178,6 +178,7 @@ public class WebScreens implements Screens, WindowManager {
             );
         }
 
+        @SuppressWarnings("unchecked")
         Class<T> resolvedScreenClass = (Class<T>) windowInfo.getControllerClass();
 
         // load XML document here in order to get metadata before Window creation, e.g. forceDialog from <dialogMode>
@@ -952,7 +953,7 @@ public class WebScreens implements Screens, WindowManager {
         OpenMode openMode = openDetails.getOpenMode();
         switch (openMode) {
             case ROOT:
-                // todo should be changed
+                // todo we should update UI theme and its properties only when RootWindow is attached to UI
                 ui.beforeTopLevelWindowInit();
 
                 window = uiComponents.create(RootWindow.NAME);
@@ -1125,7 +1126,7 @@ public class WebScreens implements Screens, WindowManager {
         return screen instanceof Window ? (Window) screen : new ScreenWrapper(screen);
     }
 
-    @SuppressWarnings({"deprecation", "IncorrectCreateGuiComponent"})
+    @SuppressWarnings({"deprecation", "IncorrectCreateGuiComponent", "unchecked"})
     @Override
     public Window.Editor openEditor(WindowInfo windowInfo, Entity item, OpenType openType, Datasource parentDs) {
         Map<String, Object> params = createParametersMap(windowInfo,
@@ -1145,7 +1146,7 @@ public class WebScreens implements Screens, WindowManager {
         return screen instanceof Window.Editor ? (Window.Editor) screen : new ScreenEditorWrapper(screen);
     }
 
-    @SuppressWarnings({"deprecation", "IncorrectCreateGuiComponent"})
+    @SuppressWarnings({"deprecation", "IncorrectCreateGuiComponent", "unchecked"})
     @Override
     public Window.Editor openEditor(WindowInfo windowInfo, Entity item, OpenType openType) {
         Map<String, Object> params = createParametersMap(windowInfo,
@@ -1180,7 +1181,7 @@ public class WebScreens implements Screens, WindowManager {
         return screen instanceof Window.Editor ? (Window.Editor) screen : new ScreenEditorWrapper(screen);
     }
 
-    @SuppressWarnings({"deprecation", "IncorrectCreateGuiComponent"})
+    @SuppressWarnings({"deprecation", "IncorrectCreateGuiComponent", "unchecked"})
     @Override
     public Window.Editor openEditor(WindowInfo windowInfo, Entity item, OpenType openType, Map<String, Object> params,
                                     Datasource parentDs) {
@@ -1201,7 +1202,7 @@ public class WebScreens implements Screens, WindowManager {
         return screen instanceof Window.Editor ? (Window.Editor) screen : new ScreenEditorWrapper(screen);
     }
 
-    @SuppressWarnings({"deprecation", "IncorrectCreateGuiComponent"})
+    @SuppressWarnings({"deprecation", "IncorrectCreateGuiComponent", "unchecked"})
     @Override
     public Window.Lookup openLookup(WindowInfo windowInfo, Window.Lookup.Handler handler, OpenType openType,
                                     Map<String, Object> params) {
@@ -1218,7 +1219,7 @@ public class WebScreens implements Screens, WindowManager {
         return screen instanceof Window.Lookup ? (Window.Lookup) screen : new ScreenLookupWrapper(screen);
     }
 
-    @SuppressWarnings({"deprecation", "IncorrectCreateGuiComponent"})
+    @SuppressWarnings({"deprecation", "IncorrectCreateGuiComponent", "unchecked"})
     @Override
     public Window.Lookup openLookup(WindowInfo windowInfo, Window.Lookup.Handler handler, OpenType openType) {
         Map<String, Object> params = createParametersMap(windowInfo, Collections.emptyMap());
@@ -1290,7 +1291,6 @@ public class WebScreens implements Screens, WindowManager {
                 .show();
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     public void showNotification(String caption, Frame.NotificationType type) {
         ui.getNotifications().create()
@@ -1300,7 +1300,6 @@ public class WebScreens implements Screens, WindowManager {
                 .show();
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     public void showNotification(String caption, String description, Frame.NotificationType type) {
         ui.getNotifications().create()
@@ -1311,7 +1310,6 @@ public class WebScreens implements Screens, WindowManager {
                 .show();
     }
 
-    @SuppressWarnings("deprecation")
     protected NotificationType convertNotificationType(Frame.NotificationType type) {
         switch (type) {
             case TRAY:
@@ -1335,7 +1333,6 @@ public class WebScreens implements Screens, WindowManager {
         }
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     public void showMessageDialog(String title, String message, Frame.MessageType messageType) {
         MessageDialogBuilder builder = ui.getDialogs().createMessageDialog()
@@ -1363,7 +1360,6 @@ public class WebScreens implements Screens, WindowManager {
         builder.show();
     }
 
-    @SuppressWarnings("deprecation")
     protected Dialogs.MessageType convertMessageType(Frame.MessageMode messageMode) {
         switch (messageMode) {
             case CONFIRMATION:
@@ -1379,7 +1375,6 @@ public class WebScreens implements Screens, WindowManager {
         }
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     public void showOptionDialog(String title, String message, Frame.MessageType messageType, Action[] actions) {
         OptionDialogBuilder builder = ui.getDialogs().createOptionDialog()

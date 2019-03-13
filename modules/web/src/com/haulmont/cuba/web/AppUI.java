@@ -24,6 +24,7 @@ import com.haulmont.cuba.gui.components.RootWindow;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.events.sys.UiEventsMulticaster;
 import com.haulmont.cuba.gui.exception.UiExceptionHandler;
+import com.haulmont.cuba.gui.screen.Screen;
 import com.haulmont.cuba.gui.sys.TestIdManager;
 import com.haulmont.cuba.gui.theme.ThemeConstantsRepository;
 import com.haulmont.cuba.security.app.UserSessionService;
@@ -187,12 +188,12 @@ public class AppUI extends CubaUI implements ErrorHandler, EnhancedUI, UiExcepti
         UrlHandlingMode urlHandlingMode = webConfig.getUrlHandlingMode();
 
         if (allowHistoryBack
-                && UrlHandlingMode.BACK_ONLY != urlHandlingMode) {
+                && urlHandlingMode != UrlHandlingMode.BACK_ONLY) {
             log.info("Deprecated 'WebConfig#getAllowHandleBrowserHistoryBack' config use is ignored. " +
                     "Please use new 'WebConfig#getUrlHandlingMode' to enable this feature.");
         }
 
-        if (UrlHandlingMode.BACK_ONLY == urlHandlingMode) {
+        if (urlHandlingMode == UrlHandlingMode.BACK_ONLY) {
             CubaHistoryControl historyControl = new CubaHistoryControl();
             historyControl.extend(this, this::onHistoryBackPerformed);
         }
@@ -657,8 +658,11 @@ public class AppUI extends CubaUI implements ErrorHandler, EnhancedUI, UiExcepti
 
     protected void onHistoryBackPerformed() {
         Window topLevelWindow = getTopLevelWindow();
-        if (topLevelWindow instanceof CubaHistoryControl.HistoryBackHandler) {
-            ((CubaHistoryControl.HistoryBackHandler) topLevelWindow).onHistoryBackPerformed();
+        if (topLevelWindow != null) {
+            Screen frameOwner = topLevelWindow.getFrameOwner();
+            if (frameOwner instanceof CubaHistoryControl.HistoryBackHandler) {
+                ((CubaHistoryControl.HistoryBackHandler) frameOwner).onHistoryBackPerformed();
+            }
         }
     }
 
