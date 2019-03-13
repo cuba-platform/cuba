@@ -504,6 +504,12 @@ public class DataContextImpl implements DataContext {
         }
     }
 
+    @Override
+    public <T extends Entity> T create(Class<T> entityClass) {
+        T entity = getMetadata().create(entityClass);
+        return merge(entity);
+    }
+
     protected void removeListeners(Entity entity) {
         entity.removePropertyChangeListener(propertyChangeListener);
         Map<String, EmbeddedPropertyChangeListener> listenerMap = embeddedPropertyListeners.get(entity);
