@@ -244,6 +244,7 @@ public class UserEditor extends AbstractEditor<User> {
         addDefaultRoles(item);
         item.setLanguage(messages.getTools().localeToString(userSession.getLocale()));
         initUserGroup(item);
+        item.setDisabledDefaultRoles(true);
     }
 
     protected void initUserGroup(User user) {

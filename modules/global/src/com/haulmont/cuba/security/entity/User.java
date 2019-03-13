@@ -106,6 +106,17 @@ public class User extends StandardEntity {
     @Column(name = "IP_MASK", length = 200)
     protected String ipMask;
 
+    @Transient
+    protected boolean disabledDefaultRoles;
+
+    public boolean isDisabledDefaultRoles() {
+        return disabledDefaultRoles;
+    }
+
+    public void setDisabledDefaultRoles(boolean disabledDefaultRoles) {
+        this.disabledDefaultRoles = disabledDefaultRoles;
+    }
+
     public String getLogin() {
         return login;
     }
