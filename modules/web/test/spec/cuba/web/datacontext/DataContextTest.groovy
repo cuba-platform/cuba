@@ -602,6 +602,21 @@ class DataContextTest extends Specification {
         customer.address.__propertyChangeListeners.isEmpty()
     }
 
+    def "create entity"() {
+
+        def dataContext = factory.createDataContext()
+
+        when:
+
+        Customer customer = dataContext.create(Customer)
+
+        then:
+
+        dataContext.hasChanges()
+        dataContext.isModified(customer)
+        dataContext.find(Customer, customer.id).is(customer)
+    }
+
     private void makeDetached(def entity) {
         entityStates.makeDetached(entity)
     }

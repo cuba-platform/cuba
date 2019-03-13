@@ -106,6 +106,18 @@ public interface DataContext {
     void evict(Entity entity);
 
     /**
+     * Creates an entity instance and merge it into the context.
+     * <p>
+     * Same as:
+     * <pre>
+     * Foo foo = dataContext.merge(metadata.create(Foo.class));
+     * </pre>
+     * @param entityClass entity class
+     * @return a new instance which is tracked by the context
+     */
+    <T extends Entity> T create(Class<T> entityClass);
+
+    /**
      * Returns true if the context has detected changes in the tracked entities.
      */
     boolean hasChanges();

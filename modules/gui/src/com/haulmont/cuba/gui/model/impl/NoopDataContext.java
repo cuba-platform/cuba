@@ -69,6 +69,11 @@ public class NoopDataContext implements DataContext {
     }
 
     @Override
+    public <T extends Entity> T create(Class<T> entityClass) {
+        return null;
+    }
+
+    @Override
     public boolean hasChanges() {
         return false;
     }
