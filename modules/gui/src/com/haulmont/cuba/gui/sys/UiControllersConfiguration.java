@@ -18,6 +18,7 @@ package com.haulmont.cuba.gui.sys;
 
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.gui.Route;
+import com.haulmont.cuba.gui.screen.Screen;
 import com.haulmont.cuba.gui.screen.UiController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +28,9 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.type.classreading.MetadataReader;
 import org.springframework.core.type.classreading.MetadataReaderFactory;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -111,6 +114,10 @@ public class UiControllersConfiguration extends AbstractScanConfiguration {
         Map<String, Object> routeAnnotation =
                 metadataReader.getAnnotationMetadata().getAnnotationAttributes(Route.class.getName());
 
+        if (routeAnnotation == null) {
+            routeAnnotation = traverseForRoute(metadataReader);
+        }
+
         RouteDefinition routeDefinition = null;
 
         if (routeAnnotation != null) {
@@ -122,6 +129,28 @@ public class UiControllersConfiguration extends AbstractScanConfiguration {
         }
 
         return routeDefinition;
+    }
+
+    @Nullable
+    protected Map<String, Object> traverseForRoute(MetadataReader metadataReader) {
+        String superClazz = metadataReader.getClassMetadata().getSuperClassName();
+
+        if (Screen.class.getName().equals(superClazz)
+                || superClazz == null) {
+            return null;
+        }
+
+        try {
+            MetadataReader superReader = metadataReaderFactory.getMetadataReader(superClazz);
+            Map<String, Object> routeAnnotation = superReader.getAnnotationMetadata()
+                    .getAnnotationAttributes(Route.class.getName());
+
+            return routeAnnotation != null
+                    ? routeAnnotation
+                    : traverseForRoute(superReader);
+        } catch (IOException e) {
+            throw new RuntimeException("Unable to read class: %s" + superClazz);
+        }
     }
 
     protected boolean isCandidateUiController(MetadataReader metadataReader) {
