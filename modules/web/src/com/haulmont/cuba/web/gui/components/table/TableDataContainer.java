@@ -297,6 +297,10 @@ public class TableDataContainer<I> implements Container, ItemSetChangeNotifier {
         dataEventsDelegate.tableSourcePropertyValueChanged(e);
     }
 
+    protected void beforeFireStateChanged() {
+        // can be overridden in descendants
+    }
+
     protected void datasourceStateChanged(TableItems.StateChangeEvent e) {
         if (e.getState() == BindingState.INACTIVE) {
             for (TableItemWrapper itemWrapper : itemsCache.values()) {
@@ -304,6 +308,8 @@ public class TableDataContainer<I> implements Container, ItemSetChangeNotifier {
             }
             resetCachedItems();
         }
+
+        beforeFireStateChanged();
 
         dataEventsDelegate.tableSourceStateChanged(e);
     }
