@@ -614,7 +614,7 @@ public class Emailer implements EmailerAPI {
         } else {
             bodyContentType = "text/plain; charset=UTF-8";
         }
-        log.warn("Content body type is not set for email '{}' with addresses: {}. Will be used '{}'.",
+        log.debug("Content body type is not set for email '{}' with addresses: {}. Will be used '{}'.",
                 sendingMessage.getCaption(), sendingMessage.getAddress(), bodyContentType);
         return bodyContentType;
     }
