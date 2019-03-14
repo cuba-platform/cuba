@@ -138,7 +138,6 @@ public class ContainerGroupTableItems<E extends Entity<K>, K>
                 }
             }
         }
-
     }
 
     protected void doGroup() {

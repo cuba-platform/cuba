@@ -71,6 +71,21 @@ public class GroupTableDataContainer<I> extends SortableDataContainer<I> impleme
         resetGroupCachedItems();
     }
 
+    protected void doRefreshGroup() {
+        if (hasGroups()) {
+            Collection<?> groupProperties = getGroupProperties();
+            Object[] groupProps = new Object[groupProperties.size()];
+
+            int i = 0;
+            for (Object groupProperty : groupProperties) {
+                groupProps[i] = groupProperty;
+                i++;
+            }
+
+            doGroup(groupProps);
+        }
+    }
+
     @Override
     public boolean isGroup(Object id) {
         return id instanceof GroupInfo && getGroupTableSource().containsGroup((GroupInfo) id);
@@ -332,17 +347,13 @@ public class GroupTableDataContainer<I> extends SortableDataContainer<I> impleme
     protected void beforeFireItemSetChanged() {
         super.beforeFireItemSetChanged();
 
-        if (hasGroups()) {
-            Collection<?> groupProperties = getGroupProperties();
-            Object[] groupProps = new Object[groupProperties.size()];
+        doRefreshGroup();
+    }
 
-            int i = 0;
-            for (Object groupProperty : groupProperties) {
-                groupProps[i] = groupProperty;
-                i++;
-            }
+    @Override
+    protected void beforeFireStateChanged() {
+        super.beforeFireStateChanged();
 
-            doGroup(groupProps);
-        }
+        doRefreshGroup();
     }
 }
