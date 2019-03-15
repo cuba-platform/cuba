@@ -4,6 +4,7 @@
                   class="com.haulmont.cuba.web.testmodel.sales.OrderLine"
                   view="_local">
             <loader/>
+            <collection id="paramsDc" property="params"/>
         </instance>
     </data>
     <layout>
@@ -12,5 +13,10 @@
                 <textField id="qtyField" property="quantity"/>
             </column>
         </form>
+        <table id="paramsTable" dataContainer="paramsDc">
+            <columns>
+                <column id="name"/>
+            </columns>
+        </table>
     </layout>
 </window>

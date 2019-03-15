@@ -450,15 +450,16 @@ public class DataContextImpl implements DataContext {
     public void remove(Entity entity) {
         checkNotNullArgument(entity, "entity is null");
 
+        modifiedInstances.remove(entity);
+        removedInstances.add(entity);
+        removeListeners(entity);
+        fireChangeListener(entity);
+
         Map<Object, Entity> entityMap = content.get(entity.getClass());
         if (entityMap != null) {
             Entity mergedEntity = entityMap.get(entity.getId());
             if (mergedEntity != null) {
-                modifiedInstances.remove(entity);
-                removedInstances.add(entity);
                 entityMap.remove(entity.getId());
-                removeListeners(entity);
-                fireChangeListener(entity);
                 removeFromCollections(mergedEntity);
             }
         }

@@ -16,12 +16,17 @@
 
 package spec.cuba.web.datacontext
 
+import com.haulmont.cuba.core.app.DataService
+import com.haulmont.cuba.core.global.CommitContext
 import com.haulmont.cuba.gui.config.WindowConfig
+import com.haulmont.cuba.gui.model.DataContext
 import com.haulmont.cuba.gui.screen.OpenMode
 import com.haulmont.cuba.gui.screen.UiControllerUtils
 import com.haulmont.cuba.gui.sys.UiControllersConfiguration
 import com.haulmont.cuba.security.app.UserManagementService
 import com.haulmont.cuba.web.testmodel.sales.Order
+import com.haulmont.cuba.web.testmodel.sales.OrderLine
+import com.haulmont.cuba.web.testmodel.sales.OrderLineParam
 import com.haulmont.cuba.web.testsupport.TestServiceProxy
 import org.springframework.core.type.classreading.MetadataReaderFactory
 import spec.cuba.web.UiScreenSpec
@@ -104,5 +109,106 @@ class CompositionScreensTest extends UiScreenSpec {
         where:
 
         explicitParentDc << [true, false]
+    }
+
+    def "remove nested instance on 2nd level"() {
+
+        def screens = vaadinUi.screens
+
+        def mainWindow = screens.create("mainWindow", OpenMode.ROOT)
+        screens.show(mainWindow)
+
+        def orderScreen = screens.create(OrderScreen)
+
+        def order = makeSaved(new Order(number: '1', orderLines: []))
+
+        def orderLine = makeSaved(new OrderLine(quantity: 1, params: []))
+        orderLine.order = order
+        order.orderLines.add(orderLine)
+
+        def lineParam = makeSaved(new OrderLineParam(name: 'p1'))
+        lineParam.orderLine = orderLine
+        orderLine.params.add(lineParam)
+
+        orderScreen.order = order
+        orderScreen.show()
+
+        def orderScreenCtx = UiControllerUtils.getScreenData(orderScreen).dataContext
+
+        when:
+
+        def lineScreen = orderScreen.buildLineScreenForEdit(false)
+        lineScreen.show()
+
+        def lineScreenCtx = UiControllerUtils.getScreenData(lineScreen).dataContext
+
+        then:
+
+        lineScreenCtx.parent == orderScreenCtx
+        lineScreen.paramsDc.items.contains(lineParam)
+
+        when:
+
+        def lineParam1 = lineScreenCtx.find(lineParam)
+        lineScreen.paramsDc.getMutableItems().remove(lineParam1)
+        lineScreenCtx.remove(lineParam1)
+        lineScreenCtx.commit()
+
+        then:
+
+        orderScreenCtx.isRemoved(lineParam)
+    }
+
+    def "remove nested instance on 2nd level if the root entity did not have the full object graph"() {
+
+        def screens = vaadinUi.screens
+
+        def mainWindow = screens.create("mainWindow", OpenMode.ROOT)
+        screens.show(mainWindow)
+
+        def orderScreen = screens.create(OrderScreen)
+
+        def order = makeSaved(new Order(number: '1', orderLines: []))
+
+        def orderLine = makeSaved(new OrderLine(quantity: 1, params: []))
+        orderLine.order = order
+        order.orderLines.add(orderLine)
+
+        orderScreen.order = order
+        orderScreen.show()
+
+        def orderScreenCtx = UiControllerUtils.getScreenData(orderScreen).dataContext
+
+        when:
+
+        def lineScreen = orderScreen.buildLineScreenForEdit(false)
+
+        def lineParam = makeSaved(new OrderLineParam(name: 'p1'))
+        lineScreen.getEditedEntity().params = []
+        lineScreen.getEditedEntity().params.add(lineParam)
+
+        lineScreen.show()
+
+        def lineScreenCtx = UiControllerUtils.getScreenData(lineScreen).dataContext
+
+        then:
+
+        lineScreenCtx.parent == orderScreenCtx
+        lineScreen.paramsDc.items.contains(lineParam)
+
+        when:
+
+        def lineParam1 = lineScreenCtx.find(lineParam)
+        lineScreen.paramsDc.getMutableItems().remove(lineParam1)
+        lineScreenCtx.remove(lineParam1)
+        lineScreenCtx.commit()
+
+        then:
+
+        orderScreenCtx.isRemoved(lineParam)
+    }
+
+    private static <T> T makeSaved(T entity) {
+        TestServiceProxy.getDefault(DataService).commit(new CommitContext().addInstanceToCommit(entity))[0] as T
     }
 }

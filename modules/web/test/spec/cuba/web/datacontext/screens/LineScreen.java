@@ -16,10 +16,15 @@
 
 package spec.cuba.web.datacontext.screens;
 
+import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.components.TextField;
+import com.haulmont.cuba.gui.model.CollectionPropertyContainer;
 import com.haulmont.cuba.gui.model.DataComponents;
+import com.haulmont.cuba.gui.model.DataContext;
+import com.haulmont.cuba.gui.model.InstanceContainer;
 import com.haulmont.cuba.gui.screen.*;
 import com.haulmont.cuba.web.testmodel.sales.OrderLine;
+import com.haulmont.cuba.web.testmodel.sales.OrderLineParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,11 +43,27 @@ public class LineScreen extends StandardEditor<OrderLine> {
     @Inject
     private DataComponents dataComponents;
 
+    @Inject
+    public Table<OrderLineParam> paramsTable;
+
+    @Inject
+    private DataContext dataContext;
+    @Inject
+    private InstanceContainer<OrderLine> lineDc;
+    @Inject
+    public CollectionPropertyContainer<OrderLineParam> paramsDc;
+
     @Subscribe
     protected void onInit(InitEvent event) {
         log.debug("onInit: dataContext={}", getScreenData().getDataContext());
     }
-    
+
+    @Subscribe
+    private void onBeforeShow(BeforeShowEvent event) {
+        OrderLine mergedOrderLine = dataContext.merge(getEditedEntity());
+        lineDc.setItem(mergedOrderLine);
+    }
+
     public void changeCommitAndClose(int quantity) {
         qtyField.setValue(quantity);
         closeWithCommit();
