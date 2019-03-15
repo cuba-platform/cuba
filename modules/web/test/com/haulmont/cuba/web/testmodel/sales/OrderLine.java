@@ -16,9 +16,13 @@
 
 package com.haulmont.cuba.web.testmodel.sales;
 
+import com.haulmont.chile.core.annotations.Composition;
 import com.haulmont.cuba.core.entity.StandardEntity;
+import com.haulmont.cuba.core.entity.annotation.OnDelete;
+import com.haulmont.cuba.core.global.DeletePolicy;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Table(name = "TEST_ORDER_LINE")
 @Entity(name = "test$OrderLine")
@@ -35,6 +39,11 @@ public class OrderLine extends StandardEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ORDER_ID")
     protected Order order;
+
+    @Composition
+    @OnDelete(DeletePolicy.CASCADE)
+    @OneToMany(mappedBy = "orderLine")
+    protected List<OrderLineParam> params;
 
     public void setOrder(Order order) {
         this.order = order;
@@ -58,6 +67,14 @@ public class OrderLine extends StandardEntity {
 
     public Integer getQuantity() {
         return quantity;
+    }
+
+    public List<OrderLineParam> getParams() {
+        return params;
+    }
+
+    public void setParams(List<OrderLineParam> params) {
+        this.params = params;
     }
 
     @Override
