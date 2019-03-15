@@ -446,15 +446,37 @@ public class EmailerTest {
 
         Map<String, Serializable> params = new HashMap<>();
         params.put("userName", "Bob");
+        params.put("greeting", "Hello");
         params.put("dateParam", new SimpleDateFormat("dd/MM/yyyy").parse("01/05/2013"));
 
-        EmailInfo info = new EmailInfo("bob@example.com", "Test", null, templateFileName, params);
+        EmailInfo info = new EmailInfo("bob@example.com", "${greeting} Test", null, templateFileName, params);
         emailer.sendEmailAsync(info);
         emailer.processQueuedEmails();
 
-        String body = getBody(testMailSender.fetchSentEmail());
+        MimeMessage sent = testMailSender.fetchSentEmail();
+        String body = getBody(sent);
         assertEquals("Greetings, Bob! 01-05-2013", body.trim());
+
+        String caption = getCaption(sent);
+        assertEquals("Hello Test", caption.trim());
+
+        info = new EmailInfo("bob@example.com", "${greeting} Test", null, null, params);
+        info.setBody("Greetings, ${userName}!");
+        emailer.sendEmailAsync(info);
+        emailer.processQueuedEmails();
+        sent = testMailSender.fetchSentEmail();
+        assertEquals("Greetings, Bob!", getBody(sent).trim());
+
+        info = new EmailInfo("bob@example.com", "${greeting} Test", null, null);
+        info.setBody("Greetings, ${userName}!");
+        emailer.sendEmailAsync(info);
+        emailer.processQueuedEmails();
+        sent = testMailSender.fetchSentEmail();
+
+        assertEquals("Greetings, ${userName}!", getBody(sent).trim());
+        assertEquals("${greeting} Test", getCaption(sent).trim());
     }
+
 
     @Test
     public void testTextAttachment() throws Exception {
@@ -646,6 +668,10 @@ public class EmailerTest {
     private String getBody(MimeMessage msg) throws Exception {
         MimeBodyPart textPart = getTextPart(msg);
         return (String) textPart.getContent();
+    }
+
+    private String getCaption(MimeMessage msg) throws Exception {
+        return msg.getSubject();
     }
 
     private String getBodyContentType(MimeMessage msg) throws Exception {
