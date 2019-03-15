@@ -21,6 +21,7 @@ import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.DatatypeRegistry;
 import com.haulmont.chile.core.datatypes.ValueConversionException;
 import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.annotation.CurrencyValue;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.UserSessionSource;
@@ -203,8 +204,17 @@ public class WebCurrencyField<V extends Number> extends WebV8AbstractField<CubaC
         super.valueBindingConnected(valueSource);
 
         if (valueSource instanceof EntityValueSource) {
-            MetaProperty metaProperty = ((EntityValueSource) valueSource).getMetaPropertyPath()
-                    .getMetaProperty();
+            MetaPropertyPath metaPropertyPath = ((EntityValueSource) valueSource).getMetaPropertyPath();
+            if (metaPropertyPath.getRange().isDatatype()) {
+                Datatype datatype = metaPropertyPath.getRange().asDatatype();
+                if (!Number.class.isAssignableFrom(datatype.getJavaClass())) {
+                    throw new IllegalArgumentException("CurrencyField doesn't support Datatype with class: " + datatype.getJavaClass());
+                }
+            } else {
+                throw new IllegalArgumentException("CurrencyField doesn't support properties with association");
+            }
+
+            MetaProperty metaProperty = metaPropertyPath.getMetaProperty();
 
             Object annotation = metaProperty.getAnnotations()
                     .get(CurrencyValue.class.getName());
@@ -227,6 +237,9 @@ public class WebCurrencyField<V extends Number> extends WebV8AbstractField<CubaC
     public void setDatatype(Datatype<V> datatype) {
         Preconditions.checkNotNullArgument(datatype);
         dataAwareComponentsTools.checkValueSourceDatatypeMismatch(datatype, getValueSource());
+        if (!Number.class.isAssignableFrom(datatype.getJavaClass())) {
+            throw new IllegalArgumentException("CurrencyField doesn't support Datatype with class: " + datatype.getJavaClass());
+        }
 
         this.datatype = datatype;
     }
