@@ -18,7 +18,6 @@
 package com.haulmont.cuba.gui.components.autocomplete.impl;
 
 import com.haulmont.cuba.core.sys.jpql.*;
-import com.haulmont.cuba.core.sys.jpql.JPA2RecognitionException;
 import com.haulmont.cuba.core.sys.jpql.model.Attribute;
 import com.haulmont.cuba.core.sys.jpql.model.JpqlEntityModel;
 import com.haulmont.cuba.core.sys.jpql.model.NoJpqlEntityModel;
@@ -38,11 +37,14 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class HintProvider {
-    private DomainModel model;
+
     private static final char CARET_POSITION_SYMBOL = '~';
-    public static final Pattern COLLECTION_MEMBER_PATTERN = Pattern.compile(".*\\sin\\s*[(]\\s*[a-zA-Z0-9]+[.][a-zA-Z0-9.]*$", Pattern.DOTALL);
-    public static final Pattern JOIN_PATTERN = Pattern.compile(".*\\sjoin\\s*[a-zA-Z0-9]+[.][a-zA-Z0-9.]*$", Pattern.DOTALL);
-    public static final String[] ARITHMETIC_OPERATIONS = {"+", "-", "*", "/"};
+    private static final String[] ARITHMETIC_OPERATIONS = {"+", "-", "*", "/"};
+
+    protected static final Pattern COLLECTION_MEMBER_PATTERN = Pattern.compile(".*\\sin\\s*[(]\\s*[a-zA-Z0-9]+[.][a-zA-Z0-9.]*$", Pattern.DOTALL);
+    protected static final Pattern JOIN_PATTERN = Pattern.compile(".*\\sjoin\\s*[a-zA-Z0-9]+[.][a-zA-Z0-9.]*$", Pattern.DOTALL);
+
+    private DomainModel model;
 
     public HintProvider(DomainModel model) {
         if (model == null)
@@ -128,8 +130,8 @@ public class HintProvider {
                 hintFieldName(lastWord, input, cursorPos, expectedTypes);
     }
 
-    private HintResponse hintFieldName(String lastWord, String input, int caretPosition, Set<InferredType> expectedTypes) throws RecognitionException {
-        QueryTree queryTree = null;
+    private HintResponse hintFieldName(String lastWord, String input, int caretPosition, Set<InferredType> expectedTypes) {
+        QueryTree queryTree;
         try {
             queryTree = new QueryTree(model, input, false);
         } catch (JPA2RecognitionException e) {

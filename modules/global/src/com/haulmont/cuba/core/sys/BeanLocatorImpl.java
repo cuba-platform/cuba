@@ -23,6 +23,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.lang.reflect.Field;
 import java.util.Map;
@@ -41,6 +42,7 @@ public class BeanLocatorImpl implements BeanLocator, ApplicationContextAware {
         Preconditions.checkNotNullArgument(beanType, "beanType is null");
         String name = null;
         Optional<String> optName = names.get(beanType);
+        //noinspection OptionalAssignedToNull
         if (optName == null) {
             // Try to find a bean name defined in its NAME static field
             try {
@@ -66,10 +68,14 @@ public class BeanLocatorImpl implements BeanLocator, ApplicationContextAware {
         return (T) applicationContext.getBean(name);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <T> T get(String name, @Nullable Class<T> beanType) {
         Preconditions.checkNotNullArgument(name, "name is null");
-        return applicationContext.getBean(name, beanType);
+        if (beanType != null) {
+            return applicationContext.getBean(name, beanType);
+        }
+        return (T) applicationContext.getBean(name);
     }
 
     @SuppressWarnings("unchecked")
@@ -90,7 +96,7 @@ public class BeanLocatorImpl implements BeanLocator, ApplicationContextAware {
     }
 
     @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+    public void setApplicationContext(@Nonnull ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
     }
 }

@@ -28,6 +28,7 @@ import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.management.Descriptor;
 import javax.management.MBeanParameterInfo;
 import javax.management.modelmbean.ModelMBeanNotificationInfo;
@@ -66,6 +67,7 @@ public class AnnotationMBeanInfoAssembler extends AbstractReflectiveMBeanInfoAss
         this.attributeSource = attributeSource;
     }
 
+    @Nonnull
     private Class findJmxInterface(String beanKey, Class<?> beanClass) {
         Class cachedInterface = interfaceCache.get(beanKey);
         if (cachedInterface != null) {
@@ -142,14 +144,12 @@ public class AnnotationMBeanInfoAssembler extends AbstractReflectiveMBeanInfoAss
     }
 
     /* Try to find method exposed in bean JMX interface. Return null if not found */
-    private Method findJmxMethod(Method method, String beanKey) {
+    @Nullable
+    private Method findJmxMethod(@Nullable Method method, String beanKey) {
         if (method == null) {
             return null;
         }
         Class ifc = findJmxInterface(beanKey, method.getDeclaringClass());
-        if (ifc == null) {
-            return null;
-        }
 
         for (Method ifcMethod : ifc.getMethods()) {
             if (ifcMethod.getName().equals(method.getName()) &&
@@ -214,6 +214,11 @@ public class AnnotationMBeanInfoAssembler extends AbstractReflectiveMBeanInfoAss
     protected String getOperationDescription(Method method, String beanKey) {
         PropertyDescriptor pd = BeanUtils.findPropertyForMethod(method);
         Method resolvedMethod = findJmxMethod(method, beanKey);
+
+        if (resolvedMethod == null) {
+            throw new RuntimeException(String.format("Unable to find JMX method %s in %s", method, beanKey));
+        }
+
         if (pd != null) {
             ManagedAttribute ma = this.attributeSource.getManagedAttribute(resolvedMethod);
             if (ma != null && StringUtils.hasText(ma.getDescription())) {
@@ -241,6 +246,10 @@ public class AnnotationMBeanInfoAssembler extends AbstractReflectiveMBeanInfoAss
     @Nonnull
     protected MBeanParameterInfo[] getOperationParameters(@Nonnull Method method, String beanKey) {
         Method resolvedMethod = findJmxMethod(method, beanKey);
+        if (resolvedMethod == null) {
+            throw new RuntimeException(String.format("Unable to find JMX method %s in %s", method, beanKey));
+        }
+
         ManagedOperationParameter[] params = this.attributeSource.getManagedOperationParameters(resolvedMethod);
         if (params.length == 0) {
             return new MBeanParameterInfo[0];
@@ -391,6 +400,10 @@ public class AnnotationMBeanInfoAssembler extends AbstractReflectiveMBeanInfoAss
     @Override
     protected void populateOperationDescriptor(@Nonnull Descriptor desc, Method method, String beanKey) {
         Method resolvedOperation = findJmxMethod(method, beanKey);
+        if (resolvedOperation == null) {
+            throw new RuntimeException(String.format("Unable to find JMX method %s in %s", method, beanKey));
+        }
+
         ManagedOperation mo = this.attributeSource.getManagedOperation(resolvedOperation);
 
         applyRunAsync(desc, resolvedOperation);

@@ -173,9 +173,13 @@ public class PersistenceImpl implements Persistence {
             emf = beanLocator.get("entityManagerFactory_" + store);
 
         javax.persistence.EntityManager jpaEm = EntityManagerFactoryUtils.doGetTransactionalEntityManager(emf, null, true);
+        if (jpaEm == null) {
+            throw new RuntimeException("Unable to get JPA EntityManager from EntityManagerFactoryUtils");
+        }
 
-        if (!jpaEm.isJoinedToTransaction())
-            throw new IllegalStateException("No active transaction for " + store + " database");
+        if (!jpaEm.isJoinedToTransaction()) {
+            throw new IllegalStateException(String.format("No active transaction for %s database", store));
+        }
 
         EntityManager entityManager = createEntityManager(jpaEm);
 

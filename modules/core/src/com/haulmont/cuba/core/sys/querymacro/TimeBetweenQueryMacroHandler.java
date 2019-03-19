@@ -17,6 +17,7 @@
 package com.haulmont.cuba.core.sys.querymacro;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableMap;
 import com.haulmont.cuba.core.global.DateTimeTransformations;
 import com.haulmont.cuba.core.global.Scripting;
 import com.haulmont.cuba.core.global.TimeSource;
@@ -41,16 +42,27 @@ public class TimeBetweenQueryMacroHandler extends AbstractQueryMacroHandler {
     protected static final Pattern PARAM_PATTERN = Pattern.compile("(now)\\s*([\\d\\s+-]*)");
     protected static final Pattern QUERY_PARAM_PATTERN = Pattern.compile(":(\\w+)");
 
-    protected static final Map<String, BiFunction<ZonedDateTime, Integer, ZonedDateTime>> units = new HashMap<>();
-
-    static {
-        units.put("year", (zdt, num) -> zdt.plusYears(num).withDayOfYear(1).truncatedTo(ChronoUnit.DAYS));
-        units.put("month", (zdt, num) -> zdt.plusMonths(num).withDayOfMonth(1).truncatedTo(ChronoUnit.DAYS));
-        units.put("day", (zdt, num) -> zdt.plusDays(num).truncatedTo(ChronoUnit.DAYS));
-        units.put("hour", (zdt, num) -> zdt.plusHours(num).truncatedTo(ChronoUnit.HOURS));
-        units.put("minute", (zdt, num) -> zdt.plusMinutes(num).truncatedTo(ChronoUnit.MINUTES));
-        units.put("second", (zdt, num) -> zdt.plusSeconds(num).truncatedTo(ChronoUnit.SECONDS));
-    }
+    protected static final Map<String, BiFunction<ZonedDateTime, Integer, ZonedDateTime>> UNITS =
+            new ImmutableMap.Builder<String, BiFunction<ZonedDateTime, Integer, ZonedDateTime>>()
+                    .put("year", (zdt, num) ->
+                            zdt.plusYears(num).withDayOfYear(1).truncatedTo(ChronoUnit.DAYS)
+                    )
+                    .put("month", (zdt, num) ->
+                            zdt.plusMonths(num).withDayOfMonth(1).truncatedTo(ChronoUnit.DAYS)
+                    )
+                    .put("day", (zdt, num) ->
+                            zdt.plusDays(num).truncatedTo(ChronoUnit.DAYS)
+                    )
+                    .put("hour", (zdt, num) ->
+                            zdt.plusHours(num).truncatedTo(ChronoUnit.HOURS)
+                    )
+                    .put("minute", (zdt, num) ->
+                            zdt.plusMinutes(num).truncatedTo(ChronoUnit.MINUTES)
+                    )
+                    .put("second", (zdt, num) ->
+                            zdt.plusSeconds(num).truncatedTo(ChronoUnit.SECONDS)
+                    )
+                    .build();
 
     @Inject
     protected DateTimeTransformations transformations;
@@ -125,9 +137,10 @@ public class TimeBetweenQueryMacroHandler extends AbstractQueryMacroHandler {
             if (transformations.isDateTypeSupportsTimeZones(javaType)) {
                 zonedDateTime = zonedDateTime.withZoneSameInstant(macroArg.getTimeZone().toZoneId());
             }
-            BiFunction<ZonedDateTime, Integer, ZonedDateTime> calc = units.get(macroArg.getUnit());
-            if (calc == null)
+            BiFunction<ZonedDateTime, Integer, ZonedDateTime> calc = UNITS.get(macroArg.getUnit());
+            if (calc == null) {
                 throw new RuntimeException(String.format("Invalid macro argument: %s", macroArg.getUnit()));
+            }
             zonedDateTime = calc.apply(zonedDateTime, macroArg.getOffset());
 
             params.put(macroArg.getParamName(), transformations.transformFromZDT(zonedDateTime, javaType));

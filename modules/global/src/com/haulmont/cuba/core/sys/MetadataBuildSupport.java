@@ -126,7 +126,7 @@ public class MetadataBuildSupport {
         for (XmlFile xmlFile : metadataXmlList) {
             Element datatypesEl = xmlFile.root.element("datatypes");
             if (datatypesEl != null) {
-                list.addAll(Dom4j.elements(datatypesEl, "datatype"));
+                list.addAll(datatypesEl.elements("datatype"));
             }
         }
         return list;
@@ -143,17 +143,15 @@ public class MetadataBuildSupport {
 
     protected void loadFromMetadataConfig(Map<String, List<EntityClassInfo>> packages, List<XmlFile> metadataXmlList) {
         for (XmlFile xmlFile : metadataXmlList) {
-            for (Element element : Dom4j.elements(xmlFile.root, "metadata-model")) {
+            for (Element element : xmlFile.root.elements("metadata-model")) {
                 String rootPackage = element.attributeValue("root-package");
-                if (StringUtils.isBlank(rootPackage))
+                if (StringUtils.isBlank(rootPackage)) {
                     throw new IllegalStateException("metadata-model/@root-package is empty in " + xmlFile.name);
-
-                List<EntityClassInfo> classNames = packages.get(rootPackage);
-                if (classNames == null) {
-                    classNames = new ArrayList<>();
-                    packages.put(rootPackage, classNames);
                 }
-                for (Element classEl : Dom4j.elements(element, "class")) {
+
+                List<EntityClassInfo> classNames = packages.computeIfAbsent(rootPackage, k -> new ArrayList<>());
+
+                for (Element classEl : element.elements("class")) {
                     classNames.add(new EntityClassInfo(classEl.attributeValue("store"), classEl.getText().trim(), false));
                 }
             }
@@ -169,27 +167,32 @@ public class MetadataBuildSupport {
         for (String fileName : persistenceFilesTokenizer.getTokenArray()) {
             Element root = readXml(fileName);
             Element puEl = root.element("persistence-unit");
-            if (puEl == null)
-                throw new IllegalStateException("File " + fileName + " has no persistence-unit element");
+            if (puEl == null) {
+                throw new IllegalStateException(String.format("File %s has no persistence-unit element", fileName));
+            }
 
             for (Element classEl : puEl.elements("class")) {
                 String className = classEl.getText().trim();
                 boolean included = false;
-                for (String rootPackage : packages.keySet()) {
-                    if (className.startsWith(rootPackage + ".")) {
-                        List<EntityClassInfo> classNames = packages.get(rootPackage);
+
+                for (Map.Entry<String, List<EntityClassInfo>> entry : packages.entrySet()) {
+                    if (className.startsWith(entry.getKey() + ".")) {
+                        List<EntityClassInfo> classNames = entry.getValue();
                         if (classNames == null) {
                             classNames = new ArrayList<>();
-                            packages.put(rootPackage, classNames);
+                            packages.put(entry.getKey(), classNames);
                         }
                         classNames.add(new EntityClassInfo(db, className, true));
                         included = true;
                         break;
                     }
                 }
-                if (!included)
-                    throw new IllegalStateException("Can not find a model for class " + className
-                            + ". The class's package must be inside of some model's root package.");
+
+                if (!included) {
+                    throw new IllegalStateException(
+                            String.format("Can not find a model for class %s. The class's package must be inside of some model's root package.",
+                                    className));
+                }
             }
         }
     }
@@ -248,7 +251,7 @@ public class MetadataBuildSupport {
         String className = attributeEl.attributeValue("class");
         String datatypeName = attributeEl.attributeValue("datatype");
 
-        List<Element> values = Dom4j.elements(attributeEl, "value");
+        List<Element> values = attributeEl.elements("value");
         if (StringUtils.isNotBlank(value)) {
             if (!values.isEmpty())
                 throw new IllegalStateException("Both 'value' attribute and 'value' element(s) are specified for attribute " + attributeEl.attributeValue("name"));

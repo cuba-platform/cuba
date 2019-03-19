@@ -125,7 +125,9 @@ public abstract class AbstractWebAppContextLoader extends AbstractAppContextLoad
         if (StringUtils.isEmpty(appComponentsParam)) {
             appComponents = new AppComponents(block);
         } else {
-            List<String> compNames = Splitter.on(SEPARATOR_PATTERN).omitEmptyStrings().splitToList(appComponentsParam);
+            List<String> compNames = Splitter.on(SEPARATOR_PATTERN)
+                    .omitEmptyStrings()
+                    .splitToList(appComponentsParam);
             appComponents = new AppComponents(compNames, block);
         }
         AppContext.Internals.setAppComponents(appComponents);
@@ -192,7 +194,7 @@ public abstract class AbstractWebAppContextLoader extends AbstractAppContextLoad
         }
 
         if (log.isTraceEnabled()) {
-            String props = Arrays.asList(AppContext.getPropertyNames()).stream()
+            String props = Arrays.stream(AppContext.getPropertyNames())
                     .map(key -> key + "=" + AppContext.getProperty(key))
                     .sorted()
                     .collect(Collectors.joining("\n"));
@@ -219,8 +221,9 @@ public abstract class AbstractWebAppContextLoader extends AbstractAppContextLoad
         }
 
         property = AppContext.getProperty("cuba.tempDir");
-        if (property == null)
+        if (property == null) {
             throw new RuntimeException("App property cuba.tempDir not defined");
+        }
 
         file = new File(property);
         if (!file.exists()) {

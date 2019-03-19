@@ -20,7 +20,6 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -60,7 +59,7 @@ public class BasicRowProcessor implements RowProcessor {
     /**
      * Use this to process beans.
      */
-    private BeanProcessor convert = null;
+    private BeanProcessor convert;
 
     /**
      * BasicRowProcessor constructor.  Bean processing defaults to a
@@ -125,6 +124,7 @@ public class BasicRowProcessor implements RowProcessor {
      * names as keys.  Calls to <code>map.get("COL")</code> and
      * <code>map.get("col")</code> return the same value.
      */
+    @SuppressWarnings("unchecked")
     @Override
     public Map toMap(ResultSet rs) throws SQLException {
         Map result = new CaseInsensitiveHashMap();
@@ -164,6 +164,7 @@ public class BasicRowProcessor implements RowProcessor {
         /**
          * @see java.util.Map#put(java.lang.Object, java.lang.Object)
          */
+        @SuppressWarnings("unchecked")
         @Override
         public Object put(Object key, Object value) {
             return super.put(key.toString().toLowerCase(), value);
@@ -172,13 +173,13 @@ public class BasicRowProcessor implements RowProcessor {
         /**
          * @see java.util.Map#putAll(java.util.Map)
          */
+        @SuppressWarnings("unchecked")
         @Override
         public void putAll(Map m) {
-            Iterator iter = m.keySet().iterator();
-            while (iter.hasNext()) {
-                Object key = iter.next();
-                Object value = m.get(key);
-                this.put(key, value);
+            for (Entry entry : (Iterable<Entry>) m.entrySet()) {
+                Object value = entry.getValue();
+                // put as lowerCase
+                this.put(entry.getKey(), value);
             }
         }
 

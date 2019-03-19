@@ -720,7 +720,7 @@ public class EntityImportExport implements EntityImportExportAPI {
         return result;
     }
 
-    protected class ReferenceInfo {
+    protected static class ReferenceInfo {
         protected Entity entity;
         protected SecurityState prevSecurityState;
         protected EntityImportViewProperty viewProperty;

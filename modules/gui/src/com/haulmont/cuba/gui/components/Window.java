@@ -652,6 +652,7 @@ public interface Window extends Frame, Component.HasCaption, Component.HasIcon {
      * @param listener the listener to register
      * @return a registration object for removing an event listener added to a window
      */
+    @CheckReturnValue(when = When.NEVER)
     Subscription addBeforeWindowCloseListener(Consumer<BeforeCloseEvent> listener);
 
     /**
@@ -684,7 +685,6 @@ public interface Window extends Frame, Component.HasCaption, Component.HasIcon {
      * @param listener the listener to register
      */
     @Deprecated
-    @CheckReturnValue(when = When.NEVER)
     default void addBeforeCloseWithShortcutListener(Consumer<BeforeCloseWithShortcutEvent> listener) {
         addBeforeWindowCloseListener(new BeforeCloseWithShortcutListenerAdapter(listener));
     }
@@ -721,7 +721,6 @@ public interface Window extends Frame, Component.HasCaption, Component.HasIcon {
      * @param listener the listener to register
      */
     @Deprecated
-    @CheckReturnValue(when = When.NEVER)
     default void addBeforeCloseWithCloseButtonListener(Consumer<BeforeCloseWithCloseButtonEvent> listener) {
         addBeforeWindowCloseListener(new BeforeCloseWithCloseButtonListenerAdapter(listener));
     }

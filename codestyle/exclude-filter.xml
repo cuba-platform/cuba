@@ -20,6 +20,15 @@
     <Match>
         <Bug pattern="DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEGED"/> <!-- We do not support Java SecurityManager -->
     </Match>
+    <Match>
+        <Bug pattern="EI_EXPOSE_REP"/>
+    </Match>
+    <Match>
+        <Bug pattern="EI_EXPOSE_REP2"/>
+    </Match>
+    <Match>
+        <Bug pattern="SE_BAD_FIELD"/> <!-- We do not check serializable fields in UI components -->
+    </Match>
 
     <!-- Ignored problems in classes -->
 
@@ -79,13 +88,6 @@
         <Bug pattern="NM_SAME_SIMPLE_NAME_AS_SUPERCLASS" />
     </Match>
 
-    <!-- Event field actually is serializable -->
-
-    <Match>
-        <Bug pattern="SE_BAD_FIELD"/>
-        <Class name="com.haulmont.restapi.events.OAuthTokenRevokedResponseEvent"/>
-    </Match>
-
     <!-- LocalService invocation classes may contain mutable data -->
 
     <Match>
@@ -103,11 +105,6 @@
     <Match>
         <Bug pattern="EI_EXPOSE_REP"/>
         <Class name="com.haulmont.cuba.core.sys.remoting.LocalServiceInvocationResult"/>
-    </Match>
-
-    <Match>
-        <Bug pattern="SE_BAD_FIELD"/>
-        <Class name="com.haulmont.cuba.web.app.folders.CubaFoldersPane"/> <!-- CubaFoldersPane is Vaadin component, ignore serialization warnings -->
     </Match>
 
     <Match>
@@ -148,61 +145,6 @@
     <!-- Serialization warnings -->
 
     <Match>
-        <Bug pattern="SE_BAD_FIELD"/>
-        <Class name="com.haulmont.cuba.web.gui.MenuShortcutAction"/>
-    </Match>
-
-    <Match>
-        <Bug pattern="SE_BAD_FIELD"/>
-        <Class name="com.haulmont.cuba.web.gui.components.ContainerShortcutActionWrapper"/>
-    </Match>
-
-    <Match>
-        <Bug pattern="SE_BAD_FIELD"/>
-        <Class name="com.haulmont.cuba.web.gui.components.CubaTokenList"/>
-    </Match>
-
-    <Match>
-        <Bug pattern="SE_BAD_FIELD"/>
-        <Class name="com.haulmont.cuba.web.gui.components.presentations.TablePresentations"/>
-    </Match>
-
-    <Match>
-        <Bug pattern="SE_BAD_FIELD"/>
-        <Class name="com.haulmont.cuba.web.gui.components.table.AbbreviatedColumnGenerator"/>
-    </Match>
-
-    <Match>
-        <Bug pattern="SE_BAD_FIELD"/>
-        <Class name="com.haulmont.cuba.web.gui.components.table.GroupTableDataContainer"/>
-    </Match>
-
-    <Match>
-        <Bug pattern="SE_BAD_FIELD"/>
-        <Class name="com.haulmont.cuba.web.gui.components.table.WebTableFieldFactory"/>
-    </Match>
-
-    <Match>
-        <Bug pattern="SE_BAD_FIELD"/>
-        <Class name="com.haulmont.cuba.web.gui.components.valueproviders.EntityNameValueProvider"/>
-    </Match>
-
-    <Match>
-        <Bug pattern="SE_BAD_FIELD"/>
-        <Class name="com.haulmont.cuba.web.gui.components.valueproviders.StringPresentationValueProvider"/>
-    </Match>
-
-    <Match>
-        <Bug pattern="SE_BAD_FIELD"/>
-        <Class name="com.haulmont.cuba.web.sys.CubaApplicationServlet"/>
-    </Match>
-
-    <Match>
-        <Bug pattern="SE_BAD_FIELD"/>
-        <Class name="com.haulmont.cuba.web.sys.CubaWebJarsHandler"/>
-    </Match>
-
-    <Match>
         <Bug pattern="BC_UNCONFIRMED_CAST"/>
         <Class name="com.haulmont.cuba.web.app.folders.AppFolderEditWindow"/>
     </Match>
@@ -230,6 +172,176 @@
     <Match>
         <Bug pattern="EI_EXPOSE_REP"/>
         <Class name="com.haulmont.cuba.web.sys.WebDialogs$OptionDialogBuilderImpl"/>
+    </Match>
+
+    <Match>
+        <Bug pattern="EQ_COMPARETO_USE_OBJECT_EQUALS"/>
+        <Class name="com.haulmont.cuba.core.sys.CubaThreadPoolTaskScheduler$TaskDecorator"/>
+    </Match>
+
+    <Match>
+        <Bug pattern="CN_IDIOM_NO_SUPER_CALL"/>
+        <Class name="com.haulmont.cuba.core.sys.persistence.CubaEntityFetchGroup"/>
+    </Match>
+
+    <Match>
+        <Bug pattern="NP_BOOLEAN_RETURN_NULL"/>
+        <Class name="com.haulmont.chile.core.datatypes.impl.BooleanDatatype"/>
+        <Method name="parse"/>
+    </Match>
+
+    <Match>
+        <Bug pattern="RV_RETURN_VALUE_IGNORED_BAD_PRACTICE"/>
+        <Class name="com.haulmont.cuba.core.sys.AbstractWebAppContextLoader"/>
+        <Method name="afterInitAppProperties"/>
+    </Match>
+
+    <Match>
+        <Bug pattern="MS_PKGPROTECT"/>
+        <Class name="com.haulmont.cuba.core.sys.jpql.model.VirtualJpqlEntityModel"/>
+    </Match>
+
+    <Match>
+        <Bug pattern="MS_MUTABLE_COLLECTION_PKGPROTECT"/>
+        <Field name="PROPERTIES_NOT_FOUND"/>
+        <Class name="com.haulmont.cuba.core.sys.AbstractMessages"/>
+    </Match>
+
+    <Match>
+        <Bug pattern="DM_STRING_VOID_CTOR"/>
+        <Class name="com.haulmont.cuba.core.config.ConfigUtil"/>
+    </Match>
+
+    <Match>
+        <Bug pattern="SIC_INNER_SHOULD_BE_STATIC"/>
+        <Class name="com.haulmont.cuba.core.sys.jpql.antlr2.JPA2Lexer$DFA11"/>
+    </Match>
+
+    <Match>
+        <Bug pattern="RV_RETURN_VALUE_IGNORED_NO_SIDE_EFFECT"/>
+        <Class name="com.haulmont.cuba.core.global.GlobalPersistentAttributesLoadChecker"/>
+    </Match>
+
+    <Match>
+        <Bug pattern="SF_SWITCH_FALLTHROUGH"/>
+        <Class name="com.haulmont.cuba.core.global.UuidProvider"/>
+    </Match>
+
+    <Match>
+        <Bug pattern="SF_SWITCH_NO_DEFAULT"/>
+        <Class name="com.haulmont.cuba.core.sys.jpql.antlr2.JPA2Lexer"/>
+    </Match>
+
+    <Match>
+        <Bug pattern="SF_SWITCH_NO_DEFAULT"/>
+        <Class name="com.haulmont.cuba.core.sys.logging.EclipseLinkLog"/>
+    </Match>
+
+    <Match>
+        <Bug pattern="URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD"/>
+        <Class name="com.haulmont.cuba.core.sys.jpql.EntityPath"/>
+    </Match>
+
+    <Match>
+        <Bug pattern="CN_IDIOM_NO_SUPER_CALL"/>
+        <Class name="com.haulmont.cuba.core.sys.persistence.DescriptorEventManagerWrapper"/>
+    </Match>
+
+    <Match>
+        <Bug pattern="RV_RETURN_VALUE_IGNORED_BAD_PRACTICE"/>
+        <Class name="com.haulmont.cuba.core.app.filestorage.FileStorage"/>
+    </Match>
+
+    <Match>
+        <Bug pattern="RV_RETURN_VALUE_IGNORED_BAD_PRACTICE"/>
+        <Class name="com.haulmont.cuba.core.sys.persistence.PersistenceConfigProcessor"/>
+    </Match>
+
+    <Match>
+        <Bug pattern="RV_RETURN_VALUE_IGNORED_BAD_PRACTICE"/>
+        <Class name="com.haulmont.cuba.core.sys.persistence.PersistenceConfigProcessor"/>
+    </Match>
+
+    <Match>
+        <Bug pattern="SE_TRANSIENT_FIELD_NOT_RESTORED"/>
+        <Class name="com.haulmont.cuba.core.sys.entitycache.QueryKey"/>
+    </Match>
+
+    <Match>
+        <Bug pattern="SE_NO_SERIALVERSIONID"/>
+        <Class name="com.haulmont.cuba.core.sys.entitycache.QueryKey"/>
+    </Match>
+
+    <Match>
+        <Bug pattern="BC_VACUOUS_INSTANCEOF"/>
+        <Class name="com.haulmont.cuba.core.PersistenceTools"/>
+    </Match>
+
+    <Match>
+        <Bug pattern="SF_SWITCH_NO_DEFAULT"/>
+        <Class name="com.haulmont.cuba.core.sys.persistence.EntityChangedEventManager"/>
+    </Match>
+
+    <Match>
+        <Bug pattern="SF_SWITCH_NO_DEFAULT"/>
+        <Class name="com.haulmont.cuba.security.app.EntityLog"/>
+    </Match>
+
+    <Match>
+        <Bug pattern="URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD"/>
+        <Field name="namedParameters"/>
+        <Class name="com.haulmont.cuba.core.sys.querymacro.EnumQueryMacroHandler"/>
+    </Match>
+
+    <Match>
+        <Bug pattern="URF_UNREAD_FIELD"/>
+        <Class name="com.haulmont.cuba.gui.components.filter.Param$Builder"/>
+    </Match>
+
+    <Match>
+        <Bug pattern="RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE"/>
+        <Class name="com.haulmont.cuba.gui.app.core.entityinspector.EntityInspectorEditor"/>
+    </Match>
+
+    <Match>
+        <Bug pattern="BC_VACUOUS_INSTANCEOF"/>
+        <Class name="com.haulmont.cuba.gui.model.impl.DataContextImpl"/>
+    </Match>
+
+    <Match>
+        <Bug pattern="BC_VACUOUS_INSTANCEOF"/>
+        <Class name="com.haulmont.cuba.gui.model.impl.DataContextImpl"/>
+    </Match>
+
+    <Match>
+        <Bug pattern="URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD"/>
+        <Class name="com.haulmont.cuba.gui.components.filter.Param"/>
+    </Match>
+
+    <Match>
+        <Bug pattern="URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD"/>
+        <Class name="com.haulmont.cuba.gui.components.filter.ParamEditor"/>
+    </Match>
+
+    <Match>
+        <Bug pattern="UWF_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD"/>
+        <Class name="com.haulmont.cuba.gui.components.AbstractMainWindow"/>
+    </Match>
+
+    <Match>
+        <Bug pattern="UWF_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD"/>
+        <Class name="com.haulmont.cuba.gui.components.filter.FakeFilterSupport"/>
+    </Match>
+
+    <Match>
+        <Bug pattern="UWF_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD"/>
+        <Class name="com.haulmont.cuba.gui.components.listeditor.ListEditorDelegateImpl"/>
+        <Field name="optionsMap"/>
+    </Match>
+
+    <Match>
+        <Bug pattern="MS_PKGPROTECT"/>
+        <Class name="com.haulmont.cuba.web.sys.navigation.CrockfordUuidEncoder"/>
     </Match>
 
 </FindBugsFilter>

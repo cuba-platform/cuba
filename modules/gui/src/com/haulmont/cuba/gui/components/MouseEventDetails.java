@@ -16,10 +16,14 @@
 
 package com.haulmont.cuba.gui.components;
 
+import java.io.Serializable;
+
 /**
  * Class to store mouse event details.
  */
-public class MouseEventDetails {
+public class MouseEventDetails implements Serializable {
+
+
 
     /**
      * Constants for mouse buttons.

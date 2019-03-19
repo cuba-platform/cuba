@@ -69,7 +69,7 @@ public class EntityCacheConnection extends BroadcastRemoteConnection {
     }
 
     @Override
-    protected Object executeCommandInternal(Object command) throws Exception {
+    protected Object executeCommandInternal(Object command) {
         Message message = new Message(command);
 
         Object[] debugInfo = null;

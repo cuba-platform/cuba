@@ -17,7 +17,6 @@
 
 package com.haulmont.cuba.core.app.dynamicattributes;
 
-import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaModel;
@@ -74,8 +73,9 @@ public class DynamicAttributesMetaClass extends MetadataObjectImpl implements Me
     @Override
     public MetaProperty getPropertyNN(String name) {
         MetaProperty property = getProperty(name);
-        if (property == null)
-            throw new IllegalArgumentException("Property '" + name + "' not found in " + getName());
+        if (property == null) {
+            throw new IllegalArgumentException(String.format("Property '%s' not found in %s", name, getName()));
+        }
         return property;
     }
 
@@ -99,16 +99,13 @@ public class DynamicAttributesMetaClass extends MetadataObjectImpl implements Me
         return properties.values();
     }
 
-    public Collection<MetaProperty> getPropertiesFilteredByCategory(final Category category) {
-        return Collections2.filter(getProperties(), new Predicate<MetaProperty>() {
-            @Override
-            public boolean apply(@Nullable MetaProperty input) {
-                if (input != null && category != null) {
-                    CategoryAttribute categoryAttribute = attributes.get(input.getName());
-                    return category.equals(categoryAttribute.getCategory());
-                } else {
-                    return false;
-                }
+    public Collection<MetaProperty> getPropertiesFilteredByCategory(Category category) {
+        return Collections2.filter(getProperties(), input -> {
+            if (input != null && category != null) {
+                CategoryAttribute categoryAttribute = attributes.get(input.getName());
+                return category.equals(categoryAttribute.getCategory());
+            } else {
+                return false;
             }
         });
     }

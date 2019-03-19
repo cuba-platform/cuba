@@ -79,6 +79,9 @@ public class NameBuilderListener<T extends Entity> implements Datasource.ItemPro
                     break;
                 case "middleName": middleName = (String) prevValue;
                     break;
+                default:
+                    // no action
+                    break;
             }
 
             String displayName;

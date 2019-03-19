@@ -84,6 +84,9 @@ public class ScreenDataXmlLoader {
                 case "keyValueInstance":
                     loadKeyValueInstanceContainer(screenData, el, hostScreenData);
                     break;
+                default:
+                    // no action
+                    break;
             }
         }
     }

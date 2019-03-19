@@ -78,17 +78,11 @@ public class FileUploading implements FileUploadingAPI, FileUploadingMBean {
                 throw new FileStorageException(FileStorageException.Type.FILE_ALREADY_EXISTS, file.getAbsolutePath());
             }
 
-            boolean failed = false;
             try (FileOutputStream os = new FileOutputStream(file)) {
                 os.write(data);
-            } catch (Exception ex) {
-                failed = true;
-            } finally {
-                if (!failed) {
-                    tempFiles.put(uuid, file);
-                }
             }
-        } catch (RuntimeException e) {
+            tempFiles.put(uuid, file);
+        } catch (RuntimeException | IOException e) {
             throw new FileStorageException(FileStorageException.Type.IO_EXCEPTION, file.getAbsolutePath());
         }
 

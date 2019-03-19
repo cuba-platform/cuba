@@ -64,7 +64,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
- * The serialization implementation using Kryo serialization
+ * The serialization implementation using Kryo serialization.
  */
 public class KryoSerialization implements Serialization {
 
@@ -135,7 +135,6 @@ public class KryoSerialization implements Serialization {
     }
 
     @Override
-    @SuppressWarnings("finally")
     public void serialize(Object object, OutputStream os) {
         try (Output output = new CubaOutput(os)) {
             if (object instanceof BaseGenericIdEntity
@@ -209,6 +208,7 @@ public class KryoSerialization implements Serialization {
     }
 
     public static class CubaJavaSerializer extends JavaSerializer {
+        @SuppressWarnings("unchecked")
         @Override
         public Object read(Kryo kryo, Input input, Class type) {
             try {
@@ -217,7 +217,7 @@ public class KryoSerialization implements Serialization {
                 if (objectStream == null) {
                     objectStream = new ObjectInputStream(input) {
                         @Override
-                        protected Class<?> resolveClass(ObjectStreamClass desc) throws IOException, ClassNotFoundException {
+                        protected Class<?> resolveClass(ObjectStreamClass desc) throws ClassNotFoundException {
                             return ClassUtils.getClass(KryoSerialization.class.getClassLoader(), desc.getName());
                         }
                     };
@@ -277,17 +277,17 @@ public class KryoSerialization implements Serialization {
         private final InstantiatorStrategy fallbackStrategy = new StdInstantiatorStrategy();
 
         @Override
-        public ObjectInstantiator newInstantiatorOf(Class type) {
+        public <T> ObjectInstantiator<T> newInstantiatorOf(Class<T> type) {
             // Use ReflectASM if the class is not a non-static member class.
             Class enclosingType = type.getEnclosingClass();
             boolean isNonStaticMemberClass = enclosingType != null && type.isMemberClass()
                     && !Modifier.isStatic(type.getModifiers());
             if (!isNonStaticMemberClass) {
                 try {
-                    final ConstructorAccess access = ConstructorAccess.get(type);
+                    ConstructorAccess<T> access = ConstructorAccess.get(type);
                     return () -> {
                         try {
-                            return access.newInstance();
+                            return (T) access.newInstance();
                         } catch (Exception ex) {
                             if (log.isTraceEnabled()) {
                                 log.trace("Unable instantiate class {}", Util.className(type), ex);
@@ -300,14 +300,14 @@ public class KryoSerialization implements Serialization {
             }
             // Reflection.
             try {
-                Constructor ctor;
+                Constructor<T> ctor;
                 try {
                     ctor = type.getConstructor((Class[]) null);
                 } catch (Exception ex) {
                     ctor = type.getDeclaredConstructor((Class[]) null);
                     ctor.setAccessible(true);
                 }
-                final Constructor constructor = ctor;
+                final Constructor<T> constructor = ctor;
                 return () -> {
                     try {
                         return constructor.newInstance();
@@ -318,7 +318,10 @@ public class KryoSerialization implements Serialization {
                         return fallbackStrategy.newInstantiatorOf(type).newInstance();
                     }
                 };
-            } catch (Exception ignored) {
+            } catch (Exception ex) {
+                if (log.isTraceEnabled()) {
+                    log.trace("Unable instantiate class {}", Util.className(type), ex);
+                }
             }
             return fallbackStrategy.newInstantiatorOf(type);
         }
@@ -349,7 +352,6 @@ public class KryoSerialization implements Serialization {
         public T read(Kryo kryo, Input input, Class<T> type) {
             checkIncorrectClass(type);
             return super.read(kryo, input, type);
-
         }
 
         protected void checkIncorrectClass(Class type) {

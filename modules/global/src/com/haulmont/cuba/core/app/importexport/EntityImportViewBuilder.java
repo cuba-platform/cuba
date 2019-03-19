@@ -132,6 +132,9 @@ public class EntityImportViewBuilder implements EntityImportViewBuilderAPI {
                                         view.addOneToManyProperty(propertyName, propertyImportView, CollectionImportPolicy.REMOVE_ABSENT_ITEMS);
                                 }
                                 break;
+                            default:
+                                // ignore other options
+                                break;
                         }
                     }
                 }

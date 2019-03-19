@@ -27,6 +27,7 @@ import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 
 import javax.annotation.Nonnull;
+import java.util.Objects;
 import java.util.concurrent.*;
 
 public class CubaThreadPoolTaskScheduler extends ThreadPoolTaskScheduler implements ApplicationContextAware,
@@ -83,7 +84,7 @@ public class CubaThreadPoolTaskScheduler extends ThreadPoolTaskScheduler impleme
     }
 
     @Override
-    public void onApplicationEvent(ContextClosedEvent event) {
+    public void onApplicationEvent(@Nonnull ContextClosedEvent event) {
         if (applicationContext == event.getApplicationContext()) {
             getScheduledExecutor().shutdown();
         }

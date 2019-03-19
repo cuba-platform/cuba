@@ -31,16 +31,12 @@ import static com.haulmont.cuba.web.sys.navigation.UrlTools.replaceState;
 
 public class HistoryNavigator {
 
-    protected UrlChangeHandler owner;
-    protected AppUI ui;
-
-    protected History history;
+    protected final UrlChangeHandler owner;
+    protected final History history;
 
     public HistoryNavigator(UrlChangeHandler owner, AppUI ui) {
         this.owner = owner;
-        this.ui = ui;
-
-        history = ui.getHistory();
+        this.history = ui.getHistory();
     }
 
     protected boolean handleHistoryNavigation(NavigationState requestedState) {

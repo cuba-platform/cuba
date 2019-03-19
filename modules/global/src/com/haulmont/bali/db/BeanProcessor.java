@@ -63,14 +63,14 @@ public class BeanProcessor {
     private static final Map<Class, Object> primitiveDefaults = new HashMap<>();
 
     static {
-        primitiveDefaults.put(Integer.TYPE, new Integer(0));
-        primitiveDefaults.put(Short.TYPE, new Short((short) 0));
-        primitiveDefaults.put(Byte.TYPE, new Byte((byte) 0));
-        primitiveDefaults.put(Float.TYPE, new Float(0));
-        primitiveDefaults.put(Double.TYPE, new Double(0));
-        primitiveDefaults.put(Long.TYPE, new Long(0));
+        primitiveDefaults.put(Integer.TYPE, 0);
+        primitiveDefaults.put(Short.TYPE, (short) 0);
+        primitiveDefaults.put(Byte.TYPE, (byte) 0);
+        primitiveDefaults.put(Float.TYPE, (float) 0);
+        primitiveDefaults.put(Double.TYPE, (double) 0);
+        primitiveDefaults.put(Long.TYPE, 0L);
         primitiveDefaults.put(Boolean.TYPE, Boolean.FALSE);
-        primitiveDefaults.put(Character.TYPE, new Character('\u0000'));
+        primitiveDefaults.put(Character.TYPE, '\u0000');
     }
 
     /**
@@ -199,13 +199,15 @@ public class BeanProcessor {
             PropertyDescriptor prop = props[columnToProperty[i]];
             Class propType = prop.getPropertyType();
 
-            Object value = this.processColumn(rs, i, propType);
+            if (propType != null) {
+                Object value = this.processColumn(rs, i, propType);
 
-            if (propType != null && value == null && propType.isPrimitive()) {
-                value = primitiveDefaults.get(propType);
+                if (value == null && propType.isPrimitive()) {
+                    value = primitiveDefaults.get(propType);
+                }
+
+                this.callSetter(bean, prop, value);
             }
-
-            this.callSetter(bean, prop, value);
         }
 
         return bean;
@@ -233,28 +235,34 @@ public class BeanProcessor {
             // convert types for some popular ones
             if (value != null) {
                 if (value instanceof java.util.Date) {
-                    if (params[0].getName().equals("java.sql.Date")) {
-                        value = new java.sql.Date(((java.util.Date) value).getTime());
-                    } else
-                    if (params[0].getName().equals("java.sql.Time")) {
-                        value = new java.sql.Time(((java.util.Date) value).getTime());
-                    } else
-                    if (params[0].getName().equals("java.sql.Timestamp")) {
-                        value = new java.sql.Timestamp(((java.util.Date) value).getTime());
+                    String firstParamName = params[0].getName();
+
+                    switch (firstParamName) {
+                        case "java.sql.Date":
+                            value = new java.sql.Date(((Date) value).getTime());
+                            break;
+                        case "java.sql.Time":
+                            value = new java.sql.Time(((Date) value).getTime());
+                            break;
+                        case "java.sql.Timestamp":
+                            value = new Timestamp(((Date) value).getTime());
+                            break;
+                        default:
+                            // ignored, do not change type
+                            break;
                     }
                 }
             }
 
             // Don't call setter if the value object isn't the right type
             if (this.isCompatibleType(value, params[0])) {
-                setter.invoke(target, new Object[]{value});
+                setter.invoke(target, value);
             } else {
               throw new SQLException(
                   "Cannot set " + prop.getName() + ": incompatible types.");
             }
         } catch (IllegalArgumentException | IllegalAccessException | InvocationTargetException e) {
-            throw new SQLException(
-                "Cannot set " + prop.getName() + ": " + e.getMessage());
+            throw new SQLException(String.format("Cannot set %s: %s", prop.getName(), e.getMessage()));
         }
     }
 
@@ -266,7 +274,7 @@ public class BeanProcessor {
      * of Integer into an int.
      *
      * @param value The value to be passed into the setter method.
-     * @param type The setter's parameter type.
+     * @param type  The setter's parameter type.
      * @return boolean True if the value is compatible.
      */
     private boolean isCompatibleType(Object value, Class type) {
@@ -275,31 +283,31 @@ public class BeanProcessor {
             return true;
 
         } else if (
-            type.equals(Integer.TYPE) && Integer.class.isInstance(value)) {
+            type.equals(Integer.TYPE) && value instanceof Integer) {
             return true;
 
-        } else if (type.equals(Long.TYPE) && Long.class.isInstance(value)) {
-            return true;
-
-        } else if (
-            type.equals(Double.TYPE) && Double.class.isInstance(value)) {
-            return true;
-
-        } else if (type.equals(Float.TYPE) && Float.class.isInstance(value)) {
-            return true;
-
-        } else if (type.equals(Short.TYPE) && Short.class.isInstance(value)) {
-            return true;
-
-        } else if (type.equals(Byte.TYPE) && Byte.class.isInstance(value)) {
+        } else if (type.equals(Long.TYPE) && value instanceof Long) {
             return true;
 
         } else if (
-            type.equals(Character.TYPE) && Character.class.isInstance(value)) {
+            type.equals(Double.TYPE) && value instanceof Double) {
+            return true;
+
+        } else if (type.equals(Float.TYPE) && value instanceof Float) {
+            return true;
+
+        } else if (type.equals(Short.TYPE) && value instanceof Short) {
+            return true;
+
+        } else if (type.equals(Byte.TYPE) && value instanceof Byte) {
             return true;
 
         } else if (
-            type.equals(Boolean.TYPE) && Boolean.class.isInstance(value)) {
+            type.equals(Character.TYPE) && value instanceof Character) {
+            return true;
+
+        } else if (
+            type.equals(Boolean.TYPE) && value instanceof Boolean) {
             return true;
 
         } else {
@@ -424,29 +432,29 @@ public class BeanProcessor {
 
         } else if (
             propType.equals(Integer.TYPE) || propType.equals(Integer.class)) {
-            return new Integer(rs.getInt(index));
+            return rs.getInt(index);
 
         } else if (
             propType.equals(Boolean.TYPE) || propType.equals(Boolean.class)) {
-            return new Boolean(rs.getBoolean(index));
+            return rs.getBoolean(index);
 
         } else if (propType.equals(Long.TYPE) || propType.equals(Long.class)) {
-            return new Long(rs.getLong(index));
+            return rs.getLong(index);
 
         } else if (
             propType.equals(Double.TYPE) || propType.equals(Double.class)) {
-            return new Double(rs.getDouble(index));
+            return rs.getDouble(index);
 
         } else if (
             propType.equals(Float.TYPE) || propType.equals(Float.class)) {
-            return new Float(rs.getFloat(index));
+            return rs.getFloat(index);
 
         } else if (
             propType.equals(Short.TYPE) || propType.equals(Short.class)) {
-            return new Short(rs.getShort(index));
+            return rs.getShort(index);
 
         } else if (propType.equals(Byte.TYPE) || propType.equals(Byte.class)) {
-            return new Byte(rs.getByte(index));
+            return rs.getByte(index);
 
         } else if (propType.equals(Timestamp.class)) {
             return rs.getTimestamp(index);

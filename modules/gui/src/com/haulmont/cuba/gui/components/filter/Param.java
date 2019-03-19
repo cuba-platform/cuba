@@ -17,14 +17,13 @@
 
 package com.haulmont.cuba.gui.components.filter;
 
-import com.google.common.collect.Lists;
+import com.google.common.collect.ImmutableList;
 import com.haulmont.bali.events.EventHub;
 import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.DatatypeRegistry;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.datatypes.ValueConversionException;
-import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.client.ClientConfig;
@@ -41,7 +40,6 @@ import com.haulmont.cuba.gui.UiComponents;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.WindowManagerProvider;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.filter.condition.FilterConditionUtils;
 import com.haulmont.cuba.gui.components.filter.dateinterval.DateInIntervalComponent;
 import com.haulmont.cuba.gui.components.listeditor.ListEditorHelper;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -86,10 +84,10 @@ public class Param {
     public static final String NAME = "cuba_FilterParam";
     public static final String NULL = "NULL";
 
-    protected static final List<Class> dateTimeClasses = Lists.newArrayList(
+    protected static final List<Class> dateTimeClasses = ImmutableList.of(
             Date.class, LocalDate.class, LocalDateTime.class, OffsetDateTime.class);
 
-    protected static final List<Class> timeClasses = Lists.newArrayList(LocalTime.class, OffsetTime.class);
+    protected static final List<Class> timeClasses = ImmutableList.of(LocalTime.class, OffsetTime.class);
 
     protected String name;
     protected Type type;
@@ -180,6 +178,10 @@ public class Param {
             return this;
         }
 
+        /**
+         * @deprecated set java class instead
+         */
+        @Deprecated
         public Builder setMetaClass(MetaClass metaClass) {
             this.metaClass = metaClass;
             return this;

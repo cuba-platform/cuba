@@ -19,13 +19,13 @@ package com.haulmont.cuba.core.sys.logging;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
+import com.google.common.collect.ImmutableMap;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.logging.SessionLogEntry;
 import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -33,19 +33,17 @@ public class EclipseLinkLog extends AbstractSessionLog {
 
     protected Map<String, Logger> logsCache = new ConcurrentHashMap<>();
 
-    protected static final Map<Integer, Level> levels = new HashMap<>();
-
-    static {
-        levels.put(SessionLog.OFF, Level.OFF);
-        levels.put(SessionLog.SEVERE, Level.ERROR);
-        levels.put(SessionLog.WARNING, Level.WARN);
-        levels.put(SessionLog.INFO, Level.INFO);
-        levels.put(SessionLog.CONFIG, Level.INFO);
-        levels.put(SessionLog.FINE, Level.DEBUG);
-        levels.put(SessionLog.FINER, Level.DEBUG);
-        levels.put(SessionLog.FINEST, Level.TRACE);
-        levels.put(SessionLog.ALL, Level.ALL);
-    }
+    protected static final Map<Integer, Level> levels = new ImmutableMap.Builder<Integer, Level>()
+            .put(SessionLog.OFF, Level.OFF)
+            .put(SessionLog.SEVERE, Level.ERROR)
+            .put(SessionLog.WARNING, Level.WARN)
+            .put(SessionLog.INFO, Level.INFO)
+            .put(SessionLog.CONFIG, Level.INFO)
+            .put(SessionLog.FINE, Level.DEBUG)
+            .put(SessionLog.FINER, Level.DEBUG)
+            .put(SessionLog.FINEST, Level.TRACE)
+            .put(SessionLog.ALL, Level.ALL)
+            .build();
 
     private Logger getLog(String category) {
         String logName = "eclipselink." + category;

@@ -74,14 +74,15 @@ public class PathNode extends BaseCustomNode {
     }
 
     public String asPathString(char separator) {
-        String result = "";
-        result += entityVariableName;
+        StringBuilder result = new StringBuilder();
+        result.append(entityVariableName);
         if (children != null) {
             for (Object child : children) {
-                result += separator + child.toString();
+                result.append(separator)
+                        .append(child.toString());
             }
         }
-        return result;
+        return result.toString();
     }
 
     public void renameVariableTo(String newVariableName) {

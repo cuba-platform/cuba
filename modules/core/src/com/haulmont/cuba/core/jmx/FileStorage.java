@@ -112,9 +112,7 @@ public class FileStorage implements FileStorageMBean {
             return ExceptionUtils.getStackTrace(
                     new FileStorageException(FileStorageException.Type.FILE_NOT_FOUND, storageFolder.getAbsolutePath()));
 
-        @SuppressWarnings("unchecked")
         Collection<File> systemFiles = FileUtils.listFiles(storageFolder, null, true);
-        @SuppressWarnings("unchecked")
         Collection<File> filesInRootFolder = FileUtils.listFiles(storageFolder, null, false);
         //remove files of root storage folder (e.g. storage.log) from files collection
         systemFiles.removeAll(filesInRootFolder);

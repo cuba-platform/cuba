@@ -86,7 +86,9 @@ public class CubaEclipseLinkJpaDialect extends EclipseLinkJpaDialect {
 
     @Override
     public void cleanupTransaction(Object transactionData) {
-        ((CubaEclipseLinkTransactionData)transactionData).clearEntityManager();
+        if (transactionData instanceof CubaEclipseLinkTransactionData) {
+            ((CubaEclipseLinkTransactionData) transactionData).clearEntityManager();
+        }
     }
 
     protected static class CubaEclipseLinkTransactionData {

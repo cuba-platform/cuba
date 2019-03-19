@@ -17,8 +17,6 @@
 package com.haulmont.cuba.core.sys;
 
 import com.google.common.base.Splitter;
-import com.haulmont.bali.util.Dom4j;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
@@ -111,87 +109,88 @@ public class AppComponents {
     }
 
     private void load(AppComponent component) {
-        try {
-            Document doc = getDescriptorDoc(component);
+        Document doc = getDescriptorDoc(component);
 
-            String dependsOnAttr = doc.getRootElement().attributeValue("dependsOn");
-            if (!StringUtils.isEmpty(dependsOnAttr)) {
-                for (String depCompId : splitCommaSeparatedValue(dependsOnAttr)) {
-                    AppComponent depComp = get(depCompId);
-                    if (depComp == null) {
-                        depComp = new AppComponent(depCompId);
-                        load(depComp);
-                        components.add(depComp);
-                    }
-                    component.addDependency(depComp);
+        String dependsOnAttr = doc.getRootElement().attributeValue("dependsOn");
+        if (!StringUtils.isEmpty(dependsOnAttr)) {
+            for (String depCompId : splitCommaSeparatedValue(dependsOnAttr)) {
+                AppComponent depComp = get(depCompId);
+                if (depComp == null) {
+                    depComp = new AppComponent(depCompId);
+                    load(depComp);
+                    components.add(depComp);
                 }
+                component.addDependency(depComp);
             }
+        }
 
-            for (Element moduleEl : Dom4j.elements(doc.getRootElement(), "module")) {
-                String blocksAttr = moduleEl.attributeValue("blocks");
-                if (StringUtils.isEmpty(blocksAttr))
-                    continue;
-                List<String> blocks = splitCommaSeparatedValue(blocksAttr);
-                if (blocks.contains("*") || blocks.contains(block)) {
-                    for (Element propertyEl : Dom4j.elements(moduleEl, "property")) {
-                        String name = propertyEl.attributeValue("name");
-                        String value = propertyEl.attributeValue("value");
-                        String existingValue = component.getProperty(name);
+        for (Element moduleEl : doc.getRootElement().elements("module")) {
+            String blocksAttr = moduleEl.attributeValue("blocks");
+            if (StringUtils.isEmpty(blocksAttr)) {
+                continue;
+            }
+            List<String> blocks = splitCommaSeparatedValue(blocksAttr);
+            if (blocks.contains("*") || blocks.contains(block)) {
+                for (Element propertyEl : moduleEl.elements("property")) {
+                    String name = propertyEl.attributeValue("name");
+                    String value = propertyEl.attributeValue("value");
+                    String existingValue = component.getProperty(name);
 
-                        if (value.startsWith("\\+")) {
-                            if (existingValue != null) {
-                                log.debug("Overwrite value of property {} from {} to {}", name, existingValue, value);
-                            }
-
-                            component.setProperty(name, value.substring(1), false);
-                            continue;
-                        }
-
-                        if (!value.startsWith("+")) {
-                            if (existingValue != null) {
-                                log.debug("Overwrite value of property {} from {} to {}", name, existingValue, value);
-                            }
-
-                            component.setProperty(name, value, false);
-                            continue;
-                        }
-
-                        String cleanValue = value.substring(1);
-
+                    if (value.startsWith("\\+")) {
                         if (existingValue != null) {
-
-                            String newValue = existingValue;
-                            Splitter splitter = Splitter.on(AppProperties.SEPARATOR_PATTERN).omitEmptyStrings();
-                            List<String> existingParts = splitter.splitToList(existingValue);
-                            for (String part : splitter.split(cleanValue)) {
-                                if (!existingParts.contains(part))
-                                    newValue += " " + part;
-                            }
-                            component.setProperty(name, newValue, true);
-                        } else {
-                            component.setProperty(name, cleanValue, true);
+                            log.debug("Overwrite value of property {} from {} to {}", name, existingValue, value);
                         }
+
+                        component.setProperty(name, value.substring(1), false);
+                        continue;
+                    }
+
+                    if (!value.startsWith("+")) {
+                        if (existingValue != null) {
+                            log.debug("Overwrite value of property {} from {} to {}", name, existingValue, value);
+                        }
+
+                        component.setProperty(name, value, false);
+                        continue;
+                    }
+
+                    String cleanValue = value.substring(1);
+
+                    if (existingValue != null) {
+                        StringBuilder newValue = new StringBuilder(existingValue);
+                        Splitter splitter = Splitter.on(AppProperties.SEPARATOR_PATTERN).omitEmptyStrings();
+                        List<String> existingParts = splitter.splitToList(existingValue);
+                        for (String part : splitter.split(cleanValue)) {
+                            if (!existingParts.contains(part)) {
+                                newValue.append(" ").append(part);
+                            }
+                        }
+                        component.setProperty(name, newValue.toString(), true);
+                    } else {
+                        component.setProperty(name, cleanValue, true);
                     }
                 }
-
             }
-        } catch (IOException | DocumentException e) {
-            throw new RuntimeException("Error loading app component '" + component + "'", e);
         }
     }
 
-    private Document getDescriptorDoc(AppComponent component) throws IOException, DocumentException {
+    private Document getDescriptorDoc(AppComponent component) {
         String descriptorPath = component.getDescriptorPath();
         InputStream descrStream = getClass().getClassLoader().getResourceAsStream(descriptorPath);
-        if (descrStream == null)
-            throw new RuntimeException("App component descriptor was not found in '" + descriptorPath + "'");
+        if (descrStream == null) {
+            throw new RuntimeException(String.format("App component descriptor was not found in '%s'", descriptorPath));
+        }
+
         try {
             SAXReader reader = new SAXReader();
             return reader.read(new InputStreamReader(descrStream, StandardCharsets.UTF_8));
         } catch (DocumentException e) {
-            throw new RuntimeException("Error reading app component descriptor '" + descriptorPath + "'", e);
+            throw new RuntimeException(String.format("Error reading app component descriptor '%s'", descriptorPath), e);
         } finally {
-            IOUtils.closeQuietly(descrStream);
+            try {
+                descrStream.close();
+            } catch (IOException ignored) {
+            }
         }
     }
 

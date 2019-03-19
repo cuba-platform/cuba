@@ -26,7 +26,6 @@ import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.events.AppContextInitializedEvent;
 import com.haulmont.cuba.core.sys.events.AppContextStoppedEvent;
 import com.haulmont.cuba.core.sys.serialization.SerializationSupport;
-import org.apache.commons.io.IOUtils;
 import org.jgroups.*;
 import org.jgroups.conf.XmlConfigurator;
 import org.jgroups.jmx.JmxConfigurator;
@@ -71,7 +70,6 @@ public class ClusterManager implements ClusterManagerAPI {
 
     @Inject
     protected GlobalConfig globalConfig;
-
     @Inject
     protected ClusterConfig clusterConfig;
 
@@ -199,15 +197,13 @@ public class ClusterManager implements ClusterManagerAPI {
     public void start() {
         log.info("Starting cluster");
 
-        InputStream stream = null;
-        try {
-            String configName = AppContext.getProperty("cuba.cluster.jgroupsConfig");
-            if (configName == null) {
-                log.info("Property 'cuba.cluster.jgroupsConfig' is not specified, using jgroups.xml");
-                configName = "jgroups.xml";
-            }
-            stream = resources.getResource(configName).getInputStream();
+        String configName = AppContext.getProperty("cuba.cluster.jgroupsConfig");
+        if (configName == null) {
+            log.info("Property 'cuba.cluster.jgroupsConfig' is not specified, using jgroups.xml");
+            configName = "jgroups.xml";
+        }
 
+        try (InputStream stream = resources.getResource(configName).getInputStream()) {
             initJGroupsProperties();
             initLogger();
 
@@ -229,8 +225,6 @@ public class ClusterManager implements ClusterManagerAPI {
         } catch (Exception e) {
             channel = null;
             throw new RuntimeException("Error starting cluster", e);
-        } finally {
-            IOUtils.closeQuietly(stream);
         }
     }
 
@@ -329,7 +323,7 @@ public class ClusterManager implements ClusterManagerAPI {
     public String printSharedStateStat() {
         StringBuilder clusterStateStat = new StringBuilder();
         for (Map.Entry<String, ClusterListener> entry : listeners.entrySet()) {
-            byte[] data = null;
+            byte[] data;
             StopWatch sw = new StopWatch();
             try {
                 data = entry.getValue().getState();
@@ -424,7 +418,8 @@ public class ClusterManager implements ClusterManagerAPI {
                 if (stat != null) {
                     stat.updateReceived(bytes.length);
                 }
-                ClusterListener listener = listeners.get(className);
+                @SuppressWarnings("unchecked")
+                ClusterListener<Serializable> listener = listeners.get(className);
                 if (listener != null) {
                     listener.receive(data);
                 }
@@ -467,7 +462,7 @@ public class ClusterManager implements ClusterManagerAPI {
                         out.write(entry.getValue());
                     }
                 }
-            } catch (Exception e) {
+            } catch (RuntimeException | IOException e) {
                 log.error("Error sending state", e);
             }
         }
@@ -539,7 +534,7 @@ public class ClusterManager implements ClusterManagerAPI {
         }
     }
 
-    protected class MessageStat {
+    protected static class MessageStat {
         protected LongAdder sentBytes = new LongAdder();
         protected LongAdder receivedBytes = new LongAdder();
         protected LongAdder receivedMessages = new LongAdder();

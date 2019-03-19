@@ -28,6 +28,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Nonnull;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.io.IOException;
@@ -72,19 +73,24 @@ public class TriggerFilesProcessor implements ApplicationContextAware {
     }
 
     public void process() {
-        if (!AppContext.isStarted() || processingDisabled())
+        if (!AppContext.isStarted() || processingDisabled()) {
             return;
+        }
 
         log.trace("Processing trigger files");
 
         for (Path path : findTriggerFiles()) {
-            if (Files.isDirectory(path))
+            if (Files.isDirectory(path)) {
                 continue;
+            }
 
-            String fileName = path.getFileName().toString();
+            Path fileName = path.getFileName();
+            if (fileName == null) {
+                continue;
+            }
 
             try {
-                processFile(fileName);
+                processFile(fileName.toString());
             } catch (Exception e) {
                 log.error("Trigger file {} processing error: {}", path, e);
             }
@@ -145,6 +151,7 @@ public class TriggerFilesProcessor implements ApplicationContextAware {
         return property != null && !Boolean.valueOf(property);
     }
 
+    @Nonnull
     protected List<Path> findTriggerFiles() {
         List<Path> paths = new ArrayList<>();
 
@@ -162,7 +169,7 @@ public class TriggerFilesProcessor implements ApplicationContextAware {
     }
 
     @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+    public void setApplicationContext(@Nonnull ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
     }
 }

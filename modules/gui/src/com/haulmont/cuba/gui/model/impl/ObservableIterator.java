@@ -24,9 +24,6 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.function.BiConsumer;
 
-/**
- *
- */
 class ObservableIterator<T> extends ForwardingIterator<T> {
 
     private Iterator<T> delegate;
@@ -39,8 +36,9 @@ class ObservableIterator<T> extends ForwardingIterator<T> {
     }
 
     protected void fireCollectionChanged(CollectionChangeType type, Collection<? extends T> changes) {
-        if (onCollectionChanged != null)
+        if (onCollectionChanged != null) {
             onCollectionChanged.accept(type, changes);
+        }
     }
 
     @Override
