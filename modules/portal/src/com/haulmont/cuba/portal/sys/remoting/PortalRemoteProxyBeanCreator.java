@@ -41,6 +41,10 @@ public class PortalRemoteProxyBeanCreator extends RemoteProxyBeanCreator {
         if (Boolean.valueOf(useLocal)) {
             log.info("Configuring proxy beans for local service invocations: {}", services.keySet());
 
+            if (!(beanFactory instanceof BeanDefinitionRegistry)) {
+                throw new RuntimeException("beanFactory is not BeanDefinitionRegistry");
+            }
+
             BeanDefinitionRegistry registry = (BeanDefinitionRegistry) beanFactory;
             for (Map.Entry<String, String> entry : services.entrySet()) {
                 String name = entry.getKey();

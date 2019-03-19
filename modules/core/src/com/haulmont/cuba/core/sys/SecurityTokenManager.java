@@ -17,8 +17,8 @@
 package com.haulmont.cuba.core.sys;
 
 import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Multimap;
-import com.google.common.collect.Sets;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.app.ServerConfig;
@@ -60,8 +60,13 @@ public class SecurityTokenManager {
     protected static final String ENTITY_NAME_KEY = "__entityName";
     protected static final String ENTITY_ID_KEY = "__entityId";
 
-    protected static final Set SYSTEM_ATTRIBUTE_KEYS = Sets.newHashSet(READ_ONLY_ATTRIBUTES_KEY,
-            REQUIRED_ATTRIBUTES_KEY, HIDDEN_ATTRIBUTES_KEY, ENTITY_NAME_KEY, ENTITY_ID_KEY);
+    protected static final Set<String> SYSTEM_ATTRIBUTE_KEYS = new ImmutableSet.Builder<String>()
+            .add(READ_ONLY_ATTRIBUTES_KEY)
+            .add(REQUIRED_ATTRIBUTES_KEY)
+            .add(HIDDEN_ATTRIBUTES_KEY)
+            .add(ENTITY_NAME_KEY)
+            .add(ENTITY_ID_KEY)
+            .build();
 
     /**
      * Encrypt filtered data and write the result to the security token
@@ -123,7 +128,7 @@ public class SecurityTokenManager {
             byte[] decrypted = cipher.doFinal(getSecurityToken(securityState));
             String json = new String(decrypted, StandardCharsets.UTF_8);
             JSONObject jsonObject = new JSONObject(json);
-            for (Object key : jsonObject.keySet()) {
+            for (String key : jsonObject.keySet()) {
                 if (!SYSTEM_ATTRIBUTE_KEYS.contains(key)) {
                     String elementName = String.valueOf(key);
                     JSONArray jsonArray = jsonObject.getJSONArray(elementName);
@@ -191,7 +196,7 @@ public class SecurityTokenManager {
         for (int i = 0; i < array.length(); i++) {
             result.add(array.getString(i));
         }
-        return result.toArray(new String[result.size()]);
+        return result.toArray(new String[0]);
     }
 
     protected Object getEntityId(Entity entity) {

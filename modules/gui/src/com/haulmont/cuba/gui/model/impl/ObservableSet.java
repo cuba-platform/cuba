@@ -27,11 +27,10 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.function.BiConsumer;
 
-/**
- *
- */
 @SuppressWarnings("NullableProblems")
 public class ObservableSet<T> extends ForwardingSet<T> implements Serializable {
+
+    private static final long serialVersionUID = 7237243645914200614L;
 
     private final Set<T> delegate;
     private transient final BiConsumer<CollectionChangeType, Collection<? extends T>> onCollectionChanged;

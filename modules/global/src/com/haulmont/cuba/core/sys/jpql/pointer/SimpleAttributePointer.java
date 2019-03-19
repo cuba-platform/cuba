@@ -25,7 +25,7 @@ public class SimpleAttributePointer implements Pointer {
     private JpqlEntityModel entity;
     private Attribute attribute;
 
-    SimpleAttributePointer(JpqlEntityModel entity, Attribute attribute) {
+    protected SimpleAttributePointer(JpqlEntityModel entity, Attribute attribute) {
         this.entity = entity;
         this.attribute = attribute;
     }
@@ -37,5 +37,9 @@ public class SimpleAttributePointer implements Pointer {
 
     public Attribute getAttribute() {
         return attribute;
+    }
+
+    public JpqlEntityModel getEntity() {
+        return entity;
     }
 }

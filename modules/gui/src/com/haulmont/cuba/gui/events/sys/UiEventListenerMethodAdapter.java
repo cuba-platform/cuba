@@ -309,13 +309,15 @@ public class UiEventListenerMethodAdapter implements GenericApplicationListener 
         }
 
         for (ResolvableType declaredEventType : this.declaredEventTypes) {
-            if (declaredEventType.getRawClass() != null) {
-                if (!ApplicationEvent.class.isAssignableFrom(declaredEventType.getRawClass()) && payloadType != null) {
+            Class<?> rawClass = declaredEventType.getRawClass();
+
+            if (rawClass != null) {
+                if (!ApplicationEvent.class.isAssignableFrom(rawClass) && payloadType != null) {
                     if (declaredEventType.isAssignableFrom(payloadType)) {
                         return declaredEventType;
                     }
                 }
-                if (declaredEventType.getRawClass().isInstance(event)) {
+                if (rawClass.isInstance(event)) {
                     return declaredEventType;
                 }
             }

@@ -23,15 +23,14 @@ import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.cuba.core.app.OrmXmlPostProcessor;
 import com.haulmont.cuba.core.entity.annotation.Extends;
 import com.haulmont.cuba.core.sys.AppContext;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.dom4j.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.dom4j.*;
 
 import javax.annotation.Nullable;
-import javax.persistence.*;
 import javax.persistence.Entity;
+import javax.persistence.*;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -224,12 +223,8 @@ class MappingFileCreator {
 
     private void createAttributes(Map.Entry<Class<?>, List<Attr>> entry, Element entityEl) {
         Element attributesEl = entityEl.addElement("attributes", XMLNS);
-        Collections.sort(entry.getValue(), new Comparator<Attr>() {
-            @Override
-            public int compare(Attr a1, Attr a2) {
-                return a1.type.order - a2.type.order;
-            }
-        });
+        entry.getValue().sort(Comparator.comparingInt(a -> a.type.order));
+
         for (Attr attr : entry.getValue()) {
             attr.toXml(attributesEl);
         }
@@ -239,40 +234,13 @@ class MappingFileCreator {
         File file = new File(dir, "orm.xml");
         log.info("Creating file " + file);
 
-        OutputStream os = null;
-        try {
-            os = new FileOutputStream(file);
+        try (OutputStream os = new FileOutputStream(file)) {
             Dom4j.writeDocument(doc, true, os);
         } catch (IOException e) {
-            throw new RuntimeException(e);
-        } finally {
-            IOUtils.closeQuietly(os);
+            throw new RuntimeException("Unable to write XML document", e);
         }
+
         return file;
-    }
-
-    private class ClassDef {
-
-        private Class<?> entityClass;
-
-        private ClassDef(Class<?> entityClass) {
-            this.entityClass = entityClass;
-        }
-
-        @Nullable
-        private Element toXml(Element parentEl) {
-            Element el;
-            if (entityClass.getAnnotation(Entity.class) != null) {
-                el = parentEl.addElement("entity", XMLNS);
-            } else if (entityClass.getAnnotation(MappedSuperclass.class) != null) {
-                el = parentEl.addElement("mapped-superclass", XMLNS);
-            } else {
-                log.warn(entityClass + " has neither @Entity nor @MappedSuperclass annotation, ignoring it");
-                return null;
-            }
-            el.addAttribute("class", entityClass.getName());
-            return el;
-        }
     }
 
     private static class Attr {

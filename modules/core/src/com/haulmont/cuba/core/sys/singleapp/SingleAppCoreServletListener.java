@@ -74,7 +74,7 @@ public class SingleAppCoreServletListener implements ServletContextListener {
 
             String[] dependenciesNames = dependenciesFile.split("\\n");
             URL[] urls = Arrays.stream(dependenciesNames)
-                    .map((String name) -> {
+                    .map(name -> {
                         try {
                             return servletContext.getResource("/WEB-INF/lib/" + name);
                         } catch (MalformedURLException e) {
@@ -89,9 +89,15 @@ public class SingleAppCoreServletListener implements ServletContextListener {
             appContextLoader = appContextLoaderClass.newInstance();
 
             Method setJarsNamesMethod = findMethod(appContextLoaderClass, "setJarNames", String.class);
+            if (setJarsNamesMethod == null) {
+                throw new RuntimeException("Unable to find setJarsNames method in " + appContextLoader.getClass());
+            }
             invokeMethod(setJarsNamesMethod, appContextLoader, dependenciesFile);
 
             Method contextInitializedMethod = findMethod(appContextLoaderClass, "contextInitialized", ServletContextEvent.class);
+            if (contextInitializedMethod == null) {
+                throw new RuntimeException("Unable to find contextInitialized method in " + appContextLoader.getClass());
+            }
             invokeMethod(contextInitializedMethod, appContextLoader, sce);
 
             Thread.currentThread().setContextClassLoader(contextClassLoader);
@@ -104,8 +110,11 @@ public class SingleAppCoreServletListener implements ServletContextListener {
 
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
-        Method contextInitialized = findMethod(appContextLoader.getClass(), "contextDestroyed", ServletContextEvent.class);
-        invokeMethod(contextInitialized, appContextLoader, sce);
+        Method contextDestroyed = findMethod(appContextLoader.getClass(), "contextDestroyed", ServletContextEvent.class);
+        if (contextDestroyed == null) {
+            throw new RuntimeException("Unable to find contextDestroyed method in " + appContextLoader.getClass());
+        }
+        invokeMethod(contextDestroyed, appContextLoader, sce);
     }
 
     protected String getAppContextLoaderClassName() {

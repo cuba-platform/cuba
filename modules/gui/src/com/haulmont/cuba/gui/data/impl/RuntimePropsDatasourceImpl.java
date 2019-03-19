@@ -265,13 +265,13 @@ public class RuntimePropsDatasourceImpl
         }
 
         BaseGenericIdEntity baseGenericIdEntity = (BaseGenericIdEntity) entity;
-        if (PersistenceHelper.isNew(baseGenericIdEntity) && baseGenericIdEntity.getDynamicAttributes() == null) {
-            baseGenericIdEntity.setDynamicAttributes(new HashMap<>());
-        }
-
         @SuppressWarnings("unchecked")
         Map<String, CategoryAttributeValue> dynamicAttributes = baseGenericIdEntity.getDynamicAttributes();
         checkNotNullArgument(dynamicAttributes, "Dynamic attributes should be loaded explicitly");
+
+        if (PersistenceHelper.isNew(baseGenericIdEntity) && baseGenericIdEntity.getDynamicAttributes() == null) {
+            baseGenericIdEntity.setDynamicAttributes(new HashMap<>());
+        }
 
         if (baseGenericIdEntity instanceof Categorized) {
             category = ((Categorized) baseGenericIdEntity).getCategory();

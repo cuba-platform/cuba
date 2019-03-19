@@ -1850,7 +1850,7 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
      * Sort order descriptor. Links together a {@link SortDirection} value and a
      * DataGrid column Id.
      */
-    class SortOrder {
+    class SortOrder implements Serializable {
         protected final String columnId;
         protected final SortDirection direction;
 

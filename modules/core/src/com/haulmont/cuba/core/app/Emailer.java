@@ -45,6 +45,7 @@ import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Component(EmailerAPI.NAME)
 public class Emailer implements EmailerAPI {
@@ -55,7 +56,7 @@ public class Emailer implements EmailerAPI {
 
     protected EmailerConfig config;
 
-    protected volatile int callCount = 0;
+    protected AtomicInteger callCount = new AtomicInteger(0);
 
     @Resource(name = "mailSendTaskExecutor")
     protected TaskExecutor mailSendTaskExecutor;
@@ -145,7 +146,7 @@ public class Emailer implements EmailerAPI {
         }
 
         Map<String, Serializable> params = info.getTemplateParameters() == null
-                ? Collections.<String, Serializable>emptyMap()
+                ? Collections.emptyMap()
                 : info.getTemplateParameters();
         String templateContents = resources.getResourceAsString(templatePath);
         if (templateContents == null) {
@@ -272,8 +273,8 @@ public class Emailer implements EmailerAPI {
         }
 
         int callsToSkip = config.getDelayCallCount();
-        if (callCount < callsToSkip) {
-            callCount++;
+        int count = callCount.getAndAdd(1);
+        if (count < callsToSkip) {
             return null;
         }
 
@@ -396,7 +397,7 @@ public class Emailer implements EmailerAPI {
             try {
                 bodyContent = fileStorage.loadFile(msg.getContentTextFile());
             } catch (FileStorageException e) {
-                throw new RuntimeException(e);
+                throw new RuntimeFileStorageException("Unable to load file from file storage", e);
             }
             //noinspection UnnecessaryLocalVariable
             String res = bodyTextFromByteArray(bodyContent);
@@ -600,7 +601,7 @@ public class Emailer implements EmailerAPI {
             sendingMessage.setAttachments(sendingAttachments);
             sendingMessage.setAttachmentsName(attachmentsName.toString());
         } else {
-            sendingMessage.setAttachments(Collections.<SendingAttachment>emptyList());
+            sendingMessage.setAttachments(Collections.emptyList());
         }
 
         if (headers != null && !headers.isEmpty()) {
@@ -704,7 +705,7 @@ public class Emailer implements EmailerAPI {
         try {
             fileStorage.saveFile(bodyFile, bodyBytes);
         } catch (FileStorageException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeFileStorageException("Unable to save file to storage", e);
         }
         em.persist(bodyFile);
         msg.setContentTextFile(bodyFile);
@@ -718,7 +719,7 @@ public class Emailer implements EmailerAPI {
         try {
             fileStorage.saveFile(contentFile, attachment.getContent());
         } catch (FileStorageException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Unable to save file to storage", e);
         }
         em.persist(contentFile);
         attachment.setContentFile(contentFile);

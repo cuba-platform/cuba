@@ -567,8 +567,6 @@ public class FieldGroupLoader extends AbstractComponentLoader<FieldGroup> {
                 field.setRequiredMessage(loadResourceString(requiredMessage));
             }
         } else {
-            MetaClass metaClass = getMetaClass(resultComponent, field);
-
             Element element = field.getXmlDescriptor();
 
             String required = element.attributeValue("required");

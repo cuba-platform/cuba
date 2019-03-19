@@ -451,7 +451,7 @@ public class EntitySqlGenerator {
         }
     }
 
-    protected class FieldEntry {
+    protected static class FieldEntry {
         protected String fieldName;
         protected boolean isEmbedded;
         protected String columnName;

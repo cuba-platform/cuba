@@ -67,6 +67,9 @@ public final class PermissionUiHelper {
                 case DISALLOWED:
                     value = PermissionValue.DENY.getValue();
                     break;
+
+                default:
+                    throw new UnsupportedOperationException();
             }
         }
         return value;
@@ -88,6 +91,9 @@ public final class PermissionUiHelper {
                 case READ_ONLY:
                     value = PropertyPermissionValue.VIEW.getValue();
                     break;
+
+                default:
+                    throw new UnsupportedOperationException();
             }
         }
         return value;
@@ -166,6 +172,9 @@ public final class PermissionUiHelper {
                 case SHOW:
                     value = UiPermissionValue.SHOW.getValue();
                     break;
+
+                default:
+                    throw new UnsupportedOperationException();
             }
         }
         return value;

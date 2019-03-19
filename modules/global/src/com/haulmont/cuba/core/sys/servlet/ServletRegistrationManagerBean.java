@@ -25,14 +25,18 @@ import javax.servlet.Servlet;
 @Component(ServletRegistrationManager.NAME)
 public class ServletRegistrationManagerBean implements ServletRegistrationManager {
 
+    @SuppressWarnings("unchecked")
     @Override
     public Servlet createServlet(ApplicationContext context, String servletClass) {
         Class<? extends Servlet> clazz;
 
         try {
-            //noinspection unchecked
-            clazz = (Class<? extends Servlet>) context.getClassLoader()
-                    .loadClass(servletClass);
+            ClassLoader classLoader = context.getClassLoader();
+            if (classLoader == null) {
+                throw new RuntimeException("Context classLoader is null");
+            }
+
+            clazz = (Class<? extends Servlet>) classLoader.loadClass(servletClass);
         } catch (ClassNotFoundException e) {
             throw new RuntimeException("Failed to load servlet class: " + servletClass, e);
         }
@@ -47,14 +51,18 @@ public class ServletRegistrationManagerBean implements ServletRegistrationManage
         return servlet;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public Filter createFilter(ApplicationContext context, String filterClass) {
         Class<? extends Filter> clazz;
 
         try {
-            //noinspection unchecked
-            clazz = (Class<? extends Filter>) context.getClassLoader()
-                    .loadClass(filterClass);
+            ClassLoader classLoader = context.getClassLoader();
+            if (classLoader == null) {
+                throw new RuntimeException("Context classLoader is null");
+            }
+
+            clazz = (Class<? extends Filter>) classLoader.loadClass(filterClass);
         } catch (ClassNotFoundException e) {
             throw new RuntimeException("Failed to load filter class: " + filterClass, e);
         }

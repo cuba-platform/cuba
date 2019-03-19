@@ -173,6 +173,10 @@ public class EntityChangedEventManager {
     private void addDynamicAttributeChanges(@Nullable Entity entity, Set<AttributeChanges.Change> changes, boolean deleted) {
         if (entity instanceof BaseGenericIdEntity && ((BaseGenericIdEntity) entity).getDynamicAttributes() != null) {
             Map<String, CategoryAttributeValue> dynamicAttributes = ((BaseGenericIdEntity) entity).getDynamicAttributes();
+            if (dynamicAttributes == null) {
+                throw new RuntimeException("Entity dynamicAttributes is null");
+            }
+
             for (CategoryAttributeValue cav : dynamicAttributes.values()) {
                 if (BaseEntityInternalAccess.isNew(cav)) {
                     changes.add(new AttributeChanges.Change(DynamicAttributesUtils.encodeAttributeCode(cav.getCode()), null));
@@ -279,4 +283,3 @@ public class EntityChangedEventManager {
         return new AttributeChanges(changes, embeddedChanges);
     }
 }
-

@@ -152,12 +152,12 @@ configure([sharedLibModule, globalModule, coreModule, clientModule, guiModule,
     }
 
     spotbugs {
-        toolVersion = "3.1.10"
+        toolVersion = "3.1.12"
         ignoreFailures = false
         omitVisitors = ['FindDoubleCheck']
         excludeFilter = rootProject.file("codestyle/exclude-filter.xml")
         effort = "max"
-        reportLevel = "high"
+        reportLevel = "medium"
     }
 
     spotbugsMain {
@@ -854,7 +854,7 @@ configure(desktopModule) {
         it.file =~ 'tar' || it.file =~ 'zip'
     }
 
-    // vaadin8
+    // desktop module is disabled
     compileJava.enabled = false
     test.enabled = false
     compileTestGroovy.enabled = false
@@ -895,6 +895,8 @@ configure(restApiModule) {
 
         testCompile(clientTestsModule)
     }
+
+    spotbugsMain.enabled = false
 }
 
 configure(portalModule) {

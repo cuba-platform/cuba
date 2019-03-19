@@ -175,6 +175,10 @@ public class DateIntervalValue {
                 moment1 = includingCurrent ? "now" : "now + 1";
                 moment2 = "now + " + number;
                 break;
+
+            default:
+                // no action
+                break;
         }
         return String.format("@between(%s.%s, %s, %s, %s)", "{E}", propertyName, moment1, moment2, timeUnit.name());
     }

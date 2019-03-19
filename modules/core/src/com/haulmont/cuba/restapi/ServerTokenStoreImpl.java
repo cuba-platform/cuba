@@ -42,6 +42,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -745,7 +746,7 @@ public class ServerTokenStoreImpl implements ServerTokenStore {
         }
 
         @Override
-        public int compareTo(Delayed other) {
+        public int compareTo(@Nonnull Delayed other) {
             if (this == other) {
                 return 0;
             }
@@ -754,12 +755,30 @@ public class ServerTokenStoreImpl implements ServerTokenStore {
         }
 
         @Override
-        public long getDelay(TimeUnit unit) {
+        public long getDelay(@Nonnull TimeUnit unit) {
             return expiry - System.currentTimeMillis();
         }
 
         public String getValue() {
             return value;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) {
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
+            TokenExpiry that = (TokenExpiry) o;
+            return expiry == that.expiry &&
+                    Objects.equals(value, that.value);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(expiry, value);
         }
     }
 }

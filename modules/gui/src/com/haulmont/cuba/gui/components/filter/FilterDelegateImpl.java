@@ -948,12 +948,18 @@ public class FilterDelegateImpl implements FilterDelegate {
         if (!initialFocusSet) {
             switch (conditionsFocusType) {
                 case FIRST:
-                    if (firstParamEditor != null)
+                    if (firstParamEditor != null) {
                         paramEditComponentToFocus = firstParamEditor;
+                    }
                     break;
                 case LAST:
-                    if (lastParamEditor != null)
+                    if (lastParamEditor != null) {
                         paramEditComponentToFocus = lastParamEditor;
+                    }
+                    break;
+                default:
+                    // no action
+                    break;
             }
         }
 
@@ -1805,7 +1811,7 @@ public class FilterDelegateImpl implements FilterDelegate {
         Element maxResultsEl = element.element("maxResults");
         if (maxResultsEl != null && !maxResultsEl.getText().equals("") && isMaxResultsLayoutVisible()) {
             try {
-                Integer maxResultsFromSettings = Integer.valueOf(maxResultsEl.getText());
+                int maxResultsFromSettings = Integer.parseInt(maxResultsEl.getText());
                 adapter.setMaxResults(maxResultsFromSettings);
                 initMaxResults();
 
@@ -1819,7 +1825,7 @@ public class FilterDelegateImpl implements FilterDelegate {
 
     @Override
     public boolean saveSettings(Element element) {
-        Boolean changed = false;
+        boolean changed = false;
         Element e = element.element("defaultFilter");
         if (e == null)
             e = element.addElement("defaultFilter");
@@ -2028,6 +2034,7 @@ public class FilterDelegateImpl implements FilterDelegate {
         return null;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void setParamValue(String paramName, Object value) {
         Component component = getOwnComponent(paramName);

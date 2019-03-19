@@ -21,9 +21,9 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
-import com.google.common.collect.Sets;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.chile.core.model.MetaClass;
@@ -72,7 +72,7 @@ import static java.lang.String.format;
 public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
 
     protected static final Multimap<PropertyType, String> FIELDS_VISIBLE_FOR_DATATYPES = ArrayListMultimap.create();
-    protected static final Set<String> ALWAYS_VISIBLE_FIELDS = Sets.newHashSet("name", "code", "required", "dataType");
+    protected static final Set<String> ALWAYS_VISIBLE_FIELDS = ImmutableSet.of("name", "code", "required", "dataType");
     protected static final String WHERE = " where ";
 
     static {

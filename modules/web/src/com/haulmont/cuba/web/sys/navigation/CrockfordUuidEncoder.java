@@ -39,8 +39,8 @@ public final class CrockfordUuidEncoder {
 
     protected static final String CROCKFORD_CHARSET = "0123456789ABCDEFGHJKMNPQRSTVWXYZ";
 
-    protected static final char[] encodeTable = new char[BASE];
-    protected static final int[] decodeTable = new int['z' + 1];
+    protected static final char[] ENCODE_TABLE = new char[BASE];
+    protected static final int[] DECODE_TABLE = new int['z' + 1];
 
     protected static final String STRING_UUID_SPLIT_REGEX = "(\\w{8})(\\w{4})(\\w{4})(\\w{4})(\\w{12})";
     protected static final Pattern STRING_UUID_SPLIT_PATTERN = Pattern.compile(STRING_UUID_SPLIT_REGEX);
@@ -73,7 +73,7 @@ public final class CrockfordUuidEncoder {
 
         for (int i = 0; i < encoded.length(); i++) {
             int charDigit = Character.digit(encoded.charAt(i), BASE);
-            translated[i] = encodeTable[charDigit];
+            translated[i] = ENCODE_TABLE[charDigit];
         }
 
         encoded = new String(translated)
@@ -97,13 +97,13 @@ public final class CrockfordUuidEncoder {
         for (int i = 0; i < encoded.length(); i++) {
             char c = encoded.charAt(i);
 
-            if (c >= decodeTable.length
-                    || decodeTable[c] == INVALID_CHAR) {
+            if (c >= DECODE_TABLE.length
+                    || DECODE_TABLE[c] == INVALID_CHAR) {
                 throw new NumberFormatException(
                         String.format("Invalid character '%s' at position: %s", c, i));
             }
 
-            BigInteger num = new BigInteger(Integer.toString(decodeTable[c]));
+            BigInteger num = new BigInteger(Integer.toString(DECODE_TABLE[c]));
 
             decoded = i == 0 ? num
                     : base.multiply(decoded)
@@ -153,12 +153,12 @@ public final class CrockfordUuidEncoder {
 
     protected static void buildEncodeTable() {
         for (int i = 0; i < BASE; i++) {
-            CrockfordUuidEncoder.encodeTable[i] = CrockfordUuidEncoder.CROCKFORD_CHARSET.charAt(i);
+            CrockfordUuidEncoder.ENCODE_TABLE[i] = CrockfordUuidEncoder.CROCKFORD_CHARSET.charAt(i);
         }
     }
 
     protected static void buildDecodeTable() {
-        int[] table = CrockfordUuidEncoder.decodeTable;
+        int[] table = CrockfordUuidEncoder.DECODE_TABLE;
 
         Arrays.fill(table, INVALID_CHAR);
 

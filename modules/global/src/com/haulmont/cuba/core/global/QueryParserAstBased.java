@@ -40,8 +40,7 @@ public class QueryParserAstBased implements QueryParser {
     protected QueryTree queryTree;
     protected QueryTreeAnalyzer queryAnalyzer;
 
-    protected class EntityNameAndPath {
-
+    protected static class EntityNameAndPath {
         String entityName;
         String entityPath;
         boolean collectionSelect;

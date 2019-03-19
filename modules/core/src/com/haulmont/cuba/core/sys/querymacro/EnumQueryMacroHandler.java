@@ -30,15 +30,15 @@ import java.util.regex.Pattern;
 @Scope("prototype")
 public class EnumQueryMacroHandler extends AbstractQueryMacroHandler {
 
-    protected int count;
     protected Map<String, Object> namedParameters;
 
-    protected static final Pattern MACRO_PATTERN = Pattern.compile("@enum\\s*\\(([^\\)]+)\\)");
+    protected static final Pattern MACRO_PATTERN = Pattern.compile("@enum\\s*\\(([^)]+)\\)");
 
     public EnumQueryMacroHandler() {
         super(MACRO_PATTERN);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     protected String doExpand(String enumString) {
         int idx = enumString.lastIndexOf('.');
@@ -46,7 +46,6 @@ public class EnumQueryMacroHandler extends AbstractQueryMacroHandler {
         String valueName = enumString.substring(idx + 1);
         Class<Enum> aClass;
         try {
-            //noinspection unchecked
             aClass = (Class<Enum>) ReflectionHelper.loadClass(className);
         } catch (ClassNotFoundException e) {
             throw new RuntimeException("Error expanding JPQL macro", e);
@@ -65,7 +64,7 @@ public class EnumQueryMacroHandler extends AbstractQueryMacroHandler {
                 }
             }
         }
-        throw new RuntimeException("Error expanding JPQL macro: enum " + enumString + " is not found");
+        throw new RuntimeException(String.format("Error expanding JPQL macro: enum %s is not found", enumString));
     }
 
     @Override

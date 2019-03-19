@@ -86,6 +86,10 @@ public class QueryTreeTransformer {
                 IdentificationVariableNode identificationVariable = (IdentificationVariableNode) selectionSource.getChild(0);
                 if (entityReference.supportsJoinTo(identificationVariable)) {
                     String variableName = identificationVariable.getVariableName();
+                    if (!(joinClause instanceof JoinVariableNode)) {
+                        throw new RuntimeException("Passed joinClause is not JoinVariableNode: " + joinClause.getClass());
+                    }
+
                     JoinVariableNode joinNode = (JoinVariableNode) joinClause;
 
                     if (hasJoinNode(joinNode, selectionSource)) {

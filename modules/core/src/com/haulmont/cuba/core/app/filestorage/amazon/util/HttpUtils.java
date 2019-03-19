@@ -107,9 +107,10 @@ public class HttpUtils {
 
             if (headers != null) {
                 System.out.println("--------- Request headers ---------");
-                for (String headerKey : headers.keySet()) {
-                    System.out.println(headerKey + ": " + headers.get(headerKey));
-                    connection.setRequestProperty(headerKey, headers.get(headerKey));
+
+                for (Map.Entry<String, String> entry : headers.entrySet()) {
+                    System.out.println(entry.getKey() + ": " + entry.getValue());
+                    connection.setRequestProperty(entry.getKey(), entry.getValue());
                 }
             }
 

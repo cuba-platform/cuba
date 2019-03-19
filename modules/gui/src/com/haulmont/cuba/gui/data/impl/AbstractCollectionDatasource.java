@@ -177,7 +177,7 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
                 if (strings.length > 1) {
                     final List<String> list = Arrays.asList(strings);
                     final List<String> valuePath = list.subList(1, list.size());
-                    property = InstanceUtils.formatValuePath(valuePath.toArray(new String[valuePath.size()]));
+                    property = InstanceUtils.formatValuePath(valuePath.toArray(new String[0]));
                 } else {
                     property = null;
                 }
@@ -295,7 +295,7 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
                         String[] pathElements = info.getPath().split("\\.");
                         if (pathElements.length > 1) {
                             Object entity = params.get(pathElements[0]);
-                            if (entity != null && entity instanceof Instance) {
+                            if (entity instanceof Instance) {
                                 value = InstanceUtils.getValueEx((Instance) entity, Arrays.copyOfRange(pathElements, 1, pathElements.length));
                             }
                         }
@@ -571,7 +571,7 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
      */
     public int getCount() {
         LoadContext<Entity> context = new LoadContext<>(metaClass);
-        LoadContext.Query q = (LoadContext.Query) createDataQuery(context, savedParameters == null ? Collections.<String, Object>emptyMap() : savedParameters);
+        LoadContext.Query q = (LoadContext.Query) createDataQuery(context, savedParameters == null ? Collections.emptyMap() : savedParameters);
         context.setSoftDeletion(isSoftDeletion());
         if (q == null)
             return 0;
@@ -607,7 +607,7 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
         return tag;
     }
 
-    protected void prepareLoadContext(LoadContext context) {
+    protected void prepareLoadContext(LoadContext<?> context) {
     }
 
     protected void checkDataLoadError() {
@@ -641,7 +641,7 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
                         Collections.addAll(sortPropertiesList, sortPropertiesForRelProperty);
                 }
                 if (!sortPropertiesList.isEmpty())
-                    sortProperties = sortPropertiesList.toArray(new String[sortPropertiesList.size()]);
+                    sortProperties = sortPropertiesList.toArray(new String[0]);
             }
         }
 

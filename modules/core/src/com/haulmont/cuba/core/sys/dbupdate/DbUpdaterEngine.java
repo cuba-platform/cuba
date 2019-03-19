@@ -154,9 +154,8 @@ public class DbUpdaterEngine implements DbUpdater {
 
     public boolean dbInitialized() throws DbInitializationException {
         log.trace("Checking if the database is initialized");
-        Connection connection = null;
-        try {
-            connection = getDataSource().getConnection();
+
+        try (Connection connection = getDataSource().getConnection()) {
             DatabaseMetaData dbMetaData = connection.getMetaData();
             DbProperties dbProperties = new DbProperties(getConnectionUrl(connection));
             boolean isSchemaByUser = DbmsSpecificFactory.getDbmsFeatures().isSchemaByUser();
@@ -178,12 +177,6 @@ public class DbUpdaterEngine implements DbUpdater {
             return found;
         } catch (SQLException e) {
             throw new DbInitializationException(true, "Error connecting to database: " + e.getMessage(), e);
-        } finally {
-            if (connection != null)
-                try {
-                    connection.close();
-                } catch (SQLException ignored) {
-                }
         }
     }
 
@@ -308,7 +301,6 @@ public class DbUpdaterEngine implements DbUpdater {
     protected Set<String> getExecutedScripts() {
         QueryRunner runner = new QueryRunner(getDataSource());
         try {
-            //noinspection UnnecessaryLocalVariable
             Set<String> scripts = runner.query("select SCRIPT_NAME from SYS_DB_CHANGELOG",
                     rs -> {
                         Set<String> rows = new HashSet<>();
@@ -403,11 +395,11 @@ public class DbUpdaterEngine implements DbUpdater {
             }
 
             GroovyShell shell = new GroovyShell(classLoader, bind, cc);
-            //noinspection UnnecessaryLocalVariable
             Script script = shell.parse(file.getContent());
             script.run();
         } catch (Exception e) {
-            throw new RuntimeException(ERROR + "Error executing Groovy script " + file.name + "\n" + e.getMessage(), e);
+            throw new RuntimeException(
+                    String.format("%sError executing Groovy script %s\n%s", ERROR, file.name, e.getMessage()), e);
         }
         return true;
     }
@@ -463,7 +455,6 @@ public class DbUpdaterEngine implements DbUpdater {
         }
     }
 
-
     // File extension handler
     public interface FileHandler {
         /**
@@ -483,7 +474,7 @@ public class DbUpdaterEngine implements DbUpdater {
         public List<String> split(java.lang.String script) {
             String qd = Pattern.quote(delimiter);
             String[] commands = script.split("(?<!" + qd + ")" + qd + "(?!" + qd + ")"); // regex for ^: (?<!\^)\^(?!\^)
-            return Arrays.asList(commands).stream()
+            return Arrays.stream(commands)
                     .map(s -> s.replace(delimiter + delimiter, delimiter))
                     .collect(Collectors.toList());
         }

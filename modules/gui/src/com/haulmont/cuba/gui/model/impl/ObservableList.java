@@ -25,11 +25,10 @@ import java.io.Serializable;
 import java.util.*;
 import java.util.function.BiConsumer;
 
-/**
- *
- */
 @SuppressWarnings("NullableProblems")
 public class ObservableList<T> extends ForwardingList<T> implements Serializable {
+
+    private static final long serialVersionUID = -1887633822578545041L;
 
     private List<T> delegate;
     private transient BiConsumer<CollectionChangeType, Collection<? extends T>> onCollectionChanged;

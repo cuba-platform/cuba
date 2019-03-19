@@ -477,6 +477,8 @@ public class EntityInspectorBrowse extends AbstractLookup {
                         case ONE_TO_ONE:
                             entityImportView.addOneToOneProperty(metaProperty.getName(), ReferenceImportBehaviour.IGNORE_MISSING);
                             break;
+                        default:
+                            throw new UnsupportedOperationException(String.format("@Composition with cardinality %s is not supported", cardinality));
                     }
                     break;
                 default:

@@ -681,7 +681,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
     }
 
     @Override
-    protected void prepareLoadContext(LoadContext context) {
+    protected void prepareLoadContext(LoadContext<?> context) {
         context.setLoadDynamicAttributes(loadDynamicAttributes);
         context.setQueryKey(queryKey == null ? 0 : queryKey);
         context.getPrevQueries().addAll(prevQueries);
@@ -732,10 +732,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
 
     protected void incrementQueryKey() {
         queryKey = userSession.getAttribute("_queryKey");
-        if (queryKey == null)
-            queryKey = 1;
-        else
-            queryKey++;
+        queryKey = queryKey != null ? queryKey + 1 : 1;
         userSession.setAttribute("_queryKey", queryKey);
     }
 
