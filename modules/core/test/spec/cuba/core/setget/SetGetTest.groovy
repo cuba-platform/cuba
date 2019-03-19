@@ -135,4 +135,84 @@ class SetGetTest extends Specification {
         then:
         collectionOfB == afterCollectionOfB
     }
+
+    def "byte field"() {
+        when:
+        byte byteValue = 1
+        setGetEntity.setValue("byteField", byteValue)
+        byte afterByteValue = setGetEntity.getValue("byteField")
+
+        then:
+        byteValue == afterByteValue
+    }
+
+    def "char field"() {
+        when:
+        char charValue = 'a'
+        setGetEntity.setValue("charField", charValue)
+        char afterCharValue = setGetEntity.getValue("charField")
+
+        then:
+        charValue == afterCharValue
+    }
+
+    def "short field"() {
+        when:
+        short shortValue = 12
+        setGetEntity.setValue("shortField", shortValue)
+        short afterShortValue = setGetEntity.getValue("shortField")
+
+        then:
+        shortValue == afterShortValue
+    }
+
+    def "int field"() {
+        when:
+        int intValue = 12
+        setGetEntity.setValue("intField", intValue)
+        int afterIntValue = setGetEntity.getValue("intField")
+
+        then:
+        intValue == afterIntValue
+    }
+
+    def "long field"() {
+        when:
+        long longValue = 12L
+        setGetEntity.setValue("longField", longValue)
+        long afterLongValue = setGetEntity.getValue("longField")
+
+        then:
+        longValue == afterLongValue
+    }
+
+    def "float field"() {
+        when:
+        float floatValue = 12F
+        setGetEntity.setValue("floatField", floatValue)
+        float afterFloatValue = setGetEntity.getValue("floatField")
+
+        then:
+        floatValue == afterFloatValue
+    }
+
+    def "double field"() {
+        when:
+        double doubleValue = 12D
+        setGetEntity.setValue("doubleField", doubleValue)
+        double afterDoubleValue = setGetEntity.getValue("doubleField")
+
+        then:
+        doubleValue == afterDoubleValue
+    }
+
+    def "boolean field"() {
+        when:
+        boolean booleanValue = true
+        setGetEntity.setValue("booleanField", booleanValue)
+        boolean afterBooleanValue = setGetEntity.getValue("booleanField")
+
+        then:
+        booleanValue == afterBooleanValue
+    }
 }

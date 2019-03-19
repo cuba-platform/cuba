@@ -16,6 +16,7 @@
  */
 package com.haulmont.chile.core.model.utils;
 
+import com.google.common.collect.ImmutableMap;
 import org.apache.commons.lang3.StringUtils;
 
 import java.lang.invoke.*;
@@ -30,6 +31,18 @@ public class MethodsCache {
     private final Map<String, Function> getters = new HashMap<>();
     private final Map<String, BiConsumer> setters = new HashMap<>();
     private String className;
+
+    private static final Map<Class, Class> primitivesToObjects = new ImmutableMap.Builder<Class, Class>()
+            .put(byte.class, Byte.class)
+            .put(char.class, Character.class)
+            .put(short.class, Short.class)
+            .put(int.class, Integer.class)
+            .put(long.class, Long.class)
+            .put(float.class, Float.class)
+            .put(double.class, Double.class)
+            .put(boolean.class, Boolean.class)
+            .build();
+
 
     public MethodsCache(Class clazz) {
         final Method[] methods = clazz.getMethods();
@@ -72,6 +85,7 @@ public class MethodsCache {
     }
 
     protected BiConsumer createSetter(Class clazz, Method method) {
+        Class valueType = method.getParameterTypes()[0];
         BiConsumer setter;
         try {
             MethodHandles.Lookup caller = MethodHandles.lookup();
@@ -80,7 +94,7 @@ public class MethodsCache {
                     MethodType.methodType(BiConsumer.class),
                     MethodType.methodType(void.class, Object.class, Object.class),
                     caller.findVirtual(clazz, method.getName(), MethodType.methodType(method.getReturnType(), method.getParameterTypes()[0])),
-                    MethodType.methodType(void.class, clazz, method.getParameterTypes()[0]));
+                    MethodType.methodType(void.class, clazz, valueType.isPrimitive() ? primitivesToObjects.get(valueType) : valueType));
             MethodHandle factory = site.getTarget();
             setter = (BiConsumer) factory.invoke();
         } catch (Throwable t) {

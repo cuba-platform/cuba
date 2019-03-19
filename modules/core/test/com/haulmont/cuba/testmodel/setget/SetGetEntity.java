@@ -44,6 +44,30 @@
      @Transient
      private Map<T, Integer> genericMap;
 
+     @Transient
+     private byte byteField;
+
+     @Transient
+     private short shortField;
+
+     @Transient
+     private char charField;
+
+     @Transient
+     private int intField;
+
+     @Transient
+     private long longField;
+
+     @Transient
+     private float floatField;
+
+     @Transient
+     private double doubleField;
+
+     @Transient
+     private boolean booleanField;
+
      public Map<String, Integer> getMap() {
          return map;
      }
@@ -90,5 +114,69 @@
 
      public void setGenericMap(Map<T, Integer> genericMap) {
          this.genericMap = genericMap;
+     }
+
+     public int getIntField() {
+         return intField;
+     }
+
+     public void setIntField(int intField) {
+         this.intField = intField;
+     }
+
+     public byte getByteField() {
+         return byteField;
+     }
+
+     public void setByteField(byte byteField) {
+         this.byteField = byteField;
+     }
+
+     public short getShortField() {
+         return shortField;
+     }
+
+     public void setShortField(short shortField) {
+         this.shortField = shortField;
+     }
+
+     public char getCharField() {
+         return charField;
+     }
+
+     public void setCharField(char charField) {
+         this.charField = charField;
+     }
+
+     public long getLongField() {
+         return longField;
+     }
+
+     public void setLongField(long longField) {
+         this.longField = longField;
+     }
+
+     public float getFloatField() {
+         return floatField;
+     }
+
+     public void setFloatField(float floatField) {
+         this.floatField = floatField;
+     }
+
+     public double getDoubleField() {
+         return doubleField;
+     }
+
+     public void setDoubleField(double doubleField) {
+         this.doubleField = doubleField;
+     }
+
+     public boolean isBooleanField() {
+         return booleanField;
+     }
+
+     public void setBooleanField(boolean booleanField) {
+         this.booleanField = booleanField;
      }
  }
