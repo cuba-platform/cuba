@@ -194,28 +194,6 @@ public class FieldGroupLoader extends AbstractComponentLoader<FieldGroup> {
         return beanLocator.get(MetadataTools.NAME);
     }
 
-    protected void applyPermissions(Component fieldComponent) {
-        if (fieldComponent instanceof DatasourceComponent) {
-            DatasourceComponent dsComponent = (DatasourceComponent) fieldComponent;
-            MetaPropertyPath propertyPath = dsComponent.getMetaPropertyPath();
-            Datasource datasource = dsComponent.getDatasource();
-
-            if (datasource != null && propertyPath != null) {
-                MetaClass metaClass = datasource.getMetaClass();
-
-                Security security = getSecurity();
-
-                if (!security.isEntityAttrUpdatePermitted(metaClass, propertyPath.toString())
-                        && dsComponent instanceof Component.Editable) {
-                    ((Component.Editable) dsComponent).setEditable(false);
-                }
-                if (!security.isEntityAttrReadPermitted(metaClass, propertyPath.toString())) {
-                    dsComponent.setVisible(false);
-                }
-            }
-        }
-    }
-
     protected List<FieldGroup.FieldConfig> loadDynamicAttributeFields(Datasource ds) {
         if (ds != null && getMetadataTools().isPersistent(ds.getMetaClass())) {
             String windowId = getWindowId(context);
@@ -241,15 +219,6 @@ public class FieldGroupLoader extends AbstractComponentLoader<FieldGroup> {
                             attribute.getLocaleName()));
                     loadWidth(field, attribute.getWidth());
 
-                    // Currently, ListEditor does not support datasource binding so we create custom field
-                    if (BooleanUtils.isTrue(attribute.getIsCollection())) {
-                        CustomFieldGenerator fieldGenerator = new DynamicAttributeCustomFieldGenerator();
-
-                        Component fieldComponent = fieldGenerator.generateField(ds, DynamicAttributesUtils.encodeAttributeCode(attribute.getCode()));
-                        field.setCustom(true);
-                        field.setComponent(fieldComponent);
-                        applyPermissions(fieldComponent);
-                    }
                     fields.add(field);
                 }
 
