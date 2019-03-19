@@ -383,7 +383,8 @@ public class FetchGroupManager {
             MetaClass metaClass = metadata.getClassNN(entityClass);
             MetaProperty metaProperty = metaClass.getPropertyNN(propertyName);
 
-            if (metadataTools.isPersistent(metaProperty) && (metaProperty.getRange().isClass() || useFetchGroup)) {
+            if (metadataTools.isPersistent(metaProperty) &&
+                    (metaProperty.getRange().isClass() || useFetchGroup || metadataTools.isLazyFetchedLocalAttribute(metaProperty))) {
                 FetchGroupField field = createFetchGroupField(entityClass, parentField, propertyName, property.getFetchMode());
                 fetchGroupFields.add(field);
                 if (property.getView() != null) {

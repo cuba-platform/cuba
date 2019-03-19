@@ -470,6 +470,16 @@ public class MetadataTools {
     }
 
     /**
+     * Determine whether the given property is a local property with a LAZY fetch type.
+     */
+    public boolean isLazyFetchedLocalAttribute(MetaProperty metaProperty) {
+        Objects.requireNonNull(metaProperty, "metaProperty is null");
+        AnnotatedElement annotatedElement = metaProperty.getAnnotatedElement();
+        Basic annotation = annotatedElement.getAnnotation(Basic.class);
+        return annotation != null && annotation.fetch() == FetchType.LAZY;
+    }
+
+    /**
      * Determine whether the given property is on the owning side of an association.
      */
     public boolean isOwningSide(MetaProperty metaProperty) {
