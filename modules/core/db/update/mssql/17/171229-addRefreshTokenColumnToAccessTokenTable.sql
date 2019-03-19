@@ -1,1 +1,0 @@
-alter table SYS_ACCESS_TOKEN add REFRESH_TOKEN_VALUE varchar(255)^

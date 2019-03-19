@@ -85,7 +85,7 @@ public interface WebConfig extends Config {
      */
     @Property("cuba.web.cubaHttpFilterBypassUrls")
     @Factory(factory = CommaSeparatedStringListTypeFactory.class)
-    @Default("/ws/,/dispatch/,/rest/,/front/")
+    @Default("/ws/,/dispatch/,/front/")
     List<String> getCubaHttpFilterBypassUrls();
 
     /**

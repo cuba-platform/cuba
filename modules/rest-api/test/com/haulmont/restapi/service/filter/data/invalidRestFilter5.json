@@ -1,9 +1,0 @@
-{
-  "conditions": [
-    {
-      "property": "stringField",
-      "operator": ">",
-      "value": "string"
-    }
-  ]
-}

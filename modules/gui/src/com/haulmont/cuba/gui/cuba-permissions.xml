@@ -37,9 +37,6 @@
                 <permission id="cuba.gui.bulkEdit"/>
                 <permission id="cuba.gui.showExceptionDetails"/>
             </category>
-            <category id="cuba.restApi">
-                <permission id="cuba.restApi.enabled"/>
-            </category>
         </category>
     </specific>
 </permission-config>

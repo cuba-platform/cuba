@@ -1,1 +1,0 @@
-alter table SYS_REST_API_TOKEN rename to SYS_ACCESS_TOKEN^

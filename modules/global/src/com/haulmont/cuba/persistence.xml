@@ -36,8 +36,6 @@
         <class>com.haulmont.cuba.core.entity.ScheduledTask</class>
         <class>com.haulmont.cuba.core.entity.ScheduledExecution</class>
         <class>com.haulmont.cuba.core.entity.QueryResult</class>
-        <class>com.haulmont.cuba.core.entity.AccessToken</class>
-        <class>com.haulmont.cuba.core.entity.RefreshToken</class>
 
         <class>com.haulmont.cuba.security.entity.User</class>
         <class>com.haulmont.cuba.security.entity.Role</class>

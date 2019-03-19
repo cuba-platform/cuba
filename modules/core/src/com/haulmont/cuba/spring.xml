@@ -171,8 +171,6 @@
                        value-ref="cuba_BruteForceProtectionMBean"/>
                 <entry key="${cuba.webContextName}.cuba:type=QueryCacheSupport"
                        value-ref="cuba_QueryCacheSupportMBean"/>
-                <entry key="${cuba.webContextName}.cuba:type=ServerTokenStore"
-                       value-ref="cuba_ServerTokenStoreMBean"/>
             </map>
         </property>
     </bean>
@@ -194,7 +192,6 @@
         <task:scheduled ref="cuba_TriggerFilesProcessor" method="process"
                         fixed-delay="${cuba.triggerFilesCheckInterval?:5000}"/>
         <task:scheduled ref="cuba_MiddlewareStatisticsAccumulator" method="gatherParameters" fixed-rate="5000"/>
-        <task:scheduled ref="cuba_ServerTokenStore" method="deleteExpiredTokens" cron="${cuba.rest.deleteExpiredTokensCron?:0 0 3 * * ?}"/>
         <task:scheduled ref="cuba_QueryResultsManager" method="deleteForInactiveSessions" fixed-rate="${cuba.deleteOldQueryResultsInterval?:600000}"/>
     </task:scheduled-tasks>
 

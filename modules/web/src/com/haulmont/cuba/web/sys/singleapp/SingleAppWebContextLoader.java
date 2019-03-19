@@ -27,15 +27,12 @@ import com.haulmont.cuba.web.sys.CubaApplicationServlet;
 import com.haulmont.cuba.web.sys.CubaDispatcherServlet;
 import com.haulmont.cuba.web.sys.CubaHttpFilter;
 import com.haulmont.cuba.web.sys.WebAppContextLoader;
-import com.haulmont.restapi.sys.CubaRestApiServlet;
-import com.haulmont.restapi.sys.SingleAppRestApiServlet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.core.io.support.ResourcePatternResolver;
-import org.springframework.web.filter.DelegatingFilterProxy;
 import org.springframework.web.servlet.DispatcherServlet;
 
 import javax.annotation.Nonnull;
@@ -84,8 +81,6 @@ public class SingleAppWebContextLoader extends WebAppContextLoader {
             registerAppServlet(servletContext);
 
             registerDispatchServlet(servletContext);
-
-            registerRestApiServlet(servletContext);
 
             registerCubaHttpFilter(servletContext);
 
@@ -148,26 +143,6 @@ public class SingleAppWebContextLoader extends WebAppContextLoader {
         ServletRegistration.Dynamic cubaDispatcherServletReg = servletContext.addServlet("dispatcher", cubaDispatcherServlet);
         cubaDispatcherServletReg.setLoadOnStartup(1);
         cubaDispatcherServletReg.addMapping("/dispatch/*");
-    }
-
-    protected void registerRestApiServlet(ServletContext servletContext) {
-        CubaRestApiServlet cubaRestApiServlet = new SingleAppRestApiServlet(dependencyJars);
-        try {
-            cubaRestApiServlet.init(new CubaServletConfig("rest_api", servletContext));
-        } catch (ServletException e) {
-            throw new RuntimeException("An error occurred while initializing dispatcher servlet", e);
-        }
-        ServletRegistration.Dynamic cubaRestApiServletReg = servletContext.addServlet("rest_api", cubaRestApiServlet);
-        cubaRestApiServletReg.setLoadOnStartup(2);
-        cubaRestApiServletReg.addMapping("/rest/*");
-
-        DelegatingFilterProxy restSpringSecurityFilterChain = new DelegatingFilterProxy();
-        restSpringSecurityFilterChain.setContextAttribute("org.springframework.web.servlet.FrameworkServlet.CONTEXT.rest_api");
-        restSpringSecurityFilterChain.setTargetBeanName("springSecurityFilterChain");
-
-        FilterRegistration.Dynamic restSpringSecurityFilterChainReg =
-                servletContext.addFilter("restSpringSecurityFilterChain", restSpringSecurityFilterChain);
-        restSpringSecurityFilterChainReg.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, "/rest/*");
     }
 
     protected void registerFrontAppServlet(ServletContext servletContext) {

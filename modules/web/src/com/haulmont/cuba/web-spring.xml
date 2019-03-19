@@ -29,7 +29,6 @@
         <context:exclude-filter type="regex" expression="com\.haulmont\.cuba\.web\.widgets\..*"/>
         <!--exclude dispatcher-->
         <context:exclude-filter type="regex" expression="com\.haulmont\.cuba\.web\.controllers\..*"/>
-        <context:exclude-filter type="regex" expression="com\.haulmont\.cuba\.restapi\..*"/>
     </context:component-scan>
 
     <bean id="vaadinSessionScope" class="com.haulmont.cuba.web.sys.VaadinSessionScope"/>
@@ -120,7 +119,6 @@
                 <entry key="cuba_EntityRestoreService" value="com.haulmont.cuba.core.app.EntityRestoreService"/>
                 <entry key="cuba_LocalFileExchangeService" value="com.haulmont.cuba.core.sys.remoting.LocalFileExchangeService"/>
                 <entry key="cuba_EntityImportExportService" value="com.haulmont.cuba.core.app.importexport.EntityImportExportService"/>
-                <entry key="cuba_ServerTokenStore" value="com.haulmont.cuba.restapi.ServerTokenStore"/>
                 <entry key="cuba_ConstraintLocalizationService" value="com.haulmont.cuba.core.app.ConstraintLocalizationService"/>
                 <entry key="cuba_AttributeAccessService" value="com.haulmont.cuba.core.app.AttributeAccessService"/>
                 <entry key="cuba_ExceptionReportService" value="com.haulmont.cuba.core.app.ExceptionReportService"/>

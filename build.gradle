@@ -83,7 +83,6 @@ def clientModule = project(':cuba-client')
 def guiModule = project(':cuba-gui')
 def desktopModule = project(':cuba-desktop')
 def portalModule = project(':cuba-portal')
-def restApiModule = project(':cuba-rest-api')
 def webWidgetsModule = project(':cuba-web-widgets')
 def webToolkitModule = project(':cuba-web-toolkit')
 def webModule = project(':cuba-web')
@@ -92,7 +91,7 @@ def coreTestsModule = project(':cuba-core-tests')
 def clientTestsModule = project(':cuba-client-tests')
 
 configure([sharedLibModule, globalModule, coreModule, clientModule, guiModule,
-           webModule, desktopModule, portalModule, restApiModule]) {
+           webModule, desktopModule, portalModule]) {
     apply(plugin: 'java')
     apply(plugin: 'groovy')
     apply(plugin: 'maven')
@@ -612,7 +611,6 @@ configure(webModule) {
     dependencies {
         compile(sharedLibModule)
         compile(guiModule)
-        compile(restApiModule)
         compile(webWidgetsModule)
 
         compile(bom['org.springframework.ldap:spring-ldap-core']) {
@@ -753,7 +751,7 @@ configure(webModule) {
 
     task deploy(dependsOn: assemble, type: CubaDeployment) {
         appName = 'cuba'
-        appJars('cuba-global', 'cuba-client', 'cuba-gui', 'cuba-web', 'cuba-web-widgets', 'cuba-rest-api')
+        appJars('cuba-global', 'cuba-client', 'cuba-gui', 'cuba-web', 'cuba-web-widgets')
     }
 }
 
@@ -863,48 +861,11 @@ configure(desktopModule) {
     spotbugsMain.enabled = false
 }
 
-configure(restApiModule) {
-    dependencies {
-        compile(globalModule)
-        compile(clientModule)
-        compile(sharedLibModule)
-
-        compile(bom['commons-fileupload:commons-fileupload']) // required for Spring multipart resolver
-
-        compile(bom['org.springframework:spring-webmvc'])
-        compile(bom['org.springframework:spring-context-support'])
-
-        compile(bom['org.springframework.ldap:spring-ldap-core']) {
-            exclude(group: 'org.slf4j', module: 'jcl-over-slf4j') // removed because it defines its own Log4j LogFactory via JDK services mechanism
-        }
-
-        compile(bom['org.json:json'])
-
-        compile(bom['com.fasterxml.jackson.core:jackson-databind'])
-        compile(bom['com.fasterxml.jackson.core:jackson-annotations'])
-        compile(bom['com.fasterxml.jackson.dataformat:jackson-dataformat-yaml'])
-
-        compile(bom['org.springframework.security:spring-security-core'])
-        compile(bom['org.springframework.security:spring-security-web'])
-        compile(bom['org.springframework.security:spring-security-config'])
-        compile(bom['org.springframework.security.oauth:spring-security-oauth2'])
-
-        compile(bom['io.swagger:swagger-models'])
-
-        compileOnly(bom['javax.servlet:javax.servlet-api'])
-
-        testCompile(clientTestsModule)
-    }
-
-    spotbugsMain.enabled = false
-}
-
 configure(portalModule) {
     dependencies {
         compile(globalModule)
         compile(clientModule)
         compile(sharedLibModule)
-        compile(restApiModule)
 
         compile(bom['org.springframework:spring-webmvc'])
         compile(bom['org.springframework:spring-context-support'])
@@ -933,7 +894,7 @@ configure(portalModule) {
 
     task deploy(dependsOn: assemble, type: CubaDeployment) {
         appName = 'cuba-portal'
-        appJars('cuba-global', 'cuba-client', 'cuba-portal', 'cuba-rest-api')
+        appJars('cuba-global', 'cuba-client', 'cuba-portal')
     }
 }
 
@@ -1023,7 +984,6 @@ task aggregateJavadoc(type: Javadoc,
     exclude 'com/haulmont/cuba/core/app/cache/**'
     exclude 'com/haulmont/cuba/core/sys/jpql/antlr2/**'
     exclude 'com/haulmont/cuba/core/sys/utils/**'
-    exclude 'com/haulmont/cuba/restapi/**'
 
     exclude 'com/haulmont/cuba/gui/components/compatibility/**'
     exclude 'com/haulmont/cuba/gui/xml/layout/loaders/**'

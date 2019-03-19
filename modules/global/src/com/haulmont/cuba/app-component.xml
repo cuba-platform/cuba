@@ -65,11 +65,6 @@
         <artifact name="cuba-client-tests" configuration="testCompile"/>
     </module>
 
-    <module name="rest-api" dependsOn="client" blocks="web,portal">
-        <artifact name="cuba-rest-api" appJar="true"/>
-        <property name="cuba.restSpringContextConfig" value="com/haulmont/cuba/rest-dispatcher-spring.xml"/>
-    </module>
-
     <module name="gui" dependsOn="client" blocks="web,desktop">
         <artifact name="cuba-gui" appJar="true"/>
         <artifact name="cuba-client-tests" configuration="testCompile"/>
@@ -81,7 +76,7 @@
         <artifact name="cuba-web-widgets" appJar="true"/>
     </module>
 
-    <module name="web" dependsOn="gui,rest-api,web-widgets" blocks="web">
+    <module name="web" dependsOn="gui,client,web-widgets" blocks="web">
         <artifact name="cuba-web" appJar="true"/>
         <artifact name="cuba-client-tests" configuration="testCompile"/>
         <artifact name="cuba-web" classifier="web" ext="zip" configuration="webcontent"/>
@@ -101,15 +96,6 @@
 
         <property name="cuba.dispatcherBaseUrl" value="http://${cuba.webHostName}:${cuba.webPort}/${cuba.webContextName}/dispatch"/>
         <property name="cuba.useLocalServiceInvocation" value="true"/>
-        <property name="cuba.rest.client.id" value="client"/>
-        <property name="cuba.rest.client.secret" value="{noop}secret"/>
-        <property name="cuba.rest.client.tokenExpirationTimeSec" value="43200"/>
-        <property name="cuba.rest.client.refreshTokenExpirationTimeSec" value="31536000"/>
-        <property name="cuba.rest.client.authorizedGrantTypes" value="password,external,refresh_token"/>
-        <property name="cuba.rest.supportRefreshToken" value="true"/>
-        <property name="cuba.rest.reuseRefreshToken" value="true"/>
-        <property name="cuba.rest.allowedOrigins" value="*"/>
-        <property name="cuba.rest.maxUploadSize" value="20971520"/>
         <property name="cuba.iconsConfig" value="com.haulmont.cuba.gui.icons.CubaIcon"/>
     </module>
 
@@ -117,7 +103,7 @@
         <artifact name="cuba-web-toolkit"/>
     </module>
 
-    <module name="portal" dependsOn="rest-api" blocks="portal">
+    <module name="portal" dependsOn="client" blocks="portal">
         <artifact name="cuba-portal" appJar="true"/>
 
         <property name="cuba.springContextConfig" value="+com/haulmont/cuba/portal-spring.xml com/haulmont/cuba/portal-security-spring.xml"/>
@@ -126,15 +112,6 @@
 
         <property name="cuba.dispatcherBaseUrl" value="http://${cuba.webHostName}:${cuba.webPort}/${cuba.webContextName}"/>
         <property name="cuba.useLocalServiceInvocation" value="true"/>
-        <property name="cuba.rest.client.id" value="client"/>
-        <property name="cuba.rest.client.secret" value="{noop}secret"/>
-        <property name="cuba.rest.client.tokenExpirationTimeSec" value="43200"/>
-        <property name="cuba.rest.client.refreshTokenExpirationTimeSec" value="31536000"/>
-        <property name="cuba.rest.client.authorizedGrantTypes" value="password,external,refresh_token"/>
-        <property name="cuba.rest.supportRefreshToken" value="true"/>
-        <property name="cuba.rest.reuseRefreshToken" value="true"/>
-        <property name="cuba.rest.allowedOrigins" value="*"/>
-        <property name="cuba.rest.maxUploadSize" value="20971520"/>
         <property name="cuba.portal.templateLoaderPath" value="/WEB-INF/templates/"/>
     </module>
 

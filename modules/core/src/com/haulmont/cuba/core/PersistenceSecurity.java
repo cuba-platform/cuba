@@ -105,7 +105,6 @@ public interface PersistenceSecurity extends Security {
      */
     void assertToken(Entity entity);
 
-
     /**
      * Validate that security token for REST exists for specific cases.
      * For example, security constraints exists

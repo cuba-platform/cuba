@@ -19,7 +19,6 @@ package com.haulmont.cuba.security.listener;
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.global.Events;
-import com.haulmont.cuba.restapi.ServerTokenStore;
 import com.haulmont.cuba.security.app.UserManagementService;
 import com.haulmont.cuba.security.app.UserSessionsAPI;
 import com.haulmont.cuba.security.entity.User;
@@ -46,9 +45,6 @@ public class UserInvalidationListener {
     protected UserManagementService userManagementService;
 
     @Inject
-    protected ServerTokenStore serverTokenStore;
-
-    @Inject
     protected UserSessionsAPI userSessionsAPI;
 
     @Inject
@@ -70,17 +66,11 @@ public class UserInvalidationListener {
 
             sessionsIds.forEach(userSessionsAPI::killSession);
 
-            serverTokenStore.getAccessTokenValuesByUserLogin(user.getLogin())
-                    .forEach(serverTokenStore::removeAccessToken);
-
-            serverTokenStore.getRefreshTokenValuesByUserLogin(user.getLogin())
-                    .forEach(serverTokenStore::removeRefreshToken);
-
             userManagementService.resetRememberMeTokens(Collections.singletonList(user.getId()));
 
             tx.commit();
 
-            log.info("UserSessions, REST API & 'Remember me' tokens were invalidated for a user: {}", user.getLogin());
+            log.info("UserSessions & 'Remember me' tokens were invalidated for a user: {}", user.getLogin());
         } catch (Throwable t) {
             log.error("An error occurred while handling user invalidation for user: {}.", user.getLogin(), t);
         }

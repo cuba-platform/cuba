@@ -1,1 +1,0 @@
-alter table SYS_REST_API_TOKEN add USER_LOGIN varchar2(50)^
