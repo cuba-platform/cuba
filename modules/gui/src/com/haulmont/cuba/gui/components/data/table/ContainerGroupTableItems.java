@@ -65,12 +65,7 @@ public class ContainerGroupTableItems<E extends Entity<K>, K>
     public void sort(Object[] propertyId, boolean[] ascending) {
         sortProperties = propertyId;
         sortAscending = ascending;
-        if (hasGroups()) {
-            Sort sort = createSort(propertyId, ascending);
-            doGroupSort(sort);
-        } else {
-            super.sort(propertyId, ascending);
-        }
+        super.sort(propertyId, ascending);
     }
 
     protected void doGroupSort(Sort sort) {
