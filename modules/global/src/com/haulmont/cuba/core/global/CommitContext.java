@@ -40,7 +40,9 @@ public class CommitContext implements Serializable {
     protected boolean discardCommitted;
     protected boolean authorizationRequired;
     protected boolean joinTransaction;
+    protected ValidationType validationType = ValidationType.DEFAULT;
     protected Map<String, Object> dbHints = new HashMap<>();
+    protected List<Class> validationGroups;
 
     /**
      * @param commitInstances changed entities to be committed to the database
@@ -191,6 +193,25 @@ public class CommitContext implements Serializable {
         this.discardCommitted = discardCommitted;
     }
 
+    /**
+     * @return {@link ValidationType} of commit context.
+     */
+    public ValidationType getValidationType() {
+        return validationType;
+    }
+
+    /**
+     * Sets {@link ValidationType} for commit context.
+     * Validation type is responsible for whether entity bean validation will be applied on {@link DataManager} level.
+     *
+     * @see BeanValidation
+     *
+     * @param validationType validation type
+     */
+    public void setValidationType(ValidationType validationType) {
+        this.validationType = validationType;
+    }
+
     public boolean isAuthorizationRequired() {
         return authorizationRequired;
     }
@@ -212,5 +233,43 @@ public class CommitContext implements Serializable {
     private View getViewFromRepository(Entity entity, String viewName) {
         Metadata metadata = AppBeans.get(Metadata.NAME);
         return metadata.getViewRepository().getView(metadata.getClass(entity.getClass()), viewName);
+    }
+
+    /**
+     * @return groups targeted for validation.
+     *
+     * @see javax.validation.Validator#validate(Object, Class[])
+     */
+    public List<Class> getValidationGroups() {
+        return validationGroups;
+    }
+
+    /**
+     * Sets groups targeted for validation.
+     *
+     * @see javax.validation.Validator#validate(Object, Class[])
+     *
+     * @param validationGroups {@code Set} of groups
+     */
+    public void setValidationGroups(List<Class> validationGroups) {
+        this.validationGroups = validationGroups;
+    }
+
+    /**
+     * Validation type. Responsible for entity bean validation on {@link DataManager} level.
+     */
+    public enum ValidationType {
+        /**
+         * Use value from {@code cuba.dataManagerBeanValidation} application property.
+         */
+        DEFAULT,
+        /**
+         * Always perform validation.
+         */
+        ALWAYS_VALIDATE,
+        /**
+         * Do not validate.
+         */
+        NEVER_VALIDATE
     }
 }

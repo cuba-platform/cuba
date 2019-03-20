@@ -21,6 +21,7 @@ import com.haulmont.cuba.core.global.SupportedByClient;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @SupportedByClient
 public class EntityValidationException extends ConstraintViolationException {
@@ -30,5 +31,12 @@ public class EntityValidationException extends ConstraintViolationException {
 
     public EntityValidationException(Set<? extends ConstraintViolation<?>> constraintViolations) {
         super(constraintViolations);
+    }
+
+    @Override
+    public String toString() {
+        return getMessage() + getConstraintViolations().stream()
+                .map( cv -> cv == null ? "null" : cv.getPropertyPath() + ": " + cv.getMessage() )
+                .collect( Collectors.joining( ", " ) );
     }
 }

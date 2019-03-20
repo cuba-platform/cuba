@@ -300,4 +300,12 @@ public interface ServerConfig extends Config {
     @Property("cuba.implicitConversionOfJpqlParams")
     @DefaultBoolean(false)
     boolean getImplicitConversionOfJpqlParams();
+
+    /**
+     * Entity bean validation toggle for {@code DataManager}.
+     * If true, entity bean validation rules are enforced on {@code DataManager} level.
+     */
+    @Property("cuba.dataManagerBeanValidation")
+    @DefaultBoolean(true)
+    boolean getDataManagerBeanValidation();
 }

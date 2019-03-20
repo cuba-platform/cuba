@@ -120,5 +120,7 @@
         <class>com.haulmont.cuba.testmodel.fetchjoin.JoinUser</class>
         <class>com.haulmont.cuba.testmodel.fetchjoin.ExtJoinUser</class>
 
+        <class>com.haulmont.cuba.testmodel.beanvalidation.ValidatedEntity</class>
+        <class>com.haulmont.cuba.testmodel.beanvalidation.EmbeddedValidatedEntity</class>
     </persistence-unit>
 </persistence>
