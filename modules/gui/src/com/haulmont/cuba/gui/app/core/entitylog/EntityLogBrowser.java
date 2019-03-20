@@ -408,7 +408,7 @@ public class EntityLogBrowser extends AbstractWindow {
         TimeSource timeSource = AppBeans.get(TimeSource.NAME);
         Date date = timeSource.currentTimestamp();
         fromDateField.setValue(DateUtils.addDays(date, -1));
-        tillDateField.setValue(DateUtils.addMinutes(date, 1));
+        tillDateField.setValue(DateUtils.addDays(date, 1));
     }
 
     public void clearEntityLogTable() {
