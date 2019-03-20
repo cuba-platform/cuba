@@ -27,11 +27,9 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.Widget;
-import com.haulmont.cuba.web.widgets.client.button.CubaButtonWidget;
 import com.haulmont.cuba.web.widgets.client.jqueryfileupload.CubaFileUploadWidget;
 import com.haulmont.cuba.web.widgets.client.sys.ToolsImpl;
-import com.vaadin.client.BrowserInfo;
-import com.vaadin.client.WidgetUtil;
+import com.vaadin.client.*;
 import com.vaadin.client.ui.VButton;
 import com.vaadin.client.ui.VOverlay;
 import com.vaadin.client.ui.VUpload;
@@ -71,7 +69,7 @@ public class Tools {
     }
 
     public static VOverlay createCubaTablePopup(boolean autoClose) {
-        final VOverlay tableCustomPopup = autoClose ? createContextMenu() : new VOverlay();
+        VOverlay tableCustomPopup = autoClose ? createTableContextMenu() : new VOverlay();
 
         tableCustomPopup.setStyleName("c-table-popup");
 
@@ -79,65 +77,15 @@ public class Tools {
     }
 
     public static VOverlay createCubaTableContextMenu() {
-        final VOverlay tableContextMenu = createContextMenu();
+        VOverlay tableContextMenu = createTableContextMenu();
 
         tableContextMenu.setStyleName("c-context-menu");
 
         return tableContextMenu;
     }
 
-    protected static VOverlay createContextMenu() {
-        return new TableOverlay() {
-            @Override
-            protected void onPreviewNativeEvent(Event.NativePreviewEvent event) {
-                super.onPreviewNativeEvent(event);
-                NativeEvent nativeEvent = event.getNativeEvent();
-                Element target = Element.as(nativeEvent.getEventTarget());
-
-                if (Event.ONKEYDOWN == event.getTypeInt()) {
-                    if (KeyCodes.KEY_ESCAPE == event.getNativeEvent().getKeyCode()) {
-                        event.cancel();
-                        event.getNativeEvent().stopPropagation();
-                        event.getNativeEvent().preventDefault();
-                        hide();
-                    } else {
-                        VAbstractOrderedLayout verticalLayout = ((VVerticalLayout) getWidget());
-                        Widget widget = WidgetUtil.findWidget(target, null);
-                        if (isLayoutChild(verticalLayout, widget)) {
-                            Widget widgetParent = widget.getParent();
-                            VAbstractOrderedLayout layout = (VAbstractOrderedLayout) widgetParent.getParent();
-
-                            Widget focusWidget = null;
-                            int widgetIndex = layout.getWidgetIndex(widgetParent);
-                            if (event.getNativeEvent().getKeyCode() == KeyCodes.KEY_DOWN) {
-                                focusWidget = Tools.findNextWidget(layout, widgetIndex);
-                            } else if (event.getNativeEvent().getKeyCode() == KeyCodes.KEY_UP) {
-                                focusWidget = Tools.findPrevWidget(layout, widgetIndex);
-                            }
-
-                            if (focusWidget instanceof VButton) {
-                                VButton button = (VButton) focusWidget;
-                                focusSelectedItem(widgetParent.getParent(), button);
-                                button.setFocus(true);
-                            }
-                        }
-                    }
-                } else if (Event.ONMOUSEOVER == event.getTypeInt()) {
-                    VAbstractOrderedLayout verticalLayout = ((VAbstractOrderedLayout) getWidget());
-                    Widget widget = WidgetUtil.findWidget(target, null);
-                    if (isLayoutChild(verticalLayout, widget)) {
-                        if (widget instanceof VButton) {
-                            VButton button = (VButton) widget;
-                            Widget widgetParent = button.getParent();
-                            if (!button.getStyleName().contains(SELECTED_ITEM_STYLE)) {
-                                focusSelectedItem(widgetParent.getParent(), button);
-                                button.setFocus(true);
-                            }
-                        }
-                    }
-                }
-            }
-        };
+    protected static VOverlay createTableContextMenu() {
+        return new TableOverlay();
     }
 
     public static boolean isLayoutChild(VAbstractOrderedLayout layout, Widget child) {
@@ -238,6 +186,9 @@ public class Tools {
     public static Widget findPrevWidget(FlowPanel layout, int widgetIndex) {
         for (int i = widgetIndex - 1; i >= 0; i--) {
             Widget widget = layout.getWidget(i);
+            if (widget instanceof Slot) {
+                widget = ((Slot) widget).getWidget();
+            }
             if (isSuitableWidget(widget)) {
                 return widget;
             }
@@ -246,6 +197,9 @@ public class Tools {
         // try to find button from last
         for (int i = layout.getWidgetCount() - 1; i > widgetIndex; i--) {
             Widget widget = layout.getWidget(i);
+            if (widget instanceof Slot) {
+                widget = ((Slot) widget).getWidget();
+            }
             if (isSuitableWidget(widget)) {
                 return widget;
             }
@@ -256,6 +210,9 @@ public class Tools {
     public static Widget findNextWidget(FlowPanel layout, int widgetIndex) {
         for (int i = widgetIndex + 1; i < layout.getWidgetCount(); i++) {
             Widget widget = layout.getWidget(i);
+            if (widget instanceof Slot) {
+                widget = ((Slot) widget).getWidget();
+            }
             if (isSuitableWidget(widget)) {
                 return widget;
             }
@@ -264,6 +221,9 @@ public class Tools {
         // try to find button from first
         for (int i = 0; i < widgetIndex; i++) {
             Widget widget = layout.getWidget(i);
+            if (widget instanceof Slot) {
+                widget = ((Slot) widget).getWidget();
+            }
             if (isSuitableWidget(widget)) {
                 return widget;
             }
@@ -305,6 +265,60 @@ public class Tools {
             if (Event.ONCLICK == event.getTypeInt()) {
                 if (getElement().isOrHasChild(target)) {
                     Scheduler.get().scheduleDeferred(this::hide);
+                }
+            }
+
+            previewTableContextMenuEvent(event);
+        }
+
+        protected void previewTableContextMenuEvent(Event.NativePreviewEvent event) {
+            NativeEvent nativeEvent = event.getNativeEvent();
+            Element target = Element.as(nativeEvent.getEventTarget());
+
+            if (Event.ONKEYDOWN == event.getTypeInt()) {
+                int keyCode = event.getNativeEvent().getKeyCode();
+
+                if (KeyCodes.KEY_ESCAPE == keyCode) {
+                    event.cancel();
+                    event.getNativeEvent().stopPropagation();
+                    event.getNativeEvent().preventDefault();
+
+                    hide();
+                } else {
+                    VAbstractOrderedLayout verticalLayout = ((VAbstractOrderedLayout) getWidget());
+                    Widget widget = WidgetUtil.findWidget(target, null);
+
+                    if (isLayoutChild(verticalLayout, widget)) {
+                        Widget widgetParent = widget.getParent();
+                        VAbstractOrderedLayout layout = (VAbstractOrderedLayout) widgetParent.getParent();
+
+                        Widget focusWidget = null;
+                        int widgetIndex = layout.getWidgetIndex(widgetParent);
+                        if (keyCode == KeyCodes.KEY_DOWN) {
+                            focusWidget = Tools.findNextWidget(layout, widgetIndex);
+                        } else if (keyCode == KeyCodes.KEY_UP) {
+                            focusWidget = Tools.findPrevWidget(layout, widgetIndex);
+                        }
+
+                        if (focusWidget instanceof VButton) {
+                            VButton button = (VButton) focusWidget;
+                            focusSelectedItem(widgetParent.getParent(), button);
+                            button.setFocus(true);
+                        }
+                    }
+                }
+            } else if (Event.ONMOUSEOVER == event.getTypeInt()) {
+                VAbstractOrderedLayout verticalLayout = ((VAbstractOrderedLayout) getWidget());
+                Widget widget = WidgetUtil.findWidget(target, null);
+                if (isLayoutChild(verticalLayout, widget)) {
+                    if (widget instanceof VButton) {
+                        VButton button = (VButton) widget;
+                        Widget widgetParent = button.getParent();
+                        if (!button.getStyleName().contains(SELECTED_ITEM_STYLE)) {
+                            focusSelectedItem(widgetParent.getParent(), button);
+                            button.setFocus(true);
+                        }
+                    }
                 }
             }
         }

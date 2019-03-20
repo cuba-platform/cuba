@@ -26,8 +26,6 @@ public class CubaCssActionsLayoutWidget extends VCssLayout {
     protected ShortcutActionHandler shortcutHandler;
 
     public CubaCssActionsLayoutWidget() {
-        super();
-
         getElement().setTabIndex(-1);
         DOM.sinkEvents(getElement(), Event.ONKEYDOWN);
     }
@@ -36,7 +34,7 @@ public class CubaCssActionsLayoutWidget extends VCssLayout {
     public void onBrowserEvent(Event event) {
         super.onBrowserEvent(event);
 
-        final int type = DOM.eventGetType(event);
+        int type = DOM.eventGetType(event);
         if (type == Event.ONKEYDOWN && shortcutHandler != null) {
             shortcutHandler.handleKeyboardEvent(event);
         }
@@ -65,9 +63,10 @@ public class CubaCssActionsLayoutWidget extends VCssLayout {
     }
 
     public void enableStyleDependentName(String suffix, boolean enable) {
-        if (enable)
+        if (enable) {
             addStyleDependentName(suffix);
-        else
+        } else {
             removeStyleDependentName(suffix);
+        }
     }
 }

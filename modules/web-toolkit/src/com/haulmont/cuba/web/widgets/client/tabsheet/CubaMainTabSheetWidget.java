@@ -30,7 +30,6 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.haulmont.cuba.web.widgets.client.addons.dragdroplayouts.ui.tabsheet.VDDTabSheet;
-import com.haulmont.cuba.web.widgets.client.appui.ValidationErrorHolder;
 import com.vaadin.client.ComputedStyle;
 import com.vaadin.client.WidgetUtil;
 import com.vaadin.client.ui.VTabsheet;
@@ -161,32 +160,12 @@ public class CubaMainTabSheetWidget extends VDDTabSheet {
         }
 
         @Override
-        protected Tab createTab() {
-            return new CubaTab(this);
-        }
-
-        @Override
         public Tab navigateTab(int fromIndex, int toIndex) {
             Tab navigateTab = super.navigateTab(fromIndex, toIndex);
             if (navigateTab != null) {
                 assignAdditionalCellStyles(toIndex);
             }
             return navigateTab;
-        }
-    }
-
-    public static class CubaTab extends Tab {
-        public CubaTab(TabBar tabBar) {
-            super(tabBar);
-        }
-
-        @Override
-        public void onClose() {
-            if (ValidationErrorHolder.hasValidationErrors()) {
-                return;
-            }
-
-            super.onClose();
         }
     }
 
