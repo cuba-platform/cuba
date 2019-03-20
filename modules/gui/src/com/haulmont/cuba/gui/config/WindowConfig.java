@@ -304,6 +304,9 @@ public class WindowConfig {
                 String superScreenParentPrefix = superScreenRouteDefinition.getParentPrefix();
 
                 if (!route.equals(superScreenRoute)) {
+                    log.debug("Route for screen '{}' is redefined from '{}' to '{}'",
+                            screenId, superScreenRoute, rootRoute);
+
                     routes.remove(superScreenRoute);
                 }
 
@@ -331,17 +334,31 @@ public class WindowConfig {
 
         screens.put(id, windowInfo);
 
+        registerScreenRoute(id, windowInfo);
+    }
+
+    protected void registerScreenRoute(String screenId, WindowInfo windowInfo) {
         RouteDefinition routeDef = windowInfo.getRouteDefinition();
         if (routeDef != null) {
-            String anotherScreenId = routes.get(routeDef.getPath());
+            String route = routeDef.getPath();
+            String anotherScreenId = routes.get(route);
             if (anotherScreenId != null
-                    && !Objects.equals(id, anotherScreenId)) {
+                    && !Objects.equals(screenId, anotherScreenId)) {
                 log.debug("Multiple use of the route '{}' for different screens is detected: '{}' and '{}'. " +
                                 "The screen '{}' will be opened during navigation as the last registered screen",
-                        routeDef.getPath(), id, anotherScreenId, id);
+                        route, screenId, anotherScreenId, screenId);
             }
 
-            routes.put(routeDef.getPath(), id);
+            String registeredRoute = routes.inverse().get(screenId);
+            if (StringUtils.isNotEmpty(registeredRoute)
+                    && !Objects.equals(registeredRoute, route)) {
+                log.debug("Route for screen '{}' is redefined from '{}' to '{}'",
+                        screenId, registeredRoute, route);
+
+                routes.remove(registeredRoute);
+            }
+
+            routes.put(route, screenId);
         }
     }
 
