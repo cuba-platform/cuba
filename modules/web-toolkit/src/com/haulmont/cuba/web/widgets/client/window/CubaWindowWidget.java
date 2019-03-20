@@ -20,8 +20,6 @@ package com.haulmont.cuba.web.widgets.client.window;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
-import com.google.gwt.user.client.EventListener;
-import com.haulmont.cuba.web.widgets.client.appui.ValidationErrorHolder;
 import com.vaadin.client.ui.VWindow;
 
 public class CubaWindowWidget extends VWindow {
@@ -75,15 +73,6 @@ public class CubaWindowWidget extends VWindow {
         super.constructDOM();
 
         DOM.sinkEvents(closeBox, Event.FOCUSEVENTS);
-    }
-
-    @Override
-    protected void onCloseClick() {
-        if (ValidationErrorHolder.hasValidationErrors()) {
-            return;
-        }
-
-        super.onCloseClick();
     }
 
     @Override

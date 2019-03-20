@@ -19,7 +19,6 @@ package com.haulmont.cuba.web.widgets.client.button;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.haulmont.cuba.web.widgets.CubaButton;
-import com.haulmont.cuba.web.widgets.client.appui.ValidationErrorHolder;
 import com.vaadin.client.communication.StateChangeEvent;
 import com.vaadin.client.ui.button.ButtonConnector;
 import com.vaadin.shared.ui.Connect;
@@ -32,6 +31,7 @@ public class CubaButtonConnector extends ButtonConnector {
     protected boolean pendingResponse = false;
 
     public CubaButtonConnector() {
+        //noinspection Convert2Lambda,Anonymous2MethodRef
         registerRpc(CubaButtonClientRpc.class, new CubaButtonClientRpc() {
             @Override
             public void onClickHandled() {
@@ -76,11 +76,6 @@ public class CubaButtonConnector extends ButtonConnector {
 
     @Override
     public void onClick(ClickEvent event) {
-        // todo get rid of it
-        if (ValidationErrorHolder.hasValidationErrors()) {
-            return;
-        }
-
         if (pendingResponse) {
             return;
         }

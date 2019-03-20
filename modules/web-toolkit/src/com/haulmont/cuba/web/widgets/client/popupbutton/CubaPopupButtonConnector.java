@@ -35,7 +35,6 @@ import com.vaadin.client.communication.RpcProxy;
 import com.vaadin.client.communication.StateChangeEvent;
 import com.vaadin.client.ui.VButton;
 import com.vaadin.client.ui.VUpload;
-import com.vaadin.client.ui.orderedlayout.VAbstractOrderedLayout;
 import com.vaadin.shared.ui.Connect;
 
 import static com.haulmont.cuba.web.widgets.client.popupbutton.CubaPopupButtonWidget.SELECTED_ITEM_STYLE;
@@ -120,7 +119,7 @@ public class CubaPopupButtonConnector extends PopupButtonConnector {
         }
     }
 
-    protected void handleClick(Event.NativePreviewEvent event, Element target) {
+    protected void handleClick(@SuppressWarnings("unused") Event.NativePreviewEvent event, Element target) {
         if (getState().autoClose && getWidget().popupHasChild(target)) {
             Scheduler.get().scheduleDeferred(() -> {
                 getWidget().hidePopup();
@@ -131,7 +130,7 @@ public class CubaPopupButtonConnector extends PopupButtonConnector {
         }
     }
 
-    protected void handleMouseOver(Event.NativePreviewEvent event, Element target) {
+    protected void handleMouseOver(@SuppressWarnings("unused") Event.NativePreviewEvent event, Element target) {
         if (!getState().customLayout && getWidget().popupHasChild(target)) {
             Widget widget = WidgetUtil.findWidget(target, null);
             if ((widget instanceof VButton
@@ -173,10 +172,12 @@ public class CubaPopupButtonConnector extends PopupButtonConnector {
                 FlowPanel layout = (FlowPanel) widgetParent;
                 Widget focusWidget = null;
 
-                int widgetIndex = layout.getWidgetIndex(widgetParent);
-                if (event.getNativeEvent().getKeyCode() == KeyCodes.KEY_DOWN) {
+                int widgetIndex = layout.getWidgetIndex(widget);
+                int keyCode = event.getNativeEvent().getKeyCode();
+
+                if (keyCode == KeyCodes.KEY_DOWN) {
                     focusWidget = Tools.findNextWidget(layout, widgetIndex);
-                } else if (event.getNativeEvent().getKeyCode() == KeyCodes.KEY_UP) {
+                } else if (keyCode == KeyCodes.KEY_UP) {
                     focusWidget = Tools.findPrevWidget(layout, widgetIndex);
                 }
 
@@ -201,8 +202,8 @@ public class CubaPopupButtonConnector extends PopupButtonConnector {
     protected boolean isLastChild(Element target) {
         Widget widget = WidgetUtil.findWidget(target, null);
         Widget widgetParent = widget.getParent();
-        VAbstractOrderedLayout layout = (VAbstractOrderedLayout) widgetParent.getParent();
-        int widgetIndex = layout.getWidgetIndex(widgetParent);
+        FlowPanel layout = (FlowPanel) widgetParent.getParent();
+        int widgetIndex = layout.getWidgetIndex(widget);
         return widgetIndex == layout.getWidgetCount() - 1;
     }
 }
