@@ -17,14 +17,10 @@
 package spec.cuba.web.masterdetail
 
 import com.haulmont.cuba.gui.components.Table
-import com.haulmont.cuba.gui.config.WindowConfig
 import com.haulmont.cuba.gui.screen.MasterDetailScreen
 import com.haulmont.cuba.gui.screen.OpenMode
-import com.haulmont.cuba.gui.sys.UiControllersConfiguration
 import com.haulmont.cuba.security.app.UserManagementService
-import com.haulmont.cuba.security.entity.User
 import com.haulmont.cuba.web.testsupport.TestServiceProxy
-import org.springframework.core.type.classreading.MetadataReaderFactory
 import spec.cuba.web.UiScreenSpec
 import spec.cuba.web.masterdetail.screens.UserMasterDetail
 
@@ -38,23 +34,13 @@ class MasterDetailInitEntityTest extends UiScreenSpec {
             getSubstitutedUsers(_) >> Collections.emptyList()
         })
 
-        def windowConfig = cont.getBean(WindowConfig)
-
-        def configuration = new UiControllersConfiguration()
-        configuration.applicationContext = cont.getApplicationContext()
-        configuration.metadataReaderFactory = cont.getBean(MetadataReaderFactory)
-        configuration.basePackages = ['spec.cuba.web.masterdetail.screens']
-
-        windowConfig.configurations = [configuration]
-        windowConfig.initialized = false
+        exportScreensPackages(['spec.cuba.web.masterdetail.screens'])
     }
 
     def cleanup() {
         TestServiceProxy.clear()
 
-        def windowConfig = cont.getBean(WindowConfig)
-        windowConfig.configurations = []
-        windowConfig.initialized = false
+        resetScreensConfig()
     }
 
     def "MasterDetailScreen fires InitEntityEvent on Create"() {

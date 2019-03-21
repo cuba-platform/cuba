@@ -24,6 +24,9 @@ import com.haulmont.cuba.client.sys.cache.DynamicAttributesCacheStrategy
 import com.haulmont.cuba.client.testsupport.TestUserSessionSource
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesCache
 import com.haulmont.cuba.core.global.UserSessionSource
+import com.haulmont.cuba.gui.config.WindowConfig
+import com.haulmont.cuba.gui.sys.UiControllersConfiguration
+import org.springframework.core.type.classreading.MetadataReaderFactory
 
 import java.util.concurrent.locks.Lock
 import java.util.concurrent.locks.ReadWriteLock
@@ -56,6 +59,26 @@ class UiScreenSpec extends WebSpec {
         dynamicAttributesCacheStrategy.lock() >> cacheLock
 
         clientCacheManager.addCachedObject(DynamicAttributesCacheStrategy.NAME, dynamicAttributesCacheStrategy)
+    }
+
+    @SuppressWarnings(["GroovyAccessibility", "GroovyAssignabilityCheck"])
+    protected void exportScreensPackages(List<String> packages) {
+        def windowConfig = cont.getBean(WindowConfig)
+
+        def configuration = new UiControllersConfiguration()
+        configuration.applicationContext = cont.getApplicationContext()
+        configuration.metadataReaderFactory = cont.getBean(MetadataReaderFactory)
+        configuration.basePackages = packages
+
+        windowConfig.configurations = [configuration]
+        windowConfig.initialized = false
+    }
+
+    @SuppressWarnings(["GroovyAccessibility"])
+    protected void resetScreensConfig() {
+        def windowConfig = cont.getBean(WindowConfig)
+        windowConfig.configurations = []
+        windowConfig.initialized = false
     }
 
     @SuppressWarnings("GroovyAccessibility")

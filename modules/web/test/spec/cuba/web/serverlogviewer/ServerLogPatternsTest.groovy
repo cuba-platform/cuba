@@ -18,6 +18,7 @@ package spec.cuba.web.serverlogviewer
 
 import com.google.gson.Gson
 import com.google.gson.internal.LinkedTreeMap
+import com.haulmont.cuba.core.global.Resources
 import com.haulmont.cuba.core.sys.ResourcesImpl
 import com.haulmont.cuba.web.app.ui.serverlogviewer.ServerLogWindow
 import spock.lang.Shared
@@ -25,22 +26,23 @@ import spock.lang.Specification
 
 import java.util.regex.Pattern
 
+@SuppressWarnings("GroovyAccessibility")
 class ServerLogPatternsTest extends Specification {
 
     @Shared
-    def serverLog
+    ServerLogWindow serverLog
 
     @Shared
-    def resources
+    Resources resources
 
     @Shared
-    def correctLines
+    List correctLines
 
     @Shared
-    def correctPatterns
+    List correctPatterns
 
     @Shared
-    def incorrectLines
+    List incorrectLines
 
     @Shared
     def incorrectPatterns
@@ -86,9 +88,9 @@ class ServerLogPatternsTest extends Specification {
     }
 
     def loadIncorrectTestData() {
-        String incorrectTestDataPath = "spec/cuba/web/serverlogviewer/incorrectTestData"
-        String json = resources.getResourceAsString(incorrectTestDataPath)
-        List<LinkedTreeMap> data = new Gson().fromJson(json, ArrayList.class) as List<LinkedTreeMap>
+        def incorrectTestDataPath = "/spec/cuba/web/serverlogviewer/incorrectTestData.json"
+        def json = resources.getResourceAsString(incorrectTestDataPath)
+        def data = new Gson().fromJson(json, ArrayList.class) as List<LinkedTreeMap>
 
         incorrectLines = new ArrayList<>()
         incorrectPatterns = new ArrayList<>()
@@ -101,9 +103,9 @@ class ServerLogPatternsTest extends Specification {
     }
 
     def loadCorrectTestData() {
-        String correctTestDataPath = "spec/cuba/web/serverlogviewer/correctTestData"
-        String json = resources.getResourceAsString(correctTestDataPath)
-        List<LinkedTreeMap> data = new Gson().fromJson(json, ArrayList.class) as List<LinkedTreeMap>
+        def correctTestDataPath = "/spec/cuba/web/serverlogviewer/correctTestData.json"
+        def json = resources.getResourceAsString(correctTestDataPath)
+        def data = new Gson().fromJson(json, ArrayList.class) as List<LinkedTreeMap>
 
         correctLines = new ArrayList<>()
         correctPatterns = new ArrayList<>()

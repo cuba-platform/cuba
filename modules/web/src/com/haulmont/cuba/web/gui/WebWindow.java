@@ -27,14 +27,13 @@ import com.haulmont.cuba.gui.components.sys.FrameImplementation;
 import com.haulmont.cuba.gui.components.sys.WindowImplementation;
 import com.haulmont.cuba.gui.events.sys.UiEventsMulticaster;
 import com.haulmont.cuba.gui.icons.Icons;
+import com.haulmont.cuba.gui.navigation.NavigationState;
 import com.haulmont.cuba.gui.screen.Screen;
 import com.haulmont.cuba.gui.screen.UiControllerUtils;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.gui.components.WebFrameActionsHolder;
 import com.haulmont.cuba.web.gui.components.WebWrapperUtils;
-import com.haulmont.cuba.gui.navigation.NavigationState;
-import com.haulmont.cuba.web.widgets.CubaSingleModeContainer;
 import com.haulmont.cuba.web.widgets.CubaVerticalActionsLayout;
 import com.haulmont.cuba.web.widgets.HtmlAttributesExtension;
 import com.vaadin.server.ClientConnector;
@@ -42,7 +41,6 @@ import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.AbstractOrderedLayout;
 import com.vaadin.ui.Layout;
-import com.vaadin.ui.TabSheet;
 import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
 import org.slf4j.Logger;
@@ -913,53 +911,6 @@ public abstract class WebWindow implements Window, Component.Wrapper,
     @Override
     public void setCaption(String caption) {
         this.caption = caption;
-
-        // todo check that everything gets updated: breadcrumbs, titlebar, dialog caption, etc
-
-        if (component.isAttached()) {
-            TabSheet.Tab tabWindow = asTabWindow();
-            if (tabWindow != null) {
-                setTabCaptionAndDescription(tabWindow);
-                // todo
-                // windowManagerImpl.getBreadCrumbs((com.vaadin.ui.ComponentContainer) tabWindow.getComponent()).update();
-            } else {
-                Layout singleModeWindow = asSingleWindow();
-                if (singleModeWindow != null) {
-                    // todo
-                    // windowManagerImpl.getBreadCrumbs(singleModeWindow).update();
-                }
-            }
-        }
-    }
-
-    @Nullable
-    protected TabSheet.Tab asTabWindow() {
-        if (component.isAttached()) {
-            com.vaadin.ui.Component parent = component;
-            while (parent != null) {
-                if (parent.getParent() instanceof TabSheet) {
-                    return ((TabSheet) parent.getParent()).getTab(parent);
-                }
-
-                parent = parent.getParent();
-            }
-        }
-        return null;
-    }
-
-    @Nullable
-    protected Layout asSingleWindow() {
-        if (component.isAttached()) {
-            com.vaadin.ui.Component parent = component;
-            while (parent != null) {
-                if (parent.getParent() instanceof CubaSingleModeContainer) {
-                    return (Layout) parent;
-                }
-
-                parent = parent.getParent();
-            }
-        }
-        return null;
     }
 
     @Override
@@ -970,21 +921,6 @@ public abstract class WebWindow implements Window, Component.Wrapper,
     @Override
     public void setDescription(String description) {
         this.description = description;
-
-        if (component.isAttached()) {
-            TabSheet.Tab tabWindow = asTabWindow();
-            if (tabWindow != null) {
-                setTabCaptionAndDescription(tabWindow);
-
-                // todo
-                // windowManagerImpl.getBreadCrumbs((com.vaadin.ui.ComponentContainer) tabWindow.getComponent()).update();
-            }
-        }
-    }
-
-    // todo move to WebTabWindow
-    protected void setTabCaptionAndDescription(TabSheet.Tab tabWindow) {
-        //
     }
 
     @Override
