@@ -164,4 +164,18 @@ public interface ColumnManager {
      * @param captionAsHtml interpret caption as HTML or not
      */
     void setColumnCaptionAsHtml(Table.Column column, boolean captionAsHtml);
+
+    /**
+     * Sets expand ratio for a column.
+     *
+     * @param column a column to set expand ratio
+     * @param ratio  ratio
+     */
+    void setColumnExpandRatio(Table.Column column, float ratio);
+
+    /**
+     * @param column a column to get ratio
+     * @return ratio for the column
+     */
+    float getColumnExpandRatio(Table.Column column);
 }

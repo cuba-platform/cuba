@@ -2191,6 +2191,7 @@
         <xs:attribute name="maxTextLength" type="xs:integer"/>
         <xs:attribute name="align" type="columnAlignment"/>
         <xs:attribute name="captionAsHtml" type="xs:boolean"/>
+        <xs:attribute name="expandRatio" type="xs:float"/>
 
         <!-- Show entity reference as clickable link -->
         <xs:attribute name="link" type="xs:boolean"/>

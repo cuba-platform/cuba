@@ -545,7 +545,17 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
         if (metaPropertyPath != null)
             column.setType(metaPropertyPath.getRangeJavaClass());
 
+        String expandRatio = element.attributeValue("expandRatio");
         String width = loadThemeString(element.attributeValue("width"));
+        if (StringUtils.isNotEmpty(expandRatio)) {
+            column.setExpandRatio(Float.parseFloat(expandRatio));
+
+            if (StringUtils.isNotEmpty(width)) {
+                throw new GuiDevelopmentException(
+                        "Properties 'width' and 'expandRatio' cannot be used simultaneously", context.getFullFrameId());
+            }
+        }
+
         if (StringUtils.isNotEmpty(width)) {
             if (StringUtils.endsWith(width, "px")) {
                 width = StringUtils.substring(width, 0, width.length() - 2);

@@ -474,6 +474,10 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
 
         component.setColumnCaptionAsHtml(columnId, column.getCaptionAsHtml());
 
+        if (column.getExpandRatio() != null) {
+            component.setColumnExpandRatio(columnId, column.getExpandRatio());
+        }
+
         column.setOwner(this);
 
         MetaPropertyPath propertyPath = column.getBoundProperty();
@@ -2892,6 +2896,20 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
     @Override
     public void setShowSelection(boolean showSelection) {
         component.setSelectable(showSelection);
+    }
+
+    @Override
+    public void setColumnExpandRatio(Column column, float ratio) {
+        checkNotNullArgument(column, "Column must be non null");
+
+        component.setColumnExpandRatio(column.getId(), ratio);
+    }
+
+    @Override
+    public float getColumnExpandRatio(Column column) {
+        checkNotNullArgument(column, "Column must be non null");
+
+        return component.getColumnExpandRatio(column.getId());
     }
 
     protected String generateCellStyle(Object itemId, Object propertyId) {

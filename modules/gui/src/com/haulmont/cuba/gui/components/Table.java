@@ -802,6 +802,7 @@ public interface Table<E extends Entity>
         protected Integer maxTextLength;
         protected ColumnAlignment alignment;
         protected boolean captionAsHtml;
+        protected Float expandRatio;
 
         protected Function<T, Object> valueProvider;
 
@@ -1136,6 +1137,25 @@ public interface Table<E extends Entity>
          */
         public void removeAggregationProperty() {
             ((ColumnManager) owner).removeAggregationProperty(getStringId());
+        }
+
+        /**
+         * Sets expand ration for the given column.
+         *
+         * @param ratio ratio
+         */
+        public void setExpandRatio(Float ratio) {
+            this.expandRatio = ratio;
+            if (ratio != null && owner != null) {
+                ((ColumnManager) owner).setColumnExpandRatio(this, ratio);
+            }
+        }
+
+        /**
+         * @return expand ratio for the column
+         */
+        public Float getExpandRatio() {
+            return expandRatio;
         }
     }
 
