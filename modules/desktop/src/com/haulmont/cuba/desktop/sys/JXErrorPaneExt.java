@@ -83,7 +83,8 @@ public class JXErrorPaneExt extends JXErrorPane {
 
         UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.NAME);
         Security security = AppBeans.get(Security.NAME);
-        if (userSessionSource == null || !security.isSpecificPermitted("cuba.gui.showExceptionDetails")) {
+        if (userSessionSource == null || !userSessionSource.checkCurrentUserSession()
+                || !security.isSpecificPermitted("cuba.gui.showExceptionDetails")) {
             copyButton.setVisible(false);
         }
 
