@@ -17,12 +17,9 @@
 package spec.cuba.web.components.grouptable
 
 import com.haulmont.cuba.gui.components.GroupTable
-import com.haulmont.cuba.gui.config.WindowConfig
 import com.haulmont.cuba.gui.screen.OpenMode
-import com.haulmont.cuba.gui.sys.UiControllersConfiguration
 import com.haulmont.cuba.security.app.UserManagementService
 import com.haulmont.cuba.web.testsupport.TestServiceProxy
-import org.springframework.core.type.classreading.MetadataReaderFactory
 import spec.cuba.web.UiScreenSpec
 import spec.cuba.web.components.grouptable.screens.GroupTableLoadColumnsByIncludeScreen
 
@@ -34,22 +31,13 @@ class GroupTableLoadColumnsByIncludeTest extends UiScreenSpec {
             getSubstitutedUsers(_) >> Collections.emptyList()
         })
 
-        def configuration = new UiControllersConfiguration()
-        configuration.applicationContext = cont.getApplicationContext()
-        configuration.metadataReaderFactory = cont.getBean(MetadataReaderFactory)
-        configuration.basePackages = ['spec.cuba.web.components.grouptable.screens']
-
-        def windowConfig = cont.getBean(WindowConfig)
-        windowConfig.configurations = [configuration]
-        windowConfig.initialized = false
+        exportScreensPackages(['spec.cuba.web.components.grouptable.screens'])
     }
 
     def cleanup() {
         TestServiceProxy.clear()
 
-        def windowConfig = cont.getBean(WindowConfig)
-        windowConfig.configurations = []
-        windowConfig.initialized = false
+        resetScreensConfig()
     }
 
     def "load column by includeAll"() {

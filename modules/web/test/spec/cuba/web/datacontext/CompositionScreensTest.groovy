@@ -17,48 +17,33 @@
 package spec.cuba.web.datacontext
 
 import com.haulmont.cuba.core.app.DataService
+import com.haulmont.cuba.core.entity.Entity
 import com.haulmont.cuba.core.global.CommitContext
-import com.haulmont.cuba.gui.config.WindowConfig
-import com.haulmont.cuba.gui.model.DataContext
 import com.haulmont.cuba.gui.screen.OpenMode
 import com.haulmont.cuba.gui.screen.UiControllerUtils
-import com.haulmont.cuba.gui.sys.UiControllersConfiguration
 import com.haulmont.cuba.security.app.UserManagementService
 import com.haulmont.cuba.web.testmodel.sales.Order
 import com.haulmont.cuba.web.testmodel.sales.OrderLine
 import com.haulmont.cuba.web.testmodel.sales.OrderLineParam
 import com.haulmont.cuba.web.testsupport.TestServiceProxy
-import org.springframework.core.type.classreading.MetadataReaderFactory
 import spec.cuba.web.UiScreenSpec
 import spec.cuba.web.datacontext.screens.OrderScreen
 import spock.lang.Unroll
 
 class CompositionScreensTest extends UiScreenSpec {
 
-    @SuppressWarnings(["GroovyAssignabilityCheck", "GroovyAccessibility"])
     void setup() {
         TestServiceProxy.mock(UserManagementService, Mock(UserManagementService) {
             getSubstitutedUsers(_) >> Collections.emptyList()
         })
 
-        def windowConfig = cont.getBean(WindowConfig)
-
-        def configuration = new UiControllersConfiguration()
-        configuration.applicationContext = cont.getApplicationContext()
-        configuration.metadataReaderFactory = cont.getBean(MetadataReaderFactory)
-        configuration.basePackages = ['spec.cuba.web.datacontext.screens', 'com.haulmont.cuba.web.app.main']
-
-        windowConfig.configurations = [configuration]
-        windowConfig.initialized = false
+        exportScreensPackages(['spec.cuba.web.datacontext.screens', 'com.haulmont.cuba.web.app.main'])
     }
 
-    @SuppressWarnings(["GroovyAccessibility"])
     def cleanup() {
         TestServiceProxy.clear()
 
-        def windowConfig = cont.getBean(WindowConfig)
-        windowConfig.configurations = []
-        windowConfig.initialized = false
+        resetScreensConfig()
     }
 
     @Unroll
@@ -208,7 +193,9 @@ class CompositionScreensTest extends UiScreenSpec {
         orderScreenCtx.isRemoved(lineParam)
     }
 
-    private static <T> T makeSaved(T entity) {
-        TestServiceProxy.getDefault(DataService).commit(new CommitContext().addInstanceToCommit(entity))[0] as T
+    private static <T extends Entity> T makeSaved(T entity) {
+        def cc = new CommitContext().addInstanceToCommit(entity)
+        def ds = TestServiceProxy.getDefault(DataService)
+        return ds.commit(cc)[0] as T
     }
 }

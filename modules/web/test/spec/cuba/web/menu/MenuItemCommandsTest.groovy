@@ -22,36 +22,21 @@ import com.haulmont.cuba.core.global.LoadContext
 import com.haulmont.cuba.gui.app.security.user.edit.UserEditor
 import com.haulmont.cuba.gui.config.MenuItem
 import com.haulmont.cuba.gui.config.MenuItemCommands
-import com.haulmont.cuba.gui.config.WindowConfig
 import com.haulmont.cuba.gui.screen.OpenMode
-import com.haulmont.cuba.gui.sys.UiControllersConfiguration
 import com.haulmont.cuba.security.app.UserManagementService
 import com.haulmont.cuba.security.entity.User
 import com.haulmont.cuba.web.testsupport.TestServiceProxy
-import spec.cuba.web.menu.commandtargets.TestWebBean
-import org.springframework.core.type.classreading.MetadataReaderFactory
 import spec.cuba.web.UiScreenSpec
-import spec.cuba.web.menu.commandtargets.PropertiesInjectionTestScreen
-import spec.cuba.web.menu.commandtargets.TestMenuItemConsumer
-import spec.cuba.web.menu.commandtargets.TestMenuItemRunnable
-import spec.cuba.web.menu.commandtargets.TestRunnable
+import spec.cuba.web.menu.commandtargets.*
 
 class MenuItemCommandsTest extends UiScreenSpec {
 
-    @SuppressWarnings(['GroovyAssignabilityCheck', 'GroovyAccessibility'])
     void setup() {
         TestServiceProxy.mock(UserManagementService, Mock(UserManagementService) {
             getSubstitutedUsers(_) >> Collections.emptyList()
         })
 
-        def configuration = new UiControllersConfiguration()
-        configuration.applicationContext = cont.getApplicationContext()
-        configuration.metadataReaderFactory = cont.getBean(MetadataReaderFactory)
-        configuration.basePackages = ['spec.cuba.web.menu.commandtargets', 'com.haulmont.cuba.web.app.main']
-
-        def windowConfig = cont.getBean(WindowConfig)
-        windowConfig.configurations = [configuration]
-        windowConfig.initialized = false
+        exportScreensPackages(['spec.cuba.web.menu.commandtargets', 'com.haulmont.cuba.web.app.main'])
 
         TestMenuItemConsumer.launched.set(false)
         TestMenuItemConsumer.beanLocatorSet.set(false)
@@ -63,13 +48,10 @@ class MenuItemCommandsTest extends UiScreenSpec {
         TestRunnable.beanLocatorSet.set(false)
     }
 
-    @SuppressWarnings('GroovyAccessibility')
     def cleanup() {
         TestServiceProxy.clear()
 
-        def windowConfig = cont.getBean(WindowConfig)
-        windowConfig.configurations = []
-        windowConfig.initialized = false
+        resetScreensConfig()
     }
 
     @SuppressWarnings(['GroovyAccessibility'])

@@ -38,23 +38,13 @@ class MasterDetailInitEntityTest extends UiScreenSpec {
             getSubstitutedUsers(_) >> Collections.emptyList()
         })
 
-        def windowConfig = cont.getBean(WindowConfig)
-
-        def configuration = new UiControllersConfiguration()
-        configuration.applicationContext = cont.getApplicationContext()
-        configuration.metadataReaderFactory = cont.getBean(MetadataReaderFactory)
-        configuration.basePackages = ['spec.cuba.web.masterdetail.screens', 'com.haulmont.cuba.web.app.main']
-
-        windowConfig.configurations = [configuration]
-        windowConfig.initialized = false
+        exportScreensPackages(['spec.cuba.web.masterdetail.screens', 'com.haulmont.cuba.web.app.main'])
     }
 
     def cleanup() {
         TestServiceProxy.clear()
 
-        def windowConfig = cont.getBean(WindowConfig)
-        windowConfig.configurations = []
-        windowConfig.initialized = false
+        resetScreensConfig()
     }
 
     def "MasterDetailScreen fires InitEntityEvent on Create"() {

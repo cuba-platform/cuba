@@ -26,8 +26,14 @@ public interface TabWindow extends Window {
      */
     String NAME = "tabWindow";
 
+    /**
+     * @return formatted tab caption
+     */
     String formatTabCaption();
 
+    /**
+     * @return formatted tab tooltip text
+     */
     String formatTabDescription();
 
     /**

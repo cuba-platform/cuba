@@ -24,6 +24,9 @@ import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.gui.MainTabSheetMode;
 import com.haulmont.cuba.web.gui.WebWindow;
 import com.haulmont.cuba.web.gui.icons.IconResolver;
+import com.haulmont.cuba.web.sys.TabWindowContainer;
+import com.haulmont.cuba.web.widgets.CubaSingleModeContainer;
+import com.vaadin.ui.Layout;
 import com.vaadin.ui.TabSheet;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -31,6 +34,8 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
+
+import java.util.Objects;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
@@ -65,6 +70,89 @@ public class WebTabWindow extends WebWindow implements TabWindow {
                 tabWindow.setIcon(iconResolver.getIconResource(icon));
             }
         }
+    }
+
+    @Override
+    public void setCloseable(boolean closeable) {
+        super.setCloseable(closeable);
+
+        if (component.isAttached()) {
+            TabSheet.Tab tabWindow = findTab();
+            if (tabWindow != null) {
+                tabWindow.setClosable(closeable);
+            }
+        }
+    }
+
+    @Override
+    public void setCaption(String caption) {
+        super.setCaption(caption);
+
+        if (component.isAttached()) {
+            updateCaptionAndDescription();
+        }
+    }
+
+    @Override
+    public void setDescription(String description) {
+        super.setDescription(description);
+
+        if (component.isAttached()) {
+            updateCaptionAndDescription();
+        }
+    }
+
+    protected void updateCaptionAndDescription() {
+        TabSheet.Tab tabWindow = findTab();
+        if (tabWindow != null) {
+            String tabCaption = formatTabCaption();
+            String tabDescription = formatTabDescription();
+
+            tabWindow.setCaption(tabCaption);
+
+            if (!Objects.equals(tabCaption, tabDescription)) {
+                tabWindow.setDescription(tabDescription);
+            } else {
+                tabWindow.setDescription(null);
+            }
+
+            ((TabWindowContainer) tabWindow.getComponent()).getBreadCrumbs().update();
+        } else {
+            TabWindowContainer layout = (TabWindowContainer) asSingleWindow();
+            if (layout != null) {
+                layout.getBreadCrumbs().update();
+            }
+        }
+    }
+
+    @Nullable
+    protected TabSheet.Tab asTabWindow() {
+        if (component.isAttached()) {
+            com.vaadin.ui.Component parent = component;
+            while (parent != null) {
+                if (parent.getParent() instanceof TabSheet) {
+                    return ((TabSheet) parent.getParent()).getTab(parent);
+                }
+
+                parent = parent.getParent();
+            }
+        }
+        return null;
+    }
+
+    @Nullable
+    protected Layout asSingleWindow() {
+        if (component.isAttached()) {
+            com.vaadin.ui.Component parent = component;
+            while (parent != null) {
+                if (parent.getParent() instanceof CubaSingleModeContainer) {
+                    return (Layout) parent;
+                }
+
+                parent = parent.getParent();
+            }
+        }
+        return null;
     }
 
     @Nullable
@@ -123,17 +211,5 @@ public class WebTabWindow extends WebWindow implements TabWindow {
         }
 
         this.contentSwitchMode = mode;
-    }
-
-    @Override
-    public void setCloseable(boolean closeable) {
-        super.setCloseable(closeable);
-
-        if (component.isAttached()) {
-            TabSheet.Tab tabWindow = findTab();
-            if (tabWindow != null) {
-                tabWindow.setClosable(closeable);
-            }
-        }
     }
 }

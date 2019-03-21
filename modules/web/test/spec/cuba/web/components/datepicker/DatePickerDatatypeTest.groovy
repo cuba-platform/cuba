@@ -20,12 +20,9 @@ import com.haulmont.chile.core.annotations.JavaClass
 import com.haulmont.chile.core.datatypes.Datatype
 import com.haulmont.chile.core.datatypes.impl.*
 import com.haulmont.cuba.gui.components.DatePicker
-import com.haulmont.cuba.gui.config.WindowConfig
 import com.haulmont.cuba.gui.screen.OpenMode
-import com.haulmont.cuba.gui.sys.UiControllersConfiguration
 import com.haulmont.cuba.security.app.UserManagementService
 import com.haulmont.cuba.web.testsupport.TestServiceProxy
-import org.springframework.core.type.classreading.MetadataReaderFactory
 import spec.cuba.web.UiScreenSpec
 import spec.cuba.web.components.datepicker.screens.DatePickerDatatypeScreen
 
@@ -37,23 +34,14 @@ class DatePickerDatatypeTest extends UiScreenSpec {
             getSubstitutedUsers(_) >> Collections.emptyList()
         })
 
-        def configuration = new UiControllersConfiguration()
-        configuration.applicationContext = cont.getApplicationContext()
-        configuration.metadataReaderFactory = cont.getBean(MetadataReaderFactory)
-        configuration.basePackages = ['spec.cuba.web.components.datepicker.screens', 'com.haulmont.cuba.web.app.main']
-
-        def windowConfig = cont.getBean(WindowConfig)
-        windowConfig.configurations = [configuration]
-        windowConfig.initialized = false
+        exportScreensPackages(['spec.cuba.web.components.datepicker.screens', 'com.haulmont.cuba.web.app.main'])
     }
 
     @SuppressWarnings(["GroovyAccessibility"])
     def cleanup() {
         TestServiceProxy.clear()
 
-        def windowConfig = cont.getBean(WindowConfig)
-        windowConfig.configurations = []
-        windowConfig.initialized = false
+        resetScreensConfig()
     }
 
     def "datatype is applied from the screen descriptor"(String id, Class<Datatype> datatypeClass) {
