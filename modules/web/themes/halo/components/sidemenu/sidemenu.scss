@@ -221,6 +221,11 @@ $cuba-sidemenu-top-height: $v-unit-size + 2 * $cuba-sidemenu-top-offset;
   .#{$primary-stylename}-item {
     @include valo-menu-item-style($bg);
 
+    .v-ch & span.v-icon {
+      -webkit-mask-image: none;
+      color: valo-font-color($bg, 0.7);
+    }
+
     .#{$primary-stylename}-item-caption {
       width: 100%;
     }
@@ -290,6 +295,10 @@ $cuba-sidemenu-top-height: $v-unit-size + 2 * $cuba-sidemenu-top-offset;
 
   .#{$primary-stylename}-item-focused {
     color: valo-font-color($v-selection-color, 0.1);
+
+    .v-ch & span.v-icon {
+      color: valo-font-color($v-selection-color, 0.1);
+    }
   }
 
   .#{$primary-stylename}-item-selected {
@@ -510,6 +519,11 @@ $cuba-sidemenu-top-height: $v-unit-size + 2 * $cuba-sidemenu-top-offset;
     .#{$primary-stylename}-item {
       @include valo-menu-item-style;
 
+      .v-ch & span.v-icon {
+        -webkit-mask-image: none;
+        color: valo-font-color($valo-menu-background-color, 0.5);
+      }
+
       :hover {
         color: valo-font-color($valo-menu-background-color, 1);
       }
@@ -522,6 +536,10 @@ $cuba-sidemenu-top-height: $v-unit-size + 2 * $cuba-sidemenu-top-offset;
 
     .#{$primary-stylename}-item-focused {
       color: valo-font-color($valo-menu-background-color, 1);
+
+      .v-ch & span.v-icon {
+        color: valo-font-color($valo-menu-background-color, 1);
+      }
     }
   }
 }
