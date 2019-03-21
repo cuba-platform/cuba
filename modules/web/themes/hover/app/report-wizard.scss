@@ -1,5 +1,5 @@
 /*!
- * Copyright (c) 2008-2018 Haulmont.
+ * Copyright (c) 2008-2019 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,14 +14,10 @@
  * limitations under the License.
  */
 
-@import "../halo/halo";
+@mixin hover-cuba-report-wizard {
 
-@import "app/table-paging";
-@import "app/report-wizard";
-
-@mixin hover {
-  @include halo;
-
-  @include hover-cuba-table-paging;
-  @include hover-cuba-report-wizard;
+  .report-wizard-tip-label {
+    padding-top: $v-layout-spacing-vertical - 1px;
+    padding-bottom: $v-layout-spacing-vertical - 1px;
+  }
 }
