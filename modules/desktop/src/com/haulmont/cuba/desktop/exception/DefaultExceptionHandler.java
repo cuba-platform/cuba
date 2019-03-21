@@ -71,7 +71,7 @@ public class DefaultExceptionHandler implements ExceptionHandler {
     protected ErrorInfo createErrorInfo(Throwable exception) {
         UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.NAME);
         Security security = AppBeans.get(Security.NAME);
-        if (userSessionSource.getUserSession() == null
+        if (!userSessionSource.checkCurrentUserSession()
                 || !security.isSpecificPermitted("cuba.gui.showExceptionDetails")) {
             return new ErrorInfo(
                     getMessage("errorPane.title"), getMessage("exceptionDialog.contactAdmin"),
