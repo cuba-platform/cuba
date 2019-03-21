@@ -29,7 +29,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.ManagedBean;
 import java.util.Collection;
 
 @Component("cuba_SpringBeanLoader")
@@ -49,15 +48,12 @@ public class SpringBeanLoader implements BeanFactoryAware {
             boolean needToRefreshRemotingContext = false;
             for (Class clazz : classes) {
                 Service serviceAnnotation = (Service) clazz.getAnnotation(Service.class);
-                ManagedBean managedBeanAnnotation = (ManagedBean) clazz.getAnnotation(ManagedBean.class);
                 Component componentAnnotation = (Component) clazz.getAnnotation(Component.class);
                 Controller controllerAnnotation = (Controller) clazz.getAnnotation(Controller.class);
 
                 String beanName = null;
                 if (serviceAnnotation != null) {
                     beanName = serviceAnnotation.value();
-                } else if (managedBeanAnnotation != null) {
-                    beanName = managedBeanAnnotation.value();
                 } else if (componentAnnotation != null) {
                     beanName = componentAnnotation.value();
                 } else if (controllerAnnotation != null) {
