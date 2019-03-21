@@ -294,6 +294,7 @@ configure(globalModule) {
         compile(bom['org.mindrot:jbcrypt'])
 
         compile(bom['javax.inject:javax.inject'])
+        compile(bom['javax.annotation:javax.annotation-api'])
         compileOnly(bom['javax.servlet:javax.servlet-api'])
     }
 
