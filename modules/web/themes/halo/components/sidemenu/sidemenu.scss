@@ -319,7 +319,7 @@ $cuba-sidemenu-userindicator-font-weight: $v-font-weight !default;
 
     .v-ch & span.v-icon {
       -webkit-mask-image: none;
-      color: valo-font-color($bg, 0.5);
+      color: valo-font-color($bg, 0.7);
     }
 
     .#{$primary-stylename}-item-caption {
