@@ -317,6 +317,11 @@ $cuba-sidemenu-userindicator-font-weight: $v-font-weight !default;
   .#{$primary-stylename}-item {
     @include valo-menu-item-style($bg);
 
+    .v-ch & span.v-icon {
+      -webkit-mask-image: none;
+      color: valo-font-color($bg, 0.5);
+    }
+
     .#{$primary-stylename}-item-caption {
       width: 100%;
     }
@@ -392,6 +397,10 @@ $cuba-sidemenu-userindicator-font-weight: $v-font-weight !default;
 
   .#{$primary-stylename}-item-focused {
     color: valo-font-color($v-selection-color, 0.1);
+
+    .v-ch & span.v-icon {
+      color: valo-font-color($v-selection-color, 0.1);
+    }
   }
 
   .#{$primary-stylename}-item-selected {
@@ -625,6 +634,11 @@ $cuba-sidemenu-userindicator-font-weight: $v-font-weight !default;
     .#{$primary-stylename}-item {
       @include valo-menu-item-style;
 
+      .v-ch & span.v-icon {
+        -webkit-mask-image: none;
+        color: valo-font-color($bg, 0.5);
+      }
+
       font-weight: $cuba-sidemenu-item-font-weight;
 
       :hover {
@@ -647,6 +661,10 @@ $cuba-sidemenu-userindicator-font-weight: $v-font-weight !default;
 
     .#{$primary-stylename}-item-focused {
       color: valo-font-color($bg, 1);
+
+      .v-ch & span.v-icon {
+        color: valo-font-color($bg, 1);
+      }
     }
   }
 }
