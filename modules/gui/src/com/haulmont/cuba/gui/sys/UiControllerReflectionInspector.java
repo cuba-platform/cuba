@@ -173,14 +173,22 @@ public class UiControllerReflectionInspector {
         return methods.get(methodName);
     }
 
-    public MethodHandle getConsumerMethodFactory(Class<?> ownerClass, MethodHandle methodHandle, Class<?> eventClass) {
+    public MethodHandle getConsumerMethodFactory(Class<?> ownerClass, AnnotatedMethod annotatedMethod, Class<?> eventClass) {
         MethodHandle lambdaMethodFactory;
+        MethodHandle methodHandle = annotatedMethod.getMethodHandle();
         try {
             lambdaMethodFactory = lambdaMethodsCache.get(methodHandle, () -> {
                 MethodType type = MethodType.methodType(void.class, eventClass);
                 MethodType consumerType = MethodType.methodType(Consumer.class, ownerClass);
 
-                MethodHandles.Lookup caller = lambdaLookupProvider.apply(ownerClass);
+                Class<?> callerClass;
+                if (Modifier.isPrivate(annotatedMethod.getMethod().getModifiers())) {
+                    callerClass = annotatedMethod.getMethod().getDeclaringClass();
+                } else {
+                    callerClass = ownerClass;
+                }
+
+                MethodHandles.Lookup caller = lambdaLookupProvider.apply(callerClass);
                 CallSite site;
                 try {
                     site = LambdaMetafactory.metafactory(

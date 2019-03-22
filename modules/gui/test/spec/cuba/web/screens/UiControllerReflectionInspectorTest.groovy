@@ -229,7 +229,7 @@ class UiControllerReflectionInspectorTest extends Specification {
 
         when:
 
-        def lambdaFactory = inspector.getConsumerMethodFactory(ScreenWithSubscribe, methods[0].methodHandle, Button.ClickEvent)
+        def lambdaFactory = inspector.getConsumerMethodFactory(ScreenWithSubscribe, methods[0], Button.ClickEvent)
 
         then:
 
