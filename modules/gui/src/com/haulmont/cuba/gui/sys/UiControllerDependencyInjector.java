@@ -390,8 +390,8 @@ public class UiControllerDependencyInjector {
             }
 
             Consumer listener;
-            MethodHandle consumerMethodFactory = reflectionInspector.getConsumerMethodFactory(clazz,
-                    annotatedMethod.getMethodHandle(), eventType);
+            MethodHandle consumerMethodFactory =
+                    reflectionInspector.getConsumerMethodFactory(clazz, annotatedMethod, eventType);
             try {
                 listener = (Consumer) consumerMethodFactory.invoke(frameOwner);
             } catch (Error e) {

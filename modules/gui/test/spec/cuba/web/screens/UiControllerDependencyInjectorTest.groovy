@@ -282,6 +282,66 @@ class UiControllerDependencyInjectorTest extends Specification {
         screen.textField == null
     }
 
+    def "Screen fires private event handlers"() {
+        def screen = new ParentScreen()
+
+        def injector = new UiControllerDependencyInjector(screen, FrameOwner.NO_OPTIONS)
+        def inspector = new UiControllerReflectionInspector()
+        def beanLocator = Mock(BeanLocator)
+        def window = Mock(TestWindow)
+
+        screen.window = window
+
+        beanLocator.getAll(BeanLocator) >> ImmutableMap.of("beanLocator", beanLocator)
+
+        injector.reflectionInspector = inspector
+        injector.beanLocator = beanLocator
+
+        when:
+        injector.inject()
+
+        then:
+        screen.eventHub != null
+        screen.eventHub.hasSubscriptions(Screen.InitEvent.class)
+
+        when:
+        def event = new Screen.InitEvent(screen, Screen.NO_OPTIONS)
+        screen.eventHub.publish(Screen.InitEvent.class, event)
+
+        then:
+        screen.fired == 1
+    }
+
+    def "Screen fires private event handlers from parent screen"() {
+        def screen = new ChildScreen() // this screen inherits private event handler from parent class
+
+        def injector = new UiControllerDependencyInjector(screen, FrameOwner.NO_OPTIONS)
+        def inspector = new UiControllerReflectionInspector()
+        def beanLocator = Mock(BeanLocator)
+        def window = Mock(TestWindow)
+
+        screen.window = window
+
+        beanLocator.getAll(BeanLocator) >> ImmutableMap.of("beanLocator", beanLocator)
+
+        injector.reflectionInspector = inspector
+        injector.beanLocator = beanLocator
+
+        when:
+        injector.inject()
+
+        then:
+        screen.eventHub != null
+        screen.eventHub.hasSubscriptions(Screen.InitEvent.class)
+
+        when:
+        def event = new Screen.InitEvent(screen, Screen.NO_OPTIONS)
+        screen.eventHub.publish(Screen.InitEvent.class, event)
+
+        then:
+        screen.fired == 1
+    }
+
     private interface TestWindow extends Window, WindowImplementation {
 
     }
