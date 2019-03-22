@@ -46,8 +46,11 @@ public class AbstractMainWindow extends AbstractTopLevelWindow
     @Inject
     protected ScreenTools screenTools;
 
+    @Inject
     protected AppWorkArea workArea;
+    @Inject
     protected UserIndicator userIndicator;
+    @Inject
     protected FoldersPane foldersPane;
 
     @Override

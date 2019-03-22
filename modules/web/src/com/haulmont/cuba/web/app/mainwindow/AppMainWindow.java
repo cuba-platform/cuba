@@ -86,19 +86,4 @@ public class AppMainWindow extends AbstractMainWindow {
             expand(workArea);
         }
     }
-
-    @Inject
-    public void setWorkArea(AppWorkArea workArea) {
-        this.workArea = workArea;
-    }
-
-    @Inject
-    public void setUserIndicator(UserIndicator userIndicator) {
-        this.userIndicator = userIndicator;
-    }
-
-    @Inject
-    public void setFoldersPane(FoldersPane foldersPane) {
-        this.foldersPane = foldersPane;
-    }
 }
