@@ -259,11 +259,11 @@ public class CubaSuggestionFieldWidget extends Composite implements HasEnabled, 
 
     public void setValue(String value, boolean fireEvents) {
         this.value = value;
-        textField.setValue(value, fireEvents);
+        resetComponentState();
     }
 
     public String getValue() {
-        return textField.getValue();
+        return value;
     }
 
     protected void handleEnterKeyPressed(KeyCodeEvent event) {
@@ -271,7 +271,7 @@ public class CubaSuggestionFieldWidget extends Composite implements HasEnabled, 
                 && suggestionsContainer.getSelectedItem() != null) {
             selectSuggestion(suggestionsContainer.getSelectedItem().getSuggestion());
         } else {
-            if (enterActionHandler != null) {
+            if (isActive() && enterActionHandler != null) {
                 enterActionHandler.accept(textField.getText().trim());
             }
         }
@@ -290,10 +290,14 @@ public class CubaSuggestionFieldWidget extends Composite implements HasEnabled, 
             suggestionsContainer.selectNextItem();
             preventEvent(event);
         } else {
-            if (arrowDownActionHandler != null) {
+            if (isActive() && arrowDownActionHandler != null) {
                 arrowDownActionHandler.accept(textField.getText().trim());
             }
         }
+    }
+
+    protected boolean isActive() {
+        return !isReadonly() && isEnabled();
     }
 
     protected void handleOnBlur(BlurEvent event) {
