@@ -23,6 +23,7 @@ import com.haulmont.cuba.core.global.EntitySet;
 import com.haulmont.cuba.gui.screen.InstallSubject;
 import com.haulmont.cuba.gui.screen.Subscribe;
 
+import javax.annotation.CheckReturnValue;
 import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.EventObject;
@@ -71,6 +72,7 @@ public interface DataContext {
      *
      * @return the instance which is tracked by the context
      */
+    @CheckReturnValue
     <T extends Entity> T merge(T entity);
 
     /**
@@ -88,6 +90,7 @@ public interface DataContext {
      * @return set of instances tracked by the context
      * @see #merge(Entity)
      */
+    @CheckReturnValue
     EntitySet merge(Collection<? extends Entity> entities);
 
     /**
