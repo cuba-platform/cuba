@@ -89,13 +89,15 @@ public class KeyValueCollectionLoaderImpl implements KeyValueCollectionLoader {
             list = delegate.apply(loadContext);
         }
 
-        // TODO merge KeyValueEntity ???
         if (dataContext != null) {
+            List<KeyValueEntity> mergedList = new ArrayList<>(list.size());
             for (KeyValueEntity entity : list) {
-                dataContext.merge(entity);
+                mergedList.add(dataContext.merge(entity));
             }
+            container.setItems(mergedList);
+        } else {
+            container.setItems(list);
         }
-        container.setItems(list);
     }
 
     @Override
