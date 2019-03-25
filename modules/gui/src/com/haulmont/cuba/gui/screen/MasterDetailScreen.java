@@ -365,7 +365,7 @@ public abstract class MasterDetailScreen<T extends Entity> extends StandardLooku
     /**
      * Releases pessimistic lock if the entity was locked.
      */
-    public void releaseLock() {
+    protected void releaseLock() {
         if (justLocked) {
             Entity entity = getEditContainer().getItemOrNull();
             if (entity != null) {
@@ -387,7 +387,7 @@ public abstract class MasterDetailScreen<T extends Entity> extends StandardLooku
     /**
      * Method invoked when clicking on the Ok button after editing an existing or creating a new record.
      */
-    public void saveChanges() {
+    protected void saveChanges() {
         if (!editing) {
             return;
         }
@@ -444,7 +444,7 @@ public abstract class MasterDetailScreen<T extends Entity> extends StandardLooku
     /**
      * Method invoked when clicking the Cancel button, discards changes and disables controls for editing.
      */
-    public void discardChanges() {
+    protected void discardChanges() {
         releaseLock();
         getScreenData().getDataContext().evict(getEditContainer().getItem());
         getEditContainer().setItem(null);
@@ -520,38 +520,6 @@ public abstract class MasterDetailScreen<T extends Entity> extends StandardLooku
     }
 
     /**
-     * Event sent before the new entity instance is set to edited entity container.
-     * <p>
-     * Use this event listener to initialize default values in the new entity instance, for example:
-     * <pre>
-     *     &#64;Subscribe
-     *     protected void onInitEntity(InitEntityEvent&lt;Foo&gt; event) {
-     *         event.getEntity().setStatus(Status.ACTIVE);
-     *     }
-     * </pre>
-     *
-     * @param <E> type of entity
-     * @see #addInitEntityListener(Consumer)
-     */
-    public static class InitEntityEvent<E extends Entity> extends EventObject {
-        protected final E entity;
-
-        public InitEntityEvent(Screen source, E entity) {
-            super(source);
-            this.entity = entity;
-        }
-
-        @Override
-        public Screen getSource() {
-            return (Screen) super.getSource();
-        }
-
-        public E getEntity() {
-            return entity;
-        }
-    }
-
-    /**
      * Adds a listener to {@link InitEntityEvent}.
      *
      * @param listener listener
@@ -580,6 +548,41 @@ public abstract class MasterDetailScreen<T extends Entity> extends StandardLooku
      */
     protected Subscription addAfterCommitChangesListener(Consumer<AfterCommitChangesEvent> listener) {
         return getEventHub().subscribe(AfterCommitChangesEvent.class, listener);
+    }
+
+    /**
+     * Event sent before the new entity instance is set to edited entity container.
+     * <p>
+     * Use this event listener to initialize default values in the new entity instance, for example:
+     * <pre>
+     *     &#64;Subscribe
+     *     protected void onInitEntity(InitEntityEvent&lt;Foo&gt; event) {
+     *         event.getEntity().setStatus(Status.ACTIVE);
+     *     }
+     * </pre>
+     *
+     * @param <E> type of entity
+     * @see #addInitEntityListener(Consumer)
+     */
+    public static class InitEntityEvent<E extends Entity> extends EventObject {
+        protected final E entity;
+
+        public InitEntityEvent(Screen source, E entity) {
+            super(source);
+            this.entity = entity;
+        }
+
+        @Override
+        public Screen getSource() {
+            return (Screen) super.getSource();
+        }
+
+        /**
+         * @return initializing entity
+         */
+        public E getEntity() {
+            return entity;
+        }
     }
 
     /**
