@@ -23,6 +23,7 @@ import com.vaadin.ui.Layout;
 import com.vaadin.v7.data.Property;
 
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
@@ -100,6 +101,12 @@ public interface CubaEnhancedTable extends AggregationContainer {
 
     void setSpecificVariablesHandler(SpecificVariablesHandler handler);
     SpecificVariablesHandler getSpecificVariablesHandler();
+
+    Consumer<Component> getAfterUnregisterComponentHandler();
+    void setAfterUnregisterComponentHandler(Consumer<Component> afterUnregisterComponentHandler);
+
+    Runnable getBeforeRefreshRowCacheHandler();
+    void setBeforeRefreshRowCacheHandler(Runnable beforeRefreshRowCacheHandler);
 
     interface SpecificVariablesHandler {
         boolean handleSpecificVariables(Map<String, Object> variables);

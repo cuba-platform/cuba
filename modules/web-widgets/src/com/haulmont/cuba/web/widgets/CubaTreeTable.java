@@ -46,6 +46,7 @@ import org.apache.commons.collections4.CollectionUtils;
 
 import javax.annotation.Nonnull;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -90,6 +91,9 @@ public class CubaTreeTable extends com.vaadin.v7.ui.TreeTable implements TreeTab
     protected String focusTotalAggregationInputColumnKey;
 
     protected Function<AggregationInputValueChangeContext, Boolean> aggregationDistributionProvider;
+
+    protected Consumer<Component> afterUnregisterComponentHandler;
+    protected Runnable beforeRefreshRowCacheHandler;
 
     public CubaTreeTable() {
         registerRpc(new CubaTableServerRpc() {
@@ -1057,5 +1061,43 @@ public class CubaTreeTable extends com.vaadin.v7.ui.TreeTable implements TreeTab
         } else {
             collapseAll();
         }
+    }
+
+    @Override
+    public Consumer<Component> getAfterUnregisterComponentHandler() {
+        return afterUnregisterComponentHandler;
+    }
+
+    @Override
+    public void setAfterUnregisterComponentHandler(Consumer<Component> afterUnregisterComponentHandler) {
+        this.afterUnregisterComponentHandler = afterUnregisterComponentHandler;
+    }
+
+    @Override
+    protected void unregisterComponent(Component component) {
+        super.unregisterComponent(component);
+
+        if (afterUnregisterComponentHandler != null) {
+            afterUnregisterComponentHandler.accept(component);
+        }
+    }
+
+    @Override
+    public Runnable getBeforeRefreshRowCacheHandler() {
+        return beforeRefreshRowCacheHandler;
+    }
+
+    @Override
+    public void setBeforeRefreshRowCacheHandler(Runnable beforeRefreshRowCacheHandler) {
+        this.beforeRefreshRowCacheHandler = beforeRefreshRowCacheHandler;
+    }
+
+    @Override
+    public void refreshRowCache() {
+        if (beforeRefreshRowCacheHandler != null) {
+            beforeRefreshRowCacheHandler.run();
+        }
+
+        super.refreshRowCache();
     }
 }

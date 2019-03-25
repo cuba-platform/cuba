@@ -41,6 +41,7 @@ import com.vaadin.v7.ui.Field;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -84,6 +85,9 @@ public class CubaTable extends com.vaadin.v7.ui.Table implements TableSortableCo
     protected String focusTotalAggregationInputColumnKey;
 
     protected Function<AggregationInputValueChangeContext, Boolean> aggregationDistributionProvider;
+
+    protected Consumer<Component> afterUnregisterComponentHandler;
+    protected Runnable beforeRefreshRowCacheHandler;
 
     public CubaTable() {
         registerRpc(new CubaTableServerRpc() {
@@ -965,5 +969,43 @@ public class CubaTable extends com.vaadin.v7.ui.Table implements TableSortableCo
         if (!repaintIsNotNeeded) {
             markAsDirty();
         }
+    }
+
+    @Override
+    public Consumer<Component> getAfterUnregisterComponentHandler() {
+        return afterUnregisterComponentHandler;
+    }
+
+    @Override
+    public void setAfterUnregisterComponentHandler(Consumer<Component> afterUnregisterComponentHandler) {
+        this.afterUnregisterComponentHandler = afterUnregisterComponentHandler;
+    }
+
+    @Override
+    protected void unregisterComponent(Component component) {
+        super.unregisterComponent(component);
+
+        if (afterUnregisterComponentHandler != null) {
+            afterUnregisterComponentHandler.accept(component);
+        }
+    }
+
+    @Override
+    public Runnable getBeforeRefreshRowCacheHandler() {
+        return beforeRefreshRowCacheHandler;
+    }
+
+    @Override
+    public void setBeforeRefreshRowCacheHandler(Runnable beforeRefreshRowCacheHandler) {
+        this.beforeRefreshRowCacheHandler = beforeRefreshRowCacheHandler;
+    }
+
+    @Override
+    public void refreshRowCache() {
+        if (beforeRefreshRowCacheHandler != null) {
+            beforeRefreshRowCacheHandler.run();
+        }
+
+        super.refreshRowCache();
     }
 }
