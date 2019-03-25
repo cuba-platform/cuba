@@ -17,7 +17,6 @@
 package com.haulmont.cuba.gui.screen;
 
 import com.haulmont.bali.events.Subscription;
-import com.haulmont.bali.events.TriggerOnce;
 import com.haulmont.cuba.core.app.LockService;
 import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 import com.haulmont.cuba.core.entity.Entity;
@@ -36,6 +35,8 @@ import com.haulmont.cuba.gui.components.data.options.ContainerOptions;
 import com.haulmont.cuba.gui.components.data.value.ContainerValueSourceProvider;
 import com.haulmont.cuba.gui.dynamicattributes.DynamicAttributesGuiTools;
 import com.haulmont.cuba.gui.model.*;
+import com.haulmont.cuba.gui.util.OperationResult;
+import com.haulmont.cuba.gui.util.UnknownOperationResult;
 import com.haulmont.cuba.security.entity.EntityOp;
 
 import javax.annotation.Nullable;
@@ -387,28 +388,57 @@ public abstract class MasterDetailScreen<T extends Entity> extends StandardLooku
      * Method invoked when clicking on the Ok button after editing an existing or creating a new record.
      */
     public void saveChanges() {
-        if (!editing)
+        if (!editing) {
             return;
+        }
 
+        commitEditorChanges()
+                .then(() -> {
+                    T editedItem = getEditContainer().getItem();
+                    if (creating) {
+                        getBrowseContainer().getMutableItems().add(0, editedItem);
+                    } else {
+                        getBrowseContainer().replaceItem(editedItem);
+                    }
+                    getTable().setSelected(editedItem);
+
+                    releaseLock();
+                    disableEditControls();
+                });
+    }
+
+    /**
+     * Validates editor form and commits data context.
+     *
+     * @return operation result
+     */
+    protected OperationResult commitEditorChanges() {
         ValidationErrors validationErrors = validateEditorForm();
         if (!validationErrors.isEmpty()) {
             ScreenValidation screenValidation = getBeanLocator().get(ScreenValidation.class);
             screenValidation.showValidationErrors(this, validationErrors);
-            return;
+            return OperationResult.fail();
         }
 
-        getScreenData().getDataContext().commit();
+        Runnable standardCommitAction = () -> {
+            getScreenData().getDataContext().commit();
+            fireEvent(AfterCommitChangesEvent.class, new AfterCommitChangesEvent(this));
+        };
 
-        T editedItem = getEditContainer().getItem();
-        if (creating) {
-            getBrowseContainer().getMutableItems().add(0, editedItem);
-        } else {
-            getBrowseContainer().replaceItem(editedItem);
+        BeforeCommitChangesEvent beforeEvent = new BeforeCommitChangesEvent(this, standardCommitAction);
+        fireEvent(BeforeCommitChangesEvent.class, beforeEvent);
+
+        if (beforeEvent.isCommitPrevented()) {
+            if (beforeEvent.getCommitResult() != null) {
+                return beforeEvent.getCommitResult();
+            }
+
+            return OperationResult.fail();
         }
-        getTable().setSelected(editedItem);
 
-        releaseLock();
-        disableEditControls();
+        standardCommitAction.run();
+
+        return OperationResult.success();
     }
 
     /**
@@ -503,8 +533,8 @@ public abstract class MasterDetailScreen<T extends Entity> extends StandardLooku
      * @param <E> type of entity
      * @see #addInitEntityListener(Consumer)
      */
-    public static class InitEntityEvent<E> extends EventObject {
-        private final E entity;
+    public static class InitEntityEvent<E extends Entity> extends EventObject {
+        protected final E entity;
 
         public InitEntityEvent(Screen source, E entity) {
             super(source);
@@ -530,5 +560,170 @@ public abstract class MasterDetailScreen<T extends Entity> extends StandardLooku
     @SuppressWarnings("unchecked")
     protected Subscription addInitEntityListener(Consumer<InitEntityEvent<T>> listener) {
         return getEventHub().subscribe(InitEntityEvent.class, (Consumer) listener);
+    }
+
+    /**
+     * Adds a listener to {@link StandardEditor.BeforeCommitChangesEvent}.
+     *
+     * @param listener listener
+     * @return subscription
+     */
+    protected Subscription addBeforeCommitChangesListener(Consumer<BeforeCommitChangesEvent> listener) {
+        return getEventHub().subscribe(BeforeCommitChangesEvent.class, listener);
+    }
+
+    /**
+     * Adds a listener to {@link StandardEditor.AfterCommitChangesEvent}.
+     *
+     * @param listener listener
+     * @return subscription
+     */
+    protected Subscription addAfterCommitChangesListener(Consumer<AfterCommitChangesEvent> listener) {
+        return getEventHub().subscribe(AfterCommitChangesEvent.class, listener);
+    }
+
+    /**
+     * Event sent before commit of data context from {@link #commitEditorChanges()} call.
+     * <br>
+     * Use this event listener to prevent commit and/or show additional dialogs to user before commit, for example:
+     * <pre>
+     *     &#64;Subscribe
+     *     protected void onBeforeCommit(BeforeCommitChangesEvent event) {
+     *         if (getEditedEntity().getDescription() == null) {
+     *             notifications.create().withCaption("Description required").show();
+     *             event.preventCommit();
+     *         }
+     *     }
+     * </pre>
+     *
+     * Show dialog and resume commit after:
+     * <pre>
+     *     &#64;Subscribe
+     *     protected void onBeforeCommit(BeforeCommitChangesEvent event) {
+     *         if (getEditedEntity().getDescription() == null) {
+     *             dialogs.createOptionDialog()
+     *                     .withCaption("Question")
+     *                     .withMessage("Do you want to set default description?")
+     *                     .withActions(
+     *                             new DialogAction(DialogAction.Type.YES).withHandler(e -> {
+     *                                 getEditedEntity().setDescription("No description");
+     *
+     *                                 // retry commit and resume action
+     *                                 event.resume(commitChanges());
+     *                             }),
+     *                             new DialogAction(DialogAction.Type.NO).withHandler(e -> {
+     *                                 // trigger standard commit and resume action
+     *                                 event.resume();
+     *                             })
+     *                     )
+     *                     .show();
+     *
+     *             event.preventCommit();
+     *         }
+     *     }
+     * </pre>
+     *
+     * @see #addBeforeCommitChangesListener(Consumer)
+     */
+    public static class BeforeCommitChangesEvent extends EventObject {
+
+        protected final Runnable resumeAction;
+
+        protected boolean commitPrevented = false;
+        protected OperationResult commitResult;
+
+        public BeforeCommitChangesEvent(Screen source, Runnable resumeAction) {
+            super(source);
+            this.resumeAction = resumeAction;
+        }
+
+        @Override
+        public Screen getSource() {
+            return (Screen) super.getSource();
+        }
+
+        /**
+         * @return data context of the screen
+         */
+        public DataContext getDataContext() {
+            return getSource().getScreenData().getDataContext();
+        }
+
+        /**
+         * Prevents commit of the editor form.
+         */
+        public void preventCommit() {
+            preventCommit(new UnknownOperationResult());
+        }
+
+        /**
+         * Prevents commit of the editor form.
+         *
+         * @param commitResult result object that will be used to resume entity saving
+         */
+        public void preventCommit(OperationResult commitResult) {
+            this.commitPrevented = true;
+            this.commitResult = commitResult;
+        }
+
+        /**
+         * Resume standard execution.
+         */
+        public void resume() {
+            if (resumeAction != null) {
+                resumeAction.run();
+            }
+            if (commitResult instanceof UnknownOperationResult) {
+                ((UnknownOperationResult) commitResult).resume(OperationResult.success());
+            }
+        }
+
+        /**
+         * Resume with the passed result ignoring standard execution. The standard commit will not be performed.
+         */
+        public void resume(OperationResult result) {
+            if (commitResult instanceof UnknownOperationResult) {
+                ((UnknownOperationResult) commitResult).resume(result);
+            }
+        }
+
+        /**
+         * @return result passed to the {@link #preventCommit(OperationResult)} method
+         */
+        @Nullable
+        public OperationResult getCommitResult() {
+            return commitResult;
+        }
+
+        /**
+         * @return whether the commit was prevented by invoking {@link #preventCommit()} method
+         */
+        public boolean isCommitPrevented() {
+            return commitPrevented;
+        }
+    }
+
+    /**
+     * Event sent after commit of data context from {@link #commitEditorChanges()} call.
+     *
+     * @see #addAfterCommitChangesListener(Consumer)
+     */
+    public static class AfterCommitChangesEvent extends EventObject {
+
+        public AfterCommitChangesEvent(Screen source) {
+            super(source);
+        }
+
+        @Override
+        public Screen getSource() {
+            return (Screen) super.getSource();
+        }
+
+        /**
+         * @return data context of the screen
+         */
+        public DataContext getDataContext() {
+            return getSource().getScreenData().getDataContext();
+        }
     }
 }
