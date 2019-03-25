@@ -36,6 +36,7 @@ import com.haulmont.cuba.gui.util.OperationResult;
 import com.haulmont.cuba.gui.util.UnknownOperationResult;
 import com.haulmont.cuba.security.entity.EntityOp;
 
+import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.EventObject;
 import java.util.HashSet;
@@ -142,12 +143,12 @@ public abstract class StandardEditor<T extends Entity> extends Screen implements
 
             if (clientConfig.getUseSaveConfirmation()) {
                 screenValidation.showSaveConfirmationDialog(this, action)
-                    .onCommit(() -> result.resolveWith(closeWithCommit()))
-                    .onDiscard(() -> result.resolveWith(closeWithDiscard()))
+                    .onCommit(() -> result.resume(closeWithCommit()))
+                    .onDiscard(() -> result.resume(closeWithDiscard()))
                     .onCancel(result::fail);
             } else {
                 screenValidation.showUnsavedChangesDialog(this, action)
-                        .onDiscard(() -> result.resolveWith(closeWithDiscard()))
+                        .onDiscard(() -> result.resume(closeWithDiscard()))
                         .onCancel(result::fail);
             }
 
@@ -386,7 +387,24 @@ public abstract class StandardEditor<T extends Entity> extends Screen implements
             return OperationResult.fail();
         }
 
-        getScreenData().getDataContext().commit();
+
+        Runnable standardCommitAction = () -> {
+            getScreenData().getDataContext().commit();
+            fireEvent(AfterCommitChangesEvent.class, new AfterCommitChangesEvent(this));
+        };
+
+        BeforeCommitChangesEvent beforeEvent = new BeforeCommitChangesEvent(this, standardCommitAction);
+        fireEvent(BeforeCommitChangesEvent.class, beforeEvent);
+
+        if (beforeEvent.isCommitPrevented()) {
+            if (beforeEvent.getCommitResult() != null) {
+                return beforeEvent.getCommitResult();
+            }
+
+            return OperationResult.fail();
+        }
+
+        standardCommitAction.run();
 
         return OperationResult.success();
     }
@@ -512,6 +530,26 @@ public abstract class StandardEditor<T extends Entity> extends Screen implements
     }
 
     /**
+     * Adds a listener to {@link BeforeCommitChangesEvent}.
+     *
+     * @param listener listener
+     * @return subscription
+     */
+    protected Subscription addBeforeCommitChangesListener(Consumer<BeforeCommitChangesEvent> listener) {
+        return getEventHub().subscribe(BeforeCommitChangesEvent.class, listener);
+    }
+
+    /**
+     * Adds a listener to {@link AfterCommitChangesEvent}.
+     *
+     * @param listener listener
+     * @return subscription
+     */
+    protected Subscription addAfterCommitChangesListener(Consumer<AfterCommitChangesEvent> listener) {
+        return getEventHub().subscribe(AfterCommitChangesEvent.class, listener);
+    }
+
+    /**
      * Event sent before the new entity instance is set to edited entity container.
      * <p>
      * Use this event listener to initialize default values in the new entity instance, for example:
@@ -526,8 +564,8 @@ public abstract class StandardEditor<T extends Entity> extends Screen implements
      * @see #addInitEntityListener(Consumer)
      */
     @TriggerOnce
-    public static class InitEntityEvent<E> extends EventObject {
-        private final E entity;
+    public static class InitEntityEvent<E extends Entity> extends EventObject {
+        protected final E entity;
 
         public InitEntityEvent(Screen source, E entity) {
             super(source);
@@ -539,8 +577,156 @@ public abstract class StandardEditor<T extends Entity> extends Screen implements
             return (Screen) super.getSource();
         }
 
+        /**
+         * @return initializing entity
+         */
         public E getEntity() {
             return entity;
+        }
+    }
+
+    /**
+     * Event sent before commit of data context from {@link #commitChanges()} call.
+     * <br>
+     * Use this event listener to prevent commit and/or show additional dialogs to user before commit, for example:
+     * <pre>
+     *     &#64;Subscribe
+     *     protected void onBeforeCommit(BeforeCommitChangesEvent event) {
+     *         if (getEditedEntity().getDescription() == null) {
+     *             notifications.create().withCaption("Description required").show();
+     *             event.preventCommit();
+     *         }
+     *     }
+     * </pre>
+     *
+     * Show dialog and resume commit after:
+     * <pre>
+     *     &#64;Subscribe
+     *     protected void onBeforeCommit(BeforeCommitChangesEvent event) {
+     *         if (getEditedEntity().getDescription() == null) {
+     *             dialogs.createOptionDialog()
+     *                     .withCaption("Question")
+     *                     .withMessage("Do you want to set default description?")
+     *                     .withActions(
+     *                             new DialogAction(DialogAction.Type.YES).withHandler(e -> {
+     *                                 getEditedEntity().setDescription("No description");
+     *
+     *                                 // retry commit and resume action
+     *                                 event.resume(commitChanges());
+     *                             }),
+     *                             new DialogAction(DialogAction.Type.NO).withHandler(e -> {
+     *                                 // trigger standard commit and resume action
+     *                                 event.resume();
+     *                             })
+     *                     )
+     *                     .show();
+     *
+     *             event.preventCommit();
+     *         }
+     *     }
+     * </pre>
+     *
+     * @see #addBeforeCommitChangesListener(Consumer)
+     */
+    public static class BeforeCommitChangesEvent extends EventObject {
+
+        protected final Runnable resumeAction;
+
+        protected boolean commitPrevented = false;
+        protected OperationResult commitResult;
+
+        public BeforeCommitChangesEvent(Screen source, @Nullable Runnable resumeAction) {
+            super(source);
+            this.resumeAction = resumeAction;
+        }
+
+        @Override
+        public Screen getSource() {
+            return (Screen) super.getSource();
+        }
+
+        /**
+         * @return data context of the screen
+         */
+        public DataContext getDataContext() {
+            return getSource().getScreenData().getDataContext();
+        }
+
+        /**
+         * Prevents commit of the screen.
+         */
+        public void preventCommit() {
+            preventCommit(new UnknownOperationResult());
+        }
+
+        /**
+         * Prevents commit of the screen.
+         *
+         * @param commitResult result object that will be returned from the {@link #commitChanges()}} method
+         */
+        public void preventCommit(OperationResult commitResult) {
+            this.commitPrevented = true;
+            this.commitResult = commitResult;
+        }
+
+        /**
+         * Resume standard execution.
+         */
+        public void resume() {
+            if (resumeAction != null) {
+                resumeAction.run();
+            }
+            if (commitResult instanceof UnknownOperationResult) {
+                ((UnknownOperationResult) commitResult).resume(OperationResult.success());
+            }
+        }
+
+        /**
+         * Resume with the passed result ignoring standard execution. The standard commit will not be performed.
+         */
+        public void resume(OperationResult result) {
+            if (commitResult instanceof UnknownOperationResult) {
+                ((UnknownOperationResult) commitResult).resume(result);
+            }
+        }
+
+        /**
+         * @return result passed to the {@link #preventCommit(OperationResult)} method
+         */
+        @Nullable
+        public OperationResult getCommitResult() {
+            return commitResult;
+        }
+
+        /**
+         * @return whether the commit was prevented by invoking {@link #preventCommit()} method
+         */
+        public boolean isCommitPrevented() {
+            return commitPrevented;
+        }
+    }
+
+    /**
+     * Event sent after commit of data context from {@link #commitChanges()} call.
+     *
+     * @see #addAfterCommitChangesListener(Consumer)
+     */
+    public static class AfterCommitChangesEvent extends EventObject {
+
+        public AfterCommitChangesEvent(Screen source) {
+            super(source);
+        }
+
+        @Override
+        public Screen getSource() {
+            return (Screen) super.getSource();
+        }
+
+        /**
+         * @return data context of the screen
+         */
+        public DataContext getDataContext() {
+            return getSource().getScreenData().getDataContext();
         }
     }
 }

@@ -89,11 +89,20 @@ public class UnknownOperationResult implements OperationResult {
     }
 
     /**
-     * Resolve this result depending on the passed result.
+     * Resolve this result depending on the passed result. Alias for {@link #resume(OperationResult)}.
      *
      * @param result dependency
      */
     public void resolveWith(OperationResult result) {
+        resume(result);
+    }
+
+    /**
+     * Resume action depending on the passed result.
+     *
+     * @param result dependency
+     */
+    public void resume(OperationResult result) {
         result.then(this::success)
                 .otherwise(this::fail);
     }
