@@ -96,7 +96,7 @@ public class ScheduledTask extends BaseUuidEntity implements Creatable, Updatabl
     @Column(name = "IS_ACTIVE")
     protected Boolean active;
 
-    @Column(name = "PERIOD")
+    @Column(name = "PERIOD_")
     protected Integer period;
 
     @Column(name = "TIMEOUT")

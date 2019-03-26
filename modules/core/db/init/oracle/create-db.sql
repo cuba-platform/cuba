@@ -290,7 +290,7 @@ create table SYS_SCHEDULED_TASK (
     USER_NAME varchar2(50),
     IS_SINGLETON char(1),
     IS_ACTIVE char(1),
-    PERIOD integer,
+    PERIOD_ integer,
     TIMEOUT integer,
     START_DATE timestamp,
     TIME_FRAME integer,
