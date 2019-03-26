@@ -608,13 +608,13 @@ public abstract class StandardEditor<T extends Entity> extends Screen implements
      *                     .withCaption("Question")
      *                     .withMessage("Do you want to set default description?")
      *                     .withActions(
-     *                             new DialogAction(DialogAction.Type.YES).withHandler(e -> {
+     *                             new DialogAction(DialogAction.Type.YES).withHandler(e -&gt; {
      *                                 getEditedEntity().setDescription("No description");
      *
      *                                 // retry commit and resume action
      *                                 event.resume(commitChanges());
      *                             }),
-     *                             new DialogAction(DialogAction.Type.NO).withHandler(e -> {
+     *                             new DialogAction(DialogAction.Type.NO).withHandler(e -&gt; {
      *                                 // trigger standard commit and resume action
      *                                 event.resume();
      *                             })
