@@ -708,6 +708,14 @@ public abstract class MasterDetailScreen<T extends Entity> extends StandardLooku
 
     /**
      * Event sent after commit of data context from {@link #commitEditorChanges()} call.
+     * <br>
+     * Use this event listener to notify users after commit, for example:
+     * <pre>
+     *     &#64;Subscribe
+     *     protected void onAfterCommit(AfterCommitChanges event) {
+     *         notifications.create().withCaption("Committed").show();
+     *     }
+     * </pre>
      *
      * @see #addAfterCommitChangesListener(Consumer)
      */
