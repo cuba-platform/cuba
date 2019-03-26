@@ -708,6 +708,14 @@ public abstract class StandardEditor<T extends Entity> extends Screen implements
 
     /**
      * Event sent after commit of data context from {@link #commitChanges()} call.
+     * <br>
+     * Use this event listener to notify users after commit, for example:
+     * <pre>
+     *     &#64;Subscribe
+     *     protected void onAfterCommit(AfterCommitChanges event) {
+     *         notifications.create().withCaption("Committed").show();
+     *     }
+     * </pre>
      *
      * @see #addAfterCommitChangesListener(Consumer)
      */
