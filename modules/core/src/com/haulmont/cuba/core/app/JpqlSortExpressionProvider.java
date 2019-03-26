@@ -33,7 +33,7 @@ public interface JpqlSortExpressionProvider {
      * <ul>
      *     <li>Apply JPQL functions for property, e.g <code>upper({E}.property)</code></li>
      *     <li>Use <code>asc/desc</code> or <code>nulls last/nulls first</code>,
-     *     e.g. <code></>{E}.property asc nulls first</code></li>
+     *     e.g. <code>{E}.property asc nulls first</code></li>
      * </ul>
      */
     String getDatatypeSortExpression(MetaPropertyPath metaPropertyPath, boolean sortDirectionAsc);

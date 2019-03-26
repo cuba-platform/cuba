@@ -592,7 +592,7 @@ public abstract class MasterDetailScreen<T extends Entity> extends StandardLooku
      * <pre>
      *     &#64;Subscribe
      *     protected void onBeforeCommit(BeforeCommitChangesEvent event) {
-     *         if (getEditedEntity().getDescription() == null) {
+     *         if (getEditContainer().getItem().getDescription() == null) {
      *             notifications.create().withCaption("Description required").show();
      *             event.preventCommit();
      *         }
@@ -603,18 +603,18 @@ public abstract class MasterDetailScreen<T extends Entity> extends StandardLooku
      * <pre>
      *     &#64;Subscribe
      *     protected void onBeforeCommit(BeforeCommitChangesEvent event) {
-     *         if (getEditedEntity().getDescription() == null) {
+     *         if (getEditContainer().getItem().getDescription() == null) {
      *             dialogs.createOptionDialog()
      *                     .withCaption("Question")
      *                     .withMessage("Do you want to set default description?")
      *                     .withActions(
-     *                             new DialogAction(DialogAction.Type.YES).withHandler(e -> {
-     *                                 getEditedEntity().setDescription("No description");
+     *                             new DialogAction(DialogAction.Type.YES).withHandler(e -&gt; {
+     *                                 getEditContainer().getItem().setDescription("No description");
      *
      *                                 // retry commit and resume action
-     *                                 event.resume(commitChanges());
+     *                                 event.resume(commitEditorChanges());
      *                             }),
-     *                             new DialogAction(DialogAction.Type.NO).withHandler(e -> {
+     *                             new DialogAction(DialogAction.Type.NO).withHandler(e -&gt; {
      *                                 // trigger standard commit and resume action
      *                                 event.resume();
      *                             })
