@@ -73,6 +73,11 @@ public class MysqlDbmsFeatures implements DbmsFeatures {
     }
 
     @Override
+    public boolean isRequiresDbCatalogName() {
+        return true;
+    }
+
+    @Override
     public boolean supportsLobSortingAndFiltering() {
         return true;
     }
