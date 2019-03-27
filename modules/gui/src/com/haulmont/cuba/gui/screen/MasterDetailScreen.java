@@ -39,6 +39,7 @@ import com.haulmont.cuba.gui.util.OperationResult;
 import com.haulmont.cuba.gui.util.UnknownOperationResult;
 import com.haulmont.cuba.security.entity.EntityOp;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.EventObject;
@@ -136,6 +137,17 @@ public abstract class MasterDetailScreen<T extends Entity> extends StandardLooku
     @SuppressWarnings("unchecked")
     protected InstanceContainer<T> getEditContainer() {
         return ((ContainerValueSourceProvider) getForm().getValueSourceProvider()).getContainer();
+    }
+
+    /**
+     * @return currently edited entity instance loaded to editor form
+     */
+    @Nonnull
+    protected T getEditedEntity() {
+        if (!editing) {
+            throw new IllegalStateException("Edited entity is not available because form is in non-editing state");
+        }
+        return getEditContainer().getItem();
     }
 
     /**
@@ -592,7 +604,7 @@ public abstract class MasterDetailScreen<T extends Entity> extends StandardLooku
      * <pre>
      *     &#64;Subscribe
      *     protected void onBeforeCommit(BeforeCommitChangesEvent event) {
-     *         if (getEditContainer().getItem().getDescription() == null) {
+     *         if (getEditedEntity().getDescription() == null) {
      *             notifications.create().withCaption("Description required").show();
      *             event.preventCommit();
      *         }
@@ -603,13 +615,13 @@ public abstract class MasterDetailScreen<T extends Entity> extends StandardLooku
      * <pre>
      *     &#64;Subscribe
      *     protected void onBeforeCommit(BeforeCommitChangesEvent event) {
-     *         if (getEditContainer().getItem().getDescription() == null) {
+     *         if (getEditedEntity().getDescription() == null) {
      *             dialogs.createOptionDialog()
      *                     .withCaption("Question")
      *                     .withMessage("Do you want to set default description?")
      *                     .withActions(
      *                             new DialogAction(DialogAction.Type.YES).withHandler(e -&gt; {
-     *                                 getEditContainer().getItem().setDescription("No description");
+     *                                 getEditedEntity().setDescription("No description");
      *
      *                                 // retry commit and resume action
      *                                 event.resume(commitEditorChanges());
