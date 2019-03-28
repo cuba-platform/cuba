@@ -108,6 +108,36 @@ public class DbUpdaterEngineTest {
         file.createNewFile();
         mssql2012InitFiles.add(file);
 
+        dir = new File(dbmsDir, "50-app1/init/mssql");
+        dir.mkdirs();
+        file = new File(dir, "10.create-db.sql");
+        file.createNewFile();
+        mssqlInitFiles.add(file);
+        mssql2012InitFiles.add(file);
+        file = new File(dir, "20.create-db.sql");
+        file.createNewFile();
+        mssqlInitFiles.add(file);
+        mssql2012InitFiles.add(file);
+        file = new File(dir, "30.create-db.sql");
+        file.createNewFile();
+        mssqlInitFiles.add(file);
+        mssql2012InitFiles.add(file);
+
+        dir = new File(dbmsDir, "100-app2/init/mssql");
+        dir.mkdirs();
+        file = new File(dir, "10.create-db.sql");
+        file.createNewFile();
+        mssqlInitFiles.add(file);
+        mssql2012InitFiles.add(file);
+        file = new File(dir, "20.create-db.sql");
+        file.createNewFile();
+        mssqlInitFiles.add(file);
+        mssql2012InitFiles.add(file);
+        file = new File(dir, "30.create-db.sql");
+        file.createNewFile();
+        mssqlInitFiles.add(file);
+        mssql2012InitFiles.add(file);
+
         // Update scripts
 
         dir = new File(dbmsDir, "10-cuba/update/mssql/13");
@@ -141,6 +171,28 @@ public class DbUpdaterEngineTest {
         mssql2012UpdateFiles.add(file);
         file = new File(dir, "app-update-2.sql");
         file.createNewFile();
+        mssql2012UpdateFiles.add(file);
+
+        dir = new File(dbmsDir, "50-app1/update/mssql/14");
+        dir.mkdirs();
+        file = new File(dir, "app1-update-0.sql");
+        file.createNewFile();
+        mssqlUpdateFiles.add(file);
+        mssql2012UpdateFiles.add(file);
+        file = new File(dir, "app1-update-1.sql");
+        file.createNewFile();
+        mssqlUpdateFiles.add(file);
+        mssql2012UpdateFiles.add(file);
+
+        dir = new File(dbmsDir, "100-app2/update/mssql/14");
+        dir.mkdirs();
+        file = new File(dir, "app2-update-0.sql");
+        file.createNewFile();
+        mssqlUpdateFiles.add(file);
+        mssql2012UpdateFiles.add(file);
+        file = new File(dir, "app2-update-1.sql");
+        file.createNewFile();
+        mssqlUpdateFiles.add(file);
         mssql2012UpdateFiles.add(file);
     }
 
