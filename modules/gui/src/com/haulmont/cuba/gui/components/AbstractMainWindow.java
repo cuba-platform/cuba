@@ -41,45 +41,56 @@ import javax.inject.Inject;
 public class AbstractMainWindow extends AbstractTopLevelWindow
         implements Window.HasWorkArea, Window.HasUserIndicator, Window.HasFoldersPane {
 
+    protected static final String APP_LOGO_IMAGE = "application.logoImage";
+
     @Inject
     protected Screens screens;
     @Inject
     protected ScreenTools screenTools;
 
-    @Inject
     protected AppWorkArea workArea;
-    @Inject
     protected UserIndicator userIndicator;
-    @Inject
     protected FoldersPane foldersPane;
+
+    public AbstractMainWindow() {
+        addInitListener(this::initComponents);
+    }
+
+    protected void initComponents(@SuppressWarnings("unused") InitEvent e) {
+        workArea = getWorkArea();
+        userIndicator = getUserIndicator();
+        foldersPane = getFoldersPane();
+    }
 
     @Override
     @Nullable
     public AppWorkArea getWorkArea() {
-        return workArea;
+        return (AppWorkArea) getComponent("workArea");
     }
 
     @Override
     @Nullable
     public UserIndicator getUserIndicator() {
-        return userIndicator;
+        return (UserIndicator) getComponent("userIndicator");
     }
 
     @Nullable
     @Override
     public FoldersPane getFoldersPane() {
-        return foldersPane;
+        return (FoldersPane) getComponent("foldersPane");
     }
 
     protected void initLogoImage(Image logoImage) {
-        String logoImagePath = messages.getMainMessage("application.logoImage");
-        if (StringUtils.isNotBlank(logoImagePath) && !"application.logoImage".equals(logoImagePath)) {
+        String logoImagePath = messages.getMainMessage(APP_LOGO_IMAGE);
+        if (logoImage != null
+                && StringUtils.isNotBlank(logoImagePath)
+                && !APP_LOGO_IMAGE.equals(logoImagePath)) {
             logoImage.setSource(ThemeResource.class).setPath(logoImagePath);
         }
     }
 
     protected void initFtsField(FtsField ftsField) {
-        if (!FtsConfigHelper.getEnabled()) {
+        if (ftsField != null && !FtsConfigHelper.getEnabled()) {
             ftsField.setVisible(false);
         }
     }

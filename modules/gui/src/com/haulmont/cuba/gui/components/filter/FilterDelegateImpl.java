@@ -705,7 +705,8 @@ public class FilterDelegateImpl implements FilterDelegate {
         saveAsSearchFolderAction.setEnabled(saveAsSearchFolderActionEnabled);
         saveAsAppFolderAction.setEnabled(saveAsAppFolderActionEnabled);
 
-        if (filterHelper.isTableActionsEnabled()) {
+        if (filterHelper.isTableActionsEnabled()
+                && filterHelper.mainScreenHasFoldersPane(filter.getFrame())) {
             fillTableActions();
         }
     }
@@ -2249,6 +2250,37 @@ public class FilterDelegateImpl implements FilterDelegate {
     @Override
     public void setCaptionChangedListener(Consumer<String> captionChangedListener) {
         this.captionChangedListener = captionChangedListener;
+    }
+
+    @Override
+    public void frameAssigned(Frame frame) {
+        updateSettingsBtn(frame);
+        updateControlsLayout(frame);
+    }
+
+    protected void updateSettingsBtn(Frame frame) {
+        if (settingsBtn != null
+                && !filterHelper.isFolderActionsAllowed(frame)) {
+            List<Action> folderActions = settingsBtn.getActions()
+                    .stream()
+                    .filter(action -> action instanceof SaveAsFolderAction)
+                    .collect(Collectors.toList());
+
+            folderActions.forEach(settingsBtn::removeAction);
+        }
+    }
+
+    protected void updateControlsLayout(Frame frame) {
+        if (controlsLayout != null
+                && !filterHelper.isFolderActionsAllowed(frame)) {
+            List<Component> folderActionButtons = controlsLayout.getComponents()
+                    .stream()
+                    .filter(c -> c instanceof Button
+                            && ((Button) c).getAction() instanceof SaveAsFolderAction)
+                    .collect(Collectors.toList());
+
+            folderActionButtons.forEach(controlsLayout::remove);
+        }
     }
 
     protected class FiltersLookupChangeListener implements Consumer<HasValue.ValueChangeEvent<FilterEntity>> {

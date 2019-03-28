@@ -69,6 +69,10 @@ public interface FilterHelper {
 
     boolean isFolderActionsEnabled();
 
+    boolean isFolderActionsAllowed(Frame frame);
+
+    boolean mainScreenHasFoldersPane(Frame currentFrame);
+
     void initConditionsDragAndDrop(Tree tree, ConditionsTree conditions);
 
     Object getFoldersPane();
