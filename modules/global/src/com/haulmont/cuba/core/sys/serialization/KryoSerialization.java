@@ -129,6 +129,8 @@ public class KryoSerialization implements Serialization {
         kryo.register(MetaPropertyImpl.class, new CubaJavaSerializer());
         kryo.register(UnitOfWorkQueryValueHolder.class, new UnitOfWorkQueryValueHolderSerializer(kryo));
 
+        kryo.addDefaultSerializer(Collection.class, new CubaCollectionSerializer());
+
         registerEntitySerializer(kryo);
 
         return kryo;
@@ -181,6 +183,26 @@ public class KryoSerialization implements Serialization {
 
     protected void registerEntitySerializer(Kryo kryo) {
         kryo.addDefaultSerializer(Entity.class, EntitySerializer.class);
+    }
+
+    public static class CubaCollectionSerializer extends CollectionSerializer {
+        @Override
+        public void write (Kryo kryo, Output output, Collection collection) {
+            checkIncorrectObject(collection);
+            super.write(kryo, output, collection);
+        }
+
+        @Override
+        protected Collection create (Kryo kryo, Input input, Class<Collection> type) {
+            checkIncorrectClass(type);
+            return super.create(kryo, input, type);
+        }
+
+        @Override
+        public Collection read (Kryo kryo, Input input, Class<Collection> type) {
+            checkIncorrectClass(type);
+            return super.read(kryo, input, type);
+        }
     }
 
     public static class IndirectContainerSerializer extends CollectionSerializer {
@@ -353,20 +375,20 @@ public class KryoSerialization implements Serialization {
             checkIncorrectClass(type);
             return super.read(kryo, input, type);
         }
+    }
 
-        protected void checkIncorrectClass(Class type) {
-            if (type != null && !Serializable.class.isAssignableFrom(type)) {
-                throw new IllegalArgumentException(String.format("Class is not registered: %s\nNote: To register this class use: kryo.register(\"%s\".class);",
-                        Util.className(type), Util.className(type)));
-            }
+    protected static void checkIncorrectClass(Class type) {
+        if (type != null && !Serializable.class.isAssignableFrom(type)) {
+            throw new IllegalArgumentException(String.format("Class is not registered: %s\nNote: To register this class use: kryo.register(\"%s\".class);",
+                    Util.className(type), Util.className(type)));
         }
+    }
 
-        protected void checkIncorrectObject(T object) {
-            if (object != null && !(object instanceof Serializable)) {
-                String className = Util.className(object.getClass());
-                throw new IllegalArgumentException(String.format("Class is not registered: %s\nNote: To register this class use: kryo.register(\"%s\".class);",
-                        className, className));
-            }
+    protected static void checkIncorrectObject(Object object) {
+        if (object != null && !(object instanceof Serializable)) {
+            String className = Util.className(object.getClass());
+            throw new IllegalArgumentException(String.format("Class is not registered: %s\nNote: To register this class use: kryo.register(\"%s\".class);",
+                    className, className));
         }
     }
 

@@ -16,12 +16,15 @@
 
 package spec.cuba.core.serialization
 
+import com.google.common.collect.ArrayListMultimap
+import com.google.common.collect.Multimap
 import com.haulmont.cuba.core.Persistence
 import com.haulmont.cuba.core.global.AppBeans
 import com.haulmont.cuba.core.global.DataManager
 import com.haulmont.cuba.core.global.Metadata
 import com.haulmont.cuba.core.global.View
 import com.haulmont.cuba.core.sys.serialization.KryoSerialization
+import com.haulmont.cuba.core.sys.serialization.SerializationException
 import com.haulmont.cuba.testmodel.sales.Order
 import com.haulmont.cuba.testmodel.sales.OrderLine
 import com.haulmont.cuba.testsupport.TestContainer
@@ -91,4 +94,42 @@ class KryoSerializationTest extends Specification {
         matcher.find()
         matcher.group() != null
     }
+
+    //https://github.com/cuba-platform/cuba/issues/1992
+    def "default Collection serializer. ArrayList"() {
+        setup:
+        KryoSerialization kryoSerialization = new KryoSerialization()
+        when:
+        List<String> cars = new ArrayList<>()
+        cars.add('Volvo')
+        cars.add('Mercedes')
+
+        then:
+        byte[] bytes = kryoSerialization.serialize(cars)
+        List<String> cars2 = kryoSerialization.deserialize(bytes) as List<String>
+        cars2.size() == 2
+        cars2[0] == 'Volvo'
+        cars2[1] == 'Mercedes'
+
+    }
+
+    def "default Collection serializer. not Serializable"() {
+        setup:
+        KryoSerialization kryoSerialization = new KryoSerialization()
+        when:
+        Multimap<String, String> map = ArrayListMultimap.create()
+        map.put('car', 'Volvo')
+        map.put('car', 'Mercedes')
+        map.put('color', 'White')
+        List<String> cars = map.get('car')
+        byte[] bytes = kryoSerialization.serialize(cars)
+        kryoSerialization.deserialize(bytes) as List<String>
+
+        then:
+
+        SerializationException ex = thrown()
+        ex.getCause().class == IllegalArgumentException
+
+    }
+
 }
