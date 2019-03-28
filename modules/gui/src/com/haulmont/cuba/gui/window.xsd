@@ -2529,6 +2529,7 @@
                 <xs:attribute name="collapsed" type="xs:boolean"/>
                 <xs:attribute name="orientation" type="orientation"/>
                 <xs:attribute name="showAsPanel" type="xs:boolean"/>
+                <xs:attribute name="captionAsHtml" type="xs:boolean"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>

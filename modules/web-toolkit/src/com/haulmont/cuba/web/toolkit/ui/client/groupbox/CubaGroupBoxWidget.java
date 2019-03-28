@@ -36,6 +36,7 @@ public class CubaGroupBoxWidget extends VPanel implements HasEnabled {
     protected boolean showAsPanel = false;
 
     protected boolean enabled = true;
+    protected boolean captionAsHtml;
 
     protected ExpandHandler expandHandler;
     protected MarginInfo marginInfo;
@@ -95,7 +96,11 @@ public class CubaGroupBoxWidget extends VPanel implements HasEnabled {
             removeStyleDependentName("nocaption");
         }
 
-        super.setCaption(text);
+        if (captionAsHtml) {
+            captionTextNode.setInnerHTML(text);
+        } else {
+            captionTextNode.setInnerText(text);
+        }
     }
 
     public boolean isExpanded() {
@@ -170,6 +175,10 @@ public class CubaGroupBoxWidget extends VPanel implements HasEnabled {
         if (isShowAsPanel() != showAsPanel) {
             this.showAsPanel = showAsPanel;
         }
+    }
+
+    public void setCaptionAsHtml(boolean captionAsHtml) {
+        this.captionAsHtml = captionAsHtml;
     }
 
     public boolean isShowAsPanel() {
