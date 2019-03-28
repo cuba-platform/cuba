@@ -61,6 +61,11 @@ public class GroupBoxLayoutLoader extends ContainerLoader<GroupBoxLayout> {
 
         loadSubComponentsAndExpand(resultComponent, element);
         loadShowAsPanel(resultComponent, element);
+
+        String captionAsHtml = element.attributeValue("captionAsHtml");
+        if (StringUtils.isNotEmpty(captionAsHtml)) {
+            resultComponent.setCaptionAsHtml(Boolean.parseBoolean(captionAsHtml));
+        }
     }
 
     protected void loadOuterMargin(GroupBoxLayout resultComponent, Element element) {

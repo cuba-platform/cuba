@@ -42,6 +42,8 @@ public class DesktopGroupBox extends DesktopAbstractBox implements GroupBoxLayou
     protected boolean showAsPanel;
     protected MarginInfo outerMarginInfo;
 
+    protected boolean captionAsHtml = false; // just stub
+
     public DesktopGroupBox() {
         collapsiblePanel = new CollapsiblePanel(super.getComposition());
         collapsiblePanel.addCollapseListener(new CollapsiblePanel.CollapseListener() {
@@ -233,6 +235,16 @@ public class DesktopGroupBox extends DesktopAbstractBox implements GroupBoxLayou
     @Override
     public boolean isShowAsPanel() {
         return showAsPanel;
+    }
+
+    @Override
+    public boolean isCaptionAsHtml() {
+        return captionAsHtml;
+    }
+
+    @Override
+    public void setCaptionAsHtml(boolean captionAsHtml) {
+        this.captionAsHtml = captionAsHtml;
     }
 
     @Override

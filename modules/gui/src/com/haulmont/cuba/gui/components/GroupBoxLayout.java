@@ -41,4 +41,19 @@ public interface GroupBoxLayout
      * @return true if layout looks like Vaadin Panel
      */
     boolean isShowAsPanel();
+
+    /**
+     * @return {@code true} if the caption is rendered as HTML,
+     * {@code false} if rendered as plain text
+     */
+    boolean isCaptionAsHtml();
+
+    /**
+     * Sets whether the caption is rendered as HTML.
+     *
+     * @param captionAsHtml {@code true} if the caption is rendered as HTML,
+     *                      {@code false} if rendered as plain text
+     * @see #setCaption(String)
+     */
+    void setCaptionAsHtml(boolean captionAsHtml);
 }

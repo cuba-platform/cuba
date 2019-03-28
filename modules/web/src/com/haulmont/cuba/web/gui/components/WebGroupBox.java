@@ -380,6 +380,16 @@ public class WebGroupBox extends WebAbstractComponent<CubaGroupBox> implements G
     }
 
     @Override
+    public boolean isCaptionAsHtml() {
+        return component.isCaptionAsHtml();
+    }
+
+    @Override
+    public void setCaptionAsHtml(boolean captionAsHtml) {
+        component.setCaptionAsHtml(captionAsHtml);
+    }
+
+    @Override
     public void setStyleName(String name) {
         super.setStyleName(name);
 
