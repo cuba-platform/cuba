@@ -48,6 +48,8 @@ public class CubaGroupBoxWidget extends VPanel implements HasEnabled {
     protected Element contextHelpIcon;
     protected Consumer<Event> contextHelpClickHandler;
 
+    protected boolean captionAsHtml;
+
     public Element captionStartDeco = DOM.createDiv();
     public Element captionEndDeco = DOM.createDiv();
     public Element captionTextNode;
@@ -100,7 +102,11 @@ public class CubaGroupBoxWidget extends VPanel implements HasEnabled {
             removeStyleDependentName("nocaption");
         }
 
-        super.setCaption(text);
+        if (captionAsHtml) {
+            captionTextNode.setInnerHTML(text);
+        } else {
+            captionTextNode.setInnerText(text);
+        }
     }
 
     public boolean isExpanded() {
@@ -187,6 +193,10 @@ public class CubaGroupBoxWidget extends VPanel implements HasEnabled {
 
     public boolean isShowAsPanel() {
         return showAsPanel;
+    }
+
+    public void setCaptionAsHtml(boolean captionAsHtml) {
+        this.captionAsHtml = captionAsHtml;
     }
 
     public interface ExpandHandler {
