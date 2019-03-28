@@ -127,9 +127,9 @@ public class ScriptScanner {
                             throw new RuntimeException("An error occurred while detecting modules", e);
                         }
                     })
-                    .filter(element -> element != null)
+                    .filter(Objects::nonNull)
                     .collect(Collectors.toSet()).stream()
-                    .sorted()
+                    .sorted(Comparator.comparingLong(this::getModuleIndex).thenComparing(String::compareTo))
                     .collect(Collectors.toList());
 
             if (modules.isEmpty()) {
@@ -160,7 +160,6 @@ public class ScriptScanner {
         return originalPath.replaceFirst(dir, "");
     }
 
-
     protected ResourcePatternResolver createAppropriateResourceResolver() {
         if (dbScriptsDirectory.startsWith(WEB_INF_LABEL)) {
             return new ServletContextResourcePatternResolver(ServletContextHolder.getServletContext());
@@ -181,5 +180,17 @@ public class ScriptScanner {
 
     protected String dbScriptDirectoryPath() {
         return dbScriptsDirectoryForSearch().replaceFirst(".+?:", "");
+    }
+
+    protected Long getModuleIndex(String moduleDir) {
+        int dashIndex = moduleDir.indexOf('-');
+        if (dashIndex > 1) {
+            try {
+                return Long.valueOf(moduleDir.substring(0, dashIndex));
+            } catch (NumberFormatException e) {
+                throw new RuntimeException(String.format("Invalid DB scripts directory name: %s", moduleDir));
+            }
+        } else
+            throw new RuntimeException(String.format("Invalid DB scripts directory name: %s", moduleDir));
     }
 }
