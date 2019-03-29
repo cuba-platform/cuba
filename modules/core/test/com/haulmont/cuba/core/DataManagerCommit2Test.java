@@ -17,10 +17,7 @@
 package com.haulmont.cuba.core;
 
 import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.security.entity.Group;
-import com.haulmont.cuba.security.entity.Role;
-import com.haulmont.cuba.security.entity.User;
-import com.haulmont.cuba.security.entity.UserRole;
+import com.haulmont.cuba.security.entity.*;
 import com.haulmont.cuba.testsupport.TestContainer;
 import com.haulmont.cuba.testsupport.TestSupport;
 import org.junit.After;
@@ -30,8 +27,7 @@ import org.junit.Test;
 
 import java.util.UUID;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * PL-9325 For new entity, DataManager.commit() does not fetch attributes of related entity by supplied view
@@ -50,6 +46,7 @@ public class DataManagerCommit2Test {
     private Metadata metadata;
     private Persistence persistence;
     private Group group2;
+    private Constraint constraint;
 
     @Before
     public void setUp() throws Exception {
@@ -67,6 +64,13 @@ public class DataManagerCommit2Test {
             group2 = metadata.create(Group.class);
             group2.setName("Group2-" + group2.getId());
             em.persist(group2);
+
+            constraint = metadata.create(Constraint.class);
+            constraint.setCheckType(ConstraintCheckType.MEMORY);
+            constraint.setOperationType(ConstraintOperationType.READ);
+            constraint.setEntityName("sec$User");
+            constraint.setGroup(group2);
+            em.persist(constraint);
 
             User user = metadata.create(User.class);
             userId = user.getId();
@@ -98,6 +102,7 @@ public class DataManagerCommit2Test {
     public void tearDown() throws Exception {
         cont.deleteRecord("SEC_USER_ROLE", userRoleId);
         cont.deleteRecord("SEC_USER", userId);
+        cont.deleteRecord(constraint);
         cont.deleteRecord(group2);
     }
 
@@ -121,6 +126,41 @@ public class DataManagerCommit2Test {
 
             User committedUser = dataManager.commit(user, userView);
             assertTrue(PersistenceHelper.isLoaded(committedUser.getGroup(), "createTs"));
+        } finally {
+            cont.deleteRecord(user);
+        }
+    }
+
+    @Test
+    public void testViewOnSecondLevelAfterCommitNew() throws Exception {
+        View groupView = new View(Group.class, false)
+                .addProperty("createTs")
+                .addProperty("constraints", new View(Constraint.class, false)
+                        .addProperty("createTs"))
+                .setLoadPartialEntities(true);
+
+        Group group = dataManager.load(LoadContext.create(Group.class).setId(this.group2.getId()).setView(groupView));
+        assertNotNull(group);
+        assertFalse(PersistenceHelper.isLoaded(group.getConstraints().iterator().next(), "entityName"));
+
+        User user = metadata.create(User.class);
+        try {
+            user.setName("testUser");
+            user.setLogin("login" + user.getId());
+            user.setGroup(group);
+
+            View userView = new View(User.class, true)
+                    .addProperty("login")
+                    .addProperty("name")
+                    .addProperty("group", new View(Group.class, false)
+                            .addProperty("createTs")
+                            .addProperty("constraints",
+                                    new View(Constraint.class, false)
+                                            .addProperty("entityName")));
+
+            User committedUser = dataManager.commit(user, userView);
+            assertTrue(PersistenceHelper.isLoaded(committedUser.getGroup(), "createTs"));
+            assertTrue(PersistenceHelper.isLoaded(committedUser.getGroup().getConstraints().iterator().next(), "entityName"));
         } finally {
             cont.deleteRecord(user);
         }
