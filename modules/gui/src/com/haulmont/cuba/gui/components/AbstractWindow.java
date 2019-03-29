@@ -38,10 +38,7 @@ import org.springframework.core.annotation.Order;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
@@ -90,7 +87,7 @@ public class AbstractWindow extends Screen implements Window, LegacyFrame, Compo
     @Order(Events.HIGHEST_PLATFORM_PRECEDENCE + 10)
     @Subscribe
     protected void init(InitEvent initEvent) {
-        Map<String, Object> params = Collections.emptyMap();
+        Map<String, Object> params = new HashMap<>(0);
         ScreenOptions options = initEvent.getOptions();
         if (options instanceof MapScreenOptions) {
             params = ((MapScreenOptions) options).getParams();
