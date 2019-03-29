@@ -161,12 +161,7 @@ public class EntityFetcher {
     }
 
     protected boolean needReloading(Entity entity, View view) {
-        for (ViewProperty viewProperty : view.getProperties()) {
-            if (!entityStates.isLoaded(entity, viewProperty.getName())) {
-                return true;
-            }
-        }
-        return false;
+        return !entityStates.isLoadedWithView(entity, view);
     }
 
     protected boolean isLazyFetchedLocalAttribute(MetaProperty metaProperty) {
