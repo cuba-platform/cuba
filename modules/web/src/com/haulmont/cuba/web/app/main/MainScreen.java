@@ -28,7 +28,6 @@ import com.haulmont.cuba.gui.components.Image;
 import com.haulmont.cuba.gui.components.ThemeResource;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.dev.LayoutAnalyzerContextMenuProvider;
-import com.haulmont.cuba.gui.components.mainwindow.AppMenu;
 import com.haulmont.cuba.gui.components.mainwindow.AppWorkArea;
 import com.haulmont.cuba.gui.components.mainwindow.FtsField;
 import com.haulmont.cuba.gui.components.mainwindow.UserIndicator;
@@ -97,9 +96,13 @@ public class MainScreen extends Screen implements Window.HasWorkArea, Window.Has
     }
 
     protected void initMenu() {
-        AppMenu menu = getMenu();
+        Component menu = getAppMenu();
+        if (menu == null) {
+            menu = getSideMenu();
+        }
+
         if (menu != null) {
-            menu.focus();
+            ((Component.Focusable) menu).focus();
         }
     }
 
@@ -151,18 +154,27 @@ public class MainScreen extends Screen implements Window.HasWorkArea, Window.Has
         return (UserIndicator) getWindow().getComponent("userIndicator");
     }
 
+    @Nullable
     protected Image getLogoImage() {
         return (Image) getWindow().getComponent("logoImage");
     }
 
+    @Nullable
     protected FtsField getFtsField() {
         return (FtsField) getWindow().getComponent("ftsField");
     }
 
-    protected AppMenu getMenu() {
-        return (AppMenu) getWindow().getComponent("appMenu");
+    @Nullable
+    protected Component getAppMenu() {
+        return getWindow().getComponent("appMenu");
     }
 
+    @Nullable
+    protected Component getSideMenu() {
+        return getWindow().getComponent("sideMenu");
+    }
+
+    @Nullable
     protected Component getTitleBar() {
         return getWindow().getComponent("titleBar");
     }

@@ -17,49 +17,58 @@
 <window xmlns="http://schemas.haulmont.com/cuba/screen/window.xsd"
         caption="mainMsg://application.caption">
 
-    <layout expand="workArea">
-        <hbox id="titleBar"
-              stylename="c-app-menubar"
-              expand="mainMenu"
-              width="100%"
-              spacing="true"
-              margin="false;false;false;true">
-
-            <image id="logoImage"
-                   align="MIDDLE_LEFT"
-                   scaleMode="SCALE_DOWN"
-                   stylename="c-app-icon"/>
-
-            <menu id="mainMenu"
-                  align="MIDDLE_LEFT"/>
-
-            <ftsField id="ftsField"
-                      align="MIDDLE_LEFT"/>
-
-            <userIndicator id="userIndicator"
-                           align="MIDDLE_LEFT"/>
-
-            <timeZoneIndicator id="timeZoneIndicator"
-                               align="MIDDLE_LEFT"/>
-
-            <hbox id="mainButtonsBox"
-                  stylename="c-main-buttons"
-                  align="MIDDLE_LEFT">
-                <newWindowButton id="newWindowButton"
-                                 icon="app/images/new-window.png"
-                                 description="msg://newWindowBtnDescription"/>
-
-                <logoutButton id="logoutButton"
-                              icon="app/images/exit.png"
-                              description="msg://logoutBtnDescription"/>
-            </hbox>
+    <layout>
+        <hbox id="horizontalWrap"
+              expand="workArea"
+              stylename="c-sidemenu-layout"
+              height="100%"
+              width="100%">
+            <vbox id="sideMenuPanel"
+                  spacing="true"
+                  stylename="c-sidemenu-panel"
+                  expand="sideMenu"
+                  width="250px"
+                  height="100%"
+                  margin="false,false,true,false">
+                <hbox id="appTitleBox"
+                      spacing="true"
+                      stylename="c-sidemenu-title"
+                      width="100%">
+                    <label id="appTitleLabel"
+                           align="MIDDLE_CENTER"
+                           value="mainMsg://application.logoLabel"/>
+                </hbox>
+                <image id="logoImage"
+                       stylename="c-app-icon"
+                       align="MIDDLE_CENTER"
+                       scaleMode="SCALE_DOWN"/>
+                <hbox id="userInfoBox"
+                      align="MIDDLE_CENTER"
+                      spacing="true"
+                      margin="true"
+                      width="100%"
+                      expand="userIndicator">
+                    <userIndicator id="userIndicator"
+                                   align="MIDDLE_CENTER"/>
+                    <newWindowButton id="newWindowButton"
+                                     description="mainMsg://newWindowBtnDescription"
+                                     icon="app/images/new-window.png"/>
+                    <logoutButton id="logoutButton"
+                                  description="mainMsg://logoutBtnDescription"
+                                  icon="app/images/exit.png"/>
+                </hbox>
+                <timeZoneIndicator id="timeZoneIndicator"
+                                   align="MIDDLE_CENTER"/>
+                <sideMenu id="sideMenu"
+                          width="100%"/>
+                <ftsField id="ftsField"
+                          width="100%"/>
+            </vbox>
+            <workArea id="workArea"
+                      height="100%">
+                <initialLayout spacing="true" margin="true">
+                </initialLayout>
+            </workArea>
         </hbox>
-
-        <workArea id="workArea"
-                  width="100%">
-            <initialLayout spacing="true" margin="true">
-
-            </initialLayout>
-        </workArea>
     </layout>
 </window>
