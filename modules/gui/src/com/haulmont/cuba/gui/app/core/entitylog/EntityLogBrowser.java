@@ -220,14 +220,14 @@ public class EntityLogBrowser extends AbstractWindow {
                     };
 
                     if (config.hasWindow(currentWindowAlias)) {
-                        ((LegacyFrame) lookupWindow).openLookup(
+                        lookupWindow.openLookup(
                                 currentWindowAlias,
                                 lookupWindowHandler,
                                 lookupScreenOpenType,
                                 lookupScreenParams != null ? lookupScreenParams : Collections.emptyMap()
                         );
                     } else {
-                        ((LegacyFrame) lookupWindow).openLookup(EntityInspectorBrowse.SCREEN_NAME,
+                        lookupWindow.openLookup(EntityInspectorBrowse.SCREEN_NAME,
                                 lookupWindowHandler,
                                 WindowManager.OpenType.THIS_TAB,
                                 ParamsMap.of("entity", metaClass.getName())
