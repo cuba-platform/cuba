@@ -85,7 +85,7 @@ public class Param {
     public static final String NULL = "NULL";
 
     protected static final List<Class> dateTimeClasses = ImmutableList.of(
-            Date.class, LocalDate.class, LocalDateTime.class, OffsetDateTime.class);
+            Date.class, java.sql.Date.class, LocalDate.class, LocalDateTime.class, OffsetDateTime.class);
 
     protected static final List<Class> timeClasses = ImmutableList.of(LocalTime.class, OffsetTime.class);
 
