@@ -3148,7 +3148,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
             try {
                 return generateCellStyle(itemId, propertyId);
             } catch (Exception e) {
-                LoggerFactory.getLogger(WebAbstractTable.class).error("Uncautch exception in Table StyleProvider", e);
+                LoggerFactory.getLogger(WebAbstractTable.class).error("Uncaught exception in Table StyleProvider", e);
                 this.exceptionHandled = true;
                 return null;
             }
