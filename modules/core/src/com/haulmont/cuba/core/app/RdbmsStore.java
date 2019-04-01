@@ -1023,7 +1023,7 @@ public class RdbmsStore implements DataStore {
             return;
         em.detach(rootEntity);
         metadataTools.traverseAttributesByView(view, rootEntity, (entity, property) -> {
-            if (property.getRange().isClass()) {
+            if (property.getRange().isClass() && !metadataTools.isEmbedded(property)) {
                 Object value = entity.getValue(property.getName());
                 if (value != null) {
                     if (property.getRange().getCardinality().isMany()) {
