@@ -57,8 +57,6 @@ public class EntityLogBrowser extends AbstractWindow {
 
     protected static final String SELECT_ALL_CHECK_BOX = "selectAllCheckBox";
 
-    protected static final int DEFAULT_SHOW_ROWS = 50;
-
     @Inject
     protected Metadata metadata;
 
@@ -137,8 +135,6 @@ public class EntityLogBrowser extends AbstractWindow {
     @Inject
     protected ThemeConstants themeConstants;
 
-    protected TextField showRowField;
-
     protected TreeMap<String, String> entityMetaClassesMap;
 
     protected List<String> systemAttrsList;
@@ -180,19 +176,6 @@ public class EntityLogBrowser extends AbstractWindow {
 
         addAction(new SaveAction());
         addAction(new CancelAction());
-        Label<String> label1 = factory.createComponent(Label.class);
-        label1.setValue(messages.getMessage(getClass(), "show"));
-        label1.setAlignment(Alignment.MIDDLE_LEFT);
-        Label<String> label2 = factory.createComponent(Label.class);
-        label2.setValue(messages.getMessage(getClass(), "rows"));
-        label2.setAlignment(Alignment.MIDDLE_LEFT);
-        ButtonsPanel panel = entityLogTable.getButtonsPanel();
-        showRowField = factory.createComponent(TextField.class);
-        showRowField.setWidth(themeConstants.get("cuba.gui.EntityLogBrowser.showRowField.width"));
-        showRowField.setValue(String.valueOf(DEFAULT_SHOW_ROWS));
-        panel.add(label1);
-        panel.add(showRowField);
-        panel.add(label2);
         disableControls();
         setDateFieldTime();
 
@@ -418,21 +401,9 @@ public class EntityLogBrowser extends AbstractWindow {
         instancePicker.setValue(null);
         fromDateField.setValue(null);
         tillDateField.setValue(null);
-        showRowField.setValue(String.valueOf(DEFAULT_SHOW_ROWS));
     }
 
     public void search() {
-        int maxRows;
-        try {
-            maxRows = Integer.parseInt(showRowField.getValue().toString());
-            if (maxRows >= 0)
-                entityLogDs.setMaxResults(maxRows);
-            else
-                throw new NumberFormatException();
-        } catch (Exception e) {
-            showNotification(messages.getMessage(getClass(), "invalidNumber"), NotificationType.HUMANIZED);
-            return;
-        }
         Entity entity = instancePicker.getValue();
         Map<String, Object> params = new HashMap<>();
         if (entity != null) {
