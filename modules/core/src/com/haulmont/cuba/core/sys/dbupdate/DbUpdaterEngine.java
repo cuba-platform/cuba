@@ -49,6 +49,10 @@ public class DbUpdaterEngine implements DbUpdater {
     private static final String GROOVY_EXTENSION = "groovy";
     protected static final String UPGRADE_GROOVY_EXTENSION = "upgrade.groovy";
 
+    protected static final Pattern RESTAPI_REGEX = Pattern.compile("^\\d+-restapi.*$");
+
+    protected static final Pattern[] EXCLUDED_ADDONS = {RESTAPI_REGEX};
+
     protected static final String ERROR = "\n" +
                         "=================================================\n" +
                         "ERROR: Database update failed. See details below.\n" +
@@ -244,7 +248,11 @@ public class DbUpdaterEngine implements DbUpdater {
         if (dirs.size() > 1) {
             // check all db folders except the last because it is the folder of the app and we need only components
             for (String dirName : dirs.subList(0, dirs.size() - 1)) {
-                List<ScriptResource> initScripts = getInitScripts(dirName);
+                List<ScriptResource> initScripts = getInitScripts(dirName)
+                        .stream()
+                        .filter(this::filterInitScript)
+                        .collect(Collectors.toList());
+
                 if (!initScripts.isEmpty()) {
                     boolean anInitScriptHasBeenExecuted = false;
                     for (ScriptResource initScript : initScripts) {
@@ -271,6 +279,12 @@ public class DbUpdaterEngine implements DbUpdater {
                 }
             }
         }
+    }
+
+    protected boolean filterInitScript(ScriptResource scriptResource) {
+        return Arrays.stream(EXCLUDED_ADDONS)
+                .noneMatch(pattern ->
+                        pattern.matcher(getScriptName(scriptResource)).matches());
     }
 
     protected boolean initializedByOwnScript(Set<String> executedScripts, String dirName) {

@@ -1,0 +1,1 @@
+alter table SYS_REST_API_TOKEN add LOCALE varchar2(200)^

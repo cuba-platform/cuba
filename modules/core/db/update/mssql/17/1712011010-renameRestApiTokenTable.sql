@@ -1,0 +1,1 @@
+sp_rename 'SYS_REST_API_TOKEN', 'SYS_ACCESS_TOKEN';
