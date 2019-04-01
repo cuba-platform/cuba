@@ -22,6 +22,8 @@ import com.haulmont.cuba.core.TransactionalDataManager
 import com.haulmont.cuba.core.entity.BaseEntityInternalAccess
 import com.haulmont.cuba.core.global.*
 import com.haulmont.cuba.core.sys.listener.EntityListenerManager
+import com.haulmont.cuba.testmodel.embedded.AddressEmbedded
+import com.haulmont.cuba.testmodel.embedded.AddressEmbeddedContainer
 import com.haulmont.cuba.testmodel.sales.Customer
 import com.haulmont.cuba.testmodel.sales.Order
 import com.haulmont.cuba.testmodel.sales.OrderLine
@@ -235,6 +237,32 @@ class DataManagerTransactionalTest extends Specification {
 
         tx.end()
         cont.deleteRecord(orderLine11, orderLine12, order1, customer1)
+    }
+
+    def "load entity with embedded"() {
+        def embedded = new AddressEmbedded(street: 'street1')
+        def container = new AddressEmbeddedContainer(name: 'name1', address: embedded)
+        txDataManager.save(container)
+
+        View view = new View(AddressEmbeddedContainer)
+                .addProperty('name')
+                .addProperty('address', new View(AddressEmbedded)
+                    .addProperty('street')
+                )
+        Transaction tx = persistence.createTransaction()
+
+        when:
+
+        def container1 = txDataManager.load(AddressEmbeddedContainer).id(container.id).view(view).one()
+
+        then:
+
+        container1.address.street == 'street1'
+
+        cleanup:
+
+        tx.end()
+        cont.deleteRecord(container)
     }
 
     private void checkObjectGraph(Order order) {
