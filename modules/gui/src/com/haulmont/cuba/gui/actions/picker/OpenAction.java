@@ -17,8 +17,10 @@
 package com.haulmont.cuba.gui.actions.picker;
 
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.SoftDelete;
+import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.DevelopmentException;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.ComponentsHelper;
@@ -33,11 +35,12 @@ import com.haulmont.cuba.gui.icons.CubaIcon;
 import com.haulmont.cuba.gui.icons.Icons;
 import com.haulmont.cuba.gui.screen.Screen;
 import com.haulmont.cuba.gui.screen.ScreenContext;
+import org.springframework.beans.factory.InitializingBean;
 
 import javax.inject.Inject;
 
 @ActionType(OpenAction.ID)
-public class OpenAction extends BaseAction implements PickerField.PickerFieldAction {
+public class OpenAction extends BaseAction implements PickerField.PickerFieldAction, HasDefaultDescription, InitializingBean {
 
     public static final String ID = "picker_open";
 
@@ -45,8 +48,12 @@ public class OpenAction extends BaseAction implements PickerField.PickerFieldAct
     protected Icons icons;
 
     protected Messages messages;
+    protected Configuration configuration;
+
     @Inject
     protected ScreenBuilders screenBuilders;
+
+    protected String defaultDescription;
 
     protected boolean editable = true;
 
@@ -56,6 +63,22 @@ public class OpenAction extends BaseAction implements PickerField.PickerFieldAct
 
     public OpenAction(String id) {
         super(id);
+    }
+
+    @Inject
+    protected void setConfiguration(Configuration configuration) {
+        this.configuration = configuration;
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        defaultDescription = messages.getMainMessage("pickerField.action.open.tooltip");
+        setShortcut(configuration.getConfig(ClientConfig.class).getPickerOpenShortcut());
+    }
+
+    @Override
+    public String getDefaultDescription() {
+        return defaultDescription;
     }
 
     @SuppressWarnings("unchecked")
