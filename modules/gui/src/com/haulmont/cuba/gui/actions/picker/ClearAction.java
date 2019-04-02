@@ -78,7 +78,7 @@ public class ClearAction extends BaseAction implements PickerField.PickerFieldAc
 
     @Override
     public String getDefaultDescription() {
-        return null;
+        return defaultDescription;
     }
 
     @Override
