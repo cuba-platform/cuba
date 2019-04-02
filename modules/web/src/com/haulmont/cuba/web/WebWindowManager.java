@@ -20,14 +20,16 @@ import com.google.common.collect.Lists;
 import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.DevelopmentException;
+import com.haulmont.cuba.core.global.SilentException;
 import com.haulmont.cuba.gui.*;
 import com.haulmont.cuba.gui.app.core.dev.LayoutAnalyzer;
 import com.haulmont.cuba.gui.app.core.dev.LayoutTip;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Action.Status;
-import com.haulmont.cuba.gui.components.DialogAction.Type;
 import com.haulmont.cuba.gui.components.Window;
+import com.haulmont.cuba.gui.components.DialogAction.Type;
 import com.haulmont.cuba.gui.components.mainwindow.AppMenu;
 import com.haulmont.cuba.gui.components.mainwindow.AppWorkArea;
 import com.haulmont.cuba.gui.components.mainwindow.FoldersPane;
@@ -53,9 +55,9 @@ import com.vaadin.shared.ui.BorderStyle;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.*;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TabSheet;
+import com.vaadin.ui.*;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -70,6 +72,7 @@ import static com.haulmont.cuba.gui.components.Frame.MessageType;
 import static com.haulmont.cuba.gui.components.Frame.NotificationType;
 import static com.haulmont.cuba.web.gui.components.WebComponentsHelper.convertNotificationType;
 import static com.vaadin.server.Sizeable.Unit;
+import static org.apache.commons.lang.StringEscapeUtils.escapeHtml;
 
 public class WebWindowManager extends WindowManager {
 
@@ -206,7 +209,7 @@ public class WebWindowManager extends WindowManager {
 
                 String formattedDescription = formatTabDescription(caption, description);
                 if (!StringUtils.equals(formattedDescription, formattedCaption)) {
-                    tab.setDescription(formattedDescription);
+                    tab.setDescription(escapeHtml(formattedDescription));
                 } else {
                     tab.setDescription(null);
                 }
@@ -517,7 +520,7 @@ public class WebWindowManager extends WindowManager {
             newTab.setCaption(formattedCaption);
             String formattedDescription = formatTabDescription(window.getCaption(), window.getDescription());
             if (!StringUtils.equals(formattedCaption, formattedDescription)) {
-                newTab.setDescription(formattedDescription);
+                newTab.setDescription(escapeHtml(formattedDescription));
             } else {
                 newTab.setDescription(null);
             }
@@ -636,7 +639,7 @@ public class WebWindowManager extends WindowManager {
             String formattedDescription = formatTabDescription(caption, description);
 
             if (!StringUtils.equals(formattedCaption, formattedDescription)) {
-                tab.setDescription(formattedDescription);
+                tab.setDescription(escapeHtml(formattedDescription));
             } else {
                 tab.setDescription(null);
             }
@@ -999,7 +1002,7 @@ public class WebWindowManager extends WindowManager {
                         String formattedDescription = formatTabDescription(currentWindow.getCaption(), currentWindow.getDescription());
 
                         if (!StringUtils.equals(formattedCaption, formattedDescription)) {
-                            tab.setDescription(formattedDescription);
+                            tab.setDescription(escapeHtml(formattedDescription));
                         } else {
                             tab.setDescription(null);
                         }
