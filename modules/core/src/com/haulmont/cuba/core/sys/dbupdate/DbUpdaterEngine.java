@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.core.sys.dbupdate;
 
+import com.google.common.collect.ImmutableList;
 import com.haulmont.bali.db.DbUtils;
 import com.haulmont.bali.db.QueryRunner;
 import com.haulmont.cuba.core.sys.DbInitializationException;
@@ -51,7 +52,7 @@ public class DbUpdaterEngine implements DbUpdater {
 
     protected static final Pattern RESTAPI_REGEX = Pattern.compile("^\\d+-restapi.*$");
 
-    protected static final Pattern[] EXCLUDED_ADDONS = {RESTAPI_REGEX};
+    protected static final List<Pattern> EXCLUDED_ADDONS = ImmutableList.of(RESTAPI_REGEX);
 
     protected static final String ERROR = "\n" +
                         "=================================================\n" +
@@ -282,7 +283,7 @@ public class DbUpdaterEngine implements DbUpdater {
     }
 
     protected boolean filterInitScript(ScriptResource scriptResource) {
-        return Arrays.stream(EXCLUDED_ADDONS)
+        return EXCLUDED_ADDONS.stream()
                 .noneMatch(pattern ->
                         pattern.matcher(getScriptName(scriptResource)).matches());
     }
