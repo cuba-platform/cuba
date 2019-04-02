@@ -23,10 +23,7 @@ import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.sys.listener.EntityListenerManager;
 import com.haulmont.cuba.testmodel.cascadedelete.CascadeEntity;
 import com.haulmont.cuba.testsupport.TestContainer;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.ClassRule;
-import org.junit.Test;
+import org.junit.*;
 
 import java.util.List;
 
@@ -75,6 +72,8 @@ public class CascadeDeleteTest {
         cont.deleteRecord(third, second, first, root);
     }
 
+    // Ignore flaky test
+    @Ignore
     @Test
     public void testRemoveCascade() throws Exception {
         try (Transaction tx = cont.persistence().createTransaction()) {
