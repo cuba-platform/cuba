@@ -100,8 +100,6 @@ public class FilterDelegateImpl implements FilterDelegate {
     @Inject
     protected Messages messages;
     @Inject
-    protected WindowManagerProvider windowManagerProvider;
-    @Inject
     protected Metadata metadata;
     @Inject
     protected WindowConfig windowConfig;
@@ -125,7 +123,6 @@ public class FilterDelegateImpl implements FilterDelegate {
     protected GlobalConfig globalConfig;
     protected AddConditionHelper addConditionHelper;
     protected ThemeConstants theme;
-    protected WindowManager windowManager;
 
     protected Filter filter;
     protected FilterEntity adHocFilter;
@@ -212,7 +209,6 @@ public class FilterDelegateImpl implements FilterDelegate {
     @PostConstruct
     public void init() {
         theme = themeConstantsManager.getConstants();
-        windowManager = windowManagerProvider.get();
         dataService = AppBeans.get(DataService.class);
         persistenceManager = AppBeans.get(PersistenceManagerClient.class);
         globalConfig = configuration.getConfig(GlobalConfig.class);
@@ -498,7 +494,7 @@ public class FilterDelegateImpl implements FilterDelegate {
             setFilterEntity(defaultFilter);
         } catch (Exception e) {
             log.error("Exception on loading default filter '" + defaultFilter.getName() + "'", e);
-            windowManager.showNotification(messages.formatMainMessage("filter.errorLoadingDefaultFilter", defaultFilter.getName()), Frame.NotificationType.ERROR);
+            getWindowManager().showNotification(messages.formatMainMessage("filter.errorLoadingDefaultFilter", defaultFilter.getName()), Frame.NotificationType.ERROR);
             defaultFilter = adHocFilter;
             setFilterEntity(adHocFilter);
         }
@@ -551,7 +547,7 @@ public class FilterDelegateImpl implements FilterDelegate {
                 String message = String.format(getMainMessage("filter.inappropriate.filter"),
                         filterEntity.getName(), datasource.getMetaClass().getName());
 
-                windowManager.showNotification(message, Frame.NotificationType.HUMANIZED);
+                getWindowManager().showNotification(message, Frame.NotificationType.HUMANIZED);
                 setFilterEntity(adHocFilter);
                 break;
             }
@@ -1137,7 +1133,7 @@ public class FilterDelegateImpl implements FilterDelegate {
             @Override
             public void actionPerform(Component component) {
                 WindowInfo windowInfo = windowConfig.getWindowInfo("filterSelect");
-                FilterSelectWindow window = (FilterSelectWindow) windowManager.openWindow(windowInfo,
+                FilterSelectWindow window = (FilterSelectWindow) getWindowManager().openWindow(windowInfo,
                         WindowManager.OpenType.DIALOG,
                         ParamsMap.of("filterEntities", filterEntities));
 
@@ -1261,7 +1257,7 @@ public class FilterDelegateImpl implements FilterDelegate {
                 ((CollectionDatasource.SupportsApplyToSelected) datasource).unpinAllQuery();
                 this.layout.remove(appliedFiltersLayout);
             } else {
-                windowManager.showOptionDialog(
+                getWindowManager().showOptionDialog(
                         messages.getMainMessage("removeApplied.title"),
                         messages.getMainMessage("removeApplied.message"),
                         MessageType.WARNING,
@@ -1455,7 +1451,7 @@ public class FilterDelegateImpl implements FilterDelegate {
                 boolean haveCorrectCondition = hasCorrectCondition();
                 if (!haveCorrectCondition) {
                     if (!notifyInvalidConditions) {
-                        windowManager.showNotification(messages.getMainMessage("filter.emptyConditions"),
+                        getWindowManager().showNotification(messages.getMainMessage("filter.emptyConditions"),
                                 Frame.NotificationType.HUMANIZED);
                     }
                     return false;
@@ -1473,7 +1469,7 @@ public class FilterDelegateImpl implements FilterDelegate {
             boolean haveRequiredConditions = haveFilledRequiredConditions();
             if (!haveRequiredConditions) {
                 if (!notifyInvalidConditions) {
-                    windowManager.showNotification(messages.getMainMessage("filter.emptyRequiredConditions"),
+                    getWindowManager().showNotification(messages.getMainMessage("filter.emptyRequiredConditions"),
                             Frame.NotificationType.HUMANIZED);
                 }
                 return false;
@@ -1533,7 +1529,7 @@ public class FilterDelegateImpl implements FilterDelegate {
 
         String searchTerm = ftsSearchCriteriaField.getValue();
         if (Strings.isNullOrEmpty(searchTerm) && clientConfig.getGenericFilterChecking()) {
-            windowManager.showNotification(getMainMessage("filter.fillSearchCondition"), Frame.NotificationType.TRAY);
+            getWindowManager().showNotification(getMainMessage("filter.fillSearchCondition"), Frame.NotificationType.TRAY);
             return;
         }
 
@@ -2117,7 +2113,7 @@ public class FilterDelegateImpl implements FilterDelegate {
             initialWindowCaption = window.getCaption();
         }
 
-        windowManager.setWindowCaption(window, initialWindowCaption, filterTitle);
+        getWindowManager().setWindowCaption(window, initialWindowCaption, filterTitle);
 
         String newCaption = Strings.isNullOrEmpty(filterTitle) ? caption : caption + ": " + filterTitle;
         captionChangedListener.accept(newCaption);
@@ -2196,7 +2192,7 @@ public class FilterDelegateImpl implements FilterDelegate {
                 if (!getMainMessage("filter.adHocFilter").equals(filterEntity.getName())) {
                     params.put("filterName", filterEntity.getName());
                 }
-                final SaveFilterWindow window = (SaveFilterWindow) windowManager.openWindow(windowInfo, WindowManager.OpenType.DIALOG, params);
+                final SaveFilterWindow window = (SaveFilterWindow) getWindowManager().openWindow(windowInfo, WindowManager.OpenType.DIALOG, params);
                 window.addCloseListener(actionId -> {
                     if (Window.COMMIT_ACTION_ID.equals(actionId)) {
                         String filterName = window.getFilterName();
@@ -2258,7 +2254,7 @@ public class FilterDelegateImpl implements FilterDelegate {
                             .collect(Collectors.toList())
             );
 
-            final SaveFilterWindow window = (SaveFilterWindow) windowManager.openWindow(windowInfo, WindowManager.OpenType.DIALOG, params);
+            final SaveFilterWindow window = (SaveFilterWindow) getWindowManager().openWindow(windowInfo, WindowManager.OpenType.DIALOG, params);
             window.addCloseListener(actionId -> {
                 if (Window.COMMIT_ACTION_ID.equals(actionId)) {
                     String filterName = window.getFilterName();
@@ -2309,7 +2305,7 @@ public class FilterDelegateImpl implements FilterDelegate {
             params.put("filter", filter);
             params.put("conditions", conditions);
 
-            FilterEditor window = (FilterEditor) windowManager.openWindow(windowInfo, WindowManager.OpenType.DIALOG, params);
+            FilterEditor window = (FilterEditor) getWindowManager().openWindow(windowInfo, WindowManager.OpenType.DIALOG, params);
             window.addCloseListener(actionId -> {
                 if (Window.COMMIT_ACTION_ID.equals(actionId)) {
                     conditions = window.getConditions();
@@ -2378,7 +2374,7 @@ public class FilterDelegateImpl implements FilterDelegate {
         @Override
         public void actionPerform(Component component) {
             if (filterEntity == adHocFilter) return;
-            windowManager.showOptionDialog(
+            getWindowManager().showOptionDialog(
                     getMainMessage("filter.removeDialogTitle"),
                     getMainMessage("filter.removeDialogMessage"),
                     MessageType.CONFIRMATION,
@@ -2440,6 +2436,14 @@ public class FilterDelegateImpl implements FilterDelegate {
         setFilterEntity(adHocFilter);
         initFilterSelectComponents();
         updateWindowCaption();
+    }
+
+    protected WindowManager getWindowManager() {
+        Window window = ComponentsHelper.getWindow(filter);
+        if (window != null) {
+            return window.getWindowManager();
+        }
+        return null;
     }
 
     protected class PinAppliedAction extends AbstractAction {
@@ -2550,7 +2554,7 @@ public class FilterDelegateImpl implements FilterDelegate {
                 removeFilterEntity();
 
                 Window window = ComponentsHelper.getWindow(filter);
-                windowManager.close(window);
+                getWindowManager().close(window);
             } else {
                 String filterXml = filterEntity.getXml();
                 filterEntity.setXml(UserSetHelper.removeEntities(filterXml, selected));
