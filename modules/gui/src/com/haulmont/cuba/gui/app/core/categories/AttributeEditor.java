@@ -52,7 +52,6 @@ import com.haulmont.cuba.gui.dynamicattributes.DynamicAttributesGuiTools;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.entity.FilterEntity;
-import javafx.scene.layout.HBox;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
