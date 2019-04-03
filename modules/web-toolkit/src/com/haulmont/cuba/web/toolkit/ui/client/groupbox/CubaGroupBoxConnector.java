@@ -76,6 +76,11 @@ public class CubaGroupBoxConnector extends PanelConnector {
 
     @Override
     public void updateFromUIDL(UIDL uidl, ApplicationConnection client) {
+        if (isRealUpdate(uidl)) {
+            // set captionAsHtml before caption update in super.updateFromUIDL(uidl, client);
+            getWidget().setCaptionAsHtml(getState().captionAsHtml);
+        }
+
         super.updateFromUIDL(uidl, client);
 
         // replace VPanel class names

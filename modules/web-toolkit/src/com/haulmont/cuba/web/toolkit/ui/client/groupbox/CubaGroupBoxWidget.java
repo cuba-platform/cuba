@@ -45,6 +45,8 @@ public class CubaGroupBoxWidget extends VPanel implements HasEnabled {
     public Element captionEndDeco = DOM.createDiv();
     public Element captionTextNode;
 
+    protected boolean captionAsHtml;
+
     public CubaGroupBoxWidget(String primaryStyleName) {
         setStylePrimaryName(primaryStyleName);
         setStyleName(primaryStyleName);
@@ -89,7 +91,11 @@ public class CubaGroupBoxWidget extends VPanel implements HasEnabled {
             removeStyleDependentName("nocaption");
         }
 
-        super.setCaption(text);
+        if (captionAsHtml) {
+            captionTextNode.setInnerHTML(text);
+        } else {
+            captionTextNode.setInnerText(text);
+        }
     }
 
     public boolean isExpanded() {
@@ -127,6 +133,10 @@ public class CubaGroupBoxWidget extends VPanel implements HasEnabled {
         Tools.textSelectionEnable(captionNode, !collapsable);
 
         this.collapsable = collapsable;
+    }
+
+    public void setCaptionAsHtml(boolean captionAsHtml) {
+        this.captionAsHtml = captionAsHtml;
     }
 
     @Override
