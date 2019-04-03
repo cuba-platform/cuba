@@ -2876,7 +2876,7 @@
         <xs:complexContent>
             <xs:extension base="baseComponent">
                 <xs:all>
-                    <xs:element name="properties" type="fragmentProperties"/>
+                    <xs:element name="properties" type="fragmentProperties" minOccurs="0"/>
                 </xs:all>
 
                 <xs:attribute name="screen" type="xs:string"/>
@@ -2886,7 +2886,7 @@
 
     <xs:complexType name="fragmentProperties">
         <xs:sequence>
-            <xs:element name="property" type="fragmentProperty"/>
+            <xs:element name="property" type="fragmentProperty" minOccurs="0"/>
         </xs:sequence>
     </xs:complexType>
 
