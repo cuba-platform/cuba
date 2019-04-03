@@ -855,4 +855,14 @@ public class AbstractWindow extends Screen implements Window, LegacyFrame, Compo
     public void removeBeforeWindowCloseListener(Consumer<Window.BeforeCloseEvent> listener) {
         frame.removeBeforeWindowCloseListener(listener);
     }
+
+    @Override
+    public void setExpandRatio(Component component, float ratio) {
+        frame.setExpandRatio(component, ratio);
+    }
+
+    @Override
+    public float getExpandRatio(Component component) {
+        return frame.getExpandRatio(component);
+    }
 }

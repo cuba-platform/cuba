@@ -549,4 +549,14 @@ public class AbstractFrame extends ScreenFragment implements Frame, Frame.Wrappe
     public Action getAction(String id) {
         return frame.getAction(id);
     }
+
+    @Override
+    public void setExpandRatio(Component component, float ratio) {
+        frame.setExpandRatio(component, ratio);
+    }
+
+    @Override
+    public float getExpandRatio(Component component) {
+        return frame.getExpandRatio(component);
+    }
 }

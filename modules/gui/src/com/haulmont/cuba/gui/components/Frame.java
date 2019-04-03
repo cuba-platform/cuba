@@ -39,7 +39,8 @@ public interface Frame
                 ActionsHolder,
                 Component.HasIcon,
                 Component.HasCaption,
-                HasWindowManager {
+                HasWindowManager,
+                SupportsExpandRatio {
 
     /** XML element name used to show a frame in an enclosing screen. */
     @Deprecated

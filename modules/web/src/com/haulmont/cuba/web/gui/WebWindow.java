@@ -965,6 +965,18 @@ public abstract class WebWindow implements Window, Component.Wrapper,
         setIcon(icons.get(icon));
     }
 
+    @Override
+    public void setExpandRatio(Component component, float ratio) {
+        com.vaadin.ui.Component vComponent = component.unwrap(com.vaadin.ui.Component.class);
+        this.component.setExpandRatio(vComponent, ratio);
+    }
+
+    @Override
+    public float getExpandRatio(Component component) {
+        com.vaadin.ui.Component vComponent = component.unwrap(com.vaadin.ui.Component.class);
+        return this.component.getExpandRatio(vComponent);
+    }
+
     public int getUrlStateMark() {
         return urlStateMark;
     }
