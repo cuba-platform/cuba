@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.gui.components.filter;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.haulmont.bali.events.EventHub;
 import com.haulmont.bali.util.ParamsMap;
@@ -39,12 +40,14 @@ import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.UiComponents;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.WindowManagerProvider;
+import com.haulmont.cuba.gui.actions.picker.ClearAction;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.data.options.ContainerOptions;
 import com.haulmont.cuba.gui.components.filter.dateinterval.DateInIntervalComponent;
 import com.haulmont.cuba.gui.components.listeditor.ListEditorHelper;
-import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.gui.data.DsBuilder;
-import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
+import com.haulmont.cuba.gui.model.CollectionContainer;
+import com.haulmont.cuba.gui.model.CollectionLoader;
+import com.haulmont.cuba.gui.model.DataComponents;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
 import com.haulmont.cuba.security.global.UserSession;
@@ -123,6 +126,10 @@ public class Param {
     protected DataManager dataManager;
     @Inject
     protected Configuration configuration;
+    @Inject
+    protected DataComponents dataComponents;
+    @Inject
+    protected Actions actions;
 
     @Inject
     protected DatatypeRegistry datatypeRegistry;
@@ -515,12 +522,30 @@ public class Param {
     }
 
     /**
+     * Creates an GUI component for condition parameter to specify default value.
+     *
+     * @return GUI component for condition parameter.
+     */
+    public Component createEditComponentForDefaultValue() {
+        return createEditComponent(null, Param.ValueProperty.DEFAULT_VALUE);
+    }
+
+    /**
+     * Creates an GUI component for condition parameter to specify value for filter.
+     *
+     * @return GUI component for condition parameter.
+     */
+    public Component createEditComponentForFilterValue(FilterDataContext filterDataContext) {
+        return createEditComponent(filterDataContext, Param.ValueProperty.VALUE);
+    }
+
+    /**
      * Creates an GUI component for condition parameter.
      *
      * @param valueProperty What value the editor will be connected with: current filter value or default one.
      * @return GUI component for condition parameter.
      */
-    public Component createEditComponent(ValueProperty valueProperty) {
+    protected Component createEditComponent(FilterDataContext context, ValueProperty valueProperty) {
         Component component;
 
         switch (type) {
@@ -536,7 +561,7 @@ public class Param {
                 }
                 break;
             case ENTITY:
-                component = createEntityLookup(valueProperty);
+                component = createEntityLookup(context, valueProperty);
                 break;
             case UNARY:
                 component = createUnaryField(valueProperty);
@@ -809,7 +834,7 @@ public class Param {
         return field;
     }
 
-    protected Component createEntityLookup(ValueProperty valueProperty) {
+    protected Component createEntityLookup(FilterDataContext filterDataContext, ValueProperty valueProperty) {
         MetaClass metaClass = metadata.getSession().getClassNN(javaClass);
 
         LookupType type = null;
@@ -834,8 +859,6 @@ public class Param {
                 picker.setMetaClass(metaClass);
 
                 picker.setWidth(theme.get("cuba.gui.filter.Param.textComponent.width"));
-                // TODO filter ds
-//                picker.setFrame(datasource.getDsContext().getFrameContext().getFrame());
                 picker.addLookupAction();
                 picker.addClearAction();
 
@@ -846,8 +869,6 @@ public class Param {
                 return picker;
             }
         } else {
-            CollectionDatasource<Entity<Object>, Object> optionsDataSource = createOptionsDataSource(metaClass);
-
             if (inExpr) {
                 ListEditor listEditor = uiComponents.create(ListEditor.class);
                 listEditor.setItemType(ListEditor.ItemType.ENTITY);
@@ -858,15 +879,23 @@ public class Param {
 
                 return listEditor;
             } else {
+                CollectionLoader<Entity> loader = createEntityOptionsLoader(metaClass);
+                if (filterDataContext != null) {
+                    filterDataContext.registerCollectionLoader(loader);
+                }
+
+                CollectionContainer<Entity> container =
+                        dataComponents.createCollectionContainer(metaClass.getJavaClass());
+                loader.setContainer(container);
+
                 LookupPickerField<Entity> lookup = uiComponents.create(LookupPickerField.NAME);
                 lookup.setWidth(theme.get("cuba.gui.filter.Param.textComponent.width"));
-                lookup.addClearAction();
-                lookup.setOptionsDatasource(optionsDataSource);
+                lookup.addAction(actions.create(ClearAction.class));
+                lookup.setOptions(new ContainerOptions<>(container));
 
-                optionsDataSource.addCollectionChangeListener(e -> lookup.setValue(null));
+                container.addCollectionChangeListener(e -> lookup.setValue(null));
 
-                lookup.addValueChangeListener(e ->
-                        _setValue(e.getValue(), valueProperty));
+                lookup.addValueChangeListener(e -> _setValue(e.getValue(), valueProperty));
                 lookup.setValue((Entity) _getValue(valueProperty));
 
                 return lookup;
@@ -874,32 +903,21 @@ public class Param {
         }
     }
 
-    protected CollectionDatasource<Entity<Object>, Object> createOptionsDataSource(MetaClass metaClass) {
-        CollectionDatasource ds = DsBuilder.create()
-                .setMetaClass(metaClass)
-                .setViewName(entityView)
-                .buildCollectionDatasource();
+    protected CollectionLoader<Entity> createEntityOptionsLoader(MetaClass metaClass) {
+        CollectionLoader<Entity> dataLoader = dataComponents.createCollectionLoader();
 
-        ds.setRefreshOnComponentValueChange(true);
-        ((DatasourceImplementation) ds).initialized();
+        dataLoader.setView(entityView);
 
-        if (!StringUtils.isBlank(entityWhere)) {
-            QueryTransformer transformer = QueryTransformerFactory.createTransformer(
-                    String.format("select e from %s e", metaClass.getName()));
-            transformer.addWhere(entityWhere);
-            String q = transformer.getResult();
-            ds.setQuery(q);
+        String query = String.format("select e from %s e", metaClass.getName());
+        if (!Strings.isNullOrEmpty(entityWhere)) {
+            QueryTransformer queryTransformer = QueryTransformerFactory.createTransformer(query);
+            queryTransformer.addWhere(entityWhere);
+            query = queryTransformer.getResult();
         }
 
-        // TODO filter ds
-//        if (WindowParams.DISABLE_AUTO_REFRESH.getBool(datasource.getDsContext().getFrameContext())) {
-//            if (ds instanceof CollectionDatasource.Suspendable)
-//                ((CollectionDatasource.Suspendable) ds).refreshIfNotSuspended();
-//            else
-        ds.refresh();
-//        }
+        dataLoader.setQuery(query);
 
-        return ds;
+        return dataLoader;
     }
 
     protected Component createEnumLookup(ValueProperty valueProperty) {

@@ -99,7 +99,7 @@ public abstract class ConditionFrame<T extends AbstractCondition> extends Abstra
                 defaultValueLayout.remove(defaultValueComponent);
             }
             if (condition.getParam() != null) {
-                defaultValueComponent = condition.getParam().createEditComponent(Param.ValueProperty.DEFAULT_VALUE);
+                defaultValueComponent = condition.getParam().createEditComponentForDefaultValue();
                 defaultValueLayout.add(defaultValueComponent);
                 defaultValueComponent.setAlignment(Alignment.MIDDLE_LEFT);
                 if (defaultValueComponent instanceof TextField) {

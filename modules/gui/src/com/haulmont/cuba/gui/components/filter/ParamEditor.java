@@ -27,6 +27,7 @@ import java.util.Date;
 public class ParamEditor implements AbstractCondition.Listener {
 
     protected AbstractCondition condition;
+    protected FilterDataContext filterDataContext;
     protected boolean removeButtonVisible;
     protected String fieldWidth = null;
     protected Label<String> captionLbl;
@@ -35,14 +36,18 @@ public class ParamEditor implements AbstractCondition.Listener {
     protected BoxLayout paramEditComponentLayout;
     protected BoxLayout labelAndOperationLayout;
     protected LinkButton removeButton;
-    protected UiComponents uiComponents;
     protected Action removeButtonAction;
 
-    public ParamEditor(AbstractCondition condition, boolean removeButtonVisible, boolean operationEditable) {
+    protected UiComponents uiComponents = AppBeans.get(UiComponents.class);
+
+    public ParamEditor(AbstractCondition condition,
+                       FilterDataContext filterDataContext,
+                       boolean removeButtonVisible,
+                       boolean operationEditable) {
         this.condition = condition;
+        this.filterDataContext = filterDataContext;
         this.removeButtonVisible = removeButtonVisible;
 
-        uiComponents = AppBeans.get(UiComponents.class);
         labelAndOperationLayout = uiComponents.create(HBoxLayout.class);
         labelAndOperationLayout.setSpacing(true);
         labelAndOperationLayout.setAlignment(Alignment.MIDDLE_RIGHT);
@@ -74,13 +79,12 @@ public class ParamEditor implements AbstractCondition.Listener {
             paramEditComponentLayout.setWidthFull();
         }
 
-        paramEditComponent = condition.getParam().createEditComponent(Param.ValueProperty.VALUE);
+        paramEditComponent = condition.getParam().createEditComponentForFilterValue(filterDataContext);
         paramEditComponent.addStyleName("param-field");
         if (paramEditComponent instanceof Field) {
             ((Field) paramEditComponent).setRequired(condition.getRequired());
         }
         paramEditComponentLayout.add(paramEditComponent);
-
         removeButton = uiComponents.create(LinkButton.class);
         removeButton.setStyleName("condition-remove-btn");
         removeButton.setIcon("icons/item-remove.png");
