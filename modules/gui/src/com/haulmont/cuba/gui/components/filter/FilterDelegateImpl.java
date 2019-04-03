@@ -844,6 +844,7 @@ public class FilterDelegateImpl implements FilterDelegate {
                                                      List<Node<AbstractCondition>> nodes,
                                                      ComponentContainer parentContainer,
                                                      int level) {
+        FilterDataContext filterDataContext = new FilterDataContext(filter.getFrame());
         List<Node<AbstractCondition>> visibleConditionNodes = fetchVisibleNodes(nodes);
 
         if (visibleConditionNodes.isEmpty()) {
@@ -883,7 +884,7 @@ public class FilterDelegateImpl implements FilterDelegate {
                 level++;
             } else {
                 if (condition.getParam().getJavaClass() != null) {
-                    ParamEditor paramEditor = createParamEditor(condition);
+                    ParamEditor paramEditor = createParamEditor(condition, filterDataContext);
 
                     if (firstParamEditor == null) firstParamEditor = paramEditor;
                     lastParamEditor = paramEditor;
@@ -942,6 +943,8 @@ public class FilterDelegateImpl implements FilterDelegate {
             }
         }
 
+        filterDataContext.loadAll();
+
         if (!initialFocusSet) {
             switch (conditionsFocusType) {
                 case FIRST:
@@ -995,9 +998,9 @@ public class FilterDelegateImpl implements FilterDelegate {
         return groupCellContent;
     }
 
-    protected ParamEditor createParamEditor(final AbstractCondition condition) {
+    protected ParamEditor createParamEditor(final AbstractCondition condition, FilterDataContext filterDataContext) {
         boolean conditionRemoveEnabled = !initialConditions.contains(condition);
-        ParamEditor paramEditor = new ParamEditor(condition, conditionRemoveEnabled, isParamEditorOperationEditable());
+        ParamEditor paramEditor = new ParamEditor(condition, filterDataContext, conditionRemoveEnabled, isParamEditorOperationEditable());
         AbstractAction removeConditionAction = new AbstractAction("") {
             @Override
             public void actionPerform(Component component) {
