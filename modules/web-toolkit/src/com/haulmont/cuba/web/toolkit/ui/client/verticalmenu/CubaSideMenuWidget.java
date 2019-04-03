@@ -64,7 +64,7 @@ public class CubaSideMenuWidget extends FocusableFlowPanel
          * Firefox auto-repeat works correctly only if we use a key press
          * handler, other browsers handle it correctly when using a key down handler
          */
-        if (BrowserInfo.get().isGecko()) {
+        if (BrowserInfo.get().isGecko() && BrowserInfo.get().getGeckoVersion() < 65.0) {
             addKeyPressHandler(this);
         } else {
             addKeyDownHandler(this);
