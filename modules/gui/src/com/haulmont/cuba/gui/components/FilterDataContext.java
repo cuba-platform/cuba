@@ -64,13 +64,15 @@ public class FilterDataContext {
     }
 
     public void loadAll() {
-        for (DataLoaderRegistration registration : collectionLoaderRegistrations) {
-            DataLoader loader = registration.getLoader();
-            Map<String, Object> parameterValues = getQueryParameterValues(loader, registration.getParameters());
-            for (Map.Entry<String, Object> entry : parameterValues.entrySet()) {
-                loader.setParameter(entry.getKey(), entry.getValue());
+        if (collectionLoaderRegistrations != null) {
+            for (DataLoaderRegistration registration : collectionLoaderRegistrations) {
+                DataLoader loader = registration.getLoader();
+                Map<String, Object> parameterValues = getQueryParameterValues(loader, registration.getParameters());
+                for (Map.Entry<String, Object> entry : parameterValues.entrySet()) {
+                    loader.setParameter(entry.getKey(), entry.getValue());
+                }
+                loader.load();
             }
-            loader.load();
         }
     }
 
