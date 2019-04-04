@@ -137,7 +137,10 @@ public class TimeBetweenQueryMacroHandler extends AbstractQueryMacroHandler {
             if (transformations.isDateTypeSupportsTimeZones(javaType)) {
                 zonedDateTime = zonedDateTime.withZoneSameInstant(macroArg.getTimeZone().toZoneId());
             }
-            BiFunction<ZonedDateTime, Integer, ZonedDateTime> calc = UNITS.get(macroArg.getUnit());
+            if (macroArg.getUnit() == null) {
+                throw new RuntimeException("Empty date/time unit");
+            }
+            BiFunction<ZonedDateTime, Integer, ZonedDateTime> calc = UNITS.get(macroArg.getUnit().toLowerCase(Locale.ROOT));
             if (calc == null) {
                 throw new RuntimeException(String.format("Invalid macro argument: %s", macroArg.getUnit()));
             }
