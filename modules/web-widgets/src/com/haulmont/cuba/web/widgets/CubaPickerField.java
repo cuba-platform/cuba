@@ -20,13 +20,17 @@ import com.vaadin.data.HasValue;
 import com.vaadin.data.ValueProvider;
 import com.vaadin.event.Action;
 import com.vaadin.server.Page;
+import com.vaadin.server.Resource;
+import com.vaadin.server.ThemeResource;
 import com.vaadin.server.WebBrowser;
 import com.vaadin.shared.Registration;
 import com.vaadin.ui.*;
 import com.vaadin.util.ReflectTools;
+import org.apache.commons.lang3.StringUtils;
 
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.function.Function;
 
 import static com.haulmont.cuba.web.widgets.CubaPickerField.FieldValueChangeListener.FIELD_VALUE_CHANGE_METHOD;
 
@@ -41,6 +45,8 @@ public class CubaPickerField<T> extends com.vaadin.ui.CustomField<T> implements 
 
     protected AbstractComponent field;
     protected ValueProvider<T, String> textFieldValueProvider;
+
+    protected Function<? super T, String> iconProvider;
 
     protected List<Button> buttons = new ArrayList<>(4);
     protected CubaCssActionsLayout container;
@@ -156,11 +162,31 @@ public class CubaPickerField<T> extends com.vaadin.ui.CustomField<T> implements 
     protected void doSetValue(T value) {
         internalValue = value;
         updateTextRepresentation();
+        updateIcon(value);
     }
 
     @Override
     public T getValue() {
         return internalValue;
+    }
+
+
+    public Function<? super T, String> getIconProvider() {
+        return iconProvider;
+    }
+
+    public void setIconProvider(Function<? super T, String> iconProvider) {
+        if (this.iconProvider != iconProvider) {
+            this.iconProvider = iconProvider;
+
+            updateIcon(internalValue);
+        }
+    }
+
+    protected void updateIcon(T value) {
+        String icon = iconProvider != null ? iconProvider.apply(value) : null;
+        Resource iconResource = StringUtils.isNotEmpty(icon) ? new ThemeResource(icon) : null;
+        setIcon(iconResource);
     }
 
     public boolean isFieldReadOnly() {
