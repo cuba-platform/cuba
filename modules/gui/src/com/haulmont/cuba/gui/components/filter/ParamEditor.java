@@ -147,7 +147,9 @@ public class ParamEditor implements AbstractCondition.Listener {
     }
 
     public void requestFocus() {
-        ((Component.Focusable) paramEditComponent).focus();
+        if (paramEditComponent instanceof Component.Focusable) {
+            ((Component.Focusable) paramEditComponent).focus();
+        }
     }
 
     public void setRemoveButtonAction(Action removeButtonAction) {
