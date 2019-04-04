@@ -40,7 +40,6 @@ import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.UiComponents;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.WindowManagerProvider;
-import com.haulmont.cuba.gui.actions.picker.ClearAction;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.data.options.ContainerOptions;
 import com.haulmont.cuba.gui.components.filter.dateinterval.DateInIntervalComponent;
@@ -128,8 +127,6 @@ public class Param {
     protected Configuration configuration;
     @Inject
     protected DataComponents dataComponents;
-    @Inject
-    protected Actions actions;
 
     @Inject
     protected DatatypeRegistry datatypeRegistry;
@@ -890,7 +887,7 @@ public class Param {
 
                 LookupPickerField<Entity> lookup = uiComponents.create(LookupPickerField.NAME);
                 lookup.setWidth(theme.get("cuba.gui.filter.Param.textComponent.width"));
-                lookup.addAction(actions.create(ClearAction.class));
+                lookup.addClearAction();
                 lookup.setOptions(new ContainerOptions<>(container));
 
                 container.addCollectionChangeListener(e -> lookup.setValue(null));
