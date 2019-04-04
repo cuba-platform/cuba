@@ -372,13 +372,19 @@ public class EntitySqlGenerator {
             DiscriminatorValue discriminatorValueAnnotation = (DiscriminatorValue) clazz.getAnnotation(DiscriminatorValue.class);
             Extends extendsAnnotation = (Extends) clazz.getAnnotation(Extends.class);
             javax.persistence.Entity entityAnnotation = (javax.persistence.Entity) clazz.getAnnotation(javax.persistence.Entity.class);
+            DiscriminatorColumn discriminatorColumn = (DiscriminatorColumn) clazz.getAnnotation(DiscriminatorColumn.class);
+
             if (discriminatorValueAnnotation != null) {
                 discriminatorValue = discriminatorValueAnnotation.value();
             } else if (extendsAnnotation != null && entityAnnotation != null) {
                 discriminatorValue = entityAnnotation.name();
+            } else if (entityAnnotation != null && discriminatorColumn != null
+                    && discriminatorColumn.discriminatorType().equals(DiscriminatorType.STRING)) {
+                discriminatorValue = entityAnnotation.name();
+            } else if (entityAnnotation != null && primaryKey != null) {
+                discriminatorValue = entityAnnotation.name();
             }
 
-            DiscriminatorColumn discriminatorColumn = (DiscriminatorColumn) clazz.getAnnotation(DiscriminatorColumn.class);
             if (discriminatorColumn != null) {
                 this.discriminatorColumn = discriminatorColumn.name();
                 this.discriminatorType = discriminatorColumn.discriminatorType();
