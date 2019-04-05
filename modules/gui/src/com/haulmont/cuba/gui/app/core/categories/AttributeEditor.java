@@ -593,7 +593,7 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
 
         MetaClass categorizedEntityMetaClass = metadata.getClass(attribute.getCategory().getEntityType());
         Map<String, String> optionsMap = categorizedEntityMetaClass != null ?
-                new HashMap<>(screensHelper.getAvailableScreens(categorizedEntityMetaClass.getJavaClass())) :
+                new HashMap<>(screensHelper.getAvailableScreens(categorizedEntityMetaClass.getJavaClass(), true)) :
                 new HashMap<>();
 
         targetScreensTable.addGeneratedColumn(

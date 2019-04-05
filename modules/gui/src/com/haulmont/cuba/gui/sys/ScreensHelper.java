@@ -21,7 +21,9 @@ import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.haulmont.bali.util.Dom4j;
+import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.global.BeanLocator;
 import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.core.global.Metadata;
@@ -54,16 +56,9 @@ import org.springframework.stereotype.Component;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 import static java.util.Collections.emptyMap;
 
@@ -265,15 +260,29 @@ public class ScreensHelper {
     }
 
     public Map<String, String> getAvailableBrowserScreens(Class entityClass) {
-        return getAvailableScreensMap(entityClass, ScreenType.BROWSER);
+        return getAvailableScreensMap(entityClass, ScreenType.BROWSER, false);
     }
 
     public Map<String, String> getAvailableScreens(Class entityClass) {
-        return getAvailableScreensMap(entityClass, ScreenType.ALL);
+        return getAvailableScreens(entityClass, false);
     }
 
-    protected Map<String, String> getAvailableScreensMap(Class entityClass, ScreenType filterScreenType) {
-        String key = getScreensCacheKey(entityClass.getName(), userSessionSource.getLocale(), filterScreenType);
+    /**
+     * Method returns a map of the screens that use the provided entity class in a data element
+     * (data container or datasource)
+     * @param entityClass entity class used to search
+     * @param useComplexSearch if the value is 'true', all screens that use provided entity class in some data element
+     *                         will be returned (including screens for entities that contain the provided class as a
+     *                         composition or association).
+     *                         if value equals 'false', only main screens (browser, lookup, editor) for the provided
+     *                         entity class will be returned.
+     */
+    public Map<String, String> getAvailableScreens(Class entityClass, boolean useComplexSearch) {
+        return getAvailableScreensMap(entityClass, ScreenType.ALL, useComplexSearch);
+    }
+
+    protected Map<String, String> getAvailableScreensMap(Class entityClass, ScreenType filterScreenType, boolean useComplexSearch) {
+        String key = getScreensCacheKey(entityClass.getName(), userSessionSource.getLocale(), filterScreenType, useComplexSearch);
         Map<String, String> screensMap = availableScreensCache.get(key);
         if (screensMap != null) {
             return screensMap;
@@ -298,7 +307,7 @@ public class ScreensHelper {
                     Element windowElement = getWindowElement(src);
                     if (windowElement != null) {
                         if (isEntityAvailable(windowElement,
-                                windowInfo.getControllerClass(), entityClass, filterScreenType)) {
+                                windowInfo.getControllerClass(), entityClass, filterScreenType, useComplexSearch)) {
                             String caption = getScreenCaption(windowElement, src);
                             caption = getDetailedScreenCaption(caption, windowId);
                             screensMap.put(caption, windowId);
@@ -321,62 +330,41 @@ public class ScreensHelper {
     }
 
     protected boolean isEntityAvailable(Element window, Class<? extends FrameOwner> controllerClass,
-                                        Class entityClass, ScreenType filterScreenType) {
-        return isEntityAvailableInDataContainer(window, controllerClass, entityClass, filterScreenType)
-                || isEntityAvailableInDatasource(window, entityClass, filterScreenType);
-    }
+                                        Class entityClass, ScreenType filterScreenType, boolean useComplexSearch) {
 
-    protected boolean isEntityAvailableInDataContainer(Element window, Class<? extends FrameOwner> controllerClass,
-                                                       Class entityClass, ScreenType filterScreenType) {
-        Element data = window.element("data");
-        if (data == null) {
-            return false;
-        }
-
-        String containerId = getDataContainerId(window, controllerClass, filterScreenType);
-        if (Strings.isNullOrEmpty(containerId)) {
-            return false;
-        }
-
-        return isEntityAvailableInDataElement(entityClass, data, containerId);
-    }
-
-    protected boolean isEntityAvailableInDatasource(Element window, Class entityClass, ScreenType filterScreenType) {
         Element dsContext = window.element("dsContext");
-        if (dsContext == null) {
+        Element data = window.element("data");
+        if (dsContext == null && data == null) {
             return false;
         }
 
-        String datasourceId = getDatasourceId(window, filterScreenType);
-        if (StringUtils.isEmpty(datasourceId)) {
-            return false;
+        Element dataElement = data != null ? data : dsContext;
+
+        if (!useComplexSearch ) {
+            String dataElementId = data != null ? getDataContainerId(window, controllerClass, filterScreenType)
+                    : getDatasourceId(window, filterScreenType);
+            if (StringUtils.isEmpty(dataElementId)) {
+                return false;
+            }
+            return isEntityAvailableInDataElement(entityClass, dataElement, dataElementId);
         }
 
-        return isEntityAvailableInDataElement(entityClass, dsContext, datasourceId);
+        if (!checkWindowType(controllerClass, filterScreenType)) {
+            return false;
+        }
+        List<Element> dataElements = dataElement.elements();
+        List<String> dataElementIds = dataElements.stream()
+                .filter(de -> isEntityAvailableInDataElement(entityClass, de))
+                .map(de -> de.attributeValue("id"))
+                .collect(Collectors.toList());
+
+        if (!ScreenType.BROWSER.equals(filterScreenType)) {
+            String editedEntityDataElementId = data != null ? resolveEditedEntityContainerId(controllerClass)
+                    : window.attributeValue("datasource");
+            dataElementIds.addAll(getDataElementsIdForComposition(dataElement, entityClass, editedEntityDataElementId));
+        }
+        return dataElementIds.size() > 0;
     }
-
-    protected boolean isEntityAvailableInDataElement(Class entityClass, Element dataElement, String datasourceId) {
-        Element datasource = elementByID(dataElement, datasourceId);
-        if (datasource == null) {
-            return false;
-        }
-
-        String dsClassValue = datasource.attributeValue("class");
-        if (StringUtils.isEmpty(dsClassValue)) {
-            return false;
-        }
-
-        Class entity = entityClass;
-        boolean isAvailable;
-        boolean process;
-        do {
-            isAvailable = dsClassValue.equals(entity.getName());
-            entity = entity.getSuperclass();
-            process = metadata.getClass(entity) != null && metadataTools.isPersistent(entity);
-        } while (process && !isAvailable);
-        return isAvailable;
-    }
-
 
     @Nullable
     protected String getDataContainerId(Element window,
@@ -392,14 +380,109 @@ public class ScreensHelper {
     }
 
     @Nullable
-    protected String resolveEditedEntityContainerId(Class<? extends FrameOwner> controllerClass) {
-        EditedEntityContainer annotation = controllerClass.getAnnotation(EditedEntityContainer.class);
+    protected String resolveLookupComponentId(Class<? extends FrameOwner> controllerClass) {
+        LookupComponent annotation = controllerClass.getAnnotation(LookupComponent.class);
         return annotation != null ? annotation.value() : null;
     }
 
     @Nullable
-    protected String resolveLookupComponentId(Class<? extends FrameOwner> controllerClass) {
-        LookupComponent annotation = controllerClass.getAnnotation(LookupComponent.class);
+    protected String resolveLookupDataContainer(Element window, Class<? extends FrameOwner> controllerClass) {
+        String lookupId = resolveLookupComponentId(controllerClass);
+        if (Strings.isNullOrEmpty(lookupId)) {
+            return null;
+        }
+
+        Element lookupElement = elementByID(window, lookupId);
+        return lookupElement != null
+                ? findLookupElementDataAttributeId(lookupElement, "dataContainer")
+                : null;
+    }
+
+    protected boolean checkWindowType(Class<? extends FrameOwner> controllerClass, ScreenType filterScreenType) {
+        if (ScreenType.ALL.equals(filterScreenType)) {
+            return true;
+        }
+        EditedEntityContainer editedAnnotation = controllerClass.getAnnotation(EditedEntityContainer.class);
+        LookupComponent lookupAnnotation = controllerClass.getAnnotation(LookupComponent.class);
+        if (ScreenType.EDITOR.equals(filterScreenType) && editedAnnotation != null) {
+            return true;
+        }
+        return ScreenType.BROWSER.equals(filterScreenType) && lookupAnnotation != null;
+    }
+
+    protected List<String> getDataElementsIdForComposition(Element data, Class entityClass, String editedEntityDeId) {
+        List<String> dataElementsIds = new ArrayList<>();
+        if (Strings.isNullOrEmpty(editedEntityDeId)) {
+            return dataElementsIds;
+        }
+        Element editedEntityDe = elementByID(data, editedEntityDeId);
+        if (editedEntityDe == null) {
+            return dataElementsIds;
+        }
+        String editedEntityClassName = editedEntityDe.attributeValue("class");
+        try {
+            MetaClass editedEntityMetaClass = metadata.getClass(ReflectionHelper.getClass(editedEntityClassName));
+            MetaClass entityMetaClass = metadata.getClass(entityClass);
+            if (editedEntityMetaClass == null || entityMetaClass == null) {
+                return dataElementsIds;
+            }
+            List<String> fieldNames = getCompositionAndAssociationFieldNames(editedEntityMetaClass, entityMetaClass);
+            for (Element e: editedEntityDe.elements()) {
+                for (String fieldName: fieldNames) {
+                    if (fieldName.equals(e.attributeValue("property"))) {
+                        dataElementsIds.add(e.attributeValue("id"));
+                    }
+                }
+            }
+        }
+        catch (RuntimeException e) {
+            log.error("Can't find Composition and Association relations.", e);
+        }
+        return dataElementsIds;
+    }
+
+    protected List<String> getCompositionAndAssociationFieldNames(MetaClass editedEntityClass, MetaClass targetEntityClass){
+        return editedEntityClass.getProperties().stream()
+                .filter(p -> MetaProperty.Type.ASSOCIATION.equals(p.getType())
+                        || MetaProperty.Type.COMPOSITION.equals(p.getType()))
+                .filter(p -> metadataTools.isAssignableFrom(p.getRange().asClass(), targetEntityClass))
+                .map(MetaProperty::getName)
+                .collect(Collectors.toList());
+    }
+
+    protected boolean isEntityAvailableForClass(Class entityClass, String className) {
+        Class entity = entityClass;
+        boolean isAvailable;
+        boolean process;
+        do {
+            isAvailable = className.equals(entity.getName());
+            entity = entity.getSuperclass();
+            process = metadata.getClass(entity) != null && metadataTools.isPersistent(entity);
+        } while (process && !isAvailable);
+        return isAvailable;
+    }
+
+    protected boolean isEntityAvailableInDataElement(Class entityClass, Element dataContainer) {
+        if (dataContainer == null) {
+            return false;
+        }
+
+        String dsClassValue = dataContainer.attributeValue("class");
+        if (StringUtils.isEmpty(dsClassValue)) {
+            return false;
+        }
+
+        return isEntityAvailableForClass(entityClass, dsClassValue);
+    }
+
+    protected boolean isEntityAvailableInDataElement(Class entityClass, Element dataElement, String datasourceId) {
+        Element datasource = elementByID(dataElement, datasourceId);
+        return isEntityAvailableInDataElement(entityClass, datasource);
+    }
+
+    @Nullable
+    protected String resolveEditedEntityContainerId(Class<? extends FrameOwner> controllerClass) {
+        EditedEntityContainer annotation = controllerClass.getAnnotation(EditedEntityContainer.class);
         return annotation != null ? annotation.value() : null;
     }
 
@@ -414,19 +497,6 @@ public class ScreensHelper {
         } else {
             return windowDatasource;
         }
-    }
-
-    @Nullable
-    protected String resolveLookupDataContainer(Element window, Class<? extends FrameOwner> controllerClass) {
-        String lookupId = resolveLookupComponentId(controllerClass);
-        if (Strings.isNullOrEmpty(lookupId)) {
-            return null;
-        }
-
-        Element lookupElement = elementByID(window, lookupId);
-        return lookupElement != null
-                ? findLookupElementDataAttributeId(lookupElement, "dataContainer")
-                : null;
     }
 
     @Nullable
@@ -611,8 +681,8 @@ public class ScreensHelper {
         return src + locale.toString();
     }
 
-    protected String getScreensCacheKey(String className, Locale locale, ScreenType filterScreenType) {
-        return String.format("%s_%s_%s", className, locale.toString(), filterScreenType);
+    protected String getScreensCacheKey(String className, Locale locale, ScreenType filterScreenType, boolean useComplexSearch) {
+        return String.format("%s_%s_%s_%s", className, locale.toString(), filterScreenType, useComplexSearch);
     }
 
     protected String getScreenComponentsCacheKey(String screenId, Locale locale) {
