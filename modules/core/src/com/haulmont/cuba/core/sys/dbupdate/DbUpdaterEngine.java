@@ -110,7 +110,7 @@ public class DbUpdaterEngine implements DbUpdater {
                 Set<String> scripts = getExecutedScripts();
                 for (ScriptResource file : files) {
                     String name = getScriptName(file);
-                    if (!scripts.contains(name)) {
+                    if (!containsIgnoringPrefix(scripts, name)) {
                         list.add(name);
                     }
                 }
