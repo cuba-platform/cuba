@@ -286,7 +286,7 @@ public class WebPickerField<V extends Entity> extends WebV8AbstractField<CubaPic
 
             if (action.getShortcutCombination() != null) {
                 description = description != null ?
-                        description + "(" + action.getShortcutCombination().format() + ")"
+                        description + " (" + action.getShortcutCombination().format() + ")"
                         : action.getShortcutCombination().format();
             }
         }
