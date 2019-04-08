@@ -29,6 +29,9 @@
         </collectionDatasource>
     </dsContext>
 
+    <dialogMode width="AUTO"
+                forceDialog="true"/>
+
     <layout spacing="true">
         <label id="label" value="msg://copyFromUser"/>
         <lookupField width="theme://cuba.gui.copy-settings.userSelect.width" id="user"
@@ -36,8 +39,8 @@
                      required="true"
                      requiredMessage="msg://selectUser"/>
         <buttonsPanel id="panel">
-            <button id="copyBtn" caption="msg://copy" icon="icons/ok.png"/>
-            <button id="cancelBtn" caption="msg://cancel" icon="icons/cancel.png"/>
+            <button id="copyBtn" caption="msg://copy" icon="icons/ok.png" primary="true"/>
+            <button id="cancelBtn" caption="mainMsg://actions.Cancel" icon="icons/cancel.png"/>
         </buttonsPanel>
     </layout>
 </window>
