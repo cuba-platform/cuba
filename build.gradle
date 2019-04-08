@@ -766,7 +766,7 @@ configure(webToolkitModule) {
         compile(bom['com.vaadin:vaadin-compatibility-client'])
 
         // for code server only
-        compile('org.eclipse.jetty:jetty-server:9.3.26.v20190403')
+        compile('org.eclipse.jetty:jetty-server:9.2.27.v20190403')
 
         runtime(bom['javax.servlet:javax.servlet-api'])
     }
@@ -802,6 +802,7 @@ configure(webToolkitModule) {
 
     task debugWidgetSet(type: CubaWidgetSetDebug) {
         widgetSetClass = 'com.haulmont.cuba.web.widgets.WidgetSet'
+        xmx = '-Xmx1600m'
     }
 
     jar {
