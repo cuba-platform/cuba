@@ -88,9 +88,9 @@ public class EntityChangedEventManager {
                         log.warn("Cannot publish EntityChangedEvent for {} because it is not a BaseGenericIdEntity", entity);
                     } else {
                         return new PublishingInfo(
-                                (boolean) attrMap.get("created"),
-                                (boolean) attrMap.get("updated"),
-                                (boolean) attrMap.get("deleted"));
+                                Boolean.TRUE.equals(attrMap.get("created")),
+                                Boolean.TRUE.equals(attrMap.get("updated")),
+                                Boolean.TRUE.equals(attrMap.get("deleted")));
                     }
                 }
                 return new PublishingInfo();
