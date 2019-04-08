@@ -173,6 +173,7 @@ public abstract class MasterDetailScreen<T extends Entity> extends StandardLooku
      * Method invoked on the screen initialization.
      */
     protected void initMasterDetailScreen(@SuppressWarnings("unused") InitEvent event) {
+        initDataComponents();
         initOkCancelActions();
         initBrowseItemChangeListener();
         initBrowseCreateAction();
@@ -181,6 +182,21 @@ public abstract class MasterDetailScreen<T extends Entity> extends StandardLooku
 
         disableEditControls();
     }
+
+    /**
+     * Initializes data components.
+     * <p>Default implementation unlinks browse loader from DataContext to prevent from the edited entity being
+     * referenced from both edit and browse data containers. Keep in mind that as a result, entities loaded
+     * in the browse table are not tracked.
+     */
+    protected void initDataComponents() {
+        CollectionContainer<T> browseContainer = getBrowseContainer();
+        DataLoader browseLoader = ((HasLoader) browseContainer).getLoader();
+        if (browseLoader != null) {
+            browseLoader.setDataContext(null);
+        }
+    };
+
 
     /**
      * Initializes OK/Cancel editor buttons.
