@@ -42,15 +42,6 @@ public class GroupDatasourceImpl<T extends Entity<K>, K>
     }
 
     @Override
-    protected void doSort() {
-        if (hasGroups()) {
-            groupDelegate.doGroupSort(sortInfos);
-        } else {
-            super.doSort();
-        }
-    }
-
-    @Override
     public List<GroupInfo> rootGroups() {
         return groupDelegate.rootGroups();
     }
