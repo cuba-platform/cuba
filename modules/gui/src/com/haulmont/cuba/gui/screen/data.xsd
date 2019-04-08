@@ -47,6 +47,8 @@
     <xs:complexType name="collectionContainerType">
         <xs:sequence>
             <xs:element name="loader" type="collectionLoaderType" minOccurs="0"/>
+            <xs:element name="instance" type="nestedContainerType" minOccurs="0"/>
+            <xs:element name="collection" type="nestedContainerType" minOccurs="0"/>
         </xs:sequence>
         <xs:attribute name="id" type="xs:string" use="required"/>
         <xs:attribute name="class" type="xs:string"/>
