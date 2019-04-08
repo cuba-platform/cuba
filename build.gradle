@@ -766,7 +766,7 @@ configure(webToolkitModule) {
         compile(bom['com.vaadin:vaadin-compatibility-client'])
 
         // for code server only
-        compile(bom['org.eclipse.jetty:jetty-server:9.3.26.v20190403'])
+        compile('org.eclipse.jetty:jetty-server:9.3.26.v20190403')
 
         runtime(bom['javax.servlet:javax.servlet-api'])
     }
