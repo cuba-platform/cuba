@@ -330,6 +330,47 @@ class ScreenDataTest extends WebSpec {
         linesCont.items == [line3, line2]
     }
 
+    def "nested collection containers"() {
+
+        def order1 = new Order(number: '111')
+        def line1 = new OrderLine(order: order1)
+        def line2 = new OrderLine(order: order1)
+        order1.orderLines = [line1, line2]
+
+        def xml = '''
+            <data>
+                <collection id="ordersCont"
+                          class="com.haulmont.cuba.web.testmodel.sales.Order">
+                          
+                    <collection id="linesCont" property="orderLines"/>
+                </collection>
+            </data>
+            '''
+        Document document = Dom4j.readDocument(xml)
+        ScreenData screenData = new ScreenDataImpl()
+        ScreenDataXmlLoader screenDataLoader = cont.getBean(ScreenDataXmlLoader)
+
+        when:
+
+        screenDataLoader.load(screenData, document.rootElement, null)
+        CollectionContainer<Order> ordersCont = screenData.getContainer('ordersCont')
+        CollectionContainer<OrderLine> linesCont = screenData.getContainer('linesCont')
+
+        then:
+
+        ordersCont != null
+        linesCont != null
+
+        when:
+
+        ordersCont.items = [order1]
+        ordersCont.item = order1
+
+        then:
+
+        linesCont.items == [line1, line2]
+    }
+
     def "read-only data context"() {
         def xml = '''
             <data readOnly="true">
