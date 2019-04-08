@@ -1502,8 +1502,6 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
 
     @Override
     public void tableSourceItemSetChanged(TableItems.ItemSetChangeEvent<E> event) {
-        clearFieldDatasources();
-
         // replacement for collectionChangeSelectionListener
         // #PL-2035, reload selection from ds
         Set<Object> selectedItemIds = getSelectedItemIds();
