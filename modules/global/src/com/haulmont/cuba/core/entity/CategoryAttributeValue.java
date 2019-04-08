@@ -24,6 +24,7 @@ import com.haulmont.cuba.core.global.*;
 
 import javax.annotation.PostConstruct;
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -56,6 +57,9 @@ public class CategoryAttributeValue extends StandardEntity {
 
     @Column(name = "DATE_VALUE")
     private Date dateValue;
+
+    @Column(name = "DATE_WO_TIME_VALUE")
+    private LocalDate dateWithoutTimeValue;
 
     @Embedded
     @EmbeddedParameters(nullAllowed = false)
@@ -148,6 +152,14 @@ public class CategoryAttributeValue extends StandardEntity {
         this.dateValue = dateValue;
     }
 
+    public LocalDate getDateWithoutTimeValue() {
+        return dateWithoutTimeValue;
+    }
+
+    public void setDateWithoutTimeValue(LocalDate dateWithoutTimeValue) {
+        this.dateWithoutTimeValue = dateWithoutTimeValue;
+    }
+
     public String getCode() {
         return code;
     }
@@ -204,9 +216,12 @@ public class CategoryAttributeValue extends StandardEntity {
             doubleValue = null;
             booleanValue = null;
             dateValue = null;
+            dateWithoutTimeValue = null;
             entityValue.setObjectEntityId(null);
             transientEntityValue = null;
             transientCollectionValue = null;
+        } else if (value instanceof LocalDate) {
+            setDateWithoutTimeValue((LocalDate) value);
         } else if (value instanceof Date) {
             setDateValue((Date) value);
         } else if (value instanceof Integer) {
@@ -238,6 +253,8 @@ public class CategoryAttributeValue extends StandardEntity {
             return doubleValue;
         } else if (dateValue != null) {
             return dateValue;
+        } else if (dateWithoutTimeValue != null) {
+            return dateWithoutTimeValue;
         } else if (booleanValue != null) {
             return booleanValue;
         } else if (transientEntityValue != null) {

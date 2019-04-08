@@ -35,6 +35,7 @@ import spock.lang.Shared
 import spock.lang.Specification
 
 import java.text.SimpleDateFormat
+import java.time.LocalDate
 
 class EntityChangedEventTest extends Specification {
 
@@ -211,7 +212,8 @@ class EntityChangedEventTest extends Specification {
         CategoryAttribute ca5 = new CategoryAttribute(name: 'dynAttr5', code: 'dynAttr5', category: category, categoryEntityType: 'sales1$Order', dataType: PropertyType.DATE, defaultEntity: new ReferenceToEntity())
         CategoryAttribute ca6 = new CategoryAttribute(name: 'dynAttr6', code: 'dynAttr6', category: category, categoryEntityType: 'sales1$Order', dataType: PropertyType.ENUMERATION, defaultEntity: new ReferenceToEntity())
         CategoryAttribute ca7 = new CategoryAttribute(name: 'dynAttr7', code: 'dynAttr7', category: category, categoryEntityType: 'sales1$Order', dataType: PropertyType.ENTITY, entityClass: 'com.haulmont.cuba.testmodel.sales_1.Customer', defaultEntity: new ReferenceToEntity())
-        dataManager.commit(category, ca1, ca2, ca3, ca4, ca5, ca6, ca7)
+        CategoryAttribute ca8 = new CategoryAttribute(name: 'dynAttr8', code: 'dynAttr8', category: category, categoryEntityType: 'sales1$Order', dataType: PropertyType.DATE_WITHOUT_TIME, defaultEntity: new ReferenceToEntity())
+        dataManager.commit(category, ca1, ca2, ca3, ca4, ca5, ca6, ca7, ca8)
 
         AppBeans.get(DynamicAttributesManagerAPI).loadCache()
 
@@ -236,6 +238,7 @@ class EntityChangedEventTest extends Specification {
         order1.setValue('+dynAttr5', new SimpleDateFormat('yyyy-MM-dd').parse('2018-08-03'))
         order1.setValue('+dynAttr6', 'enumVal1')
         order1.setValue('+dynAttr7', cust1)
+        order1.setValue('+dynAttr8', LocalDate.of(2018, 8, 3))
         dataManager.commit(order1)
 
         then:
@@ -258,6 +261,8 @@ class EntityChangedEventTest extends Specification {
         beforeCommit().event.changes.getOldValue('+dynAttr6') == null
         beforeCommit().event.changes.isChanged('+dynAttr7')
         beforeCommit().event.changes.getOldValue('+dynAttr7') == null
+        beforeCommit().event.changes.isChanged('+dynAttr8')
+        beforeCommit().event.changes.getOldValue('+dynAttr8') == null
 
         listener.clear()
 
@@ -272,6 +277,7 @@ class EntityChangedEventTest extends Specification {
         order2.setValue('+dynAttr5', new SimpleDateFormat('yyyy-MM-dd').parse('2018-08-04'))
         order2.setValue('+dynAttr6', 'enumVal2')
         order2.setValue('+dynAttr7', cust2)
+        order2.setValue('+dynAttr8', LocalDate.of(2018, 8, 4))
         dataManager.commit(order2)
 
         then:
@@ -287,6 +293,7 @@ class EntityChangedEventTest extends Specification {
         beforeCommit().event.changes.getOldValue('+dynAttr5') == new SimpleDateFormat('yyyy-MM-dd').parse('2018-08-03')
         beforeCommit().event.changes.getOldValue('+dynAttr6') == 'enumVal1'
         beforeCommit().event.changes.getOldValue('+dynAttr7') == Id.of(cust1)
+        beforeCommit().event.changes.getOldValue('+dynAttr8') == LocalDate.of(2018, 8, 3)
 
         listener.clear()
 
@@ -308,11 +315,12 @@ class EntityChangedEventTest extends Specification {
         beforeCommit().event.changes.getOldValue('+dynAttr5') == new SimpleDateFormat('yyyy-MM-dd').parse('2018-08-04')
         beforeCommit().event.changes.getOldValue('+dynAttr6') == 'enumVal2'
         beforeCommit().event.changes.getOldValue('+dynAttr7') == Id.of(cust2)
+        beforeCommit().event.changes.getOldValue('+dynAttr8') == LocalDate.of(2018, 8, 4)
 
         cleanup:
 
         new QueryRunner(cont.persistence().getDataSource()).update("delete from SYS_ATTR_VALUE")
-        cont.deleteRecord(ca1, ca2, ca3, ca4, ca5, ca6, ca7, category, cust1, cust2, order)
+        cont.deleteRecord(ca1, ca2, ca3, ca4, ca5, ca6, ca7, ca8, category, cust1, cust2, order)
     }
 
     def "dynamic attributes in TransactionalDataManager"() {

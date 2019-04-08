@@ -23,6 +23,7 @@ import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributes;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
+import com.haulmont.cuba.core.app.dynamicattributes.PropertyType;
 import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 import com.haulmont.cuba.core.entity.Categorized;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
@@ -43,6 +44,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
+import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -154,38 +156,47 @@ public class DynamicAttributesGuiTools {
         if (item.getDynamicAttributes() == null) {
             item.setDynamicAttributes(new HashMap<>());
         }
-        Date currentTimestamp = AppBeans.get(TimeSource.NAME, TimeSource.class).currentTimestamp();
+        ZonedDateTime currentTimestamp = AppBeans.get(TimeSource.NAME, TimeSource.class).now();
         boolean entityIsCategorized = item instanceof Categorized && ((Categorized) item).getCategory() != null;
 
         for (CategoryAttribute categoryAttribute : attributes) {
-            String code = DynamicAttributesUtils.encodeAttributeCode(categoryAttribute.getCode());
-            if (entityIsCategorized && !categoryAttribute.getCategory().equals(((Categorized) item).getCategory())) {
-                item.setValue(code, null);//cleanup attributes from not dedicated category
-                continue;
-            }
+            setDefaultAttributeValue(item, categoryAttribute, entityIsCategorized, currentTimestamp);
+        }
+    }
 
-            if (item.getValue(code) != null) {
-                continue;//skip not null attributes
-            }
+    protected void setDefaultAttributeValue(BaseGenericIdEntity item, CategoryAttribute categoryAttribute,
+                                   boolean entityIsCategorized, ZonedDateTime currentTimestamp) {
+        String code = DynamicAttributesUtils.encodeAttributeCode(categoryAttribute.getCode());
+        if (entityIsCategorized && !categoryAttribute.getCategory().equals(((Categorized) item).getCategory())) {
+            item.setValue(code, null);//cleanup attributes from not dedicated category
+            return;
+        }
 
-            if (categoryAttribute.getDefaultValue() != null) {
-                if (BooleanUtils.isTrue(categoryAttribute.getIsEntity())) {
-                    MetaClass entityMetaClass = metadata.getClassNN(categoryAttribute.getJavaClassForEntity());
-                    LoadContext<Entity> lc = new LoadContext<>(entityMetaClass).setView(View.MINIMAL);
-                    String pkName = referenceToEntitySupport.getPrimaryKeyForLoadingEntity(entityMetaClass);
-                    lc.setQueryString(format("select e from %s e where e.%s = :entityId", entityMetaClass.getName(), pkName))
-                            .setParameter("entityId", categoryAttribute.getDefaultValue());
-                    Entity defaultEntity = dataManager.load(lc);
-                    item.setValue(code, defaultEntity);
-                } else if (Boolean.TRUE.equals(categoryAttribute.getIsCollection())) {
-                    List<Object> list = new ArrayList<>();
-                    list.add(categoryAttribute.getDefaultValue());
-                    item.setValue(code, list);
-                } else {
-                    item.setValue(code, categoryAttribute.getDefaultValue());
-                }
-            } else if (Boolean.TRUE.equals(categoryAttribute.getDefaultDateIsCurrent())) {
-                item.setValue(code, currentTimestamp);
+        if (item.getValue(code) != null) {
+            return;//skip not null attributes
+        }
+
+        if (categoryAttribute.getDefaultValue() != null) {
+            if (BooleanUtils.isTrue(categoryAttribute.getIsEntity())) {
+                MetaClass entityMetaClass = metadata.getClassNN(categoryAttribute.getJavaClassForEntity());
+                LoadContext<Entity> lc = new LoadContext<>(entityMetaClass).setView(View.MINIMAL);
+                String pkName = referenceToEntitySupport.getPrimaryKeyForLoadingEntity(entityMetaClass);
+                lc.setQueryString(format("select e from %s e where e.%s = :entityId", entityMetaClass.getName(), pkName))
+                        .setParameter("entityId", categoryAttribute.getDefaultValue());
+                Entity defaultEntity = dataManager.load(lc);
+                item.setValue(code, defaultEntity);
+            } else if (Boolean.TRUE.equals(categoryAttribute.getIsCollection())) {
+                List<Object> list = new ArrayList<>();
+                list.add(categoryAttribute.getDefaultValue());
+                item.setValue(code, list);
+            } else {
+                item.setValue(code, categoryAttribute.getDefaultValue());
+            }
+        } else if (Boolean.TRUE.equals(categoryAttribute.getDefaultDateIsCurrent())) {
+            if (PropertyType.DATE_WITHOUT_TIME.equals(categoryAttribute.getDataType())) {
+                item.setValue(code, currentTimestamp.toLocalDate());
+            } else {
+                item.setValue(code, Date.from(currentTimestamp.toInstant()));
             }
         }
     }

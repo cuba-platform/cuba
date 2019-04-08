@@ -197,6 +197,9 @@ public class EntityChangedEventManager {
                             case BOOLEAN:
                                 oldValue = cav.getBooleanValue();
                                 break;
+                            case DATE_WITHOUT_TIME:
+                                oldValue = cav.getDateWithoutTimeValue();
+                                break;
                             case DATE:
                                 oldValue = cav.getDateValue();
                                 break;
@@ -222,6 +225,7 @@ public class EntityChangedEventManager {
                                     case "intValue":
                                     case "doubleValue":
                                     case "booleanValue":
+                                    case "dateWithoutTimeValue":
                                     case "dateValue":
                                         oldValue = changeRecord.getOldValue();
                                         changed = true;

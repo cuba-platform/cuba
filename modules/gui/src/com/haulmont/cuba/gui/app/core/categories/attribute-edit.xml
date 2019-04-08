@@ -64,6 +64,7 @@
                         <field id="defaultDouble" width="100%"/>
                         <field id="defaultBoolean" custom="true" width="100%"/>
                         <field id="defaultDate" width="100%"/>
+                        <field id="defaultDateWithoutTime" width="100%"/>
                         <field id="defaultDateIsCurrent" width="100%"/>
                     </column>
                 </fieldGroup>

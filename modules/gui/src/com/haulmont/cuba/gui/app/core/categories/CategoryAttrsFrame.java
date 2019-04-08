@@ -37,6 +37,8 @@ import org.apache.commons.lang3.BooleanUtils;
 
 import javax.inject.Inject;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.Map;
 import java.util.Set;
@@ -179,11 +181,21 @@ public class CategoryAttrsFrame extends AbstractFrame {
                     PropertyType dataType = attribute.getDataType();
                     switch (dataType) {
                         case DATE:
-                            Date date = attribute.getDefaultDate();
-                            if (date != null) {
+                            Date dateTime = attribute.getDefaultDate();
+                            if (dateTime != null) {
                                 String dateTimeFormat = Datatypes.getFormatStringsNN(userSessionSource.getLocale()).getDateTimeFormat();
                                 SimpleDateFormat simpleDateFormat = new SimpleDateFormat(dateTimeFormat);
-                                defaultValue = simpleDateFormat.format(date);
+                                defaultValue = simpleDateFormat.format(dateTime);
+                            } else if (BooleanUtils.isTrue(attribute.getDefaultDateIsCurrent())) {
+                                defaultValue = getMessage("currentDate");
+                            }
+                            break;
+                        case DATE_WITHOUT_TIME:
+                            LocalDate dateWoTime = attribute.getDefaultDateWithoutTime();
+                            if (dateWoTime != null) {
+                                String dateWoTimeFormat = Datatypes.getFormatStringsNN(userSessionSource.getLocale()).getDateFormat();
+                                DateTimeFormatter formatter = DateTimeFormatter.ofPattern(dateWoTimeFormat);
+                                defaultValue = dateWoTime.format(formatter);
                             } else if (BooleanUtils.isTrue(attribute.getDefaultDateIsCurrent())) {
                                 defaultValue = getMessage("currentDate");
                             }

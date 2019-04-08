@@ -754,27 +754,8 @@ public class EntityLog implements EntityLogAPI {
     }
 
     protected Object getOldCategoryAttributeValue(CategoryAttributeValue attributeValue, EntityAttributeChanges changes) {
-        CategoryAttribute categoryAttribute = attributeValue.getCategoryAttribute();
         PersistenceTools persistenceTools = persistence.getTools();
-        String fieldName = null;
-        switch (categoryAttribute.getDataType()) {
-            case DATE:
-                fieldName = "dateValue";
-                break;
-            case ENUMERATION:
-            case STRING:
-                fieldName = "stringValue";
-                break;
-            case INTEGER:
-                fieldName = "intValue";
-                break;
-            case DOUBLE:
-                fieldName = "doubleValue";
-                break;
-            case BOOLEAN:
-                fieldName = "booleanValue";
-                break;
-        }
+        String fieldName = getCategoryAttributeValueName(attributeValue);
         if (fieldName != null) {
             return changes != null ? changes.getOldValue(fieldName) :
                     persistenceTools.getOldValue(attributeValue, fieldName);
@@ -814,6 +795,9 @@ public class EntityLog implements EntityLogAPI {
         CategoryAttribute categoryAttribute = attributeValue.getCategoryAttribute();
         String fieldName = null;
         switch (categoryAttribute.getDataType()) {
+            case DATE_WITHOUT_TIME:
+                fieldName = "dateWithoutTimeValue";
+                break;
             case DATE:
                 fieldName = "dateValue";
                 break;

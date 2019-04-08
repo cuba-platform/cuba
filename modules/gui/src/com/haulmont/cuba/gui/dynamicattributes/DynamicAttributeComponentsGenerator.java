@@ -133,6 +133,8 @@ public class DynamicAttributeComponentsGenerator {
                 return ListEditor.ItemType.ENTITY;
             case DATE:
                 return ListEditor.ItemType.DATETIME;
+            case DATE_WITHOUT_TIME:
+                return ListEditor.ItemType.DATE;
             case DOUBLE:
                 return ListEditor.ItemType.DOUBLE;
             case INTEGER:

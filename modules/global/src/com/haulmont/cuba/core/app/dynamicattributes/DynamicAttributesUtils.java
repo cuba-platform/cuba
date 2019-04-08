@@ -24,6 +24,7 @@ import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.global.AppBeans;
 
 import javax.annotation.Nullable;
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.UUID;
 
@@ -105,6 +106,8 @@ public final class DynamicAttributesUtils {
                 return Boolean.class;
             case DATE:
                 return Date.class;
+            case DATE_WITHOUT_TIME:
+                return LocalDate.class;
             case ENUMERATION:
                 return String.class;
             case ENTITY:

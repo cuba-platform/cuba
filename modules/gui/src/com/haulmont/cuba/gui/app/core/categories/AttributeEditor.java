@@ -91,6 +91,10 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
         FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.DATE, "defaultDateIsCurrent");
         FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.DATE, "width");
         FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.DATE, "isCollection");
+        FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.DATE_WITHOUT_TIME, "defaultDateWithoutTime");
+        FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.DATE_WITHOUT_TIME, "defaultDateIsCurrent");
+        FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.DATE_WITHOUT_TIME, "width");
+        FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.DATE_WITHOUT_TIME, "isCollection");
         FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.ENUMERATION, "enumeration");
         FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.ENUMERATION, "defaultString");
         FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.ENUMERATION, "width");
@@ -483,6 +487,15 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
                 attributeFieldGroup.setFieldValue("defaultDate", null);
             } else {
                 attributeFieldGroup.setVisible("defaultDate", true);
+            }
+        }
+
+        if (attribute.getDataType() == PropertyType.DATE_WITHOUT_TIME) {
+            if (Boolean.TRUE.equals(attribute.getDefaultDateIsCurrent())) {
+                attributeFieldGroup.setVisible("defaultDateWithoutTime", false);
+                attributeFieldGroup.setFieldValue("defaultDateWithoutTime", null);
+            } else {
+                attributeFieldGroup.setVisible("defaultDateWithoutTime", true);
             }
         }
 

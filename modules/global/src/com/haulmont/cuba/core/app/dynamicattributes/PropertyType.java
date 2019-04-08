@@ -25,6 +25,7 @@ public enum PropertyType implements EnumClass<String> {
     INTEGER,
     DOUBLE,
     DATE,
+    DATE_WITHOUT_TIME,
     BOOLEAN,
     ENTITY,
     ENUMERATION;

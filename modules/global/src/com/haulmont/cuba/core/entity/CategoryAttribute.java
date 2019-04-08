@@ -33,6 +33,7 @@ import javax.annotation.Nullable;
 import javax.annotation.PostConstruct;
 import javax.persistence.*;
 import javax.persistence.Entity;
+import java.time.LocalDate;
 import java.util.*;
 
 @Entity(name = "sys$CategoryAttribute")
@@ -108,6 +109,9 @@ public class CategoryAttribute extends StandardEntity {
 
     @Column(name = "DEFAULT_DATE")
     private Date defaultDate;
+
+    @Column(name = "DEFAULT_DATE_WO_TIME")
+    private LocalDate defaultDateWithoutTime;
 
     @Column(name = "DEFAULT_DATE_IS_CURRENT")
     private Boolean defaultDateIsCurrent;
@@ -234,6 +238,14 @@ public class CategoryAttribute extends StandardEntity {
         this.defaultDate = defaultDate;
     }
 
+    public LocalDate getDefaultDateWithoutTime() {
+        return defaultDateWithoutTime;
+    }
+
+    public void setDefaultDateWithoutTime(LocalDate defaultDateTime) {
+        this.defaultDateWithoutTime = defaultDateTime;
+    }
+
     public Object getDefaultValue() {
         if (dataType != null) {
             switch (PropertyType.fromId(dataType)) {
@@ -241,6 +253,7 @@ public class CategoryAttribute extends StandardEntity {
                 case DOUBLE: return defaultDouble;
                 case BOOLEAN: return defaultBoolean;
                 case DATE: return defaultDate;
+                case DATE_WITHOUT_TIME: return defaultDateWithoutTime;
                 case STRING: return defaultString;
                 case ENUMERATION: return defaultString;
                 case ENTITY: return getObjectDefaultEntityId();
