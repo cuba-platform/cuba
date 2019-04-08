@@ -451,7 +451,9 @@ public class DataContextImpl implements DataContext {
         checkNotNullArgument(entity, "entity is null");
 
         modifiedInstances.remove(entity);
-        removedInstances.add(entity);
+        if (!getEntityStates().isNew(entity)) {
+            removedInstances.add(entity);
+        }
         removeListeners(entity);
         fireChangeListener(entity);
 
