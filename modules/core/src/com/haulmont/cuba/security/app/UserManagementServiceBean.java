@@ -439,6 +439,7 @@ public class UserManagementServiceBean implements UserManagementService {
                 throw new EntityAccessException(User.class, userId);
             }
 
+            user.setPasswordEncryption(passwordEncryption.getHashMethod());
             user.setPassword(newPasswordHash);
             user.setChangePasswordAtNextLogon(false);
 
