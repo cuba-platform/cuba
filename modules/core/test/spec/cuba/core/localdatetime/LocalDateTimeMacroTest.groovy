@@ -96,6 +96,14 @@ class LocalDateTimeMacroTest extends Specification {
 
         when:
         e = dataManager.load(LocalDateTimeEntity)
+                .query('select e from test_LocalDateTimeEntity e where @between(e.localDate, now - 1, now, DAY)')
+                .view(View.LOCAL).optional().orElse(null)
+
+        then:
+        e == null
+
+        when:
+        e = dataManager.load(LocalDateTimeEntity)
                 .query('select e from test_LocalDateTimeEntity e where @between(e.localDate, now, now + 1, month)')
                 .view(View.LOCAL).optional().orElse(null)
         then:
@@ -111,6 +119,13 @@ class LocalDateTimeMacroTest extends Specification {
         when:
         e = dataManager.load(LocalDateTimeEntity)
                 .query('select e from test_LocalDateTimeEntity e where @between(e.localDate, now - 1, now, minute)')
+                .view(View.LOCAL).optional().orElse(null)
+        then:
+        e == null
+
+        when:
+        e = dataManager.load(LocalDateTimeEntity)
+                .query('select e from test_LocalDateTimeEntity e where @between(e.localDate, now - 1, now, MINUTE)')
                 .view(View.LOCAL).optional().orElse(null)
         then:
         e == null

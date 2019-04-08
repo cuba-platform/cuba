@@ -617,6 +617,31 @@ class DataContextTest extends Specification {
         dataContext.find(Customer, customer.id).is(customer)
     }
 
+    def "remove of newly created entity does not commit it"() {
+        DataContext context = factory.createDataContext()
+
+        Order order = new Order(number: '111')
+        context.merge(order)
+
+        when:
+
+        context.remove(order)
+
+        then:
+
+        context.find(Order, order.id) == null
+
+        when:
+
+        def removed = []
+        context.addPreCommitListener { e -> removed.addAll(e.removedInstances) }
+        context.commit()
+
+        then:
+
+        !removed.contains(order)
+    }
+
     private void makeDetached(def entity) {
         entityStates.makeDetached(entity)
     }

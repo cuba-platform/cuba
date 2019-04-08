@@ -19,10 +19,7 @@ package com.haulmont.cuba.gui;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.CommitContext;
-import com.haulmont.cuba.core.global.DataManager;
-import com.haulmont.cuba.core.global.ExtendedEntities;
-import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.components.Component.Focusable;
 import com.haulmont.cuba.gui.components.DataGrid;
 import com.haulmont.cuba.gui.components.DialogAction;
@@ -43,6 +40,7 @@ import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 import static com.haulmont.cuba.gui.screen.UiControllerUtils.getScreenContext;
@@ -64,6 +62,8 @@ public class RemoveOperation {
     protected Messages messages;
     @Inject
     protected ExtendedEntities extendedEntities;
+    @Inject
+    protected EntityStates entityStates;
 
     /**
      * Creates a remove builder.
@@ -192,7 +192,12 @@ public class RemoveOperation {
 
     protected void commitIfNeeded(Collection<? extends Entity> entitiesToRemove, CollectionContainer container,
                                   ScreenData screenData) {
-        boolean needCommit = true;
+
+        List<? extends Entity> entitiesToCommit = entitiesToRemove.stream()
+                .filter(entity -> !entityStates.isNew(entity))
+                .collect(Collectors.toList());
+
+        boolean needCommit = !entitiesToCommit.isEmpty();
         if (container instanceof Nested) {
             InstanceContainer masterContainer = ((Nested) container).getMaster();
             String property = ((Nested) container).getProperty();
@@ -200,12 +205,12 @@ public class RemoveOperation {
             MetaClass masterMetaClass = masterContainer.getEntityMetaClass();
             MetaProperty metaProperty = masterMetaClass.getPropertyNN(property);
 
-            needCommit = metaProperty.getType() != MetaProperty.Type.COMPOSITION;
+            needCommit = needCommit && (metaProperty.getType() != MetaProperty.Type.COMPOSITION);
         }
 
         if (needCommit) {
             CommitContext commitContext = new CommitContext();
-            for (Entity entity : entitiesToRemove) {
+            for (Entity entity : entitiesToCommit) {
                 commitContext.addInstanceToRemove(entity);
             }
             dataManager.commit(commitContext);

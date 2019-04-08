@@ -230,6 +230,7 @@ class CollectionContainerUsageTest extends WebSpec {
         })
 
         Foo foo1 = new Foo(name: 'foo1')
+        entityStates.makeDetached(foo1)
         context.merge(foo1)
         container.items = [foo1]
 

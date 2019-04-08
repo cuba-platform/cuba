@@ -17,11 +17,12 @@
 
 package com.haulmont.cuba.gui.app.security.user.copysettings;
 
-import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.gui.WindowParam;
-import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.AbstractWindow;
+import com.haulmont.cuba.gui.components.Action;
+import com.haulmont.cuba.gui.components.Button;
+import com.haulmont.cuba.gui.components.DialogAction;
 import com.haulmont.cuba.gui.components.DialogAction.Type;
-import com.haulmont.cuba.gui.components.actions.BaseAction;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.security.app.UserSettingService;
 import com.haulmont.cuba.security.entity.User;
@@ -33,57 +34,49 @@ import java.util.Set;
 public class CopySettings extends AbstractWindow {
 
     @Inject
-    protected Datasource<User> usersDs;
-
-    @Inject
     protected Button copyBtn;
-
     @Inject
     protected Button cancelBtn;
 
+    @Inject
+    protected Datasource<User> usersDs;
+
     @WindowParam(required = true)
     protected Set<User> users;
+
+    @Inject
+    protected UserSettingService userSettingService;
 
     @Override
     public void init(Map<String, Object> params) {
         super.init(params);
 
-        getDialogOptions().setWidthAuto();
-
-        copyBtn.setAction(new BaseAction("deployBtn")
-                .withPrimary(true)
-                .withHandler(e -> {
-                    if (usersDs.getItem() == null) {
-                        showNotification(
-                                getMessage("selectUser"), NotificationType.HUMANIZED);
-                    } else {
-                        showOptionDialog(
-                                getMessage("confirmCopy.title"),
-                                getMessage("confirmCopy.msg"),
-                                MessageType.CONFIRMATION,
-                                new Action[]{
-                                        new DialogAction(Type.YES).withHandler(event ->
-                                                copySettings()),
-                                        new DialogAction(Type.NO, Action.Status.PRIMARY)
-                                }
-                        );
-                    }
-                }));
-
-        cancelBtn.setAction(new AbstractAction("cancelBtn") {
-            @Override
-            public void actionPerform(Component component) {
-                close("cancel");
+        copyBtn.addClickListener(e -> {
+            if (usersDs.getItem() == null) {
+                showNotification(
+                        getMessage("selectUser"), NotificationType.HUMANIZED);
+            } else {
+                showOptionDialog(
+                        getMessage("confirmCopy.title"),
+                        getMessage("confirmCopy.msg"),
+                        MessageType.CONFIRMATION,
+                        new Action[]{
+                                new DialogAction(Type.YES).withHandler(event ->
+                                        copySettings()),
+                                new DialogAction(Type.NO, Action.Status.PRIMARY)
+                        }
+                );
             }
         });
+
+        cancelBtn.addClickListener(e -> close("cancel"));
     }
 
     protected void copySettings() {
-        UserSettingService settingsService = AppBeans.get(UserSettingService.NAME);
         User fromUser = usersDs.getItem();
         for (User user : users) {
             if (!user.equals(fromUser)) {
-                settingsService.copySettings(fromUser, user);
+                userSettingService.copySettings(fromUser, user);
             }
         }
         close("ok");

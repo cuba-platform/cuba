@@ -61,7 +61,6 @@ import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoader;
 import com.haulmont.cuba.gui.xml.layout.ScreenXmlLoader;
 import com.haulmont.cuba.gui.xml.layout.loaders.ComponentLoaderContext;
-import com.haulmont.cuba.security.app.UserSettingService;
 import com.haulmont.cuba.security.entity.PermissionType;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.AppUI;
@@ -114,8 +113,6 @@ public class WebScreens implements Screens, WindowManager {
     protected ScreenXmlLoader screenXmlLoader;
     @Inject
     protected UserSessionSource userSessionSource;
-    @Inject
-    protected UserSettingService userSettingService;
     @Inject
     protected IconResolver iconResolver;
     @Inject
@@ -333,7 +330,9 @@ public class WebScreens implements Screens, WindowManager {
                                                         ComponentLoaderContext componentLoaderContext) {
         LayoutLoader layoutLoader = beanLocator.getPrototype(LayoutLoader.NAME, componentLoaderContext);
         layoutLoader.setLocale(getLocale());
-        layoutLoader.setMessagesPack(getMessagePack(windowInfo.getTemplate()));
+        if (windowInfo.getTemplate() != null) {
+            layoutLoader.setMessagesPack(getMessagePack(windowInfo.getTemplate()));
+        }
 
         ComponentLoader<Window> windowLoader = layoutLoader.createWindowContent(window, element, windowInfo.getId());
 
@@ -1816,12 +1815,6 @@ public class WebScreens implements Screens, WindowManager {
             window.setCloseable(openType.getCloseable());
         }
     }
-
-    // todo message type parameters: modal / resizable / sizes / etc
-
-    /*
-     *  Utility classes
-     */
 
     /**
      * Content of each tab of AppWorkArea TabSheet.

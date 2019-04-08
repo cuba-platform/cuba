@@ -451,7 +451,9 @@ public class DataContextImpl implements DataContext {
         checkNotNullArgument(entity, "entity is null");
 
         modifiedInstances.remove(entity);
-        removedInstances.add(entity);
+        if (!getEntityStates().isNew(entity)) {
+            removedInstances.add(entity);
+        }
         removeListeners(entity);
         fireChangeListener(entity);
 
@@ -550,9 +552,9 @@ public class DataContextImpl implements DataContext {
 
         Set<Entity> committed = performCommit();
 
-        events.publish(PostCommitEvent.class, new PostCommitEvent(this, committed));
+        EntitySet committedAndMerged = mergeCommitted(committed);
 
-        mergeCommitted(committed);
+        events.publish(PostCommitEvent.class, new PostCommitEvent(this, committedAndMerged));
 
         modifiedInstances.clear();
         removedInstances.clear();
@@ -619,7 +621,7 @@ public class DataContextImpl implements DataContext {
         return committedEntities;
     }
 
-    protected void mergeCommitted(Set<Entity> committed) {
+    protected EntitySet mergeCommitted(Set<Entity> committed) {
         // transform into sorted collection to have reproducible behavior
         List<Entity> entitiesToMerge = new ArrayList<>();
         for (Entity entity : committed) {
@@ -629,7 +631,7 @@ public class DataContextImpl implements DataContext {
         }
         entitiesToMerge.sort(Comparator.comparing(Object::hashCode));
 
-        merge(entitiesToMerge);
+        return merge(entitiesToMerge);
     }
 
     public Collection<Entity> getAll() {

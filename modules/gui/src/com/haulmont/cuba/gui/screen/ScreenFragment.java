@@ -200,23 +200,6 @@ public abstract class ScreenFragment implements FrameOwner {
      * Event sent when the fragment controller is created and dependency injection is completed. <br>
      * If the fragment is declared in host screen declaratively, this event if fired after {@link Screen.InitEvent} of the
      * host controller.
-     * <p>
-     * There are two ways to add an event handler:
-     * <p>
-     * 1. Programmatically from a class constructor:
-     * <pre>
-     *    addInitListener(event -&gt; {
-     *       // handle event here
-     *    });
-     * </pre>
-     * <p>
-     * 2. Declaratively using method with {@link Subscribe} annotation: <br>
-     * <pre>
-     *    &#64;Subscribe
-     *    protected void onInit(InitEvent event) {
-     *       // handle event here
-     *    }
-     * </pre>
      *
      * @see #addInitListener(Consumer)
      */
@@ -242,23 +225,6 @@ public abstract class ScreenFragment implements FrameOwner {
     /**
      * Event sent when the fragment controller is created, dependency injection is completed, and all components
      * have completed their internal initialization procedures.
-     * <p>
-     * There are two ways to add an event handler:
-     * <p>
-     * 1. Programmatically from the class constructor:
-     * <pre>
-     *    addAfterInitListener(event -&gt; {
-     *       // handle event here
-     *    });
-     * </pre>
-     * <p>
-     * 2. Declaratively using method with {@link Subscribe} annotation: <br>
-     * <pre>
-     *    &#64;Subscribe
-     *    protected void onAfterInit(AfterInitEvent event) {
-     *       // handle event here
-     *    }
-     * </pre>
      *
      * @see #addAfterInitListener(Consumer)
      */
