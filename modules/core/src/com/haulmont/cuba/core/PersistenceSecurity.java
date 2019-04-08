@@ -67,13 +67,14 @@ public interface PersistenceSecurity extends Security {
     /**
      * Filter entities in collection by in-memory constraints
      * @param entities - collection of entities that will be filtered
+     * @return true if some items were filtered out
      */
     boolean filterByConstraints(Collection<Entity> entities);
 
     /**
      * Filter entity by in-memory constraints
      * @param entity - entity that will be filtered
-     * @return true, if entity should be filtered from client output
+     * @return true, if entity should be filtered out from client output
      */
     boolean filterByConstraints(Entity entity);
 
