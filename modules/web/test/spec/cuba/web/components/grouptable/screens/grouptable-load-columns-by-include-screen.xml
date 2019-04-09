@@ -24,25 +24,36 @@
             </loader>
         </collection>
 
+        <collection id="customersWithoutSystemDc"
+                    class="com.haulmont.cuba.web.testmodel.sales.Customer"
+                    view="customer-without-systems">
+            <loader id="customersLd">
+                <query><![CDATA[select e from test$Customer e]]></query>
+            </loader>
+        </collection>
+
+        <collection id="customersWithoutViewDc"
+                    class="com.haulmont.cuba.web.testmodel.sales.Customer">
+            <loader id="customersLd">
+                <query><![CDATA[select e from test$Customer e]]></query>
+            </loader>
+        </collection>
+
         <collection id="goodsInfoDc"
                     class="com.haulmont.cuba.web.testmodel.sample.GoodInfo"/>
     </data>
 
     <layout spacing="true">
-        <groupTable id="groupTableAll" width="100%" height="100%" dataContainer="customersSystemDc">
+        <groupTable id="groupTableAll" width="100%" height="100%" dataContainer="customersWithoutSystemDc">
             <columns includeAll="true"/>
         </groupTable>
 
         <groupTable id="groupTableSystem" width="100%" height="100%" dataContainer="customersSystemDc">
-            <columns includeAll="true" includeSystem="true"/>
+            <columns includeAll="true"/>
         </groupTable>
 
         <groupTable id="groupTableExclude" width="100%" height="100%" dataContainer="customersSystemDc">
-            <columns includeAll="true" includeSystem="true" exclude="createTs, address"/>
-        </groupTable>
-
-        <groupTable id="groupTableView" width="100%" height="100%" dataContainer="customersSystemDc">
-            <columns includeByView="customer-without-systems" includeSystem="true"/>
+            <columns includeAll="true" exclude="createTs, address"/>
         </groupTable>
 
         <groupTable id="groupTableEmb" width="100%" height="100%" dataContainer="customersSystemDc">
@@ -53,7 +64,7 @@
         </groupTable>
 
         <groupTable id="groupTableGrouping" width="100%" height="100%" dataContainer="customersSystemDc">
-            <columns includeByView="customer-with-systems">
+            <columns includeAll="true">
                 <group>
                     <column id="address"/>
                 </group>
@@ -63,6 +74,10 @@
 
         <groupTable id="groupTableNonPersist" width="100%" height="100%" dataContainer="goodsInfoDc">
             <columns includeAll="true" exclude="isFragile"/>
+        </groupTable>
+
+        <groupTable id="groupTableWithoutView" width="100%" height="100%" dataContainer="customersWithoutViewDc">
+            <columns includeAll="true"/>
         </groupTable>
     </layout>
 </window>

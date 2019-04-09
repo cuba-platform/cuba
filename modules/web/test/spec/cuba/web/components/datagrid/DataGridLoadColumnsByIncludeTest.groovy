@@ -40,7 +40,7 @@ class DataGridLoadColumnsByIncludeTest extends UiScreenSpec {
         resetScreensConfig()
     }
 
-    def "load column by includeAll"() {
+    def "load columns by includeAll"() {
         def screens = vaadinUi.screens
 
         def mainWindow = screens.create("mainWindow", OpenMode.ROOT)
@@ -57,7 +57,7 @@ class DataGridLoadColumnsByIncludeTest extends UiScreenSpec {
         columnList.size() == 4
     }
 
-    def "load column by includeAll and includeSystem"() {
+    def "load columns by includeAll with system properties"() {
         def screens = vaadinUi.screens
         def mainWindow = screens.create("mainWindow", OpenMode.ROOT)
         screens.show(mainWindow)
@@ -92,22 +92,6 @@ class DataGridLoadColumnsByIncludeTest extends UiScreenSpec {
         dataGrid.getColumn("createTs") == null
     }
 
-    def "load columns by view"() {
-        def screens = vaadinUi.screens
-        def mainWindow = screens.create("mainWindow", OpenMode.ROOT)
-        screens.show(mainWindow)
-
-        def dataGridScreen = screens.create(DataGridLoadColumnsByIncludeScreen)
-        dataGridScreen.show()
-
-        when:
-        def dataGrid = dataGridScreen.getWindow().getComponentNN("dataGridView") as DataGrid
-        def columnList = dataGrid.getColumns()
-
-        then:
-        columnList.size() == 4
-    }
-
     def "entity with embedded property"() {
         def screens = vaadinUi.screens
 
@@ -122,14 +106,14 @@ class DataGridLoadColumnsByIncludeTest extends UiScreenSpec {
         def columnList = dataGrid.getColumns()
 
         then:
-        columnList.size() == 6
+        columnList.size() == 14
 
         dataGrid.getColumn("address.city") != null
         dataGrid.getColumn("address.zip") != null
         dataGrid.getColumn("address") != null
     }
 
-    def "grouping and overriding columns"() {
+    def "overriding columns"() {
         def screens = vaadinUi.screens
 
         def mainWindow = screens.create("mainWindow", OpenMode.ROOT)
@@ -143,12 +127,12 @@ class DataGridLoadColumnsByIncludeTest extends UiScreenSpec {
         def columnList = dataGrid.getColumns()
 
         then:
-        columnList.size() == 4
+        columnList.size() == 12
 
         !dataGrid.getColumn("name").isSortable()
     }
 
-    def "data grid with non-persistent entity"() {
+    def "includeAll with non-persistent entity"() {
         def screens = vaadinUi.screens
 
         def mainWindow = screens.create("mainWindow", OpenMode.ROOT)
@@ -162,8 +146,25 @@ class DataGridLoadColumnsByIncludeTest extends UiScreenSpec {
         def columnList = dataGrid.getColumns()
 
         then:
-        columnList.size() == 4
+        columnList.size() == 5
 
         dataGrid.getColumn("isFragile") == null
+    }
+
+    def "load columns without view"() {
+        def screens = vaadinUi.screens
+
+        def mainWindow = screens.create("mainWindow", OpenMode.ROOT)
+        screens.show(mainWindow)
+
+        def dataGridTableScreen = screens.create(DataGridLoadColumnsByIncludeScreen)
+        dataGridTableScreen.show()
+
+        when:
+        def dataGrid = dataGridTableScreen.getWindow().getComponentNN("dataGridWithoutView") as DataGrid
+        def columnList = dataGrid.getColumns()
+
+        then:
+        columnList.size() == 12
     }
 }

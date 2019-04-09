@@ -16,49 +16,65 @@
 
 <window xmlns="http://schemas.haulmont.com/cuba/screen/window.xsd">
     <data>
-        <collection id="customersDc"
+        <collection id="customersSystemDc"
                     class="com.haulmont.cuba.web.testmodel.sales.Customer"
                     view="customer-with-systems">
             <loader id="customersLd">
                 <query><![CDATA[select e from test$Customer e]]></query>
             </loader>
         </collection>
+
+        <collection id="customersWithoutSystemDc"
+                    class="com.haulmont.cuba.web.testmodel.sales.Customer"
+                    view="customer-without-systems">
+            <loader id="customersLd">
+                <query><![CDATA[select e from test$Customer e]]></query>
+            </loader>
+        </collection>
+
+        <collection id="customersWithoutViewDc"
+                    class="com.haulmont.cuba.web.testmodel.sales.Customer">
+            <loader id="customersLd">
+                <query><![CDATA[select e from test$Customer e]]></query>
+            </loader>
+        </collection>
+
         <collection id="goodsInfoDc"
                     class="com.haulmont.cuba.web.testmodel.sample.GoodInfo"/>
     </data>
 
     <layout spacing="true">
-        <dataGrid id="dataGridAll" width="100%" height="100%" dataContainer="customersDc">
+        <dataGrid id="dataGridAll" width="100%" height="100%" dataContainer="customersWithoutSystemDc">
             <columns includeAll="true"/>
         </dataGrid>
 
-        <dataGrid id="dataGridSystem" width="100%" height="100%" dataContainer="customersDc">
-            <columns includeAll="true" includeSystem="true"/>
+        <dataGrid id="dataGridSystem" width="100%" height="100%" dataContainer="customersSystemDc">
+            <columns includeAll="true"/>
         </dataGrid>
 
-        <groupTable id="dataGridExclude" width="100%" height="100%" dataContainer="customersDc">
-            <columns includeAll="true" includeSystem="true" exclude="createTs, address"/>
+        <groupTable id="dataGridExclude" width="100%" height="100%" dataContainer="customersSystemDc">
+            <columns includeAll="true" exclude="createTs, address"/>
         </groupTable>
 
-        <groupTable id="dataGridView" width="100%" height="100%" dataContainer="customersDc">
-            <columns includeByView="customer-without-systems" includeSystem="true"/>
-        </groupTable>
-
-        <dataGrid id="dataGridEmb" width="100%" height="100%" dataContainer="customersDc">
+        <dataGrid id="dataGridEmb" width="100%" height="100%" dataContainer="customersSystemDc">
             <columns includeAll="true">
                 <column property="address.city"/>
                 <column property="address.zip"/>
             </columns>
         </dataGrid>
 
-        <dataGrid id="dataGridOverriding" width="100%" height="100%" dataContainer="customersDc">
-            <columns includeByView="customer-with-systems">
+        <dataGrid id="dataGridOverriding" width="100%" height="100%" dataContainer="customersSystemDc">
+            <columns includeAll="true">
                 <column property="name" sortable="false"/>
             </columns>
         </dataGrid>
 
         <dataGrid id="dataGridNonPersist" width="100%" height="100%" dataContainer="goodsInfoDc">
             <columns includeAll="true" exclude="isFragile"/>
+        </dataGrid>
+
+        <dataGrid id="dataGridWithoutView" width="100%" height="100%" dataContainer="customersWithoutViewDc">
+            <columns includeAll="true"/>
         </dataGrid>
     </layout>
 </window>

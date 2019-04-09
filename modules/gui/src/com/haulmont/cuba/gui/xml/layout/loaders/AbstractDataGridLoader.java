@@ -319,14 +319,8 @@ public abstract class AbstractDataGridLoader<T extends DataGrid> extends Actions
         }
     }
 
-    protected List<Column> loadColumnsByInclude(String viewName, DataGrid component, Element columnsElement, MetaClass metaClass, View view) {
-        View currentView = view;
-        if (viewName != null) {
-            ViewRepository viewRepository = beanLocator.get(ViewRepository.NAME);
-            currentView = viewRepository.getView(metaClass, viewName);
-        }
-
-        Collection<String> appliedProperties = getAppliedProperties(columnsElement, currentView, metaClass);
+    protected List<Column> loadColumnsByInclude(DataGrid component, Element columnsElement, MetaClass metaClass, View view) {
+        Collection<String> appliedProperties = getAppliedProperties(columnsElement, view, metaClass);
 
         List<Column> columns = new ArrayList<>(appliedProperties.size());
         List<Element> columnElements = columnsElement.elements("column");
@@ -359,7 +353,7 @@ public abstract class AbstractDataGridLoader<T extends DataGrid> extends Actions
                 MetaPropertyPath dynamicAttributePath = DynamicAttributesUtils.getMetaPropertyPath(metaClass, propertyId);
 
                 MetaPropertyPath mpp = metaClass.getPropertyPath(propertyId);
-                boolean isViewContainsProperty = mpp != null && getMetadataTools().viewContainsProperty(currentView, mpp);
+                boolean isViewContainsProperty = mpp != null && getMetadataTools().viewContainsProperty(view, mpp);
 
                 if (isViewContainsProperty || dynamicAttributePath != null) {
                     columns.add(loadColumn(component, column, metaClass));
@@ -371,21 +365,10 @@ public abstract class AbstractDataGridLoader<T extends DataGrid> extends Actions
     }
 
     protected List<Column> loadColumns(DataGrid component, Element columnsElement, MetaClass metaClass, View view) {
-        String includeByView = columnsElement.attributeValue("includeByView");
         String includeAll = columnsElement.attributeValue("includeAll");
-
-        if (StringUtils.isNotBlank(includeByView) && StringUtils.isNotBlank(includeAll)) {
-            throw new GuiDevelopmentException("'includeByView' and 'includeAll' attributes cannot be defined simultaneously",
-                    getContext().getFullFrameId());
-        }
-
-        if (StringUtils.isNotBlank(includeByView)) {
-            return loadColumnsByInclude(includeByView, component, columnsElement, metaClass, view);
-        }
-
         if (StringUtils.isNotBlank(includeAll)) {
             if (Boolean.parseBoolean(includeAll)) {
-                return loadColumnsByInclude(null, component, columnsElement, metaClass, view);
+                return loadColumnsByInclude(component, columnsElement, metaClass, view);
             }
         }
 
@@ -606,26 +589,16 @@ public abstract class AbstractDataGridLoader<T extends DataGrid> extends Actions
         List<String> excludes = StringUtils.isEmpty(exclude) ? Collections.emptyList() :
                 Splitter.on(",").omitEmptyStrings().trimResults().splitToList(exclude);
 
-        String includeSystem = columnsElement.attributeValue("includeSystem");
-        boolean isIncludeSystem = StringUtils.isNotBlank(includeSystem) && Boolean.parseBoolean(includeSystem);
-
         MetadataTools metadataTools = getMetadataTools();
 
         Stream<String> properties;
-        if (metadataTools.isPersistent(metaClass)) {
+        if (metadataTools.isPersistent(metaClass) && view != null) {
             properties = view.getProperties().stream().map(ViewProperty::getName);
         } else {
-            properties = metaClass.getOwnProperties().stream().map(MetadataObject::getName);
+            properties = metaClass.getProperties().stream().map(MetadataObject::getName);
         }
 
-        List<String> appliedProperties = properties.filter(s -> {
-            MetaProperty metaProperty = metaClass.getProperty(s);
-            if (isIncludeSystem || !metadataTools.isSystem(metaProperty)) {
-                return !excludes.contains(s);
-            } else {
-                return false;
-            }
-        }).collect(Collectors.toList());
+        List<String> appliedProperties = properties.filter(s -> !excludes.contains(s)).collect(Collectors.toList());
 
         return appliedProperties;
     }

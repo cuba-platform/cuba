@@ -49,12 +49,12 @@ public class GroupTableLoader extends AbstractTableLoader<GroupTable> {
     }
 
     @Override
-    protected List<Table.Column> loadColumns(Table component, Element columnsElement, MetaClass metaClasss, View view) {
+    protected List<Table.Column> loadColumns(Table component, Element columnsElement, MetaClass metaClass, View view) {
         List<Table.Column> columns = new ArrayList<>();
 
         Element groupElement = columnsElement.element("group");
         if (groupElement != null) {
-            columns.addAll(super.loadColumns(component, groupElement, metaClasss, view));
+            columns.addAll(super.loadColumns(component, groupElement, metaClass, view));
             final List<Object> groupProperties = new ArrayList<>(columns.size());
             for (Table.Column column : columns) {
                 if (column.isCollapsed()) {
@@ -73,16 +73,15 @@ public class GroupTableLoader extends AbstractTableLoader<GroupTable> {
 
         // check for duplicate
         String includeAll = columnsElement.attributeValue("includeAll");
-        String includeByView = columnsElement.attributeValue("includeByView");
-        if (StringUtils.isNotBlank(includeAll) || StringUtils.isNotBlank(includeByView)) {
-            List<Table.Column> columnList = super.loadColumns(component, columnsElement, metaClasss, view);
+        if (StringUtils.isNotBlank(includeAll)) {
+            List<Table.Column> columnList = super.loadColumns(component, columnsElement, metaClass, view);
             for (Table.Column column : columnList) {
                 if (!columns.contains(column)) {
                     columns.add(column);
                 }
             }
         } else {
-            columns.addAll(super.loadColumns(component, columnsElement, metaClasss, view));
+            columns.addAll(super.loadColumns(component, columnsElement, metaClass, view));
         }
 
         return columns;

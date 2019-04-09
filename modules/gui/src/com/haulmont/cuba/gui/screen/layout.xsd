@@ -1159,9 +1159,7 @@
     </xs:complexType>
 
     <xs:attributeGroup name="columnsLoadType">
-        <xs:attribute name="includeByView" type="xs:string"/>
         <xs:attribute name="includeAll" type="xs:boolean"/>
-        <xs:attribute name="includeSystem" type="xs:boolean"/>
         <xs:attribute name="exclude" type="xs:string"/>
     </xs:attributeGroup>
 
