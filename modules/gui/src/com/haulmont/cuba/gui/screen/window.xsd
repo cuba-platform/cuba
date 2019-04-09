@@ -66,6 +66,14 @@
             <xs:attribute name="caption" type="layout:resourceString"/>
             <xs:attribute name="description" type="layout:resourceString"/>
             <xs:attribute name="focusComponent" type="xs:string"/>
+            <xs:attribute name="focusMode" type="focusModeType"/>
         </xs:complexType>
     </xs:element>
+
+    <xs:simpleType name="focusModeType">
+        <xs:restriction>
+            <xs:enumeration value="NO_FOCUS"/>
+            <xs:enumeration value="AUTO"/>
+        </xs:restriction>
+    </xs:simpleType>
 </xs:schema>

@@ -73,6 +73,7 @@ public abstract class WebWindow implements Window, Component.Wrapper,
     protected List<Timer> timers = null; // lazy initialized timers list
 
     protected String focusComponentId;
+    protected FocusMode focusMode = FocusMode.AUTO;
 
     protected AbstractOrderedLayout component;
 
@@ -405,6 +406,16 @@ public abstract class WebWindow implements Window, Component.Wrapper,
         return handleValidationErrors(errors);
     }
 
+    @Override
+    public void setFocusMode(FocusMode focusMode) {
+        this.focusMode = focusMode;
+    }
+
+    @Override
+    public FocusMode getFocusMode() {
+        return focusMode;
+    }
+
     protected boolean handleValidationErrors(ValidationErrors errors) {
         if (errors.isEmpty())
             return true;
@@ -475,8 +486,7 @@ public abstract class WebWindow implements Window, Component.Wrapper,
                 continue;
             }
 
-            if (child instanceof Component.Focusable
-                    && !(child instanceof Button)) {
+            if (child instanceof Component.Focusable) {
 
                 if (!(child instanceof Editable) || ((Editable) child).isEditable()) {
 
@@ -513,6 +523,10 @@ public abstract class WebWindow implements Window, Component.Wrapper,
     @Override
     public void setFocusComponent(String componentId) {
         this.focusComponentId = componentId;
+
+        if (focusMode == FocusMode.NO_FOCUS) {
+            return;
+        }
 
         if (componentId != null) {
             Component focusComponent = getComponent(componentId);

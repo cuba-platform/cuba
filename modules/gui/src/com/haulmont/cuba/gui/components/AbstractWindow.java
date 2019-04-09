@@ -865,4 +865,14 @@ public class AbstractWindow extends Screen implements Window, LegacyFrame, Compo
     public float getExpandRatio(Component component) {
         return frame.getExpandRatio(component);
     }
+
+    @Override
+    public void setFocusMode(FocusMode focusMode) {
+        frame.setFocusMode(focusMode);
+    }
+
+    @Override
+    public FocusMode getFocusMode() {
+        return frame.getFocusMode();
+    }
 }
