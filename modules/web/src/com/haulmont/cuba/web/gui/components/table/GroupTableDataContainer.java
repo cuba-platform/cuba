@@ -351,9 +351,11 @@ public class GroupTableDataContainer<I> extends SortableDataContainer<I> impleme
     }
 
     @Override
-    protected void beforeFireStateChanged() {
-        super.beforeFireStateChanged();
+    protected void beforeFireStateChanged(BindingState state) {
+        super.beforeFireStateChanged(state);
 
-        doRefreshGroup();
+        if (state == BindingState.ACTIVE) {
+            doRefreshGroup();
+        }
     }
 }
