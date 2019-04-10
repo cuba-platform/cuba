@@ -16,23 +16,58 @@
 
 package com.haulmont.cuba.web.widgets;
 
+import com.haulmont.cuba.web.widgets.client.listselect.CubaListSelectServerRpc;
 import com.haulmont.cuba.web.widgets.compatibility.CubaValueChangeEvent;
 import com.vaadin.server.AbstractErrorMessage;
 import com.vaadin.server.CompositeErrorMessage;
 import com.vaadin.server.ErrorMessage;
+import com.vaadin.v7.data.util.IndexedContainer;
 import com.vaadin.v7.ui.ListSelect;
 
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 public class CubaListSelect extends ListSelect {
 
     protected Function<Object, String> itemCaptionGenerator;
 
+    protected Consumer<Object> doubleClickHandler;
+
+    protected CubaListSelectServerRpc listSelectServerRpc = new CubaListSelectServerRpc() {
+
+        @Override
+        public void onDoubleClick(Integer itemIndex) {
+            if (doubleClickHandler != null
+                    && (itemIndex >= 0)
+                    && (!isNullSelectionAllowed() || itemIndex != 0)) {
+                IndexedContainer container = (IndexedContainer) getContainerDataSource();
+
+                if (isNullSelectionAllowed()) {
+                    --itemIndex;
+                }
+
+                if (container != null && itemIndex < container.size()) {
+                    doubleClickHandler.accept(container.getIdByIndex(itemIndex));
+                }
+            }
+        }
+    };
+
     public CubaListSelect() {
+        registerRpc(listSelectServerRpc);
+
         setValidationVisible(false);
 
         setShowBufferedSourceException(false);
         this.resetValueToNullOnContainerChange = false;
+    }
+
+    public Consumer<Object> getDoubleClickHandler() {
+        return doubleClickHandler;
+    }
+
+    public void setDoubleClickHandler(Consumer<Object> doubleClickHandler) {
+        this.doubleClickHandler = doubleClickHandler;
     }
 
     public Function<Object, String> getItemCaptionGenerator() {
