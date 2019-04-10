@@ -122,7 +122,8 @@ public class ExcelAction extends ListAction {
     }
 
     protected boolean needExportAll() {
-        if (target.getSelected().isEmpty()) {
+        if (target.getSelected().isEmpty()
+                || !(target.getItems() instanceof ContainerDataUnit)) {
             return true;
         }
         CollectionContainer container = ((ContainerDataUnit) target.getItems()).getContainer();

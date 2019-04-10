@@ -17,6 +17,7 @@
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.google.common.base.Splitter;
+import com.google.common.base.Strings;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.DatatypeRegistry;
 import com.haulmont.chile.core.model.MetaClass;
@@ -31,7 +32,9 @@ import com.haulmont.cuba.core.entity.LocaleHelper;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.data.TableItems;
 import com.haulmont.cuba.gui.components.data.table.ContainerTableItems;
+import com.haulmont.cuba.gui.components.data.table.EmptyTableItems;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.aggregation.AggregationStrategy;
@@ -169,14 +172,21 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
 
             metaClass = datasource.getMetaClass();
         } else {
-            throw new GuiDevelopmentException("Table doesn't have data binding",
-                    context.getCurrentFrameId(), "Table ID", element.attributeValue("id"));
+            String metaClassStr = element.attributeValue("metaClass");
+            if (Strings.isNullOrEmpty(metaClassStr)) {
+                throw new GuiDevelopmentException("Table doesn't have data binding",
+                        context.getCurrentFrameId(), "Table ID", element.attributeValue("id"));
+            }
+
+            metaClass = getMetadata().getClassNN(metaClassStr);
         }
 
         List<Table.Column> availableColumns;
 
         if (columnsElement != null) {
-            View view = collectionContainer != null ? collectionContainer.getView() : datasource.getView();
+            View view = collectionContainer != null ? collectionContainer.getView()
+                    : datasource != null ? datasource.getView()
+                    : getViewRepository().getView(metaClass.getJavaClass(), View.LOCAL);
             availableColumns = loadColumns(resultComponent, columnsElement, metaClass, view);
         } else {
             availableColumns = new ArrayList<>();
@@ -194,9 +204,13 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
             }
             //noinspection unchecked
             resultComponent.setItems(createContainerTableSource(collectionContainer));
-        } else {
+        } else if (datasource != null) {
             addDynamicAttributes(resultComponent, metaClass, datasource, null, availableColumns);
             resultComponent.setDatasource((CollectionDatasource) datasource);
+        } else {
+            addDynamicAttributes(resultComponent, metaClass, null, null, availableColumns);
+            //noinspection unchecked
+            resultComponent.setItems(createEmptyTableItems(metaClass));
         }
 
         for (Table.Column column : availableColumns) {
@@ -216,9 +230,21 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
         }
     }
 
+    protected Metadata getMetadata() {
+        return beanLocator.get(Metadata.NAME);
+    }
+
+    protected ViewRepository getViewRepository() {
+        return beanLocator.get(ViewRepository.NAME);
+    }
+
     @SuppressWarnings("unchecked")
     protected ContainerTableItems createContainerTableSource(CollectionContainer container) {
         return new ContainerTableItems(container);
+    }
+
+    protected TableItems createEmptyTableItems(MetaClass metaClass) {
+        return new EmptyTableItems(metaClass);
     }
 
     protected MetadataTools getMetadataTools() {

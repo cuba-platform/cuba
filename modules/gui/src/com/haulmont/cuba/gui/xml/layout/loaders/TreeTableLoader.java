@@ -18,10 +18,13 @@
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.google.common.base.Strings;
+import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.TreeTable;
+import com.haulmont.cuba.gui.components.data.TableItems;
 import com.haulmont.cuba.gui.components.data.table.ContainerTableItems;
 import com.haulmont.cuba.gui.components.data.table.ContainerTreeTableItems;
+import com.haulmont.cuba.gui.components.data.table.EmptyTreeTableItems;
 import com.haulmont.cuba.gui.model.CollectionContainer;
 import org.dom4j.Element;
 
@@ -47,5 +50,10 @@ public class TreeTableLoader extends AbstractTableLoader<TreeTable> {
                     "TreeTable ID", element.attributeValue("id"));
         }
         return new ContainerTreeTableItems(container, hierarchyProperty);
+    }
+
+    @Override
+    protected TableItems createEmptyTableItems(MetaClass metaClass) {
+        return new EmptyTreeTableItems(metaClass);
     }
 }

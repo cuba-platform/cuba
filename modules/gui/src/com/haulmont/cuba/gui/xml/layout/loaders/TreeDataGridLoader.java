@@ -1,11 +1,12 @@
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.google.common.base.Strings;
+import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
-import com.haulmont.cuba.gui.components.DataGrid;
 import com.haulmont.cuba.gui.components.TreeDataGrid;
 import com.haulmont.cuba.gui.components.data.DataGridItems;
 import com.haulmont.cuba.gui.components.data.datagrid.ContainerTreeDataGridItems;
+import com.haulmont.cuba.gui.components.data.datagrid.EmptyTreeDataGridItems;
 import com.haulmont.cuba.gui.model.CollectionContainer;
 import org.dom4j.Element;
 
@@ -39,5 +40,10 @@ public class TreeDataGridLoader extends AbstractDataGridLoader<TreeDataGrid> {
                     "TreeDataGrid ID", element.attributeValue("id"));
         }
         return new ContainerTreeDataGridItems(container, hierarchyProperty);
+    }
+
+    @Override
+    protected DataGridItems createEmptyDataGridItems(MetaClass metaClass) {
+        return new EmptyTreeDataGridItems(metaClass);
     }
 }

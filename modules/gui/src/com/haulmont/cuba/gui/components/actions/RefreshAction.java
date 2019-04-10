@@ -108,6 +108,9 @@ public class RefreshAction extends BaseAction {
         }
 
         CollectionDatasource datasource = owner.getDatasource();
+        if (datasource == null) {
+            throw new IllegalStateException("RefreshAction target is not bound to CollectionDatasource");
+        }
 
         Map<String, Object> refreshParams = getRefreshParams();
         Map<String, Object> supplierParams = null;

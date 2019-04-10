@@ -186,7 +186,9 @@ public class ExcelAction extends BaseAction implements Action.HasBeforeActionPer
                 return;
         }
 
-        if (listComponent.getSelected().isEmpty() || listComponent.getDatasource().size() <= 1) {
+        if (listComponent.getSelected().isEmpty()
+                || listComponent.getDatasource() == null
+                || listComponent.getDatasource().size() <= 1) {
             export(ExportMode.ALL_ROWS);
         } else {
             String title = messages.getMainMessage("actions.exportSelectedTitle");
