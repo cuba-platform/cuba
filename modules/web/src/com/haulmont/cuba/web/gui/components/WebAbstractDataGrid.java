@@ -3414,6 +3414,7 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
 
         public boolean isShouldBeEditable() {
             return editable
+                    && propertyPath != null  // We can't generate field for editor in case we don't have propertyPath
                     && (!generated && !isRepresentsCollection()
                     || fieldGenerator != null
                     || generator != null)
