@@ -240,6 +240,9 @@
     <screen id="localizedNameFrame"
             template="/com/haulmont/cuba/gui/app/core/categories/localized-name-frame.xml"/>
 
+    <screen id="localizedNameAndDescriptionFrame"
+            template="/com/haulmont/cuba/gui/app/core/categories/localized-name-description-frame.xml"/>
+
     <screen id="localizedEnumerationWindow"
             template="/com/haulmont/cuba/gui/app/core/categories/localized-enumeration-window.xml"/>
 

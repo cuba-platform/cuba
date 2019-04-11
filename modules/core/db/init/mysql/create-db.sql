@@ -783,6 +783,7 @@ create table SYS_CATEGORY_ATTR (
     CATEGORY_ENTITY_TYPE text,
     NAME varchar(255),
     CODE varchar(100) not null,
+    DESCRIPTION varchar(1000),
     CATEGORY_ID varchar(32) not null,
     ENTITY_CLASS varchar(500),
     DATA_TYPE varchar(200),
@@ -811,6 +812,7 @@ create table SYS_CATEGORY_ATTR (
     FILTER_XML longtext,
     LOCALE_NAMES varchar(1000),
     ENUMERATION_LOCALES text,
+    LOCALE_DESCRIPTIONS text,
     --
     primary key (ID),
     constraint SYS_CATEGORY_ATTR_CATEGORY_ID foreign key (CATEGORY_ID) references SYS_CATEGORY(ID)

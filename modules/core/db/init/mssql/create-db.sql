@@ -768,6 +768,7 @@ create table SYS_CATEGORY_ATTR (
     CATEGORY_ENTITY_TYPE varchar(4000),
     NAME varchar(255),
     CODE varchar(100) not null,
+    DESCRIPTION varchar(1000),
     CATEGORY_ID uniqueidentifier not null,
     ENTITY_CLASS varchar(500),
     DATA_TYPE varchar(200),
@@ -795,6 +796,7 @@ create table SYS_CATEGORY_ATTR (
     WHERE_CLAUSE varchar(4000),
     FILTER_XML varchar(max),
     LOCALE_NAMES varchar(1000),
+    LOCALE_DESCRIPTIONS varchar(4000),
     ENUMERATION_LOCALES varchar(5000),
     --
     primary key nonclustered (ID),

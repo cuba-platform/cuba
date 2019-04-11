@@ -294,6 +294,8 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
                             attribute.getLocaleName() :
                             StringUtils.capitalize(attribute.getName()));
 
+                    column.setDescription(attribute.getLocaleDescription());
+
                     if (attribute.getDataType().equals(PropertyType.STRING)) {
                         ClientConfig clientConfig = getConfiguration().getConfig(ClientConfig.class);
                         column.setMaxTextLength(clientConfig.getDynamicAttributesTableColumnMaxTextLength());
@@ -537,6 +539,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
                     columnCaption = LocaleHelper.isLocalizedValueDefined(categoryAttribute.getLocaleNames()) ?
                             categoryAttribute.getLocaleName() :
                             StringUtils.capitalize(categoryAttribute.getName());
+                    column.setDescription(categoryAttribute.getLocaleDescription());
                 } else {
                     MetaClass propertyMetaClass = getMetadataTools().getPropertyEnclosingMetaClass(mpp);
                     columnCaption = getMessageTools().getPropertyCaption(propertyMetaClass, propertyName);

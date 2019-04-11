@@ -209,6 +209,7 @@ public class FieldGroupLoader extends AbstractComponentLoader<FieldGroup> {
                             DynamicAttributesUtils.encodeAttributeCode(attribute.getCode()));
                     field.setProperty(DynamicAttributesUtils.encodeAttributeCode(attribute.getCode()));
                     field.setCaption(attribute.getLocaleName());
+                    field.setDescription(attribute.getLocaleDescription());
                     field.setDatasource(ds);
                     field.setRequired(attribute.getRequired());
                     field.setRequiredMessage(getMessages().formatMainMessage(
@@ -400,6 +401,7 @@ public class FieldGroupLoader extends AbstractComponentLoader<FieldGroup> {
         if (metaPropertyPath != null && DynamicAttributesUtils.isDynamicAttribute(metaPropertyPath.getMetaProperty())) {
             CategoryAttribute categoryAttribute = DynamicAttributesUtils.getCategoryAttribute(metaPropertyPath.getMetaProperty());
             field.setCaption(categoryAttribute != null ? categoryAttribute.getLocaleName() : propertyName);
+            field.setDescription(categoryAttribute != null ? categoryAttribute.getLocaleDescription() : null);
         } else {
             loadCaption(field, element);
 

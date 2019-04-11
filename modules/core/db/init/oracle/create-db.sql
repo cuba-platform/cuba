@@ -73,6 +73,7 @@ create table SYS_CATEGORY_ATTR (
     CATEGORY_ENTITY_TYPE varchar(4000),
     NAME varchar2(255),
     CODE varchar2(100) not null,
+    DESCRIPTION varchar2(1000),
     CATEGORY_ID varchar2(32) not null,
     ENTITY_CLASS varchar2(500),
     DATA_TYPE varchar2(200),
@@ -101,6 +102,7 @@ create table SYS_CATEGORY_ATTR (
     FILTER_XML clob,
     LOCALE_NAMES varchar2(1000),
     ENUMERATION_LOCALES clob,
+    LOCALE_DESCRIPTIONS varchar2(4000),
 
     primary key(ID)
 )^

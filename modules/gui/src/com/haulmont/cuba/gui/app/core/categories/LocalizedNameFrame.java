@@ -16,21 +16,16 @@
 
 package com.haulmont.cuba.gui.app.core.categories;
 
-import com.haulmont.cuba.core.entity.LocaleHelper;
 import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 
 import javax.inject.Inject;
 import java.util.*;
 
-public class LocalizedNameFrame extends AbstractFrame {
+public class LocalizedNameFrame extends AbstractLocalizedTextFieldsFrame {
 
     @Inject
     protected ScrollBoxLayout localesScrollBox;
-
-    @Inject
-    protected ComponentsFactory factory;
 
     @Inject
     protected GlobalConfig globalConfig;
@@ -41,41 +36,17 @@ public class LocalizedNameFrame extends AbstractFrame {
     public void init(Map<String, Object> params) {
         Map<String, Locale> map = globalConfig.getAvailableLocales();
         for (Map.Entry<String, Locale> entry : map.entrySet()) {
-            localesScrollBox.add(createLocaleListComponent(entry.getValue(), entry.getKey()));
+            localesScrollBox.add(createTextFieldComponent(entry.getValue(),
+                    entry.getKey() + "|" + entry.getValue(), textFieldMap));
         }
-    }
-
-    protected Component createLocaleListComponent(Locale locale, String key) {
-        TextField valueField = factory.createComponent(TextField.class);
-        valueField.setWidth("100%");
-        valueField.setCaption(key + "|" + locale.toString());
-
-        textFieldMap.put(locale, valueField);
-
-        return valueField;
     }
 
     public String getValue() {
-        Properties properties = new Properties();
-        for (Map.Entry<Locale, TextField> entry : textFieldMap.entrySet()) {
-            if (!entry.getValue().getRawValue().isEmpty()) {
-                properties.setProperty(entry.getKey().toString(), entry.getValue().getRawValue());
-            }
-        }
-
-        return LocaleHelper.convertPropertiesToString(properties);
+        return getValue(textFieldMap);
     }
 
     public void setValue(String localeBundle) {
-        if (localeBundle == null || textFieldMap == null) {
-            return;
-        }
-
-        Map<String, String> localizedNamesMap = LocaleHelper.getLocalizedValuesMap(localeBundle);
-        for (Map.Entry<Locale, TextField> textFieldEntry : textFieldMap.entrySet()) {
-            String keyLocale = textFieldEntry.getKey().toString();
-            textFieldEntry.getValue().setValue(localizedNamesMap.get(keyLocale));
-        }
+        setValue(localeBundle, textFieldMap);
     }
 
     public void clearFields() {

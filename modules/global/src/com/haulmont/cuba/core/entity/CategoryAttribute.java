@@ -61,6 +61,9 @@ public class CategoryAttribute extends StandardEntity {
     @Column(name = "CODE", length = CODE_FIELD_LENGTH, nullable = false)
     private String code;
 
+    @Column(name = "DESCRIPTION")
+    private String description;
+
     @Column(name = "ENUMERATION")
     private String enumeration;
 
@@ -137,12 +140,19 @@ public class CategoryAttribute extends StandardEntity {
     @Column(name = "LOCALE_NAMES")
     protected String localeNames;
 
+    @Column(name = "LOCALE_DESCRIPTIONS")
+    protected String localeDescriptions;
+
     @Column(name = "ENUMERATION_LOCALES")
     protected String enumerationLocales;
 
     @Transient
     @MetaProperty(related = {"localeNames", "name"})
     protected String localeName;
+
+    @Transient
+    @MetaProperty(related = {"localeDescriptions", "description"})
+    protected String localeDescription;
 
     @Transient
     @MetaProperty(related = "enumerationLocales")
@@ -168,6 +178,14 @@ public class CategoryAttribute extends StandardEntity {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public String getEnumeration() {
@@ -428,6 +446,22 @@ public class CategoryAttribute extends StandardEntity {
             localeName = name;
         }
         return localeName;
+    }
+
+    public String getLocaleDescriptions() {
+        return localeDescriptions;
+    }
+
+    public void setLocaleDescriptions(String localeDescriptions) {
+        this.localeDescriptions = localeDescriptions;
+    }
+
+    public String getLocaleDescription() {
+        localeDescription = LocaleHelper.getLocalizedName(localeDescriptions);
+        if (localeDescription == null) {
+            localeDescription = description;
+        }
+        return localeDescription;
     }
 
     public void setEnumerationLocales(String enumerationLocales) {
