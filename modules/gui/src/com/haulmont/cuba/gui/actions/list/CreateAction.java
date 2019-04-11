@@ -44,11 +44,12 @@ public class CreateAction extends ListAction {
     protected Security security;
 
     public CreateAction() {
-        super(ID);
+        this(ID);
     }
 
     public CreateAction(String id) {
         super(id);
+        this.primary = true;
     }
 
     @Inject
