@@ -201,6 +201,8 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
         if (collectionContainer != null) {
             if (dataLoader instanceof CollectionLoader) {
                 addDynamicAttributes(resultComponent, metaClass, null, (CollectionLoader) dataLoader, availableColumns);
+            } else if (collectionContainer instanceof CollectionPropertyContainer) {
+                addDynamicAttributes(resultComponent, metaClass, null, null, availableColumns);
             }
             //noinspection unchecked
             resultComponent.setItems(createContainerTableSource(collectionContainer));
