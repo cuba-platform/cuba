@@ -46,4 +46,7 @@
 
     <datatype class="com.haulmont.chile.core.datatypes.impl.ByteArrayDatatype"/>
 
+    <datatype id="localDate" class="com.haulmont.chile.core.datatypes.impl.LocalDateDatatype"
+              format="yyyy-MM-dd"/>
+
 </datatypes>
