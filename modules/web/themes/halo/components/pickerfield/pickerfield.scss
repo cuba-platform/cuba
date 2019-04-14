@@ -18,6 +18,17 @@
 @mixin halo-cuba-pickerfield($primary-stylename: c-pickerfield) {
   .#{$primary-stylename} {
     width: $v-default-field-width;
+
+    &.c-has-field-icon {
+      position: relative;
+
+      .c-suggestionfield.inline-icon,
+      .v-textfield.inline-icon {
+        padding-left: 30px;
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+      }
+    }
   }
 
   & .v-caption-on-right > .#{$primary-stylename},

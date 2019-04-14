@@ -60,8 +60,6 @@ import static com.haulmont.cuba.gui.ComponentsHelper.findActionById;
 public class WebPickerField<V extends Entity> extends WebV8AbstractField<CubaPickerField<V>, V, V>
         implements PickerField<V>, SecuredActionsHolder, InitializingBean {
 
-    public final Function<? super V, String> NULL_VALUE_ICON_PROVIDER = value -> null;
-
     /* Beans */
     protected Metadata metadata;
     protected MetadataTools metadataTools;
@@ -199,18 +197,18 @@ public class WebPickerField<V extends Entity> extends WebV8AbstractField<CubaPic
         if (this.iconProvider != optionIconProvider) {
             this.iconProvider = optionIconProvider;
 
-            component.setStyleName(HaloTheme.TEXTFIELD_INLINE_ICON, optionIconProvider != null);
+            component.setStyleName("c-has-field-icon", optionIconProvider != null);
             component.getField().setStyleName(HaloTheme.TEXTFIELD_INLINE_ICON, optionIconProvider != null);
 
-            if (optionIconProvider != null) {
-                component.setIconProvider(this::generateIcon);
-            } else {
-                component.setIconProvider(NULL_VALUE_ICON_PROVIDER);
-            }
+            component.setIconGenerator(this::generateOptionIcon);
         }
     }
 
-    protected String generateIcon(V item) {
+    protected Resource generateOptionIcon(V item) {
+        if (iconProvider == null) {
+            return null;
+        }
+
         String resourceId;
         try {
             resourceId = iconProvider.apply(item);
@@ -220,7 +218,7 @@ public class WebPickerField<V extends Entity> extends WebV8AbstractField<CubaPic
             return null;
         }
 
-        return resourceId;
+        return getIconResource(resourceId);
     }
 
     @Override

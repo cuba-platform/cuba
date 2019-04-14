@@ -21,16 +21,13 @@ import com.vaadin.data.ValueProvider;
 import com.vaadin.event.Action;
 import com.vaadin.server.Page;
 import com.vaadin.server.Resource;
-import com.vaadin.server.ThemeResource;
 import com.vaadin.server.WebBrowser;
 import com.vaadin.shared.Registration;
 import com.vaadin.ui.*;
 import com.vaadin.util.ReflectTools;
-import org.apache.commons.lang3.StringUtils;
 
 import java.lang.reflect.Method;
 import java.util.*;
-import java.util.function.Function;
 
 import static com.haulmont.cuba.web.widgets.CubaPickerField.FieldValueChangeListener.FIELD_VALUE_CHANGE_METHOD;
 
@@ -46,7 +43,7 @@ public class CubaPickerField<T> extends com.vaadin.ui.CustomField<T> implements 
     protected AbstractComponent field;
     protected ValueProvider<T, String> textFieldValueProvider;
 
-    protected Function<? super T, String> iconProvider;
+    protected IconGenerator<T> iconGenerator;
 
     protected List<Button> buttons = new ArrayList<>(4);
     protected CubaCssActionsLayout container;
@@ -171,22 +168,21 @@ public class CubaPickerField<T> extends com.vaadin.ui.CustomField<T> implements 
     }
 
 
-    public Function<? super T, String> getIconProvider() {
-        return iconProvider;
+    public IconGenerator<T> getIconGenerator() {
+        return iconGenerator;
     }
 
-    public void setIconProvider(Function<? super T, String> iconProvider) {
-        if (this.iconProvider != iconProvider) {
-            this.iconProvider = iconProvider;
+    public void setIconGenerator(IconGenerator<T> iconGenerator) {
+        if (this.iconGenerator != iconGenerator) {
+            this.iconGenerator = iconGenerator;
 
             updateIcon(internalValue);
         }
     }
 
     protected void updateIcon(T value) {
-        String icon = iconProvider != null ? iconProvider.apply(value) : null;
-        Resource iconResource = StringUtils.isNotEmpty(icon) ? new ThemeResource(icon) : null;
-        setIcon(iconResource);
+        Resource iconResource = iconGenerator != null ? iconGenerator.apply(value) : null;
+        getField().setIcon(iconResource);
     }
 
     public boolean isFieldReadOnly() {
