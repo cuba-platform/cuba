@@ -13,19 +13,13 @@
  */
 package com.haulmont.cuba.web.widgets.addons.dragdroplayouts.v7.drophandlers;
 
-import com.vaadin.event.dd.DragAndDropEvent;
-import com.vaadin.shared.ui.dd.HorizontalDropLocation;
-import com.vaadin.ui.AbstractOrderedLayout;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.ComponentContainer;
-import com.vaadin.v7.ui.HorizontalLayout;
-import com.vaadin.ui.SingleComponentContainer;
-
-import com.haulmont.cuba.web.widgets.addons.dragdroplayouts.v7.DDHorizontalLayout
-        .HorizontalLayoutTargetDetails;
 import com.haulmont.cuba.web.widgets.addons.dragdroplayouts.drophandlers.AbstractDefaultLayoutDropHandler;
 import com.haulmont.cuba.web.widgets.addons.dragdroplayouts.events.LayoutBoundTransferable;
+import com.haulmont.cuba.web.widgets.addons.dragdroplayouts.v7.DDHorizontalLayout.HorizontalLayoutTargetDetails;
+import com.vaadin.event.dd.DragAndDropEvent;
+import com.vaadin.shared.ui.dd.HorizontalDropLocation;
+import com.vaadin.ui.*;
+import com.vaadin.v7.ui.HorizontalLayout;
 
 /**
  * A default drop handler for horizontal layouts
@@ -168,13 +162,10 @@ public class DefaultHorizontalLayoutDropHandler
 
     @Override
     protected void handleHTML5Drop(DragAndDropEvent event) {
-        LayoutBoundTransferable transferable = (LayoutBoundTransferable) event
-                .getTransferable();
         HorizontalLayoutTargetDetails details = (HorizontalLayoutTargetDetails) event
                 .getTargetDetails();
         AbstractOrderedLayout layout = (AbstractOrderedLayout) details
                 .getTarget();
-        Component source = event.getTransferable().getSourceComponent();
         int idx = (details).getOverIndex();
 
         // Increase index if component is dropped after or above a

@@ -45,6 +45,7 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * @param <T> type of entity
@@ -336,10 +337,10 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
             query = filter.processQuery(this.query, parameterValues);
 
         for (ParameterInfo info : queryParameters) {
-            final String paramName = info.getName();
-            final String jpaParamName = info.getFlatName();
+            String paramName = info.getName();
+            String jpaParamName = info.getFlatName();
 
-            Pattern p = Pattern.compile(paramName.replace("$", "\\$") + "([^\\.]|$)"); // not ending with "."
+            Pattern p = Pattern.compile(paramName.replace("$", "\\$") + "([^.]|$)"); // not ending with "."
             Matcher m = p.matcher(query);
             StringBuffer sb = new StringBuffer();
             while (m.find()) {
@@ -545,18 +546,20 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
         } else if (!(context instanceof ValueLoadContext)) {
             Collection<MetaProperty> properties = metadata.getTools().getNamePatternProperties(metaClass);
             if (!properties.isEmpty()) {
-                StringBuilder orderBy = new StringBuilder();
-                for (MetaProperty metaProperty : properties) {
-                    if (metaProperty != null
-                            && metaProperty.getAnnotatedElement().
-                            getAnnotation(com.haulmont.chile.core.annotations.MetaProperty.class) == null)
-                        orderBy.append("e.").append(metaProperty.getName()).append(", ");
+                String orderBy = properties.stream()
+                        .filter(m -> m != null
+                            && m.getAnnotatedElement().getAnnotation(com.haulmont.chile.core.annotations.MetaProperty.class) == null)
+                        .map(m -> "e." + m.getName())
+                        .collect(Collectors.joining(", "));
+
+                String queryString;
+                if (!orderBy.isEmpty()) {
+                    queryString = String.format("select e from %s e order by %s", metaClass.getName(), orderBy);
+                } else {
+                    queryString = String.format("select e from %s e", metaClass.getName());
                 }
-                if (orderBy.length() > 0) {
-                    orderBy.delete(orderBy.length() - 2, orderBy.length());
-                    orderBy.insert(0, " order by ");
-                }
-                q = context.setQueryString("select e from " + metaClass.getName() + " e" + orderBy.toString());
+
+                q = context.setQueryString(queryString);
             } else
                 q = context.setQueryString("select e from " + metaClass.getName() + " e");
         }

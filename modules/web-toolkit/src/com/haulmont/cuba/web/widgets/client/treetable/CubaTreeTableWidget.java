@@ -419,9 +419,9 @@ public class CubaTreeTableWidget extends VTreeTable implements TableWidget {
             TableWidgetDelegate delegate = CubaTreeTableWidget.this._delegate;
             boolean captionAsHtml = delegate.htmlCaptionColumns.contains(cid);
             if (captionAsHtml) {
-                DOM.setInnerHTML(captionContainer, headerText);
+                captionContainer.setInnerHTML(headerText);
             } else {
-                DOM.setInnerText(captionContainer, headerText);
+                captionContainer.setInnerText(headerText);
             }
         }
 
@@ -441,7 +441,6 @@ public class CubaTreeTableWidget extends VTreeTable implements TableWidget {
                             reloadDataFromServer = false;
                             sortClickCounter = 0;
                             sortColumn = null;
-                            sortAscending = true;
 
                             client.updateVariable(paintableId, "resetsortorder", "", true);
                         }

@@ -22,9 +22,12 @@ import com.haulmont.cuba.gui.screen.Screen;
 import com.haulmont.cuba.gui.screen.Subscribe;
 
 public interface ScreenEventMixin {
-
     @Subscribe
     default void onInitMixin(Screen.InitEvent event) {
         BeanLocator beanLocator = Extensions.getBeanLocator(event.getSource());
+
+        if (beanLocator == null) {
+            throw new RuntimeException("BeanLocator is null");
+        }
     }
 }

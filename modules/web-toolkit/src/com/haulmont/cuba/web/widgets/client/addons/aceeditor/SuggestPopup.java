@@ -248,8 +248,8 @@ public class SuggestPopup extends VOverlay implements KeyDownHandler,
 	protected void updateDescriptionPopupPosition() {
 		int x = getAbsoluteLeft() + WIDTH;
 		int y = getAbsoluteTop();
-		descriptionPopup.setPopupPosition(x, y);
-		if (descriptionPopup!=null) {
+
+		if (descriptionPopup != null) {
 			descriptionPopup.setPopupPosition(x, y);
 		}
 	}
@@ -262,8 +262,7 @@ public class SuggestPopup extends VOverlay implements KeyDownHandler,
 		lbl.setWordWrap(true);
 		descriptionPopup.setWidget(lbl);
 		updateDescriptionPopupPosition();
-		descriptionPopup.setWidth(DESCRIPTION_WIDTH+"px");
-//		descriptionPopup.setSize(DESCRIPTION_WIDTH+"px", HEIGHT+"px");
+		descriptionPopup.setWidth(DESCRIPTION_WIDTH + "px");
 	}
 
 	public void setStartOfValue(String startOfValue) {
@@ -276,5 +275,4 @@ public class SuggestPopup extends VOverlay implements KeyDownHandler,
 			close();
 		}
 	}
-
 }

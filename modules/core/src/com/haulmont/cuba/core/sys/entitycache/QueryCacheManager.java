@@ -124,14 +124,15 @@ public class QueryCacheManager {
                 throw queryResult.getException();
             }
             EntityManager em = persistence.getEntityManager();
-            for (Object id : queryResult.getResult()) {
-                return (T) em.find(metaClass.getJavaClass(), id, views.toArray(new View[views.size()]));
+            List ids = queryResult.getResult();
+
+            if (!ids.isEmpty()) {
+                return (T) em.find(metaClass.getJavaClass(), ids.get(0), views.toArray(new View[0]));
             }
         }
         log.debug("Query results are not found in cache: {}", queryKey.printDescription());
         return null;
     }
-
 
     /**
      * Put query results into query cache for specified query {@code queryKey}.

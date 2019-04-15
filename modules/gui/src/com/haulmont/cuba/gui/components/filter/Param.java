@@ -808,15 +808,13 @@ public class Param {
             String strValue = e.getValue();
             if (strValue == null) {
                 _setValue(null, valueProperty);
-            } else if ((!StringUtils.isBlank(strValue))) {
+            } else if (StringUtils.isNotBlank(strValue)) {
                 try {
                     _setValue(UUID.fromString(strValue), valueProperty);
                 } catch (IllegalArgumentException ie) {
                     beanLocator.get(WindowManagerProvider.class).get()
                             .showNotification(messages.getMainMessage("filter.param.uuid.Err"), Frame.NotificationType.TRAY);
                 }
-            } else if (StringUtils.isBlank(strValue)) {
-                _setValue(null, valueProperty);
             } else {
                 throw new IllegalStateException("Invalid value: " + strValue);
             }

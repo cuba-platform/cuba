@@ -463,9 +463,9 @@ public class CubaScrollTableWidget extends VScrollTable implements TableWidget {
             TableWidgetDelegate delegate = CubaScrollTableWidget.this._delegate;
             boolean captionAsHtml = delegate.htmlCaptionColumns.contains(cid);
             if (captionAsHtml) {
-                DOM.setInnerHTML(captionContainer, headerText);
+                captionContainer.setInnerHTML(headerText);
             } else {
-                DOM.setInnerText(captionContainer, headerText);
+                captionContainer.setInnerText(headerText);
             }
         }
 
@@ -485,7 +485,6 @@ public class CubaScrollTableWidget extends VScrollTable implements TableWidget {
                             reloadDataFromServer = false;
                             sortClickCounter = 0;
                             sortColumn = null;
-                            sortAscending = true;
 
                             client.updateVariable(paintableId, "resetsortorder", "", true);
                         }

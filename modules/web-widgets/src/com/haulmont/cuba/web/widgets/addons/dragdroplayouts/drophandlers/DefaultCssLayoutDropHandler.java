@@ -13,6 +13,9 @@
  */
 package com.haulmont.cuba.web.widgets.addons.dragdroplayouts.drophandlers;
 
+import com.haulmont.cuba.web.widgets.addons.dragdroplayouts.DDCssLayout;
+import com.haulmont.cuba.web.widgets.addons.dragdroplayouts.DDCssLayout.CssLayoutTargetDetails;
+import com.haulmont.cuba.web.widgets.addons.dragdroplayouts.events.LayoutBoundTransferable;
 import com.vaadin.event.dd.DragAndDropEvent;
 import com.vaadin.shared.ui.dd.HorizontalDropLocation;
 import com.vaadin.shared.ui.dd.VerticalDropLocation;
@@ -21,16 +24,11 @@ import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.SingleComponentContainer;
 
-import com.haulmont.cuba.web.widgets.addons.dragdroplayouts.DDCssLayout;
-import com.haulmont.cuba.web.widgets.addons.dragdroplayouts.DDCssLayout.CssLayoutTargetDetails;
-import com.haulmont.cuba.web.widgets.addons.dragdroplayouts.events.LayoutBoundTransferable;
-
 /**
  * Default CSS Layout drop handler
  * 
  * @author John Ahlroos / www.jasoft.fi
  * @since 0.7.0
- * 
  */
 @SuppressWarnings("serial")
 public class DefaultCssLayoutDropHandler
@@ -46,7 +44,6 @@ public class DefaultCssLayoutDropHandler
         DDCssLayout layout = (DDCssLayout) details.getTarget();
         Component comp = transferable.getComponent();
         int idx = details.getOverIndex();
-        Component over = details.getOverComponent();
 
         // Detach from old source
         Component source = transferable.getSourceComponent();

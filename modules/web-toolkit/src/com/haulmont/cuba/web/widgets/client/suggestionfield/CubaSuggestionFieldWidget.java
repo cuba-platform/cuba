@@ -191,9 +191,7 @@ public class CubaSuggestionFieldWidget extends Composite implements HasEnabled, 
             return;
         }
 
-        if (!query.equals(value)) {
-            addStyleName(MODIFIED_STYLENAME);
-        }
+        addStyleName(MODIFIED_STYLENAME);
 
         if (query.length() >= minSearchStringLength) {
             scheduleQuery(query);
@@ -420,7 +418,7 @@ public class CubaSuggestionFieldWidget extends Composite implements HasEnabled, 
         }
 
         public void showPopup() {
-            final int x = textField.getAbsoluteLeft();
+            int x = textField.getAbsoluteLeft();
             topPosition = textField.getAbsoluteTop() + textField.getOffsetHeight();
 
             setPopupPosition(x, topPosition);
@@ -431,6 +429,8 @@ public class CubaSuggestionFieldWidget extends Composite implements HasEnabled, 
 
         @Override
         public void setPosition(int offsetWidth, int offsetHeight) {
+            // CAUTION: offsetWidth and offsetHeight are ignored because we measure width/height after show
+
             offsetHeight = getOffsetHeight();
 
             if (popupOuterPadding == -1) {

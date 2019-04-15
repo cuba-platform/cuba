@@ -2686,8 +2686,6 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
     }
 
     protected boolean handleSpecificVariables(Map<String, Object> variables) {
-        boolean needReload = false;
-
         if (isUsePresentations() && presentations != null) {
             Presentations p = getPresentations();
 
@@ -2698,8 +2696,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
             }
         }
 
-        //noinspection ConstantConditions
-        return needReload;
+        return false;
     }
 
     protected boolean needUpdatePresentation(Map<String, Object> variables) {

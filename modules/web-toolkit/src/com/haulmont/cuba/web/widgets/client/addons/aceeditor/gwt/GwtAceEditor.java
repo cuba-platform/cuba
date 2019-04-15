@@ -23,7 +23,6 @@ import com.google.gwt.dom.client.Element;
  * A GWT adaptation of Ace editor.
  * 
  * @see <a href="http://ace.ajax.org">Ace Editor</a>
- * 
  */
 public class GwtAceEditor extends JavaScriptObject {
 
@@ -185,10 +184,6 @@ public class GwtAceEditor extends JavaScriptObject {
 	public final native void blur() /*-{
 		this.blur();
 	}-*/;
-
-	public final boolean isFocused() {
-		return this.isFocused();
-	}
 
 	public final native void setAnnotations(JsArray<GwtAceAnnotation> anns) /*-{
 		this.getSession().setAnnotations(anns);

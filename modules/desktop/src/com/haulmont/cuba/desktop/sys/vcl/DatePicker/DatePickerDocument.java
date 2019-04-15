@@ -235,7 +235,7 @@ public class DatePickerDocument extends PlainDocument {
                         result.setCharAt(i + shift, placeHolder);
                     }
                 }
-            } else if ((mask.charAt(i + offset) != placeHolder) && (Character.isDigit(text.charAt(i)))) {
+            } else if (Character.isDigit(text.charAt(i))) {
                 int digit = Integer.parseInt(text.substring(i, i + 1));
                 if (i + offset + 1 == month0) {
                     if (digit > 1) {

@@ -57,7 +57,7 @@ public class SourceCodeEditorLoader extends AbstractFieldLoader<SourceCodeEditor
         }
 
         String handleTabKey = element.attributeValue("handleTabKey");
-        if (StringUtils.isNotEmpty("handleTabKey")) {
+        if (StringUtils.isNotEmpty(handleTabKey)) {
             resultComponent.setHandleTabKey(Boolean.parseBoolean(handleTabKey));
         }
     }

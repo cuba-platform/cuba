@@ -311,9 +311,9 @@ public class CubaSideMenuWidget extends FocusableFlowPanel
         List<MenuItemWidget> menuItemWidgets = menuTreeToList(menuTree);
 
         int menuItemFlatIndex = menuItemWidgets.indexOf(currentItem);
-        int nextMenuItemFlatIndex = menuItemFlatIndex - 1;
-        if (nextMenuItemFlatIndex < menuItemWidgets.size()) {
-            return menuItemWidgets.get(nextMenuItemFlatIndex);
+        int previousMenuItemFlatIndex = menuItemFlatIndex - 1;
+        if (previousMenuItemFlatIndex >= 0) {
+            return menuItemWidgets.get(previousMenuItemFlatIndex);
         }
         return null;
     }
@@ -324,9 +324,9 @@ public class CubaSideMenuWidget extends FocusableFlowPanel
         List<MenuItemWidget> menuItemWidgets = menuTreeToList(menuTree);
 
         int menuItemFlatIndex = menuItemWidgets.indexOf(currentItem);
-        int previousMenuItemFlatIndex = menuItemFlatIndex + 1;
-        if (previousMenuItemFlatIndex >= 0) {
-            return menuItemWidgets.get(previousMenuItemFlatIndex);
+        int nextMenuItemFlatIndex = menuItemFlatIndex + 1;
+        if (nextMenuItemFlatIndex < menuItemWidgets.size()) {
+            return menuItemWidgets.get(nextMenuItemFlatIndex);
         }
         return null;
     }

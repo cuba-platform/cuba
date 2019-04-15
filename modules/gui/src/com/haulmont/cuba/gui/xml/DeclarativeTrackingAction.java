@@ -45,7 +45,7 @@ public class DeclarativeTrackingAction extends ListAction implements Action.HasT
 
     public DeclarativeTrackingAction(String id, String caption, String description, String icon, String enable, String visible,
                                      String methodName, @Nullable String shortcut, ActionsHolder holder) {
-        super(id);
+        super(id, shortcut);
         this.caption = caption;
         this.description = description;
         this.icon = icon;

@@ -43,9 +43,8 @@ public class QueryNode extends BaseCustomNode {
 
     public boolean contains(int caret) {
         return lastToken == null ||
-                caret >= token.getCharPositionInLine() && (caret - lastToken.getCharPositionInLine()) <= lastToken.getText().length();
-
-
+                caret >= token.getCharPositionInLine()
+                        && (caret - lastToken.getCharPositionInLine()) <= lastToken.getText().length();
     }
 
     @Override
@@ -69,8 +68,9 @@ public class QueryNode extends BaseCustomNode {
     @Override
     public CommonTree treeToQueryPost(QueryBuilder sb, List<ErrorRec> invalidNodes) {
         if (parent != null) {
-            if (' ' == sb.getLast())
+            if (' ' == sb.getLast()) {
                 sb.deleteLast();
+            }
             sb.appendString(") ");
         }
         return this;

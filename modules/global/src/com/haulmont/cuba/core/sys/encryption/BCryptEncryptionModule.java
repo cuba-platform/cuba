@@ -45,8 +45,8 @@ public class BCryptEncryptionModule implements EncryptionModule {
 
     @Override
     public String getHash(String content, String salt) {
-        salt = BCrypt.gensalt();
-        return BCrypt.hashpw(content, salt);
+        // CAUTION: we ignore passed salt
+        return BCrypt.hashpw(content, BCrypt.gensalt());
     }
 
     @Override

@@ -18,8 +18,7 @@ package com.haulmont.cuba.web.exception;
 
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
-import com.haulmont.cuba.gui.WindowManager;
-import com.haulmont.cuba.gui.components.Frame;
+import com.haulmont.cuba.gui.Notifications;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.AppUI;
 import com.vaadin.server.ErrorEvent;
@@ -68,22 +67,22 @@ public class DefaultExceptionHandler implements ExceptionHandler {
 
         if (t != null) {
             if (app.getConnection().getSession() != null) {
-                showDialog(app, t);
+                showDialog(app, ui, t);
             } else {
-                showNotification(app, t);
+                showNotification(app, ui, t);
             }
         }
 
+        // default handler always return true
         return true;
     }
 
-    protected void showDialog(App app, Throwable exception) {
+    protected void showDialog(App app, AppUI ui, Throwable exception) {
         Throwable rootCause = ExceptionUtils.getRootCause(exception);
         if (rootCause == null) {
             rootCause = exception;
         }
         ExceptionDialog dialog = new ExceptionDialog(rootCause);
-        AppUI ui = app.getAppUI();
         for (Window window : ui.getWindows()) {
             if (window.isModal()) {
                 dialog.setModal(true);
@@ -94,18 +93,18 @@ public class DefaultExceptionHandler implements ExceptionHandler {
         dialog.focus();
     }
 
-    protected void showNotification(App app, Throwable exception) {
+    protected void showNotification(App app, AppUI ui, Throwable exception) {
         Throwable rootCause = ExceptionUtils.getRootCause(exception);
         if (rootCause == null) {
             rootCause = exception;
         }
-        WindowManager windowManager = app.getWindowManager();
-        if (windowManager != null) {
-            windowManager.showNotification(
-                    messages.getMainMessage("exceptionDialog.caption", app.getLocale()),
-                    rootCause.getClass().getSimpleName() + (rootCause.getMessage() != null ? "\n" + rootCause.getMessage() : ""),
-                    Frame.NotificationType.ERROR
-            );
-        }
+
+        String message = rootCause.getClass().getSimpleName() +
+                (rootCause.getMessage() != null ? "\n" + rootCause.getMessage() : "");
+
+        ui.getNotifications().create(Notifications.NotificationType.ERROR)
+                .withCaption(messages.getMainMessage("exceptionDialog.caption", app.getLocale()))
+                .withDescription(message)
+                .show();
     }
 }

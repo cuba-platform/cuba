@@ -42,7 +42,7 @@ public class HTML5Support {
     protected static DropHandler globalDropHandler = null;
     protected static DragEnterHandler globalDragEnterHandler = null;
 
-    private final List<HandlerRegistration> handlers = new ArrayList<HandlerRegistration>();
+    private final List<HandlerRegistration> handlers = new ArrayList<>();
 
     public static class HTML5DragHandler
             implements DragEnterHandler, DragOverHandler, DropHandler {
@@ -159,7 +159,7 @@ public class HTML5Support {
             }
 
             ComponentConnector connector = Util.findConnectorFor(widget);
-            while (connector == null) {
+            while (connector == null && widget != null) {
                 widget = widget.getParent();
                 connector = Util.findConnectorFor(widget);
             }
@@ -178,7 +178,7 @@ public class HTML5Support {
         }
     }
 
-    public static final HTML5Support enable(final ComponentConnector connector,
+    public static HTML5Support enable(final ComponentConnector connector,
             final VDDAbstractDropHandler<? extends Widget> handler) {
         if (handler == null) {
             return null;

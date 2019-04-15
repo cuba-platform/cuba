@@ -593,9 +593,7 @@ public abstract class DesktopAbstractTable<C extends JXTable, E extends Entity>
             columns.remove(column.getId());
             columnsOrder.remove(column);
 
-            if (tableModel != null) {
-                tableModel.removeColumn(column);
-            }
+            tableModel.removeColumn(column);
 
             // reassign column identifiers
             setColumnIdentifiers();
@@ -673,6 +671,10 @@ public abstract class DesktopAbstractTable<C extends JXTable, E extends Entity>
                     for (Object entity : e.getItems()) {
                         fieldDatasources.remove(entity);
                     }
+                    break;
+
+                case ADD:
+                    // no action
                     break;
             }
         };
@@ -1577,9 +1579,7 @@ public abstract class DesktopAbstractTable<C extends JXTable, E extends Entity>
 
         columns.put(col.getId(), col);
         // do not touch columnsOrder, it will be synced from table model
-        if (tableModel != null) {
-            tableModel.addColumn(col);
-        }
+        tableModel.addColumn(col);
 
         // reassign column identifiers
         setColumnIdentifiers();
