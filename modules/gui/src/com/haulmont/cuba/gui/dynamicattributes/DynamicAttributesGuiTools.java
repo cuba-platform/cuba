@@ -38,6 +38,7 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsBuilder;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
+import com.haulmont.cuba.gui.sys.ScreensHelper;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
@@ -68,6 +69,9 @@ public class DynamicAttributesGuiTools {
 
     @Inject
     protected DataManager dataManager;
+
+    @Inject
+    protected ScreensHelper screensHelper;
 
     /**
      * Enforce the datasource to change modified status if dynamic attribute is changed
@@ -244,7 +248,8 @@ public class DynamicAttributesGuiTools {
             lookupAction.setLookupScreen(screen);
         } else {
             screen = windowConfig.getBrowseScreenId(metaClass);
-            if (windowConfig.findWindowInfo(screen) != null) {
+            Map<String, String> screensMap = screensHelper.getAvailableBrowserScreens(javaClass);
+            if (windowConfig.findWindowInfo(screen) != null && screensMap.containsValue(screen)) {
                 lookupAction.setLookupScreen(screen);
                 lookupAction.setLookupScreenOpenType(OpenType.THIS_TAB);
             } else {
