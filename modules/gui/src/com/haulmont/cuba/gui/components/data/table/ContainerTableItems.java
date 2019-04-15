@@ -23,9 +23,9 @@ import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.Sort;
 import com.haulmont.cuba.gui.components.AggregationInfo;
+import com.haulmont.cuba.gui.components.data.AggregatableTableItems;
 import com.haulmont.cuba.gui.components.data.BindingState;
 import com.haulmont.cuba.gui.components.data.TableItems;
-import com.haulmont.cuba.gui.components.data.AggregatableTableItems;
 import com.haulmont.cuba.gui.components.data.meta.ContainerDataUnit;
 import com.haulmont.cuba.gui.components.data.meta.EntityTableItems;
 import com.haulmont.cuba.gui.data.impl.AggregatableDelegate;
@@ -218,7 +218,10 @@ public class ContainerTableItems<E extends Entity> implements EntityTableItems<E
     @Override
     public Object lastItemId() {
         List<E> items = container.getItems();
-        return items.isEmpty() ? null : items.get(0).getId();
+        if (items.isEmpty()) {
+            return null;
+        }
+        return items.get(items.size() - 1).getId();
     }
 
     @Override

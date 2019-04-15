@@ -90,23 +90,72 @@ public interface TableItems<I> extends DataUnit {
      */
     Subscription addSelectedItemChangeListener(Consumer<SelectedItemChangeEvent<I>> listener);
 
+    /**
+     * Ordered table items.
+     *
+     * @param <T> row item type
+     */
     interface Ordered<T> extends TableItems<T> {
+        /**
+         * Gets the ID of the item following the Item that corresponds to <code>itemId</code>.
+         *
+         * @param itemId item id
+         * @return ID of the next visible Item or <code>null</code>
+         */
         Object nextItemId(Object itemId);
 
+        /**
+         * Gets the ID of the item preceding the item that corresponds to <code>itemId</code>.
+         *
+         * @param itemId item id
+         * @return ID of the previous visible item or <code>null</code>
+         */
         Object prevItemId(Object itemId);
 
+        /**
+         * @return ID of the first visible item
+         */
         Object firstItemId();
 
+        /**
+         * @return ID of the last visible item
+         */
         Object lastItemId();
 
+        /**
+         * Tests if the Item corresponding to the given Item ID is the first item.
+         *
+         * @param itemId item id
+         * @return <code>true</code> if the item is first visible item, <code>false</code> if not
+         */
         boolean isFirstId(Object itemId);
 
+        /**
+         * Tests if the item corresponding to the given item ID is the last item.
+         *
+         * @param itemId item id
+         * @return <code>true</code> if the item is last visible item in the, <code>false</code> if not
+         */
         boolean isLastId(Object itemId);
     }
 
+    /**
+     * Sortable table items.
+     *
+     * @param <T> row item type
+     */
     interface Sortable<T> extends Ordered<T> {
+        /**
+         * Sorts data.
+         *
+         * @param propertyId id of property
+         * @param ascending asc / desc flags
+         */
         void sort(Object[] propertyId, boolean[] ascending);
 
+        /**
+         * Resets sort order.
+         */
         void resetSortOrder();
     }
 
