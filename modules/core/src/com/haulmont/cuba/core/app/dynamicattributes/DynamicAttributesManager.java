@@ -29,6 +29,7 @@ import com.haulmont.cuba.core.app.ClusterListenerAdapter;
 import com.haulmont.cuba.core.app.ClusterManagerAPI;
 import com.haulmont.cuba.core.entity.*;
 import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.security.entity.EntityOp;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.slf4j.Logger;
@@ -68,6 +69,9 @@ public class DynamicAttributesManager implements DynamicAttributesManagerAPI {
 
     @Inject
     protected PersistentAttributesLoadChecker persistentAttributesLoadChecker;
+
+    @Inject
+    protected Security security;
 
     protected ClusterManagerAPI clusterManager;
 
@@ -476,8 +480,10 @@ public class DynamicAttributesManager implements DynamicAttributesManagerAPI {
             try {
                 Class<?> aClass = Class.forName(className);
                 MetaClass metaClass = metadata.getClass(aClass);
-                entitiesIdsToBeLoaded.put(metaClass, cav.getObjectEntityValueId());
-                cavByType.put(metaClass, cav);
+                if (security.isEntityOpPermitted(metaClass, EntityOp.READ)) {
+                    entitiesIdsToBeLoaded.put(metaClass, cav.getObjectEntityValueId());
+                    cavByType.put(metaClass, cav);
+                }
             } catch (ClassNotFoundException e) {
                 log.error("Class {} not found", className);
             }
