@@ -36,25 +36,6 @@ import javax.management.ObjectName;
  * can be found.
  */
 public class AnnotationMBeanNamingStrategy implements ObjectNamingStrategy {
-
-    /**
-     * The {@code JmxAttributeSource} implementation to use for reading metadata.
-     */
-    @Nullable
-    private JmxAttributeSource attributeSource;
-
-    /**
-     * Create a new {@code AnnotationMBeanNamingStrategy} for the given
-     * {@code JmxAttributeSource}.
-     *
-     * @param attributeSource the JmxAttributeSource to use
-     */
-    public AnnotationMBeanNamingStrategy(JmxAttributeSource attributeSource) {
-        Assert.notNull(attributeSource, "JmxAttributeSource must not be null");
-        this.attributeSource = attributeSource;
-    }
-
-
     @Override
     public ObjectName getObjectName(Object managedBean, String beanKey) throws MalformedObjectNameException {
         Class<?> managedClass = AopUtils.getTargetClass(managedBean);

@@ -24,7 +24,7 @@ public class AnnotationMBeanExporter extends MBeanExporter {
     public AnnotationMBeanExporter() {
         super();
         setAutodetectMode(AUTODETECT_ASSEMBLER);
-        setNamingStrategy(new AnnotationMBeanNamingStrategy(getJmxAttributeSource()));
+        setNamingStrategy(new AnnotationMBeanNamingStrategy());
     }
 
     @Override
