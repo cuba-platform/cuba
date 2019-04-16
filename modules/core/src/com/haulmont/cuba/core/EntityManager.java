@@ -20,6 +20,7 @@ import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.View;
 
+import javax.annotation.CheckReturnValue;
 import javax.annotation.Nullable;
 import java.sql.Connection;
 
@@ -87,6 +88,7 @@ public interface EntityManager {
      * is not a valid type for that entity's primary key
      */
     @Nullable
+    @CheckReturnValue
     <T extends Entity<K>, K> T find(Class<T> entityClass, K id);
 
     /**
@@ -103,6 +105,7 @@ public interface EntityManager {
      * is not a valid type for that entity's primary key
      */
     @Nullable
+    @CheckReturnValue
     <T extends Entity<K>, K> T find(Class<T> entityClass, K id, View... views);
 
     /**
@@ -120,6 +123,7 @@ public interface EntityManager {
      * is not a valid type for that entity's primary key
      */
     @Nullable
+    @CheckReturnValue
     <T extends Entity<K>, K> T find(Class<T> entityClass, K id, String... viewNames);
 
     /**
@@ -138,6 +142,7 @@ public interface EntityManager {
      * is not a valid type for that entity's primary key
      * @throws javax.persistence.EntityNotFoundException if the entity state cannot be accessed
      */
+    @CheckReturnValue
     <T extends Entity<K>, K> T getReference(Class<T> entityClass, K id);
 
     /**

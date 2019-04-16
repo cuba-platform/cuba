@@ -21,6 +21,7 @@ import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.queryconditions.Condition;
 
+import javax.annotation.CheckReturnValue;
 import javax.persistence.TemporalType;
 import java.util.*;
 
@@ -73,6 +74,7 @@ public class FluentLoader<E extends Entity<K>, K> {
     /**
      * Loads a list of entities.
      */
+    @CheckReturnValue
     public List<E> list() {
         LoadContext<E> loadContext = createLoadContext();
         return dataManager.loadList(loadContext);
@@ -81,6 +83,7 @@ public class FluentLoader<E extends Entity<K>, K> {
     /**
      * Loads a single instance and wraps it in Optional.
      */
+    @CheckReturnValue
     public Optional<E> optional() {
         LoadContext<E> loadContext = createLoadContext();
         loadContext.getQuery().setMaxResults(1);
@@ -92,6 +95,7 @@ public class FluentLoader<E extends Entity<K>, K> {
      *
      * @throws IllegalStateException if nothing was loaded
      */
+    @CheckReturnValue
     public E one() {
         LoadContext<E> loadContext = createLoadContext();
         loadContext.getQuery().setMaxResults(1);

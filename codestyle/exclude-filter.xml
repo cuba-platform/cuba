@@ -349,4 +349,9 @@
         <Class name="com.haulmont.cuba.web.sys.navigation.CrockfordUuidEncoder"/>
     </Match>
 
+    <Match>
+        <Bug pattern="RV_RETURN_VALUE_IGNORED"/>
+        <Class name="com.haulmont.cuba.core.app.TestingServiceBean"/>
+    </Match>
+
 </FindBugsFilter>

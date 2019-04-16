@@ -22,6 +22,7 @@ import com.haulmont.cuba.core.entity.KeyValueEntity;
 import com.haulmont.cuba.core.entity.contracts.Id;
 import com.haulmont.cuba.core.global.*;
 
+import javax.annotation.CheckReturnValue;
 import javax.annotation.Nullable;
 import java.util.List;
 
@@ -122,6 +123,7 @@ public interface TransactionalDataManager {
      * @return          the loaded detached object, or null if not found
      */
     @Nullable
+    @CheckReturnValue
     <E extends Entity> E load(LoadContext<E> context);
 
     /**
@@ -129,6 +131,7 @@ public interface TransactionalDataManager {
      * @param context   {@link LoadContext} object, defining what and how to load
      * @return          a list of detached instances, or empty list if nothing found
      */
+    @CheckReturnValue
     <E extends Entity> List<E> loadList(LoadContext<E> context);
 
     /**
@@ -136,6 +139,7 @@ public interface TransactionalDataManager {
      * @param context   defines a query for scalar values and a list of keys for returned KeyValueEntity
      * @return list of KeyValueEntity instances
      */
+    @CheckReturnValue
     List<KeyValueEntity> loadValues(ValueLoadContext context);
 
     /**

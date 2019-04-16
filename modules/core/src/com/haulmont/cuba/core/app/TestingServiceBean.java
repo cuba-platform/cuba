@@ -43,13 +43,13 @@ public class TestingServiceBean implements TestingService {
 
     @Override
     public String executeFor(int timeMillis) {
-        log.debug("executeFor " + timeMillis  + " started");
+        log.debug("executeFor {} started", timeMillis);
         try {
             Thread.sleep(timeMillis);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-        log.debug("executeFor " + timeMillis + " finished");
+        log.debug("executeFor {} finished", timeMillis);
         return "Done";
     }
 
@@ -71,11 +71,11 @@ public class TestingServiceBean implements TestingService {
     public String executeSelectSql(String sql) {
         checkTestMode();
 
-        log.info("started: " + sql);
+        log.info("started: {}", sql);
         EntityManager em = persistence.getEntityManager();
         Query query = em.createNativeQuery(sql);
         query.getResultList();
-        log.info("finished: " + sql);
+        log.info("finished: {}", sql);
         return "Done";
     }
 
@@ -123,6 +123,7 @@ public class TestingServiceBean implements TestingService {
     public Object leaveOpenTransaction() {
         checkTestMode();
         Transaction tx = persistence.createTransaction();
+        //noinspection ResultOfMethodCallIgnored
         persistence.getEntityManager().find(User.class, UUID.fromString("60885987-1b61-4247-94c7-dff348347f93"));
         return tx;
     }
@@ -131,6 +132,7 @@ public class TestingServiceBean implements TestingService {
     @Override
     public void declarativeTransaction() {
         checkTestMode();
+        //noinspection ResultOfMethodCallIgnored
         persistence.getEntityManager().find(User.class, UUID.fromString("60885987-1b61-4247-94c7-dff348347f93"));
 
         persistence.getEntityManagerContext().setAttribute("test", "test_value");

@@ -20,6 +20,7 @@ package com.haulmont.cuba.core;
 import com.haulmont.cuba.core.sys.EntityManagerContext;
 import com.haulmont.cuba.core.sys.persistence.DbTypeConverter;
 
+import javax.annotation.CheckReturnValue;
 import javax.sql.DataSource;
 
 /**
@@ -95,6 +96,7 @@ public interface Persistence {
      *
      * @see #createTransaction(TransactionParams)
      */
+    @CheckReturnValue
     Transaction createTransaction(TransactionParams params);
 
     /**
@@ -105,6 +107,7 @@ public interface Persistence {
      * @param params    new transaction parameters
      * @return new transaction
      */
+    @CheckReturnValue
     Transaction createTransaction(String storeName, TransactionParams params);
 
     /**
@@ -112,6 +115,7 @@ public interface Persistence {
      *
      * @see #createTransaction(String)
      */
+    @CheckReturnValue
     Transaction createTransaction();
 
     /**
@@ -121,6 +125,7 @@ public interface Persistence {
      * @param storeName data store name
      * @return object to control the new transaction
      */
+    @CheckReturnValue
     Transaction createTransaction(String storeName);
 
     /**
@@ -128,6 +133,7 @@ public interface Persistence {
      *
      * @see #getTransaction(String)
      */
+    @CheckReturnValue
     Transaction getTransaction();
 
     /**
@@ -143,6 +149,7 @@ public interface Persistence {
      * @param storeName data store name
      * @return object to control the transaction
      */
+    @CheckReturnValue
     Transaction getTransaction(String storeName);
 
     /**
@@ -158,6 +165,7 @@ public interface Persistence {
      *
      * @see #getTransaction(String)
      */
+    @CheckReturnValue
     EntityManager getEntityManager();
 
     /**
@@ -167,6 +175,7 @@ public interface Persistence {
      *
      * @return EntityManager instance
      */
+    @CheckReturnValue
     EntityManager getEntityManager(String storeName);
 
     /**

@@ -23,6 +23,7 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.KeyValueEntity;
 import com.haulmont.cuba.core.entity.contracts.Id;
 
+import javax.annotation.CheckReturnValue;
 import javax.annotation.Nullable;
 import java.util.List;
 
@@ -35,7 +36,6 @@ import java.util.List;
  * When used on the client tier - always applies security restrictions. When used on the middleware - does not apply
  * security restrictions by default. If you want to apply security, get {@link #secure()} instance or set the
  * {@code cuba.dataManagerChecksSecurityOnMiddleware} application property to use it by default.
- *
  */
 public interface DataManager {
 
@@ -49,6 +49,7 @@ public interface DataManager {
      * @return          the loaded detached object, or null if not found
      */
     @Nullable
+    @CheckReturnValue
     <E extends Entity> E load(LoadContext<E> context);
 
     /**
@@ -58,6 +59,7 @@ public interface DataManager {
      * @param context   {@link LoadContext} object, defining what and how to load
      * @return          a list of detached instances, or empty list if nothing found
      */
+    @CheckReturnValue
     <E extends Entity> List<E> loadList(LoadContext<E> context);
 
     /**
@@ -65,6 +67,7 @@ public interface DataManager {
      * @param context   defines the query
      * @return          number of instances in the data store
      */
+    @CheckReturnValue
     long getCount(LoadContext<? extends Entity> context);
 
     /**
@@ -74,6 +77,7 @@ public interface DataManager {
      * @return              reloaded instance
      * @throws EntityAccessException if the entity cannot be reloaded because it was deleted or access restrictions has been changed
      */
+    @CheckReturnValue
     <E extends Entity> E reload(E entity, String viewName);
 
     /**
@@ -83,6 +87,7 @@ public interface DataManager {
      * @return              reloaded instance
      * @throws EntityAccessException if the entity cannot be reloaded because it was deleted or access restrictions has been changed
      */
+    @CheckReturnValue
     <E extends Entity> E reload(E entity, View view);
 
     /**
@@ -94,6 +99,7 @@ public interface DataManager {
      * @return              reloaded instance
      * @throws EntityAccessException if the entity cannot be reloaded because it was deleted or access restrictions has been changed
      */
+    @CheckReturnValue
     <E extends Entity> E reload(E entity, View view, @Nullable MetaClass metaClass);
 
     /**
@@ -106,6 +112,7 @@ public interface DataManager {
      * @return                          reloaded instance
      * @throws EntityAccessException if the entity cannot be reloaded because it was deleted or access restrictions has been changed
      */
+    @CheckReturnValue
     <E extends Entity> E reload(E entity, View view, @Nullable MetaClass metaClass, boolean loadDynamicAttributes);
 
     /**
@@ -156,6 +163,7 @@ public interface DataManager {
      * @param context   defines a query for scalar values and a list of keys for returned KeyValueEntity
      * @return list of KeyValueEntity instances
      */
+    @CheckReturnValue
     List<KeyValueEntity> loadValues(ValueLoadContext context);
 
     /**
@@ -270,5 +278,6 @@ public interface DataManager {
      * @param entityClass   entity class
      * @param id            id of an existing object
      */
+    @CheckReturnValue
     <T extends BaseGenericIdEntity<K>, K> T getReference(Class<T> entityClass, K id);
 }

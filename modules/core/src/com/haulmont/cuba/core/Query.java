@@ -19,6 +19,7 @@ package com.haulmont.cuba.core;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.View;
 
+import javax.annotation.CheckReturnValue;
 import javax.annotation.Nullable;
 import javax.persistence.FlushModeType;
 import javax.persistence.LockModeType;
@@ -55,6 +56,7 @@ public interface Query {
      * @return a list of the results
      * @throws IllegalStateException if called for a Java Persistence query language UPDATE or DELETE statement
      */
+    @CheckReturnValue
     List getResultList();
 
     /**
@@ -65,6 +67,7 @@ public interface Query {
      * @throws javax.persistence.NonUniqueResultException if more than one result
      * @throws IllegalStateException                      if called for a Java Persistence query language UPDATE or DELETE statement
      */
+    @CheckReturnValue
     Object getSingleResult();
 
     /**
@@ -76,6 +79,7 @@ public interface Query {
      * @throws IllegalStateException if called for a Java Persistence query language UPDATE or DELETE statement
      */
     @Nullable
+    @CheckReturnValue
     Object getFirstResult();
 
     /**

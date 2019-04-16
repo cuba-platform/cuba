@@ -22,6 +22,7 @@ import com.haulmont.cuba.core.global.CommitContext;
 import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.core.global.ValueLoadContext;
 
+import javax.annotation.CheckReturnValue;
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Set;
@@ -50,6 +51,7 @@ public interface DataService {
      * @return          the loaded detached object, or null if not found
      */
     @Nullable
+    @CheckReturnValue
     <E extends Entity> E load(LoadContext<E> context);
 
     /**
@@ -59,6 +61,7 @@ public interface DataService {
      * @param context   {@link LoadContext} object, defining what and how to load
      * @return          a list of detached instances, or empty list if nothing found
      */
+    @CheckReturnValue
     <E extends Entity> List<E> loadList(LoadContext<E> context);
 
     /**
@@ -66,7 +69,9 @@ public interface DataService {
      * @param context   defines the query
      * @return          number of instances in the database
      */
+    @CheckReturnValue
     long getCount(LoadContext<? extends Entity> context);
 
+    @CheckReturnValue
     List<KeyValueEntity> loadValues(ValueLoadContext context);
 }
