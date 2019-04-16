@@ -116,8 +116,8 @@ public class ClientProxyTokenStore implements TokenStore {
                 userLogin,
                 locale,
                 refreshTokenValue);
-        processSession(authentication, token.getValue());
-        log.info("REST API access token stored: [{}] {}", authentication.getPrincipal(), tokenMasker.maskToken(token.getValue())) ;
+        createNewUserSession(authentication, token.getValue(), locale);
+        log.info("REST API access token stored: [{}] {}", authentication.getPrincipal(), tokenMasker.maskToken(token.getValue()));
     }
 
     @Override
@@ -138,10 +138,31 @@ public class ClientProxyTokenStore implements TokenStore {
         return accessTokenBytes != null ? deserializeAccessToken(accessTokenBytes) : null;
     }
 
+
     /**
-     * Tries to find the session associated with the given {@code authentication}. If the session id is in the store and
-     * exists then it is set to the {@link SecurityContext}. If the session id is not in the store or the session with
-     * the id doesn't exist in the middleware, then the trusted login attempt is performed.
+     * Creates a new user session associated with the given {@code authentication} and sets to the * {@link SecurityContext}.
+     */
+    protected void createNewUserSession(OAuth2Authentication authentication, String tokenValue, Locale requestLocale) {
+        Map<String, String> userAuthenticationDetails = (Map<String, String>) authentication.getUserAuthentication().getDetails();
+        String username = userAuthenticationDetails.get("username");
+        if (Strings.isNullOrEmpty(username)) {
+            throw new IllegalStateException("Empty username extracted from user authentication details");
+        }
+        TrustedClientCredentials credentials = createTrustedClientCredentials(username, requestLocale);
+        try {
+            UserSession session = authenticationService.login(credentials).getSession();
+            serverTokenStore.putSessionInfo(tokenValue, new RestUserSessionInfo(session));
+            AppContext.setSecurityContext(new SecurityContext(session));
+            log.debug("New session created for token '{}'", tokenMasker.maskToken(tokenValue));
+        } catch (LoginException e) {
+            throw new OAuth2Exception("Cannot login to the middleware", e);
+        }
+    }
+
+    /**
+     * Tries to find the session associated with the given {@code authentication}. If the session id is in the store and exists then it is set to the
+     * {@link SecurityContext}. If the session id is not in the store or the session with the id doesn't exist in the middleware, then the trusted
+     * login attempt is performed.
      */
     protected void processSession(OAuth2Authentication authentication, String tokenValue) {
         RestUserSessionInfo sessionInfo = serverTokenStore.getSessionInfoByTokenValue(tokenValue);
@@ -178,32 +199,12 @@ public class ClientProxyTokenStore implements TokenStore {
 
             Locale locale = sessionInfo != null ?
                     sessionInfo.getLocale() : null;
-
-            TrustedClientCredentials credentials = new TrustedClientCredentials(username,
-                    restApiConfig.getTrustedClientPassword(), locale);
-            credentials.setClientType(ClientType.REST_API);
-            
-            ServletRequestAttributes attributes =
-                    (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-            if (attributes != null) {
-                HttpServletRequest request = attributes.getRequest();
-                credentials.setIpAddress(request.getRemoteAddr());
-                credentials.setClientInfo(makeClientInfo(request.getHeader(HttpHeaders.USER_AGENT)));
-            } else {
-                credentials.setClientInfo(makeClientInfo(""));
-            }
-
-            //if locale was not determined then use the user locale
-            if (locale == null) {
-                credentials.setOverrideLocale(false);
-            }
-
+            TrustedClientCredentials credentials = createTrustedClientCredentials(username, locale);
             try {
                 session = authenticationService.login(credentials).getSession();
             } catch (LoginException e) {
                 throw new OAuth2Exception("Cannot login to the middleware", e);
             }
-
             log.debug("New session created for token '{}' since the original session has been expired", tokenMasker.maskToken(tokenValue));
         }
 
@@ -211,6 +212,28 @@ public class ClientProxyTokenStore implements TokenStore {
             serverTokenStore.putSessionInfo(tokenValue, new RestUserSessionInfo(session));
             AppContext.setSecurityContext(new SecurityContext(session));
         }
+    }
+
+    protected TrustedClientCredentials createTrustedClientCredentials(String username, Locale locale) {
+        TrustedClientCredentials credentials = new TrustedClientCredentials(username,
+                restApiConfig.getTrustedClientPassword(), locale);
+        credentials.setClientType(ClientType.REST_API);
+
+        ServletRequestAttributes attributes =
+                (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        if (attributes != null) {
+            HttpServletRequest request = attributes.getRequest();
+            credentials.setIpAddress(request.getRemoteAddr());
+            credentials.setClientInfo(makeClientInfo(request.getHeader(HttpHeaders.USER_AGENT)));
+        } else {
+            credentials.setClientInfo(makeClientInfo(""));
+        }
+
+        //if locale was not determined then use the user locale
+        if (locale == null) {
+            credentials.setOverrideLocale(false);
+        }
+        return credentials;
     }
 
     protected String makeClientInfo(String userAgent) {
