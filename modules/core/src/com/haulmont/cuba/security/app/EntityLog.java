@@ -405,6 +405,7 @@ public class EntityLog implements EntityLogAPI {
         item.setUser(findUser(em));
         item.setType(EntityLogItem.Type.CREATE);
         item.setEntity(entityName);
+        item.setEntityInstanceName(metadataTools.getInstanceName(entity));
         if (entity instanceof BaseDbGeneratedIdEntity) {
             item.setDbGeneratedIdEntity((BaseDbGeneratedIdEntity) entity);
         } else {
@@ -435,11 +436,24 @@ public class EntityLog implements EntityLogAPI {
             item.setUser(findUser(em));
             item.setType(EntityLogItem.Type.MODIFY);
             item.setEntity(getEntityName(entity));
+            Entity realEntity = findEntity(em, entity);
+            item.setEntityInstanceName(realEntity == null ? "" : metadataTools.getInstanceName(realEntity));
             item.setObjectEntityId(entity.getObjectEntityId());
             item.setAttributes(createDynamicLogAttribute(entity, changes, registerDeleteOp));
 
             enqueueItem(item);
         }
+    }
+
+    protected Entity findEntity(EntityManager em, CategoryAttributeValue categoryAttributeValue) {
+        MetaClass entityMetaClass = metadata.getClass(categoryAttributeValue.getCategoryAttribute().getCategoryEntityType());
+        if (entityMetaClass != null) {
+            Class entityClass = entityMetaClass.getJavaClass();
+            if (entityClass != null) {
+                return em.find(entityClass, categoryAttributeValue.getObjectEntityId());
+            }
+        }
+        return null;
     }
 
     protected User findUser(EntityManager em) {
@@ -551,6 +565,7 @@ public class EntityLog implements EntityLogAPI {
             item.setUser(findUser(em));
             item.setType(type);
             item.setEntity(metadata.getExtendedEntities().getOriginalOrThisMetaClass(metaClass).getName());
+            item.setEntityInstanceName(metadataTools.getInstanceName(entity));
             item.setObjectEntityId(referenceToEntitySupport.getReferenceId(entity));
             item.setAttributes(entityLogAttrs);
 
@@ -689,6 +704,7 @@ public class EntityLog implements EntityLogAPI {
         item.setUser(findUser(em));
         item.setType(EntityLogItem.Type.DELETE);
         item.setEntity(entityName);
+        item.setEntityInstanceName(metadataTools.getInstanceName(entity));
         item.setObjectEntityId(referenceToEntitySupport.getReferenceId(entity));
         item.setAttributes(createLogAttributes(entity, attributes, null));
 

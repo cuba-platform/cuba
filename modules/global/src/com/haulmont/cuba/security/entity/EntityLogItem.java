@@ -99,6 +99,9 @@ public class EntityLogItem extends BaseUuidEntity implements Creatable {
     @EmbeddedParameters(nullAllowed = false)
     private ReferenceToEntity entityRef;
 
+    @Column(name = "ENTITY_INSTANCE_NAME")
+    private String entityInstanceName;
+
     @Transient
     private transient BaseDbGeneratedIdEntity dbGeneratedIdEntity;
 
@@ -197,6 +200,14 @@ public class EntityLogItem extends BaseUuidEntity implements Creatable {
 
     public void setDbGeneratedIdEntity(BaseDbGeneratedIdEntity dbGeneratedIdEntity) {
         this.dbGeneratedIdEntity = dbGeneratedIdEntity;
+    }
+
+    public String getEntityInstanceName() {
+        return entityInstanceName;
+    }
+
+    public void setEntityInstanceName(String entityInstanceName) {
+        this.entityInstanceName = entityInstanceName;
     }
 
     public void setObjectEntityId(Object entity) {

@@ -23,10 +23,7 @@ import com.haulmont.cuba.core.app.dynamicattributes.PropertyType
 import com.haulmont.cuba.core.entity.Category
 import com.haulmont.cuba.core.entity.CategoryAttribute
 import com.haulmont.cuba.core.entity.ReferenceToEntity
-import com.haulmont.cuba.core.global.AppBeans
-import com.haulmont.cuba.core.global.DataManager
-import com.haulmont.cuba.core.global.LoadContext
-import com.haulmont.cuba.core.global.View
+import com.haulmont.cuba.core.global.*
 import com.haulmont.cuba.security.app.EntityLog
 import com.haulmont.cuba.security.app.EntityLogAPI
 import com.haulmont.cuba.security.entity.EntityLogItem
@@ -74,6 +71,7 @@ class EntityLogDynamicAttributesTest extends AbstractEntityLogTest {
         dynamicAttributesManagerAPI = AppBeans.get(DynamicAttributesManagerAPI.class)
         dynamicAttributesManagerAPI.loadCache()
         dataManager = AppBeans.get(DataManager.class)
+        metadataTools = AppBeans.get(MetadataTools.class)
     }
 
     protected void initDynamicAttributeConfiguration(EntityManager em) {
@@ -132,6 +130,7 @@ class EntityLogDynamicAttributesTest extends AbstractEntityLogTest {
         and:
 
         loggedValueMatches(log, 'userName')
+        log.entityInstanceName == metadataTools.getInstanceName(user)
 
     }
 
@@ -155,6 +154,7 @@ class EntityLogDynamicAttributesTest extends AbstractEntityLogTest {
 
         loggedValueMatches(log, 'updatedUserName')
         loggedOldValueMatches(log, 'oldUserName')
+        log.entityInstanceName == metadataTools.getInstanceName(user)
 
     }
 
@@ -178,6 +178,7 @@ class EntityLogDynamicAttributesTest extends AbstractEntityLogTest {
 
         loggedValueMatches(log, '')
         loggedOldValueMatches(log, 'oldUserName')
+        log.entityInstanceName == metadataTools.getInstanceName(user)
 
     }
 
