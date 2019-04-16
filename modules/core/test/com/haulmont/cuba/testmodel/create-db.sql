@@ -1183,3 +1183,38 @@ create table TEST_EXT_JOIN_USER (
     --
     primary key (ID)
 )^
+------------------------------------------------------------------------------------------------------------------------
+create table TEST_ENTITY_LOG_A (
+    ID varchar(36) not null,
+    VERSION integer not null,
+    CREATE_TS timestamp,
+    CREATED_BY varchar(50),
+    UPDATE_TS timestamp,
+    UPDATED_BY varchar(50),
+    DELETE_TS timestamp,
+    DELETED_BY varchar(50),
+    --
+    NAME varchar(255),
+    ENTITY_LOG_B_ID varchar(36),
+    --
+    primary key (ID)
+)^
+
+
+create table TEST_ENTITY_LOG_B (
+    ID varchar(36) not null,
+    VERSION integer not null,
+    CREATE_TS timestamp,
+    CREATED_BY varchar(50),
+    UPDATE_TS timestamp,
+    UPDATED_BY varchar(50),
+    DELETE_TS timestamp,
+    DELETED_BY varchar(50),
+    --
+    NAME varchar(255),
+    --
+    primary key (ID)
+)^
+
+alter table TEST_ENTITY_LOG_A add constraint FK_TEST_ENTITY_LOG_A_ON_TEST_ENTITY_LOG_B foreign key
+    (ENTITY_LOG_B_ID) references TEST_ENTITY_LOG_B(ID)^

@@ -24,6 +24,7 @@ import com.haulmont.cuba.core.TypedQuery
 import com.haulmont.cuba.core.entity.BaseDbGeneratedIdEntity
 import com.haulmont.cuba.core.entity.BaseStringIdEntity
 import com.haulmont.cuba.core.global.AppBeans
+import com.haulmont.cuba.core.global.MetadataTools
 import com.haulmont.cuba.security.app.EntityLogAPI
 import com.haulmont.cuba.security.entity.EntityLogItem
 import com.haulmont.cuba.security.entity.Group
@@ -45,6 +46,7 @@ class AbstractEntityLogTest extends Specification {
 
     protected EntityLogAPI entityLog
     protected PersistenceTools persistenceTools
+    protected MetadataTools metadataTools
 
     protected void saveEntityLogAutoConfFor(EntityManager em, String entityName, String... attributes) {
 

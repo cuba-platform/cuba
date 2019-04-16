@@ -20,9 +20,12 @@ package spec.cuba.core.entity_log
 import com.haulmont.cuba.core.EntityManager
 import com.haulmont.cuba.core.PersistenceTools
 import com.haulmont.cuba.core.global.AppBeans
+import com.haulmont.cuba.core.global.MetadataTools
 import com.haulmont.cuba.core.global.View
 import com.haulmont.cuba.security.entity.Group
 import com.haulmont.cuba.security.entity.User
+import com.haulmont.cuba.testmodel.entity_log.EntityLogA
+import com.haulmont.cuba.testmodel.entity_log.EntityLogB
 import spock.lang.Issue
 
 class EntityLogTest extends AbstractEntityLogTest {
@@ -45,6 +48,7 @@ class EntityLogTest extends AbstractEntityLogTest {
     protected void initBeans() {
         initEntityLogAPI()
         persistenceTools = AppBeans.get(PersistenceTools.class)
+        metadataTools = AppBeans.get(MetadataTools.class)
     }
 
 
@@ -54,6 +58,7 @@ class EntityLogTest extends AbstractEntityLogTest {
 
         saveEntityLogAutoConfFor(em, 'sec$Role', 'type')
 
+        saveEntityLogAutoConfFor(em, 'test_EntityLogA', 'name')
     }
 
 
@@ -88,20 +93,27 @@ class EntityLogTest extends AbstractEntityLogTest {
 
         when: 'instance attributes are changed an implicit flush is executed'
 
+        def instanceName1 = ''
+        def instanceName2 = ''
+
         withTransaction { EntityManager em ->
             def user1 = em.find(User, user1Id)
             user1.setEmail('email1')
+            instanceName1 = metadataTools.getInstanceName(user1)
 
             em.reload(findCompanyGroup(), View.BASE)
 
             def user2 = em.find(User, user2Id)
             user2.setEmail('email1')
+            instanceName2 = metadataTools.getInstanceName(user2)
         }
 
         then: 'those attribute changes result in Entity log items'
 
         getEntityLogItems('sec$User', user1Id).size() == 2
         getEntityLogItems('sec$User', user2Id).size() == 2
+        getLatestEntityLogItem('sec$User', user1Id).entityInstanceName == instanceName1
+        getLatestEntityLogItem('sec$User', user2Id).entityInstanceName == instanceName2
     }
 
     def "correct old value in case of flush in the middle"() {
@@ -124,6 +136,7 @@ class EntityLogTest extends AbstractEntityLogTest {
         def secondEmail = 'email11'
         def secondName = 'name11'
         def thirdEmail = 'email111'
+        def instanceName = ''
 
         withTransaction { EntityManager em ->
             def user1 = em.find(User, user1Id)
@@ -137,6 +150,7 @@ class EntityLogTest extends AbstractEntityLogTest {
 
             user1 = em.find(User, user1Id)
             user1.setEmail(thirdEmail)
+            instanceName = metadataTools.getInstanceName(user1)
         }
 
         then:
@@ -150,6 +164,46 @@ class EntityLogTest extends AbstractEntityLogTest {
         loggedValueMatches(item, 'name', secondName)
         loggedOldValueMatches(item, 'name', firstName)
 
+        getLatestEntityLogItem('sec$User', user1Id).entityInstanceName == instanceName
+    }
+
+    def "instance name with reference"() {
+        when:
+
+        EntityLogB entityLogB
+
+        withTransaction { EntityManager em ->
+            entityLogB = cont.metadata().create(EntityLogB)
+            entityLogB.setName('nameB')
+
+            em.persist(entityLogB)
+        }
+
+        UUID aId = null
+        EntityLogA entityLogA
+
+        withTransaction { EntityManager em ->
+            em = cont.persistence().getEntityManager()
+            entityLogA = cont.metadata().create(EntityLogA)
+            entityLogA.setName('nameA')
+            entityLogA.setEntityLogB(entityLogB)
+
+            em.persist(entityLogA)
+            aId = entityLogA.getId()
+        }
+
+        withTransaction { EntityManager em ->
+            em = cont.persistence().getEntityManager()
+            entityLogA = em.reload(entityLogA, '_local')
+            entityLogA.setName('edited_nameA')
+
+            em.persist(entityLogA)
+        }
+
+        then: 'those attribute changes result in Entity log items'
+
+        getEntityLogItems('test_EntityLogA', aId).size() == 2
+        getLatestEntityLogItem('test_EntityLogA', aId).entityInstanceName == 'edited_nameA nameB'
     }
 
     protected def createAndSaveUser(EntityManager em, Map params) {

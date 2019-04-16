@@ -120,5 +120,7 @@
         <class>com.haulmont.cuba.testmodel.fetchjoin.JoinUser</class>
         <class>com.haulmont.cuba.testmodel.fetchjoin.ExtJoinUser</class>
 
+        <class>com.haulmont.cuba.testmodel.entity_log.EntityLogA</class>
+        <class>com.haulmont.cuba.testmodel.entity_log.EntityLogB</class>
     </persistence-unit>
 </persistence>
