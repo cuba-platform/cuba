@@ -58,6 +58,7 @@ class EntityLogTest extends AbstractEntityLogTest {
 
         saveEntityLogAutoConfFor(em, 'sec$Role', 'type')
 
+        saveEntityLogAutoConfFor(em, 'test_EntityLogA', 'name')
     }
 
 
