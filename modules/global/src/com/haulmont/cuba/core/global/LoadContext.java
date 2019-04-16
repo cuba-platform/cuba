@@ -56,7 +56,7 @@ public class LoadContext<E extends Entity> implements DataLoadContext, Serializa
     protected boolean authorizationRequired;
     protected boolean joinTransaction;
 
-    protected Map<String, Object> dbHints; // lazy initialized map
+    protected Map<String, Object> hints; // lazy initialized map
 
     /**
      * Factory method to create a LoadContext instance.
@@ -219,11 +219,19 @@ public class LoadContext<E extends Entity> implements DataLoadContext, Serializa
     /**
      * @return custom hints which can be used later during query construction
      */
-    public Map<String, Object> getDbHints() {
-        if (dbHints == null) {
-            dbHints = new HashMap<>();
+    public Map<String, Object> getHints() {
+        return hints == null ? Collections.emptyMap() : Collections.unmodifiableMap(hints);
+    }
+
+    /**
+     * Sets custom hint that can be used later during query construction
+     */
+    public LoadContext<E> setHint(String hintName, Object value) {
+        if (hints == null) {
+            hints = new HashMap<>();
         }
-        return dbHints;
+        hints.put(hintName, value);
+        return this;
     }
 
     /**
@@ -295,8 +303,8 @@ public class LoadContext<E extends Entity> implements DataLoadContext, Serializa
         ctx.softDeletion = softDeletion;
         ctx.prevQueries.addAll(prevQueries.stream().map(Query::copy).collect(Collectors.toList()));
         ctx.queryKey = queryKey;
-        if (dbHints != null) {
-            ctx.getDbHints().putAll(dbHints);
+        if (hints != null) {
+            ctx.getHints().putAll(hints);
         }
         ctx.loadDynamicAttributes = loadDynamicAttributes;
         ctx.authorizationRequired = authorizationRequired;

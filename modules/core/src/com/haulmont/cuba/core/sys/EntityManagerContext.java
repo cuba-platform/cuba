@@ -24,8 +24,6 @@ public class EntityManagerContext {
 
     private boolean softDeletion = true;
 
-    private Map<String, Object> dbHints = new HashMap<>();
-
     private Map<Object, Object> attributes = new HashMap<>();
 
     public boolean isSoftDeletion() {
@@ -34,14 +32,6 @@ public class EntityManagerContext {
 
     public void setSoftDeletion(boolean softDeletion) {
         this.softDeletion = softDeletion;
-    }
-
-    public Map<String, Object> getDbHints() {
-        return dbHints;
-    }
-
-    public void setDbHints(Map<String, Object> dbHints) {
-        this.dbHints = dbHints;
     }
 
     public void setAttribute(Object key, Object value) {
