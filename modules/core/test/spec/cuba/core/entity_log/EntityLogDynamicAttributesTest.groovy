@@ -162,6 +162,7 @@ class EntityLogDynamicAttributesTest extends Specification {
         item.type == EntityLogItem.Type.CREATE
         item.attributes.find({ it.name == 'name' }).value == 'test-name'
         item.attributes.find({ it.name == '+userAttribute' }).value == 'userName'
+        item.entityInstanceName == user1.getInstanceName()
 
         when:
 
@@ -182,6 +183,7 @@ class EntityLogDynamicAttributesTest extends Specification {
         item1.type == EntityLogItem.Type.MODIFY
         item1.attributes.find({ it.name == '+userAttribute' }).oldValue == 'userName'
         item1.attributes.find({ it.name == '+userAttribute' }).value == 'userName1'
+        item1.entityInstanceName == user1.getInstanceName()
 
         when:
 
@@ -202,5 +204,6 @@ class EntityLogDynamicAttributesTest extends Specification {
         item2.type == EntityLogItem.Type.MODIFY
         item2.attributes.find({ it.name == '+userAttribute' }).value == ""
         item2.attributes.find({ it.name == '+userAttribute' }).oldValue == 'userName1'
+        item2.entityInstanceName == user1.getInstanceName()
     }
 }

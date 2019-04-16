@@ -219,6 +219,44 @@ class EntityLogTest extends Specification {
         getEntityLogItems('sec$User', user2Id).size() == 2
     }
 
+    def "correct instance name"() {
+
+        Group group = cont.persistence().callInTransaction({ em ->
+            em.find(Group.class, TestSupport.COMPANY_GROUP_ID)
+        })
+
+        when:
+
+        def instanceName1 = ''
+        def instanceName2 = ''
+
+        cont.persistence().runInTransaction({ em ->
+            User user1 = cont.metadata().create(User)
+            user1Id = user1.getId()
+            user1.setGroup(group)
+            user1.setLogin("test")
+            user1.setName("test-name")
+            em.persist(user1)
+            instanceName1 = user1.getInstanceName()
+        })
+        cont.persistence().runInTransaction({ em ->
+            User user2 = cont.metadata().create(User)
+            user2Id = user2.getId()
+            user2.setGroup(group)
+            user2.setLogin("test2")
+            user2.setName("test2-name")
+            em.persist(user2)
+            instanceName2 = user2.getInstanceName()
+        })
+
+        then:
+
+        getEntityLogItems('sec$User', user1Id).size() == 1
+        getEntityLogItems('sec$User', user1Id)[0].entityInstanceName == instanceName1
+        getEntityLogItems('sec$User', user2Id).size() == 1
+        getEntityLogItems('sec$User', user2Id)[0].entityInstanceName == instanceName2
+    }
+
     def "correct old value in case of flush in the middle"() {
         Group group = cont.persistence().callInTransaction({ em ->
             em.find(Group.class, TestSupport.COMPANY_GROUP_ID)

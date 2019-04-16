@@ -478,6 +478,7 @@ create table SEC_ENTITY_LOG (
     USER_ID varchar(32),
     CHANGE_TYPE char(1),
     ENTITY varchar(100),
+    ENTITY_INSTANCE_NAME varchar(1000),
     ENTITY_ID varchar(32),
     STRING_ENTITY_ID varchar(190),
     INT_ENTITY_ID integer,

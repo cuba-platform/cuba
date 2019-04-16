@@ -125,6 +125,7 @@
                                 <column id="type" caption="msg://changeType"/>
                                 <column id="entity" caption="msg://entity"/>
                                 <column id="entityId" caption="Id"/>
+                                <column id="entityInstanceName"/>
                             </columns>
                             <rows datasource="entityLogDs"/>
                             <rowsCount/>
