@@ -60,7 +60,7 @@ public class Constraint extends StandardEntity {
     @Column(name = "IS_ACTIVE")
     protected Boolean isActive = true;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "GROUP_ID")
     protected Group group;
 
