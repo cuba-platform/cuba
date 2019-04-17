@@ -20,12 +20,10 @@ package com.haulmont.cuba.core.sys.persistence;
 import com.google.common.base.Strings;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.bali.util.ReflectionHelper;
-import com.haulmont.cuba.core.app.OrmXmlPostProcessor;
 import com.haulmont.cuba.core.app.PersistenceXmlPostProcessor;
 import com.haulmont.cuba.core.global.Stores;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.ConfigurationResourceLoader;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Document;
 import org.dom4j.Element;
@@ -33,7 +31,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 
-import javax.annotation.Nullable;
 import javax.persistence.Entity;
 import java.io.*;
 import java.util.*;
@@ -41,7 +38,6 @@ import java.util.*;
 /**
  * Generates a working persistence.xml file combining classes and properties from a set of given persistence.xml files,
  * defined in <code>cuba.persistenceConfig</code> app property.
- *
  */
 public class PersistenceConfigProcessor {
 
@@ -75,9 +71,7 @@ public class PersistenceConfigProcessor {
             throw new IllegalStateException("Output file not set");
 
         Map<String, String> classes = new LinkedHashMap<>();
-        Map<String, String> properties = new HashMap<>();
-
-        properties.putAll(DbmsSpecificFactory.getDbmsFeatures(storeName).getJpaParameters());
+        Map<String, String> properties = new HashMap<>(DbmsSpecificFactory.getDbmsFeatures(storeName).getJpaParameters());
 
         for (String fileName : sourceFileNames) {
             Document doc = getDocument(fileName);
@@ -94,14 +88,15 @@ public class PersistenceConfigProcessor {
             }
         }
 
-        if (!Stores.isMain(storeName))
+        if (!Stores.isMain(storeName)) {
             properties.put(PersistenceImplSupport.PROP_NAME, storeName);
+        }
 
         File outFile;
         try {
             outFile = new File(outFileName).getCanonicalFile();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Unable to get path to out persistence.xml", e);
         }
         outFile.getParentFile().mkdirs();
 
@@ -117,17 +112,19 @@ public class PersistenceConfigProcessor {
         Element rootElem = doc.getRootElement();
 
         Element puElem = findPersistenceUnitElement(rootElem);
-        if (puElem == null)
+        if (puElem == null) {
             throw new IllegalStateException("No persistence unit named 'cuba' found among multiple units inside " + fileName);
+        }
 
         String puName = AppContext.getProperty("cuba.persistenceUnitName");
         if (!StringUtils.isEmpty(puName)) {
-            if (!Stores.isMain(storeName))
+            if (!Stores.isMain(storeName)) {
                 puName = puName + "_" + storeName;
+            }
             puElem.addAttribute("name", puName);
         }
 
-        for (Element element : new ArrayList<>(Dom4j.elements(puElem, "class"))) {
+        for (Element element : new ArrayList<>(puElem.elements("class"))) {
             puElem.remove(element);
         }
 
@@ -144,8 +141,9 @@ public class PersistenceConfigProcessor {
         puElem.addElement("exclude-unlisted-classes");
 
         Element propertiesEl = puElem.element("properties");
-        if (propertiesEl != null)
+        if (propertiesEl != null) {
             puElem.remove(propertiesEl);
+        }
 
         propertiesEl = puElem.addElement("properties");
         for (Map.Entry<String, String> entry : properties.entrySet()) {
@@ -156,15 +154,11 @@ public class PersistenceConfigProcessor {
 
         postProcess(doc);
 
-        log.info("Creating file " + outFile);
-        OutputStream os = null;
-        try {
-            os = new FileOutputStream(outFileName);
+        log.info("Creating file {}", outFile);
+        try (OutputStream os = new FileOutputStream(outFileName)) {
             Dom4j.writeDocument(doc, true, os);
         } catch (IOException e) {
-            throw new RuntimeException(e);
-        } finally {
-            IOUtils.closeQuietly(os);
+            throw new RuntimeException("Unable to write persistence.xml", e);
         }
     }
 
@@ -184,7 +178,7 @@ public class PersistenceConfigProcessor {
     }
 
     private void addClasses(Element puElem, Map<String, String> classes) {
-        for (Element element : Dom4j.elements(puElem, "class")) {
+        for (Element element : puElem.elements("class")) {
             String className = element.getText();
             Class<Object> cls = ReflectionHelper.getClass(className);
             Entity annotation = cls.getAnnotation(Entity.class);
@@ -199,14 +193,14 @@ public class PersistenceConfigProcessor {
     private void addProperties(Element puElem, Map<String, String> properties) {
         Element propertiesEl = puElem.element("properties");
         if (propertiesEl != null) {
-            for (Element element : Dom4j.elements(propertiesEl, "property")) {
+            for (Element element : propertiesEl.elements("property")) {
                 properties.put(element.attributeValue("name"), element.attributeValue("value"));
             }
         }
     }
 
     private Element findPersistenceUnitElement(Element rootElem) {
-        List<Element> puList = Dom4j.elements(rootElem, "persistence-unit");
+        List<Element> puList = rootElem.elements("persistence-unit");
         if (puList.size() == 1) {
             return puList.get(0);
         } else {
@@ -223,21 +217,19 @@ public class PersistenceConfigProcessor {
         Document doc;
         if (baseDir == null) {
             Resource resource = new ConfigurationResourceLoader().getResource(fileName);
-            InputStream stream = null;
-            try {
-                stream = resource.getInputStream();
+            try (InputStream stream = resource.getInputStream()) {
                 doc = Dom4j.readDocument(stream);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            } finally {
-                IOUtils.closeQuietly(stream);
+            } catch (IOException | RuntimeException e) {
+                throw new RuntimeException("Unable to read XML file " + fileName, e);
             }
         } else {
-            if (!fileName.startsWith("/"))
+            if (!fileName.startsWith("/")) {
                 fileName = "/" + fileName;
+            }
             File file = new File(baseDir, fileName);
-            if (!file.exists())
+            if (!file.exists()) {
                 throw new IllegalArgumentException("File not found: " + file.getAbsolutePath());
+            }
 
             doc = Dom4j.readDocument(file);
         }

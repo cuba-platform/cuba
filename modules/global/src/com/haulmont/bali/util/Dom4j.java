@@ -31,6 +31,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 
@@ -91,9 +92,9 @@ public final class Dom4j {
 
     public static Document readDocument(InputStream stream) {
         SAXReader xmlReader = getSaxReader();
-        try {
-            return xmlReader.read(stream);
-        } catch (DocumentException e) {
+        try (InputStreamReader reader = new InputStreamReader(stream, StandardCharsets.UTF_8)) {
+            return xmlReader.read(reader);
+        } catch (IOException | DocumentException e) {
             throw new RuntimeException("Unable to read XML from stream", e);
         }
     }
@@ -102,7 +103,7 @@ public final class Dom4j {
         FileInputStream inputStream = null;
         try {
             inputStream = new FileInputStream(file);
-            return Dom4j.readDocument(inputStream);
+            return readDocument(inputStream);
         } catch (FileNotFoundException e) {
             throw new RuntimeException("Unable to read XML from file", e);
         } finally {
