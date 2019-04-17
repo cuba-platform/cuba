@@ -61,6 +61,8 @@ public class BulkEditorFieldFactory {
                 return createStringField(datasource, property);
             } else if (type.equals(Boolean.class)) {
                 return createBooleanField(datasource, property);
+            } else if (type.equals(java.time.LocalDate.class)) {
+                return createDateField(datasource, property);
             } else if (type.equals(java.sql.Date.class) || type.equals(Date.class)) {
                 return createDateField(datasource, property);
             } else if (type.equals(Time.class)) {
@@ -118,10 +120,13 @@ public class BulkEditorFieldFactory {
         dateField.setDatasource(datasource, property.getName());
 
         if (type.equals(Date.class)) {
-            dateField.setResolution(DateField.Resolution.DAY);
+            dateField.setResolution(DateField.Resolution.MIN);
             dateField.setDateFormat(messages.getMainMessage("dateTimeFormat"));
         } else if (type.equals(java.sql.Date.class)) {
             dateField.setResolution(DateField.Resolution.SEC);
+            dateField.setDateFormat(messages.getMainMessage("dateFormat"));
+        } else if (type.equals(java.time.LocalDate.class)) {
+            dateField.setResolution(DateField.Resolution.DAY);
             dateField.setDateFormat(messages.getMainMessage("dateFormat"));
         } else {
             throw new RuntimeException("Unknown type for " + property);

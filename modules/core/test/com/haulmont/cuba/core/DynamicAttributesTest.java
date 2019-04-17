@@ -357,4 +357,57 @@ public class DynamicAttributesTest {
         User loadedUser = dataManager.load(loadContext);
         assertEquals("option1", loadedUser.getValue("+userEnumAttribute"));
     }
+
+    @Test
+    public void testCollectionOfEntitiesAttributeWithoutSoftDeletion() {
+        LoadContext<User> loadContext = LoadContext.create(User.class).setId(user.getId())
+                .setLoadDynamicAttributes(true)
+                .setSoftDeletion(false);
+        User loadedUser = dataManager.load(loadContext);
+        List<Group> groupsCollection = loadedUser.getValue("+userGroupCollectionAttribute");
+        assertEquals(2, groupsCollection.size());
+
+        loadedUser.setValue("+userGroupCollectionAttribute", Lists.newArrayList(group));
+        dataManager.commit(loadedUser);
+
+        loadContext.setSoftDeletion(true);
+        loadedUser = dataManager.load(loadContext);
+        groupsCollection = loadedUser.getValue("+userGroupCollectionAttribute");
+        assertEquals(1, groupsCollection.size());
+        assertEquals(group, groupsCollection.get(0));
+
+        loadContext.setSoftDeletion(false);
+        loadedUser = dataManager.load(loadContext);
+        groupsCollection = loadedUser.getValue("+userGroupCollectionAttribute");
+        assertEquals(1, groupsCollection.size());
+        assertEquals(group, groupsCollection.get(0));
+
+        loadedUser.setValue("+userGroupCollectionAttribute", Lists.newArrayList(group2));
+        dataManager.commit(loadedUser);
+
+        loadContext.setSoftDeletion(true);
+        loadedUser = dataManager.load(loadContext);
+        groupsCollection = loadedUser.getValue("+userGroupCollectionAttribute");
+        assertEquals(1, groupsCollection.size());
+        assertEquals(group2, groupsCollection.get(0));
+
+        loadContext.setSoftDeletion(false);
+        loadedUser = dataManager.load(loadContext);
+        groupsCollection = loadedUser.getValue("+userGroupCollectionAttribute");
+        assertEquals(1, groupsCollection.size());
+        assertEquals(group2, groupsCollection.get(0));
+
+        loadedUser.setValue("+userGroupCollectionAttribute", Lists.newArrayList(group, group2));
+        dataManager.commit(loadedUser);
+
+        loadContext.setSoftDeletion(true);
+        loadedUser = dataManager.load(loadContext);
+        groupsCollection = loadedUser.getValue("+userGroupCollectionAttribute");
+        assertEquals(2, groupsCollection.size());
+
+        loadContext.setSoftDeletion(false);
+        loadedUser = dataManager.load(loadContext);
+        groupsCollection = loadedUser.getValue("+userGroupCollectionAttribute");
+        assertEquals(2, groupsCollection.size());
+    }
 }
