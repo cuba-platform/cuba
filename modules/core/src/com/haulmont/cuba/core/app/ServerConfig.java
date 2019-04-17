@@ -308,4 +308,20 @@ public interface ServerConfig extends Config {
     @Property("cuba.dataManagerBeanValidation")
     @DefaultBoolean(true)
     boolean getDataManagerBeanValidation();
+
+    /**
+     * Deactivating switch for {@code EntityNotEnhancedException}. By default on application start entities
+     * will be checked for Cuba and EclipseLink enhancing interfaces. If any interfaces are missing,
+     * an exception will be thrown.
+     * If true, detected problems will be logged instead of throwing {@code EntityNotEnhancedException}.
+     *
+     * List of checked interfaces:
+     * {@link com.haulmont.cuba.core.sys.CubaEnhanced}
+     * {@link org.eclipse.persistence.internal.descriptors.PersistenceObject}
+     * {@link org.eclipse.persistence.internal.weaving.PersistenceWeaved}
+     * {@link org.eclipse.persistence.internal.weaving.PersistenceWeavedFetchGroups}
+     * {@link org.eclipse.persistence.internal.weaving.PersistenceWeavedChangeTracking}
+     */
+    @Property("cuba.disableEnhancementChecks")
+    boolean getDisableEnhancementChecks();
 }
