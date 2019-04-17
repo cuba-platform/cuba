@@ -202,8 +202,8 @@ public class FormLoader extends AbstractComponentLoader<Form> {
             InstanceContainer instanceContainer = ((ContainerValueSourceProvider) provider).getContainer();
             MetaClass metaClass = instanceContainer.getEntityMetaClass();
 
-            Set<CategoryAttribute> attributesToShow =
-                    getDynamicAttributesGuiTools().getAttributesToShowOnTheScreen(
+            List<CategoryAttribute> attributesToShow =
+                    getDynamicAttributesGuiTools().getSortedAttributesToShowOnTheScreen(
                             metaClass, windowId, resultComponent.getId());
 
             if (!attributesToShow.isEmpty()) {

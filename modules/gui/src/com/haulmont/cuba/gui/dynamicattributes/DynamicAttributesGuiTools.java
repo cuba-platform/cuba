@@ -106,6 +106,17 @@ public class DynamicAttributesGuiTools {
     }
 
     /**
+     * Get attributes which should be added automatically to the screen and component.
+     * Based on visibility settings from category attribute editor.
+     * Resulting list is sorted using CategoryAttribute.orderNo parameter.
+     */
+    public List<CategoryAttribute> getSortedAttributesToShowOnTheScreen(MetaClass metaClass, String screen, @Nullable String component) {
+        List<CategoryAttribute> attributesToShow = new ArrayList<>(getAttributesToShowOnTheScreen(metaClass, screen, component));
+        attributesToShow.sort(Comparator.comparingInt(CategoryAttribute::getOrderNo));
+        return attributesToShow;
+    }
+
+    /**
      * Method checks whether any class in the view hierarchy contains dynamic attributes that must be displayed on
      * the current screen
      */

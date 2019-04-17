@@ -269,8 +269,8 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
         if (getMetadataTools().isPersistent(metaClass)) {
             String windowId = getWindowId(context);
 
-            Set<CategoryAttribute> attributesToShow =
-                    getDynamicAttributesGuiTools().getAttributesToShowOnTheScreen(metaClass,
+            List<CategoryAttribute> attributesToShow =
+                    getDynamicAttributesGuiTools().getSortedAttributesToShowOnTheScreen(metaClass,
                             windowId, component.getId());
             if (CollectionUtils.isNotEmpty(attributesToShow)) {
                 if (collectionLoader != null) {

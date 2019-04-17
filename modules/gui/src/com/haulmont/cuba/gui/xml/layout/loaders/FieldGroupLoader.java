@@ -26,15 +26,12 @@ import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.core.global.MetadataTools;
-import com.haulmont.cuba.core.global.Security;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.FieldGroup.CustomFieldGenerator;
 import com.haulmont.cuba.gui.components.FieldGroup.FieldCaptionAlignment;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
-import com.haulmont.cuba.gui.dynamicattributes.DynamicAttributeCustomFieldGenerator;
 import com.haulmont.cuba.gui.dynamicattributes.DynamicAttributesGuiTools;
 import com.haulmont.cuba.gui.screen.compatibility.LegacyFrame;
 import com.haulmont.cuba.gui.xml.DeclarativeFieldGenerator;
@@ -198,8 +195,8 @@ public class FieldGroupLoader extends AbstractComponentLoader<FieldGroup> {
         if (ds != null && getMetadataTools().isPersistent(ds.getMetaClass())) {
             String windowId = getWindowId(context);
 
-            Set<CategoryAttribute> attributesToShow =
-                    getDynamicAttributesGuiTools().getAttributesToShowOnTheScreen(ds.getMetaClass(),
+            List<CategoryAttribute> attributesToShow =
+                    getDynamicAttributesGuiTools().getSortedAttributesToShowOnTheScreen(ds.getMetaClass(),
                             windowId, resultComponent.getId());
 
             if (!attributesToShow.isEmpty()) {
