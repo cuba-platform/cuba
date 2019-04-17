@@ -53,6 +53,8 @@ public class CubaSuggestionPickerField<T> extends CubaPickerField<T> {
     @Override
     protected void doSetValue(T value) {
         getFieldInternal().setValue(value);
+
+        updateIcon(value);
     }
 
     @Override
