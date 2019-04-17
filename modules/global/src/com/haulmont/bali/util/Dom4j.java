@@ -26,6 +26,9 @@ import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
 import org.xml.sax.SAXException;
+import org.xml.sax.SAXNotRecognizedException;
+import org.xml.sax.SAXNotSupportedException;
+import org.xml.sax.XMLReader;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
@@ -80,14 +83,39 @@ public final class Dom4j {
             SAXParserFactory factory = SAXParserFactory.newInstance();
             factory.setValidating(false);
             factory.setNamespaceAware(false);
+            XMLReader xmlReader;
             try {
                 parser = factory.newSAXParser();
+                xmlReader = parser.getXMLReader();
             } catch (ParserConfigurationException | SAXException e) {
                 throw new RuntimeException("Unable to create SAX parser", e);
             }
+
+            setParserFeature(xmlReader, "http://xml.org/sax/features/namespaces", true);
+            setParserFeature(xmlReader, "http://xml.org/sax/features/namespace-prefixes", false);
+
+            // external entites
+            setParserFeature(xmlReader, "http://xml.org/sax/properties/external-general-entities", false);
+            setParserFeature(xmlReader, "http://xml.org/sax/properties/external-parameter-entities", false);
+
+            // external DTD
+            setParserFeature(xmlReader, "http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+
+            // use Locator2 if possible
+            setParserFeature(xmlReader, "http://xml.org/sax/features/use-locator2", true);
+
             saxParserHolder.set(parser);
         }
         return parser;
+    }
+
+    private static void setParserFeature(XMLReader reader,
+                                         String featureName, boolean value) {
+        try {
+            reader.setFeature(featureName, value);
+        } catch (SAXNotSupportedException | SAXNotRecognizedException e) {
+            // ignore
+        }
     }
 
     public static Document readDocument(InputStream stream) {
