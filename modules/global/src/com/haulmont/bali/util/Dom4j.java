@@ -25,12 +25,18 @@ import org.dom4j.Element;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
+import org.xml.sax.SAXNotRecognizedException;
+import org.xml.sax.SAXNotSupportedException;
+import org.xml.sax.XMLReader;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 
@@ -43,6 +49,7 @@ import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 public final class Dom4j {
 
     private static final ThreadLocal<SAXParser> saxParserHolder = new ThreadLocal<>();
+    private static final Logger log = LoggerFactory.getLogger(Dom4j.class);
 
     private Dom4j() {
     }
@@ -79,21 +86,46 @@ public final class Dom4j {
             SAXParserFactory factory = SAXParserFactory.newInstance();
             factory.setValidating(false);
             factory.setNamespaceAware(false);
+            XMLReader xmlReader;
             try {
                 parser = factory.newSAXParser();
+                xmlReader = parser.getXMLReader();
             } catch (ParserConfigurationException | SAXException e) {
                 throw new RuntimeException("Unable to create SAX parser", e);
             }
+
+            setParserFeature(xmlReader, "http://xml.org/sax/features/namespaces", true);
+            setParserFeature(xmlReader, "http://xml.org/sax/features/namespace-prefixes", false);
+
+            // external entites
+            setParserFeature(xmlReader, "http://xml.org/sax/properties/external-general-entities", false);
+            setParserFeature(xmlReader, "http://xml.org/sax/properties/external-parameter-entities", false);
+
+            // external DTD
+            setParserFeature(xmlReader, "http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+
+            // use Locator2 if possible
+            setParserFeature(xmlReader, "http://xml.org/sax/features/use-locator2", true);
+
             saxParserHolder.set(parser);
         }
         return parser;
     }
 
+    private static void setParserFeature(XMLReader reader,
+                                         String featureName, boolean value) {
+        try {
+            reader.setFeature(featureName, value);
+        } catch (SAXNotSupportedException | SAXNotRecognizedException e) {
+            log.debug("Error while setting XML reader feature", e);
+        }
+    }
+
     public static Document readDocument(InputStream stream) {
         SAXReader xmlReader = getSaxReader();
-        try {
-            return xmlReader.read(stream);
-        } catch (DocumentException e) {
+        try (InputStreamReader reader = new InputStreamReader(stream, StandardCharsets.UTF_8)) {
+            return xmlReader.read(reader);
+        } catch (IOException | DocumentException e) {
             throw new RuntimeException("Unable to read XML from stream", e);
         }
     }
@@ -102,7 +134,7 @@ public final class Dom4j {
         FileInputStream inputStream = null;
         try {
             inputStream = new FileInputStream(file);
-            return Dom4j.readDocument(inputStream);
+            return readDocument(inputStream);
         } catch (FileNotFoundException e) {
             throw new RuntimeException("Unable to read XML from file", e);
         } finally {
