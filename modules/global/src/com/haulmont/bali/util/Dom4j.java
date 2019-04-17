@@ -25,6 +25,8 @@ import org.dom4j.Element;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXNotRecognizedException;
 import org.xml.sax.SAXNotSupportedException;
@@ -47,6 +49,7 @@ import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 public final class Dom4j {
 
     private static final ThreadLocal<SAXParser> saxParserHolder = new ThreadLocal<>();
+    private static final Logger log = LoggerFactory.getLogger(Dom4j.class);
 
     private Dom4j() {
     }
@@ -114,7 +117,7 @@ public final class Dom4j {
         try {
             reader.setFeature(featureName, value);
         } catch (SAXNotSupportedException | SAXNotRecognizedException e) {
-            // ignore
+            log.debug("Error while setting XML reader feature", e);
         }
     }
 
