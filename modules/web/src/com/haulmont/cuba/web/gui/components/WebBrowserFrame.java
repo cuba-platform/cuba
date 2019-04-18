@@ -17,12 +17,94 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.components.BrowserFrame;
+import com.haulmont.cuba.web.widgets.CubaBrowserFrame;
 
-public class WebBrowserFrame extends WebAbstractResourceView<com.vaadin.ui.BrowserFrame> implements BrowserFrame {
-    protected static final String BROWSER_FRAME_STYLENAME = "c-browserframe";
+import java.util.EnumSet;
+import java.util.stream.Collectors;
+
+public class WebBrowserFrame extends WebAbstractResourceView<CubaBrowserFrame> implements BrowserFrame {
 
     public WebBrowserFrame() {
-        component = new com.vaadin.ui.BrowserFrame();
-        component.setPrimaryStyleName(BROWSER_FRAME_STYLENAME);
+        component = createComponent();
+    }
+
+    protected CubaBrowserFrame createComponent() {
+        return new CubaBrowserFrame();
+    }
+
+    public String getSandbox() {
+        return component.getSandbox();
+    }
+
+    @Override
+    public void setSandbox(String value) {
+        component.setSandbox(value);
+    }
+
+    @Override
+    public void setSandbox(Sandbox sandbox) {
+        component.setSandbox(sandbox.getValue());
+    }
+
+    @Override
+    public void setSandbox(EnumSet<Sandbox> sandboxSet) {
+        if (sandboxSet != null) {
+            component.setSandbox(sandboxSet.stream()
+                    .map(Sandbox::getValue)
+                    .collect(Collectors.joining(" ")));
+        } else {
+            component.setSandbox(null);
+        }
+    }
+
+    @Override
+    public void setSrcdoc(String value) {
+        component.setSrcdoc(value);
+    }
+
+    @Override
+    public String getSrcdoc() {
+        return component.getSrcdoc();
+    }
+
+    @Override
+    public void setAllow(String value) {
+        component.setAllow(value);
+    }
+
+    @Override
+    public void setAllow(Allow allow) {
+        component.setAllow(allow.getValue());
+    }
+
+    @Override
+    public void setAllow(EnumSet<Allow> allowSet) {
+        if (allowSet != null) {
+            component.setAllow(allowSet.stream()
+                    .map(Allow::getValue)
+                    .collect(Collectors.joining(" ")));
+        } else {
+            component.setAllow(null);
+        }
+    }
+
+    @Override
+    public String getAllow() {
+        return component.getAllow();
+    }
+
+    @Override
+    public String getReferrerPolicy() {
+        return component.getReferrerPolicy();
+    }
+
+    @Override
+    public void setReferrerPolicy(String value) {
+        component.setReferrerPolicy(value);
+    }
+
+    @Override
+    public void setReferrerPolicy(ReferrerPolicy referrerPolicy) {
+        component.setReferrerPolicy(referrerPolicy.getValue());
     }
 }

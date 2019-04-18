@@ -1,0 +1,49 @@
+<!--
+  ~ Copyright (c) 2008-2019 Haulmont.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<window xmlns="http://schemas.haulmont.com/cuba/screen/window.xsd">
+    <layout spacing="true">
+        <browserFrame id="bfSrcdocHeading1"
+                      width="100%"
+                      height="100%"
+                      srcdoc="&lt;h1&gt;Test srcdoc Heading 1&lt;/h1&gt;"/>
+
+        <browserFrame id="bfSrcdocHeading3"
+                      width="100%"
+                      height="100%"
+                      srcdoc="&lt;h3&gt;Test srcdoc Heading 3&lt;/h3&gt;"/>
+
+        <browserFrame id="bfSrcdocHeading6"
+                      width="100%"
+                      height="100%"
+                      srcdoc="&lt;h6&gt;Test srcdoc Heading 6&lt;/h6&gt;"/>
+
+        <browserFrame id="bfSrcdocParagraph"
+                      width="100%"
+                      height="100%"
+                      srcdoc="&lt;p&gt;Test srcdoc Paragraph&lt;/p&gt;"/>
+
+        <browserFrame id="bfSrcdocBold"
+                      width="100%"
+                      height="100%"
+                      srcdoc="&lt;b&gt;Test srcdoc Bold&lt;/b&gt;"/>
+
+        <browserFrame id="bfSrcdocItalic"
+                      width="100%"
+                      height="100%"
+                      srcdoc="&lt;i&gt;Test srcdoc Italic&lt;/i&gt;"/>
+    </layout>
+</window>
