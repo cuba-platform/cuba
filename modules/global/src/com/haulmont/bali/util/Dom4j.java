@@ -117,7 +117,7 @@ public final class Dom4j {
         try {
             reader.setFeature(featureName, value);
         } catch (SAXNotSupportedException | SAXNotRecognizedException e) {
-            log.debug("Error while setting XML reader feature", e);
+            log.trace("Error while setting XML reader feature", e);
         }
     }
 
