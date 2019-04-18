@@ -172,7 +172,7 @@ public class EclipseLinkSessionEventListener extends SessionEventAdapter {
         boolean persistenceWeaved = ArrayUtils.contains(entityClass.getInterfaces(), PersistenceWeaved.class);
         boolean persistenceWeavedFetchGroups = ArrayUtils.contains(entityClass.getInterfaces(), PersistenceWeavedFetchGroups.class);
         boolean persistenceWeavedChangeTracking = ArrayUtils.contains(entityClass.getInterfaces(), PersistenceWeavedChangeTracking.class);
-        if (!cubaEnhanced || !persistenceObject || !persistenceWeaved || !persistenceWeavedFetchGroups
+        if (!persistenceObject || !persistenceWeaved || !persistenceWeavedFetchGroups
                 || !persistenceWeavedChangeTracking) {
             String message = String.format("Entity class %s is missing some of enhancing interfaces:%s%s%s%s%s",
                     entityClass.getSimpleName(),
