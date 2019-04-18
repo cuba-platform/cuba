@@ -39,6 +39,7 @@
     <permission target="runtimePropertiesFrame" value="1" type="10"/>
     <permission target="saveFilter" value="1" type="10"/>
     <permission target="saveSetInFolder" value="1" type="10"/>
+    <permission target="inputDialog" value="1" type="10"/>
 
     <!-- Entities -->
     <permission target="sec$Filter:read" value="1" type="20"/>

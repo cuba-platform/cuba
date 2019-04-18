@@ -20,9 +20,16 @@ package com.haulmont.cuba.web.sys;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.Dialogs;
+import com.haulmont.cuba.gui.ScreenBuilders;
+import com.haulmont.cuba.gui.app.core.inputdialog.DialogActions;
+import com.haulmont.cuba.gui.app.core.inputdialog.InputDialog;
+import com.haulmont.cuba.gui.app.core.inputdialog.InputParameter;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.inputdialog.InputDialogAction;
 import com.haulmont.cuba.gui.executors.BackgroundWorker;
 import com.haulmont.cuba.gui.icons.Icons;
+import com.haulmont.cuba.gui.screen.FrameOwner;
+import com.haulmont.cuba.gui.screen.OpenMode;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.exception.ExceptionDialog;
@@ -41,7 +48,9 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
-import java.util.EnumSet;
+import java.util.*;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 import static com.haulmont.cuba.web.gui.components.WebComponentsHelper.setClickShortcut;
 import static com.haulmont.cuba.web.gui.components.WebWrapperUtils.*;
@@ -60,9 +69,15 @@ public class WebDialogs implements Dialogs {
     protected Icons icons;
     @Inject
     protected ClientConfig clientConfig;
+    protected ScreenBuilders screenBuilders;
 
     public WebDialogs(AppUI ui) {
         this.ui = ui;
+    }
+
+    @Inject
+    public void setScreenBuilders(ScreenBuilders screenBuilders) {
+        this.screenBuilders = screenBuilders;
     }
 
     @Override
@@ -96,6 +111,11 @@ public class WebDialogs implements Dialogs {
         backgroundWorker.checkUIAccess();
 
         return new ExceptionDialogBuilderImpl();
+    }
+
+    @Override
+    public InputDialogBuilder createInputDialog(FrameOwner owner) {
+        return new InputDialogBuilderImpl(owner);
     }
 
     public CubaButton createButton(Action action) {
@@ -682,6 +702,129 @@ public class WebDialogs implements Dialogs {
             }
             ui.addWindow(dialog);
             dialog.focus();
+        }
+    }
+
+    public class InputDialogBuilderImpl implements InputDialogBuilder {
+
+        protected InputDialog inputDialog;
+
+        public InputDialogBuilderImpl(FrameOwner owner) {
+            inputDialog = screenBuilders.screen(owner)
+                    .withScreenClass(InputDialog.class)
+                    .withOpenMode(OpenMode.DIALOG)
+                    .build();
+        }
+
+        @Override
+        public InputDialogBuilder withParameter(InputParameter parameter) {
+            inputDialog.setParameter(parameter);
+            return this;
+        }
+
+        @Override
+        public InputDialogBuilder withParameters(InputParameter... parameters) {
+            inputDialog.setParameters(parameters);
+            return this;
+        }
+
+        public Collection<InputParameter> getParameters() {
+            return inputDialog.getParameters();
+        }
+
+        @Override
+        public InputDialogBuilder withCloseListener(Consumer<InputDialog.InputDialogCloseEvent> listener) {
+            inputDialog.setCloseListener(listener);
+            return this;
+        }
+
+        public Consumer<InputDialog.InputDialogCloseEvent> getCloseListener() {
+            return inputDialog.getCloseListener();
+        }
+
+        @Override
+        public InputDialogBuilder withActions(InputDialogAction... actions) {
+            inputDialog.setActions(actions);
+            return this;
+        }
+
+        public Collection<Action> getActions() {
+            return inputDialog.getActions();
+        }
+
+        @Override
+        public InputDialogBuilder withActions(DialogActions actions) {
+            inputDialog.setDialogActions(actions);
+            return this;
+        }
+
+        @Override
+        public InputDialogBuilder withActions(DialogActions actions, Consumer<InputDialog.InputDialogResult> resultHandler) {
+            inputDialog.setDialogActions(actions);
+            inputDialog.setResultHandler(resultHandler);
+            return this;
+        }
+
+        public DialogActions getDialogActions() {
+            return inputDialog.getDialogActions();
+        }
+
+        @Nullable
+        public Consumer<InputDialog.InputDialogResult> getResultHandler() {
+            return inputDialog.getResultHandler();
+        }
+
+        @Override
+        public InputDialogBuilder withValidator(Function<InputDialog.ValidationContext, ValidationErrors> validator) {
+            inputDialog.setValidator(validator);
+            return this;
+        }
+
+        public Function<InputDialog.ValidationContext, ValidationErrors> getValidator() {
+            return inputDialog.getValidator();
+        }
+
+        @Override
+        public InputDialogBuilder withCaption(String caption) {
+            inputDialog.getDialogWindow().setCaption(caption);
+            return this;
+        }
+
+        @Override
+        public InputDialogBuilder withWidth(String width) {
+            inputDialog.getDialogWindow().setDialogWidth(width);
+            return this;
+        }
+
+        public float getWidth() {
+            return inputDialog.getDialogWindow().getDialogWidth();
+        }
+
+        @Override
+        public InputDialogBuilder withHeight(String height) {
+            inputDialog.getDialogWindow().setDialogHeight(height);
+            return this;
+        }
+
+        public float getHeight() {
+            return inputDialog.getDialogWindow().getDialogHeight();
+        }
+
+        @Nullable
+        public String getCaption() {
+            return inputDialog.getDialogWindow().getCaption();
+        }
+
+        @Override
+        public InputDialog show() {
+            InputDialog dialog = build();
+            dialog.show();
+            return dialog;
+        }
+
+        @Override
+        public InputDialog build() {
+            return inputDialog;
         }
     }
 }

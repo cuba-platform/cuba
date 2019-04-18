@@ -89,4 +89,38 @@ public class ValidationErrors {
 
         return items.get(0).component;
     }
+
+    /**
+     * Creates new object with one validation error.
+     *
+     * @param description error description
+     * @return object with one validation error
+     */
+    public static ValidationErrors of(String description) {
+        ValidationErrors errors = new ValidationErrors();
+        errors.add(description);
+        return errors;
+    }
+
+    /**
+     * @return immutable empty object
+     */
+    public static ValidationErrors none() {
+        return new ValidationErrors() {
+            @Override
+            public void add(String description) {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public void add(@Nullable Component component, String description) {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public void addAll(ValidationErrors errors) {
+                throw new UnsupportedOperationException();
+            }
+        };
+    }
 }
