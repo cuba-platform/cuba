@@ -630,6 +630,8 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
         if (buttonsPanel != null && !buttonsPanel.isAlwaysVisible()) {
             buttonsPanel.setVisible(false);
         }
+
+        setEditorEnabled(false);
     }
 
     @Override
