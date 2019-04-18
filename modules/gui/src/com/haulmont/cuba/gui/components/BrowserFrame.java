@@ -267,12 +267,12 @@ public interface BrowserFrame extends ResourceView {
         SAME_ORIGIN("same-origin"),
         /**
          * Only send the origin of the document as the referrer when the protocol security level stays
-         * the same (HTTPS->HTTPS), but don't send it to a less secure destination (HTTPS->HTTP).
+         * the same (HTTPS-&gt;HTTPS), but don't send it to a less secure destination (HTTPS-&gt;HTTP).
          */
         STRICT_ORIGIN("strict-origin"),
         /**
          * Send a full URL when performing a same-origin request, only send the origin when the protocol security
-         * level stays the same (HTTPS->HTTPS), and send no header to a less secure destination (HTTPS->HTTP).
+         * level stays the same (HTTPS-&gt;HTTPS), and send no header to a less secure destination (HTTPS-&gt;HTTP).
          */
         STRICT_ORIGIN_WHEN_CROSS_ORIGIN("strict-origin-when-cross-origin"),
         /**
