@@ -34,8 +34,7 @@ import org.junit.*;
 
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class DynamicAttributesTest {
 
@@ -48,6 +47,7 @@ public class DynamicAttributesTest {
 
     protected Category userCategory, userRoleCategory, roleCategory;
     protected CategoryAttribute userAttribute, userRoleAttribute, roleAttribute, userGroupAttribute, userGroupCollectionAttribute, userIntCollectionAttribute;
+    protected CategoryAttribute userEnumAttribute, userEnumCollectionAttribute;
     protected Group group, group2;
 
     protected User user, user2;
@@ -141,6 +141,25 @@ public class DynamicAttributesTest {
             userIntCollectionAttribute.setIsCollection(true);
             em.persist(userIntCollectionAttribute);
 
+            userEnumAttribute = metadata.create(CategoryAttribute.class);
+            userEnumAttribute.setName("userEnumAttribute");
+            userEnumAttribute.setCode("userEnumAttribute");
+            userEnumAttribute.setCategory(userCategory);
+            userEnumAttribute.setCategoryEntityType("sec$User");
+            userEnumAttribute.setDataType(PropertyType.ENUMERATION);
+            userEnumAttribute.setEnumeration("option1,option2,option3");
+            em.persist(userEnumAttribute);
+
+            userEnumCollectionAttribute = metadata.create(CategoryAttribute.class);
+            userEnumCollectionAttribute.setName("userEnumCollectionAttribute");
+            userEnumCollectionAttribute.setCode("userEnumCollectionAttribute");
+            userEnumCollectionAttribute.setCategory(userCategory);
+            userEnumCollectionAttribute.setCategoryEntityType("sec$User");
+            userEnumCollectionAttribute.setDataType(PropertyType.ENUMERATION);
+            userEnumCollectionAttribute.setEnumeration("option1,option2,option3");
+            userEnumCollectionAttribute.setIsCollection(true);
+            em.persist(userEnumCollectionAttribute);
+
             user = metadata.create(User.class);
             user.setName("user");
             user.setLogin("user");
@@ -181,6 +200,8 @@ public class DynamicAttributesTest {
         user.setValue("+userGroupAttribute", group);
         user.setValue("+userGroupCollectionAttribute", Lists.newArrayList(group, group2));
         user.setValue("+userIntCollectionAttribute", Lists.newArrayList(1, 2));
+        user.setValue("+userEnumAttribute", "option1");
+        user.setValue("+userEnumCollectionAttribute", Lists.newArrayList("option1", "option3"));
         dataManager.commit(user);
 
         user2 = dataManager.load(LoadContext.create(User.class).setId(user2.getId()).setLoadDynamicAttributes(true));
@@ -203,7 +224,8 @@ public class DynamicAttributesTest {
         runner.update("delete from SYS_ATTR_VALUE");
         runner.update("delete from TEST_COMPOSITE_KEY");
         cont.deleteRecord(userRole, role, user, user2, group, group2);
-        cont.deleteRecord(userAttribute, userRoleAttribute, roleAttribute, userGroupAttribute, userGroupCollectionAttribute, userIntCollectionAttribute);
+        cont.deleteRecord(userAttribute, userRoleAttribute, roleAttribute, userGroupAttribute, userGroupCollectionAttribute,
+                userIntCollectionAttribute, userEnumAttribute, userEnumCollectionAttribute);
         cont.deleteRecord(userCategory, userRoleCategory, roleCategory);
     }
 
@@ -309,5 +331,30 @@ public class DynamicAttributesTest {
             assertEquals("newName", e.getValue());
         });
         loadedUser.setValue("+userAttribute", "newName");
+    }
+
+    @Test
+    public void testCollectionOfEnumAttribute() {
+        LoadContext<User> loadContext = LoadContext.create(User.class).setId(user.getId()).setLoadDynamicAttributes(true);
+        User loadedUser = dataManager.load(loadContext);
+        List<String> enumValues = loadedUser.getValue("+userEnumCollectionAttribute");
+        assertEquals(2, enumValues.size());
+        assertTrue(enumValues.contains("option1"));
+        assertFalse(enumValues.contains("option2"));
+
+        loadedUser.setValue("+userEnumCollectionAttribute", Lists.newArrayList("option2"));
+        dataManager.commit(loadedUser);
+
+        loadedUser = dataManager.load(loadContext);
+        enumValues = loadedUser.getValue("+userEnumCollectionAttribute");
+        assertEquals(1, enumValues.size());
+        assertEquals("option2", enumValues.get(0));
+    }
+
+    @Test
+    public void testEnumAttribute() {
+        LoadContext<User> loadContext = LoadContext.create(User.class).setId(user.getId()).setLoadDynamicAttributes(true);
+        User loadedUser = dataManager.load(loadContext);
+        assertEquals("option1", loadedUser.getValue("+userEnumAttribute"));
     }
 }

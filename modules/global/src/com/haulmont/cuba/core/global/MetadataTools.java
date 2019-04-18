@@ -125,7 +125,7 @@ public class MetadataTools {
         if (DynamicAttributesUtils.isDynamicAttribute(property)) {
             CategoryAttribute categoryAttribute = DynamicAttributesUtils.getCategoryAttribute(property);
 
-            if (categoryAttribute.getDataType().equals(PropertyType.ENUMERATION)) {
+            if (categoryAttribute.getDataType().equals(PropertyType.ENUMERATION) && !(value instanceof Collection)) {
                 return LocaleHelper.getEnumLocalizedValue((String) value, categoryAttribute.getEnumerationLocales());
             }
 

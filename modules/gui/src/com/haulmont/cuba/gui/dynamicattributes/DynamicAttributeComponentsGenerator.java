@@ -124,6 +124,11 @@ public class DynamicAttributeComponentsGenerator {
         //noinspection unchecked
         listEditor.setValueSource(valueSource);
 
+        if (PropertyType.ENUMERATION.equals(categoryAttribute.getDataType())) {
+            //noinspection unchecked
+            listEditor.setOptionsMap(categoryAttribute.getLocalizedEnumerationMap());
+        }
+
         return listEditor;
     }
 

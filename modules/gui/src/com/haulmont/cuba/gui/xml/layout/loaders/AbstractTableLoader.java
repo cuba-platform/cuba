@@ -46,6 +46,7 @@ import com.haulmont.cuba.gui.xml.DeclarativeColumnGenerator;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.IterableUtils;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.dom4j.DocumentFactory;
 import org.dom4j.Element;
@@ -302,7 +303,8 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
                         column.setMaxTextLength(clientConfig.getDynamicAttributesTableColumnMaxTextLength());
                     }
 
-                    if (attribute.getDataType().equals(PropertyType.ENUMERATION)) {
+                    if (attribute.getDataType().equals(PropertyType.ENUMERATION)
+                            && BooleanUtils.isNotTrue(attribute.getIsCollection())) {
                         column.setFormatter(value ->
                                 LocaleHelper.getEnumLocalizedValue((String) value, attribute.getEnumerationLocales())
                         );

@@ -28,6 +28,7 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.dynamicattributes.DynamicAttributeCustomFieldGenerator;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
+import org.apache.commons.lang3.BooleanUtils;
 
 import javax.annotation.Nullable;
 import java.sql.Time;
@@ -46,7 +47,8 @@ public class BulkEditorFieldFactory {
     public Field createField(Datasource datasource, MetaProperty property) {
         if (DynamicAttributesUtils.isDynamicAttribute(property)) {
             CategoryAttribute attribute = DynamicAttributesUtils.getCategoryAttribute(property);
-            if (attribute.getDataType().equals(PropertyType.ENUMERATION)) {
+            if (attribute.getDataType().equals(PropertyType.ENUMERATION)
+                    && BooleanUtils.isNotTrue(attribute.getIsCollection())) {
                 return createEnumField(datasource, property);
             } else if (attribute.getIsCollection()) {
                 return createListEditorField(datasource, property);
