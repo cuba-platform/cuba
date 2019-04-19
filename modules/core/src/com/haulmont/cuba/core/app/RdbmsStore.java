@@ -404,7 +404,7 @@ public class RdbmsStore implements DataStore {
                     if (entityHasDynamicAttributes(entity)) {
                         BaseGenericIdEntity originalBaseGenericIdEntity = (BaseGenericIdEntity) entity;
                         BaseGenericIdEntity mergedBaseGenericIdEntity = (BaseGenericIdEntity) merged;
-                        mergedBaseGenericIdEntity.setDynamicAttributes(originalBaseGenericIdEntity.getDynamicAttributes());
+                        mergeDynamicAttributes(originalBaseGenericIdEntity, mergedBaseGenericIdEntity);
                         entitiesToStoreDynamicAttributes.add(mergedBaseGenericIdEntity);
                     }
                 }
@@ -1038,5 +1038,38 @@ public class RdbmsStore implements DataStore {
                 }
             }
         });
+    }
+
+    protected void mergeDynamicAttributes(BaseGenericIdEntity entity, BaseGenericIdEntity saved) {
+        saved.setDynamicAttributes(entity.getDynamicAttributes());
+        MetaClass metaClass = metadata.getClassNN(entity.getClass());
+        for (MetaProperty metaProperty : metaClass.getProperties()) {
+            if (metaProperty.getRange().isClass()
+                    && entityStates.isLoaded(entity, metaProperty.getName())
+                    && entityStates.isLoaded(saved, metaProperty.getName())) {
+                Object entityValue = entity.getValue(metaProperty.getName());
+                Object savedValue = saved.getValue(metaProperty.getName());
+                if (entityValue instanceof BaseGenericIdEntity
+                        && savedValue instanceof BaseGenericIdEntity
+                        && entityHasDynamicAttributes((BaseGenericIdEntity) entityValue)
+                        && !entityHasDynamicAttributes((BaseGenericIdEntity) savedValue)) {
+                    mergeDynamicAttributes((BaseGenericIdEntity) entityValue, (BaseGenericIdEntity) savedValue);
+                }
+                if (savedValue instanceof Collection && entityValue instanceof Collection) {
+                    for (Object savedItem: (Collection) savedValue) {
+                        if (savedItem instanceof BaseGenericIdEntity
+                                && !entityHasDynamicAttributes((BaseGenericIdEntity) savedItem)) {
+                            for (Object item : (Collection) entityValue) {
+                                if (savedItem.equals(item)
+                                        && entityHasDynamicAttributes((BaseGenericIdEntity) item)) {
+                                    mergeDynamicAttributes((BaseGenericIdEntity) item, (BaseGenericIdEntity) savedItem);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }
