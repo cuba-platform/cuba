@@ -21,9 +21,10 @@ import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributes;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.data.value.DatasourceValueSource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.RuntimePropsDatasource;
-import com.haulmont.cuba.gui.dynamicattributes.DynamicAttributeCustomFieldGenerator;
+import com.haulmont.cuba.gui.dynamicattributes.DynamicAttributeComponentsGenerator;
 import org.apache.commons.lang3.BooleanUtils;
 
 import javax.inject.Inject;
@@ -37,6 +38,9 @@ public class FieldGroupFieldFactoryImpl implements FieldGroupFieldFactory {
     @Inject
     protected UiComponentsGenerator uiComponentsGenerator;
 
+    @Inject
+    protected DynamicAttributeComponentsGenerator dynamicAttributeComponentsGenerator;
+
     @Override
     public GeneratedField createField(FieldGroup.FieldConfig fc) {
         return createFieldComponent(fc);
@@ -48,9 +52,9 @@ public class FieldGroupFieldFactoryImpl implements FieldGroupFieldFactory {
         if (DynamicAttributesUtils.isDynamicAttribute(fc.getProperty())) {
             CategoryAttribute attribute = dynamicAttributes.getAttributeForMetaClass(metaClass, fc.getProperty());
             if (attribute != null && BooleanUtils.isTrue(attribute.getIsCollection())) {
-                FieldGroup.CustomFieldGenerator fieldGenerator = new DynamicAttributeCustomFieldGenerator();
-
-                Component fieldComponent = fieldGenerator.generateField(fc.getTargetDatasource(), fc.getProperty());
+                //noinspection unchecked
+                DatasourceValueSource valueSource = new DatasourceValueSource(fc.getTargetDatasource(), fc.getProperty());
+                Component fieldComponent = dynamicAttributeComponentsGenerator.generateComponent(valueSource, attribute);
                 return new GeneratedField(fieldComponent);
             }
         }
