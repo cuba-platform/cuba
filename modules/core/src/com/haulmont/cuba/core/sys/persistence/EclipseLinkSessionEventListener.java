@@ -22,6 +22,7 @@ import com.haulmont.bali.datastruct.Pair;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.Range;
+import com.haulmont.chile.core.model.impl.AbstractInstance;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.SoftDelete;
 import com.haulmont.cuba.core.entity.annotation.EmbeddedParameters;
@@ -30,6 +31,7 @@ import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.CubaEnhanced;
+import com.haulmont.cuba.core.sys.CubaEnhancingDisabled;
 import com.haulmont.cuba.core.sys.UuidConverter;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.BooleanUtils;
@@ -167,12 +169,14 @@ public class EclipseLinkSessionEventListener extends SessionEventAdapter {
     }
 
     protected void enhancementCheck(Class entityClass, List<Pair<Class, String>> missingEnhancements) {
-        boolean cubaEnhanced = ArrayUtils.contains(entityClass.getInterfaces(), CubaEnhanced.class);
+        boolean cubaEnhanced = ArrayUtils.contains(entityClass.getInterfaces(), CubaEnhanced.class)
+                || !(AbstractInstance.class.isAssignableFrom(entityClass))
+                || ArrayUtils.contains(entityClass.getInterfaces(), CubaEnhancingDisabled.class);
         boolean persistenceObject = ArrayUtils.contains(entityClass.getInterfaces(), PersistenceObject.class);
         boolean persistenceWeaved = ArrayUtils.contains(entityClass.getInterfaces(), PersistenceWeaved.class);
         boolean persistenceWeavedFetchGroups = ArrayUtils.contains(entityClass.getInterfaces(), PersistenceWeavedFetchGroups.class);
         boolean persistenceWeavedChangeTracking = ArrayUtils.contains(entityClass.getInterfaces(), PersistenceWeavedChangeTracking.class);
-        if (!persistenceObject || !persistenceWeaved || !persistenceWeavedFetchGroups
+        if (!cubaEnhanced || !persistenceObject || !persistenceWeaved || !persistenceWeavedFetchGroups
                 || !persistenceWeavedChangeTracking) {
             String message = String.format("Entity class %s is missing some of enhancing interfaces:%s%s%s%s%s",
                     entityClass.getSimpleName(),
