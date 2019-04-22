@@ -29,10 +29,12 @@ import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.AppConfig;
+import com.haulmont.cuba.gui.UiComponents;
 import com.haulmont.cuba.gui.WindowParam;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Action.Status;
 import com.haulmont.cuba.gui.components.DialogAction.Type;
+import com.haulmont.cuba.gui.components.validators.AbstractBeanValidator;
 import com.haulmont.cuba.gui.data.DataSupplier;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.NestedDatasource;
@@ -40,9 +42,7 @@ import com.haulmont.cuba.gui.data.impl.DatasourceImpl;
 import com.haulmont.cuba.gui.data.impl.DsContextImpl;
 import com.haulmont.cuba.gui.data.impl.EmbeddedDatasourceImpl;
 import com.haulmont.cuba.gui.icons.CubaIcon;
-import com.haulmont.cuba.gui.icons.Icons;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
-import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
 import com.haulmont.cuba.security.entity.EntityOp;
 import org.apache.commons.lang3.StringUtils;
@@ -51,6 +51,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.regex.Pattern;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
@@ -58,22 +59,16 @@ import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 public class BulkEditorWindow extends AbstractWindow {
     @Inject
     protected ViewRepository viewRepository;
-
     @Inject
     protected MetadataTools metadataTools;
-
     @Inject
     protected MessageTools messageTools;
-
     @Inject
     protected Metadata metadata;
-
     @Inject
     protected DataSupplier dataSupplier;
-
     @Inject
-    protected ComponentsFactory componentsFactory;
-
+    protected UiComponents uiComponents;
     @Inject
     protected Security security;
 
@@ -84,11 +79,9 @@ public class BulkEditorWindow extends AbstractWindow {
     protected DynamicAttributes dynamicAttributes;
 
     @Inject
-    protected BoxLayout contentPane;
-
+    protected ScrollBoxLayout fieldsScrollBox;
     @Inject
-    protected Label infoLabel;
-
+    protected Label<String> infoLabel;
     @Inject
     protected Button applyButton;
 
@@ -97,27 +90,20 @@ public class BulkEditorWindow extends AbstractWindow {
 
     @WindowParam(required = true)
     protected MetaClass metaClass;
-
     @WindowParam(required = true)
     protected Set<Entity> selected;
-
     @WindowParam
     protected String exclude;
-
     @WindowParam
     protected List<String> includeProperties;
-
     @WindowParam
     protected boolean loadDynamicAttributes = true;
-
     @WindowParam
     protected boolean useConfirmDialog = true;
-
     @WindowParam
-    protected Map<String, Field.Validator> fieldValidators;
-
+    protected Map<String, Consumer> fieldValidators;
     @WindowParam
-    protected List<Field.Validator> modelValidators;
+    protected List<Consumer> modelValidators;
 
     protected Pattern excludeRegex;
 
@@ -127,9 +113,8 @@ public class BulkEditorWindow extends AbstractWindow {
 
     protected Map<String, ManagedField> managedFields = new LinkedHashMap<>();
     protected Map<String, Field> dataFields = new LinkedHashMap<>();
-    protected BulkEditorFieldFactory fieldFactory = new BulkEditorFieldFactory();
-    protected List<Entity> items;
 
+    protected List<Entity> items;
     protected List<String> managedEmbeddedProperties = new ArrayList<>();
 
     @Override
@@ -181,6 +166,7 @@ public class BulkEditorWindow extends AbstractWindow {
         createDataComponents();
     }
 
+    @SuppressWarnings("unchecked")
     protected void createDataComponents() {
         if (managedFields.isEmpty()) {
             infoLabel.setValue(getMessage("bulk.noEditableProperties"));
@@ -188,14 +174,13 @@ public class BulkEditorWindow extends AbstractWindow {
             return;
         }
 
-        GridLayout grid = componentsFactory.createComponent(GridLayout.class);
+        GridLayout grid = uiComponents.create(GridLayout.class);
         grid.setSpacing(true);
         grid.setColumns(4);
         grid.setRows((managedFields.size() + 1) / 2);
         grid.setStyleName("c-bulk-editor-grid");
 
-        contentPane.add(grid);
-        grid.setFrame(frame);
+        fieldsScrollBox.add(grid);
 
         List<ManagedField> editFields = new ArrayList<>(managedFields.values());
         editFields.sort(Comparator.comparing(ManagedField::getLocalizedName));
@@ -203,7 +188,7 @@ public class BulkEditorWindow extends AbstractWindow {
         String fieldWidth = themeConstants.get("cuba.gui.BulkEditorWindow.field.width");
 
         for (ManagedField field : editFields) {
-            Label<String> label = componentsFactory.createComponent(Label.class);
+            Label<String> label = uiComponents.create(Label.NAME);
             label.setValue(field.getLocalizedName());
             label.setAlignment(Alignment.TOP_LEFT);
             label.setStyleName("field-label");
@@ -220,59 +205,64 @@ public class BulkEditorWindow extends AbstractWindow {
                 fieldDs = datasources.get(field.getParentFqn());
             }
 
-            final Field editField = fieldFactory.createField(fieldDs, field.getMetaProperty());
+            BulkEditorFieldFactory fieldFactory = getFieldFactory();
+            Field<?> editField = fieldFactory.createField(fieldDs, field.getMetaProperty());
             if (editField != null) {
                 editField.setFrame(getFrame());
                 editField.setWidth(fieldWidth);
 
                 boolean required = editField.isRequired();
 
-                BoxLayout boxLayout = componentsFactory.createComponent(HBoxLayout.class);
-                boxLayout.setFrame(getFrame());
+                BoxLayout boxLayout = uiComponents.create(HBoxLayout.class);
                 boxLayout.setSpacing(true);
 
                 boxLayout.add(editField);
 
                 if (!required) {
-                    final Button clearButton = componentsFactory.createComponent(Button.class);
-                    clearButton.setFrame(getFrame());
-                    Action action = new AbstractAction("actions.BulkClear") {
-                        @Override
-                        public void actionPerform(Component component) {
-                            editField.setEnabled(!editField.isEnabled());
-                            if (!editField.isEnabled()) {
-                                if (editField instanceof ListEditor) {
-                                    editField.setValue(Collections.EMPTY_LIST);
-                                } else {
-                                    editField.setValue(null);
-                                }
-                                setIcon("icons/edit.png");
-                                clearButton.setDescription(getMessage("bulk.editAttribute"));
-                            } else {
-                                setIcon("icons/trash.png");
-                                clearButton.setDescription(getMessage("bulk.clearAttribute"));
-                            }
-                        }
-                    };
-                    action.setCaption("");
-                    action.setIcon("icons/trash.png");
-
-                    clearButton.setAction(action);
+                    Button clearButton = uiComponents.create(Button.class);
+                    clearButton.setIconFromSet(CubaIcon.TRASH);
+                    clearButton.setCaption("");
                     clearButton.setDescription(getMessage("bulk.clearAttribute"));
+
+                    clearButton.addClickListener(e -> {
+                        editField.setEnabled(!editField.isEnabled());
+                        if (!editField.isEnabled()) {
+                            if (editField instanceof ListEditor) {
+                                ((Field) editField).setValue(Collections.EMPTY_LIST);
+                            } else {
+                                editField.setValue(null);
+                            }
+
+                            e.getButton().setIconFromSet(CubaIcon.EDIT);
+                            e.getButton().setDescription(getMessage("bulk.editAttribute"));
+                        } else {
+                            e.getButton().setIconFromSet(CubaIcon.TRASH);
+                            e.getButton().setDescription(getMessage("bulk.clearAttribute"));
+                        }
+                    });
 
                     boxLayout.add(clearButton);
                 }
 
+                // disable bean validator
+
+                //noinspection RedundantCast
+                editField.getValidators().stream()
+                        .filter(v -> v instanceof AbstractBeanValidator)
+                        .findFirst()
+                        .ifPresent(((Field) editField)::removeValidator);
+
+                // disable required
                 editField.setRequired(false);
 
                 if (editField instanceof ListEditor) {
-                    editField.setValue(Collections.EMPTY_LIST);
+                    ((Field) editField).setValue(Collections.EMPTY_LIST);
                 } else {
                     editField.setValue(null);
                 }
 
                 if (fieldValidators != null) {
-                    Field.Validator validator = fieldValidators.get(field.getFqn());
+                    Consumer validator = fieldValidators.get(field.getFqn());
                     if (validator != null) {
                         editField.addValidator(validator);
                     }
@@ -282,19 +272,20 @@ public class BulkEditorWindow extends AbstractWindow {
 
                 dataFields.put(field.getFqn(), editField);
             } else {
-                Label unknownLabel = componentsFactory.createComponent(Label.class);
-                grid.add(unknownLabel);
+                grid.add(uiComponents.create(Label.class));
             }
         }
 
-        if (!dataFields.isEmpty()) {
-            dataFields.values().stream()
-                    .filter(f -> f instanceof Focusable)
-                    .findFirst()
-                    .ifPresent(f ->
-                            ((Focusable) f).focus()
-                    );
-        }
+        dataFields.values().stream()
+                .filter(f -> f instanceof Focusable)
+                .findFirst()
+                .ifPresent(f ->
+                        ((Focusable) f).focus()
+                );
+    }
+
+    protected BulkEditorFieldFactory getFieldFactory() {
+        return new BulkEditorFieldFactory();
     }
 
     protected boolean isByteArray(MetaProperty metaProperty) {
@@ -436,11 +427,9 @@ public class BulkEditorWindow extends AbstractWindow {
     protected boolean isRangeClassPermitted(MetaProperty metaProperty) {
         if (metaProperty.getRange().isClass()) {
             MetaClass propertyMetaClass = metaProperty.getRange().asClass();
-            if (metadataTools.isSystemLevel(propertyMetaClass)) {
-                return false;
-            }
 
-            if (!security.isEntityOpPermitted(propertyMetaClass, EntityOp.READ)) {
+            if (metadataTools.isSystemLevel(propertyMetaClass)
+                    || !security.isEntityOpPermitted(propertyMetaClass, EntityOp.READ)) {
                 return false;
             }
         }
@@ -489,9 +478,9 @@ public class BulkEditorWindow extends AbstractWindow {
         for (MetaProperty metaProperty : metaClass.getProperties()) {
             if (isManagedAttribute(metaClass, metaProperty)) {
                 String propertyCaption = messageTools.getPropertyCaption(metaClass, metaProperty.getName());
+
                 if (!metadataTools.isEmbedded(metaProperty)) {
-                    managedFields.add(new ManagedField(metaProperty.getName(), metaProperty,
-                            propertyCaption, null));
+                    managedFields.add(new ManagedField(metaProperty.getName(), metaProperty, propertyCaption, null));
                 } else {
                     List<ManagedField> nestedFields = getManagedFields(metaProperty, metaProperty.getName(), propertyCaption);
                     if (nestedFields.size() > 0) {
@@ -556,9 +545,10 @@ public class BulkEditorWindow extends AbstractWindow {
             showOptionDialog(messages.getMainMessage("closeUnsaved.caption"),
                     messages.getMainMessage("closeUnsaved"),
                     MessageType.CONFIRMATION, new Action[]{
-                            new DialogAction(Type.YES).withHandler(event -> {
-                                close(CLOSE_ACTION_ID, true);
-                            }),
+
+                            new DialogAction(Type.YES)
+                                    .withHandler(event -> close(CLOSE_ACTION_ID, true)),
+
                             new DialogAction(Type.NO, Status.PRIMARY)
                     });
         } else {
@@ -566,7 +556,7 @@ public class BulkEditorWindow extends AbstractWindow {
         }
     }
 
-    private boolean hasChanges() {
+    protected boolean hasChanges() {
         for (Map.Entry<String, Field> fieldEntry : dataFields.entrySet()) {
             Field field = fieldEntry.getValue();
             if (isFieldChanged(field)) {
@@ -593,9 +583,9 @@ public class BulkEditorWindow extends AbstractWindow {
         if (validateAll()) {
             StringBuilder sb = new StringBuilder();
             if (modelValidators != null) {
-                for (Field.Validator moduleValidator : modelValidators) {
+                for (Consumer moduleValidator : modelValidators) {
                     try {
-                        moduleValidator.validate(datasource);
+                        moduleValidator.accept(datasource);
                     } catch (ValidationException e) {
                         sb.append(e.getMessage());
                         sb.append("\n");
@@ -627,18 +617,12 @@ public class BulkEditorWindow extends AbstractWindow {
         if (useConfirmDialog) {
             showOptionDialog(getMessage("bulk.confirmation"),
                     formatMessage("bulk.applyConfirmation", items.size(), StringUtils.join(fields, "\n")),
-                    MessageType.CONFIRMATION, new Action[]{
-                            new AbstractAction("actions.Apply") {
-                                {
-                                    icon = AppBeans.get(Icons.class)
-                                            .get(CubaIcon.DIALOG_OK);
-                                }
+                    MessageType.CONFIRMATION, new Action[] {
 
-                                @Override
-                                public void actionPerform(Component component) {
-                                    commitBulkChanges();
-                                }
-                            },
+                            new DialogAction(Type.OK)
+                                    .withCaption(getMessage("actions.Apply"))
+                                    .withHandler(e -> commitBulkChanges()),
+
                             new DialogAction(Type.CANCEL, Status.PRIMARY)
                     });
         } else {
