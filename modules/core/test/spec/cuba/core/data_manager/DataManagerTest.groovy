@@ -16,13 +16,19 @@
 
 package spec.cuba.core.data_manager
 
+import com.haulmont.cuba.core.entity.contracts.Id
 import com.haulmont.cuba.core.global.AppBeans
 import com.haulmont.cuba.core.global.DataManager
+import com.haulmont.cuba.core.global.EntityStates
 import com.haulmont.cuba.core.global.LoadContext
+import com.haulmont.cuba.core.global.MetadataTools
 import com.haulmont.cuba.core.global.ValueLoadContext
+import com.haulmont.cuba.core.global.View
 import com.haulmont.cuba.core.sys.AppContext
 import com.haulmont.cuba.security.entity.Group
 import com.haulmont.cuba.security.entity.User
+import com.haulmont.cuba.testmodel.sales_1.OrderLine
+import com.haulmont.cuba.testmodel.sales_1.Product
 import com.haulmont.cuba.testsupport.TestContainer
 import com.haulmont.cuba.testsupport.TestSupport
 import org.junit.ClassRule
@@ -262,5 +268,25 @@ class DataManagerTest extends Specification {
         then:
 
         query.getNoConversionParams() == ['ref1', 'ref2', 'ref3'].toArray(new String[0])
+    }
+
+    def "load uses _base view by default"() {
+
+        def product = new Product(name: 'p1', quantity: 100)
+        def line = new OrderLine(product: product, quantity: 10)
+        dataManager.commit(product, line)
+
+        when:
+
+        def line1 = dataManager.load(Id.of(line)).one()
+
+        then:
+
+        AppBeans.get(EntityStates).isLoadedWithView(line1, View.BASE)
+        AppBeans.get(MetadataTools).getInstanceName(line1) == 'p1 10'
+
+        cleanup:
+
+        cont.deleteRecord(line, product)
     }
 }

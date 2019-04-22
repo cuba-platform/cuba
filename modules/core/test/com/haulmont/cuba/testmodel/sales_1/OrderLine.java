@@ -16,6 +16,7 @@
 
 package com.haulmont.cuba.testmodel.sales_1;
 
+import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.cuba.core.entity.StandardEntity;
 import com.haulmont.cuba.core.entity.annotation.PublishEntityChangedEvents;
 
@@ -23,6 +24,7 @@ import javax.persistence.*;
 
 @Table(name = "SALES1_ORDER_LINE")
 @Entity(name = "sales1$OrderLine")
+@NamePattern("%s %s|product,quantity")
 @PublishEntityChangedEvents
 public class OrderLine extends StandardEntity {
     private static final long serialVersionUID = 5682981871475199801L;
