@@ -550,7 +550,7 @@ public class DataContextImpl implements DataContext {
         if (preCommitEvent.isCommitPrevented())
             return EntitySet.of(Collections.emptySet());
 
-        Set<Entity> committed = performCommit();
+        Set<Entity> committed = performCommit(preCommitEvent.getValidationType(), preCommitEvent.getValidationGroups());
 
         EntitySet committedAndMerged = mergeCommitted(committed);
 
@@ -582,21 +582,25 @@ public class DataContextImpl implements DataContext {
         this.commitDelegate = delegate;
     }
 
-    protected Set<Entity> performCommit() {
+    protected Set<Entity> performCommit(CommitContext.ValidationType validationType, List<Class> validationGroups) {
         if (!hasChanges())
             return Collections.emptySet();
 
         if (parentContext == null) {
-            return commitToDataManager();
+            return commitToDataManager(validationType, validationGroups);
         } else {
             return commitToParentContext();
         }
     }
 
-    protected Set<Entity> commitToDataManager() {
+    protected Set<Entity> commitToDataManager(CommitContext.ValidationType validationType, List<Class> validationGroups) {
         CommitContext commitContext = new CommitContext(
                 filterCommittedInstances(modifiedInstances),
                 filterCommittedInstances(removedInstances));
+        if (validationType != null)
+            commitContext.setValidationType(validationType);
+        if (validationGroups != null)
+            commitContext.setValidationGroups(validationGroups);
         if (commitDelegate == null) {
             return getDataManager().commit(commitContext);
         } else {

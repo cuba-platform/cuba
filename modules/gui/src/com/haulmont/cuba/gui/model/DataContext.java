@@ -18,7 +18,9 @@ package com.haulmont.cuba.gui.model;
 
 import com.haulmont.bali.events.Subscription;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.BeanValidation;
 import com.haulmont.cuba.core.global.CommitContext;
+import com.haulmont.cuba.core.global.DataManager;
 import com.haulmont.cuba.core.global.EntitySet;
 import com.haulmont.cuba.gui.screen.InstallSubject;
 import com.haulmont.cuba.gui.screen.Subscribe;
@@ -27,6 +29,7 @@ import javax.annotation.CheckReturnValue;
 import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.EventObject;
+import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -227,6 +230,8 @@ public interface DataContext {
         private final Collection<Entity> modifiedInstances;
         private final Collection<Entity> removedInstances;
         private boolean commitPrevented;
+        private List<Class> validationGroups;
+        private CommitContext.ValidationType validationType;
 
         public PreCommitEvent(DataContext dataContext, Collection<Entity> modified, Collection<Entity> removed) {
             super(dataContext);
@@ -268,6 +273,44 @@ public interface DataContext {
          */
         public boolean isCommitPrevented() {
             return commitPrevented;
+        }
+
+        /**
+         * @return groups targeted for validation.
+         * @see javax.validation.Validator#validate(Object, Class[])
+         */
+        public List<Class> getValidationGroups() {
+            return validationGroups;
+        }
+
+        /**
+         * Sets groups targeted for validation.
+         * Note that groups will be ignored for child context.
+         *
+         * @param validationGroups {@code Set} of groups
+         * @see javax.validation.Validator#validate(Object, Class[])
+         */
+        public void setValidationGroups(List<Class> validationGroups) {
+            this.validationGroups = validationGroups;
+        }
+
+        /**
+         * @return {@link CommitContext.ValidationType} of associated commit.
+         */
+        public CommitContext.ValidationType getValidationType() {
+            return validationType;
+        }
+
+        /**
+         * Sets {@link CommitContext.ValidationType} for associated commit.
+         * Validation type is responsible for whether entity bean validation will be applied on {@link DataManager} level.
+         * Note that validation type will be ignored for child context.
+         *
+         * @param validationType validation type
+         * @see BeanValidation
+         */
+        public void setValidationType(CommitContext.ValidationType validationType) {
+            this.validationType = validationType;
         }
     }
 
