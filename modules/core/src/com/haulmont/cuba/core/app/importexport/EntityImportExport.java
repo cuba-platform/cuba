@@ -635,9 +635,10 @@ public class EntityImportExport implements EntityImportExportAPI {
             EntityImportView importViewPropertyView = importViewProperty.getView();
             if (importViewPropertyView == null) {
                 MetaProperty metaProperty = metaClass.getPropertyNN(importViewProperty.getName());
+                if (metaProperty.isReadOnly()) continue;
                 if (metaProperty.getRange().isClass()) {
                     MetaClass propertyMetaClass = metaProperty.getRange().asClass();
-                    regularView.addProperty(importViewProperty.getName(), viewRepository.getView(propertyMetaClass, View.MINIMAL));
+                    regularView.addProperty(importViewProperty.getName(), new View(propertyMetaClass.getJavaClass(), false));
                 } else {
                     regularView.addProperty(importViewProperty.getName());
                 }
@@ -696,7 +697,7 @@ public class EntityImportExport implements EntityImportExportAPI {
         if (result == null) {
             LoadContext<? extends Entity> ctx = LoadContext.create(entity.getClass())
                     .setSoftDeletion(false)
-                    .setView(View.MINIMAL)
+                    .setView(new View(entity.getMetaClass().getJavaClass(), false))
                     .setId(entity.getId());
             result = dataManager.load(ctx);
             if (result == null) {
