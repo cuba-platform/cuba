@@ -184,6 +184,7 @@ public class EntitySerialization implements EntitySerializationAPI {
 
         protected boolean compactRepeatedEntities = false;
         protected boolean serializeInstanceName;
+        protected boolean doNotSerializeReadOnlyProperties = false;
         protected View view;
 
         public EntitySerializer(@Nullable View view, EntitySerializationOption... options) {
@@ -194,6 +195,8 @@ public class EntitySerialization implements EntitySerializationAPI {
                         compactRepeatedEntities = true;
                     if (option == EntitySerializationOption.SERIALIZE_INSTANCE_NAME)
                         serializeInstanceName = true;
+                    if (option == EntitySerializationOption.DO_NOT_SERIALIZE_RO_NON_PERSISTENT_PROPERTIES)
+                        doNotSerializeReadOnlyProperties = true;
                 }
             }
         }
@@ -269,7 +272,8 @@ public class EntitySerialization implements EntitySerializationAPI {
             return !"id".equals(metaProperty.getName()) &&
                     (DynamicAttributesUtils.isDynamicAttribute(metaProperty) ||
                             (entity instanceof AbstractNotPersistentEntity) ||
-                            !metadataTools.isPersistent(metaProperty) ||
+                            (!metadataTools.isPersistent(metaProperty) &&
+                                    (metaProperty.isReadOnly() && !doNotSerializeReadOnlyProperties || !metaProperty.isReadOnly())) ||
                             (metadataTools.isPersistent(metaProperty) && PersistenceHelper.isLoaded(entity, metaProperty.getName())));
         }
 

@@ -6,6 +6,7 @@
 package spec.cuba.core.entity_serialization
 
 import com.haulmont.cuba.core.app.serialization.EntitySerializationAPI
+import com.haulmont.cuba.core.app.serialization.EntitySerializationOption
 import com.haulmont.cuba.core.global.AppBeans
 import com.haulmont.cuba.testmodel.entity_serialization.Serialization_Order
 import com.haulmont.cuba.testmodel.entity_serialization.Serialization_OrderItem
@@ -58,5 +59,39 @@ class EntityJsonSerializationTest extends Specification {
         item2.relatedItem.name == item1.name //item1 name should exist, it is not a cyclic reference
         item2.relatedItem.order.id == parsedObject.id
         item2.relatedItem.order.name == null //order name should NOT exist, it is a cyclic reference
+    }
+
+    def "should serialize non-persistent fields if DO_NOT_SERIALIZE_RO_NON_PERSISTENT_PROPERTIES is NOT provided"() {
+        def order = cont.metadata().create(Serialization_Order.class)
+        order.setNumber('order-1')
+        order.setTransientField("tf")
+
+        when: 'no EntitySerializationOption.DO_NOT_SERIALIZE_RO_NON_PERSISTENT_PROPERTIES is provided'
+
+        def json = entitySerializationAPI.toJson(order)
+
+        then: 'not persistent fields must be absent in JSON'
+
+        def jsonSlurper = new JsonSlurper()
+        def parsedObject = jsonSlurper.parseText(json)
+        parsedObject.transientField == 'tf'
+        parsedObject.valueFromMetaPropertyMethod =='some value'
+    }
+
+    def "SHOULD NOT serialize non-persistent fields if DO_NOT_SERIALIZE_RO_NON_PERSISTENT_PROPERTIES IS provided"() {
+        def order = cont.metadata().create(Serialization_Order.class)
+        order.setNumber('order-1')
+        order.setTransientField("tf")
+
+        when: 'EntitySerializationOption.DO_NOT_SERIALIZE_RO_NON_PERSISTENT_PROPERTIES is provided'
+
+        def json = entitySerializationAPI.toJson(order, null, EntitySerializationOption.DO_NOT_SERIALIZE_RO_NON_PERSISTENT_PROPERTIES)
+
+        then: 'persistent fields must be absent in JSON'
+
+        def jsonSlurper = new JsonSlurper()
+        def parsedObject = jsonSlurper.parseText(json)
+        parsedObject.transientField == 'tf'
+        parsedObject.valueFromMetaPropertyMethod == null
     }
 }

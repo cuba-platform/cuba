@@ -5,12 +5,10 @@
 
 package com.haulmont.cuba.testmodel.entity_serialization;
 
+import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.List;
 
 @Table(name = "TEST_SERIALIZATION_ORDER")
@@ -22,6 +20,15 @@ public class Serialization_Order extends BaseUuidEntity {
 
     @OneToMany(mappedBy = "order")
     protected List<Serialization_OrderItem> items;
+
+    @MetaProperty
+    @Transient
+    protected String transientField;
+
+    @MetaProperty
+    public String getValueFromMetaPropertyMethod() {
+        return "some value";
+    }
 
     public String getNumber() {
         return number;
@@ -37,5 +44,13 @@ public class Serialization_Order extends BaseUuidEntity {
 
     public void setItems(List<Serialization_OrderItem> items) {
         this.items = items;
+    }
+
+    public String getTransientField() {
+        return transientField;
+    }
+
+    public void setTransientField(String transientField) {
+        this.transientField = transientField;
     }
 }

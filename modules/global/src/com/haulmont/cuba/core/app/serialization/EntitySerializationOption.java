@@ -39,6 +39,11 @@ public enum EntitySerializationOption {
     SERIALIZE_INSTANCE_NAME,
 
     /**
+     * Specifies that read-only non-persistent properties (getter methods annotated with @MetaProperty) should NOT be serialized.
+     */
+    DO_NOT_SERIALIZE_RO_NON_PERSISTENT_PROPERTIES,
+
+    /**
      * Specifies that JSON must be pretty printed
      */
     PRETTY_PRINT
