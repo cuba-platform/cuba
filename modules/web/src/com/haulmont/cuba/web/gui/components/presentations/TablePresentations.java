@@ -18,7 +18,7 @@ package com.haulmont.cuba.web.gui.components.presentations;
 
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
-import com.haulmont.cuba.gui.components.AbstractAction;
+import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.presentations.Presentations;
 import com.haulmont.cuba.gui.presentations.PresentationsChangeListener;
@@ -29,9 +29,6 @@ import com.haulmont.cuba.web.gui.components.presentations.actions.PresentationAc
 import com.haulmont.cuba.web.widgets.CubaEnhancedTable;
 import com.haulmont.cuba.web.widgets.CubaMenuBar;
 import com.vaadin.ui.*;
-import com.vaadin.v7.data.Property;
-import com.vaadin.v7.data.util.AbstractProperty;
-import com.vaadin.v7.ui.CheckBox;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -67,7 +64,7 @@ public class TablePresentations extends VerticalLayout {
         this.table = component;
         this.messages = AppBeans.get(Messages.NAME);
 
-        this.tableImpl = (CubaEnhancedTable) WebComponentsHelper.unwrap(table);
+        this.tableImpl = table.unwrap(CubaEnhancedTable.class);
 
         setMargin(false);
 
@@ -202,33 +199,17 @@ public class TablePresentations extends VerticalLayout {
         menuBar.setVertical(true);
         addComponent(menuBar);
 
-        button = new WebPopupButton();
+        button = new WebPopupButton(); // todo rewrite !
         button.setCaption(messages.getMainMessage("PresentationsPopup.actions"));
         addComponent(button.getComponent());
         setComponentAlignment(button.getComponent(), Alignment.MIDDLE_CENTER);
 
         textSelectionCheckBox = new CheckBox();
-        textSelectionCheckBox.setInvalidCommitted(true);
         textSelectionCheckBox.setCaption(messages.getMainMessage("PresentationsPopup.textSelection"));
         addComponent(textSelectionCheckBox);
-        textSelectionCheckBox.setPropertyDataSource(new AbstractProperty() {
-            @Override
-            public Object getValue() {
-                return tableImpl.isTextSelectionEnabled();
-            }
 
-            @Override
-            public void setValue(Object newValue) throws Property.ReadOnlyException {
-                if (newValue instanceof Boolean) {
-                    tableImpl.setTextSelectionEnabled((Boolean) newValue);
-                }
-            }
-
-            @Override
-            public Class getType() {
-                return Boolean.class;
-            }
-        });
+        textSelectionCheckBox.setValue(tableImpl.isTextSelectionEnabled());
+        textSelectionCheckBox.addValueChangeListener(e -> tableImpl.setTextSelectionEnabled(e.getValue()));
     }
 
     public void build() {
@@ -268,9 +249,11 @@ public class TablePresentations extends VerticalLayout {
         button.removeAllActions();
 
         PresentationActionsBuilder presentationActionsBuilder = getPresentationActionsBuilder();
-        if (presentationActionsBuilder != null)
-            for (AbstractAction action : presentationActionsBuilder.build())
+        if (presentationActionsBuilder != null) {
+            for (Action action : presentationActionsBuilder.build()) {
                 button.addAction(action);
+            }
+        }
     }
 
     protected PresentationActionsBuilder getPresentationActionsBuilder() {

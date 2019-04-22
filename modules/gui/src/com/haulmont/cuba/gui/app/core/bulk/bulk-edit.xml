@@ -27,7 +27,6 @@
         </groupBox>
 
         <scrollBox id="fieldsScrollBox" width="100%" spacing="true" scrollBars="both">
-            <vbox id="contentPane" width="AUTO"/>
         </scrollBox>
 
         <hbox id="buttonsBox" spacing="true">
