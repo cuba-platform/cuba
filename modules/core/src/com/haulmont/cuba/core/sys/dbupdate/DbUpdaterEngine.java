@@ -164,19 +164,15 @@ public class DbUpdaterEngine implements DbUpdater {
                     dbMetaData.getUserName() : dbProperties.getCurrentSchemaProperty();
             String catalogName = isRequiresCatalog ? connection.getCatalog() : null;
             ResultSet tables = dbMetaData.getTables(catalogName, schemaName, "%", null);
-            boolean found = false;
             while (tables.next()) {
                 String tableName = tables.getString("TABLE_NAME");
                 if ("SYS_DB_CHANGELOG".equalsIgnoreCase(tableName)) {
                     log.trace("Found SYS_DB_CHANGELOG table");
                     changelogTableExists = true;
-                }
-                if ("SEC_USER".equalsIgnoreCase(tableName)) {
-                    log.trace("Found SEC_USER table");
-                    found = true;
+                    return true;
                 }
             }
-            return found;
+            return false;
         } catch (SQLException e) {
             throw new DbInitializationException(true, "Error connecting to database: " + e.getMessage(), e);
         }
