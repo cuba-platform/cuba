@@ -208,9 +208,8 @@ public class CreateAction extends ListAction implements Action.HasOpenType, Acti
         }
 
         final CollectionDatasource datasource = target.getDatasource();
-        final DataSupplier dataService = datasource.getDataSupplier();
 
-        final Entity item = dataService.newInstance(datasource.getMetaClass());
+        Entity item = createEntity();
 
         if (target instanceof Tree) {
             String hierarchyProperty = ((Tree) target).getHierarchyProperty();
@@ -255,6 +254,12 @@ public class CreateAction extends ListAction implements Action.HasOpenType, Acti
         Map<String, Object> params = prepareWindowParams();
 
         internalOpenEditor(datasource, item, parentDs, params);
+    }
+
+    protected Entity createEntity() {
+        CollectionDatasource datasource = target.getDatasource();
+        DataSupplier dataSupplier = datasource.getDataSupplier();
+        return dataSupplier.newInstance(datasource.getMetaClass());
     }
 
     protected Map<String, Object> prepareWindowParams() {
