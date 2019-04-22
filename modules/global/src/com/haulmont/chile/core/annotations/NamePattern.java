@@ -25,27 +25,29 @@ import java.lang.annotation.RetentionPolicy;
 /**
  * Defines an instance name format pattern in the form {0}|{1}, where
  * <ul>
- *     <li>{0} - format string as for {@link String#format}, or a name of this object method, returning string,
- *     with {@code #} symbol in the beginning.</li>
+ *     <li>{0} - format string which can be one of two types:
+ *     <ul>
+ *      <li>A string with {@code %s} placeholders for formatted values of entity attributes.
+ *          Attribute values are formatted to strings according to their {@code Datatype}s.
+ *      <li>A name of this object method, returning string, with {@code #} symbol in the beginning.
+ *     </ul>
  *     <li>{1} - comma-separated list of field names, corresponding to format {0}. These fields are also used for
  *     defining a {@code _minimal} view of this entity.</li>
  * </ul>
  * Extra spaces between parts are not allowed.
- *
- * <br> Format string example: {@code @NamePattern("%s : %s|name,address")}
- *
- * <br> Method example:
- * {@code @NamePattern("#getCaption|login,name")}
+ * <p>
+ * Attribute placeholders example:
+ * <p>
+ * {@code @NamePattern("%s : %s|name,address")}
+ * <p>
+ * Method example:
+ * <p>
  * <pre>
- * public class User extends StandardEntity {
+ * {@code @NamePattern("#getCaption|name,address")}
+ * public class Foo extends StandardEntity {
  * ...
  *     public String getCaption() {
- *         String pattern = AppContext.getProperty("cuba.user.namePattern");
- *         if (StringUtils.isBlank(pattern)) {
- *             pattern = "{1} [{0}]";
- *         }
- *         MessageFormat fmt = new MessageFormat(pattern);
- *         return fmt.format(new Object[] {login, name});
+ *         return name + " : " + address;
  *     }
  * }
  * </pre>
