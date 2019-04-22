@@ -264,6 +264,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
         }
     }
 
+    @SuppressWarnings("unchecked")
     protected void addDynamicAttributes(Table component, MetaClass metaClass, Datasource ds, CollectionLoader collectionLoader,
                                         List<Table.Column> availableColumns) {
         if (getMetadataTools().isPersistent(metaClass)) {
@@ -279,7 +280,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
                     ds.setLoadDynamicAttributes(true);
                 }
                 for (CategoryAttribute attribute : attributesToShow) {
-                    final MetaPropertyPath metaPropertyPath = DynamicAttributesUtils.getMetaPropertyPath(metaClass, attribute);
+                    MetaPropertyPath metaPropertyPath = DynamicAttributesUtils.getMetaPropertyPath(metaClass, attribute);
 
                     Object columnWithSameId = IterableUtils.find(availableColumns,
                             o -> o.getId().equals(metaPropertyPath));
@@ -288,7 +289,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
                         continue;
                     }
 
-                    final Table.Column column = new Table.Column(metaPropertyPath);
+                    Table.Column column = new Table.Column(metaPropertyPath);
 
                     column.setCaption(LocaleHelper.isLocalizedValueDefined(attribute.getLocaleNames()) ?
                             attribute.getLocaleName() :
@@ -392,10 +393,9 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
 
     protected List<Table.Column> loadColumns(Table component, Element columnsElement, MetaClass metaClass, View view) {
         String includeAll = columnsElement.attributeValue("includeAll");
-        if (StringUtils.isNotBlank(includeAll)) {
-            if (Boolean.parseBoolean(includeAll)) {
-                return loadColumnsByInclude(columnsElement, metaClass, view);
-            }
+        if (StringUtils.isNotBlank(includeAll)
+                && Boolean.parseBoolean(includeAll)) {
+            return loadColumnsByInclude(columnsElement, metaClass, view);
         }
 
         List<Element> columnElements = columnsElement.elements("column");
@@ -613,10 +613,11 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
         }
     }
 
+    @SuppressWarnings("unchecked")
     protected void loadAggregation(Table.Column column, Element columnElement) {
         Element aggregationElement = columnElement.element("aggregation");
         if (aggregationElement != null) {
-            final AggregationInfo aggregation = new AggregationInfo();
+            AggregationInfo aggregation = new AggregationInfo();
             aggregation.setPropertyPath((MetaPropertyPath) column.getId());
             String aggregationType = aggregationElement.attributeValue("type");
             if (StringUtils.isNotEmpty(aggregationType)) {
@@ -624,7 +625,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
             }
 
             String aggregationEditable = aggregationElement.attributeValue("editable");
-            if (StringUtils.isNotEmpty("editable")) {
+            if (StringUtils.isNotEmpty(aggregationEditable)) {
                 aggregation.setEditable(Boolean.valueOf(aggregationEditable));
             }
 
@@ -634,7 +635,6 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
             }
 
             Function formatter = loadFormatter(aggregationElement);
-            //noinspection unchecked
             aggregation.setFormatter(formatter == null ? column.getFormatter() : formatter);
             column.setAggregation(aggregation);
 
@@ -671,7 +671,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
         List<Element> validatorElements = element.elements("validator");
 
         for (Element validatorElement : validatorElements) {
-            final Field.Validator validator = loadValidator(validatorElement);
+            Field.Validator validator = loadValidator(validatorElement);
             if (validator != null) {
                 component.addValidator(validator);
             }
