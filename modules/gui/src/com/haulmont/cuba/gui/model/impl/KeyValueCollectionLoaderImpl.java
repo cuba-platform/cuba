@@ -132,6 +132,9 @@ public class KeyValueCollectionLoaderImpl implements KeyValueCollectionLoader {
     @Override
     public void setContainer(KeyValueCollectionContainer container) {
         this.container = container;
+        if (container instanceof HasLoader) {
+            ((HasLoader) container).setLoader(this);
+        }
         container.setSorter(getSorterFactory().createCollectionContainerSorter(container, this));
     }
 

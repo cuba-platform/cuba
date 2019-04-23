@@ -150,6 +150,8 @@ class ScreenDataTest extends WebSpec {
 
         userCont != null
         userLoader != null
+        userCont instanceof HasLoader
+        ((HasLoader) userCont).loader == userLoader
         userLoader.dataContext == dataContext
         userLoader.container == userCont
         userLoader.query == 'select u from sec$User u where u.id = 1'
@@ -157,6 +159,8 @@ class ScreenDataTest extends WebSpec {
 
         usersCont != null
         usersLoader != null
+        usersCont instanceof HasLoader
+        ((HasLoader) usersCont).loader == usersLoader
         usersLoader.dataContext == dataContext
         usersLoader.container == usersCont
         usersLoader.query == 'select u from sec$User u'
@@ -167,11 +171,17 @@ class ScreenDataTest extends WebSpec {
 
         screenData.getLoaderIds().find { String id -> screenData.getLoader(id) == usersCont1.loader } != null
 
+        userInfoLoader.container == userInfoCont
+        userInfoCont instanceof HasLoader
+        ((HasLoader) userInfoCont).loader == userInfoLoader
         userInfoCont.getEntityMetaClass().getProperty('login') != null
         userInfoCont.getEntityMetaClass().getProperty('name') != null
         userInfoLoader.getContainer() == userInfoCont
         userInfoLoader.getQuery() == 'select u.login, u.name from sec$User u where u.login like :login'
 
+        userInfoInstanceLoader.container == userInfoInstanceCont
+        userInfoInstanceCont instanceof HasLoader
+        ((HasLoader) userInfoInstanceCont).loader == userInfoInstanceLoader
         userInfoInstanceCont.getEntityMetaClass().getProperty('login') != null
         userInfoInstanceCont.getEntityMetaClass().getProperty('name') != null
         userInfoInstanceLoader.getContainer() == userInfoInstanceCont
