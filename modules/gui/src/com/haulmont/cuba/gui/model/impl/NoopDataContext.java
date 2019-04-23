@@ -25,6 +25,7 @@ import com.haulmont.cuba.gui.model.DataContext;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -89,7 +90,8 @@ public class NoopDataContext implements DataContext {
     }
 
     @Override
-    public void commit() {
+    public EntitySet commit() {
+        return EntitySet.of(Collections.emptySet());
     }
 
     @Override

@@ -140,8 +140,9 @@ public interface DataContext {
      * updated instances returned from the middleware.
      *
      * @see #setParent(DataContext)
+     * @return set of committed and merged back to the context instances. Does not contain removed instances.
      */
-    void commit();
+    EntitySet commit();
 
     /**
      * Returns a parent context, if any. If the parent context is set, {@link #commit()} method merges the changed instances

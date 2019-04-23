@@ -264,10 +264,6 @@ class DataContextTest extends Specification {
 
         DataContext context = factory.createDataContext()
 
-        TestServiceProxy.mock(DataService, Mock(DataService) {
-            commit(_) >> Collections.emptySet()
-        })
-
         when: "merge graph then modify and remove some instances"
 
         User user1 = new User(login: 'u1', name: 'User 1', userRoles: [])
@@ -302,7 +298,7 @@ class DataContextTest extends Specification {
             removed.addAll(e.removedInstances)
         })
 
-        context.commit()
+        def committed = context.commit()
 
         then:
 
@@ -312,6 +308,9 @@ class DataContextTest extends Specification {
 
         removed.size() == 1
         removed.contains(user1Role2)
+
+        committed.containsAll([role1, user1])
+        !committed.contains(user1Role2)
     }
 
     def "remove"() {

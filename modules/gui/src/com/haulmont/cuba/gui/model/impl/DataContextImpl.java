@@ -544,11 +544,11 @@ public class DataContextImpl implements DataContext {
     }
 
     @Override
-    public void commit() {
+    public EntitySet commit() {
         PreCommitEvent preCommitEvent = new PreCommitEvent(this, modifiedInstances, removedInstances);
         events.publish(PreCommitEvent.class, preCommitEvent);
         if (preCommitEvent.isCommitPrevented())
-            return;
+            return EntitySet.of(Collections.emptySet());
 
         Set<Entity> committed = performCommit();
 
@@ -558,6 +558,8 @@ public class DataContextImpl implements DataContext {
 
         modifiedInstances.clear();
         removedInstances.clear();
+
+        return committedAndMerged;
     }
 
     @Override
