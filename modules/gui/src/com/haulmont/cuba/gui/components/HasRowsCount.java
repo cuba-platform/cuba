@@ -16,10 +16,24 @@
 
 package com.haulmont.cuba.gui.components;
 
+import com.haulmont.cuba.core.global.DataLoadContext;
+
+import java.util.function.Function;
+
 /**
  * Component having a {@link RowsCount} component.
  */
 public interface HasRowsCount {
     RowsCount getRowsCount();
     void setRowsCount(RowsCount rowsCount);
+
+    /**
+     * Sets RowsCount delegate which is used to get the total number of rows when user clicks ? or >>
+     */
+    default void setRowsCountTotalCountDelegate(Function<DataLoadContext, Long> delegate) {
+        RowsCount rowsCount = getRowsCount();
+        if (rowsCount != null) {
+            rowsCount.setTotalCountDelegate(delegate);
+        }
+    }
 }

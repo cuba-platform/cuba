@@ -17,6 +17,7 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.bali.events.Subscription;
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.KeyValueEntity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.components.*;
@@ -40,6 +41,7 @@ import javax.inject.Inject;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
@@ -71,6 +73,7 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
     protected Registration onNextClickRegistration;
     protected Registration onFirstClickRegistration;
     protected Registration onLastClickRegistration;
+    private Function<DataLoadContext, Long> totalCountDelegate;
 
     public WebRowsCount() {
         component = new CubaRowsCount();
@@ -213,6 +216,16 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
         }
 
         initButtonListeners();
+    }
+
+    @Override
+    public Function<DataLoadContext, Long> getTotalCountDelegate() {
+        return totalCountDelegate;
+    }
+
+    @Override
+    public void setTotalCountDelegate(Function<DataLoadContext, Long> countDelegate) {
+        this.totalCountDelegate = countDelegate;
     }
 
     @Override
@@ -520,17 +533,26 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
             }
 
             if (loader instanceof CollectionLoader) {
-                return (int) dataManager.getCount(((CollectionLoader) loader).createLoadContext());
+                LoadContext context = ((CollectionLoader) loader).createLoadContext();
+                if (totalCountDelegate == null) {
+                    return (int) dataManager.getCount(context);
+                } else {
+                    return Math.toIntExact(totalCountDelegate.apply(context));
+                }
             } else if (loader instanceof KeyValueCollectionLoader) {
                 ValueLoadContext context = ((KeyValueCollectionLoader) loader).createLoadContext();
-                QueryTransformer transformer = QueryTransformerFactory.createTransformer(context.getQuery().getQueryString());
-                // TODO it doesn't work for query containing scalars in select
-                transformer.replaceWithCount();
-                context.getQuery().setQueryString(transformer.getResult());
-                context.setProperties(Collections.singletonList("cnt"));
-                List<KeyValueEntity> list = dataManager.loadValues(context);
-                Number count = list.get(0).getValue("cnt");
-                return count == null ? 0 : count.intValue();
+                if (totalCountDelegate == null) {
+                    QueryTransformer transformer = QueryTransformerFactory.createTransformer(context.getQuery().getQueryString());
+                    // TODO it doesn't work for query containing scalars in select
+                    transformer.replaceWithCount();
+                    context.getQuery().setQueryString(transformer.getResult());
+                    context.setProperties(Collections.singletonList("cnt"));
+                    List<KeyValueEntity> list = dataManager.loadValues(context);
+                    Number count = list.get(0).getValue("cnt");
+                    return count == null ? 0 : count.intValue();
+                } else {
+                    return Math.toIntExact(totalCountDelegate.apply(context));
+                }
             } else {
                 log.warn("Unsupported loader type: {}", loader.getClass().getName());
                 return 0;

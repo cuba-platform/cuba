@@ -16,10 +16,12 @@
  */
 package com.haulmont.cuba.gui.components;
 
+import com.haulmont.cuba.core.global.DataLoadContext;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 
 import java.util.EventObject;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * Component that makes a data binding to load data by pages. Usually used with {@link Table} or {@link DataGrid}.
@@ -65,6 +67,16 @@ public interface RowsCount extends Component.BelongToFrame {
 
     interface RowsCountTarget {
     }
+
+    /**
+     * @return delegate which is used to get the total number of rows when user clicks ? or >>
+     */
+    Function<DataLoadContext, Long> getTotalCountDelegate();
+
+    /**
+     * Sets delegate which is used to get the total number of rows when user clicks ? or >>
+     */
+    void setTotalCountDelegate(Function<DataLoadContext, Long> delegate);
 
     /**
      * Event that is fired before refreshing the datasource when the user clicks next, previous, etc.
