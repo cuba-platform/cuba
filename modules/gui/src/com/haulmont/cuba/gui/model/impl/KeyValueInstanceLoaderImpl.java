@@ -23,6 +23,7 @@ import com.haulmont.cuba.core.global.Stores;
 import com.haulmont.cuba.core.global.ValueLoadContext;
 import com.haulmont.cuba.core.global.queryconditions.Condition;
 import com.haulmont.cuba.gui.model.DataContext;
+import com.haulmont.cuba.gui.model.HasLoader;
 import com.haulmont.cuba.gui.model.KeyValueContainer;
 import com.haulmont.cuba.gui.model.KeyValueInstanceLoader;
 import org.springframework.context.ApplicationContext;
@@ -116,6 +117,9 @@ public class KeyValueInstanceLoaderImpl implements KeyValueInstanceLoader {
     @Override
     public void setContainer(KeyValueContainer container) {
         this.container = container;
+        if (container instanceof HasLoader) {
+            ((HasLoader) container).setLoader(this);
+        }
     }
 
     @Override
