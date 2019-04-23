@@ -97,7 +97,9 @@ public class DataComponents implements ApplicationContextAware {
      * Creates {@code CollectionContainer}.
      */
     public <E extends Entity> CollectionContainer<E> createCollectionContainer(Class<E> entityClass) {
-        return new CollectionContainerImpl<>(metadata.getClassNN(entityClass));
+        CollectionContainerImpl<E> container = new CollectionContainerImpl<>(metadata.getClassNN(entityClass));
+        container.setSorter(sorterFactory.createCollectionContainerSorter(container, null));
+        return container;
     }
 
     /**

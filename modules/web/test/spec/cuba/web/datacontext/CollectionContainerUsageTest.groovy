@@ -16,6 +16,7 @@
 
 package spec.cuba.web.datacontext
 
+import com.haulmont.cuba.core.global.Sort
 import com.haulmont.cuba.gui.components.Table
 import com.haulmont.cuba.gui.components.data.table.ContainerTableItems
 import com.haulmont.cuba.gui.model.CollectionChangeType
@@ -87,6 +88,31 @@ class CollectionContainerUsageTest extends WebSpec {
         then: "container's current item is the first again"
 
         container.items.indexOf(container.item) == 0
+    }
+
+    def "sort items using Sorter"() {
+
+        Foo foo1 = new Foo(name: 'foo1')
+        Foo foo2 = new Foo(name: 'foo2')
+        Foo foo3 = new Foo(name: 'foo3')
+
+        container.items = [foo2, foo1, foo3]
+
+        when:
+
+        container.getSorter().sort(Sort.by(Sort.Order.asc('name')))
+
+        then:
+
+        container.items == [foo1, foo2, foo3]
+
+        when:
+
+        table.sort('name', Table.SortDirection.DESCENDING)
+
+        then:
+
+        container.items == [foo3, foo2, foo1]
     }
 
     def "filter items"() {
