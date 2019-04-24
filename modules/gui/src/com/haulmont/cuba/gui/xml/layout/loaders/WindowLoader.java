@@ -97,6 +97,7 @@ public class WindowLoader extends ContainerLoader<Window> implements ComponentRo
         loadTimers(factory, resultComponent, element);
 
         loadSubComponentsAndExpand(resultComponent, layoutElement);
+        setComponentsRatio(resultComponent, layoutElement);
 
         loadFocusedComponent(resultComponent, element);
 

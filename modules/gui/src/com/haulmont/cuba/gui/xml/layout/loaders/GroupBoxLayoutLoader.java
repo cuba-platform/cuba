@@ -62,6 +62,7 @@ public class GroupBoxLayoutLoader extends ContainerLoader<GroupBoxLayout> {
         loadOuterMargin(resultComponent, element);
 
         loadSubComponentsAndExpand(resultComponent, element);
+        setComponentsRatio(resultComponent, element);
         loadShowAsPanel(resultComponent, element);
     }
 

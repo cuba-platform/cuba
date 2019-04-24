@@ -144,6 +144,7 @@ public class FragmentLoader extends ContainerLoader<Fragment> implements Compone
         parentContext.addInitTask(new FragmentLoaderInitTask(resultComponent, options));
 
         loadSubComponentsAndExpand(resultComponent, layoutElement);
+        setComponentsRatio(resultComponent, layoutElement);
     }
 
     protected void loadScreenData(Element dataEl) {

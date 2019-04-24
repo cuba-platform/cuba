@@ -411,4 +411,16 @@ public class WebGroupBox extends WebAbstractComponent<CubaGroupBox> implements G
         return new com.haulmont.cuba.gui.components.MarginInfo(vMargin.hasTop(), vMargin.hasRight(), vMargin.hasBottom(),
                 vMargin.hasLeft());
     }
+
+    @Override
+    public void setExpandRatio(Component component, float ratio) {
+        AbstractOrderedLayout layout = getComponentContent();
+        layout.setExpandRatio(WebComponentsHelper.getComposition(component), ratio);
+    }
+
+    @Override
+    public float getExpandRatio(Component component) {
+        AbstractOrderedLayout layout = getComponentContent();
+        return layout.getExpandRatio(component.unwrap(com.vaadin.ui.Component.class));
+    }
 }
