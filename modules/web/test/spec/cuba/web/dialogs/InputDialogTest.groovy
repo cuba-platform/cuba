@@ -18,27 +18,11 @@ package spec.cuba.web.dialogs
 
 import com.google.common.base.Strings
 import com.haulmont.chile.core.datatypes.DatatypeRegistry
-import com.haulmont.chile.core.datatypes.impl.BigDecimalDatatype
-import com.haulmont.chile.core.datatypes.impl.DateDatatype
-import com.haulmont.chile.core.datatypes.impl.DateTimeDatatype
-import com.haulmont.chile.core.datatypes.impl.DoubleDatatype
-import com.haulmont.chile.core.datatypes.impl.IntegerDatatype
-import com.haulmont.chile.core.datatypes.impl.StringDatatype
-import com.haulmont.chile.core.datatypes.impl.TimeDatatype
-import com.haulmont.cuba.gui.ComponentsHelper
+import com.haulmont.chile.core.datatypes.impl.*
 import com.haulmont.cuba.gui.app.core.inputdialog.DialogActions
 import com.haulmont.cuba.gui.app.core.inputdialog.InputDialog
 import com.haulmont.cuba.gui.app.core.inputdialog.InputParameter
-import com.haulmont.cuba.gui.components.Button
-import com.haulmont.cuba.gui.components.CheckBox
-import com.haulmont.cuba.gui.components.DateField
-import com.haulmont.cuba.gui.components.DialogAction
-import com.haulmont.cuba.gui.components.Form
-import com.haulmont.cuba.gui.components.HBoxLayout
-import com.haulmont.cuba.gui.components.PickerField
-import com.haulmont.cuba.gui.components.TextField
-import com.haulmont.cuba.gui.components.TimeField
-import com.haulmont.cuba.gui.components.ValidationErrors
+import com.haulmont.cuba.gui.components.*
 import com.haulmont.cuba.gui.components.inputdialog.InputDialogAction
 import com.haulmont.cuba.gui.screen.OpenMode
 import com.haulmont.cuba.gui.screen.Screen
@@ -47,30 +31,19 @@ import com.haulmont.cuba.web.testmodel.sample.GoodInfo
 import com.haulmont.cuba.web.testsupport.TestServiceProxy
 import spec.cuba.web.UiScreenSpec
 
-import static com.haulmont.cuba.gui.app.core.inputdialog.InputDialog.INPUT_DIALOG_APPLY_ACTION
-import static com.haulmont.cuba.gui.app.core.inputdialog.InputDialog.INPUT_DIALOG_CANCEL_ACTION
-import static com.haulmont.cuba.gui.app.core.inputdialog.InputDialog.INPUT_DIALOG_OK_ACTION
-import static com.haulmont.cuba.gui.app.core.inputdialog.InputDialog.INPUT_DIALOG_REJECT_ACTION
+import static com.haulmont.cuba.gui.app.core.inputdialog.InputDialog.*
 import static com.haulmont.cuba.gui.app.core.inputdialog.InputDialog.InputDialogResult.ActionType.NO
 import static com.haulmont.cuba.gui.app.core.inputdialog.InputDialog.InputDialogResult.ActionType.YES
-import static com.haulmont.cuba.gui.app.core.inputdialog.InputParameter.bigDecimalParamater
-import static com.haulmont.cuba.gui.app.core.inputdialog.InputParameter.booleanParameter
-import static com.haulmont.cuba.gui.app.core.inputdialog.InputParameter.dateParameter
-import static com.haulmont.cuba.gui.app.core.inputdialog.InputParameter.dateTimeParameter
-import static com.haulmont.cuba.gui.app.core.inputdialog.InputParameter.doubleParameter
-import static com.haulmont.cuba.gui.app.core.inputdialog.InputParameter.entityParameter
-import static com.haulmont.cuba.gui.app.core.inputdialog.InputParameter.intParameter
-import static com.haulmont.cuba.gui.app.core.inputdialog.InputParameter.longParameter
-import static com.haulmont.cuba.gui.app.core.inputdialog.InputParameter.parameter
-import static com.haulmont.cuba.gui.app.core.inputdialog.InputParameter.stringParameter
-import static com.haulmont.cuba.gui.app.core.inputdialog.InputParameter.timeParameter
+import static com.haulmont.cuba.gui.app.core.inputdialog.InputParameter.*
 import static com.haulmont.cuba.gui.components.inputdialog.InputDialogAction.action
 import static com.haulmont.cuba.gui.screen.FrameOwner.WINDOW_CLOSE_ACTION
+import static com.haulmont.cuba.gui.screen.UiControllerUtils.getScreenContext
 
 class InputDialogTest extends UiScreenSpec {
 
     DatatypeRegistry datatypeRegistry
 
+    @SuppressWarnings("GroovyAssignabilityCheck")
     void setup() {
         TestServiceProxy.mock(UserManagementService, Mock(UserManagementService) {
             getSubstitutedUsers(_) >> Collections.emptyList()
@@ -92,7 +65,7 @@ class InputDialogTest extends UiScreenSpec {
         def mainWindow = screens.create("mainWindow", OpenMode.ROOT)
         screens.show(mainWindow)
 
-        def dialogs = ComponentsHelper.getScreenContext(mainWindow.getWindow().getFrame()).getDialogs()
+        def dialogs = getScreenContext(mainWindow).getDialogs()
 
         when: "the same id is used"
         dialogs.createInputDialog(mainWindow)
@@ -121,7 +94,7 @@ class InputDialogTest extends UiScreenSpec {
         def mainWindow = screens.create("mainWindow", OpenMode.ROOT)
         screens.show(mainWindow)
 
-        def dialogs = ComponentsHelper.getScreenContext(mainWindow.getWindow().getFrame()).getDialogs()
+        def dialogs = getScreenContext(mainWindow).getDialogs()
 
         when: "all types are used"
         InputDialog dialog = dialogs.createInputDialog(mainWindow)
@@ -175,7 +148,7 @@ class InputDialogTest extends UiScreenSpec {
         def mainWindow = screens.create("mainWindow", OpenMode.ROOT)
         screens.show(mainWindow)
 
-        def dialogs = ComponentsHelper.getScreenContext(mainWindow.getWindow().getFrame()).getDialogs()
+        def dialogs = getScreenContext(mainWindow).getDialogs()
 
         when: "YES NO CANCEL are created"
         InputDialog dialog = dialogs.createInputDialog(mainWindow)
@@ -186,7 +159,7 @@ class InputDialogTest extends UiScreenSpec {
                 .show()
         then:
         def actionsLayout = (HBoxLayout) dialog.getWindow().getComponentNN("actionsLayout")
-        actionsLayout.getComponents().size() == 4
+        actionsLayout.ownComponents.size() == 4
 
         // YES action
         def yesBtn = (Button) actionsLayout.getComponent(1) // because 0 - spacer
@@ -210,7 +183,7 @@ class InputDialogTest extends UiScreenSpec {
         def mainWindow = screens.create("mainWindow", OpenMode.ROOT)
         screens.show(mainWindow)
 
-        def dialogs = ComponentsHelper.getScreenContext(mainWindow.getWindow().getFrame()).getDialogs()
+        def dialogs = getScreenContext(mainWindow).getDialogs()
 
         def goodInfo = new GoodInfo()
         def defaultString = "default value"
@@ -252,7 +225,7 @@ class InputDialogTest extends UiScreenSpec {
         def mainWindow = screens.create("mainWindow", OpenMode.ROOT)
         screens.show(mainWindow)
 
-        def dialogs = ComponentsHelper.getScreenContext(mainWindow.getWindow().getFrame()).getDialogs()
+        def dialogs = getScreenContext(mainWindow).getDialogs()
         def dateValue = new Date()
         def stringValue = "Default value"
 
@@ -262,19 +235,17 @@ class InputDialogTest extends UiScreenSpec {
                         parameter("string").withDefaultValue(stringValue),
                         dateParameter("date").withDefaultValue(dateValue))
                 .withActions(
-                        action("ok")
-                                .withHandler({
-                                    InputDialogAction.InputDialogActionPerformed event ->
-                                        InputDialog dialog = event.getInputDialog()
+                        action("ok").withHandler({
+                            InputDialogAction.InputDialogActionPerformed event ->
+                                InputDialog dialog = event.getInputDialog()
 
-                                        assert dialog.getValue("string") == stringValue
-                                        assert dialog.getValue("date") == dateValue
-                                }),
-                        action("cancel")
-                                .withHandler({
-                                    InputDialogAction.InputDialogActionPerformed event ->
-                                        event.getInputDialog().close(INPUT_DIALOG_CANCEL_ACTION)
-                                }))
+                                assert dialog.getValue("string") == stringValue
+                                assert dialog.getValue("date") == dateValue
+                        }),
+                        action("cancel").withHandler({
+                            InputDialogAction.InputDialogActionPerformed event ->
+                                event.getInputDialog().close(INPUT_DIALOG_CANCEL_ACTION)
+                        }))
                 .show()
 
         then:
@@ -316,7 +287,7 @@ class InputDialogTest extends UiScreenSpec {
     }
 
     protected InputDialog createDialogWithCloseListener(Screen mainWindow) {
-        def dialogs = ComponentsHelper.getScreenContext(mainWindow.getWindow().getFrame()).getDialogs()
+        def dialogs = getScreenContext(mainWindow).getDialogs()
         def bigDecimalValue = 1234
 
         return dialogs.createInputDialog(mainWindow)
@@ -340,7 +311,7 @@ class InputDialogTest extends UiScreenSpec {
         def mainWindow = screens.create("mainWindow", OpenMode.ROOT)
         screens.show(mainWindow)
 
-        def dialogs = ComponentsHelper.getScreenContext(mainWindow.getWindow().getFrame()).getDialogs()
+        def dialogs = getScreenContext(mainWindow).getDialogs()
         def customValue = "default value"
         def dateTimeValue = new Date()
 
@@ -370,7 +341,7 @@ class InputDialogTest extends UiScreenSpec {
         def mainWindow = screens.create("mainWindow", OpenMode.ROOT)
         screens.show(mainWindow)
 
-        def dialogs = ComponentsHelper.getScreenContext(mainWindow.getWindow().getFrame()).getDialogs()
+        def dialogs = getScreenContext(mainWindow).getDialogs()
 
         when: "custom field has incorrect value"
         InputDialog dialog = dialogs.createInputDialog(mainWindow)
@@ -409,7 +380,8 @@ class InputDialogTest extends UiScreenSpec {
         def mainWindow = screens.create("mainWindow", OpenMode.ROOT)
         screens.show(mainWindow)
 
-        def dialogs = ComponentsHelper.getScreenContext(mainWindow.getWindow().getFrame()).getDialogs()
+        def dialogs = getScreenContext(mainWindow).getDialogs()
+
         when: "create dialog with default actions and custom validator"
         InputDialog dialog = dialogs.createInputDialog(mainWindow)
                 .withParameters(
@@ -439,7 +411,7 @@ class InputDialogTest extends UiScreenSpec {
         screens.show(mainWindow)
 
         when: "validator and validationRequired in InputDialogAction"
-        def dialogs = ComponentsHelper.getScreenContext(mainWindow.getWindow().getFrame()).getDialogs()
+        def dialogs = getScreenContext(mainWindow).getDialogs()
         def targetValue = 100100
         def date = new Date(targetValue)
 
@@ -479,8 +451,8 @@ class InputDialogTest extends UiScreenSpec {
         !screens.getOpenedScreens().getActiveScreens().contains(dialogA)
     }
 
-    protected Button getButtonFromDialog(InputDialog dialog, int index) {
-        def reqActionsLayout = (HBoxLayout) dialog.getWindow().getComponentNN("actionsLayout")
-        return (Button) reqActionsLayout.getComponent(index) // 0 - spacer
+    protected static Button getButtonFromDialog(InputDialog dialog, int index) {
+        def actionsLayout = (OrderedContainer) dialog.getWindow().getComponentNN("actionsLayout")
+        return (Button) actionsLayout.getComponent(index) // 0 - spacer
     }
 }
