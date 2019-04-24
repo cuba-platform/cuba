@@ -159,6 +159,7 @@ public class TreeTableModelAdapter extends AbstractTreeTableModel implements Any
 
     @Override
     public void removeColumn(Table.Column column) {
+        updateModelIndexes();
     }
 
     @Override
@@ -227,6 +228,12 @@ public class TreeTableModelAdapter extends AbstractTreeTableModel implements Any
 
         for (DataChangeListener changeListener : changeListeners) {
             changeListener.afterChange(true);
+        }
+    }
+
+    protected void updateModelIndexes() {
+        for (int i = 0; i < treeTable.getColumnCount(); i++) {
+            treeTable.getColumn(i).setModelIndex(i);
         }
     }
 }
