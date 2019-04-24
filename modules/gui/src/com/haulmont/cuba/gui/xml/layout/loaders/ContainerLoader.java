@@ -16,11 +16,9 @@
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
+import com.google.common.base.Strings;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
-import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.ComponentContainer;
-import com.haulmont.cuba.gui.components.ExpandingLayout;
-import com.haulmont.cuba.gui.components.HasSpacing;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoader;
 import org.apache.commons.lang3.StringUtils;
@@ -28,6 +26,7 @@ import org.dom4j.Element;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public abstract class ContainerLoader<T extends Component> extends AbstractComponentLoader<T> {
 
@@ -113,6 +112,35 @@ public abstract class ContainerLoader<T extends Component> extends AbstractCompo
                     throw new GuiDevelopmentException(
                             String.format("Illegal expand target '%s' for container", targetId),
                             context.getFullFrameId(), "component", targetId);
+                }
+            }
+        }
+    }
+
+    protected void setComponentsRatio(ComponentContainer resultComponent, Element element) {
+        if (!(resultComponent instanceof SupportsExpandRatio)) {
+            return;
+        }
+
+        List<Element> elements = element.elements();
+        if (elements.isEmpty()) {
+            return;
+        }
+
+        SupportsExpandRatio supportsRatio = (SupportsExpandRatio) resultComponent;
+        List<Component> ownComponents = resultComponent.getOwnComponentsStream().collect(Collectors.toList());
+        if (ownComponents.size() != elements.size()) {
+            return;
+        }
+
+        for (int i = 0; i < elements.size(); i++) {
+            String stringRatio = elements.get(i).attributeValue("box.expandRatio");
+            if (!Strings.isNullOrEmpty(stringRatio)) {
+
+                Component subComponent = ownComponents.get(i);
+                if (subComponent != null) {
+                    float ratio = Float.parseFloat(stringRatio);
+                    supportsRatio.setExpandRatio(subComponent, ratio);
                 }
             }
         }
