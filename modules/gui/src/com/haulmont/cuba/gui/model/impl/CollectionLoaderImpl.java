@@ -16,6 +16,8 @@
 
 package com.haulmont.cuba.gui.model.impl;
 
+import com.haulmont.bali.events.EventHub;
+import com.haulmont.bali.events.Subscription;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.global.queryconditions.Condition;
@@ -24,6 +26,7 @@ import org.springframework.context.ApplicationContext;
 
 import javax.annotation.Nullable;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
@@ -33,20 +36,21 @@ public class CollectionLoaderImpl<E extends Entity> implements CollectionLoader<
 
     private ApplicationContext applicationContext;
 
-    private DataContext dataContext;
-    private CollectionContainer<E> container;
-    private String query;
-    private Condition condition;
-    private Map<String, Object> parameters = new HashMap<>();
-    private int firstResult = 0;
-    private int maxResults = Integer.MAX_VALUE;
-    private boolean softDeletion = true;
-    private boolean loadDynamicAttributes;
-    private boolean cacheable;
-    private View view;
-    private String viewName;
-    private Sort sort;
-    private Function<LoadContext<E>, List<E>> delegate;
+    protected DataContext dataContext;
+    protected CollectionContainer<E> container;
+    protected String query;
+    protected Condition condition;
+    protected Map<String, Object> parameters = new HashMap<>();
+    protected int firstResult = 0;
+    protected int maxResults = Integer.MAX_VALUE;
+    protected boolean softDeletion = true;
+    protected boolean loadDynamicAttributes;
+    protected boolean cacheable;
+    protected View view;
+    protected String viewName;
+    protected Sort sort;
+    protected Function<LoadContext<E>, List<E>> delegate;
+    protected EventHub events = new EventHub();
 
     public CollectionLoaderImpl(ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
@@ -84,6 +88,10 @@ public class CollectionLoaderImpl<E extends Entity> implements CollectionLoader<
 
         LoadContext<E> loadContext = createLoadContext();
 
+        if (!sendPreLoadEvent(loadContext)) {
+            return;
+        }
+
         List<E> list;
         if (delegate == null) {
             list = getDataManager().loadList(loadContext);
@@ -100,6 +108,8 @@ public class CollectionLoaderImpl<E extends Entity> implements CollectionLoader<
         } else {
             container.setItems(list);
         }
+
+        sendPostLoadEvent(list);
     }
 
     @Override
@@ -135,6 +145,17 @@ public class CollectionLoaderImpl<E extends Entity> implements CollectionLoader<
             view = container.getView();
         }
         return view;
+    }
+
+    protected boolean sendPreLoadEvent(LoadContext<E> loadContext) {
+        PreLoadEvent<E> preLoadEvent = new PreLoadEvent<>(this, loadContext);
+        events.publish(PreLoadEvent.class, preLoadEvent);
+        return !preLoadEvent.isLoadPrevented();
+    }
+
+    protected void sendPostLoadEvent(List<E> entities) {
+        PostLoadEvent<E> postLoadEvent = new PostLoadEvent<>(this, entities);
+        events.publish(PostLoadEvent.class, postLoadEvent);
     }
 
     @Override
@@ -288,5 +309,15 @@ public class CollectionLoaderImpl<E extends Entity> implements CollectionLoader<
     @Override
     public void setLoadDelegate(Function<LoadContext<E>, List<E>> delegate) {
         this.delegate = delegate;
+    }
+
+    @Override
+    public Subscription addPreLoadListener(Consumer<PreLoadEvent> listener) {
+        return events.subscribe(PreLoadEvent.class, listener);
+    }
+
+    @Override
+    public Subscription addPostLoadListener(Consumer<PostLoadEvent> listener) {
+        return events.subscribe(PostLoadEvent.class, listener);
     }
 }

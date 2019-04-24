@@ -16,12 +16,16 @@
 
 package com.haulmont.cuba.gui.model;
 
+import com.haulmont.bali.events.Subscription;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.screen.InstallSubject;
+import com.haulmont.cuba.gui.screen.Subscribe;
 
+import java.util.EventObject;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
@@ -91,4 +95,124 @@ public interface CollectionLoader<E extends Entity> extends BaseCollectionLoader
      * Sets a function which will be used to load data instead of standard implementation.
      */
     void setLoadDelegate(Function<LoadContext<E>, List<E>> delegate);
+
+    /**
+     * Event sent before loading entities.
+     * <p>
+     * You can prevent load using the {@link #preventLoad()} method of the event, for example:
+     * <pre>
+     *     &#64;Subscribe(id = "fooDl", target = Target.DATA_LOADER)
+     *     private void onFooDlPreLoad(CollectionLoader.PreLoadEvent event) {
+     *         if (doNotLoad()) {
+     *             event.preventLoad();
+     *         }
+     *     }
+     * </pre>
+     *
+     * @see #addPreLoadListener(Consumer)
+     */
+    class PreLoadEvent<T extends Entity> extends EventObject {
+
+        private final LoadContext<T> loadContext;
+        private boolean loadPrevented;
+
+        public PreLoadEvent(CollectionLoader<T> loader, LoadContext<T> loadContext) {
+            super(loader);
+            this.loadContext = loadContext;
+        }
+
+        /**
+         * The data loader which sent the event.
+         */
+        @SuppressWarnings("unchecked")
+        @Override
+        public CollectionLoader<T> getSource() {
+            return (CollectionLoader<T>) super.getSource();
+        }
+
+        /**
+         * Returns the load context of the current data loader.
+         */
+        public LoadContext<T> getLoadContext() {
+            return loadContext;
+        }
+
+        /**
+         * Invoke this method if you want to abort the loading.
+         */
+        public void preventLoad() {
+            loadPrevented = true;
+        }
+
+        /**
+         * Returns true if {@link #preventLoad()} method was called and loading will be aborted.
+         */
+        public boolean isLoadPrevented() {
+            return loadPrevented;
+        }
+    }
+
+    /**
+     * Adds a listener to {@link PreLoadEvent}.
+     * <p>
+     * You can also add an event listener declaratively using a controller method annotated with {@link Subscribe}:
+     * <pre>
+     *    &#64;Subscribe(id = "fooDl", target = Target.DATA_LOADER)
+     *     private void onFooDlPreLoad(CollectionLoader.PreLoadEvent event) {
+     *         // handle event here
+     *     }
+     * </pre>
+     *
+     * @param listener listener
+     * @return subscription
+     */
+    Subscription addPreLoadListener(Consumer<PreLoadEvent> listener);
+
+    /**
+     * Event sent after successful loading of entities, merging them into {@code DataContext} and setting to
+     * the container.
+     *
+     * @see #addPostLoadListener(Consumer)
+     */
+    class PostLoadEvent<T extends Entity> extends EventObject {
+
+        private final List<T> loadedEntities;
+
+        public PostLoadEvent(CollectionLoader<T> loader, List<T> loadedEntities) {
+            super(loader);
+            this.loadedEntities = loadedEntities;
+        }
+
+        /**
+         * The data loader which sent the event.
+         */
+        @SuppressWarnings("unchecked")
+        @Override
+        public CollectionLoader<T> getSource() {
+            return (CollectionLoader<T>) super.getSource();
+        }
+
+        /**
+         * Returns the list of loaded entities.
+         */
+        public List<T> getLoadedEntities() {
+            return loadedEntities;
+        }
+    }
+
+    /**
+     * Adds a listener to {@link PostLoadEvent}.
+     * <p>
+     * You can also add an event listener declaratively using a controller method annotated with {@link Subscribe}:
+     * <pre>
+     *    &#64;Subscribe(id = "fooDl", target = Target.DATA_LOADER)
+     *     private void onFooDlPostLoad(CollectionLoader.PostLoadEvent event) {
+     *         // handle event here
+     *     }
+     * </pre>
+     *
+     * @param listener listener
+     * @return subscription
+     */
+    Subscription addPostLoadListener(Consumer<PostLoadEvent> listener);
 }

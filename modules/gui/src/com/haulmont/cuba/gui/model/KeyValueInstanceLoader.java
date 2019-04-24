@@ -16,10 +16,14 @@
 
 package com.haulmont.cuba.gui.model;
 
+import com.haulmont.bali.events.Subscription;
 import com.haulmont.cuba.core.entity.KeyValueEntity;
 import com.haulmont.cuba.core.global.ValueLoadContext;
 import com.haulmont.cuba.gui.screen.InstallSubject;
+import com.haulmont.cuba.gui.screen.Subscribe;
 
+import java.util.EventObject;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
@@ -63,4 +67,123 @@ public interface KeyValueInstanceLoader extends DataLoader {
      * Sets a function which will be used to load data instead of standard implementation.
      */
     void setLoadDelegate(Function<ValueLoadContext, KeyValueEntity> delegate);
-}
+
+    /**
+     * Event sent before loading a KeyValueEntity instance.
+     * <p>
+     * You can prevent load using the {@link #preventLoad()} method of the event, for example:
+     * <pre>
+     *     &#64;Subscribe(id = "fooDl", target = Target.DATA_LOADER)
+     *     private void onFooDlPreLoad(KeyValueInstanceLoader.PreLoadEvent event) {
+     *         if (doNotLoad()) {
+     *             event.preventLoad();
+     *         }
+     *     }
+     * </pre>
+     *
+     * @see #addPreLoadListener(Consumer)
+     */
+    class PreLoadEvent extends EventObject {
+
+        private final ValueLoadContext loadContext;
+        private boolean loadPrevented;
+
+        public PreLoadEvent(KeyValueInstanceLoader loader, ValueLoadContext loadContext) {
+            super(loader);
+            this.loadContext = loadContext;
+        }
+
+        /**
+         * The data loader which sent the event.
+         */
+        @SuppressWarnings("unchecked")
+        @Override
+        public KeyValueInstanceLoader getSource() {
+            return (KeyValueInstanceLoader) super.getSource();
+        }
+
+        /**
+         * Returns the load context of the current data loader.
+         */
+        public ValueLoadContext getLoadContext() {
+            return loadContext;
+        }
+
+        /**
+         * Invoke this method if you want to abort the loading.
+         */
+        public void preventLoad() {
+            loadPrevented = true;
+        }
+
+        /**
+         * Returns true if {@link #preventLoad()} method was called and loading will be aborted.
+         */
+        public boolean isLoadPrevented() {
+            return loadPrevented;
+        }
+    }
+
+    /**
+     * Adds a listener to {@link PreLoadEvent}.
+     * <p>
+     * You can also add an event listener declaratively using a controller method annotated with {@link Subscribe}:
+     * <pre>
+     *    &#64;Subscribe(id = "fooDl", target = Target.DATA_LOADER)
+     *     private void onFooDlPreLoad(KeyValueInstanceLoader.PreLoadEvent event) {
+     *         // handle event here
+     *     }
+     * </pre>
+     *
+     * @param listener listener
+     * @return subscription
+     */
+    Subscription addPreLoadListener(Consumer<PreLoadEvent> listener);
+
+    /**
+     * Event sent after successful loading of a KeyValueEntity instance and setting it to
+     * the container.
+     *
+     * @see #addPostLoadListener(Consumer)
+     */
+    class PostLoadEvent extends EventObject {
+
+        private final KeyValueEntity loadedEntity;
+
+        public PostLoadEvent(KeyValueInstanceLoader loader, KeyValueEntity loadedEntity) {
+            super(loader);
+            this.loadedEntity = loadedEntity;
+        }
+
+        /**
+         * The data loader which sent the event.
+         */
+        @SuppressWarnings("unchecked")
+        @Override
+        public KeyValueInstanceLoader getSource() {
+            return (KeyValueInstanceLoader) super.getSource();
+        }
+
+        /**
+         * Returns the loaded entity instance.
+         */
+        public KeyValueEntity getLoadedEntity() {
+            return loadedEntity;
+        }
+    }
+
+    /**
+     * Adds a listener to {@link PostLoadEvent}.
+     * <p>
+     * You can also add an event listener declaratively using a controller method annotated with {@link Subscribe}:
+     * <pre>
+     *    &#64;Subscribe(id = "fooDl", target = Target.DATA_LOADER)
+     *     private void onFooDlPostLoad(KeyValueInstanceLoader.PostLoadEvent event) {
+     *         // handle event here
+     *     }
+     * </pre>
+     *
+     * @param listener listener
+     * @return subscription
+     */
+    Subscription addPostLoadListener(Consumer<PostLoadEvent> listener);}

@@ -17,6 +17,8 @@
 package com.haulmont.cuba.gui.model.impl;
 
 import com.google.common.base.Strings;
+import com.haulmont.bali.events.EventHub;
+import com.haulmont.bali.events.Subscription;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.global.queryconditions.Condition;
@@ -30,6 +32,7 @@ import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
@@ -39,17 +42,18 @@ public class InstanceLoaderImpl<E extends Entity> implements InstanceLoader<E> {
 
     private final ApplicationContext applicationContext;
 
-    private DataContext dataContext;
-    private InstanceContainer<E> container;
-    private String query;
-    private Condition condition;
-    private Map<String, Object> parameters = new HashMap<>();
-    private Object entityId;
-    private boolean softDeletion = true;
-    private boolean loadDynamicAttributes;
-    private View view;
-    private String viewName;
-    private Function<LoadContext<E>, E> delegate;
+    protected DataContext dataContext;
+    protected InstanceContainer<E> container;
+    protected String query;
+    protected Condition condition;
+    protected Map<String, Object> parameters = new HashMap<>();
+    protected Object entityId;
+    protected boolean softDeletion = true;
+    protected boolean loadDynamicAttributes;
+    protected View view;
+    protected String viewName;
+    protected Function<LoadContext<E>, E> delegate;
+    protected EventHub events = new EventHub();
 
     public InstanceLoaderImpl(ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
@@ -81,11 +85,15 @@ public class InstanceLoaderImpl<E extends Entity> implements InstanceLoader<E> {
 
         E entity;
 
+        LoadContext<E> loadContext = createLoadContext();
+
         if (delegate == null) {
             if (!needLoad())
                 return;
 
-            LoadContext<E> loadContext = createLoadContext();
+            if (!sendPreLoadEvent(loadContext)) {
+                return;
+            }
 
             entity = getDataManager().load(loadContext);
 
@@ -93,6 +101,9 @@ public class InstanceLoaderImpl<E extends Entity> implements InstanceLoader<E> {
                 throw new EntityAccessException(container.getEntityMetaClass(), entityId);
             }
         } else {
+            if (!sendPreLoadEvent(loadContext)) {
+                return;
+            }
             entity = delegate.apply(createLoadContext());
         }
 
@@ -100,6 +111,8 @@ public class InstanceLoaderImpl<E extends Entity> implements InstanceLoader<E> {
             entity = dataContext.merge(entity);
         }
         container.setItem(entity);
+
+        sendPostLoadEvent(entity);
     }
 
     protected boolean needLoad() {
@@ -133,6 +146,17 @@ public class InstanceLoaderImpl<E extends Entity> implements InstanceLoader<E> {
             view = container.getView();
         }
         return view;
+    }
+
+    protected boolean sendPreLoadEvent(LoadContext<E> loadContext) {
+        PreLoadEvent<E> preLoadEvent = new PreLoadEvent<>(this, loadContext);
+        events.publish(PreLoadEvent.class, preLoadEvent);
+        return !preLoadEvent.isLoadPrevented();
+    }
+
+    protected void sendPostLoadEvent(E entity) {
+        PostLoadEvent<E> postLoadEvent = new PostLoadEvent<>(this, entity);
+        events.publish(PostLoadEvent.class, postLoadEvent);
     }
 
     @Override
@@ -234,6 +258,16 @@ public class InstanceLoaderImpl<E extends Entity> implements InstanceLoader<E> {
     @Override
     public void setLoadDelegate(Function<LoadContext<E>, E> delegate) {
         this.delegate = delegate;
+    }
+
+    @Override
+    public Subscription addPreLoadListener(Consumer<PreLoadEvent> listener) {
+        return events.subscribe(PreLoadEvent.class, listener);
+    }
+
+    @Override
+    public Subscription addPostLoadListener(Consumer<PostLoadEvent> listener) {
+        return events.subscribe(PostLoadEvent.class, listener);
     }
 
     @Override

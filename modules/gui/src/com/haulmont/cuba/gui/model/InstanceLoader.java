@@ -16,11 +16,15 @@
 
 package com.haulmont.cuba.gui.model;
 
+import com.haulmont.bali.events.Subscription;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.screen.InstallSubject;
+import com.haulmont.cuba.gui.screen.Subscribe;
 
+import java.util.EventObject;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
@@ -84,4 +88,124 @@ public interface InstanceLoader<E extends Entity> extends DataLoader {
      * Sets a function which will be used to load data instead of standard implementation.
      */
     void setLoadDelegate(Function<LoadContext<E>, E> delegate);
+
+    /**
+     * Event sent before loading an entity instance.
+     * <p>
+     * You can prevent load using the {@link #preventLoad()} method of the event, for example:
+     * <pre>
+     *     &#64;Subscribe(id = "fooDl", target = Target.DATA_LOADER)
+     *     private void onFooDlPreLoad(InstanceLoader.PreLoadEvent event) {
+     *         if (doNotLoad()) {
+     *             event.preventLoad();
+     *         }
+     *     }
+     * </pre>
+     *
+     * @see #addPreLoadListener(Consumer)
+     */
+    class PreLoadEvent<T extends Entity> extends EventObject {
+
+        private final LoadContext<T> loadContext;
+        private boolean loadPrevented;
+
+        public PreLoadEvent(InstanceLoader<T> loader, LoadContext<T> loadContext) {
+            super(loader);
+            this.loadContext = loadContext;
+        }
+
+        /**
+         * The data loader which sent the event.
+         */
+        @SuppressWarnings("unchecked")
+        @Override
+        public InstanceLoader<T> getSource() {
+            return (InstanceLoader<T>) super.getSource();
+        }
+
+        /**
+         * Returns the load context of the current data loader.
+         */
+        public LoadContext<T> getLoadContext() {
+            return loadContext;
+        }
+
+        /**
+         * Invoke this method if you want to abort the loading.
+         */
+        public void preventLoad() {
+            loadPrevented = true;
+        }
+
+        /**
+         * Returns true if {@link #preventLoad()} method was called and loading will be aborted.
+         */
+        public boolean isLoadPrevented() {
+            return loadPrevented;
+        }
+    }
+
+    /**
+     * Adds a listener to {@link PreLoadEvent}.
+     * <p>
+     * You can also add an event listener declaratively using a controller method annotated with {@link Subscribe}:
+     * <pre>
+     *    &#64;Subscribe(id = "fooDl", target = Target.DATA_LOADER)
+     *     private void onFooDlPreLoad(InstanceLoader.PreLoadEvent event) {
+     *         // handle event here
+     *     }
+     * </pre>
+     *
+     * @param listener listener
+     * @return subscription
+     */
+    Subscription addPreLoadListener(Consumer<PreLoadEvent> listener);
+
+    /**
+     * Event sent after successful loading of an entity instance, merging it into {@code DataContext} and setting to
+     * the container.
+     *
+     * @see #addPostLoadListener(Consumer)
+     */
+    class PostLoadEvent<T extends Entity> extends EventObject {
+
+        private final T loadedEntity;
+
+        public PostLoadEvent(InstanceLoader<T> loader, T loadedEntity) {
+            super(loader);
+            this.loadedEntity = loadedEntity;
+        }
+
+        /**
+         * The data loader which sent the event.
+         */
+        @SuppressWarnings("unchecked")
+        @Override
+        public InstanceLoader<T> getSource() {
+            return (InstanceLoader<T>) super.getSource();
+        }
+
+        /**
+         * Returns the loaded entity instance.
+         */
+        public T getLoadedEntity() {
+            return loadedEntity;
+        }
+    }
+
+    /**
+     * Adds a listener to {@link PostLoadEvent}.
+     * <p>
+     * You can also add an event listener declaratively using a controller method annotated with {@link Subscribe}:
+     * <pre>
+     *    &#64;Subscribe(id = "fooDl", target = Target.DATA_LOADER)
+     *     private void onFooDlPostLoad(InstanceLoader.PostLoadEvent event) {
+     *         // handle event here
+     *     }
+     * </pre>
+     *
+     * @param listener listener
+     * @return subscription
+     */
+    Subscription addPostLoadListener(Consumer<PostLoadEvent> listener);
 }

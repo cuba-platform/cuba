@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2018 Haulmont.
+ * Copyright (c) 2008-2019 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,11 +17,12 @@
 package spec.cuba.web.datacontext
 
 import com.haulmont.cuba.core.app.DataService
+import com.haulmont.cuba.core.entity.KeyValueEntity
 import com.haulmont.cuba.core.global.DataManager
 import com.haulmont.cuba.core.global.Metadata
 import com.haulmont.cuba.gui.model.DataComponents
-import com.haulmont.cuba.gui.model.InstanceContainer
-import com.haulmont.cuba.gui.model.InstanceLoader
+import com.haulmont.cuba.gui.model.KeyValueContainer
+import com.haulmont.cuba.gui.model.KeyValueInstanceLoader
 import com.haulmont.cuba.web.testmodel.datacontext.Foo
 import com.haulmont.cuba.web.testsupport.TestContainer
 import com.haulmont.cuba.web.testsupport.TestServiceProxy
@@ -31,9 +32,7 @@ import spock.lang.Specification
 
 import java.util.function.Consumer
 
-import static com.haulmont.cuba.client.testsupport.TestSupport.reserialize
-
-class InstanceLoaderTest extends Specification {
+class KeyValueInstanceLoaderTest extends Specification {
 
     @Shared @ClassRule
     public TestContainer cont = TestContainer.Common.INSTANCE
@@ -53,8 +52,8 @@ class InstanceLoaderTest extends Specification {
     }
 
     def "successful load"() {
-        InstanceLoader<Foo> loader = factory.createInstanceLoader()
-        InstanceContainer<Foo> container = factory.createInstanceContainer(Foo)
+        KeyValueInstanceLoader loader = factory.createKeyValueInstanceLoader()
+        KeyValueContainer container = factory.createKeyValueContainer()
 
         Consumer preLoadListener = Mock()
         loader.addPreLoadListener(preLoadListener)
@@ -62,31 +61,31 @@ class InstanceLoaderTest extends Specification {
         Consumer postLoadListener = Mock()
         loader.addPostLoadListener(postLoadListener)
 
-        Foo foo = new Foo()
+        def kv = new KeyValueEntity()
 
         TestServiceProxy.mock(DataService, Mock(DataService) {
-            load(_) >> reserialize(foo)
+            loadValues(_) >> [kv]
         })
 
         when:
 
         loader.setContainer(container)
-        loader.setEntityId(foo.id)
+        loader.setQuery('select bla-bla')
         loader.load()
 
         then:
 
-        container.getItem() == foo
+        container.getItem() == kv
 
         1 * preLoadListener.accept(_)
         1 * postLoadListener.accept(_)
     }
 
     def "prevent load by PreLoadEvent"() {
-        InstanceLoader<Foo> loader = factory.createInstanceLoader()
-        InstanceContainer<Foo> container = factory.createInstanceContainer(Foo)
+        KeyValueInstanceLoader loader = factory.createKeyValueInstanceLoader()
+        KeyValueContainer container = factory.createKeyValueContainer()
 
-        Consumer preLoadListener = { InstanceLoader.PreLoadEvent e -> e.preventLoad() }
+        Consumer preLoadListener = { KeyValueInstanceLoader.PreLoadEvent e -> e.preventLoad() }
         loader.addPreLoadListener(preLoadListener)
 
         Consumer postLoadListener = Mock()
@@ -97,7 +96,7 @@ class InstanceLoaderTest extends Specification {
         when:
 
         loader.setContainer(container)
-        loader.setEntityId(foo.id)
+        loader.setQuery('select bla-bla')
         loader.load()
 
         then:
