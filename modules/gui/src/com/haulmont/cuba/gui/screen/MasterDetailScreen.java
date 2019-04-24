@@ -41,6 +41,7 @@ import com.haulmont.cuba.security.entity.EntityOp;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Collections;
 import java.util.EventObject;
 import java.util.function.Consumer;
@@ -48,6 +49,7 @@ import java.util.function.Consumer;
 /**
  * Displays a list of entities on the left and details of the currently selected instance on the right.
  */
+@ParametersAreNonnullByDefault
 public abstract class MasterDetailScreen<T extends Entity> extends StandardLookup<T> {
 
     /**
@@ -195,8 +197,7 @@ public abstract class MasterDetailScreen<T extends Entity> extends StandardLooku
         if (browseLoader != null) {
             browseLoader.setDataContext(null);
         }
-    };
-
+    }
 
     /**
      * Initializes OK/Cancel editor buttons.
@@ -277,8 +278,9 @@ public abstract class MasterDetailScreen<T extends Entity> extends StandardLooku
         ListComponent<T> table = getTable();
         EditAction editAction = (EditAction) table.getActionNN("edit");
         editAction.withHandler(actionPerformedEvent -> {
-            if (table.getSelected().size() == 1) {
-                if (lockIfNeeded(table.getSingleSelected())) {
+            T item = table.getSingleSelected();
+            if (item != null) {
+                if (lockIfNeeded(item)) {
                     refreshOptionsForLookupFields();
                     enableEditControls(false);
                 }
