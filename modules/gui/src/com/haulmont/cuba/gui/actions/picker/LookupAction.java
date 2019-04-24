@@ -34,7 +34,7 @@ import org.springframework.beans.factory.InitializingBean;
 import javax.inject.Inject;
 
 @ActionType(LookupAction.ID)
-public class LookupAction extends BaseAction implements PickerField.PickerFieldAction, HasDefaultDescription, InitializingBean {
+public class LookupAction extends BaseAction implements PickerField.PickerFieldAction, InitializingBean {
 
     public static final String ID = "picker_lookup";
 
@@ -45,8 +45,6 @@ public class LookupAction extends BaseAction implements PickerField.PickerFieldA
     protected Icons icons;
     protected Messages messages;
     protected Configuration configuration;
-
-    protected String defaultDescription;
 
     protected boolean editable = true;
 
@@ -105,13 +103,9 @@ public class LookupAction extends BaseAction implements PickerField.PickerFieldA
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        defaultDescription = messages.getMainMessage("pickerField.action.lookup.tooltip");
         setShortcut(configuration.getConfig(ClientConfig.class).getPickerLookupShortcut());
-    }
-
-    @Override
-    public String getDefaultDescription() {
-        return defaultDescription;
+        setDescription(messages.getMainMessage("pickerField.action.lookup.tooltip")
+                + " (" + getShortcutCombination().format() + ")");
     }
 
     @SuppressWarnings("unchecked")

@@ -39,7 +39,7 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 
 @ActionType(ClearAction.ID)
-public class ClearAction extends BaseAction implements PickerField.PickerFieldAction, HasDefaultDescription, InitializingBean {
+public class ClearAction extends BaseAction implements PickerField.PickerFieldAction, InitializingBean {
 
     public static final String ID = "picker_clear";
 
@@ -47,8 +47,6 @@ public class ClearAction extends BaseAction implements PickerField.PickerFieldAc
     protected Icons icons;
     protected Messages messages;
     protected Configuration configuration;
-
-    protected String defaultDescription;
 
     protected boolean editable = true;
 
@@ -72,13 +70,9 @@ public class ClearAction extends BaseAction implements PickerField.PickerFieldAc
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        defaultDescription = messages.getMainMessage("pickerField.action.clear.tooltip");
         setShortcut(configuration.getConfig(ClientConfig.class).getPickerClearShortcut());
-    }
-
-    @Override
-    public String getDefaultDescription() {
-        return defaultDescription;
+        setDescription(messages.getMainMessage("pickerField.action.clear.tooltip")
+                + " (" + getShortcutCombination().format() + ")");
     }
 
     @Override

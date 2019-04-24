@@ -40,7 +40,7 @@ import org.springframework.beans.factory.InitializingBean;
 import javax.inject.Inject;
 
 @ActionType(OpenAction.ID)
-public class OpenAction extends BaseAction implements PickerField.PickerFieldAction, HasDefaultDescription, InitializingBean {
+public class OpenAction extends BaseAction implements PickerField.PickerFieldAction, InitializingBean {
 
     public static final String ID = "picker_open";
 
@@ -52,8 +52,6 @@ public class OpenAction extends BaseAction implements PickerField.PickerFieldAct
 
     @Inject
     protected ScreenBuilders screenBuilders;
-
-    protected String defaultDescription;
 
     protected boolean editable = true;
 
@@ -72,13 +70,9 @@ public class OpenAction extends BaseAction implements PickerField.PickerFieldAct
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        defaultDescription = messages.getMainMessage("pickerField.action.open.tooltip");
         setShortcut(configuration.getConfig(ClientConfig.class).getPickerOpenShortcut());
-    }
-
-    @Override
-    public String getDefaultDescription() {
-        return defaultDescription;
+        setDescription(messages.getMainMessage("pickerField.action.open.tooltip")
+                + " (" + getShortcutCombination().format() + ")");
     }
 
     @SuppressWarnings("unchecked")
