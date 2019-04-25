@@ -28,7 +28,7 @@ public interface HasRowsCount {
     void setRowsCount(RowsCount rowsCount);
 
     /**
-     * Sets RowsCount delegate which is used to get the total number of rows when user clicks ? or >>
+     * Sets RowsCount delegate which is used to get the total number of rows when user clicks "total count" or "last page".
      */
     default void setRowsCountTotalCountDelegate(Function<DataLoadContext, Long> delegate) {
         RowsCount rowsCount = getRowsCount();

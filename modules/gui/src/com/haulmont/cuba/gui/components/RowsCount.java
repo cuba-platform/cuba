@@ -69,12 +69,12 @@ public interface RowsCount extends Component.BelongToFrame {
     }
 
     /**
-     * @return delegate which is used to get the total number of rows when user clicks ? or >>
+     * @return delegate which is used to get the total number of rows when user clicks "total count" or "last page".
      */
     Function<DataLoadContext, Long> getTotalCountDelegate();
 
     /**
-     * Sets delegate which is used to get the total number of rows when user clicks ? or >>
+     * Sets delegate which is used to get the total number of rows when user clicks "total count" or "last page".
      */
     void setTotalCountDelegate(Function<DataLoadContext, Long> delegate);
 
