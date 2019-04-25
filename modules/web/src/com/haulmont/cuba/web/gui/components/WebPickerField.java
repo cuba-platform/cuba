@@ -90,7 +90,16 @@ public class WebPickerField<V extends Entity> extends WebV8AbstractField<CubaPic
     }
 
     @Override
+    public void setValue(V value) {
+        checkValueType(value);
+
+        super.setValue(value);
+    }
+
+    @Override
     public void setValueFromUser(V value) {
+        checkValueType(value);
+
         setValueToPresentation(convertToPresentation(value));
 
         V oldValue = internalValue;
@@ -99,6 +108,25 @@ public class WebPickerField<V extends Entity> extends WebV8AbstractField<CubaPic
         if (!fieldValueEquals(value, oldValue)) {
             ValueChangeEvent<V> event = new ValueChangeEvent<>(this, oldValue, value, true);
             publish(ValueChangeEvent.class, event);
+        }
+    }
+
+    protected void checkValueType(V value) {
+        if (value != null) {
+            MetaClass metaClass = getMetaClass();
+            if (metaClass == null) {
+                throw new IllegalStateException("Neither metaClass nor valueSource is set for PickerField");
+            }
+
+            Class<?> fieldClass = metaClass.getJavaClass();
+            Class<?> valueClass = value.getClass();
+            if (!fieldClass.isAssignableFrom(valueClass)) {
+                throw new IllegalArgumentException(
+                        String.format("Could not set value with class %s to field with class %s",
+                                fieldClass.getCanonicalName(),
+                                valueClass.getCanonicalName())
+                );
+            }
         }
     }
 
