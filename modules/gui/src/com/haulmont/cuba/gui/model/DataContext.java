@@ -66,8 +66,13 @@ public interface DataContext {
      * it and the existing instance is returned. Otherwise, a copy of the passed instance is registered in the context
      * and returned.
      * <p>
-     * WARNING: It's very important to continue work with the returned value because it is always a different object instance.
-     * The only case when you get the same instance is if it was previously returned from the same context as a
+     * If the given instance is new and the the context doesn't contain an instance with the same identifier, the context
+     * will save the new instance on {@link #commit()}. Otherwise, even if some attributes of the merged instance are changed
+     * as a result of copying the state of the passed instance, the merged instance will not be committed. Such modifications
+     * are considered as a result of loading more fresh state from the database.
+     * <p>
+     * WARNING: use the returned value because it is always a different object instance.
+     * The only case when you get the same instance is if the input was previously returned from the same context as a
      * result of {@link #find(Class, Object)} or {@code merge()}.
      *
      * @return the instance which is tracked by the context
@@ -79,13 +84,7 @@ public interface DataContext {
      * Merge the given entities into the context. The whole object graph for each element of the collection with all
      * references will be merged.
      * <p>
-     * For each element, if an entity with the same identifier already exists in the context, the passed entity state is
-     * copied into it and the existing instance is added to the returned set. Otherwise, a copy of the passed instance
-     * is registered in the context and added to the returned set.
-     * <p>
-     * WARNING: It's very important to continue work with instances from the returned set because they are always different
-     * object instances. The only case when you get the same instance is if it was previously returned from the same
-     * context as a result of {@link #find(Class, Object)} or {@code merge()}.
+     * Same as {@link #merge(Entity)} but for a collection of instances.
      *
      * @return set of instances tracked by the context
      * @see #merge(Entity)
