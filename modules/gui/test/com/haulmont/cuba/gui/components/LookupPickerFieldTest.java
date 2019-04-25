@@ -38,7 +38,7 @@ import java.util.function.Consumer;
 
 import static org.junit.Assert.*;
 
-@SuppressWarnings("unchecked")
+@SuppressWarnings({"unchecked", "IncorrectCreateEntity"})
 @Ignore
 public class LookupPickerFieldTest extends AbstractComponentTestCase {
 

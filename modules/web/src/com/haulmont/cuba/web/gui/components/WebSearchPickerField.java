@@ -514,4 +514,9 @@ public class WebSearchPickerField<V extends Entity> extends WebPickerField<V>
             getComponent().setItemCaptionGenerator(this::generateItemCaption);
         }
     }
+
+    @Override
+    protected void checkValueType(V value) {
+        // do not check
+    }
 }

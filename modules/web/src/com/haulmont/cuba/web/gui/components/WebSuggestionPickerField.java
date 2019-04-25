@@ -336,4 +336,9 @@ public class WebSuggestionPickerField<V extends Entity> extends WebPickerField<V
 
         getComponent().removePopupStyleName(styleName);
     }
+
+    @Override
+    protected void checkValueType(V value) {
+        // do not check
+    }
 }
