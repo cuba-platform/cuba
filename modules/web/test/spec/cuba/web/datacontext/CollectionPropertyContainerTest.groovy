@@ -127,4 +127,19 @@ class CollectionPropertyContainerTest extends WebSpec {
 
         1 * listener.accept(_)
     }
+
+    def "sorting using getMutableItems"() {
+
+        orderCt.setItem(order)
+
+        Comparator<OrderLine> comparator = Comparator.comparing { OrderLine line -> line.getQuantity() }.reversed()
+
+        when:
+
+        linesCt.getMutableItems().sort(comparator)
+
+        then:
+
+        order.orderLines == [orderLine2, orderLine1]
+    }
 }

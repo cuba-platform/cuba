@@ -195,4 +195,23 @@ public class ObservableList<T> extends ForwardingList<T> implements Serializable
     public Iterator<T> iterator() {
         return new ObservableIterator<>(super.iterator(), onCollectionChanged);
     }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public void sort(Comparator<? super T> c) {
+        Object[] array = this.toArray();
+        Arrays.sort(array, (Comparator) c);
+
+        boolean changed = false;
+        for (int i = 0; i < super.size(); i++) {
+            T element = (T) array[i];
+            T prev = super.set(i, element);
+            if (prev != element) {
+                changed = true;
+            }
+        }
+        if (changed) {
+            fireCollectionRefreshed();
+        }
+    }
 }
