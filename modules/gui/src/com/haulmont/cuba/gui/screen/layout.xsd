@@ -388,7 +388,6 @@
                     <xs:enumeration value="com.haulmont.cuba.gui.components.validators.LongValidator"/>
                     <xs:enumeration value="com.haulmont.cuba.gui.components.validators.PatternValidator"/>
                     <xs:enumeration value="com.haulmont.cuba.gui.components.validators.ScriptValidator"/>
-                    <xs:enumeration value="com.haulmont.cuba.gui.components.validators.StringValidator"/>
                 </xs:restriction>
             </xs:simpleType>
         </xs:union>

@@ -19,12 +19,11 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.google.common.base.Splitter;
 import com.haulmont.cuba.core.global.UserSessionSource;
+import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.WindowManager;
-import com.haulmont.cuba.gui.components.BulkEditor;
-import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.Field;
-import com.haulmont.cuba.gui.components.ListComponent;
+import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.screen.compatibility.LegacyFrame;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
@@ -73,6 +72,13 @@ public class BulkEditorLoader extends AbstractComponentLoader<BulkEditor> {
     public void loadComponent() {
         assignXmlDescriptor(resultComponent, element);
         assignFrame(resultComponent);
+
+        Window window = ComponentsHelper.getWindow(resultComponent);
+        if (window != null && !(window instanceof LegacyFrame)) {
+            throw new GuiDevelopmentException(
+                    "BulkEditor component can be used only in legacy screens based on AbstractWindow",
+                    context.getFullFrameId());
+        }
 
         loadEnable(resultComponent, element);
         loadVisible(resultComponent, element);

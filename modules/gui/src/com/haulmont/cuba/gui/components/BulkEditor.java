@@ -23,6 +23,11 @@ import com.haulmont.cuba.security.entity.ConstraintOperationType;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Use {@link com.haulmont.cuba.gui.actions.list.BulkEditAction} in new screens instead.
+ *
+ * @see com.haulmont.cuba.gui.BulkEditors
+ */
 public interface BulkEditor extends Component, Component.HasCaption, Component.BelongToFrame, Component.HasIcon,
                                     Component.Focusable, HasHtmlCaption, HasHtmlDescription {
 
