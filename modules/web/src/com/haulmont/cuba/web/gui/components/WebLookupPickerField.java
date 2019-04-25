@@ -416,4 +416,9 @@ public class WebLookupPickerField<V extends Entity> extends WebPickerField<V>
     public Function<? super V, String> getOptionStyleProvider() {
         return optionStyleProvider;
     }
+
+    @Override
+    protected void checkValueType(V value) {
+        // do not check
+    }
 }
