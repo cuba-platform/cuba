@@ -228,7 +228,7 @@ public class EclipseLinkSessionEventListener extends SessionEventAdapter {
             }
             message.append("\n=================================================================");
             log.error(message.toString());
-            if (!Boolean.parseBoolean(AppContext.getProperty("cuba.disableEnhancementChecks"))) {
+            if (!Boolean.parseBoolean(AppContext.getProperty("cuba.disableEntityEnhancementCheck"))) {
                 StringBuilder exceptionMessage = new StringBuilder();
                 for (Pair me : missingEnhancements) {
                     exceptionMessage.append(me.getFirst());

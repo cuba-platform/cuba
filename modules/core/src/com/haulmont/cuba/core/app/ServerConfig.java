@@ -322,6 +322,6 @@ public interface ServerConfig extends Config {
      * {@link org.eclipse.persistence.internal.weaving.PersistenceWeavedFetchGroups}
      * {@link org.eclipse.persistence.internal.weaving.PersistenceWeavedChangeTracking}
      */
-    @Property("cuba.disableEnhancementChecks")
-    boolean getDisableEnhancementChecks();
+    @Property("cuba.disableEntityEnhancementCheck")
+    boolean getDisableEntityEnhancementCheck();
 }
