@@ -27,6 +27,7 @@ import org.springframework.stereotype.Component;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.List;
+import java.util.function.Supplier;
 
 @Component(TransactionalDataManager.NAME)
 public class TransactionalDataManagerBean implements TransactionalDataManager {
@@ -36,6 +37,9 @@ public class TransactionalDataManagerBean implements TransactionalDataManager {
 
     @Inject
     protected Transactions transactions;
+
+    @Inject
+    protected TransactionalActionFactory transactionalActionFactory;
 
     @Override
     public <E extends Entity<K>, K> FluentLoader<E, K> load(Class<E> entityClass) {
@@ -122,6 +126,11 @@ public class TransactionalDataManagerBean implements TransactionalDataManager {
     @Override
     public Transactions transactions() {
         return transactions;
+    }
+
+    @Override
+    public TransactionalAction commitAction(Supplier<CommitContext> supplier) {
+        return transactionalActionFactory.getTransactionalAction(supplier, true);
     }
 
     private static class Secure extends TransactionalDataManagerBean {

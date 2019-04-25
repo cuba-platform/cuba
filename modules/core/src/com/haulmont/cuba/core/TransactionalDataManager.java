@@ -25,6 +25,7 @@ import com.haulmont.cuba.core.global.*;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.function.Supplier;
 
 /**
  * Similar to {@link DataManager} but joins an existing transaction.
@@ -238,4 +239,13 @@ public interface TransactionalDataManager {
      * </pre>
      */
     Transactions transactions();
+
+    /**
+     * Entry point to TransactionalAction API.
+     * @param supplier  defines how to retrieve {@link com.haulmont.cuba.core.global.CommitContext}
+     * @return          instance of {@link com.haulmont.cuba.core.global.TransactionalAction} without any additional
+     *                  actions ({@code onSuccess, onFail, beforeCommit, afterCompletion}) and with {@code joinTransaction=true}
+     */
+    TransactionalAction commitAction(Supplier<CommitContext> supplier);
+
 }
