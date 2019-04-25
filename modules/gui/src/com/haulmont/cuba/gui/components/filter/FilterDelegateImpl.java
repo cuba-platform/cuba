@@ -1365,8 +1365,13 @@ public class FilterDelegateImpl implements FilterDelegate {
     public String getEntityAlias() {
         checkState();
         String query = adapter.getQuery();
+        String metaClassName = adapter.getMetaClass().getName();
+        if (query == null) {
+            query = String.format("select e from %s e", metaClassName);
+            adapter.setQuery(query);
+        }
         QueryParser parser = QueryTransformerFactory.createParser(query);
-        return parser.getEntityAlias(adapter.getMetaClass().getName());
+        return parser.getEntityAlias(metaClassName);
     }
 
     @Override
@@ -2941,6 +2946,8 @@ public class FilterDelegateImpl implements FilterDelegate {
 
         String getQuery();
 
+        void setQuery(String query);
+
         void preventNextDataLoading();
     }
 
@@ -3141,6 +3148,11 @@ public class FilterDelegateImpl implements FilterDelegate {
         }
 
         @Override
+        public void setQuery(String query) {
+            loader.setQuery(query);
+        }
+
+        @Override
         public String getQuery() {
             return loader.getQuery();
         }
@@ -3242,6 +3254,11 @@ public class FilterDelegateImpl implements FilterDelegate {
         @Override
         public String getQuery() {
             return datasource.getQuery();
+        }
+
+        @Override
+        public void setQuery(String query) {
+            datasource.setQuery(query);
         }
 
         @Override
