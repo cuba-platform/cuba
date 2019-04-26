@@ -371,6 +371,16 @@ public class WebScrollBoxLayout extends WebAbstractComponent<CubaScrollBoxLayout
     }
 
     @Override
+    public boolean isRequiredIndicatorVisible() {
+        return component.isRequiredIndicatorVisible();
+    }
+
+    @Override
+    public void setRequiredIndicatorVisible(boolean visible) {
+        component.setRequiredIndicatorVisible(visible);
+    }
+
+    @Override
     public void addShortcutAction(ShortcutAction action) {
         KeyCombination keyCombination = action.getShortcutCombination();
         com.vaadin.event.ShortcutListener shortcut =

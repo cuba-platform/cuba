@@ -62,13 +62,6 @@ public class JavaScriptComponentLoader extends AbstractComponentLoader<JavaScrip
         loadDependencies(resultComponent, element);
     }
 
-    protected void loadRequiredIndicatorVisible(JavaScriptComponent component, Element element) {
-        String requiredIndicatorVisible = element.attributeValue("requiredIndicatorVisible");
-        if (!Strings.isNullOrEmpty(requiredIndicatorVisible)) {
-            component.setRequiredIndicatorVisible(Boolean.parseBoolean(requiredIndicatorVisible));
-        }
-    }
-
     protected void loadInitFunctionName(JavaScriptComponent component, Element element) {
         String initFunctionName = element.attributeValue("initFunctionName");
         if (!Strings.isNullOrEmpty(initFunctionName)) {

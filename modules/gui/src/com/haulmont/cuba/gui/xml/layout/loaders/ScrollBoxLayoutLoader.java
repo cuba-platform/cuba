@@ -56,6 +56,7 @@ public class ScrollBoxLayoutLoader extends ContainerLoader<ScrollBoxLayout> {
         loadCaption(resultComponent, element);
         loadDescription(resultComponent, element);
         loadContextHelp(resultComponent, element);
+        loadRequiredIndicatorVisible(resultComponent, element);
 
         loadSubComponents();
 

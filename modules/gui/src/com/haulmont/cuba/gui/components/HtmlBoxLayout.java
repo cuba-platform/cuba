@@ -17,7 +17,7 @@
 package com.haulmont.cuba.gui.components;
 
 public interface HtmlBoxLayout extends ComponentContainer, Component.BelongToFrame, Component.HasIcon,
-        Component.HasCaption, HasContextHelp, HasHtmlCaption, HasHtmlDescription {
+        Component.HasCaption, HasContextHelp, HasHtmlCaption, HasHtmlDescription, HasRequiredIndicator {
 
     String NAME = "htmlBox";
 

@@ -64,4 +64,14 @@ public class WebFlowBoxLayout extends WebAbstractOrderedLayout<CubaFlowLayout> i
     public boolean getSpacing() {
         return component.isSpacing();
     }
+
+    @Override
+    public boolean isRequiredIndicatorVisible() {
+        return component.isRequiredIndicatorVisible();
+    }
+
+    @Override
+    public void setRequiredIndicatorVisible(boolean visible) {
+        component.setRequiredIndicatorVisible(visible);
+    }
 }

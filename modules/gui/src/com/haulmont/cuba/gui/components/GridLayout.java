@@ -25,7 +25,7 @@ import javax.annotation.Nullable;
  */
 public interface GridLayout extends ComponentContainer, HasSpacing, HasMargin, Component.BelongToFrame,
         Component.HasIcon, Component.HasCaption, HasContextHelp, LayoutClickNotifier, ShortcutNotifier,
-        HasHtmlCaption, HasHtmlDescription {
+        HasHtmlCaption, HasHtmlDescription, HasRequiredIndicator {
 
     String NAME = "grid";
 

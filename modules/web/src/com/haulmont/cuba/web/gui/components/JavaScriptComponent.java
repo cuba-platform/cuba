@@ -18,6 +18,7 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.HasContextHelp;
+import com.haulmont.cuba.gui.components.HasRequiredIndicator;
 import elemental.json.JsonArray;
 import elemental.json.JsonValue;
 
@@ -30,7 +31,8 @@ import java.util.function.Consumer;
  * A JavaScript wrapper.
  */
 public interface JavaScriptComponent extends Component,
-        Component.HasCaption, Component.HasDescription, Component.HasIcon, Component.BelongToFrame, HasContextHelp {
+        Component.HasCaption, Component.HasDescription, Component.HasIcon, Component.BelongToFrame,
+        HasContextHelp, HasRequiredIndicator {
 
     String NAME = "jsComponent";
 
@@ -147,19 +149,6 @@ public interface JavaScriptComponent extends Component,
      * @param arguments function arguments
      */
     void callFunction(String name, Object... arguments);
-
-    /**
-     * @return whether the required indicator is visible
-     */
-    boolean isRequiredIndicatorVisible();
-
-    /**
-     * Sets whether the required indicator is visible.
-     *
-     * @param visible {@code true} to make the required indicator visible,
-     *                {@code false} otherwise
-     */
-    void setRequiredIndicatorVisible(boolean visible);
 
     /**
      * Repaint UI representation of the component.

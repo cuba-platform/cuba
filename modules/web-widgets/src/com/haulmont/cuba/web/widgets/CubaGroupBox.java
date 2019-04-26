@@ -212,4 +212,14 @@ public class CubaGroupBox extends Panel implements ComponentContainer {
     public void setOuterMargin(MarginInfo marginInfo) {
         getState().outerMarginsBitmask = marginInfo.getBitMask();
     }
+
+    @Override
+    public boolean isRequiredIndicatorVisible() {
+        return getState().requiredIndicatorVisible;
+    }
+
+    @Override
+    public void setRequiredIndicatorVisible(boolean visible) {
+        getState().requiredIndicatorVisible = visible;
+    }
 }

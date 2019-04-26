@@ -297,4 +297,14 @@ public abstract class WebAbstractBox<T extends AbstractOrderedLayout>
 
         return this.component.getExpandRatio(vComponent);
     }
+
+    @Override
+    public boolean isRequiredIndicatorVisible() {
+        return component.isRequiredIndicatorVisible();
+    }
+
+    @Override
+    public void setRequiredIndicatorVisible(boolean visible) {
+        component.setRequiredIndicatorVisible(visible);
+    }
 }

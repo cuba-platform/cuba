@@ -423,4 +423,14 @@ public class WebGroupBox extends WebAbstractComponent<CubaGroupBox> implements G
         AbstractOrderedLayout layout = getComponentContent();
         return layout.getExpandRatio(component.unwrap(com.vaadin.ui.Component.class));
     }
+
+    @Override
+    public boolean isRequiredIndicatorVisible() {
+        return component.isRequiredIndicatorVisible();
+    }
+
+    @Override
+    public void setRequiredIndicatorVisible(boolean visible) {
+        component.setRequiredIndicatorVisible(visible);
+    }
 }

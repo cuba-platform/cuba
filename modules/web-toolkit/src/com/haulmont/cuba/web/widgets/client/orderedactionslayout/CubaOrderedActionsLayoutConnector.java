@@ -33,11 +33,17 @@ import com.vaadin.shared.ui.Connect;
 import java.util.List;
 
 @Connect(CubaOrderedActionsLayout.class)
-public class CubaOrderedActionsLayoutConnector extends AbstractOrderedLayoutConnector implements Paintable {
+public class CubaOrderedActionsLayoutConnector extends AbstractOrderedLayoutConnector
+        implements Paintable, HasRequiredIndicator {
 
     @Override
     public CubaOrderedActionsLayoutWidget getWidget() {
         return (CubaOrderedActionsLayoutWidget) super.getWidget();
+    }
+
+    @Override
+    public boolean isRequiredIndicatorVisible() {
+        return getState().requiredIndicatorVisible;
     }
 
     @Override

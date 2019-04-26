@@ -22,18 +22,18 @@ import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.HtmlBoxLayout;
 import com.haulmont.cuba.gui.components.sys.FrameImplementation;
-import com.vaadin.ui.CustomLayout;
+import com.haulmont.cuba.web.widgets.CubaCustomLayout;
 
 import javax.annotation.Nullable;
 import java.util.*;
 import java.util.stream.Stream;
 
-public class WebHtmlBoxLayout extends WebAbstractComponent<CustomLayout> implements HtmlBoxLayout {
+public class WebHtmlBoxLayout extends WebAbstractComponent<CubaCustomLayout> implements HtmlBoxLayout {
 
     protected List<Component> ownComponents = new ArrayList<>();
 
     public WebHtmlBoxLayout() {
-        component = new CustomLayout("");
+        component = new CubaCustomLayout();
     }
 
     @Override
@@ -152,5 +152,15 @@ public class WebHtmlBoxLayout extends WebAbstractComponent<CustomLayout> impleme
     @Override
     public Collection<Component> getComponents() {
         return ComponentsHelper.getComponents(this);
+    }
+
+    @Override
+    public boolean isRequiredIndicatorVisible() {
+        return component.isRequiredIndicatorVisible();
+    }
+
+    @Override
+    public void setRequiredIndicatorVisible(boolean visible) {
+        component.setRequiredIndicatorVisible(visible);
     }
 }

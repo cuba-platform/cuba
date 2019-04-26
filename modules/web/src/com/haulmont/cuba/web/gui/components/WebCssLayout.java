@@ -24,4 +24,14 @@ public class WebCssLayout extends WebAbstractOrderedLayout<com.vaadin.ui.CssLayo
     public WebCssLayout() {
         component = new CubaCssActionsLayout();
     }
+
+    @Override
+    public boolean isRequiredIndicatorVisible() {
+        return component.isRequiredIndicatorVisible();
+    }
+
+    @Override
+    public void setRequiredIndicatorVisible(boolean visible) {
+        component.setRequiredIndicatorVisible(visible);
+    }
 }

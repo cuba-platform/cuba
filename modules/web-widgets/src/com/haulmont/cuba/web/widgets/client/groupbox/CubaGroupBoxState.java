@@ -31,4 +31,6 @@ public class CubaGroupBoxState extends PanelState {
     public boolean showAsPanel = false;
 
     public int outerMarginsBitmask = 0;
+
+    public boolean requiredIndicatorVisible = false;
 }

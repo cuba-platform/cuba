@@ -21,6 +21,7 @@ import com.google.gwt.user.client.ui.Widget;
 import com.haulmont.cuba.web.widgets.CubaGridLayout;
 import com.haulmont.cuba.web.widgets.client.caption.CubaCaptionWidget;
 import com.vaadin.client.*;
+import com.vaadin.client.ui.HasRequiredIndicator;
 import com.vaadin.client.ui.ShortcutActionHandler;
 import com.vaadin.client.ui.VGridLayout;
 import com.vaadin.client.ui.gridlayout.GridLayoutConnector;
@@ -29,11 +30,16 @@ import com.vaadin.shared.AbstractComponentState;
 import com.vaadin.shared.ui.Connect;
 
 @Connect(CubaGridLayout.class)
-public class CubaGridLayoutConnector extends GridLayoutConnector implements Paintable {
+public class CubaGridLayoutConnector extends GridLayoutConnector implements Paintable, HasRequiredIndicator {
 
     @Override
     public CubaGridLayoutWidget getWidget() {
         return (CubaGridLayoutWidget) super.getWidget();
+    }
+
+    @Override
+    public boolean isRequiredIndicatorVisible() {
+        return getState().requiredIndicatorVisible;
     }
 
     protected void setDefaultCaptionParameters(CubaCaptionWidget widget) {

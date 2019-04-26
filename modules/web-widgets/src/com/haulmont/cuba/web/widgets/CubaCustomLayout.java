@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2016 Haulmont.
+ * Copyright (c) 2008-2019 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,14 +12,28 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
-package com.haulmont.cuba.gui.components;
+package com.haulmont.cuba.web.widgets;
 
-public interface CssLayout extends OrderedContainer, Component.BelongToFrame, Component.HasCaption,
-        Component.HasIcon, HasContextHelp, LayoutClickNotifier, ShortcutNotifier, HasHtmlCaption, HasHtmlDescription,
-        HasRequiredIndicator {
+import com.vaadin.ui.CustomLayout;
 
-    String NAME = "cssLayout";
+import java.io.IOException;
+import java.io.InputStream;
+
+public class CubaCustomLayout extends CustomLayout {
+
+    public CubaCustomLayout() {
+        super("");
+    }
+
+    @Override
+    public boolean isRequiredIndicatorVisible() {
+        return getState().requiredIndicatorVisible;
+    }
+
+    @Override
+    public void setRequiredIndicatorVisible(boolean visible) {
+        getState().requiredIndicatorVisible = visible;
+    }
 }

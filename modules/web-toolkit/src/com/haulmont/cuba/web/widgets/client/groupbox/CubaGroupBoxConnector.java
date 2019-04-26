@@ -36,6 +36,7 @@ public class CubaGroupBoxConnector extends PanelConnector {
 
     public static final String CONTEXT_HELP_CLASSNAME = "c-context-help-button";
     public static final String CONTEXT_HELP_CLICKABLE_CLASSNAME = "c-context-help-button-clickable";
+    public static final String REQUIRED_INDICATOR_CLASSNAME = "v-required-field-indicator";
 
     protected boolean widgetInitialized = false;
 
@@ -207,6 +208,30 @@ public class CubaGroupBoxConnector extends PanelConnector {
             }
         } else if (getWidget().contextHelpIcon != null) {
             getWidget().contextHelpIcon.getStyle().setDisplay(Style.Display.NONE);
+
+            updateCaptionNodeWidth(widget);
+        }
+
+        if (getState().requiredIndicatorVisible) {
+            if (getWidget().requiredIcon == null) {
+                getWidget().requiredIcon = DOM.createSpan();
+                getWidget().requiredIcon.setInnerHTML("*");
+                getWidget().requiredIcon.setClassName(REQUIRED_INDICATOR_CLASSNAME);
+
+                // The star should not be read by the screen reader, as it is
+                // purely visual. Required state is set at the element level for
+                // the screen reader.
+                Roles.getTextboxRole().setAriaHiddenState(getWidget().requiredIcon, true);
+
+                getWidget().captionNode.appendChild(getWidget().requiredIcon);
+                DOM.sinkEvents(getWidget().requiredIcon, VTooltip.TOOLTIP_EVENTS);
+            } else {
+                getWidget().requiredIcon.getStyle().clearDisplay();
+
+                updateCaptionNodeWidth(widget);
+            }
+        } else if (getWidget().requiredIcon != null) {
+            getWidget().requiredIcon.getStyle().setDisplay(Style.Display.NONE);
 
             updateCaptionNodeWidth(widget);
         }

@@ -113,14 +113,4 @@ public class CubaCssActionsLayout extends CssLayout implements Action.Container,
     public boolean isSpacing() {
         return getState().spacing;
     }
-
-    @Override
-    public boolean isRequiredIndicatorVisible() {
-        return getState().requiredIndicatorVisible;
-    }
-
-    @Override
-    public void setRequiredIndicatorVisible(boolean visible) {
-        getState().requiredIndicatorVisible = visible;
-    }
 }
