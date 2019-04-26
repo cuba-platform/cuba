@@ -18,7 +18,6 @@
 package com.haulmont.cuba.core.sys.remoting;
 
 import com.google.common.base.Joiner;
-import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.serialization.SerializationException;
 import com.haulmont.cuba.core.sys.serialization.SerializationSupport;
 import org.springframework.beans.factory.BeanNameAware;
@@ -57,10 +56,7 @@ public class HttpServiceExporter extends HttpInvokerServiceExporter implements B
         if (service == null)
             throw new IllegalStateException("Target service is null");
 
-        String entryName = AppContext.getProperty("cuba.webContextName") + name;
-
-        LocalServiceInvoker invoker = new LocalServiceInvokerImpl(service);
-        LocalServiceDirectory.registerInvoker(entryName, invoker);
+        ServiceExportHelper.registerLocal(name, service);
     }
 
     /*
@@ -71,6 +67,13 @@ public class HttpServiceExporter extends HttpInvokerServiceExporter implements B
      */
     @Override
     public void handleRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+        if (!ServiceExportHelper.exposeServices()) {
+            logger.debug("Services are not exposed due to 'cuba.doNotExposeRemoteServices' is set to true");
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            return;
+        }
+
         RemoteInvocationResult result;
         RemoteInvocation invocation = null;
         try {

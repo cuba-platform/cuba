@@ -82,12 +82,16 @@ public class RemoteServicesBeanCreator implements BeanFactoryPostProcessor, Appl
                 intfName = serviceInterfaces.get(0).getName();
             }
             if (intfName != null) {
-                BeanDefinition definition = new RootBeanDefinition(HttpServiceExporter.class);
-                MutablePropertyValues propertyValues = definition.getPropertyValues();
-                propertyValues.add("service", service);
-                propertyValues.add("serviceInterface", intfName);
-                registry.registerBeanDefinition("/" + serviceName, definition);
-                log.debug("Bean " + serviceName + " configured for export via HTTP");
+                if (ServiceExportHelper.exposeServices()) {
+                    BeanDefinition definition = new RootBeanDefinition(HttpServiceExporter.class);
+                    MutablePropertyValues propertyValues = definition.getPropertyValues();
+                    propertyValues.add("service", service);
+                    propertyValues.add("serviceInterface", intfName);
+                    registry.registerBeanDefinition("/" + serviceName, definition);
+                    log.debug("Bean " + serviceName + " configured for export via HTTP");
+                } else {
+                    ServiceExportHelper.registerLocal("/" + serviceName, service);
+                }
             }
         }
     }
