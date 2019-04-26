@@ -22,6 +22,9 @@ import javax.annotation.Nullable;
 import java.util.EventObject;
 import java.util.function.Consumer;
 
+/**
+ * A split panel contains two components and lays them vertically or horizontally.
+ */
 public interface SplitPanel extends ComponentContainer, Component.BelongToFrame, Component.HasIcon,
         Component.HasCaption, HasContextHelp, HasSettings, HasHtmlCaption, HasHtmlDescription {
 

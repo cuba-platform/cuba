@@ -25,6 +25,9 @@ import com.haulmont.cuba.security.entity.FilterEntity;
 
 import java.util.List;
 
+/**
+ * Generic filter component.
+ */
 public interface Filter extends HasMargin, Component.BelongToFrame, HasNamedComponents, HasSettings, Component.HasCaption, HasContextHelp,
         Component.HasIcon, Collapsable, Component.Focusable, HasHtmlCaption, HasHtmlDescription {
 

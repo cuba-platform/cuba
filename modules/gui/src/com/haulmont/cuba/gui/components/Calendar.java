@@ -33,6 +33,9 @@ import java.util.Map;
 import java.util.TimeZone;
 import java.util.function.Consumer;
 
+/**
+ * Calendar is used for visualizing events in a calendar using week or month view.
+ */
 public interface Calendar extends Component.BelongToFrame, Component.HasCaption, Component.HasIcon,
         HasContextHelp, HasHtmlCaption, HasHtmlDescription {
 

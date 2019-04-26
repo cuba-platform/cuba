@@ -17,6 +17,9 @@
 
 package com.haulmont.cuba.gui.components;
 
+/**
+ * Component container, which shows the subcomponents in the order of their addition (horizontally).
+ */
 public interface HBoxLayout extends BoxLayout {
     String NAME = "hbox";
 }

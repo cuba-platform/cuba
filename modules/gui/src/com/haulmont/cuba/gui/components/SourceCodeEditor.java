@@ -21,6 +21,9 @@ import com.haulmont.cuba.gui.components.autocomplete.AutoCompleteSupport;
 import com.haulmont.cuba.gui.components.autocomplete.Suggester;
 import org.apache.commons.lang3.StringUtils;
 
+/**
+ * Text area component with source code highlighting support.
+ */
 public interface SourceCodeEditor extends Field<String>, Component.Focusable {
     String NAME = "sourceCodeEditor";
 

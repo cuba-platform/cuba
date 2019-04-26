@@ -20,6 +20,11 @@ package com.haulmont.cuba.gui.components;
 import com.google.common.reflect.TypeToken;
 import com.haulmont.cuba.core.entity.Entity;
 
+/**
+ * SuggestionPickerField adds to PickerField the ability to search an entity by user input.
+ *
+ * @param <V> type of value
+ */
 public interface SuggestionPickerField<V extends Entity> extends SuggestionField<V>, PickerField<V> {
 
     String NAME = "suggestionPickerField";

@@ -21,6 +21,12 @@ import com.haulmont.bali.events.Subscription;
 
 import java.util.function.Consumer;
 
+/**
+ * Resizable text area component.
+ *
+ * @param <V> type of value
+ * @see TextArea
+ */
 public interface ResizableTextArea<V> extends TextArea<V>, HasSettings {
     String NAME = "resizableTextArea";
 

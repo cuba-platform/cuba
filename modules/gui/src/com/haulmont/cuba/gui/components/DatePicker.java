@@ -24,6 +24,11 @@ import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.OffsetTime;
 
+/**
+ * A date entry component, which displays the actual date selector inline.
+ *
+ * @param <V> type of value
+ */
 public interface DatePicker<V> extends Field<V>, HasDatatype<V>, Component.Focusable, HasRange<V>, Buffered {
     String NAME = "datePicker";
 

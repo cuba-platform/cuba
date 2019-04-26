@@ -16,6 +16,9 @@
 
 package com.haulmont.cuba.gui.components;
 
+/**
+ * Component shows if CapsLock key is enabled when user inputs password.
+ */
 public interface CapsLockIndicator extends Component {
     String NAME = "capsLockIndicator";
 

@@ -22,6 +22,11 @@ import java.sql.Date;
 import java.time.*;
 import java.util.TimeZone;
 
+/**
+ * A date entry component, which displays the actual date selector or date with time.
+ *
+ * @param <V> type of value
+ */
 public interface DateField<V> extends Field<V>, HasDatatype<V>, Buffered, Component.Focusable, HasRange<V> {
     String NAME = "dateField";
 

@@ -31,8 +31,6 @@ import java.util.function.Consumer;
 
 /**
  * The Image component is intended for displaying graphic content.
- * <p>
- * It can be bound to a ValueSource or configured manually.
  */
 public interface Image extends ResourceView, HasValueSource<FileDescriptor> {
     String NAME = "image";

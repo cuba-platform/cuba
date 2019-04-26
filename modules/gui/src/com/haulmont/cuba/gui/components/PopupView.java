@@ -21,6 +21,10 @@ import com.haulmont.bali.events.Subscription;
 import java.util.EventObject;
 import java.util.function.Consumer;
 
+/**
+ * A component for displaying a two different views to data. The minimized view is normally used to render the component,
+ * and when it is clicked the full view is displayed on a popup.
+ */
 public interface PopupView extends Component.HasCaption, Component.BelongToFrame,
         Component.HasIcon, HasContextHelp, HasHtmlCaption, HasHtmlDescription {
     String NAME = "popupView";

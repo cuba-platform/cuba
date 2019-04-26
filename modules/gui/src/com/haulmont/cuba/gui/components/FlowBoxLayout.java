@@ -17,6 +17,9 @@
 
 package com.haulmont.cuba.gui.components;
 
+/**
+ * A flow layout arranges components in a directional flow, much like lines of text in a paragraph.
+ */
 public interface FlowBoxLayout extends OrderedContainer, Component.BelongToFrame, HasMargin,
         HasSpacing, Component.HasCaption, Component.HasIcon, HasContextHelp,
         LayoutClickNotifier, ShortcutNotifier, HasHtmlCaption, HasHtmlDescription, HasRequiredIndicator {

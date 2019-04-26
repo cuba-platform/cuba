@@ -17,6 +17,9 @@
 
 package com.haulmont.cuba.gui.components;
 
+/**
+ * A simple RichTextArea to edit HTML format text.
+ */
 public interface RichTextArea extends TextInputField<String> {
 
     String NAME = "richTextArea";

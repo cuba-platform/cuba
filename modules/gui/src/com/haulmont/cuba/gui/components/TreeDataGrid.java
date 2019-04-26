@@ -20,7 +20,7 @@ import java.util.stream.Stream;
 /**
  * A DataGrid component for displaying hierarchical tabular data.
  *
- * @param <E> the TreeDataGrid items type
+ * @param <E> row item type
  */
 public interface TreeDataGrid<E extends Entity> extends DataGrid<E> {
 

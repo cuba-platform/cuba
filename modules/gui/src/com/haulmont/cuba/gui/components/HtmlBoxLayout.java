@@ -16,6 +16,11 @@
  */
 package com.haulmont.cuba.gui.components;
 
+/**
+ * A container component with freely designed layout and style. The layout consists of items with textually represented
+ * locations. Each item contains one sub-component, which can be any component, such as a layout. The adapter and theme
+ * are responsible for rendering the layout with a given style by placing the items in the defined locations.
+ */
 public interface HtmlBoxLayout extends ComponentContainer, Component.BelongToFrame, Component.HasIcon,
         Component.HasCaption, HasContextHelp, HasHtmlCaption, HasHtmlDescription, HasRequiredIndicator {
 

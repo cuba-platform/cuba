@@ -23,6 +23,11 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.OffsetTime;
 
+/**
+ * A text field that supports multi line editing.
+ *
+ * @param <V> type of value
+ */
 public interface TextArea<V> extends TextInputField<V>,
                                   HasDatatype<V>,
                                   TextInputField.MaxLengthLimited,

@@ -16,6 +16,9 @@
  */
 package com.haulmont.cuba.gui.components;
 
+/**
+ * Component container that shows scrollbars if its content does not fit the viewport.
+ */
 public interface ScrollBoxLayout
         extends OrderedContainer, Component.BelongToFrame, HasMargin, HasSpacing, HasOrientation,
                 Component.HasIcon, Component.HasCaption, ShortcutNotifier, HasContextHelp,

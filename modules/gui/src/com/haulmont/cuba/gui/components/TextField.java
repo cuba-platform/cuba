@@ -23,6 +23,12 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.OffsetTime;
 
+/**
+ * A component for editing textual data that fits on a single line. For a multi-line textarea, see the
+ * {@link TextArea} component.
+ *
+ * @param <V> type of value
+ */
 public interface TextField<V>
         extends
             TextInputField<V>,

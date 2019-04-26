@@ -17,7 +17,7 @@
 package com.haulmont.cuba.gui.components;
 
 /**
- * A button looking like hyperlink
+ * A button looking like hyperlink.
  */
 public interface LinkButton extends Button {
     String NAME = "linkButton";

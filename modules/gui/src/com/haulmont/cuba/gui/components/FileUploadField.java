@@ -26,6 +26,9 @@ import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+/**
+ * Component for uploading files from client to server.
+ */
 public interface FileUploadField extends UploadField, Field<FileDescriptor>, Component.Focusable, Buffered {
     String NAME = "upload";
 

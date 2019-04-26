@@ -23,6 +23,11 @@ import com.haulmont.bali.util.Preconditions;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * A filtering dropdown single-select. Items are filtered based on user input using asynchronous data loading.
+ *
+ * @param <V> type of value
+ */
 public interface SuggestionField<V> extends Field<V>, Component.Focusable, HasInputPrompt, HasOptionsStyleProvider<V>,
         HasOptionCaptionProvider<V>, HasCaptionMode {
 

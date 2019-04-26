@@ -22,6 +22,11 @@ import com.google.common.reflect.TypeToken;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+/**
+ * A filtering dropdown single-select. Items are filtered based on user input.
+ *
+ * @param <V> type of options and value
+ */
 public interface LookupField<V> extends OptionsField<V, V>, HasInputPrompt, Buffered, LookupComponent,
         Component.Focusable, HasOptionsStyleProvider<V> {
 

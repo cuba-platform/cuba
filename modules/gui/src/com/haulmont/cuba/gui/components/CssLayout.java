@@ -17,6 +17,10 @@
 
 package com.haulmont.cuba.gui.components;
 
+/**
+ * CssLayout is a layout component renders components and their captions into a same DIV element.
+ * Component layout can then be adjusted with CSS.
+ */
 public interface CssLayout extends OrderedContainer, Component.BelongToFrame, Component.HasCaption,
         Component.HasIcon, HasContextHelp, LayoutClickNotifier, ShortcutNotifier, HasHtmlCaption, HasHtmlDescription,
         HasRequiredIndicator {

@@ -24,6 +24,11 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.OffsetTime;
 
+/**
+ * Label component for showing non-editable short texts.
+ *
+ * @param <V> type of value
+ */
 public interface Label<V> extends HasValueSource<V>, DatasourceComponent<V>, HasFormatter<V>,
         Component.HasDescription, Component.HasIcon, HasContextHelp, HasHtmlDescription {
 

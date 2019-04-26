@@ -24,6 +24,9 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.function.Consumer;
 
+/**
+ * Component for uploading files from client to server that supports multiple file selection.
+ */
 public interface FileMultiUploadField extends UploadField {
 
     String NAME = "multiUpload";

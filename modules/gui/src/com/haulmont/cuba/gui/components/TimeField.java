@@ -22,6 +22,11 @@ import java.sql.Date;
 import java.time.LocalTime;
 import java.time.OffsetTime;
 
+/**
+ * todo
+ *
+ * @param <V>
+ */
 public interface TimeField<V> extends Field<V>, HasDatatype<V>, Buffered, Component.Focusable {
     String NAME = "timeField";
 

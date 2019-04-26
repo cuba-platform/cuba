@@ -21,7 +21,7 @@ import com.haulmont.cuba.gui.components.data.Options;
 import java.util.function.Function;
 
 /**
- * A group of RadioButtons. Individual radiobuttons are made from items supplied by a {@link Options}.
+ * A group of RadioButtons. Individual radio buttons are made from items supplied by a {@link Options}.
  *
  * @param <I> item type
  */

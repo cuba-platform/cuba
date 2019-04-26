@@ -23,6 +23,12 @@ import com.haulmont.cuba.gui.components.data.table.DatasourceTreeTableItems;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 
+/**
+ * TreeTable extends the {@link Table} component so that it can also visualize a hierarchy of its Items in a similar
+ * manner that {@link Tree} does. The tree hierarchy is always displayed in the first actual column of the TreeTable.
+ *
+ * @param <E> row item type
+ */
 public interface TreeTable<E extends Entity> extends Table<E> {
 
     String NAME = "treeTable";
