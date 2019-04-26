@@ -674,25 +674,29 @@ public interface PickerField<V extends Entity> extends Field<V>, ActionsHolder, 
 
         @Override
         public void actionPerform(Component component) {
-            EntityValueSource entityValueSource = (EntityValueSource) pickerField.getValueSource();
-            MetaPropertyPath metaPropertyPath = entityValueSource.getMetaPropertyPath();
-            boolean composition = metaPropertyPath != null
-                    && metaPropertyPath.getMetaProperty().getType() == MetaProperty.Type.COMPOSITION;
+            boolean composition = false;
+
+            if (pickerField.getValueSource() instanceof EntityValueSource) {
+                EntityValueSource valueSource = (EntityValueSource) pickerField.getValueSource();
+
+                MetaPropertyPath metaPropertyPath = valueSource.getMetaPropertyPath();
+                composition = metaPropertyPath != null
+                        && metaPropertyPath.getMetaProperty().getType() == MetaProperty.Type.COMPOSITION;
+            }
 
             Entity entity = getEntity();
             if (entity == null && composition) {
                 entity = initEntity();
             }
-            if (entity == null)
+            if (entity == null) {
                 return;
+            }
 
-            WindowManager wm;
             Window window = ComponentsHelper.getWindow(pickerField);
             if (window == null) {
                 throw new IllegalStateException("Please specify Frame for EntityLinkField");
-            } else {
-                wm = window.getWindowManager();
             }
+            WindowManager wm = window.getWindowManager();
 
             OpenType openType = getEditScreenOpenType();
 
@@ -716,7 +720,7 @@ public interface PickerField<V extends Entity> extends Field<V>, ActionsHolder, 
                 windowAlias = windowConfig.getEditorScreenId(entity.getMetaClass());
             }
 
-            AbstractEditor editor = (AbstractEditor) wm.openEditor(
+            Window.Editor editor = wm.openEditor(
                     windowConfig.getWindowInfo(windowAlias),
                     entity,
                     openType,
