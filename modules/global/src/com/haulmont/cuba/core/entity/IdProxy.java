@@ -61,9 +61,10 @@ public class IdProxy<T extends Number> extends Number implements Serializable {
         }
     }
 
-    IdProxy(T value) {
+    IdProxy(T value, int hashCode) {
         Preconditions.checkNotNullArgument(value, "value is null");
         this.value = value;
+        this.hashCode = hashCode;
     }
 
     private IdProxy() {
@@ -72,10 +73,25 @@ public class IdProxy<T extends Number> extends Number implements Serializable {
     /**
      * Create proxy for the specified ID value. You might need it for providing ID to the {@code EntityManager.find()}
      * method.
+     * <p>If you have stored a {@code HasUuid} entity in a hashtable using its ID as a key, use {@link #of(Number, UUID)}
+     * method to construct the key when accessing the collection.
+     *
      * @param value real ID value
      */
     public static <T extends Number> IdProxy<T> of(T value) {
-        return new IdProxy<>(value);
+        return new IdProxy<>(value, 0);
+    }
+
+    /**
+     * Create proxy for the specified ID and UUID values. You might need it for finding {@code HasUuid} entities stored
+     * in hashtables by ID.
+     *
+     * @param value real ID value
+     * @param uuid entity's UUID
+     */
+    public static <T extends Number> IdProxy<T> of(T value, UUID uuid) {
+        Preconditions.checkNotNullArgument(uuid, "uuid is null");
+        return new IdProxy<>(value, uuid.hashCode());
     }
 
     /**

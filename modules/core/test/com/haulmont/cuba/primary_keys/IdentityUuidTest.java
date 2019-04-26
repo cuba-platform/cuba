@@ -19,17 +19,22 @@ package com.haulmont.cuba.primary_keys;
 import com.haulmont.bali.db.QueryRunner;
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.Transaction;
+import com.haulmont.cuba.core.entity.BaseIdentityIdEntity;
+import com.haulmont.cuba.core.entity.IdProxy;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.testmodel.primary_keys.IdentityUuidEntity;
 import com.haulmont.cuba.testsupport.TestContainer;
+import com.haulmont.cuba.testsupport.TestSupport;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 
+import java.lang.reflect.Field;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 public class IdentityUuidTest {
 
@@ -84,4 +89,55 @@ public class IdentityUuidTest {
         assertEquals(uuid, merged.getUuid());
         assertEquals(uuid, merged.getId().getUuid());
     }
+
+    @Test
+    public void testEquality() throws Exception {
+        IdentityUuidEntity e1 = metadata.create(IdentityUuidEntity.class);
+        assertNotNull(e1.getId());
+        assertNotNull(e1.getId().getUuid());
+
+        IdentityUuidEntity e2 = metadata.create(IdentityUuidEntity.class);
+        assertNotEquals(e1, e2);
+
+        Field idField = BaseIdentityIdEntity.class.getDeclaredField("id");
+        idField.setAccessible(true);
+
+        // e1 & e3 are different instances with the same UUID
+        IdentityUuidEntity e3 = TestSupport.reserialize(e1);
+        // one of them has an Id, other has not - this is the case when a newly committed instance returns from
+        // middleware to the client
+        idField.set(e3, 100L);
+        // they should be equal and with the same hashCode
+        assertEquals(e1, e3);
+        assertTrue(e1.hashCode() == e3.hashCode());
+
+        // e1 & e3 are different instances with the same Id
+        e1 = metadata.create(IdentityUuidEntity.class);
+        idField.set(e1, 100L);
+        e2 = metadata.create(IdentityUuidEntity.class);
+        idField.set(e2, 100L);
+        // UUIDs are equal as if loaded from DB
+        e2.setUuid(e1.getUuid());
+        // they should be equal and with the same hashCode
+        assertEquals(e1, e2);
+        assertTrue(e1.hashCode() == e2.hashCode());
+    }
+
+    @Test
+    public void testSavingInHashTables() throws Exception {
+        Field idField = BaseIdentityIdEntity.class.getDeclaredField("id");
+        idField.setAccessible(true);
+
+        IdentityUuidEntity e1 = metadata.create(IdentityUuidEntity.class);
+        idField.set(e1, 100L);
+
+        Map<Object, IdentityUuidEntity> map = new HashMap<>();
+        map.put(e1.getId(), e1);
+
+        IdProxy<Long> id = IdProxy.of(100L, e1.getUuid());
+
+        IdentityUuidEntity entity = map.get(id);
+        assertSame(e1, entity);
+    }
+
 }

@@ -33,6 +33,8 @@ import org.junit.ClassRule;
 import org.junit.Test;
 
 import java.lang.reflect.Field;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 import static org.junit.Assert.*;
@@ -63,10 +65,6 @@ public class IdentityTest {
         IdentityEntity e2 = metadata.create(IdentityEntity.class);
         assertNotEquals(e1, e2);
 
-//        e2.setUuid(e1.getUuid());
-//        assertEquals(e1, e2);
-//        assertTrue(e1.hashCode() == e2.hashCode());
-
         Field idField = BaseIdentityIdEntity.class.getDeclaredField("id");
         idField.setAccessible(true);
 
@@ -87,6 +85,23 @@ public class IdentityTest {
         // they should be equal and with the same hashCode
         assertEquals(e1, e2);
         assertTrue(e1.hashCode() == e2.hashCode());
+    }
+
+    @Test
+    public void testSavingInHashTables() throws Exception {
+        Field idField = BaseIdentityIdEntity.class.getDeclaredField("id");
+        idField.setAccessible(true);
+
+        IdentityEntity e1 = metadata.create(IdentityEntity.class);
+        idField.set(e1, 100L);
+
+        Map<Object, IdentityEntity> map = new HashMap<>();
+        map.put(e1.getId(), e1);
+
+        IdProxy<Long> id = IdProxy.of(100L);
+
+        IdentityEntity entity = map.get(id);
+        assertSame(e1, entity);
     }
 
     @Test
