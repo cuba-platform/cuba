@@ -14,6 +14,7 @@ import com.vaadin.ui.renderers.AbstractRenderer;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Consumer;
 
 public class CubaTreeGrid<T> extends TreeGrid<T> implements CubaEnhancedGrid<T> {
 
@@ -102,5 +103,10 @@ public class CubaTreeGrid<T> extends TreeGrid<T> implements CubaEnhancedGrid<T> 
             );
         }
         return ((EnhancedHierarchicalDataProvider) dataProvider).getLevel(item);
+    }
+
+    @Override
+    public void setBeforeRefreshHandler(Consumer<T> beforeRefreshHandler) {
+        getDataCommunicator().setBeforeRefreshHandler(beforeRefreshHandler);
     }
 }

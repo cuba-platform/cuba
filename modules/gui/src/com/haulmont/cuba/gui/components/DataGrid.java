@@ -28,6 +28,7 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.CollectionDatasource.Sortable;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.icons.CubaIcon;
+import com.haulmont.cuba.gui.model.InstanceContainer;
 
 import javax.annotation.Nullable;
 import java.io.Serializable;
@@ -1098,7 +1099,7 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
      * @param <E> DataGrid data type
      * @param <T> column data type
      */
-    interface ColumnGenerator<E, T> {
+    interface ColumnGenerator<E extends Entity, T> {
         /**
          * Returns value for given event.
          *
@@ -1118,22 +1119,27 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
     /**
      * Event provided by a {@link ColumnGenerator}
      */
-    class ColumnGeneratorEvent<E> extends AbstractDataGridEvent {
-        E item;
-        String columnId;
+    class ColumnGeneratorEvent<E extends Entity> extends AbstractDataGridEvent {
+        protected E item;
+        protected String columnId;
+        protected InstanceContainer<E> container;
+        protected Function<E, InstanceContainer<E>> containerProvider;
 
         /**
          * Constructor for a column generator event
          *
-         * @param component the DataGrid from which this event originates
-         * @param item      an entity instance represented by the current row
-         * @param columnId  a generated column id
+         * @param component         the DataGrid from which this event originates
+         * @param item              an entity instance represented by the current row
+         * @param columnId          a generated column id
+         * @param containerProvider a provider that returns an instance container associated with the item
          */
-        public ColumnGeneratorEvent(DataGrid component, E item, String columnId) {
+        public ColumnGeneratorEvent(DataGrid component, E item, String columnId,
+                                    Function<E, InstanceContainer<E>> containerProvider) {
             super(component);
 
             this.item = item;
             this.columnId = columnId;
+            this.containerProvider = containerProvider;
         }
 
         /**
@@ -1148,6 +1154,17 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
          */
         public String getColumnId() {
             return columnId;
+        }
+
+        /**
+         * @return an instance container associated with the item
+         */
+        public InstanceContainer<E> getContainer() {
+            if (container == null) {
+                container = containerProvider.apply(item);
+            }
+
+            return container;
         }
     }
 

@@ -6,6 +6,7 @@ import com.vaadin.ui.Grid;
 import com.vaadin.ui.components.grid.GridSelectionModel;
 
 import java.util.Map;
+import java.util.function.Consumer;
 
 public interface CubaEnhancedGrid<T> {
 
@@ -26,4 +27,6 @@ public interface CubaEnhancedGrid<T> {
     void setCubaEditorFieldFactory(CubaGridEditorFieldFactory<T> editorFieldFactory);
 
     CubaEditorField<?> getColumnEditorField(T bean, Grid.Column<T, ?> column);
+
+    void setBeforeRefreshHandler(Consumer<T> beforeRefreshHandler);
 }

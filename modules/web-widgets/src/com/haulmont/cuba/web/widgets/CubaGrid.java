@@ -29,6 +29,7 @@ import com.vaadin.ui.renderers.Renderer;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Consumer;
 
 public class CubaGrid<T> extends Grid<T> implements CubaEnhancedGrid<T> {
 
@@ -106,5 +107,10 @@ public class CubaGrid<T> extends Grid<T> implements CubaEnhancedGrid<T> {
     @Override
     public CubaEditorField<?> getColumnEditorField(T bean, Column<T, ?> column) {
         return editorFieldFactory.createField(bean, column);
+    }
+
+    @Override
+    public void setBeforeRefreshHandler(Consumer<T> beforeRefreshHandler) {
+        getDataCommunicator().setBeforeRefreshHandler(beforeRefreshHandler);
     }
 }

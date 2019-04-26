@@ -1574,13 +1574,9 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
         for (Map.Entry<Entity, Object> entry : fieldDatasources.entrySet()) {
             if (entry.getValue() instanceof InstanceContainer) {
                 InstanceContainer container = (InstanceContainer) entry.getValue();
-
                 container.setItem(null);
-            }
-
-            if (entry.getValue() instanceof Datasource) {
+            } else if (entry.getValue() instanceof Datasource) {
                 Datasource datasource = (Datasource) entry.getValue();
-
                 datasource.setItem(null);
             }
         }

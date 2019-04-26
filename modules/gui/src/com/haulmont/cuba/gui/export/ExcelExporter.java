@@ -19,26 +19,18 @@ package com.haulmont.cuba.gui.export;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
-import com.haulmont.chile.core.model.Instance;
-import com.haulmont.chile.core.model.MetaProperty;
-import com.haulmont.chile.core.model.MetaPropertyPath;
-import com.haulmont.chile.core.model.Range;
+import com.haulmont.chile.core.model.*;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.IdProxy;
 import com.haulmont.cuba.core.entity.annotation.IgnoreUserTimeZone;
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.Messages;
-import com.haulmont.cuba.core.global.MetadataTools;
-import com.haulmont.cuba.core.global.UserSessionSource;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.data.GroupTableItems;
-import com.haulmont.cuba.gui.components.data.TableItems;
-import com.haulmont.cuba.gui.components.data.TreeDataGridItems;
-import com.haulmont.cuba.gui.components.data.TreeTableItems;
+import com.haulmont.cuba.gui.components.data.*;
 import com.haulmont.cuba.gui.components.data.meta.EntityDataGridItems;
 import com.haulmont.cuba.gui.components.data.meta.EntityTableItems;
 import com.haulmont.cuba.gui.data.GroupInfo;
+import com.haulmont.cuba.gui.model.InstanceContainer;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.*;
@@ -54,6 +46,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -671,7 +664,8 @@ public class ExcelExporter {
                     cellValue = column.getFormatter().apply(cellValue);
                 }
             } else if ((generator = dataGrid.getColumnGenerator(column.getId())) != null) {
-                DataGrid.ColumnGeneratorEvent event = new DataGrid.ColumnGeneratorEvent(dataGrid, item, column.getId());
+                DataGrid.ColumnGeneratorEvent<Entity> event = new DataGrid.ColumnGeneratorEvent<>(dataGrid, item,
+                        column.getId(), createInstanceContainerProvider(dataGrid, item));
                 cellValue = generator.getValue(event);
 
                 if (cellValue == null && Boolean.class.equals(generator.getType())) {
@@ -681,6 +675,12 @@ public class ExcelExporter {
 
             formatValueCell(cell, cellValue, propertyPath, c, rowNumber, level, null);
         }
+    }
+
+    protected Function<Entity, InstanceContainer<Entity>> createInstanceContainerProvider(DataGrid dataGrid, Entity item) {
+        return entity -> {
+            throw new UnsupportedOperationException("ExcelExporter doesn't provide instance container");
+        };
     }
 
     protected String createSpaceString(int level) {
