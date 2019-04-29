@@ -119,6 +119,7 @@ public class LayoutLoaderConfig {
 
         loaders.put(AppMenu.NAME, AppMenuLoader.class);
         loaders.put(AppWorkArea.NAME, AppWorkAreaLoader.class);
+        loaders.put(UserActionsButton.NAME, UserActionsButtonLoader.class);
         loaders.put(LogoutButton.NAME, LogoutButtonLoader.class);
         loaders.put(NewWindowButton.NAME, NewWindowButtonLoader.class);
         loaders.put(UserIndicator.NAME, UserIndicatorLoader.class);

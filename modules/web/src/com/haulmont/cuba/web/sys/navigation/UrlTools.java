@@ -21,13 +21,15 @@ import com.vaadin.server.Page;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static com.haulmont.bali.util.Preconditions.checkNotEmptyString;
+import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
 public class UrlTools {
 
@@ -47,25 +49,53 @@ public class UrlTools {
     protected static final Pattern PARAMS_PATTERN = Pattern.compile(PARAMS_REGEX);
 
     public static void pushState(String navigationState) {
-        checkNotEmptyString(navigationState, "Unable to push empty navigation state");
+        checkNotNullArgument(navigationState, "Navigation state cannot be null");
 
         if (headless()) {
             log.debug("Unable to push navigation state in headless mode");
             return;
         }
 
-        Page.getCurrent().pushState("#" + navigationState);
+        String state = !navigationState.isEmpty()
+                ? "#" + navigationState
+                : "";
+
+        if (!state.isEmpty()) {
+            Page.getCurrent().pushState(state);
+        } else {
+            Page.getCurrent().pushState(getEmptyFragmentUri());
+        }
     }
 
     public static void replaceState(String navigationState) {
-        checkNotEmptyString(navigationState, "Unable to replace by empty navigation state");
+        checkNotNullArgument(navigationState, "Navigation state cannot be null");
 
         if (headless()) {
             log.debug("Unable to replace navigation state in headless mode");
             return;
         }
 
-        Page.getCurrent().replaceState("#" + navigationState);
+        String state = !navigationState.isEmpty()
+                ? "#" + navigationState
+                : "";
+
+        if (!state.isEmpty()) {
+            Page.getCurrent().replaceState(state);
+        } else {
+            Page.getCurrent().replaceState(getEmptyFragmentUri());
+        }
+    }
+
+    protected static URI getEmptyFragmentUri() {
+        URI location = Page.getCurrent().getLocation();
+
+        try {
+            return new URI(location.getScheme(), location.getSchemeSpecificPart(), null);
+        } catch (URISyntaxException e) {
+            log.info("Failed to form new location to reset fragment");
+        }
+
+        return location;
     }
 
     public static NavigationState parseState(String uriFragment) {

@@ -520,4 +520,24 @@ public interface WebConfig extends Config {
     @Property("cuba.web.mainScreenId")
     @DefaultString("main")
     String getMainScreenId();
+
+    /**
+     * Defines the screen that will be open for non-authenticated user when an application opened.
+     *
+     * @return initial screen id
+     */
+    @Property("cuba.web.initialScreenId")
+    @DefaultString("login")
+    String getInitialScreenId();
+
+    /**
+     * Defines whether app should perform force refresh for tabs with logged in user.
+     * <p>
+     * Notification that session is changed in another tab is shown by default.
+     *
+     * @return whether all logged tabs should be refresh on login
+     */
+    @Property("cuba.web.forceRefreshLoggedTabs")
+    @DefaultBoolean(false)
+    boolean getForceRefreshLoggedTabs();
 }

@@ -19,7 +19,7 @@ package spec.cuba.web.navigation.entityinference
 import com.haulmont.cuba.gui.config.WindowInfo
 import com.haulmont.cuba.gui.screen.FrameOwner
 import com.haulmont.cuba.security.entity.User
-import com.haulmont.cuba.web.sys.navigation.ScreenNavigator
+import com.haulmont.cuba.web.sys.navigation.EditorTypeExtractor
 import org.dom4j.tree.BaseElement
 import spec.cuba.web.navigation.entityinference.testscreens.notype.byclass.ExtBaseAbstEditorNT
 import spec.cuba.web.navigation.entityinference.testscreens.notype.byclass.ExtBaseStdEditorNT
@@ -42,7 +42,7 @@ class EditorEntityTypeInferenceTest extends Specification {
         def windowInfo = getWindowInfoFor(ScreenImplEditorScreen.class)
 
         when: 'entity type is specified in EditorScreen generic'
-        def entityClass = new ScreenNavigator().extractEntityClass(windowInfo)
+        def entityClass = EditorTypeExtractor.extractEntityClass(windowInfo)
 
         then: 'type can be extracted'
         User.class.isAssignableFrom(entityClass)
@@ -53,7 +53,7 @@ class EditorEntityTypeInferenceTest extends Specification {
         def windowInfo = getWindowInfoFor(ScreenExtAbstEditor.class)
 
         when: 'entity type is specified in AbstractEditor generic'
-        def entityClass = new ScreenNavigator().extractEntityClass(windowInfo)
+        def entityClass = EditorTypeExtractor.extractEntityClass(windowInfo)
 
         then: 'type can be extracted'
         User.class.isAssignableFrom(entityClass)
@@ -64,7 +64,7 @@ class EditorEntityTypeInferenceTest extends Specification {
         def windowInfo = getWindowInfoFor(ScreenExtStdEditor.class)
 
         when: 'entity type is specified in StandardEditor generic'
-        def entityClass = new ScreenNavigator().extractEntityClass(windowInfo)
+        def entityClass = EditorTypeExtractor.extractEntityClass(windowInfo)
 
         then: 'type can be extracted'
         User.class.isAssignableFrom(entityClass)
@@ -75,7 +75,7 @@ class EditorEntityTypeInferenceTest extends Specification {
         def windowInfo = getWindowInfoFor(ExtBaseEditorScreen.class)
 
         when: 'entity type is specified in parent in EditorScreen generic'
-        def entityClass = new ScreenNavigator().extractEntityClass(windowInfo)
+        def entityClass = EditorTypeExtractor.extractEntityClass(windowInfo)
 
         then: 'type can be extracted'
         User.class.isAssignableFrom(entityClass)
@@ -86,7 +86,7 @@ class EditorEntityTypeInferenceTest extends Specification {
         def windowInfo = getWindowInfoFor(ExtBaseAbstEditor.class)
 
         when: 'entity type is specified in parent in AbstractEditor generic'
-        def entityClass = new ScreenNavigator().extractEntityClass(windowInfo)
+        def entityClass = EditorTypeExtractor.extractEntityClass(windowInfo)
 
         then: 'type can be extracted'
         User.class.isAssignableFrom(entityClass)
@@ -97,7 +97,7 @@ class EditorEntityTypeInferenceTest extends Specification {
         def windowInfo = getWindowInfoFor(ExtBaseStdEditor.class)
 
         when: 'entity type is specified in parent in StandardEditor generic'
-        def entityClass = new ScreenNavigator().extractEntityClass(windowInfo)
+        def entityClass = EditorTypeExtractor.extractEntityClass(windowInfo)
 
         then: 'type can be extracted'
         User.class.isAssignableFrom(entityClass)
@@ -110,7 +110,7 @@ class EditorEntityTypeInferenceTest extends Specification {
         def windowInfo = getWindowInfoFor(ScreenImplEditorScreenNT.class)
 
         when: 'entity type is not specified in EditorScreen generic'
-        def entityClass = new ScreenNavigator().extractEntityClass(windowInfo)
+        def entityClass = EditorTypeExtractor.extractEntityClass(windowInfo)
 
         then: 'type cannot be be extracted'
         entityClass == null
@@ -121,7 +121,7 @@ class EditorEntityTypeInferenceTest extends Specification {
         def windowInfo = getWindowInfoFor(ScreenExtAbstEditorNT.class)
 
         when: 'entity type is not specified in AbstractEditor generic'
-        def entityClass = new ScreenNavigator().extractEntityClass(windowInfo)
+        def entityClass = EditorTypeExtractor.extractEntityClass(windowInfo)
 
         then: 'type cannot be extracted'
         entityClass == null
@@ -132,7 +132,7 @@ class EditorEntityTypeInferenceTest extends Specification {
         def windowInfo = getWindowInfoFor(ScreenExtStdEditorNT.class)
 
         when: 'entity type is not specified in StandardEditor generic'
-        def entityClass = new ScreenNavigator().extractEntityClass(windowInfo)
+        def entityClass = EditorTypeExtractor.extractEntityClass(windowInfo)
 
         then: 'type cannot be extracted'
         entityClass == null
@@ -143,7 +143,7 @@ class EditorEntityTypeInferenceTest extends Specification {
         def windowInfo = getWindowInfoFor(ExtBaseEditorScreenNT.class)
 
         when: 'entity type is not specified in parent in EditorScreen generic'
-        def entityClass = new ScreenNavigator().extractEntityClass(windowInfo)
+        def entityClass = EditorTypeExtractor.extractEntityClass(windowInfo)
 
         then: 'type cannot be extracted'
         entityClass == null
@@ -154,7 +154,7 @@ class EditorEntityTypeInferenceTest extends Specification {
         def windowInfo = getWindowInfoFor(ExtBaseAbstEditorNT.class)
 
         when: 'entity type is not specified in parent in AbstractEditor generic'
-        def entityClass = new ScreenNavigator().extractEntityClass(windowInfo)
+        def entityClass = EditorTypeExtractor.extractEntityClass(windowInfo)
 
         then: 'type cannot be extracted'
         entityClass == null
@@ -165,7 +165,7 @@ class EditorEntityTypeInferenceTest extends Specification {
         def windowInfo = getWindowInfoFor(ExtBaseStdEditorNT.class)
 
         when: 'entity type is not specified in parent in StandardEditor generic'
-        def entityClass = new ScreenNavigator().extractEntityClass(windowInfo)
+        def entityClass = EditorTypeExtractor.extractEntityClass(windowInfo)
 
         then: 'type cannot be extracted'
         entityClass == null

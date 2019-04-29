@@ -22,14 +22,15 @@ import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.Notifications.NotificationType;
 import com.haulmont.cuba.gui.Screens;
 import com.haulmont.cuba.gui.components.CloseOriginType;
+import com.haulmont.cuba.gui.components.RootWindow;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.navigation.NavigationState;
 import com.haulmont.cuba.gui.screen.FrameOwner;
 import com.haulmont.cuba.gui.screen.Screen;
 import com.haulmont.cuba.gui.screen.UiControllerUtils;
+import com.haulmont.cuba.gui.sys.RouteDefinition;
 import com.haulmont.cuba.gui.util.OperationResult;
-import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.controllers.ControllerUtils;
@@ -51,7 +52,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 
-import static com.haulmont.cuba.web.sys.navigation.UrlTools.pushState;
+import static com.haulmont.cuba.web.sys.navigation.UrlTools.replaceState;
 
 public class UrlChangeHandler implements InitializingBean {
 
@@ -64,7 +65,7 @@ public class UrlChangeHandler implements InitializingBean {
     @Inject
     protected WindowConfig windowConfig;
     @Inject
-    protected List<NavigationFilter> accessFilters;
+    protected List<NavigationFilter> navigationFilters;
     @Inject
     protected BeanLocator beanLocator;
 
@@ -73,13 +74,15 @@ public class UrlChangeHandler implements InitializingBean {
     protected HistoryNavigator historyNavigator;
     protected ScreenNavigator screenNavigator;
 
+    protected RedirectHandler redirectHandler;
+
     public UrlChangeHandler(AppUI ui) {
         this.ui = ui;
     }
 
     @Override
     public void afterPropertiesSet() {
-        historyNavigator = new HistoryNavigator(this, ui);
+        historyNavigator = new HistoryNavigator(ui, this);
         screenNavigator = beanLocator.getPrototype(ScreenNavigator.NAME, this, ui);
     }
 
@@ -100,16 +103,19 @@ public class UrlChangeHandler implements InitializingBean {
             return;
         }
 
-        if (!App.getInstance().getConnection().isAuthenticated()) {
-            handleNoAuthNavigation(requestedState);
-            return;
-        }
-
         __handleUrlChange(requestedState);
     }
 
     public ScreenNavigator getScreenNavigator() {
         return screenNavigator;
+    }
+
+    public RedirectHandler getRedirectHandler() {
+        return redirectHandler;
+    }
+
+    public void setRedirectHandler(RedirectHandler redirectHandler) {
+        this.redirectHandler = redirectHandler;
     }
 
     protected void __handleUrlChange(NavigationState requestedState) {
@@ -120,7 +126,7 @@ public class UrlChangeHandler implements InitializingBean {
     }
 
     @Nullable
-    protected Screen getActiveScreen() {
+    public Screen getActiveScreen() {
         Iterator<Screen> dialogsIterator = getOpenedScreens().getDialogScreens().iterator();
         if (dialogsIterator.hasNext()) {
             return dialogsIterator.next();
@@ -142,25 +148,18 @@ public class UrlChangeHandler implements InitializingBean {
                 .orElse(null);
     }
 
-    protected void handleNoAuthNavigation(NavigationState requestedState) {
-        if (Objects.equals(ui.getHistory().getNow(), requestedState)) {
-            return;
-        }
+    public void restoreState() {
+        NavigationState currentState = UrlTools.parseState(ui.getPage().getUriFragment());
 
-        String nestedRoute = requestedState.getNestedRoute();
-        if (StringUtils.isNotEmpty(nestedRoute)) {
-            RedirectHandler redirectHandler = beanLocator.getPrototype(RedirectHandler.NAME, ui);
-            redirectHandler.schedule(requestedState);
-            App.getInstance().setRedirectHandler(redirectHandler);
+        if (currentState == null
+                || currentState == NavigationState.EMPTY) {
+            RootWindow topLevelWindow = ui.getTopLevelWindow();
+            if (topLevelWindow instanceof WebWindow) {
+                NavigationState topScreenState = ((WebWindow) topLevelWindow).getResolvedState();
 
-        } else if (isRootState(requestedState)) {
-            Screen rootScreen = getOpenedScreens().getRootScreenOrNull();
-            if (rootScreen != null) {
-                pushState(getResolvedState(rootScreen).asRoute());
+                replaceState(topScreenState.asRoute());
             }
         }
-
-        showNotification(messages.getMainMessage("navigation.shouldLogInFirst"));
     }
 
     // Util methods
@@ -170,7 +169,11 @@ public class UrlChangeHandler implements InitializingBean {
         ui.getPage().open(url, "_self");
     }
 
-    protected boolean isRootState(NavigationState requestedState) {
+    public boolean isRootState(NavigationState requestedState) {
+        if (requestedState == null) {
+            return false;
+        }
+
         return StringUtils.isEmpty(requestedState.getStateMark())
                 && StringUtils.isEmpty(requestedState.getNestedRoute());
     }
@@ -185,13 +188,13 @@ public class UrlChangeHandler implements InitializingBean {
             return false;
         }
 
-        String screenId = UiControllerUtils.getScreenContext(rootScreen)
+        RouteDefinition routeDefinition = UiControllerUtils.getScreenContext(rootScreen)
                 .getWindowInfo()
-                .getId();
+                .getRouteDefinition();
 
-        String rootScreenRoute = windowConfig.findRoute(screenId);
-
-        return Objects.equals(requestedState.getRoot(), rootScreenRoute);
+        return routeDefinition != null
+                && routeDefinition.isRoot()
+                && StringUtils.equals(routeDefinition.getPath(), requestedState.getRoot());
     }
 
     protected String getStateMark(Screen screen) {
@@ -199,7 +202,7 @@ public class UrlChangeHandler implements InitializingBean {
         return String.valueOf(webWindow.getUrlStateMark());
     }
 
-    protected Screen findActiveScreenByState(NavigationState requestedState) {
+    public Screen findActiveScreenByState(NavigationState requestedState) {
         Screen screen = findScreenByState(getOpenedScreens().getActiveScreens(), requestedState);
 
         if (screen == null && isCurrentRootState(requestedState)) {
@@ -229,7 +232,7 @@ public class UrlChangeHandler implements InitializingBean {
         }
     }
 
-    protected void showNotification(String msg) {
+    public void showNotification(String msg) {
         ui.getNotifications()
                 .create(NotificationType.TRAY)
                 .withCaption(msg)
@@ -242,26 +245,29 @@ public class UrlChangeHandler implements InitializingBean {
             screen = getActiveScreen();
         }
 
-        pushState(getResolvedState(screen).asRoute());
+        replaceState(getResolvedState(screen).asRoute());
     }
 
     protected boolean notSuitableMode() {
         return UrlHandlingMode.URL_ROUTES != webConfig.getUrlHandlingMode();
     }
 
-    protected NavigationState getResolvedState(Screen screen) {
+    public NavigationState getResolvedState(Screen screen) {
         return screen != null
                 ? ((WebWindow) screen.getWindow()).getResolvedState()
                 : NavigationState.EMPTY;
     }
 
-    protected AccessCheckResult navigationAllowed(NavigationState requestedState) {
-        for (NavigationFilter filter : accessFilters) {
-            AccessCheckResult result = filter.allowed(ui.getHistory().getNow(), requestedState);
-            if (result.isRejected()) {
-                return result;
+    public AccessCheckResult navigationAllowed(NavigationState requestedState) {
+        NavigationState currentState = ui.getHistory().getNow();
+
+        for (NavigationFilter filter : navigationFilters) {
+            AccessCheckResult accessCheckResult = filter.allowed(currentState, requestedState);
+            if (accessCheckResult.isRejected()) {
+                return accessCheckResult;
             }
         }
+
         return AccessCheckResult.allowed();
     }
 
@@ -270,7 +276,6 @@ public class UrlChangeHandler implements InitializingBean {
     }
 
     // Copied from WebAppWorkArea
-
     protected boolean closeWindowStack(Screens.WindowStack windowStack) {
         boolean closed = true;
 
@@ -296,6 +301,7 @@ public class UrlChangeHandler implements InitializingBean {
         return closed;
     }
 
+    // Copied from WebAppWorkArea
     public boolean isNotCloseable(Window window) {
         if (!window.isCloseable()) {
             return true;
@@ -318,6 +324,7 @@ public class UrlChangeHandler implements InitializingBean {
         return windowIsDefault;
     }
 
+    // Copied from WebAppWorkArea
     protected boolean isWindowClosePrevented(Window window) {
         Window.BeforeCloseEvent event = new Window.BeforeCloseEvent(window, CloseOriginType.CLOSE_BUTTON);
 

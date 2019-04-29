@@ -46,16 +46,13 @@
                       align="MIDDLE_CENTER"
                       spacing="true"
                       margin="true"
-                      width="100%"
                       expand="userIndicator">
                     <userIndicator id="userIndicator"
                                    align="MIDDLE_CENTER"/>
                     <newWindowButton id="newWindowButton"
                                      description="mainMsg://newWindowBtnDescription"
                                      icon="app/images/new-window.png"/>
-                    <logoutButton id="logoutButton"
-                                  description="mainMsg://logoutBtnDescription"
-                                  icon="app/images/exit.png"/>
+                    <userActionsButton id="userActionsButton"/>
                 </hbox>
                 <timeZoneIndicator id="timeZoneIndicator"
                                    align="MIDDLE_CENTER"/>

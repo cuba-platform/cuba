@@ -57,6 +57,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -108,6 +109,8 @@ public abstract class App {
     @Inject
     protected UserSessionService userSessionService;
     @Inject
+    protected UserSessionSource userSessionSource;
+    @Inject
     protected MessageTools messageTools;
     @Inject
     protected SettingsClient settingsClient;
@@ -120,8 +123,6 @@ public abstract class App {
     protected AppCookies cookies;
 
     protected LinkHandler linkHandler;
-
-    protected RedirectHandler redirectHandler;
 
     protected BackgroundTaskManager backgroundTaskManager = new BackgroundTaskManager();
 
@@ -486,9 +487,28 @@ public abstract class App {
      * Removes all windows from all UIs.
      */
     public void removeAllWindows() {
+        UserSession currentSession = AppUI.getCurrent().getUserSession();
+
+        List<AppUI> authenticatedUIs = getAppUIs()
+                .stream()
+                .filter(ui ->
+                        ui.hasAuthenticatedSession()
+                                && (Objects.equals(ui.getUserSession(), currentSession)
+                                || webConfig.getForceRefreshLoggedTabs()))
+                .collect(Collectors.toList());
+
+        removeAllWindows(authenticatedUIs);
+    }
+
+    /**
+     * Removes all windows in the given {@code uis}.
+     *
+     * @param uis {@link AppUI} instances
+     */
+    protected void removeAllWindows(List<AppUI> uis) {
         log.debug("Closing all windows in all UIs");
         try {
-            for (AppUI ui : getAppUIs()) {
+            for (AppUI ui : uis) {
                 Screens screens = ui.getScreens();
                 if (screens != null) {
                     Screen rootScreen = screens.getOpenedScreens().getRootScreenOrNull();
@@ -518,6 +538,19 @@ public abstract class App {
         } catch (Throwable e) {
             log.error("Error closing all windows", e);
         }
+    }
+
+    /**
+     * Sets UserSession from {@link Connection#getSession()}
+     * and re-initializes the given {@code ui}.
+     */
+    public void recreateUi(AppUI ui) {
+        ui.setUserSession(connection.getSession());
+
+        removeAllWindows(Collections.singletonList(ui));
+        createTopLevelWindow(ui);
+
+        ui.getPage().open(ControllerUtils.getLocationWithoutParams(), "_self");
     }
 
     protected void clearSettingsCache() {
@@ -614,16 +647,5 @@ public abstract class App {
 
         Connection connection = getConnection();
         connection.logout();
-    }
-
-    /**
-     * INTERNAL.
-     *
-     * Sets redirect handler that will be triggered on log in.
-     *
-     * @param redirectHandler redirect handler
-     */
-    public void setRedirectHandler(RedirectHandler redirectHandler) {
-        this.redirectHandler = redirectHandler;
     }
 }

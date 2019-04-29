@@ -18,11 +18,11 @@
 package com.haulmont.cuba.web.gui.components.mainwindow;
 
 import com.haulmont.cuba.gui.components.mainwindow.NewWindowButton;
+import com.haulmont.cuba.web.controllers.ControllerUtils;
 import com.haulmont.cuba.web.gui.components.WebAbstractComponent;
 import com.haulmont.cuba.web.widgets.CubaButton;
 import com.vaadin.server.BrowserWindowOpener;
 import com.vaadin.server.ExternalResource;
-import com.vaadin.server.Page;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.LoggerFactory;
 
@@ -40,7 +40,7 @@ public class WebNewWindowButton extends WebAbstractComponent<CubaButton> impleme
 
         URL pageUrl;
         try {
-            pageUrl = Page.getCurrent().getLocation().toURL();
+            pageUrl = new URL(ControllerUtils.getLocationWithoutParams());
         } catch (MalformedURLException ignored) {
             LoggerFactory.getLogger(WebNewWindowButton.class).warn("Couldn't get URL of current Page");
             return;

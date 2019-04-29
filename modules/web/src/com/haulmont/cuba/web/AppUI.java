@@ -140,6 +140,16 @@ public class AppUI extends CubaUI implements ErrorHandler, EnhancedUI, UiExcepti
     protected UrlRouting urlRouting;
     protected History history;
 
+    protected UserSession userSession;
+
+    public UserSession getUserSession() {
+        return userSession;
+    }
+
+    public void setUserSession(UserSession userSession) {
+        this.userSession = userSession;
+    }
+
     public AppUI() {
     }
 
@@ -320,6 +330,10 @@ public class AppUI extends CubaUI implements ErrorHandler, EnhancedUI, UiExcepti
                         Notification.Type.HUMANIZED_MESSAGE);
             }
 
+            if (connection != null) {
+                setUserSession(connection.getSession());
+            }
+
             setupUI();
         } catch (Exception e) {
             log.error("Unable to init ui", e);
@@ -401,6 +415,11 @@ public class AppUI extends CubaUI implements ErrorHandler, EnhancedUI, UiExcepti
         }
     }
 
+    public boolean hasAuthenticatedSession() {
+        return userSession instanceof ClientUserSession
+                && ((ClientUserSession) userSession).isAuthenticated();
+    }
+
     protected void publishAppInitializedEvent(App app) {
         events.publish(new AppInitializedEvent(app));
     }
@@ -479,6 +498,10 @@ public class AppUI extends CubaUI implements ErrorHandler, EnhancedUI, UiExcepti
                         && ((ClientUserSession) session).isAuthenticated()) {
                     userSessionService.getUserSession(session.getId());
 
+                    if (hasAuthenticatedSession()
+                            && !Objects.equals(userSession, session)) {
+                        setUserSession(session);
+                    }
                 }
             } catch (Exception e) {
                 sessionIsAlive = false;
@@ -490,6 +513,8 @@ public class AppUI extends CubaUI implements ErrorHandler, EnhancedUI, UiExcepti
                 events.publish(new SessionHeartbeatEvent(app));
             }
         }
+
+        urlChangeHandler.restoreState();
 
         if (sessionIsAlive) {
             events.publish(new UIRefreshEvent(this));
@@ -616,18 +641,13 @@ public class AppUI extends CubaUI implements ErrorHandler, EnhancedUI, UiExcepti
     }
 
     protected void processRequest(NavigationState navigationState) {
-        if (UrlHandlingMode.URL_ROUTES != webConfig.getUrlHandlingMode() || navigationState == null) {
+        if (UrlHandlingMode.URL_ROUTES != webConfig.getUrlHandlingMode()
+                || navigationState == null) {
             return;
         }
 
-        if (!app.getConnection().isAuthenticated()) {
-            RedirectHandler redirectHandler = beanLocator.getPrototype(RedirectHandler.NAME, this);
-            redirectHandler.schedule(navigationState);
-            app.redirectHandler = redirectHandler;
-        } else {
-            urlChangeHandler.getScreenNavigator()
-                    .handleScreenNavigation(navigationState);
-        }
+        urlChangeHandler.getScreenNavigator()
+                .handleScreenNavigation(navigationState);
     }
 
     @Override

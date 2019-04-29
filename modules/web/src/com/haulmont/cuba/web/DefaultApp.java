@@ -17,15 +17,19 @@
 package com.haulmont.cuba.web;
 
 import com.google.common.base.Strings;
+import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.gui.Notifications;
 import com.haulmont.cuba.gui.Screens;
 import com.haulmont.cuba.gui.screen.OpenMode;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.app.loginwindow.AppLoginWindow;
+import com.haulmont.cuba.web.controllers.ControllerUtils;
 import com.haulmont.cuba.web.security.AnonymousUserCredentials;
 import com.haulmont.cuba.web.security.events.AppLoggedInEvent;
 import com.haulmont.cuba.web.security.events.AppLoggedOutEvent;
 import com.haulmont.cuba.web.security.events.AppStartedEvent;
+import com.haulmont.cuba.web.sys.RedirectHandler;
 import com.haulmont.cuba.web.sys.VaadinSessionScope;
 import com.vaadin.server.*;
 import com.vaadin.ui.UI;
@@ -37,7 +41,9 @@ import org.springframework.stereotype.Component;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
+import java.util.Collections;
 import java.util.Locale;
+import java.util.Objects;
 
 import static com.haulmont.cuba.web.Connection.StateChangeEvent;
 import static com.haulmont.cuba.web.Connection.UserSubstitutedEvent;
@@ -84,12 +90,35 @@ public class DefaultApp extends App {
 
             initExceptionHandlers(true);
 
+            AppUI currentUi = AppUI.getCurrent();
+            if (currentUi != null) {
+                UserSession oldUserSession = currentUi.getUserSession();
+
+                currentUi.setUserSession(connection.getSession());
+
+                getAppUIs()
+                        .stream()
+                        .filter(ui ->
+                                ui.hasAuthenticatedSession()
+                                        && (Objects.equals(ui.getUserSession(), oldUserSession)
+                                                || webConfig.getForceRefreshLoggedTabs()))
+                        .forEach(ui -> ui.setUserSession(userSession));
+            }
+
+            if (connection.isAuthenticated()) {
+                notifyMismatchedUIs(userSession);
+            }
+
             initializeUi();
 
             if (linkHandler != null && linkHandler.canHandleLink()) {
                 linkHandler.handle();
                 linkHandler = null;
             }
+
+            RedirectHandler redirectHandler = currentUi != null && currentUi.getUrlChangeHandler() != null
+                    ? currentUi.getUrlChangeHandler().getRedirectHandler()
+                    : null;
 
             if (redirectHandler != null && redirectHandler.scheduled()) {
                 redirectHandler.redirect();
@@ -113,6 +142,28 @@ public class DefaultApp extends App {
 
             publishAppLoggedOutEvent(event.getPreviousSession());
         }
+    }
+
+    protected void notifyMismatchedUIs(UserSession userSession) {
+        getAppUIs()
+                .stream()
+                .filter(ui -> ui.hasAuthenticatedSession()
+                        && !Objects.equals(ui.getUserSession(), userSession))
+                .forEach(this::notifyMismatchedSessionUi);
+    }
+
+    protected void notifyMismatchedSessionUi(AppUI ui) {
+        Messages messages = beanLocator.get(Messages.class);
+
+        String sessionChangedCaption = messages.getMainMessage("sessionChangedCaption");
+        String sessionChanged = messages.getMainMessage("sessionChanged");
+
+        ui.getNotifications()
+                .create(Notifications.NotificationType.SYSTEM)
+                .withCaption(sessionChangedCaption)
+                .withDescription(sessionChanged)
+                .withCloseListener((e) -> recreateUi(ui))
+                .show();
     }
 
     protected void userSubstituted(UserSubstitutedEvent event) {
@@ -173,11 +224,15 @@ public class DefaultApp extends App {
             createTopLevelWindow(currentUi);
         }
 
+        UserSession appUserSession = userSessionSource.getUserSession();
+
         for (AppUI ui : getAppUIs()) {
-            if (currentUi != ui) {
+            if (currentUi != ui
+                    && Objects.equals(appUserSession, ui.getUserSession())
+                    || (ui.hasAuthenticatedSession()
+                            && webConfig.getForceRefreshLoggedTabs())) {
                 ui.accessSynchronously(() ->
-                        createTopLevelWindow(ui)
-                );
+                        createTopLevelWindow(ui));
             }
         }
     }
@@ -206,7 +261,13 @@ public class DefaultApp extends App {
         if (connection.isAuthenticated()) {
             return webConfig.getMainScreenId();
         } else {
-            return webConfig.getLoginScreenId();
+            String initialScreenId = webConfig.getInitialScreenId();
+
+            if (!userSessionSource.getUserSession().isScreenPermitted(initialScreenId)) {
+                return webConfig.getLoginScreenId();
+            }
+
+            return initialScreenId;
         }
     }
 

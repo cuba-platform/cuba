@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2016 Haulmont.
+ * Copyright (c) 2008-2019 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,8 +12,8 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
+
 package com.haulmont.cuba.web.exception;
 
 import com.haulmont.cuba.client.ClientConfig;
@@ -21,18 +21,16 @@ import com.haulmont.cuba.core.global.BeanLocator;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.sys.BeanLocatorAware;
-import com.haulmont.cuba.gui.components.DialogAction.Type;
+import com.haulmont.cuba.gui.components.DialogAction;
 import com.haulmont.cuba.gui.icons.Icons;
-import com.haulmont.cuba.security.global.NoUserSessionException;
+import com.haulmont.cuba.security.global.MismatchedUserSessionException;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.Connection;
-import com.haulmont.cuba.web.controllers.ControllerUtils;
 import com.haulmont.cuba.web.gui.icons.IconResolver;
 import com.haulmont.cuba.web.widgets.CubaButton;
 import com.haulmont.cuba.web.widgets.CubaLabel;
 import com.haulmont.cuba.web.widgets.CubaWindow;
-import com.vaadin.server.Page;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
@@ -47,16 +45,17 @@ import java.util.stream.Collectors;
 import static com.haulmont.cuba.web.gui.components.WebComponentsHelper.setClickShortcut;
 
 /**
- * Handles {@link NoUserSessionException}.
+ * Handles {@link MismatchedUserSessionException}.
  */
-public class NoUserSessionHandler extends AbstractExceptionHandler
+public class MismatchedUserSessionHandler extends AbstractExceptionHandler
         implements BeanLocatorAware {
 
-    private static final Logger log = LoggerFactory.getLogger(NoUserSessionHandler.class);
+    private static final Logger log = LoggerFactory.getLogger(MismatchedUserSessionHandler.class);
+
     protected BeanLocator beanLocator;
 
-    public NoUserSessionHandler() {
-        super(NoUserSessionException.class.getName());
+    public MismatchedUserSessionHandler() {
+        super(MismatchedUserSessionException.class.getName());
     }
 
     @Override
@@ -64,19 +63,11 @@ public class NoUserSessionHandler extends AbstractExceptionHandler
         try {
             AppUI ui = AppUI.getCurrent();
 
-            // we may show two or more dialogs if user pressed F5 and we have no valid user session
-            // just remove previous dialog and show new
-            List<Window> noUserSessionDialogs = ui.getWindows().stream()
-                    .filter(w -> w instanceof NoUserSessionExceptionDialog)
-                    .collect(Collectors.toList());
-            for (Window dialog : noUserSessionDialogs) {
-                ui.removeWindow(dialog);
-            }
-
-            showNoUserSessionDialog(ui);
+            closeAllDialogs(ui);
+            showMismatchedSessionDialog(ui);
         } catch (Throwable th) {
-            log.error("Unable to handle NoUserSessionException", throwable);
-            log.error("Exception in NoUserSessionHandler", th);
+            log.error("Unable to handle MismatchedUserSessionException", throwable);
+            log.error("Exception in MismatchedUserSessionHandler", th);
         }
     }
 
@@ -85,15 +76,28 @@ public class NoUserSessionHandler extends AbstractExceptionHandler
         this.beanLocator = beanLocator;
     }
 
-    protected void showNoUserSessionDialog(AppUI ui) {
+    // we may show two or more dialogs if user pressed F5 and we have no valid user session
+    // just remove previous dialog and show new
+    protected void closeAllDialogs(AppUI ui) {
+        List<Window> changedSessionDialogs = ui.getWindows()
+                .stream()
+                .filter(w -> w instanceof MismatchedUserSessionExceptionDialog)
+                .collect(Collectors.toList());
+
+        for (Window dialog : changedSessionDialogs) {
+            ui.removeWindow(dialog);
+        }
+    }
+
+    protected void showMismatchedSessionDialog(AppUI ui) {
         Messages messages = beanLocator.get(Messages.class);
 
         Connection connection = ui.getApp().getConnection();
         //noinspection ConstantConditions
         Locale locale = connection.getSession().getLocale();
 
-        Window dialog = new NoUserSessionExceptionDialog();
-        dialog.setStyleName("c-nousersession-dialog");
+        Window dialog = new MismatchedUserSessionExceptionDialog();
+        dialog.setStyleName("c-sessionchanged-dialog");
         dialog.setCaption(messages.getMainMessage("dialogs.Information", locale));
         dialog.setClosable(false);
         dialog.setResizable(false);
@@ -101,23 +105,24 @@ public class NoUserSessionHandler extends AbstractExceptionHandler
 
         CubaLabel messageLab = new CubaLabel();
         messageLab.setWidthUndefined();
-        messageLab.setValue(messages.getMainMessage("noUserSession.message", locale));
+        messageLab.setValue(messages.getMainMessage("sessionChangedMsg", locale));
 
         VerticalLayout layout = new VerticalLayout();
         layout.setSpacing(true);
         layout.setMargin(false);
         layout.setWidthUndefined();
-        layout.setStyleName("c-nousersession-dialog-layout");
+        layout.setStyleName("c-sessionchanged-dialog-layout");
         layout.setSpacing(true);
         dialog.setContent(layout);
 
         CubaButton reloginBtn = new CubaButton();
         reloginBtn.addStyleName("c-primary-action");
-        reloginBtn.addClickListener(event -> relogin());
-        reloginBtn.setCaption(messages.getMainMessage(Type.OK.getMsgKey()));
+        reloginBtn.setCaption(messages.getMainMessage(DialogAction.Type.OK.getMsgKey(), locale));
+        reloginBtn.addClickListener(event ->
+                ui.getApp().recreateUi(ui));
 
         String iconName = beanLocator.get(Icons.class)
-                .get(Type.OK.getIconKey());
+                .get(DialogAction.Type.OK.getIconKey());
         reloginBtn.setIcon(beanLocator.get(IconResolver.class)
                 .getIconResource(iconName));
 
@@ -147,11 +152,6 @@ public class NoUserSessionHandler extends AbstractExceptionHandler
         }
     }
 
-    protected void relogin() {
-        String url = ControllerUtils.getLocationWithoutParams() + "?restartApp";
-        Page.getCurrent().open(url, "_self");
-    }
-
-    public static class NoUserSessionExceptionDialog extends CubaWindow {
+    public static class MismatchedUserSessionExceptionDialog extends CubaWindow {
     }
 }

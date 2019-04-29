@@ -28,9 +28,7 @@ import com.haulmont.cuba.gui.components.Image;
 import com.haulmont.cuba.gui.components.ThemeResource;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.dev.LayoutAnalyzerContextMenuProvider;
-import com.haulmont.cuba.gui.components.mainwindow.AppWorkArea;
-import com.haulmont.cuba.gui.components.mainwindow.FtsField;
-import com.haulmont.cuba.gui.components.mainwindow.UserIndicator;
+import com.haulmont.cuba.gui.components.mainwindow.*;
 import com.haulmont.cuba.gui.events.UserRemovedEvent;
 import com.haulmont.cuba.gui.events.UserSubstitutionsChangedEvent;
 import com.haulmont.cuba.gui.screen.Screen;
@@ -38,6 +36,7 @@ import com.haulmont.cuba.gui.screen.Subscribe;
 import com.haulmont.cuba.gui.screen.UiController;
 import com.haulmont.cuba.gui.screen.UiControllerUtils;
 import com.haulmont.cuba.gui.screen.UiDescriptor;
+import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.WebConfig;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.event.EventListener;
@@ -62,9 +61,18 @@ public class MainScreen extends Screen implements Window.HasWorkArea, Window.Has
     protected void initComponents(@SuppressWarnings("unused") InitEvent e) {
         initLogoImage();
         initFtsField();
-        initLayoutAnalyzerContextMenu();
+        initUserIndicator();
         initTitleBar();
         initMenu();
+        initLayoutAnalyzerContextMenu();
+    }
+
+    protected void initUserIndicator() {
+        UserIndicator userIndicator = getUserIndicator();
+        if (userIndicator != null) {
+            boolean authenticated = AppUI.getCurrent().hasAuthenticatedSession();
+            userIndicator.setVisible(authenticated);
+        }
     }
 
     protected void initLogoImage() {
@@ -165,17 +173,22 @@ public class MainScreen extends Screen implements Window.HasWorkArea, Window.Has
     }
 
     @Nullable
-    protected Component getAppMenu() {
-        return getWindow().getComponent("appMenu");
+    protected AppMenu getAppMenu() {
+        return (AppMenu) getWindow().getComponent("appMenu");
     }
 
     @Nullable
-    protected Component getSideMenu() {
-        return getWindow().getComponent("sideMenu");
+    protected SideMenu getSideMenu() {
+        return (SideMenu) getWindow().getComponent("sideMenu");
     }
 
     @Nullable
     protected Component getTitleBar() {
         return getWindow().getComponent("titleBar");
+    }
+
+    @Nullable
+    protected LogoutButton getLogoutButton() {
+        return (LogoutButton) getWindow().getComponent("logoutButton");
     }
 }

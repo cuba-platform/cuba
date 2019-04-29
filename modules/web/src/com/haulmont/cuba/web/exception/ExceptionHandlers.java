@@ -18,6 +18,7 @@ package com.haulmont.cuba.web.exception;
 
 import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.cuba.core.global.BeanLocator;
+import com.haulmont.cuba.core.sys.BeanLocatorAware;
 import com.haulmont.cuba.gui.exception.UiExceptionHandler;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.AppUI;
@@ -137,7 +138,13 @@ public class ExceptionHandlers {
         for (ExceptionHandlersConfiguration conf : configurations) {
             for (Class aClass : conf.getHandlerClasses()) {
                 try {
-                    addHandler(ReflectionHelper.<ExceptionHandler>newInstance(aClass));
+                    ExceptionHandler handler = ReflectionHelper.<ExceptionHandler>newInstance(aClass);
+
+                    if (handler instanceof BeanLocatorAware) {
+                        ((BeanLocatorAware) handler).setBeanLocator(beanLocator);
+                    }
+
+                    addHandler(handler);
                 } catch (NoSuchMethodException e) {
                     log.error("Unable to instantiate {}", aClass, e);
                 }

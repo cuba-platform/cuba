@@ -22,8 +22,10 @@ import com.haulmont.cuba.core.sys.AbstractUserSessionSource;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
 import com.haulmont.cuba.security.app.UserSessionService;
+import com.haulmont.cuba.security.global.MismatchedUserSessionException;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.App;
+import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.Connection;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestAttributes;
@@ -32,6 +34,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
+import java.util.Objects;
 import java.util.UUID;
 
 @Component(UserSessionSource.NAME)
@@ -71,8 +74,14 @@ public class WebUserSessionSource extends AbstractUserSessionSource {
     @Override
     public UserSession getUserSession() {
         UserSession session;
+
+        AppUI ui = AppUI.getCurrent();
         if (App.isBound()) {
-            session = App.getInstance().getConnection().getSession();
+            session = ui.getUserSession();
+
+            if (session == null) {
+                session = ui.getApp().getConnection().getSession();
+            }
         } else {
             SecurityContext securityContext = AppContext.getSecurityContextNN();
             if (securityContext.getSession() != null) {
@@ -84,6 +93,9 @@ public class WebUserSessionSource extends AbstractUserSessionSource {
         if (session == null) {
             throw new IllegalStateException("No user session");
         }
+
+        checkUiSession(session, ui);
+
         return session;
     }
 
@@ -107,5 +119,23 @@ public class WebUserSessionSource extends AbstractUserSessionSource {
             request.setAttribute(REQUEST_ATTR, userSession);
         }
         return userSession;
+    }
+
+    protected void checkUiSession(UserSession session, AppUI ui) {
+        Connection connection = ui.getApp().getConnection();
+
+        UserSession appUserSession = connection.getSession();
+        boolean appAuthenticated = App.getInstance().getConnection().isAuthenticated();
+
+        boolean uiAuthenticated = ui.hasAuthenticatedSession();
+
+        if (!appAuthenticated && uiAuthenticated) {
+            throw new MismatchedUserSessionException(session.getId());
+        }
+
+        if (appAuthenticated && uiAuthenticated
+                && !Objects.equals(appUserSession, session)) {
+            throw new MismatchedUserSessionException(session.getId());
+        }
     }
 }

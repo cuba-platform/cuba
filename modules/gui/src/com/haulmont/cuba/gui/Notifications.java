@@ -18,6 +18,10 @@
 package com.haulmont.cuba.gui;
 
 import com.haulmont.cuba.gui.components.ContentMode;
+import com.haulmont.cuba.gui.components.HasUserOriginated;
+
+import java.util.EventObject;
+import java.util.function.Consumer;
 
 /**
  * Notifications API.
@@ -150,6 +154,19 @@ public interface Notifications {
         int getHideDelayMs();
 
         /**
+         * Sets the listener that will be fired when notification will be closed.
+         *
+         * @param closeListener {@link CloseEvent} consumer
+         * @return this
+         */
+        NotificationBuilder withCloseListener(Consumer<CloseEvent> closeListener);
+
+        /**
+         * @return close listener
+         */
+        Consumer<CloseEvent> getCloseListener();
+
+        /**
          * Shows notification.
          */
         void show();
@@ -162,7 +179,8 @@ public interface Notifications {
         TRAY,
         HUMANIZED,
         WARNING,
-        ERROR
+        ERROR,
+        SYSTEM
     }
 
     /**
@@ -177,5 +195,24 @@ public interface Notifications {
         TOP_LEFT, TOP_CENTER, TOP_RIGHT,
         MIDDLE_LEFT, MIDDLE_CENTER, MIDDLE_RIGHT,
         BOTTOM_LEFT, BOTTOM_CENTER, BOTTOM_RIGHT
+    }
+
+    /**
+     * An event that is fired when notification is closed.
+     *
+     * @see NotificationBuilder#withCloseListener(Consumer)
+     */
+    class CloseEvent implements HasUserOriginated {
+
+        protected boolean userOriginated;
+
+        public CloseEvent(boolean userOriginated) {
+            this.userOriginated = userOriginated;
+        }
+
+        @Override
+        public boolean isUserOriginated() {
+            return userOriginated;
+        }
     }
 }

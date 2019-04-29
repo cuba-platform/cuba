@@ -160,6 +160,25 @@ $cuba-menubar-lineheight: $cuba-menubar-height - 2px !default;
     }
   }
 
+  .c-useractions-button {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    color: inherit;
+
+    & > .v-menubar-menuitem {
+      padding: 0 round($v-unit-size/5);
+    }
+
+    &:not(.v-menubar-submenu) > .v-menubar-menuitem .v-icon {
+      margin: 0;
+    }
+  }
+
+  .c-useractions-button:not(.v-menubar-submenu):hover {
+    color: $cuba-menubar-menuitem-text-selected-color;
+  }
+
   .c-app-appname-label {
     font-size: round(2*$v-unit-size/3);
     font-weight: bold;

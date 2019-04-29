@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2016 Haulmont.
+ * Copyright (c) 2008-2019 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,8 +12,8 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
+
 package com.haulmont.cuba.security.global;
 
 import com.haulmont.cuba.core.global.Logging;
@@ -22,16 +22,16 @@ import com.haulmont.cuba.core.global.SupportedByClient;
 import java.util.UUID;
 
 /**
- * Raised by middleware if the client provides an invalid user session ID
- * (e.g. if the user session has expired).
+ * Raised if {@link UserSession} in UI is mismatched with session in App.
  */
 @SupportedByClient
 @Logging(Logging.Type.BRIEF)
-public class NoUserSessionException extends RuntimeException {
+public class MismatchedUserSessionException extends RuntimeException {
 
-    private static final long serialVersionUID = 4820628023682230319L;
+    private static final long serialVersionUID = 6993619407662317614L;
 
-    public NoUserSessionException(UUID sessionId) {
-        super(String.format("User session not found: %s", sessionId.toString()));
+    public MismatchedUserSessionException(UUID sessionId) {
+        super(String.format("UI user session doesn't match app user session: %s",
+                sessionId.toString()));
     }
 }

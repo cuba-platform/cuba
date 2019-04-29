@@ -35,6 +35,7 @@ import com.haulmont.cuba.gui.sys.RouteDefinition;
 import com.haulmont.cuba.gui.sys.UiDescriptorUtils;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.WebConfig;
+import com.haulmont.cuba.web.app.ui.navigation.notfoundwindow.NotFoundScreen;
 import com.haulmont.cuba.web.controllers.ControllerUtils;
 import com.haulmont.cuba.web.gui.UrlHandlingMode;
 import com.haulmont.cuba.web.gui.WebWindow;
@@ -124,7 +125,9 @@ public class WebUrlRouting implements UrlRouting {
         NavigationState newState = buildNavState(screen, urlParams);
 
         // do not push copy-pasted requested state to avoid double state pushing into browser history
-        if (!pushState || externalNavigation(currentState, newState)) {
+        if (!pushState
+                || externalNavigation(currentState, newState)
+                || isNotFoundScreen(screen)) {
             UrlTools.replaceState(newState.asRoute());
 
             lastHistoryOperation = CubaUIConstants.HISTORY_REPLACE_OP;
@@ -309,7 +312,10 @@ public class WebUrlRouting implements UrlRouting {
 
     protected String getRoute(Screen screen) {
         RouteDefinition routeDef = getRouteDef(screen);
-        return routeDef == null ? null : routeDef.getPath();
+
+        return routeDef != null && StringUtils.isNotEmpty(routeDef.getPath())
+                ? routeDef.getPath()
+                : "";
     }
 
     protected RouteDefinition getRouteDef(Screen screen) {
@@ -401,6 +407,10 @@ public class WebUrlRouting implements UrlRouting {
 
     public String getLastHistoryOperation() {
         return lastHistoryOperation;
+    }
+
+    protected boolean isNotFoundScreen(Screen screen) {
+        return screen instanceof NotFoundScreen;
     }
 
     protected class RouteGeneratorImpl implements RouteGenerator {

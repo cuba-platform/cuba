@@ -21,8 +21,10 @@ import com.haulmont.cuba.gui.Notifications;
 import com.haulmont.cuba.gui.components.ContentMode;
 import com.haulmont.cuba.gui.executors.BackgroundWorker;
 import com.haulmont.cuba.web.AppUI;
+import com.vaadin.ui.Notification;
 
 import javax.inject.Inject;
+import java.util.function.Consumer;
 
 public class WebNotifications implements Notifications {
 
@@ -56,6 +58,9 @@ public class WebNotifications implements Notifications {
     }
 
     public class NotificationBuilderImpl implements NotificationBuilder {
+
+        public static final String SYSTEM_STYLENAME = "system";
+
         protected String caption;
         protected String description;
         protected String styleName;
@@ -65,6 +70,7 @@ public class WebNotifications implements Notifications {
 
         protected ContentMode contentMode = ContentMode.TEXT;
         protected NotificationType notificationType = NotificationType.HUMANIZED;
+        protected Consumer<CloseEvent> closeListener;
 
         public NotificationBuilderImpl() {
         }
@@ -151,6 +157,17 @@ public class WebNotifications implements Notifications {
             return hideDelayMs;
         }
 
+        @Override
+        public NotificationBuilder withCloseListener(Consumer<CloseEvent> closeListener) {
+            this.closeListener = closeListener;
+            return this;
+        }
+
+        @Override
+        public Consumer<CloseEvent> getCloseListener() {
+            return closeListener;
+        }
+
         protected com.vaadin.ui.Notification.Type convertType(NotificationType notificationType) {
             switch (notificationType) {
                 case TRAY:
@@ -178,27 +195,46 @@ public class WebNotifications implements Notifications {
             }
         }
 
+        protected com.vaadin.ui.Notification createNotification() {
+            com.vaadin.ui.Notification vNotification;
+
+            if (NotificationType.SYSTEM == notificationType) {
+                vNotification = new com.vaadin.ui.Notification(caption, description);
+
+                vNotification.setDelayMsec(Notifications.DELAY_FOREVER);
+                vNotification.setPosition(com.vaadin.shared.Position.TOP_CENTER);
+                vNotification.setStyleName(SYSTEM_STYLENAME);
+            } else {
+                vNotification = new com.vaadin.ui.Notification(caption, description, convertType(notificationType));
+
+                if (hideDelayMs != DELAY_DEFAULT) {
+                    vNotification.setDelayMsec(hideDelayMs);
+                } else {
+                    setNotificationDelayMsec(vNotification, notificationType);
+                }
+
+                if (position != Position.DEFAULT) {
+                    vNotification.setPosition(com.vaadin.shared.Position.valueOf(position.name()));
+                }
+
+                vNotification.setHtmlContentAllowed(contentMode == ContentMode.HTML);
+                if (styleName != null) {
+                    vNotification.setStyleName(styleName);
+                }
+            }
+
+            if (closeListener != null) {
+                vNotification.addCloseListener(e ->
+                        closeListener.accept(new CloseEvent(e.isUserOriginated())));
+            }
+
+            return vNotification;
+        }
+
         @Override
         public void show() {
-            com.vaadin.ui.Notification vNotification =
-                    new com.vaadin.ui.Notification(caption, description, convertType(notificationType));
-
-            if (hideDelayMs != DELAY_DEFAULT) {
-                vNotification.setDelayMsec(hideDelayMs);
-            } else {
-                setNotificationDelayMsec(vNotification, notificationType);
-            }
-
-            if (position != Position.DEFAULT) {
-                vNotification.setPosition(com.vaadin.shared.Position.valueOf(position.name()));
-            }
-
-            vNotification.setHtmlContentAllowed(contentMode == ContentMode.HTML);
-            if (styleName != null) {
-                vNotification.setStyleName(styleName);
-            }
-
-            vNotification.show(ui.getPage());
+            Notification notification = createNotification();
+            notification.show(ui.getPage());
         }
     }
 }

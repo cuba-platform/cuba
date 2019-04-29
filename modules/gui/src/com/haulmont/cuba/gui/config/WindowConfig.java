@@ -19,6 +19,7 @@ package com.haulmont.cuba.gui.config;
 import com.google.common.base.Strings;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import com.google.common.collect.ImmutableList;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
@@ -68,6 +69,12 @@ public class WindowConfig {
     public static final String WINDOW_CONFIG_XML_PROP = "cuba.windowConfig";
 
     public static final Pattern ENTITY_SCREEN_PATTERN = Pattern.compile("([A-Za-z0-9]+[$_][A-Z][_A-Za-z0-9]*)\\..+");
+
+    protected static final List<String> LOGIN_SCREEN_IDS = ImmutableList.of("login", "loginWindow");
+    protected static final List<String> MAIN_SCREEN_IDS = ImmutableList.of("main", "mainWindow");
+
+    protected static final String LOGIN_SCREEN_PROP = "cuba.web.loginScreenId";
+    protected static final String MAIN_SCREEN_PROP = "cuba.web.mainScreenId";
 
     private final Logger log = LoggerFactory.getLogger(WindowConfig.class);
 
@@ -341,12 +348,17 @@ public class WindowConfig {
         RouteDefinition routeDef = windowInfo.getRouteDefinition();
         if (routeDef != null) {
             String route = routeDef.getPath();
-            String anotherScreenId = routes.get(route);
-            if (anotherScreenId != null
-                    && !Objects.equals(screenId, anotherScreenId)) {
+            String registeredScreenId = routes.get(route);
+            if (registeredScreenId != null
+                    && !Objects.equals(screenId, registeredScreenId)) {
+
+                if (!routeOverrideAllowed(screenId)) {
+                    return;
+                }
+
                 log.debug("Multiple use of the route '{}' for different screens is detected: '{}' and '{}'. " +
                                 "The screen '{}' will be opened during navigation as the last registered screen",
-                        route, screenId, anotherScreenId, screenId);
+                        route, screenId, registeredScreenId, screenId);
             }
 
             String registeredRoute = routes.inverse().get(screenId);
@@ -360,6 +372,24 @@ public class WindowConfig {
 
             routes.put(route, screenId);
         }
+    }
+
+    /**
+     * Have to do this check due to Login/Main Screen are registered
+     * before legacy LoginWindow / AppMainWindow.
+     */
+    protected boolean routeOverrideAllowed(String newScreenId) {
+        if (LOGIN_SCREEN_IDS.contains(newScreenId)) {
+            String loginScreenId = AppContext.getProperty(LOGIN_SCREEN_PROP);
+            return StringUtils.equals(loginScreenId, newScreenId);
+        }
+
+        if (MAIN_SCREEN_IDS.contains(newScreenId)) {
+            String mainScreenId = AppContext.getProperty(MAIN_SCREEN_PROP);
+            return StringUtils.equals(mainScreenId, newScreenId);
+        }
+
+        return true;
     }
 
     protected void registerPrimaryEditor(WindowInfo windowInfo, AnnotationMetadata annotationMetadata) {

@@ -19,6 +19,7 @@ package com.haulmont.cuba.web.sys.navigation.accessfilter;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.gui.navigation.NavigationState;
+import com.haulmont.cuba.web.WebConfig;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
@@ -31,10 +32,13 @@ public class CubaLoginScreenFilter implements NavigationFilter {
 
     @Inject
     protected WindowConfig windowConfig;
+    @Inject
+    protected WebConfig webConfig;
 
     @Override
     public AccessCheckResult allowed(NavigationState fromState, NavigationState toState) {
-        String loginWindowRoute = windowConfig.findRoute("loginWindow");
+        String loginWindowRoute = windowConfig.findRoute(webConfig.getLoginScreenId());
+
         if (!Objects.equals(loginWindowRoute, toState.getRoot())) {
             return AccessCheckResult.allowed();
         }
