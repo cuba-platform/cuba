@@ -421,6 +421,9 @@ public class EntityLogBrowser extends AbstractWindow {
                 params.put("longEntityId", entityId);
             }
         }
+        if (entityLogDs instanceof CollectionDatasource.SupportsPaging) {
+            ((CollectionDatasource.SupportsPaging) entityLogDs).setFirstResult(0);
+        }
         entityLogDs.refresh(params);
     }
 
