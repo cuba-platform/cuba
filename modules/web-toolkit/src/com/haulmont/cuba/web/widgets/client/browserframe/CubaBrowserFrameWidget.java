@@ -16,17 +16,90 @@
 
 package com.haulmont.cuba.web.widgets.client.browserframe;
 
+import com.google.gwt.dom.client.Document;
 import com.vaadin.client.ui.VBrowserFrame;
 
 public class CubaBrowserFrameWidget extends VBrowserFrame {
 
     protected void setAttribute(String name, String value) {
-        if (value == null) {
-            if (this.iframe.hasAttribute(name)) {
-                this.iframe.removeAttribute(name);
-            }
-        } else {
-            this.iframe.setAttribute(name, value);
+        if (iframe == null) {
+            return;
         }
+
+        if (value != null) {
+            iframe.setAttribute(name, value);
+        } else {
+            iframe.removeAttribute(name);
+        }
+    }
+
+    protected void setSrcdoc(String srcdoc, String connectorId) {
+        if (srcdoc == null || srcdoc.isEmpty()) {
+            if (iframe == null) {
+                return;
+            }
+
+            if (iframe.getSrc() == null
+                    || iframe.getSrc().isEmpty()) {
+                removeIFrame();
+                return;
+            }
+
+            iframe.removeAttribute(CubaBrowserFrameState.SRCDOC);
+        } else {
+            if (iframe == null) {
+                createIFrame(connectorId);
+            }
+            iframe.setAttribute(CubaBrowserFrameState.SRCDOC, srcdoc);
+        }
+    }
+
+    protected void createIFrame(String connectorId) {
+        if (altElement != null) {
+            getElement().removeChild(altElement);
+            altElement = null;
+        }
+
+        iframe = Document.get().createIFrameElement();
+        iframe.setFrameBorder(0);
+        iframe.setAttribute("width", "100%");
+        iframe.setAttribute("height", "100%");
+        iframe.setAttribute("allowTransparency", "true");
+
+        setName(connectorId);
+
+        getElement().appendChild(iframe);
+    }
+
+    @Override
+    public void setSource(String source) {
+        if (source == null) {
+            if (iframe == null) {
+                return;
+            }
+
+            String srcdoc = iframe.getAttribute(CubaBrowserFrameState.SRCDOC);
+            if (srcdoc == null || srcdoc.isEmpty()) {
+                removeIFrame();
+                return;
+            }
+
+            iframe.removeAttribute("src");
+        } else {
+            if (iframe == null) {
+                createIFrameElement(source);
+            } else {
+                iframe.setSrc(source);
+            }
+        }
+    }
+
+    protected void removeIFrame() {
+        if (iframe != null) {
+            getElement().removeChild(iframe);
+            iframe = null;
+        }
+        createAltTextElement();
+        setAlternateText(altText);
     }
 }

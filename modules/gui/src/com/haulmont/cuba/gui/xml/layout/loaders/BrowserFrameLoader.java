@@ -58,6 +58,11 @@ public class BrowserFrameLoader extends AbstractResourceViewLoader<BrowserFrame>
     protected void loadSrcdocFile(BrowserFrame resultComponent, Element element) {
         String srcdocFile = element.attributeValue("srcdocFile");
         if (StringUtils.isNotEmpty(srcdocFile)) {
+            if (StringUtils.isNotEmpty(resultComponent.getSrcdoc())) {
+                throw new GuiDevelopmentException("'Srcdoc' and 'srcdocFile' cannot be used in the same time for BrowserFrame",
+                        context.getFullFrameId());
+            }
+
             Resources resources = beanLocator.get(Resources.class);
             String resource = resources.getResourceAsString(srcdocFile);
 

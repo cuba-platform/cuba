@@ -23,6 +23,11 @@ public class CubaBrowserFrameState extends BrowserFrameState {
         primaryStyleName = "c-browserframe";
     }
 
+    public static final String SANDBOX = "sandbox";
+    public static final String SRCDOC = "srcdoc";
+    public static final String ALLOW = "allow";
+    public static final String REFERRERPOLICY = "referrerpolicy";
+
     public String sandbox = null;
     public String srcdoc = null;
     public String allow = null;

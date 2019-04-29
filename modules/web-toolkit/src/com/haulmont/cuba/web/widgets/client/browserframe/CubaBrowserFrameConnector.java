@@ -21,6 +21,11 @@ import com.vaadin.client.communication.StateChangeEvent;
 import com.vaadin.client.ui.browserframe.BrowserFrameConnector;
 import com.vaadin.shared.ui.Connect;
 
+import static com.haulmont.cuba.web.widgets.client.browserframe.CubaBrowserFrameState.ALLOW;
+import static com.haulmont.cuba.web.widgets.client.browserframe.CubaBrowserFrameState.REFERRERPOLICY;
+import static com.haulmont.cuba.web.widgets.client.browserframe.CubaBrowserFrameState.SANDBOX;
+import static com.haulmont.cuba.web.widgets.client.browserframe.CubaBrowserFrameState.SRCDOC;
+
 @Connect(CubaBrowserFrame.class)
 public class CubaBrowserFrameConnector extends BrowserFrameConnector {
 
@@ -38,20 +43,29 @@ public class CubaBrowserFrameConnector extends BrowserFrameConnector {
     public void onStateChanged(StateChangeEvent stateChangeEvent) {
         super.onStateChanged(stateChangeEvent);
 
-        if (stateChangeEvent.hasPropertyChanged("sandbox")) {
-            getWidget().setAttribute("sandbox", getState().sandbox);
+        CubaBrowserFrameState state = getState();
+
+        if (stateChangeEvent.hasPropertyChanged(SRCDOC)) {
+            getWidget().setSrcdoc(state.srcdoc, getConnectorId());
         }
 
-        if (stateChangeEvent.hasPropertyChanged("srcdoc")) {
-            getWidget().setAttribute("srcdoc", getState().srcdoc);
+        if (stateChangeEvent.hasPropertyChanged("resources")
+                || stateChangeEvent.hasPropertyChanged(SRCDOC)) {
+            getWidget().setAttribute(ALLOW, state.allow);
+            getWidget().setAttribute(REFERRERPOLICY, state.referrerpolicy);
+            getWidget().setAttribute(SANDBOX, state.sandbox);
         }
 
-        if (stateChangeEvent.hasPropertyChanged("allow")) {
-            getWidget().setAttribute("allow", getState().allow);
+        if (stateChangeEvent.hasPropertyChanged(ALLOW)) {
+            getWidget().setAttribute(ALLOW, state.allow);
         }
 
-        if (stateChangeEvent.hasPropertyChanged("referrerpolicy")) {
-            getWidget().setAttribute("referrerpolicy", getState().referrerpolicy);
+        if (stateChangeEvent.hasPropertyChanged(REFERRERPOLICY)) {
+            getWidget().setAttribute(REFERRERPOLICY, state.referrerpolicy);
+        }
+
+        if (stateChangeEvent.hasPropertyChanged(SANDBOX)) {
+            getWidget().setAttribute(SANDBOX, state.sandbox);
         }
     }
 }
