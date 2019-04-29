@@ -27,6 +27,7 @@ import com.haulmont.cuba.core.app.importexport.ReferenceImportBehaviour;
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.gui.UiComponents;
 import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.app.security.user.browse.UserRemoveAction;
 import com.haulmont.cuba.gui.components.*;
@@ -37,7 +38,6 @@ import com.haulmont.cuba.gui.export.ByteArrayDataProvider;
 import com.haulmont.cuba.gui.export.ExportDisplay;
 import com.haulmont.cuba.gui.export.ExportFormat;
 import com.haulmont.cuba.gui.upload.FileUploadingAPI;
-import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.app.UserManagementService;
 import com.haulmont.cuba.security.entity.*;
 import org.apache.commons.io.IOUtils;
@@ -91,12 +91,10 @@ public class GroupBrowser extends AbstractWindow {
 
     @Inject
     protected Metadata metadata;
-
     @Inject
     protected Security security;
-
     @Inject
-    protected ComponentsFactory componentsFactory;
+    protected UiComponents uiComponents;
 
     @Inject
     protected FileUploadField importUpload;
@@ -420,12 +418,12 @@ public class GroupBrowser extends AbstractWindow {
                 "entityName",
                 constraint -> {
                     if (StringUtils.isEmpty(constraint.getEntityName())) {
-                        return componentsFactory.createComponent(Label.class);
+                        return uiComponents.create(Label.class);
                     }
 
                     MetaClass metaClass = metadata.getClassNN(constraint.getEntityName());
                     MetaClass effectiveMetaClass = metadata.getExtendedEntities().getEffectiveMetaClass(metaClass);
-                    Label label = componentsFactory.createComponent(Label.class);
+                    Label<String> label = uiComponents.create(Label.NAME);
                     label.setValue(effectiveMetaClass.getName());
                     return label;
                 }
@@ -452,7 +450,7 @@ public class GroupBrowser extends AbstractWindow {
                 "exclude", groupsTree.getSelected().iterator().next(),
                 "excludeChildren", false);
 
-        AbstractLookup lookupWindow = openLookup(Group.class, items -> {
+        Window lookupWindow = openLookup(Group.class, items -> {
             if (items.isEmpty()) {
                 return;
             }

@@ -24,7 +24,6 @@ import com.haulmont.cuba.core.sys.jpql.DomainModel;
 import com.haulmont.cuba.core.sys.jpql.DomainModelBuilder;
 import com.haulmont.cuba.core.sys.jpql.DomainModelWithCaptionsBuilder;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.Frame.MessageType;
 import com.haulmont.cuba.gui.components.autocomplete.JpqlSuggestionFactory;
 import com.haulmont.cuba.gui.components.autocomplete.Suggestion;
 import com.haulmont.cuba.gui.components.autocomplete.impl.HintProvider;
@@ -34,7 +33,6 @@ import com.haulmont.cuba.gui.components.autocomplete.impl.Option;
 import com.haulmont.cuba.gui.components.filter.*;
 import com.haulmont.cuba.gui.components.filter.condition.AbstractCondition;
 import com.haulmont.cuba.gui.components.filter.condition.CustomCondition;
-import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.security.global.UserSession;
 import org.antlr.runtime.RecognitionException;
 import org.apache.commons.lang3.BooleanUtils;
@@ -52,7 +50,6 @@ public class CustomConditionFrame extends ConditionFrame<CustomCondition> {
 
     @Inject
     protected LookupField<ParamType> typeSelect;
-
     @Inject
     protected LookupField<Object> entitySelect;
 
@@ -61,16 +58,13 @@ public class CustomConditionFrame extends ConditionFrame<CustomCondition> {
 
     @Inject
     protected TextField<String> nameField;
-
     @Inject
     protected TextField<String> entityParamViewField;
 
     @Inject
     protected SourceCodeEditor joinField;
-
     @Inject
     protected SourceCodeEditor whereField;
-
     @Inject
     protected SourceCodeEditor entityParamWhereField;
 
@@ -78,19 +72,15 @@ public class CustomConditionFrame extends ConditionFrame<CustomCondition> {
     protected CheckBox useUserTimeZone;
 
     @Inject
-    protected Label paramViewLab;
-
+    protected Label<String> paramViewLab;
     @Inject
-    protected Label paramWhereLab;
-
+    protected Label<String> paramWhereLab;
     @Inject
-    protected Label entityLab;
-
+    protected Label<String> entityLab;
     @Inject
-    protected Label nameLab;
-
+    protected Label<String> nameLab;
     @Inject
-    protected Label useUserTimeZoneLab;
+    protected Label<String> useUserTimeZoneLab;
 
     @Inject
     protected UserSessionSource userSessionSource;
@@ -136,7 +126,7 @@ public class CustomConditionFrame extends ConditionFrame<CustomCondition> {
 
             //recreate default value component based on param type
             if (!initializing && defaultValueLayout.isVisibleRecursive()) {
-                ParamType paramType = (ParamType) e.getValue();
+                ParamType paramType = e.getValue();
                 if ((isEntity || isEnum) && (entitySelect.getValue() == null)) {
                     defaultValueLayout.remove(defaultValueComponent);
                     param.setJavaClass(null);
@@ -150,7 +140,7 @@ public class CustomConditionFrame extends ConditionFrame<CustomCondition> {
         });
 
         inExprCb.addValueChangeListener(e -> {
-            condition.getParam().setInExpr(BooleanUtils.isTrue((Boolean) e.getValue()));
+            condition.getParam().setInExpr(BooleanUtils.isTrue(e.getValue()));
             //recreate default value component based on "in list" checkbox value
             if (!initializing && defaultValueLayout.isVisibleRecursive()) {
                 condition.getParam().setDefaultValue(null);

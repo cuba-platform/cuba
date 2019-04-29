@@ -21,13 +21,13 @@ import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.gui.components.AbstractEditor;
 import com.haulmont.cuba.gui.components.PickerField;
+import com.haulmont.cuba.security.entity.Group;
 
 import javax.inject.Named;
 
 public class GroupEditor extends AbstractEditor {
-
     @Named("fieldGroup.parent")
-    protected PickerField parentField;
+    protected PickerField<Group> parentField;
 
     @Override
     protected void postInit() {

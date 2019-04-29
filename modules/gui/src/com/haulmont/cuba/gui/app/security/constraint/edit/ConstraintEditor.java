@@ -28,7 +28,6 @@ import com.haulmont.cuba.core.global.filter.SecurityJpqlGenerator;
 import com.haulmont.cuba.core.sys.jpql.ErrorRec;
 import com.haulmont.cuba.core.sys.jpql.JpqlSyntaxException;
 import com.haulmont.cuba.gui.AppConfig;
-import com.haulmont.cuba.gui.WindowManagerProvider;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.autocomplete.JpqlSuggestionFactory;
 import com.haulmont.cuba.gui.components.autocomplete.Suggestion;
@@ -74,22 +73,19 @@ public class ConstraintEditor extends AbstractEditor<Constraint> {
     protected SourceCodeEditor groovyScript;
 
     @Inject
-    protected Label groovyScriptLabel;
-
+    protected Label<String> groovyScriptLabel;
     @Inject
-    protected Label joinClauseLabel;
-
+    protected Label<String> joinClauseLabel;
     @Inject
-    protected Label whereClauseLabel;
-
+    protected Label<String> whereClauseLabel;
     @Inject
-    protected TextField code;
-
+    protected Label<String> codeLabel;
     @Inject
-    protected Label codeLabel;
-
+    protected TextField<String> code;
     @Inject
-    protected LookupField operationType;
+    protected LookupField<ConstraintOperationType> operationType;
+    @Inject
+    protected LookupField<ConstraintCheckType> type;
 
     @Inject
     protected Datasource<Constraint> constraint;
@@ -101,16 +97,10 @@ public class ConstraintEditor extends AbstractEditor<Constraint> {
     protected ExtendedEntities extendedEntities;
 
     @Inject
-    protected WindowManagerProvider windowManagerProvider;
-
-    @Inject
     protected Button testConstraint;
 
     @Inject
     protected WindowConfig windowConfig;
-
-    @Inject
-    protected LookupField type;
 
     @Inject
     protected UserManagementService userManagementService;
@@ -318,7 +308,7 @@ public class ConstraintEditor extends AbstractEditor<Constraint> {
         params.put("hideDynamicAttributes", constraint.getCheckType() != ConstraintCheckType.DATABASE);
         params.put("hideCustomConditions", constraint.getCheckType() != ConstraintCheckType.DATABASE);
 
-        FilterEditor filterEditor = (FilterEditor) windowManagerProvider.get().openWindow(windowInfo, OpenType.DIALOG, params);
+        FilterEditor filterEditor = (FilterEditor) getWindowManager().openWindow(windowInfo, OpenType.DIALOG, params);
         filterEditor.addCloseListener(actionId -> {
             if (!COMMIT_ACTION_ID.equals(actionId)) return;
             FilterParser filterParser1 = AppBeans.get(FilterParser.class);

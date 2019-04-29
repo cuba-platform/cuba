@@ -59,16 +59,14 @@ public class RoleBrowser extends AbstractLookup {
 
     @Inject
     protected Security security;
-
     @Inject
     protected Metadata metadata;
-
     @Inject
     protected DataManager dataManager;
-
     @Inject
-    protected CollectionDatasource<Role, UUID> rolesDs;
-
+    protected ViewRepository viewRepository;
+    @Inject
+    protected FileUploadingAPI fileUploadingAPI;
     @Inject
     protected ExportDisplay exportDisplay;
 
@@ -76,13 +74,10 @@ public class RoleBrowser extends AbstractLookup {
     protected EntityImportExportService entityImportExportService;
 
     @Inject
-    protected ViewRepository viewRepository;
+    protected CollectionDatasource<Role, UUID> rolesDs;
 
     @Inject
     protected FileUploadField importRolesUpload;
-
-    @Inject
-    protected FileUploadingAPI fileUploadingAPI;
 
     @Inject
     protected PopupButton exportBtn;
@@ -143,9 +138,9 @@ public class RoleBrowser extends AbstractLookup {
             }
         });
 
-        importRolesUpload.addFileUploadSucceedListener(event -> {
-            importRoles();
-        });
+        importRolesUpload.addFileUploadSucceedListener(event ->
+                importRoles()
+        );
         importRolesUpload.setCaption(null);
         importRolesUpload.setUploadButtonCaption(null);
     }

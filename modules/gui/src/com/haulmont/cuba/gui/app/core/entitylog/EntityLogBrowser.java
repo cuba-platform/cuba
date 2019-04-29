@@ -38,7 +38,6 @@ import com.haulmont.cuba.gui.app.core.entityinspector.EntityInspectorBrowse;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.gui.screen.compatibility.LegacyFrame;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.entity.*;
@@ -228,7 +227,7 @@ public class EntityLogBrowser extends AbstractWindow {
 
         entityNameField.addValueChangeListener(e -> {
             if (entityNameField.isEditable())
-                fillAttributes((String) e.getValue(), null, true);
+                fillAttributes(e.getValue(), null, true);
         });
 
         loggedEntityDs.addItemChangeListener(e -> {
@@ -244,14 +243,18 @@ public class EntityLogBrowser extends AbstractWindow {
         filterEntityNameField.addValueChangeListener(e -> {
             if (e.getValue() != null) {
                 instancePicker.setEnabled(true);
-                MetaClass metaClass = metadata.getSession().getClassNN(e.getValue().toString());
+                MetaClass metaClass = metadata.getSession().getClassNN(e.getValue());
                 instancePicker.setMetaClass(metaClass);
             } else {
                 instancePicker.setEnabled(false);
             }
             instancePicker.setValue(null);
         });
-        selectAllCheckBox.addValueChangeListener(e -> enableAllCheckBoxes((boolean) e.getValue()));
+        selectAllCheckBox.addValueChangeListener(e -> {
+            if (e.getValue() != null) {
+                enableAllCheckBoxes(e.getValue());
+            }
+        });
 
         entityLogTable.addGeneratedColumn("entityId", entity -> {
             if (entity.getObjectEntityId() != null) {

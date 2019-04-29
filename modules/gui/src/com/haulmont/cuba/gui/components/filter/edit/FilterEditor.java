@@ -65,31 +65,23 @@ public class FilterEditor extends AbstractWindow {
     protected TextField<String> filterName;
 
     @Inject
-    protected Label filterNameLabel;
-
+    protected Label<String> filterNameLabel;
     @Inject
     protected CheckBox availableForAllCb;
-
     @Inject
-    protected Label availableForAllLabel;
-
+    protected Label<String> availableForAllLabel;
     @Inject
     protected CheckBox defaultCb;
-
     @Inject
-    protected Label defaultLabel;
-
+    protected Label<String> defaultLabel;
     @Inject
-    private CheckBox globalDefaultCb;
-
+    protected CheckBox globalDefaultCb;
     @Inject
-    private Label globalDefaultLabel;
-
+    protected Label<String> globalDefaultLabel;
     @Inject
     protected CheckBox applyDefaultCb;
-
     @Inject
-    protected Label applyDefaultLabel;
+    protected Label<String> applyDefaultLabel;
 
     @Inject
     protected DynamicAttributesConditionFrame dynamicAttributesConditionFrame;
@@ -107,7 +99,7 @@ public class FilterEditor extends AbstractWindow {
     protected FtsConditionFrame ftsConditionFrame;
 
     @Inject
-    protected Tree conditionsTree;
+    protected Tree<AbstractCondition> conditionsTree;
 
     @Inject
     protected ThemeConstants theme;
@@ -119,7 +111,7 @@ public class FilterEditor extends AbstractWindow {
     protected Companion companion;
 
     @Inject
-    private Metadata metadata;
+    protected Metadata metadata;
 
     protected ConditionsTree conditions;
 
@@ -206,7 +198,7 @@ public class FilterEditor extends AbstractWindow {
         }
 
         availableForAllCb.addValueChangeListener(e -> {
-            Boolean isFilterAvailableForAll = (Boolean) e.getValue();
+            Boolean isFilterAvailableForAll = e.getValue();
             globalDefaultCb.setEnabled(isFilterAvailableForAll);
             if (!isFilterAvailableForAll) {
                 globalDefaultCb.setValue(null);

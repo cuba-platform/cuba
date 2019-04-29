@@ -91,9 +91,11 @@ public class CategoryEditor extends AbstractEditor<Category> {
         }
 
         entityType.addValueChangeListener(e -> {
-            MetaClass metaClass = (MetaClass) e.getValue();
-            MetaClass originalClass = extendedEntities.getOriginalMetaClass(metaClass);
-            category.setEntityType(originalClass == null ? metaClass.getName() : originalClass.getName());
+            MetaClass metaClass = e.getValue();
+            if (metaClass != null) {
+                MetaClass originalClass = extendedEntities.getOriginalMetaClass(metaClass);
+                category.setEntityType(originalClass == null ? metaClass.getName() : originalClass.getName());
+            }
         });
     }
 

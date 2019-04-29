@@ -18,7 +18,9 @@
 package com.haulmont.cuba.gui.app.security.user.resetpasswords;
 
 import com.haulmont.cuba.gui.WindowParam;
-import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.AbstractWindow;
+import com.haulmont.cuba.gui.components.Table;
+import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.security.entity.User;
@@ -26,7 +28,6 @@ import com.haulmont.cuba.security.entity.User;
 import javax.inject.Inject;
 import java.util.Map;
 import java.util.UUID;
-import java.util.function.Function;
 
 public class NewPasswordsList extends AbstractWindow {
 
@@ -35,7 +36,7 @@ public class NewPasswordsList extends AbstractWindow {
     }
 
     @Inject
-    protected Table passwordsTable;
+    protected Table<User> passwordsTable;
 
     @Inject
     protected CollectionDatasource<User, UUID> usersDs;
@@ -54,12 +55,12 @@ public class NewPasswordsList extends AbstractWindow {
                 .setResizable(true)
                 .setHeight(themeConstants.get("cuba.gui.NewPasswordsList.height"));
 
-        passwordsTable.getColumn("id").setFormatter((Function<UUID, String>) id -> {
+        passwordsTable.getColumn("id").setFormatter(id -> {
             if (id == null) {
                 return "";
             }
 
-            User user = usersDs.getItem(id);
+            User user = usersDs.getItem((UUID) id);
             if (user != null) {
                 return passwords.get(user);
             } else {

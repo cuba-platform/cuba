@@ -17,7 +17,6 @@
 
 package com.haulmont.cuba.gui.xml.data;
 
-import com.haulmont.bali.util.Dom4j;
 import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
@@ -531,7 +530,7 @@ public class DsContextLoader {
     private void loadProperties(Element element, ValueDatasource datasource) {
         Element propsEl = element.element("properties");
         if (propsEl != null) {
-            for (Element propEl : Dom4j.elements(propsEl)) {
+            for (Element propEl : propsEl.elements()) {
                 String name = propEl.attributeValue("name");
                 String className = propEl.attributeValue("class");
                 if (className != null) {

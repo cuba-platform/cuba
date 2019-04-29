@@ -47,17 +47,14 @@ public class SessionBrowser extends AbstractLookup {
     protected UserSessionsDatasource sessionsDs;
 
     @Inject
-    protected Label lastUpdateTsLab;
+    protected Label<String> lastUpdateTsLab;
 
     @Inject
     protected TextField<String> userLogin;
-
     @Inject
     protected TextField<String> userName;
-
     @Inject
     protected TextField<String> userAddress;
-
     @Inject
     protected TextField<String> userInfo;
 

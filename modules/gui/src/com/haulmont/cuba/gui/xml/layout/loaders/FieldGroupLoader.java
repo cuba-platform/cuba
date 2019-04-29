@@ -18,7 +18,6 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Iterables;
-import com.haulmont.bali.util.Dom4j;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
@@ -27,8 +26,11 @@ import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
-import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.Field;
+import com.haulmont.cuba.gui.components.FieldGroup;
 import com.haulmont.cuba.gui.components.FieldGroup.FieldCaptionAlignment;
+import com.haulmont.cuba.gui.components.FieldGroupFieldFactory;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
@@ -346,7 +348,7 @@ public class FieldGroupLoader extends AbstractComponentLoader<FieldGroup> {
             customField = true;
         }
 
-        List<Element> elements = Dom4j.elements(element);
+        List<Element> elements = element.elements();
         List<Element> customElements = elements.stream()
                 .filter(e -> !("formatter".equals(e.getName()) || "validator".equals(e.getName())))
                 .collect(Collectors.toList());

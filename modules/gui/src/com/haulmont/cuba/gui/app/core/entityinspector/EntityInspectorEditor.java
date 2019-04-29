@@ -59,37 +59,28 @@ public class EntityInspectorEditor extends AbstractWindow {
 
     @Inject
     protected Metadata metadata;
-
     @Inject
     protected MessageTools messageTools;
-
     @Inject
     protected ViewRepository viewRepository;
-
     @Inject
     protected Security security;
-
     @Inject
     protected DataSupplier dataSupplier;
 
     @Inject
     protected BoxLayout buttonsBox;
-
     @Inject
     protected BoxLayout contentPane;
-
     @Inject
     protected BoxLayout runtimePane;
-
     @Inject
     protected TabSheet tablesTabSheet;
 
     @Inject
     protected UiComponents uiComponents;
-
     @Inject
     protected Configuration configuration;
-
     @Inject
     protected ThemeConstants themeConstants;
 
@@ -208,7 +199,7 @@ public class EntityInspectorEditor extends AbstractWindow {
         setCaption(meta.getName());
 
         if (focusFieldGroup != null && focusFieldId != null) {
-            focusFieldGroup.requestFocus(focusFieldId);
+            focusFieldGroup.focusField(focusFieldId);
         }
     }
 
@@ -350,7 +341,7 @@ public class EntityInspectorEditor extends AbstractWindow {
         MetadataTools tools = metadata.getTools();
         MetaProperty primaryKeyProperty = tools.getPrimaryKeyProperty(metaClass);
 
-        LinkedList<FieldGroup.FieldConfig> customFields = new LinkedList<>();
+        List<FieldGroup.FieldConfig> customFields = new ArrayList<>();
         for (MetaProperty metaProperty : metaClass.getProperties()) {
             boolean isRequired = isRequired(metaProperty);
             boolean isReadonly = metaProperty.isReadOnly();

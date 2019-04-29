@@ -20,12 +20,12 @@ package com.haulmont.cuba.gui.app.core.credits;
 import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.DialogOptions;
+import com.haulmont.cuba.gui.UiComponents;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.export.ByteArrayDataProvider;
 import com.haulmont.cuba.gui.export.ExportDisplay;
 import com.haulmont.cuba.gui.export.ExportFormat;
-import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -40,13 +40,12 @@ public class CreditsFrame extends AbstractFrame {
     protected ScrollBoxLayout scrollBox;
 
     @Inject
-    protected ComponentsFactory componentsFactory;
-
+    protected UiComponents uiComponents;
     @Inject
     protected ExportDisplay exportDisplay;
 
     @Override
-    public void init(final Map<String, Object> params) {
+    public void init(Map<String, Object> params) {
         DialogOptions dialogOptions = ComponentsHelper.getWindow(this).getDialogOptions();
         if (dialogOptions != null) {
             dialogOptions.setResizable(true);
@@ -54,7 +53,7 @@ public class CreditsFrame extends AbstractFrame {
 
         StringBuilder acknowledgements = new StringBuilder();
 
-        GridLayout grid = componentsFactory.createComponent(GridLayout.class);
+        GridLayout grid = uiComponents.create(GridLayout.class);
         grid.setSpacing(true);
         grid.setMargin(false, true, false, true);
         grid.setColumns(5);
@@ -70,17 +69,17 @@ public class CreditsFrame extends AbstractFrame {
                 if (item.getAcknowledgement() != null)
                     acknowledgements.append("<p>").append(item.getAcknowledgement());
 
-                Label<String> nameLab = componentsFactory.createComponent(Label.class);
+                Label<String> nameLab = uiComponents.create(Label.NAME);
                 nameLab.setValue(item.getName());
                 nameLab.setAlignment(Alignment.MIDDLE_LEFT);
                 grid.add(nameLab, 0, i);
 
-                Label<String> dash = componentsFactory.createComponent(Label.class);
+                Label<String> dash = uiComponents.create(Label.NAME);
                 dash.setValue("-");
                 dash.setAlignment(Alignment.MIDDLE_LEFT);
                 grid.add(dash, 1, i);
 
-                Link webpage = componentsFactory.createComponent(Link.class);
+                Link webpage = uiComponents.create(Link.class);
                 webpage.setCaption(getMessage("webpage"));
                 webpage.setUrl(item.getWebPage());
                 webpage.setTarget("_blank");
@@ -88,12 +87,12 @@ public class CreditsFrame extends AbstractFrame {
                 webpage.setAlignment(Alignment.MIDDLE_LEFT);
                 grid.add(webpage, 2, i);
 
-                dash = componentsFactory.createComponent(Label.class);
+                dash = uiComponents.create(Label.NAME);
                 dash.setValue("-");
                 dash.setAlignment(Alignment.MIDDLE_LEFT);
                 grid.add(dash, 3, i);
 
-                LinkButton license = componentsFactory.createComponent(LinkButton.class);
+                LinkButton license = uiComponents.create(LinkButton.class);
                 license.setFrame(frame);
                 license.setCaption(getMessage("license"));
                 license.setAlignment(Alignment.MIDDLE_LEFT);
@@ -111,7 +110,7 @@ public class CreditsFrame extends AbstractFrame {
             scrollBox.add(grid);
 
             if (acknowledgements.length() > 0) {
-                Label<String> ackLab = componentsFactory.createComponent(Label.class);
+                Label<String> ackLab = uiComponents.create(Label.NAME);
                 ackLab.setWidth("420px");
                 ackLab.setHtmlEnabled(true);
                 ackLab.setValue(acknowledgements.toString());

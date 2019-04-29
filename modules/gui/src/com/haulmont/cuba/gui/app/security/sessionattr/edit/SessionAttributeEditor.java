@@ -18,50 +18,45 @@ package com.haulmont.cuba.gui.app.security.sessionattr.edit;
 
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
-import com.haulmont.cuba.gui.AppConfig;
+import com.haulmont.cuba.gui.UiComponents;
 import com.haulmont.cuba.gui.components.AbstractEditor;
-import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.FieldGroup;
 import com.haulmont.cuba.gui.components.LookupField;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.security.entity.SessionAttribute;
 
+import javax.inject.Inject;
+import javax.inject.Named;
 import java.text.ParseException;
 import java.util.Map;
-import java.util.Set;
 import java.util.TreeMap;
 
-public class SessionAttributeEditor extends AbstractEditor {
+public class SessionAttributeEditor extends AbstractEditor<SessionAttribute> {
 
+    @Named("attribute")
     protected Datasource<SessionAttribute> datasource;
+    @Inject
+    protected UiComponents uiComponents;
+    @Inject
+    protected FieldGroup fields;
 
     @Override
     public void init(Map<String, Object> params) {
-        datasource = getDsContext().get("attribute");
+        fields.addCustomField("datatype", (datasource, propertyId) -> {
+            LookupField lookup = uiComponents.create(LookupField.NAME);
+            lookup.setDatasource(datasource, propertyId);
+            lookup.setRequiredMessage(getMessage("datatypeMsg"));
+            lookup.setRequired(true);
+            lookup.setPageLength(15);
 
-        FieldGroup fields = (FieldGroup) getComponent("fields");
-        FieldGroup.FieldConfig field = fields.getField("datatype");
-        fields.addCustomField(field,
-                new FieldGroup.CustomFieldGenerator() {
-                    @Override
-                    public Component generateField(Datasource datasource, String propertyId) {
-                        LookupField lookup = AppConfig.getFactory().createComponent(LookupField.class);
-                        lookup.setDatasource(datasource, propertyId);
-                        lookup.setRequiredMessage(getMessage("datatypeMsg"));
-                        lookup.setRequired(true);
-                        lookup.setPageLength(15);
+            Map<String, Object> options = new TreeMap<>();
+            for (String datatypeId : Datatypes.getIds()) {
+                options.put(messages.getMainMessage("Datatype." + datatypeId), datatypeId);
+            }
+            lookup.setOptionsMap(options);
 
-                        Map<String, Object> options = new TreeMap<>();
-                        String mainMessagePack = AppConfig.getMessagesPack();
-                        for (String datatypeId : Datatypes.getIds()) {
-                            options.put(messages.getMessage(mainMessagePack, "Datatype." + datatypeId), datatypeId);
-                        }
-                        lookup.setOptionsMap(options);
-
-                        return lookup;
-                    }
-                }
-        );
+            return lookup;
+        });
     }
 
     @Override

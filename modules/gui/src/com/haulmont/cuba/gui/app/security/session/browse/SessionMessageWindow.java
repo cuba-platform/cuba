@@ -37,7 +37,7 @@ public class SessionMessageWindow extends AbstractWindow {
     protected UserSessionService uss;
 
     @Inject
-    protected Label sendToAllLabel;
+    protected Label<String> sendToAllLabel;
 
     protected String result;
 

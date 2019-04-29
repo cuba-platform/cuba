@@ -23,7 +23,6 @@ import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.components.ActionType;
 import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.SupportsUserAction;
 import com.haulmont.cuba.gui.components.PickerField;
 import com.haulmont.cuba.gui.components.actions.BaseAction;
 import com.haulmont.cuba.gui.components.data.ValueSource;
@@ -69,7 +68,7 @@ public class ClearAction extends BaseAction implements PickerField.PickerFieldAc
     }
 
     @Override
-    public void afterPropertiesSet() throws Exception {
+    public void afterPropertiesSet() {
         setShortcut(configuration.getConfig(ClientConfig.class).getPickerClearShortcut());
         setDescription(messages.getMainMessage("pickerField.action.clear.tooltip")
                 + " (" + getShortcutCombination().format() + ")");
@@ -129,7 +128,7 @@ public class ClearAction extends BaseAction implements PickerField.PickerFieldAc
                 }
             }
             // Set the value as if the user had set it
-            ((SupportsUserAction) pickerField).setValueFromUser(pickerField.getEmptyValue());
+            pickerField.setValueFromUser(pickerField.getEmptyValue());
         } else {
             // call action perform handlers from super, delegate execution
             super.actionPerform(component);

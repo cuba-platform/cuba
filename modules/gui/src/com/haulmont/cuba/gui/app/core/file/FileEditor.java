@@ -46,19 +46,18 @@ public class FileEditor extends AbstractEditor<FileDescriptor> {
     protected Button okBtn;
 
     @Inject
-    protected TextField nameField;
-
+    protected TextField<String> nameField;
     @Inject
-    protected Label extLabel;
-
+    protected Label<String> extLabel;
     @Inject
-    protected Label sizeLabel;
-
+    protected Label<String> sizeLabel;
     @Inject
-    protected Label createDateLabel;
+    protected Label<String> createDateLabel;
 
     @Inject
     protected FileUploadField uploadField;
+    @Inject
+    protected FileUploadingAPI fileUploadingAPI;
 
     protected boolean needSave;
 
@@ -119,8 +118,7 @@ public class FileEditor extends AbstractEditor<FileDescriptor> {
             fd.setCreateDate(timeSource.currentTimestamp());
             fd.setExtension(FilenameUtils.getExtension(uploadField.getFileName()));
 
-            FileUploadingAPI fileUploading = AppBeans.get(FileUploadingAPI.NAME);
-            File file = fileUploading.getFile(uploadField.getFileId());
+            File file = fileUploadingAPI.getFile(uploadField.getFileId());
 
             fd.setSize(file.length());
 

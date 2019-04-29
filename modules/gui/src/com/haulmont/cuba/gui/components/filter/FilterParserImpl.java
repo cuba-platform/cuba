@@ -54,7 +54,7 @@ public class FilterParserImpl implements FilterParser {
     }
 
     protected void recursiveFromXml(Element element, Node<AbstractCondition> parentNode, Filter filter, String xml, ConditionsTree conditions) {
-        for (Element el : Dom4j.elements(element)) {
+        for (Element el : element.elements()) {
             AbstractCondition condition;
             if ("c".equals(el.getName())) {
                 String name = el.attributeValue("name");

@@ -30,12 +30,11 @@ public class ResetPasswordsDialog extends AbstractWindow {
 
     @Inject
     protected CheckBox sendEmailsCheckBox;
-
     @Inject
     protected CheckBox generatePasswordsCheckBox;
 
     @Inject
-    protected Label expectedResultLabel;
+    protected Label<String> expectedResultLabel;
 
     @Inject
     protected ThemeConstants theme;

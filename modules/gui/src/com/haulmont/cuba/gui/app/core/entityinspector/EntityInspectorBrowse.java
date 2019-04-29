@@ -32,6 +32,7 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.SoftDelete;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.AppConfig;
+import com.haulmont.cuba.gui.UiComponents;
 import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.*;
@@ -44,7 +45,6 @@ import com.haulmont.cuba.gui.export.ExportFormat;
 import com.haulmont.cuba.gui.icons.CubaIcon;
 import com.haulmont.cuba.gui.icons.Icons;
 import com.haulmont.cuba.gui.upload.FileUploadingAPI;
-import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.entity.EntityOp;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -67,7 +67,6 @@ import static com.haulmont.cuba.gui.export.ExportFormat.JSON;
 import static com.haulmont.cuba.gui.export.ExportFormat.ZIP;
 
 public class EntityInspectorBrowse extends AbstractLookup {
-
     public interface Companion {
         void setHorizontalScrollEnabled(Table table, boolean enabled);
 
@@ -82,28 +81,27 @@ public class EntityInspectorBrowse extends AbstractLookup {
 
     @Inject
     protected Metadata metadata;
-
     @Inject
     protected MessageTools messageTools;
+    @Inject
+    protected Security security;
 
     @Inject
     protected BoxLayout lookupBox;
-
     @Inject
     protected BoxLayout tableBox;
 
     @Inject
-    protected ComponentsFactory componentsFactory;
-
+    protected UiComponents uiComponents;
     @Inject
     protected Configuration configuration;
+
 
     @Inject
     protected LookupField<MetaClass> entitiesLookup;
 
     @Inject
     protected CheckBox removedRecords;
-
     @Inject
     protected CheckBox textSelection;
 
@@ -111,22 +109,19 @@ public class EntityInspectorBrowse extends AbstractLookup {
     protected BoxLayout filterBox;
 
     @Inject
-    protected ExportDisplay exportDisplay;
-
-    @Inject
     protected EntityImportExportService entityImportExportService;
-
+    @Inject
+    protected ExportDisplay exportDisplay;
     @Inject
     protected FileUploadingAPI fileUploadingAPI;
-
     @Inject
     protected Icons icons;
 
     protected Filter filter;
-    protected Table entitiesTable;
+    protected Table<Entity> entitiesTable;
 
     @Inject
-    protected EntityInspectorBrowse.Companion companion;
+    protected Companion companion;
 
     protected Button createButton;
     protected Button editButton;
@@ -203,7 +198,7 @@ public class EntityInspectorBrowse extends AbstractLookup {
             filterBox.remove(filter);
         }
 
-        entitiesTable = componentsFactory.createComponent(Table.class);
+        entitiesTable = uiComponents.create(Table.NAME);
         entitiesTable.setFrame(frame);
         if (companion != null) {
             companion.setHorizontalScrollEnabled(entitiesTable, true);
@@ -286,7 +281,7 @@ public class EntityInspectorBrowse extends AbstractLookup {
 
         createButtonsPanel(entitiesTable);
 
-        RowsCount rowsCount = componentsFactory.createComponent(RowsCount.class);
+        RowsCount rowsCount = uiComponents.create(RowsCount.class);
         rowsCount.setDatasource(entitiesDs);
         entitiesTable.setRowsCount(rowsCount);
 
@@ -300,7 +295,7 @@ public class EntityInspectorBrowse extends AbstractLookup {
     }
 
     protected void createFilter() {
-        filter = componentsFactory.createComponent(Filter.class);
+        filter = uiComponents.create(Filter.class);
         filter.setId("filter");
         filter.setFrame(frame);
 
@@ -320,9 +315,9 @@ public class EntityInspectorBrowse extends AbstractLookup {
     }
 
     protected void createButtonsPanel(Table table) {
-        ButtonsPanel buttonsPanel = componentsFactory.createComponent(ButtonsPanel.class);
+        ButtonsPanel buttonsPanel = uiComponents.create(ButtonsPanel.class);
 
-        createButton = componentsFactory.createComponent(Button.class);
+        createButton = uiComponents.create(Button.class);
         createButton.setCaption(messages.getMessage(EntityInspectorBrowse.class, "create"));
         CreateAction createAction = new CreateAction();
         table.addAction(createAction);
@@ -330,7 +325,7 @@ public class EntityInspectorBrowse extends AbstractLookup {
         createButton.setIcon(icons.get(CubaIcon.CREATE_ACTION));
         createButton.setFrame(frame);
 
-        editButton = componentsFactory.createComponent(Button.class);
+        editButton = uiComponents.create(Button.class);
         editButton.setCaption(messages.getMessage(EntityInspectorBrowse.class, "edit"));
         EditAction editAction = new EditAction();
         table.addAction(editAction);
@@ -338,7 +333,7 @@ public class EntityInspectorBrowse extends AbstractLookup {
         editButton.setIcon(icons.get(CubaIcon.EDIT_ACTION));
         editButton.setFrame(frame);
 
-        removeButton = componentsFactory.createComponent(Button.class);
+        removeButton = uiComponents.create(Button.class);
         removeButton.setCaption(messages.getMessage(EntityInspectorBrowse.class, "remove"));
         RemoveAction removeAction = new RemoveAction(entitiesTable) {
             @Override
@@ -358,24 +353,24 @@ public class EntityInspectorBrowse extends AbstractLookup {
         removeButton.setIcon(icons.get(CubaIcon.REMOVE_ACTION));
         removeButton.setFrame(frame);
 
-        excelButton = componentsFactory.createComponent(Button.class);
+        excelButton = uiComponents.create(Button.class);
         excelButton.setCaption(messages.getMessage(EntityInspectorBrowse.class, "excel"));
         excelButton.setAction(new ExcelAction(entitiesTable));
         excelButton.setIcon(icons.get(CubaIcon.EXCEL_ACTION));
         excelButton.setFrame(frame);
 
-        refreshButton = componentsFactory.createComponent(Button.class);
+        refreshButton = uiComponents.create(Button.class);
         refreshButton.setCaption(messages.getMessage(EntityInspectorBrowse.class, "refresh"));
         refreshButton.setAction(new RefreshAction(entitiesTable));
         refreshButton.setIcon(icons.get(CubaIcon.REFRESH_ACTION));
         refreshButton.setFrame(frame);
 
-        exportPopupButton = componentsFactory.createComponent(PopupButton.class);
+        exportPopupButton = uiComponents.create(PopupButton.class);
         exportPopupButton.setIcon(icons.get(CubaIcon.DOWNLOAD));
         exportPopupButton.addAction(new ExportAction("exportJSON", JSON));
         exportPopupButton.addAction(new ExportAction("exportZIP", ZIP));
 
-        importUpload = componentsFactory.createComponent(FileUploadField.class);
+        importUpload = uiComponents.create(FileUploadField.class);
         importUpload.setFrame(frame);
         importUpload.setPermittedExtensions(Sets.newHashSet(".json", ".zip"));
         importUpload.setUploadButtonIcon(icons.get(CubaIcon.UPLOAD));
@@ -539,7 +534,6 @@ public class EntityInspectorBrowse extends AbstractLookup {
     }
 
     protected boolean entityOpPermitted(MetaClass metaClass, EntityOp entityOp) {
-        Security security = AppBeans.get(Security.NAME);
         return security.isEntityOpPermitted(metaClass, entityOp);
     }
 
@@ -554,7 +548,6 @@ public class EntityInspectorBrowse extends AbstractLookup {
 
         @Override
         public void actionPerform(Component component) {
-            @SuppressWarnings("unchecked")
             Set<Entity> selected = entitiesTable.getSelected();
 
             if (!selected.isEmpty()) {

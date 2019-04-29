@@ -73,7 +73,7 @@ public class CreditsLoader {
         if (licensesEl == null)
             return;
 
-        for (Element element : Dom4j.elements(licensesEl)) {
+        for (Element element : licensesEl.elements()) {
             licenses.put(element.attributeValue("id"), element.getText());
         }
     }
@@ -83,7 +83,7 @@ public class CreditsLoader {
         if (itemsEl == null)
             return;
 
-        for (Element element : Dom4j.elements(itemsEl)) {
+        for (Element element : itemsEl.elements()) {
             CreditsItem item = new CreditsItem(element.attributeValue("name"), element.attributeValue("web"),
                     element.attributeValue("license"), loadLicense(element), loadAcknowledgement(element),
                     Boolean.parseBoolean(element.attributeValue("fork")));

@@ -69,18 +69,15 @@ public class UserBrowser extends AbstractLookup {
 
     @Inject
     protected Security security;
-
     @Inject
     protected Metadata metadata;
-
     @Inject
     protected DataSupplier dataSupplier;
+    @Inject
+    protected UiComponents uiComponents;
 
     @Inject
     protected UserManagementService userManagementService;
-
-    @Inject
-    protected UiComponents uiComponents;
 
     @Override
     public void init(Map<String, Object> params) {
@@ -198,7 +195,7 @@ public class UserBrowser extends AbstractLookup {
     }
 
     public void changePassword() {
-        final User selectedUser = usersTable.getSingleSelected();
+        User selectedUser = usersTable.getSingleSelected();
         if (selectedUser != null) {
             Window changePasswordDialog = openWindow("sec$User.changePassword",
                     OpenType.DIALOG,

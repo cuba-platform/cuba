@@ -25,7 +25,6 @@ import com.haulmont.cuba.gui.components.KeyCombination;
 import com.haulmont.cuba.gui.icons.Icons;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringTokenizer;
 import org.dom4j.Element;
@@ -113,15 +112,11 @@ public class MenuConfig {
         for (String location : tokenizer.getTokenArray()) {
             Resource resource = resources.getResource(location);
             if (resource.exists()) {
-                InputStream stream = null;
-                try {
-                    stream = resource.getInputStream();
+                try (InputStream stream = resource.getInputStream()) {
                     Element rootElement = Dom4j.readDocument(stream).getRootElement();
                     loadMenuItems(rootElement, null);
                 } catch (IOException e) {
                     throw new RuntimeException("Unable to read menu config", e);
-                } finally {
-                    IOUtils.closeQuietly(stream);
                 }
             } else {
                 log.warn("Resource {} not found, ignore it", location);
@@ -150,7 +145,7 @@ public class MenuConfig {
     }
 
     protected void loadMenuItems(Element parentElement, MenuItem parentItem) {
-        for (Element element : ((List<Element>) parentElement.elements())) {
+        for (Element element : parentElement.elements()) {
             MenuItem menuItem = null;
             MenuItem currentParentItem = parentItem;
             MenuItem nextToItem = null;

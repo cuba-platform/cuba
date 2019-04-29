@@ -27,8 +27,7 @@ import java.util.Map;
 public class LicenseWindow extends AbstractWindow {
 
     @Inject
-    protected TextArea licenseTextArea;
-
+    protected TextArea<String> licenseTextArea;
     @Inject
     protected ThemeConstants themeConstants;
 

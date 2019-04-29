@@ -79,7 +79,6 @@ public class ScheduledTaskEditor extends AbstractEditor<ScheduledTask> {
 
     @Inject
     protected TextField<String> cronField;
-
     @Inject
     protected TextField<Integer> periodField;
 
@@ -139,7 +138,7 @@ public class ScheduledTaskEditor extends AbstractEditor<ScheduledTask> {
     @Override
     public void init(Map<String, Object> params) {
         schedulingTypeField.setOptionsList(Arrays.asList(SchedulingType.values()));
-        schedulingTypeField.addValueChangeListener(e -> setSchedulingTypeField((SchedulingType) e.getValue()));
+        schedulingTypeField.addValueChangeListener(e -> setSchedulingTypeField(e.getValue()));
 
         definedByField.setOptionsList(Arrays.asList(ScheduledTaskDefinedBy.values()));
         definedByField.addValueChangeListener(e -> {

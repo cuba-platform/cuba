@@ -38,13 +38,13 @@ public class ConstraintLocalizationEdit extends AbstractEditor<LocalizedConstrai
     protected LookupField<Locale> localesSelect;
 
     @Inject
-    protected TextField entityName;
+    protected TextField<String> entityName;
 
     @Inject
-    protected TextField caption;
+    protected TextField<String> caption;
 
     @Inject
-    protected TextArea message;
+    protected TextArea<String> message;
 
     @Inject
     protected GlobalConfig globalConfig;
@@ -94,7 +94,7 @@ public class ConstraintLocalizationEdit extends AbstractEditor<LocalizedConstrai
             captionValueChangeListener.suspend();
             messageValueChangeListener.suspend();
 
-            Locale selectedLocale = (Locale) e.getValue();
+            Locale selectedLocale = e.getValue();
             String localeCode = messages.getTools().localeToString(selectedLocale);
             caption.setValue(getItem().getLocalizedCaption(localeCode));
             message.setValue(getItem().getLocalizedMessage(localeCode));
@@ -139,15 +139,15 @@ public class ConstraintLocalizationEdit extends AbstractEditor<LocalizedConstrai
                         .width(480));
     }
 
-    protected abstract class LocalizationValueChangeListener implements Consumer<HasValue.ValueChangeEvent> {
+    protected abstract class LocalizationValueChangeListener implements Consumer<HasValue.ValueChangeEvent<String>> {
         protected boolean active = true;
 
         @Override
-        public void accept(HasValue.ValueChangeEvent e) {
+        public void accept(HasValue.ValueChangeEvent<String> e) {
             if (active) {
                 Locale selectedLocale = localesSelect.getValue();
                 String localeCode = messages.getTools().localeToString(selectedLocale);
-                updateValues(getItem(), localeCode, (String) e.getValue());
+                updateValues(getItem(), localeCode, e.getValue());
             }
         }
 

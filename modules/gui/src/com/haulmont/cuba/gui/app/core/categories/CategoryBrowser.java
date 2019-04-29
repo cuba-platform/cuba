@@ -25,6 +25,7 @@ import com.haulmont.cuba.core.entity.Category;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.core.global.Metadata;
+import com.haulmont.cuba.gui.UiComponents;
 import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.BaseAction;
@@ -32,7 +33,6 @@ import com.haulmont.cuba.gui.components.actions.ItemTrackingAction;
 import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.cuba.gui.config.PermissionConfig;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import org.apache.commons.lang3.BooleanUtils;
 
 import javax.inject.Inject;
@@ -44,7 +44,6 @@ public class CategoryBrowser extends AbstractLookup {
 
     @Inject
     protected Metadata metadata;
-
     @Inject
     protected MessageTools messageTools;
 
@@ -59,16 +58,13 @@ public class CategoryBrowser extends AbstractLookup {
 
     @Inject
     protected PermissionConfig permissionConfig;
-
     @Inject
     protected ClientCacheManager clientCacheManager;
-
     @Inject
-    protected ComponentsFactory componentsFactory;
+    protected UiComponents uiComponents;
 
     @Inject
     protected Table<CategoryAttribute> attributesTable;
-
     @Inject
     protected CollectionDatasource<CategoryAttribute, UUID> attributesDs;
 
@@ -90,7 +86,7 @@ public class CategoryBrowser extends AbstractLookup {
         categoryTable.removeGeneratedColumn("entityType");
 
         categoryTable.addGeneratedColumn("entityType", entity -> {
-            Label dataTypeLabel = componentsFactory.createComponent(Label.class);
+            Label<String> dataTypeLabel = uiComponents.create(Label.NAME);
             MetaClass meta = metadata.getSession().getClassNN(entity.getEntityType());
             dataTypeLabel.setValue(messageTools.getEntityCaption(meta));
             return dataTypeLabel;
@@ -113,8 +109,8 @@ public class CategoryBrowser extends AbstractLookup {
         @Override
         public void actionPerform(Component component) {
             Category category = metadata.create(Category.class);
-            Editor editor = openEditor("sys$Category.edit", category, OpenType.THIS_TAB);
-            ((AbstractWindow) editor).addCloseListener(actionId -> {
+            Window editor = openEditor("sys$Category.edit", category, OpenType.THIS_TAB);
+            editor.addCloseListener(actionId -> {
                 categoriesDs.refresh();
                 categoryTable.focus();
             });
@@ -137,8 +133,8 @@ public class CategoryBrowser extends AbstractLookup {
             Set<Category> selected = categoryTable.getSelected();
             if (!selected.isEmpty()) {
                 Category category = selected.iterator().next();
-                Editor editor = openEditor("sys$Category.edit", category, OpenType.THIS_TAB);
-                ((AbstractWindow) editor).addCloseListener(actionId -> {
+                Window editor = openEditor("sys$Category.edit", category, OpenType.THIS_TAB);
+                editor.addCloseListener(actionId -> {
                     categoriesDs.refresh();
                     categoryTable.focus();
                 });

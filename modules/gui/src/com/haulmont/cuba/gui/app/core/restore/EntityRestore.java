@@ -25,7 +25,7 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.SoftDelete;
 import com.haulmont.cuba.core.entity.annotation.EnableRestore;
 import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.gui.AppConfig;
+import com.haulmont.cuba.gui.UiComponents;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Action.Status;
 import com.haulmont.cuba.gui.components.DialogAction.Type;
@@ -34,7 +34,6 @@ import com.haulmont.cuba.gui.data.DsBuilder;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.GroupDatasource;
 import com.haulmont.cuba.gui.data.impl.DsContextImplementation;
-import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
 
@@ -48,28 +47,25 @@ public class EntityRestore extends AbstractWindow {
 
     @Inject
     protected LookupField entities;
-
     @Inject
     protected BoxLayout tablePanel;
 
     @Inject
     protected MetadataTools metadataTools;
-
     @Inject
     protected ViewRepository viewRepository;
-
     @Inject
     protected MessageTools messageTools;
-
+    @Inject
+    protected ExtendedEntities extendedEntities;
+    @Inject
+    protected UiComponents uiComponents;
     @Inject
     protected EntityRestoreService restoreService;
 
-    @Inject
-    protected ExtendedEntities extendedEntities;
-
     protected GroupDatasource entitiesDs;
 
-    protected Table entitiesTable;
+    protected Table<Entity> entitiesTable;
 
     protected Filter filter;
 
@@ -94,24 +90,22 @@ public class EntityRestore extends AbstractWindow {
                     tablePanel.remove(filter);
                 }
 
-                ComponentsFactory componentsFactory = AppConfig.getFactory();
-
-                entitiesTable = componentsFactory.createComponent(Table.class);
+                entitiesTable = uiComponents.create(Table.NAME);
                 entitiesTable.setFrame(frame);
 
-                restoreButton = componentsFactory.createComponent(Button.class);
+                restoreButton = uiComponents.create(Button.class);
                 restoreButton.setId("restore");
                 restoreButton.setCaption(getMessage("entityRestore.restore"));
 
-                ButtonsPanel buttonsPanel = componentsFactory.createComponent(ButtonsPanel.class);
+                ButtonsPanel buttonsPanel = uiComponents.create(ButtonsPanel.class);
                 buttonsPanel.add(restoreButton);
                 entitiesTable.setButtonsPanel(buttonsPanel);
 
-                RowsCount rowsCount = componentsFactory.createComponent(RowsCount.class);
+                RowsCount rowsCount = uiComponents.create(RowsCount.class);
                 entitiesTable.setRowsCount(rowsCount);
 
-                final SimpleDateFormat dateTimeFormat = new SimpleDateFormat(getMessage("dateTimeFormat"));
-                Function<?, String> dateTimeFormatter = propertyValue -> {
+                SimpleDateFormat dateTimeFormat = new SimpleDateFormat(getMessage("dateTimeFormat"));
+                Function<Object, String> dateTimeFormatter = propertyValue -> {
                     if (propertyValue == null) {
                         return StringUtils.EMPTY;
                     }
@@ -120,8 +114,8 @@ public class EntityRestore extends AbstractWindow {
                 };
 
                 //collect properties in order to add non-system columns first
-                LinkedList<Table.Column> nonSystemPropertyColumns = new LinkedList<>();
-                LinkedList<Table.Column> systemPropertyColumns = new LinkedList<>();
+                LinkedList<Table.Column<Entity>> nonSystemPropertyColumns = new LinkedList<>();
+                LinkedList<Table.Column<Entity>> systemPropertyColumns = new LinkedList<>();
                 List<MetaProperty> metaProperties = new ArrayList<>();
                 for (MetaProperty metaProperty : metaClass.getProperties()) {
                     //don't show embedded & multiple referred entities
@@ -134,7 +128,7 @@ public class EntityRestore extends AbstractWindow {
                     }
 
                     metaProperties.add(metaProperty);
-                    Table.Column column = new Table.Column(metaClass.getPropertyPath(metaProperty.getName()));
+                    Table.Column<Entity> column = new Table.Column<>(metaClass.getPropertyPath(metaProperty.getName()));
                     if (!metadataTools.isSystem(metaProperty)) {
                         column.setCaption(getPropertyCaption(metaClass, metaProperty));
                         nonSystemPropertyColumns.add(column);
@@ -149,11 +143,11 @@ public class EntityRestore extends AbstractWindow {
                     }
                 }
 
-                for (Table.Column column : nonSystemPropertyColumns) {
+                for (Table.Column<Entity> column : nonSystemPropertyColumns) {
                     entitiesTable.addColumn(column);
                 }
 
-                for (Table.Column column : systemPropertyColumns) {
+                for (Table.Column<Entity> column : systemPropertyColumns) {
                     entitiesTable.addColumn(column);
                 }
 
@@ -177,11 +171,11 @@ public class EntityRestore extends AbstractWindow {
 
                 String filterId = metaClass.getName().replace("$", "") + "GenericFilter";
 
-                filter = componentsFactory.createComponent(Filter.class);
+                filter = uiComponents.create(Filter.class);
                 filter.setId(filterId);
                 filter.setFrame(getFrame());
 
-                StringBuilder sb = new StringBuilder("");
+                StringBuilder sb = new StringBuilder();
                 for (MetaProperty property : metaClass.getProperties()) {
                     AnnotatedElement annotatedElement = property.getAnnotatedElement();
                     if (annotatedElement.getAnnotation(com.haulmont.chile.core.annotations.MetaProperty.class) != null) {
@@ -251,7 +245,7 @@ public class EntityRestore extends AbstractWindow {
     }
 
     protected void showRestoreDialog() {
-        final Set<Entity> entityList = entitiesTable.getSelected();
+        Set<Entity> entityList = entitiesTable.getSelected();
         Entity entity = entitiesDs.getItem();
         if (entityList != null && entity != null && entityList.size() > 0) {
             if (entity instanceof SoftDelete) {

@@ -74,7 +74,7 @@ public class AppPropertiesBrowse extends AbstractWindow {
         searchField.addValueChangeListener(e -> {
             paramsDs.refresh(ParamsMap.of("name", e.getValue()));
 
-            if (StringUtils.isNotEmpty((String) e.getValue())) {
+            if (StringUtils.isNotEmpty(e.getValue())) {
                 paramsTable.expandAll();
             }
         });
@@ -99,7 +99,7 @@ public class AppPropertiesBrowse extends AbstractWindow {
     }
 
     public void editValue() {
-        AppPropertiesEdit editor = (AppPropertiesEdit) openWindow("appPropertyEditor", OpenType.DIALOG,
+        Window editor = openWindow("appPropertyEditor", OpenType.DIALOG,
                 ParamsMap.of("item", paramsDs.getItem()));
         editor.addCloseWithCommitListener(() -> {
             List<AppPropertyEntity> entities = paramsDs.loadAppPropertyEntities();

@@ -25,6 +25,7 @@ import com.haulmont.cuba.core.entity.SendingMessage;
 import com.haulmont.cuba.core.global.FileLoader;
 import com.haulmont.cuba.core.global.FileStorageException;
 import com.haulmont.cuba.gui.AppConfig;
+import com.haulmont.cuba.gui.UiComponents;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.DataSupplier;
@@ -35,7 +36,6 @@ import com.haulmont.cuba.gui.export.ExportFormat;
 import com.haulmont.cuba.gui.export.FileDataProvider;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.upload.FileUploadingAPI;
-import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.IterableUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -63,8 +63,7 @@ public class SendingMessageBrowser extends AbstractWindow {
     protected FieldGroup fg;
 
     @Inject
-    protected ComponentsFactory factory;
-
+    protected UiComponents uiComponents;
     @Inject
     protected ThemeConstants themeConstants;
 
@@ -73,18 +72,15 @@ public class SendingMessageBrowser extends AbstractWindow {
 
     @Inject
     protected FileUploadingAPI fileUploading;
-
     @Inject
     protected DataSupplier dataSupplier;
-
     @Inject
     protected ExportDisplay exportDisplay;
+    @Inject
+    protected FileLoader fileLoader;
 
     @Named("fg.bodyContentType")
     protected TextField<String> bodyContentTypeField;
-
-    @Inject
-    protected FileLoader fileLoader;
 
     protected Button showContentButton;
     protected TextArea<String> contentTextArea;
@@ -94,15 +90,15 @@ public class SendingMessageBrowser extends AbstractWindow {
         fg.addCustomField(CONTENT_TEXT, new FieldGroup.CustomFieldGenerator() {
             @Override
             public Component generateField(Datasource datasource, String propertyId) {
-                VBoxLayout contentArea = factory.createComponent(VBoxLayout.class);
+                VBoxLayout contentArea = uiComponents.create(VBoxLayout.class);
                 contentArea.setSpacing(true);
 
-                contentTextArea = factory.createComponent(TextArea.class);
+                contentTextArea = uiComponents.create(TextArea.NAME);
                 contentTextArea.setWidth("100%");
                 contentTextArea.setEditable(false);
                 contentTextArea.setHeight(themeConstants.get("cuba.gui.SendingMessageBrowser.contentTextArea.height"));
 
-                showContentButton = factory.createComponent(Button.class);
+                showContentButton = uiComponents.create(Button.class);
                 showContentButton.setAction(new AbstractAction("") {
                     @Override
                     public void actionPerform(Component component) {
