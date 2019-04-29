@@ -17,10 +17,13 @@
 
 package com.haulmont.cuba.web.toolkit.ui.client.datefield;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
+import com.haulmont.cuba.web.toolkit.ui.client.datepicker.CubaCalendarPanel;
 import com.haulmont.cuba.web.toolkit.ui.client.textfield.CubaMaskedFieldWidget;
 import com.vaadin.client.ui.ShortcutActionHandler;
+import com.vaadin.client.ui.VCalendarPanel;
 import com.vaadin.client.ui.VPopupCalendar;
 
 public class CubaDateFieldWidget extends VPopupCalendar implements ShortcutActionHandler.ShortcutActionHandlerOwner {
@@ -34,6 +37,11 @@ public class CubaDateFieldWidget extends VPopupCalendar implements ShortcutActio
     public CubaDateFieldWidget() {
         // handle shortcuts
         DOM.sinkEvents(getElement(), Event.ONKEYDOWN);
+    }
+
+    @Override
+    protected VCalendarPanel createCalendarPanel() {
+        return GWT.create(CubaCalendarPanel.class);
     }
 
     @Override
@@ -143,5 +151,13 @@ public class CubaDateFieldWidget extends VPopupCalendar implements ShortcutActio
 
     public void updateTextState() {
         getImpl().updateTextState();
+    }
+
+    public void setTextualRangeStart(String rangeStart) {
+        ((CubaCalendarPanel) calendar).setTextualRangeStart(rangeStart);
+    }
+
+    public void setTextualRangeEnd(String rangeEnd) {
+        ((CubaCalendarPanel) calendar).setTextualRangeEnd(rangeEnd);
     }
 }

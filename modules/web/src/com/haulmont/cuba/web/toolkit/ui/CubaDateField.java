@@ -25,12 +25,15 @@ import com.vaadin.event.ShortcutListener;
 import com.vaadin.server.PaintException;
 import com.vaadin.server.PaintTarget;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.time.FastDateFormat;
 
 import java.util.Date;
 import java.util.Map;
 import java.util.Objects;
 
 public class CubaDateField extends com.vaadin.ui.DateField implements Action.Container {
+
+    protected static final FastDateFormat RANGE_FORMATTER = FastDateFormat.getInstance("yyyy-MM-dd HH:mm:ss");
 
     /**
      * Keeps track of the Actions added to this component, and manages the
@@ -140,5 +143,19 @@ public class CubaDateField extends com.vaadin.ui.DateField implements Action.Con
     @Override
     public void removeActionHandler(Action.Handler actionHandler) {
         getActionManager().removeActionHandler(actionHandler);
+    }
+
+    @Override
+    public void setRangeStart(Date startDate) {
+        super.setRangeStart(startDate);
+
+        getState().textualRangeStart = RANGE_FORMATTER.format(startDate);
+    }
+
+    @Override
+    public void setRangeEnd(Date endDate) {
+        super.setRangeEnd(endDate);
+
+        getState().textualRangeEnd = RANGE_FORMATTER.format(endDate);
     }
 }

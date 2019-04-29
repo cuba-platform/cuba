@@ -23,4 +23,10 @@ import com.vaadin.shared.ui.datefield.PopupDateFieldState;
 public class CubaDateFieldState extends PopupDateFieldState {
     @NoLayout
     public String dateMask = "";
+
+    @NoLayout
+    public String textualRangeStart;
+
+    @NoLayout
+    public String textualRangeEnd;
 }
