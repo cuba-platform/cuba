@@ -159,9 +159,6 @@
             template="/com/haulmont/cuba/gui/app/core/about/about-window.xml"
             route="about"/>
 
-    <screen id="licenseFrame"
-            template="/com/haulmont/cuba/gui/app/core/license/license-frame.xml"/>
-
     <screen id="creditsFrame"
             template="/com/haulmont/cuba/gui/app/core/credits/credits-frame.xml"/>
 
