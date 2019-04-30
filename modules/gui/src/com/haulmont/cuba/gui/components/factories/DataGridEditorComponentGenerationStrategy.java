@@ -17,21 +17,30 @@
 package com.haulmont.cuba.gui.components.factories;
 
 import com.haulmont.bali.util.ParamsMap;
+import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesMetaProperty;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesTools;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
+import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.entity.annotation.Lookup;
+import com.haulmont.cuba.core.entity.annotation.LookupType;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.UiComponents;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.data.Options;
+import com.haulmont.cuba.gui.components.data.options.ContainerOptions;
 import com.haulmont.cuba.gui.components.data.options.DatasourceOptions;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.dynamicattributes.DynamicAttributesGuiTools;
+import com.haulmont.cuba.gui.model.CollectionContainer;
+import com.haulmont.cuba.gui.model.CollectionLoader;
+import com.haulmont.cuba.gui.model.DataComponents;
 import org.springframework.core.Ordered;
 
 import javax.annotation.Nullable;
@@ -40,6 +49,13 @@ import javax.inject.Inject;
 @org.springframework.stereotype.Component(DataGridEditorComponentGenerationStrategy.NAME)
 public class DataGridEditorComponentGenerationStrategy extends AbstractComponentGenerationStrategy implements Ordered {
     public static final String NAME = "cuba_DataGridEditorMetaComponentStrategy";
+
+    protected DataComponents dataComponents;
+
+    @Inject
+    public void setDataComponents(DataComponents dataComponents) {
+        this.dataComponents = dataComponents;
+    }
 
     @Inject
     public DataGridEditorComponentGenerationStrategy(Messages messages, DynamicAttributesTools dynamicAttributesTools) {
@@ -73,6 +89,19 @@ public class DataGridEditorComponentGenerationStrategy extends AbstractComponent
     @Override
     protected Field createEntityField(ComponentGenerationContext context, MetaPropertyPath mpp) {
         Options options = context.getOptions();
+
+        Lookup lookupAnnotation;
+        if ((lookupAnnotation = mpp.getMetaProperty().getAnnotatedElement().getAnnotation(Lookup.class)) != null
+                && lookupAnnotation.type() == LookupType.DROPDOWN) {
+            MetaClass metaClass = mpp.getMetaProperty().getRange().asClass();
+            CollectionContainer<Entity> container = dataComponents.createCollectionContainer(metaClass.getJavaClass());
+            CollectionLoader<Entity> loader = dataComponents.createCollectionLoader();
+            loader.setQuery("select e from " + metaClass.getName() + " e");
+            loader.setView(View.MINIMAL);
+            loader.setContainer(container);
+            loader.load();
+            options = new ContainerOptions(container);
+        }
 
         if (DynamicAttributesUtils.isDynamicAttribute(mpp.getMetaProperty())) {
             DynamicAttributesMetaProperty metaProperty = (DynamicAttributesMetaProperty) mpp.getMetaProperty();
