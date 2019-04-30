@@ -75,12 +75,19 @@ public class WebUserSessionSource extends AbstractUserSessionSource {
     public UserSession getUserSession() {
         UserSession session;
 
-        AppUI ui = AppUI.getCurrent();
         if (App.isBound()) {
-            session = ui.getUserSession();
+            AppUI ui = AppUI.getCurrent();
 
-            if (session == null) {
-                session = ui.getApp().getConnection().getSession();
+            if (ui != null) {
+                session = ui.getUserSession();
+
+                if (session == null) {
+                    session = ui.getApp().getConnection().getSession();
+                }
+
+                checkUiSession(session, ui);
+            } else {
+                session = App.getInstance().getConnection().getSession();
             }
         } else {
             SecurityContext securityContext = AppContext.getSecurityContextNN();
@@ -93,8 +100,6 @@ public class WebUserSessionSource extends AbstractUserSessionSource {
         if (session == null) {
             throw new IllegalStateException("No user session");
         }
-
-        checkUiSession(session, ui);
 
         return session;
     }
@@ -125,7 +130,7 @@ public class WebUserSessionSource extends AbstractUserSessionSource {
         Connection connection = ui.getApp().getConnection();
 
         UserSession appUserSession = connection.getSession();
-        boolean appAuthenticated = App.getInstance().getConnection().isAuthenticated();
+        boolean appAuthenticated = connection.isAuthenticated();
 
         boolean uiAuthenticated = ui.hasAuthenticatedSession();
 
