@@ -34,21 +34,15 @@ import java.util.Map;
 public interface ComponentLoader<T extends Component> {
 
     interface Context {
+    }
+
+    interface ComponentContext extends Context {
         ScreenOptions getOptions();
 
         ScreenData getScreenData();
 
         Map<String, Object> getParams();
         DsContext getDsContext();
-
-        void addPostInitTask(PostInitTask task);
-        void executePostInitTasks();
-
-        void addInjectTask(InjectTask task);
-        void executeInjectTasks();
-
-        void addInitTask(InitTask task);
-        void executeInitTasks();
 
         Map<String, String> getAliasesMap();
 
@@ -61,8 +55,25 @@ public interface ComponentLoader<T extends Component> {
         String getCurrentFrameId();
         void setCurrentFrameId(String currentFrameId);
 
-        Context getParent();
-        void setParent(Context parent);
+        ComponentContext getParent();
+        void setParent(ComponentContext parent);
+
+        void addPostInitTask(PostInitTask task);
+        void executePostInitTasks();
+
+        void addInjectTask(InjectTask task);
+        void executeInjectTasks();
+
+        void addInitTask(InitTask task);
+        void executeInitTasks();
+    }
+
+    interface CompositeComponentContext extends Context {
+        Class<? extends Component> getComponentClass();
+        void setComponentClass(Class<? extends Component> componentClass);
+
+        String getDescriptorPath();
+        void setDescriptorPath(String template);
     }
 
     /**
@@ -75,7 +86,7 @@ public interface ComponentLoader<T extends Component> {
          * @param context loader context
          * @param window  top-most window
          */
-        void execute(Context context, Frame window);
+        void execute(ComponentContext context, Frame window);
     }
 
     /**
@@ -88,7 +99,7 @@ public interface ComponentLoader<T extends Component> {
          * @param context top-most loader context
          * @param window top-most window
          */
-        void execute(Context context, Frame window);
+        void execute(ComponentContext context, Frame window);
     }
 
     /**
@@ -101,7 +112,7 @@ public interface ComponentLoader<T extends Component> {
          * @param context loader context
          * @param window top-most window
          */
-        void execute(Context context, Frame window);
+        void execute(ComponentContext context, Frame window);
     }
 
     Context getContext();

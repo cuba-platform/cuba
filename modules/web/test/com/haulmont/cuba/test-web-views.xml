@@ -28,4 +28,10 @@
           extends="_local">
         <property name="address" view="_local"/>
     </view>
+    <view class="com.haulmont.cuba.web.testmodel.compositecomponent.Comment"
+          name="comment-with-creator"
+          extends="_local">
+        <property name="createTs"/>
+        <property name="createdBy"/>
+    </view>
 </views>

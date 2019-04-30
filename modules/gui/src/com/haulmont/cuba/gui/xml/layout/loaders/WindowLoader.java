@@ -80,7 +80,7 @@ public class WindowLoader extends ContainerLoader<Window> implements ComponentRo
 
         Element layoutElement = element.element("layout");
         if (layoutElement == null) {
-            throw new GuiDevelopmentException("Required 'layout' element is not found", context.getFullFrameId());
+            throw new GuiDevelopmentException("Required 'layout' element is not found", context);
         }
 
         loadSpacing(resultComponent, layoutElement);
@@ -114,7 +114,7 @@ public class WindowLoader extends ContainerLoader<Window> implements ComponentRo
                 companionStopWatch.stop();
 
                 if (companion != null) {
-                    getContext().addInjectTask((c, w) -> {
+                    getComponentContext().addInjectTask((c, w) -> {
                         CompanionDependencyInjector cdi =
                                 new CompanionDependencyInjector((LegacyFrame) controller, companion);
                         cdi.setBeanLocator(beanLocator);
@@ -256,7 +256,7 @@ public class WindowLoader extends ContainerLoader<Window> implements ComponentRo
 
         String delay = element.attributeValue("delay");
         if (StringUtils.isEmpty(delay)) {
-            throw new GuiDevelopmentException("Timer 'delay' can't be empty", context.getCurrentFrameId(),
+            throw new GuiDevelopmentException("Timer 'delay' can't be empty", context,
                     "Timer ID", timer.getId());
         }
 
@@ -264,7 +264,7 @@ public class WindowLoader extends ContainerLoader<Window> implements ComponentRo
         try {
             value = Integer.parseInt(delay);
         } catch (NumberFormatException e) {
-            throw new GuiDevelopmentException("Timer 'delay' must be numeric", context.getFullFrameId(),
+            throw new GuiDevelopmentException("Timer 'delay' must be numeric", context,
                     ParamsMap.of(
                             "Timer delay", delay,
                             "Timer ID", timer.getId()
@@ -272,8 +272,8 @@ public class WindowLoader extends ContainerLoader<Window> implements ComponentRo
         }
 
         if (value <= 0) {
-            throw new GuiDevelopmentException("Timer 'delay' must be greater than 0", context.getFullFrameId(),
-                    "Timer ID", timer.getId());
+            throw new GuiDevelopmentException("Timer 'delay' must be greater than 0",
+                    context, "Timer ID", timer.getId());
         }
 
         timer.setDelay(value);
@@ -296,7 +296,7 @@ public class WindowLoader extends ContainerLoader<Window> implements ComponentRo
             timer.start();
         }
 
-        timer.setFrame(context.getFrame());
+        timer.setFrame(getComponentContext().getFrame());
 
         component.addTimer(timer);
     }
@@ -320,21 +320,20 @@ public class WindowLoader extends ContainerLoader<Window> implements ComponentRo
                 editor.setCrossFieldValidate(Boolean.parseBoolean(crossFieldValidate));
             } else {
                 throw new GuiDevelopmentException("Window should extend Window.Editor to use crossFieldValidate attribute",
-                        context.getCurrentFrameId());
+                        context);
             }
         }
     }
 
     protected void addInitTimerMethodTask(Timer timer, String timerMethodName) {
-        FrameOwner controller = context.getFrame().getFrameOwner();
+        FrameOwner controller = getComponentContext().getFrame().getFrameOwner();
         Class<? extends FrameOwner> windowClass = controller.getClass();
 
         Method timerMethod;
         try {
             timerMethod = windowClass.getMethod(timerMethodName, Timer.class);
         } catch (NoSuchMethodException e) {
-            throw new GuiDevelopmentException("Unable to find invoke method for timer",
-                    context.getFullFrameId(),
+            throw new GuiDevelopmentException("Unable to find invoke method for timer", context,
                     ParamsMap.of(
                             "Timer Id", timer.getId(),
                             "Method name", timerMethodName));

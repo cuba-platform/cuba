@@ -29,11 +29,14 @@ import com.haulmont.cuba.gui.components.KeyCombination;
 import com.haulmont.cuba.gui.components.actions.BaseAction;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
+import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
+import com.haulmont.cuba.gui.xml.layout.ComponentLoader.CompositeComponentContext;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.Connection;
 import com.haulmont.cuba.web.controllers.ControllerUtils;
+import com.haulmont.cuba.web.gui.components.CompositeDescriptor;
 import com.haulmont.cuba.web.widgets.CubaButton;
 import com.haulmont.cuba.web.widgets.CubaCopyButtonExtension;
 import com.haulmont.cuba.web.widgets.CubaWindow;
@@ -272,13 +275,22 @@ public class ExceptionDialog extends CubaWindow {
                 Map<String, Object> params = new LinkedHashMap<>();
                 if (rootCause instanceof GuiDevelopmentException) {
                     GuiDevelopmentException guiDevException = (GuiDevelopmentException) rootCause;
-                    if (guiDevException.getFrameId() != null) {
-                        params.put("Frame ID", guiDevException.getFrameId());
+                    ComponentLoader.Context context = guiDevException.getContext();
+                    if (context instanceof CompositeComponentContext) {
+                        Class<?> componentClass = ((CompositeComponentContext) context).getComponentClass();
+                        params.put("Component Class", componentClass);
+                        CompositeDescriptor template = componentClass.getAnnotation(CompositeDescriptor.class);
+                        if (template != null) {
+                            params.put("XML descriptor", template.value());
+                        }
+                    } else if (guiDevException.getFrameId() != null) {
+                        String frameId = guiDevException.getFrameId();
+                        params.put("Frame ID", frameId);
                         try {
                             params.put("XML descriptor",
-                                    windowConfig.getWindowInfo(guiDevException.getFrameId()).getTemplate());
+                                    windowConfig.getWindowInfo(frameId).getTemplate());
                         } catch (Exception e) {
-                            params.put("XML descriptor", "not found for " + guiDevException.getFrameId());
+                            params.put("XML descriptor", "not found for " + frameId);
                         }
                     }
                 }

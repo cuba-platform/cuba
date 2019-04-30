@@ -36,8 +36,8 @@ public class TreeDataGridLoader extends AbstractDataGridLoader<TreeDataGrid> {
     protected DataGridItems createContainerDataGridSource(CollectionContainer container) {
         String hierarchyProperty = element.attributeValue("hierarchyProperty");
         if (Strings.isNullOrEmpty(hierarchyProperty)) {
-            throw new GuiDevelopmentException("TreeDataGrid doesn't have 'hierarchyProperty' attribute", context.getCurrentFrameId(),
-                    "TreeDataGrid ID", element.attributeValue("id"));
+            throw new GuiDevelopmentException("TreeDataGrid doesn't have 'hierarchyProperty' attribute",
+                    context, "TreeDataGrid ID", element.attributeValue("id"));
         }
         return new ContainerTreeDataGridItems(container, hierarchyProperty);
     }

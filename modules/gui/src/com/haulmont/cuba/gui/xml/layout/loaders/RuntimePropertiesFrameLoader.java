@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
+import com.google.common.base.Preconditions;
 import com.haulmont.cuba.core.global.DevelopmentException;
 import com.haulmont.cuba.gui.FrameContext;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
@@ -59,6 +60,18 @@ public class RuntimePropertiesFrameLoader extends ContainerLoader<Frame> {
 
     protected ComponentLoader fragmentLoader;
     protected ComponentLoaderContext innerContext;
+
+    @Override
+    public ComponentContext getContext() {
+        return (ComponentContext) super.getContext();
+    }
+
+    @Override
+    public void setContext(Context context) {
+        Preconditions.checkArgument(context instanceof ComponentContext,
+                "'context' must implement com.haulmont.cuba.gui.xml.layout.ComponentLoader.ComponentContext");
+        super.setContext(context);
+    }
 
     @Override
     public void createComponent() {
@@ -111,7 +124,7 @@ public class RuntimePropertiesFrameLoader extends ContainerLoader<Frame> {
                 frameId = parentContext.getFullFrameId() + "." + frameId;
             }
 
-            innerContext = new ComponentLoaderContext(context.getOptions());
+            innerContext = new ComponentLoaderContext(getContext().getOptions());
             innerContext.setCurrentFrameId(fragmentId);
             innerContext.setFullFrameId(frameId);
             innerContext.setFrame(fragment);
@@ -134,8 +147,8 @@ public class RuntimePropertiesFrameLoader extends ContainerLoader<Frame> {
 
     @Override
     public void loadComponent() {
-        if (context.getFrame() != null) {
-            resultComponent.setFrame(context.getFrame());
+        if (getContext().getFrame() != null) {
+            resultComponent.setFrame(getContext().getFrame());
         }
 
         String src = element.attributeValue("src");
@@ -144,31 +157,33 @@ public class RuntimePropertiesFrameLoader extends ContainerLoader<Frame> {
         }
         String runtimeDs = element.attributeValue("runtimeDs");
         if (StringUtils.isEmpty(runtimeDs)) {
-            throw new GuiDevelopmentException("runtimePropsDatasource is not set for runtimeProperties component", context.getFullFrameId());
+            throw new GuiDevelopmentException("runtimePropsDatasource is not set for runtimeProperties component",
+                    getContext().getFullFrameId());
         }
-        context.getParams().put("runtimeDs", runtimeDs);
+        getContext().getParams().put("runtimeDs", runtimeDs);
 
         String categoriesDs = element.attributeValue("categoriesDs");
         if (StringUtils.isEmpty(categoriesDs)) {
-            throw new GuiDevelopmentException("categoriesDs is not set for runtimeProperties component", context.getFullFrameId());
+            throw new GuiDevelopmentException("categoriesDs is not set for runtimeProperties component",
+                    getContext().getFullFrameId());
         }
-        context.getParams().put("categoriesDs", categoriesDs);
+        getContext().getParams().put("categoriesDs", categoriesDs);
 
         String rows = element.attributeValue("rows");
-        context.getParams().put("rows", rows);
+        getContext().getParams().put("rows", rows);
         String cols = element.attributeValue("cols");
-        context.getParams().put("cols", cols);
+        getContext().getParams().put("cols", cols);
         String fieldWidth = element.attributeValue("fieldWidth");
-        context.getParams().put("fieldWidth", fieldWidth);
+        getContext().getParams().put("fieldWidth", fieldWidth);
         String fieldCaptionWidth = element.attributeValue("fieldCaptionWidth");
-        context.getParams().put("fieldCaptionWidth", fieldCaptionWidth);
+        getContext().getParams().put("fieldCaptionWidth", fieldCaptionWidth);
 
         String screenPath = Objects.equals(src, DEFAULT_DESCRIPTOR) ? "runtimeProperties" : src;
         if (element.attributeValue("id") != null) {
             screenPath = element.attributeValue("id");
         }
-        if (context.getFrame() != null) {
-            String parentId = context.getFullFrameId();
+        if (getContext().getFrame() != null) {
+            String parentId = getContext().getFullFrameId();
             if (StringUtils.isNotEmpty(parentId)) {
                 screenPath = parentId + "." + screenPath;
             }

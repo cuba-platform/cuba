@@ -97,7 +97,7 @@ public class FilterLoader extends AbstractComponentLoader<Filter> {
 
         String dataLoaderId = element.attributeValue("dataLoader");
         if (!StringUtils.isBlank(dataLoaderId)) {
-            FrameOwner frameOwner = context.getFrame().getFrameOwner();
+            FrameOwner frameOwner = getComponentContext().getFrame().getFrameOwner();
             ScreenData screenData = UiControllerUtils.getScreenData(frameOwner);
             DataLoader dataLoader = screenData.getLoader(dataLoaderId);
             if (!(dataLoader instanceof CollectionLoader)) {
@@ -108,25 +108,25 @@ public class FilterLoader extends AbstractComponentLoader<Filter> {
         } else {
             String datasource = element.attributeValue("datasource");
             if (!StringUtils.isBlank(datasource)) {
-                if (context.getDsContext() == null) {
+                if (getComponentContext().getDsContext() == null) {
                     throw new IllegalStateException("'datasource' attribute can be used only in screens with 'dsContext' element. " +
                             "In a screen with 'data' element use 'dataContainer' attribute.");
                 }
-                CollectionDatasource ds = (CollectionDatasource) context.getDsContext().get(datasource);
+                CollectionDatasource ds = (CollectionDatasource) getComponentContext().getDsContext().get(datasource);
                 if (ds == null) {
-                    throw new GuiDevelopmentException("Can't find datasource by name: " + datasource, context.getCurrentFrameId());
+                    throw new GuiDevelopmentException("Can't find datasource by name: " + datasource, context);
                 }
                 resultComponent.setDatasource(ds);
             }
         }
 
-        Frame frame = context.getFrame();
+        Frame frame = getComponentContext().getFrame();
         String applyTo = element.attributeValue("applyTo");
         if (!StringUtils.isEmpty(applyTo)) {
-            context.addPostInitTask((c, w) -> {
+            getComponentContext().addPostInitTask((c, w) -> {
                 Component applyToComponent = frame.getComponent(applyTo);
                 if (c == null) {
-                    throw new GuiDevelopmentException("Can't apply component to component with ID: " + applyTo, context.getFullFrameId());
+                    throw new GuiDevelopmentException("Can't apply component to component with ID: " + applyTo, context);
                 }
                 resultComponent.setApplyTo(applyToComponent);
             });
@@ -137,7 +137,7 @@ public class FilterLoader extends AbstractComponentLoader<Filter> {
             resultComponent.setModeSwitchVisible(Boolean.parseBoolean(modeSwitchVisible));
         }
 
-        context.addPostInitTask((context1, window) -> {
+        getComponentContext().addPostInitTask((context1, window) -> {
             ((FilterImplementation) resultComponent).loadFiltersAndApplyDefault();
             String defaultMode = element.attributeValue("defaultMode");
             if (FTS_MODE_VALUE.equals(defaultMode)) {

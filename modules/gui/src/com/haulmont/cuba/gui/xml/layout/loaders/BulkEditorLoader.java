@@ -77,7 +77,7 @@ public class BulkEditorLoader extends AbstractComponentLoader<BulkEditor> {
         if (window != null && !(window instanceof LegacyFrame)) {
             throw new GuiDevelopmentException(
                     "BulkEditor component can be used only in legacy screens based on AbstractWindow",
-                    context.getFullFrameId());
+                    context);
         }
 
         loadEnable(resultComponent, element);
@@ -110,8 +110,8 @@ public class BulkEditorLoader extends AbstractComponentLoader<BulkEditor> {
         String includeProperties = element.attributeValue("includeProperties");
 
         if (StringUtils.isNotBlank(exclude) && StringUtils.isNotBlank(includeProperties)) {
-            throw new GuiDevelopmentException("BulkEditor cannot define simultaneously exclude and includeProperties attributes",
-                    getContext().getCurrentFrameId());
+            throw new GuiDevelopmentException(
+                    "BulkEditor cannot define simultaneously exclude and includeProperties attributes", getContext());
         }
 
         if (StringUtils.isNotBlank(exclude)) {
@@ -127,7 +127,7 @@ public class BulkEditorLoader extends AbstractComponentLoader<BulkEditor> {
         String listComponent = element.attributeValue("for");
         if (StringUtils.isEmpty(listComponent)) {
             throw new GuiDevelopmentException("'for' attribute of bulk editor is not specified",
-                    context.getFullFrameId(), "componentId", resultComponent.getId());
+                    context, "componentId", resultComponent.getId());
         }
 
         String loadDynamicAttributes = element.attributeValue("loadDynamicAttributes");
@@ -140,12 +140,12 @@ public class BulkEditorLoader extends AbstractComponentLoader<BulkEditor> {
             resultComponent.setUseConfirmDialog(Boolean.parseBoolean(useConfirmDialog));
         }
 
-        context.addPostInitTask((c, w) -> {
+        getComponentContext().addPostInitTask((c, w) -> {
             if (resultComponent.getListComponent() == null) {
                 Component bindComponent = resultComponent.getFrame().getComponent(listComponent);
                 if (!(bindComponent instanceof ListComponent)) {
                     throw new GuiDevelopmentException("Specify 'for' attribute: id of table or tree",
-                            context.getFullFrameId(), "componentId", resultComponent.getId());
+                            context, "componentId", resultComponent.getId());
                 }
 
                 resultComponent.setListComponent((ListComponent) bindComponent);

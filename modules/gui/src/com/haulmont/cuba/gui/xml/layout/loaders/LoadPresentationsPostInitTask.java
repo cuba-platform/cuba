@@ -29,7 +29,7 @@ public class LoadPresentationsPostInitTask implements ComponentLoader.PostInitTa
     }
 
     @Override
-    public void execute(ComponentLoader.Context context, Frame window) {
+    public void execute(ComponentLoader.ComponentContext context, Frame window) {
         if (component.isUsePresentations()) {
             component.loadPresentations();
         }

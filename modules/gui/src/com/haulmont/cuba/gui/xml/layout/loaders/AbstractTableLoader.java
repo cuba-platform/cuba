@@ -142,13 +142,13 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
 
         String containerId = element.attributeValue("dataContainer");
         if (containerId != null) {
-            FrameOwner frameOwner = context.getFrame().getFrameOwner();
+            FrameOwner frameOwner = getComponentContext().getFrame().getFrameOwner();
             ScreenData screenData = UiControllerUtils.getScreenData(frameOwner);
             InstanceContainer container = screenData.getContainer(containerId);
             if (container instanceof CollectionContainer) {
                 collectionContainer = (CollectionContainer) container;
             } else {
-                throw new GuiDevelopmentException("Not a CollectionContainer: " + containerId, context.getCurrentFrameId());
+                throw new GuiDevelopmentException("Not a CollectionContainer: " + containerId, context);
             }
             metaClass = collectionContainer.getEntityMetaClass();
             if (collectionContainer instanceof HasLoader) {
@@ -159,16 +159,16 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
             String datasourceId = rowsElement.attributeValue("datasource");
             if (StringUtils.isBlank(datasourceId)) {
                 throw new GuiDevelopmentException("Table 'rows' element doesn't have 'datasource' attribute",
-                        context.getCurrentFrameId(), "Table ID", element.attributeValue("id"));
+                        context, "Table ID", element.attributeValue("id"));
             }
 
-            datasource = context.getDsContext().get(datasourceId);
+            datasource = getComponentContext().getDsContext().get(datasourceId);
             if (datasource == null) {
-                throw new GuiDevelopmentException("Can't find datasource by name: " + datasourceId, context.getCurrentFrameId());
+                throw new GuiDevelopmentException("Can't find datasource by name: " + datasourceId, context);
             }
 
             if (!(datasource instanceof CollectionDatasource)) {
-                throw new GuiDevelopmentException("Not a CollectionDatasource: " + datasourceId, context.getCurrentFrameId());
+                throw new GuiDevelopmentException("Not a CollectionDatasource: " + datasourceId, context);
             }
 
             metaClass = datasource.getMetaClass();
@@ -176,7 +176,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
             String metaClassStr = element.attributeValue("metaClass");
             if (Strings.isNullOrEmpty(metaClassStr)) {
                 throw new GuiDevelopmentException("Table doesn't have data binding",
-                        context.getCurrentFrameId(), "Table ID", element.attributeValue("id"));
+                        context, "Table ID", element.attributeValue("id"));
             }
 
             metaClass = getMetadata().getClassNN(metaClassStr);
@@ -270,6 +270,10 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
                                         List<Table.Column> availableColumns) {
         if (getMetadataTools().isPersistent(metaClass)) {
             String windowId = getWindowId(context);
+            // May be no windowId, if a loader is used from a CompositeComponent
+            if (windowId == null) {
+                return;
+            }
 
             List<CategoryAttribute> attributesToShow =
                     getDynamicAttributesGuiTools().getSortedAttributesToShowOnTheScreen(metaClass,
@@ -487,7 +491,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
         } else if (column.isEditable()) {
             if (!(column.getId() instanceof MetaPropertyPath)) {
                 throw new GuiDevelopmentException(String.format("Column '%s' has editable=true, but there is no " +
-                        "property of an entity with this id", column.getId()), context.getCurrentFrameId());
+                        "property of an entity with this id", column.getId()), context);
             }
 
             MetaPropertyPath propertyPath = (MetaPropertyPath) column.getId();
@@ -568,7 +572,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
 
             if (StringUtils.isNotEmpty(width)) {
                 throw new GuiDevelopmentException(
-                        "Properties 'width' and 'expandRatio' cannot be used simultaneously", context.getFullFrameId());
+                        "Properties 'width' and 'expandRatio' cannot be used simultaneously", context);
             }
         }
 
@@ -580,7 +584,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
                 column.setWidth(Integer.parseInt(width));
             } catch (NumberFormatException e) {
                 throw new GuiDevelopmentException("Property 'width' must contain only numeric value",
-                        context.getCurrentFrameId(), "width", element.attributeValue("width"));
+                        context, "width", element.attributeValue("width"));
             }
         }
         String align = element.attributeValue("align");
@@ -644,7 +648,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
             if (StringUtils.isNotEmpty(strategyClass)) {
                 Class<?> aggregationClass = getScripting().loadClass(strategyClass);
                 if (aggregationClass == null) {
-                    throw new GuiDevelopmentException(String.format("Class %s is not found", strategyClass), context.getFullFrameId());
+                    throw new GuiDevelopmentException(String.format("Class %s is not found", strategyClass), context);
                 }
 
                 try {
@@ -657,7 +661,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
             }
 
             if (aggregationType == null && strategyClass == null) {
-                throw new GuiDevelopmentException("Incorrect aggregation - type or strategyClass is required", context.getFullFrameId());
+                throw new GuiDevelopmentException("Incorrect aggregation - type or strategyClass is required", context);
             }
         }
     }

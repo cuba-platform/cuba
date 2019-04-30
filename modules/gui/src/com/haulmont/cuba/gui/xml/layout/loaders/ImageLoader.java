@@ -54,17 +54,16 @@ public class ImageLoader extends AbstractResourceViewLoader<Image> {
     protected void loadDatasource(Image component, Element element) {
         final String datasource = element.attributeValue("datasource");
         if (!StringUtils.isEmpty(datasource)) {
-            Datasource ds = context.getDsContext().get(datasource);
+            Datasource ds = getComponentContext().getDsContext().get(datasource);
             if (ds == null) {
                 throw new GuiDevelopmentException(String.format("Datasource '%s' is not defined", datasource),
-                        getContext().getFullFrameId(), "Component ID", component.getId());
+                        getContext(), "Component ID", component.getId());
             }
             String property = element.attributeValue("property");
             if (StringUtils.isEmpty(property)) {
                 throw new GuiDevelopmentException(
                         String.format("Can't set datasource '%s' for component '%s' because 'property' " +
-                                "attribute is not defined", datasource, component.getId()),
-                        context.getFullFrameId());
+                                "attribute is not defined", datasource, component.getId()), context);
             }
 
             component.setDatasource(ds, property);

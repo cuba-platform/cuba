@@ -63,9 +63,8 @@ public class DatePickerLoader extends AbstractFieldLoader<DatePicker> {
                 SimpleDateFormat rangeDF = new SimpleDateFormat(DATE_PATTERN);
                 resultComponent.setRangeStart(rangeDF.parse(rangeStart));
             } catch (ParseException e) {
-                throw new GuiDevelopmentException(
-                        "'rangeStart' parsing error for date picker: " +
-                                rangeStart, context.getFullFrameId(), "DatePicker ID", resultComponent.getId());
+                throw new GuiDevelopmentException("'rangeStart' parsing error for date picker: " +
+                        rangeStart, context, "DatePicker ID", resultComponent.getId());
             }
         }
     }
@@ -77,9 +76,8 @@ public class DatePickerLoader extends AbstractFieldLoader<DatePicker> {
                 SimpleDateFormat rangeDF = new SimpleDateFormat(DATE_PATTERN);
                 resultComponent.setRangeEnd(rangeDF.parse(rangeEnd));
             } catch (ParseException e) {
-                throw new GuiDevelopmentException(
-                        "'rangeEnd' parsing error for date picker: " +
-                                rangeEnd, context.getFullFrameId(), "DatePicker ID", resultComponent.getId());
+                throw new GuiDevelopmentException("'rangeEnd' parsing error for date picker: " +
+                        rangeEnd, context, "DatePicker ID", resultComponent.getId());
             }
         }
     }

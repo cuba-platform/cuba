@@ -101,13 +101,13 @@ public class CalendarLoader extends AbstractComponentLoader<Calendar> {
 
     protected void loadDataContainer(Calendar component, Element element) {
         String containerId = element.attributeValue("dataContainer");
-        FrameOwner frameOwner = context.getFrame().getFrameOwner();
+        FrameOwner frameOwner = getComponentContext().getFrame().getFrameOwner();
         ScreenData screenData = UiControllerUtils.getScreenData(frameOwner);
         InstanceContainer container = screenData.getContainer(containerId);
 
         if (!(container instanceof CollectionContainer)) {
             throw new GuiDevelopmentException("Not a CollectionContainer: " +
-                    containerId, context.getCurrentFrameId());
+                    containerId, context);
         }
 
         component.setEventProvider(new ContainerCalendarEventProvider<>(((CollectionContainer) container)));
@@ -115,10 +115,10 @@ public class CalendarLoader extends AbstractComponentLoader<Calendar> {
 
     protected void loadDatasource(Calendar component, Element element) {
         final String datasource = element.attributeValue("datasource");
-        CollectionDatasource ds = (CollectionDatasource) context.getDsContext().get(datasource);
+        CollectionDatasource ds = (CollectionDatasource) getComponentContext().getDsContext().get(datasource);
         if (ds == null) {
             throw new GuiDevelopmentException(String.format("Datasource '%s' is not defined", datasource),
-                    getContext().getFullFrameId(), "Component ID", component.getId());
+                    getContext(), "Component ID", component.getId());
         }
 
         component.setDatasource(ds);
@@ -173,9 +173,8 @@ public class CalendarLoader extends AbstractComponentLoader<Calendar> {
             try {
                 resultComponent.setStartDate(parseDateOrDateTime(startDate));
             } catch (ParseException e) {
-                throw new GuiDevelopmentException(
-                        "'startDate' parsing error for calendar: " +
-                                startDate, context.getFullFrameId(), "Calendar ID", resultComponent.getId());
+                throw new GuiDevelopmentException("'startDate' parsing error for calendar: " +
+                        startDate, context, "Calendar ID", resultComponent.getId());
             }
         }
     }
@@ -186,9 +185,8 @@ public class CalendarLoader extends AbstractComponentLoader<Calendar> {
             try {
                 resultComponent.setEndDate(parseDateOrDateTime(endDate));
             } catch (ParseException e) {
-                throw new GuiDevelopmentException(
-                        "'endDate' parsing error for calendar: " +
-                                endDate, context.getFullFrameId(), "Calendar ID", resultComponent.getId());
+                throw new GuiDevelopmentException("'endDate' parsing error for calendar: " +
+                        endDate, context, "Calendar ID", resultComponent.getId());
             }
         }
     }
@@ -212,7 +210,7 @@ public class CalendarLoader extends AbstractComponentLoader<Calendar> {
                 resultComponent.setTimeFormat(Calendar.TimeFormat.FORMAT_24H);
             } else {
                 throw new GuiDevelopmentException("'timeFormat' must be '12H' or '24H'",
-                        context.getFullFrameId(), "Calendar ID", resultComponent.getId());
+                        context, "Calendar ID", resultComponent.getId());
             }
         }
     }

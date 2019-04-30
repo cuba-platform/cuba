@@ -18,6 +18,7 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.gui.ComponentsHelper;
+import com.haulmont.cuba.gui.components.AttachNotifier;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.HtmlBoxLayout;
@@ -162,5 +163,23 @@ public class WebHtmlBoxLayout extends WebAbstractComponent<CubaCustomLayout> imp
     @Override
     public void setRequiredIndicatorVisible(boolean visible) {
         component.setRequiredIndicatorVisible(visible);
+    }
+
+    @Override
+    public void attached() {
+        super.attached();
+
+        for (Component component : ownComponents) {
+            ((AttachNotifier) component).attached();
+        }
+    }
+
+    @Override
+    public void detached() {
+        super.detached();
+
+        for (Component component : ownComponents) {
+            ((AttachNotifier) component).detached();
+        }
     }
 }

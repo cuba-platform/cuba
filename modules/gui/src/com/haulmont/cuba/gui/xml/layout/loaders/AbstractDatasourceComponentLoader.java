@@ -27,21 +27,20 @@ public abstract class AbstractDatasourceComponentLoader<T extends DatasourceComp
     protected void loadDatasource(DatasourceComponent component, Element element) {
         final String datasource = element.attributeValue("datasource");
         if (!StringUtils.isEmpty(datasource)) {
-            if (context.getDsContext() == null) {
+            if (getComponentContext().getDsContext() == null) {
                 throw new IllegalStateException("'datasource' attribute can be used only in screens with 'dsContext' element. " +
                         "In a screen with 'data' element use 'dataContainer' attribute.");
             }
-            Datasource ds = context.getDsContext().get(datasource);
+            Datasource ds = getComponentContext().getDsContext().get(datasource);
             if (ds == null) {
                 throw new GuiDevelopmentException(String.format("Datasource '%s' is not defined", datasource),
-                        getContext().getFullFrameId(), "Component ID", component.getId());
+                        getContext(), "Component ID", component.getId());
             }
             String property = element.attributeValue("property");
             if (StringUtils.isEmpty(property)) {
                 throw new GuiDevelopmentException(
                         String.format("Can't set datasource '%s' for component '%s' because 'property' " +
-                                "attribute is not defined", datasource, component.getId()),
-                        context.getFullFrameId());
+                                "attribute is not defined", datasource, component.getId()), context);
             }
 
             component.setDatasource(ds, property);

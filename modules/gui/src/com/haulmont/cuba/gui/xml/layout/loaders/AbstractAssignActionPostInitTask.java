@@ -36,7 +36,7 @@ public abstract class AbstractAssignActionPostInitTask implements ComponentLoade
     }
 
     @Override
-    public void execute(ComponentLoader.Context context, Frame window) {
+    public void execute(ComponentLoader.ComponentContext context, Frame window) {
         String[] elements = ValuePathHelper.parse(actionId);
         if (elements.length > 1) {
             String id = elements[elements.length - 1];

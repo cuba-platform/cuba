@@ -86,8 +86,7 @@ public class SplitPanelLoader extends ContainerLoader<SplitPanel> {
 
         boolean bDockable = Boolean.parseBoolean(dockable);
         if (bDockable && resultComponent.getOrientation() == SplitPanel.ORIENTATION_VERTICAL) {
-            throw new GuiDevelopmentException("Docking cannot be enabled for vertically oriented SplitPanel",
-                    context.getFullFrameId());
+            throw new GuiDevelopmentException("Docking cannot be enabled for vertically oriented SplitPanel", context);
         }
 
         resultComponent.setDockable(bDockable);
@@ -101,8 +100,7 @@ public class SplitPanelLoader extends ContainerLoader<SplitPanel> {
         }
 
         if (resultComponent.getOrientation() == SplitPanel.ORIENTATION_VERTICAL) {
-            throw new GuiDevelopmentException("Docking cannot be enabled for vertically oriented SplitPanel",
-                    context.getFullFrameId());
+            throw new GuiDevelopmentException("Docking cannot be enabled for vertically oriented SplitPanel", context);
         }
 
         SplitPanel.DockMode mode = SplitPanel.DockMode.valueOf(dockMode);
@@ -129,7 +127,7 @@ public class SplitPanelLoader extends ContainerLoader<SplitPanel> {
                 position = Integer.parseInt(minSplitPosition.substring(0, minSplitPosition.indexOf("%")));
                 unit = SizeUnit.PERCENTAGE;
             } else {
-                throw new GuiDevelopmentException("Unit of minSplitPosition is not set", context.getFullFrameId());
+                throw new GuiDevelopmentException("Unit of minSplitPosition is not set", context);
             }
 
             resultComponent.setMinSplitPosition(position, unit);
@@ -149,7 +147,7 @@ public class SplitPanelLoader extends ContainerLoader<SplitPanel> {
                 position = Integer.parseInt(maxSplitPosition.substring(0, maxSplitPosition.indexOf("%")));
                 unit = SizeUnit.PERCENTAGE;
             } else {
-                throw new GuiDevelopmentException("Unit of maxSplitPosition is not set", context.getFullFrameId());
+                throw new GuiDevelopmentException("Unit of maxSplitPosition is not set", context);
             }
 
             resultComponent.setMaxSplitPosition(position, unit);

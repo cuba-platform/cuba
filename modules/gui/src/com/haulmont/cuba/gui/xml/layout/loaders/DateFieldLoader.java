@@ -93,9 +93,8 @@ public class DateFieldLoader extends AbstractFieldLoader<DateField> {
             try {
                 resultComponent.setRangeStart(parseDateOrDateTime(rangeStart));
             } catch (ParseException e) {
-                throw new GuiDevelopmentException(
-                        "'rangeStart' parsing error for date picker: " +
-                                rangeStart, context.getFullFrameId(), "DatePicker ID", resultComponent.getId());
+                throw new GuiDevelopmentException("'rangeStart' parsing error for date picker: " +
+                        rangeStart, context, "DatePicker ID", resultComponent.getId());
             }
         }
     }
@@ -106,9 +105,8 @@ public class DateFieldLoader extends AbstractFieldLoader<DateField> {
             try {
                 resultComponent.setRangeEnd(parseDateOrDateTime(rangeEnd));
             } catch (ParseException e) {
-                throw new GuiDevelopmentException(
-                        "'rangeEnd' parsing error for date picker: " +
-                                rangeEnd, context.getFullFrameId(), "DatePicker ID", resultComponent.getId());
+                throw new GuiDevelopmentException("'rangeEnd' parsing error for date picker: " +
+                        rangeEnd, context, "DatePicker ID", resultComponent.getId());
             }
         }
     }

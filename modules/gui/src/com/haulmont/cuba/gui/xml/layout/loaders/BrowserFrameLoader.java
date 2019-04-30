@@ -60,7 +60,7 @@ public class BrowserFrameLoader extends AbstractResourceViewLoader<BrowserFrame>
         if (StringUtils.isNotEmpty(srcdocFile)) {
             if (StringUtils.isNotEmpty(resultComponent.getSrcdoc())) {
                 throw new GuiDevelopmentException("'Srcdoc' and 'srcdocFile' cannot be used in the same time for BrowserFrame",
-                        context.getFullFrameId());
+                        context);
             }
 
             Resources resources = beanLocator.get(Resources.class);
@@ -69,7 +69,7 @@ public class BrowserFrameLoader extends AbstractResourceViewLoader<BrowserFrame>
             if (resource == null) {
                 String msg = String.format("Can't load srcdocFile in BrowserFrame. The file with given path not found: %s",
                         srcdocFile);
-                throw new GuiDevelopmentException(msg, context.getFullFrameId());
+                throw new GuiDevelopmentException(msg, context);
             }
 
             resultComponent.setSrcdoc(resource);

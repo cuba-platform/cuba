@@ -93,8 +93,7 @@ public abstract class ContainerLoader<T extends Component> extends AbstractCompo
                 Component componentToExpand = layout.getOwnComponent(expand);
                 if (componentToExpand == null) {
                     throw new GuiDevelopmentException(
-                            String.format("There is no component with id '%s' to expand", expand),
-                            context.getFullFrameId());
+                            String.format("There is no component with id '%s' to expand", expand), context);
                 }
                 layout.expand(componentToExpand);
             } else {
@@ -111,7 +110,7 @@ public abstract class ContainerLoader<T extends Component> extends AbstractCompo
                 } else {
                     throw new GuiDevelopmentException(
                             String.format("Illegal expand target '%s' for container", targetId),
-                            context.getFullFrameId(), "component", targetId);
+                            context, "component", targetId);
                 }
             }
         }

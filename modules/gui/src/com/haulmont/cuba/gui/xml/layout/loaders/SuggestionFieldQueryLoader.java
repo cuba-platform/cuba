@@ -73,7 +73,7 @@ public abstract class SuggestionFieldQueryLoader<T extends Field> extends Abstra
                 });
             } else {
                 throw new GuiDevelopmentException(String.format("Field 'entityClass' is empty in component %s.",
-                        suggestionField.getId()), getContext().getFullFrameId());
+                        suggestionField.getId()), getContext());
             }
         }
     }

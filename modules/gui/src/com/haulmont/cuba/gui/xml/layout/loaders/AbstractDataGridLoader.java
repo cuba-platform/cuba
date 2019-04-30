@@ -133,33 +133,32 @@ public abstract class AbstractDataGridLoader<T extends DataGrid> extends Actions
         String containerId = element.attributeValue("dataContainer");
         String datasourceId = element.attributeValue("datasource");
         if (!Strings.isNullOrEmpty(containerId)) {
-            FrameOwner frameOwner = context.getFrame().getFrameOwner();
+            FrameOwner frameOwner = getComponentContext().getFrame().getFrameOwner();
             ScreenData screenData = UiControllerUtils.getScreenData(frameOwner);
             InstanceContainer container = screenData.getContainer(containerId);
             if (container instanceof CollectionContainer) {
                 collectionContainer = (CollectionContainer) container;
             } else {
-                throw new GuiDevelopmentException("Not a CollectionContainer: " + containerId, context.getCurrentFrameId());
+                throw new GuiDevelopmentException("Not a CollectionContainer: " + containerId, context);
             }
             metaClass = collectionContainer.getEntityMetaClass();
             if (collectionContainer instanceof HasLoader) {
                 dataLoader = ((HasLoader) collectionContainer).getLoader();
             }
-
         } else if (!Strings.isNullOrEmpty(datasourceId)) {
-            datasource = context.getDsContext().get(datasourceId);
+            datasource = getComponentContext().getDsContext().get(datasourceId);
             if (datasource == null) {
-                throw new GuiDevelopmentException("Can't find datasource by name: " + datasourceId, context.getCurrentFrameId());
+                throw new GuiDevelopmentException("Can't find datasource by name: " + datasourceId, context);
             }
             if (!(datasource instanceof CollectionDatasource)) {
-                throw new GuiDevelopmentException("Not a CollectionDatasource: " + datasource, context.getCurrentFrameId());
+                throw new GuiDevelopmentException("Not a CollectionDatasource: " + datasource, context);
             }
             metaClass = datasource.getMetaClass();
         } else {
             String metaClassStr = element.attributeValue("metaClass");
             if (Strings.isNullOrEmpty(metaClassStr)) {
                 throw new GuiDevelopmentException("DataGrid doesn't have data binding",
-                        context.getFullFrameId(), "DataGrid ID", element.attributeValue("id"));
+                        context, "DataGrid ID", element.attributeValue("id"));
             }
 
             metaClass = getMetadata().getClassNN(metaClassStr);
@@ -411,7 +410,7 @@ public abstract class AbstractDataGridLoader<T extends DataGrid> extends Actions
                 id = property;
             } else {
                 throw new GuiDevelopmentException("A column must have whether id or property specified",
-                        context.getCurrentFrameId(), "DataGrid ID", component.getId());
+                        context, "DataGrid ID", component.getId());
             }
         }
 
@@ -534,7 +533,7 @@ public abstract class AbstractDataGridLoader<T extends DataGrid> extends Actions
                 return Integer.parseInt(value);
             } catch (NumberFormatException e) {
                 throw new GuiDevelopmentException("Property '" + propertyName + "' must contain only numeric value",
-                        context.getCurrentFrameId(), propertyName, element.attributeValue(propertyName));
+                        context, propertyName, element.attributeValue(propertyName));
             }
         }
         return null;
@@ -553,7 +552,10 @@ public abstract class AbstractDataGridLoader<T extends DataGrid> extends Actions
                                         List<Column> availableColumns) {
         if (getMetadataTools().isPersistent(metaClass)) {
             String windowId = getWindowId(context);
-
+            // May be no windowId, if a loader is used from a CompositeComponent
+            if (windowId == null) {
+                return;
+            }
             Set<CategoryAttribute> attributesToShow =
                     getDynamicAttributesGuiTools().getAttributesToShowOnTheScreen(metaClass,
                             windowId, component.getId());

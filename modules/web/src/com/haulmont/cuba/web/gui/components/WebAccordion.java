@@ -391,8 +391,9 @@ public class WebAccordion extends WebAbstractComponent<CubaAccordion>
         this.component.addSelectedTabChangeListener(new LazyTabChangeListener(tabContent, descriptor, loader));
         context = loader.getContext();
 
-        if (!postInitTaskAdded) {
-            context.addPostInitTask((c, w) -> initComponentTabChangeListener());
+        if (!postInitTaskAdded
+                && context instanceof ComponentLoader.ComponentContext) {
+            ((ComponentLoader.ComponentContext) context).addPostInitTask((c, w) -> initComponentTabChangeListener());
             postInitTaskAdded = true;
         }
 
@@ -404,7 +405,12 @@ public class WebAccordion extends WebAbstractComponent<CubaAccordion>
             this.component.setCubaId(tabControl, name);
         }
 
-        tabContent.setFrame(context.getFrame());
+        if (context instanceof ComponentLoader.ComponentContext) {
+            tabContent.setFrame(((ComponentLoader.ComponentContext) context).getFrame());
+        } else {
+            throw new IllegalStateException("'context' must implement " +
+                    "com.haulmont.cuba.gui.xml.layout.ComponentLoader.ComponentContext");
+        }
 
         return tab;
     }
@@ -482,16 +488,16 @@ public class WebAccordion extends WebAbstractComponent<CubaAccordion>
         // after all lazy tabs listeners
         if (!componentTabChangeListenerInitialized) {
             component.addSelectedTabChangeListener(event -> {
-                if (context != null) {
-                    context.executeInjectTasks();
-                    context.executeInitTasks();
+                if (context instanceof ComponentLoader.ComponentContext) {
+                    ((ComponentLoader.ComponentContext) context).executeInjectTasks();
+                    ((ComponentLoader.ComponentContext) context).executeInitTasks();
                 }
                 // Fire GUI listener
                 fireTabChanged();
                 // Execute outstanding post init tasks after GUI listener.
                 // We suppose that context.executePostInitTasks() executes a task once and then remove it from task list.
-                if (context != null) {
-                    context.executePostInitTasks();
+                if (context instanceof ComponentLoader.ComponentContext) {
+                    ((ComponentLoader.ComponentContext) context).executePostInitTasks();
                 }
 
                 Window window = ComponentsHelper.getWindow(WebAccordion.this);
@@ -525,6 +531,24 @@ public class WebAccordion extends WebAbstractComponent<CubaAccordion>
     @Override
     public void removeSelectedTabChangeListener(Consumer<SelectedTabChangeEvent> listener) {
         getEventHub().unsubscribe(SelectedTabChangeEvent.class, listener);
+    }
+
+    @Override
+    public void attached() {
+        super.attached();
+
+        getOwnComponentsStream().forEach(component -> {
+            ((AttachNotifier) component).attached();
+        });
+    }
+
+    @Override
+    public void detached() {
+        super.detached();
+
+        getOwnComponentsStream().forEach(component -> {
+            ((AttachNotifier) component).detached();
+        });
     }
 
     protected class LazyTabChangeListener implements com.vaadin.ui.Accordion.SelectedTabChangeListener {

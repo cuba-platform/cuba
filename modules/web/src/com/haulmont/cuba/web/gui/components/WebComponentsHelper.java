@@ -70,7 +70,9 @@ public class WebComponentsHelper {
             comp = ((com.haulmont.cuba.gui.components.Component.Wrapper) comp).getComponent();
         }
 
-        return (Component) comp;
+        return comp instanceof com.haulmont.cuba.gui.components.Component
+                ? ((com.haulmont.cuba.gui.components.Component) comp).unwrapComposition(Component.class)
+                : (Component) comp;
     }
 
     /**
@@ -88,7 +90,9 @@ public class WebComponentsHelper {
             comp = ((com.haulmont.cuba.gui.components.Component.Wrapper) comp).getComposition();
         }
 
-        return (Component) comp;
+        return comp instanceof com.haulmont.cuba.gui.components.Component
+                ? ((com.haulmont.cuba.gui.components.Component) comp).unwrapComposition(Component.class)
+                : (Component) comp;
     }
 
     public static void expand(AbstractOrderedLayout layout, Component component, String height, String width) {

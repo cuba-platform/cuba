@@ -80,7 +80,7 @@ public class LayoutLoader {
     protected ComponentLoader getLoader(Element element) {
         Class<? extends ComponentLoader> loaderClass = config.getLoader(element.getName());
         if (loaderClass == null) {
-            throw new GuiDevelopmentException("Unknown component: " + element.getName(), context.getFullFrameId());
+            throw new GuiDevelopmentException("Unknown component: " + element.getName(), context);
         }
 
         return initLoader(element, loaderClass);
@@ -105,13 +105,13 @@ public class LayoutLoader {
         try {
             constructor = loaderClass.getConstructor();
         } catch (NoSuchMethodException e) {
-            throw new GuiDevelopmentException("Unable to get constructor for loader: " + e, context.getFullFrameId());
+            throw new GuiDevelopmentException("Unable to get constructor for loader: " + e, context);
         }
 
         try {
             loader = constructor.newInstance();
         } catch (InvocationTargetException | IllegalAccessException | InstantiationException e) {
-            throw new GuiDevelopmentException("Loader instantiation error: " + e, context.getFullFrameId());
+            throw new GuiDevelopmentException("Loader instantiation error: " + e, context);
         }
 
         loader.setBeanLocator(beanLocator);

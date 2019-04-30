@@ -16,18 +16,15 @@
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
+import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.*;
 import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 import java.util.HashSet;
 
 public class FileUploadFieldLoader extends AbstractFieldLoader<FileUploadField> {
-
-    private final Logger log = LoggerFactory.getLogger(AbstractUploadFieldLoader.class);
 
     @Override
     public void loadComponent() {
@@ -158,13 +155,14 @@ public class FileUploadFieldLoader extends AbstractFieldLoader<FileUploadField> 
     protected void loadDropZone(UploadField uploadField, Element element) {
         String dropZoneId = element.attributeValue("dropZone");
         if (StringUtils.isNotEmpty(dropZoneId)) {
-            Component dropZone = context.getFrame().getComponent(dropZoneId);
+            Component dropZone = findComponent(dropZoneId);
             if (dropZone instanceof BoxLayout) {
                 uploadField.setDropZone(new UploadField.DropZone((BoxLayout) dropZone));
             } else if (dropZone != null) {
-                log.warn("Unsupported dropZone class {}", dropZone.getClass().getName());
+                throw new GuiDevelopmentException("Unsupported dropZone class " + dropZone.getClass().getName(),
+                        context);
             } else {
-                log.warn("Unable to find dropZone component with id: {}", dropZoneId);
+                throw new GuiDevelopmentException("Unable to find dropZone component with id: " + dropZoneId, context);
             }
         }
 
@@ -177,13 +175,14 @@ public class FileUploadFieldLoader extends AbstractFieldLoader<FileUploadField> 
     protected void loadPasteZone(UploadField uploadField, Element element) {
         String pasteZoneId = element.attributeValue("pasteZone");
         if (StringUtils.isNotEmpty(pasteZoneId)) {
-            Component pasteZone = context.getFrame().getComponent(pasteZoneId);
+            Component pasteZone = findComponent(pasteZoneId);
             if (pasteZone instanceof ComponentContainer) {
                 uploadField.setPasteZone((ComponentContainer) pasteZone);
             } else if (pasteZone != null) {
-                log.warn("Unsupported pasteZone class {}", pasteZone.getClass().getName());
+                throw new GuiDevelopmentException("Unsupported pasteZone class " + pasteZone.getClass().getName(),
+                        context);
             } else {
-                log.warn("Unable to find pasteZone component with id: {}", pasteZoneId);
+                throw new GuiDevelopmentException("Unable to find pasteZone component with id: " + pasteZoneId, context);
             }
         }
     }

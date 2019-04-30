@@ -81,7 +81,7 @@ public class TwinColumnLoader extends AbstractFieldLoader<TwinColumn> {
     protected void loadDatasource(DatasourceComponent component, Element element) {
         String datasource = element.attributeValue("optionsDatasource");
         if (!StringUtils.isEmpty(datasource)) {
-            Datasource ds = context.getDsContext().get(datasource);
+            Datasource ds = getComponentContext().getDsContext().get(datasource);
             ((TwinColumn) component).setOptionsDatasource((CollectionDatasource) ds);
         }
 
@@ -91,11 +91,11 @@ public class TwinColumnLoader extends AbstractFieldLoader<TwinColumn> {
     protected void loadOptionsContainer(TwinColumn component, Element element) {
         String containerId = element.attributeValue("optionsContainer");
         if (containerId != null) {
-            FrameOwner frameOwner = context.getFrame().getFrameOwner();
+            FrameOwner frameOwner = getComponentContext().getFrame().getFrameOwner();
             ScreenData screenData = UiControllerUtils.getScreenData(frameOwner);
             InstanceContainer container = screenData.getContainer(containerId);
             if (!(container instanceof CollectionContainer)) {
-                throw new GuiDevelopmentException("Not a CollectionContainer: " + containerId, context.getCurrentFrameId());
+                throw new GuiDevelopmentException("Not a CollectionContainer: " + containerId, context);
             }
             //noinspection unchecked
             component.setOptions(new ContainerOptions((CollectionContainer) container));

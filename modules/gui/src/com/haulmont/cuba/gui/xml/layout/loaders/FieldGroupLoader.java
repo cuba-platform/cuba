@@ -119,7 +119,8 @@ public class FieldGroupLoader extends AbstractComponentLoader<FieldGroup> {
                 if (StringUtils.isNotEmpty(fieldGroupId)) {
                     params.put("FieldGroup ID", fieldGroupId);
                 }
-                throw new GuiDevelopmentException("FieldGroup field elements should be placed within its column.", context.getFullFrameId(), params);
+                throw new GuiDevelopmentException("FieldGroup field elements should be placed within its column.",
+                        context, params);
             }
             resultComponent.setColumns(columnElements.size());
 
@@ -175,7 +176,7 @@ public class FieldGroupLoader extends AbstractComponentLoader<FieldGroup> {
             if (field.getXmlDescriptor() != null) {
                 String generator = field.getXmlDescriptor().attributeValue("generator");
                 if (generator != null) {
-                    context.addInjectTask((boundContext, window) -> {
+                    getComponentContext().addInjectTask((boundContext, window) -> {
                         DeclarativeFieldGenerator fieldGenerator = new DeclarativeFieldGenerator(resultComponent, generator);
                         Component fieldComponent = fieldGenerator.generateField(field.getTargetDatasource(), field.getProperty());
                         field.setComponent(fieldComponent);
@@ -246,9 +247,9 @@ public class FieldGroupLoader extends AbstractComponentLoader<FieldGroup> {
     protected Datasource loadDatasource(Element element) {
         String datasource = element.attributeValue("datasource");
         if (!StringUtils.isBlank(datasource)) {
-            Datasource ds = context.getDsContext().get(datasource);
+            Datasource ds = getComponentContext().getDsContext().get(datasource);
             if (ds == null) {
-                throw new GuiDevelopmentException("Can't find datasource by name: " + datasource, context.getFullFrameId());
+                throw new GuiDevelopmentException("Can't find datasource by name: " + datasource, context);
             }
             return ds;
         }
@@ -279,7 +280,7 @@ public class FieldGroupLoader extends AbstractComponentLoader<FieldGroup> {
 
                 throw new GuiDevelopmentException(
                         String.format("FieldGroup column contains duplicate fields '%s'.", field.getId()),
-                        context.getFullFrameId(), params);
+                        context, params);
             }
             fields.add(field);
             ids.add(field.getId());
@@ -293,7 +294,7 @@ public class FieldGroupLoader extends AbstractComponentLoader<FieldGroup> {
         }
 
         Datasource datasource = dsContext.get(dsName);
-        if (datasource != null && datasource instanceof CollectionDatasource) {
+        if (datasource instanceof CollectionDatasource) {
             return (CollectionDatasource) datasource;
         } else {
             if (dsContext.getParent() != null) {
@@ -310,7 +311,7 @@ public class FieldGroupLoader extends AbstractComponentLoader<FieldGroup> {
 
         if (Strings.isNullOrEmpty(id) && Strings.isNullOrEmpty(property)) {
             throw new GuiDevelopmentException(String.format("id/property is not defined for field of FieldGroup '%s'. " +
-                    "Set id or property attribute.", resultComponent.getId()), context.getFullFrameId());
+                    "Set id or property attribute.", resultComponent.getId()), context);
         }
 
         if (Strings.isNullOrEmpty(property)) {
@@ -329,12 +330,12 @@ public class FieldGroupLoader extends AbstractComponentLoader<FieldGroup> {
         CollectionDatasource optionsDs = null;
         String optDsName = element.attributeValue("optionsDatasource");
         if (StringUtils.isNotBlank(optDsName)) {
-            LegacyFrame frame = (LegacyFrame) getContext().getFrame().getFrameOwner();
+            LegacyFrame frame = (LegacyFrame) getComponentContext().getFrame().getFrameOwner();
             DsContext dsContext = frame.getDsContext();
             optionsDs = findDatasourceRecursively(dsContext, optDsName);
             if (optionsDs == null) {
-                throw new GuiDevelopmentException(String.format("Options datasource %s not found for field %s", optDsName, id)
-                        , context.getFullFrameId());
+                throw new GuiDevelopmentException(String.format("Options datasource %s not found for field %s", optDsName, id),
+                        context);
             }
         }
 
@@ -357,19 +358,19 @@ public class FieldGroupLoader extends AbstractComponentLoader<FieldGroup> {
             if (customElements.size() > 1) {
                 throw new GuiDevelopmentException(
                         String.format("FieldGroup field %s element cannot contains two or more custom field definitions", id),
-                        context.getCurrentFrameId());
+                        context);
             }
             if (customField) {
                 throw new GuiDevelopmentException(
                         String.format("FieldGroup field %s cannot use both custom/generator attribute and inline component definition", id),
-                        context.getCurrentFrameId());
+                        context);
             }
             customField = true;
         }
 
         if (!customField && targetDs == null) {
             throw new GuiDevelopmentException(String.format("Datasource is not defined for FieldGroup field '%s'. " +
-                    "Only custom fields can have no datasource.", property), context.getFullFrameId());
+                    "Only custom fields can have no datasource.", property), context);
         }
 
         FieldGroup.FieldConfig field = resultComponent.createField(id);
@@ -395,7 +396,7 @@ public class FieldGroupLoader extends AbstractComponentLoader<FieldGroup> {
             if (metaPropertyPath == null) {
                 if (!customField) {
                     throw new GuiDevelopmentException(String.format("Property '%s' is not found in entity '%s'",
-                            property, metaClass.getName()), context.getFullFrameId());
+                            property, metaClass.getName()), context);
                 }
             }
         }
@@ -613,7 +614,7 @@ public class FieldGroupLoader extends AbstractComponentLoader<FieldGroup> {
             datasource = resultComponent.getDatasource();
         } else {
             throw new GuiDevelopmentException(String.format("Unable to get datasource for field '%s'",
-                    field.getId()), context.getFullFrameId());
+                    field.getId()), context);
         }
         return datasource.getMetaClass();
     }

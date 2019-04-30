@@ -34,13 +34,14 @@ public abstract class ActionsHolderLoader<T extends ActionsHolder> extends Abstr
     protected Action loadDeclarativeAction(ActionsHolder actionsHolder, Element element) {
         String id = element.attributeValue("id");
         if (StringUtils.isEmpty(id)) {
-            throw new GuiDevelopmentException("No action id provided", context.getFullFrameId(),
+            throw new GuiDevelopmentException("No action id provided", context,
                     "ActionsHolder ID", actionsHolder.getId());
         }
 
         if (StringUtils.isEmpty(element.attributeValue("invoke"))) {
             // only in legacy frames
-            if (getContext().getFrame().getFrameOwner() instanceof LegacyFrame) {
+            if (context instanceof ComponentContext
+                    && getComponentContext().getFrame().getFrameOwner() instanceof LegacyFrame) {
                 // Try to create a standard list action
                 for (ListActionType type : ListActionType.values()) {
                     if (type.getId().equals(id)) {
@@ -121,7 +122,7 @@ public abstract class ActionsHolderLoader<T extends ActionsHolder> extends Abstr
                 } catch (IllegalArgumentException e) {
                     throw new GuiDevelopmentException(
                             String.format("Unknown open type: '%s' for action: '%s'", openTypeString, action.getId()),
-                            context.getFullFrameId());
+                            context);
                 }
 
                 ((Action.HasOpenType) action).setOpenType(openType);

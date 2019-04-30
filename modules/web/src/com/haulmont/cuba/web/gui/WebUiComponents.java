@@ -18,12 +18,20 @@ package com.haulmont.cuba.web.gui;
 
 import com.google.common.reflect.TypeToken;
 import com.haulmont.chile.core.datatypes.DatatypeRegistry;
+import com.haulmont.cuba.core.global.BeanLocator;
 import com.haulmont.cuba.core.global.DevelopmentException;
+import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.UiComponents;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.mainwindow.*;
+import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
+import com.haulmont.cuba.gui.xml.layout.CompositeComponentLayoutLoader;
+import com.haulmont.cuba.gui.xml.layout.CompositeDescriptorLoader;
+import com.haulmont.cuba.gui.xml.layout.loaders.CompositeComponentLoaderContext;
 import com.haulmont.cuba.web.gui.components.*;
 import com.haulmont.cuba.web.gui.components.mainwindow.*;
+import org.apache.commons.lang3.StringUtils;
+import org.dom4j.Element;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.ApplicationContext;
@@ -34,6 +42,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -44,6 +53,12 @@ public class WebUiComponents implements UiComponents {
     protected ApplicationContext applicationContext;
     @Inject
     protected DatatypeRegistry datatypeRegistry;
+    @Inject
+    protected CompositeDescriptorLoader compositeDescriptorLoader;
+    @Inject
+    protected UserSessionSource userSessionSource;
+    @Inject
+    protected BeanLocator beanLocator;
 
     protected Map<String, Class<? extends Component>> classes = new ConcurrentHashMap<>();
     protected Map<Class, String> names = new ConcurrentHashMap<>();
@@ -163,6 +178,7 @@ public class WebUiComponents implements UiComponents {
         try {
             Component instance = constructor.newInstance();
             autowireContext(instance);
+            initCompositeComponent(instance, componentClass);
             return (T) instance;
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
             throw new RuntimeException(String.format("Error creating the '%s' component instance", name), e);
@@ -220,6 +236,66 @@ public class WebUiComponents implements UiComponents {
                                 instance.getClass(), e);
             }
         }
+    }
+
+    protected void initCompositeComponent(Component instance, Class<? extends Component> componentClass) {
+        if (!(instance instanceof CompositeComponent)) {
+            return;
+        }
+
+        CompositeComponent compositeComponent = (CompositeComponent) instance;
+
+        CompositeDescriptor descriptor = componentClass.getAnnotation(CompositeDescriptor.class);
+        if (descriptor != null) {
+            String descriptorPath = descriptor.value();
+            if (!descriptorPath.startsWith("/")) {
+                String packageName = getPackage(componentClass);
+                if (StringUtils.isNotEmpty(packageName)) {
+                    String relativePath = packageName.replace('.', '/');
+                    descriptorPath = "/" + relativePath + "/" + descriptorPath;
+                }
+            }
+            Component root = processCompositeDescriptor(componentClass, descriptorPath);
+            CompositeComponentUtils.setRoot(compositeComponent, root);
+        }
+
+        CompositeComponent.CreateEvent event = new CompositeComponent.CreateEvent(compositeComponent);
+        CompositeComponentUtils.fireEvent(compositeComponent, CompositeComponent.CreateEvent.class, event);
+    }
+
+    protected String getPackage(Class<? extends Component> componentClass) {
+        Package javaPackage = componentClass.getPackage();
+        return javaPackage != null ? javaPackage.getName() : "";
+    }
+
+    protected Component processCompositeDescriptor(Class<? extends Component> componentClass, String descriptorPath) {
+        ComponentLoader.CompositeComponentContext context = new CompositeComponentLoaderContext();
+        context.setComponentClass(componentClass);
+        context.setDescriptorPath(descriptorPath);
+
+        Element element = compositeDescriptorLoader.load(descriptorPath);
+
+        CompositeComponentLayoutLoader layoutLoader =
+                beanLocator.getPrototype(CompositeComponentLayoutLoader.NAME, context);
+        layoutLoader.setLocale(getLocale());
+        layoutLoader.setMessagesPack(getMessagePack(descriptorPath));
+
+        return layoutLoader.createComponent(element);
+    }
+
+    protected Locale getLocale() {
+        return userSessionSource.getUserSession().getLocale();
+    }
+
+    protected String getMessagePack(String descriptorPath) {
+        if (descriptorPath.contains("/")) {
+            descriptorPath = StringUtils.substring(descriptorPath, 0, descriptorPath.lastIndexOf("/"));
+        }
+
+        String messagesPack = descriptorPath.replaceAll("/", ".");
+        int start = messagesPack.startsWith(".") ? 1 : 0;
+        messagesPack = messagesPack.substring(start);
+        return messagesPack;
     }
 
     public void register(String name, Class<? extends Component> componentClass) {

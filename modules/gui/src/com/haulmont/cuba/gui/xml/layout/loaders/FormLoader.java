@@ -86,7 +86,7 @@ public class FormLoader extends AbstractComponentLoader<Form> {
     protected void loadDataContainer(Form resultComponent, Element element) {
         String containerId = element.attributeValue("dataContainer");
         if (!Strings.isNullOrEmpty(containerId)) {
-            FrameOwner frameOwner = context.getFrame().getFrameOwner();
+            FrameOwner frameOwner = getComponentContext().getFrame().getFrameOwner();
             ScreenData screenData = UiControllerUtils.getScreenData(frameOwner);
             InstanceContainer container = screenData.getContainer(containerId);
             //noinspection unchecked
@@ -110,7 +110,7 @@ public class FormLoader extends AbstractComponentLoader<Form> {
                         ? Collections.emptyMap()
                         : ParamsMap.of("Form ID", fieldGroupId);
                 throw new GuiDevelopmentException("Form component elements have to be placed within its column.",
-                        context.getFullFrameId(), params);
+                        context, params);
             }
 
             resultComponent.setColumns(columnElements.size());

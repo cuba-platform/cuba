@@ -46,7 +46,7 @@ public class TreeTableLoader extends AbstractTableLoader<TreeTable> {
         }
 
         if (Strings.isNullOrEmpty(hierarchyProperty)) {
-            throw new GuiDevelopmentException("TreeTable doesn't have 'hierarchyProperty' attribute", context.getCurrentFrameId(),
+            throw new GuiDevelopmentException("TreeTable doesn't have 'hierarchyProperty' attribute", context,
                     "TreeTable ID", element.attributeValue("id"));
         }
         return new ContainerTreeTableItems(container, hierarchyProperty);

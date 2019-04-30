@@ -32,5 +32,7 @@
         <class>com.haulmont.cuba.web.testmodel.sales.OrderLineParam</class>
         <class>com.haulmont.cuba.web.testmodel.sales.Product</class>
         <class>com.haulmont.cuba.web.testmodel.sales.ProductTag</class>
+
+        <class>com.haulmont.cuba.web.testmodel.compositecomponent.Comment</class>
     </persistence-unit>
 </persistence>

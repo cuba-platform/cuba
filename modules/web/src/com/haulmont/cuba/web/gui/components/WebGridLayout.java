@@ -318,4 +318,22 @@ public class WebGridLayout extends WebAbstractComponent<CubaGridLayout> implemen
     public void setRequiredIndicatorVisible(boolean visible) {
         component.setRequiredIndicatorVisible(visible);
     }
+
+    @Override
+    public void attached() {
+        super.attached();
+
+        for (Component component : ownComponents) {
+            ((AttachNotifier) component).attached();
+        }
+    }
+
+    @Override
+    public void detached() {
+        super.detached();
+
+        for (Component component : ownComponents) {
+            ((AttachNotifier) component).detached();
+        }
+    }
 }

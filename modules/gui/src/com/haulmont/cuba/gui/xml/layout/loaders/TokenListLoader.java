@@ -171,7 +171,7 @@ public class TokenListLoader extends AbstractFieldLoader<TokenList> {
     protected void loadLookup(TokenList component, Element element) {
         Element lookupElement = element.element("lookup");
         if (lookupElement == null) {
-            throw new GuiDevelopmentException("'tokenList' must contain 'lookup' element", context.getFullFrameId(),
+            throw new GuiDevelopmentException("'tokenList' must contain 'lookup' element", context,
                     "TokenList ID", element.attributeValue("id"));
         }
 
@@ -179,7 +179,8 @@ public class TokenListLoader extends AbstractFieldLoader<TokenList> {
         if (component.getOptions() == null) {
             String optionsDatasource = lookupElement.attributeValue("optionsDatasource");
             if (!StringUtils.isEmpty(optionsDatasource)) {
-                CollectionDatasource ds = (CollectionDatasource) context.getDsContext().get(optionsDatasource);
+                CollectionDatasource ds =
+                        (CollectionDatasource) getComponentContext().getDsContext().get(optionsDatasource);
                 component.setOptionsDatasource(ds);
             }
         }
@@ -244,16 +245,16 @@ public class TokenListLoader extends AbstractFieldLoader<TokenList> {
     protected void loadDatasource(TokenList tokenList, Element element) {
         final String datasourceId = element.attributeValue("datasource");
         if (StringUtils.isNotEmpty(datasourceId)) {
-            Datasource datasource = context.getDsContext().get(datasourceId);
+            Datasource datasource = getComponentContext().getDsContext().get(datasourceId);
             if (datasource == null) {
                 throw new GuiDevelopmentException(String.format("Datasource '%s' is not defined", datasourceId),
-                        context.getFullFrameId());
+                        context);
             }
 
             if (!(datasource instanceof CollectionDatasource)) {
                 throw new GuiDevelopmentException(
                         String.format("Can't set datasource '%s' for TokenList because it supports only CollectionDatasources",
-                                datasourceId), context.getFullFrameId());
+                                datasourceId), context);
             }
 
             tokenList.setValueSource(new LegacyCollectionDsValueSource((CollectionDatasource) datasource));
@@ -270,11 +271,11 @@ public class TokenListLoader extends AbstractFieldLoader<TokenList> {
     protected void loadOptionsContainer(TokenList component, Element element) {
         String containerId = element.attributeValue("optionsContainer");
         if (containerId != null) {
-            FrameOwner frameOwner = context.getFrame().getFrameOwner();
+            FrameOwner frameOwner = getComponentContext().getFrame().getFrameOwner();
             ScreenData screenData = UiControllerUtils.getScreenData(frameOwner);
             InstanceContainer container = screenData.getContainer(containerId);
             if (!(container instanceof CollectionContainer)) {
-                throw new GuiDevelopmentException("Not a CollectionContainer: " + containerId, context.getCurrentFrameId());
+                throw new GuiDevelopmentException("Not a CollectionContainer: " + containerId, context);
             }
             //noinspection unchecked
             component.setOptions(new ContainerOptions((CollectionContainer) container));

@@ -89,7 +89,8 @@ public class PopupButtonLoader extends AbstractComponentLoader<PopupButton> {
             Action action = loadDeclarativeAction(actionsHolder, actionEl);
             actionsHolder.addAction(action);
 
-            context.addPostInitTask(new ActionHolderAssignActionPostInitTask(actionsHolder, action.getId(), context.getFrame()));
+            getComponentContext().addPostInitTask(new ActionHolderAssignActionPostInitTask(actionsHolder,
+                    action.getId(), getComponentContext().getFrame()));
         }
     }
 

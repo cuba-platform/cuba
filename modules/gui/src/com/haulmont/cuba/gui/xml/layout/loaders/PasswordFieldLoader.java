@@ -26,6 +26,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
 
 public class PasswordFieldLoader extends AbstractTextFieldLoader<PasswordField> {
+
     @Override
     public void createComponent() {
         resultComponent = factory.create(PasswordField.NAME);
@@ -48,13 +49,16 @@ public class PasswordFieldLoader extends AbstractTextFieldLoader<PasswordField> 
         String capsLockIndicator = element.attributeValue("capsLockIndicator");
         if (StringUtils.isNotEmpty(capsLockIndicator)) {
             if (component.getCapsLockIndicator() == null) {
-                Component bindComponent = component.getFrame().getComponent(capsLockIndicator);
-                if (!(bindComponent instanceof CapsLockIndicator)) {
-                    throw new GuiDevelopmentException("Specify 'capsLockIndicator' attribute: id of " +
-                            "CapsLockIndicator component", context.getFullFrameId(), "componentId", component
-                            .getId());
+                Component bindComponent = findComponent(capsLockIndicator);
+                if (bindComponent instanceof CapsLockIndicator) {
+                    component.setCapsLockIndicator((CapsLockIndicator) bindComponent);
+                } else if (bindComponent != null) {
+                    throw new GuiDevelopmentException("Unsupported 'capsLockIndicator' component class",
+                            context, "componentId", component.getId());
+                } else {
+                    throw new GuiDevelopmentException("Unable to find capsLockIndicator component with id: " +
+                            capsLockIndicator, context);
                 }
-                component.setCapsLockIndicator((CapsLockIndicator) bindComponent);
             }
         }
     }

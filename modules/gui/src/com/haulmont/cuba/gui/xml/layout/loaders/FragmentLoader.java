@@ -105,7 +105,7 @@ public class FragmentLoader extends ContainerLoader<Fragment> implements Compone
             getScreenViewsLoader().deployViews(element);
         }
 
-        if (context.getParent() == null) {
+        if (getComponentContext().getParent() == null) {
             throw new IllegalStateException("FragmentLoader is always called within parent ComponentLoaderContext");
         }
 
@@ -113,7 +113,8 @@ public class FragmentLoader extends ContainerLoader<Fragment> implements Compone
 
         Element layoutElement = element.element("layout");
         if (layoutElement == null) {
-            throw new GuiDevelopmentException("Required 'layout' element is not found", context.getFullFrameId());
+            throw new GuiDevelopmentException("Required 'layout' element is not found",
+                    getComponentContext().getFullFrameId());
         }
 
         loadIcon(resultComponent, layoutElement);
@@ -140,7 +141,7 @@ public class FragmentLoader extends ContainerLoader<Fragment> implements Compone
             loadDsContext(dsContextElement);
         }
 
-        ComponentLoaderContext parentContext = (ComponentLoaderContext) getContext().getParent();
+        ComponentLoaderContext parentContext = (ComponentLoaderContext) getComponentContext().getParent();
         ScreenOptions options = parentContext.getOptions();
 
         // add inject / init tasks before nested fragments
@@ -153,7 +154,7 @@ public class FragmentLoader extends ContainerLoader<Fragment> implements Compone
 
     protected void loadScreenData(Element dataEl) {
         ScreenData hostScreenData = null;
-        Context parent = context.getParent();
+        ComponentContext parent = getComponentContext().getParent();
         while (hostScreenData == null && parent != null) {
             hostScreenData = parent.getScreenData();
             parent = parent.getParent();
@@ -168,18 +169,19 @@ public class FragmentLoader extends ContainerLoader<Fragment> implements Compone
         DsContext dsContext = null;
         if (resultComponent.getFrameOwner() instanceof LegacyFrame) {
             DsContextLoader dsContextLoader;
-            DsContext parentDsContext = context.getParent().getDsContext();
+            DsContext parentDsContext = getComponentContext().getParent().getDsContext();
             if (parentDsContext != null){
                 dsContextLoader = new DsContextLoader(parentDsContext.getDataSupplier());
             } else {
                 dsContextLoader = new DsContextLoader(new GenericDataSupplier());
             }
 
-            dsContext = dsContextLoader.loadDatasources(dsContextElement, parentDsContext, getContext().getAliasesMap());
+            dsContext = dsContextLoader.loadDatasources(dsContextElement, parentDsContext,
+                    getComponentContext().getAliasesMap());
             ((ComponentLoaderContext) context).setDsContext(dsContext);
         }
         if (dsContext != null) {
-            FrameOwner frameOwner = getContext().getFrame().getFrameOwner();
+            FrameOwner frameOwner = getComponentContext().getFrame().getFrameOwner();
             if (frameOwner instanceof LegacyFrame) {
                 LegacyFrame frame = (LegacyFrame) frameOwner;
                 frame.setDsContext(dsContext);
@@ -213,7 +215,7 @@ public class FragmentLoader extends ContainerLoader<Fragment> implements Compone
         }
 
         @Override
-        public void execute(Context context, Frame window) {
+        public void execute(ComponentContext context, Frame window) {
             String loggingId = context.getFullFrameId();
             try {
                 if (fragment.getFrameOwner() instanceof AbstractFrame) {
@@ -256,7 +258,7 @@ public class FragmentLoader extends ContainerLoader<Fragment> implements Compone
         }
 
         @Override
-        public void execute(Context context, Frame window) {
+        public void execute(ComponentContext context, Frame window) {
             String loggingId = ComponentsHelper.getFullFrameId(this.fragment);
 
             StopWatch stopWatch = createStopWatch(ScreenLifeCycle.INIT, loggingId);

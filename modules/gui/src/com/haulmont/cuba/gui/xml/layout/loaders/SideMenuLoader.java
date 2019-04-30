@@ -74,7 +74,7 @@ public class SideMenuLoader extends AbstractComponentLoader<SideMenu> {
             Component sidePanel = resultComponent.getFrame().getComponent(sidePanelId);
             if (sidePanel == null) {
                 throw new GuiDevelopmentException("Unable to find sidePanel component for SideMenu",
-                        context.getFullFrameId(), "sidePanel", sidePanelId);
+                        context, "sidePanel", sidePanelId);
             }
             component.setSidePanel(sidePanel);
         }
@@ -86,7 +86,7 @@ public class SideMenuLoader extends AbstractComponentLoader<SideMenu> {
             Component toggleButton = resultComponent.getFrame().getComponent(toggleButtonId);
             if (!(toggleButton instanceof Button)) {
                 throw new GuiDevelopmentException("Unable to find sidePanelToggleButton for SideMenu",
-                        context.getFullFrameId(), "sidePanelToggleButton", toggleButtonId);
+                        context, "sidePanelToggleButton", toggleButtonId);
             }
             component.setSidePanelToggleButton((Button) toggleButton);
         }

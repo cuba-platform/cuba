@@ -56,8 +56,8 @@ public class EmbeddedLoader extends AbstractComponentLoader<Embedded> {
                 try {
                     targetUrl = new URL(src);
                 } catch (MalformedURLException e) {
-                    throw new GuiDevelopmentException("Incorrect URL in Embedded src attribute", context.getFullFrameId(),
-                            "src", srcAttr);
+                    throw new GuiDevelopmentException("Incorrect URL in Embedded src attribute",
+                            context, "src", srcAttr);
                 }
 
                 resultComponent.setType(Embedded.Type.BROWSER);
@@ -71,7 +71,7 @@ public class EmbeddedLoader extends AbstractComponentLoader<Embedded> {
                 resultComponent.setSource(src);
             } else {
                 throw new GuiDevelopmentException("Illegal src attribute value. 'url://' or 'file://' or theme:// prefix expected",
-                        context.getFullFrameId(), "src", srcAttr);
+                        context, "src", srcAttr);
             }
         }
 

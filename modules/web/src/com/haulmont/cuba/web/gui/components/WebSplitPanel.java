@@ -18,6 +18,7 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.bali.events.Subscription;
 import com.haulmont.cuba.gui.ComponentsHelper;
+import com.haulmont.cuba.gui.components.AttachNotifier;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.SizeUnit;
@@ -374,5 +375,23 @@ public class WebSplitPanel extends WebAbstractComponent<AbstractSplitPanel> impl
     @Override
     public void removeSplitPositionChangeListener(Consumer<SplitPositionChangeEvent> listener) {
         unsubscribe(SplitPositionChangeEvent.class, listener);
+    }
+
+    @Override
+    public void attached() {
+        super.attached();
+
+        for (Component component : ownComponents) {
+            ((AttachNotifier) component).attached();
+        }
+    }
+
+    @Override
+    public void detached() {
+        super.detached();
+
+        for (Component component : ownComponents) {
+            ((AttachNotifier) component).detached();
+        }
     }
 }

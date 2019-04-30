@@ -61,14 +61,14 @@ public class GroupTableLoader extends AbstractTableLoader<GroupTable> {
             for (Table.Column column : columns) {
                 if (column.isCollapsed()) {
                     String msg = String.format("Can't group by collapsed column: %s", column.getId());
-                    throw new GuiDevelopmentException(msg, context.getFullFrameId());
+                    throw new GuiDevelopmentException(msg, context);
                 }
 
                 if (column.isGroupAllowed()) {
                     groupProperties.add(column.getId());
                 }
             }
-            context.addPostInitTask((context1, window) ->
+            getComponentContext().addPostInitTask((context1, window) ->
                     ((GroupTable) component).groupBy(groupProperties.toArray())
             );
         }
