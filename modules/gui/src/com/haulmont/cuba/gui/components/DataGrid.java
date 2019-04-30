@@ -619,38 +619,47 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
     /**
      * The root class from which all DataGrid editor event state objects shall be derived.
      */
-    abstract class AbstractDataGridEditorEvent extends AbstractDataGridEvent {
-        protected Object itemId;
+    abstract class AbstractDataGridEditorEvent<E extends Entity> extends AbstractDataGridEvent {
+        protected E item;
 
         /**
          * @param component the DataGrid from which this event originates
-         * @param itemId    the editing item id
+         * @param item      the editing item
          */
-        public AbstractDataGridEditorEvent(DataGrid component, Object itemId) {
+        public AbstractDataGridEditorEvent(DataGrid component, E item) {
             super(component);
-            this.itemId = itemId;
+            this.item = item;
         }
 
         /**
          * @return an item Id
+         * @deprecated use {@link #getItem()} instead
          */
+        @Deprecated
         public Object getItemId() {
-            return itemId;
+            return item.getId();
+        }
+
+        /**
+         * @return an item
+         */
+        public E getItem() {
+            return item;
         }
     }
 
     /**
      * An event that is fired before the item is updated.
      */
-    class EditorPreCommitEvent extends AbstractDataGridEditorEvent {
+    class EditorPreCommitEvent<E extends Entity> extends AbstractDataGridEditorEvent<E> {
         /**
          * Constructor for a DataGrid editor pre commit event.
          *
          * @param component the DataGrid from which this event originates
-         * @param itemId    the editing item id
+         * @param item      the editing item
          */
-        public EditorPreCommitEvent(DataGrid component, Object itemId) {
-            super(component, itemId);
+        public EditorPreCommitEvent(DataGrid component, E item) {
+            super(component, item);
         }
     }
 
@@ -673,15 +682,15 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
     /**
      * An event that is fired after the item is updated.
      */
-    class EditorPostCommitEvent extends AbstractDataGridEditorEvent {
+    class EditorPostCommitEvent<E extends Entity> extends AbstractDataGridEditorEvent<E> {
         /**
          * Constructor for a DataGrid editor post commit event.
          *
          * @param component the DataGrid from which this event originates
-         * @param itemId    the edited item id
+         * @param item      the edited item
          */
-        public EditorPostCommitEvent(DataGrid component, Object itemId) {
-            super(component, itemId);
+        public EditorPostCommitEvent(DataGrid component, E item) {
+            super(component, item);
         }
     }
 
@@ -704,15 +713,15 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
     /**
      * An event that is fired when the DataGrid editor is closed.
      */
-    class EditorCloseEvent extends AbstractDataGridEditorEvent {
+    class EditorCloseEvent<E extends Entity> extends AbstractDataGridEditorEvent<E> {
         /**
          * Constructor for a DataGrid editor close event.
          *
          * @param component the DataGrid from which this event originates
-         * @param itemId    the edited item id
+         * @param item      the edited item
          */
-        public EditorCloseEvent(DataGrid component, Object itemId) {
-            super(component, itemId);
+        public EditorCloseEvent(DataGrid component, E item) {
+            super(component, item);
         }
     }
 
@@ -752,17 +761,17 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
      * });
      * }</pre>
      */
-    class EditorOpenEvent extends AbstractDataGridEditorEvent {
+    class EditorOpenEvent<E extends Entity> extends AbstractDataGridEditorEvent<E> {
         protected Map<String, Field> fields;
 
         /**
          * @param component the DataGrid from which this event originates
-         * @param itemId    the editing item id
+         * @param item      the editing item
          * @param fields    the map, where key - DataGrid column's id
          *                  and value - the field that is used in the editor for this column
          */
-        public EditorOpenEvent(DataGrid component, Object itemId, Map<String, Field> fields) {
-            super(component, itemId);
+        public EditorOpenEvent(DataGrid component, E item, Map<String, Field> fields) {
+            super(component, item);
             this.fields = fields;
         }
 

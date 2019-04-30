@@ -1254,7 +1254,7 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
                         entry -> ((DataGridEditorCustomField) entry.getValue()).getField())
                 );
 
-        EditorOpenEvent e = new EditorOpenEvent(this, event.getBean(), fields);
+        EditorOpenEvent<E> e = new EditorOpenEvent<>(this, event.getBean(), fields);
         publish(EditorOpenEvent.class, e);
     }
 
@@ -1278,7 +1278,7 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
     }
 
     protected void onEditorCancel(EditorCancelEvent<E> event) {
-        EditorCloseEvent e = new EditorCloseEvent(this, event.getBean());
+        EditorCloseEvent<E> e = new EditorCloseEvent<>(this, event.getBean());
         publish(EditorCloseEvent.class, e);
     }
 
@@ -1304,7 +1304,7 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
     }
 
     protected void onEditorBeforeSave(CubaEditorBeforeSaveEvent<E> event) {
-        EditorPreCommitEvent e = new EditorPreCommitEvent(this, event.getBean());
+        EditorPreCommitEvent<E> e = new EditorPreCommitEvent<>(this, event.getBean());
         publish(EditorPreCommitEvent.class, e);
     }
 
@@ -1328,7 +1328,7 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
     }
 
     protected void onEditorSave(EditorSaveEvent<E> event) {
-        EditorPostCommitEvent e = new EditorPostCommitEvent(this, event.getBean());
+        EditorPostCommitEvent<E> e = new EditorPostCommitEvent<>(this, event.getBean());
         publish(EditorPostCommitEvent.class, e);
     }
 
