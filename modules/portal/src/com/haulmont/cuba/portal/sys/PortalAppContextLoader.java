@@ -22,6 +22,8 @@ import com.haulmont.cuba.core.sys.AbstractWebAppContextLoader;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.CubaXmlWebApplicationContext;
 import com.haulmont.cuba.core.sys.ServletContextHolder;
+import com.haulmont.cuba.core.sys.environmentcheck.EnvironmentChecksRunner;
+import com.haulmont.cuba.core.sys.environmentcheck.JvmCheck;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -41,6 +43,8 @@ public class PortalAppContextLoader extends AbstractWebAppContextLoader {
     @Override
     protected void beforeInitAppContext() {
         super.beforeInitAppContext();
+
+        runEnvironmentSanityChecks();
 
         AppContext.setProperty("cuba.clientType", ClientType.PORTAL.toString());
     }
@@ -64,5 +68,11 @@ public class PortalAppContextLoader extends AbstractWebAppContextLoader {
         }
         servletContext.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, webContext);
         return webContext;
+    }
+
+    protected void runEnvironmentSanityChecks() {
+        EnvironmentChecksRunner checks = new EnvironmentChecksRunner(getBlock());
+        checks.addCheck(new JvmCheck());
+        checks.runChecks();
     }
 }

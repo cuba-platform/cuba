@@ -19,6 +19,10 @@ package com.haulmont.cuba.core.sys;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.haulmont.cuba.core.global.Stores;
+import com.haulmont.cuba.core.sys.environmentcheck.DataStoresCheck;
+import com.haulmont.cuba.core.sys.environmentcheck.DirectoriesCheck;
+import com.haulmont.cuba.core.sys.environmentcheck.EnvironmentChecksRunner;
+import com.haulmont.cuba.core.sys.environmentcheck.JvmCheck;
 import com.haulmont.cuba.core.sys.persistence.DbmsType;
 import com.haulmont.cuba.core.sys.persistence.PersistenceConfigProcessor;
 import org.slf4j.Logger;
@@ -80,6 +84,7 @@ public class AppContextLoader extends AbstractWebAppContextLoader {
 
         log.info("DbmsType of the main database is set to " + DbmsType.getType() + DbmsType.getVersion());
 
+        runEnvironmentSanityChecks();
         // Init persistence.xml
         Stores.getAll().forEach(AppContextLoader::createPersistenceXml);
     }
@@ -87,5 +92,13 @@ public class AppContextLoader extends AbstractWebAppContextLoader {
     @Override
     protected ClassPathXmlApplicationContext createApplicationContext(String[] locations) {
         return new CubaCoreApplicationContext(locations);
+    }
+
+    protected void runEnvironmentSanityChecks() {
+        EnvironmentChecksRunner checks = new EnvironmentChecksRunner(getBlock());
+        checks.addCheck(new JvmCheck());
+        checks.addCheck(new DirectoriesCheck());
+        checks.addCheck(new DataStoresCheck());
+        checks.runChecks();
     }
 }

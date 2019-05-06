@@ -19,6 +19,8 @@ package com.haulmont.cuba.web.sys;
 import com.haulmont.cuba.core.global.ClientType;
 import com.haulmont.cuba.core.sys.AbstractWebAppContextLoader;
 import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.core.sys.environmentcheck.EnvironmentChecksRunner;
+import com.haulmont.cuba.core.sys.environmentcheck.JvmCheck;
 import com.haulmont.cuba.gui.AppConfig;
 
 /**
@@ -35,8 +37,16 @@ public class WebAppContextLoader extends AbstractWebAppContextLoader {
     protected void beforeInitAppContext() {
         super.beforeInitAppContext();
 
+        runEnvironmentSanityChecks();
+
         AppContext.setProperty(AppConfig.CLIENT_TYPE_PROP, ClientType.WEB.toString());
 
         AppContext.Internals.setSecurityContextHolder(new WebVaadinCompatibleSecurityContextHolder());
+    }
+
+    protected void runEnvironmentSanityChecks() {
+        EnvironmentChecksRunner checks = new EnvironmentChecksRunner(getBlock());
+        checks.addCheck(new JvmCheck());
+        checks.runChecks();
     }
 }
