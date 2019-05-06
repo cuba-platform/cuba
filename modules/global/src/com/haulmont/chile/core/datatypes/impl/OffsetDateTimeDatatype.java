@@ -16,6 +16,7 @@
 
 package com.haulmont.chile.core.datatypes.impl;
 
+import com.haulmont.chile.core.annotations.Ddl;
 import com.haulmont.chile.core.annotations.JavaClass;
 import com.haulmont.chile.core.datatypes.DatatypeRegistry;
 import com.haulmont.chile.core.datatypes.FormatStrings;
@@ -34,6 +35,9 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 @JavaClass(OffsetDateTime.class)
+@Ddl("timestamp with time zone")
+@Ddl(dbms = "mssql", value = "datetimeoffset")
+@Ddl(dbms = "mysql", value = "datetime(3)")
 public class OffsetDateTimeDatatype extends AbstractTemporalDatatype<OffsetDateTime>
         implements TimeZoneAwareDatatype {
 

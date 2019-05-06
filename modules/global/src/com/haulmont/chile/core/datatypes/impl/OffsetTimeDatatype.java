@@ -16,6 +16,7 @@
 
 package com.haulmont.chile.core.datatypes.impl;
 
+import com.haulmont.chile.core.annotations.Ddl;
 import com.haulmont.chile.core.annotations.JavaClass;
 import com.haulmont.chile.core.datatypes.FormatStrings;
 import org.dom4j.Element;
@@ -27,6 +28,10 @@ import java.time.temporal.TemporalQuery;
 import java.util.Locale;
 
 @JavaClass(OffsetTime.class)
+@Ddl("time with time zone")
+@Ddl(dbms = "oracle", value = "timestamp with time zone")
+@Ddl(dbms = "mssql", value = "time")
+@Ddl(dbms = "mysql", value = "time(3)")
 public class OffsetTimeDatatype extends AbstractTemporalDatatype<OffsetTime> {
 
     public OffsetTimeDatatype(Element element) {

@@ -16,6 +16,8 @@
 
 package com.haulmont.chile.core.datatypes.impl;
 
+import com.haulmont.chile.core.annotations.Ddl;
+import com.haulmont.chile.core.annotations.DdlByDbms;
 import com.haulmont.chile.core.annotations.JavaClass;
 import com.haulmont.chile.core.datatypes.FormatStrings;
 import org.dom4j.Element;
@@ -27,6 +29,10 @@ import java.time.temporal.TemporalQuery;
 import java.util.Locale;
 
 @JavaClass(LocalDateTime.class)
+@Ddl("timestamp")
+@Ddl(dbms = "mssql", value = "datetime")
+@Ddl(dbms = "mssql-2012", value = "datetime2")
+@Ddl(dbms = "mysql", value = "datetime(3)")
 public class LocalDateTimeDatatype extends AbstractTemporalDatatype<LocalDateTime> {
 
     public LocalDateTimeDatatype(Element element) {
