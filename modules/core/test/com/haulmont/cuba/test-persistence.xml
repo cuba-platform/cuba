@@ -125,5 +125,8 @@
 
         <class>com.haulmont.cuba.testmodel.entity_log.EntityLogA</class>
         <class>com.haulmont.cuba.testmodel.entity_log.EntityLogB</class>
+
+        <class>com.haulmont.cuba.testmodel.self_reference.BaseDictEntity</class>
+        <class>com.haulmont.cuba.testmodel.self_reference.SelfReferencedEntity</class>
     </persistence-unit>
 </persistence>

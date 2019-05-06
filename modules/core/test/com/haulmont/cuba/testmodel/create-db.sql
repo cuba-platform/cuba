@@ -1199,7 +1199,9 @@ create table TEST_VALIDATED_ENTITY (
     --
     primary key (ID)
 )^
+
 ------------------------------------------------------------------------------------------------------------------------
+
 create table TEST_ENTITY_LOG_A (
     ID varchar(36) not null,
     VERSION integer not null,
@@ -1234,3 +1236,16 @@ create table TEST_ENTITY_LOG_B (
 
 alter table TEST_ENTITY_LOG_A add constraint FK_TEST_ENTITY_LOG_A_ON_TEST_ENTITY_LOG_B foreign key
     (ENTITY_LOG_B_ID) references TEST_ENTITY_LOG_B(ID)^
+
+------------------------------------------------------------------------------------------------------------------------
+
+create table TEST_SELF_REFERENCED_ENTITY (
+    CODE varchar(32) not null,
+    --
+    PARENT_CODE varchar(32),
+    --
+    primary key (CODE)
+)^
+
+alter table TEST_SELF_REFERENCED_ENTITY add constraint FK_TEST_SELF_REFERENCED_ENTITY_ON_PARENT_CODE foreign key (PARENT_CODE) references TEST_SELF_REFERENCED_ENTITY(CODE)^
+create index IDX_TEST_SELF_REFERENCED_ENTITY_ON_PARENT_CODE on TEST_SELF_REFERENCED_ENTITY (PARENT_CODE)^
