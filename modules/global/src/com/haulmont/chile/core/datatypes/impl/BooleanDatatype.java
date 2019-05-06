@@ -51,17 +51,17 @@ public class BooleanDatatype implements Datatype<Boolean> {
     }
 
     protected Boolean parse(@Nullable String value, String trueString, String falseString) throws ParseException {
-        if (!StringUtils.isBlank(value)) {
-            String lowerCaseValue = StringUtils.lowerCase(value);
-            if (trueString.equals(lowerCaseValue)) {
-                return Boolean.TRUE;
-            }
-            if (falseString.equals(lowerCaseValue)) {
-                return Boolean.FALSE;
-            }
-            throw new ParseException(String.format("Can't parse '%s'", value), 0);
+        if (StringUtils.isBlank(value)) {
+            return null;
         }
-        return null;
+        if (trueString.equalsIgnoreCase(value)) {
+            return Boolean.TRUE;
+        }
+        if (falseString.equalsIgnoreCase(value)) {
+            return Boolean.FALSE;
+        }
+
+        throw new ParseException(String.format("Can't parse '%s'", value), 0);
     }
 
     @Override
