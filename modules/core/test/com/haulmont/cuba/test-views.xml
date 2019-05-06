@@ -75,4 +75,8 @@
           name="compositePropertyTwo-view">
         <property name="compositeTwo" view="_minimal"/>
     </view>
+
+    <view entity="test_SelfReferencedEntity" name="entityWithChildren" extends="_local">
+        <property name="children" view="_local"/>
+    </view>
 </views>
