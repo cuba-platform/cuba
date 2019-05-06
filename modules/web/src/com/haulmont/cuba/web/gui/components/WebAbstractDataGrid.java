@@ -87,14 +87,7 @@ import com.haulmont.cuba.web.widgets.CubaEnhancedGrid;
 import com.haulmont.cuba.web.widgets.CubaGridEditorFieldFactory;
 import com.haulmont.cuba.web.widgets.CubaUI;
 import com.haulmont.cuba.web.widgets.data.SortableDataProvider;
-import com.haulmont.cuba.web.widgets.grid.CubaEditorBeforeSaveEvent;
-import com.haulmont.cuba.web.widgets.grid.CubaEditorField;
-import com.haulmont.cuba.web.widgets.grid.CubaEditorImpl;
-import com.haulmont.cuba.web.widgets.grid.CubaEditorOpenEvent;
-import com.haulmont.cuba.web.widgets.grid.CubaGridContextMenu;
-import com.haulmont.cuba.web.widgets.grid.CubaMultiCheckSelectionModel;
-import com.haulmont.cuba.web.widgets.grid.CubaMultiSelectionModel;
-import com.haulmont.cuba.web.widgets.grid.CubaSingleSelectionModel;
+import com.haulmont.cuba.web.widgets.grid.*;
 import com.vaadin.data.HasValue;
 import com.vaadin.data.SelectionModel;
 import com.vaadin.data.ValidationResult;
@@ -1233,6 +1226,17 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
         component.getEditor().editRow(rowIndex);
     }
 
+    @SuppressWarnings("ConstantConditions")
+    protected Map<String, Field> convertToCubaFields(Map<Grid.Column<E, ?>, Component> columnFieldMap) {
+        return columnFieldMap.entrySet().stream()
+                .filter(entry ->
+                        getColumnByGridColumn(entry.getKey()) != null)
+                .collect(Collectors.toMap(
+                        entry -> getColumnByGridColumn(entry.getKey()).getId(),
+                        entry -> ((DataGridEditorCustomField) entry.getValue()).getField())
+                );
+    }
+
     @Override
     public Subscription addEditorOpenListener(Consumer<EditorOpenEvent> listener) {
         if (editorOpenListener == null) {
@@ -1245,14 +1249,7 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
     protected void onEditorOpen(com.vaadin.ui.components.grid.EditorOpenEvent<E> editorOpenEvent) {
         //noinspection unchecked
         CubaEditorOpenEvent<E> event = ((CubaEditorOpenEvent) editorOpenEvent);
-        //noinspection ConstantConditions
-        Map<String, Field> fields = event.getColumnFieldMap().entrySet().stream()
-                .filter(entry ->
-                        getColumnByGridColumn(entry.getKey()) != null)
-                .collect(Collectors.toMap(
-                        entry -> getColumnByGridColumn(entry.getKey()).getId(),
-                        entry -> ((DataGridEditorCustomField) entry.getValue()).getField())
-                );
+        Map<String, Field> fields = convertToCubaFields(event.getColumnFieldMap());
 
         EditorOpenEvent<E> e = new EditorOpenEvent<>(this, event.getBean(), fields);
         publish(EditorOpenEvent.class, e);
@@ -1277,8 +1274,12 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
         return getEventHub().subscribe(EditorCloseEvent.class, listener);
     }
 
-    protected void onEditorCancel(EditorCancelEvent<E> event) {
-        EditorCloseEvent<E> e = new EditorCloseEvent<>(this, event.getBean());
+    protected void onEditorCancel(EditorCancelEvent<E> cancelEvent) {
+        //noinspection unchecked
+        CubaEditorCancelEvent<E> event = ((CubaEditorCancelEvent) cancelEvent);
+        Map<String, Field> fields = convertToCubaFields(event.getColumnFieldMap());
+
+        EditorCloseEvent<E> e = new EditorCloseEvent<>(this, event.getBean(), fields);
         publish(EditorCloseEvent.class, e);
     }
 
@@ -1304,7 +1305,9 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
     }
 
     protected void onEditorBeforeSave(CubaEditorBeforeSaveEvent<E> event) {
-        EditorPreCommitEvent<E> e = new EditorPreCommitEvent<>(this, event.getBean());
+        Map<String, Field> fields = convertToCubaFields(event.getColumnFieldMap());
+
+        EditorPreCommitEvent<E> e = new EditorPreCommitEvent<>(this, event.getBean(), fields);
         publish(EditorPreCommitEvent.class, e);
     }
 
@@ -1327,8 +1330,12 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
         return getEventHub().subscribe(EditorPostCommitEvent.class, listener);
     }
 
-    protected void onEditorSave(EditorSaveEvent<E> event) {
-        EditorPostCommitEvent<E> e = new EditorPostCommitEvent<>(this, event.getBean());
+    protected void onEditorSave(EditorSaveEvent<E> saveEvent) {
+        //noinspection unchecked
+        CubaEditorSaveEvent<E> event = ((CubaEditorSaveEvent) saveEvent);
+        Map<String, Field> fields = convertToCubaFields(event.getColumnFieldMap());
+
+        EditorPostCommitEvent<E> e = new EditorPostCommitEvent<>(this, event.getBean(), fields);
         publish(EditorPostCommitEvent.class, e);
     }
 

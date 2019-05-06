@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2018 Haulmont.
+ * Copyright (c) 2008-2019 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,20 +19,12 @@ package com.haulmont.cuba.web.widgets.grid;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.components.grid.Editor;
+import com.vaadin.ui.components.grid.EditorSaveEvent;
 
-import java.util.EventObject;
 import java.util.Map;
 
-/**
- * An event that is fired before a Grid editor is saved.
- *
- * @param <T> the bean type
- * @see CubaEditorBeforeSaveListener
- * @see CubaEditorImpl#addBeforeSaveListener(CubaEditorBeforeSaveListener)
- */
-public class CubaEditorBeforeSaveEvent<T> extends EventObject {
+public class CubaEditorSaveEvent<T> extends EditorSaveEvent<T> {
 
-    protected T bean;
     protected Map<Grid.Column<T, ?>, Component> columnFieldMap;
 
     /**
@@ -41,34 +33,9 @@ public class CubaEditorBeforeSaveEvent<T> extends EventObject {
      * @param editor the source of the event
      * @param bean   the bean being edited
      */
-    public CubaEditorBeforeSaveEvent(Editor<T> editor, T bean, Map<Grid.Column<T, ?>, Component> columnFieldMap) {
-        super(editor);
-        this.bean = bean;
+    public CubaEditorSaveEvent(Editor<T> editor, T bean, Map<Grid.Column<T, ?>, Component> columnFieldMap) {
+        super(editor, bean);
         this.columnFieldMap = columnFieldMap;
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public Editor<T> getSource() {
-        return (Editor<T>) super.getSource();
-    }
-
-    /**
-     * Gets the editor grid.
-     *
-     * @return the editor grid
-     */
-    public Grid<T> getGrid() {
-        return getSource().getGrid();
-    }
-
-    /**
-     * Gets the bean being edited.
-     *
-     * @return the bean being edited
-     */
-    public T getBean() {
-        return bean;
     }
 
     /**

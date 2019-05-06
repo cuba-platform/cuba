@@ -17,6 +17,7 @@
 package com.haulmont.cuba.web.widgets.grid;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableMap;
 import com.haulmont.cuba.web.widgets.CubaEnhancedGrid;
 import com.vaadin.data.HasValue;
 import com.vaadin.data.PropertySet;
@@ -25,7 +26,6 @@ import com.vaadin.shared.Registration;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.components.grid.EditorImpl;
-import com.vaadin.ui.components.grid.EditorSaveEvent;
 import com.vaadin.util.ReflectTools;
 
 import java.util.*;
@@ -85,15 +85,30 @@ public class CubaEditorImpl<T> extends EditorImpl<T> {
     @Override
     public boolean save() {
         if (isOpen() && isBuffered()) {
-            eventRouter.fireEvent(new CubaEditorBeforeSaveEvent<>(this, edited));
+            eventRouter.fireEvent(
+                    new CubaEditorBeforeSaveEvent<>(this, edited, Collections.unmodifiableMap(columnFields)));
             if (isEditorFieldsValid()) {
                 commitFields();
                 refresh(edited);
-                eventRouter.fireEvent(new EditorSaveEvent<>(this, edited));
+                eventRouter.fireEvent(
+                        new CubaEditorSaveEvent<>(this, edited, Collections.unmodifiableMap(columnFields)));
                 return true;
             }
         }
         return false;
+    }
+
+    @Override
+    protected void doCancel(boolean afterBeingSaved) {
+        // CAUTION copied from parent with changes
+        T editedBean = edited;
+        // As columnFields is cleared in doClose, we need to make a copy of it
+        Map<Grid.Column<T, ?>, Component> usedColumnFields = ImmutableMap.copyOf(columnFields);
+        doClose();
+        if (!afterBeingSaved) {
+            eventRouter.fireEvent(
+                    new CubaEditorCancelEvent<>(this, editedBean, usedColumnFields));
+        }
     }
 
     protected boolean isEditorFieldsValid() {
