@@ -258,7 +258,14 @@ public class RuntimePropsDatasourceImpl
     }
 
     protected void initMetaClass(Entity entity) {
-        checkNotNullArgument(entity);
+
+        if (entity == null) {
+            category = null;
+            valid();
+            initializedBefore = true;
+            fireItemChanged(null);
+            return;
+        }
 
         if (!(entity instanceof BaseGenericIdEntity)) {
             throw new IllegalStateException("This datasource can contain only entity with subclass of BaseGenericIdEntity");
