@@ -181,12 +181,12 @@ class UiControllerReflectionInspectorTest extends Specification {
 
         then:
 
-        methods.size() == 4
+        methods.size() == 5
         methods.find({ it.name == 'format' }) != null
+        methods.find({ it.name == 'runnableMethod' }) != null
         methods.find({ it.name == 'getCellStyleName' }) != null
         methods.find({ it.name == 'getData' }) != null
         methods.find({ it.name == 'consumeEvent' }) != null
-        methods.find({ it.name == 'ignoredMethod' }) == null
     }
 
     def "Get addListener methods"() {

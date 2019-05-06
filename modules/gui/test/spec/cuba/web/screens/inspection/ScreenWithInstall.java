@@ -24,6 +24,7 @@ import com.haulmont.cuba.security.entity.User;
 
 import java.util.Date;
 
+@SuppressWarnings({"unused", "CubaInstalledDelegateInspection"})
 public class ScreenWithInstall extends Screen {
 
     @Install(subject = "formatter", to = "label1")
@@ -42,13 +43,10 @@ public class ScreenWithInstall extends Screen {
     }
 
     @Install
-    protected void ignoredMethod() {
+    protected void runnableMethod() {
     }
 
     @Install(to = "button1")
     protected void consumeEvent(Button.ClickEvent event) {
-
     }
-
-    // todo validator support
 }
