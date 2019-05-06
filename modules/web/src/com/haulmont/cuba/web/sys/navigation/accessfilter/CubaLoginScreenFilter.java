@@ -17,8 +17,8 @@
 package com.haulmont.cuba.web.sys.navigation.accessfilter;
 
 import com.haulmont.cuba.gui.config.WindowConfig;
-import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.gui.navigation.NavigationState;
+import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.WebConfig;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
@@ -43,7 +43,7 @@ public class CubaLoginScreenFilter implements NavigationFilter {
             return AccessCheckResult.allowed();
         }
 
-        boolean authenticated = App.getInstance().getConnection().isAuthenticated();
+        boolean authenticated = AppUI.getCurrent().hasAuthenticatedSession();
 
         return authenticated
                 ? AccessCheckResult.rejected()

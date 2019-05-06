@@ -54,7 +54,6 @@ public class ScreenNavigator {
                 return;
     }
 
-    // TODO: get rid of usage in HistoryNavigator
     protected boolean handleCurrentRootNavigation(NavigationState requestedState) {
         if (!currentRootNavigated(requestedState)) {
             return true;

@@ -24,7 +24,6 @@ import com.haulmont.cuba.gui.screen.OpenMode;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.app.loginwindow.AppLoginWindow;
-import com.haulmont.cuba.web.controllers.ControllerUtils;
 import com.haulmont.cuba.web.security.AnonymousUserCredentials;
 import com.haulmont.cuba.web.security.events.AppLoggedInEvent;
 import com.haulmont.cuba.web.security.events.AppLoggedOutEvent;
@@ -41,7 +40,6 @@ import org.springframework.stereotype.Component;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
-import java.util.Collections;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -171,7 +169,27 @@ public class DefaultApp extends App {
         clearSettingsCache();
         removeAllWindows();
 
+        updateUiUserSessions();
+
         initializeUi();
+    }
+
+    protected void updateUiUserSessions() {
+        AppUI currentUi = AppUI.getCurrent();
+        if (currentUi == null) {
+            return;
+        }
+
+        UserSession oldUserSession = currentUi.getUserSession();
+        UserSession appUserSession = getConnection().getSession();
+
+        currentUi.setUserSession(appUserSession);
+
+        for (AppUI ui : getAppUIs()) {
+            if (Objects.equals(oldUserSession, ui.getUserSession())) {
+                ui.setUserSession(appUserSession);
+            }
+        }
     }
 
     protected void publishAppLoggedOutEvent(UserSession previousSession) {

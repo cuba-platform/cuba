@@ -72,8 +72,6 @@ public class HistoryNavigator {
         }
 
         if (urlChangeHandler.isRootState(requestedState)) {
-            // TODO: re-check
-            // TODO: get rid of navigation - close screens here
             WindowInfo rootWindowInfo = urlChangeHandler.windowConfig.findWindowInfoByRoute(requestedState.getRoot());
             if (rootWindowInfo != null) {
                 Class<? extends FrameOwner> clazz = rootWindowInfo.getControllerClass();

@@ -80,7 +80,7 @@ public class ScreenNavigationHandler extends AbstractNavigationHandler implement
         }
 
         if (!isScreenChanged(requestedState, ui)) {
-            return fullyHandled(requestedState);
+            return fullyHandled(ui, requestedState);
         }
 
         String requestedRoute = requestedState.getNestedRoute();
@@ -133,7 +133,7 @@ public class ScreenNavigationHandler extends AbstractNavigationHandler implement
         }
 
         return navigate(requestedState, ui, routeWindowInfos)
-                && fullyHandled(requestedState);
+                && fullyHandled(ui, requestedState);
     }
 
     protected boolean navigate(NavigationState requestedState, AppUI ui, List<Pair<String, WindowInfo>> routeWindowInfos) {
@@ -158,8 +158,19 @@ public class ScreenNavigationHandler extends AbstractNavigationHandler implement
         return true;
     }
 
-    protected boolean fullyHandled(NavigationState requestedState) {
-        return MapUtils.isEmpty(requestedState.getParams());
+    protected boolean fullyHandled(AppUI ui, NavigationState requestedState) {
+        Map<String, String> requestedParams = MapUtils.isNotEmpty(requestedState.getParams())
+                ? requestedState.getParams()
+                : Collections.emptyMap();
+
+        Screen screen = ui.getUrlChangeHandler().findActiveScreenByState(requestedState);
+        if (screen == null) {
+            return MapUtils.isEmpty(requestedParams);
+        }
+
+        Map<String, String> resolvedParams = ((WebWindow) screen.getWindow()).getResolvedState().getParams();
+
+        return requestedParams.equals(resolvedParams);
     }
 
     protected void handle404(String route, AppUI ui) {
