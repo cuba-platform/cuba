@@ -173,6 +173,28 @@ public interface LookupField<V> extends OptionsField<V, V>, HasInputPrompt, Buff
     FilterPredicate getFilterPredicate();
 
     /**
+     * Returns the suggestion pop-up's width as a string. By default this
+     * width is set to "100%".
+     *
+     * @return explicitly set popup width as size string or null if not set
+     */
+    String getPopupWidth();
+
+    /**
+     * Sets the suggestion pop-up's width as a string. By using relative
+     * units (e.g. "50%") it's possible to set the popup's width relative to the
+     * LookupField itself.
+     * <p>
+     * By default this width is set to "100%" so that the pop-up's width is
+     * equal to the width of the LookupField. By setting width to null the pop-up's
+     * width will automatically expand beyond 100% relative width to fit the
+     * content of all displayed items.
+     *
+     * @param width the width
+     */
+    void setPopupWidth(String width);
+
+    /**
      * A predicate that tests whether an item with the given caption matches to the given search string.
      */
     @FunctionalInterface

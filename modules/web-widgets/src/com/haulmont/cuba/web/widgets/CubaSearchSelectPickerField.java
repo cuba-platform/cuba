@@ -150,6 +150,14 @@ public class CubaSearchSelectPickerField<T> extends CubaPickerField<T> {
         getFieldInternal().setItemCaptionGenerator(itemCaptionGenerator);
     }
 
+    public String getPopupWidth() {
+        return getFieldInternal().getPopupWidth();
+    }
+
+    public void setPopupWidth(String width) {
+        getFieldInternal().setPopupWidth(width);
+    }
+
     public void setFilterHandler(Consumer<String> filterHandler) {
         getFieldInternal().setFilterHandler(filter -> {
             if (filterHandler != null) {

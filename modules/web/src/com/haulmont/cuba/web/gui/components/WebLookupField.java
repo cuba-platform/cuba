@@ -464,6 +464,16 @@ public class WebLookupField<V> extends WebV8AbstractField<CubaComboBox<V>, V, V>
     }
 
     @Override
+    public String getPopupWidth() {
+        return component.getPopupWidth();
+    }
+
+    @Override
+    public void setPopupWidth(String width) {
+        component.setPopupWidth(width);
+    }
+
+    @Override
     public void focus() {
         component.focus();
     }

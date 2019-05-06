@@ -149,6 +149,14 @@ public class CubaComboBoxPickerField<T> extends CubaPickerField<T> {
         getFieldInternal().setItemCaptionGenerator(itemCaptionGenerator);
     }
 
+    public String getPopupWidth() {
+        return getFieldInternal().getPopupWidth();
+    }
+
+    public void setPopupWidth(String width) {
+        getFieldInternal().setPopupWidth(width);
+    }
+
     public ComboBox.NewItemHandler getNewItemHandler() {
         return getFieldInternal().getNewItemHandler();
     }
