@@ -30,6 +30,7 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.*;
 import com.haulmont.cuba.core.entity.annotation.IgnoreUserTimeZone;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.stereotype.Component;
@@ -80,19 +81,14 @@ public class MetadataTools {
 
     @Inject
     protected Metadata metadata;
-
     @Inject
     protected Messages messages;
-
     @Inject
     protected DynamicAttributesTools dynamicAttributesTools;
-
     @Inject
     protected UserSessionSource userSessionSource;
-
     @Inject
     protected DatatypeRegistry datatypeRegistry;
-
     @Inject
     protected PersistentAttributesLoadChecker persistentAttributesLoadChecker;
 
@@ -194,28 +190,33 @@ public class MetadataTools {
     public String getInstanceName(Instance instance) {
         checkNotNullArgument(instance, "instance is null");
 
-        NamePatternRec rec = parseNamePattern(instance.getMetaClass());
+        MetaClass metaClass = instance.getMetaClass();
+
+        NamePatternRec rec = parseNamePattern(metaClass);
         if (rec == null) {
             return instance.toString();
-        } else {
-            if (rec.methodName != null) {
-                try {
-                    Method method = instance.getClass().getMethod(rec.methodName);
-                    Object result = method.invoke(instance);
-                    return (String) result;
-                } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-                    throw new RuntimeException("Error getting instance name", e);
-                }
-            }
-
-            Object[] values = new Object[rec.fields.length];
-            for (int i = 0; i < rec.fields.length; i++) {
-                Object value = instance.getValue(rec.fields[i]);
-                values[i] = format(value);
-            }
-
-            return String.format(rec.format, values);
         }
+
+        if (rec.methodName != null) {
+            try {
+                Method method = instance.getClass().getMethod(rec.methodName);
+                Object result = method.invoke(instance);
+                return (String) result;
+            } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+                throw new RuntimeException("Error getting instance name", e);
+            }
+        }
+
+        Object[] values = new Object[rec.fields.length];
+        for (int i = 0; i < rec.fields.length; i++) {
+            String fieldName = rec.fields[i];
+            MetaProperty property = metaClass.getPropertyNN(fieldName);
+
+            Object value = instance.getValue(fieldName);
+            values[i] = format(value, property);
+        }
+
+        return String.format(rec.format, values);
     }
 
     /**
@@ -227,15 +228,18 @@ public class MetadataTools {
     @Nullable
     public NamePatternRec parseNamePattern(MetaClass metaClass) {
         Map attributes = (Map) metaClass.getAnnotations().get(NamePattern.class.getName());
-        if (attributes == null)
+        if (attributes == null) {
             return null;
+        }
         String pattern = (String) attributes.get("value");
-        if (StringUtils.isBlank(pattern))
+        if (StringUtils.isBlank(pattern)) {
             return null;
+        }
 
         int pos = pattern.indexOf("|");
-        if (pos < 0)
+        if (pos < 0) {
             throw new DevelopmentException("Invalid name pattern: " + pattern);
+        }
 
         String format = StringUtils.substring(pattern, 0, pos);
         String trimmedFormat = format.trim();
@@ -344,9 +348,9 @@ public class MetadataTools {
         Objects.requireNonNull(metaProperty, "metaProperty is null");
         OneToMany oneToMany = metaProperty.getAnnotatedElement().getAnnotation(OneToMany.class);
         if (oneToMany != null) {
-            final Collection<CascadeType> cascadeTypes = Arrays.asList(oneToMany.cascade());
-            if (cascadeTypes.contains(CascadeType.ALL) ||
-                    cascadeTypes.contains(CascadeType.MERGE)) {
+            CascadeType[] cascadeTypes = oneToMany.cascade();
+            if (ArrayUtils.contains(cascadeTypes, CascadeType.ALL) ||
+                    ArrayUtils.contains(cascadeTypes, CascadeType.MERGE)) {
                 return true;
             }
         }
@@ -519,7 +523,8 @@ public class MetadataTools {
     }
 
     public Map<String, Object> getMetaAnnotationAttributes(Map<String, Object> metaAnnotations, Class metaAnnotationClass) {
-        Map map = (Map) metaAnnotations.get(metaAnnotationClass.getName());
+        @SuppressWarnings("unchecked")
+        Map<String, Object> map = (Map) metaAnnotations.get(metaAnnotationClass.getName());
         return map != null ? map : Collections.emptyMap();
     }
 
@@ -741,8 +746,8 @@ public class MetadataTools {
      */
     public Collection<MetaPropertyPath> getViewPropertyPaths(View view, MetaClass metaClass) {
         List<MetaPropertyPath> propertyPaths = new ArrayList<>(metaClass.getProperties().size());
-        for (final MetaProperty metaProperty : metaClass.getProperties()) {
-            final MetaPropertyPath metaPropertyPath = new MetaPropertyPath(metaClass, metaProperty);
+        for (MetaProperty metaProperty : metaClass.getProperties()) {
+            MetaPropertyPath metaPropertyPath = new MetaPropertyPath(metaClass, metaProperty);
             if (viewContainsProperty(view, metaPropertyPath)) {
                 propertyPaths.add(metaPropertyPath);
             }
@@ -822,14 +827,15 @@ public class MetadataTools {
      * @return entity name as defined in {@link javax.persistence.Entity} annotation
      */
     public String getEntityName(Class<?> entityClass) {
-        Annotation annotation = entityClass.getAnnotation(javax.persistence.Entity.class);
-        if (annotation == null)
-            throw new IllegalArgumentException("Class " + entityClass + " is not a persistent entity");
-        String name = ((javax.persistence.Entity) annotation).name();
-        if (!StringUtils.isEmpty(name))
+        javax.persistence.Entity annotation = entityClass.getAnnotation(javax.persistence.Entity.class);
+        if (annotation == null) {
+            throw new IllegalArgumentException(String.format("Class %s is not a persistent entity", entityClass));
+        }
+        String name = annotation.name();
+        if (StringUtils.isNotEmpty(name)) {
             return name;
-        else
-            return entityClass.getSimpleName();
+        }
+        return entityClass.getSimpleName();
     }
 
     /**
