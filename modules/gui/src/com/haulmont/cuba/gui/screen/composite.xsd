@@ -22,11 +22,5 @@
 
     <xs:include schemaLocation="http://schemas.haulmont.com/cuba/screen/layout.xsd"/>
 
-    <xs:element name="composite">
-        <xs:complexType>
-            <xs:sequence>
-                <xs:group ref="layout:singleLayoutOrComponent"/>
-            </xs:sequence>
-        </xs:complexType>
-    </xs:element>
+    <xs:element name="composite" type="layout:compositeType"/>
 </xs:schema>

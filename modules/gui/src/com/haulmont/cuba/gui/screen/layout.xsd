@@ -3358,4 +3358,11 @@
             <xs:enumeration value="CENTER"/>
         </xs:restriction>
     </xs:simpleType>
+
+    <!-- Composite Component -->
+    <xs:complexType name="compositeType">
+        <xs:sequence>
+            <xs:group ref="singleLayoutOrComponent"/>
+        </xs:sequence>
+    </xs:complexType>
 </xs:schema>
