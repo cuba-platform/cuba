@@ -332,20 +332,18 @@ public class UiControllerReflectionInspector {
         List<AnnotatedMethod<Install>> annotatedMethods = new ArrayList<>();
 
         for (Method m : uniqueDeclaredMethods) {
-            if (m.getParameterCount() > 0 || m.getReturnType() != Void.TYPE) {
-                Install installAnnotation = findMergedAnnotation(m, Install.class);
-                if (installAnnotation != null) {
-                    if (!m.isAccessible()) {
-                        m.setAccessible(true);
-                    }
-                    MethodHandle methodHandle;
-                    try {
-                        methodHandle = lookup.unreflect(m);
-                    } catch (IllegalAccessException e) {
-                        throw new RuntimeException("unable to get method handle " + m);
-                    }
-                    annotatedMethods.add(new AnnotatedMethod<>(installAnnotation, m, methodHandle));
+            Install installAnnotation = findMergedAnnotation(m, Install.class);
+            if (installAnnotation != null) {
+                if (!m.isAccessible()) {
+                    m.setAccessible(true);
                 }
+                MethodHandle methodHandle;
+                try {
+                    methodHandle = lookup.unreflect(m);
+                } catch (IllegalAccessException e) {
+                    throw new RuntimeException("unable to get method handle " + m);
+                }
+                annotatedMethods.add(new AnnotatedMethod<>(installAnnotation, m, methodHandle));
             }
         }
 

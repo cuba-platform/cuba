@@ -289,6 +289,8 @@ public class UiControllerDependencyInjector {
             return new InstalledSupplier(frameOwner, method);
         } else if (targetObjectType == BiFunction.class) {
             return new InstalledBiFunction(frameOwner, method);
+        } else if (targetObjectType == Runnable.class) {
+            return new InstalledRunnable(frameOwner, method);
         } else {
             ClassLoader classLoader = getClass().getClassLoader();
             return newProxyInstance(classLoader, new Class[]{targetObjectType},
@@ -794,6 +796,38 @@ public class UiControllerDependencyInjector {
         public String toString() {
             return "InstalledConsumer{" +
                     "frameOwner=" + frameOwner.getClass() +
+                    ", method=" + method +
+                    '}';
+        }
+    }
+
+    public static class InstalledRunnable implements Runnable {
+        private final FrameOwner frameOwner;
+        private final Method method;
+
+        public InstalledRunnable(FrameOwner frameOwner, Method method) {
+            this.frameOwner = frameOwner;
+            this.method = method;
+        }
+
+        @Override
+        public void run() {
+            try {
+                method.invoke(frameOwner);
+            } catch (IllegalAccessException | InvocationTargetException e) {
+                if (e instanceof InvocationTargetException
+                        && ((InvocationTargetException) e).getTargetException() instanceof RuntimeException) {
+                    throw (RuntimeException) ((InvocationTargetException) e).getTargetException();
+                }
+
+                throw new RuntimeException("Exception on @Install invocation", e);
+            }
+        }
+
+        @Override
+        public String toString() {
+            return "InstalledRunnable{" +
+                    "target=" + frameOwner.getClass() +
                     ", method=" + method +
                     '}';
         }
