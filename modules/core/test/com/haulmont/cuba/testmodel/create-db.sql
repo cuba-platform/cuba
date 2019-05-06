@@ -1107,3 +1107,16 @@ alter table TEST_COMPOSITE_PROPERTY_ONE add constraint FK_TEST_COMPOSITE_PROPERT
     foreign key (COMPOSITE_TWO_ID) references TEST_COMPOSITE_TWO(ID)^
 alter table TEST_COMPOSITE_PROPERTY_TWO add constraint FK_TEST_COMPOSITE_PROPERTY_TWO_TWO
     foreign key (COMPOSITE_TWO_ID) references TEST_COMPOSITE_TWO(ID)^
+
+------------------------------------------------------------------------------------------------------------------------
+
+create table TEST_SELF_REFERENCED_ENTITY (
+    CODE varchar(32) not null,
+    --
+    PARENT_CODE varchar(32),
+    --
+    primary key (CODE)
+)^
+
+alter table TEST_SELF_REFERENCED_ENTITY add constraint FK_TEST_SELF_REFERENCED_ENTITY_ON_PARENT_CODE foreign key (PARENT_CODE) references TEST_SELF_REFERENCED_ENTITY(CODE)^
+create index IDX_TEST_SELF_REFERENCED_ENTITY_ON_PARENT_CODE on TEST_SELF_REFERENCED_ENTITY (PARENT_CODE)^
