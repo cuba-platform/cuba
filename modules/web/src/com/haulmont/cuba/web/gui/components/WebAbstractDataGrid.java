@@ -2297,6 +2297,9 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
 
         List<Element> settingsColumnList = columnsElem.elements("columns");
         List<Column<E>> visibleColumns = getVisibleColumns();
+        if (settingsColumnList.size() != visibleColumns.size()) {
+            return true;
+        }
 
         for (int i = 0; i < visibleColumns.size(); i++) {
             Object columnId = visibleColumns.get(i).getId();
