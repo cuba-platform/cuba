@@ -53,17 +53,18 @@ public class WebClasspathResource extends WebAbstractStreamSettingsResource impl
     protected void createResource() {
         StringBuilder name = new StringBuilder();
 
-        if (StringUtils.isNotEmpty(fileName)) {
-            name.append(fileName)
-                    .append('-');
+        String fullName = StringUtils.isNotEmpty(fileName) ? fileName : path;
+        String baseName = FilenameUtils.getBaseName(fullName);
+
+        if (StringUtils.isNotEmpty(baseName)) {
+            name.append(baseName)
+                    .append('-')
+                    .append(UUID.randomUUID().toString())
+                    .append('.')
+                    .append(FilenameUtils.getExtension(fullName));
         } else {
-            String nameByPath = FilenameUtils.getName(path);
-            if (StringUtils.isNotEmpty(nameByPath)) {
-                name.append(nameByPath)
-                        .append('-');
-            }
+            name.append(UUID.randomUUID().toString());
         }
-        name.append(UUID.randomUUID().toString());
 
         resource = new StreamResource(() ->
                 AppBeans.get(Resources.class).getResourceAsStream(path), name.toString());
