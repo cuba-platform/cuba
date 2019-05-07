@@ -23,6 +23,7 @@ import com.haulmont.cuba.core.global.FileLoader;
 import com.haulmont.cuba.core.global.FileStorageException;
 import com.haulmont.cuba.gui.components.FileDescriptorResource;
 import com.vaadin.server.StreamResource;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.UUID;
@@ -56,30 +57,46 @@ public class WebFileDescriptorResource extends WebAbstractStreamSettingsResource
 
     @Override
     protected void createResource() {
-        StringBuilder name = new StringBuilder();
-
-        if (StringUtils.isNotEmpty(fileName)) {
-            name.append(fileName)
-                    .append('-');
-        } else if (StringUtils.isNotEmpty(fileDescriptor.getName())) {
-            name.append(fileDescriptor.getName())
-                    .append('-');
-        }
-
-        name.append(UUID.randomUUID().toString());
-
         resource = new StreamResource(() -> {
             try {
                 return AppBeans.get(FileLoader.class).openStream(fileDescriptor);
             } catch (FileStorageException e) {
                 throw new RuntimeException(FILE_STORAGE_EXCEPTION_MESSAGE, e);
             }
-        }, name.toString());
+        }, getResourceName());
 
         StreamResource streamResource = (StreamResource) this.resource;
 
         streamResource.setCacheTime(cacheTime);
         streamResource.setBufferSize(bufferSize);
+    }
+
+    protected String getResourceName() {
+        StringBuilder name = new StringBuilder();
+
+        String fullName = StringUtils.isNotEmpty(fileName)
+                ? fileName
+                : fileDescriptor.getName();
+        String baseName = FilenameUtils.getBaseName(fullName);
+
+        if (StringUtils.isEmpty(baseName)) {
+            return UUID.randomUUID().toString();
+        }
+
+        String extension;
+        if (StringUtils.isEmpty(fileName)
+                && StringUtils.isNotEmpty(fileDescriptor.getExtension())) {
+            extension = fileDescriptor.getExtension();
+        } else {
+            extension = FilenameUtils.getExtension(fullName);
+        }
+
+        return name.append(baseName)
+                .append('-')
+                .append(UUID.randomUUID().toString())
+                .append('.')
+                .append(extension)
+                .toString();
     }
 
     @Override
