@@ -21,4 +21,11 @@
         <class>com.haulmont.cuba.web.gui.components.WebJavaScriptComponent</class>
         <componentLoader>com.haulmont.cuba.web.gui.xml.layout.loaders.JavaScriptComponentLoader</componentLoader>
     </component>
+
+    <component>
+        <tag>runtimePropertiesPanel</tag>
+        <name>runtimePropertiesPanel</name>
+        <componentLoader>com.haulmont.cuba.web.gui.xml.layout.loaders.RuntimePropertiesPanelLoader</componentLoader>
+        <class>com.haulmont.cuba.web.gui.components.dynamicattributes.RuntimePropertiesPanel</class>
+    </component>
 </components>

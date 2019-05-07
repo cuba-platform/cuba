@@ -3164,6 +3164,21 @@
         <xs:attribute name="fieldCaptionWidth" type="xs:string"/>
     </xs:complexType>
 
+    <!-- RuntimePropertiesPanel -->
+    <xs:complexType name="runtimePropertiesPanel">
+        <xs:attributeGroup ref="hasId"/>
+        <xs:attributeGroup ref="hasSize"/>
+        <xs:attributeGroup ref="hasStyle"/>
+        <xs:attributeGroup ref="hasAlign"/>
+        <xs:attributeGroup ref="hasVisibility"/>
+
+        <xs:attribute name="dataContainer" type="xs:string" use="required"/>
+        <xs:attribute name="cols" type="xs:integer"/>
+        <xs:attribute name="rows" type="xs:integer"/>
+        <xs:attribute name="fieldWidth" type="xs:string"/>
+        <xs:attribute name="fieldCaptionWidth" type="xs:string"/>
+    </xs:complexType>
+
     <xs:complexType name="relatedComponent">
         <xs:complexContent>
             <xs:extension base="baseComponent">
@@ -3391,6 +3406,7 @@
                 <xs:element name="frame" type="frameContainer"/>
 
                 <xs:element name="runtimeProperties" type="runtimePropertiesContainer"/>
+                <xs:element name="runtimePropertiesPanel" type="runtimePropertiesPanel"/>
 
                 <!-- Component -->
                 <xs:element name="button" type="buttonComponent"/>
