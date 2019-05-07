@@ -21,4 +21,11 @@
         <class>com.haulmont.cuba.web.gui.components.WebJavaScriptComponent</class>
         <componentLoader>com.haulmont.cuba.web.gui.xml.layout.loaders.JavaScriptComponentLoader</componentLoader>
     </component>
+
+    <component>
+        <tag>dynamicAttributesPanel</tag>
+        <name>dynamicAttributesPanel</name>
+        <componentLoader>com.haulmont.cuba.web.gui.xml.layout.loaders.DynamicAttributesPanelLoader</componentLoader>
+        <class>com.haulmont.cuba.web.gui.components.dynamicattributes.DynamicAttributesPanel</class>
+    </component>
 </components>
