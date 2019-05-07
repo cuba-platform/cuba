@@ -160,7 +160,7 @@ public class CubaTokenList<T extends Entity> extends CustomField<Collection<T>> 
 
         if (!owner.isSimple()) {
             addButtonSub = owner.addButton.addClickListener(e -> {
-                if (owner.isEditable()) {
+                if (owner.isEditableWithParent()) {
                     owner.addValueFromLookupPickerField();
                 }
                 owner.addButton.focus();
@@ -237,7 +237,7 @@ public class CubaTokenList<T extends Entity> extends CustomField<Collection<T>> 
 
         initField();
 
-        if (owner.isEditable()) {
+        if (owner.isEditableWithParent()) {
             if (owner.position == TokenList.Position.TOP) {
                 composition.addComponentAsFirst(editor);
             } else {
@@ -246,8 +246,22 @@ public class CubaTokenList<T extends Entity> extends CustomField<Collection<T>> 
         }
 
         updateTokenContainerVisibility();
+        updateTokensEditable();
         updateEditorMargins();
         updateSizes();
+    }
+
+    protected void updateTokensEditable() {
+        if (tokenContainer == null || tokenContainer.getComponentCount() == 0) {
+            return;
+        }
+
+        boolean editable = owner.isEditableWithParent();
+
+        for (int i = 0; i < tokenContainer.getComponentCount(); i++) {
+            CubaTokenListLabel label = (CubaTokenListLabel) tokenContainer.getComponent(i);
+            label.setEditable(editable);
+        }
     }
 
     public void refreshTokens(Collection<T> newValue) {
@@ -268,7 +282,7 @@ public class CubaTokenList<T extends Entity> extends CustomField<Collection<T>> 
                 componentItems.put(label, entity);
             }
 
-            label.setEditable(owner.isEditable());
+            label.setEditable(owner.isEditableWithParent());
             label.setText(owner.getInstanceCaption(entity));
             label.setWidthUndefined();
 
@@ -366,7 +380,7 @@ public class CubaTokenList<T extends Entity> extends CustomField<Collection<T>> 
         CubaTokenListLabel label = new CubaTokenListLabel();
         label.setWidth("100%");
         label.addListener((CubaTokenListLabel.RemoveTokenListener) source -> {
-            if (owner.isEditable()) {
+            if (owner.isEditableWithParent()) {
                 doRemove(source);
             }
         });
