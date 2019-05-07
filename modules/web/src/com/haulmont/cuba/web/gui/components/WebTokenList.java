@@ -88,7 +88,7 @@ public class WebTokenList<V extends Entity>
     protected Function<Object, String> tokenStyleGenerator;
 
     protected final Consumer<ValueChangeEvent<V>> lookupSelectListener = e -> {
-        if (isEditable()) {
+        if (isEditableWithParent()) {
             addValueFromLookupPickerField();
         }
     };
@@ -674,6 +674,8 @@ public class WebTokenList<V extends Entity>
 
     @Override
     protected void setEditableToComponent(boolean editable) {
+        super.setEditableToComponent(editable);
+
         component.refreshComponent();
     }
 

@@ -45,7 +45,7 @@
     @include opacity($v-disabled-opacity);
   }
 
-  .#{$primary-stylename}.readonly .#{$primary-stylename}-label-close{
+  .#{$primary-stylename}.v-readonly .#{$primary-stylename}-label-close {
     display: none;
   }
 
