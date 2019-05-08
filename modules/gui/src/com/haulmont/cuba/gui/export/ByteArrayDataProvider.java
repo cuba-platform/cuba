@@ -16,19 +16,72 @@
  */
 package com.haulmont.cuba.gui.export;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
+import com.haulmont.cuba.client.ClientConfig;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.core.global.GlobalConfig;
+import com.haulmont.cuba.core.global.UuidProvider;
+import org.apache.commons.io.FileUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.*;
+import java.util.UUID;
+import java.util.function.Supplier;
 
 public class ByteArrayDataProvider implements ExportDataProvider {
 
-    private byte[] data;
+    private static Logger log = LoggerFactory.getLogger(ByteArrayDataProvider.class);
+
+    private Supplier<InputStream> supplier;
 
     public ByteArrayDataProvider(byte[] data) {
-        this.data = data;
+        ClientConfig config = getConfiguration().getConfig(ClientConfig.class);
+
+        if (data.length >= config.getSaveExportedByteArrayDataThresholdBytes()) {
+            // save to temp
+            File file = saveToTempStorage(data);
+            this.supplier = () -> readFromTempStorage(file);
+        } else {
+            this.supplier = () -> new ByteArrayInputStream(data);
+        }
+    }
+
+    protected Configuration getConfiguration() {
+        return AppBeans.get(Configuration.class);
+    }
+
+    protected File saveToTempStorage(byte[] data) {
+        UUID uuid = UuidProvider.createUuid();
+
+        GlobalConfig config = getConfiguration().getConfig(GlobalConfig.class);
+        String tempDir = config.getTempDir();
+
+        File dir = new File(tempDir);
+        File file = new File(dir, uuid.toString());
+
+        try {
+            FileUtils.writeByteArrayToFile(file, data);
+        } catch (IOException e) {
+            throw new RuntimeException("Unable to write byte data to temp file", e);
+        }
+
+        log.debug("Stored {} bytes of data to temporary file {}", data.length, file.getAbsolutePath());
+
+        return file;
+    }
+
+    protected InputStream readFromTempStorage(File file) {
+        try {
+            return new FileInputStream(file);
+        } catch (FileNotFoundException e) {
+            log.warn("Unable to read temp file " + file.getAbsolutePath());
+            return null;
+        }
     }
 
     @Override
     public InputStream provide() {
-        return new ByteArrayInputStream(data);
+        return supplier.get();
     }
 }
