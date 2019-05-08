@@ -17,7 +17,6 @@
 package com.haulmont.cuba.gui.model.impl;
 
 import com.haulmont.chile.core.datatypes.Datatype;
-import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.app.keyvalue.KeyValueMetaClass;
 import com.haulmont.cuba.core.app.keyvalue.KeyValueMetaProperty;
 import com.haulmont.cuba.core.entity.KeyValueEntity;
@@ -30,7 +29,11 @@ public class KeyValueContainerImpl extends InstanceContainerImpl<KeyValueEntity>
     private String idName;
 
     public KeyValueContainerImpl() {
-        super(new KeyValueMetaClass());
+        this(new KeyValueMetaClass());
+    }
+
+    public KeyValueContainerImpl(KeyValueMetaClass entityMetaClass) {
+        super(entityMetaClass);
     }
 
     @Override
