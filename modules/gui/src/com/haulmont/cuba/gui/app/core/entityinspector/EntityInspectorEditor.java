@@ -24,6 +24,7 @@ import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.Range;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.client.ClientConfig;
+import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 import com.haulmont.cuba.core.entity.Categorized;
 import com.haulmont.cuba.core.entity.Category;
 import com.haulmont.cuba.core.entity.Entity;
@@ -163,6 +164,9 @@ public class EntityInspectorEditor extends AbstractWindow {
         if (createRequest) {
             item = metadata.create(meta);
             setParentField(item, parentProperty, parent);
+            if (item instanceof BaseGenericIdEntity) {
+                ((BaseGenericIdEntity) item).setDynamicAttributes(new HashMap<>());
+            }
         } else {
             //edit request
             Object itemId = item.getId();
