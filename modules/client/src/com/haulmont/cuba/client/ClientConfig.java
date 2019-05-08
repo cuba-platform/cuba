@@ -377,4 +377,12 @@ public interface ClientConfig extends Config {
     @Property("cuba.gui.validationNotificationType")
     @Default("TRAY")
     String getValidationNotificationType();
+
+    /**
+     * @return threshold in bytes, if exported byte arrays of {@code ByteArrayDataProvider} bigger than threshold then
+     * they will be saved to temp storage to prevent HTTP session memory leaks. Default is 100 KB.
+     */
+    @Property("cuba.gui.saveExportedByteArrayDataThresholdBytes")
+    @DefaultInt(100 * 1024)
+    int getSaveExportedByteArrayDataThresholdBytes();
 }

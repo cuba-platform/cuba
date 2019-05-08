@@ -20,7 +20,6 @@ import java.io.InputStream;
 
 /**
  * Provides data for {@link ExportDisplay}.
- *
  */
 public interface ExportDataProvider {
 
