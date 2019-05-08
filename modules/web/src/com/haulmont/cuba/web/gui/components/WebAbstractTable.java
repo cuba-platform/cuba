@@ -27,6 +27,7 @@ import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.client.sys.PersistenceManagerClient;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesTools;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
+import com.haulmont.cuba.core.app.keyvalue.KeyValueMetaClass;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.LocaleHelper;
@@ -54,6 +55,7 @@ import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import com.haulmont.cuba.gui.model.CollectionContainer;
 import com.haulmont.cuba.gui.model.DataComponents;
 import com.haulmont.cuba.gui.model.InstanceContainer;
+import com.haulmont.cuba.gui.model.impl.KeyValueContainerImpl;
 import com.haulmont.cuba.gui.presentations.Presentations;
 import com.haulmont.cuba.gui.presentations.PresentationsImpl;
 import com.haulmont.cuba.gui.screen.FrameOwner;
@@ -565,9 +567,14 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
             throw new IllegalStateException("Table is not bound to items");
         }
 
-        InstanceContainer<E> instanceContainer = dataComponents.createInstanceContainer(
-                containerTableItems.getEntityMetaClass().getJavaClass());
-        View view = viewRepository.getView(containerTableItems.getEntityMetaClass(), View.LOCAL);
+        InstanceContainer<E> instanceContainer;
+        MetaClass metaClass = containerTableItems.getEntityMetaClass();
+        if (metaClass instanceof KeyValueMetaClass) {
+            instanceContainer = (InstanceContainer<E>) new KeyValueContainerImpl((KeyValueMetaClass) metaClass);
+        } else {
+            instanceContainer = dataComponents.createInstanceContainer(metaClass.getJavaClass());
+        }
+        View view = viewRepository.getView(metaClass, View.LOCAL);
         instanceContainer.setView(view);
         instanceContainer.setItem(item);
 
