@@ -5,6 +5,8 @@
 
 package com.haulmont.cuba.web.widgets.data;
 
+import javax.annotation.Nullable;
+
 /**
  * Interface defining methods for enhancing {@link com.vaadin.data.provider.HierarchicalDataProvider} behavior.
  *
@@ -19,4 +21,13 @@ public interface EnhancedHierarchicalDataProvider<T> {
      * @return the level of the given item
      */
     int getLevel(T item);
+
+    /**
+     * Returns the parent of given item.
+     *
+     * @param item the item to get parent
+     * @return the parent of given item or {@code null} if no parent
+     */
+    @Nullable
+    T getParent(T item);
 }

@@ -4,6 +4,7 @@ import com.google.common.base.Strings;
 import com.haulmont.bali.events.Subscription;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.TreeDataGrid;
+import com.haulmont.cuba.gui.components.data.BindingState;
 import com.haulmont.cuba.gui.components.data.DataGridItems;
 import com.haulmont.cuba.gui.components.data.TreeDataGridItems;
 import com.haulmont.cuba.web.gui.components.datagrid.DataGridDataProvider;
@@ -18,6 +19,7 @@ import org.dom4j.Element;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
+import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -64,6 +66,15 @@ public class WebTreeDataGrid<E extends Entity> extends WebAbstractDataGrid<CubaT
         return (TreeDataGridItems<E>) super.getItems();
     }
 
+    protected TreeDataGridItems<E> getTreeDataGridItemsNN() {
+        TreeDataGridItems<E> dataGridItems = getItems();
+        if (dataGridItems == null
+                || dataGridItems.getState() == BindingState.INACTIVE) {
+            throw new IllegalStateException("DataGridItems is not active");
+        }
+        return dataGridItems;
+    }
+
     @Override
     public void setItems(DataGridItems<E> dataGridItems) {
         if (dataGridItems != null
@@ -90,6 +101,26 @@ public class WebTreeDataGrid<E extends Entity> extends WebAbstractDataGrid<CubaT
     @Override
     protected DataGridDataProvider<E> createDataGridDataProvider(DataGridItems<E> dataGridItems) {
         return new HierarchicalDataGridDataProvider<>((TreeDataGridItems<E>) dataGridItems, this);
+    }
+
+    @Override
+    protected void editItemInternal(E itemToEdit) {
+        if (!isItemVisible(itemToEdit)) {
+            component.expandItemWithParents(itemToEdit);
+        }
+
+        int rowIndex = getVisibleItemsConsideringHierarchy().indexOf(itemToEdit);
+        component.getEditor().editRow(rowIndex);
+    }
+
+    protected List<E> getVisibleItemsConsideringHierarchy() {
+        return component.getDataCommunicator()
+                .fetchItemsWithRange(0, getTreeDataGridItemsNN().size());
+    }
+
+    protected boolean isItemVisible(E item) {
+        E parent = getTreeDataGridItemsNN().getParent(item);
+        return parent == null || isExpanded(parent) && isItemVisible(parent);
     }
 
     @Override

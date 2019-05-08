@@ -12,7 +12,9 @@ import com.vaadin.ui.components.grid.Editor;
 import com.vaadin.ui.components.grid.GridSelectionModel;
 import com.vaadin.ui.renderers.AbstractRenderer;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class CubaTreeGrid<T> extends TreeGrid<T> implements CubaEnhancedGrid<T> {
@@ -101,6 +103,23 @@ public class CubaTreeGrid<T> extends TreeGrid<T> implements CubaEnhancedGrid<T> 
                     "Data provider must implement com.haulmont.cuba.web.widgets.data.EnhancedHierarchicalDataProvider"
             );
         }
-        return ((EnhancedHierarchicalDataProvider) dataProvider).getLevel(item);
+        return ((EnhancedHierarchicalDataProvider<T>) dataProvider).getLevel(item);
+    }
+
+    public void expandItemWithParents(T item) {
+        List<T> itemsToExpand = new ArrayList<>();
+
+        T current = item;
+        while (current != null) {
+            itemsToExpand.add(current);
+            current = getParentItem(current);
+        }
+
+        expand(itemsToExpand);
+    }
+
+    @SuppressWarnings("unchecked")
+    protected T getParentItem(T item) {
+        return ((EnhancedHierarchicalDataProvider<T>) getDataProvider()).getParent(item);
     }
 }
