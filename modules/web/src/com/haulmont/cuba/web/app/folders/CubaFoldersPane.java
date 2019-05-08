@@ -478,6 +478,7 @@ public class CubaFoldersPane extends VerticalLayout {
                 f.setQuantity(folder.getQuantity());
             }
         }
+        appFoldersTree.repaint();
     }
 
     protected void adjustLayout() {
@@ -500,12 +501,14 @@ public class CubaFoldersPane extends VerticalLayout {
             if (StringUtils.isBlank(folder.getQuantityScript())) {
                 folder.setQuantity(null);
                 folder.setItemStyle(null);
+                appFoldersTree.repaint();
             }
         });
         appFoldersTree.addCollapseListener(event -> {
             AppFolder folder = event.getCollapsedItem();
             if (StringUtils.isBlank(folder.getQuantityScript())) {
                 reloadSingleParentFolder(folder, null);
+                appFoldersTree.repaint();
             }
         });
 
