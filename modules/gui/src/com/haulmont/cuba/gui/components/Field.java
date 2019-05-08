@@ -48,6 +48,12 @@ public interface Field<V> extends DatasourceComponent<V>, HasValueSource<V>, Com
     void addValidator(Consumer<? super V> validator);
     void removeValidator(Consumer<V> validator);
 
+    default void addValidators(Consumer<? super V>... validators) {
+        for (Consumer<? super V> validator : validators) {
+            addValidator(validator);
+        }
+    }
+
     /**
      * @return unmodifiable collection with Field validators
      */

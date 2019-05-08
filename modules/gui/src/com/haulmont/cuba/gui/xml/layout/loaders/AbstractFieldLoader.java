@@ -18,14 +18,15 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.MetaProperty;
-import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.gui.components.Buffered;
 import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.HasDatatype;
+import com.haulmont.cuba.gui.components.validation.*;
+import com.haulmont.cuba.gui.components.validators.EmailValidator;
 import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
 
-import java.util.List;
+import java.util.*;
 
 public abstract class AbstractFieldLoader<T extends Field> extends AbstractDatasourceComponentLoader<T> {
 
@@ -51,6 +52,8 @@ public abstract class AbstractFieldLoader<T extends Field> extends AbstractDatas
         loadContextHelp(resultComponent, element);
 
         loadValidators(resultComponent, element);
+        loadValidation(resultComponent, element);
+
         loadRequired(resultComponent, element);
 
         loadHeight(resultComponent, element);
@@ -72,6 +75,7 @@ public abstract class AbstractFieldLoader<T extends Field> extends AbstractDatas
         }
     }
 
+    @SuppressWarnings("unchecked")
     protected void loadValidators(Field component, Element element) {
         List<Element> validatorElements = element.elements("validator");
 
@@ -88,6 +92,25 @@ public abstract class AbstractFieldLoader<T extends Field> extends AbstractDatas
             Field.Validator validator = getDefaultValidator(property);
             if (validator != null) {
                 component.addValidator(validator);
+            }
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    protected void loadValidation(Field component, Element element) {
+        Element validatorsHolder = element.element("validators");
+        if (validatorsHolder != null) {
+            List<Element> validators = validatorsHolder.elements();
+
+            ValidatorLoadFactory loadFactory = beanLocator.get(ValidatorLoadFactory.NAME);
+
+            for (Element validatorElem : validators) {
+                AbstractValidator validator = loadFactory.createValidator(validatorElem, getMessagesPack());
+                if (validator != null) {
+                    component.addValidator(validator);
+                } else if (validatorElem.getName().equals("email")) {
+                    component.addValidator(new EmailValidator(validatorElem, getMessagesPack()));
+                }
             }
         }
     }

@@ -20,10 +20,15 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.ValidationException;
+import com.haulmont.cuba.gui.components.validation.RegexpValidator;
 import org.dom4j.Element;
 
 import java.util.regex.Pattern;
 
+/**
+ * @deprecated Use {@link RegexpValidator}.
+ */
+@Deprecated
 public class PatternValidator implements Field.Validator {
 
     protected Pattern pattern;
