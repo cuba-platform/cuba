@@ -57,12 +57,14 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 import com.haulmont.cuba.gui.model.CollectionContainer;
 import com.haulmont.cuba.gui.model.CollectionLoader;
+import com.haulmont.cuba.gui.model.LoaderSupportsApplyToSelected;
 import com.haulmont.cuba.gui.presentations.Presentations;
 import com.haulmont.cuba.gui.settings.SettingsImpl;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
 import com.haulmont.cuba.security.entity.FilterEntity;
 import com.haulmont.cuba.security.entity.SearchFolder;
+import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -2961,6 +2963,8 @@ public class FilterDelegateImpl implements FilterDelegate {
         protected Set<String> ftsComponentParameters = new HashSet<>();
         protected Set<String> ftsCustomParameters = new HashSet<>();
 
+        protected UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.class);
+
         /**
          * Condition which was set on DataLoader before applying the filter
          */
@@ -3134,17 +3138,35 @@ public class FilterDelegateImpl implements FilterDelegate {
 
         @Override
         public boolean supportsApplyToSelected() {
-            return false; // TODO filter supportsApplyToSelected
+            return loader instanceof LoaderSupportsApplyToSelected;
         }
 
         @Override
         public void pinQuery() {
-            // TODO filter supportsApplyToSelected
+            UserSession userSession = userSessionSource.getUserSession();
+            LoaderSupportsApplyToSelected supportsApplyToSelected = (LoaderSupportsApplyToSelected)loader;
+            List<LoadContext.Query> prevQueries = supportsApplyToSelected.getPrevQueries();
+
+            if (prevQueries == null) {
+                supportsApplyToSelected.setPrevQueries(new LinkedList<>());
+
+                Integer queryKey = userSession.getAttribute("_queryKey");
+                queryKey = queryKey != null ? queryKey + 1 : 1;
+
+                userSession.setAttribute("_queryKey", queryKey);
+                supportsApplyToSelected.setQueryKey(queryKey);
+            }
+
+            if (supportsApplyToSelected.getLastQuery() != null) {
+                supportsApplyToSelected.getPrevQueries().add(supportsApplyToSelected.getLastQuery());
+            }
         }
 
         @Override
         public void unpinAllQuery() {
-            // TODO filter supportsApplyToSelected
+            LoaderSupportsApplyToSelected supportsApplyToSelected = (LoaderSupportsApplyToSelected)loader;
+            supportsApplyToSelected.setPrevQueries(null);
+            supportsApplyToSelected.setQueryKey(null);
         }
 
         @Override

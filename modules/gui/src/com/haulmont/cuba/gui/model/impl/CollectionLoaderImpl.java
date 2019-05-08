@@ -32,7 +32,7 @@ import java.util.function.Function;
 /**
  *
  */
-public class CollectionLoaderImpl<E extends Entity> implements CollectionLoader<E> {
+public class CollectionLoaderImpl<E extends Entity> implements CollectionLoader<E>, LoaderSupportsApplyToSelected {
 
     private ApplicationContext applicationContext;
 
@@ -50,6 +50,10 @@ public class CollectionLoaderImpl<E extends Entity> implements CollectionLoader<
     protected String viewName;
     protected Sort sort;
     protected Function<LoadContext<E>, List<E>> delegate;
+    protected LoadContext.Query lastQuery;
+    protected List<LoadContext.Query> prevQueries;
+    protected Integer queryKey;
+
     protected EventHub events = new EventHub();
 
     public CollectionLoaderImpl(ApplicationContext applicationContext) {
@@ -92,6 +96,8 @@ public class CollectionLoaderImpl<E extends Entity> implements CollectionLoader<
             return;
         }
 
+        lastQuery = loadContext.getQuery();
+
         List<E> list;
         if (delegate == null) {
             list = getDataManager().loadList(loadContext);
@@ -132,6 +138,13 @@ public class CollectionLoaderImpl<E extends Entity> implements CollectionLoader<
         loadContext.setView(resolveView());
         loadContext.setSoftDeletion(softDeletion);
         loadContext.setLoadDynamicAttributes(loadDynamicAttributes);
+
+        if (prevQueries != null) {
+            loadContext.getPrevQueries().addAll(prevQueries);
+        }
+        if (queryKey != null) {
+            loadContext.setQueryKey(queryKey);
+        }
 
         return loadContext;
     }
@@ -319,5 +332,30 @@ public class CollectionLoaderImpl<E extends Entity> implements CollectionLoader<
     @Override
     public Subscription addPostLoadListener(Consumer<PostLoadEvent> listener) {
         return events.subscribe(PostLoadEvent.class, listener);
+    }
+
+    @Override
+    public LoadContext.Query getLastQuery() {
+        return lastQuery;
+    }
+
+    @Override
+    public List<LoadContext.Query> getPrevQueries() {
+        return prevQueries;
+    }
+
+    @Override
+    public void setPrevQueries(List<LoadContext.Query> prevQueries) {
+        this.prevQueries = prevQueries;
+    }
+
+    @Override
+    public Integer getQueryKey() {
+        return queryKey;
+    }
+
+    @Override
+    public void setQueryKey(Integer queryKey) {
+        this.queryKey = queryKey;
     }
 }
