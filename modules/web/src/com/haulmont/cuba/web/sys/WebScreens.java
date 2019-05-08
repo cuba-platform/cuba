@@ -1255,6 +1255,8 @@ public class WebScreens implements Screens, WindowManager {
             screenFragment.getFragment().setId(id);
         }
 
+        fragments.init(screenFragment);
+
         if (parent instanceof ComponentContainer) {
             ComponentContainer container = (ComponentContainer) parent;
             for (com.haulmont.cuba.gui.components.Component c : container.getComponents()) {
@@ -1269,8 +1271,6 @@ public class WebScreens implements Screens, WindowManager {
             }
             container.add(screenFragment.getFragment());
         }
-
-        fragments.init(screenFragment);
 
         return screenFragment instanceof Frame ? (Frame) screenFragment : new ScreenFragmentWrapper(screenFragment);
     }
