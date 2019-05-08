@@ -392,7 +392,7 @@ public class WebScreens implements Screens, WindowManager {
             descriptorPath = StringUtils.substring(descriptorPath, 0, descriptorPath.lastIndexOf("/"));
         }
 
-        String messagesPack = descriptorPath.replaceAll("/", ".");
+        String messagesPack = descriptorPath.replace("/", ".");
         int start = messagesPack.startsWith(".") ? 1 : 0;
         messagesPack = messagesPack.substring(start);
         return messagesPack;

@@ -19,7 +19,6 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.google.common.base.Preconditions;
 import com.haulmont.cuba.core.global.DevelopmentException;
-import com.haulmont.cuba.gui.FrameContext;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.AbstractFrame;
 import com.haulmont.cuba.gui.components.Fragment;
@@ -34,11 +33,13 @@ import com.haulmont.cuba.gui.model.impl.ScreenDataImpl;
 import com.haulmont.cuba.gui.screen.FrameOwner;
 import com.haulmont.cuba.gui.screen.ScreenContext;
 import com.haulmont.cuba.gui.screen.ScreenFragment;
-import com.haulmont.cuba.gui.sys.FrameContextImpl;
+import com.haulmont.cuba.gui.screen.ScreenOptions;
+import com.haulmont.cuba.gui.sys.FragmentContextImpl;
 import com.haulmont.cuba.gui.sys.ScreenContextImpl;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoader;
 import com.haulmont.cuba.gui.xml.layout.ScreenXmlLoader;
+import com.haulmont.cuba.gui.xml.layout.loaders.FragmentComponentLoader.FragmentLoaderInitTask;
 import org.apache.commons.lang3.StringUtils;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
@@ -52,6 +53,7 @@ import java.util.Objects;
 
 import static com.haulmont.cuba.gui.logging.UIPerformanceLogger.createStopWatch;
 import static com.haulmont.cuba.gui.screen.UiControllerUtils.*;
+import static com.haulmont.cuba.gui.xml.layout.loaders.FragmentComponentLoader.FragmentLoaderInjectTask;
 
 public class RuntimePropertiesFrameLoader extends ContainerLoader<Frame> {
 
@@ -113,7 +115,7 @@ public class RuntimePropertiesFrameLoader extends ContainerLoader<Frame> {
         fragmentImpl.setFrameOwner(controller);
         fragmentImpl.setId(fragmentId);
 
-        FrameContext frameContext = new FrameContextImpl(fragment);
+        FragmentContextImpl frameContext = new FragmentContextImpl(fragment, innerContext);
         ((FrameImplementation) fragment).setContext(frameContext);
 
         // load from XML if needed
@@ -139,7 +141,7 @@ public class RuntimePropertiesFrameLoader extends ContainerLoader<Frame> {
             Element windowElement = screenXmlLoader.load(windowInfo.getTemplate(), windowInfo.getId(),
                     getContext().getParams());
 
-            this.fragmentLoader = layoutLoader.createFragmentContent(fragment, windowElement, fragmentId);
+            this.fragmentLoader = layoutLoader.createFragmentContent(fragment, windowElement);
         }
 
         this.resultComponent = fragment;
@@ -220,13 +222,17 @@ public class RuntimePropertiesFrameLoader extends ContainerLoader<Frame> {
 
         // propagate init phases
 
+        ComponentLoaderContext parentContext = (ComponentLoaderContext) getContext();
         if (innerContext != null) {
-            ComponentLoaderContext parentContext = (ComponentLoaderContext) getContext();
 
             parentContext.getInjectTasks().addAll(innerContext.getInjectTasks());
             parentContext.getInitTasks().addAll(innerContext.getInitTasks());
             parentContext.getPostInitTasks().addAll(innerContext.getPostInitTasks());
         }
+
+        ScreenOptions options = parentContext.getOptions();
+        parentContext.addInjectTask(new FragmentLoaderInjectTask((Fragment) resultComponent, options, beanLocator));
+        parentContext.addInitTask(new FragmentLoaderInitTask((Fragment) resultComponent, options, (ComponentLoaderContext) context, beanLocator));
     }
 
     @SuppressWarnings("unchecked")
@@ -276,7 +282,7 @@ public class RuntimePropertiesFrameLoader extends ContainerLoader<Frame> {
             descriptorPath = StringUtils.substring(descriptorPath, 0, descriptorPath.lastIndexOf("/"));
         }
 
-        String messagesPack = descriptorPath.replaceAll("/", ".");
+        String messagesPack = descriptorPath.replace("/", ".");
         int start = messagesPack.startsWith(".") ? 1 : 0;
         messagesPack = messagesPack.substring(start);
         return messagesPack;

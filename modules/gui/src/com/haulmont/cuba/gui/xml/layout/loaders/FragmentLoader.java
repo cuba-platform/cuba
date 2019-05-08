@@ -16,10 +16,8 @@
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
-import com.haulmont.cuba.core.global.BeanLocator;
 import com.haulmont.cuba.core.global.DevelopmentException;
 import com.haulmont.cuba.gui.AppConfig;
-import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.AbstractFrame;
 import com.haulmont.cuba.gui.components.Fragment;
@@ -32,15 +30,10 @@ import com.haulmont.cuba.gui.logging.ScreenLifeCycle;
 import com.haulmont.cuba.gui.model.ScreenData;
 import com.haulmont.cuba.gui.model.impl.ScreenDataXmlLoader;
 import com.haulmont.cuba.gui.screen.FrameOwner;
-import com.haulmont.cuba.gui.screen.ScreenFragment;
-import com.haulmont.cuba.gui.screen.ScreenOptions;
 import com.haulmont.cuba.gui.screen.UiControllerUtils;
 import com.haulmont.cuba.gui.screen.compatibility.LegacyFrame;
 import com.haulmont.cuba.gui.sys.CompanionDependencyInjector;
 import com.haulmont.cuba.gui.sys.ScreenViewsLoader;
-import com.haulmont.cuba.gui.sys.UiControllerDependencyInjector;
-import com.haulmont.cuba.gui.sys.UiControllerPropertyInjector;
-import com.haulmont.cuba.gui.sys.UiControllerProperty;
 import com.haulmont.cuba.gui.xml.data.DsContextLoader;
 import com.haulmont.cuba.gui.xml.layout.ComponentRootLoader;
 import org.apache.commons.lang3.StringUtils;
@@ -48,39 +41,10 @@ import org.dom4j.Element;
 import org.perf4j.StopWatch;
 
 import javax.annotation.Nullable;
-import java.util.List;
 
 import static com.haulmont.cuba.gui.logging.UIPerformanceLogger.createStopWatch;
 
 public class FragmentLoader extends ContainerLoader<Fragment> implements ComponentRootLoader<Fragment> {
-
-    protected String frameId;
-
-    protected void initCompanion(Element companionsElem, AbstractFrame frame) {
-        String clientTypeId = AppConfig.getClientType().toString().toLowerCase();
-        Element element = companionsElem.element(clientTypeId);
-        if (element != null) {
-            String className = element.attributeValue("class");
-            if (!StringUtils.isBlank(className)) {
-                Class aClass = getScripting().loadClassNN(className);
-                Object companion;
-                try {
-                    companion = aClass.newInstance();
-                    frame.setCompanion(companion);
-
-                    CompanionDependencyInjector cdi = new CompanionDependencyInjector(frame, companion);
-                    cdi.setBeanLocator(beanLocator);
-                    cdi.inject();
-                } catch (Exception e) {
-                    throw new RuntimeException("Unable to init companion for frame", e);
-                }
-            }
-        }
-    }
-
-    protected ScreenViewsLoader getScreenViewsLoader() {
-        return beanLocator.get(ScreenViewsLoader.NAME);
-    }
 
     @Override
     public void createComponent() {
@@ -141,15 +105,19 @@ public class FragmentLoader extends ContainerLoader<Fragment> implements Compone
             loadDsContext(dsContextElement);
         }
 
-        ComponentLoaderContext parentContext = (ComponentLoaderContext) getComponentContext().getParent();
-        ScreenOptions options = parentContext.getOptions();
-
-        // add inject / init tasks before nested fragments
-        parentContext.addInjectTask(new FragmentLoaderInjectTask(resultComponent, options));
-        parentContext.addInitTask(new FragmentLoaderInitTask(resultComponent, options, (ComponentLoaderContext) context, beanLocator));
+        if (resultComponent.getFrameOwner() instanceof AbstractFrame) {
+            Element companionsElem = element.element("companions");
+            if (companionsElem != null) {
+                getComponentContext().addInjectTask(new FragmentLoaderCompanionTask(resultComponent));
+            }
+        }
 
         loadSubComponentsAndExpand(resultComponent, layoutElement);
         setComponentsRatio(resultComponent, layoutElement);
+    }
+
+    protected ScreenViewsLoader getScreenViewsLoader() {
+        return beanLocator.get(ScreenViewsLoader.NAME);
     }
 
     protected void loadScreenData(Element dataEl) {
@@ -197,21 +165,11 @@ public class FragmentLoader extends ContainerLoader<Fragment> implements Compone
         }
     }
 
-    public String getFrameId() {
-        return frameId;
-    }
-
-    public void setFrameId(String frameId) {
-        this.frameId = frameId;
-    }
-
-    protected class FragmentLoaderInjectTask implements InjectTask {
+    protected class FragmentLoaderCompanionTask implements InjectTask {
         protected Fragment fragment;
-        protected ScreenOptions options;
 
-        public FragmentLoaderInjectTask(Fragment fragment, ScreenOptions options) {
+        public FragmentLoaderCompanionTask(Fragment fragment) {
             this.fragment = fragment;
-            this.options = options;
         }
 
         @Override
@@ -228,58 +186,30 @@ public class FragmentLoader extends ContainerLoader<Fragment> implements Compone
                         companionStopWatch.stop();
                     }
                 }
-
-                StopWatch injectStopWatch = createStopWatch(ScreenLifeCycle.INJECTION, loggingId);
-
-                FrameOwner controller = fragment.getFrameOwner();
-                UiControllerDependencyInjector dependencyInjector =
-                        beanLocator.getPrototype(UiControllerDependencyInjector.NAME, controller, options);
-                dependencyInjector.inject();
-
-                injectStopWatch.stop();
             } catch (Throwable e) {
-                throw new RuntimeException("Unable to init custom frame class", e);
+                throw new RuntimeException("Unable to init frame companion", e);
             }
         }
-    }
 
-    protected static class FragmentLoaderInitTask implements InitTask {
-        protected Fragment fragment;
-        protected ScreenOptions options;
-        protected ComponentLoaderContext fragmentLoaderContext;
-        protected BeanLocator beanLocator;
+        protected void initCompanion(Element companionsElem, AbstractFrame frame) {
+            String clientTypeId = AppConfig.getClientType().toString().toLowerCase();
+            Element element = companionsElem.element(clientTypeId);
+            if (element != null) {
+                String className = element.attributeValue("class");
+                if (!StringUtils.isBlank(className)) {
+                    Class aClass = getScripting().loadClassNN(className);
+                    Object companion;
+                    try {
+                        companion = aClass.newInstance();
+                        frame.setCompanion(companion);
 
-        public FragmentLoaderInitTask(Fragment fragment, ScreenOptions options,
-                                      ComponentLoaderContext fragmentLoaderContext, BeanLocator beanLocator) {
-            this.fragment = fragment;
-            this.options = options;
-            this.fragmentLoaderContext = fragmentLoaderContext;
-            this.beanLocator = beanLocator;
-        }
-
-        @Override
-        public void execute(ComponentContext context, Frame window) {
-            String loggingId = ComponentsHelper.getFullFrameId(this.fragment);
-
-            StopWatch stopWatch = createStopWatch(ScreenLifeCycle.INIT, loggingId);
-
-            ScreenFragment frameOwner = fragment.getFrameOwner();
-
-            UiControllerUtils.fireEvent(frameOwner,
-                    ScreenFragment.InitEvent.class,
-                    new ScreenFragment.InitEvent(frameOwner, options));
-
-            stopWatch.stop();
-
-            UiControllerUtils.fireEvent(frameOwner,
-                    ScreenFragment.AfterInitEvent.class,
-                    new ScreenFragment.AfterInitEvent(frameOwner, options));
-
-            List<UiControllerProperty> properties = fragmentLoaderContext.getProperties();
-            if (!properties.isEmpty()) {
-                UiControllerPropertyInjector propertyInjector = beanLocator.getPrototype(UiControllerPropertyInjector.NAME,
-                        frameOwner, properties);
-                propertyInjector.inject();
+                        CompanionDependencyInjector cdi = new CompanionDependencyInjector(frame, companion);
+                        cdi.setBeanLocator(beanLocator);
+                        cdi.inject();
+                    } catch (Exception e) {
+                        throw new RuntimeException("Unable to init companion for frame", e);
+                    }
+                }
             }
         }
     }

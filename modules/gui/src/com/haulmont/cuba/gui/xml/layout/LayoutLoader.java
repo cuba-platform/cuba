@@ -16,7 +16,6 @@
  */
 package com.haulmont.cuba.gui.xml.layout;
 
-import com.haulmont.bali.datastruct.Pair;
 import com.haulmont.cuba.core.global.BeanLocator;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.UiComponents;
@@ -33,7 +32,6 @@ import javax.inject.Inject;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Locale;
-import java.util.Map;
 
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
 @Component(LayoutLoader.NAME)
@@ -55,17 +53,17 @@ public class LayoutLoader {
     }
 
     @Inject
-    public void setBeanLocator(BeanLocator beanLocator) {
+    protected void setBeanLocator(BeanLocator beanLocator) {
         this.beanLocator = beanLocator;
     }
 
     @Inject
-    public void setFactory(UiComponents factory) {
+    protected void setFactory(UiComponents factory) {
         this.factory = factory;
     }
 
     @Inject
-    public void setConfig(LayoutLoaderConfig config) {
+    protected void setConfig(LayoutLoaderConfig config) {
         this.config = config;
     }
 
@@ -126,20 +124,6 @@ public class LayoutLoader {
         return loader;
     }
 
-    public Pair<ComponentLoader, Element> createFrameComponent(String resourcePath, String id,
-                                                               Map<String, Object> params) {
-        ScreenXmlLoader screenXmlLoader = beanLocator.get(ScreenXmlLoader.NAME);
-        Element element = screenXmlLoader.load(resourcePath, id, params);
-
-        ComponentLoader loader = getLoader(element);
-        FragmentLoader fragmentLoader = (FragmentLoader) loader;
-        fragmentLoader.setFrameId(id);
-
-        loader.createComponent();
-
-        return new Pair<>(loader, element);
-    }
-
     public ComponentLoader createComponent(Element element) {
         ComponentLoader loader = getLoader(element);
 
@@ -147,10 +131,8 @@ public class LayoutLoader {
         return loader;
     }
 
-    public ComponentLoader<Fragment> createFragmentContent(Fragment fragment, Element rootWindowElement, String fragmentId) {
+    public ComponentLoader<Fragment> createFragmentContent(Fragment fragment, Element rootWindowElement) {
         FragmentLoader fragmentLoader = getFragmentLoader(rootWindowElement);
-
-        fragmentLoader.setFrameId(fragmentId);
         fragmentLoader.setResultComponent(fragment);
 
         Element layout = rootWindowElement.element("layout");

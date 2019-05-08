@@ -81,7 +81,7 @@ public class AbstractLookup extends AbstractWindow implements Lookup {
         }
     }
 
-    protected void afterInit(AfterInitEvent event) {
+    protected void afterInit(@SuppressWarnings("unused") AfterInitEvent event) {
         initLookupLayout();
     }
 
@@ -107,8 +107,6 @@ public class AbstractLookup extends AbstractWindow implements Lookup {
             lookupWindowActions.getFragment().setVisible(false);
 
             getFrame().add(lookupWindowActions.getFragment());
-
-            lookupWindowActions.init();
         }
 
         Element element = ((Component.HasXmlDescriptor) getFrame()).getXmlDescriptor();

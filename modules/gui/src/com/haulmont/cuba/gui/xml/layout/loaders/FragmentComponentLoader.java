@@ -16,11 +16,13 @@
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
+import com.haulmont.cuba.core.global.BeanLocator;
 import com.haulmont.cuba.core.global.DevelopmentException;
-import com.haulmont.cuba.gui.FrameContext;
+import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.AbstractFrame;
 import com.haulmont.cuba.gui.components.Fragment;
+import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.sys.FragmentImplementation;
 import com.haulmont.cuba.gui.components.sys.FrameImplementation;
 import com.haulmont.cuba.gui.config.WindowAttributesProvider;
@@ -28,12 +30,8 @@ import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.logging.ScreenLifeCycle;
 import com.haulmont.cuba.gui.model.impl.ScreenDataImpl;
-import com.haulmont.cuba.gui.screen.FrameOwner;
-import com.haulmont.cuba.gui.screen.ScreenContext;
-import com.haulmont.cuba.gui.screen.ScreenFragment;
-import com.haulmont.cuba.gui.sys.FrameContextImpl;
-import com.haulmont.cuba.gui.sys.ScreenContextImpl;
-import com.haulmont.cuba.gui.sys.UiControllerProperty;
+import com.haulmont.cuba.gui.screen.*;
+import com.haulmont.cuba.gui.sys.*;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoader;
 import com.haulmont.cuba.gui.xml.layout.ScreenXmlLoader;
@@ -80,10 +78,6 @@ public class FragmentComponentLoader extends ContainerLoader<Fragment> {
         if (src == null) {
             // load screen class only once
             windowInfo = getWindowConfig().getWindowInfo(screenId).resolve();
-            if (windowInfo.getTemplate() == null) {
-                throw new GuiDevelopmentException(
-                        String.format("Screen %s doesn't have template path configured", screenId), context);
-            }
         } else {
             windowInfo = createFakeWindowInfo(src, fragmentId);
         }
@@ -117,7 +111,7 @@ public class FragmentComponentLoader extends ContainerLoader<Fragment> {
         fragmentImpl.setFrameOwner(controller);
         fragmentImpl.setId(fragmentId);
 
-        FrameContext frameContext = new FrameContextImpl(fragment);
+        FragmentContextImpl frameContext = new FragmentContextImpl(fragment, innerContext);
         ((FrameImplementation) fragment).setContext(frameContext);
 
         // load from XML if needed
@@ -144,7 +138,7 @@ public class FragmentComponentLoader extends ContainerLoader<Fragment> {
             Element windowElement = screenXmlLoader.load(windowInfo.getTemplate(), windowInfo.getId(),
                     getComponentContext().getParams());
 
-            this.fragmentLoader = layoutLoader.createFragmentContent(fragment, windowElement, fragmentId);
+            this.fragmentLoader = layoutLoader.createFragmentContent(fragment, windowElement);
         }
 
         createStopWatch.stop();
@@ -157,7 +151,7 @@ public class FragmentComponentLoader extends ContainerLoader<Fragment> {
             descriptorPath = StringUtils.substring(descriptorPath, 0, descriptorPath.lastIndexOf("/"));
         }
 
-        String messagesPack = descriptorPath.replaceAll("/", ".");
+        String messagesPack = descriptorPath.replace("/", ".");
         int start = messagesPack.startsWith(".") ? 1 : 0;
         messagesPack = messagesPack.substring(start);
         return messagesPack;
@@ -284,6 +278,10 @@ public class FragmentComponentLoader extends ContainerLoader<Fragment> {
             parentContext.getInitTasks().addAll(innerContext.getInitTasks());
             parentContext.getPostInitTasks().addAll(innerContext.getPostInitTasks());
         }
+
+        ScreenOptions options = parentContext.getOptions();
+        parentContext.addInjectTask(new FragmentLoaderInjectTask(resultComponent, options, beanLocator));
+        parentContext.addInitTask(new FragmentLoaderInitTask(resultComponent, options, (ComponentLoaderContext) context, beanLocator));
     }
 
     protected List<UiControllerProperty> loadProperties(Element element) {
@@ -341,5 +339,86 @@ public class FragmentComponentLoader extends ContainerLoader<Fragment> {
 
     protected WindowConfig getWindowConfig() {
         return beanLocator.get(WindowConfig.NAME);
+    }
+
+    public static class FragmentLoaderInjectTask implements InjectTask {
+        protected Fragment fragment;
+        protected ScreenOptions options;
+        protected BeanLocator beanLocator;
+
+        public FragmentLoaderInjectTask(Fragment fragment, ScreenOptions options, BeanLocator beanLocator) {
+            this.fragment = fragment;
+            this.options = options;
+            this.beanLocator = beanLocator;
+        }
+
+        @Override
+        public void execute(ComponentContext context, Frame window) {
+            String loggingId = context.getFullFrameId();
+            try {
+                StopWatch injectStopWatch = createStopWatch(ScreenLifeCycle.INJECTION, loggingId);
+
+                FrameOwner controller = fragment.getFrameOwner();
+                UiControllerDependencyInjector dependencyInjector =
+                        beanLocator.getPrototype(UiControllerDependencyInjector.NAME, controller, options);
+                dependencyInjector.inject();
+
+                injectStopWatch.stop();
+            } catch (Throwable e) {
+                throw new RuntimeException("Unable to init custom frame class", e);
+            }
+        }
+    }
+
+    public static class FragmentLoaderInitTask implements InitTask {
+        protected Fragment fragment;
+        protected ScreenOptions options;
+        protected ComponentLoaderContext fragmentLoaderContext;
+        protected BeanLocator beanLocator;
+
+        public FragmentLoaderInitTask(Fragment fragment, ScreenOptions options,
+                                      ComponentLoaderContext fragmentLoaderContext, BeanLocator beanLocator) {
+            this.fragment = fragment;
+            this.options = options;
+            this.fragmentLoaderContext = fragmentLoaderContext;
+            this.beanLocator = beanLocator;
+        }
+
+        @Override
+        public void execute(ComponentContext context, Frame window) {
+            String loggingId = ComponentsHelper.getFullFrameId(this.fragment);
+
+            StopWatch stopWatch = createStopWatch(ScreenLifeCycle.INIT, loggingId);
+
+            ScreenFragment frameOwner = fragment.getFrameOwner();
+
+            UiControllerUtils.fireEvent(frameOwner,
+                    ScreenFragment.InitEvent.class,
+                    new ScreenFragment.InitEvent(frameOwner, options));
+
+            stopWatch.stop();
+
+            UiControllerUtils.fireEvent(frameOwner,
+                    ScreenFragment.AfterInitEvent.class,
+                    new ScreenFragment.AfterInitEvent(frameOwner, options));
+
+            List<UiControllerProperty> properties = fragmentLoaderContext.getProperties();
+            if (!properties.isEmpty()) {
+                UiControllerPropertyInjector propertyInjector =
+                        beanLocator.getPrototype(UiControllerPropertyInjector.NAME, frameOwner, properties);
+                propertyInjector.inject();
+            }
+
+            FragmentContextImpl fragmentContext = (FragmentContextImpl) fragment.getContext();
+            fragmentContext.setInitialized(true);
+
+            // fire attached
+
+            if (!fragmentContext.isManualInitRequired()) {
+                UiControllerUtils.fireEvent(frameOwner,
+                        ScreenFragment.AttachEvent.class,
+                        new ScreenFragment.AttachEvent(frameOwner));
+            }
+        }
     }
 }

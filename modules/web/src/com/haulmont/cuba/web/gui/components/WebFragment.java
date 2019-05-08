@@ -17,6 +17,7 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.ComponentsHelper;
+import com.haulmont.cuba.gui.Fragments;
 import com.haulmont.cuba.gui.FrameContext;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
@@ -25,6 +26,7 @@ import com.haulmont.cuba.gui.components.sys.FrameImplementation;
 import com.haulmont.cuba.gui.events.sys.UiEventsMulticaster;
 import com.haulmont.cuba.gui.screen.ScreenFragment;
 import com.haulmont.cuba.gui.screen.UiControllerUtils;
+import com.haulmont.cuba.gui.sys.FragmentContextImpl;
 import com.haulmont.cuba.web.AppUI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,12 +46,10 @@ public class WebFragment extends WebVBoxLayout implements Fragment, FragmentImpl
     private static final Logger log = LoggerFactory.getLogger(WebFragment.class);
 
     protected FrameContext context;
+    protected ScreenFragment frameOwner;
 
     protected Map<String, Component> allComponents = new HashMap<>();
-
     protected WebFrameActionsHolder actionsHolder = new WebFrameActionsHolder(this);
-
-    protected ScreenFragment frameOwner;
 
     public WebFragment() {
         component.addActionHandler(actionsHolder);
@@ -209,7 +209,10 @@ public class WebFragment extends WebVBoxLayout implements Fragment, FragmentImpl
             return true;
         }
 
-        WebComponentsHelper.focusProblemComponent(errors);
+        com.haulmont.cuba.gui.components.Component problemComponent = errors.getFirstComponent();
+        if (problemComponent != null) {
+            ComponentsHelper.focusComponent(problemComponent);
+        }
 
         return false;
     }
@@ -269,6 +272,30 @@ public class WebFragment extends WebVBoxLayout implements Fragment, FragmentImpl
     public void initUiEventListeners() {
         component.addAttachListener(event -> enableEventListeners());
         component.addDetachListener(event -> disableEventListeners());
+    }
+
+    @Override
+    public void attached() {
+        super.attached();
+
+        FragmentContextImpl context = (FragmentContextImpl) getContext();
+        if (context.isManualInitRequired()) {
+            if (!context.isInitialized()) {
+                Fragments fragments = UiControllerUtils.getScreenContext(frameOwner).getFragments();
+                fragments.init(frameOwner);
+            }
+
+            UiControllerUtils.fireEvent(frameOwner, ScreenFragment.AttachEvent.class,
+                    new ScreenFragment.AttachEvent(frameOwner));
+        }
+    }
+
+    @Override
+    public void detached() {
+        super.detached();
+
+        UiControllerUtils.fireEvent(frameOwner, ScreenFragment.DetachEvent.class,
+                new ScreenFragment.DetachEvent(frameOwner));
     }
 
     protected void disableEventListeners() {

@@ -26,6 +26,7 @@ import com.haulmont.cuba.gui.components.sys.FragmentImplementation;
 import com.haulmont.cuba.gui.model.ScreenData;
 import org.springframework.context.ApplicationListener;
 
+import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import java.util.EventObject;
 import java.util.List;
@@ -104,6 +105,7 @@ public abstract class ScreenFragment implements FrameOwner {
      * @return host screen of the fragment
      * @throws IllegalStateException if host screen cannot be found though hierarchy of fragments
      */
+    @Nonnull
     protected Screen getHostScreen() {
         FrameOwner parent = this.hostController;
 
@@ -197,6 +199,26 @@ public abstract class ScreenFragment implements FrameOwner {
     }
 
     /**
+     * Adds {@link AttachEvent} listener.
+     *
+     * @param listener listener
+     * @return subscription
+     */
+    protected Subscription addAttachEventListener(Consumer<AttachEvent> listener) {
+        return eventHub.subscribe(AttachEvent.class, listener);
+    }
+
+    /**
+     * Adds {@link DetachEvent} listener.
+     *
+     * @param listener listener
+     * @return subscription
+     */
+    protected Subscription addDetachEventListener(Consumer<DetachEvent> listener) {
+        return eventHub.subscribe(DetachEvent.class, listener);
+    }
+
+    /**
      * Event sent when the fragment controller is created and dependency injection is completed. <br>
      * If the fragment is declared in host screen declaratively, this event if fired after {@link Screen.InitEvent} of the
      * host controller.
@@ -247,5 +269,37 @@ public abstract class ScreenFragment implements FrameOwner {
         }
     }
 
-    // todo attached / detached / events from parent
+    /**
+     * Event sent when the fragment controller is initialized and added to host screen.
+     *
+     * @see #addAttachEventListener(Consumer)
+     */
+    public static class AttachEvent extends EventObject {
+
+        public AttachEvent(ScreenFragment source) {
+            super(source);
+        }
+
+        @Override
+        public ScreenFragment getSource() {
+            return (ScreenFragment) super.getSource();
+        }
+    }
+
+    /**
+     * Event sent when the fragment controller is removed from host screen.
+     *
+     * @see #addDetachEventListener(Consumer)
+     */
+    public static class DetachEvent extends EventObject {
+
+        public DetachEvent(ScreenFragment source) {
+            super(source);
+        }
+
+        @Override
+        public ScreenFragment getSource() {
+            return (ScreenFragment) super.getSource();
+        }
+    }
 }

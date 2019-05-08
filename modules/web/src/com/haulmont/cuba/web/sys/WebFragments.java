@@ -35,13 +35,13 @@ import com.haulmont.cuba.gui.model.impl.ScreenDataImpl;
 import com.haulmont.cuba.gui.screen.*;
 import com.haulmont.cuba.gui.screen.compatibility.LegacyFrame;
 import com.haulmont.cuba.gui.sys.FragmentContextImpl;
-import com.haulmont.cuba.gui.sys.FrameContextImpl;
 import com.haulmont.cuba.gui.sys.ScreenContextImpl;
 import com.haulmont.cuba.gui.sys.UiDescriptorUtils;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoader;
 import com.haulmont.cuba.gui.xml.layout.ScreenXmlLoader;
 import com.haulmont.cuba.gui.xml.layout.loaders.ComponentLoaderContext;
+import com.haulmont.cuba.gui.xml.layout.loaders.FragmentComponentLoader.FragmentLoaderInjectTask;
 import com.haulmont.cuba.web.AppUI;
 import com.vaadin.server.ClientConnector;
 import org.apache.commons.lang3.StringUtils;
@@ -56,6 +56,7 @@ import java.util.Locale;
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 import static com.haulmont.cuba.gui.logging.UIPerformanceLogger.createStopWatch;
 import static com.haulmont.cuba.gui.screen.UiControllerUtils.*;
+import static com.haulmont.cuba.gui.xml.layout.loaders.FragmentComponentLoader.FragmentLoaderInitTask;
 
 public class WebFragments implements Fragments {
 
@@ -150,7 +151,8 @@ public class WebFragments implements Fragments {
         // fake parent loader context
         ComponentLoaderContext loaderContext = new ComponentLoaderContext(options);
 
-        FrameContextImpl frameContext = new FragmentContextImpl(fragment, loaderContext);
+        FragmentContextImpl frameContext = new FragmentContextImpl(fragment, loaderContext);
+        frameContext.setManualInitRequired(true);
         ((FrameImplementation) fragment).setContext(frameContext);
 
         loaderContext.setCurrentFrameId(windowInfo.getId());
@@ -178,7 +180,7 @@ public class WebFragments implements Fragments {
                     innerContext.getParams());
 
             ComponentLoader<Fragment> fragmentLoader =
-                    layoutLoader.createFragmentContent(fragment, windowElement, windowInfo.getId());
+                    layoutLoader.createFragmentContent(fragment, windowElement);
 
             fragmentLoader.loadComponent();
 
@@ -186,6 +188,9 @@ public class WebFragments implements Fragments {
             loaderContext.getInitTasks().addAll(innerContext.getInitTasks());
             loaderContext.getPostInitTasks().addAll(innerContext.getPostInitTasks());
         }
+
+        loaderContext.addInjectTask(new FragmentLoaderInjectTask(fragment, options, beanLocator));
+        loaderContext.addInitTask(new FragmentLoaderInitTask(fragment, options, loaderContext, beanLocator));
 
         loadStopWatch.stop();
 
@@ -202,6 +207,9 @@ public class WebFragments implements Fragments {
         checkNotNullArgument(controller);
 
         FragmentContextImpl fragmentContext = (FragmentContextImpl) controller.getFragment().getContext();
+        if (fragmentContext.isInitialized()) {
+            throw new IllegalStateException("Fragment is already initialized " + controller.getId());
+        }
 
         ComponentLoaderContext loaderContext = fragmentContext.getLoaderContext();
 
@@ -221,6 +229,8 @@ public class WebFragments implements Fragments {
                 }
             });
         }
+
+        fragmentContext.setInitialized(true);
     }
 
     protected void resumeDsContextAfterShow(LegacyFrame controller) {
@@ -237,7 +247,7 @@ public class WebFragments implements Fragments {
             descriptorPath = StringUtils.substring(descriptorPath, 0, descriptorPath.lastIndexOf("/"));
         }
 
-        String messagesPack = descriptorPath.replaceAll("/", ".");
+        String messagesPack = descriptorPath.replace("/", ".");
         int start = messagesPack.startsWith(".") ? 1 : 0;
         messagesPack = messagesPack.substring(start);
         return messagesPack;
