@@ -1222,7 +1222,11 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
             throw new IllegalArgumentException("Datasource doesn't contain item");
         }
 
-        int rowIndex = dataGridItems.indexOfItem(item);
+        editItemInternal(item);
+    }
+
+    protected void editItemInternal(E item) {
+        int rowIndex = getDataGridItemsNN().indexOfItem(item);
         component.getEditor().editRow(rowIndex);
     }
 

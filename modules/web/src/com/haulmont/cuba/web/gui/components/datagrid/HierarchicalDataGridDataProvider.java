@@ -23,6 +23,7 @@ import com.vaadin.data.provider.HierarchicalDataProvider;
 import com.vaadin.data.provider.HierarchicalQuery;
 import com.vaadin.server.SerializablePredicate;
 
+import javax.annotation.Nullable;
 import java.util.stream.Stream;
 
 public class HierarchicalDataGridDataProvider<T> extends SortableDataGridDataProvider<T>
@@ -77,5 +78,11 @@ public class HierarchicalDataGridDataProvider<T> extends SortableDataGridDataPro
         }
 
         return level;
+    }
+
+    @Nullable
+    @Override
+    public T getParent(T item) {
+        return getTreeDataGridSource().getParent(item);
     }
 }
