@@ -22,12 +22,16 @@ import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.presentations.Presentations;
 import com.haulmont.cuba.gui.presentations.PresentationsChangeListener;
+import com.haulmont.cuba.gui.sys.TestIdManager;
 import com.haulmont.cuba.security.entity.Presentation;
+import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
-import com.haulmont.cuba.web.gui.components.WebPopupButton;
 import com.haulmont.cuba.web.gui.components.presentations.actions.PresentationActionsBuilder;
+import com.haulmont.cuba.web.widgets.CubaButton;
 import com.haulmont.cuba.web.widgets.CubaEnhancedTable;
 import com.haulmont.cuba.web.widgets.CubaMenuBar;
+import com.haulmont.cuba.web.widgets.CubaPopupButton;
+import com.haulmont.cuba.web.widgets.CubaPopupButtonLayout;
 import com.vaadin.ui.*;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -47,8 +51,10 @@ public class TablePresentations extends VerticalLayout {
     protected static final String DEFAULT_MENUITEM_STYLENAME = "c-table-prefs-menuitem-default";
     protected static final String TABLE_PREFS_STYLENAME = "c-table-prefs";
 
+    protected static final String CONTEXT_MENU_BUTTON_STYLENAME = "c-cm-button";
+
     protected CubaMenuBar menuBar;
-    protected WebPopupButton button;
+    protected CubaPopupButton button;
     protected CheckBox textSelectionCheckBox;
 
     protected Table table;
@@ -199,10 +205,10 @@ public class TablePresentations extends VerticalLayout {
         menuBar.setVertical(true);
         addComponent(menuBar);
 
-        button = new WebPopupButton(); // todo rewrite !
+        button = new CubaPopupButton();
         button.setCaption(messages.getMainMessage("PresentationsPopup.actions"));
-        addComponent(button.getComponent());
-        setComponentAlignment(button.getComponent(), Alignment.MIDDLE_CENTER);
+        addComponent(button);
+        setComponentAlignment(button, Alignment.MIDDLE_CENTER);
 
         textSelectionCheckBox = new CheckBox();
         textSelectionCheckBox.setCaption(messages.getMainMessage("PresentationsPopup.textSelection"));
@@ -246,14 +252,67 @@ public class TablePresentations extends VerticalLayout {
     }
 
     protected void buildActions() {
-        button.removeAllActions();
+        CubaPopupButtonLayout actionsContainer = new CubaPopupButtonLayout();
 
         PresentationActionsBuilder presentationActionsBuilder = getPresentationActionsBuilder();
         if (presentationActionsBuilder != null) {
             for (Action action : presentationActionsBuilder.build()) {
-                button.addAction(action);
+                actionsContainer.addComponent(createActionButton(action));
             }
         }
+
+        button.setContent(actionsContainer);
+    }
+
+    protected CubaButton createActionButton(Action action) {
+        CubaButton actionBtn = new CubaButton();
+
+        actionBtn.setWidth("100%");
+        actionBtn.setPrimaryStyleName(CONTEXT_MENU_BUTTON_STYLENAME);
+
+        setPopupButtonAction(actionBtn, action);
+
+        AppUI ui = AppUI.getCurrent();
+        if (ui != null) {
+            if (ui.isTestMode()) {
+                actionBtn.setCubaId(action.getId());
+            }
+
+            if (ui.isPerformanceTestMode()) {
+                String debugId = getDebugId();
+                if (debugId != null) {
+                    TestIdManager testIdManager = ui.getTestIdManager();
+                    actionBtn.setId(testIdManager.getTestId(debugId + "_" + action.getId()));
+                }
+            }
+        }
+
+        return actionBtn;
+    }
+
+    protected void setPopupButtonAction(CubaButton actionBtn, Action action) {
+        actionBtn.setCaption(action.getCaption());
+
+        String description = action.getDescription();
+        if (description == null && action.getShortcutCombination() != null) {
+            description = action.getShortcutCombination().format();
+        }
+        if (description != null) {
+            actionBtn.setDescription(description);
+        }
+
+        actionBtn.setEnabled(action.isEnabled());
+        actionBtn.setVisible(action.isVisible());
+
+        actionBtn.setClickHandler(mouseEventDetails -> {
+            this.focus();
+
+            if (button.isAutoClose()) {
+                button.setPopupVisible(false);
+            }
+
+            action.actionPerform(null);
+        });
     }
 
     protected PresentationActionsBuilder getPresentationActionsBuilder() {
