@@ -29,14 +29,12 @@ import com.haulmont.cuba.gui.components.Resource;
 import com.haulmont.cuba.gui.components.StreamResource;
 import com.haulmont.cuba.gui.components.data.ValueSource;
 import com.haulmont.cuba.gui.components.data.meta.EntityValueSource;
-import com.haulmont.cuba.gui.export.ByteArrayDataProvider;
 import com.haulmont.cuba.web.widgets.CubaImage;
 import com.vaadin.event.MouseEvents;
 import org.springframework.beans.factory.InitializingBean;
 
-import java.io.InputStream;
+import java.io.ByteArrayInputStream;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 public class WebImage extends WebAbstractResourceView<CubaImage> implements Image, InitializingBean {
     protected static final String IMAGE_STYLENAME = "c-image";
@@ -61,7 +59,7 @@ public class WebImage extends WebAbstractResourceView<CubaImage> implements Imag
     }
 
     @Override
-    public void afterPropertiesSet() throws Exception {
+    public void afterPropertiesSet() {
         initComponent(component);
     }
 
@@ -137,17 +135,14 @@ public class WebImage extends WebAbstractResourceView<CubaImage> implements Imag
         }
 
         if (resourceObject instanceof FileDescriptor) {
-            FileDescriptorResource imageResource = createResource(FileDescriptorResource.class);
-            imageResource.setFileDescriptor((FileDescriptor) resourceObject);
-            return imageResource;
+            return createResource(FileDescriptorResource.class)
+                    .setFileDescriptor((FileDescriptor) resourceObject);
         }
 
         if (resourceObject instanceof byte[]) {
-            StreamResource imageResource = createResource(StreamResource.class);
-            Supplier<InputStream> streamSupplier = () ->
-                    new ByteArrayDataProvider((byte[]) resourceObject).provide();
-            imageResource.setStreamSupplier(streamSupplier);
-            return imageResource;
+            return createResource(StreamResource.class)
+                    .setStreamSupplier(() ->
+                            new ByteArrayInputStream((byte[]) resourceObject));
         }
 
         throw new GuiDevelopmentException(
