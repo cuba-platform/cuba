@@ -24,9 +24,7 @@ import com.haulmont.cuba.gui.components.data.Options;
 import com.haulmont.cuba.gui.components.data.ValueSource;
 import com.haulmont.cuba.gui.components.data.meta.EntityValueSource;
 import com.haulmont.cuba.gui.components.data.meta.OptionsBinding;
-import com.haulmont.cuba.gui.components.data.options.ContainerOptions;
 import com.haulmont.cuba.gui.components.data.options.OptionsBinder;
-import com.haulmont.cuba.gui.model.CollectionContainer;
 import com.haulmont.cuba.web.widgets.CubaListSelect;
 import com.vaadin.v7.data.util.IndexedContainer;
 import org.springframework.beans.factory.InitializingBean;
@@ -116,8 +114,10 @@ public class WebOptionsList<V, I> extends WebAbstractField<CubaListSelect, V>
             Set collectionValue = (Set) componentRawValue;
 
             List<I> itemIds = getCurrentItems();
-            Stream<I> selectedItemsStream = itemIds.stream()
-                    .filter(collectionValue::contains);
+
+            //noinspection RedundantCast
+            Stream<I> selectedItemsStream = collectionValue.stream()
+                    .filter(item -> itemIds.isEmpty() || itemIds.contains((I) item));
 
             if (valueBinding != null) {
                 Class<V> targetType = valueBinding.getSource().getType();
@@ -144,38 +144,7 @@ public class WebOptionsList<V, I> extends WebAbstractField<CubaListSelect, V>
 
     @Override
     public void setValue(V value) {
-        V oldValue = internalValue;
-        internalValue = value;
-
         setValueToPresentation(convertToPresentation(value));
-
-        if (isMultiSelect()) {
-            //noinspection unchecked
-            if (isCollectionValuesChanged((Collection<I>) value, (Collection<I>) oldValue)) {
-                ValueChangeEvent<V> event = new ValueChangeEvent<>(this, oldValue, value, false);
-                publish(ValueChangeEvent.class, event);
-            }
-        } else if (!fieldValueEquals(value, oldValue)) {
-            ValueChangeEvent<V> event = new ValueChangeEvent<>(this, oldValue, value, false);
-            publish(ValueChangeEvent.class, event);
-        }
-    }
-
-    @Override
-    protected void componentValueChanged(Object newComponentValue, boolean userOriginated) {
-        if (userOriginated) {
-            CollectionContainer collectionContainer = null;
-            if (optionsBinding.getSource() instanceof ContainerOptions) {
-                collectionContainer = ((ContainerOptions) optionsBinding.getSource()).getContainer();
-                collectionContainer.mute();
-            }
-
-            super.componentValueChanged(newComponentValue, userOriginated);
-
-            if (collectionContainer != null) {
-                collectionContainer.unmute(CollectionContainer.UnmuteEventsMode.FIRE_REFRESH_EVENT);
-            }
-        }
     }
 
     @SuppressWarnings("unchecked")
