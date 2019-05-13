@@ -271,6 +271,7 @@ public abstract class ScreenFragment implements FrameOwner {
 
     /**
      * Event sent when the fragment controller is initialized and added to host screen.
+     * Event handlers have access to the host screen of the fragment.
      *
      * @see #addAttachEventListener(Consumer)
      */
@@ -287,7 +288,8 @@ public abstract class ScreenFragment implements FrameOwner {
     }
 
     /**
-     * Event sent when the fragment controller is removed from host screen.
+     * Event sent when the fragment controller has been removed from host screen.
+     * Event handlers do not have access to the host screen of the fragment.
      *
      * @see #addDetachEventListener(Consumer)
      */
