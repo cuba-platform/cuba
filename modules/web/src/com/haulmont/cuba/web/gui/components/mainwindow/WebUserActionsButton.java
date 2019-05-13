@@ -18,6 +18,7 @@ package com.haulmont.cuba.web.gui.components.mainwindow;
 
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.core.global.Security;
 import com.haulmont.cuba.gui.components.mainwindow.UserActionsButton;
 import com.haulmont.cuba.gui.icons.CubaIcon;
 import com.haulmont.cuba.gui.icons.Icons;
@@ -28,14 +29,22 @@ import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.gui.components.WebAbstractComponent;
 import com.haulmont.cuba.web.gui.icons.IconResolver;
 import com.haulmont.cuba.web.widgets.CubaMenuBar;
+import com.vaadin.server.Resource;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.UI;
 import org.apache.commons.lang3.StringUtils;
+
+import javax.inject.Inject;
 
 public class WebUserActionsButton extends WebAbstractComponent<CubaMenuBar>
         implements UserActionsButton {
 
     public static final String USERACTIONS_BUTTON_STYLENAME = "c-useractions-button";
+
+    protected IconResolver iconResolver;
+    protected Icons icons;
+    protected Messages messages;
+    protected Security security;
 
     public WebUserActionsButton() {
         component = new CubaMenuBar();
@@ -50,28 +59,57 @@ public class WebUserActionsButton extends WebAbstractComponent<CubaMenuBar>
         });
     }
 
+    @Inject
+    public void setIconResolver(IconResolver iconResolver) {
+        this.iconResolver = iconResolver;
+    }
+
+    @Inject
+    public void setIcons(Icons icons) {
+        this.icons = icons;
+    }
+
+    @Inject
+    public void setMessages(Messages messages) {
+        this.messages = messages;
+    }
+
+    @Inject
+    public void setSecurity(Security security) {
+        this.security = security;
+    }
+
     protected void initComponent(AppUI ui) {
         boolean authenticated = ui.hasAuthenticatedSession();
 
-        IconResolver iconResolver = beanLocator.get(IconResolver.class);
-        Icons icons = beanLocator.get(Icons.class);
-        Messages messages = beanLocator.get(Messages.class);
+        initLoginButton(authenticated);
+        initUserMenuButton(authenticated);
+    }
 
+    protected void initLoginButton(boolean authenticated) {
         MenuBar.MenuItem loginButton = component.addItem("", item -> login());
         loginButton.setDescription(messages.getMainMessage("loginBtnDescription"));
-        loginButton.setIcon(iconResolver.getIconResource(icons.get(CubaIcon.SIGN_IN)));
+        loginButton.setIcon(getIconResource(CubaIcon.SIGN_IN));
         loginButton.setVisible(!authenticated);
+    }
 
-        MenuBar.MenuItem userMenuBtn = component.addItem("");
-        userMenuBtn.setDescription(messages.getMainMessage("userActionsBtnDescription"));
-        userMenuBtn.setIcon(iconResolver.getIconResource(icons.get(CubaIcon.USER)));
-        userMenuBtn.setVisible(authenticated);
+    protected void initUserMenuButton(boolean authenticated) {
+        MenuBar.MenuItem userMenuButton = component.addItem("");
+        userMenuButton.setDescription(messages.getMainMessage("userActionsBtnDescription"));
+        userMenuButton.setIcon(getIconResource(CubaIcon.USER));
+        userMenuButton.setVisible(authenticated);
 
-        userMenuBtn.addItem(messages.getMainMessage("settings"),
-                iconResolver.getIconResource(icons.get(CubaIcon.GEAR)), item -> openSettings());
+        if (security.isScreenPermitted("settings")) {
+            userMenuButton.addItem(messages.getMainMessage("settings"),
+                    getIconResource(CubaIcon.GEAR), item -> openSettings());
+        }
 
-        userMenuBtn.addItem(messages.getMainMessage("logoutBtnDescription"),
-                iconResolver.getIconResource(icons.get(CubaIcon.SIGN_OUT)), item -> logout());
+        userMenuButton.addItem(messages.getMainMessage("logoutBtnDescription"),
+                getIconResource(CubaIcon.SIGN_OUT), item -> logout());
+    }
+
+    protected Resource getIconResource(Icons.Icon icon) {
+        return iconResolver.getIconResource(icons.get(icon));
     }
 
     protected void login() {

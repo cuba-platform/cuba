@@ -35,7 +35,7 @@ import java.util.Map;
 @Component
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
 @Order(NavigationHandler.LOWEST_PLATFORM_PRECEDENCE - 20)
-public class ParamsNavigationHandler extends AbstractNavigationHandler implements NavigationHandler {
+public class ParamsNavigationHandler implements NavigationHandler {
 
     private static final Logger log = LoggerFactory.getLogger(ParamsNavigationHandler.class);
 

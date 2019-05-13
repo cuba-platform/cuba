@@ -57,7 +57,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationContext;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -494,7 +493,7 @@ public abstract class App {
                 .filter(ui ->
                         ui.hasAuthenticatedSession()
                                 && (Objects.equals(ui.getUserSession(), currentSession)
-                                || webConfig.getForceRefreshLoggedTabs()))
+                                || webConfig.getForceRefreshAuthenticatedTabs()))
                 .collect(Collectors.toList());
 
         removeAllWindows(authenticatedUIs);

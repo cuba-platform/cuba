@@ -16,21 +16,25 @@
 
 package com.haulmont.cuba.web.sys.navigation;
 
+import com.haulmont.cuba.core.global.AccessDeniedException;
 import com.haulmont.cuba.core.global.BeanLocator;
-import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.core.global.Security;
 import com.haulmont.cuba.gui.Notifications.NotificationType;
 import com.haulmont.cuba.gui.Screens;
 import com.haulmont.cuba.gui.components.CloseOriginType;
 import com.haulmont.cuba.gui.components.RootWindow;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.config.WindowConfig;
+import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.navigation.NavigationState;
 import com.haulmont.cuba.gui.screen.FrameOwner;
+import com.haulmont.cuba.gui.screen.OpenMode;
 import com.haulmont.cuba.gui.screen.Screen;
 import com.haulmont.cuba.gui.screen.UiControllerUtils;
 import com.haulmont.cuba.gui.sys.RouteDefinition;
 import com.haulmont.cuba.gui.util.OperationResult;
+import com.haulmont.cuba.security.entity.PermissionType;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.controllers.ControllerUtils;
@@ -61,13 +65,17 @@ public class UrlChangeHandler implements InitializingBean {
     @Inject
     protected Messages messages;
     @Inject
+    protected Security security;
+    @Inject
+    protected BeanLocator beanLocator;
+
+    @Inject
     protected WebConfig webConfig;
     @Inject
     protected WindowConfig windowConfig;
+
     @Inject
     protected List<NavigationFilter> navigationFilters;
-    @Inject
-    protected BeanLocator beanLocator;
 
     protected AppUI ui;
 
@@ -141,11 +149,14 @@ public class UrlChangeHandler implements InitializingBean {
     }
 
     @Nullable
-    protected Screen findScreenByState(Collection<Screen> screens, NavigationState requestedState) {
-        return screens.stream()
-                .filter(s -> Objects.equals(requestedState.getStateMark(), getStateMark(s)))
-                .findFirst()
-                .orElse(null);
+    public Screen findActiveScreenByState(NavigationState requestedState) {
+        Screen screen = findScreenByState(getOpenedScreens().getActiveScreens(), requestedState);
+
+        if (screen == null && isCurrentRootState(requestedState)) {
+            screen = ui.getScreens().getOpenedScreens().getRootScreenOrNull();
+        }
+
+        return screen;
     }
 
     public void restoreState() {
@@ -162,14 +173,97 @@ public class UrlChangeHandler implements InitializingBean {
         }
     }
 
-    // Util methods
+    public boolean shouldRedirect(WindowInfo windowInfo) {
+        if (ui.hasAuthenticatedSession()) {
+            return false;
+        }
 
-    protected void reloadApp() {
-        String url = ControllerUtils.getLocationWithoutParams() + "?restartApp";
-        ui.getPage().open(url, "_self");
+        boolean allowAnonymousAccess = webConfig.getAllowAnonymousAccess();
+
+        return !allowAnonymousAccess
+                || !security.isScreenPermitted(windowInfo.getId());
     }
 
-    public boolean isRootState(NavigationState requestedState) {
+    public void redirect(NavigationState navigationState) {
+        String loginScreenId = webConfig.getLoginScreenId();
+
+        Screen loginScreen = ui.getScreens().create(loginScreenId, OpenMode.ROOT);
+
+        loginScreen.show();
+
+        RedirectHandler redirectHandler = beanLocator.getPrototype(RedirectHandler.NAME, ui);
+        redirectHandler.schedule(navigationState);
+
+        setRedirectHandler(redirectHandler);
+    }
+
+    public boolean isPermittedToNavigate(NavigationState requestedState, WindowInfo windowInfo) {
+        boolean screenPermitted = security.isScreenPermitted(windowInfo.getId());
+        if (!screenPermitted) {
+            revertNavigationState();
+
+            throw new AccessDeniedException(PermissionType.SCREEN, windowInfo.getId());
+        }
+
+        NavigationFilter.AccessCheckResult navigationAllowed = navigationAllowed(requestedState);
+        if (navigationAllowed.isRejected()) {
+            if (StringUtils.isNotEmpty(navigationAllowed.getMessage())) {
+                showNotification(navigationAllowed.getMessage());
+            }
+
+            revertNavigationState();
+
+            return false;
+        }
+
+        return true;
+    }
+
+    public void showNotification(String msg) {
+        ui.getNotifications()
+                .create(NotificationType.TRAY)
+                .withCaption(msg)
+                .show();
+    }
+
+    public void revertNavigationState() {
+        Screen screen = findActiveScreenByState(ui.getHistory().getNow());
+        if (screen == null) {
+            screen = getActiveScreen();
+        }
+
+        replaceState(getResolvedState(screen).asRoute());
+    }
+
+    public NavigationState getResolvedState(@Nullable Screen screen) {
+        return screen != null
+                ? ((WebWindow) screen.getWindow()).getResolvedState()
+                : NavigationState.EMPTY;
+    }
+
+    public AccessCheckResult navigationAllowed(NavigationState requestedState) {
+        NavigationState currentState = ui.getHistory().getNow();
+
+        for (NavigationFilter filter : navigationFilters) {
+            AccessCheckResult accessCheckResult = filter.allowed(currentState, requestedState);
+            if (accessCheckResult.isRejected()) {
+                return accessCheckResult;
+            }
+        }
+
+        return AccessCheckResult.allowed();
+    }
+
+    public boolean isEmptyState(@Nullable NavigationState requestedState) {
+        return requestedState == null || requestedState == NavigationState.EMPTY;
+    }
+
+    public boolean isRootRoute(@Nullable WindowInfo windowInfo) {
+        return windowInfo != null
+                && windowInfo.getRouteDefinition().isRoot();
+    }
+
+    public boolean isRootState(@Nullable NavigationState requestedState) {
         if (requestedState == null) {
             return false;
         }
@@ -197,26 +291,30 @@ public class UrlChangeHandler implements InitializingBean {
                 && StringUtils.equals(routeDefinition.getPath(), requestedState.getRoot());
     }
 
+    protected void reloadApp() {
+        String url = ControllerUtils.getLocationWithoutParams() + "?restartApp";
+        ui.getPage().open(url, "_self");
+    }
+
     protected String getStateMark(Screen screen) {
         WebWindow webWindow = (WebWindow) screen.getWindow();
         return String.valueOf(webWindow.getUrlStateMark());
     }
 
-    public Screen findActiveScreenByState(NavigationState requestedState) {
-        Screen screen = findScreenByState(getOpenedScreens().getActiveScreens(), requestedState);
-
-        if (screen == null && isCurrentRootState(requestedState)) {
-            screen = ui.getScreens().getOpenedScreens().getRootScreenOrNull();
-        }
-
-        return screen;
-    }
-
+    @Nullable
     protected Screen findScreenByState(NavigationState requestedState) {
         return findScreenByState(getOpenedScreens().getAll(), requestedState);
     }
 
-    protected void selectScreen(Screen screen) {
+    @Nullable
+    protected Screen findScreenByState(Collection<Screen> screens, NavigationState requestedState) {
+        return screens.stream()
+                .filter(s -> Objects.equals(requestedState.getStateMark(), getStateMark(s)))
+                .findFirst()
+                .orElse(null);
+    }
+
+    protected void selectScreen(@Nullable Screen screen) {
         if (screen == null) {
             return;
         }
@@ -232,43 +330,8 @@ public class UrlChangeHandler implements InitializingBean {
         }
     }
 
-    public void showNotification(String msg) {
-        ui.getNotifications()
-                .create(NotificationType.TRAY)
-                .withCaption(msg)
-                .show();
-    }
-
-    protected void revertNavigationState() {
-        Screen screen = findActiveScreenByState(ui.getHistory().getNow());
-        if (screen == null) {
-            screen = getActiveScreen();
-        }
-
-        replaceState(getResolvedState(screen).asRoute());
-    }
-
     protected boolean notSuitableMode() {
         return UrlHandlingMode.URL_ROUTES != webConfig.getUrlHandlingMode();
-    }
-
-    public NavigationState getResolvedState(Screen screen) {
-        return screen != null
-                ? ((WebWindow) screen.getWindow()).getResolvedState()
-                : NavigationState.EMPTY;
-    }
-
-    public AccessCheckResult navigationAllowed(NavigationState requestedState) {
-        NavigationState currentState = ui.getHistory().getNow();
-
-        for (NavigationFilter filter : navigationFilters) {
-            AccessCheckResult accessCheckResult = filter.allowed(currentState, requestedState);
-            if (accessCheckResult.isRejected()) {
-                return accessCheckResult;
-            }
-        }
-
-        return AccessCheckResult.allowed();
     }
 
     protected Screens.OpenedScreens getOpenedScreens() {
@@ -276,6 +339,26 @@ public class UrlChangeHandler implements InitializingBean {
     }
 
     // Copied from WebAppWorkArea
+
+    public boolean isNotCloseable(Window window) {
+        if (!window.isCloseable()) {
+            return true;
+        }
+
+        if (webConfig.getDefaultScreenCanBeClosed()) {
+            return false;
+        }
+
+        boolean windowIsDefault;
+        if (window instanceof Window.Wrapper) {
+            windowIsDefault = ((WebWindow) ((Window.Wrapper) window).getWrappedWindow()).isDefaultScreenWindow();
+        } else {
+            windowIsDefault = ((WebWindow) window).isDefaultScreenWindow();
+        }
+
+        return windowIsDefault;
+    }
+
     protected boolean closeWindowStack(Screens.WindowStack windowStack) {
         boolean closed = true;
 
@@ -301,30 +384,6 @@ public class UrlChangeHandler implements InitializingBean {
         return closed;
     }
 
-    // Copied from WebAppWorkArea
-    public boolean isNotCloseable(Window window) {
-        if (!window.isCloseable()) {
-            return true;
-        }
-
-        Configuration configuration = beanLocator.get(Configuration.NAME);
-        WebConfig webConfig = configuration.getConfig(WebConfig.class);
-
-        if (webConfig.getDefaultScreenCanBeClosed()) {
-            return false;
-        }
-
-        boolean windowIsDefault;
-        if (window instanceof Window.Wrapper) {
-            windowIsDefault = ((WebWindow) ((Window.Wrapper) window).getWrappedWindow()).isDefaultScreenWindow();
-        } else {
-            windowIsDefault = ((WebWindow) window).isDefaultScreenWindow();
-        }
-
-        return windowIsDefault;
-    }
-
-    // Copied from WebAppWorkArea
     protected boolean isWindowClosePrevented(Window window) {
         Window.BeforeCloseEvent event = new Window.BeforeCloseEvent(window, CloseOriginType.CLOSE_BUTTON);
 

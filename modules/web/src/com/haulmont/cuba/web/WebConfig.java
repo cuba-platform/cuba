@@ -531,13 +531,22 @@ public interface WebConfig extends Config {
     String getInitialScreenId();
 
     /**
-     * Defines whether app should perform force refresh for tabs with logged in user.
+     * Defines whether app should perform force refresh for browser tabs
+     * with authenticated sessions.
      * <p>
      * Notification that session is changed in another tab is shown by default.
      *
-     * @return whether all logged tabs should be refresh on login
+     * @return true if app should perform force refresh for browser tabs
+     * with authenticated sessions or false otherwise
      */
-    @Property("cuba.web.forceRefreshLoggedTabs")
+    @Property("cuba.web.forceRefreshAuthenticatedTabs")
     @DefaultBoolean(false)
-    boolean getForceRefreshLoggedTabs();
+    boolean getForceRefreshAuthenticatedTabs();
+
+    /**
+     * Defines whether anonymous user is allowed to access the app.
+     */
+    @Property("cuba.web.allowAnonymousAccess")
+    @DefaultBoolean(false)
+    boolean getAllowAnonymousAccess();
 }

@@ -99,7 +99,7 @@ public class DefaultApp extends App {
                         .filter(ui ->
                                 ui.hasAuthenticatedSession()
                                         && (Objects.equals(ui.getUserSession(), oldUserSession)
-                                                || webConfig.getForceRefreshLoggedTabs()))
+                                                || webConfig.getForceRefreshAuthenticatedTabs()))
                         .forEach(ui -> ui.setUserSession(userSession));
             }
 
@@ -248,7 +248,7 @@ public class DefaultApp extends App {
             if (currentUi != ui
                     && Objects.equals(appUserSession, ui.getUserSession())
                     || (ui.hasAuthenticatedSession()
-                            && webConfig.getForceRefreshLoggedTabs())) {
+                            && webConfig.getForceRefreshAuthenticatedTabs())) {
                 ui.accessSynchronously(() ->
                         createTopLevelWindow(ui));
             }
