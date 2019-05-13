@@ -311,7 +311,7 @@ class ValidatorsTest extends UiScreenSpec {
         pastValidator.setCheckSeconds(true)
 
         when: "invalid seconds value"
-        def invalidSeconds = addSecondsToCurrentDate(+5)
+        def invalidSeconds = addSecondsToCurrentDate(5)
         dateField.setValue(new Date(invalidSeconds))
         dateField.validate()
 
@@ -573,7 +573,7 @@ class ValidatorsTest extends UiScreenSpec {
         textField.setDatatype(datatypeRegistry.get(Long))
         textField.addValidator(negativeOrZeroValidator)
 
-        def invalidValue = +1
+        def invalidValue = 1
         def validValue = 0
 
         when: "invalid value"
@@ -735,7 +735,7 @@ class ValidatorsTest extends UiScreenSpec {
 
         when: "invalid value"
         def invalidValue = timeSource.now().toOffsetDateTime().toOffsetTime()
-        timeField.setValue(invalidValue)
+        timeField.setValue(invalidValue.minusSeconds(5))
         timeField.validate()
 
         then:
