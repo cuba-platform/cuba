@@ -41,6 +41,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Consumer;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
@@ -150,9 +151,7 @@ public class LegacyCollectionDsValueSource<V extends Entity> implements ValueSou
         }
 
         Collection<V> itemValue = getMaster().getItem().getValueEx(metaPropertyPath.toPathString());
-        Collection<V> oldValue = itemValue == null
-                ? null
-                : new ArrayList<>(itemValue);
+        Collection<V> oldValue = copyPropertyCollection(itemValue);
 
         if (equalCollections(oldValue, value)) {
             return;
@@ -250,6 +249,22 @@ public class LegacyCollectionDsValueSource<V extends Entity> implements ValueSou
 
         //noinspection unchecked
         return invPropEntityClass.isAssignableFrom(datasourceEntityClass);
+    }
+
+    protected Collection<V> copyPropertyCollection(Collection<V> propertyValue) {
+        if (propertyValue == null) {
+            return null;
+        }
+
+        Class<?> propertyCollectionType = metaPropertyPath.getMetaProperty().getJavaType();
+
+        if (Set.class.isAssignableFrom(propertyCollectionType)) {
+            return new LinkedHashSet<>(propertyValue);
+        } else if (List.class.isAssignableFrom(propertyCollectionType)) {
+            return new ArrayList<>(propertyValue);
+        }
+
+        return new LinkedHashSet<>(propertyValue);
     }
 
     protected boolean equalCollections(Collection c1, Collection c2) {

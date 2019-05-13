@@ -264,11 +264,12 @@ public class ContainerValueSource<E extends Entity, V> implements EntityValueSou
         if (!(value instanceof Collection)) {
             return;
         }
+
         //noinspection unchecked
         Collection<V> newValue = (Collection<V>) value;
 
         Collection<? extends V> itemValue = getItem().getValueEx(metaPropertyPath.toPathString());
-        Collection<V> oldValue = itemValue != null ? new ArrayList<>(itemValue) : null;
+        Collection<? extends V> oldValue = copyPropertyCollection(itemValue);
 
         getItem().setValueEx(metaPropertyPath.toPathString(), value);
 
@@ -295,6 +296,22 @@ public class ContainerValueSource<E extends Entity, V> implements EntityValueSou
         }
 
         container.unmute();
+    }
+
+    protected Collection<? extends V> copyPropertyCollection(Collection<? extends V> propertyValue) {
+        if (propertyValue == null) {
+            return null;
+        }
+
+        Class<?> propertyCollectionType = metaPropertyPath.getMetaProperty().getJavaType();
+
+        if (Set.class.isAssignableFrom(propertyCollectionType)) {
+            return new LinkedHashSet<>(propertyValue);
+        } else if (List.class.isAssignableFrom(propertyCollectionType)) {
+            return new ArrayList<>(propertyValue);
+        }
+
+        return new LinkedHashSet<>(propertyValue);
     }
 
     protected DataContext getDataContext() {
