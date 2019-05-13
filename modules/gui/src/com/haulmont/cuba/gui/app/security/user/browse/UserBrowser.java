@@ -129,7 +129,7 @@ public class UserBrowser extends AbstractLookup {
         additionalActionsBtn.addAction(changePasswAtLogonAction);
         additionalActionsBtn.addAction(resetRememberMeAction);
 
-        if (WindowParams.MULTI_SELECT.getBool(getContext())) {
+        if (WindowParams.MULTI_SELECT.getBool(getFrame().getContext())) {
             usersTable.setMultiSelect(true);
         }
 

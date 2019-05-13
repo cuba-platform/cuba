@@ -249,7 +249,7 @@ public interface HasWindowManager {
      * @param windowAlias   frame ID as defined in {@code screens.xml}
      * @return              frame's controller instance
      */
-    default AbstractFrame openFrame(@Nullable Component parent, String windowAlias) {
+    default Frame openFrame(@Nullable Component parent, String windowAlias) {
         WindowConfig windowConfig = AppBeans.get(WindowConfig.NAME);
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
 
@@ -260,7 +260,7 @@ public interface HasWindowManager {
             parentFrame = ((Frame) this);
         }
 
-        return (AbstractFrame) getWindowManager().openFrame(parentFrame, parent, windowInfo);
+        return getWindowManager().openFrame(parentFrame, parent, windowInfo);
     }
 
     /**
@@ -272,7 +272,7 @@ public interface HasWindowManager {
      * @param params        parameters to be passed into the frame's controller {@code init} method
      * @return              frame's controller instance
      */
-    default AbstractFrame openFrame(@Nullable Component parent, String windowAlias, Map<String, Object> params) {
+    default Frame openFrame(@Nullable Component parent, String windowAlias, Map<String, Object> params) {
         WindowConfig windowConfig = AppBeans.get(WindowConfig.NAME);
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
 
@@ -283,7 +283,7 @@ public interface HasWindowManager {
             parentFrame = ((Frame) this);
         }
 
-        return (AbstractFrame) getWindowManager().openFrame(parentFrame, parent, windowInfo, params);
+        return getWindowManager().openFrame(parentFrame, parent, windowInfo, params);
     }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

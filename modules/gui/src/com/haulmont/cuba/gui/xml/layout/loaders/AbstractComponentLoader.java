@@ -62,7 +62,6 @@ import javax.annotation.Nullable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
-import java.util.Locale;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -88,7 +87,6 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
                     .put("PICKER_CLEAR_SHORTCUT", ClientConfig::getPickerClearShortcut)
                     .build();
 
-    protected Locale locale;
     protected String messagesPack;
     protected Context context;
 
@@ -131,16 +129,6 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
                 "'context' must implement com.haulmont.cuba.gui.xml.layout.ComponentLoader.CompositeComponentContext");
 
         return (CompositeComponentContext) getContext();
-    }
-
-    @Override
-    public Locale getLocale() {
-        return locale;
-    }
-
-    @Override
-    public void setLocale(Locale locale) {
-        this.locale = locale;
     }
 
     @Override
@@ -969,7 +957,6 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
 
         loader.setBeanLocator(beanLocator);
 
-        loader.setLocale(locale);
         loader.setMessagesPack(messagesPack);
         loader.setContext(context);
         loader.setLayoutLoaderConfig(layoutLoaderConfig);

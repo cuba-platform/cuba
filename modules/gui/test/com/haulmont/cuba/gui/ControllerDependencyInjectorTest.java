@@ -23,11 +23,9 @@ import com.haulmont.cuba.client.testsupport.CubaClientTestCase;
 import com.haulmont.cuba.core.global.BeanLocator;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.components.AbstractWindow;
+import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.Window;
-import com.haulmont.cuba.gui.screen.MapScreenOptions;
-import com.haulmont.cuba.gui.screen.MessageBundle;
-import com.haulmont.cuba.gui.screen.ScreenContext;
-import com.haulmont.cuba.gui.screen.UiControllerUtils;
+import com.haulmont.cuba.gui.screen.*;
 import com.haulmont.cuba.gui.sys.UiControllerDependencyInjector;
 import com.haulmont.cuba.gui.sys.UiControllerReflectionInspector;
 import mockit.Expectations;
@@ -128,6 +126,11 @@ public class ControllerDependencyInjectorTest extends CubaClientTestCase {
         }
 
         @Override
+        public Frame getWrappedFrame() {
+            return this;
+        }
+
+        @Override
         public Element getXmlDescriptor() {
             return null;
         }
@@ -140,6 +143,11 @@ public class ControllerDependencyInjectorTest extends CubaClientTestCase {
 
         @Override
         public Window getWindow() {
+            return this;
+        }
+
+        @Override
+        public Frame getWrappedFrame() {
             return this;
         }
 

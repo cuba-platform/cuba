@@ -18,9 +18,11 @@ package com.haulmont.cuba.gui.screen;
 
 import com.haulmont.bali.events.EventHub;
 import com.haulmont.bali.events.Subscription;
+import com.haulmont.cuba.gui.components.AbstractWindow;
 import com.haulmont.cuba.gui.components.Fragment;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.Window;
+import com.haulmont.cuba.gui.components.compatibility.LegacyFragmentAdapter;
 import com.haulmont.cuba.gui.model.ScreenData;
 import com.haulmont.cuba.gui.settings.Settings;
 import org.springframework.context.ApplicationListener;
@@ -73,6 +75,12 @@ public final class UiControllerUtils {
             ((Screen) screen).setScreenContext(screenContext);
         } else if (screen instanceof ScreenFragment) {
             ((ScreenFragment) screen).setScreenContext(screenContext);
+
+            // support for legacy screens in frames
+            if (screen instanceof LegacyFragmentAdapter) {
+                AbstractWindow realScreen = ((LegacyFragmentAdapter) screen).getRealScreen();
+                ((Screen) realScreen).setScreenContext(screenContext);
+            }
         }
     }
 
@@ -115,6 +123,10 @@ public final class UiControllerUtils {
     }
 
     public static Frame getFrame(FrameOwner frameOwner) {
+        // support legacy screens in frames
+        if (frameOwner instanceof AbstractWindow) {
+            return ((AbstractWindow) frameOwner).getWrappedFrame();
+        }
         if (frameOwner instanceof Screen) {
             return ((Screen) frameOwner).getWindow();
         }

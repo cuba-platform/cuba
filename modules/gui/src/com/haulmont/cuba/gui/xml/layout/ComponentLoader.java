@@ -25,7 +25,6 @@ import com.haulmont.cuba.gui.model.ScreenData;
 import com.haulmont.cuba.gui.screen.ScreenOptions;
 import org.dom4j.Element;
 
-import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -117,9 +116,6 @@ public interface ComponentLoader<T extends Component> {
 
     Context getContext();
     void setContext(Context context);
-
-    Locale getLocale();
-    void setLocale(Locale locale);
 
     String getMessagesPack();
     void setMessagesPack(String name);

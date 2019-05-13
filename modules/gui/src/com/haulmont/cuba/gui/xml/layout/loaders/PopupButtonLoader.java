@@ -164,7 +164,6 @@ public class PopupButtonLoader extends AbstractComponentLoader<PopupButton> {
     protected void createContent() {
         if (element != null && element.element("popup") != null) {
             LayoutLoader loader = beanLocator.getPrototype(LayoutLoader.NAME, context);
-            loader.setLocale(getLocale());
             loader.setMessagesPack(getMessagesPack());
 
             List<Element> elements = element.element("popup").elements();

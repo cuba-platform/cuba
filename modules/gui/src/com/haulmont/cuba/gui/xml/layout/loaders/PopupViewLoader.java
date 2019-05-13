@@ -90,7 +90,6 @@ public class PopupViewLoader extends AbstractComponentLoader<PopupView> {
     protected void createContent() {
         if (element != null) {
             LayoutLoader loader = beanLocator.getPrototype(LayoutLoader.NAME, context);
-            loader.setLocale(getLocale());
             loader.setMessagesPack(getMessagesPack());
 
             List<Element> elements = element.elements();

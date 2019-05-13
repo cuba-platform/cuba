@@ -117,7 +117,6 @@ public class CompositeComponentLayoutLoader {
 
         loader.setBeanLocator(beanLocator);
 
-        loader.setLocale(locale);
         loader.setMessagesPack(messagesPack);
         loader.setContext(context);
         loader.setLayoutLoaderConfig(config);

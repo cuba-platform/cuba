@@ -21,6 +21,7 @@ import com.haulmont.cuba.gui.components.ActionsHolder;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.actions.BaseAction;
+import com.haulmont.cuba.gui.components.compatibility.LegacyFragmentAdapter;
 import com.haulmont.cuba.gui.screen.FrameOwner;
 import org.apache.commons.lang3.StringUtils;
 
@@ -78,6 +79,10 @@ public class DeclarativeAction extends BaseAction {
         }
 
         FrameOwner controller = frame.getFrameOwner();
+        if (controller instanceof LegacyFragmentAdapter) {
+            controller = ((LegacyFragmentAdapter) controller).getRealScreen();
+        }
+
         Method method;
         try {
             method = controller.getClass().getMethod(methodName, Component.class);

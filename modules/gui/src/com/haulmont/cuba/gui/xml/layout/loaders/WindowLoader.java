@@ -25,6 +25,7 @@ import com.haulmont.cuba.gui.UiComponents;
 import com.haulmont.cuba.gui.components.AbstractWindow;
 import com.haulmont.cuba.gui.components.Timer;
 import com.haulmont.cuba.gui.components.Window;
+import com.haulmont.cuba.gui.components.compatibility.LegacyFragmentAdapter;
 import com.haulmont.cuba.gui.logging.ScreenLifeCycle;
 import com.haulmont.cuba.gui.model.ScreenData;
 import com.haulmont.cuba.gui.model.impl.ScreenDataXmlLoader;
@@ -38,24 +39,25 @@ import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
 import org.perf4j.StopWatch;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.function.Consumer;
 
 import static com.haulmont.cuba.gui.logging.UIPerformanceLogger.createStopWatch;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
+@ParametersAreNonnullByDefault
 public class WindowLoader extends ContainerLoader<Window> implements ComponentRootLoader<Window> {
 
-    protected String windowId;
+    public void setResultComponent(Window window) {
+        this.resultComponent = window;
+    }
 
     @Override
     public void createComponent() {
         throw new UnsupportedOperationException("Window cannot be created from XML element");
-    }
-
-    public void setResultComponent(Window window) {
-        this.resultComponent = window;
     }
 
     @Override
@@ -101,6 +103,10 @@ public class WindowLoader extends ContainerLoader<Window> implements ComponentRo
 
         loadFocusedComponent(resultComponent, element);
 
+        loadCompanions(resultComponent, element);
+    }
+
+    protected void loadCompanions(Window resultComponent, Element element) {
         Screen controller = resultComponent.getFrameOwner();
         if (controller instanceof AbstractWindow) {
             loadCrossFieldValidate(resultComponent, element);
@@ -231,14 +237,6 @@ public class WindowLoader extends ContainerLoader<Window> implements ComponentRo
         }
     }
 
-    public String getWindowId() {
-        return windowId;
-    }
-
-    public void setWindowId(String windowId) {
-        this.windowId = windowId;
-    }
-
     protected void loadTimers(UiComponents factory, Window component, Element element) {
         Element timersElement = element.element("timers");
         if (timersElement != null) {
@@ -314,7 +312,6 @@ public class WindowLoader extends ContainerLoader<Window> implements ComponentRo
     protected void loadCrossFieldValidate(Window window, Element element) {
         String crossFieldValidate = element.attributeValue("crossFieldValidate");
         if (isNotEmpty(crossFieldValidate)) {
-            // todo lookupComponent
             if (window.getFrameOwner() instanceof Window.Editor) {
                 Window.Editor editor = (Window.Editor) window.getFrameOwner();
                 editor.setCrossFieldValidate(Boolean.parseBoolean(crossFieldValidate));
@@ -327,6 +324,10 @@ public class WindowLoader extends ContainerLoader<Window> implements ComponentRo
 
     protected void addInitTimerMethodTask(Timer timer, String timerMethodName) {
         FrameOwner controller = getComponentContext().getFrame().getFrameOwner();
+        if (controller instanceof LegacyFragmentAdapter) {
+            controller = ((LegacyFragmentAdapter) controller).getRealScreen();
+        }
+
         Class<? extends FrameOwner> windowClass = controller.getClass();
 
         Method timerMethod;
@@ -339,12 +340,25 @@ public class WindowLoader extends ContainerLoader<Window> implements ComponentRo
                             "Method name", timerMethodName));
         }
 
-        timer.addTimerActionListener(e -> {
+        timer.addTimerActionListener(new WindowTimerActionHandler(timerMethod, controller));
+    }
+
+    protected static class WindowTimerActionHandler implements Consumer<Timer.TimerActionEvent> {
+        protected final Method timerMethod;
+        protected final FrameOwner controller;
+
+        public WindowTimerActionHandler(Method timerMethod, FrameOwner controller) {
+            this.timerMethod = timerMethod;
+            this.controller = controller;
+        }
+
+        @Override
+        public void accept(Timer.TimerActionEvent e) {
             try {
                 timerMethod.invoke(controller, e.getSource());
             } catch (IllegalAccessException | InvocationTargetException ex) {
                 throw new RuntimeException("Unable to invoke onTimer", ex);
             }
-        });
+        }
     }
 }

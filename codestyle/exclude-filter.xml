@@ -248,6 +248,12 @@
     </Match>
 
     <Match>
+        <Bug pattern="URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD"/>
+        <Field name="ui"/>
+        <Class name="com.haulmont.cuba.web.sys.WebFragments"/>
+    </Match>
+
+    <Match>
         <Bug pattern="CN_IDIOM_NO_SUPER_CALL"/>
         <Class name="com.haulmont.cuba.core.sys.persistence.DescriptorEventManagerWrapper"/>
     </Match>

@@ -16,39 +16,37 @@
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
-import com.haulmont.cuba.core.global.BeanLocator;
-import com.haulmont.cuba.core.global.DevelopmentException;
-import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
-import com.haulmont.cuba.gui.components.AbstractFrame;
 import com.haulmont.cuba.gui.components.Fragment;
-import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.sys.FragmentImplementation;
 import com.haulmont.cuba.gui.components.sys.FrameImplementation;
-import com.haulmont.cuba.gui.config.WindowAttributesProvider;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.logging.ScreenLifeCycle;
 import com.haulmont.cuba.gui.model.impl.ScreenDataImpl;
-import com.haulmont.cuba.gui.screen.*;
-import com.haulmont.cuba.gui.sys.*;
+import com.haulmont.cuba.gui.screen.FrameOwner;
+import com.haulmont.cuba.gui.screen.ScreenFragment;
+import com.haulmont.cuba.gui.screen.ScreenOptions;
+import com.haulmont.cuba.gui.sys.FragmentContextImpl;
+import com.haulmont.cuba.gui.sys.FragmentHelper;
+import com.haulmont.cuba.gui.sys.FragmentHelper.FragmentLoaderInitTask;
+import com.haulmont.cuba.gui.sys.ScreenContextImpl;
+import com.haulmont.cuba.gui.sys.UiControllerProperty;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoader;
 import com.haulmont.cuba.gui.xml.layout.ScreenXmlLoader;
 import org.apache.commons.lang3.StringUtils;
-import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.perf4j.StopWatch;
 
-import javax.annotation.Nonnull;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import static com.haulmont.cuba.gui.logging.UIPerformanceLogger.createStopWatch;
 import static com.haulmont.cuba.gui.screen.UiControllerUtils.*;
+import static com.haulmont.cuba.gui.sys.FragmentHelper.FragmentLoaderInjectTask;
+import static com.haulmont.cuba.gui.sys.FragmentHelper.NAME;
 
 public class FragmentComponentLoader extends ContainerLoader<Fragment> {
 
@@ -74,36 +72,31 @@ public class FragmentComponentLoader extends ContainerLoader<Fragment> {
             fragmentId = src;
         }
 
+        FragmentHelper fragmentHelper = getFragmentHelper();
+
         WindowInfo windowInfo;
         if (src == null) {
             // load screen class only once
             windowInfo = getWindowConfig().getWindowInfo(screenId).resolve();
         } else {
-            windowInfo = createFakeWindowInfo(src, fragmentId);
+            windowInfo = fragmentHelper.createFakeWindowInfo(src, fragmentId);
         }
 
         StopWatch createStopWatch = createStopWatch(ScreenLifeCycle.CREATE, windowInfo.getId());
 
         Fragment fragment = factory.create(Fragment.NAME);
-        ScreenFragment controller = createController(windowInfo, fragment, windowInfo.asFragment());
+        ScreenFragment controller = fragmentHelper.createController(windowInfo, fragment);
 
         // setup screen and controller
         ComponentLoaderContext parentContext = (ComponentLoaderContext) getContext();
 
         FrameOwner hostController = parentContext.getFrame().getFrameOwner();
 
-        ScreenContext hostScreenContext = getScreenContext(hostController);
-
         setHostController(controller, hostController);
         setWindowId(controller, windowInfo.getId());
         setFrame(controller, fragment);
         setScreenContext(controller,
-                new ScreenContextImpl(windowInfo, parentContext.getOptions(),
-                        hostScreenContext.getScreens(),
-                        hostScreenContext.getDialogs(),
-                        hostScreenContext.getNotifications(),
-                        hostScreenContext.getFragments(),
-                        hostScreenContext.getUrlRouting())
+                new ScreenContextImpl(windowInfo, parentContext.getOptions(), getScreenContext(hostController))
         );
         setScreenData(controller, new ScreenDataImpl());
 
@@ -130,8 +123,7 @@ public class FragmentComponentLoader extends ContainerLoader<Fragment> {
             innerContext.setProperties(loadProperties(element));
 
             LayoutLoader layoutLoader = beanLocator.getPrototype(LayoutLoader.NAME, innerContext);
-            layoutLoader.setLocale(getLocale());
-            layoutLoader.setMessagesPack(getMessagePack(windowInfo.getTemplate()));
+            layoutLoader.setMessagesPack(fragmentHelper.getMessagePack(windowInfo.getTemplate()));
 
             ScreenXmlLoader screenXmlLoader = beanLocator.get(ScreenXmlLoader.NAME);
 
@@ -146,77 +138,8 @@ public class FragmentComponentLoader extends ContainerLoader<Fragment> {
         this.resultComponent = fragment;
     }
 
-    protected String getMessagePack(String descriptorPath) {
-        if (descriptorPath.contains("/")) {
-            descriptorPath = StringUtils.substring(descriptorPath, 0, descriptorPath.lastIndexOf("/"));
-        }
-
-        String messagesPack = descriptorPath.replace("/", ".");
-        int start = messagesPack.startsWith(".") ? 1 : 0;
-        messagesPack = messagesPack.substring(start);
-        return messagesPack;
-    }
-
-    @SuppressWarnings("unchecked")
-    protected WindowInfo createFakeWindowInfo(String src, String fragmentId) {
-        Element screenElement = DocumentHelper.createElement("screen");
-        screenElement.addAttribute("template", src);
-        screenElement.addAttribute("id", fragmentId);
-
-        ScreenXmlLoader screenXmlLoader = beanLocator.get(ScreenXmlLoader.NAME);
-
-        Element windowElement = screenXmlLoader.load(src, fragmentId, Collections.emptyMap());
-        Class<? extends ScreenFragment> fragmentClass;
-
-        String className = windowElement.attributeValue("class");
-        if (StringUtils.isNotEmpty(className)) {
-            fragmentClass = (Class<? extends ScreenFragment>) getScripting().loadClassNN(className);
-        } else {
-            fragmentClass = AbstractFrame.class;
-        }
-
-        return new WindowInfo(fragmentId, new WindowAttributesProvider() {
-            @Override
-            public WindowInfo.Type getType(WindowInfo wi) {
-                return WindowInfo.Type.FRAGMENT;
-            }
-
-            @Override
-            public String getTemplate(WindowInfo wi) {
-                return src;
-            }
-
-            @Nonnull
-            @Override
-            public Class<? extends FrameOwner> getControllerClass(WindowInfo wi) {
-                return fragmentClass;
-            }
-
-            @Override
-            public WindowInfo resolve(WindowInfo windowInfo) {
-                return windowInfo;
-            }
-        }, screenElement);
-    }
-
-    protected <T extends ScreenFragment> T createController(@SuppressWarnings("unused") WindowInfo windowInfo,
-                                                            @SuppressWarnings("unused") Fragment fragment,
-                                                            Class<T> screenClass) {
-        Constructor<T> constructor;
-        try {
-            constructor = screenClass.getConstructor();
-        } catch (NoSuchMethodException e) {
-            throw new DevelopmentException("No accessible constructor for screen class " + screenClass);
-        }
-
-        T controller;
-        try {
-            controller = constructor.newInstance();
-        } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-            throw new RuntimeException("Unable to create instance of screen class " + screenClass);
-        }
-
-        return controller;
+    protected FragmentHelper getFragmentHelper() {
+        return beanLocator.get(NAME);
     }
 
     @Override
@@ -339,86 +262,5 @@ public class FragmentComponentLoader extends ContainerLoader<Fragment> {
 
     protected WindowConfig getWindowConfig() {
         return beanLocator.get(WindowConfig.NAME);
-    }
-
-    public static class FragmentLoaderInjectTask implements InjectTask {
-        protected Fragment fragment;
-        protected ScreenOptions options;
-        protected BeanLocator beanLocator;
-
-        public FragmentLoaderInjectTask(Fragment fragment, ScreenOptions options, BeanLocator beanLocator) {
-            this.fragment = fragment;
-            this.options = options;
-            this.beanLocator = beanLocator;
-        }
-
-        @Override
-        public void execute(ComponentContext context, Frame window) {
-            String loggingId = context.getFullFrameId();
-            try {
-                StopWatch injectStopWatch = createStopWatch(ScreenLifeCycle.INJECTION, loggingId);
-
-                FrameOwner controller = fragment.getFrameOwner();
-                UiControllerDependencyInjector dependencyInjector =
-                        beanLocator.getPrototype(UiControllerDependencyInjector.NAME, controller, options);
-                dependencyInjector.inject();
-
-                injectStopWatch.stop();
-            } catch (Throwable e) {
-                throw new RuntimeException("Unable to init custom frame class", e);
-            }
-        }
-    }
-
-    public static class FragmentLoaderInitTask implements InitTask {
-        protected Fragment fragment;
-        protected ScreenOptions options;
-        protected ComponentLoaderContext fragmentLoaderContext;
-        protected BeanLocator beanLocator;
-
-        public FragmentLoaderInitTask(Fragment fragment, ScreenOptions options,
-                                      ComponentLoaderContext fragmentLoaderContext, BeanLocator beanLocator) {
-            this.fragment = fragment;
-            this.options = options;
-            this.fragmentLoaderContext = fragmentLoaderContext;
-            this.beanLocator = beanLocator;
-        }
-
-        @Override
-        public void execute(ComponentContext context, Frame window) {
-            String loggingId = ComponentsHelper.getFullFrameId(this.fragment);
-
-            StopWatch stopWatch = createStopWatch(ScreenLifeCycle.INIT, loggingId);
-
-            ScreenFragment frameOwner = fragment.getFrameOwner();
-
-            UiControllerUtils.fireEvent(frameOwner,
-                    ScreenFragment.InitEvent.class,
-                    new ScreenFragment.InitEvent(frameOwner, options));
-
-            stopWatch.stop();
-
-            UiControllerUtils.fireEvent(frameOwner,
-                    ScreenFragment.AfterInitEvent.class,
-                    new ScreenFragment.AfterInitEvent(frameOwner, options));
-
-            List<UiControllerProperty> properties = fragmentLoaderContext.getProperties();
-            if (!properties.isEmpty()) {
-                UiControllerPropertyInjector propertyInjector =
-                        beanLocator.getPrototype(UiControllerPropertyInjector.NAME, frameOwner, properties);
-                propertyInjector.inject();
-            }
-
-            FragmentContextImpl fragmentContext = (FragmentContextImpl) fragment.getContext();
-            fragmentContext.setInitialized(true);
-
-            // fire attached
-
-            if (!fragmentContext.isManualInitRequired()) {
-                UiControllerUtils.fireEvent(frameOwner,
-                        ScreenFragment.AttachEvent.class,
-                        new ScreenFragment.AttachEvent(frameOwner));
-            }
-        }
     }
 }

@@ -25,6 +25,7 @@ import com.haulmont.cuba.gui.components.ActionsHolder;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.actions.ListAction;
+import com.haulmont.cuba.gui.components.compatibility.LegacyFragmentAdapter;
 import com.haulmont.cuba.gui.screen.FrameOwner;
 import com.haulmont.cuba.security.entity.ConstraintOperationType;
 import org.apache.commons.lang3.StringUtils;
@@ -74,6 +75,10 @@ public class DeclarativeTrackingAction extends ListAction implements Action.HasT
         }
 
         FrameOwner controller = frame.getFrameOwner();
+        if (controller instanceof LegacyFragmentAdapter) {
+            controller = ((LegacyFragmentAdapter) controller).getRealScreen();
+        }
+
         Method method;
         try {
             method = controller.getClass().getMethod(methodName, Component.class);

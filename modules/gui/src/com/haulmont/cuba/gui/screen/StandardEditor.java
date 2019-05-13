@@ -387,7 +387,6 @@ public abstract class StandardEditor<T extends Entity> extends Screen implements
             return OperationResult.fail();
         }
 
-
         Runnable standardCommitAction = () -> {
             getScreenData().getDataContext().commit();
             fireEvent(AfterCommitChangesEvent.class, new AfterCommitChangesEvent(this));

@@ -31,7 +31,6 @@ import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Locale;
 
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
 @Component(LayoutLoader.NAME)
@@ -43,7 +42,6 @@ public class LayoutLoader {
     protected UiComponents factory;
     protected LayoutLoaderConfig config;
 
-    protected Locale locale;
     protected String messagesPack;
 
     protected BeanLocator beanLocator;
@@ -114,7 +112,6 @@ public class LayoutLoader {
 
         loader.setBeanLocator(beanLocator);
 
-        loader.setLocale(locale);
         loader.setMessagesPack(messagesPack);
         loader.setContext(context);
         loader.setLayoutLoaderConfig(config);
@@ -143,10 +140,8 @@ public class LayoutLoader {
         return fragmentLoader;
     }
 
-    public ComponentLoader<Window> createWindowContent(Window window, Element rootWindowElement, String windowId) {
+    public ComponentLoader<Window> createWindowContent(Window window, Element rootWindowElement) {
         WindowLoader windowLoader = getWindowLoader(rootWindowElement);
-
-        windowLoader.setWindowId(windowId);
         windowLoader.setResultComponent(window);
 
         Element layout = rootWindowElement.element("layout");
@@ -154,13 +149,5 @@ public class LayoutLoader {
             windowLoader.createContent(layout);
         }
         return windowLoader;
-    }
-
-    public Locale getLocale() {
-        return locale;
-    }
-
-    public void setLocale(Locale locale) {
-        this.locale = locale;
     }
 }

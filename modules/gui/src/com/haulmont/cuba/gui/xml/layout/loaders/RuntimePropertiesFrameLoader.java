@@ -18,42 +18,35 @@
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.google.common.base.Preconditions;
-import com.haulmont.cuba.core.global.DevelopmentException;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
-import com.haulmont.cuba.gui.components.AbstractFrame;
 import com.haulmont.cuba.gui.components.Fragment;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.sys.FragmentImplementation;
 import com.haulmont.cuba.gui.components.sys.FrameImplementation;
-import com.haulmont.cuba.gui.config.WindowAttributesProvider;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.logging.ScreenLifeCycle;
 import com.haulmont.cuba.gui.model.impl.ScreenDataImpl;
 import com.haulmont.cuba.gui.screen.FrameOwner;
-import com.haulmont.cuba.gui.screen.ScreenContext;
 import com.haulmont.cuba.gui.screen.ScreenFragment;
 import com.haulmont.cuba.gui.screen.ScreenOptions;
 import com.haulmont.cuba.gui.sys.FragmentContextImpl;
+import com.haulmont.cuba.gui.sys.FragmentHelper;
+import com.haulmont.cuba.gui.sys.FragmentHelper.FragmentLoaderInjectTask;
 import com.haulmont.cuba.gui.sys.ScreenContextImpl;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoader;
 import com.haulmont.cuba.gui.xml.layout.ScreenXmlLoader;
-import com.haulmont.cuba.gui.xml.layout.loaders.FragmentComponentLoader.FragmentLoaderInitTask;
 import org.apache.commons.lang3.StringUtils;
-import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.perf4j.StopWatch;
 
-import javax.annotation.Nonnull;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.util.Collections;
 import java.util.Objects;
 
 import static com.haulmont.cuba.gui.logging.UIPerformanceLogger.createStopWatch;
 import static com.haulmont.cuba.gui.screen.UiControllerUtils.*;
-import static com.haulmont.cuba.gui.xml.layout.loaders.FragmentComponentLoader.FragmentLoaderInjectTask;
+import static com.haulmont.cuba.gui.sys.FragmentHelper.FragmentLoaderInitTask;
+import static com.haulmont.cuba.gui.sys.FragmentHelper.NAME;
 
 public class RuntimePropertiesFrameLoader extends ContainerLoader<Frame> {
 
@@ -86,28 +79,25 @@ public class RuntimePropertiesFrameLoader extends ContainerLoader<Frame> {
 
         String fragmentId = screenId != null ? screenId : src;
 
-        WindowInfo windowInfo = createFakeWindowInfo(src, fragmentId);
+        FragmentHelper fragmentHelper = getFragmentHelper();
+
+        WindowInfo windowInfo = fragmentHelper.createFakeWindowInfo(src, fragmentId);
 
         Fragment fragment = factory.create(Fragment.NAME);
-        ScreenFragment controller = createController(windowInfo, fragment, windowInfo.asFragment());
+        ScreenFragment controller = fragmentHelper.createController(windowInfo, fragment);
 
         // setup screen and controller
         ComponentLoaderContext parentContext = (ComponentLoaderContext) getContext();
 
         FrameOwner hostController = parentContext.getFrame().getFrameOwner();
 
-        ScreenContext hostScreenContext = getScreenContext(hostController);
+        // setup screen and controller
 
         setHostController(controller, hostController);
         setWindowId(controller, windowInfo.getId());
         setFrame(controller, fragment);
         setScreenContext(controller,
-                new ScreenContextImpl(windowInfo, parentContext.getOptions(),
-                        hostScreenContext.getScreens(),
-                        hostScreenContext.getDialogs(),
-                        hostScreenContext.getNotifications(),
-                        hostScreenContext.getFragments(),
-                        hostScreenContext.getUrlRouting())
+                new ScreenContextImpl(windowInfo, parentContext.getOptions(), getScreenContext(hostController))
         );
         setScreenData(controller, new ScreenDataImpl());
 
@@ -133,8 +123,7 @@ public class RuntimePropertiesFrameLoader extends ContainerLoader<Frame> {
             innerContext.setParent(parentContext);
 
             LayoutLoader layoutLoader = beanLocator.getPrototype(LayoutLoader.NAME, innerContext);
-            layoutLoader.setLocale(getLocale());
-            layoutLoader.setMessagesPack(getMessagePack(windowInfo.getTemplate()));
+            layoutLoader.setMessagesPack(fragmentHelper.getMessagePack(windowInfo.getTemplate()));
 
             ScreenXmlLoader screenXmlLoader = beanLocator.get(ScreenXmlLoader.NAME);
 
@@ -145,6 +134,10 @@ public class RuntimePropertiesFrameLoader extends ContainerLoader<Frame> {
         }
 
         this.resultComponent = fragment;
+    }
+
+    protected FragmentHelper getFragmentHelper() {
+        return beanLocator.get(NAME);
     }
 
     @Override
@@ -233,79 +226,6 @@ public class RuntimePropertiesFrameLoader extends ContainerLoader<Frame> {
         ScreenOptions options = parentContext.getOptions();
         parentContext.addInjectTask(new FragmentLoaderInjectTask((Fragment) resultComponent, options, beanLocator));
         parentContext.addInitTask(new FragmentLoaderInitTask((Fragment) resultComponent, options, (ComponentLoaderContext) context, beanLocator));
-    }
-
-    @SuppressWarnings("unchecked")
-    protected WindowInfo createFakeWindowInfo(String src, String fragmentId) {
-        Element screenElement = DocumentHelper.createElement("screen");
-        screenElement.addAttribute("template", src);
-        screenElement.addAttribute("id", fragmentId);
-
-        ScreenXmlLoader screenXmlLoader = beanLocator.get(ScreenXmlLoader.NAME);
-
-        Element windowElement = screenXmlLoader.load(src, fragmentId, Collections.emptyMap());
-        Class<? extends ScreenFragment> fragmentClass;
-
-        String className = windowElement.attributeValue("class");
-        if (StringUtils.isNotEmpty(className)) {
-            fragmentClass = (Class<? extends ScreenFragment>) getScripting().loadClassNN(className);
-        } else {
-            fragmentClass = AbstractFrame.class;
-        }
-
-        return new WindowInfo(fragmentId, new WindowAttributesProvider() {
-            @Override
-            public WindowInfo.Type getType(WindowInfo wi) {
-                return WindowInfo.Type.FRAGMENT;
-            }
-
-            @Override
-            public String getTemplate(WindowInfo wi) {
-                return src;
-            }
-
-            @Nonnull
-            @Override
-            public Class<? extends FrameOwner> getControllerClass(WindowInfo wi) {
-                return fragmentClass;
-            }
-
-            @Override
-            public WindowInfo resolve(WindowInfo windowInfo) {
-                return windowInfo;
-            }
-        }, screenElement);
-    }
-
-    protected String getMessagePack(String descriptorPath) {
-        if (descriptorPath.contains("/")) {
-            descriptorPath = StringUtils.substring(descriptorPath, 0, descriptorPath.lastIndexOf("/"));
-        }
-
-        String messagesPack = descriptorPath.replace("/", ".");
-        int start = messagesPack.startsWith(".") ? 1 : 0;
-        messagesPack = messagesPack.substring(start);
-        return messagesPack;
-    }
-
-    protected <T extends ScreenFragment> T createController(@SuppressWarnings("unused") WindowInfo windowInfo,
-                                                            @SuppressWarnings("unused") Fragment fragment,
-                                                            Class<T> screenClass) {
-        Constructor<T> constructor;
-        try {
-            constructor = screenClass.getConstructor();
-        } catch (NoSuchMethodException e) {
-            throw new DevelopmentException("No accessible constructor for screen class " + screenClass);
-        }
-
-        T controller;
-        try {
-            controller = constructor.newInstance();
-        } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-            throw new RuntimeException("Unable to create instance of screen class " + screenClass);
-        }
-
-        return controller;
     }
 
     protected WindowConfig getWindowConfig() {

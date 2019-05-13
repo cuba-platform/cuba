@@ -20,6 +20,7 @@ import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.FieldGroup;
 import com.haulmont.cuba.gui.components.Frame;
+import com.haulmont.cuba.gui.components.compatibility.LegacyFragmentAdapter;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.screen.FrameOwner;
 
@@ -43,6 +44,9 @@ public class DeclarativeFieldGenerator implements FieldGroup.CustomFieldGenerato
             throw new IllegalStateException("Table should be attached to frame");
         }
         FrameOwner controller = frame.getFrameOwner();
+        if (controller instanceof LegacyFragmentAdapter) {
+            controller = ((LegacyFragmentAdapter) controller).getRealScreen();
+        }
 
         Class<? extends FrameOwner> cCls = controller.getClass();
         Method exactMethod = getAccessibleMethod(cCls, methodName, Datasource.class, String.class);

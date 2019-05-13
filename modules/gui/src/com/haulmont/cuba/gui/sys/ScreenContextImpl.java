@@ -36,6 +36,17 @@ public class ScreenContextImpl implements ScreenContext {
     protected final Fragments fragments;
     protected final UrlRouting urlRouting;
 
+    public ScreenContextImpl(WindowInfo windowInfo, ScreenOptions options, ScreenContext hostScreenContext) {
+        this.windowInfo = windowInfo;
+        this.options = options;
+
+        this.dialogs = hostScreenContext.getDialogs();
+        this.fragments = hostScreenContext.getFragments();
+        this.notifications = hostScreenContext.getNotifications();
+        this.urlRouting = hostScreenContext.getUrlRouting();
+        this.screens = hostScreenContext.getScreens();
+    }
+
     public ScreenContextImpl(WindowInfo windowInfo, ScreenOptions options,
                              Screens screens,
                              Dialogs dialogs,

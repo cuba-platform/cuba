@@ -455,7 +455,6 @@ public class FieldGroupLoader extends AbstractComponentLoader<FieldGroup> {
             Element customFieldElement = customElements.get(0);
 
             LayoutLoader loader = beanLocator.getPrototype(LayoutLoader.NAME, context);
-            loader.setLocale(getLocale());
             loader.setMessagesPack(getMessagesPack());
 
             ComponentLoader childComponentLoader = loader.createComponent(customFieldElement);

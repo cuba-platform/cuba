@@ -29,6 +29,7 @@ import com.haulmont.cuba.gui.components.Component.Disposable;
 import com.haulmont.cuba.gui.components.DialogWindow.WindowMode;
 import com.haulmont.cuba.gui.components.Window.HasWorkArea;
 import com.haulmont.cuba.gui.components.actions.BaseAction;
+import com.haulmont.cuba.gui.components.compatibility.LegacyFragmentAdapter;
 import com.haulmont.cuba.gui.components.compatibility.SelectHandlerAdapter;
 import com.haulmont.cuba.gui.components.mainwindow.AppWorkArea;
 import com.haulmont.cuba.gui.components.mainwindow.AppWorkArea.Mode;
@@ -81,8 +82,8 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import javax.inject.Inject;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.function.Predicate;
@@ -93,7 +94,9 @@ import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 import static com.haulmont.cuba.gui.logging.UIPerformanceLogger.createStopWatch;
 import static com.haulmont.cuba.gui.screen.FrameOwner.WINDOW_CLOSE_ACTION;
 import static com.haulmont.cuba.gui.screen.UiControllerUtils.*;
+import static org.apache.commons.lang3.reflect.ConstructorUtils.invokeConstructor;
 
+@ParametersAreNonnullByDefault
 public class WebScreens implements Screens, WindowManager {
 
     private static final org.slf4j.Logger userActionsLog = LoggerFactory.getLogger(UserActionsLogger.class);
@@ -329,12 +332,11 @@ public class WebScreens implements Screens, WindowManager {
     protected <T extends Screen> void loadWindowFromXml(Element element, WindowInfo windowInfo, Window window, T controller,
                                                         ComponentLoaderContext componentLoaderContext) {
         LayoutLoader layoutLoader = beanLocator.getPrototype(LayoutLoader.NAME, componentLoaderContext);
-        layoutLoader.setLocale(getLocale());
         if (windowInfo.getTemplate() != null) {
             layoutLoader.setMessagesPack(getMessagePack(windowInfo.getTemplate()));
         }
 
-        ComponentLoader<Window> windowLoader = layoutLoader.createWindowContent(window, element, windowInfo.getId());
+        ComponentLoader<Window> windowLoader = layoutLoader.createWindowContent(window, element);
 
         if (controller instanceof LegacyFrame) {
             screenViewsLoader.deployViews(element);
@@ -923,18 +925,13 @@ public class WebScreens implements Screens, WindowManager {
         return null;
     }
 
-    protected <T extends Screen> T createController(WindowInfo windowInfo, Window window, Class<T> screenClass) {
-        Constructor<T> constructor;
-        try {
-            constructor = screenClass.getConstructor();
-        } catch (NoSuchMethodException e) {
-            throw new DevelopmentException("No accessible constructor for screen class " + screenClass);
-        }
-
+    protected <T extends Screen> T createController(@SuppressWarnings("unused") WindowInfo windowInfo,
+                                                    @SuppressWarnings("unused") Window window, Class<T> screenClass) {
         T controller;
         try {
-            controller = constructor.newInstance();
-        } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
+            controller = invokeConstructor(screenClass);
+        } catch (NoSuchMethodException | InstantiationException
+                | IllegalAccessException | InvocationTargetException e) {
             throw new RuntimeException("Unable to create instance of screen class " + screenClass);
         }
 
@@ -1155,7 +1152,8 @@ public class WebScreens implements Screens, WindowManager {
 
     // used only for legacy screens
     @Override
-    public Screen createEditor(WindowInfo windowInfo, Entity item, OpenType openType, Map<String, Object> params) {
+    public Screen createEditor(WindowInfo windowInfo, Entity item, OpenType openType,
+                               @Nullable Map<String, Object> params) {
         params = createParametersMap(windowInfo, params);
         params.put(WindowParams.ITEM.name(), item);
 
@@ -1174,7 +1172,8 @@ public class WebScreens implements Screens, WindowManager {
 
     @SuppressWarnings({"deprecation", "IncorrectCreateGuiComponent", "unchecked"})
     @Override
-    public Window.Editor openEditor(WindowInfo windowInfo, Entity item, OpenType openType, Map<String, Object> params,
+    public Window.Editor openEditor(WindowInfo windowInfo, Entity item, OpenType openType,
+                                    @Nullable Map<String, Object> params,
                                     Datasource parentDs) {
         params = createParametersMap(windowInfo, params);
         params.put(WindowParams.ITEM.name(), item);
@@ -1270,6 +1269,10 @@ public class WebScreens implements Screens, WindowManager {
                 container.remove(c);
             }
             container.add(screenFragment.getFragment());
+        }
+
+        if (screenFragment instanceof LegacyFragmentAdapter) {
+            return ((LegacyFragmentAdapter) screenFragment).getRealScreen();
         }
 
         return screenFragment instanceof Frame ? (Frame) screenFragment : new ScreenFragmentWrapper(screenFragment);
@@ -1410,9 +1413,11 @@ public class WebScreens implements Screens, WindowManager {
      * @param runIfOk a closure to run after all screens are closed
      */
     @Deprecated
-    public void checkModificationsAndCloseAll(Runnable runIfOk) {
-        checkModificationsAndCloseAll()
-                .then(runIfOk);
+    public void checkModificationsAndCloseAll(@Nullable Runnable runIfOk) {
+        OperationResult result = checkModificationsAndCloseAll();
+        if (runIfOk != null) {
+            result.then(runIfOk);
+        }
     }
 
     /**
@@ -1422,10 +1427,14 @@ public class WebScreens implements Screens, WindowManager {
      * @param runIfCancel a closure to run if there were modifications and a user canceled the operation
      */
     @Deprecated
-    public void checkModificationsAndCloseAll(Runnable runIfOk, Runnable runIfCancel) {
-        checkModificationsAndCloseAll()
-                .then(runIfOk)
-                .otherwise(runIfCancel);
+    public void checkModificationsAndCloseAll(@Nullable Runnable runIfOk, @Nullable Runnable runIfCancel) {
+        OperationResult result = checkModificationsAndCloseAll();
+        if (runIfOk != null) {
+            result.then(runIfOk);
+        }
+        if (runIfCancel != null) {
+            result.otherwise(runIfCancel);
+        }
     }
 
     /**

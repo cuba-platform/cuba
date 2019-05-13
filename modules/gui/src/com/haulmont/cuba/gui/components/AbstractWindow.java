@@ -38,7 +38,10 @@ import org.springframework.core.annotation.Order;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
@@ -50,7 +53,7 @@ public class AbstractWindow extends Screen implements Window, LegacyFrame, Compo
 
     public static final String UNKNOWN_CLOSE_ACTION_ID = "unknown";
 
-    protected Window frame;
+    protected Frame frame;
     private Object _companion;
 
     private Component parent;
@@ -447,7 +450,7 @@ public class AbstractWindow extends Screen implements Window, LegacyFrame, Compo
 
     @Override
     public void setFrame(Frame frame) {
-        // do nothing
+        this.frame = frame;
     }
 
     @Override
@@ -558,52 +561,52 @@ public class AbstractWindow extends Screen implements Window, LegacyFrame, Compo
 
     @Override
     public void setCloseable(boolean closeable) {
-        this.frame.setCloseable(closeable);
+        ((Window) frame).setCloseable(closeable);
     }
 
     @Override
     public boolean isCloseable() {
-        return this.frame.isCloseable();
+        return ((Window) frame).isCloseable();
     }
 
     @Override
     public void setMinWidth(String minWidth) {
-        frame.setMinWidth(minWidth);
+        ((Window) frame).setMinWidth(minWidth);
     }
 
     @Override
     public String getMinWidth() {
-        return frame.getMinWidth();
+        return ((Window) frame).getMinWidth();
     }
 
     @Override
     public void setMaxWidth(String maxWidth) {
-        frame.setMaxWidth(maxWidth);
+        ((Window) frame).setMaxWidth(maxWidth);
     }
 
     @Override
     public String getMaxWidth() {
-        return frame.getMaxWidth();
+        return ((Window) frame).getMaxWidth();
     }
 
     @Override
     public void setMinHeight(String minHeight) {
-        frame.setMinHeight(minHeight);
+        ((Window) frame).setMinHeight(minHeight);
     }
 
     @Override
     public String getMinHeight() {
-        return frame.getMinHeight();
+        return ((Window) frame).getMinHeight();
     }
 
     @Override
     public void setMaxHeight(String maxHeight) {
-        frame.setMaxHeight(maxHeight);
+        ((Window) frame).setMaxHeight(maxHeight);
     }
 
     @Override
     public String getMaxHeight() {
-        return frame.getMaxHeight();
+        return ((Window) frame).getMaxHeight();
     }
 
     @Override
@@ -613,7 +616,7 @@ public class AbstractWindow extends Screen implements Window, LegacyFrame, Compo
 
     @Override
     public WindowContext getContext() {
-        return frame.getContext();
+        return ((Window) frame).getContext();
     }
 
     @Override
@@ -664,7 +667,7 @@ public class AbstractWindow extends Screen implements Window, LegacyFrame, Compo
     /** INTERNAL. Don't call from application code. */
     @Override
     public Window getWrappedWindow() {
-        return frame;
+        return ((Window) frame);
     }
 
     /**
@@ -706,22 +709,22 @@ public class AbstractWindow extends Screen implements Window, LegacyFrame, Compo
 
     @Override
     public void setFocusComponent(String componentId) {
-        frame.setFocusComponent(componentId);
+        ((Window) frame).setFocusComponent(componentId);
     }
 
     @Override
     public String getFocusComponent() {
-        return frame.getFocusComponent();
+        return ((Window) frame).getFocusComponent();
     }
 
     @Override
     public void addTimer(Timer timer) {
-        frame.addTimer(timer);
+        ((Window) frame).addTimer(timer);
     }
 
     @Override
     public Timer getTimer(String id) {
-        return frame.getTimer(id);
+        return ((Window) frame).getTimer(id);
     }
 
     @Override
@@ -731,7 +734,7 @@ public class AbstractWindow extends Screen implements Window, LegacyFrame, Compo
 
     @Override
     public DialogOptions getDialogOptions() {
-        return frame.getDialogOptions();
+        return ((Window) frame).getDialogOptions();
     }
 
     /**
@@ -848,12 +851,12 @@ public class AbstractWindow extends Screen implements Window, LegacyFrame, Compo
 
     @Override
     public Subscription addBeforeWindowCloseListener(Consumer<Window.BeforeCloseEvent> listener) {
-        return frame.addBeforeWindowCloseListener(listener);
+        return ((Window) frame).addBeforeWindowCloseListener(listener);
     }
 
     @Override
     public void removeBeforeWindowCloseListener(Consumer<Window.BeforeCloseEvent> listener) {
-        frame.removeBeforeWindowCloseListener(listener);
+        ((Window) frame).removeBeforeWindowCloseListener(listener);
     }
 
     @Override
@@ -868,11 +871,11 @@ public class AbstractWindow extends Screen implements Window, LegacyFrame, Compo
 
     @Override
     public void setFocusMode(FocusMode focusMode) {
-        frame.setFocusMode(focusMode);
+        ((Window) frame).setFocusMode(focusMode);
     }
 
     @Override
     public FocusMode getFocusMode() {
-        return frame.getFocusMode();
+        return ((Window) frame).getFocusMode();
     }
 }

@@ -17,47 +17,42 @@
 package com.haulmont.cuba.web.sys;
 
 import com.haulmont.cuba.core.global.BeanLocator;
-import com.haulmont.cuba.core.global.DevelopmentException;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.Fragments;
 import com.haulmont.cuba.gui.UiComponents;
-import com.haulmont.cuba.gui.WindowParams;
+import com.haulmont.cuba.gui.components.AbstractWindow;
 import com.haulmont.cuba.gui.components.Fragment;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.sys.FragmentImplementation;
 import com.haulmont.cuba.gui.components.sys.FrameImplementation;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
-import com.haulmont.cuba.gui.data.DsContext;
-import com.haulmont.cuba.gui.data.impl.DsContextImplementation;
 import com.haulmont.cuba.gui.logging.ScreenLifeCycle;
 import com.haulmont.cuba.gui.model.impl.ScreenDataImpl;
 import com.haulmont.cuba.gui.screen.*;
 import com.haulmont.cuba.gui.screen.compatibility.LegacyFrame;
 import com.haulmont.cuba.gui.sys.FragmentContextImpl;
+import com.haulmont.cuba.gui.sys.FragmentHelper;
+import com.haulmont.cuba.gui.sys.FragmentHelper.FragmentLoaderInitTask;
+import com.haulmont.cuba.gui.sys.FragmentHelper.FragmentLoaderInjectTask;
 import com.haulmont.cuba.gui.sys.ScreenContextImpl;
 import com.haulmont.cuba.gui.sys.UiDescriptorUtils;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoader;
 import com.haulmont.cuba.gui.xml.layout.ScreenXmlLoader;
 import com.haulmont.cuba.gui.xml.layout.loaders.ComponentLoaderContext;
-import com.haulmont.cuba.gui.xml.layout.loaders.FragmentComponentLoader.FragmentLoaderInjectTask;
 import com.haulmont.cuba.web.AppUI;
-import com.vaadin.server.ClientConnector;
-import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
 import org.perf4j.StopWatch;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import javax.inject.Inject;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.util.Locale;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 import static com.haulmont.cuba.gui.logging.UIPerformanceLogger.createStopWatch;
 import static com.haulmont.cuba.gui.screen.UiControllerUtils.*;
-import static com.haulmont.cuba.gui.xml.layout.loaders.FragmentComponentLoader.FragmentLoaderInitTask;
 
+@ParametersAreNonnullByDefault
 public class WebFragments implements Fragments {
 
     @Inject
@@ -71,6 +66,9 @@ public class WebFragments implements Fragments {
     @Inject
     protected UserSessionSource userSessionSource;
 
+    @Inject
+    protected FragmentHelper fragmentHelper;
+
     protected AppUI ui;
 
     public WebFragments(AppUI ui) {
@@ -83,7 +81,18 @@ public class WebFragments implements Fragments {
         checkNotNullArgument(requiredFragmentClass);
         checkNotNullArgument(options);
 
-        WindowInfo windowInfo = getFragmentInfo(requiredFragmentClass);
+        WindowInfo windowInfo = getFragmentInfo(requiredFragmentClass).resolve();
+
+        return createFragment(parent, windowInfo, options);
+    }
+
+    @Override
+    public ScreenFragment create(FrameOwner parent, String screenFragmentId, ScreenOptions options) {
+        checkNotNullArgument(parent);
+        checkNotNullArgument(screenFragmentId);
+        checkNotNullArgument(options);
+
+        WindowInfo windowInfo = windowConfig.getWindowInfo(screenFragmentId).resolve();
 
         return createFragment(parent, windowInfo, options);
     }
@@ -99,29 +108,19 @@ public class WebFragments implements Fragments {
         return windowConfig.getWindowInfo(screenId);
     }
 
-    @Override
-    public ScreenFragment create(FrameOwner parent, String screenFragmentId, ScreenOptions options) {
-        checkNotNullArgument(parent);
-        checkNotNullArgument(screenFragmentId);
-        checkNotNullArgument(options);
-
-        WindowInfo windowInfo = windowConfig.getWindowInfo(screenFragmentId);
-
-        return createFragment(parent, windowInfo, options);
-    }
-
     protected <T extends ScreenFragment> T createFragment(FrameOwner parent, WindowInfo windowInfo,
                                                           ScreenOptions options) {
-        if (windowInfo.getType() != WindowInfo.Type.FRAGMENT) {
+        if (windowInfo.getType() != WindowInfo.Type.FRAGMENT
+            && !AbstractWindow.class.isAssignableFrom(windowInfo.getControllerClass())) {
             throw new IllegalArgumentException(
-                    String.format("Unable to create fragment %s with type %s", windowInfo.getId(), windowInfo.getType())
+                    String.format("Unable to create fragment %s it is a screen: %s", windowInfo.getId(), windowInfo.getControllerClass())
             );
         }
 
         StopWatch createStopWatch = createStopWatch(ScreenLifeCycle.CREATE, windowInfo.getId());
 
         Fragment fragment = uiComponents.create(Fragment.NAME);
-        ScreenFragment controller = createController(windowInfo, fragment, windowInfo.asFragment());
+        ScreenFragment controller = fragmentHelper.createController(windowInfo, fragment);
 
         // setup screen and controller
 
@@ -129,12 +128,7 @@ public class WebFragments implements Fragments {
         setWindowId(controller, windowInfo.getId());
         setFrame(controller, fragment);
         setScreenContext(controller,
-                new ScreenContextImpl(windowInfo, options,
-                        ui.getScreens(),
-                        ui.getDialogs(),
-                        ui.getNotifications(),
-                        this,
-                        ui.getUrlRouting())
+                new ScreenContextImpl(windowInfo, options, getScreenContext(parent))
         );
         setScreenData(controller, new ScreenDataImpl());
 
@@ -173,8 +167,7 @@ public class WebFragments implements Fragments {
             innerContext.setParent(loaderContext);
 
             LayoutLoader layoutLoader = beanLocator.getPrototype(LayoutLoader.NAME, innerContext);
-            layoutLoader.setLocale(getLocale());
-            layoutLoader.setMessagesPack(getMessagePack(windowInfo.getTemplate()));
+            layoutLoader.setMessagesPack(fragmentHelper.getMessagePack(windowInfo.getTemplate()));
 
             Element windowElement = screenXmlLoader.load(windowInfo.getTemplate(), windowInfo.getId(),
                     innerContext.getParams());
@@ -216,64 +209,6 @@ public class WebFragments implements Fragments {
         loaderContext.executeInitTasks();
         loaderContext.executePostInitTasks();
 
-        // resume listeners after show
-        // only if legacy frame
-        if (controller instanceof LegacyFrame) {
-            com.vaadin.ui.Component vComposition = controller.getFragment().unwrapComposition(com.vaadin.ui.Component.class);
-            vComposition.addAttachListener(new ClientConnector.AttachListener() {
-                @Override
-                public void attach(ClientConnector.AttachEvent event) {
-                    resumeDsContextAfterShow((LegacyFrame) controller);
-                    // run only once
-                    vComposition.removeAttachListener(this);
-                }
-            });
-        }
-
         fragmentContext.setInitialized(true);
-    }
-
-    protected void resumeDsContextAfterShow(LegacyFrame controller) {
-        if (!WindowParams.DISABLE_RESUME_SUSPENDED.getBool(controller.getContext())) {
-            DsContext dsContext = controller.getDsContext();
-            if (dsContext != null) {
-                ((DsContextImplementation) dsContext).resumeSuspended();
-            }
-        }
-    }
-
-    protected String getMessagePack(String descriptorPath) {
-        if (descriptorPath.contains("/")) {
-            descriptorPath = StringUtils.substring(descriptorPath, 0, descriptorPath.lastIndexOf("/"));
-        }
-
-        String messagesPack = descriptorPath.replace("/", ".");
-        int start = messagesPack.startsWith(".") ? 1 : 0;
-        messagesPack = messagesPack.substring(start);
-        return messagesPack;
-    }
-
-    protected Locale getLocale() {
-        return userSessionSource.getUserSession().getLocale();
-    }
-
-    protected <T extends ScreenFragment> T createController(@SuppressWarnings("unused") WindowInfo windowInfo,
-                                                            @SuppressWarnings("unused") Fragment fragment,
-                                                            Class<T> screenClass) {
-        Constructor<T> constructor;
-        try {
-            constructor = screenClass.getConstructor();
-        } catch (NoSuchMethodException e) {
-            throw new DevelopmentException("No accessible constructor for screen class " + screenClass);
-        }
-
-        T controller;
-        try {
-            controller = constructor.newInstance();
-        } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-            throw new RuntimeException("Unable to create instance of screen class " + screenClass);
-        }
-
-        return controller;
     }
 }

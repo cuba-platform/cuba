@@ -46,13 +46,13 @@ import static com.haulmont.cuba.gui.logging.UIPerformanceLogger.createStopWatch;
 
 public class FragmentLoader extends ContainerLoader<Fragment> implements ComponentRootLoader<Fragment> {
 
+    public void setResultComponent(Fragment fragment) {
+        this.resultComponent = fragment;
+    }
+
     @Override
     public void createComponent() {
         throw new UnsupportedOperationException("Fragment cannot be created from XML element");
-    }
-
-    public void setResultComponent(Fragment fragment) {
-        this.resultComponent = fragment;
     }
 
     @Override

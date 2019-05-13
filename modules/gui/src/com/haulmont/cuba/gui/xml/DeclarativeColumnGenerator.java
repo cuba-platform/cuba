@@ -18,10 +18,10 @@
 package com.haulmont.cuba.gui.xml;
 
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.Table;
+import com.haulmont.cuba.gui.components.compatibility.LegacyFragmentAdapter;
 import com.haulmont.cuba.gui.screen.FrameOwner;
 import org.apache.commons.lang3.reflect.MethodUtils;
 import org.springframework.context.annotation.Scope;
@@ -58,6 +58,9 @@ public class DeclarativeColumnGenerator implements Table.ColumnGenerator {
             throw new IllegalStateException("Table should be attached to frame");
         }
         FrameOwner controller = frame.getFrameOwner();
+        if (controller instanceof LegacyFragmentAdapter) {
+            controller = ((LegacyFragmentAdapter) controller).getRealScreen();
+        }
 
         if (method == null) {
             method = findGeneratorMethod(controller.getClass(), methodName);

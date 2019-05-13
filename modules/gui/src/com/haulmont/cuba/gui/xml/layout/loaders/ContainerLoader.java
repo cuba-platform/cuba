@@ -60,7 +60,6 @@ public abstract class ContainerLoader<T extends Component> extends AbstractCompo
 
     protected void createSubComponents(ComponentContainer container, Element containerElement) {
         LayoutLoader loader = beanLocator.getPrototype(LayoutLoader.NAME, context);
-        loader.setLocale(getLocale());
         loader.setMessagesPack(getMessagesPack());
 
         for (Element subElement : containerElement.elements()) {

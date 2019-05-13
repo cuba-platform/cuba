@@ -26,6 +26,7 @@ import com.haulmont.cuba.core.global.DevelopmentException;
 import com.haulmont.cuba.core.global.Events;
 import com.haulmont.cuba.gui.*;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.compatibility.LegacyFragmentAdapter;
 import com.haulmont.cuba.gui.components.sys.ValuePathHelper;
 import com.haulmont.cuba.gui.data.DataSupplier;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -69,11 +70,14 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import static com.haulmont.cuba.gui.screen.UiControllerUtils.getScreenContext;
+import static com.haulmont.cuba.gui.screen.UiControllerUtils.getScreenData;
 import static java.lang.reflect.Proxy.newProxyInstance;
 import static org.springframework.core.annotation.AnnotatedElementUtils.findMergedAnnotation;
 
 /**
- * Wires {@link Inject}, {@link Named}, {@link WindowParam} fields/setters and {@link EventListener} methods.
+ * Wires {@link Inject}, {@link Autowired}, {@link Resource}, {@link Named}, {@link WindowParam} fields/setters
+ * and {@link Subscribe}, {@link Install} and {@link EventListener} methods.
  */
 @org.springframework.stereotype.Component(UiControllerDependencyInjector.NAME)
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
@@ -90,7 +94,13 @@ public class UiControllerDependencyInjector {
     protected UiControllerReflectionInspector reflectionInspector;
 
     public UiControllerDependencyInjector(FrameOwner frameOwner, ScreenOptions options) {
-        this.frameOwner = frameOwner;
+        // support legacy windows inside of fragments
+        if (!(frameOwner instanceof LegacyFragmentAdapter)) {
+            this.frameOwner = frameOwner;
+        } else {
+            this.frameOwner = ((LegacyFragmentAdapter) frameOwner).getRealScreen();
+        }
+
         this.options = options;
     }
 
@@ -230,14 +240,14 @@ public class UiControllerDependencyInjector {
                     break;
 
                 case DATA_CONTEXT:
-                    targetInstance = UiControllerUtils.getScreenData(frameOwner).getDataContext();
+                    targetInstance = getScreenData(frameOwner).getDataContext();
                     break;
 
                 default:
                     throw new UnsupportedOperationException("Unsupported @Install target " + annotation.target());
             }
         } else if (annotation.target() == Target.DATA_LOADER) {
-            targetInstance = UiControllerUtils.getScreenData(frameOwner).getLoader(target);
+            targetInstance = getScreenData(frameOwner).getLoader(target);
         } else {
             targetInstance = findInstallTarget(target, frame);
         }
@@ -313,6 +323,9 @@ public class UiControllerDependencyInjector {
 
         List<AnnotatedMethod<Subscribe>> eventListenerMethods = screenIntrospectionData.getSubscribeMethods();
 
+        Frame frame = UiControllerUtils.getFrame(frameOwner);
+        ScreenData screenData = getScreenData(frameOwner);
+
         for (AnnotatedMethod<Subscribe> annotatedMethod : eventListenerMethods) {
             Method method = annotatedMethod.getMethod();
             Subscribe annotation = annotatedMethod.getAnnotation();
@@ -321,9 +334,6 @@ public class UiControllerDependencyInjector {
 
             Parameter parameter = method.getParameters()[0];
             Class<?> eventType = parameter.getType();
-
-            Frame frame = UiControllerUtils.getFrame(frameOwner);
-            ScreenData screenData = UiControllerUtils.getScreenData(frameOwner);
 
             Object eventTarget = null;
 
@@ -350,7 +360,7 @@ public class UiControllerDependencyInjector {
                         break;
 
                     case DATA_CONTEXT:
-                        eventTarget = UiControllerUtils.getScreenData(frameOwner).getDataContext();
+                        eventTarget = screenData.getDataContext();
                         break;
 
                     default:
@@ -564,6 +574,18 @@ public class UiControllerDependencyInjector {
             }
             return ((Fragment) fragment).getFrameOwner();
 
+        } else if (AbstractWindow.class.isAssignableFrom(type)) {
+            // Injecting inner legacy screen controller
+            Component fragment = frame.getComponent(name);
+            if (fragment == null) {
+                return null;
+            }
+            ScreenFragment frameOwner = ((Fragment) fragment).getFrameOwner();
+            if (frameOwner instanceof LegacyFragmentAdapter) {
+                return ((LegacyFragmentAdapter) frameOwner).getRealScreen();
+            }
+
+            return frameOwner;
         } else if (Component.class.isAssignableFrom(type)) {
             /// if legacy frame - inject controller
             Component component = frame.getComponent(name);
@@ -588,35 +610,35 @@ public class UiControllerDependencyInjector {
 
         } else if (InstanceContainer.class.isAssignableFrom(type)) {
             // Injecting a container
-            ScreenData data = UiControllerUtils.getScreenData(frameOwner);
+            ScreenData data = getScreenData(frameOwner);
             return data.getContainer(name);
 
         } else if (DataLoader.class.isAssignableFrom(type)) {
             // Injecting a loader
-            ScreenData data = UiControllerUtils.getScreenData(frameOwner);
+            ScreenData data = getScreenData(frameOwner);
             return data.getLoader(name);
 
         } else if (DataContext.class.isAssignableFrom(type)) {
             // Injecting the data context
-            ScreenData data = UiControllerUtils.getScreenData(frameOwner);
+            ScreenData data = getScreenData(frameOwner);
             return data.getDataContext();
 
         } else if (Datasource.class.isAssignableFrom(type)) {
             // Injecting a datasource
-            return ((LegacyFrame) frame.getFrameOwner()).getDsContext().get(name);
+            return ((LegacyFrame) frameOwner).getDsContext().get(name);
 
         } else if (DsContext.class.isAssignableFrom(type)) {
-            if (frame.getFrameOwner() instanceof LegacyFrame) {
+            if (frameOwner instanceof LegacyFrame) {
                 // Injecting the DsContext
-                return ((LegacyFrame) frame.getFrameOwner()).getDsContext();
+                return ((LegacyFrame) frameOwner).getDsContext();
             } else {
                 throw new DevelopmentException("DsContext can be injected only into LegacyFrame inheritors");
             }
 
         } else if (DataSupplier.class.isAssignableFrom(type)) {
-            if (frame.getFrameOwner() instanceof LegacyFrame) {
+            if (frameOwner instanceof LegacyFrame) {
                 // Injecting the DataSupplier
-                return ((LegacyFrame) frame.getFrameOwner()).getDsContext().getDataSupplier();
+                return ((LegacyFrame) frameOwner).getDsContext().getDataSupplier();
             } else {
                 throw new DevelopmentException("DataSupplier can be injected only into LegacyFrame inheritors");
             }
@@ -646,26 +668,26 @@ public class UiControllerDependencyInjector {
 
         } else if (Screens.class.isAssignableFrom(type)) {
             // injecting screens
-            return UiControllerUtils.getScreenContext(frameOwner).getScreens();
+            return getScreenContext(frameOwner).getScreens();
 
         } else if (Dialogs.class.isAssignableFrom(type)) {
             // injecting dialogs
-            return UiControllerUtils.getScreenContext(frameOwner).getDialogs();
+            return getScreenContext(frameOwner).getDialogs();
 
         } else if (Notifications.class.isAssignableFrom(type)) {
             // injecting notifications
-            return UiControllerUtils.getScreenContext(frameOwner).getNotifications();
+            return getScreenContext(frameOwner).getNotifications();
 
         } else if (Fragments.class.isAssignableFrom(type)) {
             // injecting fragments
-            return UiControllerUtils.getScreenContext(frameOwner).getFragments();
+            return getScreenContext(frameOwner).getFragments();
 
         } else if (UrlRouting.class.isAssignableFrom(type)) {
             // injecting urlRouting
-            return UiControllerUtils.getScreenContext(frameOwner).getUrlRouting();
+            return getScreenContext(frameOwner).getUrlRouting();
 
         } else if (MessageBundle.class == type) {
-            return createMessageBundle(element, frame);
+            return createMessageBundle(element, frameOwner, frame);
 
         } else if (ThemeConstants.class == type) {
             // Injecting a Theme
@@ -697,10 +719,10 @@ public class UiControllerDependencyInjector {
         return null;
     }
 
-    protected MessageBundle createMessageBundle(@SuppressWarnings("unused") AnnotatedElement element, Frame frame) {
+    protected MessageBundle createMessageBundle(@SuppressWarnings("unused") AnnotatedElement element, FrameOwner frameOwner, Frame frame) {
         MessageBundle messageBundle = beanLocator.getPrototype(MessageBundle.NAME);
 
-        Class<? extends FrameOwner> screenClass = frame.getFrameOwner().getClass();
+        Class<? extends FrameOwner> screenClass = frameOwner.getClass();
         String packageName = UiControllerUtils.getPackage(screenClass);
         messageBundle.setMessagesPack(packageName);
 
