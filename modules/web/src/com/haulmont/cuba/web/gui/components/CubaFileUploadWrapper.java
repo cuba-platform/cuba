@@ -17,6 +17,9 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.core.entity.FileDescriptor;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Security;
+import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.web.widgets.CubaButton;
 import com.haulmont.cuba.web.widgets.UploadComponent;
 import com.vaadin.server.Resource;
@@ -199,6 +202,23 @@ public class CubaFileUploadWrapper extends CustomField<FileDescriptor> {
 
         setShowFileName(false);
         setWidthUndefined();
+
+        applyPermissions();
+    }
+
+    protected void applyPermissions() {
+        Security security = AppBeans.get(Security.NAME);
+
+        if (!security.isEntityOpPermitted(FileDescriptor.class, EntityOp.CREATE)
+                || !security.isEntityOpPermitted(FileDescriptor.class, EntityOp.UPDATE)) {
+            uploadButton.setEnabled(false);
+        }
+        if (!security.isEntityOpPermitted(FileDescriptor.class, EntityOp.DELETE)) {
+            clearButton.setEnabled(false);
+        }
+        if (!security.isEntityOpPermitted(FileDescriptor.class, EntityOp.READ)) {
+            fileNameButton.setEnabled(false);
+        }
     }
 
     public boolean isShowFileName() {
