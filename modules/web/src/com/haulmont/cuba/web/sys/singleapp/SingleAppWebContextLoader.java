@@ -134,7 +134,7 @@ public class SingleAppWebContextLoader extends WebAppContextLoader {
     }
 
     protected void registerDispatchServlet(ServletContext servletContext) {
-        CubaDispatcherServlet cubaDispatcherServlet = new SingleAppDispatcherServlet(dependencyJars);
+        CubaDispatcherServlet cubaDispatcherServlet = new SingleAppDispatcherServlet("/lib-web/");
         try {
             cubaDispatcherServlet.init(new CubaServletConfig("dispatcher", servletContext));
         } catch (ServletException e) {
@@ -198,18 +198,12 @@ public class SingleAppWebContextLoader extends WebAppContextLoader {
     protected ClassPathXmlApplicationContext createApplicationContext(String[] locations) {
         return new CubaClassPathXmlApplicationContext(locations) {
             /**
-             * Here we create resource resolver which scans only web jars (and avoid putting core beans to web context)
-             * JAR_DEPENDENCIES properties is filled by com.haulmont.cuba.web.sys.singleapp.SingleAppWebServletListener
-             * during application initialization.
+             * Here we create resource resolver which scans only web jars which should be placed into /lib-web/ folder.
              */
             @Override
             @Nonnull
             protected ResourcePatternResolver getResourcePatternResolver() {
-                if (dependencyJars == null || dependencyJars.isEmpty()) {
-                    throw new RuntimeException("No JARs defined for the 'web' block. " +
-                            "Please check that web.dependencies file exists in WEB-INF directory.");
-                }
-                return new SingleAppResourcePatternResolver(this, dependencyJars);
+                return new SingleAppResourcePatternResolver(this, "/lib-web/");
             }
         };
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2016 Haulmont.
+ * Copyright (c) 2008-2019 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,45 +12,33 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
 package com.haulmont.cuba.core.sys.singleapp;
 
-import com.haulmont.cuba.core.sys.CubaSingleAppClassLoader;
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
-import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-
-import static org.springframework.util.ReflectionUtils.findMethod;
-import static org.springframework.util.ReflectionUtils.invokeMethod;
 
 /**
  * This class and its twin com.haulmont.cuba.web.sys.singleapp.SingleAppWebServletListener separate "web" and "core" classes
  * to different classloaders when we pack application to single WAR.
  * <p>
- * We create 2 URLClassLoaders (1 for core and 1 for web), with predefined (during single WAR build) list of jars (core.dependencies).
- * So the classloaders load classes from the jars and only if class is not found they delegate loading to base WebAppClassLoader (their parent).
+ * We create 2 URLClassLoaders (1 for core and 1 for web), with predefined (during single WAR build) list of jars (/WEB-INF/lib-core/).
  * <p>
  * As a result, core classloader contains core classes, web classloder contains web classes and WebAppClassLoader contains "shared" classes.
  * <p>
  * To make sure the Spring context use specific classloader we load {@code AppWebContextLoader} reflectively, create new instance
  * and call its initialization methods reflectively as well.
- *
- * As each classloader has its own AppContext version, we can put property with dependencies to AppContext (reflectively as well).
- * The property will be used on spring context creation, to detect which jars to scan.
- *
+ * <p>
+ * As each classloader has its own AppContext version, we can scan jars only from defined folders (/WEB-INF/lib-core/ for "core" jars).
  */
 public class SingleAppCoreServletListener implements ServletContextListener {
     protected Object appContextLoader;
@@ -65,40 +53,25 @@ public class SingleAppCoreServletListener implements ServletContextListener {
             contextClassLoader.loadClass("com.haulmont.cuba.core.sys.remoting.LocalServiceDirectory");
 
             ServletContext servletContext = sce.getServletContext();
-            String dependenciesFile;
-            try {
-                dependenciesFile = IOUtils.toString(servletContext.getResourceAsStream("/WEB-INF/core.dependencies"), StandardCharsets.UTF_8);
-            } catch (IOException e) {
-                throw new RuntimeException("An error occurred while loading dependencies file", e);
-            }
 
-            String[] dependenciesNames = dependenciesFile.split("\\n");
-            URL[] urls = Arrays.stream(dependenciesNames)
-                    .map(name -> {
+            URL[] urls = servletContext.getResourcePaths("/WEB-INF/lib-core/").stream()
+                    .map((String name) -> {
                         try {
-                            return servletContext.getResource("/WEB-INF/lib/" + name);
+                            return servletContext.getResource(name);
                         } catch (MalformedURLException e) {
                             throw new RuntimeException("An error occurred while loading dependency " + name, e);
                         }
                     })
                     .toArray(URL[]::new);
-            URLClassLoader coreClassLoader = new CubaSingleAppClassLoader(urls, contextClassLoader);
+            URLClassLoader coreClassLoader = new URLClassLoader(urls, contextClassLoader);
 
             Thread.currentThread().setContextClassLoader(coreClassLoader);
             Class<?> appContextLoaderClass = coreClassLoader.loadClass(getAppContextLoaderClassName());
             appContextLoader = appContextLoaderClass.newInstance();
 
-            Method setJarsNamesMethod = findMethod(appContextLoaderClass, "setJarNames", String.class);
-            if (setJarsNamesMethod == null) {
-                throw new RuntimeException("Unable to find setJarsNames method in " + appContextLoader.getClass());
-            }
-            invokeMethod(setJarsNamesMethod, appContextLoader, dependenciesFile);
+            Method contextInitializedMethod = appContextLoaderClass.getMethod("contextInitialized", ServletContextEvent.class);
 
-            Method contextInitializedMethod = findMethod(appContextLoaderClass, "contextInitialized", ServletContextEvent.class);
-            if (contextInitializedMethod == null) {
-                throw new RuntimeException("Unable to find contextInitialized method in " + appContextLoader.getClass());
-            }
-            invokeMethod(contextInitializedMethod, appContextLoader, sce);
+            contextInitializedMethod.invoke(appContextLoader, sce);
 
             Thread.currentThread().setContextClassLoader(contextClassLoader);
         } catch (Exception e) {
@@ -110,11 +83,12 @@ public class SingleAppCoreServletListener implements ServletContextListener {
 
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
-        Method contextDestroyed = findMethod(appContextLoader.getClass(), "contextDestroyed", ServletContextEvent.class);
-        if (contextDestroyed == null) {
-            throw new RuntimeException("Unable to find contextDestroyed method in " + appContextLoader.getClass());
+        try {
+            Method contextDestroyed = appContextLoader.getClass().getMethod("contextDestroyed", ServletContextEvent.class);
+            contextDestroyed.invoke(appContextLoader, sce);
+        } catch (Exception e) {
+            throw new RuntimeException("An error occurred while destroying context of single WAR application", e);
         }
-        invokeMethod(contextDestroyed, appContextLoader, sce);
     }
 
     protected String getAppContextLoaderClassName() {

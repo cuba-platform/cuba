@@ -26,14 +26,13 @@ import org.springframework.web.context.WebApplicationContext;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Set;
 
 public class SingleAppDispatcherServlet extends CubaDispatcherServlet {
 
-    private Set<String> dependencyJars;
+    protected String libFolder;
 
-    public SingleAppDispatcherServlet(Set<String> dependencyJars) {
-        this.dependencyJars = dependencyJars;
+    public SingleAppDispatcherServlet(String libFolder) {
+        this.libFolder = libFolder;
     }
 
     @Override
@@ -47,11 +46,7 @@ public class SingleAppDispatcherServlet extends CubaDispatcherServlet {
         ConfigurableWebApplicationContext wac = new CubaXmlWebApplicationContext() {
             @Override
             protected ResourcePatternResolver getResourcePatternResolver() {
-                if (dependencyJars == null || dependencyJars.isEmpty()) {
-                    throw new RuntimeException("No JARs defined for the 'web' block. " +
-                            "Please check that web.dependencies file exists in WEB-INF directory.");
-                }
-                return new SingleAppResourcePatternResolver(this, dependencyJars);
+                return new SingleAppResourcePatternResolver(this, libFolder);
             }
         };
 

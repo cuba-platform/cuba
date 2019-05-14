@@ -238,6 +238,8 @@ configure(sharedLibModule) {
     dependencies {
         compile(bom['ch.qos.logback:logback-classic'])
         compile(bom['org.slf4j:log4j-over-slf4j'])
+        
+        compileOnly(bom['javax.servlet:javax.servlet-api'])
 
         jdbc(bom['org.postgresql:postgresql'])
         jdbc(bom['org.hsqldb:hsqldb'])

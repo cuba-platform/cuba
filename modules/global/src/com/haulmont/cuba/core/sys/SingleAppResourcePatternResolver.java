@@ -22,7 +22,6 @@ import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -30,11 +29,11 @@ public class SingleAppResourcePatternResolver extends PathMatchingResourcePatter
 
     public static final Pattern JAR_NAME_PATTERN = Pattern.compile(".*/(.+?\\.jar).*");
 
-    private Set<String> dependencyJars;
+    private String libFolder;
 
-    public SingleAppResourcePatternResolver(ResourceLoader resourceLoader, Set<String> dependencyJars) {
+    public SingleAppResourcePatternResolver(ResourceLoader resourceLoader, String libFolder) {
         super(resourceLoader);
-        this.dependencyJars = dependencyJars;
+        this.libFolder = libFolder;
     }
 
     @Override
@@ -55,8 +54,7 @@ public class SingleAppResourcePatternResolver extends PathMatchingResourcePatter
 
             Matcher matcher = JAR_NAME_PATTERN.matcher(url);
             if (matcher.find()) {
-                String jarName = matcher.group(1);
-                return dependencyJars.contains(jarName);
+                return url.contains(libFolder);
             }
             return true;
         } catch (IOException e) {

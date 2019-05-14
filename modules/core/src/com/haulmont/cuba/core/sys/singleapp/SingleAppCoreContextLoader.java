@@ -17,7 +17,6 @@
 
 package com.haulmont.cuba.core.sys.singleapp;
 
-import com.google.common.base.Splitter;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.AppContextLoader;
 import com.haulmont.cuba.core.sys.CubaCoreApplicationContext;
@@ -34,8 +33,6 @@ import javax.annotation.Nonnull;
 import javax.servlet.*;
 import java.io.IOException;
 import java.util.EnumSet;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * {@link AppContext} loader of the middleware application block packed in a WAR together with the web block.
@@ -43,18 +40,6 @@ import java.util.Set;
 public class SingleAppCoreContextLoader extends AppContextLoader {
 
     private final Logger log = LoggerFactory.getLogger(SingleAppCoreContextLoader.class);
-
-    private Set<String> dependencyJars;
-
-    /**
-     * Invoked reflectively by {@link SingleAppCoreServletListener}.
-     *
-     * @param jarNames JARs of the core block
-     */
-    @SuppressWarnings("unused")
-    public void setJarNames(String jarNames) {
-        dependencyJars = new HashSet<>(Splitter.on("\n").omitEmptyStrings().trimResults().splitToList(jarNames));
-    }
 
     /**
      * Here we create servlets and filters manually, to make sure the classes would be loaded using necessary classloader.
@@ -98,18 +83,12 @@ public class SingleAppCoreContextLoader extends AppContextLoader {
     protected ClassPathXmlApplicationContext createApplicationContext(String[] locations) {
         return new CubaCoreApplicationContext(locations) {
             /**
-             * Here we create resource resolver which scans only core jars (and avoid putting web beans to core context)
-             * JAR_DEPENDENCIES properties is filled by com.haulmont.cuba.core.sys.singleapp.SingleAppCoreServletListener
-             * during application initialization.
+             * Here we create resource resolver which scans only core jars which should be placed into /lib-core/ folder.
              */
             @Override
             @Nonnull
             protected ResourcePatternResolver getResourcePatternResolver() {
-                if (dependencyJars == null || dependencyJars.isEmpty()) {
-                    throw new RuntimeException("No JARs defined for the 'core' block. " +
-                            "Please check that core.dependencies file exists in WEB-INF directory.");
-                }
-                return new SingleAppResourcePatternResolver(this, dependencyJars);
+                return new SingleAppResourcePatternResolver(this, "/lib-core/");
             }
         };
     }
