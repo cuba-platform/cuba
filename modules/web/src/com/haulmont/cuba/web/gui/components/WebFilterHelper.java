@@ -29,7 +29,9 @@ import com.haulmont.cuba.gui.components.filter.condition.AbstractCondition;
 import com.haulmont.cuba.gui.components.filter.condition.GroupCondition;
 import com.haulmont.cuba.gui.components.mainwindow.FoldersPane;
 import com.haulmont.cuba.gui.presentations.Presentations;
+import com.haulmont.cuba.gui.screen.FrameOwner;
 import com.haulmont.cuba.gui.screen.Screen;
+import com.haulmont.cuba.gui.screen.ScreenFragment;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.app.folders.AppFolderEditWindow;
@@ -46,6 +48,8 @@ import com.vaadin.ui.components.grid.*;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.*;
+
+import static com.haulmont.cuba.gui.screen.UiControllerUtils.getHostScreen;
 
 @org.springframework.stereotype.Component(FilterHelper.NAME)
 public class WebFilterHelper implements FilterHelper {
@@ -90,6 +94,28 @@ public class WebFilterHelper implements FilterHelper {
     @Override
     public boolean isFolderActionsEnabled() {
         return configuration.getConfig(WebConfig.class).getFoldersPaneEnabled();
+    }
+
+    @Override
+    public boolean isFolderActionsAllowed(Frame frame) {
+        return isFolderActionsEnabled() && mainScreenHasFoldersPane(frame);
+    }
+
+    public boolean mainScreenHasFoldersPane(Frame currentFrame) {
+        RootWindow rootWindow = AppUI.getCurrent().getTopLevelWindow();
+        if (rootWindow != null) {
+            return rootWindow.getFrameOwner() instanceof Window.HasFoldersPane
+                    && ((Window.HasFoldersPane) rootWindow.getFrameOwner()).getFoldersPane() != null;
+        } else {
+            FrameOwner frameOwner = currentFrame.getFrameOwner();
+            if (frameOwner instanceof ScreenFragment) {
+                Screen rootScreen = getHostScreen((ScreenFragment) frameOwner);
+                return rootScreen instanceof Window.HasFoldersPane
+                        && ((Window.HasFoldersPane) rootScreen).getFoldersPane() != null;
+            }
+        }
+
+        return false;
     }
 
     @SuppressWarnings("unchecked")

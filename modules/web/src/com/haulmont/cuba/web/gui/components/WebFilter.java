@@ -401,6 +401,8 @@ public class WebFilter extends WebAbstractComponent<com.vaadin.ui.Component> imp
             ((BelongToFrame) layout).setFrame(frame);
         }
 
+        delegate.frameAssigned(frame);
+
         if (frame != null && frame.getId() == null) {
             LoggerFactory.getLogger(WebFilter.class).warn("Filter is embedded in a frame without ID");
         }
