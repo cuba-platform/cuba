@@ -73,6 +73,7 @@ class AllDataEventsTest extends Specification {
         then:
 
         int i = 0
+        listener.allEvents[i++].message == 'EntityPersistingEvent'
         listener.allEvents[i++].message == 'JPA PrePersist'
         listener.allEvents[i++].message == 'BeforeInsertEntityListener'
         listener.allEvents[i++].message == 'BeforeDetachEntityListener'
@@ -168,6 +169,7 @@ class AllDataEventsTest extends Specification {
 
         then:
 
+        listener.allEvents[i++].message == 'EntityPersistingEvent'
         listener.allEvents[i++].message == 'JPA PrePersist'
         listener.allEvents[i++].message == 'BeforeInsertEntityListener'
         listener.allEvents[i++].message == 'AfterInsertEntityListener'
