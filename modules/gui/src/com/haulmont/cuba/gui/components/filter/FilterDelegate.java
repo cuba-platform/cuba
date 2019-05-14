@@ -19,6 +19,7 @@ package com.haulmont.cuba.gui.components.filter;
 
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Filter;
+import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.security.entity.FilterEntity;
 import org.dom4j.Element;
@@ -167,4 +168,6 @@ public interface FilterDelegate {
 
     void setBorderVisible(boolean visible);
     boolean isBorderVisible();
+
+    void frameAssigned(Frame frame);
 }

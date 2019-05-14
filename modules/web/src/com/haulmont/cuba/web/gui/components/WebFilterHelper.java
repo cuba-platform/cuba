@@ -21,7 +21,9 @@ import com.haulmont.bali.datastruct.Node;
 import com.haulmont.cuba.core.entity.AbstractSearchFolder;
 import com.haulmont.cuba.core.entity.Folder;
 import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.Component.Container;
 import com.haulmont.cuba.gui.components.filter.ConditionsTree;
 import com.haulmont.cuba.gui.components.filter.FilterHelper;
 import com.haulmont.cuba.gui.components.filter.condition.AbstractCondition;
@@ -96,6 +98,33 @@ public class WebFilterHelper implements FilterHelper {
     @Override
     public boolean isFolderActionsEnabled() {
         return configuration.getConfig(WebConfig.class).getFoldersPaneEnabled();
+    }
+
+    @Override
+    public boolean isFolderActionsAllowed(Frame frame) {
+        return isFolderActionsEnabled() && mainScreenHasFoldersPane(frame);
+    }
+
+    public boolean mainScreenHasFoldersPane(Frame currentFrame) {
+        Window.TopLevelWindow rootWindow = AppUI.getCurrent().getTopLevelWindow();
+        if (rootWindow instanceof AbstractMainWindow) {
+            return ((Window.HasFoldersPane) rootWindow).getFoldersPane() != null;
+        } else {
+            com.haulmont.cuba.gui.components.Component component = ComponentsHelper.getFrameController(currentFrame);
+            if (component == null) {
+                return false;
+            }
+
+            while (component.getParent() != null) {
+                component = component.getParent();
+            }
+
+            if (!(component instanceof Container)) {
+                return false;
+            }
+
+            return ((Container) component).getComponent("foldersPane") != null;
+        }
     }
 
     @Override
@@ -241,8 +270,7 @@ public class WebFilterHelper implements FilterHelper {
 
     @Override
     public boolean isTableActionsEnabled() {
-        WebConfig config = configuration.getConfig(WebConfig.class);
-        return config.getFoldersPaneEnabled();
+        return configuration.getConfig(WebConfig.class).getFoldersPaneEnabled();
     }
 
     @Override
@@ -324,7 +352,7 @@ public class WebFilterHelper implements FilterHelper {
     }
 
     @Override
-    public com.haulmont.cuba.gui.components.Component.Container createSearchButtonGroupContainer() {
+    public Container createSearchButtonGroupContainer() {
         CssLayout layout = componentsFactory.createComponent(CssLayout.class);
         layout.addStyleName("v-component-group");
         return layout;

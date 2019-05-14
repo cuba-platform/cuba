@@ -163,4 +163,16 @@ public class DesktopFilterHelper implements FilterHelper {
     public Component.Container createSearchButtonGroupContainer() {
         return componentsFactory.createComponent(HBoxLayout.class);
     }
+
+    // just stub
+    @Override
+    public boolean isFolderActionsAllowed(Frame frame) {
+        return false;
+    }
+
+    // just stub
+    @Override
+    public boolean mainScreenHasFoldersPane(Frame currentFrame) {
+        return false;
+    }
 }

@@ -396,6 +396,8 @@ public class WebFilter extends WebAbstractComponent<CubaCssActionsLayout> implem
     public void setFrame(Frame frame) {
         super.setFrame(frame);
 
+        delegate.frameAssigned(frame);
+
         if (frame != null && frame.getId() == null) {
             LoggerFactory.getLogger(WebFilter.class).warn("Filter is embedded in a frame without ID");
         }
