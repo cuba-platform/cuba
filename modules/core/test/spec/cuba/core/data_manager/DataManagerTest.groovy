@@ -16,22 +16,19 @@
 
 package spec.cuba.core.data_manager
 
+
 import com.haulmont.cuba.core.entity.contracts.Id
-import com.haulmont.cuba.core.global.AppBeans
-import com.haulmont.cuba.core.global.DataManager
-import com.haulmont.cuba.core.global.EntityAccessException
-import com.haulmont.cuba.core.global.EntityStates
-import com.haulmont.cuba.core.global.LoadContext
-import com.haulmont.cuba.core.global.MetadataTools
-import com.haulmont.cuba.core.global.ValueLoadContext
-import com.haulmont.cuba.core.global.View
+import com.haulmont.cuba.core.global.*
 import com.haulmont.cuba.core.sys.AppContext
 import com.haulmont.cuba.security.entity.Group
 import com.haulmont.cuba.security.entity.User
+import com.haulmont.cuba.testmodel.primary_keys.CompositeKeyEntity
+import com.haulmont.cuba.testmodel.primary_keys.EntityKey
 import com.haulmont.cuba.testmodel.sales_1.OrderLine
 import com.haulmont.cuba.testmodel.sales_1.Product
 import com.haulmont.cuba.testsupport.TestContainer
 import com.haulmont.cuba.testsupport.TestSupport
+import groovy.sql.Sql
 import org.junit.ClassRule
 import spock.lang.Shared
 import spock.lang.Specification
@@ -328,5 +325,29 @@ class DataManagerTest extends Specification {
         cleanup:
 
         cont.deleteRecord(product1)
+    }
+
+    def "load by collection of composite ids"() {
+
+        def id1 = new EntityKey(tenant: 1, entityId: 1)
+        def id2 = new EntityKey(tenant: 1, entityId: 2)
+        def entity1 = new CompositeKeyEntity(id: id1, name: 'e1')
+        def entity2 = new CompositeKeyEntity(id: id2, name: 'e2')
+        dataManager.commit(entity1, entity2)
+
+        when:
+
+        def loadContext = LoadContext.create(CompositeKeyEntity).setIds([id1, id2])
+        def list = dataManager.loadList(loadContext)
+
+        then:
+
+        list == [entity1, entity2]
+
+        cleanup:
+
+        Sql sql = new Sql(cont.persistence().getDataSource())
+        sql.execute("delete from TEST_COMPOSITE_KEY where TENANT = $id1.tenant and ENTITY_ID = $id1.entityId")
+        sql.execute("delete from TEST_COMPOSITE_KEY where TENANT = $id2.tenant and ENTITY_ID = $id2.entityId")
     }
 }

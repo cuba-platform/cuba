@@ -100,7 +100,7 @@ public class QueryResultsManager implements QueryResultsManagerAPI {
             RdbmsQueryBuilder queryBuilder = AppBeans.get(RdbmsQueryBuilder.NAME);
             queryBuilder.init(queryString, contextQuery.getCondition(), contextQuery.getSort(),
                     contextQuery.getParameters(), contextQuery.getNoConversionParams(),
-                    null, entityName);
+                    null, null, entityName);
             if (prevQueries.size() > 1) {
                 queryBuilder.restrictByPreviousResults(userSessionSource.getUserSession().getId(), loadContext.getQueryKey());
             }

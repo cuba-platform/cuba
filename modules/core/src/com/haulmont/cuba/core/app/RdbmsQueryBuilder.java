@@ -69,10 +69,15 @@ public class RdbmsQueryBuilder {
 
     public void init(@Nullable String queryString, Condition condition, Sort sort,
                      Map<String, Object> queryParams, String[] noConversionParams,
-                     @Nullable Object id, String entityName) {
+                     @Nullable Object id, @Nullable List<?> ids, String entityName) {
         this.entityName = entityName;
         String qs;
-        if (queryString == null && id == null) {
+        if (ids != null && !ids.isEmpty()) {
+            qs = "select e from " + entityName + " e where e." + getPkName(entityName) + " in :entityIdList";
+            this.queryParams = new HashMap<>();
+            this.queryParams.put("entityIdList", ids);
+
+        } else if (queryString == null && id == null) {
             qs = "select e from " + entityName + " e";
             this.queryParams = Collections.emptyMap();
 
@@ -82,11 +87,7 @@ public class RdbmsQueryBuilder {
             this.noConversionParams = noConversionParams;
 
         } else {
-            MetaClass metaClass = metadata.getClassNN(entityName);
-            String pkName = metadata.getTools().getPrimaryKeyName(metaClass);
-            if (pkName == null)
-                throw new IllegalStateException(String.format("Entity %s has no primary key", entityName));
-            qs = "select e from " + entityName + " e where e." + pkName + " = :entityId";
+            qs = "select e from " + entityName + " e where e." + getPkName(entityName) + " = :entityId";
             this.queryParams = new HashMap<>();
             this.queryParams.put("entityId", id);
         }
@@ -102,6 +103,14 @@ public class RdbmsQueryBuilder {
             qs = sortJpqlGenerator.processQuery(entityName, qs, sort);
         }
         this.queryString = qs;
+    }
+
+    protected String getPkName(String entityName) {
+        MetaClass metaClass = metadata.getClassNN(entityName);
+        String pkName = metadata.getTools().getPrimaryKeyName(metaClass);
+        if (pkName == null)
+            throw new IllegalStateException(String.format("Entity %s has no primary key", entityName));
+        return pkName;
     }
 
     public void setSingleResult(boolean singleResult) {

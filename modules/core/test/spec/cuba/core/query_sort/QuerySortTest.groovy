@@ -24,7 +24,7 @@ class QuerySortTest extends Specification {
 
         queryBuilder = AppBeans.get(RdbmsQueryBuilder)
         queryBuilder.init('select u from sec$User u', null,
-                Sort.by('name'), [:], null, null, 'sec$User')
+                Sort.by('name'), [:], null, null, null, 'sec$User')
 
         then:
 
@@ -34,7 +34,7 @@ class QuerySortTest extends Specification {
 
         queryBuilder = AppBeans.get(RdbmsQueryBuilder)
         queryBuilder.init('select u from sec$User u', null,
-                Sort.by('login', 'name'), [:], null, null, 'sec$User')
+                Sort.by('login', 'name'), [:], null, null, null, 'sec$User')
 
         then:
 
@@ -44,7 +44,7 @@ class QuerySortTest extends Specification {
 
         queryBuilder = AppBeans.get(RdbmsQueryBuilder)
         queryBuilder.init('select u from sec$User u', null,
-                Sort.by(Sort.Direction.DESC, 'login', 'name'), [:], null, null, 'sec$User')
+                Sort.by(Sort.Direction.DESC, 'login', 'name'), [:], null, null, null, 'sec$User')
 
         then:
 
@@ -54,7 +54,7 @@ class QuerySortTest extends Specification {
 
         queryBuilder = AppBeans.get(RdbmsQueryBuilder)
         queryBuilder.init('select u from sec$User u', null,
-                Sort.by('group.name'), [:], null, null, 'sec$User')
+                Sort.by('group.name'), [:], null, null, null, 'sec$User')
 
         then:
 
@@ -64,7 +64,7 @@ class QuerySortTest extends Specification {
 
         queryBuilder = AppBeans.get(RdbmsQueryBuilder)
         queryBuilder.init('select u from sec$User u', null,
-                Sort.by(Sort.Direction.DESC, 'group.name'), [:], null, null, 'sec$User')
+                Sort.by(Sort.Direction.DESC, 'group.name'), [:], null, null, null, 'sec$User')
 
         then:
 
@@ -85,7 +85,7 @@ class QuerySortTest extends Specification {
 
         queryBuilder = AppBeans.get(RdbmsQueryBuilder)
         queryBuilder.init('select e from test$Order e', null,
-                Sort.by('number'), [:], null, null, 'test$Order')
+                Sort.by('number'), [:], null, null, null, 'test$Order')
 
         then:
 
@@ -103,7 +103,7 @@ class QuerySortTest extends Specification {
 
         queryBuilder = AppBeans.get(RdbmsQueryBuilder)
         queryBuilder.init('select u from sec$User u', null,
-                Sort.by(Sort.Order.asc('login'), Sort.Order.desc('name')), [:], null, null, 'sec$User')
+                Sort.by(Sort.Order.asc('login'), Sort.Order.desc('name')), [:], null, null, null, 'sec$User')
 
         then:
 
@@ -118,7 +118,7 @@ class QuerySortTest extends Specification {
 
         queryBuilder = AppBeans.get(RdbmsQueryBuilder)
         queryBuilder.init('select e from sys$EntitySnapshot e', null,
-                Sort.by('changeDate'), [:], null, null, 'sys$EntitySnapshot')
+                Sort.by('changeDate'), [:], null, null, null, 'sys$EntitySnapshot')
 
         then:
 
@@ -128,7 +128,7 @@ class QuerySortTest extends Specification {
 
         queryBuilder = AppBeans.get(RdbmsQueryBuilder)
         queryBuilder.init('select e from sys$EntitySnapshot e', null,
-                Sort.by('createTs', 'changeDate'), [:], null, null, 'sys$EntitySnapshot')
+                Sort.by('createTs', 'changeDate'), [:], null, null, null, 'sys$EntitySnapshot')
 
         then:
 
@@ -138,7 +138,7 @@ class QuerySortTest extends Specification {
 
         queryBuilder = AppBeans.get(RdbmsQueryBuilder)
         queryBuilder.init('select e from sys$EntitySnapshot e', null,
-                Sort.by(Sort.Direction.DESC, 'changeDate'), [:], null, null, 'sys$EntitySnapshot')
+                Sort.by(Sort.Direction.DESC, 'changeDate'), [:], null, null, null, 'sys$EntitySnapshot')
 
         then:
 
@@ -148,7 +148,7 @@ class QuerySortTest extends Specification {
 
         queryBuilder = AppBeans.get(RdbmsQueryBuilder)
         queryBuilder.init('select e from sys$EntitySnapshot e', null,
-                Sort.by('label'), [:], null, null, 'sys$EntitySnapshot')
+                Sort.by('label'), [:], null, null, null, 'sys$EntitySnapshot')
 
         then:
 
@@ -158,7 +158,7 @@ class QuerySortTest extends Specification {
 
         queryBuilder = AppBeans.get(RdbmsQueryBuilder)
         queryBuilder.init('select e from sys$EntitySnapshot e', null,
-                Sort.by(Sort.Direction.DESC, 'label'), [:], null, null, 'sys$EntitySnapshot')
+                Sort.by(Sort.Direction.DESC, 'label'), [:], null, null, null, 'sys$EntitySnapshot')
 
         then:
 

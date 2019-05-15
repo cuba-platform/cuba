@@ -194,6 +194,7 @@ public class LoadContext<E extends Entity> implements DataLoadContext, Serializa
      * @return this instance for chaining
      */
     public LoadContext<E> setIds(Collection<?> ids) {
+        this.idList.clear();
         this.idList.addAll(ids);
         return this;
     }
@@ -320,6 +321,7 @@ public class LoadContext<E extends Entity> implements DataLoadContext, Serializa
         ctx.setQuery(query != null ? query.copy() : null);
         ctx.view = view;
         ctx.id = id;
+        ctx.idList.addAll(idList);
         ctx.softDeletion = softDeletion;
         ctx.prevQueries.addAll(prevQueries.stream().map(Query::copy).collect(Collectors.toList()));
         ctx.queryKey = queryKey;

@@ -217,29 +217,19 @@ public class RdbmsStore implements DataStore {
                 }
             }
             View view = createRestrictedView(context);
-            if (context.getIds().isEmpty()) {
+
+            List<E> entities;
+            if (!context.getIds().isEmpty() && entityHasEmbeddedId(metaClass)) {
+                entities = loadBySeparateQueries(context, em, view);
+            } else {
                 Query query = createQuery(em, context, false);
                 query.setView(view);
-
-                resultList = getResultList(context, query, ensureDistinct);
+                entities = getResultList(context, query, ensureDistinct);
+            }
+            if (context.getIds().isEmpty()) {
+                resultList = entities;
             } else {
-                resultList = new ArrayList<>(context.getIds().size());
-                Object savedId = context.getId();
-                try {
-                    for (Object id : context.getIds()) {
-                        context.setId(id);
-                        Query query = createQuery(em, context, true);
-                        query.setView(view);
-                        List<E> list = executeQuery(query, true);
-                        if (list.isEmpty()) {
-                            throw new EntityAccessException(metaClass, id);
-                        } else {
-                            resultList.add(list.get(0));
-                        }
-                    }
-                } finally {
-                    context.setId(savedId);
-                }
+                resultList = checkAndReorderLoadedEntities(context.getIds(), entities, metaClass);
             }
 
             // Fetch dynamic attributes
@@ -273,6 +263,38 @@ public class RdbmsStore implements DataStore {
         }
 
         return resultList;
+    }
+
+    protected boolean entityHasEmbeddedId(MetaClass metaClass) {
+        MetaProperty pkProperty = metadataTools.getPrimaryKeyProperty(metaClass);
+        return pkProperty == null || pkProperty.getRange().isClass();
+    }
+
+    protected  <E extends Entity> List<E> loadBySeparateQueries(LoadContext<E> context, EntityManager em, View view) {
+        LoadContext<?> contextCopy = context.copy();
+        contextCopy.setIds(Collections.emptyList());
+
+        List<E> entities = new ArrayList<>(context.getIds().size());
+        for (Object id : context.getIds()) {
+            contextCopy.setId(id);
+            Query query = createQuery(em, contextCopy, true);
+            query.setView(view);
+            List<E> list = executeQuery(query, true);
+            entities.addAll(list);
+        }
+        return entities;
+    }
+
+    protected <E extends Entity> List<E> checkAndReorderLoadedEntities(List<?> ids, List<E> entities, MetaClass metaClass) {
+        List<E> result = new ArrayList<>(ids.size());
+        for (Object id : ids) {
+            E entity = entities.stream()
+                    .filter(e -> e.getId().equals(id))
+                    .findAny()
+                    .orElseThrow(() -> new EntityAccessException(metaClass, id));
+            result.add(entity);
+        }
+        return result;
     }
 
     @Override
@@ -553,7 +575,7 @@ public class RdbmsStore implements DataStore {
             RdbmsQueryBuilder queryBuilder = AppBeans.get(RdbmsQueryBuilder.NAME);
             queryBuilder.init(contextQuery.getQueryString(), contextQuery.getCondition(), contextQuery.getSort(),
                     contextQuery.getParameters(), contextQuery.getNoConversionParams(),
-                    null, metadata.getClassNN(KeyValueEntity.class).getName());
+                    null, null, metadata.getClassNN(KeyValueEntity.class).getName());
             Query query = queryBuilder.getQuery(em);
 
             if (contextQuery.getFirstResult() != 0)
@@ -636,7 +658,9 @@ public class RdbmsStore implements DataStore {
                 contextQuery == null ? null : contextQuery.getSort(),
                 contextQuery == null ? null : contextQuery.getParameters(),
                 contextQuery == null ? null : contextQuery.getNoConversionParams(),
-                context.getId(), context.getMetaClass()
+                context.getId(),
+                context.getIds(),
+                context.getMetaClass()
         );
 
         queryBuilder.setSingleResult(singleResult);
