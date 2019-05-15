@@ -183,7 +183,7 @@ public class VLayoutDragDropMouseHandler implements MouseDownHandler,
         // Stop event propagation and prevent default behaviour if
         // - target is *not* a VTabsheet.TabCaption or
         // - drag mode is caption mode and widget is caption
-        boolean isTabCaption = targetParent instanceof VTabsheet.TabCaption;
+        boolean isTabCaption = WidgetUtil.findWidget(target.getElement(), TabCaption.class) != null;
         boolean isCaption = VDragDropUtil.isCaptionOrCaptionless(targetParent);
 
         if (dragMode == LayoutDragMode.CLONE && isTabCaption == false) {
