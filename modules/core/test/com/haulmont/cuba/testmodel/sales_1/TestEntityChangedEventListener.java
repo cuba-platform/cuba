@@ -21,6 +21,7 @@ import com.haulmont.bali.db.QueryRunner;
 import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.app.events.EntityChangedEvent;
 import com.haulmont.cuba.core.Persistence;
+import com.haulmont.cuba.core.app.events.EntityPersistingEvent;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.contracts.Id;
 import com.haulmont.cuba.core.listener.*;
@@ -88,6 +89,11 @@ public class TestEntityChangedEventListener implements
     public void clear() {
         allEvents.clear();
         entityChangedEvents.clear();
+    }
+
+    @EventListener
+    void beforePersist(EntityPersistingEvent<Order> event) {
+        allEvents.add(new EventInfo("EntityPersistingEvent", event));
     }
 
     @EventListener

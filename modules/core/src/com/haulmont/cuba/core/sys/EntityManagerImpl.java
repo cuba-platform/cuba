@@ -27,6 +27,7 @@ import com.haulmont.cuba.core.entity.*;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.listener.EntityListenerManager;
 import com.haulmont.cuba.core.sys.listener.EntityListenerType;
+import com.haulmont.cuba.core.sys.persistence.EntityPersistingEventManager;
 import com.haulmont.cuba.core.sys.persistence.PersistenceImplSupport;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
@@ -57,6 +58,10 @@ public class EntityManagerImpl implements EntityManager {
     protected Metadata metadata;
     @Inject
     protected EntityListenerManager entityListenerMgr;
+    @Inject
+    protected EntityPersistingEventManager entityPersistingEventMgr;
+    @Inject
+    protected EntityStates entityStates;
     @Inject
     protected PersistenceImplSupport support;
     @Inject
@@ -91,24 +96,27 @@ public class EntityManagerImpl implements EntityManager {
 
     @Override
     public void persist(Entity entity) {
-        delegate.persist(entity);
-        support.registerInstance(entity, this);
+        entityPersistingEventMgr.publishEvent(entity);
+        internalPersist(entity);
     }
 
     @Override
     public <T extends Entity> T merge(T entity) {
         log.debug("merge {}", entity);
 
-        if (PersistenceHelper.isManaged(entity))
+        if (entityStates.isManaged(entity))
             return entity;
 
         String storeName = support.getStorageName(delegate.unwrap(UnitOfWork.class));
         entityListenerMgr.fireListener(entity, EntityListenerType.BEFORE_ATTACH, storeName);
 
-        if ((PersistenceHelper.isNew(entity) || !PersistenceHelper.isDetached(entity)) && entity.getId() != null) {
+        if ((entityStates.isNew(entity) || !entityStates.isDetached(entity)) && entity.getId() != null) {
             // if a new instance is passed to merge(), we suppose it is persistent but "not detached"
             Entity destEntity = findOrCreate(entity.getClass(), entity.getId());
             deepCopyIgnoringNulls(entity, destEntity, Sets.newIdentityHashSet());
+            if (entityStates.isNew(destEntity)) {
+                entityPersistingEventMgr.publishEvent(entity);
+            }
             //noinspection unchecked
             return (T) destEntity;
         }
@@ -142,7 +150,7 @@ public class EntityManagerImpl implements EntityManager {
     public void remove(Entity entity) {
         log.debug("remove {}", entity);
 
-        if (PersistenceHelper.isDetached(entity)) {
+        if (entityStates.isDetached(entity)) {
             entity = internalMerge(entity);
         }
         if (entity instanceof SoftDelete && softDeletion) {
@@ -335,7 +343,7 @@ public class EntityManagerImpl implements EntityManager {
         for (MetaProperty srcProperty : source.getMetaClass().getProperties()) {
             String name = srcProperty.getName();
 
-            if (!PersistenceHelper.isLoaded(source, name)) {
+            if (!entityStates.isLoaded(source, name)) {
                 continue;
             }
 
@@ -407,6 +415,7 @@ public class EntityManagerImpl implements EntityManager {
         }
     }
 
+    @SuppressWarnings("unchecked")
     protected <T extends Entity> T findOrCreate(Class<T> entityClass, Object id) {
         Entity reloadedRef = find(entityClass, id);
         if (reloadedRef == null) {
@@ -414,7 +423,7 @@ public class EntityManagerImpl implements EntityManager {
             if (reloadedRef instanceof BaseGenericIdEntity) {
                 ((BaseGenericIdEntity) reloadedRef).setId(id);
             }
-            persist(reloadedRef);
+            internalPersist(reloadedRef);
         }
         //noinspection unchecked
         return (T) reloadedRef;
@@ -461,6 +470,11 @@ public class EntityManagerImpl implements EntityManager {
             CubaUtil.setSoftDeletion(softDeletion);
             CubaUtil.setOriginalSoftDeletion(softDeletion);
         }
+    }
+
+    protected void internalPersist(Entity entity) {
+        delegate.persist(entity);
+        support.registerInstance(entity, this);
     }
 
     protected Object getRealId(Object id) {
