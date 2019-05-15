@@ -363,8 +363,8 @@ public interface DataContext {
         /**
          * Returns the collection of committed entities.
          */
-        public Collection<Entity> getCommittedInstances() {
-            return committedInstances;
+        public EntitySet getCommittedInstances() {
+            return EntitySet.of(committedInstances);
         }
     }
 
