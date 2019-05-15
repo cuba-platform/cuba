@@ -548,24 +548,26 @@ public class EntityInspectorBrowse extends AbstractLookup {
 
         @Override
         public void actionPerform(Component component) {
-            Set<Entity> selected = entitiesTable.getSelected();
+            Collection<Entity> selected = entitiesTable.getSelected();
+            if (selected.isEmpty()
+                    && entitiesTable.getItems() != null) {
+                selected = entitiesTable.getItems().getItems();
+            }
 
-            if (!selected.isEmpty()) {
-                try {
-                    if (exportFormat == ZIP) {
-                        byte[] data = entityImportExportService.exportEntitiesToZIP(selected);
-                        String resourceName = selectedMeta.getJavaClass().getSimpleName() + ".zip";
-                        exportDisplay.show(new ByteArrayDataProvider(data), resourceName, ZIP);
-                    } else if (exportFormat == JSON) {
-                        byte[] data = entityImportExportService.exportEntitiesToJSON(selected)
-                                .getBytes(StandardCharsets.UTF_8);
-                        String resourceName = selectedMeta.getJavaClass().getSimpleName() + ".json";
-                        exportDisplay.show(new ByteArrayDataProvider(data), resourceName, JSON);
-                    }
-                } catch (Exception e) {
-                    showNotification(getMessage("exportFailed"), e.getMessage(), NotificationType.ERROR);
-                    log.error("Entities export failed", e);
+            try {
+                if (exportFormat == ZIP) {
+                    byte[] data = entityImportExportService.exportEntitiesToZIP(selected);
+                    String resourceName = selectedMeta.getJavaClass().getSimpleName() + ".zip";
+                    exportDisplay.show(new ByteArrayDataProvider(data), resourceName, ZIP);
+                } else if (exportFormat == JSON) {
+                    byte[] data = entityImportExportService.exportEntitiesToJSON(selected)
+                            .getBytes(StandardCharsets.UTF_8);
+                    String resourceName = selectedMeta.getJavaClass().getSimpleName() + ".json";
+                    exportDisplay.show(new ByteArrayDataProvider(data), resourceName, JSON);
                 }
+            } catch (Exception e) {
+                showNotification(getMessage("exportFailed"), e.getMessage(), NotificationType.ERROR);
+                log.error("Entities export failed", e);
             }
         }
 

@@ -562,22 +562,27 @@ public class GroupBrowser extends AbstractWindow {
 
     protected void export(ExportFormat exportFormat) {
         Set<Group> selected = groupsTree.getSelected();
+        if (selected.isEmpty()
+                && groupsTree.getItems() != null) {
+            selected = groupsTree.getItems()
+                    .getItems()
+                    .collect(Collectors.toSet());
+        }
+
         View view = viewRepository.getView(Group.class, "group.export");
 
-        if (!selected.isEmpty()) {
-            try {
-                if (exportFormat == ExportFormat.ZIP) {
-                    byte[] data = entityImportExportService.exportEntitiesToZIP(selected, view);
-                    exportDisplay.show(new ByteArrayDataProvider(data), "Groups", ExportFormat.ZIP);
-                } else if (exportFormat == ExportFormat.JSON) {
-                    byte[] data = entityImportExportService.exportEntitiesToJSON(selected, view)
-                            .getBytes(StandardCharsets.UTF_8);
-                    exportDisplay.show(new ByteArrayDataProvider(data), "Groups", ExportFormat.JSON);
-                }
-            } catch (Exception e) {
-                showNotification(getMessage("exportFailed"), e.getMessage(), NotificationType.ERROR);
-                log.error("Groups export failed", e);
+        try {
+            if (exportFormat == ExportFormat.ZIP) {
+                byte[] data = entityImportExportService.exportEntitiesToZIP(selected, view);
+                exportDisplay.show(new ByteArrayDataProvider(data), "Groups", ExportFormat.ZIP);
+            } else if (exportFormat == ExportFormat.JSON) {
+                byte[] data = entityImportExportService.exportEntitiesToJSON(selected, view)
+                        .getBytes(StandardCharsets.UTF_8);
+                exportDisplay.show(new ByteArrayDataProvider(data), "Groups", ExportFormat.JSON);
             }
+        } catch (Exception e) {
+            showNotification(getMessage("exportFailed"), e.getMessage(), NotificationType.ERROR);
+            log.error("Groups export failed", e);
         }
     }
 }

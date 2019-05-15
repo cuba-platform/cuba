@@ -236,25 +236,29 @@ public class RoleBrowser extends AbstractLookup {
     }
 
     protected void export(ExportFormat exportFormat) {
-        Set<Role> selected = rolesTable.getSelected();
+        Collection<Role> selected = rolesTable.getSelected();
+        if (selected.isEmpty()
+                && rolesTable.getItems() != null) {
+            selected = rolesTable.getItems().getItems();
+        }
+
         View view = viewRepository.getView(Role.class, "role.export");
         if (view == null) {
             throw new DevelopmentException("View 'role.export' for sec$Role was not found");
         }
-        if (!selected.isEmpty()) {
-            try {
-                if (exportFormat == ExportFormat.ZIP) {
-                    byte[] data = entityImportExportService.exportEntitiesToZIP(selected, view);
-                    exportDisplay.show(new ByteArrayDataProvider(data), "Roles", ExportFormat.ZIP);
-                } else if (exportFormat == ExportFormat.JSON) {
-                    byte[] data = entityImportExportService.exportEntitiesToJSON(selected, view)
-                            .getBytes(StandardCharsets.UTF_8);
-                    exportDisplay.show(new ByteArrayDataProvider(data), "Roles", ExportFormat.JSON);
-                }
-            } catch (Exception e) {
-                showNotification(getMessage("exportFailed"), e.getMessage(), NotificationType.ERROR);
-                log.error("Roles export failed", e);
+
+        try {
+            if (exportFormat == ExportFormat.ZIP) {
+                byte[] data = entityImportExportService.exportEntitiesToZIP(selected, view);
+                exportDisplay.show(new ByteArrayDataProvider(data), "Roles", ExportFormat.ZIP);
+            } else if (exportFormat == ExportFormat.JSON) {
+                byte[] data = entityImportExportService.exportEntitiesToJSON(selected, view)
+                        .getBytes(StandardCharsets.UTF_8);
+                exportDisplay.show(new ByteArrayDataProvider(data), "Roles", ExportFormat.JSON);
             }
+        } catch (Exception e) {
+            showNotification(getMessage("exportFailed"), e.getMessage(), NotificationType.ERROR);
+            log.error("Roles export failed", e);
         }
     }
 }
