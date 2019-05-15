@@ -19,6 +19,7 @@ package spec.cuba.core.data_manager
 import com.haulmont.cuba.core.entity.contracts.Id
 import com.haulmont.cuba.core.global.AppBeans
 import com.haulmont.cuba.core.global.DataManager
+import com.haulmont.cuba.core.global.EntityAccessException
 import com.haulmont.cuba.core.global.EntityStates
 import com.haulmont.cuba.core.global.LoadContext
 import com.haulmont.cuba.core.global.MetadataTools
@@ -288,5 +289,44 @@ class DataManagerTest extends Specification {
         cleanup:
 
         cont.deleteRecord(line, product)
+    }
+
+    def "load by collection of ids"() {
+
+        def product1 = new Product(name: 'p1', quantity: 100)
+        def product2 = new Product(name: 'p2', quantity: 200)
+        dataManager.commit(product1, product2)
+
+        when:
+
+        def loadContext = LoadContext.create(Product).setIds([product1.id, product2.id])
+        def list = dataManager.loadList(loadContext)
+
+        then:
+
+        list == [product1, product2]
+
+        cleanup:
+
+        cont.deleteRecord(product1, product2)
+    }
+
+    def "load by collection of ids throws exception if some instance not found"() {
+
+        def product1 = new Product(name: 'p1', quantity: 100)
+        dataManager.commit(product1)
+
+        when:
+
+        def loadContext = LoadContext.create(Product).setIds([product1.id, UUID.randomUUID()])
+        dataManager.loadList(loadContext)
+
+        then:
+
+        thrown(EntityAccessException)
+
+        cleanup:
+
+        cont.deleteRecord(product1)
     }
 }

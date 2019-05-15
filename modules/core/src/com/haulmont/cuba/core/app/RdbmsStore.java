@@ -217,10 +217,30 @@ public class RdbmsStore implements DataStore {
                 }
             }
             View view = createRestrictedView(context);
-            Query query = createQuery(em, context, false);
-            query.setView(view);
+            if (context.getIds().isEmpty()) {
+                Query query = createQuery(em, context, false);
+                query.setView(view);
 
-            resultList = getResultList(context, query, ensureDistinct);
+                resultList = getResultList(context, query, ensureDistinct);
+            } else {
+                resultList = new ArrayList<>(context.getIds().size());
+                Object savedId = context.getId();
+                try {
+                    for (Object id : context.getIds()) {
+                        context.setId(id);
+                        Query query = createQuery(em, context, true);
+                        query.setView(view);
+                        List<E> list = executeQuery(query, true);
+                        if (list.isEmpty()) {
+                            throw new EntityAccessException(metaClass, id);
+                        } else {
+                            resultList.add(list.get(0));
+                        }
+                    }
+                } finally {
+                    context.setId(savedId);
+                }
+            }
 
             // Fetch dynamic attributes
             if (!resultList.isEmpty() && resultList.get(0) instanceof BaseGenericIdEntity && context.isLoadDynamicAttributes()) {

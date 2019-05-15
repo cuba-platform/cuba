@@ -39,8 +39,8 @@ class FluentLoaderTest extends Specification {
     private DataManager dataManager
     private ViewRepository viewRepository
     private View baseView
-    private customer
-    private UUID customerId
+    private customer, customer2
+    private UUID customerId, customer2Id
 
     void setup() {
         dataManager = AppBeans.get(DataManager)
@@ -50,11 +50,16 @@ class FluentLoaderTest extends Specification {
         customer = cont.metadata().create(Customer)
         customer.name = 'Smith'
         customerId = customer.id
-        dataManager.commit(customer)
+
+        customer2 = cont.metadata().create(Customer)
+        customer2.name = 'Johns'
+        customer2Id = customer2.id
+
+        dataManager.commit(customer, customer2)
     }
 
     void cleanup() {
-        cont.deleteRecord(customer)
+        cont.deleteRecord(customer, customer2)
     }
 
     def "usage examples"() {
@@ -64,8 +69,8 @@ class FluentLoaderTest extends Specification {
         // load all
 
         dataManager.load(Customer).list() instanceof List
-        dataManager.load(Customer).one() == customer
-        dataManager.load(Customer).optional() == Optional.of(customer)
+        dataManager.load(Customer).one() instanceof Customer
+        dataManager.load(Customer).optional() instanceof Optional
 
         dataManager.load(Customer).view('_base').list() instanceof List
         dataManager.load(Customer).view(baseView).list() instanceof List
@@ -81,8 +86,8 @@ class FluentLoaderTest extends Specification {
         // load by query
 
         dataManager.load(Customer).query('select c from test$Customer c').list() instanceof List
-        dataManager.load(Customer).query('select c from test$Customer c').one() == customer
-        dataManager.load(Customer).query('select c from test$Customer c').optional() == Optional.of(customer)
+        dataManager.load(Customer).query('select c from test$Customer c').one() instanceof Customer
+        dataManager.load(Customer).query('select c from test$Customer c').optional() instanceof Optional
 
         dataManager.load(Customer).query('select c from test$Customer c where c.name = :n')
                 .parameter('n', 'Smith')
@@ -102,6 +107,14 @@ class FluentLoaderTest extends Specification {
                 .firstResult(10)
                 .maxResults(100)
                 .list() instanceof List
+
+        // load by collection of ids
+
+        dataManager.load(Customer).ids(customerId, customer2Id).list()
+                .size() == 2
+
+        dataManager.load(Customer).ids([customerId, customer2Id]).list()
+                .size() == 2
     }
 
     def "test LoadContext when loading all"() {
@@ -269,4 +282,48 @@ class FluentLoaderTest extends Specification {
         loadContext.query.firstResult == 10
         loadContext.query.maxResults == 100
     }
+
+    def "test LoadContext when loading by collection of ids"() {
+        def loader
+        LoadContext loadContext
+
+        when:
+
+        loader = dataManager.load(Customer).ids(customer.id, customer2.id)
+        loadContext = FluentLoaderTestAccess.createLoadContext(loader)
+
+        then:
+
+        loadContext.id == null
+        loadContext.ids == [customerId, customer2Id]
+        loadContext.softDeletion
+
+        when:
+
+        loader = dataManager.load(Customer).ids(customer.id, customer2.id).softDeletion(false)
+        loadContext = FluentLoaderTestAccess.createLoadContext(loader)
+
+        then:
+
+        !loadContext.softDeletion
+
+        when:
+
+        loader = dataManager.load(Customer).ids(customer.id, customer2.id).view('_base')
+        loadContext = FluentLoaderTestAccess.createLoadContext(loader)
+
+        then:
+
+        loadContext.view == baseView
+
+        when:
+
+        loader = dataManager.load(Customer).ids(customer.id, customer2.id).view(baseView)
+        loadContext = FluentLoaderTestAccess.createLoadContext(loader)
+
+        then:
+
+        loadContext.view == baseView
+    }
+
 }

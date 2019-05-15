@@ -146,6 +146,21 @@ public class FluentLoader<E extends Entity<K>, K> {
     }
 
     /**
+     * Sets array of entity identifiers.
+     */
+    @SafeVarargs
+    public final ByIds<E, K> ids(K... ids) {
+        return new ByIds<>(this, Arrays.asList(ids));
+    }
+
+    /**
+     * Sets collection of entity identifiers.
+     */
+    public ByIds<E, K> ids(Collection<K> ids) {
+        return new ByIds<>(this, ids);
+    }
+
+    /**
      * Sets the query text.
      */
     public ByQuery<E, K> query(String queryString) {
@@ -218,6 +233,63 @@ public class FluentLoader<E extends Entity<K>, K> {
          * Sets loading of dynamic attributes. It is false by default.
          */
         public ById<E, K> dynamicAttributes(boolean dynamicAttributes) {
+            loader.dynamicAttributes = dynamicAttributes;
+            return this;
+        }
+    }
+
+    public static class ByIds<E extends Entity<K>, K> {
+
+        private FluentLoader<E, K> loader;
+        private Collection<K> ids;
+
+        ByIds(FluentLoader<E, K> loader, Collection<K> ids) {
+            this.loader = loader;
+            this.ids = ids;
+        }
+
+        LoadContext<E> createLoadContext() {
+            LoadContext<E> loadContext = LoadContext.create(loader.entityClass).setIds(ids);
+            loader.initCommonLoadContextParameters(loadContext);
+            return loadContext;
+        }
+
+        /**
+         * Loads a list of entities.
+         */
+        public List<E> list() {
+            LoadContext<E> loadContext = createLoadContext();
+            return loader.dataManager.loadList(loadContext);
+        }
+
+        /**
+         * Sets a view.
+         */
+        public ByIds<E, K> view(View view) {
+            loader.view = view;
+            return this;
+        }
+
+        /**
+         * Sets a view by name.
+         */
+        public ByIds<E, K> view(String viewName) {
+            loader.viewName = viewName;
+            return this;
+        }
+
+        /**
+         * Sets soft deletion. The soft deletion is true by default.
+         */
+        public ByIds<E, K> softDeletion(boolean softDeletion) {
+            loader.softDeletion = softDeletion;
+            return this;
+        }
+
+        /**
+         * Sets loading of dynamic attributes. It is false by default.
+         */
+        public ByIds<E, K> dynamicAttributes(boolean dynamicAttributes) {
             loader.dynamicAttributes = dynamicAttributes;
             return this;
         }

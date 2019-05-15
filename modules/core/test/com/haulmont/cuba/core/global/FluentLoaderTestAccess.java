@@ -26,6 +26,10 @@ public class FluentLoaderTestAccess {
         return loader.createLoadContext();
     }
 
+    public static LoadContext createLoadContext(FluentLoader.ByIds loader) {
+        return loader.createLoadContext();
+    }
+
     public static LoadContext createLoadContext(FluentLoader.ByQuery loader) {
         return loader.createLoadContext();
     }

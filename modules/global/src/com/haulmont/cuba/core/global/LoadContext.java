@@ -38,6 +38,8 @@ import java.util.stream.Collectors;
             .setView("user.browse");
     List&lt;User&gt; users = dataManager.loadList(context);
  * </pre>
+ * <p>
+ * Instead of using this class directly, consider fluent interface with the entry point in {@link DataManager#load(Class)}.
  */
 public class LoadContext<E extends Entity> implements DataLoadContext, Serializable {
 
@@ -47,8 +49,9 @@ public class LoadContext<E extends Entity> implements DataLoadContext, Serializa
     protected Query query;
     protected View view;
     protected Object id;
+    protected List<Object> idList = new ArrayList<>(0);
     protected boolean softDeletion = true;
-    protected List<Query> prevQueries = new ArrayList<>();
+    protected List<Query> prevQueries = new ArrayList<>(0);
     protected int queryKey;
 
     protected boolean loadDynamicAttributes;
@@ -175,6 +178,23 @@ public class LoadContext<E extends Entity> implements DataLoadContext, Serializa
      */
     public LoadContext<E> setId(Object id) {
         this.id = id instanceof Entity ? ((Entity) id).getId() : id; // for compatibility with legacy code relying on implicit conversions
+        return this;
+    }
+
+    /**
+     * @return identifiers of entities to be loaded
+     */
+    public List<?> getIds() {
+        return idList;
+    }
+
+    /**
+     *
+     * @param ids identifiers of entities to be loaded
+     * @return this instance for chaining
+     */
+    public LoadContext<E> setIds(Collection<?> ids) {
+        this.idList.addAll(ids);
         return this;
     }
 
