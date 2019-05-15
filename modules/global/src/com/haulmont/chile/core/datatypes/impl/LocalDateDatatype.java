@@ -19,12 +19,8 @@ package com.haulmont.chile.core.datatypes.impl;
 import com.haulmont.chile.core.annotations.Ddl;
 import com.haulmont.chile.core.annotations.JavaClass;
 import com.haulmont.chile.core.datatypes.FormatStrings;
-import com.haulmont.chile.core.datatypes.FormatStringsRegistry;
-import com.haulmont.cuba.core.global.AppBeans;
-import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
 
-import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
@@ -39,21 +35,6 @@ public class LocalDateDatatype extends AbstractTemporalDatatype<LocalDate> {
 
     public LocalDateDatatype(Element element) {
         super(element);
-    }
-
-    @Override
-    public LocalDate parse(String value, Locale locale) throws ParseException {
-        if (StringUtils.isBlank(value)) {
-            return null;
-        }
-
-        FormatStrings formatStrings = AppBeans.get(FormatStringsRegistry.class).getFormatStrings(locale);
-        if (formatStrings == null) {
-            return parse(value);
-        }
-
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(formatPattern);
-        return LocalDate.parse(value.trim(), formatter);
     }
 
     @Override

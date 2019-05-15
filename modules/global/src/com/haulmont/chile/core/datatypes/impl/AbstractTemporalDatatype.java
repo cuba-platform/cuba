@@ -11,8 +11,8 @@ import org.dom4j.Element;
 
 import javax.annotation.Nullable;
 import java.text.ParseException;
-import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.time.temporal.Temporal;
 import java.time.temporal.TemporalAccessor;
 import java.time.temporal.TemporalQuery;
@@ -71,7 +71,11 @@ public abstract class AbstractTemporalDatatype<T extends Temporal> implements Da
         } else {
             formatter = getDateTimeFormatter();
         }
-        return formatter.parse(value.trim(), newInstance());
+        try {
+            return formatter.parse(value.trim(), newInstance());
+        } catch (DateTimeParseException ex) {
+            throw new ParseException(ex.getMessage(), 0);
+        }
     }
 
     @Nullable
@@ -87,7 +91,11 @@ public abstract class AbstractTemporalDatatype<T extends Temporal> implements Da
         }
 
         DateTimeFormatter formatter = getDateTimeFormatter(formatStrings, locale);
-        return formatter.parse(value.trim(), newInstance());
+        try {
+            return formatter.parse(value.trim(), newInstance());
+        } catch (DateTimeParseException ex) {
+            throw new ParseException(ex.getMessage(), 0);
+        }
     }
 
     @Override
