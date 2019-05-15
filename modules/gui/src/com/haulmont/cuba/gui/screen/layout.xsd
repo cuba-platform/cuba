@@ -2277,16 +2277,17 @@
     <xs:complexType name="buttonComponent">
         <xs:complexContent>
             <xs:extension base="baseComponent">
-                <xs:attribute name="stylename" type="buttonStylename"/>
+                <xs:attributeGroup ref="hasTabIndex"/>
+
                 <xs:attribute name="action" type="xs:string"/>
+                <xs:attribute name="disableOnClick" type="xs:boolean"/>
                 <xs:attribute name="invoke" type="xs:string"/>
-                <xs:attribute name="primary" type="xs:boolean"/>
-                <xs:attribute name="captionAsHtml" type="xs:boolean"/>
+                <xs:attribute name="shortcut" type="shortcut"/>
+
+                <xs:attribute name="stylename" type="buttonStylename"/>
 
                 <xs:attribute name="focusable" type="xs:boolean"/>
-                <xs:attribute name="disableOnClick" type="xs:boolean"/>
-
-                <xs:attributeGroup ref="hasTabIndex"/>
+                <xs:attribute name="primary" type="xs:boolean"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>

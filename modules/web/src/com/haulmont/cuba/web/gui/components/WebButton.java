@@ -21,6 +21,7 @@ import com.haulmont.cuba.gui.components.AbstractAction;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Button;
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.KeyCombination;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.widgets.CubaButton;
 import com.vaadin.server.Resource;
@@ -35,6 +36,8 @@ public class WebButton extends WebAbstractComponent<CubaButton> implements Butto
 
     protected Action action;
     protected Consumer<PropertyChangeEvent> actionPropertyChangeListener;
+
+    protected KeyCombination shortcut;
 
     public WebButton() {
         component = createComponent();
@@ -210,6 +213,37 @@ public class WebButton extends WebAbstractComponent<CubaButton> implements Butto
     @Override
     public boolean isCaptionAsHtml() {
         return component.isCaptionAsHtml();
+    }
+
+    @Override
+    public KeyCombination getShortcutCombination() {
+        return shortcut;
+    }
+
+    @Override
+    public void setShortcutCombination(KeyCombination shortcut) {
+        KeyCombination oldValue = this.shortcut;
+        if (!Objects.equals(oldValue, shortcut)) {
+            this.shortcut = shortcut;
+
+            if (shortcut != null) {
+                int[] shortcutModifiers = KeyCombination.Modifier.codes(shortcut.getModifiers());
+                int shortcutCode = shortcut.getKey().getCode();
+
+                component.setClickShortcut(shortcutCode, shortcutModifiers);
+            } else {
+                component.removeClickShortcut();
+            }
+        }
+    }
+
+    @Override
+    public void setShortcut(String shortcut) {
+        if (shortcut != null) {
+            setShortcutCombination(KeyCombination.create(shortcut));
+        } else {
+            setShortcutCombination(null);
+        }
     }
 
     @Override

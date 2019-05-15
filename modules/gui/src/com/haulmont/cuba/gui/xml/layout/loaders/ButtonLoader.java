@@ -76,6 +76,7 @@ public class ButtonLoader extends AbstractComponentLoader<Button> {
         loadTabIndex(resultComponent, element);
 
         loadInvoke(resultComponent, enabled, visible, element);
+        loadShortcut(resultComponent, element);
 
         loadFocusable(resultComponent, element);
         loadDisableOnClick(resultComponent, element);
@@ -88,6 +89,13 @@ public class ButtonLoader extends AbstractComponentLoader<Button> {
         String captionAsHtml = element.attributeValue("captionAsHtml");
         if (StringUtils.isNotEmpty(captionAsHtml)) {
             resultComponent.setCaptionAsHtml(Boolean.parseBoolean(captionAsHtml));
+        }
+    }
+
+    protected void loadShortcut(Button resultComponent, Element element) {
+        String shortcut = element.attributeValue("shortcut");
+        if (StringUtils.isNotEmpty(shortcut)) {
+            resultComponent.setShortcut(shortcut);
         }
     }
 

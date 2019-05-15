@@ -60,6 +60,25 @@ public interface Button extends Component, Component.HasCaption, Component.Belon
      */
     boolean isCaptionAsHtml();
 
+    /**
+     * @return action's shortcut
+     */
+    KeyCombination getShortcutCombination();
+
+    /**
+     * Sets shortcut combination.
+     *
+     * @param shortcut key combination
+     */
+    void setShortcutCombination(KeyCombination shortcut);
+
+    /**
+     * Sets shortcut from string representation.
+     *
+     * @param shortcut string of type "Modifiers-Key", e.g. "Alt-N". Case-insensitive.
+     */
+    void setShortcut(String shortcut);
+
     Subscription addClickListener(Consumer<ClickEvent> listener);
 
     /**
