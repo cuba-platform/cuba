@@ -342,4 +342,8 @@ public class CompositeComponent<T extends Component>
             return (CompositeComponent) super.getSource();
         }
     }
+
+    protected Subscription addCreateListener(Consumer<CreateEvent> listener) {
+        return getEventHub().subscribe(CreateEvent.class, listener);
+    }
 }
