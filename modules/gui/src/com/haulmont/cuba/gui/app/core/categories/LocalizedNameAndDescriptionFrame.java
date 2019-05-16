@@ -44,12 +44,18 @@ public class LocalizedNameAndDescriptionFrame extends AbstractLocalizedTextField
     public void init(Map<String, Object> params) {
         Map<String, Locale> map = globalConfig.getAvailableLocales();
         for (Map.Entry<String, Locale> entry : map.entrySet()) {
-            localesScrollBox.add(createLabelComponent(entry.getKey() + "|" + entry.getValue().toString()));
-            localesScrollBox.add(createTextFieldComponent(entry.getValue(),
-                    messageTools.loadString(MESSAGE_PACK + "CategoryAttribute.name"), namesTextFieldMap));
-            localesScrollBox.add(createTextAreaComponent(entry.getValue(),
-                    messageTools.loadString(MESSAGE_PACK + "CategoryAttribute.description"), descriptionsTextFieldMap));
+            localesScrollBox.add(createLocaleGroupBox(entry.getKey(), entry.getValue()));
         }
+    }
+
+    protected GroupBoxLayout createLocaleGroupBox(String localeName, Locale locale) {
+        GroupBoxLayout groupBoxLayout = uiComponents.create(GroupBoxLayout.NAME);
+        groupBoxLayout.setCaption(localeName + "|" + locale.toString());
+        groupBoxLayout.add(createTextFieldComponent(locale,
+                messageTools.loadString(MESSAGE_PACK + "CategoryAttribute.name"), namesTextFieldMap));
+        groupBoxLayout.add(createTextAreaComponent(locale,
+                messageTools.loadString(MESSAGE_PACK + "CategoryAttribute.description"), descriptionsTextFieldMap));
+        return groupBoxLayout;
     }
 
     public String getNamesValue() {
