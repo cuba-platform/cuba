@@ -241,11 +241,22 @@ public class WindowConfig {
         for (UiControllersConfiguration provider : configurations) {
             List<UiControllerDefinition> uiControllers = provider.getUiControllers();
 
+            Set<String> projectScreens = new HashSet<>(uiControllers.size());
+
             for (UiControllerDefinition definition : uiControllers) {
+                if (projectScreens.contains(definition.getId())) {
+                    throw new RuntimeException(
+                            String.format("Project contains screens with the same id: %s", definition.getId()));
+                } else {
+                    projectScreens.add(definition.getId());
+                }
+
                 WindowInfo windowInfo = new WindowInfo(definition.getId(), windowAttributesProvider,
                         definition.getControllerClass(), definition.getRouteDefinition());
                 registerScreen(definition.getId(), windowInfo);
             }
+
+            projectScreens.clear();
         }
     }
 
