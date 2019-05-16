@@ -29,6 +29,6 @@ public final class CompositeComponentUtils {
 
     public static <E> void fireEvent(CompositeComponent compositeComponent,
                                      Class<E> eventType, E event) {
-        compositeComponent.fireEvent(eventType, event);
+        compositeComponent.publish(eventType, event);
     }
 }

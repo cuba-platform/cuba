@@ -48,6 +48,12 @@ public class CompositeComponent<T extends Component>
         return eventHub;
     }
 
+    protected <E> void publish(Class<E> eventType, E event) {
+        if (eventHub != null) {
+            eventHub.publish(eventType, event);
+        }
+    }
+
     public T getComposition() {
         return root;
     }
@@ -74,10 +80,6 @@ public class CompositeComponent<T extends Component>
     protected void setComposition(T composition) {
         Preconditions.checkState(root == null, "Composition root is already initialized");
         this.root = composition;
-    }
-
-    protected <E> void fireEvent(Class<E> eventType, E event) {
-        getEventHub().publish(eventType, event);
     }
 
     @Override
@@ -180,13 +182,13 @@ public class CompositeComponent<T extends Component>
     @Override
     public void attached() {
         ((AttachNotifier) getCompositionNN()).attached();
-        getEventHub().publish(AttachEvent.class, new AttachEvent(this));
+        publish(AttachEvent.class, new AttachEvent(this));
     }
 
     @Override
     public void detached() {
         ((AttachNotifier) getCompositionNN()).detached();
-        getEventHub().publish(DetachEvent.class, new DetachEvent(this));
+        publish(DetachEvent.class, new DetachEvent(this));
     }
 
     @Override
