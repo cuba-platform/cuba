@@ -44,6 +44,7 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.persistence.NoResultException;
 import java.util.*;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -287,7 +288,7 @@ public class RdbmsStore implements DataStore {
 
     protected <E extends Entity> List<E> checkAndReorderLoadedEntities(List<?> ids, List<E> entities, MetaClass metaClass) {
         List<E> result = new ArrayList<>(ids.size());
-        Map<Object, E> idToEntityMap = entities.stream().collect(Collectors.toMap(Entity::getId, e -> e));
+        Map<Object, E> idToEntityMap = entities.stream().collect(Collectors.toMap(Entity::getId, Function.identity()));
         for (Object id : ids) {
             E entity = idToEntityMap.get(id);
             if (entity == null) {
