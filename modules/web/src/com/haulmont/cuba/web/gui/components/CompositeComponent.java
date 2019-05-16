@@ -19,6 +19,7 @@ package com.haulmont.cuba.web.gui.components;
 import com.google.common.base.Preconditions;
 import com.haulmont.bali.events.EventHub;
 import com.haulmont.bali.events.Subscription;
+import com.haulmont.bali.events.TriggerOnce;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.sys.FrameImplementation;
@@ -333,6 +334,7 @@ public class CompositeComponent<T extends Component>
         }
     }
 
+    @TriggerOnce
     public static class CreateEvent extends EventObject {
 
         public CreateEvent(CompositeComponent source) {
