@@ -138,7 +138,8 @@ public class WebDialogWindow extends WebWindow implements DialogWindow, Initiali
         }
     }
 
-    protected void onCloseShortcutTriggered(Object sender, Object target) {
+    protected void onCloseShortcutTriggered(@SuppressWarnings("unused") Object sender,
+                                            @SuppressWarnings("unused") Object target) {
         if (this.isCloseable()) {
             com.vaadin.ui.Component component = getComponent();
             CubaUI ui = (CubaUI) component.getUI();
@@ -354,10 +355,8 @@ public class WebDialogWindow extends WebWindow implements DialogWindow, Initiali
         protected DialogOptions setWidth(Float width, SizeUnit sizeUnit) {
             if (width != null && sizeUnit != null) {
                 setDialogWidth(width + sizeUnit.getSymbol());
-            } else {
-                if (width != null) {
-                    setDialogWidth(width + "px");
-                }
+            } else if (width != null) {
+                setDialogWidth(width + "px");
             }
 
             super.setWidth(width, sizeUnit);
@@ -379,10 +378,8 @@ public class WebDialogWindow extends WebWindow implements DialogWindow, Initiali
         protected DialogOptions setHeight(Float height, SizeUnit sizeUnit) {
             if (height != null && sizeUnit != null) {
                 setDialogHeight(height + sizeUnit.getSymbol());
-            } else {
-                if (height != null) {
-                    setDialogHeight(height + "px");
-                }
+            } else if (height != null) {
+                setDialogHeight(height + "px");
             }
 
             super.setHeight(height, sizeUnit);

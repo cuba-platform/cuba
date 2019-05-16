@@ -22,6 +22,7 @@ import com.haulmont.cuba.gui.components.ComponentGenerationContext;
 import com.haulmont.cuba.gui.components.Timer;
 import com.haulmont.cuba.gui.components.UiComponentsGenerator;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
+import com.haulmont.cuba.web.gui.components.WebTimer;
 
 import javax.inject.Inject;
 

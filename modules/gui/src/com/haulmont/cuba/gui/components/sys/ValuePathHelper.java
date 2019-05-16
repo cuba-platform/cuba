@@ -15,10 +15,11 @@
  */
 package com.haulmont.cuba.gui.components.sys;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Utility class to format and parse component paths.
@@ -83,5 +84,15 @@ public class ValuePathHelper {
         elements.add(buffer.toString());
 
         return elements.toArray(new String[0]);
+    }
+
+    public static String pathSuffix(String[] elements) {
+        String[] subArray = ArrayUtils.subarray(elements, 1, elements.length);
+        return ValuePathHelper.format(subArray);
+    }
+
+    public static String pathPrefix(String[] elements) {
+        String[] subPath = ArrayUtils.subarray(elements, 0, elements.length - 1);
+        return ValuePathHelper.format(subPath);
     }
 }

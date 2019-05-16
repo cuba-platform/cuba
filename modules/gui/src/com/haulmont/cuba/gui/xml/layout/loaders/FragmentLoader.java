@@ -20,6 +20,7 @@ import com.haulmont.cuba.core.global.DevelopmentException;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.AbstractFrame;
+import com.haulmont.cuba.gui.components.Facet;
 import com.haulmont.cuba.gui.components.Fragment;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -34,6 +35,7 @@ import com.haulmont.cuba.gui.screen.UiControllerUtils;
 import com.haulmont.cuba.gui.screen.compatibility.LegacyFrame;
 import com.haulmont.cuba.gui.sys.CompanionDependencyInjector;
 import com.haulmont.cuba.gui.sys.ScreenViewsLoader;
+import com.haulmont.cuba.gui.xml.FacetLoader;
 import com.haulmont.cuba.gui.xml.data.DsContextLoader;
 import com.haulmont.cuba.gui.xml.layout.ComponentRootLoader;
 import org.apache.commons.lang3.StringUtils;
@@ -41,6 +43,7 @@ import org.dom4j.Element;
 import org.perf4j.StopWatch;
 
 import javax.annotation.Nullable;
+import java.util.List;
 
 import static com.haulmont.cuba.gui.logging.UIPerformanceLogger.createStopWatch;
 
@@ -114,6 +117,8 @@ public class FragmentLoader extends ContainerLoader<Fragment> implements Compone
 
         loadSubComponentsAndExpand(resultComponent, layoutElement);
         setComponentsRatio(resultComponent, layoutElement);
+
+        loadFacets(resultComponent, element);
     }
 
     protected ScreenViewsLoader getScreenViewsLoader() {
@@ -131,6 +136,20 @@ public class FragmentLoader extends ContainerLoader<Fragment> implements Compone
         ScreenData screenData = UiControllerUtils.getScreenData(resultComponent.getFrameOwner());
         screenDataXmlLoader.load(screenData, dataEl, hostScreenData);
         ((ComponentLoaderContext) context).setScreenData(screenData);
+    }
+
+    protected void loadFacets(Fragment resultComponent, Element fragmentElement) {
+        Element facetsElement = fragmentElement.element("facets");
+        if (facetsElement != null) {
+            List<Element> facetElements = facetsElement.elements();
+
+            for (Element facetElement : facetElements) {
+                FacetLoader loader = beanLocator.get(FacetLoader.NAME);
+                Facet facet = loader.load(facetElement, getComponentContext());
+
+                resultComponent.addFacet(facet);
+            }
+        }
     }
 
     protected void loadDsContext(@Nullable Element dsContextElement) {
@@ -173,7 +192,7 @@ public class FragmentLoader extends ContainerLoader<Fragment> implements Compone
         }
 
         @Override
-        public void execute(ComponentContext context, Frame window) {
+        public void execute(ComponentContext context, Frame frame) {
             String loggingId = context.getFullFrameId();
             try {
                 if (fragment.getFrameOwner() instanceof AbstractFrame) {

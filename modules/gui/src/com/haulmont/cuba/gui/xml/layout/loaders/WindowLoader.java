@@ -16,36 +16,33 @@
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
-import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.cuba.core.global.DevelopmentException;
 import com.haulmont.cuba.gui.AppConfig;
-import com.haulmont.cuba.gui.DialogOptions;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
-import com.haulmont.cuba.gui.UiComponents;
 import com.haulmont.cuba.gui.components.AbstractWindow;
-import com.haulmont.cuba.gui.components.Timer;
+import com.haulmont.cuba.gui.components.DialogWindow;
+import com.haulmont.cuba.gui.components.DialogWindow.WindowMode;
+import com.haulmont.cuba.gui.components.Facet;
 import com.haulmont.cuba.gui.components.Window;
-import com.haulmont.cuba.gui.components.compatibility.LegacyFragmentAdapter;
 import com.haulmont.cuba.gui.logging.ScreenLifeCycle;
 import com.haulmont.cuba.gui.model.ScreenData;
 import com.haulmont.cuba.gui.model.impl.ScreenDataXmlLoader;
-import com.haulmont.cuba.gui.screen.FrameOwner;
 import com.haulmont.cuba.gui.screen.Screen;
 import com.haulmont.cuba.gui.screen.UiControllerUtils;
 import com.haulmont.cuba.gui.screen.compatibility.LegacyFrame;
 import com.haulmont.cuba.gui.sys.CompanionDependencyInjector;
+import com.haulmont.cuba.gui.xml.FacetLoader;
 import com.haulmont.cuba.gui.xml.layout.ComponentRootLoader;
 import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
 import org.perf4j.StopWatch;
 
 import javax.annotation.ParametersAreNonnullByDefault;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.List;
-import java.util.function.Consumer;
 
 import static com.haulmont.cuba.gui.logging.UIPerformanceLogger.createStopWatch;
+import static java.lang.Boolean.parseBoolean;
+import static java.lang.Integer.parseInt;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
 @ParametersAreNonnullByDefault
@@ -96,39 +93,18 @@ public class WindowLoader extends ContainerLoader<Window> implements ComponentRo
 
         loadMinMaxSizes(resultComponent, layoutElement);
 
-        loadTimers(factory, resultComponent, element);
-
         loadSubComponentsAndExpand(resultComponent, layoutElement);
         setComponentsRatio(resultComponent, layoutElement);
 
         loadFocusedComponent(resultComponent, element);
 
+        loadFacets(resultComponent, element);
+
+        // for compatibility
+
+        loadTimers(resultComponent, element);
+        loadCrossFieldValidate(resultComponent, element);
         loadCompanions(resultComponent, element);
-    }
-
-    protected void loadCompanions(Window resultComponent, Element element) {
-        Screen controller = resultComponent.getFrameOwner();
-        if (controller instanceof AbstractWindow) {
-            loadCrossFieldValidate(resultComponent, element);
-
-            Element companionsElem = element.element("companions");
-            if (companionsElem != null) {
-                StopWatch companionStopWatch = createStopWatch(ScreenLifeCycle.COMPANION, controller.getId());
-
-                Object companion = initCompanion(companionsElem, (AbstractWindow) controller);
-
-                companionStopWatch.stop();
-
-                if (companion != null) {
-                    getComponentContext().addInjectTask((c, w) -> {
-                        CompanionDependencyInjector cdi =
-                                new CompanionDependencyInjector((LegacyFrame) controller, companion);
-                        cdi.setBeanLocator(beanLocator);
-                        cdi.inject();
-                    });
-                }
-            }
-        }
     }
 
     protected void loadMinMaxSizes(Window resultComponent, Element layoutElement) {
@@ -153,6 +129,135 @@ public class WindowLoader extends ContainerLoader<Window> implements ComponentRo
         }
     }
 
+    protected void loadScreenData(Window window, Element element) {
+        Element dataEl = element.element("data");
+        if (dataEl != null) {
+            ScreenDataXmlLoader screenDataXmlLoader = beanLocator.get(ScreenDataXmlLoader.class);
+            ScreenData screenData = UiControllerUtils.getScreenData(window.getFrameOwner());
+            screenDataXmlLoader.load(screenData, dataEl, null);
+
+            ((ComponentLoaderContext) context).setScreenData(screenData);
+        }
+    }
+
+    protected void loadDialogOptions(Window resultComponent, Element element) {
+        Element dialogModeElement = element.element("dialogMode");
+        if (dialogModeElement != null
+                && resultComponent instanceof DialogWindow) {
+            // dialog mode applied only if opened as dialog
+            DialogWindow dialog = (DialogWindow) resultComponent;
+
+            String xmlWidthValue = dialogModeElement.attributeValue("width");
+            if (StringUtils.isNotBlank(xmlWidthValue)) {
+                String themeWidthValue = loadThemeString(xmlWidthValue);
+                dialog.setWidth(themeWidthValue);
+            }
+
+            String xmlHeightValue = dialogModeElement.attributeValue("height");
+            if (StringUtils.isNotBlank(xmlHeightValue)) {
+                String themeHeightValue = loadThemeString(xmlHeightValue);
+                dialog.setHeight(themeHeightValue);
+            }
+
+            String closeable = dialogModeElement.attributeValue("closeable");
+            if (isNotEmpty(closeable)) {
+                dialog.setCloseable(parseBoolean(closeable));
+            }
+
+            String resizable = dialogModeElement.attributeValue("resizable");
+            if (isNotEmpty(resizable)) {
+                dialog.setResizable(parseBoolean(resizable));
+            }
+
+            String modal = dialogModeElement.attributeValue("modal");
+            if (isNotEmpty(modal)) {
+                dialog.setModal(parseBoolean(modal));
+            }
+
+            String closeOnClickOutside = dialogModeElement.attributeValue("closeOnClickOutside");
+            if (isNotEmpty(closeOnClickOutside)) {
+                dialog.setCloseOnClickOutside(parseBoolean(closeOnClickOutside));
+            }
+
+            String maximized = dialogModeElement.attributeValue("maximized");
+            if (isNotEmpty(maximized) && parseBoolean(maximized)) {
+                dialog.setWindowMode(WindowMode.MAXIMIZED);
+            }
+
+            String positionX = dialogModeElement.attributeValue("positionX");
+            if (isNotEmpty(positionX)) {
+                dialog.setPositionX(parseInt(positionX));
+            }
+
+            String positionY = dialogModeElement.attributeValue("positionY");
+            if (isNotEmpty(positionY)) {
+                dialog.setPositionY(parseInt(positionY));
+            }
+        }
+    }
+
+    protected void loadFocusedComponent(Window window, Element element) {
+        String focusMode = element.attributeValue("focusMode");
+        String componentId = element.attributeValue("focusComponent");
+        if (!"NO_FOCUS".equals(focusMode)) {
+            window.setFocusComponent(componentId);
+        }
+    }
+
+    protected void loadFacets(Window resultComponent, Element windowElement) {
+        Element facetsElement = windowElement.element("facets");
+        if (facetsElement != null) {
+            List<Element> facetElements = facetsElement.elements();
+
+            for (Element facetElement : facetElements) {
+                FacetLoader loader = beanLocator.get(FacetLoader.NAME);
+                Facet facet = loader.load(facetElement, getComponentContext());
+
+                resultComponent.addFacet(facet);
+            }
+        }
+    }
+
+    @Deprecated
+    protected void loadTimers(Window resultComponent, Element windowElement) {
+        Element timersElement = windowElement.element("timers");
+        if (timersElement != null) {
+            List<Element> facetElements = timersElement.elements("timer");
+
+            for (Element facetElement : facetElements) {
+                FacetLoader loader = beanLocator.get(FacetLoader.NAME);
+                Facet facet = loader.load(facetElement, getComponentContext());
+
+                resultComponent.addFacet(facet);
+            }
+        }
+    }
+
+    @Deprecated
+    protected void loadCompanions(Window resultComponent, Element element) {
+        Screen controller = resultComponent.getFrameOwner();
+        if (controller instanceof AbstractWindow) {
+            Element companionsElem = element.element("companions");
+            if (companionsElem != null) {
+                StopWatch companionStopWatch = createStopWatch(ScreenLifeCycle.COMPANION, controller.getId());
+
+                Object companion = initCompanion(companionsElem, (AbstractWindow) controller);
+
+                companionStopWatch.stop();
+
+                if (companion != null) {
+                    getComponentContext().addInjectTask((c, w) -> {
+                        CompanionDependencyInjector cdi =
+                                new CompanionDependencyInjector((LegacyFrame) controller, companion);
+                        cdi.setBeanLocator(beanLocator);
+                        cdi.inject();
+                    });
+                }
+            }
+        }
+    }
+
+    @Deprecated
     protected Object initCompanion(Element companionsElem, AbstractWindow window) {
         Element element = companionsElem.element(AppConfig.getClientType().toString().toLowerCase());
         if (element != null) {
@@ -172,190 +277,19 @@ public class WindowLoader extends ContainerLoader<Window> implements ComponentRo
         return null;
     }
 
-    protected void loadScreenData(Window window, Element element) {
-        Element dataEl = element.element("data");
-        if (dataEl != null) {
-            ScreenDataXmlLoader screenDataXmlLoader = beanLocator.get(ScreenDataXmlLoader.class);
-            ScreenData screenData = UiControllerUtils.getScreenData(window.getFrameOwner());
-            screenDataXmlLoader.load(screenData, dataEl, null);
-
-            ((ComponentLoaderContext) context).setScreenData(screenData);
-        }
-    }
-
-    protected void loadDialogOptions(Window resultComponent, Element element) {
-        Element dialogModeElement = element.element("dialogMode");
-        if (dialogModeElement != null) {
-            DialogOptions dialogOptions = resultComponent.getDialogOptions();
-
-            String xmlWidthValue = dialogModeElement.attributeValue("width");
-            if (StringUtils.isNotBlank(xmlWidthValue)) {
-                String themeWidthValue = loadThemeString(xmlWidthValue);
-                dialogOptions.setWidth(themeWidthValue);
-            }
-
-            String xmlHeightValue = dialogModeElement.attributeValue("height");
-            if (StringUtils.isNotBlank(xmlHeightValue)) {
-                String themeHeightValue = loadThemeString(xmlHeightValue);
-                dialogOptions.setHeight(themeHeightValue);
-            }
-
-            String closeable = dialogModeElement.attributeValue("closeable");
-            if (isNotEmpty(closeable)) {
-                dialogOptions.setCloseable(Boolean.parseBoolean(closeable));
-            }
-
-            String resizable = dialogModeElement.attributeValue("resizable");
-            if (isNotEmpty(resizable)) {
-                dialogOptions.setResizable(Boolean.parseBoolean(resizable));
-            }
-
-            String modal = dialogModeElement.attributeValue("modal");
-            if (isNotEmpty(modal)) {
-                dialogOptions.setModal(Boolean.parseBoolean(modal));
-            }
-
-            String closeOnClickOutside = dialogModeElement.attributeValue("closeOnClickOutside");
-            if (isNotEmpty(closeOnClickOutside)) {
-                dialogOptions.setCloseOnClickOutside(Boolean.parseBoolean(closeOnClickOutside));
-            }
-
-            String maximized = dialogModeElement.attributeValue("maximized");
-            if (isNotEmpty(maximized)) {
-                dialogOptions.setMaximized(Boolean.parseBoolean(maximized));
-            }
-
-            String positionX = dialogModeElement.attributeValue("positionX");
-            if (isNotEmpty(positionX)) {
-                dialogOptions.setPositionX(Integer.parseInt(positionX));
-            }
-
-            String positionY = dialogModeElement.attributeValue("positionY");
-            if (isNotEmpty(positionY)) {
-                dialogOptions.setPositionY(Integer.parseInt(positionY));
-            }
-        }
-    }
-
-    protected void loadTimers(UiComponents factory, Window component, Element element) {
-        Element timersElement = element.element("timers");
-        if (timersElement != null) {
-            List<Element> timers = timersElement.elements("timer");
-            for (Element timer : timers) {
-                loadTimer(factory, component, timer);
-            }
-        }
-    }
-
-    protected void loadTimer(UiComponents factory, Window component, Element element) {
-        Timer timer = factory.create(Timer.class);
-        assignXmlDescriptor(timer, element);
-        timer.setId(element.attributeValue("id"));
-
-        String delay = element.attributeValue("delay");
-        if (StringUtils.isEmpty(delay)) {
-            throw new GuiDevelopmentException("Timer 'delay' can't be empty", context,
-                    "Timer ID", timer.getId());
-        }
-
-        int value;
-        try {
-            value = Integer.parseInt(delay);
-        } catch (NumberFormatException e) {
-            throw new GuiDevelopmentException("Timer 'delay' must be numeric", context,
-                    ParamsMap.of(
-                            "Timer delay", delay,
-                            "Timer ID", timer.getId()
-                    ));
-        }
-
-        if (value <= 0) {
-            throw new GuiDevelopmentException("Timer 'delay' must be greater than 0",
-                    context, "Timer ID", timer.getId());
-        }
-
-        timer.setDelay(value);
-        timer.setRepeating(Boolean.parseBoolean(element.attributeValue("repeating")));
-
-        String onTimer = element.attributeValue("onTimer");
-        if (isNotEmpty(onTimer)) {
-            String timerMethodName = onTimer;
-            if (StringUtils.startsWith(onTimer, "invoke:")) {
-                timerMethodName = StringUtils.substring(onTimer, "invoke:".length());
-            }
-            timerMethodName = StringUtils.trim(timerMethodName);
-
-            addInitTimerMethodTask(timer, timerMethodName);
-        }
-
-        String autostart = element.attributeValue("autostart");
-        if (isNotEmpty(autostart)
-                && Boolean.parseBoolean(autostart)) {
-            timer.start();
-        }
-
-        timer.setFrame(getComponentContext().getFrame());
-
-        component.addTimer(timer);
-    }
-
-    protected void loadFocusedComponent(Window window, Element element) {
-        String focusMode = element.attributeValue("focusMode");
-        String componentId = element.attributeValue("focusComponent");
-        if (!"NO_FOCUS".equals(focusMode)) {
-            window.setFocusComponent(componentId);
-        }
-    }
-
-    protected void loadCrossFieldValidate(Window window, Element element) {
-        String crossFieldValidate = element.attributeValue("crossFieldValidate");
-        if (isNotEmpty(crossFieldValidate)) {
-            if (window.getFrameOwner() instanceof Window.Editor) {
-                Window.Editor editor = (Window.Editor) window.getFrameOwner();
-                editor.setCrossFieldValidate(Boolean.parseBoolean(crossFieldValidate));
-            } else {
-                throw new GuiDevelopmentException("Window should extend Window.Editor to use crossFieldValidate attribute",
-                        context);
-            }
-        }
-    }
-
-    protected void addInitTimerMethodTask(Timer timer, String timerMethodName) {
-        FrameOwner controller = getComponentContext().getFrame().getFrameOwner();
-        if (controller instanceof LegacyFragmentAdapter) {
-            controller = ((LegacyFragmentAdapter) controller).getRealScreen();
-        }
-
-        Class<? extends FrameOwner> windowClass = controller.getClass();
-
-        Method timerMethod;
-        try {
-            timerMethod = windowClass.getMethod(timerMethodName, Timer.class);
-        } catch (NoSuchMethodException e) {
-            throw new GuiDevelopmentException("Unable to find invoke method for timer", context,
-                    ParamsMap.of(
-                            "Timer Id", timer.getId(),
-                            "Method name", timerMethodName));
-        }
-
-        timer.addTimerActionListener(new WindowTimerActionHandler(timerMethod, controller));
-    }
-
-    protected static class WindowTimerActionHandler implements Consumer<Timer.TimerActionEvent> {
-        protected final Method timerMethod;
-        protected final FrameOwner controller;
-
-        public WindowTimerActionHandler(Method timerMethod, FrameOwner controller) {
-            this.timerMethod = timerMethod;
-            this.controller = controller;
-        }
-
-        @Override
-        public void accept(Timer.TimerActionEvent e) {
-            try {
-                timerMethod.invoke(controller, e.getSource());
-            } catch (IllegalAccessException | InvocationTargetException ex) {
-                throw new RuntimeException("Unable to invoke onTimer", ex);
+    @Deprecated
+    protected void loadCrossFieldValidate(Window resultComponent, Element element) {
+        Screen controller = resultComponent.getFrameOwner();
+        if (controller instanceof AbstractWindow) {
+            String crossFieldValidate = element.attributeValue("crossFieldValidate");
+            if (isNotEmpty(crossFieldValidate)) {
+                if (controller instanceof Window.Editor) {
+                    Window.Editor editor = (Window.Editor) controller;
+                    editor.setCrossFieldValidate(parseBoolean(crossFieldValidate));
+                } else {
+                    throw new GuiDevelopmentException("Window should extend Window.Editor to use crossFieldValidate attribute",
+                            context);
+                }
             }
         }
     }

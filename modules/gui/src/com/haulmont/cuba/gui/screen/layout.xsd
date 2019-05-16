@@ -1229,7 +1229,7 @@
 
     <xs:complexType name="baseValidatorType">
         <xs:all>
-            <xs:element name="notNull" minOccurs="0" maxOccurs="1" type="messageValidatorType"/>
+            <xs:element name="notNull" minOccurs="0" type="messageValidatorType"/>
         </xs:all>
     </xs:complexType>
 
@@ -1237,8 +1237,8 @@
         <xs:complexContent>
             <xs:extension base="baseValidatorType">
                 <xs:all>
-                    <xs:element name="size" minOccurs="0" maxOccurs="1" type="sizeValidatorType"/>
-                    <xs:element name="notEmpty" minOccurs="0" maxOccurs="1" type="messageValidatorType"/>
+                    <xs:element name="size" minOccurs="0" type="sizeValidatorType"/>
+                    <xs:element name="notEmpty" minOccurs="0" type="messageValidatorType"/>
                 </xs:all>
             </xs:extension>
         </xs:complexContent>
@@ -1248,10 +1248,10 @@
         <xs:complexContent>
             <xs:extension base="baseValidatorType">
                 <xs:all>
-                    <xs:element name="future" minOccurs="0" maxOccurs="1" type="dateValidatorType"/>
-                    <xs:element name="futureOrPresent" minOccurs="0" maxOccurs="1" type="dateValidatorType"/>
-                    <xs:element name="past" minOccurs="0" maxOccurs="1" type="dateValidatorType"/>
-                    <xs:element name="pastOrPresent" minOccurs="0" maxOccurs="1" type="dateValidatorType"/>
+                    <xs:element name="future" minOccurs="0" type="dateValidatorType"/>
+                    <xs:element name="futureOrPresent" minOccurs="0" type="dateValidatorType"/>
+                    <xs:element name="past" minOccurs="0" type="dateValidatorType"/>
+                    <xs:element name="pastOrPresent" minOccurs="0" type="dateValidatorType"/>
                 </xs:all>
             </xs:extension>
         </xs:complexContent>
@@ -1261,20 +1261,20 @@
         <xs:complexContent>
             <xs:extension base="baseValidatorType">
                 <xs:sequence>
-                    <xs:element name="notEmpty" minOccurs="0" maxOccurs="1" type="messageValidatorType"/>
-                    <xs:element name="notBlank" minOccurs="0" maxOccurs="1" type="messageValidatorType"/>
-                    <xs:element name="regexp" minOccurs="0" maxOccurs="1" type="regexpValidatorType"/>
-                    <xs:element name="size" minOccurs="0" maxOccurs="1" type="sizeValidatorType"/>
-                    <xs:element name="digits" minOccurs="0" maxOccurs="1" type="digitsValidatorType"/>
-                    <xs:element name="decimalMin" minOccurs="0" maxOccurs="1" type="decimalMaxMinValidatorType"/>
-                    <xs:element name="decimalMax" minOccurs="0" maxOccurs="1" type="decimalMaxMinValidatorType"/>
-                    <xs:element name="negativeOrZero" minOccurs="0" maxOccurs="1" type="messageValidatorType"/>
-                    <xs:element name="negative" minOccurs="0" maxOccurs="1" type="messageValidatorType"/>
-                    <xs:element name="positiveOrZero" minOccurs="0" maxOccurs="1" type="messageValidatorType"/>
-                    <xs:element name="positive" minOccurs="0" maxOccurs="1" type="messageValidatorType"/>
-                    <xs:element name="max" minOccurs="0" maxOccurs="1" type="maxMinValidatorType"/>
-                    <xs:element name="min" minOccurs="0" maxOccurs="1" type="maxMinValidatorType"/>
-                    <xs:element name="email" minOccurs="0" maxOccurs="1" type="messageValidatorType"/>
+                    <xs:element name="notEmpty" minOccurs="0" type="messageValidatorType"/>
+                    <xs:element name="notBlank" minOccurs="0" type="messageValidatorType"/>
+                    <xs:element name="regexp" minOccurs="0" type="regexpValidatorType"/>
+                    <xs:element name="size" minOccurs="0" type="sizeValidatorType"/>
+                    <xs:element name="digits" minOccurs="0" type="digitsValidatorType"/>
+                    <xs:element name="decimalMin" minOccurs="0" type="decimalMaxMinValidatorType"/>
+                    <xs:element name="decimalMax" minOccurs="0" type="decimalMaxMinValidatorType"/>
+                    <xs:element name="negativeOrZero" minOccurs="0" type="messageValidatorType"/>
+                    <xs:element name="negative" minOccurs="0" type="messageValidatorType"/>
+                    <xs:element name="positiveOrZero" minOccurs="0" type="messageValidatorType"/>
+                    <xs:element name="positive" minOccurs="0" type="messageValidatorType"/>
+                    <xs:element name="max" minOccurs="0" type="maxMinValidatorType"/>
+                    <xs:element name="min" minOccurs="0" type="maxMinValidatorType"/>
+                    <xs:element name="email" minOccurs="0" type="messageValidatorType"/>
                 </xs:sequence>
             </xs:extension>
         </xs:complexContent>
@@ -1579,7 +1579,7 @@
             <xs:extension base="baseFieldComponent">
                 <xs:sequence>
                     <xs:element name="validator" minOccurs="0" maxOccurs="unbounded" type="validatorType"/>
-                    <xs:element name="validators" minOccurs="0" maxOccurs="1" type="constraintValidatorType"/>
+                    <xs:element name="validators" minOccurs="0" type="constraintValidatorType"/>
                 </xs:sequence>
 
                 <xs:attributeGroup ref="hasTabIndex"/>
@@ -3239,18 +3239,36 @@
         <xs:attribute name="capsLockOffMessage" type="resourceString"/>
     </xs:complexType>
 
+    <xs:complexType name="timerType">
+        <xs:attribute name="id" type="xs:string" use="required"/>
+        <xs:attribute name="delay" type="xs:integer" use="required"/>
+        <xs:attribute name="repeating" type="xs:boolean"/>
+        <xs:attribute name="onTimer" type="xs:string"/>
+        <xs:attribute name="autostart" type="xs:boolean"/>
+    </xs:complexType>
+
+    <xs:complexType name="clipboardTriggerType">
+        <xs:attribute name="id" type="xs:string"/>
+        <xs:attribute name="button" type="xs:string"/>
+        <xs:attribute name="input" type="xs:string"/>
+    </xs:complexType>
+
+    <xs:complexType name="facets">
+        <xs:sequence>
+            <xs:choice minOccurs="0" maxOccurs="unbounded">
+                <xs:element name="timer" type="timerType" minOccurs="0" maxOccurs="unbounded"/>
+                <xs:element name="clipboardTrigger" type="clipboardTriggerType" minOccurs="0" maxOccurs="unbounded"/>
+
+                <!-- allow custom facets from any namespace -->
+                <xs:any/>
+            </xs:choice>
+        </xs:sequence>
+    </xs:complexType>
+
     <xs:complexType name="timer">
         <xs:sequence>
             <xs:choice maxOccurs="unbounded">
-                <xs:element name="timer">
-                    <xs:complexType>
-                        <xs:attribute name="id" type="xs:string"/>
-                        <xs:attribute name="delay" type="xs:integer" use="required"/>
-                        <xs:attribute name="repeating" type="xs:boolean"/>
-                        <xs:attribute name="onTimer" type="xs:string"/>
-                        <xs:attribute name="autostart" type="xs:boolean"/>
-                    </xs:complexType>
-                </xs:element>
+                <xs:element name="timer" type="timerType"/>
             </xs:choice>
         </xs:sequence>
     </xs:complexType>

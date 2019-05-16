@@ -483,4 +483,19 @@ public class DesktopComponentsHelper {
         }
         return canRequestFocus;
     }
+
+    /**
+     * Converts \n and \t symbols to HTML form.
+     *
+     * @param message HTML text
+     * @return HTML text or null if the input is null
+     */
+    public static String preprocessHtmlMessage(String message) {
+        if (message == null) {
+            return null;
+        }
+        String html = StringUtils.replace(message, "\n", "<br/>");
+        html = StringUtils.replace(html, "\t", "&nbsp;&nbsp;&nbsp;&nbsp;");
+        return html;
+    }
 }

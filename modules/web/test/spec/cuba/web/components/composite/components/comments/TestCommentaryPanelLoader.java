@@ -43,6 +43,7 @@ public class TestCommentaryPanelLoader extends AbstractComponentLoader<TestComme
         loadDataContainer(resultComponent, element);
     }
 
+    @SuppressWarnings("unchecked")
     private void loadDataContainer(TestCommentaryPanel resultComponent, Element element) {
         String containerId = this.element.attributeValue("dataContainer");
         if (Strings.isNullOrEmpty(containerId)) {
@@ -54,7 +55,6 @@ public class TestCommentaryPanelLoader extends AbstractComponentLoader<TestComme
         ScreenData screenData = UiControllerUtils.getScreenData(frameOwner);
         InstanceContainer container = screenData.getContainer(containerId);
         if (container instanceof CollectionContainer) {
-            //noinspection unchecked
             resultComponent.setDataContainer((CollectionContainer) container);
         } else {
             throw new GuiDevelopmentException("Not a CollectionContainer: " + containerId, context);

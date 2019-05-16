@@ -868,4 +868,25 @@ public class AbstractWindow extends Screen implements Window, LegacyFrame, Compo
     public float getExpandRatio(Component component) {
         return frame.getExpandRatio(component);
     }
+
+    @Override
+    public void addFacet(Facet facet) {
+        frame.addFacet(facet);
+    }
+
+    @Nullable
+    @Override
+    public Facet getFacet(String id) {
+        return frame.getFacet(id);
+    }
+
+    @Override
+    public void removeFacet(Facet facet) {
+        frame.removeFacet(facet);
+    }
+
+    @Override
+    public Stream<Facet> getFacets() {
+        return frame.getFacets();
+    }
 }

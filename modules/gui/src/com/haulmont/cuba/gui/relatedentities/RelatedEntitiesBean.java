@@ -17,7 +17,6 @@
 package com.haulmont.cuba.gui.relatedentities;
 
 import com.haulmont.bali.datastruct.Node;
-import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.Range;
@@ -54,6 +53,7 @@ import javax.inject.Inject;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 import static com.haulmont.cuba.gui.screen.UiControllerUtils.getScreenContext;
 
 @Component(RelatedEntitiesAPI.NAME)
@@ -61,34 +61,26 @@ public class RelatedEntitiesBean implements RelatedEntitiesAPI {
 
     @Inject
     protected ExtendedEntities extendedEntities;
-
     @Inject
     protected RelatedEntitiesService relatedEntitiesService;
 
     @Inject
     protected Messages messages;
-
     @Inject
     protected MessageTools messageTools;
-
     @Inject
     protected WindowConfig windowConfig;
-
     @Inject
     protected WindowManagerProvider windowManagerProvider;
-
     @Inject
     protected UserSessionSource userSessionSource;
-
     @Inject
     protected Metadata metadata;
-
     @Inject
     protected MetadataTools metadataTools;
 
     @Inject
     protected FilterParser filterParser;
-
     @Inject
     protected ConditionParamBuilder paramBuilder;
 
@@ -105,8 +97,8 @@ public class RelatedEntitiesBean implements RelatedEntitiesAPI {
     @Override
     public void openRelatedScreen(Collection<? extends Entity> selectedEntities, MetaClass metaClass, MetaProperty metaProperty,
                                   RelatedScreenDescriptor descriptor) {
-        Preconditions.checkNotNullArgument(metaClass, "MetaClass can't be null");
-        Preconditions.checkNotNullArgument(metaProperty, "MetaProperty can't be null");
+        checkNotNullArgument(metaClass, "MetaClass can't be null");
+        checkNotNullArgument(metaProperty, "MetaProperty can't be null");
 
         WindowManager windowManager = windowManagerProvider.get();
         if (!selectedEntities.isEmpty()) {
@@ -182,7 +174,7 @@ public class RelatedEntitiesBean implements RelatedEntitiesAPI {
 
     @Override
     public <T extends Entity> void openRelatedScreen(Collection<T> selectedEntities, Class<T> clazz, String property, RelatedScreenDescriptor descriptor) {
-        Preconditions.checkNotNullArgument(clazz, "Class can't be null");
+        checkNotNullArgument(clazz, "Class can't be null");
 
         if (StringUtils.isEmpty(property)) {
             throw new IllegalArgumentException("Property can't be null");
@@ -194,7 +186,8 @@ public class RelatedEntitiesBean implements RelatedEntitiesAPI {
         openRelatedScreen(selectedEntities, metaClass, metaProperty, descriptor);
     }
 
-    protected void applyFilter(Filter component, Collection<? extends Entity> selectedParents, RelatedScreenDescriptor descriptor, MetaDataDescriptor metaDataDescriptor) {
+    protected void applyFilter(Filter component, Collection<? extends Entity> selectedParents,
+                               RelatedScreenDescriptor descriptor, MetaDataDescriptor metaDataDescriptor) {
         FilterEntity filterEntity = metadata.create(FilterEntity.class);
         filterEntity.setComponentId(ComponentsHelper.getFilterComponentPath(component));
 
@@ -217,12 +210,13 @@ public class RelatedEntitiesBean implements RelatedEntitiesAPI {
                 .setLoadData(false));
     }
 
-    protected String getRelatedEntitiesFilterXml(MetaClass relatedMetaCLass, Collection<? extends Entity> selectedEntities, Filter component, MetaDataDescriptor descriptor) {
+    protected String getRelatedEntitiesFilterXml(MetaClass relatedMetaCLass, Collection<? extends Entity> selectedEntities,
+                                                 Filter component, MetaDataDescriptor descriptor) {
         ConditionsTree tree = new ConditionsTree();
 
         String filterComponentPath = ComponentsHelper.getFilterComponentPath(component);
         String[] strings = ValuePathHelper.parse(filterComponentPath);
-        String filterComponentName = ValuePathHelper.format(Arrays.copyOfRange(strings, 1, strings.length));
+        String filterComponentName = ValuePathHelper.pathSuffix(strings);
 
         MetaClass metaClass = getFilterMetaClass(component);
         String relatedPrimaryKey = metadataTools.getPrimaryKeyName(relatedMetaCLass);

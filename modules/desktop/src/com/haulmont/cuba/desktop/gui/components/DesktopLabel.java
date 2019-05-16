@@ -45,6 +45,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
+import static com.haulmont.cuba.desktop.gui.components.DesktopComponentsHelper.preprocessHtmlMessage;
+
 public class DesktopLabel<V> extends DesktopAbstractComponent<JLabel> implements Label<V> {
 
     protected Datasource<Entity> datasource;
@@ -194,9 +196,9 @@ public class DesktopLabel<V> extends DesktopAbstractComponent<JLabel> implements
         if (!htmlEnabled) {
             text = StringEscapeUtils.escapeHtml(text);
             if (getWidth() > 0 && getHeight() <= 0) {
-                text = ComponentsHelper.preprocessHtmlMessage("<html>" + text + "</html>");
+                text = preprocessHtmlMessage("<html>" + text + "</html>");
             } else {
-                text = ComponentsHelper.preprocessHtmlMessage("<html><nobr>" + text + "</nobr></html>");
+                text = preprocessHtmlMessage("<html><nobr>" + text + "</nobr></html>");
             }
         } else {
             text = "<html>" + text + "</html>";

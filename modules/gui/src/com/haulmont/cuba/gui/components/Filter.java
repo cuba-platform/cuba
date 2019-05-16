@@ -61,7 +61,7 @@ public interface Filter extends HasMargin, Component.BelongToFrame, HasNamedComp
      * Sets the handler that will be invoked before the filter is applied. If the {@link
      * BeforeFilterAppliedHandler#beforeFilterApplied()} returns false, then the filter won't be applied
      *
-     * @param beforeFilterAppliedHandler
+     * @param beforeFilterAppliedHandler handler
      */
     void setBeforeFilterAppliedHandler(BeforeFilterAppliedHandler beforeFilterAppliedHandler);
 

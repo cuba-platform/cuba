@@ -22,7 +22,6 @@ import com.haulmont.cuba.core.global.BeanLocator;
 import com.haulmont.cuba.core.global.DevelopmentException;
 import com.haulmont.cuba.core.global.Resources;
 import com.haulmont.cuba.gui.xml.layout.ScreenXmlParser;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.dom4j.*;
 import org.slf4j.Logger;
@@ -32,6 +31,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.util.*;
@@ -79,20 +79,15 @@ public class XmlInheritanceProcessor {
 
         Element root = document.getRootElement();
         String ancestorTemplate = root.attributeValue("extends");
-        if (!StringUtils.isBlank(ancestorTemplate)) {
-            InputStream ancestorStream = resources.getResourceAsStream(ancestorTemplate);
-            if (ancestorStream == null) {
-                ancestorStream = getClass().getResourceAsStream(ancestorTemplate);
-                if (ancestorStream == null) {
-                    throw new DevelopmentException("Template is not found", "Ancestor's template path", ancestorTemplate);
-                }
-            }
+
+        if (StringUtils.isNotEmpty(ancestorTemplate)) {
             Document ancestorDocument;
-            try {
+            try (InputStream ancestorStream = getAncestorStream(ancestorTemplate)) {
                 ancestorDocument = screenXmlParser.parseDescriptor(ancestorStream);
-            } finally {
-                IOUtils.closeQuietly(ancestorStream);
+            } catch (IOException e) {
+                throw new RuntimeException("Unable to read ancestor XML document", e);
             }
+
             XmlInheritanceProcessor processor = beanLocator.getPrototype(XmlInheritanceProcessor.NAME,
                     ancestorDocument, params);
             result = processor.getResultRoot();
@@ -108,6 +103,17 @@ public class XmlInheritanceProcessor {
         }
 
         return result;
+    }
+
+    protected InputStream getAncestorStream(String ancestorTemplate) {
+        InputStream ancestorStream = resources.getResourceAsStream(ancestorTemplate);
+        if (ancestorStream == null) {
+            ancestorStream = XmlInheritanceProcessor.class.getResourceAsStream(ancestorTemplate);
+            if (ancestorStream == null) {
+                throw new DevelopmentException("Template is not found", "Ancestor's template path", ancestorTemplate);
+            }
+        }
+        return ancestorStream;
     }
 
     protected void process(Element resultElem, Element extElem) {

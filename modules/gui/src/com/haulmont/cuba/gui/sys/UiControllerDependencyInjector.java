@@ -26,6 +26,7 @@ import com.haulmont.cuba.core.global.DevelopmentException;
 import com.haulmont.cuba.core.global.Events;
 import com.haulmont.cuba.gui.*;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.Component.HasXmlDescriptor;
 import com.haulmont.cuba.gui.components.compatibility.LegacyFragmentAdapter;
 import com.haulmont.cuba.gui.components.sys.ValuePathHelper;
 import com.haulmont.cuba.gui.data.DataSupplier;
@@ -42,9 +43,9 @@ import com.haulmont.cuba.gui.screen.compatibility.LegacyFrame;
 import com.haulmont.cuba.gui.sys.UiControllerReflectionInspector.AnnotatedMethod;
 import com.haulmont.cuba.gui.sys.UiControllerReflectionInspector.InjectElement;
 import com.haulmont.cuba.gui.sys.UiControllerReflectionInspector.ScreenIntrospectionData;
+import com.haulmont.cuba.gui.sys.delegates.*;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
 import org.slf4j.Logger;
@@ -70,6 +71,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import static com.haulmont.cuba.gui.components.sys.ValuePathHelper.pathPrefix;
 import static com.haulmont.cuba.gui.screen.UiControllerUtils.getScreenContext;
 import static com.haulmont.cuba.gui.screen.UiControllerUtils.getScreenData;
 import static java.lang.reflect.Proxy.newProxyInstance;
@@ -249,45 +251,9 @@ public class UiControllerDependencyInjector {
         } else if (annotation.target() == Target.DATA_LOADER) {
             targetInstance = getScreenData(frameOwner).getLoader(target);
         } else {
-            targetInstance = findInstallTarget(target, frame);
+            targetInstance = findMethodTarget(frame, target);
         }
         return targetInstance;
-    }
-
-    @Nullable
-    protected Object findInstallTarget(String target, Frame frame) {
-        String[] elements = ValuePathHelper.parse(target);
-        if (elements.length == 1) {
-            Object part = frame.getSubPart(target);
-            if (part != null) {
-                return part;
-            }
-
-            Component component = frame.getComponent(target);
-            if (component != null) {
-                return component;
-            }
-        } else if (elements.length > 1) {
-            String id = elements[elements.length - 1];
-
-            String[] subPath = ArrayUtils.subarray(elements, 0, elements.length - 1);
-            Component component = frame.getComponent(ValuePathHelper.format(subPath));
-
-            if (component != null) {
-                if (component instanceof HasSubParts) {
-                    Object part = ((HasSubParts) component).getSubPart(id);
-                    if (part != null) {
-                        return part;
-                    }
-                }
-
-                if (component instanceof ComponentContainer) {
-                    return ((ComponentContainer) component).getComponent(id);
-                }
-            }
-        }
-
-        return null;
     }
 
     protected Object createInstallHandler(FrameOwner frameOwner, Method method, Class<?> targetObjectType) {
@@ -370,7 +336,7 @@ public class UiControllerDependencyInjector {
                 switch (annotation.target()) {
                     case COMPONENT:
                         // component event
-                        eventTarget = findEventTarget(frame, target);
+                        eventTarget = findMethodTarget(frame, target);
                         break;
 
                     case DATA_LOADER:
@@ -429,13 +395,27 @@ public class UiControllerDependencyInjector {
     }
 
     @Nullable
-    protected Object findEventTarget(Frame frame, String target) {
+    protected Object findMethodTarget(Frame frame, String target) {
         String[] elements = ValuePathHelper.parse(target);
-        if (elements.length > 1) {
+        if (elements.length == 1) {
+            Object part = frame.getSubPart(target);
+            if (part != null) {
+                return part;
+            }
+
+            Component component = frame.getComponent(target);
+            if (component != null) {
+                return component;
+            }
+
+            Facet facet = frame.getFacet(target);
+            if (facet != null) {
+                return facet;
+            }
+        } else if (elements.length > 1) {
             String id = elements[elements.length - 1];
 
-            String[] subPath = ArrayUtils.subarray(elements, 0, elements.length - 1);
-            Component component = frame.getComponent(ValuePathHelper.format(subPath));
+            Component component = frame.getComponent(pathPrefix(elements));
 
             if (component != null) {
                 if (component instanceof HasSubParts) {
@@ -451,16 +431,13 @@ public class UiControllerDependencyInjector {
                         return childComponent;
                     }
                 }
-            }
-        } else if (elements.length == 1) {
-            Object part = frame.getSubPart(target);
-            if (part != null) {
-                return part;
-            }
 
-            Component component = frame.getComponent(target);
-            if (component != null) {
-                return component;
+                if (component instanceof Fragment) {
+                    Facet facet = ((Fragment) component).getFacet(id);
+                    if (facet != null) {
+                        return facet;
+                    }
+                }
             }
         }
 
@@ -651,6 +628,31 @@ public class UiControllerDependencyInjector {
             // Injecting an action
             return ComponentsHelper.findAction(name, frame);
 
+        } else if (Facet.class.isAssignableFrom(type)) {
+            // Injecting non-visual component
+
+            String[] elements = ValuePathHelper.parse(name);
+            if (elements.length == 1) {
+                return frame.getFacet(name);
+            }
+
+            String prefix = pathPrefix(elements);
+            Component component = frame.getComponent(prefix);
+
+            if (component == null) {
+                return null;
+            }
+
+            if (!(component instanceof Fragment)) {
+                throw new UnsupportedOperationException(
+                        String.format("Unable to inject facet with id %s and type %s. Component %s is not a fragment",
+                                name, type, prefix)
+                );
+            }
+
+            String facetId = elements[elements.length - 1];
+            return ((Fragment) component).getFacet(facetId);
+
         } else if (ExportDisplay.class.isAssignableFrom(type)) {
             // Injecting an ExportDisplay
             ExportDisplay exportDisplay = beanLocator.get(ExportDisplay.NAME);
@@ -726,8 +728,8 @@ public class UiControllerDependencyInjector {
         String packageName = UiControllerUtils.getPackage(screenClass);
         messageBundle.setMessagesPack(packageName);
 
-        if (frame instanceof Component.HasXmlDescriptor) {
-            Element xmlDescriptor = ((Component.HasXmlDescriptor) frame).getXmlDescriptor();
+        if (frame instanceof HasXmlDescriptor) {
+            Element xmlDescriptor = ((HasXmlDescriptor) frame).getXmlDescriptor();
             if (xmlDescriptor != null) {
                 String messagePack = xmlDescriptor.attributeValue("messagesPack");
                 if (messagePack != null) {
@@ -761,208 +763,6 @@ public class UiControllerDependencyInjector {
                 throw new RuntimeException("CDI - Unable to assign value through setter "
                         + method.getName(), e);
             }
-        }
-    }
-
-    public static class InstalledFunction implements Function {
-        private final FrameOwner frameOwner;
-        private final Method method;
-
-        public InstalledFunction(FrameOwner frameOwner, Method method) {
-            this.frameOwner = frameOwner;
-            this.method = method;
-        }
-
-        @Override
-        public Object apply(Object o) {
-            try {
-                return method.invoke(frameOwner, o);
-            } catch (IllegalAccessException | InvocationTargetException e) {
-                throw new RuntimeException("Exception on @Install invocation", e);
-            }
-        }
-
-        @Override
-        public String toString() {
-            return "InstalledFunction{" +
-                    "frameOwner=" + frameOwner.getClass() +
-                    ", method=" + method +
-                    '}';
-        }
-    }
-
-    public static class InstalledConsumer implements Consumer {
-        private final FrameOwner frameOwner;
-        private final Method method;
-
-        public InstalledConsumer(FrameOwner frameOwner, Method method) {
-            this.frameOwner = frameOwner;
-            this.method = method;
-        }
-
-        @Override
-        public void accept(Object o) {
-            try {
-                method.invoke(frameOwner, o);
-            } catch (IllegalAccessException | InvocationTargetException e) {
-                if (e instanceof InvocationTargetException
-                        && ((InvocationTargetException) e).getTargetException() instanceof RuntimeException) {
-                    throw (RuntimeException) ((InvocationTargetException) e).getTargetException();
-                }
-
-                throw new RuntimeException("Exception on @Install invocation", e);
-            }
-        }
-
-        @Override
-        public String toString() {
-            return "InstalledConsumer{" +
-                    "frameOwner=" + frameOwner.getClass() +
-                    ", method=" + method +
-                    '}';
-        }
-    }
-
-    public static class InstalledRunnable implements Runnable {
-        private final FrameOwner frameOwner;
-        private final Method method;
-
-        public InstalledRunnable(FrameOwner frameOwner, Method method) {
-            this.frameOwner = frameOwner;
-            this.method = method;
-        }
-
-        @Override
-        public void run() {
-            try {
-                method.invoke(frameOwner);
-            } catch (IllegalAccessException | InvocationTargetException e) {
-                if (e instanceof InvocationTargetException
-                        && ((InvocationTargetException) e).getTargetException() instanceof RuntimeException) {
-                    throw (RuntimeException) ((InvocationTargetException) e).getTargetException();
-                }
-
-                throw new RuntimeException("Exception on @Install invocation", e);
-            }
-        }
-
-        @Override
-        public String toString() {
-            return "InstalledRunnable{" +
-                    "target=" + frameOwner.getClass() +
-                    ", method=" + method +
-                    '}';
-        }
-    }
-
-    public static class InstalledSupplier implements Supplier {
-        private final FrameOwner frameOwner;
-        private final Method method;
-
-        public InstalledSupplier(FrameOwner frameOwner, Method method) {
-            this.frameOwner = frameOwner;
-            this.method = method;
-        }
-
-        @Override
-        public Object get() {
-            try {
-                return method.invoke(frameOwner);
-            } catch (IllegalAccessException | InvocationTargetException e) {
-                if (e instanceof InvocationTargetException
-                        && ((InvocationTargetException) e).getTargetException() instanceof RuntimeException) {
-                    throw (RuntimeException) ((InvocationTargetException) e).getTargetException();
-                }
-
-                throw new RuntimeException("Exception on @Install invocation", e);
-            }
-        }
-
-        @Override
-        public String toString() {
-            return "InstalledSupplier{" +
-                    "target=" + frameOwner.getClass() +
-                    ", method=" + method +
-                    '}';
-        }
-    }
-
-    public static class InstalledBiFunction implements BiFunction {
-        private final FrameOwner frameOwner;
-        private final Method method;
-
-        public InstalledBiFunction(FrameOwner frameOwner, Method method) {
-            this.frameOwner = frameOwner;
-            this.method = method;
-        }
-
-        @Override
-        public Object apply(Object o1, Object o2) {
-            try {
-                return method.invoke(frameOwner, o1, o2);
-            } catch (IllegalAccessException | InvocationTargetException e) {
-                if (e instanceof InvocationTargetException
-                        && ((InvocationTargetException) e).getTargetException() instanceof RuntimeException) {
-                    throw (RuntimeException) ((InvocationTargetException) e).getTargetException();
-                }
-
-                throw new RuntimeException("Exception on @Install invocation", e);
-            }
-        }
-
-        @Override
-        public String toString() {
-            return "InstalledBiFunction{" +
-                    "frameOwner=" + frameOwner.getClass() +
-                    ", method=" + method +
-                    '}';
-        }
-    }
-
-    public static class InstalledProxyHandler implements InvocationHandler {
-        private final FrameOwner frameOwner;
-        private final Method method;
-
-        public InstalledProxyHandler(FrameOwner frameOwner, Method method) {
-            this.frameOwner = frameOwner;
-            this.method = method;
-        }
-
-        @Override
-        public Object invoke(Object proxy, Method invokedMethod, Object[] args) throws Throwable {
-            if ("toString".equals(invokedMethod.getName())) {
-                return this.toString();
-            }
-            if ("equals".equals(invokedMethod.getName())) {
-                return args.length == 1 && args[0] == proxy;
-            }
-            if ("hashCode".equals(invokedMethod.getName())) {
-                return this.hashCode();
-            }
-
-            if (invokedMethod.getParameterCount() == method.getParameterCount()) {
-                try {
-                    return this.method.invoke(frameOwner, args);
-                } catch (InvocationTargetException e) {
-                    if (e.getTargetException() instanceof RuntimeException) {
-                        throw e.getTargetException();
-                    }
-
-                    throw e.getTargetException();
-                }
-            }
-
-            throw new UnsupportedOperationException(
-                    String.format("InstalledProxyHandler does not support method %s. Check types and number of parameters",
-                            invokedMethod));
-        }
-
-        @Override
-        public String toString() {
-            return "InstalledProxyHandler{" +
-                    "frameOwner=" + frameOwner.getClass() +
-                    ", method=" + method +
-                    '}';
         }
     }
 }

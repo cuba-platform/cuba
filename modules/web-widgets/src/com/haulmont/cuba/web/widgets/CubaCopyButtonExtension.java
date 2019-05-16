@@ -21,12 +21,14 @@ import com.haulmont.cuba.web.widgets.client.button.CubaCopyButtonExtensionState;
 import com.vaadin.server.AbstractExtension;
 import com.vaadin.server.Page;
 import com.vaadin.server.WebBrowser;
+import com.vaadin.shared.Registration;
 import com.vaadin.ui.Button;
 import com.vaadin.util.ReflectTools;
 
 import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.util.EventObject;
+import java.util.Objects;
 
 public class CubaCopyButtonExtension extends AbstractExtension {
 
@@ -36,6 +38,7 @@ public class CubaCopyButtonExtension extends AbstractExtension {
         component = button;
         extend(component);
 
+        //noinspection Convert2Lambda
         registerRpc(new CubaCopyButtonExtensionServerRpc() {
             @Override
             public void copied(boolean success) {
@@ -69,13 +72,9 @@ public class CubaCopyButtonExtension extends AbstractExtension {
     }
 
     public void setCopyTargetSelector(String targetElementClass) {
-        if (!equalValues(getState(false).copyTargetSelector, targetElementClass)) {
+        if (!Objects.equals(getState(false).copyTargetSelector, targetElementClass)) {
             getState().copyTargetSelector = targetElementClass;
         }
-    }
-
-    protected boolean equalValues(Object a, Object b) {
-        return a == b || (a != null && a.equals(b));
     }
 
     public static class CopyEvent extends EventObject {
@@ -97,12 +96,8 @@ public class CubaCopyButtonExtension extends AbstractExtension {
 
     private static Method COPY_METHOD = ReflectTools.findMethod(CopyListener.class, "copied", CopyEvent.class);
 
-    public void addCopyListener(CopyListener listener) {
-        addListener(CopyEvent.class, listener, COPY_METHOD);
-    }
-
-    public void removeCopyListener(CopyListener listener) {
-        removeListener(CopyEvent.class, listener, COPY_METHOD);
+    public Registration addCopyListener(CopyListener listener) {
+        return addListener(CopyEvent.class, listener, COPY_METHOD);
     }
 
     public static boolean browserSupportCopy() {

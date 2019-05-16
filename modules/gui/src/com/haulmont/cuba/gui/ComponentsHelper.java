@@ -100,31 +100,28 @@ public abstract class ComponentsHelper {
     @Nullable
     public static Component getWindowComponent(Window window, String id) {
         String[] elements = ValuePathHelper.parse(id);
+
         FrameImplementation frameImpl = (FrameImplementation) window;
         if (elements.length == 1) {
-            Component component = frameImpl.getRegisteredComponent(id);
-            if (component != null) {
-                return component;
-            } else {
-                return window.getTimer(id);
-            }
+            return frameImpl.getRegisteredComponent(id);
+                // todo timers should be find using getFacet()
+//                return window.getTimer(id);
         } else {
             Component innerComponent = frameImpl.getRegisteredComponent(elements[0]);
             if (innerComponent instanceof FieldGroup) {
-                List<String> subList = Arrays.asList(elements).subList(1, elements.length);
-                String subPath = ValuePathHelper.format(subList.toArray(new String[0]));
+                String subPath = ValuePathHelper.pathSuffix(elements);
 
                 FieldGroup fieldGroup = (FieldGroup) innerComponent;
                 FieldGroup.FieldConfig field = fieldGroup.getField(subPath);
 
                 return field != null ? field.getComponent() : null;
             } else if (innerComponent instanceof ComponentContainer) {
-                List<String> subList = Arrays.asList(elements).subList(1, elements.length);
-                String subPath = ValuePathHelper.format(subList.toArray(new String[0]));
+
+                String subPath = ValuePathHelper.pathSuffix(elements);
                 return ((ComponentContainer) innerComponent).getComponent(subPath);
             } else if (innerComponent instanceof HasNamedComponents) {
-                List<String> subList = Arrays.asList(elements).subList(1, elements.length);
-                String subPath = ValuePathHelper.format(subList.toArray(new String[0]));
+
+                String subPath = ValuePathHelper.pathSuffix(elements);
                 return ((HasNamedComponents) innerComponent).getComponent(subPath);
             }
 
@@ -145,20 +142,19 @@ public abstract class ComponentsHelper {
         } else {
             Component innerComponent = frameImpl.getRegisteredComponent(elements[0]);
             if (innerComponent instanceof FieldGroup) {
-                List<String> subList = Arrays.asList(elements).subList(1, elements.length);
-                String subPath = ValuePathHelper.format(subList.toArray(new String[0]));
+                String subPath = ValuePathHelper.pathSuffix(elements);
 
                 FieldGroup fieldGroup = (FieldGroup) innerComponent;
                 FieldGroup.FieldConfig field = fieldGroup.getField(subPath);
 
                 return field != null ? field.getComponent() : null;
             } else if (innerComponent instanceof ComponentContainer) {
-                List<String> subList = Arrays.asList(elements).subList(1, elements.length);
-                String subPath = ValuePathHelper.format(subList.toArray(new String[0]));
+
+                String subPath = ValuePathHelper.pathSuffix(elements);
                 return ((ComponentContainer) innerComponent).getComponent(subPath);
             } else if (innerComponent instanceof HasNamedComponents) {
-                List<String> subList = Arrays.asList(elements).subList(1, elements.length);
-                String subPath = ValuePathHelper.format(subList.toArray(new String[0]));
+
+                String subPath = ValuePathHelper.pathSuffix(elements);
                 return ((HasNamedComponents) innerComponent).getComponent(subPath);
             }
 
@@ -185,20 +181,19 @@ public abstract class ComponentsHelper {
                 return getComponentByIteration(container, id);
             } else {
                 if (innerComponent instanceof FieldGroup) {
-                    List<String> subList = Arrays.asList(elements).subList(1, elements.length);
-                    String subPath = ValuePathHelper.format(subList.toArray(new String[0]));
+                    String subPath = ValuePathHelper.pathSuffix(elements);
 
                     FieldGroup fieldGroup = (FieldGroup) innerComponent;
                     FieldGroup.FieldConfig field = fieldGroup.getField(subPath);
 
                     return field != null ? field.getComponent() : null;
                 } else if (innerComponent instanceof ComponentContainer) {
-                    List<String> subList = Arrays.asList(elements).subList(1, elements.length);
-                    String subPath = ValuePathHelper.format(subList.toArray(new String[0]));
+
+                    String subPath = ValuePathHelper.pathSuffix(elements);
                     return ((com.haulmont.cuba.gui.components.ComponentContainer) innerComponent).getComponent(subPath);
                 } else if (innerComponent instanceof HasNamedComponents) {
-                    List<String> subList = Arrays.asList(elements).subList(1, elements.length);
-                    String subPath = ValuePathHelper.format(subList.toArray(new String[0]));
+
+                    String subPath = ValuePathHelper.pathSuffix(elements);
                     return ((HasNamedComponents) innerComponent).getComponent(subPath);
                 }
 
@@ -491,18 +486,18 @@ public abstract class ComponentsHelper {
         if (elements.length > 1) {
             String id = elements[elements.length - 1];
 
-            String[] subPath = ArrayUtils.subarray(elements, 0, elements.length - 1);
-            Component component = frame.getComponent(ValuePathHelper.format(subPath));
+            String prefix = ValuePathHelper.pathPrefix(elements);
+            Component component = frame.getComponent(prefix);
             if (component != null) {
                 if (component instanceof ActionsHolder) {
                     return ((ActionsHolder) component).getAction(id);
                 } else {
                     throw new IllegalArgumentException(
-                            String.format("Component '%s' can't contain actions", Arrays.toString(subPath)));
+                            String.format("Component '%s' can't contain actions", prefix));
                 }
             } else {
                 throw new IllegalArgumentException(
-                        String.format("Can't find component '%s'", Arrays.toString(subPath)));
+                        String.format("Can't find component '%s'", prefix));
             }
         } else if (elements.length == 1) {
             String id = elements[0];
@@ -544,10 +539,12 @@ public abstract class ComponentsHelper {
         return height + heightUnit.getSymbol();
     }
 
+    @Deprecated
     public static boolean hasFullWidth(Component c) {
         return (int) c.getWidth() == 100 && c.getWidthSizeUnit() == SizeUnit.PERCENTAGE;
     }
 
+    @Deprecated
     public static boolean hasFullHeight(Component c) {
         return (int) c.getHeight() == 100 && c.getHeightSizeUnit() == SizeUnit.PERCENTAGE;
     }
@@ -582,21 +579,6 @@ public abstract class ComponentsHelper {
         if (actions.contains(ListActionType.REFRESH)) {
             owner.addAction(RefreshAction.create(owner));
         }
-    }
-
-    /**
-     * Converts \n and \t symbols to HTML form.
-     *
-     * @param message HTML text
-     * @return HTML text or null if the input is null
-     */
-    public static String preprocessHtmlMessage(String message) {
-        if (message == null) {
-            return null;
-        }
-        String html = StringUtils.replace(message, "\n", "<br/>");
-        html = StringUtils.replace(html, "\t", "&nbsp;&nbsp;&nbsp;&nbsp;");
-        return html;
     }
 
     /**

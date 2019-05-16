@@ -74,6 +74,7 @@ import org.apache.commons.lang3.StringUtils;
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -390,7 +391,7 @@ public class CubaFoldersPane extends VerticalLayout {
         userSettingsTools.saveFoldersState(visible, -1, verticalSplitPos);
     }
 
-    protected CubaTimer.ActionListener createAppFolderUpdater() {
+    protected Consumer<CubaTimer> createAppFolderUpdater() {
         return new AppFoldersUpdater();
     }
 
@@ -892,7 +893,7 @@ public class CubaFoldersPane extends VerticalLayout {
         }
 
         @Override
-        public List<AppFolder> run(TaskLifeCycle<Integer> taskLifeCycle) throws Exception {
+        public List<AppFolder> run(TaskLifeCycle<Integer> taskLifeCycle) {
             return getReloadedFolders();
         }
 
@@ -903,9 +904,9 @@ public class CubaFoldersPane extends VerticalLayout {
         }
     }
 
-    public class AppFoldersUpdater implements CubaTimer.ActionListener {
+    public class AppFoldersUpdater implements Consumer<CubaTimer> {
         @Override
-        public void timerAction(CubaTimer timer) {
+        public void accept(CubaTimer cubaTimer) {
             reloadAppFolders();
         }
     }

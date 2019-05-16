@@ -320,7 +320,7 @@ public class ConditionDescriptorsTreeBuilder implements ConditionDescriptorsTree
         String filterComponentName = ComponentsHelper.getFilterComponentPath(filter);
         String[] parts = ValuePathHelper.parse(filterComponentName);
         if (parts.length > 1) {
-            filterComponentName = ValuePathHelper.format(Arrays.copyOfRange(parts, 1, parts.length));
+            filterComponentName = ValuePathHelper.pathSuffix(parts);
         }
         return filterComponentName;
     }

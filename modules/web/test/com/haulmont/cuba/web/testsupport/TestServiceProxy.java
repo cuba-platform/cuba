@@ -35,7 +35,7 @@ public class TestServiceProxy extends LocalServiceProxy {
     private static Map<Class, Object> mocks = new HashMap<>();
 
     @Override
-    public Object getObject() throws Exception {
+    public Object getObject() {
         return Proxy.newProxyInstance(
                 getBeanClassLoader(),
                 new Class[]{getServiceInterface()},
@@ -73,17 +73,17 @@ public class TestServiceProxy extends LocalServiceProxy {
         public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
             Object mock = mocks.get(serviceInterface);
             if (mock != null) {
-                log.info("Invoking " + method + " on " + mock);
+                log.info("Invoking {} on {}", method, mock);
                 return method.invoke(mock, args);
             }
 
             Object defaultProxy = defaults.get(serviceInterface);
             if (defaultProxy != null) {
-                log.info("Invoking " + method + " on " + defaultProxy);
+                log.info("Invoking {} on {}", method, defaultProxy);
                 return method.invoke(defaultProxy, args);
             }
 
-            log.info("Returning null from " + method);
+            log.info("Returning null from {}", method);
             return null;
         }
     }

@@ -16,6 +16,7 @@
 
 package spec.cuba.web.components
 
+import com.haulmont.cuba.gui.Facets
 import com.haulmont.cuba.gui.components.*
 import com.haulmont.cuba.gui.components.mainwindow.*
 import com.haulmont.cuba.web.gui.components.JavaScriptComponent
@@ -24,7 +25,7 @@ import spec.cuba.web.WebSpec
 @SuppressWarnings("GroovyAccessibility")
 class CreateComponentTest extends WebSpec {
 
-    def "Create all standard UI components with UiComponents"() {
+    def "create all standard UI components with UiComponents"() {
         expect:
         uiComponents.create(name) != null
 
@@ -112,14 +113,26 @@ class CreateComponentTest extends WebSpec {
                 LogoutButton.NAME,
                 NewWindowButton.NAME,
                 UserIndicator.NAME,
+                UserActionsButton.NAME,
                 FoldersPane.NAME,
                 FtsField.NAME,
                 TimeZoneIndicator.NAME,
                 SideMenu.NAME,
 
-                Timer.NAME,
-
                 JavaScriptComponent.NAME
+        ]
+    }
+
+    def "create all standard facets with Facets"() {
+        def facets = cont.getBean(Facets.class)
+
+        expect:
+        facets.create(clazz) != null
+
+        where:
+        clazz << [
+                Timer.class,
+                ClipboardTrigger.class
         ]
     }
 }

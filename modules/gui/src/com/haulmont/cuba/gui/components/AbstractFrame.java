@@ -571,4 +571,25 @@ public class AbstractFrame extends ScreenFragment implements Frame, Frame.Wrappe
             parent.getChildren().remove(dsContext);
         }
     }
+
+    @Override
+    public void addFacet(Facet facet) {
+        frame.addFacet(facet);
+    }
+
+    @Nullable
+    @Override
+    public Facet getFacet(String id) {
+        return frame.getFacet(id);
+    }
+
+    @Override
+    public void removeFacet(Facet facet) {
+        frame.removeFacet(facet);
+    }
+
+    @Override
+    public Stream<Facet> getFacets() {
+        return frame.getFacets();
+    }
 }

@@ -17,7 +17,7 @@
 package com.haulmont.cuba.gui.components;
 
 /**
- * Component container which can expand enclosing components
+ * Component container which can expand enclosing components.
  */
 public interface ExpandingLayout extends ComponentContainer {
 

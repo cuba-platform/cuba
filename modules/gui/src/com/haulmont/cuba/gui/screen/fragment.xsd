@@ -25,7 +25,7 @@
     <xs:include schemaLocation="http://schemas.haulmont.com/cuba/screen/data.xsd"/>
     <xs:include schemaLocation="http://schemas.haulmont.com/cuba/screen/layout.xsd"/>
 
-    <!-- Window -->
+    <!-- Fragment -->
     <xs:element name="fragment">
         <xs:complexType>
             <xs:sequence>
@@ -40,6 +40,8 @@
                         </xs:sequence>
                     </xs:complexType>
                 </xs:element>
+
+                <xs:element name="facets" minOccurs="0" type="layout:facets"/>
 
                 <xs:element name="layout">
                     <xs:complexType>

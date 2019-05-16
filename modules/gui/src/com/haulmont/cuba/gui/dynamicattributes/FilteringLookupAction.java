@@ -37,7 +37,6 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Objects;
 
@@ -154,6 +153,6 @@ public class FilteringLookupAction extends PickerField.LookupAction {
     protected String getFilterComponentName(Filter filterComponent) {
         String filterComponentPath = ComponentsHelper.getFilterComponentPath(filterComponent);
         String[] strings = ValuePathHelper.parse(filterComponentPath);
-        return ValuePathHelper.format(Arrays.copyOfRange(strings, 1, strings.length));
+        return ValuePathHelper.pathSuffix(strings);
     }
 }

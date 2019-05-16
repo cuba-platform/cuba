@@ -27,7 +27,7 @@ import java.util.Arrays;
 public abstract class AbstractAssignActionPostInitTask implements ComponentLoader.PostInitTask {
     protected Component component;
     protected String actionId;
-    private Frame frame;
+    protected Frame frame;
 
     public AbstractAssignActionPostInitTask(Component component, String actionId, Frame frame) {
         this.component = component;
@@ -36,45 +36,47 @@ public abstract class AbstractAssignActionPostInitTask implements ComponentLoade
     }
 
     @Override
-    public void execute(ComponentLoader.ComponentContext context, Frame window) {
+    public void execute(ComponentLoader.ComponentContext context, Frame frame) {
         String[] elements = ValuePathHelper.parse(actionId);
         if (elements.length > 1) {
             String id = elements[elements.length - 1];
-            String[] subPath = ArrayUtils.subarray(elements, 0, elements.length - 1);
 
             // using this.frame to look up the component inside the actual frame
-            Component holder = this.frame.getComponent(ValuePathHelper.format(subPath));
+            String prefix = ValuePathHelper.pathPrefix(elements);
+            Component holder = this.frame.getComponent(prefix);
             if (holder == null) {
                 throw new GuiDevelopmentException(
-                        "Can't find component: " + Arrays.toString(subPath) + " for action: " + actionId,
-                        context.getFullFrameId(), "Component ID", Arrays.toString(subPath));
+                        String.format("Can't find component: %s for action: %s", prefix, actionId),
+                        context, "Component ID", prefix);
             }
 
             if (!(holder instanceof ActionsHolder)) {
                 throw new GuiDevelopmentException(String.format(
-                        "Component '%s' can't contain actions", holder.getId()), context.getFullFrameId(),
+                        "Component '%s' can't contain actions", holder.getId()), context,
                         "Holder ID", holder.getId());
             }
 
             Action action = ((ActionsHolder) holder).getAction(id);
             if (action == null) {
                 throw new GuiDevelopmentException(String.format(
-                        "Can't find action '%s' in '%s'", id, holder.getId()), context.getFullFrameId(),
+                        "Can't find action '%s' in '%s'", id, holder.getId()), context,
                         "Holder ID", holder.getId());
             }
 
             addAction(action);
         } else if (elements.length == 1) {
             String id = elements[0];
-            Action action = getActionRecursively(frame, id);
+            Action action = getActionRecursively(this.frame, id);
 
             if (action == null) {
                 if (!hasOwnAction(id)) {
                     String message = "Can't find action " + id;
-                    if (Window.Editor.WINDOW_COMMIT.equals(id) || Window.Editor.WINDOW_COMMIT_AND_CLOSE.equals(id))
+                    if (Window.Editor.WINDOW_COMMIT.equals(id) || Window.Editor.WINDOW_COMMIT_AND_CLOSE.equals(id)) {
                         message += ". This may happen if you are opening an AbstractEditor-based screen by openWindow() method, " +
                                 "for example from the main menu. Use openEditor() method or give the screen a name ended " +
                                 "with '.edit' to open it as editor from the main menu.";
+                    }
+
                     throw new GuiDevelopmentException(message, context.getFullFrameId());
                 }
             } else {

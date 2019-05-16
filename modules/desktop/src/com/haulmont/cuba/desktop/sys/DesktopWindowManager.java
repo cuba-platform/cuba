@@ -80,6 +80,7 @@ import java.net.URISyntaxException;
 import java.util.*;
 import java.util.List;
 
+import static com.haulmont.cuba.desktop.gui.components.DesktopComponentsHelper.preprocessHtmlMessage;
 import static com.haulmont.cuba.gui.ComponentsHelper.preprocessHtmlMessage;
 import static com.haulmont.cuba.gui.components.Component.AUTO_SIZE;
 import static com.haulmont.cuba.gui.components.Component.AUTO_SIZE_PX;
@@ -1436,7 +1437,7 @@ public class DesktopWindowManager extends WindowManagerImpl {
         String msg = message;
         if (!MessageType.isHTML(messageType)) {
             msg = StringEscapeUtils.escapeHtml4(msg);
-            msg = ComponentsHelper.preprocessHtmlMessage("<html>" + msg + "</html>");
+            msg = preprocessHtmlMessage("<html>" + msg + "</html>");
         } else {
             msg = "<html>" + msg + "</html>";
         }

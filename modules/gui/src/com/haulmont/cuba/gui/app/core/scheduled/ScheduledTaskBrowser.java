@@ -20,13 +20,9 @@ package com.haulmont.cuba.gui.app.core.scheduled;
 import com.haulmont.cuba.core.app.SchedulingService;
 import com.haulmont.cuba.core.entity.ScheduledTask;
 import com.haulmont.cuba.core.global.RunTaskOnceException;
-import com.haulmont.cuba.gui.ComponentsHelper;
-import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.actions.BaseAction;
-import com.haulmont.cuba.gui.components.actions.EditAction;
-import com.haulmont.cuba.gui.components.actions.ItemTrackingAction;
-import com.haulmont.cuba.gui.components.actions.RemoveAction;
+import com.haulmont.cuba.gui.components.actions.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import org.apache.commons.lang3.BooleanUtils;
 import org.slf4j.Logger;
@@ -54,7 +50,9 @@ public class ScheduledTaskBrowser extends AbstractWindow {
 
     @Override
     public void init(Map<String, Object> params) {
-        ComponentsHelper.createActions(tasksTable);
+        tasksTable.addAction(CreateAction.create(tasksTable));
+        tasksTable.addAction(EditAction.create(tasksTable));
+        tasksTable.addAction(RemoveAction.create(tasksTable));
 
         Action editAction = tasksTable.getActionNN(EditAction.ACTION_ID);
         editAction.setEnabled(false);
@@ -82,7 +80,7 @@ public class ScheduledTaskBrowser extends AbstractWindow {
             ScheduledTask singleSelected = tasksTable.getSingleSelected();
             Set<ScheduledTask> selected = tasksTable.getSelected();
             boolean isSingleSelected = selected.size() == 1;
-            boolean enableEdit = isSingleSelected && !BooleanUtils.isTrue(singleSelected.getActive());
+            boolean enableEdit = singleSelected != null && !BooleanUtils.isTrue(singleSelected.getActive());
 
             editAction.setEnabled(enableEdit);
             removeAction.setEnabled(checkAllTasksIsNotActive(selected));
@@ -141,7 +139,7 @@ public class ScheduledTaskBrowser extends AbstractWindow {
             if (task != null) {
                 Map<String, Object> params = new HashMap<>();
                 params.put("task", task);
-                openWindow("sys$ScheduledExecution.browse", WindowManager.OpenType.THIS_TAB, params);
+                openWindow("sys$ScheduledExecution.browse", OpenType.THIS_TAB, params);
             }
         }
 

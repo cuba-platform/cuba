@@ -19,7 +19,6 @@ package com.haulmont.cuba.gui.sys;
 import com.haulmont.cuba.core.global.BeanLocator;
 import com.haulmont.cuba.core.global.DevelopmentException;
 import com.haulmont.cuba.core.global.Scripting;
-import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.AbstractFrame;
 import com.haulmont.cuba.gui.components.AbstractWindow;
 import com.haulmont.cuba.gui.components.Fragment;
@@ -28,7 +27,10 @@ import com.haulmont.cuba.gui.components.compatibility.LegacyFragmentAdapter;
 import com.haulmont.cuba.gui.config.WindowAttributesProvider;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.logging.ScreenLifeCycle;
-import com.haulmont.cuba.gui.screen.*;
+import com.haulmont.cuba.gui.screen.FrameOwner;
+import com.haulmont.cuba.gui.screen.MapScreenOptions;
+import com.haulmont.cuba.gui.screen.ScreenFragment;
+import com.haulmont.cuba.gui.screen.ScreenOptions;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import com.haulmont.cuba.gui.xml.layout.ScreenXmlLoader;
 import com.haulmont.cuba.gui.xml.layout.loaders.ComponentLoaderContext;
@@ -49,7 +51,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.haulmont.cuba.gui.ComponentsHelper.getFullFrameId;
 import static com.haulmont.cuba.gui.logging.UIPerformanceLogger.createStopWatch;
+import static com.haulmont.cuba.gui.screen.UiControllerUtils.fireEvent;
 import static org.apache.commons.lang3.reflect.ConstructorUtils.invokeConstructor;
 
 /**
@@ -175,20 +179,17 @@ public class FragmentHelper {
         }
 
         @Override
-        public void execute(ComponentLoader.ComponentContext context, Frame window) {
-            String loggingId = context.getFullFrameId();
-            try {
-                StopWatch injectStopWatch = createStopWatch(ScreenLifeCycle.INJECTION, loggingId);
+        public void execute(ComponentLoader.ComponentContext windowContext, Frame window) {
+            String loggingId = getFullFrameId(this.fragment);
 
-                FrameOwner controller = fragment.getFrameOwner();
-                UiControllerDependencyInjector dependencyInjector =
-                        beanLocator.getPrototype(UiControllerDependencyInjector.NAME, controller, options);
-                dependencyInjector.inject();
+            StopWatch injectStopWatch = createStopWatch(ScreenLifeCycle.INJECTION, loggingId);
 
-                injectStopWatch.stop();
-            } catch (Throwable e) {
-                throw new RuntimeException("Unable to init custom frame class", e);
-            }
+            FrameOwner controller = fragment.getFrameOwner();
+            UiControllerDependencyInjector dependencyInjector =
+                    beanLocator.getPrototype(UiControllerDependencyInjector.NAME, controller, options);
+            dependencyInjector.inject();
+
+            injectStopWatch.stop();
         }
     }
 
@@ -207,15 +208,14 @@ public class FragmentHelper {
         }
 
         @Override
-        public void execute(ComponentLoader.ComponentContext context, Frame window) {
-            String loggingId = ComponentsHelper.getFullFrameId(this.fragment);
+        public void execute(ComponentLoader.ComponentContext windowContext, Frame window) {
+            String loggingId = getFullFrameId(this.fragment);
 
             StopWatch stopWatch = createStopWatch(ScreenLifeCycle.INIT, loggingId);
 
             ScreenFragment frameOwner = fragment.getFrameOwner();
 
-            UiControllerUtils.fireEvent(frameOwner,
-                    ScreenFragment.InitEvent.class,
+            fireEvent(frameOwner, ScreenFragment.InitEvent.class,
                     new ScreenFragment.InitEvent(frameOwner, options));
 
             // compatibility with old screens in frames
@@ -229,8 +229,7 @@ public class FragmentHelper {
 
             stopWatch.stop();
 
-            UiControllerUtils.fireEvent(frameOwner,
-                    ScreenFragment.AfterInitEvent.class,
+            fireEvent(frameOwner, ScreenFragment.AfterInitEvent.class,
                     new ScreenFragment.AfterInitEvent(frameOwner, options));
 
             List<UiControllerProperty> properties = fragmentLoaderContext.getProperties();
@@ -246,8 +245,7 @@ public class FragmentHelper {
             // fire attached
 
             if (!fragmentContext.isManualInitRequired()) {
-                UiControllerUtils.fireEvent(frameOwner,
-                        ScreenFragment.AttachEvent.class,
+                fireEvent(frameOwner, ScreenFragment.AttachEvent.class,
                         new ScreenFragment.AttachEvent(frameOwner));
             }
         }

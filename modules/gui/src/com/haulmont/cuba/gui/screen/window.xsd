@@ -44,6 +44,8 @@
 
                 <xs:element name="dialogMode" minOccurs="0" type="layout:dialogMode"/>
 
+                <xs:element name="facets" minOccurs="0" type="layout:facets"/>
+
                 <xs:element name="layout">
                     <xs:complexType>
                         <xs:complexContent>

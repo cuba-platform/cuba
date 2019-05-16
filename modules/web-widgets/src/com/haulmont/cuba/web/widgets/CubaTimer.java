@@ -32,10 +32,8 @@ public class CubaTimer extends AbstractExtension implements CubaTimerServerRpc {
 
     private static final Logger log = LoggerFactory.getLogger(CubaTimer.class);
 
-    protected final List<ActionListener> actionListeners = new ArrayList<>();
-    protected List<StopListener> stopListeners; // lazily initialized
-
-    protected Consumer<Exception> exceptionHandler;
+    protected List<Consumer<CubaTimer>> actionListeners = new ArrayList<>(2);
+    protected List<Consumer<CubaTimer>> stopListeners; // lazily initialized
 
     public CubaTimer() {
         registerRpc(this);
@@ -83,26 +81,28 @@ public class CubaTimer extends AbstractExtension implements CubaTimerServerRpc {
         }
     }
 
+    @SuppressWarnings("unchecked")
     public void stop() {
         if (getState(false).running) {
             getRpcProxy(CubaTimerClientRpc.class).setRunning(false);
 
             if (stopListeners != null) {
-                for (StopListener stopListener : new ArrayList<>(stopListeners)) {
-                    stopListener.timerStopped(this);
+                for (Object listener : stopListeners.toArray()) {
+                    ((Consumer<CubaTimer>) listener).accept(this);
                 }
             }
             getState().running = false;
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void onTimer() {
         try {
             long startTime = System.currentTimeMillis();
 
-            for (ActionListener listener : new ArrayList<>(actionListeners)) {
-                listener.timerAction(this);
+            for (Object listener : actionListeners.toArray()) {
+                ((Consumer<CubaTimer>) listener).accept(this);
             }
 
             long endTime = System.currentTimeMillis();
@@ -110,28 +110,12 @@ public class CubaTimer extends AbstractExtension implements CubaTimerServerRpc {
                 long duration = endTime - startTime;
                 log.warn("Too long timer {} processing: {} ms ", getLoggingTimerId(), duration);
             }
-        } catch (RuntimeException e) {
-            handleOnTimerException(e);
         } finally {
             getRpcProxy(CubaTimerClientRpc.class).requestCompleted();
         }
     }
 
-    protected void handleOnTimerException(RuntimeException e) {
-        if (this.exceptionHandler != null) {
-            this.exceptionHandler.accept(e);
-        }
-    }
-
-    public Consumer<Exception> getExceptionHandler() {
-        return exceptionHandler;
-    }
-
-    public void setExceptionHandler(Consumer<Exception> exceptionHandler) {
-        this.exceptionHandler = exceptionHandler;
-    }
-
-    public String getLoggingTimerId() {
+    protected String getLoggingTimerId() {
         String timerId = "<noid>";
         if (getState(false).timerId != null) {
             timerId = getState(false).timerId;
@@ -150,17 +134,7 @@ public class CubaTimer extends AbstractExtension implements CubaTimerServerRpc {
         getState().timerId = id;
     }
 
-    public interface ActionListener {
-
-        void timerAction(CubaTimer timer);
-    }
-
-    public interface StopListener {
-
-        void timerStopped(CubaTimer timer);
-    }
-
-    public void addActionListener(ActionListener listener) {
+    public void addActionListener(Consumer<CubaTimer> listener) {
         if (!actionListeners.contains(listener)) {
             actionListeners.add(listener);
 
@@ -168,13 +142,13 @@ public class CubaTimer extends AbstractExtension implements CubaTimerServerRpc {
         }
     }
 
-    public void removeActionListener(ActionListener listener) {
+    public void removeActionListener(Consumer<CubaTimer> listener) {
         if (actionListeners.remove(listener)) {
             markAsDirty();
         }
     }
 
-    public void addStopListener(StopListener listener) {
+    public void addStopListener(Consumer<CubaTimer> listener) {
         if (stopListeners == null) {
             stopListeners = new ArrayList<>();
         }
@@ -185,7 +159,7 @@ public class CubaTimer extends AbstractExtension implements CubaTimerServerRpc {
         }
     }
 
-    public void removeStopListeners(StopListener listener) {
+    public void removeStopListeners(Consumer<CubaTimer> listener) {
         if (stopListeners != null) {
             if (stopListeners.remove(listener)) {
                 markAsDirty();

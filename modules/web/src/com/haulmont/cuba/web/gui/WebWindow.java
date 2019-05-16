@@ -36,7 +36,6 @@ import com.haulmont.cuba.web.gui.components.WebFrameActionsHolder;
 import com.haulmont.cuba.web.gui.components.WebWrapperUtils;
 import com.haulmont.cuba.web.widgets.CubaVerticalActionsLayout;
 import com.haulmont.cuba.web.widgets.HtmlAttributesExtension;
-import com.vaadin.server.ClientConnector;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.AbstractOrderedLayout;
@@ -55,22 +54,19 @@ import java.util.stream.Stream;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
-public abstract class WebWindow implements Window, Component.Wrapper,
-        Component.HasXmlDescriptor, WrappedWindow, Component.Disposable,
-        SecuredActionsHolder, Component.HasIcon,
-        FrameImplementation, WindowImplementation {
+public abstract class WebWindow implements Window, Component.Wrapper, Component.HasXmlDescriptor, WrappedWindow,
+        SecuredActionsHolder, Component.HasIcon, FrameImplementation, WindowImplementation {
 
     protected static final String C_WINDOW_LAYOUT = "c-window-layout";
 
     private static final Logger log = LoggerFactory.getLogger(WebWindow.class);
 
     protected String id;
-    protected String debugId;
+
+    protected Set<Facet> facets = null; // lazily initialized linked hash set
 
     protected List<Component> ownComponents = new ArrayList<>();
     protected Map<String, Component> allComponents = new HashMap<>(4);
-
-    protected List<Timer> timers = null; // lazy initialized timers list
 
     protected String focusComponentId;
 
@@ -90,8 +86,6 @@ public abstract class WebWindow implements Window, Component.Wrapper,
     protected ActionsPermissions actionsPermissions = new ActionsPermissions(this);
 
     protected Icons icons;
-
-    protected boolean disposed = false;
 
     protected DialogOptions dialogOptions; // lazily initialized
 
@@ -113,6 +107,19 @@ public abstract class WebWindow implements Window, Component.Wrapper,
             eventHub = new EventHub();
         }
         return eventHub;
+    }
+
+    protected <E> void publish(Class<E> eventType, E event) {
+        if (eventHub != null) {
+            eventHub.publish(eventType, event);
+        }
+    }
+
+    protected <E> boolean unsubscribe(Class<E> eventType, Consumer<E> listener) {
+        if (eventHub != null) {
+            return eventHub.unsubscribe(eventType, listener);
+        }
+        return false;
     }
 
     @Inject
@@ -156,6 +163,53 @@ public abstract class WebWindow implements Window, Component.Wrapper,
 
     protected com.vaadin.ui.ComponentContainer getContainer() {
         return component;
+    }
+
+    @Override
+    public void addFacet(Facet facet) {
+        checkNotNullArgument(facet);
+
+        if (facets == null) {
+            facets = new HashSet<>();
+        }
+
+        if (!facets.contains(facet)) {
+            facets.add(facet);
+            facet.setOwner(this);
+        }
+    }
+
+    @Nullable
+    @Override
+    public Facet getFacet(String id) {
+        checkNotNullArgument(id);
+
+        if (facets == null) {
+            return null;
+        }
+
+        return facets.stream()
+                .filter(f -> id.equals(f.getId()))
+                .findFirst()
+                .orElse(null);
+    }
+
+    @Override
+    public void removeFacet(Facet facet) {
+        checkNotNullArgument(facet);
+
+        if (facets != null
+                && facets.remove(facet)) {
+            facet.setOwner(null);
+        }
+    }
+
+    @Override
+    public Stream<Facet> getFacets() {
+        if (facets == null) {
+            return Stream.empty();
+        }
+        return facets.stream();
     }
 
     @Override
@@ -373,10 +427,11 @@ public abstract class WebWindow implements Window, Component.Wrapper,
             try {
                 field.validate();
             } catch (ValidationException e) {
-                if (log.isTraceEnabled())
+                if (log.isTraceEnabled()) {
                     log.trace("Validation failed", e);
-                else if (log.isDebugEnabled())
+                } else if (log.isDebugEnabled()) {
                     log.debug("Validation failed: " + e);
+                }
 
                 ComponentsHelper.fillErrorMessages(field, e, errors);
             }
@@ -406,12 +461,13 @@ public abstract class WebWindow implements Window, Component.Wrapper,
     }
 
     protected boolean handleValidationErrors(ValidationErrors errors) {
-        if (errors.isEmpty())
-            return true;
+        Component firstComponent = errors.getFirstComponent();
+        if (firstComponent != null) {
+            ComponentsHelper.focusComponent(firstComponent);
+            return false;
+        }
 
-        WebComponentsHelper.focusProblemComponent(errors);
-
-        return false;
+        return true;
     }
 
     @Override
@@ -420,10 +476,6 @@ public abstract class WebWindow implements Window, Component.Wrapper,
             dialogOptions = new DialogOptions();
         }
         return dialogOptions;
-    }
-
-    public boolean hasDialogOptions() {
-        return dialogOptions != null;
     }
 
     @Override
@@ -546,66 +598,30 @@ public abstract class WebWindow implements Window, Component.Wrapper,
 
     @Override
     public void removeBeforeWindowCloseListener(Consumer<BeforeCloseEvent> listener) {
-        getEventHub().unsubscribe(BeforeCloseEvent.class, listener);
+        unsubscribe(BeforeCloseEvent.class, listener);
     }
 
     public void fireBeforeClose(BeforeCloseEvent event) {
-        getEventHub().publish(BeforeCloseEvent.class, event);
+        publish(BeforeCloseEvent.class, event);
     }
 
     @Override
     public void addTimer(Timer timer) {
-        if (component.isAttached()) {
-            attachTimerToUi((WebTimer) timer);
-        } else {
-            component.addAttachListener(new ClientConnector.AttachListener() {
-                @Override
-                public void attach(ClientConnector.AttachEvent event) {
-                    if (timers.contains(timer)) {
-                        attachTimerToUi((WebTimer) timer);
-                    }
-                    // execute attach listener only once
-                    component.removeAttachListener(this);
-                }
-            });
-        }
-
-        if (timers == null) {
-            timers = new ArrayList<>(2);
-        }
-        timers.add(timer);
-    }
-
-    protected void attachTimerToUi(WebTimer timer) {
-        AppUI appUI = (AppUI) component.getUI();
-        appUI.addTimer(timer.getTimerImpl());
+        addFacet(timer);
     }
 
     @Override
     public Timer getTimer(String id) {
-        if (timers == null) {
+        if (facets == null) {
             return null;
         }
 
-        return timers.stream()
+        return facets.stream()
+                .filter(f -> f instanceof Timer)
+                .map(f -> (Timer) f)
                 .filter(timer -> Objects.equals(timer.getId(), id))
                 .findFirst()
                 .orElse(null);
-    }
-
-    /**
-     * Completely stop and remove timers of the window.
-     */
-    public void stopTimers() {
-        AppUI appUI = AppUI.getCurrent();
-        if (timers != null) {
-            for (Timer timer : timers) {
-                timer.stop();
-                WebTimer webTimer = (WebTimer) timer;
-                appUI.removeTimer(webTimer.getTimerImpl());
-            }
-            timers.clear();
-        }
     }
 
     @Override
@@ -732,8 +748,7 @@ public abstract class WebWindow implements Window, Component.Wrapper,
 
         AppUI ui = AppUI.getCurrent();
         if (ui != null
-                && ui.isPerformanceTestMode()
-                && StringUtils.isEmpty(debugId)) {
+                && ui.isPerformanceTestMode()) {
             getComponent().setId(ui.getTestIdManager().getTestId("window_" + id));
         }
     }
@@ -930,18 +945,6 @@ public abstract class WebWindow implements Window, Component.Wrapper,
     @Override
     public void setFrame(Frame frame) {
         throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void dispose() {
-        stopTimers();
-
-        disposed = true;
-    }
-
-    @Override
-    public boolean isDisposed() {
-        return disposed;
     }
 
     @Override

@@ -22,7 +22,10 @@ import com.haulmont.cuba.gui.screen.FrameOwner;
 import com.haulmont.cuba.gui.screen.Screen;
 import com.haulmont.cuba.gui.screen.ScreenFragment;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.List;
+import java.util.stream.Stream;
 
 /**
  * Root class of UI components having controller.
@@ -84,6 +87,49 @@ public interface Frame
      * @return true if the validation was successful, false if there were any problems
      */
     boolean validateAll();
+
+    /**
+     * JavaDoc
+     *
+     * @param facet
+     */
+    void addFacet(Facet facet);
+
+    /**
+     * JavaDoc
+     *
+     * @param id
+     * @return
+     */
+    @Nullable
+    Facet getFacet(String id);
+
+    /**
+     * JavaDoc
+     *
+     * @param id
+     * @return
+     */
+    @Nonnull
+    default Facet getFacetNN(String id) {
+        Facet facet = getFacet(id);
+        if (facet == null) {
+            throw new IllegalArgumentException("No facet with id " + id);
+        }
+        return facet;
+    }
+
+    /**
+     * JavaDoc
+     *
+     * @param facet
+     */
+    void removeFacet(Facet facet);
+
+    /**
+     * @return JavaDoc
+     */
+    Stream<Facet> getFacets();
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

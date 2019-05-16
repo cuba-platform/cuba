@@ -33,10 +33,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationListener;
 
 import javax.annotation.Nullable;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Stream;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 import static com.haulmont.cuba.web.gui.components.WebWrapperUtils.toVaadinAlignment;
@@ -48,11 +46,61 @@ public class WebFragment extends WebVBoxLayout implements Fragment, FragmentImpl
     protected FrameContext context;
     protected ScreenFragment frameOwner;
 
+    protected Set<Facet> facets = null; // lazily initialized hash set
+
     protected Map<String, Component> allComponents = new HashMap<>();
     protected WebFrameActionsHolder actionsHolder = new WebFrameActionsHolder(this);
 
     public WebFragment() {
         component.addActionHandler(actionsHolder);
+    }
+
+    @Override
+    public void addFacet(Facet facet) {
+        checkNotNullArgument(facet);
+
+        if (facets == null) {
+            facets = new HashSet<>();
+        }
+
+        if (!facets.contains(facet)) {
+            facets.add(facet);
+            facet.setOwner(this);
+        }
+    }
+
+    @Nullable
+    @Override
+    public Facet getFacet(String id) {
+        checkNotNullArgument(id);
+
+        if (facets == null) {
+            return null;
+        }
+
+        return facets.stream()
+                .filter(f -> id.equals(f.getId()))
+                .findFirst()
+                .orElse(null);
+    }
+
+    @Override
+    public void removeFacet(Facet facet) {
+        checkNotNullArgument(facet);
+
+        if (facets != null) {
+            if (facets.remove(facet)) {
+                facet.setOwner(null);
+            }
+        }
+    }
+
+    @Override
+    public Stream<Facet> getFacets() {
+        if (facets == null) {
+            return Stream.empty();
+        }
+        return facets.stream();
     }
 
     @Override

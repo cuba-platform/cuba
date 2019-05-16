@@ -65,7 +65,6 @@ import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
 import com.haulmont.cuba.security.entity.FilterEntity;
 import com.haulmont.cuba.security.entity.SearchFolder;
 import com.haulmont.cuba.security.global.UserSession;
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Attribute;
@@ -1107,7 +1106,7 @@ public class FilterDelegateImpl implements FilterDelegate {
 
         String componentPath = ComponentsHelper.getFilterComponentPath(filter);
         String[] strings = ValuePathHelper.parse(componentPath);
-        String name = ValuePathHelper.format(ArrayUtils.subarray(strings, 1, strings.length));
+        String name = ValuePathHelper.pathSuffix(strings);
 
         Element e = settings.get(name).element("defaultFilter");
         if (e != null) {
@@ -2659,7 +2658,7 @@ public class FilterDelegateImpl implements FilterDelegate {
                 }
 
                 String[] strings = ValuePathHelper.parse(ComponentsHelper.getFilterComponentPath(filter));
-                String componentId = ValuePathHelper.format(Arrays.copyOfRange(strings, 1, strings.length));
+                String componentId = ValuePathHelper.pathSuffix(strings);
 
                 Map<String, Object> params = new HashMap<>();
                 params.put("entityType", entityType);

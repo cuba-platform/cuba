@@ -56,6 +56,20 @@ public @interface StudioComponent {
     String xmlElement() default "";
 
     /**
+     * JavaDoc
+     *
+     * @return
+     */
+    String xmlns() default "";
+
+    /**
+     * JavaDoc
+     *
+     * @return
+     */
+    String xmlnsAlias() default "";
+
+    /**
      * @return name of the default property, it will be automatically selected in Properties panel
      */
     String defaultProperty() default "";

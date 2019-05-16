@@ -36,9 +36,7 @@ import com.haulmont.cuba.gui.screen.compatibility.LegacyFrame;
 import com.haulmont.cuba.gui.settings.Settings;
 import com.haulmont.cuba.gui.util.OperationResult;
 
-import javax.annotation.CheckReturnValue;
 import javax.annotation.Nullable;
-import javax.annotation.meta.When;
 import java.util.Collection;
 import java.util.EventObject;
 import java.util.List;
@@ -78,7 +76,15 @@ public interface Window extends Frame, Component.HasCaption, Component.HasIcon {
 
     String CREATE_WINDOW_SUFFIX = ".create";
 
+    /**
+     * Sets the closable status for the window.
+     *
+     * @param closeable closeable flag
+     */
     void setCloseable(boolean closeable);
+    /**
+     * @return true if the window can be closed by user with close button or keyboard shortcut
+     */
     boolean isCloseable();
 
     /**
@@ -125,6 +131,9 @@ public interface Window extends Frame, Component.HasCaption, Component.HasIcon {
      */
     String getMaxHeight();
 
+    /**
+     * @return UI controller of the window
+     */
     @Override
     Screen getFrameOwner();
 
@@ -277,7 +286,9 @@ public interface Window extends Frame, Component.HasCaption, Component.HasIcon {
      * <br> The timer added to the window is stopped when the window is closed.
      *
      * @param timer Timer instance
+     * @deprecated Use {@link #addFacet(Facet)} instead
      */
+    @Deprecated
     void addTimer(Timer timer);
 
     /**
@@ -285,8 +296,10 @@ public interface Window extends Frame, Component.HasCaption, Component.HasIcon {
      *
      * @param id timer ID
      * @return timer instance or null if not found
+     * @deprecated Use {@link #getFacet(String)} instead
      */
     @Nullable
+    @Deprecated
     Timer getTimer(String id);
 
     /**
@@ -652,7 +665,6 @@ public interface Window extends Frame, Component.HasCaption, Component.HasIcon {
      * @param listener the listener to register
      * @return a registration object for removing an event listener added to a window
      */
-    @CheckReturnValue(when = When.NEVER)
     Subscription addBeforeWindowCloseListener(Consumer<BeforeCloseEvent> listener);
 
     /**

@@ -23,11 +23,22 @@ import com.haulmont.cuba.gui.components.compatibility.TimerStopListenerWrapper;
 import java.util.EventObject;
 import java.util.function.Consumer;
 
-public interface Timer extends Component.BelongToFrame {
+/**
+ * Client-side timer component that fires events at fixed intervals.
+ */
+public interface Timer extends Facet {
 
     String NAME = "timer";
 
+    /**
+     * @return true if timer action is repetitive
+     */
     boolean isRepeating();
+    /**
+     * Sets repetitive mode for timer action.
+     *
+     * @param repeating repeating flag
+     */
     void setRepeating(boolean repeating);
 
     /**
@@ -51,15 +62,89 @@ public interface Timer extends Component.BelongToFrame {
     void stop();
 
     /**
-     * Listener for timer events.
+     * Adds {@link TimerActionEvent} listener.
+     *
+     * @param listener listener
+     * @return subscription
      */
+    Subscription addTimerActionListener(Consumer<TimerActionEvent> listener);
+
+    /**
+     * Adds {@link TimerStopEvent} listener.
+     *
+     * @param listener listener
+     * @return subscription
+     */
+    Subscription addTimerStopListener(Consumer<TimerStopEvent> listener);
+
+    /**
+     * Event fired on timer tick.
+     *
+     * @see #addTimerActionListener(Consumer)
+     */
+    class TimerActionEvent extends EventObject {
+        public TimerActionEvent(Timer source) {
+            super(source);
+        }
+
+        @Override
+        public Timer getSource() {
+            return (Timer) super.getSource();
+        }
+    }
+
+    /**
+     * Event fired on timer stop after {@link #stop()} call.
+     *
+     * @see #addTimerStopListener(Consumer)
+     */
+    class TimerStopEvent extends EventObject {
+        public TimerStopEvent(Timer source) {
+            super(source);
+        }
+
+        @Override
+        public Timer getSource() {
+            return (Timer) super.getSource();
+        }
+    }
+
+    // Deprecated API
+
+    /**
+     * Removes {@link TimerActionEvent} listener.
+     *
+     * @param listener listener
+     * @deprecated Use subscription object instead
+     */
+    @Deprecated
+    void removeTimerActionListener(Consumer<TimerActionEvent> listener);
+
+    /**
+     * Removes {@link TimerStopEvent} listener.
+     *
+     * @param listener listener
+     * @deprecated Use subscription object instead
+     */
+    @Deprecated
+    void removeTimerStopListener(Consumer<TimerStopEvent> listener);
+
+    /**
+     * Listener for timer events.
+     *
+     * @deprecated Use {@link #addTimerActionListener(Consumer)} with lambda instead.
+     */
+    @Deprecated
     interface ActionListener {
         void timerAction(Timer timer);
     }
 
     /**
      * Listener for timer stop event.
+     *
+     * @deprecated Use {@link #addTimerStopListener(Consumer)} with lambda instead.
      */
+    @Deprecated
     interface StopListener {
         void timerStopped(Timer timer);
     }
@@ -94,33 +179,5 @@ public interface Timer extends Component.BelongToFrame {
     @Deprecated
     default void removeStopListener(StopListener listener) {
         removeTimerStopListener(new TimerStopListenerWrapper(listener));
-    }
-
-    Subscription addTimerActionListener(Consumer<TimerActionEvent> listener);
-    void removeTimerActionListener(Consumer<TimerActionEvent> listener);
-
-    Subscription addTimerStopListener(Consumer<TimerStopEvent> listener);
-    void removeTimerStopListener(Consumer<TimerStopEvent> listener);
-
-    class TimerActionEvent extends EventObject {
-        public TimerActionEvent(Timer source) {
-            super(source);
-        }
-
-        @Override
-        public Timer getSource() {
-            return (Timer) super.getSource();
-        }
-    }
-
-    class TimerStopEvent extends EventObject {
-        public TimerStopEvent(Timer source) {
-            super(source);
-        }
-
-        @Override
-        public Timer getSource() {
-            return (Timer) super.getSource();
-        }
     }
 }

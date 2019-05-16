@@ -23,7 +23,7 @@ import org.dom4j.Element;
 import java.util.function.Function;
 
 /**
- * Root of the GenericUI components hierarchy.
+ * Root of the Generic UI components hierarchy.
  */
 public interface Component {
 

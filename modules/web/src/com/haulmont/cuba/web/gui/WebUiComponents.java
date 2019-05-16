@@ -24,7 +24,7 @@ import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.UiComponents;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.mainwindow.*;
-import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
+import com.haulmont.cuba.gui.xml.layout.ComponentLoader.CompositeComponentContext;
 import com.haulmont.cuba.gui.xml.layout.CompositeComponentLayoutLoader;
 import com.haulmont.cuba.gui.xml.layout.CompositeDescriptorLoader;
 import com.haulmont.cuba.gui.xml.layout.loaders.CompositeComponentLoaderContext;
@@ -154,10 +154,6 @@ public class WebUiComponents implements UiComponents {
         classes.put(FtsField.NAME, WebFtsField.class);
         classes.put(TimeZoneIndicator.NAME, WebTimeZoneIndicator.class);
         classes.put(SideMenu.NAME, WebSideMenu.class);
-
-        /* Misc */
-
-        classes.put(Timer.NAME, WebTimer.class);
     }
 
     @SuppressWarnings("unchecked")
@@ -269,7 +265,7 @@ public class WebUiComponents implements UiComponents {
     }
 
     protected Component processCompositeDescriptor(Class<? extends Component> componentClass, String descriptorPath) {
-        ComponentLoader.CompositeComponentContext context = new CompositeComponentLoaderContext();
+        CompositeComponentContext context = new CompositeComponentLoaderContext();
         context.setComponentClass(componentClass);
         context.setDescriptorPath(descriptorPath);
 
