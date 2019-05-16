@@ -16,6 +16,7 @@
 
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
+import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.Iterables;
 import com.haulmont.bali.util.ParamsMap;
@@ -254,7 +255,10 @@ public class FormLoader extends AbstractComponentLoader<Form> {
         loadOptionsContainer(element).ifPresent(optionsContainer ->
                 context.setOptions(new ContainerOptions(optionsContainer)));
 
-        return (Field) getUiComponentsGenerator().generate(context);
+        Component component = getUiComponentsGenerator().generate(context);
+        Preconditions.checkState(component instanceof Field,
+                "Form field must implement com.haulmont.cuba.gui.components.Field");
+        return (Field) component;
     }
 
     protected List<Component> loadDynamicAttributeComponents(ValueSourceProvider provider,
