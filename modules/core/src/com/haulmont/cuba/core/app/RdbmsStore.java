@@ -287,11 +287,12 @@ public class RdbmsStore implements DataStore {
 
     protected <E extends Entity> List<E> checkAndReorderLoadedEntities(List<?> ids, List<E> entities, MetaClass metaClass) {
         List<E> result = new ArrayList<>(ids.size());
+        Map<Object, E> idToEntityMap = entities.stream().collect(Collectors.toMap(Entity::getId, e -> e));
         for (Object id : ids) {
-            E entity = entities.stream()
-                    .filter(e -> e.getId().equals(id))
-                    .findAny()
-                    .orElseThrow(() -> new EntityAccessException(metaClass, id));
+            E entity = idToEntityMap.get(id);
+            if (entity == null) {
+                throw new EntityAccessException(metaClass, id);
+            }
             result.add(entity);
         }
         return result;
