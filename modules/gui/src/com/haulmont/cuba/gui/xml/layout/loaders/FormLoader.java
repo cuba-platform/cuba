@@ -257,7 +257,7 @@ public class FormLoader extends AbstractComponentLoader<Form> {
 
         Component component = getUiComponentsGenerator().generate(context);
         Preconditions.checkState(component instanceof Field,
-                "Form field must implement com.haulmont.cuba.gui.components.Field");
+                "Form field '%s' must implement com.haulmont.cuba.gui.components.Field", property);
         return (Field) component;
     }
 
