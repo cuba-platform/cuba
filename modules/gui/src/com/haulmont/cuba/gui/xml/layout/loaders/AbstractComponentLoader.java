@@ -39,6 +39,7 @@ import com.haulmont.cuba.gui.components.data.HasValueSource;
 import com.haulmont.cuba.gui.components.data.value.ContainerValueSource;
 import com.haulmont.cuba.gui.components.validators.*;
 import com.haulmont.cuba.gui.icons.Icons;
+import com.haulmont.cuba.gui.model.CollectionContainer;
 import com.haulmont.cuba.gui.model.InstanceContainer;
 import com.haulmont.cuba.gui.model.ScreenData;
 import com.haulmont.cuba.gui.screen.FrameOwner;
@@ -63,6 +64,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 
 import static com.haulmont.cuba.gui.icons.Icons.ICON_NAME_REGEX;
@@ -993,8 +995,15 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
 
     @SuppressWarnings("unchecked")
     protected void loadContainer(T component, Element element) {
+        if (component instanceof HasValueSource) {
+            String property = element.attributeValue("property");
+            loadContainer(element, property).ifPresent(container ->
+                    ((HasValueSource) component).setValueSource(new ContainerValueSource<>(container, property)));
+        }
+    }
+
+    protected Optional<InstanceContainer> loadContainer(Element element, String property) {
         String containerId = element.attributeValue("dataContainer");
-        String property = element.attributeValue("property");
 
         // In case a component has only a property,
         // we try to obtain `dataContainer` from a parent element.
@@ -1007,18 +1016,32 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
             if (property == null) {
                 throw new GuiDevelopmentException(
                         String.format("Can't set container '%s' for component '%s' because 'property' " +
-                                "attribute is not defined", containerId, component.getId()), context);
+                                "attribute is not defined", containerId, element.attributeValue("id")), context);
             }
 
 
             FrameOwner frameOwner = getComponentContext().getFrame().getFrameOwner();
             ScreenData screenData = UiControllerUtils.getScreenData(frameOwner);
-            InstanceContainer container = screenData.getContainer(containerId);
 
-            if (component instanceof HasValueSource) {
-                ((HasValueSource) component).setValueSource(new ContainerValueSource<>(container, property));
-            }
+            return Optional.of(screenData.getContainer(containerId));
         }
+
+        return Optional.empty();
+    }
+
+    protected Optional<CollectionContainer> loadOptionsContainer(Element element) {
+        String containerId = element.attributeValue("optionsContainer");
+        if (containerId != null) {
+            FrameOwner frameOwner = getComponentContext().getFrame().getFrameOwner();
+            ScreenData screenData = UiControllerUtils.getScreenData(frameOwner);
+            InstanceContainer container = screenData.getContainer(containerId);
+            if (!(container instanceof CollectionContainer)) {
+                throw new GuiDevelopmentException("Not a CollectionContainer: " + containerId, context);
+            }
+            return Optional.of((CollectionContainer) container);
+        }
+
+        return Optional.empty();
     }
 
     protected String getParentDataContainer(Element element) {

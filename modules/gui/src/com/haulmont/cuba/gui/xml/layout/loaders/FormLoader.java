@@ -30,6 +30,8 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.data.HasValueSource;
 import com.haulmont.cuba.gui.components.data.ValueSourceProvider;
 import com.haulmont.cuba.gui.components.data.meta.EntityValueSource;
+import com.haulmont.cuba.gui.components.data.options.ContainerOptions;
+import com.haulmont.cuba.gui.components.data.value.ContainerValueSource;
 import com.haulmont.cuba.gui.components.data.value.ContainerValueSourceProvider;
 import com.haulmont.cuba.gui.dynamicattributes.DynamicAttributeComponentsGenerator;
 import com.haulmont.cuba.gui.dynamicattributes.DynamicAttributesGuiTools;
@@ -153,13 +155,18 @@ public class FormLoader extends AbstractComponentLoader<Form> {
     }
 
     protected Component loadComponent(Element element, @Nullable String columnWidth) {
-        LayoutLoader loader = beanLocator.getPrototype(LayoutLoader.NAME, context);
-        loader.setMessagesPack(getMessagesPack());
+        Component component;
+        if ("field".equals(element.getName())) {
+            component = loadField(element);
+        } else {
+            LayoutLoader loader = beanLocator.getPrototype(LayoutLoader.NAME, context);
+            loader.setMessagesPack(getMessagesPack());
 
-        ComponentLoader childComponentLoader = loader.createComponent(element);
-        childComponentLoader.loadComponent();
+            ComponentLoader childComponentLoader = loader.createComponent(element);
+            childComponentLoader.loadComponent();
 
-        Component component = childComponentLoader.getResultComponent();
+            component = childComponentLoader.getResultComponent();
+        }
 
         // Set default width
         String componentWidth = element.attributeValue("width");
@@ -196,6 +203,58 @@ public class FormLoader extends AbstractComponentLoader<Form> {
         }
 
         return component;
+    }
+
+    protected Field loadField(Element element) {
+        Field component = createField(element);
+
+        loadId(component, element);
+
+        assignFrame(component);
+        assignXmlDescriptor(component, element);
+
+        loadEditable(component, element);
+        loadEnable(component, element);
+        loadVisible(component, element);
+
+        loadCaption(component, element);
+        loadCaptionAsHtml(component, element);
+        loadDescription(component, element);
+        loadDescriptionAsHtml(component, element);
+
+        loadIcon(component, element);
+        loadContextHelp(component, element);
+
+        loadHeight(component, element);
+        loadWidth(component, element);
+
+        loadResponsive(component, element);
+        loadStyleName(component, element);
+        loadCss(component, element);
+
+        return component;
+    }
+
+    @SuppressWarnings("unchecked")
+    protected Field createField(Element element) {
+        String property = element.attributeValue("property");
+        if (Strings.isNullOrEmpty(property)) {
+            throw new GuiDevelopmentException("Field element has no 'property' attribute", context);
+        }
+
+        InstanceContainer container = loadContainer(element, property).orElseThrow(() ->
+                new GuiDevelopmentException(String.format("Can't infer component for field '%s'. " +
+                        "No data container associated with it", property), context));
+        MetaClass metaClass = container.getEntityMetaClass();
+
+        ComponentGenerationContext context = new ComponentGenerationContext(metaClass, property);
+        context.setValueSource(new ContainerValueSource<>(container, property));
+        context.setXmlDescriptor(element);
+
+        loadOptionsContainer(element).ifPresent(optionsContainer ->
+                context.setOptions(new ContainerOptions(optionsContainer)));
+
+        return (Field) getUiComponentsGenerator().generate(context);
     }
 
     protected List<Component> loadDynamicAttributeComponents(ValueSourceProvider provider,

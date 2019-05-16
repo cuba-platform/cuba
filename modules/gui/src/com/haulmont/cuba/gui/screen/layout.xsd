@@ -2719,10 +2719,14 @@
             <xs:extension base="baseComponent">
                 <xs:choice maxOccurs="unbounded" minOccurs="0">
                     <xs:group ref="layoutOrComponent"/>
+                    <xs:element name="field" type="formFieldType"/>
                     <xs:element name="column">
                         <xs:complexType>
                             <xs:sequence>
-                                <xs:group ref="layoutOrComponent"/>
+                                <xs:choice minOccurs="0" maxOccurs="unbounded">
+                                    <xs:group ref="layoutOrComponent"/>
+                                    <xs:element name="field" type="formFieldType"/>
+                                </xs:choice>
                             </xs:sequence>
 
                             <xs:attribute name="id" type="xs:string"/>
@@ -2742,6 +2746,24 @@
                 <xs:attribute name="childrenCaptionWidth" type="xs:string"/>
             </xs:extension>
         </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="formFieldType">
+        <xs:attributeGroup ref="hasId"/>
+
+        <xs:attribute name="property" type="xs:string" use="required"/>
+        <xs:attribute name="dataContainer" type="xs:string"/>
+        <xs:attribute name="optionsContainer" type="xs:string"/>
+
+        <xs:attributeGroup ref="hasEditState"/>
+        <xs:attributeGroup ref="hasVisibility"/>
+        <xs:attributeGroup ref="hasHtmlCaption"/>
+        <xs:attributeGroup ref="hasIcon"/>
+        <xs:attributeGroup ref="hasContextHelp"/>
+        <xs:attributeGroup ref="hasSize"/>
+        <xs:attributeGroup ref="hasResponsiveProp"/>
+        <xs:attributeGroup ref="hasStyle"/>
+        <xs:attributeGroup ref="hasCss"/>
     </xs:complexType>
 
     <!-- TokenList -->
