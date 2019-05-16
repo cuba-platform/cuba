@@ -118,9 +118,10 @@ public class EntityRestore extends AbstractWindow {
                 LinkedList<Table.Column<Entity>> systemPropertyColumns = new LinkedList<>();
                 List<MetaProperty> metaProperties = new ArrayList<>();
                 for (MetaProperty metaProperty : metaClass.getProperties()) {
-                    //don't show embedded & multiple referred entities
+                    //don't show embedded, transient & multiple referred entities
                     Range range = metaProperty.getRange();
                     if (isEmbedded(metaProperty)
+                        || metadataTools.isNotPersistent(metaProperty)
                         || range.getCardinality().isMany()
                         || metadataTools.isSystemLevel(metaProperty)
                         || (range.isClass() && metadataTools.isSystemLevel(range.asClass()))) {
