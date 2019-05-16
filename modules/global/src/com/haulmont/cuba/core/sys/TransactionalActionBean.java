@@ -40,7 +40,6 @@ public class TransactionalActionBean implements TransactionalAction {
     protected Supplier<CommitContext> getCommitContextAction;
     protected Consumer<EntitySet> onSuccessAction;
     protected BiConsumer<CommitContext, Throwable> onFailAction;
-    protected Consumer<CommitContext> beforeCommitAction;
     protected Consumer<CommitContext> afterCommitAction;
     protected boolean joinTransaction = false;
 
@@ -84,10 +83,6 @@ public class TransactionalActionBean implements TransactionalAction {
             throw new IllegalStateException("CommitContext can't be null.");
         }
         commitContext.setJoinTransaction(isJoinTransaction());
-
-        if (beforeCommitAction != null) {
-            beforeCommitAction.accept(commitContext);
-        }
 
         EntitySet resultSet;
         try {
