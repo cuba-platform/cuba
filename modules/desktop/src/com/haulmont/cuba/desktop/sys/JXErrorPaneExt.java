@@ -32,6 +32,8 @@ import org.jdesktop.swingx.JXErrorPane;
 import org.jdesktop.swingx.error.ErrorInfo;
 import org.jdesktop.swingx.error.ErrorReporter;
 import org.jdesktop.swingx.plaf.basic.BasicErrorPaneUI;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -42,6 +44,8 @@ import java.util.Locale;
 import java.util.Map;
 
 public class JXErrorPaneExt extends JXErrorPane {
+
+    private static final Logger log = LoggerFactory.getLogger(JXErrorPaneExt.class);
 
     protected ActionListener copyToClipboardListener;
 
@@ -138,6 +142,7 @@ public class JXErrorPaneExt extends JXErrorPane {
         } catch (Throwable e) {
             mainFrame.showNotification(messages.getMainMessage("errorPane.emailSendingErr", locale),
                     Frame.NotificationType.ERROR);
+            log.error("Can't send error report", e);
         }
     }
 
