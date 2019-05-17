@@ -23,8 +23,8 @@ import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.client.ClientConfig;
+import com.haulmont.cuba.client.sys.PersistenceManagerClient;
 import com.haulmont.cuba.core.app.DataService;
-import com.haulmont.cuba.core.app.PersistenceManagerService;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.app.dynamicattributes.PropertyType;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
@@ -774,7 +774,7 @@ public class Param {
         MetaClass metaClass = metadata.getSession().getClassNN(javaClass);
 
         ThemeConstants theme = AppBeans.get(ThemeConstantsManager.class).getConstants();
-        PersistenceManagerService persistenceManager = AppBeans.get(PersistenceManagerService.NAME);
+        PersistenceManagerClient persistenceManager = AppBeans.get(PersistenceManagerClient.NAME);
 
         LookupType type = null;
         if (property != null && property.getRange().isClass()) {

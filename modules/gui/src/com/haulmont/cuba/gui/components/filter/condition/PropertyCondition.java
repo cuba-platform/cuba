@@ -21,7 +21,7 @@ import com.google.common.base.Strings;
 import com.haulmont.chile.core.annotations.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
-import com.haulmont.cuba.core.app.PersistenceManagerService;
+import com.haulmont.cuba.client.sys.PersistenceManagerClient;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.global.filter.ConditionType;
@@ -131,7 +131,7 @@ public class PropertyCondition extends AbstractCondition {
         }
 
         if (operator != Op.NOT_EMPTY) {
-            PersistenceManagerService persistenceManager = AppBeans.get(PersistenceManagerService.class);
+            PersistenceManagerClient persistenceManager = AppBeans.get(PersistenceManagerClient.class);
             if (operator == Op.EQUAL && stringType && persistenceManager.emulateEqualsByLike(thisStore)) {
                 sb.append(" ").append(Op.CONTAINS.forJpql());
             } else if (operator == Op.NOT_EQUAL && stringType && persistenceManager.emulateEqualsByLike(thisStore)) {
