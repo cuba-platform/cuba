@@ -20,7 +20,6 @@ package com.haulmont.cuba.core.sys.persistence;
 import com.google.common.base.Strings;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
-import com.haulmont.chile.core.model.Range;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.SoftDelete;
 import com.haulmont.cuba.core.entity.annotation.EmbeddedParameters;
@@ -32,10 +31,11 @@ import com.haulmont.cuba.core.sys.UuidConverter;
 import org.apache.commons.lang3.BooleanUtils;
 import org.eclipse.persistence.annotations.CacheCoordinationType;
 import org.eclipse.persistence.config.CacheIsolationType;
-import org.eclipse.persistence.descriptors.*;
+import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.descriptors.DescriptorEventListener;
+import org.eclipse.persistence.descriptors.InheritancePolicy;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.internal.helper.DatabaseField;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.*;
 import org.eclipse.persistence.platform.database.PostgreSQLPlatform;
 import org.eclipse.persistence.sessions.Session;
@@ -158,13 +158,7 @@ public class EclipseLinkSessionEventListener extends SessionEventAdapter {
     private void setMultipleTableConstraintDependency(MetaClass metaClass, ClassDescriptor desc) {
         InheritancePolicy policy = desc.getInheritancePolicyOrNull();
         if (policy != null && policy.isJoinedStrategy() && policy.getParentClass() != null) {
-            boolean hasOneToMany = metaClass.getOwnProperties().stream().anyMatch(metaProperty ->
-                    metadata.getTools().isPersistent(metaProperty)
-                            && metaProperty.getRange().isClass()
-                            && metaProperty.getRange().getCardinality() == Range.Cardinality.ONE_TO_MANY);
-            if (hasOneToMany) {
-                desc.setHasMultipleTableConstraintDependecy(true);
-            }
+            desc.setHasMultipleTableConstraintDependecy(true);
         }
     }
 

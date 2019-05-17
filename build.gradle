@@ -422,12 +422,12 @@ configure(coreModule) {
         }
     }
 
-    task testJoinedComposition(type: Test) {
+    task testJoinInheritance(type: Test) {
         scanForTestClasses = false
-        includes = ['spec/cuba/core/composition/joined_composition/JoinedCompositionTestClass.class']
+        includes = ['spec/cuba/core/inheritance/JoinedInheritanceTestClass.class']
     }
 
-    test.finalizedBy testJoinedComposition
+    test.finalizedBy testJoinInheritance
 
     assembleDbScripts {
         moduleAlias = '10-cuba'
