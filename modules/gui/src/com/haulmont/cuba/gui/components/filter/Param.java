@@ -823,8 +823,6 @@ public class Param {
         Object _value = _getValue(valueProperty);
         if (_value instanceof String) {
             field.setValue((String) _value);
-        } else {
-            field.setValue("");
         }
         return field;
     }
