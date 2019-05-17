@@ -301,12 +301,12 @@ public class WindowLoader extends ContainerLoader<Window> implements ComponentRo
 
     protected void loadFocusedComponent(Window window, Element element) {
         String focusMode = element.attributeValue("focusMode");
-        if (isNotEmpty(focusMode)) {
-            window.setFocusMode(Window.FocusMode.valueOf(focusMode));
-        }
+        boolean isBlank = StringUtils.isBlank(focusMode);
 
         String componentId = element.attributeValue("focusComponent");
-        window.setFocusComponent(componentId);
+        if (isBlank) {
+            window.setFocusComponent(componentId);
+        }
     }
 
     protected void loadCrossFieldValidate(Window window, Element element) {

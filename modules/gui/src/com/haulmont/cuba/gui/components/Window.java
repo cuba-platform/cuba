@@ -306,19 +306,6 @@ public interface Window extends Frame, Component.HasCaption, Component.HasIcon {
     boolean validateAll();
 
     /**
-     * Sets focus mode to the window. Focus mode defines whether focus-component specified in XML should be focused
-     * or not. Default value is {@link FocusMode#AUTO}.
-     *
-     * @param focusMode focus mode
-     */
-    void setFocusMode(FocusMode focusMode);
-
-    /**
-     * @return focus mode. Default value is {@link FocusMode#AUTO}
-     */
-    FocusMode getFocusMode();
-
-    /**
      * @deprecated Use {@link com.haulmont.cuba.gui.Screens} and {@link com.haulmont.cuba.gui.Notifications} instead.
      *
      * @return window manager instance
@@ -348,21 +335,6 @@ public interface Window extends Frame, Component.HasCaption, Component.HasIcon {
          * Tab content should be unloaded not considering the TabSheet mode.
          */
         UNLOAD
-    }
-
-    /**
-     * Focus mode defines whether focus-component specified in XML should be focused or not.
-     */
-    enum FocusMode {
-        /**
-         * Window will focus specified component or first found focusable component.
-         */
-        AUTO,
-
-        /**
-         * Window won't focus components.
-         */
-        NO_FOCUS
     }
 
     /**

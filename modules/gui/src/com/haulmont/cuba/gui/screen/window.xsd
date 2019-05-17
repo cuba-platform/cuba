@@ -73,7 +73,6 @@
     <xs:simpleType name="focusModeType">
         <xs:restriction>
             <xs:enumeration value="NO_FOCUS"/>
-            <xs:enumeration value="AUTO"/>
         </xs:restriction>
     </xs:simpleType>
 </xs:schema>

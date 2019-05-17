@@ -693,11 +693,6 @@ public class WebAppWorkArea extends WebAbstractComponent<CssLayout> implements A
         Window window = windowContainer.getBreadCrumbs().getCurrentWindow();
 
         if (window != null) {
-            if (window.getFocusMode() == Window.FocusMode.NO_FOCUS) {
-                tabSheet.focus();
-                return;
-            }
-
             boolean focused = false;
             String focusComponentId = window.getFocusComponent();
             if (focusComponentId != null) {
