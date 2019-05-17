@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2018 Haulmont.
+ * Copyright (c) 2008-2019 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package spec.cuba.core.composition.joined_composition
+package spec.cuba.core.inheritance
 
 import com.haulmont.bali.db.QueryRunner
 import com.haulmont.cuba.core.Persistence
@@ -22,12 +22,13 @@ import com.haulmont.cuba.core.global.DataManager
 import com.haulmont.cuba.core.global.Metadata
 import com.haulmont.cuba.testmodel.selfinherited.ChildEntity
 import com.haulmont.cuba.testmodel.selfinherited.ChildEntityDetail
+import com.haulmont.cuba.testmodel.selfinherited.ChildEntityReferrer
 import com.haulmont.cuba.testsupport.TestContainer
 import org.junit.ClassRule
 import spock.lang.Shared
 import spock.lang.Specification
 
-class JoinedCompositionTestClass extends Specification {
+class JoinedInheritanceTestClass extends Specification {
 
     @Shared
     @ClassRule
@@ -36,7 +37,7 @@ class JoinedCompositionTestClass extends Specification {
                 "com/haulmont/cuba/app.properties",
                 "com/haulmont/cuba/testsupport/test-app.properties",
                 "com/haulmont/cuba/test-app.properties",
-                "spec/cuba/core/composition/test-composition-app.properties"))
+                "spec/cuba/core/inheritance/test-inheritance-app.properties"))
 
     private Persistence persistence = cont.persistence()
     private Metadata metadata = cont.metadata()
@@ -51,6 +52,7 @@ class JoinedCompositionTestClass extends Specification {
         def runner = new QueryRunner(persistence.dataSource)
         runner.update('delete from TEST_CHILD_ENTITY_DETAIL')
         runner.update('delete from TEST_ROOT_ENTITY_DETAIL')
+        runner.update('delete from TEST_CHILD_ENTITY_REFERRER')
         runner.update('delete from TEST_CHILD_ENTITY')
         runner.update('delete from TEST_ROOT_ENTITY')
     }
@@ -67,6 +69,24 @@ class JoinedCompositionTestClass extends Specification {
             childEntityDetail.childEntity = childEntity
             childEntityDetail.info = 'info'
             em.persist(childEntityDetail)
+        })
+
+        then:
+        noExceptionThrown()
+    }
+
+    def "store root-joined-inheritance-and-referer"() {
+        when:
+        persistence.runInTransaction({ em ->
+            ChildEntity childEntity = metadata.create(ChildEntity)
+            childEntity.name = 'name'
+            childEntity.description = 'description'
+            em.persist(childEntity)
+
+            ChildEntityReferrer childEntityReferrer = metadata.create(ChildEntityReferrer)
+            childEntityReferrer.childEntity = childEntity
+            childEntityReferrer.info = 'info'
+            em.persist(childEntityReferrer)
         })
 
         then:

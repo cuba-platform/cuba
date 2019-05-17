@@ -254,13 +254,7 @@ public class EclipseLinkSessionEventListener extends SessionEventAdapter {
     private void setMultipleTableConstraintDependency(MetaClass metaClass, ClassDescriptor desc) {
         InheritancePolicy policy = desc.getInheritancePolicyOrNull();
         if (policy != null && policy.isJoinedStrategy() && policy.getParentClass() != null) {
-            boolean hasOneToMany = metaClass.getOwnProperties().stream().anyMatch(metaProperty ->
-                    metadata.getTools().isPersistent(metaProperty)
-                            && metaProperty.getRange().isClass()
-                            && metaProperty.getRange().getCardinality() == Range.Cardinality.ONE_TO_MANY);
-            if (hasOneToMany) {
-                desc.setHasMultipleTableConstraintDependecy(true);
-            }
+            desc.setHasMultipleTableConstraintDependecy(true);
         }
     }
 
