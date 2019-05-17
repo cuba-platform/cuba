@@ -21,7 +21,6 @@ import com.google.common.base.Strings;
 import com.haulmont.bali.datastruct.Pair;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
-import com.haulmont.chile.core.model.Range;
 import com.haulmont.chile.core.model.impl.AbstractInstance;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.SoftDelete;
