@@ -29,7 +29,7 @@ import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.client.ClientConfig;
-import com.haulmont.cuba.core.app.PersistenceManagerService;
+import com.haulmont.cuba.client.sys.PersistenceManagerClient;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.app.dynamicattributes.PropertyType;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
@@ -872,7 +872,7 @@ public class Param {
                     .getMetaAnnotationAttributes(property.getAnnotations(), Lookup.class)
                     .get("type");
         }
-        PersistenceManagerService persistenceManager = beanLocator.get(PersistenceManagerService.NAME);
+        PersistenceManagerClient persistenceManager = beanLocator.get(PersistenceManagerClient.NAME);
         boolean useLookupScreen = type != null ?
                 type == LookupType.SCREEN : persistenceManager.useLookupScreen(metaClass.getName());
 
