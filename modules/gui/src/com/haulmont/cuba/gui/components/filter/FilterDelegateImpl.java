@@ -2436,7 +2436,7 @@ public class FilterDelegateImpl implements FilterDelegate {
             Map<String, Object> params = new HashMap<>();
             params.put("filterEntity", filterEntity);
             params.put("filter", filter);
-            params.put("conditions", conditions);
+            params.put("conditionsTree", conditions);
 
             FilterEditor window = (FilterEditor) getWindowManager().openWindow(windowInfo, OpenType.DIALOG, params);
             window.addCloseListener(actionId -> {

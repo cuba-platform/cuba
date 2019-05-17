@@ -166,7 +166,7 @@ public class FilterEditor extends AbstractWindow {
         }
         filter = (Filter) params.get("filter");
 
-        ConditionsTree paramConditions = (ConditionsTree) params.get("conditions");
+        ConditionsTree paramConditions = (ConditionsTree) params.get("conditionsTree");
         conditions = paramConditions.createCopy();
         refreshConditionsDs();
         conditionsTree.expandTree();
