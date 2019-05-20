@@ -313,7 +313,7 @@ public class ConstraintEditor extends AbstractEditor<Constraint> {
 
         params.put("filter", fakeFilter);
         params.put("filterEntity", filterEntity);
-        params.put("conditions", conditionsTree);
+        params.put("conditionsTree", conditionsTree);
         params.put("useShortConditionForm", true);
         params.put("hideDynamicAttributes", constraint.getCheckType() != ConstraintCheckType.DATABASE);
         params.put("hideCustomConditions", constraint.getCheckType() != ConstraintCheckType.DATABASE);
