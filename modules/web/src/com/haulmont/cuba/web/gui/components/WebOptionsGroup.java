@@ -27,6 +27,7 @@ import com.haulmont.cuba.gui.components.data.options.OptionsBinder;
 import com.haulmont.cuba.web.widgets.CubaOptionGroup;
 import com.haulmont.cuba.web.widgets.client.optiongroup.OptionGroupOrientation;
 import com.vaadin.v7.data.util.IndexedContainer;
+import org.apache.commons.collections4.CollectionUtils;
 
 import javax.inject.Inject;
 import java.util.*;
@@ -62,6 +63,28 @@ public class WebOptionsGroup<V, I> extends WebAbstractField<CubaOptionGroup, V> 
     @Override
     public V getValue() {
         return convertToModel(component.getValue());
+    }
+
+    @Override
+    protected boolean fieldValueEquals(V value, V oldValue) {
+        if (!isMultiSelect()) {
+            return super.fieldValueEquals(value, oldValue);
+        }
+
+        //noinspection unchecked
+        return equalCollections((Collection<V>) value, (Collection<V>) oldValue);
+    }
+
+    protected boolean equalCollections(Collection<V> a, Collection<V> b) {
+        if (a == null && b == null) {
+            return true;
+        }
+
+        if (a == null || b == null) {
+            return false;
+        }
+
+        return CollectionUtils.isEqualCollection(a, b);
     }
 
     protected String generateDefaultItemCaption(I item) {
@@ -218,7 +241,7 @@ public class WebOptionsGroup<V, I> extends WebAbstractField<CubaOptionGroup, V> 
 
     @Override
     protected void setValueToPresentation(Object value) {
-        component.setValueIgnoreReadOnly(value);
+        component.setValueToComponent(value);
     }
 
     protected void setOptionsToComponent(Stream<I> options) {

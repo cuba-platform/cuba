@@ -27,11 +27,23 @@ public class CubaOptionGroup extends OptionGroup {
 
     protected Function<Object, String> itemCaptionGenerator;
 
+    protected boolean omitValueChange = false;
+
     public CubaOptionGroup() {
         setValidationVisible(false);
         setShowBufferedSourceException(false);
 
         this.resetValueToNullOnContainerChange = false;
+    }
+
+    public void setValueToComponent(Object value) {
+        omitValueChange = true;
+
+        setValue(value, false, true);
+
+        omitValueChange = false;
+
+        fireValueChangeEvent(false);
     }
 
     @Override
@@ -72,9 +84,15 @@ public class CubaOptionGroup extends OptionGroup {
 
     @Override
     protected void fireValueChange(boolean repaintIsNotNeeded) {
-        fireEvent(new CubaValueChangeEvent(this, repaintIsNotNeeded));
+        fireValueChangeEvent(true);
         if (!repaintIsNotNeeded) {
             markAsDirty();
+        }
+    }
+
+    protected void fireValueChangeEvent(boolean userOriginated) {
+        if (!omitValueChange) {
+            fireEvent(new CubaValueChangeEvent(this, userOriginated));
         }
     }
 }

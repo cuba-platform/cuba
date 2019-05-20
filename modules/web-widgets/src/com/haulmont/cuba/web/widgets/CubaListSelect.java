@@ -33,6 +33,8 @@ public class CubaListSelect extends ListSelect {
 
     protected Consumer<Object> doubleClickHandler;
 
+    protected boolean omitValueChange = false;
+
     protected CubaListSelectServerRpc listSelectServerRpc = new CubaListSelectServerRpc() {
 
         @Override
@@ -60,6 +62,16 @@ public class CubaListSelect extends ListSelect {
 
         setShowBufferedSourceException(false);
         this.resetValueToNullOnContainerChange = false;
+    }
+
+    public void setValueToComponent(Object value) {
+        omitValueChange = true;
+
+        setValue(value, false, true);
+
+        omitValueChange = false;
+
+        fireValueChangeEvent(false);
     }
 
     public Consumer<Object> getDoubleClickHandler() {
@@ -101,9 +113,15 @@ public class CubaListSelect extends ListSelect {
 
     @Override
     protected void fireValueChange(boolean repaintIsNotNeeded) {
-        fireEvent(new CubaValueChangeEvent(this, repaintIsNotNeeded));
+        fireValueChangeEvent(true);
         if (!repaintIsNotNeeded) {
             markAsDirty();
+        }
+    }
+
+    protected void fireValueChangeEvent(boolean userOriginated) {
+        if (!omitValueChange) {
+            fireEvent(new CubaValueChangeEvent(this, userOriginated));
         }
     }
 }
