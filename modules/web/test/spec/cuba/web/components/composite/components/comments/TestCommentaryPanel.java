@@ -54,8 +54,7 @@ public class TestCommentaryPanel extends CompositeComponent<VBoxLayout> implemen
     private Function<String, Comment> commentProvider;
 
     public TestCommentaryPanel() {
-        getEventHub().subscribe(CreateEvent.class, event ->
-                initComponent(getCompositionNN()));
+        addCreateListener(event -> initComponent(getComposition()));
     }
 
     @Override

@@ -59,12 +59,9 @@ public class TestProgrammaticCommentaryPanel extends CompositeComponent<VBoxLayo
     private Function<String, Comment> commentProvider;
 
     public TestProgrammaticCommentaryPanel() {
-        getEventHub().subscribe(CreateEvent.class, event -> {
-            if (getComposition() == null) {
-                createComponent();
-            }
-
-            initComponent(getCompositionNN());
+        addCreateListener(event -> {
+            createComponent();
+            initComponent(getComposition());
         });
     }
 

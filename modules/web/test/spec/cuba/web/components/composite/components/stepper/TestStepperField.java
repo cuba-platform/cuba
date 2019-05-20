@@ -87,7 +87,7 @@ public class TestStepperField extends CompositeComponent<CssLayout> implements F
     @Override
     public void setRequired(boolean required) {
         valueField.setRequired(required);
-        getCompositionNN().setRequiredIndicatorVisible(required);
+        getComposition().setRequiredIndicatorVisible(required);
     }
 
     @Override
@@ -160,7 +160,7 @@ public class TestStepperField extends CompositeComponent<CssLayout> implements F
     @Override
     public void setValueSource(ValueSource<Integer> valueSource) {
         valueField.setValueSource(valueSource);
-        getCompositionNN().setRequiredIndicatorVisible(valueField.isRequired());
+        getComposition().setRequiredIndicatorVisible(valueField.isRequired());
     }
 
     @Override

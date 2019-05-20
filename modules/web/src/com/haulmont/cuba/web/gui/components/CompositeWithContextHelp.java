@@ -28,37 +28,37 @@ public interface CompositeWithContextHelp extends HasContextHelp {
 
     @Override
     default String getContextHelpText() {
-        HasContextHelp hasContextHelp = (HasContextHelp) ((CompositeComponent) this).getCompositionNN();
+        HasContextHelp hasContextHelp = (HasContextHelp) ((CompositeComponent) this).getComposition();
         return hasContextHelp.getContextHelpText();
     }
 
     @Override
     default void setContextHelpText(String contextHelpText) {
-        HasContextHelp hasContextHelp = (HasContextHelp) ((CompositeComponent) this).getCompositionNN();
+        HasContextHelp hasContextHelp = (HasContextHelp) ((CompositeComponent) this).getComposition();
         hasContextHelp.setContextHelpText(contextHelpText);
     }
 
     @Override
     default boolean isContextHelpTextHtmlEnabled() {
-        HasContextHelp hasContextHelp = (HasContextHelp) ((CompositeComponent) this).getCompositionNN();
+        HasContextHelp hasContextHelp = (HasContextHelp) ((CompositeComponent) this).getComposition();
         return hasContextHelp.isContextHelpTextHtmlEnabled();
     }
 
     @Override
     default void setContextHelpTextHtmlEnabled(boolean enabled) {
-        HasContextHelp hasContextHelp = (HasContextHelp) ((CompositeComponent) this).getCompositionNN();
+        HasContextHelp hasContextHelp = (HasContextHelp) ((CompositeComponent) this).getComposition();
         hasContextHelp.setContextHelpTextHtmlEnabled(enabled);
     }
 
     @Override
     default Consumer<ContextHelpIconClickEvent> getContextHelpIconClickHandler() {
-        HasContextHelp hasContextHelp = (HasContextHelp) ((CompositeComponent) this).getCompositionNN();
+        HasContextHelp hasContextHelp = (HasContextHelp) ((CompositeComponent) this).getComposition();
         return hasContextHelp.getContextHelpIconClickHandler();
     }
 
     @Override
     default void setContextHelpIconClickHandler(Consumer<ContextHelpIconClickEvent> handler) {
-        HasContextHelp hasContextHelp = (HasContextHelp) ((CompositeComponent) this).getCompositionNN();
+        HasContextHelp hasContextHelp = (HasContextHelp) ((CompositeComponent) this).getComposition();
         hasContextHelp.setContextHelpIconClickHandler(handler);
     }
 }

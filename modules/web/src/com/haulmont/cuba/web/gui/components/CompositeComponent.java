@@ -27,6 +27,7 @@ import com.haulmont.cuba.gui.sys.TestIdManager;
 import com.haulmont.cuba.web.AppUI;
 import org.apache.commons.lang3.StringUtils;
 
+import javax.annotation.Nullable;
 import java.util.EventObject;
 import java.util.Objects;
 import java.util.Optional;
@@ -55,29 +56,76 @@ public class CompositeComponent<T extends Component>
         }
     }
 
-    public T getComposition() {
-        return root;
+    protected boolean hasSubscriptions(Class<?> eventClass) {
+        return eventHub != null && eventHub.hasSubscriptions(eventClass);
     }
 
-    protected T getCompositionNN() {
+    protected <E> boolean unsubscribe(Class<E> eventType, Consumer<E> listener) {
+        if (eventHub != null) {
+            return eventHub.unsubscribe(eventType, listener);
+        }
+        return false;
+    }
+
+    /**
+     * Returns the root component that represents the component tree of the composite component.
+     *
+     * @return the root component that represents the component tree of the composite component
+     */
+    public T getComposition() {
         Preconditions.checkState(root != null, "Composition root is not initialized");
         return root;
     }
 
+    /**
+     * Returns the root component that represents the component tree of the composite component.
+     *
+     * @return the root component that represents the component tree of the composite component
+     * or {@code null} if not yet initialized
+     * @see #getComposition()
+     */
+    @Nullable
+    protected T getCompositionOrNull() {
+        return root;
+    }
+
+    /**
+     * Returns an inner component belonging to the whole components tree below this composition.
+     *
+     * @param id the id of a component
+     * @return found component
+     * @throws IllegalArgumentException if no component is found with given id
+     * @throws IllegalStateException    if the root component can't contain inner components
+     * @see #getInnerComponentOptional(String)
+     */
     @SuppressWarnings("unchecked")
     protected <C> C getInnerComponent(String id) {
         return (C) getInnerComponentOptional(id).orElseThrow(() ->
                 new IllegalArgumentException(String.format("Not found component with id '%s'", id)));
     }
 
+    /**
+     * Returns an inner component belonging to the whole components tree below this composition.
+     *
+     * @param id the id of a component
+     * @return found component or {@code null} if no component is found
+     * @throws IllegalStateException if the root component can't contain inner components
+     * @see #getInnerComponent(String)
+     */
     @SuppressWarnings("unchecked")
     protected <C> Optional<C> getInnerComponentOptional(String id) {
-        Preconditions.checkState(getCompositionNN() instanceof ComponentContainer,
+        Preconditions.checkState(getComposition() instanceof ComponentContainer,
                 "Composition can't contain inner components");
 
-        return (Optional<C>) Optional.ofNullable(((ComponentContainer) getCompositionNN()).getComponent(id));
+        return (Optional<C>) Optional.ofNullable(((ComponentContainer) getComposition()).getComponent(id));
     }
 
+    /**
+     * Sets the root component that represents the component hierarchy of the composite component.
+     *
+     * @param composition a component to set as the root
+     * @throws IllegalStateException if the root component is already set
+     */
     protected void setComposition(T composition) {
         Preconditions.checkState(root == null, "Composition root is already initialized");
         this.root = composition;
@@ -140,27 +188,27 @@ public class CompositeComponent<T extends Component>
 
     @Override
     public String getDebugId() {
-        return ((HasDebugId) getCompositionNN()).getDebugId();
+        return ((HasDebugId) getComposition()).getDebugId();
     }
 
     @Override
     public void setDebugId(String id) {
-        ((HasDebugId) getCompositionNN()).setDebugId(id);
+        ((HasDebugId) getComposition()).setDebugId(id);
     }
 
     @Override
     public Component getParent() {
-        return getCompositionNN().getParent();
+        return getComposition().getParent();
     }
 
     @Override
     public void setParent(Component parent) {
-        if (getCompositionNN().getParent() != parent) {
+        if (getComposition().getParent() != parent) {
             if (isAttached()) {
                 detached();
             }
 
-            getCompositionNN().setParent(parent);
+            getComposition().setParent(parent);
 
             if (isAttached()) {
                 attached();
@@ -170,7 +218,7 @@ public class CompositeComponent<T extends Component>
 
     @Override
     public boolean isAttached() {
-        Component current = getCompositionNN().getParent();
+        Component current = getComposition().getParent();
         while (current != null) {
             if (current instanceof Window) {
                 return true;
@@ -182,14 +230,20 @@ public class CompositeComponent<T extends Component>
 
     @Override
     public void attached() {
-        ((AttachNotifier) getCompositionNN()).attached();
-        publish(AttachEvent.class, new AttachEvent(this));
+        ((AttachNotifier) getComposition()).attached();
+
+        if (hasSubscriptions(AttachEvent.class)) {
+            publish(AttachEvent.class, new AttachEvent(this));
+        }
     }
 
     @Override
     public void detached() {
-        ((AttachNotifier) getCompositionNN()).detached();
-        publish(DetachEvent.class, new DetachEvent(this));
+        ((AttachNotifier) getComposition()).detached();
+
+        if (hasSubscriptions(DetachEvent.class)) {
+            publish(DetachEvent.class, new DetachEvent(this));
+        }
     }
 
     @Override
@@ -204,112 +258,112 @@ public class CompositeComponent<T extends Component>
 
     @Override
     public boolean isEnabled() {
-        return getCompositionNN().isEnabled();
+        return getComposition().isEnabled();
     }
 
     @Override
     public void setEnabled(boolean enabled) {
-        getCompositionNN().setEnabled(enabled);
+        getComposition().setEnabled(enabled);
     }
 
     @Override
     public boolean isResponsive() {
-        return getCompositionNN().isResponsive();
+        return getComposition().isResponsive();
     }
 
     @Override
     public void setResponsive(boolean responsive) {
-        getCompositionNN().setResponsive(responsive);
+        getComposition().setResponsive(responsive);
     }
 
     @Override
     public boolean isVisible() {
-        return getCompositionNN().isVisible();
+        return getComposition().isVisible();
     }
 
     @Override
     public void setVisible(boolean visible) {
-        getCompositionNN().setVisible(visible);
+        getComposition().setVisible(visible);
     }
 
     @Override
     public boolean isVisibleRecursive() {
-        return getCompositionNN().isVisibleRecursive();
+        return getComposition().isVisibleRecursive();
     }
 
     @Override
     public boolean isEnabledRecursive() {
-        return getCompositionNN().isEnabledRecursive();
+        return getComposition().isEnabledRecursive();
     }
 
     @Override
     public float getHeight() {
-        return getCompositionNN().getHeight();
+        return getComposition().getHeight();
     }
 
     @Override
     public SizeUnit getHeightSizeUnit() {
-        return getCompositionNN().getHeightSizeUnit();
+        return getComposition().getHeightSizeUnit();
     }
 
     @Override
     public void setHeight(String height) {
-        getCompositionNN().setHeight(height);
+        getComposition().setHeight(height);
     }
 
     @Override
     public float getWidth() {
-        return getCompositionNN().getWidth();
+        return getComposition().getWidth();
     }
 
     @Override
     public SizeUnit getWidthSizeUnit() {
-        return getCompositionNN().getWidthSizeUnit();
+        return getComposition().getWidthSizeUnit();
     }
 
     @Override
     public void setWidth(String width) {
-        getCompositionNN().setWidth(width);
+        getComposition().setWidth(width);
     }
 
     @Override
     public Alignment getAlignment() {
-        return getCompositionNN().getAlignment();
+        return getComposition().getAlignment();
     }
 
     @Override
     public void setAlignment(Alignment alignment) {
-        getCompositionNN().setAlignment(alignment);
+        getComposition().setAlignment(alignment);
     }
 
     @Override
     public String getStyleName() {
-        return getCompositionNN().getStyleName();
+        return getComposition().getStyleName();
     }
 
     @Override
     public void setStyleName(String styleName) {
-        getCompositionNN().setStyleName(styleName);
+        getComposition().setStyleName(styleName);
     }
 
     @Override
     public void addStyleName(String styleName) {
-        getCompositionNN().addStyleName(styleName);
+        getComposition().addStyleName(styleName);
     }
 
     @Override
     public void removeStyleName(String styleName) {
-        getCompositionNN().removeStyleName(styleName);
+        getComposition().removeStyleName(styleName);
     }
 
     @Override
     public <X> X unwrap(Class<X> internalComponentClass) {
-        return getCompositionNN().unwrap(internalComponentClass);
+        return getComposition().unwrap(internalComponentClass);
     }
 
     @Override
     public <X> X unwrapComposition(Class<X> internalCompositionClass) {
-        return getCompositionNN().unwrapComposition(internalCompositionClass);
+        return getComposition().unwrapComposition(internalCompositionClass);
     }
 
     @Override
@@ -334,6 +388,11 @@ public class CompositeComponent<T extends Component>
         }
     }
 
+    /**
+     * An Event that is fired right before the composite component instance is returned
+     * by {@link com.haulmont.cuba.gui.UiComponents} bean. By this time a composite component
+     * is created, has context, all beans are injected and composition is loaded from descriptor if present.
+     */
     @TriggerOnce
     public static class CreateEvent extends EventObject {
 
@@ -347,6 +406,12 @@ public class CompositeComponent<T extends Component>
         }
     }
 
+    /**
+     * Registers a new {@link CreateEvent} listener.
+     *
+     * @param listener a listener to add
+     * @return a registration object for removing an event listener added to a source
+     */
     protected Subscription addCreateListener(Consumer<CreateEvent> listener) {
         return getEventHub().subscribe(CreateEvent.class, listener);
     }

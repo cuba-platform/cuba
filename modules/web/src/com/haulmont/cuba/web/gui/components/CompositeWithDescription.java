@@ -27,14 +27,14 @@ public interface CompositeWithDescription extends Component.HasDescription {
     @Override
     default String getDescription() {
         Component.HasDescription hasDescription =
-                (Component.HasCaption) ((CompositeComponent) this).getCompositionNN();
+                (Component.HasCaption) ((CompositeComponent) this).getComposition();
         return hasDescription.getDescription();
     }
 
     @Override
     default void setDescription(String description) {
         Component.HasDescription hasDescription =
-                (Component.HasDescription) ((CompositeComponent) this).getCompositionNN();
+                (Component.HasDescription) ((CompositeComponent) this).getComposition();
         hasDescription.setDescription(description);
     }
 }

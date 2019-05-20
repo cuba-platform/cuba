@@ -27,19 +27,19 @@ public interface CompositeWithIcon extends Component.HasIcon {
 
     @Override
     default String getIcon() {
-        Component.HasIcon hasIcon = (Component.HasIcon) ((CompositeComponent) this).getCompositionNN();
+        Component.HasIcon hasIcon = (Component.HasIcon) ((CompositeComponent) this).getComposition();
         return hasIcon.getIcon();
     }
 
     @Override
     default void setIcon(String icon) {
-        Component.HasIcon hasIcon = (Component.HasIcon) ((CompositeComponent) this).getCompositionNN();
+        Component.HasIcon hasIcon = (Component.HasIcon) ((CompositeComponent) this).getComposition();
         hasIcon.setIcon(icon);
     }
 
     @Override
     default void setIconFromSet(Icons.Icon icon) {
-        Component.HasIcon hasIcon = (Component.HasIcon) ((CompositeComponent) this).getCompositionNN();
+        Component.HasIcon hasIcon = (Component.HasIcon) ((CompositeComponent) this).getComposition();
         hasIcon.setIconFromSet(icon);
     }
 }

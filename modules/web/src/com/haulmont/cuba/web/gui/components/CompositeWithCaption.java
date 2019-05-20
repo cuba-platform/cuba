@@ -26,13 +26,13 @@ public interface CompositeWithCaption extends CompositeWithDescription, Componen
 
     @Override
     default String getCaption() {
-        Component.HasCaption hasCaption = (Component.HasCaption) ((CompositeComponent) this).getCompositionNN();
+        Component.HasCaption hasCaption = (Component.HasCaption) ((CompositeComponent) this).getComposition();
         return hasCaption.getCaption();
     }
 
     @Override
     default void setCaption(String caption) {
-        Component.HasCaption hasCaption = (Component.HasCaption) ((CompositeComponent) this).getCompositionNN();
+        Component.HasCaption hasCaption = (Component.HasCaption) ((CompositeComponent) this).getComposition();
         hasCaption.setCaption(caption);
     }
 

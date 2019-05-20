@@ -26,13 +26,13 @@ public interface CompositeWithHtmlCaption extends CompositeWithCaption, HasHtmlC
 
     @Override
     default boolean isCaptionAsHtml() {
-        HasHtmlCaption hasCaption = (HasHtmlCaption) ((CompositeComponent) this).getCompositionNN();
+        HasHtmlCaption hasCaption = (HasHtmlCaption) ((CompositeComponent) this).getComposition();
         return hasCaption.isCaptionAsHtml();
     }
 
     @Override
     default void setCaptionAsHtml(boolean captionAsHtml) {
-        HasHtmlCaption hasCaption = (HasHtmlCaption) ((CompositeComponent) this).getCompositionNN();
+        HasHtmlCaption hasCaption = (HasHtmlCaption) ((CompositeComponent) this).getComposition();
         hasCaption.setCaptionAsHtml(captionAsHtml);
     }
 

@@ -26,13 +26,13 @@ public interface CompositeWithHtmlDescription extends CompositeWithDescription, 
 
     @Override
     default boolean isDescriptionAsHtml() {
-        HasHtmlDescription hasDescription = (HasHtmlDescription) ((CompositeComponent) this).getCompositionNN();
+        HasHtmlDescription hasDescription = (HasHtmlDescription) ((CompositeComponent) this).getComposition();
         return hasDescription.isDescriptionAsHtml();
     }
 
     @Override
     default void setDescriptionAsHtml(boolean descriptionAsHtml) {
-        HasHtmlDescription hasDescription = (HasHtmlDescription) ((CompositeComponent) this).getCompositionNN();
+        HasHtmlDescription hasDescription = (HasHtmlDescription) ((CompositeComponent) this).getComposition();
         hasDescription.setDescriptionAsHtml(descriptionAsHtml);
     }
 }
