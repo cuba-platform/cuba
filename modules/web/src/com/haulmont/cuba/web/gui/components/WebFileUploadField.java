@@ -22,6 +22,7 @@ import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.DataManager;
 import com.haulmont.cuba.core.global.FileStorageException;
 import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.core.global.Security;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.Notifications;
 import com.haulmont.cuba.gui.Notifications.NotificationType;
@@ -34,6 +35,7 @@ import com.haulmont.cuba.gui.export.ExportDisplay;
 import com.haulmont.cuba.gui.export.FileDataProvider;
 import com.haulmont.cuba.gui.screen.compatibility.LegacyFrame;
 import com.haulmont.cuba.gui.upload.FileUploadingAPI;
+import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.web.gui.icons.IconResolver;
 import com.haulmont.cuba.web.widgets.CubaFileUpload;
 import com.vaadin.server.Resource;
@@ -143,6 +145,20 @@ public class WebFileUploadField extends WebAbstractUploadField<CubaFileUploadWra
         });
         component.setClearButtonListener(this::clearButtonClicked);
         component.setRequiredError(null);
+
+        applyPermissions();
+    }
+
+    protected void applyPermissions() {
+        Security security = beanLocator.get(Security.NAME);
+
+        if (!security.isEntityOpPermitted(FileDescriptor.class, EntityOp.UPDATE)) {
+            component.setUploadButtonEnabled(false);
+            component.setClearButtonEnabled(false);
+        }
+        if (!security.isEntityOpPermitted(FileDescriptor.class, EntityOp.READ)) {
+            component.setFileNameButtonEnabled(false);
+        }
     }
 
     protected void internalValueChanged(Object newValue) {
