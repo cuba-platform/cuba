@@ -272,7 +272,6 @@ public class SettingsWindow extends AbstractWindow {
             options.put(timeZones.getDisplayNameLong(timeZone), id);
         }
         timeZoneLookup.setOptionsMap(options);
-        timeZoneLookup.unwrap(ComboBox.class).setPopupWidth(null);
 
         timeZoneAutoField.setCaption(messages.getMainMessage("timeZone.auto"));
         timeZoneAutoField.setDescription(messages.getMainMessage("timeZone.auto.descr"));

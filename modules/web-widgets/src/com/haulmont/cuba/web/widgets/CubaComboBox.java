@@ -40,6 +40,7 @@ public class CubaComboBox<V> extends ComboBox<V> implements Action.Container, Le
     protected BiFunction<V, V, Boolean> customValueEquals;
 
     public CubaComboBox() {
+        setPopupWidth(null);
     }
 
     @Override
