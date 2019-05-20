@@ -27,6 +27,7 @@ import com.haulmont.cuba.gui.components.data.meta.OptionsBinding;
 import com.haulmont.cuba.gui.components.data.options.OptionsBinder;
 import com.haulmont.cuba.web.widgets.CubaListSelect;
 import com.vaadin.v7.data.util.IndexedContainer;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.InitializingBean;
 
 import javax.inject.Inject;
@@ -147,6 +148,28 @@ public class WebOptionsList<V, I> extends WebAbstractField<CubaListSelect, V>
         setValueToPresentation(convertToPresentation(value));
     }
 
+    @Override
+    protected boolean fieldValueEquals(V value, V oldValue) {
+        if (!isMultiSelect()) {
+            return super.fieldValueEquals(value, oldValue);
+        }
+
+        //noinspection unchecked
+        return equalCollections((Collection<V>) value, (Collection<V>) oldValue);
+    }
+
+    protected boolean equalCollections(Collection<V> a, Collection<V> b) {
+        if (a == null && b == null) {
+            return true;
+        }
+
+        if (a == null || b == null) {
+            return false;
+        }
+
+        return CollectionUtils.isEqualCollection(a, b);
+    }
+
     @SuppressWarnings("unchecked")
     protected List<I> getCurrentItems() {
         IndexedContainer container = (IndexedContainer) component.getContainerDataSource();
@@ -198,7 +221,7 @@ public class WebOptionsList<V, I> extends WebAbstractField<CubaListSelect, V>
 
     @Override
     protected void setValueToPresentation(Object value) {
-        component.setValueIgnoreReadOnly(value);
+        component.setValueToComponent(value);
     }
 
     protected void setItemsToPresentation(Stream<I> options) {

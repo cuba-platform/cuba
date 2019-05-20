@@ -28,11 +28,23 @@ public class CubaListSelect extends ListSelect {
 
     protected Function<Object, String> itemCaptionGenerator;
 
+    protected boolean omitValueChange = false;
+
     public CubaListSelect() {
         setValidationVisible(false);
 
         setShowBufferedSourceException(false);
         this.resetValueToNullOnContainerChange = false;
+    }
+
+    public void setValueToComponent(Object value) {
+        omitValueChange = true;
+
+        setValue(value, false, true);
+
+        omitValueChange = false;
+
+        fireValueChangeEvent(false);
     }
 
     public Function<Object, String> getItemCaptionGenerator() {
@@ -66,9 +78,15 @@ public class CubaListSelect extends ListSelect {
 
     @Override
     protected void fireValueChange(boolean repaintIsNotNeeded) {
-        fireEvent(new CubaValueChangeEvent(this, repaintIsNotNeeded));
+        fireValueChangeEvent(true);
         if (!repaintIsNotNeeded) {
             markAsDirty();
+        }
+    }
+
+    protected void fireValueChangeEvent(boolean userOriginated) {
+        if (!omitValueChange) {
+            fireEvent(new CubaValueChangeEvent(this, userOriginated));
         }
     }
 }
