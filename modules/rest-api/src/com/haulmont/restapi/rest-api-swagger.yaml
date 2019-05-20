@@ -1143,6 +1143,8 @@ paths:
 
         If the 'Content-Type' header has some other value then file contents must be passed in the request body.
         The 'Content-Length' header will be used for FileDescriptor 'size' field value.
+
+        File upload may be disabled for the security role using the `cuba.restApi.fileUpload.enabled` specific permission.
       parameters:
         - name: name
           in: query
