@@ -711,4 +711,18 @@ public class AbstractFrame implements Frame, Frame.Wrapper, Component.Wrapper, C
     public Action getAction(String id) {
         return frame.getAction(id);
     }
+
+    /**
+     * Disposes frame references.
+     * <p>
+     * Should be called when a frame is removed from UI.
+     */
+    public void dispose() {
+        DsContext dsContext = getDsContext();
+        if (dsContext != null
+                && dsContext.getParent() != null) {
+            dsContext.getParent()
+                    .getChildren().remove(dsContext);
+        }
+    }
 }
