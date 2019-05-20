@@ -559,4 +559,16 @@ public class AbstractFrame extends ScreenFragment implements Frame, Frame.Wrappe
     public float getExpandRatio(Component component) {
         return frame.getExpandRatio(component);
     }
+
+    /**
+     * Disposes frame references.
+     * <p>
+     * Should be called when a frame is removed from UI.
+     */
+    public void dispose() {
+        DsContext parent = dsContext.getParent();
+        if (parent != null) {
+            parent.getChildren().remove(dsContext);
+        }
+    }
 }
