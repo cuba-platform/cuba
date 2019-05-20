@@ -424,7 +424,7 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
         Map<String, Object> params = new HashMap<>();
         params.put("filter", fakeFilter);
         params.put("filterEntity", filterEntity);
-        params.put("conditions", conditionsTree);
+        params.put("conditionsTree", conditionsTree);
         params.put("useShortConditionForm", true);
 
         FilterEditor filterEditor = (FilterEditor) openWindow("filterEditor", OpenType.DIALOG, params);
