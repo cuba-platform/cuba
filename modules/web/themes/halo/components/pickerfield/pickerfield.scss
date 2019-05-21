@@ -24,9 +24,24 @@
 
       .c-suggestionfield.inline-icon,
       .v-textfield.inline-icon {
-        padding-left: 30px;
+        padding-left: $v-unit-size;
         border-top-right-radius: 0;
         border-bottom-right-radius: 0;
+      }
+    }
+  }
+
+  .#{$primary-stylename} {
+    .v-caption-inline-icon {
+      img.v-icon {
+        height: round($v-unit-size/2);
+        width: round($v-unit-size/2);
+        bottom: round($v-unit-size/4);
+        left: round($v-unit-size/4);
+      }
+
+      span.v-icon {
+        left: 0;
       }
     }
   }
