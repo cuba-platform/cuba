@@ -22,6 +22,21 @@
     }
   }
 
+  .#{$primary-stylename} {
+    img.v-icon {
+      height: round($v-unit-size/2);
+      width: round($v-unit-size/2);
+      margin-left: round($v-unit-size/4);
+    }
+  }
+
+  .#{$primary-stylename}-suggestpopup {
+    img.v-icon {
+      height: round($v-unit-size/2);
+      width: round($v-unit-size/2);
+    }
+  }
+
   .#{$primary-stylename}.v-readonly {
     input {
       padding-right: ceil($v-unit-size/6) + ceil($v-border-radius/3);
