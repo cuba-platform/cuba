@@ -56,16 +56,16 @@ public @interface StudioComponent {
     String xmlElement() default "";
 
     /**
-     * JavaDoc
+     * Specifies xml namespace required for the component.
      *
-     * @return
+     * @return xml namespace
      */
     String xmlns() default "";
 
     /**
-     * JavaDoc
+     * Specifies xml namespace alias required for the component.
      *
-     * @return
+     * @return xml namespace alias
      */
     String xmlnsAlias() default "";
 

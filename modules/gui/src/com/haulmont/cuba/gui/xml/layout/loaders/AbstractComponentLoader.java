@@ -370,7 +370,14 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
     }
 
     protected void loadHeight(Component component, Element element) {
-        loadHeight(component, element, null);
+        String height = element.attributeValue("height");
+        if (StringUtils.isNotEmpty(height)) {
+            if ("auto".equalsIgnoreCase(height)) {
+                component.setHeight(Component.AUTO_SIZE);
+            } else {
+                component.setHeight(loadThemeString(height));
+            }
+        }
     }
 
     protected void loadHeight(Component component, Element element, @Nullable String defaultValue) {
@@ -385,7 +392,14 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
     }
 
     protected void loadWidth(Component component, Element element) {
-        loadWidth(component, element, null);
+        String width = element.attributeValue("width");
+        if (StringUtils.isNotEmpty(width)) {
+            if ("auto".equalsIgnoreCase(width)) {
+                component.setWidth(Component.AUTO_SIZE);
+            } else {
+                component.setWidth(loadThemeString(width));
+            }
+        }
     }
 
     protected void loadTabIndex(Component.Focusable component, Element element) {

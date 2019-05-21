@@ -19,11 +19,8 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 import com.haulmont.cuba.core.global.DevelopmentException;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
-import com.haulmont.cuba.gui.components.AbstractWindow;
-import com.haulmont.cuba.gui.components.DialogWindow;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.DialogWindow.WindowMode;
-import com.haulmont.cuba.gui.components.Facet;
-import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.logging.ScreenLifeCycle;
 import com.haulmont.cuba.gui.model.ScreenData;
 import com.haulmont.cuba.gui.model.impl.ScreenDataXmlLoader;
@@ -148,15 +145,23 @@ public class WindowLoader extends ContainerLoader<Window> implements ComponentRo
             DialogWindow dialog = (DialogWindow) resultComponent;
 
             String xmlWidthValue = dialogModeElement.attributeValue("width");
-            if (StringUtils.isNotBlank(xmlWidthValue)) {
+            if (StringUtils.isNotEmpty(xmlWidthValue)) {
                 String themeWidthValue = loadThemeString(xmlWidthValue);
-                dialog.setWidth(themeWidthValue);
+                if ("auto".equalsIgnoreCase(themeWidthValue)) {
+                    dialog.setWidth(Component.AUTO_SIZE);
+                } else {
+                    dialog.setWidth(themeWidthValue);
+                }
             }
 
             String xmlHeightValue = dialogModeElement.attributeValue("height");
-            if (StringUtils.isNotBlank(xmlHeightValue)) {
+            if (StringUtils.isNotEmpty(xmlHeightValue)) {
                 String themeHeightValue = loadThemeString(xmlHeightValue);
-                dialog.setHeight(themeHeightValue);
+                if ("auto".equalsIgnoreCase(themeHeightValue)) {
+                    dialog.setHeight(Component.AUTO_SIZE);
+                } else {
+                    dialog.setHeight(themeHeightValue);
+                }
             }
 
             String closeable = dialogModeElement.attributeValue("closeable");

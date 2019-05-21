@@ -61,7 +61,7 @@ public class LinkLoader extends AbstractComponentLoader<Link> {
             resultComponent.setRel(rel);
         }
 
-        loadWidth(resultComponent, element, Component.AUTO_SIZE);
-        loadHeight(resultComponent, element, Component.AUTO_SIZE);
+        loadWidth(resultComponent, element);
+        loadHeight(resultComponent, element);
     }
 }

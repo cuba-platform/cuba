@@ -16,10 +16,14 @@
 
 package com.haulmont.cuba.gui.meta;
 
+import com.haulmont.cuba.gui.components.Facet;
+
 import java.lang.annotation.*;
 
 /**
- * JavaDoc
+ * Indicates that the annotated interface should be available in Studio Screen Designer as a non-visual component.
+ * Provides metadata for components Palette and Properties Panel of Screen Designer. The annotated interface must be a
+ * direct or indirect subclass of {@link Facet}.
  */
 @Documented
 @Retention(RetentionPolicy.SOURCE)
@@ -51,16 +55,16 @@ public @interface StudioFacet {
     String xmlElement() default "";
 
     /**
-     * JavaDoc
+     * Specifies xml namespace required for the facet.
      *
-     * @return
+     * @return xml namespace
      */
     String xmlns() default "";
 
     /**
-     * JavaDoc
+     * Specifies xml namespace alias required for the facet.
      *
-     * @return
+     * @return xml namespace alias
      */
     String xmlnsAlias() default "";
 
@@ -73,5 +77,4 @@ public @interface StudioFacet {
      * @return name of the default event, it will be used for scaffolding of the event handler on double click
      */
     String defaultEvent() default "";
-
 }

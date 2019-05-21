@@ -17,7 +17,6 @@
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.gui.GuiDevelopmentException;
-import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.SizeUnit;
 import com.haulmont.cuba.gui.components.SplitPanel;
 import com.haulmont.cuba.gui.components.VBoxLayout;
@@ -70,8 +69,8 @@ public class SplitPanelLoader extends ContainerLoader<SplitPanel> {
         loadDockable(resultComponent, element);
         loadDockMode(resultComponent, element);
 
-        loadHeight(resultComponent, element, Component.AUTO_SIZE);
-        loadWidth(resultComponent, element, Component.AUTO_SIZE);
+        loadHeight(resultComponent, element);
+        loadWidth(resultComponent, element);
         loadAlign(resultComponent, element);
 
         loadSubComponents();
