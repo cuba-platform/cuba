@@ -25,28 +25,8 @@ import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.client.sys.PersistenceManagerClient;
 import com.haulmont.cuba.core.app.keyvalue.KeyValueMetaClass;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.MessageTools;
-import com.haulmont.cuba.core.global.Messages;
-import com.haulmont.cuba.core.global.MetadataTools;
-import com.haulmont.cuba.core.global.Security;
-import com.haulmont.cuba.core.global.View;
-import com.haulmont.cuba.core.global.ViewRepository;
-import com.haulmont.cuba.gui.components.Action;
-import com.haulmont.cuba.gui.components.Buffered;
-import com.haulmont.cuba.gui.components.ButtonsPanel;
-import com.haulmont.cuba.gui.components.ContentMode;
-import com.haulmont.cuba.gui.components.DataGrid;
-import com.haulmont.cuba.gui.components.DataGridEditorFieldFactory;
-import com.haulmont.cuba.gui.components.Field;
-import com.haulmont.cuba.gui.components.HasInnerComponents;
-import com.haulmont.cuba.gui.components.KeyCombination;
-import com.haulmont.cuba.gui.components.LookupComponent;
-import com.haulmont.cuba.gui.components.MouseEventDetails;
-import com.haulmont.cuba.gui.components.RowsCount;
-import com.haulmont.cuba.gui.components.SecuredActionsHolder;
-import com.haulmont.cuba.gui.components.ValidationException;
-import com.haulmont.cuba.gui.components.VisibilityChangeNotifier;
+import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.BaseAction;
 import com.haulmont.cuba.gui.components.data.BindingState;
 import com.haulmont.cuba.gui.components.data.DataGridItems;
@@ -68,6 +48,7 @@ import com.haulmont.cuba.gui.model.CollectionContainer;
 import com.haulmont.cuba.gui.model.DataComponents;
 import com.haulmont.cuba.gui.model.InstanceContainer;
 import com.haulmont.cuba.gui.model.impl.KeyValueContainerImpl;
+import com.haulmont.cuba.gui.screen.ScreenValidation;
 import com.haulmont.cuba.gui.sys.UiTestIds;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
@@ -168,6 +149,7 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
     protected MessageTools messageTools;
     protected PersistenceManagerClient persistenceManagerClient;
     protected ApplicationContext applicationContext;
+    protected ScreenValidation screenValidation;
 
     // Style names used by grid itself
     protected final List<String> internalStyles = new ArrayList<>(2);
@@ -187,6 +169,7 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
     protected boolean sortable = true;
     protected boolean columnsCollapsingAllowed = true;
     protected boolean textSelectionEnabled = false;
+    protected boolean crossFieldValidate = true;
 
     protected Action itemClickAction;
     protected Action enterPressAction;
@@ -339,6 +322,11 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
     @Inject
     public void setApplicationContext(ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
+    }
+
+    @Inject
+    protected void setScreenValidation(ScreenValidation screenValidation) {
+        this.screenValidation = screenValidation;
     }
 
     @SuppressWarnings("unchecked")
@@ -1145,6 +1133,8 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
     @Override
     public void setEditorEnabled(boolean isEnabled) {
         component.getEditor().setEnabled(isEnabled);
+
+        enableCrossFieldValidationHandling(crossFieldValidate);
     }
 
     @Override
@@ -1336,6 +1326,18 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
         return getEventHub().subscribe(EditorPostCommitEvent.class, listener);
     }
 
+    @Override
+    public void setEditorCrossFieldValidate(boolean validate) {
+        this.crossFieldValidate = validate;
+
+        enableCrossFieldValidationHandling(validate);
+    }
+
+    @Override
+    public boolean isEditorCrossFieldValidate() {
+        return crossFieldValidate;
+    }
+
     protected void onEditorSave(EditorSaveEvent<E> saveEvent) {
         //noinspection unchecked
         CubaEditorSaveEvent<E> event = ((CubaEditorSaveEvent) saveEvent);
@@ -1418,6 +1420,12 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
         }
 
         if (item != null) {
+            if (isEditorActive()
+                    && !isEditorBuffered()
+                    && item.equals(getEditedItem())) {
+                    return;
+            }
+
             Object removed = itemDatasources.remove(item);
             if (removed != null) {
                 detachItemContainer(removed);
@@ -2912,6 +2920,40 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
     @Override
     public void setTabIndex(int tabIndex) {
         component.setTabIndex(tabIndex);
+    }
+
+    protected void enableCrossFieldValidationHandling(boolean enable) {
+        if (isEditorEnabled()) {
+            ((CubaEditorImpl<E>) component.getEditor()).setCrossFieldValidationHandler(
+                    enable ? this::validateCrossFieldRules : null);
+        }
+    }
+
+    protected String validateCrossFieldRules(Map<String, Object> properties) {
+        E item = getEditedItem();
+        if (item == null) {
+            return null;
+        }
+
+        // set changed values from editor to copied entity
+        E copiedItem = metadataTools.deepCopy(item);
+        for (Map.Entry<String, Object> property : properties.entrySet()) {
+            copiedItem.setValue(property.getKey(), property.getValue());
+        }
+
+        // validate copy
+        ValidationErrors errors = screenValidation.validateCrossFieldRules(
+                getFrame() != null ? getFrame().getFrameOwner() : null,
+                copiedItem);
+        if (errors.isEmpty()) {
+            return null;
+        }
+
+        StringBuilder errorMessage = new StringBuilder();
+        for (ValidationErrors.Item error : errors.getAll()) {
+            errorMessage.append(error.description).append("\n");
+        }
+        return errorMessage.toString();
     }
 
     @Nullable

@@ -2539,6 +2539,7 @@
                 <xs:attribute name="sortable" type="xs:boolean"/>
                 <xs:attribute name="textSelectionEnabled" type="xs:boolean"/>
                 <xs:attribute name="editorEnabled" type="xs:boolean"/>
+                <xs:attribute name="editorCrossFieldEnabled" type="xs:boolean"/>
                 <xs:attribute name="editorBuffered" type="xs:boolean"/>
                 <xs:attribute name="editorSaveCaption" type="resourceString"/>
                 <xs:attribute name="editorCancelCaption" type="resourceString"/>

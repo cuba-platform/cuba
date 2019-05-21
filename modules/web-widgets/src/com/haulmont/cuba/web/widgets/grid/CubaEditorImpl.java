@@ -29,9 +29,13 @@ import com.vaadin.ui.components.grid.EditorImpl;
 import com.vaadin.util.ReflectTools;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class CubaEditorImpl<T> extends EditorImpl<T> {
+
+    protected Function<Map<String, Object>, String> crossFieldValidationHandler;
+
     /**
      * Constructor for internal implementation of the Editor.
      *
@@ -39,6 +43,24 @@ public class CubaEditorImpl<T> extends EditorImpl<T> {
      */
     public CubaEditorImpl(PropertySet<T> propertySet) {
         super(propertySet);
+    }
+
+    /**
+     * Sets cross field validation handler. The first parameter in Function contains changed values from the editor's
+     * fields: property - value, the second parameter is String which must contain error message or null if validation
+     * was successful.
+     *
+     * @param handler handler function
+     */
+    public void setCrossFieldValidationHandler(Function<Map<String, Object>, String> handler) {
+        this.crossFieldValidationHandler = handler;
+    }
+
+    /**
+     * @return cross field validation handler
+     */
+    public Function<Map<String, Object>, String> getCrossFieldValidationHandler() {
+        return crossFieldValidationHandler;
     }
 
     protected CubaEnhancedGrid<T> getEnhancedGrid() {
@@ -113,20 +135,30 @@ public class CubaEditorImpl<T> extends EditorImpl<T> {
 
     protected boolean isEditorFieldsValid() {
         Map<Component, ValidationResult> errors = getValidationErrors();
-        handleValidation(errors);
-        return errors.isEmpty();
+        return handleValidation(errors);
     }
 
-    protected void handleValidation(Map<Component, ValidationResult> errors) {
-        boolean ok = errors.isEmpty();
-        if (saving) {
-            rpc.confirmSave(ok);
-            saving = false;
-        }
+    protected boolean handleValidation(Map<Component, ValidationResult> errors) {
+        if (errors.isEmpty()) {
+            // validate cross fields if there is no errors after validation and
+            // user clicked save or it is not buffered mode
+            if (!isBuffered() || saving) {
+                if (crossFieldValidationHandler != null) {
+                    String errorMessage = crossFieldValidationHandler.apply(generatePropertiesMap());
+                    boolean ok = errorMessage == null;
 
-        if (ok) {
-            rpc.setErrorMessage(null, Collections.emptyList());
+                    confirmSave(ok);
+                    rpc.setErrorMessage(errorMessage, Collections.emptyList());
+
+                    return ok;
+                } else {
+                    confirmSave(true);
+                    rpc.setErrorMessage(null, Collections.emptyList());
+                }
+            }
         } else {
+            confirmSave(false);
+
             List<Component> fields = errors.keySet().stream()
                     .filter(columnFields.values()::contains)
                     .collect(Collectors.toList());
@@ -144,6 +176,24 @@ public class CubaEditorImpl<T> extends EditorImpl<T> {
                     .collect(Collectors.toList());
 
             rpc.setErrorMessage(message, columnIds);
+            return false;
+        }
+
+        return true;
+    }
+
+    protected Map<String, Object> generatePropertiesMap() {
+        Map<String, Object> properties = new HashMap<>();
+        for (Map.Entry<Grid.Column<T, ?>, Component> entry : columnFields.entrySet()) {
+            properties.put(entry.getKey().getId(), ((CubaEditorField<?>) entry.getValue()).getValue());
+        }
+        return properties;
+    }
+
+    protected void confirmSave(boolean ok) {
+        if (saving) {
+            rpc.confirmSave(ok);
+            saving = false;
         }
     }
 

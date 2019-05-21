@@ -572,6 +572,18 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
     void edit(E item);
 
     /**
+     * Enables cross field validation in the inline editor. True by default.
+     *
+     * @param validate validate option, true if an editor should validate cross field rules
+     */
+    void setEditorCrossFieldValidate(boolean validate);
+
+    /**
+     * @return true if editor validates cross field rules
+     */
+    boolean isEditorCrossFieldValidate();
+
+    /**
      * Field generator that generates component for column in {@link DataGrid} editor.
      */
     @Deprecated

@@ -102,6 +102,7 @@ public abstract class AbstractDataGridLoader<T extends DataGrid> extends Actions
         loadEditorBuffered(resultComponent, element);
         loadEditorSaveCaption(resultComponent, element);
         loadEditorCancelCaption(resultComponent, element);
+        loadEditorCrossFieldEnabled(resultComponent, element);
 
         loadActions(resultComponent, element);
 
@@ -238,6 +239,13 @@ public abstract class AbstractDataGridLoader<T extends DataGrid> extends Actions
         if (StringUtils.isNotEmpty(editorCancelCaption)) {
             editorCancelCaption = loadResourceString(editorCancelCaption);
             component.setEditorCancelCaption(editorCancelCaption);
+        }
+    }
+
+    protected void loadEditorCrossFieldEnabled(DataGrid component, Element element) {
+        String editorCrossFieldEnabled = element.attributeValue("editorCrossFieldEnabled");
+        if (StringUtils.isNotEmpty(editorCrossFieldEnabled)) {
+            component.setEditorCrossFieldValidate(Boolean.parseBoolean(editorCrossFieldEnabled));
         }
     }
 
