@@ -99,6 +99,7 @@ public class ServiceInterceptor {
 
                 return res;
             } else {
+                boolean checkTransactionOnExit = Stores.getAdditional().isEmpty() && !persistence.isInTransaction();
                 statisticsAccumulator.incMiddlewareRequestsCount();
                 try {
                     // Using UserSessionsAPI directly to make sure the session's "last used" timestamp is propagated to the cluster
@@ -110,23 +111,21 @@ public class ServiceInterceptor {
                     ValidateServiceMethodContext validatedContext = getValidateServiceMethodContext(ctx);
                     validateMethodParameters(ctx, validatedContext);
 
-                    boolean checkTransactionOnExit = Stores.getAdditional().isEmpty() && !persistence.isInTransaction();
-
                     log.trace("Invoking: {}, session={}", ctx.getSignature(), userSession);
 
                     Object res = ctx.proceed();
 
                     validateMethodResult(ctx, validatedContext, res);
 
-                    if (checkTransactionOnExit && persistence.isInTransaction()) {
-                        log.warn("Open transaction left in {}", ctx.getSignature().toShortString());
-                    }
-
                     return res;
                 } catch (Throwable e) {
                     logException(e, ctx);
                     // Propagate the special exception to avoid serialization errors on remote clients
                     throw new RemoteException(e);
+                } finally {
+                    if (checkTransactionOnExit && persistence.isInTransaction()) {
+                        log.warn("Open transaction left in {}", ctx.getSignature().toShortString());
+                    }
                 }
             }
         } finally {
