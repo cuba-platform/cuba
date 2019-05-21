@@ -27,7 +27,7 @@ import java.lang.annotation.*;
  */
 @Documented
 @Retention(RetentionPolicy.SOURCE)
-@Target(ElementType.METHOD)
+@Target(ElementType.TYPE)
 public @interface StudioFacet {
     /**
      * @return caption of the event in Screen Designer Events

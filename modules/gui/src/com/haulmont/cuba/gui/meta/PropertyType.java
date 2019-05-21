@@ -115,6 +115,11 @@ public enum PropertyType {
      * Spring Bean ID.
      */
     BEAN_REF,
+
+    /**
+     * ID of a component defined in screen.
+     */
+    COMPONENT_REF,
     /**
      * ID of a datasource.
      */

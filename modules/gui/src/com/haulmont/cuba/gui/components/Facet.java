@@ -16,6 +16,8 @@
 
 package com.haulmont.cuba.gui.components;
 
+import com.haulmont.cuba.gui.meta.PropertyType;
+import com.haulmont.cuba.gui.meta.StudioProperty;
 import com.haulmont.cuba.gui.screen.Screen;
 import com.haulmont.cuba.gui.screen.ScreenFragment;
 
@@ -31,6 +33,7 @@ public interface Facet {
      *
      * @param id id
      */
+    @StudioProperty(type = PropertyType.COMPONENT_ID)
     void setId(String id);
     /**
      * @return ID as defined in {@code id} attribute

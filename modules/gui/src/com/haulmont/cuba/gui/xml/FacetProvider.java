@@ -21,16 +21,33 @@ import com.haulmont.cuba.gui.xml.layout.ComponentLoader.ComponentContext;
 import org.dom4j.Element;
 
 /**
- * Javadoc
+ * Interface for Spring Beans providing non-visual components for screens.
  *
- * @param <T>
+ * @param <T> type of facet
+ * @see Facet
  */
 public interface FacetProvider<T extends Facet> {
+    /**
+     * @return facet interface
+     */
     Class<T> getFacetClass();
 
+    /**
+     * @return new instance of the facet class
+     */
     T create();
 
+    /**
+     * @return facet XML tag
+     */
     String getFacetTag();
 
+    /**
+     * Loads properties of the facet from XML.
+     *
+     * @param facet   facet
+     * @param element XML element
+     * @param context loading context
+     */
     void loadFromXml(T facet, Element element, ComponentContext context);
 }
