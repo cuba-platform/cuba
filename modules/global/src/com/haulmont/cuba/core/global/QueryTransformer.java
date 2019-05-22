@@ -87,4 +87,9 @@ public interface QueryTransformer {
     void handleCaseInsensitiveParam(String paramName);
 
     void replaceInCondition(String paramName);
+
+    /** Adds 'join' clause */
+    default void addJoin(String join) {
+        addJoinAndWhere(join, "");
+    }
 }
