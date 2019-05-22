@@ -32,30 +32,26 @@ public class ConditionJpqlGenerator {
             return query;
         }
         QueryTransformer transformer = queryTransformerFactory.transformer(query);
-        String joins = generateJoins(condition);
-        String where = generateWhere(condition);
-        if (!Strings.isNullOrEmpty(joins)) {
-            transformer.addJoinAndWhere(joins, where);
-        } else {
-            transformer.addWhere(where);
-        }
+
+        addJoinStatements(transformer, condition);
+        transformer.addWhere(generateWhere(condition));
         return transformer.getResult();
     }
 
-    protected String generateJoins(Condition condition) {
+    protected void addJoinStatements(QueryTransformer transformer, Condition condition) {
         if (condition instanceof LogicalCondition) {
             LogicalCondition logical = (LogicalCondition) condition;
             List<Condition> conditions = logical.getConditions();
-            if (conditions.isEmpty())
-                return "";
-            else {
-                return conditions.stream()
-                        .map(this::generateJoins)
-                        .collect(Collectors.joining(" "));
+            if (!conditions.isEmpty()) {
+                conditions.forEach(c -> addJoinStatements(transformer, c));
             }
+            return;
         } else if (condition instanceof JpqlCondition) {
             String join = ((JpqlCondition) condition).getValue("join");
-            return join != null ? join : "";
+            if (!Strings.isNullOrEmpty(join)) {
+                transformer.addJoin(join);
+            }
+            return;
         }
         throw new UnsupportedOperationException("Condition is not supported: " + condition);
     }

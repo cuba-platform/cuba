@@ -114,26 +114,18 @@ public class QueryTransformerAstBased implements QueryTransformer {
     }
 
     @Override
+    public void addJoin(String join) {
+        EntityVariable entityReference = createMainIdentificationVariable();
+        addJoinInternal(join, entityReference);
+    }
+
+    @Override
     public void addJoinAndWhere(String join, String where) {
         EntityVariable entityReference = createMainIdentificationVariable();
 
         where = replaceEntityPlaceholder(where, entityReference.getVariableName());
-        join = replaceEntityPlaceholder(join, entityReference.getVariableName());
 
-        String[] strings = join.split(",");
-        join = strings[0];
-        if (StringUtils.isNotBlank(join)) {
-            List<JoinVariableNode> joinVariableNodes = parseJoinCondition(join);
-            boolean firstJoin = true;
-            for (JoinVariableNode joinVariableNode : joinVariableNodes) {
-                getTransformer().mixinJoinIntoTree(joinVariableNode, entityReference, firstJoin);
-                firstJoin = false;
-            }
-        }
-        for (int i = 1; i < strings.length; i++) {
-            CommonTree selectionSource = parseSelectionSource(strings[i]);
-            getTransformer().addSelectionSource(selectionSource);
-        }
+        addJoinInternal(join, entityReference);
         addWhereInternal(parseWhereCondition(where));
     }
 
@@ -275,6 +267,25 @@ public class QueryTransformerAstBased implements QueryTransformer {
         addedParams.addAll(parameterCounter.getParameterNames());
 
         getTransformer().mixinWhereConditionsIntoTree(whereTree);
+    }
+
+    protected void addJoinInternal(String join, EntityVariable entityReference) {
+        join = replaceEntityPlaceholder(join, entityReference.getVariableName());
+
+        String[] strings = join.split(",");
+        join = strings[0];
+        if (StringUtils.isNotBlank(join)) {
+            List<JoinVariableNode> joinVariableNodes = parseJoinCondition(join);
+            boolean firstJoin = true;
+            for (JoinVariableNode joinVariableNode : joinVariableNodes) {
+                getTransformer().mixinJoinIntoTree(joinVariableNode, entityReference, firstJoin);
+                firstJoin = false;
+            }
+        }
+        for (int i = 1; i < strings.length; i++) {
+            CommonTree selectionSource = parseSelectionSource(strings[i]);
+            getTransformer().addSelectionSource(selectionSource);
+        }
     }
 
     protected EntityVariable createMainIdentificationVariable() {
