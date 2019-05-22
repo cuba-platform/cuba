@@ -169,7 +169,7 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
     protected boolean sortable = true;
     protected boolean columnsCollapsingAllowed = true;
     protected boolean textSelectionEnabled = false;
-    protected boolean crossFieldValidate = true;
+    protected boolean editorCrossFieldValidate = true;
 
     protected Action itemClickAction;
     protected Action enterPressAction;
@@ -1134,7 +1134,7 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
     public void setEditorEnabled(boolean isEnabled) {
         component.getEditor().setEnabled(isEnabled);
 
-        enableCrossFieldValidationHandling(crossFieldValidate);
+        enableCrossFieldValidationHandling(editorCrossFieldValidate);
     }
 
     @Override
@@ -1328,14 +1328,14 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
 
     @Override
     public void setEditorCrossFieldValidate(boolean validate) {
-        this.crossFieldValidate = validate;
+        this.editorCrossFieldValidate = validate;
 
         enableCrossFieldValidationHandling(validate);
     }
 
     @Override
     public boolean isEditorCrossFieldValidate() {
-        return crossFieldValidate;
+        return editorCrossFieldValidate;
     }
 
     protected void onEditorSave(EditorSaveEvent<E> saveEvent) {
