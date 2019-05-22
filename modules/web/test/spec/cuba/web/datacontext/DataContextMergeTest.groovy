@@ -21,12 +21,13 @@ import com.haulmont.cuba.core.global.Metadata
 import com.haulmont.cuba.gui.model.DataComponents
 import com.haulmont.cuba.gui.model.DataContext
 import com.haulmont.cuba.security.entity.User
+import com.haulmont.cuba.web.container.CubaTestContainer
 import com.haulmont.cuba.web.testmodel.sales.Customer
 import com.haulmont.cuba.web.testmodel.sales.Order
 import com.haulmont.cuba.web.testmodel.sales.OrderLine
 import com.haulmont.cuba.web.testmodel.sales.Status
 import com.haulmont.cuba.web.testsupport.TestContainer
-import com.haulmont.cuba.web.testsupport.TestServiceProxy
+import com.haulmont.cuba.web.testsupport.proxy.TestServiceProxy
 import org.eclipse.persistence.internal.queries.EntityFetchGroup
 import org.eclipse.persistence.queries.FetchGroupTracker
 import org.junit.ClassRule
@@ -36,7 +37,7 @@ import spock.lang.Specification
 class DataContextMergeTest extends Specification {
 
     @Shared @ClassRule
-    public TestContainer cont = TestContainer.Common.INSTANCE
+    public TestContainer cont = CubaTestContainer.Common.INSTANCE
 
     private DataComponents factory
     private EntityStates entityStates
@@ -494,7 +495,7 @@ class DataContextMergeTest extends Specification {
 
         DataContext context = factory.createDataContext()
 
-        def order1, order2, line1, line2, cust1, cust2, user1
+        def order1, order2, line1, line2
 
         when: "(1) src.new > dst.new : copy all non-null (join collections)"
 
@@ -692,5 +693,4 @@ class DataContextMergeTest extends Specification {
     private void makeDetached(def entity) {
         entityStates.makeDetached(entity)
     }
-
 }

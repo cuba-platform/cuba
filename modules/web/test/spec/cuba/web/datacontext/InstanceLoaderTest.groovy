@@ -22,9 +22,10 @@ import com.haulmont.cuba.core.global.Metadata
 import com.haulmont.cuba.gui.model.DataComponents
 import com.haulmont.cuba.gui.model.InstanceContainer
 import com.haulmont.cuba.gui.model.InstanceLoader
+import com.haulmont.cuba.web.container.CubaTestContainer
 import com.haulmont.cuba.web.testmodel.datacontext.Foo
 import com.haulmont.cuba.web.testsupport.TestContainer
-import com.haulmont.cuba.web.testsupport.TestServiceProxy
+import com.haulmont.cuba.web.testsupport.proxy.TestServiceProxy
 import org.junit.ClassRule
 import spock.lang.Shared
 import spock.lang.Specification
@@ -33,10 +34,11 @@ import java.util.function.Consumer
 
 import static com.haulmont.cuba.client.testsupport.TestSupport.reserialize
 
+@SuppressWarnings("GroovyAssignabilityCheck")
 class InstanceLoaderTest extends Specification {
 
     @Shared @ClassRule
-    public TestContainer cont = TestContainer.Common.INSTANCE
+    public TestContainer cont = CubaTestContainer.Common.INSTANCE
 
     private Metadata metadata
     private DataManager dataManager

@@ -20,7 +20,7 @@ import com.haulmont.cuba.gui.components.Fragment
 import com.haulmont.cuba.gui.screen.OpenMode
 import com.haulmont.cuba.security.app.UserManagementService
 import com.haulmont.cuba.web.app.main.MainScreen
-import com.haulmont.cuba.web.testsupport.TestServiceProxy
+import com.haulmont.cuba.web.testsupport.proxy.TestServiceProxy
 import spec.cuba.web.UiScreenSpec
 import spec.cuba.web.fragments.screens.FragmentWithParentListener
 import spec.cuba.web.fragments.screens.ScreenWithFragmentListener
@@ -34,12 +34,6 @@ class FragmentParentEventTest extends UiScreenSpec {
         })
 
         exportScreensPackages(['spec.cuba.web.fragments.screens', 'com.haulmont.cuba.web.app.main'])
-    }
-
-    def cleanup() {
-        TestServiceProxy.clear()
-
-        resetScreensConfig()
     }
 
     def "open fragment with subscribe on parent event"() {

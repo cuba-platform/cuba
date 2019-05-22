@@ -18,7 +18,6 @@ package spec.cuba.web.screens
 
 import com.haulmont.cuba.gui.screen.OpenMode
 import spec.cuba.web.UiScreenSpec
-import spec.cuba.web.WebSpec
 
 import java.util.function.Consumer
 

@@ -28,11 +28,12 @@ import com.haulmont.cuba.web.testmodel.sales.Customer
 import com.haulmont.cuba.web.testmodel.sales.Order
 import com.haulmont.cuba.web.testmodel.sales.OrderLine
 import com.haulmont.cuba.web.testmodel.sales.Product
-import com.haulmont.cuba.web.testsupport.TestServiceProxy
+import com.haulmont.cuba.web.testsupport.proxy.TestServiceProxy
 import spec.cuba.web.WebSpec
 
 import static com.haulmont.cuba.client.testsupport.TestSupport.reserialize
 
+@SuppressWarnings("GroovyAssignabilityCheck")
 class CompositionTest extends WebSpec {
 
     private Customer customer1

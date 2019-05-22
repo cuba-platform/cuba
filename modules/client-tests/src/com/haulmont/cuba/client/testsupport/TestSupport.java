@@ -22,10 +22,11 @@ import static com.haulmont.cuba.core.sys.serialization.SerializationSupport.dese
 import static com.haulmont.cuba.core.sys.serialization.SerializationSupport.serialize;
 
 public class TestSupport {
-
+    @SuppressWarnings("unchecked")
     public static <T> T reserialize(Serializable object) {
-        if (object == null)
+        if (object == null) {
             return null;
+        }
 
         return (T) deserialize(serialize(object));
     }

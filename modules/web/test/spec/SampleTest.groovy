@@ -22,18 +22,20 @@ import com.haulmont.cuba.core.entity.Entity
 import com.haulmont.cuba.core.global.*
 import com.haulmont.cuba.security.entity.User
 import com.haulmont.cuba.security.entity.UserSetting
+import com.haulmont.cuba.web.container.CubaTestContainer
 import com.haulmont.cuba.web.testmodel.sample.Sample
 import com.haulmont.cuba.web.testmodel.sample.SampleNonPersistent
 import com.haulmont.cuba.web.testsupport.TestContainer
-import com.haulmont.cuba.web.testsupport.TestServiceProxy
+import com.haulmont.cuba.web.testsupport.proxy.TestServiceProxy
 import org.junit.ClassRule
 import spock.lang.Shared
 import spock.lang.Specification
 
+@SuppressWarnings("GroovyAssignabilityCheck")
 class SampleTest extends Specification {
 
     @Shared @ClassRule
-    public TestContainer cont = TestContainer.Common.INSTANCE
+    public TestContainer cont = CubaTestContainer.Common.INSTANCE
 
     private Metadata metadata
     private DataManager dataManager

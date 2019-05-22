@@ -26,20 +26,22 @@ import com.haulmont.cuba.gui.model.DataContext
 import com.haulmont.cuba.security.entity.Role
 import com.haulmont.cuba.security.entity.User
 import com.haulmont.cuba.security.entity.UserRole
+import com.haulmont.cuba.web.container.CubaTestContainer
 import com.haulmont.cuba.web.testmodel.sales.Order
 import com.haulmont.cuba.web.testmodel.sales.OrderLine
 import com.haulmont.cuba.web.testsupport.TestContainer
-import com.haulmont.cuba.web.testsupport.TestServiceProxy
+import com.haulmont.cuba.web.testsupport.proxy.TestServiceProxy
 import org.eclipse.persistence.internal.queries.EntityFetchGroup
 import org.eclipse.persistence.queries.FetchGroupTracker
 import org.junit.ClassRule
 import spock.lang.Shared
 import spock.lang.Specification
 
+@SuppressWarnings("GroovyAssignabilityCheck")
 class DataContextParentTest extends Specification {
 
     @Shared @ClassRule
-    public TestContainer cont = TestContainer.Common.INSTANCE
+    public TestContainer cont = CubaTestContainer.Common.INSTANCE
 
     private DataComponents factory
     private EntityStates entityStates
@@ -129,7 +131,7 @@ class DataContextParentTest extends Specification {
 
         ctx2.setParent(ctx1)
 
-        ctx2.merge(user1_ctx1);
+        ctx2.merge(user1_ctx1)
 
         then: "it exists in child context too, but as a different instance"
 

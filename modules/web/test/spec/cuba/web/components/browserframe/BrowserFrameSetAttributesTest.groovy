@@ -19,10 +19,11 @@ package spec.cuba.web.components.browserframe
 import com.haulmont.cuba.gui.components.BrowserFrame
 import com.haulmont.cuba.gui.screen.OpenMode
 import com.haulmont.cuba.security.app.UserManagementService
-import com.haulmont.cuba.web.testsupport.TestServiceProxy
+import com.haulmont.cuba.web.testsupport.proxy.TestServiceProxy
 import spec.cuba.web.UiScreenSpec
 import spec.cuba.web.components.browserframe.screens.*
 
+@SuppressWarnings("GroovyAssignabilityCheck")
 class BrowserFrameSetAttributesTest extends UiScreenSpec {
 
     void setup() {
@@ -31,12 +32,6 @@ class BrowserFrameSetAttributesTest extends UiScreenSpec {
         })
 
         exportScreensPackages(['spec.cuba.web.components.browserframe.screens', 'com.haulmont.cuba.web.app.main'])
-    }
-
-    def cleanup() {
-        TestServiceProxy.clear()
-
-        resetScreensConfig()
     }
 
     def "Sets allow attribute to BrowserFrame"() {

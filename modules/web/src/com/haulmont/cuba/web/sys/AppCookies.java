@@ -92,7 +92,10 @@ public class AppCookies {
     }
 
     protected void addCookie(Cookie cookie) {
-        RequestContext.get().getResponse().addCookie(cookie);
+        RequestContext requestContext = RequestContext.get();
+        if (requestContext != null) {
+            requestContext.getResponse().addCookie(cookie);
+        }
     }
 
     public void updateCookies() {

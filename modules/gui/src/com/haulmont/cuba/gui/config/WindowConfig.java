@@ -621,7 +621,8 @@ public class WindowConfig {
         protected final Class<? extends FrameOwner> controllerClass;
         protected final Type type;
 
-        public ResolvedWindowInfo(WindowInfo windowInfo, Type type, Class<? extends FrameOwner> controllerClass, String template) {
+        public ResolvedWindowInfo(WindowInfo windowInfo, Type type, Class<? extends FrameOwner> controllerClass,
+                                  String template) {
             super(windowInfo.getId(), null, windowInfo.getDescriptor(),
                     windowInfo.getControllerClassName(), windowInfo.getRouteDefinition());
 

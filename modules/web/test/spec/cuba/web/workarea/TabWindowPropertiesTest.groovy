@@ -21,7 +21,7 @@ import com.haulmont.cuba.gui.icons.CubaIcon
 import com.haulmont.cuba.gui.screen.OpenMode
 import com.haulmont.cuba.security.app.UserManagementService
 import com.haulmont.cuba.web.gui.components.WebTabWindow
-import com.haulmont.cuba.web.testsupport.TestServiceProxy
+import com.haulmont.cuba.web.testsupport.proxy.TestServiceProxy
 import com.vaadin.server.FontIcon
 import com.vaadin.ui.TabSheet
 import spec.cuba.web.UiScreenSpec
@@ -29,6 +29,7 @@ import spec.cuba.web.workarea.screens.TabbedScreen
 
 import javax.annotation.Nonnull
 
+@SuppressWarnings("GroovyAssignabilityCheck")
 class TabWindowPropertiesTest extends UiScreenSpec {
 
     void setup() {
@@ -37,12 +38,6 @@ class TabWindowPropertiesTest extends UiScreenSpec {
         })
 
         exportScreensPackages(['spec.cuba.web.workarea.screens', 'com.haulmont.cuba.web.app.main'])
-    }
-
-    def cleanup() {
-        TestServiceProxy.clear()
-
-        resetScreensConfig()
     }
 
     def "change window caption from screen"() {

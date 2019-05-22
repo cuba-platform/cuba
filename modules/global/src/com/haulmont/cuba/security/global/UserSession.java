@@ -277,6 +277,13 @@ public class UserSession implements Serializable {
     /**
      * INTERNAL
      */
+    public void removePermissions(PermissionType type) {
+        permissions[type.ordinal()].clear();
+    }
+
+    /**
+     * INTERNAL
+     */
     public Integer getPermissionValue(PermissionType type, String target) {
         return permissions[type.ordinal()].get(target);
     }

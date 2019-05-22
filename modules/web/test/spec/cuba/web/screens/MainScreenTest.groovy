@@ -18,7 +18,7 @@ package spec.cuba.web.screens
 
 import com.haulmont.cuba.gui.screen.OpenMode
 import com.haulmont.cuba.security.app.UserManagementService
-import com.haulmont.cuba.web.testsupport.TestServiceProxy
+import com.haulmont.cuba.web.testsupport.proxy.TestServiceProxy
 import spec.cuba.web.UiScreenSpec
 
 import java.util.function.Consumer

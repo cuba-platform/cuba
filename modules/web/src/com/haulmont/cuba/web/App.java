@@ -179,7 +179,9 @@ public abstract class App {
 
     /**
      * @return currently displayed top-level window
+     * @deprecated Use {@link AppUI#getTopLevelWindow()} instead
      */
+    @Deprecated
     public RootWindow getTopLevelWindow() {
         return getAppUI().getTopLevelWindow();
     }

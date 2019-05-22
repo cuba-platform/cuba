@@ -30,10 +30,10 @@ class ContainerBindingTest extends WebSpec {
     def "fields with one instance container"() {
         InstanceContainer<Foo> container = dataComponents.createInstanceContainer(Foo)
 
-        TextField field1 = componentsFactory.createComponent(TextField)
+        TextField field1 = uiComponents.create(TextField)
         field1.setValueSource(new ContainerValueSource(container, 'name'))
 
-        TextField field2 = componentsFactory.createComponent(TextField)
+        TextField field2 = uiComponents.create(TextField)
         field2.setValueSource(new ContainerValueSource(container, 'name'))
 
         def foo = new Foo(name: 'foo1')

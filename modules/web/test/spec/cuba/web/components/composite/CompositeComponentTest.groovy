@@ -25,7 +25,7 @@ import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig
 import com.haulmont.cuba.security.app.UserManagementService
 import com.haulmont.cuba.web.gui.WebUiComponents
 import com.haulmont.cuba.web.testmodel.sales.OrderLine
-import com.haulmont.cuba.web.testsupport.TestServiceProxy
+import com.haulmont.cuba.web.testsupport.proxy.TestServiceProxy
 import spec.cuba.web.UiScreenSpec
 import spec.cuba.web.components.composite.components.comments.TestCommentaryPanel
 import spec.cuba.web.components.composite.components.comments.TestCommentaryPanelLoader
@@ -35,6 +35,7 @@ import spec.cuba.web.components.composite.components.stepper.TestStepperFieldLoa
 import spec.cuba.web.components.composite.screens.CommentScreen
 import spec.cuba.web.components.composite.screens.CompositeFieldScreen
 
+@SuppressWarnings("GroovyAssignabilityCheck")
 class CompositeComponentTest extends UiScreenSpec {
 
     void setup() {
@@ -53,12 +54,6 @@ class CompositeComponentTest extends UiScreenSpec {
         def layoutLoaderConfig = cont.getBean(LayoutLoaderConfig)
         layoutLoaderConfig.registerLoader("testStepperField", TestStepperFieldLoader)
         layoutLoaderConfig.registerLoader("testCommentaryPanel", TestCommentaryPanelLoader)
-    }
-
-    def cleanup() {
-        TestServiceProxy.clear()
-
-        resetScreensConfig()
     }
 
     def "composite component as field in an editor screen and relative path to descriptor"() {

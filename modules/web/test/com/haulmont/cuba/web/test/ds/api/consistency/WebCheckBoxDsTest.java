@@ -19,12 +19,9 @@ package com.haulmont.cuba.web.test.ds.api.consistency;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.ds.api.consistency.CheckBoxDsTest;
-import com.haulmont.cuba.web.gui.WebComponentsFactory;
 import com.haulmont.cuba.web.gui.components.WebCheckBox;
-import com.haulmont.cuba.web.gui.components.WebTextField;
 import com.haulmont.cuba.web.test.stubs.TestUiComponents;
 import mockit.Expectations;
-import org.junit.Ignore;
 
 public class WebCheckBoxDsTest extends CheckBoxDsTest {
 
