@@ -148,9 +148,9 @@ public class WindowLoader extends ContainerLoader<Window> implements ComponentRo
             if (StringUtils.isNotEmpty(xmlWidthValue)) {
                 String themeWidthValue = loadThemeString(xmlWidthValue);
                 if ("auto".equalsIgnoreCase(themeWidthValue)) {
-                    dialog.setWidth(Component.AUTO_SIZE);
+                    dialog.setDialogWidth(Component.AUTO_SIZE);
                 } else {
-                    dialog.setWidth(themeWidthValue);
+                    dialog.setDialogWidth(themeWidthValue);
                 }
             }
 
@@ -158,9 +158,9 @@ public class WindowLoader extends ContainerLoader<Window> implements ComponentRo
             if (StringUtils.isNotEmpty(xmlHeightValue)) {
                 String themeHeightValue = loadThemeString(xmlHeightValue);
                 if ("auto".equalsIgnoreCase(themeHeightValue)) {
-                    dialog.setHeight(Component.AUTO_SIZE);
+                    dialog.setDialogHeight(Component.AUTO_SIZE);
                 } else {
-                    dialog.setHeight(themeHeightValue);
+                    dialog.setDialogHeight(themeHeightValue);
                 }
             }
 
