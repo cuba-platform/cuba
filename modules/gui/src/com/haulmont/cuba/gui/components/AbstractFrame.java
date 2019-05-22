@@ -566,9 +566,9 @@ public class AbstractFrame extends ScreenFragment implements Frame, Frame.Wrappe
      * Should be called when a frame is removed from UI.
      */
     public void dispose() {
-        DsContext parent = dsContext.getParent();
-        if (parent != null) {
-            parent.getChildren().remove(dsContext);
+        if (dsContext != null
+                && dsContext.getParent() != null) {
+            dsContext.getParent().getChildren().remove(dsContext);
         }
     }
 
