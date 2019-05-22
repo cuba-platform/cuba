@@ -243,9 +243,9 @@ public abstract class AbstractDataGridLoader<T extends DataGrid> extends Actions
     }
 
     protected void loadEditorCrossFieldEnabled(DataGrid component, Element element) {
-        String editorCrossFieldEnabled = element.attributeValue("editorCrossFieldEnabled");
-        if (StringUtils.isNotEmpty(editorCrossFieldEnabled)) {
-            component.setEditorCrossFieldValidate(Boolean.parseBoolean(editorCrossFieldEnabled));
+        String editorCrossFieldValidate = element.attributeValue("editorCrossFieldValidate");
+        if (StringUtils.isNotEmpty(editorCrossFieldValidate)) {
+            component.setEditorCrossFieldValidate(Boolean.parseBoolean(editorCrossFieldValidate));
         }
     }
 
