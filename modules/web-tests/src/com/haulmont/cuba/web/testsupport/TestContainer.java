@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2018 Haulmont.
+ * Copyright (c) 2008-2019 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,9 @@ import com.haulmont.cuba.core.sys.persistence.EclipseLinkCustomizer;
 import com.haulmont.cuba.core.sys.remoting.LocalServiceDirectory;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.web.sys.remoting.WebRemoteProxyBeanCreator;
+import com.haulmont.cuba.web.testsupport.proxy.ConfigStorageServiceProxy;
+import com.haulmont.cuba.web.testsupport.proxy.DataServiceProxy;
+import com.haulmont.cuba.web.testsupport.proxy.TestServiceProxy;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringSubstitutor;
 import org.apache.commons.text.StringTokenizer;
@@ -86,7 +89,7 @@ public class TestContainer extends ExternalResource {
     public TestContainer() {
         String property = System.getProperty("logback.configurationFile");
         if (StringUtils.isBlank(property)) {
-            System.setProperty("logback.configurationFile", "com/haulmont/cuba/web/testsupport/test-web-logback.xml");
+            System.setProperty("logback.configurationFile", getLogbackConfigLocation());
         }
         log = LoggerFactory.getLogger(TestContainer.class);
 
@@ -94,8 +97,11 @@ public class TestContainer extends ExternalResource {
         appComponents = Collections.emptyList();
         appPropertiesFiles = Arrays.asList(
                 "com/haulmont/cuba/web-app.properties",
-                "com/haulmont/cuba/web/testsupport/test-web-app.properties",
-                "com/haulmont/cuba/test-web-app.properties");
+                "com/haulmont/cuba/web/testsupport/test-web-app.properties");
+    }
+
+    protected String getLogbackConfigLocation() {
+        return "com/haulmont/cuba/web/testsupport/test-web-logback.xml";
     }
 
     public void setupLogging(String logger, Level level) {
@@ -247,7 +253,9 @@ public class TestContainer extends ExternalResource {
 
         StringTokenizer tokenizer = new StringTokenizer(configProperty);
         List<String> locations = tokenizer.getTokenList();
-        locations.add(getSpringConfig());
+
+        StringTokenizer configTokenizer = new StringTokenizer(getSpringConfig());
+        locations.addAll(configTokenizer.getTokenList());
 
         springAppContext = new CubaClassPathXmlApplicationContext(locations.toArray(new String[0]));
         AppContext.Internals.setApplicationContext(springAppContext);

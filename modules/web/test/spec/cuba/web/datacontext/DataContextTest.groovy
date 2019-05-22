@@ -16,10 +16,8 @@
 
 package spec.cuba.web.datacontext
 
-
 import com.haulmont.cuba.client.testsupport.TestSupport
 import com.haulmont.cuba.core.app.DataService
-import com.haulmont.cuba.core.entity.BaseEntityInternalAccess
 import com.haulmont.cuba.core.entity.Entity
 import com.haulmont.cuba.core.global.CommitContext
 import com.haulmont.cuba.core.global.EntityStates
@@ -31,19 +29,21 @@ import com.haulmont.cuba.gui.model.impl.NoopDataContext
 import com.haulmont.cuba.security.entity.Role
 import com.haulmont.cuba.security.entity.User
 import com.haulmont.cuba.security.entity.UserRole
+import com.haulmont.cuba.web.container.CubaTestContainer
 import com.haulmont.cuba.web.testmodel.sales.*
 import com.haulmont.cuba.web.testsupport.TestContainer
-import com.haulmont.cuba.web.testsupport.TestServiceProxy
+import com.haulmont.cuba.web.testsupport.proxy.TestServiceProxy
 import org.eclipse.persistence.internal.queries.EntityFetchGroup
 import org.eclipse.persistence.queries.FetchGroupTracker
 import org.junit.ClassRule
 import spock.lang.Shared
 import spock.lang.Specification
 
+@SuppressWarnings(["GroovyAccessibility", "GroovyAssignabilityCheck"])
 class DataContextTest extends Specification {
 
     @Shared @ClassRule
-    public TestContainer cont = TestContainer.Common.INSTANCE
+    public TestContainer cont = CubaTestContainer.Common.INSTANCE
 
     private DataComponents factory
     private EntityStates entityStates
@@ -489,7 +489,6 @@ class DataContextTest extends Specification {
         order2_1 == order1
         order2_1.orderLines.size() == 1
         ((FetchGroupTracker) order2_1)._persistence_getFetchGroup().attributeNames.containsAll(['id', 'version', 'number', 'orderLines'])
-
     }
 
     def "commit delegate"() {

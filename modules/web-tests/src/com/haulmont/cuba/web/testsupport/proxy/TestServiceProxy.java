@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2018 Haulmont.
+ * Copyright (c) 2008-2019 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.web.testsupport;
+package com.haulmont.cuba.web.testsupport.proxy;
 
 import com.haulmont.cuba.web.sys.remoting.LocalServiceProxy;
 import org.slf4j.Logger;
@@ -42,7 +42,6 @@ public class TestServiceProxy extends LocalServiceProxy {
                 new ServiceInvocationHandler(getServiceInterface()));
     }
 
-
     public static <T> void setDefault(Class<T> serviceInterface, @Nullable T defaultProxy) {
         defaults.put(serviceInterface, defaultProxy);
     }
@@ -61,11 +60,11 @@ public class TestServiceProxy extends LocalServiceProxy {
         mocks.clear();
     }
 
-    private class ServiceInvocationHandler implements InvocationHandler {
+    protected class ServiceInvocationHandler implements InvocationHandler {
 
-        Class serviceInterface;
+        protected Class serviceInterface;
 
-        ServiceInvocationHandler(Class serviceInterface) {
+        public ServiceInvocationHandler(Class serviceInterface) {
             this.serviceInterface = serviceInterface;
         }
 

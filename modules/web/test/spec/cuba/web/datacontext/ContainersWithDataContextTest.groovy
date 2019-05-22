@@ -16,10 +16,8 @@
 
 package spec.cuba.web.datacontext
 
-import com.haulmont.cuba.gui.model.CollectionPropertyContainer
 import com.haulmont.cuba.gui.model.DataComponents
-import com.haulmont.cuba.gui.model.DataContext
-import com.haulmont.cuba.gui.model.InstanceContainer
+import com.haulmont.cuba.web.container.CubaTestContainer
 import com.haulmont.cuba.web.testmodel.sales.Order
 import com.haulmont.cuba.web.testmodel.sales.OrderLine
 import com.haulmont.cuba.web.testsupport.TestContainer
@@ -30,7 +28,7 @@ import spock.lang.Specification
 class ContainersWithDataContextTest extends Specification {
 
     @Shared @ClassRule
-    public TestContainer cont = TestContainer.Common.INSTANCE
+    public TestContainer cont = CubaTestContainer.Common.INSTANCE
 
     private DataComponents factory
 

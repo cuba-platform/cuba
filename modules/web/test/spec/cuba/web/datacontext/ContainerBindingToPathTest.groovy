@@ -49,8 +49,8 @@ class ContainerBindingToPathTest extends WebSpec {
         orderCont = dataComponents.createInstanceContainer(Order)
         lineCont = dataComponents.createInstanceContainer(OrderLine)
 
-        field1 = componentsFactory.createComponent(TextField)
-        field2 = componentsFactory.createComponent(TextField)
+        field1 = uiComponents.create(TextField)
+        field2 = uiComponents.create(TextField)
     }
 
     def "binding to property path"() {

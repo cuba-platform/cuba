@@ -28,7 +28,7 @@ import com.haulmont.cuba.gui.components.ValidationException
 import com.haulmont.cuba.gui.components.validation.*
 import com.haulmont.cuba.gui.screen.OpenMode
 import com.haulmont.cuba.security.app.UserManagementService
-import com.haulmont.cuba.web.testsupport.TestServiceProxy
+import com.haulmont.cuba.web.testsupport.proxy.TestServiceProxy
 import spec.cuba.gui.components.validation.screens.ValidatorsScreen
 import spec.cuba.web.UiScreenSpec
 
@@ -49,12 +49,6 @@ class ValidatorsTest extends UiScreenSpec {
         exportScreensPackages(['spec.cuba.gui.components.validation.screens'])
         datatypeRegistry = cont.getBean(DatatypeRegistry)
         timeSource = cont.getBean(TimeSource.NAME)
-    }
-
-    def cleanup() {
-        TestServiceProxy.clear()
-
-        resetScreensConfig()
     }
 
     def "load validators from screen"() {

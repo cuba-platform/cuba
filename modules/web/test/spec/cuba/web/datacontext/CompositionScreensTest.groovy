@@ -25,11 +25,12 @@ import com.haulmont.cuba.security.app.UserManagementService
 import com.haulmont.cuba.web.testmodel.sales.Order
 import com.haulmont.cuba.web.testmodel.sales.OrderLine
 import com.haulmont.cuba.web.testmodel.sales.OrderLineParam
-import com.haulmont.cuba.web.testsupport.TestServiceProxy
+import com.haulmont.cuba.web.testsupport.proxy.TestServiceProxy
 import spec.cuba.web.UiScreenSpec
 import spec.cuba.web.datacontext.screens.OrderScreen
 import spock.lang.Unroll
 
+@SuppressWarnings("GroovyAssignabilityCheck")
 class CompositionScreensTest extends UiScreenSpec {
 
     void setup() {
@@ -38,12 +39,6 @@ class CompositionScreensTest extends UiScreenSpec {
         })
 
         exportScreensPackages(['spec.cuba.web.datacontext.screens', 'com.haulmont.cuba.web.app.main'])
-    }
-
-    def cleanup() {
-        TestServiceProxy.clear()
-
-        resetScreensConfig()
     }
 
     @Unroll

@@ -26,7 +26,7 @@ import com.haulmont.cuba.gui.model.KeyValueContainer
 import com.haulmont.cuba.gui.model.KeyValueInstanceLoader
 import com.haulmont.cuba.web.testmodel.sales.Customer
 import com.haulmont.cuba.web.testmodel.sales.Order
-import com.haulmont.cuba.web.testsupport.TestServiceProxy
+import com.haulmont.cuba.web.testsupport.proxy.TestServiceProxy
 import spec.cuba.web.WebSpec
 
 class KeyValueContainersTest extends WebSpec {
@@ -41,7 +41,6 @@ class KeyValueContainersTest extends WebSpec {
     }
 
     def "load collection"() {
-
         KeyValueCollectionContainer container = dataComponents.createKeyValueCollectionContainer()
         container.addProperty('custName').addProperty('amount')
 
@@ -72,7 +71,6 @@ class KeyValueContainersTest extends WebSpec {
     }
 
     def "load instance"() {
-
         KeyValueContainer container = dataComponents.createKeyValueContainer()
         container.addProperty('custName').addProperty('amount')
 
@@ -106,14 +104,13 @@ class KeyValueContainersTest extends WebSpec {
     }
 
     def "binding"() {
-
         KeyValueContainer container = dataComponents.createKeyValueContainer()
         container.addProperty('custName').addProperty('amount')
 
-        TextField field1 = componentsFactory.createComponent(TextField)
+        TextField field1 = uiComponents.create(TextField)
         field1.setValueSource(new ContainerValueSource(container, 'custName'))
 
-        TextField field2 = componentsFactory.createComponent(TextField)
+        TextField field2 = uiComponents.create(TextField)
         field2.setValueSource(new ContainerValueSource(container, 'custName'))
 
         KeyValueEntity entity = new KeyValueEntity()
@@ -143,7 +140,6 @@ class KeyValueContainersTest extends WebSpec {
         KeyValueContainer container = dataComponents.createKeyValueContainer()
         container.addProperty('custName').addProperty('amount').setIdName('custName')
 
-
         when:
 
         KeyValueEntity entity = new KeyValueEntity()
@@ -161,7 +157,6 @@ class KeyValueContainersTest extends WebSpec {
     }
 
     def "entity has correct MetaClass when added to KeyValueCollectionContainer"() {
-
         KeyValueCollectionContainer container = dataComponents.createKeyValueCollectionContainer()
         container.addProperty('custName').addProperty('amount').setIdName('custName')
 

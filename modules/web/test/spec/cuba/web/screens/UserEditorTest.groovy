@@ -19,6 +19,7 @@ package spec.cuba.web.screens
 import com.haulmont.cuba.core.app.DataService
 import com.haulmont.cuba.core.global.LoadContext
 import com.haulmont.cuba.gui.WindowParams
+import com.haulmont.cuba.gui.app.security.role.edit.PermissionValue
 import com.haulmont.cuba.gui.app.security.user.edit.UserEditor
 import com.haulmont.cuba.gui.components.PickerField
 import com.haulmont.cuba.gui.components.TextField
@@ -28,13 +29,14 @@ import com.haulmont.cuba.gui.screen.OpenMode
 import com.haulmont.cuba.security.app.UserManagementService
 import com.haulmont.cuba.security.entity.EntityOp
 import com.haulmont.cuba.security.entity.Group
+import com.haulmont.cuba.security.entity.PermissionType
 import com.haulmont.cuba.security.entity.User
-import com.haulmont.cuba.web.testsupport.TestServiceProxy
+import com.haulmont.cuba.web.testsupport.proxy.TestServiceProxy
 import spec.cuba.web.UiScreenSpec
 
 import java.util.function.Consumer
 
-@SuppressWarnings("GroovyAccessibility")
+@SuppressWarnings(["GroovyAccessibility", "GroovyAssignabilityCheck", "GroovyPointlessBoolean"])
 class UserEditorTest extends UiScreenSpec {
 
     def setup() {
@@ -59,8 +61,8 @@ class UserEditorTest extends UiScreenSpec {
         })
     }
 
-    def cleanup() {
-        TestServiceProxy.clear()
+    void cleanup() {
+        sessionSource.session.removePermissions(PermissionType.ENTITY_OP)
     }
 
     def "open UserEditor"() {
@@ -78,7 +80,7 @@ class UserEditorTest extends UiScreenSpec {
 
         when:
         def user = new User()
-        def params = Collections.singletonMap(WindowParams.ITEM.name(), user)
+        def params = [(WindowParams.ITEM.name()): user]
         def userEditor = screens.create('sec$User.edit', OpenMode.NEW_TAB, new MapScreenOptions(params))
         ((EditorScreen)userEditor).setEntityToEdit(user)
 
@@ -95,12 +97,13 @@ class UserEditorTest extends UiScreenSpec {
         userEditor.window != null
     }
 
-    @SuppressWarnings("GroovyPointlessBoolean")
     def "open UserEditor with denied CREATE and UPDATE"() {
         def screens = vaadinUi.screens
+        def session = sessionSource.session
 
-        session.isEntityOpPermitted(_, EntityOp.UPDATE) >> false
-        session.isEntityOpPermitted(_, EntityOp.CREATE) >> false
+        def userMetaClass = metadata.getClass(User).name
+        session.addPermission(PermissionType.ENTITY_OP, userMetaClass + ":" + EntityOp.CREATE.id, "", PermissionValue.DENY.value)
+        session.addPermission(PermissionType.ENTITY_OP, userMetaClass + ":" + EntityOp.UPDATE.id, "", PermissionValue.DENY.value)
 
         when:
         def mainWindow = screens.create("mainWindow", OpenMode.ROOT)
@@ -111,7 +114,7 @@ class UserEditorTest extends UiScreenSpec {
 
         when:
         def user = new User()
-        def params = Collections.singletonMap(WindowParams.ITEM.name(), user)
+        def params = [(WindowParams.ITEM.name()): user]
 
         UserEditor userEditor = (UserEditor)screens.create('sec$User.edit', OpenMode.NEW_TAB, new MapScreenOptions(params))
         userEditor.setEntityToEdit(user)
@@ -127,11 +130,12 @@ class UserEditorTest extends UiScreenSpec {
         groupField.isEditable() == false
     }
 
-    @SuppressWarnings("GroovyPointlessBoolean")
     def "open UserEditor with denied READ"() {
         def screens = vaadinUi.screens
+        def session = sessionSource.session
 
-        session.isEntityOpPermitted(_, EntityOp.READ) >> false
+        def userMetaClass = metadata.getClass(User).name
+        session.addPermission(PermissionType.ENTITY_OP, userMetaClass + ":" + EntityOp.READ.id, "", PermissionValue.DENY.value)
 
         when:
         def mainWindow = screens.create("mainWindow", OpenMode.ROOT)
@@ -142,9 +146,9 @@ class UserEditorTest extends UiScreenSpec {
 
         when:
         def user = new User()
-        def params = Collections.singletonMap(WindowParams.ITEM.name(), user)
+        def params = [(WindowParams.ITEM.name()) : user]
 
-        UserEditor userEditor = (UserEditor)screens.create('sec$User.edit', OpenMode.NEW_TAB, new MapScreenOptions(params))
+        def userEditor = (UserEditor) screens.create('sec$User.edit', OpenMode.NEW_TAB, new MapScreenOptions(params))
         userEditor.setEntityToEdit(user)
         userEditor.show()
 

@@ -22,7 +22,7 @@ import com.haulmont.chile.core.datatypes.impl.*
 import com.haulmont.cuba.gui.components.DatePicker
 import com.haulmont.cuba.gui.screen.OpenMode
 import com.haulmont.cuba.security.app.UserManagementService
-import com.haulmont.cuba.web.testsupport.TestServiceProxy
+import com.haulmont.cuba.web.testsupport.proxy.TestServiceProxy
 import spec.cuba.web.UiScreenSpec
 import spec.cuba.web.components.datepicker.screens.DatePickerDatatypeScreen
 
@@ -35,13 +35,6 @@ class DatePickerDatatypeTest extends UiScreenSpec {
         })
 
         exportScreensPackages(['spec.cuba.web.components.datepicker.screens', 'com.haulmont.cuba.web.app.main'])
-    }
-
-    @SuppressWarnings(["GroovyAccessibility"])
-    def cleanup() {
-        TestServiceProxy.clear()
-
-        resetScreensConfig()
     }
 
     def "datatype is applied from the screen descriptor"(String id, Class<Datatype> datatypeClass) {

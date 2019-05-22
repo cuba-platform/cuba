@@ -17,8 +17,6 @@
 package spec.cuba.web
 
 import com.google.common.collect.HashMultimap
-import com.haulmont.cuba.client.ClientUserSession
-import com.haulmont.cuba.client.sys.cache.CachingStrategy
 import com.haulmont.cuba.client.sys.cache.ClientCacheManager
 import com.haulmont.cuba.client.sys.cache.DynamicAttributesCacheStrategy
 import com.haulmont.cuba.client.testsupport.TestUserSessionSource
@@ -26,63 +24,46 @@ import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesCache
 import com.haulmont.cuba.core.global.UserSessionSource
 import com.haulmont.cuba.gui.config.WindowConfig
 import com.haulmont.cuba.gui.sys.UiControllersConfiguration
-import org.springframework.core.type.classreading.MetadataReaderFactory
+import com.haulmont.cuba.web.testsupport.proxy.TestServiceProxy
+import com.haulmont.cuba.web.testsupport.ui.TestCachingStrategy
 
-import java.util.concurrent.locks.Lock
-import java.util.concurrent.locks.ReadWriteLock
-
+@SuppressWarnings(["GroovyAccessibility", "GroovyAssignabilityCheck"])
 class UiScreenSpec extends WebSpec {
 
-    ClientUserSession session
-
     void setup() {
-        def userSessionSource = (TestUserSessionSource) cont.getBean(UserSessionSource.class)
-        def testSession = new ClientUserSession(userSessionSource.createTestSession())
-
-        this.session = Spy(testSession)
-        this.sessionSource.getUserSession() >> session
-
-        userSessionSource.setSession(session)
-
-        session.isAuthenticated() >> true
-
         def clientCacheManager = cont.getBean(ClientCacheManager)
-        def dynamicAttributesCacheStrategy = Mock(CachingStrategy)
+        def dynamicAttributesCacheStrategy = new TestCachingStrategy()
         def dynamicAttributesCache =
                 new DynamicAttributesCache(HashMultimap.create(), [:], new Date())
-        def cacheLock = Mock(ReadWriteLock)
-        cacheLock.writeLock() >> Mock(Lock)
-        cacheLock.readLock() >> Mock(Lock)
 
-        dynamicAttributesCacheStrategy.getObject() >> dynamicAttributesCache
-        dynamicAttributesCacheStrategy.loadObject() >> dynamicAttributesCache
-        dynamicAttributesCacheStrategy.lock() >> cacheLock
+        dynamicAttributesCacheStrategy.setData(dynamicAttributesCache)
 
         clientCacheManager.addCachedObject(DynamicAttributesCacheStrategy.NAME, dynamicAttributesCacheStrategy)
     }
 
-    @SuppressWarnings(["GroovyAccessibility", "GroovyAssignabilityCheck"])
     protected void exportScreensPackages(List<String> packages) {
         def windowConfig = cont.getBean(WindowConfig)
 
         def configuration = new UiControllersConfiguration()
-        configuration.applicationContext = cont.getApplicationContext()
-        configuration.metadataReaderFactory = cont.getBean(MetadataReaderFactory)
+        def injector = cont.getApplicationContext().getAutowireCapableBeanFactory()
+        injector.autowireBean(configuration)
         configuration.basePackages = packages
 
         windowConfig.configurations = [configuration]
         windowConfig.initialized = false
     }
 
-    @SuppressWarnings(["GroovyAccessibility"])
     protected void resetScreensConfig() {
         def windowConfig = cont.getBean(WindowConfig)
         windowConfig.configurations = []
         windowConfig.initialized = false
     }
 
-    @SuppressWarnings("GroovyAccessibility")
     void cleanup() {
+        TestServiceProxy.clear()
+
+        resetScreensConfig()
+
         def clientCacheManager = cont.getBean(ClientCacheManager)
         clientCacheManager.cache.remove(DynamicAttributesCacheStrategy.NAME)
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2018 Haulmont.
+ * Copyright (c) 2008-2019 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.web.testsupport;
+package com.haulmont.cuba.web.testsupport.proxy;
 
 import com.haulmont.cuba.core.app.ConfigStorageService;
 import com.haulmont.cuba.core.config.AppPropertyEntity;

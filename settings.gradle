@@ -16,7 +16,7 @@
  */
 
 include(':cuba-shared-lib', ':cuba-global', ':cuba-core', 'cuba-core-tests', ':cuba-client', ':cuba-client-tests',
-        ':cuba-gui', ':cuba-web-widgets', ':cuba-web-toolkit', ':cuba-web', ':cuba-desktop',
+        ':cuba-gui', ':cuba-web-widgets', ':cuba-web-toolkit', ':cuba-web', ':cuba-desktop', ':cuba-web-tests',
         ':cuba-portal')
 rootProject.name = 'cuba'
 project(':cuba-shared-lib').projectDir = new File(settingsDir, 'modules/shared-lib')
@@ -29,5 +29,6 @@ project(':cuba-gui').projectDir = new File(settingsDir, 'modules/gui')
 project(':cuba-web-widgets').projectDir = new File(settingsDir, 'modules/web-widgets')
 project(':cuba-web-toolkit').projectDir = new File(settingsDir, 'modules/web-toolkit')
 project(':cuba-web').projectDir = new File(settingsDir, 'modules/web')
+project(':cuba-web-tests').projectDir = new File(settingsDir, 'modules/web-tests')
 project(':cuba-desktop').projectDir = new File(settingsDir, 'modules/desktop')
 project(':cuba-portal').projectDir = new File(settingsDir, 'modules/portal')

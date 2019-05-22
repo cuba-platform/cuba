@@ -22,10 +22,11 @@ import com.haulmont.chile.core.datatypes.impl.*
 import com.haulmont.cuba.gui.components.DateField
 import com.haulmont.cuba.gui.screen.OpenMode
 import com.haulmont.cuba.security.app.UserManagementService
-import com.haulmont.cuba.web.testsupport.TestServiceProxy
+import com.haulmont.cuba.web.testsupport.proxy.TestServiceProxy
 import spec.cuba.web.UiScreenSpec
 import spec.cuba.web.components.datefield.screens.DateFieldDatatypeScreen
 
+@SuppressWarnings("GroovyAssignabilityCheck")
 class DateFieldDatatypeTest extends UiScreenSpec {
 
     void setup() {
@@ -34,12 +35,6 @@ class DateFieldDatatypeTest extends UiScreenSpec {
         })
 
         exportScreensPackages(['spec.cuba.web.components.datefield.screens', 'com.haulmont.cuba.web.app.main'])
-    }
-
-    def cleanup() {
-        TestServiceProxy.clear()
-
-        resetScreensConfig()
     }
 
     def "datatype is applied from the screen descriptor"(String id, Class<Datatype> datatypeClass) {

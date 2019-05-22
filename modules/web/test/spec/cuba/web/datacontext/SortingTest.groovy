@@ -21,7 +21,7 @@ import com.haulmont.cuba.core.global.Sort
 import com.haulmont.cuba.gui.model.CollectionContainer
 import com.haulmont.cuba.gui.model.CollectionLoader
 import com.haulmont.cuba.web.testmodel.sales.Product
-import com.haulmont.cuba.web.testsupport.TestServiceProxy
+import com.haulmont.cuba.web.testsupport.proxy.TestServiceProxy
 import spec.cuba.web.WebSpec
 
 class SortingTest extends WebSpec {

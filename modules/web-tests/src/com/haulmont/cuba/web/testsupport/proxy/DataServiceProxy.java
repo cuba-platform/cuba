@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2018 Haulmont.
+ * Copyright (c) 2008-2019 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.web.testsupport;
+package com.haulmont.cuba.web.testsupport.proxy;
 
 import com.haulmont.bali.util.Numbers;
 import com.haulmont.cuba.client.testsupport.TestSupport;
 import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.entity.*;
 import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.web.testsupport.TestContainer;
 
 import javax.annotation.Nullable;
 import java.util.Collections;
@@ -45,6 +46,10 @@ public class DataServiceProxy implements DataService {
         Set<Entity> result = new HashSet<>();
 
         for (Entity entity : context.getCommitInstances()) {
+            if (entity == null) {
+                throw new RuntimeException("Null instance in collection of commit entities");
+            }
+
             BaseGenericIdEntity e = TestSupport.reserialize(entity);
             entityStates.makeDetached(e);
 
@@ -71,6 +76,10 @@ public class DataServiceProxy implements DataService {
         }
 
         for (Entity entity : context.getRemoveInstances()) {
+            if (entity == null) {
+                throw new RuntimeException("Null instance in collection of removed entities");
+            }
+
             BaseGenericIdEntity e = TestSupport.reserialize(entity);
             entityStates.makeDetached(e);
 

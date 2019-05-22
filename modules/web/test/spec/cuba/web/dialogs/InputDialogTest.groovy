@@ -28,7 +28,7 @@ import com.haulmont.cuba.gui.screen.OpenMode
 import com.haulmont.cuba.gui.screen.Screen
 import com.haulmont.cuba.security.app.UserManagementService
 import com.haulmont.cuba.web.testmodel.sample.GoodInfo
-import com.haulmont.cuba.web.testsupport.TestServiceProxy
+import com.haulmont.cuba.web.testsupport.proxy.TestServiceProxy
 import spec.cuba.web.UiScreenSpec
 
 import static com.haulmont.cuba.gui.app.core.inputdialog.InputDialog.*
@@ -51,12 +51,6 @@ class InputDialogTest extends UiScreenSpec {
         exportScreensPackages(['com.haulmont.cuba.gui.app'])
 
         datatypeRegistry = cont.getBean(DatatypeRegistry)
-    }
-
-    def cleanup() {
-        TestServiceProxy.clear()
-
-        resetScreensConfig()
     }
 
     def "input parameter ids should be different"() {

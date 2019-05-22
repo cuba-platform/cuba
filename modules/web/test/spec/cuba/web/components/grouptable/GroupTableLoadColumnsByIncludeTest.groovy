@@ -19,7 +19,7 @@ package spec.cuba.web.components.grouptable
 import com.haulmont.cuba.gui.components.GroupTable
 import com.haulmont.cuba.gui.screen.OpenMode
 import com.haulmont.cuba.security.app.UserManagementService
-import com.haulmont.cuba.web.testsupport.TestServiceProxy
+import com.haulmont.cuba.web.testsupport.proxy.TestServiceProxy
 import spec.cuba.web.UiScreenSpec
 import spec.cuba.web.components.grouptable.screens.GroupTableLoadColumnsByIncludeScreen
 
@@ -32,12 +32,6 @@ class GroupTableLoadColumnsByIncludeTest extends UiScreenSpec {
         })
 
         exportScreensPackages(['spec.cuba.web.components.grouptable.screens'])
-    }
-
-    def cleanup() {
-        TestServiceProxy.clear()
-
-        resetScreensConfig()
     }
 
     def "load columns by includeAll"() {

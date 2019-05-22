@@ -17,33 +17,38 @@
 package spec.cuba.web
 
 import com.haulmont.cuba.client.ClientUserSession
-import com.haulmont.cuba.core.app.ConfigStorageService
+import com.haulmont.cuba.client.testsupport.TestUserSessionSource
 import com.haulmont.cuba.core.app.PersistenceManagerService
 import com.haulmont.cuba.core.global.*
 import com.haulmont.cuba.gui.UiComponents
-import com.haulmont.cuba.gui.events.sys.UiEventsMulticaster
 import com.haulmont.cuba.gui.model.DataComponents
 import com.haulmont.cuba.gui.theme.ThemeConstants
-import com.haulmont.cuba.gui.xml.layout.ComponentsFactory
-import com.haulmont.cuba.web.*
+import com.haulmont.cuba.web.App
+import com.haulmont.cuba.web.AppUI
+import com.haulmont.cuba.web.Connection
+import com.haulmont.cuba.web.DefaultApp
+import com.haulmont.cuba.web.container.CubaTestContainer
+import com.haulmont.cuba.web.security.ConnectionImpl
 import com.haulmont.cuba.web.sys.AppCookies
 import com.haulmont.cuba.web.testsupport.TestContainer
-import com.haulmont.cuba.web.testsupport.TestServiceProxy
-import com.vaadin.server.Page
-import com.vaadin.server.VaadinRequest
+import com.haulmont.cuba.web.testsupport.proxy.TestServiceProxy
+import com.haulmont.cuba.web.testsupport.ui.TestConnectorTracker
+import com.haulmont.cuba.web.testsupport.ui.TestPersistenceManagerService
+import com.haulmont.cuba.web.testsupport.ui.TestVaadinRequest
+import com.haulmont.cuba.web.testsupport.ui.TestVaadinSession
 import com.vaadin.server.VaadinSession
 import com.vaadin.server.WebBrowser
-import com.vaadin.shared.ui.ui.PageState
-import com.vaadin.ui.ConnectorTracker
 import com.vaadin.ui.UI
 import org.junit.ClassRule
 import spock.lang.Shared
 import spock.lang.Specification
 
+import static org.apache.commons.lang3.reflect.FieldUtils.getDeclaredField
+
 class WebSpec extends Specification {
 
     @Shared @ClassRule
-    TestContainer cont = TestContainer.Common.INSTANCE
+    TestContainer cont = CubaTestContainer.Common.INSTANCE
 
     Metadata metadata
     MetadataTools metadataTools
@@ -51,10 +56,9 @@ class WebSpec extends Specification {
     EntityStates entityStates
     DataManager dataManager
     DataComponents dataComponents
-    ComponentsFactory componentsFactory
     UiComponents uiComponents
 
-    UserSessionSource sessionSource
+    TestUserSessionSource sessionSource
 
     AppUI vaadinUi
 
@@ -66,90 +70,63 @@ class WebSpec extends Specification {
         entityStates = cont.getBean(EntityStates)
         dataManager = cont.getBean(DataManager)
         dataComponents = cont.getBean(DataComponents)
-        componentsFactory = cont.getBean(ComponentsFactory)
         uiComponents = cont.getBean(UiComponents)
 
-        sessionSource = Mock(UserSessionSource)
+        sessionSource = cont.getBean(UserSessionSource) as TestUserSessionSource
+
+        def serverSession = sessionSource.createTestSession()
+        def session = new ClientUserSession(serverSession)
+        session.setAuthenticated(false)
+
+        sessionSource.setSession(session)
 
         // all the rest is required for web components
 
-        TestServiceProxy.mock(PersistenceManagerService, Mock(PersistenceManagerService) {
-            isNullsLastSorting() >> false
-        })
+        TestServiceProxy.mock(PersistenceManagerService, new TestPersistenceManagerService())
 
-        TestServiceProxy.mock(ConfigStorageService, Mock(ConfigStorageService) {
-            getDbProperties() >> [:]
-        })
+        def injectFactory = cont.getApplicationContext().getAutowireCapableBeanFactory()
 
-        App app = new TestApp()
+        def app = new DefaultApp()
+        app.themeConstants = new ThemeConstants([:])
         app.cookies = new AppCookies()
 
-        def connection = Mock(Connection)
+        def connection = new ConnectionImpl()
+        injectFactory.autowireBean(connection)
+
         app.connection = connection
-        app.events = Mock(Events)
 
-        def webBrowser = new WebBrowser()
+        def vaadinSession = new TestVaadinSession(new WebBrowser(), Locale.ENGLISH)
 
-        VaadinSession vaadinSession = Mock() {
-            hasLock() >> true
-            getAttribute(App) >> app
-            getAttribute(App.NAME) >> app
-            getAttribute(Connection) >> connection
-            getAttribute(Connection.NAME) >> connection
-            getLocale() >> Locale.ENGLISH
-            getBrowser() >> webBrowser
-        }
+        vaadinSession.setAttribute(App.class, app)
+        vaadinSession.setAttribute(App.NAME, app)
+        vaadinSession.setAttribute(Connection.class, connection)
+        vaadinSession.setAttribute(Connection.NAME, connection)
+
         VaadinSession.setCurrent(vaadinSession)
 
-        ConnectorTracker vaadinConnectorTracker = Mock() {
-            isWritingResponse() >> false
-        }
+        injectFactory.autowireBean(app)
 
-        vaadinUi = Spy(AppUI)
-        vaadinUi.app = app
-        vaadinUi.messages = cont.getBean(Messages)
-        vaadinUi.getConnectorTracker() >> vaadinConnectorTracker
+        vaadinUi = new AppUI()
+        injectFactory.autowireBean(vaadinUi)
 
-        vaadinUi.globalConfig = Mock(GlobalConfig)
-        vaadinUi.webConfig = Mock(WebConfig)
-        vaadinUi.beanLocator = Mock(BeanLocator)
-
-        def page = new Page(vaadinUi, new PageState())
-        def vaadinRequest = Mock(VaadinRequest) {
-            getParameter("v-loc") >> "http://localhost:8080/app"
-            getParameter("v-cw") >> "1280"
-            getParameter("v-ch") >> "1080"
-            getParameter("v-wn") >> "1"
-        }
-        page.init(vaadinRequest)
-
-        vaadinUi.getPage() >> page
-        vaadinUi.getSession() >> vaadinSession
-        vaadinUi.uiEventsMulticaster = Mock(UiEventsMulticaster)
-
-        vaadinUi.applicationContext = cont.getApplicationContext()
-
-        def session = Mock(ClientUserSession) {
-            getLocale() >> Locale.ENGLISH
-        }
-
-        this.sessionSource.getUserSession() >> session
-        session.isAuthenticated() >> false
-
-        vaadinUi.userSessionSource = this.sessionSource
+        def connectorTracker = new TestConnectorTracker(vaadinUi)
+        getDeclaredField(UI.class, "connectorTracker", true)
+            .set(vaadinUi, connectorTracker)
+        getDeclaredField(UI.class, "session", true)
+            .set(vaadinUi, vaadinSession)
 
         UI.setCurrent(vaadinUi)
 
+        def vaadinRequest = new TestVaadinRequest()
+        vaadinUi.getPage().init(vaadinRequest)
         vaadinUi.init(vaadinRequest)
     }
 
     void cleanup() {
         TestServiceProxy.clear()
-    }
 
-    static class TestApp extends DefaultApp {
-        TestApp() {
-            this.themeConstants = new ThemeConstants([:])
-        }
+        UI.setCurrent(null)
+
+        sessionSource.setSession(null)
     }
 }

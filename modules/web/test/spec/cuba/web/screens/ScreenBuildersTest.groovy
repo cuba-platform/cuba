@@ -31,7 +31,7 @@ import com.haulmont.cuba.gui.util.OperationResult
 import com.haulmont.cuba.security.app.UserManagementService
 import com.haulmont.cuba.security.entity.Group
 import com.haulmont.cuba.security.entity.User
-import com.haulmont.cuba.web.testsupport.TestServiceProxy
+import com.haulmont.cuba.web.testsupport.proxy.TestServiceProxy
 import spec.cuba.web.UiScreenSpec
 
 import java.util.function.Consumer

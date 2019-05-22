@@ -37,7 +37,7 @@ class CollectionContainerUsageTest extends WebSpec {
     void setup() {
         container = dataComponents.createCollectionContainer(Foo)
 
-        table = componentsFactory.createComponent(Table)
+        table = uiComponents.create(Table)
         table.addColumn(new Table.Column(metadata.getClassNN(Foo).getPropertyPath('name')))
         table.setItems(new ContainerTableItems(this.container))
     }

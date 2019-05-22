@@ -56,7 +56,7 @@ public class UiControllersConfiguration extends AbstractScanConfiguration {
     }
 
     @Inject
-    protected void setApplicationContext(ApplicationContext applicationContext) {
+    public void setApplicationContext(ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
     }
 

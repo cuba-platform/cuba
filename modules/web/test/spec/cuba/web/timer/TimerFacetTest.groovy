@@ -20,7 +20,7 @@ import com.haulmont.cuba.gui.components.Timer
 import com.haulmont.cuba.gui.screen.OpenMode
 import com.haulmont.cuba.security.app.UserManagementService
 import com.haulmont.cuba.web.app.main.MainScreen
-import com.haulmont.cuba.web.testsupport.TestServiceProxy
+import com.haulmont.cuba.web.testsupport.proxy.TestServiceProxy
 import com.haulmont.cuba.web.widgets.CubaTimer
 import spec.cuba.web.UiScreenSpec
 import spec.cuba.web.timer.screens.FragmentWithTimer
@@ -36,12 +36,6 @@ class TimerFacetTest extends UiScreenSpec {
         })
 
         exportScreensPackages(['spec.cuba.web.timer.screens', 'com.haulmont.cuba.web.app.main'])
-    }
-
-    def cleanup() {
-        TestServiceProxy.clear()
-
-        resetScreensConfig()
     }
 
     def "open screen with Timer facet"() {
