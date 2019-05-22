@@ -17,7 +17,10 @@
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.core.global.Metadata;
+import com.haulmont.cuba.gui.actions.picker.LookupAction;
+import com.haulmont.cuba.gui.actions.picker.OpenAction;
 import com.haulmont.cuba.gui.components.Action;
+import com.haulmont.cuba.gui.components.Actions;
 import com.haulmont.cuba.gui.components.ActionsHolder;
 import com.haulmont.cuba.gui.components.CaptionMode;
 import com.haulmont.cuba.gui.components.SuggestionPickerField;
@@ -78,9 +81,21 @@ public class SuggestionPickerFieldLoader extends SuggestionFieldQueryLoader<Sugg
     protected void loadActions(SuggestionPickerField suggestionField) {
         loadActions(suggestionField, element);
         if (suggestionField.getActions().isEmpty()) {
-            suggestionField.addLookupAction();
-            suggestionField.addOpenAction();
+
+            if (isLegacyFrame()) {
+                suggestionField.addLookupAction();
+                suggestionField.addOpenAction();
+            } else {
+                Actions actions = getActions();
+
+                suggestionField.addAction(actions.create(LookupAction.ID));
+                suggestionField.addAction(actions.create(OpenAction.ID));
+            }
         }
+    }
+
+    protected Actions getActions() {
+        return beanLocator.get(Actions.NAME);
     }
 
     protected void loadMetaClass(SuggestionPickerField suggestionField, Element element) {
