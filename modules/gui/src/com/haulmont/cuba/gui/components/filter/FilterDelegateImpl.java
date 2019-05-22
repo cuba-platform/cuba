@@ -58,6 +58,7 @@ import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 import com.haulmont.cuba.gui.model.CollectionContainer;
 import com.haulmont.cuba.gui.model.CollectionLoader;
 import com.haulmont.cuba.gui.presentations.Presentations;
+import com.haulmont.cuba.gui.screen.UiControllerUtils;
 import com.haulmont.cuba.gui.settings.SettingsImpl;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
@@ -702,8 +703,7 @@ public class FilterDelegateImpl implements FilterDelegate {
         saveAsSearchFolderAction.setEnabled(saveAsSearchFolderActionEnabled);
         saveAsAppFolderAction.setEnabled(saveAsAppFolderActionEnabled);
 
-        if (filterHelper.isTableActionsEnabled()
-                && filterHelper.mainScreenHasFoldersPane(filter.getFrame())) {
+        if (filterHelper.isTableActionsEnabled()) {
             fillTableActions();
         }
     }
@@ -2261,32 +2261,57 @@ public class FilterDelegateImpl implements FilterDelegate {
 
     @Override
     public void frameAssigned(Frame frame) {
-        updateSettingsBtn(frame);
-        updateControlsLayout(frame);
+        UiControllerUtils.getScreen(frame.getFrameOwner())
+                .addAfterShowListener(e -> updateFoldersPaneActions(frame));
     }
 
-    protected void updateSettingsBtn(Frame frame) {
-        if (settingsBtn != null
-                && !filterHelper.isFolderActionsAllowed(frame)) {
-            List<Action> folderActions = settingsBtn.getActions()
-                    .stream()
-                    .filter(action -> action instanceof SaveAsFolderAction)
-                    .collect(Collectors.toList());
+    protected void updateFoldersPaneActions(Frame frame) {
+        boolean actionsAllowed = filterHelper.isFolderActionsAllowed(frame);
 
-            folderActions.forEach(settingsBtn::removeAction);
+        updateTableActions(actionsAllowed);
+        updateSettingsBtn(actionsAllowed);
+        updateControlsLayout(actionsAllowed);
+    }
+
+    protected void updateTableActions(boolean folderActionsAllowed) {
+        if ((applyTo == null)
+                || !Table.class.isAssignableFrom(applyTo.getClass())) {
+            return;
+        }
+
+        Table table = (Table) this.applyTo;
+
+        for (Action action : table.getActions()) {
+            if (action instanceof AddToSetAction
+                    || action instanceof AddToCurrSetAction
+                    || action instanceof RemoveFromSetAction) {
+                action.setVisible(folderActionsAllowed);
+            }
         }
     }
 
-    protected void updateControlsLayout(Frame frame) {
-        if (controlsLayout != null
-                && !filterHelper.isFolderActionsAllowed(frame)) {
-            List<Component> folderActionButtons = controlsLayout.getComponents()
-                    .stream()
-                    .filter(c -> c instanceof Button
-                            && ((Button) c).getAction() instanceof SaveAsFolderAction)
-                    .collect(Collectors.toList());
+    protected void updateSettingsBtn(boolean folderActionsAllowed) {
+        if (settingsBtn == null) {
+            return;
+        }
 
-            folderActionButtons.forEach(controlsLayout::remove);
+        for (Action action : settingsBtn.getActions()) {
+            if (action instanceof SaveAsFolderAction) {
+                action.setVisible(folderActionsAllowed);
+            }
+        }
+    }
+
+    protected void updateControlsLayout(boolean folderActionsAllowed) {
+        if (controlsLayout == null) {
+            return;
+        }
+
+        for (Component control : controlsLayout.getComponents()) {
+            if (control instanceof Button
+                    && ((Button) control).getAction() instanceof SaveAsFolderAction) {
+                control.setVisible(folderActionsAllowed);
+            }
         }
     }
 
