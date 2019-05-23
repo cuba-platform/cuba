@@ -137,6 +137,9 @@ public class CubaFoldersPane extends VerticalLayout {
         setStyleName(C_FOLDERS_PANE);
         //noinspection unchecked
         folderUpdateBackgroundTaskWrapper = new BackgroundTaskWrapper(new AppFolderUpdateBackgroundTask(10));
+
+        addDetachListener(e ->
+                savePosition());
     }
 
     public void loadFolders() {
