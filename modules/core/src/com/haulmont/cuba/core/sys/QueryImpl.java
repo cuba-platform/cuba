@@ -17,6 +17,7 @@
 package com.haulmont.cuba.core.sys;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
@@ -281,6 +282,8 @@ public class QueryImpl<T> implements TypedQuery<T> {
             result = transformer.getResult();
         }
 
+        result = replaceIsNullAndIsNotNullStatements(result);
+
         return result;
     }
 
@@ -340,6 +343,31 @@ public class QueryImpl<T> implements TypedQuery<T> {
         QueryTransformer transformer = queryTransformerFactory.transformer(query);
         transformer.replaceInCondition(paramName);
         return transformer.getResult();
+    }
+
+    protected String replaceIsNullAndIsNotNullStatements(String query) {
+        Set<Param> replacedParams = new HashSet<>();
+
+        QueryTransformer transformer = queryTransformerFactory.transformer(query);
+        params.stream()
+                .filter(Param::isNamedParam)
+                .map(param -> Maps.immutableEntry(param, transformer.replaceIsNullStatements(
+                        param.name.toString(), param.value == null)))
+                .filter(Map.Entry::getValue)
+                .forEach(entry -> replacedParams.add(entry.getKey()));
+
+        if (replacedParams.isEmpty()) {
+            return query;
+        }
+
+        String resultQuery = transformer.getResult();
+
+        QueryParser parser = queryTransformerFactory.parser(resultQuery);
+        params.removeAll(replacedParams.stream()
+                .filter(param -> !parser.isParameterUsedInAnyCondition(param.name.toString()))
+                .collect(Collectors.toSet()));
+
+        return resultQuery;
     }
 
     protected void addMacroParams(javax.persistence.TypedQuery jpaQuery) {

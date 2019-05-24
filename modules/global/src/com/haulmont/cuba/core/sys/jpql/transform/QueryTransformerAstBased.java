@@ -216,6 +216,20 @@ public class QueryTransformerAstBased implements QueryTransformer {
         getTransformer().clearInConditions(conditions);
     }
 
+    @Override
+    public boolean replaceIsNullStatements(String parameterName, boolean isNullValue) {
+        List<SimpleConditionNode> conditions = getAnalyzer().getConditions().stream()
+                .filter(condition -> getAnalyzer().isConditionForParameter(condition, parameterName))
+                .filter(condition -> getAnalyzer().isConditionISNULL(condition)
+                        || getAnalyzer().isConditionISNOTNULL(condition))
+                .collect(Collectors.toList());
+        if (conditions.isEmpty()) {
+            return false;
+        }
+        getTransformer().replaceIsNullStatements(conditions, isNullValue);
+        return true;
+    }
+
     protected CommonTree parseWhereCondition(String whereCondition) {
         try {
             return Parser.parseWhereClause("where " + whereCondition);

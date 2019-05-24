@@ -297,6 +297,16 @@ public class QueryTreeTransformer {
         }
     }
 
+    public void replaceIsNullStatements(List<SimpleConditionNode> conditions, boolean isNullValue) {
+        for (SimpleConditionNode condition : conditions) {
+            Tree notToken = condition.getFirstChildWithType(JPA2Lexer.NOT);
+            condition.getChildren().clear();
+            condition.addChild(createWord((isNullValue && notToken == null)
+                    || (!isNullValue && notToken != null) ? "1=1" : "1=0"));
+            condition.freshenParentAndChildIndexes();
+        }
+    }
+
     public void replaceSelectedEntityVariable(String newVariableName, PathNode pathNode) {
         if (pathNode != null) {
             pathNode.renameVariableTo(newVariableName);
