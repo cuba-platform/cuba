@@ -627,11 +627,16 @@ public class FilterDelegateImpl implements FilterDelegate {
             apply(true);
         }
 
+        updateWindowCaption();
+
         for (Filter.FilterEntityChangeListener listener : filterEntityChangeListeners) {
             listener.filterEntityChanged(filterEntity);
         }
+    }
 
-        updateWindowCaption();
+    @Override
+    public FilterEntity getFilterEntity() {
+        return filterEntity;
     }
 
     protected Window getWindow() {

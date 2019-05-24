@@ -55,6 +55,8 @@ public interface FilterDelegate {
 
     void setFilterEntity(FilterEntity filterEntity);
 
+    FilterEntity getFilterEntity();
+
     ComponentContainer getLayout();
 
     MetaClass getEntityMetaClass();
