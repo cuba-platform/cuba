@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.web.widgets.client.fieldgrouplayout;
 
+import com.google.gwt.user.client.Element;
 import com.haulmont.cuba.web.widgets.CubaFieldGroupLayout;
 import com.haulmont.cuba.web.widgets.client.caption.CubaCaptionWidget;
 import com.haulmont.cuba.web.widgets.client.gridlayout.CubaGridLayoutConnector;
@@ -137,6 +138,12 @@ public class CubaFieldGroupLayoutConnector extends CubaGridLayoutConnector {
         for (VGridLayout.Cell cell : column) {
             if (cell != null && isCaptionInlineApplicable(cell)) {
                 cell.slot.getCaption().setWidth(maxCaptionWidth + "px");
+
+                // Set fixed width to the inner textElement in order to have line wrapping
+                if (cell.slot.getCaption() instanceof CubaCaptionWidget) {
+                    Element textElement = ((CubaCaptionWidget) cell.slot.getCaption()).getTextElement();
+                    textElement.getStyle().setProperty("width", maxCaptionWidth + "px");
+                }
 
                 if (cell.slot.isRelativeWidth()) {
                     ((CubaFieldGroupLayoutComponentSlot) cell.slot).setIndicatorsWidth(maxIndicatorsWidth + "px");

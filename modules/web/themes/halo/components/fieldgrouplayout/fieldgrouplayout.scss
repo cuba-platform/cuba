@@ -27,10 +27,13 @@
     padding-top: $v-layout-spacing-vertical/2;
   }
 
+  .#{$primary-stylename}-slot > .v-caption {
+    line-height: $v-unit-size;
+  }
+
   .#{$primary-stylename}-slot.inline > .v-caption {
     margin-right: $v-layout-spacing-horizontal/2;
     vertical-align: middle;
-    line-height: $v-line-height;
     overflow: hidden;
   }
 
@@ -46,12 +49,15 @@
     padding-bottom: 0;
   }
 
-  // set line-height for all captions exclude captions for CheckBox and Label
-  .#{$primary-stylename}-slot.c-full-height-widget .v-caption {
-    height: $v-unit-size;
-  }
-
   .#{$primary-stylename}-slot.c-full-height-widget .v-caption .v-captiontext {
-    line-height: $v-unit-size;
+    line-height: $v-line-height;
+
+    white-space: normal;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+
+    &.c-captiontext-preformatted {
+      white-space: pre-wrap;
+    }
   }
 }
