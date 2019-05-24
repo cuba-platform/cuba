@@ -171,6 +171,12 @@ public class QueryParserAstBased implements QueryParser {
     }
 
     @Override
+    public boolean isParameterUsedInAnyCondition(String parameterName) {
+        return getAnalyzer().getConditions().stream()
+                .anyMatch(condition -> getAnalyzer().isConditionForParameter(condition, parameterName));
+    }
+
+    @Override
     public boolean isCollectionOriginalEntitySelect() {
         EntityNameAndPath entityNameAndAlias = getOriginEntityNameAndPath();
         return entityNameAndAlias != null && entityNameAndAlias.collectionSelect;
