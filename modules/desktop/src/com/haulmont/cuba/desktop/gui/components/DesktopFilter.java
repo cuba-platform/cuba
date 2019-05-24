@@ -433,4 +433,14 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
     public PropertiesFilterPredicate getPropertiesFilterPredicate() {
         return propertiesFilterPredicate;
     }
+
+    @Override
+    public boolean isWindowCaptionUpdateEnabled() {
+        return delegate.isWindowCaptionUpdateEnabled();
+    }
+
+    @Override
+    public void setWindowCaptionUpdateEnabled(boolean windowCaptionUpdateEnabled) {
+        delegate.setWindowCaptionUpdateEnabled(windowCaptionUpdateEnabled);
+    }
 }

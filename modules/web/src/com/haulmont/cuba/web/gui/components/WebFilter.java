@@ -444,4 +444,14 @@ public class WebFilter extends WebAbstractComponent<com.vaadin.ui.Component> imp
     public FilterDelegate getDelegate() {
         return delegate;
     }
+
+    @Override
+    public boolean isWindowCaptionUpdateEnabled() {
+        return delegate.isWindowCaptionUpdateEnabled();
+    }
+
+    @Override
+    public void setWindowCaptionUpdateEnabled(boolean windowCaptionUpdateEnabled) {
+        delegate.setWindowCaptionUpdateEnabled(windowCaptionUpdateEnabled);
+    }
 }

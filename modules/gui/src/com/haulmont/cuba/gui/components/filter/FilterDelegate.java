@@ -149,6 +149,10 @@ public interface FilterDelegate {
 
     ConditionsTree getConditionsTree();
 
+    boolean isWindowCaptionUpdateEnabled();
+
+    void setWindowCaptionUpdateEnabled(boolean windowCaptionUpdateEnabled);
+
     class FDExpandedStateChangeEvent implements HasUserOriginated {
         private final FilterDelegate delegate;
         private final boolean expanded;
