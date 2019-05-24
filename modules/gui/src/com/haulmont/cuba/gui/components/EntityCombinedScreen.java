@@ -188,7 +188,7 @@ public class EntityCombinedScreen extends AbstractLookup {
     protected boolean lockIfNeeded(Entity entity) {
         MetaClass metaClass = getMetaClassForLocking(entity);
 
-        LockInfo lockInfo = AppBeans.get(LockService.class).lock(metaClass.getName(), entity.getId().toString());
+        LockInfo lockInfo = AppBeans.get(LockService.class).lock(metaClass.getName(), entity.getEntityEntry().getId().toString());
         if (lockInfo == null) {
             justLocked = true;
         } else if (!(lockInfo instanceof LockNotSupported)) {
@@ -214,7 +214,7 @@ public class EntityCombinedScreen extends AbstractLookup {
             Entity entity = ds.getItem();
             if (entity != null) {
                 MetaClass metaClass = getMetaClassForLocking(entity);
-                AppBeans.get(LockService.class).unlock(metaClass.getName(), entity.getId().toString());
+                AppBeans.get(LockService.class).unlock(metaClass.getName(), entity.getEntityEntry().getId().toString());
             }
         }
     }

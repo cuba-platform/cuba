@@ -108,7 +108,7 @@ public class DatasourceTreeItems<E extends Entity<K>, K> implements EntityTreeIt
     @Override
     public Object getItemId(E item) {
         Preconditions.checkNotNullArgument(item);
-        return item.getId();
+        return item.getEntityEntry().getId();
     }
 
     @SuppressWarnings("unchecked")
@@ -124,7 +124,7 @@ public class DatasourceTreeItems<E extends Entity<K>, K> implements EntityTreeIt
 
     @Override
     public boolean containsItem(E item) {
-        return datasource.containsItem(item.getId());
+        return datasource.containsItem(item.getEntityEntry().getId());
     }
 
     @Override
@@ -151,7 +151,7 @@ public class DatasourceTreeItems<E extends Entity<K>, K> implements EntityTreeIt
     public Stream<E> getChildren(E item) {
         Collection<K> itemIds = item == null
                 ? datasource.getRootItemIds()
-                : datasource.getChildren(item.getId());
+                : datasource.getChildren(item.getEntityEntry().getId());
 
         return itemIds.stream()
                 .map(id -> datasource.getItem(id));
@@ -159,14 +159,14 @@ public class DatasourceTreeItems<E extends Entity<K>, K> implements EntityTreeIt
 
     @Override
     public boolean hasChildren(E item) {
-        return datasource.hasChildren(item.getId());
+        return datasource.hasChildren(item.getEntityEntry().getId());
     }
 
     @Nullable
     @Override
     public E getParent(E item) {
         Preconditions.checkNotNullArgument(item);
-        K parentId = datasource.getParent(item.getId());
+        K parentId = datasource.getParent(item.getEntityEntry().getId());
         return datasource.getItem(parentId);
     }
 

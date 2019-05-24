@@ -178,7 +178,7 @@ public class EntitySqlGenerator {
         try {
             String valueStr;
             if (value instanceof Entity) {
-                value = ((Entity) value).getId();
+                value = ((Entity) value).getEntityEntry().getId();
             } else if (value instanceof EnumClass) {
                 value = ((EnumClass) value).getId();
             } else if (value instanceof Enum) {

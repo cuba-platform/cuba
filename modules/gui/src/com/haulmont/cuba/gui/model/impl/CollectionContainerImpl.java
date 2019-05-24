@@ -53,7 +53,7 @@ public class CollectionContainerImpl<E extends Entity>
     @Override
     public void setItem(@Nullable E item) {
         if (item != null) {
-            int idx = getItemIndex(item.getId());
+            int idx = getItemIndex(item.getEntityEntry().getId());
             if (idx == -1) {
                 throw new IllegalArgumentException("CollectionContainer does not contain " + item);
             }
@@ -115,7 +115,7 @@ public class CollectionContainerImpl<E extends Entity>
             if (!entityMetaClass.getJavaClass().isAssignableFrom(entity.getClass())) {
                 throw new IllegalArgumentException("Invalid entity class: " + entity.getClass());
             } else {
-                entityId = entity.getId();
+                entityId = entity.getEntityEntry().getId();
             }
         }
         Integer idx = idMap.get(entityId);
@@ -131,7 +131,7 @@ public class CollectionContainerImpl<E extends Entity>
     public void replaceItem(E entity) {
         checkNotNullArgument(entity, "entity is null");
 
-        Object id = entity.getId();
+        Object id = entity.getEntityEntry().getId();
         int idx = getItemIndex(id);
         CollectionChangeType changeType;
         if (idx > -1) {
@@ -202,13 +202,13 @@ public class CollectionContainerImpl<E extends Entity>
     protected void buildIdMap() {
         idMap.clear();
         for (int i = 0; i < collection.size(); i++) {
-            idMap.put(collection.get(i).getId(), i);
+            idMap.put(collection.get(i).getEntityEntry().getId(), i);
         }
     }
 
     protected void clearItemIfNotExists() {
         if (item != null) {
-            int idx = getItemIndex(item.getId());
+            int idx = getItemIndex(item.getEntityEntry().getId());
             if (idx == -1) {
                 // item doesn't exist in the collection
                 E prevItem = item;

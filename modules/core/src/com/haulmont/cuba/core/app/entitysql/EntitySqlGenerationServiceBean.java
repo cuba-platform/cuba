@@ -78,7 +78,7 @@ public class EntitySqlGenerationServiceBean implements EntitySqlGenerationServic
             throw new RuntimeException("Cannot determine data store for " + entity);
 
         try (Transaction tx = persistence.createTransaction(storeName)) {
-            Entity reloaded = persistence.getEntityManager(storeName).find(entity.getClass(), entity.getId(),
+            Entity reloaded = persistence.getEntityManager(storeName).find(entity.getClass(), entity.getEntityEntry().getId(),
                     createFullView(entity.getMetaClass()));
             if (reloaded != null) {
                 entity = reloaded;

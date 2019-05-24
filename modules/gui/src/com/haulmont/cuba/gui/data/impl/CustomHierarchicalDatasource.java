@@ -49,7 +49,7 @@ public abstract class CustomHierarchicalDatasource<T extends Entity<K>, K>
 
         if (entities != null) {
             for (T entity : entities) {
-                data.put(entity.getId(), entity);
+                data.put(entity.getEntityEntry().getId(), entity);
                 attachListener(entity);
             }
         }

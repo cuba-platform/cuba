@@ -18,10 +18,7 @@ package com.haulmont.cuba.gui.data;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
-import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
-import com.haulmont.cuba.core.entity.CategoryAttribute;
-import com.haulmont.cuba.core.entity.CategoryAttributeValue;
-import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.entity.*;
 import com.haulmont.cuba.core.global.UuidProvider;
 
 import javax.annotation.Nullable;
@@ -38,20 +35,33 @@ import java.util.UUID;
 public class DynamicAttributesEntity implements Entity {
     private static final long serialVersionUID = -8091230910619941201L;
     protected BaseGenericIdEntity mainItem;
-    protected UUID id;
     protected Map<String, CategoryAttribute> attributesMap = new HashMap<>();
+    protected DynamicAttributesEntityEntry entityEntry;
+
+    protected static class DynamicAttributesEntityEntry implements EntityEntry<UUID> {
+        protected UUID id;
+
+        public DynamicAttributesEntityEntry() {
+            this.id = UuidProvider.createUuid();
+        }
+
+        @Override
+        public UUID getId() {
+            return id;
+        }
+    }
 
     public DynamicAttributesEntity(BaseGenericIdEntity mainItem, Collection<CategoryAttribute> attributes) {
         this.mainItem = mainItem;
-        this.id = UuidProvider.createUuid();
+        this.entityEntry = new DynamicAttributesEntityEntry();
         for (CategoryAttribute attribute : attributes) {
             attributesMap.put(attribute.getCode(), attribute);
         }
     }
 
     @Override
-    public UUID getId() {
-        return id;
+    public EntityEntry getEntityEntry() {
+        return entityEntry;
     }
 
     @Override

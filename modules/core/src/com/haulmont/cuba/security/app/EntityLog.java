@@ -836,6 +836,6 @@ public class EntityLog implements EntityLogAPI {
     }
 
     protected void logError(Entity entity, Exception e) {
-        log.warn("Unable to log entity {}, id={}", entity, entity.getId(), e);
+        log.warn("Unable to log entity {}, id={}", entity, entity.getEntityEntry().getId(), e);
     }
 }

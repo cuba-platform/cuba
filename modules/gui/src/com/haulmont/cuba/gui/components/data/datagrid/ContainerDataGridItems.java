@@ -83,7 +83,7 @@ public class ContainerDataGridItems<E extends Entity>
 
     @Override
     public Object getItemId(E item) {
-        return item.getId();
+        return item.getEntityEntry().getId();
     }
 
     @Override
@@ -93,7 +93,7 @@ public class ContainerDataGridItems<E extends Entity>
 
     @Override
     public int indexOfItem(E item) {
-        return container.getItemIndex(item.getId());
+        return container.getItemIndex(item.getEntityEntry().getId());
     }
 
     @Nullable
@@ -114,7 +114,7 @@ public class ContainerDataGridItems<E extends Entity>
 
     @Override
     public boolean containsItem(E item) {
-        return container.getItemOrNull(item.getId()) != null;
+        return container.getItemOrNull(item.getEntityEntry().getId()) != null;
     }
 
     @Override

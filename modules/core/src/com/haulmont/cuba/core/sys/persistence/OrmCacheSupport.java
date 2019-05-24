@@ -20,6 +20,7 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.security.app.EntityAttributeChanges;
@@ -47,7 +48,7 @@ public class OrmCacheSupport {
      * @param entity    which is being updated and can potentially be an element of a collection
      * @param changes   changes in the entity. Null when creating and removing the entity.
      */
-    public void evictMasterEntity(BaseGenericIdEntity entity, @Nullable EntityAttributeChanges changes) {
+    public void evictMasterEntity(Entity entity, @Nullable EntityAttributeChanges changes) {
         MetaClass metaClass = metadata.getClassNN(entity.getClass());
         for (MetaProperty property : metaClass.getProperties()) {
             if (!property.getRange().isClass() || property.getRange().getCardinality().isMany())

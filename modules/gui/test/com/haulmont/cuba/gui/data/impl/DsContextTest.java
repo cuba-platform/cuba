@@ -135,7 +135,7 @@ public class DsContextTest extends CubaClientTestCase {
         assertEquals(masterPartsDs, ((DatasourceImplementation) partsDs).getParent());
         assertNull(((DatasourceImplementation) embeddableDs).getParent());
 
-        assertEquals(embeddable1.getId(), embeddableDs.getItem().getId());
+        assertEquals(embeddable1.getEntityEntry().getId(), embeddableDs.getItem().getEntityEntry().getId());
 
         // Edit embeddable
         embeddableDs.getItem().setName("embeddable1_1");
@@ -155,9 +155,9 @@ public class DsContextTest extends CubaClientTestCase {
                 assertTrue(containsEntityInstance(context.getCommitInstances(), detail1.getId()));
                 assertTrue(containsEntityInstance(context.getCommitInstances(), part1.getId()));
                 for (Entity entity : context.getCommitInstances()) {
-                    if (entity.getId().equals(detail1.getId()))
+                    if (entity.getEntityEntry().getId().equals(detail1.getId()))
                         assertEquals("embeddable1_1", ((TestDetailEntity) entity).getEmbeddable().getName());
-                    if (entity.getId().equals(part1.getId()))
+                    if (entity.getEntityEntry().getId().equals(part1.getId()))
                         assertEquals("part1_1", ((TestPartEntity) entity).getPartName());
                 }
             }
@@ -194,7 +194,7 @@ public class DsContextTest extends CubaClientTestCase {
                 assertTrue(containsEntityInstance(context.getCommitInstances(), detail.getId()));
                 assertTrue(containsEntityInstance(context.getCommitInstances(), master.getId()));
                 for (Entity entity : context.getCommitInstances()) {
-                    if (entity.getId().equals(detail.getId()))
+                    if (entity.getEntityEntry().getId().equals(detail.getId()))
                         assertEquals("new_detail", ((TestDetailEntity) entity).getDetailName());
                 }
             }
@@ -254,9 +254,9 @@ public class DsContextTest extends CubaClientTestCase {
                 assertTrue(containsEntityInstance(context.getCommitInstances(), master.getId()));
                 assertTrue(containsEntityInstance(context.getCommitInstances(), part.getId()));
                 for (Entity entity : context.getCommitInstances()) {
-                    if (entity.getId().equals(detail.getId()))
+                    if (entity.getEntityEntry().getId().equals(detail.getId()))
                         assertEquals("new_detail", ((TestDetailEntity) entity).getDetailName());
-                    if (entity.getId().equals(part.getId()))
+                    if (entity.getEntityEntry().getId().equals(part.getId()))
                         assertEquals("new_part", ((TestPartEntity) entity).getPartName());
                 }
             }
@@ -285,7 +285,7 @@ public class DsContextTest extends CubaClientTestCase {
         assertEquals(masterPartsDs, ((DatasourceImplementation) partsDs).getParent());
         assertNull(((DatasourceImplementation) embeddableDs).getParent());
 
-        assertEquals(embeddable1.getId(), embeddableDs.getItem().getId());
+        assertEquals(embeddable1.getEntityEntry().getId(), embeddableDs.getItem().getEntityEntry().getId());
 
         // Edit embeddable
         embeddableDs.getItem().setName("embeddable1_1");
@@ -324,9 +324,9 @@ public class DsContextTest extends CubaClientTestCase {
                 assertTrue(containsEntityInstance(context.getCommitInstances(), detail1.getId()));
                 assertTrue(containsEntityInstance(context.getCommitInstances(), part1.getId()));
                 for (Entity entity : context.getCommitInstances()) {
-                    if (entity.getId().equals(detail1.getId()))
+                    if (entity.getEntityEntry().getId().equals(detail1.getId()))
                         assertEquals("embeddable1_1", ((TestDetailEntity) entity).getEmbeddable().getName());
-                    if (entity.getId().equals(part1.getId()))
+                    if (entity.getEntityEntry().getId().equals(part1.getId()))
                         assertEquals("part1_2", ((TestPartEntity) entity).getPartName());
                 }
             }
@@ -353,7 +353,7 @@ public class DsContextTest extends CubaClientTestCase {
         createDetailDsContext();
         setupParentDs(detailsDs, detailDs, detail1.getId());
 
-        assertEquals(embeddable1.getId(), embeddableDs.getItem().getId());
+        assertEquals(embeddable1.getEntityEntry().getId(), embeddableDs.getItem().getEntityEntry().getId());
 
         // Select Part to edit
         partsDs.setItem(part1);
@@ -381,7 +381,7 @@ public class DsContextTest extends CubaClientTestCase {
             public void validate(CommitContext context) {
                 assertTrue(containsEntityInstance(context.getCommitInstances(), part1.getId()));
                 for (Entity entity : context.getCommitInstances()) {
-                    if (entity.getId().equals(part1.getId()))
+                    if (entity.getEntityEntry().getId().equals(part1.getId()))
                         assertEquals("part1_1", ((TestPartEntity) entity).getPartName());
                 }
             }
@@ -408,7 +408,7 @@ public class DsContextTest extends CubaClientTestCase {
         createDetailDsContext();
         setupParentDs(detailsDs, detailDs, detail1.getId());
 
-        assertEquals(embeddable1.getId(), embeddableDs.getItem().getId());
+        assertEquals(embeddable1.getEntityEntry().getId(), embeddableDs.getItem().getEntityEntry().getId());
 
         // Select Part to edit
         partsDs.setItem(part1);
@@ -500,11 +500,11 @@ public class DsContextTest extends CubaClientTestCase {
             public void validate(CommitContext context) {
                 assertTrue(containsEntityInstance(context.getCommitInstances(), part1.getId()));
                 for (Entity entity : context.getCommitInstances()) {
-                    if (entity.getId().equals(part1.getId())) {
+                    if (entity.getEntityEntry().getId().equals(part1.getId())) {
                         assertEquals("part1_3", ((TestPartEntity) entity).getPartName());
                         assertTrue(((TestPartEntity) entity).getDetail() == detail1);
                     }
-                    if (entity.getId().equals(newPart.getId())) {
+                    if (entity.getEntityEntry().getId().equals(newPart.getId())) {
                         assertEquals("new_part", ((TestPartEntity) entity).getPartName());
                         assertTrue(((TestPartEntity) entity).getDetail() == detail1);
                     }
@@ -655,7 +655,7 @@ public class DsContextTest extends CubaClientTestCase {
 
     private boolean containsEntityInstance(Collection<Entity> collection, Object entityId) {
         for (Entity entity : collection) {
-            if (entity.getId().equals(entityId))
+            if (entity.getEntityEntry().getId().equals(entityId))
                 return true;
         }
         return false;

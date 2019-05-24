@@ -73,7 +73,7 @@ public class EntityRestoreServiceBean implements EntityRestoreService {
 
     protected void restoreEntity(Entity entity, String storeName) {
         EntityManager em = persistence.getEntityManager(storeName);
-        Entity reloadedEntity = em.find(entity.getClass(), entity.getId());
+        Entity reloadedEntity = em.find(entity.getClass(), entity.getEntityEntry().getId());
         if (reloadedEntity != null && ((SoftDelete) reloadedEntity).isDeleted()) {
             log.info("Restoring deleted entity " + entity);
             Date deleteTs = ((SoftDelete) reloadedEntity).getDeleteTs();
@@ -110,7 +110,7 @@ public class EntityRestoreServiceBean implements EntityRestoreService {
                 String jpql = "select e from " + detailMetaClass + " e where e." + inverseProp.getName() + ".id = ?1 " +
                         "and e.deleteTs >= ?2 and e.deleteTs <= ?3";
                 Query query = em.createQuery(jpql);
-                query.setParameter(1, entity.getId());
+                query.setParameter(1, entity.getEntityEntry().getId());
                 query.setParameter(2, DateUtils.addMilliseconds(deleteTs, -100));
                 query.setParameter(3, DateUtils.addMilliseconds(deleteTs, 1000));
                 //noinspection unchecked
@@ -153,7 +153,7 @@ public class EntityRestoreServiceBean implements EntityRestoreService {
                                 + ".id = ?1 and e.deleteTs >= ?2 and e.deleteTs <= ?3";
                     }
                     Query query = em.createQuery(jpql);
-                    query.setParameter(1, entity.getId());
+                    query.setParameter(1, entity.getEntityEntry().getId());
                     query.setParameter(2, DateUtils.addMilliseconds(deleteTs, -100));
                     query.setParameter(3, DateUtils.addMilliseconds(deleteTs, 1000));
                     //noinspection unchecked

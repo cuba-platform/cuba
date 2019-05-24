@@ -37,10 +37,8 @@ public abstract class EmbeddableEntity extends AbstractInstance implements Entit
     @Transient
     protected SecurityState __securityState;
 
-    @Override
-    public Object getId() {
-        return this;
-    }
+
+
 
     @Override
     public MetaClass getMetaClass() {

@@ -262,7 +262,7 @@ public class WebUrlRouting implements UrlRouting {
         if (isEditor(screen)) {
             Entity editedEntity = ((EditorScreen) screen).getEditedEntity();
             if (editedEntity != null) {
-                Object entityId = editedEntity.getId();
+                Object entityId = editedEntity.getEntityEntry().getId();
                 if (entityId != null) {
                     String serializedId = UrlIdSerializer.serializeId(entityId);
                     if (!"".equals(serializedId)) {
@@ -515,12 +515,12 @@ public class WebUrlRouting implements UrlRouting {
         }
 
         protected Map<String, String> prepareEditorUrlParams(Entity entity, Map<String, String> urlParams) {
-            if (entity.getId() == null) {
+            if (entity.getEntityEntry().getId() == null) {
                 throw new IllegalArgumentException("Unable to generate route for an entity without id: " + entity);
             }
 
             Map<String, String> params = new LinkedHashMap<>(1 + urlParams.size());
-            params.put("id", UrlIdSerializer.serializeId(entity.getId()));
+            params.put("id", UrlIdSerializer.serializeId(entity.getEntityEntry().getId()));
             params.putAll(urlParams);
 
             return params;

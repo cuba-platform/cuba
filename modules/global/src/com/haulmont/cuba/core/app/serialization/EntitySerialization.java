@@ -223,8 +223,8 @@ public class EntitySerialization implements EntitySerializationAPI {
                 writeIdField(entity, jsonObject);
                 if (compactRepeatedEntities) {
                     Table<Object, MetaClass, Entity> processedObjects = context.get().getProcessedEntities();
-                    if (processedObjects.get(entity.getId(), metaClass) == null) {
-                        processedObjects.put(entity.getId(), metaClass, entity);
+                    if (processedObjects.get(entity.getEntityEntry().getId(), metaClass) == null) {
+                        processedObjects.put(entity.getEntityEntry().getId(), metaClass, entity);
                         writeFields(entity, jsonObject, view, cyclicReferences);
                     }
                 } else {
@@ -260,11 +260,11 @@ public class EntitySerialization implements EntitySerializationAPI {
             if (primaryKeyProperty == null)
                 throw new EntitySerializationException("Primary key property not found for entity " + entity.getMetaClass());
             if (metadataTools.hasCompositePrimaryKey(entity.getMetaClass())) {
-                JsonObject serializedIdEntity = serializeEntity((Entity) entity.getId(), null, Collections.emptySet());
+                JsonObject serializedIdEntity = serializeEntity((Entity) entity.getEntityEntry().getId(), null, Collections.emptySet());
                 jsonObject.add("id", serializedIdEntity);
             } else {
                 Datatype idDatatype = Datatypes.getNN(primaryKeyProperty.getJavaType());
-                jsonObject.addProperty("id", idDatatype.format(entity.getId()));
+                jsonObject.addProperty("id", idDatatype.format(entity.getEntityEntry().getId()));
             }
         }
 
@@ -478,12 +478,12 @@ public class EntitySerialization implements EntitySerializationAPI {
             }
 
             Table<Object, MetaClass, Entity> processedEntities = context.get().getProcessedEntities();
-            Entity processedEntity = processedEntities.get(entity.getId(), resultMetaClass);
+            Entity processedEntity = processedEntities.get(entity.getEntityEntry().getId(), resultMetaClass);
             if (processedEntity != null) {
                 entity = processedEntity;
             } else {
-                if (entity.getId() != null) {
-                    processedEntities.put(entity.getId(), resultMetaClass, entity);
+                if (entity.getEntityEntry().getId() != null) {
+                    processedEntities.put(entity.getEntityEntry().getId(), resultMetaClass, entity);
                 }
                 readFields(jsonObject, entity);
             }
@@ -647,7 +647,7 @@ public class EntitySerialization implements EntitySerializationAPI {
         protected void fetchDynamicAttributes(Entity entity) {
             if (entity instanceof BaseGenericIdEntity) {
                 LoadContext<BaseGenericIdEntity> loadContext = new LoadContext<>(entity.getMetaClass());
-                loadContext.setId(entity.getId()).setLoadDynamicAttributes(true);
+                loadContext.setId(entity.getEntityEntry().getId()).setLoadDynamicAttributes(true);
                 DataService dataService = AppBeans.get(DataService.NAME, DataService.class);
                 BaseGenericIdEntity reloaded = dataService.load(loadContext);
                 if (reloaded != null) {

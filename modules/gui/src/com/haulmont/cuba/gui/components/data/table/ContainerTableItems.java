@@ -97,7 +97,7 @@ public class ContainerTableItems<E extends Entity> implements EntityTableItems<E
 
     @Override
     public Collection<?> getItemIds() {
-        return container.getItems().stream().map(Entity::getId).collect(Collectors.toList());
+        return container.getItems().stream().map(e -> e.getEntityEntry().getId()).collect(Collectors.toList());
     }
 
     @Override
@@ -120,7 +120,7 @@ public class ContainerTableItems<E extends Entity> implements EntityTableItems<E
     public void updateItem(E item) {
         checkNotNullArgument(item, "item is null");
 
-        if (container.containsItem(item.getId())) {
+        if (container.containsItem(item.getEntityEntry().getId())) {
             container.replaceItem(item);
         }
     }
@@ -138,7 +138,7 @@ public class ContainerTableItems<E extends Entity> implements EntityTableItems<E
 
     @Override
     public boolean containsId(Object itemId) {
-        return container.getItems().stream().anyMatch(e -> e.getId().equals(itemId));
+        return container.getItems().stream().anyMatch(e -> e.getEntityEntry().getId().equals(itemId));
     }
 
     @Override
@@ -200,19 +200,19 @@ public class ContainerTableItems<E extends Entity> implements EntityTableItems<E
     public Object nextItemId(Object itemId) {
         List<E> items = container.getItems();
         int index = container.getItemIndex(itemId);
-        return index == items.size() - 1 ? null : items.get(index + 1).getId();
+        return index == items.size() - 1 ? null : items.get(index + 1).getEntityEntry().getId();
     }
 
     @Override
     public Object prevItemId(Object itemId) {
         int index = container.getItemIndex(itemId);
-        return index <= 0 ? null : container.getItems().get(index - 1).getId();
+        return index <= 0 ? null : container.getItems().get(index - 1).getEntityEntry().getId();
     }
 
     @Override
     public Object firstItemId() {
         List<E> items = container.getItems();
-        return items.isEmpty() ? null : items.get(0).getId();
+        return items.isEmpty() ? null : items.get(0).getEntityEntry().getId();
     }
 
     @Override
@@ -221,7 +221,7 @@ public class ContainerTableItems<E extends Entity> implements EntityTableItems<E
         if (items.isEmpty()) {
             return null;
         }
-        return items.get(items.size() - 1).getId();
+        return items.get(items.size() - 1).getEntityEntry().getId();
     }
 
     @Override

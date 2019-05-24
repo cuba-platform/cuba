@@ -110,7 +110,7 @@ public class DatasourceDataGridItems<E extends Entity<K>, K> implements EntityDa
     @Override
     public Object getItemId(E item) {
         Preconditions.checkNotNullArgument(item);
-        return item.getId();
+        return item.getEntityEntry().getId();
     }
 
     @SuppressWarnings("unchecked")
@@ -122,7 +122,7 @@ public class DatasourceDataGridItems<E extends Entity<K>, K> implements EntityDa
     @Override
     public int indexOfItem(E item) {
         Preconditions.checkNotNullArgument(item);
-        return datasource.indexOfId(item.getId());
+        return datasource.indexOfId(item.getEntityEntry().getId());
     }
 
     @Nullable
@@ -146,7 +146,7 @@ public class DatasourceDataGridItems<E extends Entity<K>, K> implements EntityDa
 
     @Override
     public boolean containsItem(E item) {
-        return datasource.containsItem(item.getId());
+        return datasource.containsItem(item.getEntityEntry().getId());
     }
 
     @Override

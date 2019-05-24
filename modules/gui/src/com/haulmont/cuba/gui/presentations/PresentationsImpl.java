@@ -232,8 +232,8 @@ public class PresentationsImpl implements Presentations {
             else if (entity.equals(current))
                 current = (Presentation) entity;
 
-            if (presentations.containsKey(entity.getId())) {
-                presentations.put(entity.getId(), (Presentation) entity);
+            if (presentations.containsKey(entity.getEntityEntry().getId())) {
+                presentations.put(entity.getEntityEntry().getId(), (Presentation) entity);
             }
         }
     }

@@ -41,40 +41,76 @@ public final class BaseEntityInternalAccess {
         return entity.__new;
     }
 
-    public static boolean isNew(BaseGenericIdEntity entity) {
-        return (entity.__state & NEW) == NEW;
+    public static boolean isNew(Entity entity) {
+        EntityEntry entityEntry = entity.getEntityEntry();
+        if (entityEntry instanceof PersistentEntityEntry) {
+            return (((PersistentEntityEntry) entityEntry).getPersistenceState() & NEW) == NEW;
+        } else {
+            return false;
+        }
     }
 
     public static void setNew(AbstractNotPersistentEntity entity, boolean _new) {
         entity.__new = _new;
     }
 
-    public static void setNew(BaseGenericIdEntity entity, boolean _new) {
-        entity.__state = (byte) (_new ? entity.__state | NEW : entity.__state & ~NEW);
+    public static void setNew(Entity entity, boolean _new) {
+        EntityEntry entityEntry = entity.getEntityEntry();
+        if (entityEntry instanceof PersistentEntityEntry) {
+            byte state = ((PersistentEntityEntry) entityEntry).getPersistenceState();
+            ((PersistentEntityEntry) entityEntry).setPersistenceState((byte) (_new ? state | NEW : state & ~NEW));
+        }
     }
 
-    public static boolean isManaged(BaseGenericIdEntity entity) {
-        return (entity.__state & MANAGED) == MANAGED;
+    public static boolean isManaged(Entity entity) {
+        EntityEntry entityEntry = entity.getEntityEntry();
+        if (entityEntry instanceof PersistentEntityEntry) {
+            return (((PersistentEntityEntry) entityEntry).getPersistenceState() & MANAGED) == MANAGED;
+        } else {
+            return false;
+        }
     }
 
-    public static void setManaged(BaseGenericIdEntity entity, boolean managed) {
-        entity.__state = (byte) (managed ? entity.__state | MANAGED : entity.__state & ~MANAGED);
+    public static void setManaged(Entity entity, boolean managed) {
+        EntityEntry entityEntry = entity.getEntityEntry();
+        if (entityEntry instanceof PersistentEntityEntry) {
+            byte state = ((PersistentEntityEntry) entityEntry).getPersistenceState();
+            ((PersistentEntityEntry) entityEntry).setPersistenceState((byte) (managed ? state | MANAGED : state & ~MANAGED));
+        }
     }
 
-    public static boolean isDetached(BaseGenericIdEntity entity) {
-        return (entity.__state & DETACHED) == DETACHED;
+    public static boolean isDetached(Entity entity) {
+        EntityEntry entityEntry = entity.getEntityEntry();
+        if (entityEntry instanceof PersistentEntityEntry) {
+            return (((PersistentEntityEntry) entityEntry).getPersistenceState() & DETACHED) == DETACHED;
+        } else {
+            return false;
+        }
     }
 
-    public static void setDetached(BaseGenericIdEntity entity, boolean detached) {
-        entity.__state = (byte) (detached ? entity.__state | DETACHED : entity.__state & ~DETACHED);
+    public static void setDetached(Entity entity, boolean detached) {
+        EntityEntry entityEntry = entity.getEntityEntry();
+        if (entityEntry instanceof PersistentEntityEntry) {
+            byte state = ((PersistentEntityEntry) entityEntry).getPersistenceState();
+            ((PersistentEntityEntry) entityEntry).setPersistenceState((byte) (detached ? state | DETACHED : state & ~DETACHED));
+        }
     }
 
-    public static boolean isRemoved(BaseGenericIdEntity entity) {
-        return (entity.__state & REMOVED) == REMOVED;
+    public static boolean isRemoved(Entity entity) {
+        EntityEntry entityEntry = entity.getEntityEntry();
+        if (entityEntry instanceof PersistentEntityEntry) {
+            return (((PersistentEntityEntry) entityEntry).getPersistenceState() & REMOVED) == REMOVED;
+        } else {
+            return false;
+        }
     }
 
-    public static void setRemoved(BaseGenericIdEntity entity, boolean removed) {
-        entity.__state = (byte) (removed ? entity.__state | REMOVED : entity.__state & ~REMOVED);
+    public static void setRemoved(Entity entity, boolean removed) {
+        EntityEntry entityEntry = entity.getEntityEntry();
+        if (entityEntry instanceof PersistentEntityEntry) {
+            byte state = ((PersistentEntityEntry) entityEntry).getPersistenceState();
+            ((PersistentEntityEntry) entityEntry).setPersistenceState((byte) (removed ? state | REMOVED : state & ~REMOVED));
+        }
     }
 
     public static String[] getInaccessibleAttributes(Entity entity) {
@@ -186,49 +222,38 @@ public final class BaseEntityInternalAccess {
 
     public static SecurityState getSecurityState(Entity entity) {
         Preconditions.checkNotNullArgument(entity, "Entity is null");
-        SecurityState securityState;
-        if (entity instanceof BaseGenericIdEntity) {
-            BaseGenericIdEntity baseGenericIdEntity = (BaseGenericIdEntity) entity;
-            securityState = baseGenericIdEntity.__securityState;
-        } else if (entity instanceof EmbeddableEntity) {
-            EmbeddableEntity embeddableEntity = (EmbeddableEntity) entity;
-            securityState = embeddableEntity.__securityState;
+        EntityEntry entityEntry = entity.getEntityEntry();
+        if (entityEntry instanceof PersistentEntityEntry) {
+            return ((PersistentEntityEntry) entityEntry).getSecurityState();
         } else {
-            throw new IllegalArgumentException(String.format("Entity with type [%s] does not support security state", entity.getMetaClass().getName()));
+            throw new IllegalArgumentException(String.format(
+                    "Entity with type [%s] does not support security state", entity.getMetaClass().getName()));
         }
-        return securityState;
     }
 
     public static void setSecurityState(Entity entity, SecurityState securityState) {
         Preconditions.checkNotNullArgument(entity, "Entity is null");
-        if (entity instanceof BaseGenericIdEntity) {
-            BaseGenericIdEntity baseGenericIdEntity = (BaseGenericIdEntity) entity;
-            baseGenericIdEntity.__securityState = securityState;
-        } else if (entity instanceof EmbeddableEntity) {
-            EmbeddableEntity embeddableEntity = (EmbeddableEntity) entity;
-            embeddableEntity.__securityState = securityState;
+        EntityEntry entityEntry = entity.getEntityEntry();
+        if (entityEntry instanceof PersistentEntityEntry) {
+            ((PersistentEntityEntry) entityEntry).setSecurityState(securityState);
         } else {
-            throw new IllegalArgumentException(String.format("Entity with type [%s] does not support security state", entity.getMetaClass().getName()));
+            throw new IllegalArgumentException(String.format(
+                    "Entity with type [%s] does not support security state", entity.getMetaClass().getName()));
         }
     }
 
     public static SecurityState getOrCreateSecurityState(Entity entity) {
         Preconditions.checkNotNullArgument(entity, "Entity is null");
         SecurityState securityState;
-        if (entity instanceof BaseGenericIdEntity) {
-            BaseGenericIdEntity baseGenericIdEntity = (BaseGenericIdEntity) entity;
-            if (baseGenericIdEntity.__securityState == null) {
-                baseGenericIdEntity.__securityState = new SecurityState();
+        EntityEntry entityEntry = entity.getEntityEntry();
+        if (entityEntry instanceof PersistentEntityEntry) {
+            if (((PersistentEntityEntry) entityEntry).getSecurityState() == null) {
+                ((PersistentEntityEntry) entityEntry).setSecurityState(new SecurityState());
             }
-            securityState = baseGenericIdEntity.__securityState;
-        } else if (entity instanceof EmbeddableEntity) {
-            EmbeddableEntity embeddableEntity = (EmbeddableEntity) entity;
-            if (embeddableEntity.__securityState == null) {
-                embeddableEntity.__securityState = new SecurityState();
-            }
-            securityState = embeddableEntity.__securityState;
+            securityState = ((PersistentEntityEntry) entityEntry).getSecurityState();
         } else {
-            throw new IllegalArgumentException(String.format("Entity with type [%s] does not support security state", entity.getMetaClass().getName()));
+            throw new IllegalArgumentException(String.format(
+                    "Entity with type [%s] does not support security state", entity.getMetaClass().getName()));
         }
         return securityState;
     }
@@ -262,7 +287,7 @@ public final class BaseEntityInternalAccess {
 
     public static void setValueForHolder(Entity entity, String attribute, @Nullable Object value) {
         Preconditions.checkNotNullArgument(entity, "entity is null");
-        Field field = FieldUtils.getField(entity.getClass(), String.format("_persistence_%s_vh",attribute), true);
+        Field field = FieldUtils.getField(entity.getClass(), String.format("_persistence_%s_vh", attribute), true);
         if (field == null)
             return;
         try {
@@ -284,7 +309,10 @@ public final class BaseEntityInternalAccess {
         }
     }
 
-    public static void copySystemState(BaseGenericIdEntity src, BaseGenericIdEntity dst) {
-        dst.copySystemState(src);
+    public static void copySystemState(Entity src, Entity dst) {
+        if (dst.getEntityEntry() instanceof PersistentEntityEntry) {
+            //noinspection unchecked
+            ((PersistentEntityEntry) dst.getEntityEntry()).copySystemState((PersistentEntityEntry)src.getEntityEntry());
+        }
     }
 }

@@ -249,7 +249,7 @@ public class GroupBrowser extends AbstractWindow {
                         && target.getSingleSelected() != null) {
                     @SuppressWarnings("unchecked")
                     HierarchicalDatasource<Group, UUID> ds = (HierarchicalDatasource<Group, UUID>) target.getDatasource();
-                    UUID selectedItemId = (UUID) target.getSingleSelected().getId();
+                    UUID selectedItemId = (UUID) target.getSingleSelected().getEntityEntry().getId();
                     return ds.getChildren(selectedItemId).isEmpty();
                 }
 

@@ -102,7 +102,7 @@ public class DatasourceImpl<T extends Entity> extends AbstractDatasource<T> impl
 
             if (parentDs instanceof CollectionDatasource) {
                 CollectionDatasource ds = (CollectionDatasource) parentDs;
-                if (ds.containsItem(item.getId())) {
+                if (ds.containsItem(item.getEntityEntry().getId())) {
                     ds.modifyItem(item);
                 } else {
                     ds.addItem(item);

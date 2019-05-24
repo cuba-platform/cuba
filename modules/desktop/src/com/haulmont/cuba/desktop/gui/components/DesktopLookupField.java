@@ -637,7 +637,7 @@ public class DesktopLookupField extends DesktopAbstractOptionsField<JComponent> 
             if (Datasource.State.INVALID == optionsDatasource.getState()) {
                 optionsDatasource.refresh();
             }
-            Object itemId = ((Entity) value).getId();
+            Object itemId = ((Entity) value).getEntityEntry().getId();
             if (optionsDatasource.containsItem(itemId)) {
                 value = optionsDatasource.getItem(itemId);
             }

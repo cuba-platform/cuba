@@ -106,7 +106,7 @@ public class ContainerGroupTableItems<E extends Entity<K>, K>
             }
 
             List<K> itemsIds = groupItems.computeIfAbsent(groupInfo, k -> new ArrayList<>());
-            itemsIds.add(item.getId());
+            itemsIds.add(item.getEntityEntry().getId());
         }
     }
 
@@ -117,7 +117,7 @@ public class ContainerGroupTableItems<E extends Entity<K>, K>
         groupValues.put(property, itemValue);
 
         GroupInfo<MetaPropertyPath> groupInfo = new GroupInfo<>(groupValues);
-        itemGroups.put(item.getId(), groupInfo);
+        itemGroups.put(item.getEntityEntry().getId(), groupInfo);
 
         if (!parents.containsKey(groupInfo)) {
             parents.put(groupInfo, parent);
@@ -219,7 +219,7 @@ public class ContainerGroupTableItems<E extends Entity<K>, K>
     @Nullable
     @Override
     public GroupInfo getParentGroup(E item) {
-        K id = item.getId();
+        K id = item.getEntityEntry().getId();
         if (container.getItemOrNull(id) == null) {
             throw new IllegalArgumentException("Datasource doesn't contain passed entity");
         }
@@ -227,12 +227,12 @@ public class ContainerGroupTableItems<E extends Entity<K>, K>
         if (itemGroups == null) {
             return null;
         }
-        return itemGroups.get(item.getId());
+        return itemGroups.get(item.getEntityEntry().getId());
     }
 
     @Override
     public List<GroupInfo> getGroupPath(E item) {
-        K id = item.getId();
+        K id = item.getEntityEntry().getId();
         if (container.getItemOrNull(id) == null) {
             throw new IllegalArgumentException("Datasource doesn't contain passed entity");
         }
@@ -241,7 +241,7 @@ public class ContainerGroupTableItems<E extends Entity<K>, K>
             return Collections.emptyList();
         }
 
-        GroupInfo groupInfo = itemGroups.get(item.getId());
+        GroupInfo groupInfo = itemGroups.get(item.getEntityEntry().getId());
         if (groupInfo == null) {
             return Collections.emptyList();
         }

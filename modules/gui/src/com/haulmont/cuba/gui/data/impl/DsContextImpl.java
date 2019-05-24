@@ -337,7 +337,7 @@ public class DsContextImpl implements DsContextImplementation {
                     if (masterDs instanceof CollectionDatasource) {
                         Entity value = entity.getValue(inverseProp.getName());
                         if (value != null) {
-                            Object id = value.getId();
+                            Object id = value.getEntityEntry().getId();
                             //noinspection unchecked
                             masterItem = ((CollectionDatasource) masterDs).getItem(id);
                         }

@@ -45,11 +45,11 @@ public class ReferenceToEntitySupport {
         if (entity instanceof HasUuid) {
             return ((HasUuid) entity).getUuid();
         }
-        Object entityId = entity.getId();
+        Object entityId = entity.getEntityEntry().getId();
         if (entityId instanceof IdProxy) {
             return ((IdProxy) entityId).get();
         }
-        return entity.getId();
+        return entity.getEntityEntry().getId();
     }
 
     /**
@@ -57,7 +57,7 @@ public class ReferenceToEntitySupport {
      * @return entity id for links
      */
     public Object getReferenceIdForLink(Entity entity) {
-        Object entityId = entity.getId();
+        Object entityId = entity.getEntityEntry().getId();
         if (entityId instanceof IdProxy) {
             entityId = ((IdProxy) entityId).get();
         }

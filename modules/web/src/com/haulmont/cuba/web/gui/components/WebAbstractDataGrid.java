@@ -407,7 +407,7 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
             Column<E> column = getColumnById(e.getColumn().getId());
 
             ItemClickEvent<E> event = new ItemClickEvent<>(WebAbstractDataGrid.this,
-                    mouseEventDetails, item, item.getId(), column != null ? column.getId() : null);
+                    mouseEventDetails, item, item.getEntityEntry().getId(), column != null ? column.getId() : null);
             publish(ItemClickEvent.class, event);
         }
     }
@@ -1003,7 +1003,7 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
         Set<E> newSelection = new HashSet<>();
         for (E item : selectedItems) {
             if (event.getSource().containsItem(item)) {
-                newSelection.add(event.getSource().getItem(item.getId()));
+                newSelection.add(event.getSource().getItem(item.getEntityEntry().getId()));
             }
         }
 
@@ -1181,7 +1181,7 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
     @Override
     public Object getEditedItemId() {
         E item = getEditedItem();
-        return item != null ? item.getId() : null;
+        return item != null ? item.getEntityEntry().getId() : null;
     }
 
     @Override

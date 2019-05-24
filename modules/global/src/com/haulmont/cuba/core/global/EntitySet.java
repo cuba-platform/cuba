@@ -76,7 +76,7 @@ public class EntitySet extends ForwardingSet<Entity> implements Serializable {
         Preconditions.checkNotNullArgument(entityClass, "entityClass is null");
         Preconditions.checkNotNullArgument(entityId, "entityId is null");
         return (Optional<T>) entities.stream()
-                .filter(entity -> entityClass.equals(entity.getClass()) && entity.getId().equals(entityId))
+                .filter(entity -> entityClass.equals(entity.getClass()) && entity.getEntityEntry().getId().equals(entityId))
                 .findFirst();
     }
 
@@ -88,7 +88,7 @@ public class EntitySet extends ForwardingSet<Entity> implements Serializable {
     @SuppressWarnings("unchecked")
     public <T extends Entity> Optional<T> optional(T prototype) {
         Preconditions.checkNotNullArgument(prototype, "prototype entity is null");
-        return (Optional<T>) optional(prototype.getClass(), prototype.getId());
+        return (Optional<T>) optional(prototype.getClass(), prototype.getEntityEntry().getId());
     }
 
     /**
@@ -111,7 +111,7 @@ public class EntitySet extends ForwardingSet<Entity> implements Serializable {
     @SuppressWarnings("unchecked")
     public <T extends Entity> T get(T prototype) {
         Preconditions.checkNotNullArgument(prototype, "prototype entity is null");
-        return (T) get(prototype.getClass(), prototype.getId());
+        return (T) get(prototype.getClass(), prototype.getEntityEntry().getId());
     }
 
     @Override

@@ -86,7 +86,7 @@ public class EntityParamsDatasource extends CollectionDatasourceImpl<InfoParamEn
         if (instance != null) {
             SimpleDateFormat df = new SimpleDateFormat(TIMESTAMP_DATE_FORMAT);
 
-            includeParam("table.showInfoAction.id", instance.getId().toString());
+            includeParam("table.showInfoAction.id", instance.getEntityEntry().getId().toString());
             if (instance instanceof Versioned && ((Versioned) instance).getVersion() != null) {
                 Integer version = ((Versioned) instance).getVersion();
                 includeParam("table.showInfoAction.version", version.toString());
@@ -129,7 +129,7 @@ public class EntityParamsDatasource extends CollectionDatasourceImpl<InfoParamEn
 
         LoadContext loadContext = new LoadContext(instance.getMetaClass());
         loadContext.setSoftDeletion(false);
-        loadContext.setId(instance.getId());
+        loadContext.setId(instance.getEntityEntry().getId());
         loadContext.setView(reloadView);
 
         DataSupplier supplier = getDataSupplier();

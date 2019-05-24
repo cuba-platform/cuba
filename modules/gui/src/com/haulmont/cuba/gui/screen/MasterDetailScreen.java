@@ -221,7 +221,7 @@ public abstract class MasterDetailScreen<T extends Entity> extends StandardLooku
                     editLoader.setLoadDynamicAttributes(true);
                 }
 
-                editLoader.setEntityId(e.getItem().getId());
+                editLoader.setEntityId(e.getItem().getEntityEntry().getId());
                 editLoader.load();
             } else {
                 if (!editing) {
@@ -372,7 +372,7 @@ public abstract class MasterDetailScreen<T extends Entity> extends StandardLooku
     protected boolean lockIfNeeded(Entity entity) {
         LockService lockService = getBeanLocator().get(LockService.class);
 
-        LockInfo lockInfo = lockService.lock(getLockName(), entity.getId().toString());
+        LockInfo lockInfo = lockService.lock(getLockName(), entity.getEntityEntry().getId().toString());
         if (lockInfo == null) {
             justLocked = true;
         } else if (!(lockInfo instanceof LockNotSupported)) {
@@ -399,7 +399,7 @@ public abstract class MasterDetailScreen<T extends Entity> extends StandardLooku
         if (justLocked) {
             Entity entity = getEditContainer().getItemOrNull();
             if (entity != null) {
-                getBeanLocator().get(LockService.class).unlock(getLockName(), entity.getId().toString());
+                getBeanLocator().get(LockService.class).unlock(getLockName(), entity.getEntityEntry().getId().toString());
             }
         }
     }

@@ -142,7 +142,7 @@ public class DsContextApplyChangesTest extends CubaClientTestCase {
 
         masterDs.setItem(master);
 
-        assertEquals(embeddable1.getId(), embeddableDs.getItem().getId());
+        assertEquals(embeddable1.getEntityEntry().getId(), embeddableDs.getItem().getEntityEntry().getId());
 
         embeddableDs.getItem().setName("embeddable1_1");
 
@@ -151,7 +151,7 @@ public class DsContextApplyChangesTest extends CubaClientTestCase {
             public void validate(CommitContext context) {
                 assertTrue(containsEntityInstance(context.getCommitInstances(), detail1.getId()));
                 for (Entity entity : context.getCommitInstances()) {
-                    if (entity.getId().equals(detail1.getId()))
+                    if (entity.getEntityEntry().getId().equals(detail1.getId()))
                         assertEquals("embeddable1_1", ((TestDetailEntity) entity).getEmbeddable().getName());
                 }
             }
@@ -167,7 +167,7 @@ public class DsContextApplyChangesTest extends CubaClientTestCase {
             public void validate(CommitContext context) {
                 assertTrue(containsEntityInstance(context.getCommitInstances(), detail1.getId()));
                 for (Entity entity : context.getCommitInstances()) {
-                    if (entity.getId().equals(detail1.getId())) {
+                    if (entity.getEntityEntry().getId().equals(detail1.getId())) {
                         assertEquals("detail1_1", ((TestDetailEntity) entity).getDetailName());
                         assertEquals("embeddable1_1", ((TestDetailEntity) entity).getEmbeddable().getName());
                     }
@@ -181,7 +181,7 @@ public class DsContextApplyChangesTest extends CubaClientTestCase {
 
     private boolean containsEntityInstance(Collection<Entity> collection, Object entityId) {
         for (Entity entity : collection) {
-            if (entity.getId().equals(entityId))
+            if (entity.getEntityEntry().getId().equals(entityId))
                 return true;
         }
         return false;

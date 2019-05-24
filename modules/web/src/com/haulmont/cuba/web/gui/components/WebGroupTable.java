@@ -443,7 +443,7 @@ public class WebGroupTable<E extends Entity> extends WebAbstractTable<CubaGroupT
     @Override
     public void expandPath(Entity item) {
         if (component.hasGroups()) {
-            expandGroupsFor((Collection<GroupInfo>) component.rootGroups(), item.getId());
+            expandGroupsFor((Collection<GroupInfo>) component.rootGroups(), item.getEntityEntry().getId());
         }
     }
 

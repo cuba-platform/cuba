@@ -177,7 +177,7 @@ public class TestContainer extends ExternalResource {
             if (table == null || primaryKey == null)
                 throw new RuntimeException("Unable to determine table or primary key name for " + entity);
 
-            deleteRecord(table, primaryKey, entity.getId());
+            deleteRecord(table, primaryKey, entity.getEntityEntry().getId());
         }
     }
 

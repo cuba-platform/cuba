@@ -54,15 +54,30 @@ public abstract class BaseGenericIdEntity<T> extends AbstractInstance implements
     private static final long serialVersionUID = -8400641366148656528L;
 
     @Transient
-    protected byte __state = BaseEntityInternalAccess.NEW;
-
-    @Transient
-    protected SecurityState __securityState;
+    protected BaseGenericIdEntityEntry<T> entityEntry;
 
     @Transient
     protected Map<String, CategoryAttributeValue> dynamicAttributes = null;
 
+    protected static class BaseGenericIdEntityEntry<K> extends PersistentEntityEntry<K> {
+        public BaseGenericIdEntityEntry(BaseGenericIdEntity<K> entity) {
+            super(entity);
+        }
+
+        @Override
+        public void setId(K id) {
+            ((BaseGenericIdEntity<K>) entity).setId(id);
+        }
+
+        @Override
+        public K getId() {
+            return ((BaseGenericIdEntity<K>) entity).getId();
+        }
+    }
+
     public abstract void setId(T id);
+
+    public abstract T getId();
 
     private void writeObject(java.io.ObjectOutputStream out) throws IOException {
         if (isManaged(this)) {
@@ -78,8 +93,8 @@ public abstract class BaseGenericIdEntity<T> extends AbstractInstance implements
      */
     @SuppressWarnings("unchecked")
     protected void copySystemState(BaseGenericIdEntity src) {
-        __state = src.__state;
-        __securityState = src.__securityState;
+        ((PersistentEntityEntry) getEntityEntry()).setPersistenceState(((PersistentEntityEntry) src.getEntityEntry()).getPersistenceState());
+        ((PersistentEntityEntry) getEntityEntry()).setSecurityState(((PersistentEntityEntry) src.getEntityEntry()).getSecurityState());
         dynamicAttributes = src.dynamicAttributes;
     }
 
@@ -154,6 +169,14 @@ public abstract class BaseGenericIdEntity<T> extends AbstractInstance implements
     @Nullable
     public Map<String, CategoryAttributeValue> getDynamicAttributes() {
         return dynamicAttributes;
+    }
+
+    @Override
+    public EntityEntry<T> getEntityEntry() {
+        if (entityEntry == null) {
+            entityEntry = new BaseGenericIdEntityEntry<>(this);
+        }
+        return entityEntry;
     }
 
     @Override

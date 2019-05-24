@@ -55,7 +55,7 @@ public class DesktopWidgetsTree<E extends Entity>
                                                              boolean expanded, boolean leaf, int row) {
             Component component = widgetBuilder.build(
                     datasource,
-                    ((TreeModelAdapter.Node) value).getEntity().getId(),
+                    ((TreeModelAdapter.Node) value).getEntity().getEntityEntry().getId(),
                     leaf
             );
             return DesktopComponentsHelper.getComposition(component);
@@ -109,7 +109,7 @@ public class DesktopWidgetsTree<E extends Entity>
         {
             Component component = widgetBuilder.build(
                     datasource,
-                    ((TreeModelAdapter.Node) value).getEntity().getId(),
+                    ((TreeModelAdapter.Node) value).getEntity().getEntityEntry().getId(),
                     leaf
             );
             return DesktopComponentsHelper.getComposition(component);

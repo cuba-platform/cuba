@@ -48,8 +48,8 @@ public class ContainerTreeTableItems<E extends Entity>
             for (Object id : ids) {
                 Entity item = getItemNN(id);
                 Entity parentItem = item.getValue(hierarchyProperty);
-                if (parentItem == null || (container.getItemOrNull(parentItem.getId()) == null))
-                    result.add(item.getId());
+                if (parentItem == null || (container.getItemOrNull(parentItem.getEntityEntry().getId()) == null))
+                    result.add(item.getEntityEntry().getId());
             }
             return result;
         } else {
@@ -65,7 +65,7 @@ public class ContainerTreeTableItems<E extends Entity>
                 return null;
             else {
                 Entity parentItem = item.getValue(hierarchyProperty);
-                return parentItem == null ? null : parentItem.getId();
+                return parentItem == null ? null : parentItem.getEntityEntry().getId();
             }
         }
         return null;
@@ -84,8 +84,8 @@ public class ContainerTreeTableItems<E extends Entity>
             for (Object id : ids) {
                 Entity item = getItemNN(id);
                 Entity parentItem = item.getValue(hierarchyProperty);
-                if (parentItem != null && parentItem.getId().equals(itemId))
-                    res.add(item.getId());
+                if (parentItem != null && parentItem.getEntityEntry().getId().equals(itemId))
+                    res.add(item.getEntityEntry().getId());
             }
 
             return res;
@@ -100,7 +100,7 @@ public class ContainerTreeTableItems<E extends Entity>
 
         if (hierarchyProperty != null) {
             Entity parentItem = item.getValue(hierarchyProperty);
-            return (parentItem == null || (container.getItemOrNull(parentItem.getId()) == null));
+            return (parentItem == null || (container.getItemOrNull(parentItem.getEntityEntry().getId()) == null));
         } else {
             return true;
         }
@@ -117,7 +117,7 @@ public class ContainerTreeTableItems<E extends Entity>
             for (Object id : ids) {
                 Entity item = getItemNN(id);
                 Entity parentItem = item.getValue(hierarchyProperty);
-                if (parentItem != null && parentItem.getId().equals(itemId))
+                if (parentItem != null && parentItem.getEntityEntry().getId().equals(itemId))
                     return true;
             }
         }

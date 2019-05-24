@@ -523,11 +523,11 @@ public class QueryImpl<T> implements TypedQuery<T> {
 
     protected Object handleImplicitConversions(Object value) {
         if (value instanceof Entity)
-            value = ((Entity) value).getId();
+            value = ((Entity) value).getEntityEntry().getId();
         else if (value instanceof Collection) {
             List<Object> list = new ArrayList<>(((Collection) value).size());
             for (Object obj : ((Collection) value)) {
-                list.add(obj instanceof Entity ? ((Entity) obj).getId() : obj);
+                list.add(obj instanceof Entity ? ((Entity) obj).getEntityEntry().getId() : obj);
             }
             value = list;
         } else if (value instanceof EnumClass) {
@@ -743,7 +743,7 @@ public class QueryImpl<T> implements TypedQuery<T> {
 
     protected Object convertToCollectionOfIds(Object value) {
         return ((Collection<?>) value).stream()
-                .map(it -> it instanceof Entity ? ((Entity) it).getId() : ((EnumClass) it).getId())
+                .map(it -> it instanceof Entity ? ((Entity) it).getEntityEntry().getId() : ((EnumClass) it).getId())
                 .collect(Collectors.toList());
     }
 

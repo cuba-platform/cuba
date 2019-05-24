@@ -332,8 +332,8 @@ public class DesktopTokenList extends DesktopAbstractField<JPanel> implements To
                             if (datasource != null) {
                                 for (Object obj : getDatasource().getItems()) {
                                     Entity entity = (Entity) obj;
-                                    if (getOptionsDatasource().containsItem(entity.getId())) {
-                                        datasource.updateItem(getOptionsDatasource().getItem(entity.getId()));
+                                    if (getOptionsDatasource().containsItem(entity.getEntityEntry().getId())) {
+                                        datasource.updateItem(getOptionsDatasource().getItem(entity.getEntityEntry().getId()));
                                     }
                                 }
                             }
@@ -350,7 +350,7 @@ public class DesktopTokenList extends DesktopAbstractField<JPanel> implements To
                             MetaProperty inverseProp = getInverseProperty(datasource);
 
                             for (Entity newItem : selected) {
-                                if (!datasource.containsItem(newItem.getId())) {
+                                if (!datasource.containsItem(newItem.getEntityEntry().getId())) {
                                     // Initialize reference to master entity
                                     if (inverseProp != null && isInitializeMasterReference(inverseProp)) {
                                         newItem.setValue(inverseProp.getName(), masterEntity);
@@ -919,7 +919,7 @@ public class DesktopTokenList extends DesktopAbstractField<JPanel> implements To
                 } else {
                     if (item instanceof Entity) {
                         Entity entity = (Entity) item;
-                        if (datasource != null && !datasource.containsItem(entity.getId())) {
+                        if (datasource != null && !datasource.containsItem(entity.getEntityEntry().getId())) {
                             // Initialize reference to master entity
                             if (initializeMasterReference) {
                                 entity.setValue(inverseProp.getName(), masterEntity);
@@ -1244,7 +1244,7 @@ public class DesktopTokenList extends DesktopAbstractField<JPanel> implements To
                 Entity masterEntity = getMasterEntity(datasource);
                 MetaProperty inverseProp = getInverseProperty(datasource);
 
-                if (!datasource.containsItem(newItem.getId())) {
+                if (!datasource.containsItem(newItem.getEntityEntry().getId())) {
                     // Initialize reference to master entity
                     if (inverseProp != null && isInitializeMasterReference(inverseProp)) {
                         newItem.setValue(inverseProp.getName(), masterEntity);
@@ -1259,8 +1259,8 @@ public class DesktopTokenList extends DesktopAbstractField<JPanel> implements To
         if (lookupPickerField.isRefreshOptionsOnLookupClose()) {
             for (Object obj : getDatasource().getItems()) {
                 Entity entity = (Entity) obj;
-                if (getOptionsDatasource().containsItem(entity.getId())) {
-                    datasource.updateItem(getOptionsDatasource().getItem(entity.getId()));
+                if (getOptionsDatasource().containsItem(entity.getEntityEntry().getId())) {
+                    datasource.updateItem(getOptionsDatasource().getItem(entity.getEntityEntry().getId()));
                 }
             }
         }

@@ -401,7 +401,7 @@ public class EntityDiffManager {
     protected Entity getRelatedItem(Collection collection, Entity entity) {
         for (Object item : collection) {
             Entity itemEntity = (Entity) item;
-            if (entity.getId().equals(itemEntity.getId()))
+            if (entity.getEntityEntry().getId().equals(itemEntity.getEntityEntry().getId()))
                 return itemEntity;
         }
         return null;

@@ -229,7 +229,7 @@ public class LookupBuilderProcessor {
 
         List<E> mergedItems = new ArrayList<>(selectedItems.size());
         for (E item : selectedItems) {
-            if (!collectionDc.containsItem(item.getId())) {
+            if (!collectionDc.containsItem(item.getEntityEntry().getId())) {
                 // track changes in the related instance
                 E mergedItem = dataContext.merge(item);
                 if (initializeMasterReference) {

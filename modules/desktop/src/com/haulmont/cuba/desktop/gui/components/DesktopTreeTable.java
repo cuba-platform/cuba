@@ -364,8 +364,8 @@ public class DesktopTreeTable<E extends Entity> extends DesktopAbstractTable<JXT
         }
         for (Entity item : items) {
             // noinspection unchecked
-            if (!datasource.containsItem(item.getId())) {
-                throw new IllegalStateException("Datasource does not contain specified item: " + item.getId());
+            if (!datasource.containsItem(item.getEntityEntry().getId())) {
+                throw new IllegalStateException("Datasource does not contain specified item: " + item.getEntityEntry().getId());
             }
         }
         impl.clearSelection();

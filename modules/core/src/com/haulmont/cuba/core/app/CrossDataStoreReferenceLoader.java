@@ -239,7 +239,7 @@ public class CrossDataStoreReferenceLoader {
             Object relatedPropertyValue = entity.getValue(crossDataStoreProperty.relatedPropertyName);
             loadedEntities.stream()
                     .filter(e -> {
-                        Object id = e.getId() instanceof IdProxy ? ((IdProxy) e.getId()).getNN() : e.getId();
+                        Object id = e.getEntityEntry().getId() instanceof IdProxy ? ((IdProxy) e.getEntityEntry().getId()).getNN() : e.getEntityEntry().getId();
                         return id.equals(relatedPropertyValue);
                     })
                     .findAny()

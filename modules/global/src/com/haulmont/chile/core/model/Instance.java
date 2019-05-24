@@ -60,6 +60,20 @@ public interface Instance extends Serializable {
     void setValue(String name, Object value);
 
     /**
+     * Set value to property in instance
+     *
+     * For internal use only. Use {@link #setValue(String, Object)}
+     *
+     * @param name        property name
+     * @param value       value
+     * @param checkEquals check equals for previous and new value.
+     *                    If flag is true and objects equals, then setter will not be invoked
+     */
+    default void setValue(String name, Object value, boolean checkEquals) {
+        setValue(name, value);
+    }
+
+    /**
      * Get an attribute value. Locates the attribute by the given path in object graph starting from this instance.
      * <br>
      * The path must consist of attribute names according to JavaBeans notation, separated by dots, e.g.

@@ -356,17 +356,17 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
             setSelectedIds(Collections.emptyList());
         } else if (items.size() == 1) {
             E item = items.iterator().next();
-            if (tableItems.getItem(item.getId()) == null) {
+            if (tableItems.getItem(item.getEntityEntry().getId()) == null) {
                 throw new IllegalArgumentException("Datasource doesn't contain item to select: " + item);
             }
-            setSelectedIds(Collections.singletonList(item.getId()));
+            setSelectedIds(Collections.singletonList(item.getEntityEntry().getId()));
         } else {
             Set<Object> itemIds = new LinkedHashSet<>();
             for (Entity item : items) {
-                if (tableItems.getItem(item.getId()) == null) {
+                if (tableItems.getItem(item.getEntityEntry().getId()) == null) {
                     throw new IllegalArgumentException("Datasource doesn't contain item to select: " + item);
                 }
-                itemIds.add(item.getId());
+                itemIds.add(item.getEntityEntry().getId());
             }
             setSelectedIds(itemIds);
         }
@@ -1558,7 +1558,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
             EntityTableItems entityTableSource = (EntityTableItems) tableItems;
 
             if (entityTableSource.getSelectedItem() != null) {
-                newSelection.add(entityTableSource.getSelectedItem().getId());
+                newSelection.add(entityTableSource.getSelectedItem().getEntityEntry().getId());
             }
         }
 
@@ -3106,17 +3106,17 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
         Preconditions.checkNotNullArgument(item);
         Preconditions.checkNotNullArgument(columnId);
 
-        component.requestFocus(item.getId(), getColumn(columnId).getId());
+        component.requestFocus(item.getEntityEntry().getId(), getColumn(columnId).getId());
     }
 
     @Override
     public void scrollTo(E item) {
         Preconditions.checkNotNullArgument(item);
-        if (!component.getItemIds().contains(item.getId())) {
+        if (!component.getItemIds().contains(item.getEntityEntry().getId())) {
             throw new IllegalArgumentException("Unable to find item in Table");
         }
 
-        component.setCurrentPageFirstItemId(item.getId());
+        component.setCurrentPageFirstItemId(item.getEntityEntry().getId());
     }
 
     protected void handleColumnCollapsed(com.vaadin.v7.ui.Table.ColumnCollapseEvent event) {

@@ -84,13 +84,13 @@ public class DataManagerClientImpl implements DataManager {
             metaClass = metadata.getSession().getClass(entity.getClass());
         }
         LoadContext<E> context = new LoadContext<>(metaClass);
-        context.setId(entity.getId());
+        context.setId(entity.getEntityEntry().getId());
         context.setView(view);
         context.setLoadDynamicAttributes(loadDynamicAttributes);
 
         E reloaded = load(context);
         if (reloaded == null)
-            throw new EntityAccessException(metaClass, entity.getId());
+            throw new EntityAccessException(metaClass, entity.getEntityEntry().getId());
 
         return reloaded;
     }

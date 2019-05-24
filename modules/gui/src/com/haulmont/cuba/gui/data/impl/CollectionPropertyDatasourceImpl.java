@@ -147,7 +147,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
         Collection<T> collection = getCollection();
         if (collection != null) {
             for (T t : collection) {
-                if (t.getId().equals(id)) {
+                if (t.getEntityEntry().getId().equals(id)) {
                     return t;
                 }
             }
@@ -180,7 +180,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
             else {
                 List<K> ids = new ArrayList<>(items.size());
                 for (T item : items) {
-                    ids.add(item.getId());
+                    ids.add(item.getEntityEntry().getId());
                 }
                 return ids;
             }
@@ -662,7 +662,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
         }
 
         for (T item : collection) {
-            if (item.getId().equals(itemId)) {
+            if (item.getEntityEntry().getId().equals(itemId)) {
                 return true;
             }
         }
@@ -907,7 +907,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
     public K getIdByIndex(int index) {
         Collection<T> collection = getCollection();
         if (CollectionUtils.isNotEmpty(collection)) {
-            return Iterables.get(collection, index).getId();
+            return Iterables.get(collection, index).getEntityEntry().getId();
         }
         return null;
     }
@@ -923,7 +923,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
         Collection<T> collection = getCollection();
         if (collection != null && !collection.isEmpty()) {
             T first = Iterables.getFirst(collection, null);
-            return first == null ? null : first.getId();
+            return first == null ? null : first.getEntityEntry().getId();
         }
         return null;
     }
@@ -932,7 +932,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
     public K lastItemId() {
         Collection<T> collection = getCollection();
         if (collection != null && !collection.isEmpty()) {
-            return Iterables.getLast(collection).getId();
+            return Iterables.getLast(collection).getEntityEntry().getId();
         }
         return null;
     }
@@ -944,7 +944,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
         if ((collection != null) && !collection.isEmpty() && !itemId.equals(lastItemId())) {
             List<T> list = new ArrayList<>(collection);
             T currentItem = getItem(itemId);
-            return list.get(list.indexOf(currentItem) + 1).getId();
+            return list.get(list.indexOf(currentItem) + 1).getEntityEntry().getId();
         }
         return null;
     }
@@ -956,7 +956,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
         if ((collection != null) && !collection.isEmpty() && !itemId.equals(firstItemId())) {
             List<T> list = new ArrayList<>(collection);
             T currentItem = getItem(itemId);
-            return list.get(list.indexOf(currentItem) - 1).getId();
+            return list.get(list.indexOf(currentItem) - 1).getEntityEntry().getId();
         }
         return null;
     }

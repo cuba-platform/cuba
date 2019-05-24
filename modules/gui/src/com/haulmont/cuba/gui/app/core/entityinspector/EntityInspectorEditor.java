@@ -151,7 +151,7 @@ public class EntityInspectorEditor extends AbstractWindow {
         dsContext.setFrameContext(getDsContext().getFrameContext());
         setDsContext(dsContext);
 
-        boolean createRequest = item == null || item.getId() == null;
+        boolean createRequest = item == null || item.getEntityEntry().getId() == null;
         if (createRequest) {
             item = metadata.create(meta);
             setParentField(item, parentProperty, parent);
@@ -160,7 +160,7 @@ public class EntityInspectorEditor extends AbstractWindow {
             }
         } else {
             //edit request
-            Object itemId = item.getId();
+            Object itemId = item.getEntityEntry().getId();
             if (!isNew) {
                 item = loadSingleItem(meta, itemId, view);
             }

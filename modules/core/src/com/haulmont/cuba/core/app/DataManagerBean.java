@@ -109,13 +109,13 @@ public class DataManagerBean implements DataManager {
             metaClass = metadata.getSession().getClass(entity.getClass());
         }
         LoadContext<E> context = new LoadContext<>(metaClass);
-        context.setId(entity.getId());
+        context.setId(entity.getEntityEntry().getId());
         context.setView(view);
         context.setLoadDynamicAttributes(loadDynamicAttributes);
 
         E reloaded = load(context);
         if (reloaded == null)
-            throw new EntityAccessException(metaClass, entity.getId());
+            throw new EntityAccessException(metaClass, entity.getEntityEntry().getId());
 
         return reloaded;
     }
@@ -335,11 +335,11 @@ public class DataManagerBean implements DataManager {
                         if (refEntity == null) {
                             entity.setValue(relatedPropertyName, null);
                         } else {
-                            Object refEntityId = refEntity.getId();
+                            Object refEntityId = refEntity.getEntityEntry().getId();
                             if (refEntityId instanceof IdProxy) {
                                 Object realId = ((IdProxy) refEntityId).get();
                                 if (realId == null) {
-                                    if (allEntities.stream().anyMatch(e -> e.getId().equals(refEntityId))) {
+                                    if (allEntities.stream().anyMatch(e -> e.getEntityEntry().getId().equals(refEntityId))) {
                                         repeatRequired = true;
                                     } else {
                                         log.warn("No entity with ID={} in the context, skip handling different data store", refEntityId);

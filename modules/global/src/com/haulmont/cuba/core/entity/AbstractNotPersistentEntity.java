@@ -69,7 +69,6 @@ public abstract class AbstractNotPersistentEntity
     }
 
     @MetaProperty
-    @Override
     public UUID getId() {
         return id;
     }

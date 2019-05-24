@@ -30,9 +30,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
-import javax.persistence.Basic;
-import javax.persistence.FetchType;
-import java.lang.reflect.AnnotatedElement;
 import java.util.*;
 
 /**
@@ -143,7 +140,7 @@ public class EntityFetcher {
                                 try (Transaction tx = persistence.getTransaction(storeName)) {
                                     EntityManager em = persistence.getEntityManager(storeName);
                                     //noinspection unchecked
-                                    Entity managed = em.find(e.getClass(), e.getId());
+                                    Entity managed = em.find(e.getClass(), e.getEntityEntry().getId());
                                     if (managed != null) { // the instance here can be null if it has been deleted
                                         entity.setValue(property.getName(), managed);
                                         fetch(managed, propertyView, visited, optimizeForDetached);

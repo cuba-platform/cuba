@@ -55,6 +55,6 @@ public class OriginalEntityLoadInfo extends EntityLoadInfo {
         MetaProperty primaryKeyProperty = metadata.getTools().getPrimaryKeyProperty(metaClass);
         boolean stringKey = primaryKeyProperty != null && primaryKeyProperty.getJavaType().equals(String.class);
 
-        return new OriginalEntityLoadInfo((UUID) entity.getId(), metaClass, stringKey);
+        return new OriginalEntityLoadInfo((UUID) entity.getEntityEntry().getId(), metaClass, stringKey);
     }
 }

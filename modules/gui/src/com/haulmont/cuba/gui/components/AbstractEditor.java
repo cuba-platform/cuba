@@ -179,7 +179,7 @@ public class AbstractEditor<T extends Entity> extends AbstractWindow implements 
         }
 
         Class<? extends Entity> entityClass = item.getClass();
-        Object entityId = item.getId();
+        Object entityId = item.getEntityEntry().getId();
 
         EntityStates entityStates = getBeanLocator().get(EntityStates.class);
 
@@ -187,7 +187,7 @@ public class AbstractEditor<T extends Entity> extends AbstractWindow implements 
             if (!PersistenceHelper.isNew(item)
                     && !parentDs.getItemsToCreate().contains(item) && !parentDs.getItemsToUpdate().contains(item)
                     && parentDs instanceof CollectionDatasource
-                    && ((CollectionDatasource) parentDs).containsItem(item.getId())
+                    && ((CollectionDatasource) parentDs).containsItem(item.getEntityEntry().getId())
                     && !entityStates.isLoadedWithView(item, ds.getView())) {
                 item = dataservice.reload(item, ds.getView(), ds.getMetaClass(), ds.getLoadDynamicAttributes());
                 if (parentDs instanceof CollectionPropertyDatasourceImpl) {
@@ -244,7 +244,7 @@ public class AbstractEditor<T extends Entity> extends AbstractWindow implements 
 
             LockService lockService = getBeanLocator().get(LockService.NAME);
 
-            LockInfo lockInfo = lockService.lock(getMetaClassForLocking(ds).getName(), item.getId().toString());
+            LockInfo lockInfo = lockService.lock(getMetaClassForLocking(ds).getName(), item.getEntityEntry().getId().toString());
             if (lockInfo == null) {
                 justLocked = true;
                 addAfterCloseListener(afterCloseEvent -> {
@@ -277,7 +277,7 @@ public class AbstractEditor<T extends Entity> extends AbstractWindow implements 
             Datasource ds = getDatasourceInternal();
             Entity entity = ds.getItem();
             if (entity != null) {
-                getBeanLocator().get(LockService.class).unlock(getMetaClassForLocking(ds).getName(), entity.getId().toString());
+                getBeanLocator().get(LockService.class).unlock(getMetaClassForLocking(ds).getName(), entity.getEntityEntry().getId().toString());
             }
         }
     }

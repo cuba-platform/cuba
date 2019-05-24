@@ -21,6 +21,7 @@ import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.impl.AbstractInstance;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.entity.EntityEntry;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Metadata;
@@ -36,13 +37,33 @@ public class AttributeTarget extends AbstractInstance
     @MetaProperty(mandatory = true)
     private AttributePermissionVariant permissionVariant = AttributePermissionVariant.NOTSET;
 
+    private EntityEntry<String> entityEntry;
+
+    protected static class AttributeTargetEntry implements EntityEntry<String> {
+        protected AttributeTarget entity;
+
+        public AttributeTargetEntry(AttributeTarget entity) {
+            this.entity = entity;
+        }
+
+        @Override
+        public String getId() {
+            return entity.id;
+        }
+    }
+
     public AttributeTarget(String id) {
         this.id = id;
+        this.entityEntry = new AttributeTargetEntry(this);
+    }
+
+    public String getId() {
+        return id;
     }
 
     @Override
-    public String getId() {
-        return id;
+    public EntityEntry<String> getEntityEntry() {
+        return entityEntry;
     }
 
     @Override

@@ -23,6 +23,8 @@ import javax.annotation.Nullable;
 import java.io.Serializable;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 /**
  * Class that is used as an entity ID when an actual identifier value is not available until the object is persisted
@@ -37,7 +39,7 @@ public class IdProxy<T extends Number> extends Number implements Serializable {
 
     private static final long serialVersionUID = 1591247506604691467L;
 
-    private BaseDbGeneratedIdEntity<T> entity;
+    private Entity entity;
 
     private UUID uuid;
 
@@ -47,9 +49,12 @@ public class IdProxy<T extends Number> extends Number implements Serializable {
 
     private IdProxy<T> copy;
 
-    IdProxy(BaseDbGeneratedIdEntity<T> entity) {
+    private Function<Entity, T> idExtractor;
+
+    IdProxy(Entity entity, Function<Entity, T> idExtractor) {
         Preconditions.checkNotNullArgument(entity, "entity is null");
         this.entity = entity;
+        this.idExtractor = idExtractor;
         if (entity instanceof HasUuid) {
             this.uuid = ((HasUuid) entity).getUuid();
             if (this.uuid == null)
@@ -113,12 +118,13 @@ public class IdProxy<T extends Number> extends Number implements Serializable {
                 || !shared
                 || !Objects.equals(value, copy.value)
                 || !Objects.equals(uuid, copy.uuid)
-                || (copy.value == null && entity != null && entity.getDbGeneratedId() != null)) {
+                || (copy.value == null && entity != null && idExtractor.apply(entity) != null)) {
             copy = new IdProxy<>();
+            copy.idExtractor = this.idExtractor;
             if (value != null)
                 copy.value = value;
-            else if (entity != null && entity.getDbGeneratedId() != null)
-                copy.value = entity.getDbGeneratedId();
+            else if (entity != null && idExtractor.apply(entity) != null)
+                copy.value = idExtractor.apply(entity);
             copy.uuid = uuid;
             copy.hashCode = hashCode;
         }
@@ -136,7 +142,7 @@ public class IdProxy<T extends Number> extends Number implements Serializable {
         if (entity == null)
             return null;
 
-        return entity.getDbGeneratedId();
+        return idExtractor.apply(entity);
     }
 
     /**
@@ -150,10 +156,10 @@ public class IdProxy<T extends Number> extends Number implements Serializable {
         if (entity == null)
             throw new IllegalStateException("Cannot get primary key value: entity is null");
 
-        if (entity.getDbGeneratedId() == null)
+        if (idExtractor.apply(entity) == null)
             throw new IllegalStateException("Cannot get primary key value: ID is null in entity " + entity);
 
-        return entity.getDbGeneratedId();
+        return idExtractor.apply(entity);
     }
 
     /**
@@ -173,7 +179,7 @@ public class IdProxy<T extends Number> extends Number implements Serializable {
     /**
      * INTERNAL
      */
-    void setEntity(BaseDbGeneratedIdEntity<T> entity) {
+    void setEntity(Entity entity) {
         this.entity = entity;
     }
 
@@ -215,16 +221,16 @@ public class IdProxy<T extends Number> extends Number implements Serializable {
             if (that.value != null)
                 return value.equals(that.value);
 
-            if (that.entity != null && that.entity.getDbGeneratedId() != null)
-                return value.equals(that.entity.getDbGeneratedId());
+            if (that.entity != null && that.idExtractor.apply(that.entity) != null)
+                return value.equals(that.idExtractor.apply(that.entity));
         }
 
-        if (entity != null && entity.getDbGeneratedId() != null) {
-            if (that.entity != null && that.entity.getDbGeneratedId() != null)
-                return entity.getDbGeneratedId().equals(that.entity.getDbGeneratedId());
+        if (entity != null && idExtractor.apply(entity) != null) {
+            if (that.entity != null && that.idExtractor.apply(that.entity) != null)
+                return idExtractor.apply(entity).equals(that.idExtractor.apply(that.entity));
 
             if (that.value != null)
-                return entity.getDbGeneratedId().equals(that.value);
+                return idExtractor.apply(entity).equals(that.value);
         }
 
         return Objects.equals(uuid, that.uuid);
@@ -240,8 +246,8 @@ public class IdProxy<T extends Number> extends Number implements Serializable {
         if (value != null)
             return value.toString();
 
-        if (entity != null && entity.getDbGeneratedId() != null)
-            return entity.getDbGeneratedId().toString();
+        if (entity != null && idExtractor.apply(entity) != null)
+            return idExtractor.apply(entity).toString();
         else
             return "?(" + uuid + ")";
     }

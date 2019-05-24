@@ -127,7 +127,7 @@ public class EntityImportExport implements EntityImportExportAPI {
 
     protected Collection<? extends Entity> reloadEntities(Collection<? extends Entity> entities, View view) {
         List<Object> ids = entities.stream()
-                .map(Entity::getId)
+                .map(entity -> entity.getEntityEntry().getId())
                 .collect(Collectors.toList());
 
         MetaClass metaClass = metadata.getClassNN(view.getEntityClass());
@@ -216,7 +216,7 @@ public class EntityImportExport implements EntityImportExportAPI {
                     .setSoftDeletion(false)
                     .setView(regularView)
                     .setLoadDynamicAttributes(true)
-                    .setId(srcEntity.getId())
+                    .setId(srcEntity.getEntityEntry().getId())
                     .setAuthorizationRequired(true);
             Entity dstEntity = dataManager.load(ctx);
 
@@ -283,7 +283,7 @@ public class EntityImportExport implements EntityImportExportAPI {
         boolean createOp = false;
         if (dstEntity == null) {
             dstEntity = metadata.create(metaClass);
-            dstEntity.setValue("id", srcEntity.getId());
+            dstEntity.setValue("id", srcEntity.getEntityEntry().getId());
             createOp = true;
         }
 
@@ -698,12 +698,12 @@ public class EntityImportExport implements EntityImportExportAPI {
             LoadContext<? extends Entity> ctx = LoadContext.create(entity.getClass())
                     .setSoftDeletion(false)
                     .setView(new View(entity.getMetaClass().getJavaClass(), false))
-                    .setId(entity.getId());
+                    .setId(entity.getEntityEntry().getId());
             result = dataManager.load(ctx);
             if (result == null) {
                 if (viewProperty.getReferenceImportBehaviour() == ReferenceImportBehaviour.ERROR_ON_MISSING) {
                     throw new EntityImportException(String.format("Referenced entity for property '%s' with id = %s is missing",
-                            viewProperty.getName(), entity.getId()));
+                            viewProperty.getName(), entity.getEntityEntry().getId()));
                 }
             } else {
                 loadedEntities.add(result);

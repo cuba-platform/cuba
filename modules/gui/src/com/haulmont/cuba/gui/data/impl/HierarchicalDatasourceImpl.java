@@ -52,8 +52,8 @@ public class HierarchicalDatasourceImpl<T extends Entity<K>, K>
             for (K id : ids) {
                 Entity<K> item = getItemNN(id);
                 Entity<K> parentItem = item.getValue(hierarchyPropertyName);
-                if (parentItem != null && parentItem.getId().equals(itemId))
-                    res.add(item.getId());
+                if (parentItem != null && parentItem.getEntityEntry().getId().equals(itemId))
+                    res.add(item.getEntityEntry().getId());
             }
 
             return res;
@@ -69,7 +69,7 @@ public class HierarchicalDatasourceImpl<T extends Entity<K>, K>
                 return null;
             else {
                 Entity<K> parentItem = item.getValue(hierarchyPropertyName);
-                return parentItem == null ? null : parentItem.getId();
+                return parentItem == null ? null : parentItem.getEntityEntry().getId();
             }
         }
         return null;
@@ -84,8 +84,8 @@ public class HierarchicalDatasourceImpl<T extends Entity<K>, K>
             for (K id : ids) {
                 Entity<K> item = getItemNN(id);
                 Entity<K> parentItem = item.getValue(hierarchyPropertyName);
-                if (parentItem == null || !containsItem(parentItem.getId()))
-                    result.add(item.getId());
+                if (parentItem == null || !containsItem(parentItem.getEntityEntry().getId()))
+                    result.add(item.getEntityEntry().getId());
             }
             return result;
         } else {
@@ -100,7 +100,7 @@ public class HierarchicalDatasourceImpl<T extends Entity<K>, K>
 
         if (hierarchyPropertyName != null) {
             Entity<K> parentItem = item.getValue(hierarchyPropertyName);
-            return (parentItem == null || !containsItem(parentItem.getId()));
+            return (parentItem == null || !containsItem(parentItem.getEntityEntry().getId()));
         } else {
             return true;
         }
@@ -117,7 +117,7 @@ public class HierarchicalDatasourceImpl<T extends Entity<K>, K>
             for (K id : ids) {
                 Entity item = getItemNN(id);
                 Entity parentItem = item.getValue(hierarchyPropertyName);
-                if (parentItem != null && parentItem.getId().equals(itemId))
+                if (parentItem != null && parentItem.getEntityEntry().getId().equals(itemId))
                     return true;
             }
         }

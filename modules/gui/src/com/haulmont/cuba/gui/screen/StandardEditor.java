@@ -191,7 +191,7 @@ public abstract class StandardEditor<T extends Entity> extends Screen implements
             container.setItem(mergedEntity);
         } else {
             InstanceLoader loader = getEditedEntityLoader();
-            loader.setEntityId(entityToEdit.getId());
+            loader.setEntityId(entityToEdit.getEntityEntry().getId());
         }
     }
 
@@ -205,7 +205,7 @@ public abstract class StandardEditor<T extends Entity> extends Screen implements
 
             LockService lockService = getBeanLocator().get(LockService.class);
 
-            LockInfo lockInfo = lockService.lock(getLockName(), entityToEdit.getId().toString());
+            LockInfo lockInfo = lockService.lock(getLockName(), entityToEdit.getEntityEntry().getId().toString());
             if (lockInfo == null) {
                 this.justLocked = true;
 
@@ -244,7 +244,7 @@ public abstract class StandardEditor<T extends Entity> extends Screen implements
         if (isLocked()) {
             Entity entity = getEditedEntityContainer().getItemOrNull();
             if (entity != null) {
-                getBeanLocator().get(LockService.class).unlock(getLockName(), entity.getId().toString());
+                getBeanLocator().get(LockService.class).unlock(getLockName(), entity.getEntityEntry().getId().toString());
             }
         }
     }

@@ -207,15 +207,15 @@ public class DeletePolicyProcessor {
                     String updateMasterSql = "update " + metadataTools.getDatabaseTable(metaClass)
                             + " set " + column + " = null where "
                             + metadataTools.getPrimaryKeyName(metaClass) + " = ?";
-                    log.debug("Hard delete un-fetched reference: {}, bind: [{}]", updateMasterSql, entity.getId());
-                    queryRunner.update(entityManager.getConnection(), updateMasterSql, persistence.getDbTypeConverter().getSqlObject(entity.getId()));
+                    log.debug("Hard delete un-fetched reference: {}, bind: [{}]", updateMasterSql, entity.getEntityEntry().getId());
+                    queryRunner.update(entityManager.getConnection(), updateMasterSql, persistence.getDbTypeConverter().getSqlObject(entity.getEntityEntry().getId()));
                 }
 
                 MetaClass refMetaClass = property.getRange().asClass();
                 String deleteRefSql = "delete from " + metadataTools.getDatabaseTable(refMetaClass) + " where "
                         + metadataTools.getPrimaryKeyName(refMetaClass) + " = ?";
-                log.debug("Hard delete un-fetched reference: {}, bind: [{}]", deleteRefSql, reference.getId());
-                queryRunner.update(entityManager.getConnection(), deleteRefSql, persistence.getDbTypeConverter().getSqlObject(reference.getId()));
+                log.debug("Hard delete un-fetched reference: {}, bind: [{}]", deleteRefSql, reference.getEntityEntry().getId());
+                queryRunner.update(entityManager.getConnection(), deleteRefSql, persistence.getDbTypeConverter().getSqlObject(reference.getEntityEntry().getId()));
             } catch (SQLException e) {
                 throw new RuntimeException("Error processing deletion of " + entity, e);
             }
@@ -252,9 +252,9 @@ public class DeletePolicyProcessor {
                     metadataTools.getDatabaseColumn(property),
                     metadataTools.getPrimaryKeyName(entityMetaClass));
             try {
-                log.debug("Set reference to null: {}, bind: [{}]", sql, entity.getId());
+                log.debug("Set reference to null: {}, bind: [{}]", sql, entity.getEntityEntry().getId());
                 QueryRunner queryRunner = new QueryRunner();
-                queryRunner.update(entityManager.getConnection(), sql, persistence.getDbTypeConverter().getSqlObject(entity.getId()));
+                queryRunner.update(entityManager.getConnection(), sql, persistence.getDbTypeConverter().getSqlObject(entity.getEntityEntry().getId()));
             } catch (SQLException e) {
                 throw new RuntimeException("Error processing deletion of " + entity, e);
             }
@@ -267,7 +267,7 @@ public class DeletePolicyProcessor {
         else {
             Query query = entityManager.createQuery(
                     "select e." + property.getName() + " from " + entity.getMetaClass().getName() + " e where e." + primaryKeyName + " = ?1");
-            query.setParameter(1, entity.getId());
+            query.setParameter(1, entity.getEntityEntry().getId());
             Object refEntity = query.getFirstResult();
             return (Entity) refEntity;
         }
@@ -298,7 +298,7 @@ public class DeletePolicyProcessor {
                 " e where e." + invPropName + "." + primaryKeyName + " = ?1";
 
         Query query = entityManager.createQuery(qlStr);
-        query.setParameter(1, entity.getId());
+        query.setParameter(1, entity.getEntityEntry().getId());
         query.setMaxResults(1);
         List<Entity> list = query.getResultList();
 
@@ -318,7 +318,7 @@ public class DeletePolicyProcessor {
                 primaryKeyName + " = ?1";
 
         Query query = entityManager.createQuery(qlStr);
-        query.setParameter(1, entity.getId());
+        query.setParameter(1, entity.getEntityEntry().getId());
         List<Entity> list = query.getResultList();
 
         // If the property is not loaded, it means it was not modified and further check is not needed
@@ -342,7 +342,7 @@ public class DeletePolicyProcessor {
                 "select count(e) from %s e where e.%s." + primaryKeyName + " = ?1";
         String qstr = String.format(template, entityName, property.getName());
         Query query = entityManager.createQuery(qstr);
-        query.setParameter(1, entity.getId());
+        query.setParameter(1, entity.getEntityEntry().getId());
         query.setMaxResults(1);
         Long count = (Long) query.getSingleResult();
         return count > 0;
@@ -358,7 +358,7 @@ public class DeletePolicyProcessor {
                 "select e from %s e where e.%s." + primaryKeyName + " = ?1";
         String qstr = String.format(template, entityName, property.getName());
         Query query = entityManager.createQuery(qstr);
-        query.setParameter(1, entity.getId());
+        query.setParameter(1, entity.getEntityEntry().getId());
         List<Entity> list = query.getResultList();
         for (Entity e : list) {
             entityManager.remove(e);
@@ -372,7 +372,7 @@ public class DeletePolicyProcessor {
                     "select e from %s e where e.%s." + primaryKeyName + " = ?1";
             String qstr = String.format(template, entityName, property.getName());
             Query query = entityManager.createQuery(qstr);
-            query.setParameter(1, entity.getId());
+            query.setParameter(1, entity.getEntityEntry().getId());
             List<Entity> list = query.getResultList();
             for (Entity e : list) {
                 if (property.getRange().getCardinality().isMany()) {

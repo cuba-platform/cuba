@@ -20,7 +20,6 @@ import com.haulmont.bali.events.Subscription;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.TokenList;
-import com.haulmont.cuba.gui.components.data.BindingState;
 import com.haulmont.cuba.gui.components.data.ValueSource;
 import com.haulmont.cuba.web.widgets.CubaScrollBoxLayout;
 import com.haulmont.cuba.web.widgets.CubaTokenListLabel;
@@ -286,7 +285,7 @@ public class CubaTokenList<T extends Entity> extends CustomField<Collection<T>> 
             label.setText(owner.getInstanceCaption(entity));
             label.setWidthUndefined();
 
-            setTokenStyle(label, entity.getId());
+            setTokenStyle(label, entity.getEntityEntry().getId());
 
             tokenContainer.addComponent(label);
 

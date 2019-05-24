@@ -223,12 +223,12 @@ public class SecurityImpl implements Security {
                 Object o = evaluateConstraintScript(entity, groovyScript);
                 if (Boolean.FALSE.equals(o)) {
                     log.trace("Entity does not match security constraint. Entity class [{}]. Entity [{}]. Constraint [{}].",
-                            metaClassName, entity.getId(), constraint.getCheckType());
+                            metaClassName, entity.getEntityEntry().getId(), constraint.getCheckType());
                     return false;
                 }
             } catch (Exception e) {
                 log.error("An error occurred while applying constraint's Groovy script. The entity has been filtered out." +
-                        "Entity class [{}]. Entity [{}].", metaClassName, entity.getId(), e);
+                        "Entity class [{}]. Entity [{}].", metaClassName, entity.getEntityEntry().getId(), e);
                 return false;
             }
         }

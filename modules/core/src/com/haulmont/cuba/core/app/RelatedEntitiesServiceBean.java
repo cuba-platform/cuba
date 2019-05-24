@@ -88,10 +88,10 @@ public class RelatedEntitiesServiceBean implements RelatedEntitiesService {
                 Entity e = (Entity) obj;
                 Object value = e.getValue(relationProperty);
                 if (value instanceof Entity) {
-                    relatedIds.add(((Entity) value).getId());
+                    relatedIds.add(((Entity) value).getEntityEntry().getId());
                 } else if (value instanceof Collection) {
                     for (Object collectionItem : (Collection)value) {
-                        relatedIds.add(((Entity) collectionItem).getId());
+                        relatedIds.add(((Entity) collectionItem).getEntityEntry().getId());
                     }
                 }
             }

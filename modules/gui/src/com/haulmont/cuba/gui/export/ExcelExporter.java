@@ -210,7 +210,7 @@ public class ExcelExporter {
                     break;
                 }
 
-                createRow(table, columns, 0, ++r, item.getId());
+                createRow(table, columns, 0, ++r, item.getEntityEntry().getId());
             }
         } else {
             if (table.isAggregatable() && exportAggregation
@@ -366,7 +366,7 @@ public class ExcelExporter {
                     break;
                 }
 
-                createDataGridRow(dataGrid, columns, 0, ++r, item.getId());
+                createDataGridRow(dataGrid, columns, 0, ++r, item.getEntityEntry().getId());
             }
         } else {
             if (dataGrid instanceof TreeDataGrid) {
@@ -381,7 +381,7 @@ public class ExcelExporter {
                     r = createDataGridHierarchicalRow(treeDataGrid, treeDataGridItems, columns, 0, r, item);
                 }
             } else {
-                for (Object itemId : dataGridSource.getItems().map(Entity::getId).collect(Collectors.toList())) {
+                for (Object itemId : dataGridSource.getItems().map(entity -> entity.getEntityEntry().getId()).collect(Collectors.toList())) {
                     if (checkIsRowNumberExceed(r)) {
                         break;
                     }
@@ -624,7 +624,7 @@ public class ExcelExporter {
                                                 List<DataGrid.Column> columns, int startColumn,
                                                 int rowNumber, Entity item) {
         if (!checkIsRowNumberExceed(rowNumber)) {
-            createDataGridRow(dataGrid, columns, startColumn, ++rowNumber, item.getId());
+            createDataGridRow(dataGrid, columns, startColumn, ++rowNumber, item.getEntityEntry().getId());
 
             Collection<Entity> children = treeDataGridItems.getChildren(item).collect(Collectors.toList());
             for (Entity child: children) {

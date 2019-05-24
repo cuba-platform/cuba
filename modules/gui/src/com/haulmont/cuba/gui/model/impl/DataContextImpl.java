@@ -131,14 +131,14 @@ public class DataContextImpl implements DataContext {
     @Override
     public <T extends Entity> T find(T entity) {
         checkNotNullArgument(entity, "entity is null");
-        return (T) find(entity.getClass(), entity.getId());
+        return (T) find(entity.getClass(), entity.getEntityEntry().getId());
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public boolean contains(Entity entity) {
         checkNotNullArgument(entity, "entity is null");
-        return find(entity.getClass(), entity.getId()) != null;
+        return find(entity.getClass(), entity.getEntityEntry().getId()) != null;
     }
 
     @SuppressWarnings("unchecked")
@@ -178,7 +178,7 @@ public class DataContextImpl implements DataContext {
 
     protected Entity internalMerge(Entity entity, Set<Entity> mergedSet) {
         Map<Object, Entity> entityMap = content.computeIfAbsent(entity.getClass(), aClass -> new HashMap<>());
-        Entity managed = entityMap.get(entity.getId());
+        Entity managed = entityMap.get(entity.getEntityEntry().getId());
 
         if (mergedSet.contains(entity)) {
             if (managed != null) {
@@ -192,7 +192,7 @@ public class DataContextImpl implements DataContext {
 
         if (managed == null) {
             managed = copyEntity(entity);
-            entityMap.put(managed.getId(), managed);
+            entityMap.put(managed.getEntityEntry().getId(), managed);
 
             mergeState(entity, managed, mergedSet);
 
@@ -204,7 +204,7 @@ public class DataContextImpl implements DataContext {
             }
             return managed;
         } else {
-            if (managed.getId() == null) {
+            if (managed.getEntityEntry().getId() == null) {
                 throw new IllegalStateException("DataContext already contains an instance with null id: " + managed);
             }
 
@@ -308,16 +308,16 @@ public class DataContextImpl implements DataContext {
                     Entity srcRef = (Entity) value;
                     if (!mergedSet.contains(srcRef)) {
                         Entity managedRef = internalMerge(srcRef, mergedSet);
-                        ((AbstractInstance) dstEntity).setValue(propertyName, managedRef, false);
+                        dstEntity.setValue(propertyName, managedRef, false);
                         if (getMetadataTools().isEmbedded(property)) {
                             EmbeddedPropertyChangeListener listener = new EmbeddedPropertyChangeListener(dstEntity);
                             managedRef.addPropertyChangeListener(listener);
                             embeddedPropertyListeners.computeIfAbsent(dstEntity, e -> new HashMap<>()).put(propertyName, listener);
                         }
                     } else {
-                        Entity managedRef = find(srcRef.getClass(), srcRef.getId());
+                        Entity managedRef = find(srcRef.getClass(), srcRef.getEntityEntry().getId());
                         if (managedRef != null) {
-                            ((AbstractInstance) dstEntity).setValue(propertyName, managedRef, false);
+                            dstEntity.setValue(propertyName, managedRef, false);
                         } else {
                             // should never happen
                             log.debug("Instance was merged but managed instance is null: {}", srcRef);
@@ -330,10 +330,9 @@ public class DataContextImpl implements DataContext {
 
     @SuppressWarnings("unchecked")
     protected void copySystemState(Entity srcEntity, Entity dstEntity) {
-        if (dstEntity instanceof BaseGenericIdEntity) {
-            ((BaseGenericIdEntity) dstEntity).setId(srcEntity.getId());
-
-            BaseEntityInternalAccess.copySystemState((BaseGenericIdEntity) srcEntity, (BaseGenericIdEntity) dstEntity);
+        if (dstEntity.getEntityEntry() instanceof PersistentEntityEntry) {
+            ((PersistentEntityEntry) dstEntity.getEntityEntry()).setId(srcEntity.getEntityEntry().getId());
+            BaseEntityInternalAccess.copySystemState(srcEntity, dstEntity);
 
             if (srcEntity instanceof FetchGroupTracker && dstEntity instanceof FetchGroupTracker) {
                 FetchGroup srcFetchGroup = ((FetchGroupTracker) srcEntity)._persistence_getFetchGroup();
@@ -341,7 +340,7 @@ public class DataContextImpl implements DataContext {
             }
 
         } else if (dstEntity instanceof AbstractNotPersistentEntity) {
-            ((AbstractNotPersistentEntity) dstEntity).setId((UUID) srcEntity.getId());
+            ((AbstractNotPersistentEntity) dstEntity).setId((UUID) srcEntity.getEntityEntry().getId());
             BaseEntityInternalAccess.setNew((AbstractNotPersistentEntity) dstEntity, BaseEntityInternalAccess.isNew((AbstractNotPersistentEntity) srcEntity));
         }
 
@@ -351,8 +350,8 @@ public class DataContextImpl implements DataContext {
     }
 
     protected void mergeSystemState(Entity srcEntity, Entity dstEntity) {
-        if (dstEntity instanceof BaseGenericIdEntity) {
-            BaseEntityInternalAccess.copySystemState((BaseGenericIdEntity) srcEntity, (BaseGenericIdEntity) dstEntity);
+        if (dstEntity.getEntityEntry() instanceof PersistentEntityEntry) {
+            BaseEntityInternalAccess.copySystemState(srcEntity, dstEntity);
 
             if (srcEntity instanceof FetchGroupTracker && dstEntity instanceof FetchGroupTracker) {
                 FetchGroup srcFetchGroup = ((FetchGroupTracker) srcEntity)._persistence_getFetchGroup();
@@ -459,9 +458,9 @@ public class DataContextImpl implements DataContext {
 
         Map<Object, Entity> entityMap = content.get(entity.getClass());
         if (entityMap != null) {
-            Entity mergedEntity = entityMap.get(entity.getId());
+            Entity mergedEntity = entityMap.get(entity.getEntityEntry().getId());
             if (mergedEntity != null) {
-                entityMap.remove(entity.getId());
+                entityMap.remove(entity.getEntityEntry().getId());
                 removeFromCollections(mergedEntity);
             }
         }
@@ -497,9 +496,9 @@ public class DataContextImpl implements DataContext {
 
         Map<Object, Entity> entityMap = content.get(entity.getClass());
         if (entityMap != null) {
-            Entity mergedEntity = entityMap.get(entity.getId());
+            Entity mergedEntity = entityMap.get(entity.getEntityEntry().getId());
             if (mergedEntity != null) {
-                entityMap.remove(entity.getId());
+                entityMap.remove(entity.getEntityEntry().getId());
                 removeListeners(entity);
             }
             modifiedInstances.remove(entity);

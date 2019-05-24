@@ -20,7 +20,6 @@ package com.haulmont.cuba.gui.app.core.entitydiff;
 import com.haulmont.cuba.core.app.EntitySnapshotService;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.EntitySnapshot;
-import com.haulmont.cuba.core.entity.HasUuid;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.gui.data.impl.CustomCollectionDatasource;
 
@@ -48,7 +47,7 @@ public class EntitySnapshotsDatasource extends CustomCollectionDatasource<Entity
     protected Collection<EntitySnapshot> getEntities(Map<String, Object> params) {
         if (entity != null) {
             EntitySnapshotService snapshotService = AppBeans.get(EntitySnapshotService.NAME);
-            snapshots = snapshotService.getSnapshots(entity.getMetaClass(), entity.getId());
+            snapshots = snapshotService.getSnapshots(entity.getMetaClass(), entity.getEntityEntry().getId());
             return snapshots;
         }
         return Collections.emptyList();

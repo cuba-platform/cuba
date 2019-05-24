@@ -409,6 +409,7 @@ public class MetaModelLoader {
             map.put("inverseField", inverseField);
 
         property.setAnnotatedElement(field);
+        property.setReadOnly(!setterExists(field));
         property.setDeclaringClass(field.getDeclaringClass());
         property.setJavaType(field.getType());
 

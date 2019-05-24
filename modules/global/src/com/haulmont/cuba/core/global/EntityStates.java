@@ -55,16 +55,16 @@ public class EntityStates {
      * Determines whether the instance is <em>New</em>, i.e. just created and not stored in database yet.
      *
      * @param entity entity instance
-     * @return  - true if the instance is a new persistent entity, or if it is actually in Managed state
-     *            but newly-persisted in this transaction <br>
-     *          - true if the instance is a new non-persistent entity never returned from DataManager <br>
-     *          - false otherwise
+     * @return - true if the instance is a new persistent entity, or if it is actually in Managed state
+     * but newly-persisted in this transaction <br>
+     * - true if the instance is a new non-persistent entity never returned from DataManager <br>
+     * - false otherwise
      * @throws IllegalArgumentException if entity instance is null
      */
     public boolean isNew(Object entity) {
         checkNotNullArgument(entity, "entity is null");
-        if (entity instanceof BaseGenericIdEntity) {
-            return BaseEntityInternalAccess.isNew((BaseGenericIdEntity) entity);
+        if (entity instanceof Entity && ((Entity) entity).getEntityEntry() instanceof PersistentEntityEntry) {
+            return BaseEntityInternalAccess.isNew((Entity) entity);
         } else if (entity instanceof AbstractNotPersistentEntity) {
             return BaseEntityInternalAccess.isNew((AbstractNotPersistentEntity) entity);
         } else {
@@ -81,13 +81,13 @@ public class EntityStates {
      *
      * @param entity entity instance
      * @return - true if the instance is managed,<br>
-     *         - false if it is New (and not yet persisted) or Detached, or if it is not a persistent entity
+     * - false if it is New (and not yet persisted) or Detached, or if it is not a persistent entity
      * @throws IllegalArgumentException if entity instance is null
      */
     public boolean isManaged(Object entity) {
         checkNotNullArgument(entity, "entity is null");
-        if (entity instanceof BaseGenericIdEntity) {
-            return BaseEntityInternalAccess.isManaged((BaseGenericIdEntity) entity);
+        if (entity instanceof Entity && ((Entity) entity).getEntityEntry() instanceof PersistentEntityEntry) {
+            return BaseEntityInternalAccess.isManaged((Entity) entity);
         } else {
             if (log.isTraceEnabled()) {
                 log.trace("EntityStates.isManaged is called for unsupported type '{}'. Stacktrace:\n{}",
@@ -103,12 +103,14 @@ public class EntityStates {
      *
      * @param entity entity instance
      * @return - true if the instance is detached,<br>
-     *         - false if it is New or Managed, or if it is not a persistent entity
+     * - false if it is New or Managed, or if it is not a persistent entity
      * @throws IllegalArgumentException if entity instance is null
      */
     public boolean isDetached(Object entity) {
         checkNotNullArgument(entity, "entity is null");
-        if (entity instanceof BaseGenericIdEntity && BaseEntityInternalAccess.isDetached((BaseGenericIdEntity) entity)) {
+        if (entity instanceof BaseGenericIdEntity &&
+                ((Entity) entity).getEntityEntry() instanceof PersistentEntityEntry &&
+                BaseEntityInternalAccess.isDetached((Entity) entity)) {
             return true;
         } else {
             if (log.isTraceEnabled()) {
@@ -329,14 +331,16 @@ public class EntityStates {
      *
      * @param entity entity instance
      * @return - true if the instance was deleted
-     *         - false otherwise
+     * - false otherwise
      * @throws IllegalArgumentException if entity instance is null
      */
     public boolean isDeleted(Object entity) {
         checkNotNullArgument(entity, "entity is null");
         if (entity instanceof SoftDelete && ((SoftDelete) entity).isDeleted())
             return true;
-        if (entity instanceof BaseGenericIdEntity && BaseEntityInternalAccess.isRemoved((BaseGenericIdEntity) entity)) {
+        if (entity instanceof BaseGenericIdEntity &&
+                ((Entity) entity).getEntityEntry() instanceof PersistentEntityEntry &&
+                BaseEntityInternalAccess.isRemoved((Entity) entity)) {
             return true;
         }
         return false;
@@ -349,7 +353,7 @@ public class EntityStates {
      * <p>If the entity is {@code Versioned}, the version attribute should be equal to the latest version existing in
      * the database, or null for a new object.
      *
-     * @param entity    entity in the New state
+     * @param entity entity in the New state
      * @throws IllegalStateException if the entity is Managed
      * @see #isDetached(Object)
      * @see #makePatch(BaseGenericIdEntity)
@@ -372,7 +376,7 @@ public class EntityStates {
      * <p>If the entity is {@code Versioned}, the version attribute should be null or equal to the latest version existing in
      * the database.
      *
-     * @param entity    entity in the New or Detached state
+     * @param entity entity in the New or Detached state
      * @throws IllegalStateException if the entity is Managed
      * @see #isDetached(Object)
      * @see #makeDetached(BaseGenericIdEntity)

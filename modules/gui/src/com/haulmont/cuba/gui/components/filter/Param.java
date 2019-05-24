@@ -498,7 +498,7 @@ public class Param {
                 if (v instanceof UUID) {
                     return v.toString();
                 } else if (v instanceof Entity) {
-                    return ((Entity) v).getId().toString();
+                    return ((Entity) v).getEntityEntry().getId().toString();
                 }
 
             case ENUM:

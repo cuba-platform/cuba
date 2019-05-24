@@ -130,7 +130,7 @@ public abstract class GroupDelegate<T extends Entity<K>, K> {
         groupValues.put(property, itemValue);
 
         GroupInfo<MetaPropertyPath> groupInfo = new GroupInfo<>(groupValues);
-        itemGroups.put(item.getId(), groupInfo);
+        itemGroups.put(item.getEntityEntry().getId(), groupInfo);
 
         if (!parents.containsKey(groupInfo)) {
             parents.put(groupInfo, parent);
@@ -182,7 +182,7 @@ public abstract class GroupDelegate<T extends Entity<K>, K> {
 
                         items.clear();
                         for (T entity : entities) {
-                            items.add(entity.getId());
+                            items.add(entity.getEntityEntry().getId());
                         }
                     }
                 }
@@ -331,7 +331,7 @@ public abstract class GroupDelegate<T extends Entity<K>, K> {
     }
 
     public GroupInfo getParentGroup(T entity) {
-        K id = entity.getId();
+        K id = entity.getEntityEntry().getId();
         if (!datasource.containsItem(id)) {
             throw new IllegalArgumentException("Datasource doesn't contain passed entity");
         }
@@ -339,11 +339,11 @@ public abstract class GroupDelegate<T extends Entity<K>, K> {
         if (itemGroups == null) {
             return null;
         }
-        return itemGroups.get(entity.getId());
+        return itemGroups.get(entity.getEntityEntry().getId());
     }
 
     public List<GroupInfo> getGroupPath(T entity) {
-        K id = entity.getId();
+        K id = entity.getEntityEntry().getId();
         if (!datasource.containsItem(id)) {
             throw new IllegalArgumentException("Datasource doesn't contain passed entity");
         }
@@ -352,7 +352,7 @@ public abstract class GroupDelegate<T extends Entity<K>, K> {
             return Collections.emptyList();
         }
 
-        GroupInfo groupInfo = itemGroups.get(entity.getId());
+        GroupInfo groupInfo = itemGroups.get(entity.getEntityEntry().getId());
         if (groupInfo == null) {
             return Collections.emptyList();
         }

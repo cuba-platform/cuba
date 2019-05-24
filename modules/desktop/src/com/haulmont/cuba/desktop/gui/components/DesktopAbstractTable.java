@@ -80,7 +80,6 @@ import java.awt.Component;
 import java.awt.event.*;
 import java.util.*;
 import java.util.List;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import static com.google.common.base.Preconditions.checkArgument;
@@ -772,13 +771,13 @@ public abstract class DesktopAbstractTable<C extends JXTable, E extends Entity>
 
             Set<E> newSelection = new HashSet<>();
             for (E entity : selectedItems1) {
-                if (e.getDs().containsItem(entity.getId())) {
+                if (e.getDs().containsItem(entity.getEntityEntry().getId())) {
                     newSelection.add(entity);
                 }
             }
 
             if (e.getDs().getState() == Datasource.State.VALID && e.getDs().getItem() != null) {
-                if (e.getDs().containsItem(e.getDs().getItem().getId())) {
+                if (e.getDs().containsItem(e.getDs().getItem().getEntityEntry().getId())) {
                     newSelection.add((E) e.getDs().getItem());
                 }
             }
@@ -928,8 +927,8 @@ public abstract class DesktopAbstractTable<C extends JXTable, E extends Entity>
 
                 Set<E> newSelection = new HashSet<>(2 * selection.size());
                 for (Entity item : selection) {
-                    if (datasource.containsItem(item.getId())) {
-                        newSelection.add((E) datasource.getItem(item.getId()));
+                    if (datasource.containsItem(item.getEntityEntry().getId())) {
+                        newSelection.add((E) datasource.getItem(item.getEntityEntry().getId()));
                     }
                 }
                 return newSelection;
@@ -2055,8 +2054,8 @@ public abstract class DesktopAbstractTable<C extends JXTable, E extends Entity>
         }
         for (Entity item : items) {
             // noinspection unchecked
-            if (!datasource.containsItem(item.getId())) {
-                throw new IllegalStateException("Datasource does not contain specified item: " + item.getId());
+            if (!datasource.containsItem(item.getEntityEntry().getId())) {
+                throw new IllegalStateException("Datasource does not contain specified item: " + item.getEntityEntry().getId());
             }
         }
         impl.clearSelection();

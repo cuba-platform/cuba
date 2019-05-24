@@ -104,7 +104,6 @@ public class KeyValueEntity
         }
     }
 
-    @Override
     public Object getId() {
         if (idName == null)
             return uuid;

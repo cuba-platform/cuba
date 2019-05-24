@@ -94,7 +94,7 @@ public class DatasourceOptions<E extends Entity<K>, K> implements Options<E>, En
 
     @Override
     public boolean containsItem(E item) {
-        return datasource.containsItem(item.getId());
+        return datasource.containsItem(item.getEntityEntry().getId());
     }
 
     @Override

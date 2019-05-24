@@ -394,7 +394,7 @@ public class AddAction extends ListAction implements Action.HasOpenType, Action.
                 for (Object item : items) {
                     if (item instanceof Entity) {
                         Entity entity = (Entity) item;
-                        if (!ds.containsItem(entity.getId())) {
+                        if (!ds.containsItem(entity.getEntityEntry().getId())) {
                             // Initialize reference to master entity
                             if (initializeMasterReference) {
                                 entity.setValue(inverseProp.getName(), masterEntity);

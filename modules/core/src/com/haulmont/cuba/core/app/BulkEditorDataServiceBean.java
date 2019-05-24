@@ -92,7 +92,7 @@ public class BulkEditorDataServiceBean implements BulkEditorDataService {
                         metadataTools.getPrimaryKeyName(ld.getMetaClass())));
 
         List<Object> ids = ld.getSelectedItems().stream()
-                .map(Entity::getId)
+                .map(entity -> entity.getEntityEntry().getId())
                 .collect(Collectors.toList());
         query.setParameter("ids", ids);
 

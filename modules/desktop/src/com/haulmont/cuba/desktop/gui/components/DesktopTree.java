@@ -395,7 +395,7 @@ public class DesktopTree<E extends Entity> extends DesktopAbstractActionsHolderC
 
             Set<E> newSelection = new HashSet<>();
             for (E entity : selectedItems) {
-                if (e.getDs().containsItem(entity.getId())) {
+                if (e.getDs().containsItem(entity.getEntityEntry().getId())) {
                     newSelection.add(entity);
                 }
             }

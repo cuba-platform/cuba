@@ -118,7 +118,7 @@ public class ObservableList<T> extends ForwardingList<T> implements Serializable
     @Override
     public boolean remove(Object object) {
         if (idMap != null && object instanceof Entity) {
-            Integer index = idMap.get(((Entity) object).getId());
+            Integer index = idMap.get(((Entity) object).getEntityEntry().getId());
             if (index != null) {
                 T itemForRemove = delegate.get(index);
 
@@ -144,7 +144,7 @@ public class ObservableList<T> extends ForwardingList<T> implements Serializable
 
             for (Object object : collection) {
                 if (object instanceof Entity) {
-                    Integer index = idMap.get(((Entity) object).getId());
+                    Integer index = idMap.get(((Entity) object).getEntityEntry().getId());
                     if (index != null) {
                         itemsForRemove.add((T) object);
                     }

@@ -103,7 +103,7 @@ public class TreeModelAdapter implements TreeModel {
         if (parent == rootNode) {
             childrenIds = datasource.getRootItemIds();
         } else {
-            childrenIds = datasource.getChildren(((Node) parent).getEntity().getId());
+            childrenIds = datasource.getChildren(((Node) parent).getEntity().getEntityEntry().getId());
         }
         Object id = Iterables.get(childrenIds, index);
         return new Node(parent, datasource.getItem(id));
@@ -115,7 +115,7 @@ public class TreeModelAdapter implements TreeModel {
             return datasource.getRootItemIds().size();
         } else {
             Entity entity = ((Node) parent).getEntity();
-            Collection<Object> childrenIds = datasource.getChildren(entity.getId());
+            Collection<Object> childrenIds = datasource.getChildren(entity.getEntityEntry().getId());
             return childrenIds.size();
         }
     }
@@ -126,7 +126,7 @@ public class TreeModelAdapter implements TreeModel {
             return false;
         } else {
             Entity entity = ((Node) node).getEntity();
-            Collection<Object> childrenIds = datasource.getChildren(entity.getId());
+            Collection<Object> childrenIds = datasource.getChildren(entity.getEntityEntry().getId());
             return childrenIds.size() == 0;
         }
     }
@@ -145,10 +145,10 @@ public class TreeModelAdapter implements TreeModel {
             childrenIds = datasource.getRootItemIds();
         } else {
             Entity entity = ((Node) parent).getEntity();
-            childrenIds = datasource.getChildren(entity.getId());
+            childrenIds = datasource.getChildren(entity.getEntityEntry().getId());
         }
         final Entity childEntity = ((Node) child).getEntity();
-        return Iterables.indexOf(childrenIds, id -> childEntity.getId().equals(id));
+        return Iterables.indexOf(childrenIds, id -> childEntity.getEntityEntry().getId().equals(id));
     }
 
     @Override
@@ -199,10 +199,10 @@ public class TreeModelAdapter implements TreeModel {
                 while (entity.getValue(datasource.getHierarchyPropertyName()) != null) {
                     Entity parent = entity.getValue(datasource.getHierarchyPropertyName());
                     // noinspection ConstantConditions
-                    if (!datasource.containsItem(parent.getId())) {
+                    if (!datasource.containsItem(parent.getEntityEntry().getId())) {
                         break; // Child entities with removed parent are happen to be thrown to tree root.
                     }
-                    entity = datasource.getItemNN(parent.getId());
+                    entity = datasource.getItemNN(parent.getEntityEntry().getId());
 
                     Node parentNode = createNode(entity);
                     list.add(0, parentNode);

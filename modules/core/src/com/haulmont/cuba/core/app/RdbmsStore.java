@@ -288,7 +288,7 @@ public class RdbmsStore implements DataStore {
 
     protected <E extends Entity> List<E> checkAndReorderLoadedEntities(List<?> ids, List<E> entities, MetaClass metaClass) {
         List<E> result = new ArrayList<>(ids.size());
-        Map<Object, E> idToEntityMap = entities.stream().collect(Collectors.toMap(Entity::getId, Function.identity()));
+        Map<Object, E> idToEntityMap = entities.stream().collect(Collectors.toMap(e -> e.getEntityEntry().getId(), Function.identity()));
         for (Object id : ids) {
             E entity = idToEntityMap.get(id);
             if (entity == null) {
@@ -975,7 +975,7 @@ public class RdbmsStore implements DataStore {
                 } else {
                     Entity value = entity.getValue(property.getName());
                     if (value != null) {
-                        if (value.getId().equals(refEntity.getId())) {
+                        if (value.getEntityEntry().getId().equals(refEntity.getEntityEntry().getId())) {
                             if (entity instanceof AbstractInstance) {
                                 if (property.isReadOnly() && metadataTools.isNotPersistent(property)) {
                                     continue;

@@ -296,7 +296,7 @@ public class PersistenceTools {
                     return RefId.createNotLoaded(property);
                 else {
                     Entity refEntity = (Entity) entity.getValue(property);
-                    return RefId.create(property, refEntity == null ? null : refEntity.getId());
+                    return RefId.create(property, refEntity == null ? null : refEntity.getEntityEntry().getId());
                 }
             }
         }

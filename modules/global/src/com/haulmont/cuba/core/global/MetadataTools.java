@@ -1090,7 +1090,7 @@ public class MetadataTools {
 
         @Override
         public void put(Entity entity) {
-            cache.put(entity.getId(), entity);
+            cache.put(entity.getEntityEntry().getId(), entity);
         }
     }
 
@@ -1100,7 +1100,7 @@ public class MetadataTools {
     @SuppressWarnings("unchecked")
     public <T extends Entity> T deepCopy(T source) {
         CachingEntitiesHolder entityFinder = new CachingEntitiesHolder();
-        Entity destination = entityFinder.create(source.getClass(), source.getId());
+        Entity destination = entityFinder.create(source.getClass(), source.getEntityEntry().getId());
         deepCopy(source, destination, entityFinder);
 
         return (T) destination;
@@ -1134,9 +1134,9 @@ public class MetadataTools {
                     Collection<Entity> dstCollection = value instanceof List ? new ArrayList<>() : new LinkedHashSet<>();
 
                     for (Entity srcRef : srcCollection) {
-                        Entity reloadedRef = entitiesHolder.find(srcRef.getId());
+                        Entity reloadedRef = entitiesHolder.find(srcRef.getEntityEntry().getId());
                         if (reloadedRef == null) {
-                            reloadedRef = entitiesHolder.create(srcRef.getClass(), srcRef.getId());
+                            reloadedRef = entitiesHolder.create(srcRef.getClass(), srcRef.getEntityEntry().getId());
                             deepCopy(srcRef, reloadedRef, entitiesHolder);
                         }
                         dstCollection.add(reloadedRef);
@@ -1144,9 +1144,9 @@ public class MetadataTools {
                     destination.setValue(name, dstCollection);
                 } else {
                     Entity srcRef = (Entity) value;
-                    Entity reloadedRef = entitiesHolder.find(srcRef.getId());
+                    Entity reloadedRef = entitiesHolder.find(srcRef.getEntityEntry().getId());
                     if (reloadedRef == null) {
-                        reloadedRef = entitiesHolder.create(srcRef.getClass(), srcRef.getId());
+                        reloadedRef = entitiesHolder.create(srcRef.getClass(), srcRef.getEntityEntry().getId());
                         deepCopy(srcRef, reloadedRef, entitiesHolder);
                     }
                     destination.setValue(name, reloadedRef);

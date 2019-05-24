@@ -95,7 +95,7 @@ public class ContainerOptions<E extends Entity<K>, K> implements Options<E>, Ent
 
     @Override
     public boolean containsItem(E item) {
-        return item != null && container.containsItem(item.getId());
+        return item != null && container.containsItem(item.getEntityEntry().getId());
     }
 
     @Override

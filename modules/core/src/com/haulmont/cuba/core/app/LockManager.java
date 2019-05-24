@@ -154,7 +154,7 @@ public class LockManager implements LockManagerAPI, ClusterListener<LockInfo> {
         MetaClass metaClass = metadata.getClassNN(entity.getClass());
         MetaClass originalMetaClass = metadata.getExtendedEntities().getOriginalOrThisMetaClass(metaClass);
 
-        return lock(originalMetaClass.getName(), entity.getId().toString());
+        return lock(originalMetaClass.getName(), entity.getEntityEntry().getId().toString());
     }
 
     @Override
@@ -174,7 +174,7 @@ public class LockManager implements LockManagerAPI, ClusterListener<LockInfo> {
         MetaClass metaClass = metadata.getClassNN(entity.getClass());
         MetaClass originalMetaClass = metadata.getExtendedEntities().getOriginalOrThisMetaClass(metaClass);
 
-        unlock(originalMetaClass.getName(), entity.getId().toString());
+        unlock(originalMetaClass.getName(), entity.getEntityEntry().getId().toString());
     }
 
     @Override

@@ -21,8 +21,6 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.annotation.Listeners;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.listener.*;
-import com.haulmont.cuba.core.sys.AppContext;
-import com.haulmont.cuba.core.sys.SecurityContext;
 import org.apache.commons.lang3.ClassUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -280,7 +278,7 @@ public class EntityListenerManager {
         if (log.isDebugEnabled()) {
             StringBuilder sb = new StringBuilder();
             sb.append("Executing ").append(type).append(" entity listener for ")
-                    .append(entity.getClass().getName()).append(" id=").append(entity.getId());
+                    .append(entity.getClass().getName()).append(" id=").append(entity.getEntityEntry().getId());
             if (type != EntityListenerType.BEFORE_DETACH && type != EntityListenerType.BEFORE_ATTACH) {
                 Set<String> dirty = persistence.getTools().getDirtyFields(entity);
                 if (!dirty.isEmpty()) {

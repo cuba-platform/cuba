@@ -73,7 +73,7 @@ public interface TwinColumn<V> extends OptionsField<Collection<V>, V>, Component
         } else {
             setOptionStyleProvider((item, selected) -> {
                 if (item instanceof Entity) {
-                    return styleProvider.getStyleName((Entity) item, ((Entity) item).getId(), selected);
+                    return styleProvider.getStyleName((Entity) item, ((Entity) item).getEntityEntry().getId(), selected);
                 } else {
                     return null;
                 }

@@ -418,7 +418,7 @@ public class RelatedEntitiesBean implements RelatedEntitiesAPI {
         } else {
             List<Object> parentIds = new ArrayList<>();
             for (Entity e : selectedParents) {
-                parentIds.add(e.getId());
+                parentIds.add(e.getEntityEntry().getId());
             }
 
             //noinspection UnnecessaryLocalVariable
@@ -432,7 +432,7 @@ public class RelatedEntitiesBean implements RelatedEntitiesAPI {
         if (selectedParents.isEmpty()) {
             return Collections.emptyList();
         } else {
-            return selectedParents.stream().map(Entity::getId).collect(Collectors.toList());
+            return selectedParents.stream().map(entity -> entity.getEntityEntry().getId()).collect(Collectors.toList());
         }
     }
 

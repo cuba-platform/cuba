@@ -134,8 +134,8 @@ public class PersistenceImplSupport implements ApplicationContextAware {
         UnitOfWork unitOfWork = entityManager.getDelegate().unwrap(UnitOfWork.class);
         getInstanceContainerResourceHolder(getStorageName(unitOfWork)).registerInstanceForUnitOfWork(entity, unitOfWork);
 
-        if (entity instanceof BaseGenericIdEntity) {
-            BaseEntityInternalAccess.setDetached((BaseGenericIdEntity) entity, false);
+        if (entity.getEntityEntry() instanceof PersistentEntityEntry) {
+            BaseEntityInternalAccess.setDetached(entity, false);
         }
     }
 
@@ -206,7 +206,7 @@ public class PersistenceImplSupport implements ApplicationContextAware {
         }
     }
 
-    protected static boolean isDeleted(BaseGenericIdEntity entity, AttributeChangeListener changeListener) {
+    protected static boolean isDeleted(Entity entity, AttributeChangeListener changeListener) {
         if ((entity instanceof SoftDelete)) {
             ObjectChangeSet changeSet = changeListener.getObjectChangeSet();
             return changeSet != null
@@ -292,10 +292,10 @@ public class PersistenceImplSupport implements ApplicationContextAware {
     }
 
     protected void makeDetached(Object instance) {
-        if (instance instanceof BaseGenericIdEntity) {
-            BaseEntityInternalAccess.setNew((BaseGenericIdEntity) instance, false);
-            BaseEntityInternalAccess.setManaged((BaseGenericIdEntity) instance, false);
-            BaseEntityInternalAccess.setDetached((BaseGenericIdEntity) instance, true);
+        if (instance instanceof Entity && ((Entity) instance).getEntityEntry() instanceof PersistentEntityEntry) {
+            BaseEntityInternalAccess.setNew((Entity) instance, false);
+            BaseEntityInternalAccess.setManaged((Entity) instance, false);
+            BaseEntityInternalAccess.setDetached((Entity) instance, true);
         }
         if (instance instanceof FetchGroupTracker) {
             ((FetchGroupTracker) instance)._persistence_setSession(null);
@@ -306,7 +306,7 @@ public class PersistenceImplSupport implements ApplicationContextAware {
     }
 
     public interface EntityVisitor {
-        boolean visit(BaseGenericIdEntity entity);
+        boolean visit(Entity entity);
     }
 
     public static class ContainerResourceHolder extends ResourceHolderSupport {
@@ -332,8 +332,8 @@ public class PersistenceImplSupport implements ApplicationContextAware {
                 log.trace("ContainerResourceHolder.registerInstanceForUnitOfWork: instance = " +
                         instance + ", UnitOfWork = " + unitOfWork);
 
-            if (instance instanceof BaseGenericIdEntity) {
-                BaseEntityInternalAccess.setManaged((BaseGenericIdEntity) instance, true);
+            if (instance.getEntityEntry() instanceof PersistentEntityEntry) {
+                BaseEntityInternalAccess.setManaged(instance, true);
             }
 
             Set<Entity> instances = unitOfWorkMap.get(unitOfWork);
@@ -536,7 +536,7 @@ public class PersistenceImplSupport implements ApplicationContextAware {
         }
 
         @Override
-        public boolean visit(BaseGenericIdEntity entity) {
+        public boolean visit(Entity entity) {
             if (BaseEntityInternalAccess.isNew(entity)
                     && !getSavedInstances(storeName).contains(entity)) {
                 entityListenerManager.fireListener(entity, EntityListenerType.BEFORE_INSERT, storeName);
@@ -618,7 +618,7 @@ public class PersistenceImplSupport implements ApplicationContextAware {
         }
 
         @Override
-        public boolean visit(BaseGenericIdEntity entity) {
+        public boolean visit(Entity entity) {
             if (BaseEntityInternalAccess.isNew(entity)
                     && !getSavedInstances(storeName).contains(entity)) {
                 entityListenerManager.fireListener(entity, EntityListenerType.BEFORE_INSERT, storeName);

@@ -23,14 +23,26 @@ import java.lang.invoke.*;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 public class MethodsCache {
 
+    private final String className;
     private final Map<String, Function> getters = new HashMap<>();
     private final Map<String, BiConsumer> setters = new HashMap<>();
-    private String className;
+
+    private static transient Map<Class, MethodsCache> methodCacheMap = new ConcurrentHashMap<>();
+
+    public static MethodsCache getOrCreate(Class clazz) {
+        MethodsCache cache = methodCacheMap.get(clazz);
+        if (cache == null) {
+            cache = new MethodsCache(clazz);
+            methodCacheMap.put(clazz, cache);
+        }
+        return cache;
+    }
 
     private static final Map<Class, Class> primitivesToObjects = new ImmutableMap.Builder<Class, Class>()
             .put(byte.class, Byte.class)

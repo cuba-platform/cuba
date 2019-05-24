@@ -640,7 +640,7 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
          */
         @Deprecated
         public Object getItemId() {
-            return item.getId();
+            return item.getEntityEntry().getId();
         }
 
         /**
@@ -1382,7 +1382,7 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
          */
         @Deprecated
         public Object getItemId() {
-            return item.getId();
+            return item.getEntityEntry().getId();
         }
 
         /**

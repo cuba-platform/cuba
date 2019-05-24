@@ -49,7 +49,7 @@ public class DatasourceTreeDataGridItems<E extends Entity<K>, K>
     public Stream<E> getChildren(E item) {
         Collection<K> itemIds = item == null
                 ? getHierarchicalDatasource().getRootItemIds()
-                : getHierarchicalDatasource().getChildren(item.getId());
+                : getHierarchicalDatasource().getChildren(item.getEntityEntry().getId());
 
         return itemIds.stream()
                 .map(id -> datasource.getItem(id));
@@ -57,14 +57,14 @@ public class DatasourceTreeDataGridItems<E extends Entity<K>, K>
 
     @Override
     public boolean hasChildren(E item) {
-        return getHierarchicalDatasource().hasChildren(item.getId());
+        return getHierarchicalDatasource().hasChildren(item.getEntityEntry().getId());
     }
 
     @Nullable
     @Override
     public E getParent(E item) {
         Preconditions.checkNotNullArgument(item);
-        K parentId = getHierarchicalDatasource().getParent(item.getId());
+        K parentId = getHierarchicalDatasource().getParent(item.getEntityEntry().getId());
         return getHierarchicalDatasource().getItem(parentId);
     }
 }
