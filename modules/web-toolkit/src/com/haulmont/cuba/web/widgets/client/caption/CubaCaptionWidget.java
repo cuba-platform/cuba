@@ -146,7 +146,7 @@ public class CubaCaptionWidget extends VCaption implements ClickHandler {
                     captionText.setInnerHTML("&nbsp;");
                 }
             } else {
-                setCaptionText(captionText, owner.getState());
+                setCaptionText(owner.getState());
             }
 
         } else if (captionText != null) {
@@ -240,6 +240,15 @@ public class CubaCaptionWidget extends VCaption implements ClickHandler {
         return (wasPlacedAfterComponent != placedAfterComponent);
     }
 
+    protected void setCaptionText(AbstractComponentState state) {
+        if (state.captionAsHtml) {
+            captionText.setInnerHTML(state.caption);
+        } else {
+            captionText.addClassName("c-captiontext-preformatted");
+            captionText.setInnerText(state.caption);
+        }
+    }
+
     @Override
     public void onClick(ClickEvent event) {
         Element target = Element.as(event.getNativeEvent().getEventTarget());
@@ -255,8 +264,7 @@ public class CubaCaptionWidget extends VCaption implements ClickHandler {
 
     protected boolean isContextHelpIconEnabled(AbstractComponentState state) {
         return hasContextHelpIconListeners(state)
-                || state != null
-                && state.contextHelpText != null
+                || state.contextHelpText != null
                 && !state.contextHelpText.isEmpty();
     }
 
