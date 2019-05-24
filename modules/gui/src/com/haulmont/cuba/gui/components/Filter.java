@@ -227,7 +227,7 @@ public interface Filter extends HasMargin, Component.BelongToFrame, HasNamedComp
     PropertiesFilterPredicate getPropertiesFilterPredicate();
 
     /**
-     * If {@code windowCaptionUpdateEnabled} is true then window caption will contain a filter name, e.g. "Some Browser: <filter name>", if the
+     * If {@code windowCaptionUpdateEnabled} is true then window caption will contain a filter name, e.g. "Some Browser: filterName", if the
      * parameter value is false, when window caption will not be modified when the filter is selected
      */
     void setWindowCaptionUpdateEnabled(boolean windowCaptionUpdateEnabled);
