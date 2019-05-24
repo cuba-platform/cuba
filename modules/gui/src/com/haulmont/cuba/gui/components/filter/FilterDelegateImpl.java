@@ -215,6 +215,7 @@ public class FilterDelegateImpl implements FilterDelegate {
 
     protected Set<String> ftsLastDatasourceRefreshParamsNames = new HashSet<>();
     protected Consumer<String> captionChangedListener;
+    protected boolean windowCaptionUpdateEnabled = true;
 
     protected enum ConditionsFocusType {
         NONE,
@@ -532,7 +533,7 @@ public class FilterDelegateImpl implements FilterDelegate {
                     adapter.preventNextDataLoading();
                     apply(true);
                 }
-                if (filterEntity != null) {
+                if (filterEntity != null && windowCaptionUpdateEnabled) {
                     window.setDescription(getFilterCaption(filterEntity));
                 } else
                     window.setDescription(null);
@@ -2211,16 +2212,26 @@ public class FilterDelegateImpl implements FilterDelegate {
         } else {
             filterTitle = null;
         }
-        window.setDescription(filterTitle);
 
-        if (initialWindowCaption == null) {
-            initialWindowCaption = window.getCaption();
+        if (windowCaptionUpdateEnabled) {
+            if (initialWindowCaption == null) {
+                initialWindowCaption = window.getCaption();
+            }
+            getWindowManager().setWindowCaption(window, initialWindowCaption, filterTitle);
         }
-
-        getWindowManager().setWindowCaption(window, initialWindowCaption, filterTitle);
 
         String newCaption = Strings.isNullOrEmpty(filterTitle) ? caption : caption + ": " + filterTitle;
         captionChangedListener.accept(newCaption);
+    }
+
+    @Override
+    public boolean isWindowCaptionUpdateEnabled() {
+        return windowCaptionUpdateEnabled;
+    }
+
+    @Override
+    public void setWindowCaptionUpdateEnabled(boolean windowCaptionUpdateEnabled) {
+        this.windowCaptionUpdateEnabled = windowCaptionUpdateEnabled;
     }
 
     protected ControlsLayoutBuilder createControlsLayoutBuilder(String layoutDescription) {
