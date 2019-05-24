@@ -30,8 +30,7 @@ import org.junit.Test;
 import java.util.Date;
 import java.util.Set;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 public class QueryTransformerAstBasedTest {
 
@@ -1348,5 +1347,53 @@ public class QueryTransformerAstBasedTest {
         } catch (JpqlSyntaxException e) {
             //expected
         }
+    }
+
+    @Test
+    public void replaceIsNullAndIsNotNullStatements() throws RecognitionException {
+        DomainModel model = prepareDomainModel();
+
+        QueryTransformerAstBased transformer = new QueryTransformerAstBased(model,
+                "select c from sec$GroupHierarchy h join h.parent.constraints c where :par1 is null");
+
+        boolean statementReplaced = transformer.replaceIsNullStatements("par1", true);
+        assertTrue(statementReplaced);
+        String res = transformer.getResult();
+        assertEquals(
+                "select c from sec$GroupHierarchy h join h.parent.constraints c where 1=1",
+                res);
+
+
+        transformer = new QueryTransformerAstBased(model,
+                "select c from sec$GroupHierarchy h join h.parent.constraints c where :par1 is null");
+        statementReplaced = transformer.replaceIsNullStatements("par1", false);
+        assertTrue(statementReplaced);
+        res = transformer.getResult();
+        assertEquals(
+                "select c from sec$GroupHierarchy h join h.parent.constraints c where 1=0",
+                res);
+
+
+        transformer = new QueryTransformerAstBased(model,
+                "select c from sec$GroupHierarchy h join h.parent.constraints c where :par1 is not null "
+                        + "and :par2 is not null");
+        statementReplaced = transformer.replaceIsNullStatements("par1", false);
+        statementReplaced = transformer.replaceIsNullStatements("par2", true);
+        assertTrue(statementReplaced);
+        res = transformer.getResult();
+        assertEquals(
+                "select c from sec$GroupHierarchy h join h.parent.constraints c where 1=1 and 1=0",
+                res);
+
+
+        transformer = new QueryTransformerAstBased(model,
+                "select c from sec$GroupHierarchy h join h.parent.constraints c where 2 = 2");
+        statementReplaced = transformer.replaceIsNullStatements("par1", true);
+        assertFalse(statementReplaced);
+        res = transformer.getResult();
+        assertEquals(
+                "select c from sec$GroupHierarchy h join h.parent.constraints c where 2 = 2",
+                res);
+
     }
 }

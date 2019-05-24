@@ -92,4 +92,13 @@ public interface QueryTransformer {
     default void addJoin(String join) {
         addJoinAndWhere(join, "");
     }
+
+    /**
+     * Replace all {@code is null} and {@code is not null} statements with provided parameter
+     *
+     * @param paramName name of the parameter
+     * @param isNullValue is parameter value null
+     * @return {@code true} if at least one statement was replaced, {@code false} otherwise
+     */
+    default boolean replaceIsNullStatements(String paramName, boolean isNullValue) {return false;}
 }

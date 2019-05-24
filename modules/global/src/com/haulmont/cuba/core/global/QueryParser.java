@@ -87,6 +87,10 @@ public interface QueryParser {
 
     List<QueryPath> getQueryPaths();
 
+    default boolean isParameterUsedInAnyCondition(String paramName) {
+        return false;
+    }
+
     class QueryPath {
         protected String entityName;
         protected String pathString;
