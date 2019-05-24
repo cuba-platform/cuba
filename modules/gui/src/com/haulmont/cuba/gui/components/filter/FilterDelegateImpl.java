@@ -2291,6 +2291,11 @@ public class FilterDelegateImpl implements FilterDelegate {
         }
     }
 
+    @Override
+    public ConditionsTree getConditionsTree() {
+        return conditions;
+    }
+
     protected class FiltersLookupChangeListener implements Consumer<HasValue.ValueChangeEvent<FilterEntity>> {
         public FiltersLookupChangeListener() {
         }
