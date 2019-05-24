@@ -18,11 +18,7 @@
 package com.haulmont.cuba.gui.components.filter;
 
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.ComponentContainer;
-import com.haulmont.cuba.gui.components.Filter;
-import com.haulmont.cuba.gui.components.Frame;
-import com.haulmont.cuba.gui.components.HasUserOriginated;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.model.CollectionLoader;
 import com.haulmont.cuba.security.entity.FilterEntity;
@@ -148,6 +144,8 @@ public interface FilterDelegate {
     void requestFocus();
 
     void setCaptionChangedListener(Consumer<String> captionChangedListener);
+
+    ConditionsTree getConditionsTree();
 
     class FDExpandedStateChangeEvent implements HasUserOriginated {
         private final FilterDelegate delegate;

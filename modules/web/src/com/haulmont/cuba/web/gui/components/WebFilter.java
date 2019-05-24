@@ -417,4 +417,31 @@ public class WebFilter extends WebAbstractComponent<com.vaadin.ui.Component> imp
     public PropertiesFilterPredicate getPropertiesFilterPredicate() {
         return propertiesFilterPredicate;
     }
+
+    /**
+     * Returns a {@link FilterDelegate} instance. FilterDelegate provides an access to filter internals not available from the high-level filter API.
+     * For example, you may get a list of filter parameter and its values. That may be useful if you want to check that all parameters are filled
+     * before the filter is applied:
+     *
+     * <pre>
+     *    filter.setBeforeFilterAppliedHandler(() -> {
+     *    FilterDelegate delegate = ((WebFilter) filter).getDelegate();
+     *        List<AbstractCondition> conditions = delegate.getConditionsTree().toConditionsList();
+     *        for (AbstractCondition condition : conditions) {
+     *            if (condition.getParam().getValue() == null) {
+     *                notifications.create(Notifications.NotificationType.WARNING)
+     *                        .withCaption("All parameters must be filled")
+     *                        .show();
+     *                return false;
+     *            }
+     *        }
+     *        return true;
+     *    });
+     * </pre>
+     * <p>
+     * WARNING: The API of the FilterDelegate is unstable and may be changed.
+     */
+    public FilterDelegate getDelegate() {
+        return delegate;
+    }
 }
