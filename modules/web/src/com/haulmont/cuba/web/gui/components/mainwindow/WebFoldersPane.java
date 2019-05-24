@@ -22,10 +22,14 @@ import com.haulmont.cuba.gui.components.mainwindow.FoldersPane;
 import com.haulmont.cuba.web.app.folders.CubaFoldersPane;
 import com.haulmont.cuba.web.gui.components.WebAbstractComponent;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
+import org.dom4j.Element;
 
 import static com.haulmont.cuba.web.app.folders.CubaFoldersPane.C_FOLDERS_PANE;
 
 public class WebFoldersPane extends WebAbstractComponent<CubaFoldersPane> implements FoldersPane {
+
+    protected boolean settingsEnabled = true;
 
     public WebFoldersPane() {
         component = createComponent();
@@ -62,5 +66,39 @@ public class WebFoldersPane extends WebAbstractComponent<CubaFoldersPane> implem
     @Override
     public void refreshFolders() {
         component.refreshFolders();
+    }
+
+    @Override
+    public void applySettings(Element element) {
+        if (!isSettingsEnabled()) {
+            return;
+        }
+
+        String verticalSplitPos = element.attributeValue("splitPosition");
+        if (StringUtils.isNotEmpty(verticalSplitPos)
+                && NumberUtils.isCreatable(verticalSplitPos)) {
+            component.setVerticalSplitPosition(Float.parseFloat(verticalSplitPos));
+        }
+    }
+
+    @Override
+    public boolean saveSettings(Element element) {
+        if (!isSettingsEnabled()) {
+            return false;
+        }
+
+        float verticalSplitPos = component.getVerticalSplitPosition();
+        element.addAttribute("splitPosition", String.valueOf(verticalSplitPos));
+        return true;
+    }
+
+    @Override
+    public boolean isSettingsEnabled() {
+        return settingsEnabled;
+    }
+
+    @Override
+    public void setSettingsEnabled(boolean settingsEnabled) {
+        this.settingsEnabled = settingsEnabled;
     }
 }

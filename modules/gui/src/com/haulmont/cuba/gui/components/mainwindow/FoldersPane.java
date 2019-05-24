@@ -18,11 +18,12 @@
 package com.haulmont.cuba.gui.components.mainwindow;
 
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.HasSettings;
 
 /**
  * A component displaying a panel with application and search folders.
  */
-public interface FoldersPane extends Component.BelongToFrame {
+public interface FoldersPane extends Component.BelongToFrame, HasSettings {
 
     String NAME = "foldersPane";
 
