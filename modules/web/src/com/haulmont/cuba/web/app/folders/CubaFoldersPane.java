@@ -138,9 +138,18 @@ public class CubaFoldersPane extends VerticalLayout {
         setStyleName(C_FOLDERS_PANE);
         //noinspection unchecked
         folderUpdateBackgroundTaskWrapper = new BackgroundTaskWrapper(new AppFolderUpdateBackgroundTask(10));
+    }
 
-        addDetachListener(e ->
-                savePosition());
+    public void setVerticalSplitPosition(float verticalSplitPos) {
+        if (vertSplit.getSplitPosition() != verticalSplitPos) {
+            vertSplit.setSplitPosition(verticalSplitPos);
+        }
+    }
+
+    public float getVerticalSplitPosition() {
+        return vertSplit != null
+                ? vertSplit.getSplitPosition()
+                : DEFAULT_VERT_SPLIT_POS;
     }
 
     public void loadFolders() {
