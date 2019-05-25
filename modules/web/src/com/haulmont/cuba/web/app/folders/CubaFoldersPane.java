@@ -141,7 +141,8 @@ public class CubaFoldersPane extends VerticalLayout {
     }
 
     public void setVerticalSplitPosition(float verticalSplitPos) {
-        if (vertSplit.getSplitPosition() != verticalSplitPos) {
+        if (vertSplit != null
+                && vertSplit.getSplitPosition() != verticalSplitPos) {
             vertSplit.setSplitPosition(verticalSplitPos);
         }
     }
