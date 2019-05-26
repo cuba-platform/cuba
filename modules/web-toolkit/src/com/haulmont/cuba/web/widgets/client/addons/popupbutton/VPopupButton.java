@@ -363,7 +363,7 @@ public class VPopupButton extends VButton {
     }
 
     /**
-     * Simply check if popup has child equal to passed element <br/>
+     * Simply check if popup has child equal to passed element <br>
      *
      * Haulmont API
      */

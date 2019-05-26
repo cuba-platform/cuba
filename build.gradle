@@ -611,6 +611,10 @@ configure(webTestsModule) {
     apply(plugin: 'maven')
     apply(plugin: 'cuba')
 
+    javadoc {
+        options.addStringOption("sourcepath", "")
+    }
+
     dependencies {
         compile(clientTestsModule)
         compile(webModule)

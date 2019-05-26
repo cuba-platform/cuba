@@ -29,7 +29,7 @@ import com.vaadin.v7.ui.TreeTable;
  * Compatibility version of ContextMenu to use with v7.Table and v7.TreeTable in
  * the Framework 8.0 compatibility package.
  * <p>
- * This compatibility version exists to fix #29 using context menu in table &
+ * This compatibility version exists to fix #29 using context menu in table &amp;
  * tree table with item click listener.
  *
  * @deprecated To use only for compatibility v7.Table

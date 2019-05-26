@@ -22,7 +22,7 @@ import com.google.gwt.core.client.JavaScriptObject;
 public interface GwtAceKeyboardHandler {
 	/**
 	 * A command returned by
-	 * {@link GwtAceKeyboardHandler#handleKeyboard(JavaScriptObject, int, String, int, JavaScriptObject)}
+	 * GwtAceKeyboardHandler#handleKeyboard(JavaScriptObject, int, String, int, JavaScriptObject)
 	 * .
 	 * 
 	 */
