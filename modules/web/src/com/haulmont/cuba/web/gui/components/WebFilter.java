@@ -423,7 +423,7 @@ public class WebFilter extends WebAbstractComponent<com.vaadin.ui.Component> imp
      * For example, you may get a list of filter parameter and its values. That may be useful if you want to check that all parameters are filled
      * before the filter is applied:
      *
-     * <pre>
+     * <pre>{@code
      *    filter.setBeforeFilterAppliedHandler(() -> {
      *    FilterDelegate delegate = ((WebFilter) filter).getDelegate();
      *        List<AbstractCondition> conditions = delegate.getConditionsTree().toConditionsList();
@@ -437,7 +437,7 @@ public class WebFilter extends WebAbstractComponent<com.vaadin.ui.Component> imp
      *        }
      *        return true;
      *    });
-     * </pre>
+     * }</pre>
      * <p>
      * WARNING: The API of the FilterDelegate is unstable and may be changed.
      */
