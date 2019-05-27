@@ -28,11 +28,9 @@ import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.*;
 import com.haulmont.cuba.core.sys.events.AppContextInitializedEvent;
 import com.haulmont.cuba.core.sys.persistence.EclipseLinkCustomizer;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.BOMInputStream;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.text.StrLookup;
-import org.apache.commons.lang3.text.StrSubstitutor;
+import org.apache.commons.text.StringSubstitutor;
 import org.apache.commons.text.StringTokenizer;
 import org.junit.rules.ExternalResource;
 import org.slf4j.Logger;
@@ -66,14 +64,16 @@ import java.util.*;
  * <pre>
  *    {@literal @}ClassRule
  *     public static TestContainer cont = new TestContainer()
- *              .setAppPropertiesFiles(Arrays.asList("com/haulmont/cuba/app.properties", "com/company/sample/core/my-test-app.properties"));
+ *              .setAppPropertiesFiles(Arrays.asList(
+ *                  "com/haulmont/cuba/app.properties",
+ *                  "com/haulmont/cuba/testsupport/test-app.properties",
+ *                  "com/company/sample/core/my-test-app.properties"));
  *
  *    {@literal @}Test
  *     public void testSomething() {
  *         try (Transaction tx = cont.persistence().createTransaction()) { ... }
  *     }
  * </pre>
- *
  */
 public class TestContainer extends ExternalResource {
 
@@ -157,25 +157,30 @@ public class TestContainer extends ExternalResource {
             try {
                 runner.update(sql);
             } catch (SQLException e) {
-                throw new RuntimeException(e);
+                throw new RuntimeException(
+                        String.format("Unable to delete record %s from %s", id.toString(), table), e);
             }
         }
     }
 
     public void deleteRecord(Entity... entities) {
-        if (entities == null)
+        if (entities == null) {
             return;
+        }
+
         for (Entity entity : entities) {
-            if (entity == null)
+            if (entity == null) {
                 continue;
+            }
 
             MetadataTools metadataTools = metadata().getTools();
             MetaClass metaClass = metadata().getClassNN(entity.getClass());
 
             String table = metadataTools.getDatabaseTable(metaClass);
             String primaryKey = metadataTools.getPrimaryKeyName(metaClass);
-            if (table == null || primaryKey == null)
+            if (table == null || primaryKey == null) {
                 throw new RuntimeException("Unable to determine table or primary key name for " + entity);
+            }
 
             deleteRecord(table, primaryKey, entity.getId());
         }
@@ -314,36 +319,31 @@ public class TestContainer extends ExternalResource {
         AppContext.Internals.setAppComponents(new AppComponents(getAppComponents(), "core"));
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     protected void initAppProperties() {
-        final Properties properties = new Properties();
+        Properties properties = new Properties();
 
         List<String> locations = getAppPropertiesFiles();
         DefaultResourceLoader resourceLoader = new DefaultResourceLoader();
         for (String location : locations) {
             Resource resource = resourceLoader.getResource(location);
             if (resource.exists()) {
-                InputStream stream = null;
-                try {
-                    stream = resource.getInputStream();
+                try (InputStream stream = resource.getInputStream()) {
                     BOMInputStream bomInputStream = new BOMInputStream(stream);
                     properties.load(bomInputStream);
                 } catch (IOException e) {
-                    throw new RuntimeException(e);
-                } finally {
-                    IOUtils.closeQuietly(stream);
+                    throw new RuntimeException("Unable to read app properties " + location, e);
                 }
             } else {
-                log.warn("Resource " + location + " not found, ignore it");
+                log.warn("Resource {} not found, ignore it", location);
             }
         }
 
-        StrSubstitutor substitutor = new StrSubstitutor(new StrLookup() {
-            @Override
-            public String lookup(String key) {
-                String subst = properties.getProperty(key);
-                return subst != null ? subst : System.getProperty(key);
-            }
+        StringSubstitutor substitutor = new StringSubstitutor(key -> {
+            String subst = properties.getProperty(key);
+            return subst != null ? subst : System.getProperty(key);
         });
+
         for (Object key : properties.keySet()) {
             String value = substitutor.replace(properties.getProperty((String) key));
             appProperties.put((String) key, value);
@@ -372,7 +372,7 @@ public class TestContainer extends ExternalResource {
         springAppContext = new CubaCoreApplicationContext(locations.toArray(new String[0]));
         AppContext.Internals.setApplicationContext(springAppContext);
 
-        Events events = AppBeans.get(Events.NAME);
+        Events events = springAppContext.getBean(Events.class);
         events.publish(new AppContextInitializedEvent(springAppContext));
     }
 
@@ -380,7 +380,7 @@ public class TestContainer extends ExternalResource {
         try {
             TestContext.getInstance().unbind(AppContext.getProperty("cuba.dataSourceJndiName"));
         } catch (NamingException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Unable to unbind JNDI datasource", e);
         }
         AppContext.Internals.setApplicationContext(null);
         for (String name : AppContext.getPropertyNames()) {
