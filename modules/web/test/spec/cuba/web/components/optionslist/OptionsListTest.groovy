@@ -18,10 +18,8 @@ package spec.cuba.web.components.optionslist
 
 import com.haulmont.cuba.gui.components.OptionsList
 import com.haulmont.cuba.gui.screen.OpenMode
-import com.haulmont.cuba.security.app.UserManagementService
 import com.haulmont.cuba.web.testmodel.sales.OrderLine
 import com.haulmont.cuba.web.testmodel.sales.Product
-import com.haulmont.cuba.web.testsupport.proxy.TestServiceProxy
 import spec.cuba.web.UiScreenSpec
 import spec.cuba.web.components.optionslist.screens.OptionsListTestScreen
 
@@ -31,10 +29,6 @@ class OptionsListTest extends UiScreenSpec {
 
     @SuppressWarnings(['GroovyAssignabilityCheck', 'GroovyAccessibility'])
     void setup() {
-        TestServiceProxy.mock(UserManagementService, Mock(UserManagementService) {
-            getSubstitutedUsers(_) >> Collections.emptyList()
-        })
-
         exportScreensPackages(['spec.cuba.web.components.optionslist.screens', 'com.haulmont.cuba.web.app.main'])
     }
 

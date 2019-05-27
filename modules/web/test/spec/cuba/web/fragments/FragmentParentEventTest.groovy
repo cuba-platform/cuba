@@ -18,9 +18,7 @@ package spec.cuba.web.fragments
 
 import com.haulmont.cuba.gui.components.Fragment
 import com.haulmont.cuba.gui.screen.OpenMode
-import com.haulmont.cuba.security.app.UserManagementService
 import com.haulmont.cuba.web.app.main.MainScreen
-import com.haulmont.cuba.web.testsupport.proxy.TestServiceProxy
 import spec.cuba.web.UiScreenSpec
 import spec.cuba.web.fragments.screens.FragmentWithParentListener
 import spec.cuba.web.fragments.screens.ScreenWithFragmentListener
@@ -29,10 +27,6 @@ import spec.cuba.web.fragments.screens.ScreenWithFragmentListener
 class FragmentParentEventTest extends UiScreenSpec {
 
     def setup() {
-        TestServiceProxy.mock(UserManagementService, Mock(UserManagementService) {
-            getSubstitutedUsers(_) >> Collections.emptyList()
-        })
-
         exportScreensPackages(['spec.cuba.web.fragments.screens', 'com.haulmont.cuba.web.app.main'])
     }
 

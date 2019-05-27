@@ -627,9 +627,6 @@ configure(webTestsModule) {
     dependencies {
         compile(clientTestsModule)
         compile(webModule)
-
-        compile(bom['junit:junit'])
-        compile(bom['javax.servlet:javax.servlet-api'])
     }
 }
 

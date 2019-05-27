@@ -17,24 +17,12 @@
 package spec.cuba.web.screens
 
 import com.haulmont.cuba.gui.screen.OpenMode
-import com.haulmont.cuba.security.app.UserManagementService
-import com.haulmont.cuba.web.testsupport.proxy.TestServiceProxy
 import spec.cuba.web.UiScreenSpec
 
 import java.util.function.Consumer
 
 @SuppressWarnings("GroovyAccessibility")
 class MainScreenTest extends UiScreenSpec {
-
-    def setup() {
-        TestServiceProxy.mock(UserManagementService, Mock(UserManagementService) {
-            getSubstitutedUsers(_) >> Collections.emptyList()
-        })
-    }
-
-    def cleanup() {
-        TestServiceProxy.clear()
-    }
 
     def "open main window"() {
         def screens = vaadinUi.screens

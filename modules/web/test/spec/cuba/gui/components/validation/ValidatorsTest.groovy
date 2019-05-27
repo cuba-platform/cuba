@@ -20,21 +20,16 @@ import com.haulmont.chile.core.datatypes.DatatypeRegistry
 import com.haulmont.chile.core.datatypes.impl.DateTimeDatatype
 import com.haulmont.chile.core.datatypes.impl.LocalTimeDatatype
 import com.haulmont.cuba.core.global.TimeSource
-import com.haulmont.cuba.gui.components.DateField
-import com.haulmont.cuba.gui.components.TextField
-import com.haulmont.cuba.gui.components.TimeField
-import com.haulmont.cuba.gui.components.TwinColumn
-import com.haulmont.cuba.gui.components.ValidationException
+import com.haulmont.cuba.gui.components.*
 import com.haulmont.cuba.gui.components.validation.*
 import com.haulmont.cuba.gui.screen.OpenMode
-import com.haulmont.cuba.security.app.UserManagementService
-import com.haulmont.cuba.web.testsupport.proxy.TestServiceProxy
 import spec.cuba.gui.components.validation.screens.ValidatorsScreen
 import spec.cuba.web.UiScreenSpec
 
 import java.time.LocalTime
 import java.time.OffsetDateTime
 import java.time.OffsetTime
+import java.util.Calendar
 
 class ValidatorsTest extends UiScreenSpec {
 
@@ -42,10 +37,6 @@ class ValidatorsTest extends UiScreenSpec {
     TimeSource timeSource
 
     void setup() {
-        TestServiceProxy.mock(UserManagementService, Mock(UserManagementService) {
-            getSubstitutedUsers(_) >> Collections.emptyList()
-        })
-
         exportScreensPackages(['spec.cuba.gui.components.validation.screens'])
         datatypeRegistry = cont.getBean(DatatypeRegistry)
         timeSource = cont.getBean(TimeSource.NAME)

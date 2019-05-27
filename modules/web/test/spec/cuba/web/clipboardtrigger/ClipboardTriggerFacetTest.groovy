@@ -7,9 +7,7 @@ package spec.cuba.web.clipboardtrigger
 
 import com.haulmont.cuba.gui.components.ClipboardTrigger
 import com.haulmont.cuba.gui.screen.OpenMode
-import com.haulmont.cuba.security.app.UserManagementService
 import com.haulmont.cuba.web.app.main.MainScreen
-import com.haulmont.cuba.web.testsupport.proxy.TestServiceProxy
 import spec.cuba.web.UiScreenSpec
 import spec.cuba.web.clipboardtrigger.screens.ScreenWithClipboardTrigger
 
@@ -17,10 +15,6 @@ import spec.cuba.web.clipboardtrigger.screens.ScreenWithClipboardTrigger
 class ClipboardTriggerFacetTest extends UiScreenSpec {
 
     def setup() {
-        TestServiceProxy.mock(UserManagementService, Mock(UserManagementService) {
-            getSubstitutedUsers(_) >> Collections.emptyList()
-        })
-
         exportScreensPackages(['spec.cuba.web.clipboardtrigger.screens', 'com.haulmont.cuba.web.app.main'])
     }
 

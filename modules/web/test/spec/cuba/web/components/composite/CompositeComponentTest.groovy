@@ -22,10 +22,8 @@ import com.haulmont.cuba.gui.model.InstanceContainer
 import com.haulmont.cuba.gui.screen.OpenMode
 import com.haulmont.cuba.gui.screen.UiControllerUtils
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig
-import com.haulmont.cuba.security.app.UserManagementService
 import com.haulmont.cuba.web.gui.WebUiComponents
 import com.haulmont.cuba.web.testmodel.sales.OrderLine
-import com.haulmont.cuba.web.testsupport.proxy.TestServiceProxy
 import spec.cuba.web.UiScreenSpec
 import spec.cuba.web.components.composite.components.comments.TestCommentaryPanel
 import spec.cuba.web.components.composite.components.comments.TestCommentaryPanelLoader
@@ -39,10 +37,6 @@ import spec.cuba.web.components.composite.screens.CompositeFieldScreen
 class CompositeComponentTest extends UiScreenSpec {
 
     void setup() {
-        TestServiceProxy.mock(UserManagementService, Mock(UserManagementService) {
-            getSubstitutedUsers(_) >> Collections.emptyList()
-        })
-
         exportScreensPackages(['spec.cuba.web.components.composite.screens', 'com.haulmont.cuba.web.app.main'])
 
         // Register composite components

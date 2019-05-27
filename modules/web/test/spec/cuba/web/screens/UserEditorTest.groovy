@@ -26,7 +26,6 @@ import com.haulmont.cuba.gui.components.TextField
 import com.haulmont.cuba.gui.screen.EditorScreen
 import com.haulmont.cuba.gui.screen.MapScreenOptions
 import com.haulmont.cuba.gui.screen.OpenMode
-import com.haulmont.cuba.security.app.UserManagementService
 import com.haulmont.cuba.security.entity.EntityOp
 import com.haulmont.cuba.security.entity.Group
 import com.haulmont.cuba.security.entity.PermissionType
@@ -54,10 +53,6 @@ class UserEditorTest extends UiScreenSpec {
 
                 return []
             }
-        })
-
-        TestServiceProxy.mock(UserManagementService, Mock(UserManagementService) {
-            getSubstitutedUsers(_) >> Collections.emptyList()
         })
     }
 

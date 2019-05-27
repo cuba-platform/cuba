@@ -18,19 +18,11 @@ package com.haulmont.cuba.web.test;
 
 import com.haulmont.cuba.gui.screen.OpenMode;
 import com.haulmont.cuba.gui.screen.Screen;
-import com.haulmont.cuba.security.app.UserManagementService;
 import com.haulmont.cuba.web.app.main.MainScreen;
 import com.haulmont.cuba.web.container.CubaTestContainer;
 import com.haulmont.cuba.web.testsupport.TestUiEnvironment;
-import com.haulmont.cuba.web.testsupport.proxy.TestServiceProxy;
-import mockit.Expectations;
-import mockit.Mocked;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-
-import java.util.Collections;
-import java.util.UUID;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -41,20 +33,9 @@ import static org.junit.Assert.assertTrue;
 public class OpenMainScreenTest {
     @Rule
     public TestUiEnvironment environment =
-            new TestUiEnvironment(CubaTestContainer.Common.INSTANCE)
-                    .withScreenPackages("com.haulmont.cuba.web.app.main")
-                    .withUserLogin("admin");
-
-    @Mocked
-    public UserManagementService userManagementService;
-
-    @Before
-    public void before() {
-        new Expectations() {{
-            userManagementService.getSubstitutedUsers((UUID) any); result = Collections.emptyList(); minTimes = 0;
-        }};
-        TestServiceProxy.mock(UserManagementService.class, userManagementService);
-    }
+            new TestUiEnvironment(CubaTestContainer.Common.INSTANCE) // use cuba shared test container
+                    .withScreenPackages("com.haulmont.cuba.web.app.main") // replaces default screen packages
+                    .withUserLogin("admin"); // changes user login in the session
 
     @Test
     public void openMainScreen() {

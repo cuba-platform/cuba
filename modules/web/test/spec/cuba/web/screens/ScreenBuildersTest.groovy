@@ -28,7 +28,6 @@ import com.haulmont.cuba.gui.data.CollectionDatasource
 import com.haulmont.cuba.gui.screen.LookupScreen
 import com.haulmont.cuba.gui.screen.OpenMode
 import com.haulmont.cuba.gui.util.OperationResult
-import com.haulmont.cuba.security.app.UserManagementService
 import com.haulmont.cuba.security.entity.Group
 import com.haulmont.cuba.security.entity.User
 import com.haulmont.cuba.web.testsupport.proxy.TestServiceProxy
@@ -37,7 +36,7 @@ import spec.cuba.web.UiScreenSpec
 import java.util.function.Consumer
 import java.util.function.Function
 
-@SuppressWarnings("GroovyAccessibility")
+@SuppressWarnings(["GroovyAccessibility", "GroovyAssignabilityCheck"])
 class ScreenBuildersTest extends UiScreenSpec {
 
     def setup() {
@@ -59,14 +58,6 @@ class ScreenBuildersTest extends UiScreenSpec {
                 return cc.getCommitInstances()
             }
         })
-
-        TestServiceProxy.mock(UserManagementService, Mock(UserManagementService) {
-            getSubstitutedUsers(_) >> Collections.emptyList()
-        })
-    }
-
-    def cleanup() {
-        TestServiceProxy.clear()
     }
 
     def "build and show UserEditor with ScreenBuilders"() {

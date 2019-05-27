@@ -24,6 +24,7 @@ import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesCache
 import com.haulmont.cuba.core.global.UserSessionSource
 import com.haulmont.cuba.gui.config.WindowConfig
 import com.haulmont.cuba.gui.sys.UiControllersConfiguration
+import com.haulmont.cuba.security.app.UserManagementService
 import com.haulmont.cuba.web.testsupport.proxy.TestServiceProxy
 import com.haulmont.cuba.web.testsupport.ui.TestCachingStrategy
 
@@ -39,6 +40,10 @@ class UiScreenSpec extends WebSpec {
         dynamicAttributesCacheStrategy.setData(dynamicAttributesCache)
 
         clientCacheManager.addCachedObject(DynamicAttributesCacheStrategy.NAME, dynamicAttributesCacheStrategy)
+
+        TestServiceProxy.mock(UserManagementService, Mock(UserManagementService) {
+            getSubstitutedUsers(_) >> Collections.emptyList()
+        })
     }
 
     protected void exportScreensPackages(List<String> packages) {

@@ -21,7 +21,6 @@ import com.haulmont.cuba.core.entity.Entity
 import com.haulmont.cuba.core.global.CommitContext
 import com.haulmont.cuba.gui.screen.OpenMode
 import com.haulmont.cuba.gui.screen.UiControllerUtils
-import com.haulmont.cuba.security.app.UserManagementService
 import com.haulmont.cuba.web.testmodel.sales.Order
 import com.haulmont.cuba.web.testmodel.sales.OrderLine
 import com.haulmont.cuba.web.testmodel.sales.OrderLineParam
@@ -34,10 +33,6 @@ import spock.lang.Unroll
 class CompositionScreensTest extends UiScreenSpec {
 
     void setup() {
-        TestServiceProxy.mock(UserManagementService, Mock(UserManagementService) {
-            getSubstitutedUsers(_) >> Collections.emptyList()
-        })
-
         exportScreensPackages(['spec.cuba.web.datacontext.screens', 'com.haulmont.cuba.web.app.main'])
     }
 
