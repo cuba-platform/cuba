@@ -207,7 +207,7 @@ public class SettingsWindow extends AbstractWindow {
 
         Map<String, String> map = new LinkedHashMap<>();
         for (MenuItem item : collectPermittedScreens(menuConfig.getRootItems())) {
-            map.put(menuConfig.getItemCaption(item.getId()), item.getScreen());
+            map.put(menuConfig.getItemCaption(item), item.getScreen());
         }
         defaultScreenField.setOptionsMap(map);
 

@@ -75,7 +75,7 @@ public class MenuConfig {
      * Localized menu item caption.
      *
      * @param id screen ID as defined in <code>screens.xml</code>
-     * @deprecated Use {@link MenuConfig#getItemCaption(String)}
+     * @deprecated Use {@link MenuConfig#getItemCaption(String)} or {@link MenuConfig#getItemCaption(MenuItem)}
      */
     @Deprecated
     public static String getMenuItemCaption(String id) {
@@ -85,6 +85,17 @@ public class MenuConfig {
 
     public String getItemCaption(String id) {
         return messages.getMainMessage("menu-config." + id);
+    }
+
+    public String getItemCaption(MenuItem menuItem) {
+        String caption = menuItem.getCaption();
+        if (StringUtils.isNotEmpty(caption)) {
+            String localizedCaption = loadResourceString(caption);
+            if (StringUtils.isNotEmpty(localizedCaption)) {
+                return localizedCaption;
+            }
+        }
+        return getItemCaption(menuItem.getId());
     }
 
     protected void checkInitialized() {
@@ -180,6 +191,7 @@ public class MenuConfig {
                 loadShortcut(menuItem, element);
                 loadStylename(element, menuItem);
                 loadExpanded(element, menuItem);
+                loadCaption(element, menuItem);
                 loadDescription(element, menuItem);
                 loadMenuItems(element, menuItem);
             } else if ("item".equals(element.getName())) {
@@ -257,6 +269,7 @@ public class MenuConfig {
         loadIcon(element, menuItem);
         loadShortcut(menuItem, element);
         loadStylename(element, menuItem);
+        loadCaption(element, menuItem);
         loadDescription(element, menuItem);
 
         return menuItem;
@@ -276,6 +289,13 @@ public class MenuConfig {
         String expanded = element.attributeValue("expanded");
         if (StringUtils.isNotEmpty(expanded)) {
             menuItem.setExpanded(Boolean.parseBoolean(expanded));
+        }
+    }
+
+    protected void loadCaption(Element element, MenuItem menuItem) {
+        String caption = element.attributeValue("caption");
+        if (StringUtils.isNotEmpty(caption)) {
+            menuItem.setCaption(caption);
         }
     }
 

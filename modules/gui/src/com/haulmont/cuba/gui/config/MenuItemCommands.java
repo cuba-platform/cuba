@@ -85,7 +85,7 @@ public class MenuItemCommands {
      * @return command
      */
     public MenuItemCommand create(FrameOwner origin, MenuItem item) {
-        Map<String, Object> params = loadParams(item.getDescriptor(), item.getScreen());
+        Map<String, Object> params = loadParams(item);
         List<UiControllerProperty> properties = loadProperties(item.getDescriptor());
 
         if (StringUtils.isNotEmpty(item.getScreen())) {
@@ -103,7 +103,8 @@ public class MenuItemCommands {
         return null;
     }
 
-    protected Map<String, Object> loadParams(Element descriptor, String screen) {
+    protected Map<String, Object> loadParams(MenuItem item) {
+        Element descriptor = item.getDescriptor();
         if (descriptor == null) {
             return Collections.emptyMap();
         }
@@ -131,11 +132,13 @@ public class MenuItemCommands {
             }
         }
 
+        String screen = item.getScreen();
+
         if (StringUtils.isNotEmpty(screen)) {
             WindowInfo windowInfo = windowConfig.getWindowInfo(screen);
             // caption is passed only for legacy screens
             if (windowInfo.getDescriptor() != null) {
-                String caption = menuConfig.getItemCaption(screen);
+                String caption = menuConfig.getItemCaption(item);
 
                 builder.put(WindowParams.CAPTION.name(), caption);
             }

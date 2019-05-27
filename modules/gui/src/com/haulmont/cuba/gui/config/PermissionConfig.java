@@ -108,7 +108,7 @@ public class PermissionConfig {
 
         private void walkMenu(MenuItem info, Node<BasicPermissionTarget> node) {
             String id = info.getId();
-            String caption = menuConfig.getItemCaption(id)
+            String caption = menuConfig.getItemCaption(info)
                     .replaceAll("<.+?>", "")
                     .replaceAll("&gt;", "");
             caption = StringEscapeUtils.unescapeHtml4(caption);

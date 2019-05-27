@@ -131,7 +131,7 @@ public class MenuBuilder {
 
     protected void createMenuBarItem(Window webWindow, MenuItem item) {
         if (item.isPermitted(session)) {
-            AppMenu.MenuItem menuItem = appMenu.createMenuItem(item.getId(), menuConfig.getItemCaption(item.getId()),
+            AppMenu.MenuItem menuItem = appMenu.createMenuItem(item.getId(), menuConfig.getItemCaption(item),
                     null, createMenuBarCommand(item));
 
             assignShortcut(webWindow, menuItem, item);
@@ -158,7 +158,7 @@ public class MenuBuilder {
                         }
 
                         AppMenu.MenuItem menuItem = appMenu.createMenuItem(child.getId(),
-                                menuConfig.getItemCaption(child.getId()), null, createMenuBarCommand(child));
+                                menuConfig.getItemCaption(child), null, createMenuBarCommand(child));
 
                         assignShortcut(webWindow, menuItem, child);
                         assignDescription(menuItem, child);
@@ -170,7 +170,7 @@ public class MenuBuilder {
                 } else {
                     if (child.isPermitted(session)) {
                         AppMenu.MenuItem menuItem = appMenu.createMenuItem(child.getId(),
-                                menuConfig.getItemCaption(child.getId()), null, null);
+                                menuConfig.getItemCaption(child), null, null);
 
                         assignShortcut(webWindow, menuItem, child);
                         assignDescription(menuItem, child);

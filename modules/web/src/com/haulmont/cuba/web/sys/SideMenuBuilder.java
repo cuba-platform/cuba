@@ -117,7 +117,7 @@ public class SideMenuBuilder {
     protected void createMenuBarItem(Window webWindow, SideMenu menu, MenuItem item) {
         if (item.isPermitted(session)) {
             SideMenu.MenuItem menuItem = menu.createMenuItem(item.getId(),
-                    menuConfig.getItemCaption(item.getId()), null, createMenuBarCommand(item));
+                    menuConfig.getItemCaption(item), null, createMenuBarCommand(item));
 
             createSubMenu(webWindow, menu, menuItem, item, session);
             assignStyleName(menuItem, item);
@@ -142,7 +142,7 @@ public class SideMenuBuilder {
 
                 if (child.isPermitted(session)) {
                     SideMenu.MenuItem menuItem = menu.createMenuItem(child.getId(),
-                            menuConfig.getItemCaption(child.getId()));
+                            menuConfig.getItemCaption(child));
 
                     assignDescription(menuItem, child);
                     assignIcon(menuItem, child);

@@ -40,6 +40,7 @@ public class MenuItem {
     private String beanMethod;
     private String stylename;
     private String icon;
+    private String caption;
     private String description;
     private Element descriptor;
     private boolean separator = false;
@@ -86,10 +87,42 @@ public class MenuItem {
         return descriptor;
     }
 
+    public void setDescriptor(Element descriptor) {
+        this.descriptor = descriptor;
+    }
+
+    /**
+     * @return a raw string from menu XML config, can be a reference to localization message, e.g. {@code mainMsg://menuitem.caption}
+     *
+     * @see MenuConfig#getItemCaption(MenuItem)
+     */
+    public String getCaption() {
+        return caption;
+    }
+
+    /**
+     * Sets the given {@code caption} to menu item.
+     *
+     * @param caption menu item caption
+     *
+     * @see MenuConfig#getItemCaption(MenuItem)
+     */
+    public void setCaption(String caption) {
+        this.caption = caption;
+    }
+
+    /**
+     * @return a raw string from menu XML config, can be a reference to localization message, e.g. {@code mainMsg://menuitem.description}
+     */
     public String getDescription() {
         return description;
     }
 
+    /**
+     * Sets the given {@code description} to menu item.
+     *
+     * @param description menu item description
+     */
     public void setDescription(String description) {
         this.description = description;
     }
@@ -100,10 +133,6 @@ public class MenuItem {
 
     public void setStylename(String stylename) {
         this.stylename = stylename;
-    }
-
-    public void setDescriptor(Element descriptor) {
-        this.descriptor = descriptor;
     }
 
     public boolean isPermitted(UserSession session) {
