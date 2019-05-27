@@ -23,6 +23,7 @@ import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributes;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesMetaProperty;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesTools;
+import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.global.DevelopmentException;
 import com.haulmont.cuba.core.global.Security;
@@ -271,7 +272,8 @@ public class RuntimePropertiesFrame extends AbstractFrame {
 
     protected Consumer getValidator(MetaProperty property) {
         Consumer validator = null;
-        if (property.getRange().isDatatype()) {
+        if (property.getRange().isDatatype()
+                && !Boolean.TRUE.equals(DynamicAttributesUtils.getCategoryAttribute(property).getIsCollection())) {
             Class type = property.getRange().asDatatype().getJavaClass();
 
             if (type.equals(Integer.class)) {
