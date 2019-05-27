@@ -19,9 +19,7 @@ package spec.cuba.web.workarea
 import com.haulmont.cuba.gui.components.Window
 import com.haulmont.cuba.gui.icons.CubaIcon
 import com.haulmont.cuba.gui.screen.OpenMode
-import com.haulmont.cuba.security.app.UserManagementService
 import com.haulmont.cuba.web.gui.components.WebTabWindow
-import com.haulmont.cuba.web.testsupport.proxy.TestServiceProxy
 import com.vaadin.server.FontIcon
 import com.vaadin.ui.TabSheet
 import spec.cuba.web.UiScreenSpec
@@ -33,10 +31,6 @@ import javax.annotation.Nonnull
 class TabWindowPropertiesTest extends UiScreenSpec {
 
     void setup() {
-        TestServiceProxy.mock(UserManagementService, Mock(UserManagementService) {
-            getSubstitutedUsers(_) >> Collections.emptyList()
-        })
-
         exportScreensPackages(['spec.cuba.web.workarea.screens', 'com.haulmont.cuba.web.app.main'])
     }
 

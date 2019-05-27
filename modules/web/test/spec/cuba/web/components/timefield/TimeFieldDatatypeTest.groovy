@@ -23,8 +23,6 @@ import com.haulmont.chile.core.datatypes.impl.OffsetTimeDatatype
 import com.haulmont.chile.core.datatypes.impl.TimeDatatype
 import com.haulmont.cuba.gui.components.TimeField
 import com.haulmont.cuba.gui.screen.OpenMode
-import com.haulmont.cuba.security.app.UserManagementService
-import com.haulmont.cuba.web.testsupport.proxy.TestServiceProxy
 import spec.cuba.web.UiScreenSpec
 import spec.cuba.web.components.timefield.screens.TimeFieldDatatypeScreen
 
@@ -32,10 +30,6 @@ import spec.cuba.web.components.timefield.screens.TimeFieldDatatypeScreen
 class TimeFieldDatatypeTest extends UiScreenSpec {
 
     void setup() {
-        TestServiceProxy.mock(UserManagementService, Mock(UserManagementService) {
-            getSubstitutedUsers(_) >> Collections.emptyList()
-        })
-
         exportScreensPackages(['spec.cuba.web.components.timefield.screens', 'com.haulmont.cuba.web.app.main'])
     }
 

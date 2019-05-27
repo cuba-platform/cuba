@@ -21,8 +21,6 @@ import com.haulmont.chile.core.datatypes.Datatype
 import com.haulmont.chile.core.datatypes.impl.*
 import com.haulmont.cuba.gui.components.DatePicker
 import com.haulmont.cuba.gui.screen.OpenMode
-import com.haulmont.cuba.security.app.UserManagementService
-import com.haulmont.cuba.web.testsupport.proxy.TestServiceProxy
 import spec.cuba.web.UiScreenSpec
 import spec.cuba.web.components.datepicker.screens.DatePickerDatatypeScreen
 
@@ -30,10 +28,6 @@ class DatePickerDatatypeTest extends UiScreenSpec {
 
     @SuppressWarnings(["GroovyAssignabilityCheck", "GroovyAccessibility"])
     void setup() {
-        TestServiceProxy.mock(UserManagementService, Mock(UserManagementService) {
-            getSubstitutedUsers(_) >> Collections.emptyList()
-        })
-
         exportScreensPackages(['spec.cuba.web.components.datepicker.screens', 'com.haulmont.cuba.web.app.main'])
     }
 

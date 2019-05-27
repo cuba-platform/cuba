@@ -26,9 +26,7 @@ import com.haulmont.cuba.gui.components.*
 import com.haulmont.cuba.gui.components.inputdialog.InputDialogAction
 import com.haulmont.cuba.gui.screen.OpenMode
 import com.haulmont.cuba.gui.screen.Screen
-import com.haulmont.cuba.security.app.UserManagementService
 import com.haulmont.cuba.web.testmodel.sample.GoodInfo
-import com.haulmont.cuba.web.testsupport.proxy.TestServiceProxy
 import spec.cuba.web.UiScreenSpec
 
 import static com.haulmont.cuba.gui.app.core.inputdialog.InputDialog.*
@@ -41,16 +39,9 @@ import static com.haulmont.cuba.gui.screen.UiControllerUtils.getScreenContext
 
 class InputDialogTest extends UiScreenSpec {
 
-    DatatypeRegistry datatypeRegistry
-
     @SuppressWarnings("GroovyAssignabilityCheck")
     void setup() {
-        TestServiceProxy.mock(UserManagementService, Mock(UserManagementService) {
-            getSubstitutedUsers(_) >> Collections.emptyList()
-        })
         exportScreensPackages(['com.haulmont.cuba.gui.app'])
-
-        datatypeRegistry = cont.getBean(DatatypeRegistry)
     }
 
     def "input parameter ids should be different"() {
@@ -331,6 +322,7 @@ class InputDialogTest extends UiScreenSpec {
 
     def "field validation"() {
         def screens = vaadinUi.screens
+        def datatypeRegistry = cont.getBean(DatatypeRegistry)
 
         def mainWindow = screens.create("mainWindow", OpenMode.ROOT)
         screens.show(mainWindow)

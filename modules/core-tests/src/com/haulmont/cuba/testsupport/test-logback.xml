@@ -34,6 +34,8 @@
 
     <!-- Begin CUBA -->
 
+    <logger name="com.haulmont.bali.util.Dom4j" level="DEBUG"/>
+
     <logger name="com.haulmont.cuba" level="DEBUG"/>
 
     <logger name="com.haulmont.cuba.core.sys.CubaDefaultListableBeanFactory" level="WARN"/>

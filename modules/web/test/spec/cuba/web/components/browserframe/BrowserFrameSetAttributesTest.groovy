@@ -18,8 +18,6 @@ package spec.cuba.web.components.browserframe
 
 import com.haulmont.cuba.gui.components.BrowserFrame
 import com.haulmont.cuba.gui.screen.OpenMode
-import com.haulmont.cuba.security.app.UserManagementService
-import com.haulmont.cuba.web.testsupport.proxy.TestServiceProxy
 import spec.cuba.web.UiScreenSpec
 import spec.cuba.web.components.browserframe.screens.*
 
@@ -27,10 +25,6 @@ import spec.cuba.web.components.browserframe.screens.*
 class BrowserFrameSetAttributesTest extends UiScreenSpec {
 
     void setup() {
-        TestServiceProxy.mock(UserManagementService, Mock(UserManagementService) {
-            getSubstitutedUsers(_) >> Collections.emptyList()
-        })
-
         exportScreensPackages(['spec.cuba.web.components.browserframe.screens', 'com.haulmont.cuba.web.app.main'])
     }
 

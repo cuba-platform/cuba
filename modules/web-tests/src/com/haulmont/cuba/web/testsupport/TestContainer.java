@@ -20,8 +20,10 @@ import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.LoggerContext;
 import com.haulmont.cuba.core.app.ConfigStorageService;
 import com.haulmont.cuba.core.app.DataService;
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.ClientType;
 import com.haulmont.cuba.core.global.Events;
+import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.sys.AbstractAppContextLoader;
 import com.haulmont.cuba.core.sys.AppComponents;
 import com.haulmont.cuba.core.sys.AppContext;
@@ -305,5 +307,11 @@ public class TestContainer extends ExternalResource {
         for (Map.Entry<String, String> entry : getAppProperties().entrySet()) {
             AppContext.setProperty(entry.getKey(), entry.getValue());
         }
+    }
+
+    public <E extends Entity> TestEntityFactory<E> getEntityFactory(Class<E> clazz) {
+        Metadata metadata = getBean(Metadata.class);
+
+        return new TestEntityFactory<>(metadata, clazz);
     }
 }

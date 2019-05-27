@@ -18,13 +18,11 @@ package spec.cuba.web.fragments
 
 import com.haulmont.cuba.gui.components.Fragment
 import com.haulmont.cuba.gui.screen.OpenMode
-import com.haulmont.cuba.security.app.UserManagementService
 import com.haulmont.cuba.web.app.main.MainScreen
-import com.haulmont.cuba.web.testsupport.proxy.TestServiceProxy
 import spec.cuba.web.UiScreenSpec
+import spec.cuba.web.fragments.screens.FragmentWithAttachListener
 import spec.cuba.web.fragments.screens.ScreenWithFragment
 import spec.cuba.web.fragments.screens.ScreenWithXmlFragment
-import spec.cuba.web.fragments.screens.FragmentWithAttachListener
 
 import static com.haulmont.cuba.gui.screen.ScreenFragment.*
 
@@ -32,10 +30,6 @@ import static com.haulmont.cuba.gui.screen.ScreenFragment.*
 class FragmentAttachTest extends UiScreenSpec {
 
     def setup() {
-        TestServiceProxy.mock(UserManagementService, Mock(UserManagementService) {
-            getSubstitutedUsers(_) >> Collections.emptyList()
-        })
-
         exportScreensPackages(['spec.cuba.web.fragments.screens', 'com.haulmont.cuba.web.app.main'])
     }
 

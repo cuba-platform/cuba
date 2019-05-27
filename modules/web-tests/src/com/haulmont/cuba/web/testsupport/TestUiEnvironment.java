@@ -31,6 +31,7 @@ import com.haulmont.cuba.gui.Screens;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.sys.UiControllersConfiguration;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
+import com.haulmont.cuba.security.app.UserManagementService;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.App;
@@ -157,6 +158,7 @@ public class TestUiEnvironment extends ExternalResource {
 
     protected void setupWebBeans() {
         TestServiceProxy.mock(PersistenceManagerService.class, new TestPersistenceManagerService());
+        TestServiceProxy.mock(UserManagementService.class, new TestUserManagementService());
 
         TestCachingStrategy dynamicAttributesCacheStrategy = new TestCachingStrategy();
         DynamicAttributesCache dynamicAttributesCache = new DynamicAttributesCache(
@@ -195,6 +197,7 @@ public class TestUiEnvironment extends ExternalResource {
         vaadinSession.setAttribute(App.NAME, app);
         vaadinSession.setAttribute(Connection.class, connection);
         vaadinSession.setAttribute(Connection.NAME, connection);
+        vaadinSession.setAttribute(UserSession.class, sessionSource.getSession());
 
         VaadinSession.setCurrent(vaadinSession);
 

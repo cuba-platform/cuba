@@ -23,19 +23,13 @@ import com.haulmont.cuba.gui.app.security.user.edit.UserEditor
 import com.haulmont.cuba.gui.config.MenuItem
 import com.haulmont.cuba.gui.config.MenuItemCommands
 import com.haulmont.cuba.gui.screen.OpenMode
-import com.haulmont.cuba.security.app.UserManagementService
 import com.haulmont.cuba.security.entity.User
-import com.haulmont.cuba.web.testsupport.proxy.TestServiceProxy
 import spec.cuba.web.UiScreenSpec
 import spec.cuba.web.menu.commandtargets.*
 
 class MenuItemCommandsTest extends UiScreenSpec {
 
     void setup() {
-        TestServiceProxy.mock(UserManagementService, Mock(UserManagementService) {
-            getSubstitutedUsers(_) >> Collections.emptyList()
-        })
-
         exportScreensPackages(['spec.cuba.web.menu.commandtargets', 'com.haulmont.cuba.web.app.main'])
 
         TestMenuItemConsumer.launched.set(false)
