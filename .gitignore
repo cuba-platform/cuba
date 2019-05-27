@@ -11,6 +11,4 @@ out
 *.ids
 .idea
 
-modules/*/test-home/
 modules/*/build/
-modules/core/test-ormcache-run/
