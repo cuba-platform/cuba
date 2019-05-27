@@ -28,6 +28,7 @@ import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.Dialogs;
 import com.haulmont.cuba.gui.Notifications;
 import com.haulmont.cuba.gui.Screens;
+import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.sys.UiControllersConfiguration;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.security.entity.User;
@@ -56,6 +57,51 @@ import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static org.apache.commons.lang3.reflect.FieldUtils.getDeclaredField;
 
+/**
+ * Mocked UI environment for integration tests of Web tier. <br>
+ * Automatically start and cleans the corresponding test container instance. <br>
+ * Provides {@link App}, {@link AppUI} and initialized {@link ClientUserSession}.
+ *
+ * Usually, you should use an additional mocking framework in order to mock middleware services, e.g. JMockit or Spock.
+ *
+ * <p>Usage:</p>
+ * <pre>
+ *     // setup environment, pass desired container instance to constructor
+ *    {@literal @}Rule
+ *     public TestUiEnvironment environment =
+ *             new TestUiEnvironment(TestContainer.Common.INSTANCE)
+ *                     .withLocale(Locale.ENGLISH)
+ *                     .withUserLogin("admin");
+ *
+ *     // mock services
+ *
+ *    {@literal @}Mocked
+ *     public UserManagementService userManagementService;
+ *
+ *    {@literal @}Before
+ *     public void before() {
+ *         new Expectations() {{
+ *             userManagementService.getSubstitutedUsers((UUID) any); result = Collections.emptyList(); minTimes = 0;
+ *         }};
+ *         TestServiceProxy.mock(UserManagementService.class, userManagementService);
+ *     }
+ *
+ *     // test something
+ *
+ *    {@literal @}Test
+ *     public void openMainScreen() {
+ *         // open screens, manipulate UI
+ *         Screen screen = environment.getScreens()
+ *                 .create(MainScreen.class, OpenMode.ROOT)
+ *                 .show();
+ *
+ *         assertNotNull(screen);
+ *         assertTrue(screen instanceof MainScreen);
+ *     }
+ * </pre>
+ *
+ * @see TestContainer
+ */
 public class TestUiEnvironment extends ExternalResource {
 
     public static final String USER_ID = "b8a050db-3ade-487e-817d-781a31918657";
@@ -238,54 +284,105 @@ public class TestUiEnvironment extends ExternalResource {
         windowConfig.reset();
     }
 
+    /**
+     * @return mocked user session source
+     */
     public TestUserSessionSource getSessionSource() {
         return sessionSource;
     }
 
+    /**
+     * @return test container with Spring beans
+     */
     public TestContainer getContainer() {
         return container;
     }
 
+    /**
+     * @return user session from {@link UserSessionSource}
+     */
     public UserSession getUserSession() {
         return sessionSource.getUserSession();
     }
 
+    /**
+     * @return UI
+     */
     public AppUI getUI() {
         return ui;
     }
 
+    /**
+     * @return screens API
+     */
     public Screens getScreens() {
         return ui.getScreens();
     }
 
+    /**
+     * @return dialogs API
+     */
     public Dialogs getDialogs() {
         return ui.getDialogs();
     }
 
+    /**
+     * @return notifications API
+     */
     public Notifications getNotifications() {
         return ui.getNotifications();
     }
 
+    /**
+     * Sets authenticated flag to the mocked user session.
+     *
+     * @param sessionAuthenticated true if user is authenticated
+     * @return this
+     */
     public TestUiEnvironment sessionAuthenticated(boolean sessionAuthenticated) {
         this.sessionAuthenticated = sessionAuthenticated;
         return this;
     }
 
+    /**
+     * Sets locale to the mocked user session.
+     *
+     * @param locale locale
+     * @return this
+     */
     public TestUiEnvironment withLocale(Locale locale) {
         this.locale = locale;
         return this;
     }
 
+    /**
+     * Sets user login to the mocked user session.
+     *
+     * @param userLogin user login
+     * @return this
+     */
     public TestUiEnvironment withUserLogin(String userLogin) {
         this.userLogin = userLogin;
         return this;
     }
 
+    /**
+     * Sets user name to the mocked user session.
+     *
+     * @param userName user name
+     * @return this
+     */
     public TestUiEnvironment withUserName(String userName) {
         this.userName = userName;
         return this;
     }
 
+    /**
+     * Overrides screen packages that will be scanned by {@link WindowConfig}.
+     *
+     * @param screenPackages screen packages
+     * @return this
+     */
     public TestUiEnvironment withScreenPackages(String... screenPackages) {
         this.screenPackages = screenPackages;
         return this;

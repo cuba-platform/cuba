@@ -30,14 +30,13 @@ import java.util.*;
 /**
  * DEPRECATED. Use TestContainer and JUnit4 test annotations:
  * <pre>
- *     {@literal@}ClassRule
+ *    {@literal @}ClassRule
  *     public static TestContainer cont = TestContainer.Common.INSTANCE;
  *
- *     {@literal@}Test
+ *    {@literal @}Test
  *     public void testSomething() {
  *     }
  * </pre>
- *
  */
 @Deprecated
 public abstract class CubaTestCase extends TestCase {

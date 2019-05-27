@@ -35,25 +35,24 @@ import java.util.UUID;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+/**
+ * Sample test with {@link TestUiEnvironment}.
+ */
 public class OpenMainScreenTest {
-
-    @Mocked
-    public UserManagementService userManagementService;
-
     @Rule
     public TestUiEnvironment environment =
             new TestUiEnvironment(CubaTestContainer.Common.INSTANCE)
                     .withScreenPackages("com.haulmont.cuba.web.app.main")
                     .withUserLogin("admin");
 
+    @Mocked
+    public UserManagementService userManagementService;
+
     @Before
     public void before() {
-        new Expectations() {
-            {
-                userManagementService.getSubstitutedUsers((UUID) any); result = Collections.emptyList(); minTimes = 0;
-            }
-        };
-
+        new Expectations() {{
+            userManagementService.getSubstitutedUsers((UUID) any); result = Collections.emptyList(); minTimes = 0;
+        }};
         TestServiceProxy.mock(UserManagementService.class, userManagementService);
     }
 

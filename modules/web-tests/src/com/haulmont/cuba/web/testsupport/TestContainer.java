@@ -50,6 +50,35 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 
+/**
+ * Container for integration tests of Web tier.
+ *
+ * <p>Usage of the common instance (time saving):</p>
+ * <pre>
+ *    {@literal @}ClassRule
+ *     public static TestContainer cont = TestContainer.Common.INSTANCE;
+ *
+ *    {@literal @}Test
+ *     public void testSomething() {
+ *
+ *     }
+ * </pre>
+ *
+ * <p>Usage of a specific instance:</p>
+ * <pre>
+ *    {@literal @}ClassRule
+ *     public static TestContainer cont = new TestContainer()
+ *              .setAppPropertiesFiles(Arrays.asList(
+ *                  "com/haulmont/cuba/web-app.properties",
+ *                  "com/haulmont/cuba/web/testsupport/test-web-app.properties",
+ *                  "com/company/sample/web/my-test-app.properties"));
+ *
+ *    {@literal @}Test
+ *     public void testSomething() {
+ *
+ *     }
+ * </pre>
+ */
 public class TestContainer extends ExternalResource {
 
     public static class Common extends TestContainer {
@@ -200,7 +229,7 @@ public class TestContainer extends ExternalResource {
     }
 
     protected void initAppComponents() {
-        AppContext.Internals.setAppComponents(new AppComponents(getAppComponents(), "core"));
+        AppContext.Internals.setAppComponents(new AppComponents(getAppComponents(), "web"));
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
