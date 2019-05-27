@@ -18,6 +18,7 @@ package com.haulmont.cuba.gui.model.impl;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.Sort;
 import com.haulmont.cuba.gui.data.impl.EntityComparator;
@@ -64,9 +65,15 @@ public abstract class BaseContainerSorter implements Sorter {
         if (sort.getOrders().size() > 1) {
             throw new UnsupportedOperationException("Sort by multiple properties is not supported");
         }
-        MetaPropertyPath propertyPath = metaClass.getPropertyPath(sort.getOrders().get(0).getProperty());
+
+        String propertyName = sort.getOrders().get(0).getProperty();
+
+        MetaPropertyPath propertyPath = DynamicAttributesUtils.isDynamicAttribute(propertyName)
+                ? DynamicAttributesUtils.getMetaPropertyPath(metaClass, propertyName)
+                : metaClass.getPropertyPath(propertyName);
+
         if (propertyPath == null) {
-            throw new IllegalArgumentException("Property " + sort.getOrders().get(0).getProperty() + " is invalid");
+            throw new IllegalArgumentException("Property " + propertyName + " is invalid");
         }
         boolean asc = sort.getOrders().get(0).getDirection() == Sort.Direction.ASC;
         return new EntityComparator<>(propertyPath, asc);
