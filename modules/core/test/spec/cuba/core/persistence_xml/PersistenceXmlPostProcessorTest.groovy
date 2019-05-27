@@ -33,7 +33,7 @@ class PersistenceXmlPostProcessorTest extends Specification {
     private PersistenceConfigProcessor persistenceConfigProcessor
 
     void setup() {
-        workDir = System.getProperty('user.dir') + '/test-home/PersistenceXmlPostProcessorTest'
+        workDir = System.getProperty('user.dir') + '/build/test-home/PersistenceXmlPostProcessorTest'
         new File(workDir).deleteDir()
 
         persistenceConfigProcessor = new PersistenceConfigProcessor()
