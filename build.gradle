@@ -615,6 +615,15 @@ configure(webTestsModule) {
         options.addStringOption("sourcepath", "")
     }
 
+    task sourceJar(type: Jar) {
+        from file('src')
+        classifier = 'sources'
+    }
+
+    artifacts {
+        archives sourceJar
+    }
+
     dependencies {
         compile(clientTestsModule)
         compile(webModule)
