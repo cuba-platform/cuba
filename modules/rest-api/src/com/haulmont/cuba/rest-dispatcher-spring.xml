@@ -142,7 +142,7 @@
     </security:http>
 
     <!-- API controllers endpoints -->
-    <security:http pattern="/rest/v2/**"
+    <security:http request-matcher-ref="restApiRequestMatcher"
                    create-session="stateless"
                    entry-point-ref="oauthAuthenticationEntryPoint"
                    xmlns="http://www.springframework.org/schema/security">
@@ -163,6 +163,9 @@
         <custom-filter ref="cuba_AnonymousAuthenticationFilter" after="PRE_AUTH_FILTER"/>
         <custom-filter ref="cuba_RestLastSecurityFilter" position="LAST"/>
     </security:http>
+
+    <bean id="restApiRequestMatcher"
+          class="com.haulmont.restapi.sys.CubaRestRequestMatcher"/>
 
     <bean id="firstRestEndpointFilter" class="org.springframework.web.filter.CompositeFilter">
         <property name="filters">

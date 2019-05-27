@@ -23,6 +23,7 @@ import com.haulmont.cuba.core.config.SourceType;
 import com.haulmont.cuba.core.config.defaults.DefaultBoolean;
 import com.haulmont.cuba.core.config.type.CommaSeparatedStringListTypeFactory;
 import com.haulmont.cuba.core.config.type.Factory;
+import org.springframework.security.web.util.matcher.RequestMatcher;
 
 import java.util.List;
 
@@ -81,4 +82,20 @@ public interface RestApiConfig extends Config {
     @Property("cuba.checkPasswordOnClient")
     @DefaultBoolean(false)
     boolean getCheckPasswordOnClient();
+
+    /**
+     * Application components can use this property to set URL patterns to bypass by REST API.
+     * <p>
+     * Patterns are trailing sub-paths of REST API base mapping: {@code /rest/v2} starting with "/".
+     * <p>
+     * Example for IDP REST Auth to bypass all {@code /rest/v2/idp/**} requests:
+     * <pre>
+     *    cuba.web.externalRestBypassPatterns = +/idp/,
+     * </pre>
+     *
+     * @return Comma-separated list with trailing comma of patterns for REST {@link RequestMatcher} to bypass.
+     */
+    @Property("cuba.web.externalRestBypassPatterns")
+    @Factory(factory = CommaSeparatedStringListTypeFactory.class)
+    List<String> getExternalRestBypassPatterns();
 }

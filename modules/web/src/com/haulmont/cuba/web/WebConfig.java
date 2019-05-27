@@ -89,7 +89,7 @@ public interface WebConfig extends Config {
      * <p>
      * Related to {@link WebConfig#getCubaHttpFilterBypassUrls()}.
      *
-     * @return Comma-separated list of URLs for CubaHttpFilter to bypass.
+     * @return Comma-separated list with trailing comma of URLs for CubaHttpFilter to bypass.
      */
     @Property("cuba.web.externalHttpFilterByPassUrls")
     @Factory(factory = CommaSeparatedStringListTypeFactory.class)
