@@ -32,6 +32,7 @@ import com.haulmont.cuba.web.sys.RedirectHandler;
 import com.haulmont.cuba.web.sys.VaadinSessionScope;
 import com.vaadin.server.*;
 import com.vaadin.ui.UI;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
@@ -279,10 +280,22 @@ public class DefaultApp extends App {
         if (connection.isAuthenticated()) {
             return webConfig.getMainScreenId();
         } else {
+            String loginScreenId = webConfig.getLoginScreenId();
             String initialScreenId = webConfig.getInitialScreenId();
 
-            if (!userSessionSource.getUserSession().isScreenPermitted(initialScreenId)) {
-                return webConfig.getLoginScreenId();
+            if (StringUtils.isEmpty(initialScreenId)) {
+                return loginScreenId;
+            }
+
+            if (!windowConfig.hasWindow(initialScreenId)) {
+                log.info("No initial screen with id '{}' found", initialScreenId);
+                return loginScreenId;
+            }
+
+            UserSession userSession = userSessionSource.getUserSession();
+            if (!userSession.isScreenPermitted(initialScreenId)) {
+                log.info("Initial screen '{}' is not permitted", initialScreenId);
+                return loginScreenId;
             }
 
             return initialScreenId;
