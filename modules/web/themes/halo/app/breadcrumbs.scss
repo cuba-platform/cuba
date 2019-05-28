@@ -47,7 +47,7 @@
   .c-headline-container {
     height: $v-unit-size;
     padding-top: ceil(($v-unit-size - $v-font-size * $v-line-height) / 2);
-    display: block;
+    display: table;
   }
 
   .c-breadcrumbs-separator,
