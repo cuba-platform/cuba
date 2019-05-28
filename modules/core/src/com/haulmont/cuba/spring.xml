@@ -75,7 +75,6 @@
     <bean id="serviceInterceptor" class="com.haulmont.cuba.core.sys.ServiceInterceptor">
         <property name="userSessions" ref="cuba_UserSessions"/>
         <property name="persistence" ref="cuba_Persistence"/>
-        <property name="beanValidation" ref="cuba_BeanValidation"/>
         <property name="statisticsAccumulator" ref="cuba_MiddlewareStatisticsAccumulator"/>
         <property name="configuration" ref="cuba_Configuration"/>
     </bean>
@@ -92,6 +91,10 @@
 
     <bean id="transactionalInterceptor" class="com.haulmont.cuba.core.sys.TransactionalInterceptor">
         <property name="persistence" ref="cuba_Persistence"/>
+    </bean>
+
+    <bean id="methodValidationPostProcessor" class="com.haulmont.cuba.core.sys.aop.CubaMethodValidationPostProcessor">
+        <property name="beanValidation" ref="cuba_BeanValidation"/>
     </bean>
 
     <aop:aspectj-autoproxy/>
