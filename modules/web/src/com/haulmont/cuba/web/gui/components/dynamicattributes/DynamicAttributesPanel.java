@@ -44,10 +44,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-@CompositeDescriptor("runtime-properties-panel.xml")
-public class RuntimePropertiesPanel extends CompositeComponent<VBoxLayout> implements Validatable {
+@CompositeDescriptor("dynamic-attributes-panel.xml")
+public class DynamicAttributesPanel extends CompositeComponent<VBoxLayout> implements Validatable {
 
-    public static final String NAME = "runtimePropertiesPanel";
+    public static final String NAME = "dynamicAttributesPanel";
 
     public static final String DEFAULT_FIELD_WIDTH = "100%";
 
@@ -76,7 +76,7 @@ public class RuntimePropertiesPanel extends CompositeComponent<VBoxLayout> imple
     protected Form propertiesForm;
     protected LookupField<Category> categoryField;
 
-    public RuntimePropertiesPanel() {
+    public DynamicAttributesPanel() {
         addCreateListener(this::onCreate);
     }
 
@@ -217,7 +217,7 @@ public class RuntimePropertiesPanel extends CompositeComponent<VBoxLayout> imple
         if (fieldCaptionWidth != null) {
             SizeWithUnit sizeWithUnit = SizeWithUnit.parseStringSize(fieldCaptionWidth);
             if (SizeUnit.PERCENTAGE.equals(sizeWithUnit.getUnit())) {
-                throw new IllegalStateException("RuntimePropertiesPanel fieldCaptionWidth with '%' unit is unsupported");
+                throw new IllegalStateException("DynamicAttributesPanel fieldCaptionWidth with '%' unit is unsupported");
             }
             newRuntimeForm.setChildrenCaptionWidth(Math.round(sizeWithUnit.getSize()));
         }
@@ -234,7 +234,7 @@ public class RuntimePropertiesPanel extends CompositeComponent<VBoxLayout> imple
     }
 
     /**
-     * Defines InstanceContainer for RuntimePropertiesPanel.
+     * Defines InstanceContainer for DynamicAttributesPanel.
      *
      * @param instanceContainer {@link InstanceContainer} object with editing entity
      */
@@ -255,7 +255,7 @@ public class RuntimePropertiesPanel extends CompositeComponent<VBoxLayout> imple
     public void setColumnsCount(Integer cols) {
         if (cols != null && cols <= 0) {
             throw new GuiDevelopmentException(
-                    "RuntimePropertiesPanel element has incorrect value of the 'cols' attribute", this.id);
+                    "DynamicAttributesPanel element has incorrect value of the 'cols' attribute", this.id);
         }
         this.cols = cols;
     }
@@ -268,7 +268,7 @@ public class RuntimePropertiesPanel extends CompositeComponent<VBoxLayout> imple
     public void setRowsCount(Integer rows) {
         if (rows != null && rows <= 0) {
             throw new GuiDevelopmentException(
-                    "RuntimePropertiesPanel element has incorrect value of the 'rows' attribute", this.id);
+                    "DynamicAttributesPanel element has incorrect value of the 'rows' attribute", this.id);
         }
         this.rows = rows;
     }

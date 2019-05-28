@@ -23,14 +23,14 @@ import com.haulmont.cuba.gui.model.ScreenData;
 import com.haulmont.cuba.gui.screen.FrameOwner;
 import com.haulmont.cuba.gui.screen.UiControllerUtils;
 import com.haulmont.cuba.gui.xml.layout.loaders.AbstractComponentLoader;
-import com.haulmont.cuba.web.gui.components.dynamicattributes.RuntimePropertiesPanel;
+import com.haulmont.cuba.web.gui.components.dynamicattributes.DynamicAttributesPanel;
 import org.dom4j.Element;
 
-public class RuntimePropertiesPanelLoader extends AbstractComponentLoader<RuntimePropertiesPanel> {
+public class DynamicAttributesPanelLoader extends AbstractComponentLoader<DynamicAttributesPanel> {
 
     @Override
     public void createComponent() {
-        resultComponent = factory.create(RuntimePropertiesPanel.NAME);
+        resultComponent = factory.create(DynamicAttributesPanel.NAME);
         loadId(resultComponent, element);
     }
 
@@ -46,11 +46,11 @@ public class RuntimePropertiesPanelLoader extends AbstractComponentLoader<Runtim
         loadFieldCaptionWidth(resultComponent, element);
     }
 
-    protected void loadDataContainer(RuntimePropertiesPanel resultComponent, Element element) {
+    protected void loadDataContainer(DynamicAttributesPanel resultComponent, Element element) {
         String containerId = element.attributeValue("dataContainer");
         if (Strings.isNullOrEmpty(containerId)) {
-            throw new GuiDevelopmentException("RuntimePropertiesPanel element doesn't have 'dataContainer' attribute",
-                    context, "RuntimePropertiesPanel ID", element.attributeValue("id"));
+            throw new GuiDevelopmentException("DynamicAttributesPanel element doesn't have 'dataContainer' attribute",
+                    context, "DynamicAttributesPanel ID", element.attributeValue("id"));
         }
         FrameOwner frameOwner = getComponentContext().getFrame().getFrameOwner();
         ScreenData screenData = UiControllerUtils.getScreenData(frameOwner);
@@ -59,22 +59,22 @@ public class RuntimePropertiesPanelLoader extends AbstractComponentLoader<Runtim
         resultComponent.setInstanceContainer(container);
     }
 
-    protected void loadColumnsCount(RuntimePropertiesPanel resultComponent, Element element) {
+    protected void loadColumnsCount(DynamicAttributesPanel resultComponent, Element element) {
         resultComponent.setColumnsCount(getIntegerAttribute("cols", element));
     }
 
-    protected void loadRowsCount(RuntimePropertiesPanel resultComponent, Element element) {
+    protected void loadRowsCount(DynamicAttributesPanel resultComponent, Element element) {
         resultComponent.setRowsCount(getIntegerAttribute("rows", element));
     }
 
-    protected void loadFieldWidth(RuntimePropertiesPanel resultComponent, Element element) {
+    protected void loadFieldWidth(DynamicAttributesPanel resultComponent, Element element) {
         String fieldWidth = element.attributeValue("fieldWidth");
         if (!Strings.isNullOrEmpty(fieldWidth)) {
             resultComponent.setFieldWidth(fieldWidth);
         }
     }
 
-    protected void loadFieldCaptionWidth(RuntimePropertiesPanel resultComponent, Element element) {
+    protected void loadFieldCaptionWidth(DynamicAttributesPanel resultComponent, Element element) {
         String fieldWidth = element.attributeValue("fieldCaptionWidth");
         if (!Strings.isNullOrEmpty(fieldWidth)) {
             resultComponent.setFieldCaptionWidth(fieldWidth);

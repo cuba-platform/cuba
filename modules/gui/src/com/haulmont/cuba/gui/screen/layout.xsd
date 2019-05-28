@@ -3164,8 +3164,8 @@
         <xs:attribute name="fieldCaptionWidth" type="xs:string"/>
     </xs:complexType>
 
-    <!-- RuntimePropertiesPanel -->
-    <xs:complexType name="runtimePropertiesPanel">
+    <!-- DynamicAttributesPanel -->
+    <xs:complexType name="dynamicAttributesPanel">
         <xs:attributeGroup ref="hasId"/>
         <xs:attributeGroup ref="hasSize"/>
         <xs:attributeGroup ref="hasStyle"/>
@@ -3406,7 +3406,7 @@
                 <xs:element name="frame" type="frameContainer"/>
 
                 <xs:element name="runtimeProperties" type="runtimePropertiesContainer"/>
-                <xs:element name="runtimePropertiesPanel" type="runtimePropertiesPanel"/>
+                <xs:element name="dynamicAttributesPanel" type="dynamicAttributesPanel"/>
 
                 <!-- Component -->
                 <xs:element name="button" type="buttonComponent"/>
