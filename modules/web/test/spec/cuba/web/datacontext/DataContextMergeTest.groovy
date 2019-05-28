@@ -16,6 +16,7 @@
 
 package spec.cuba.web.datacontext
 
+import com.haulmont.chile.core.model.Instance
 import com.haulmont.cuba.core.global.EntityStates
 import com.haulmont.cuba.core.global.Metadata
 import com.haulmont.cuba.gui.model.DataComponents
@@ -36,7 +37,8 @@ import spock.lang.Specification
 
 class DataContextMergeTest extends Specification {
 
-    @Shared @ClassRule
+    @Shared
+    @ClassRule
     public TestContainer cont = CubaTestContainer.Common.INSTANCE
 
     private DataComponents factory
@@ -656,9 +658,13 @@ class DataContextMergeTest extends Specification {
         def mergedOrder = context.merge(order1)
 
         Map<String, Integer> events = [:]
-        mergedOrder.addPropertyChangeListener { e ->
-            events.compute(e.property, { k, v -> v == null ? 1 : v + 1 })
+        Instance.PropertyChangeListener listener = new Instance.PropertyChangeListener() {
+            @Override
+            void propertyChanged(Instance.PropertyChangeEvent e) {
+                events.compute(e.property, { k, v -> v == null ? 1 : v + 1 })
+            }
         }
+        mergedOrder.addPropertyChangeListener(listener)
 
         when:
 
