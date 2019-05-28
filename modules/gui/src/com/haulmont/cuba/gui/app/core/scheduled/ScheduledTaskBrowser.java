@@ -31,8 +31,10 @@ import org.slf4j.LoggerFactory;
 import javax.inject.Inject;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class ScheduledTaskBrowser extends AbstractWindow {
 
@@ -78,12 +80,15 @@ public class ScheduledTaskBrowser extends AbstractWindow {
 
         tasksDs.addItemChangeListener(e -> {
             ScheduledTask singleSelected = tasksTable.getSingleSelected();
-            Set<ScheduledTask> selected = tasksTable.getSelected();
+            Set<ScheduledTask> selected = tasksTable.getSelected().stream()
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toSet());
+
             boolean isSingleSelected = selected.size() == 1;
             boolean enableEdit = singleSelected != null && !BooleanUtils.isTrue(singleSelected.getActive());
 
             editAction.setEnabled(enableEdit);
-            removeAction.setEnabled(checkAllTasksIsNotActive(selected));
+            removeAction.setEnabled(checkAllTasksAreNotActive(selected));
             activateBtn.setEnabled(checkAllTasksHaveSameStatus(selected));
 
             if (singleSelected == null) {
@@ -99,31 +104,30 @@ public class ScheduledTaskBrowser extends AbstractWindow {
     }
 
     protected boolean checkAllTasksHaveSameStatus(Set<ScheduledTask> tasks) {
-        if (!tasks.isEmpty()) {
-            boolean firstItemState = BooleanUtils.isTrue(tasks.iterator().next().getActive());
-
-            for (ScheduledTask task : tasks) {
-                if (BooleanUtils.isTrue(task.getActive()) != firstItemState) {
-                    return false;
-                }
-            }
-            return true;
-        } else {
+        if (tasks.isEmpty()) {
             return false;
         }
+
+        boolean activeState = BooleanUtils.toBoolean(tasks.iterator().next().getActive());
+        for (ScheduledTask task : tasks) {
+            if (BooleanUtils.toBoolean(task.getActive()) != activeState) {
+                return false;
+            }
+        }
+        return true;
     }
 
-    protected boolean checkAllTasksIsNotActive(Set<ScheduledTask> tasks) {
-        if (!tasks.isEmpty()) {
-            for (ScheduledTask task : tasks) {
-                if (BooleanUtils.isTrue(task.getActive())) {
-                    return false;
-                }
-            }
-            return true;
-        } else {
+    protected boolean checkAllTasksAreNotActive(Set<ScheduledTask> tasks) {
+        if (tasks.isEmpty()) {
             return false;
         }
+
+        for (ScheduledTask task : tasks) {
+            if (BooleanUtils.isTrue(task.getActive())) {
+                return false;
+            }
+        }
+        return true;
     }
 
     protected class ShowExecutionsAction extends ItemTrackingAction {
