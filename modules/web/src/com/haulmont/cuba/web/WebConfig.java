@@ -529,7 +529,6 @@ public interface WebConfig extends Config {
      * @return initial screen id
      */
     @Property("cuba.web.initialScreenId")
-    @DefaultString("login")
     String getInitialScreenId();
 
     /**
