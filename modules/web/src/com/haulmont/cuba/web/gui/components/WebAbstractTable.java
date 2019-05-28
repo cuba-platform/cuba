@@ -319,7 +319,9 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
         if (itemIds != null) {
             if (itemIds.size() == 1) {
                 E item = tableItems.getItem(itemIds.iterator().next());
-                return Collections.singleton(item);
+                return item != null
+                        ? Collections.singleton(item)
+                        : Collections.emptySet();
             }
 
             Set<E> res = new LinkedHashSet<>();
