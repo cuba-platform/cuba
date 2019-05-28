@@ -509,7 +509,7 @@ public class WebUrlRouting implements UrlRouting {
         protected String getScreenId(Class<? extends Screen> screenClass) {
             UiController uiController = screenClass.getAnnotation(UiController.class);
             if (uiController == null) {
-                throw new IllegalArgumentException("No @UiController annotation for class " + screenClass);
+                throw new IllegalArgumentException("No @UiController annotation for " + screenClass);
             }
             return UiDescriptorUtils.getInferredScreenId(uiController, screenClass);
         }
