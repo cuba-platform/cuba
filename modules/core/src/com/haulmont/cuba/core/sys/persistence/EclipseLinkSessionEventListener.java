@@ -174,16 +174,13 @@ public class EclipseLinkSessionEventListener extends SessionEventAdapter {
         boolean persistenceObject = ArrayUtils.contains(entityClass.getInterfaces(), PersistenceObject.class);
         boolean persistenceWeaved = ArrayUtils.contains(entityClass.getInterfaces(), PersistenceWeaved.class);
         boolean persistenceWeavedFetchGroups = ArrayUtils.contains(entityClass.getInterfaces(), PersistenceWeavedFetchGroups.class);
-        boolean persistenceWeavedChangeTracking = ArrayUtils.contains(entityClass.getInterfaces(), PersistenceWeavedChangeTracking.class);
-        if (!cubaEnhanced || !persistenceObject || !persistenceWeaved || !persistenceWeavedFetchGroups
-                || !persistenceWeavedChangeTracking) {
-            String message = String.format("Entity class %s is missing some of enhancing interfaces:%s%s%s%s%s",
+        if (!cubaEnhanced || !persistenceObject || !persistenceWeaved || !persistenceWeavedFetchGroups) {
+            String message = String.format("Entity class %s is missing some of enhancing interfaces:%s%s%s%s",
                     entityClass.getSimpleName(),
                     cubaEnhanced ? "" : " CubaEnhanced;",
                     persistenceObject ? "" : " PersistenceObject;",
                     persistenceWeaved ? "" : " PersistenceWeaved;",
-                    persistenceWeavedFetchGroups ? "" : " PersistenceWeavedFetchGroups;",
-                    persistenceWeavedChangeTracking ? "" : " PersistenceWeavedChangeTracking;");
+                    persistenceWeavedFetchGroups ? "" : " PersistenceWeavedFetchGroups;");
             missingEnhancements.add(new Pair<>(entityClass, message));
         }
     }
