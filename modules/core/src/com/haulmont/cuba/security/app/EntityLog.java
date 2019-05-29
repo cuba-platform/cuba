@@ -120,11 +120,19 @@ public class EntityLog implements EntityLogAPI {
     }
 
     protected void computeChanges(EntityLogItem itemToSave, List<EntityLogItem> sameEntityList) {
-        Set<String> allAttributes = sameEntityList.stream()
+        Set<String> notDynamicAttributes = sameEntityList.stream()
                 .flatMap(entityLogItem -> entityLogItem.getAttributes().stream().map(EntityLogAttr::getName))
+                .filter(attr -> !DynamicAttributesUtils.isDynamicAttribute(attr))
                 .collect(Collectors.toSet());
 
-        for (String attributeName : allAttributes) {
+        List<EntityLogItem> dynamicAttributeChanges = sameEntityList.stream()
+                .filter(item -> item.getAttributes().stream()
+                        .allMatch(attr -> DynamicAttributesUtils.isDynamicAttribute(attr.getName())))
+                .collect(Collectors.toList());
+
+        sameEntityList.removeAll(dynamicAttributeChanges);
+
+        for (String attributeName : notDynamicAttributes) {
             // old value from the first item
             sameEntityList.get(0).getAttributes().stream()
                     .filter(entityLogAttr -> entityLogAttr.getName().equals(attributeName))
@@ -136,6 +144,17 @@ public class EntityLog implements EntityLogAPI {
                     .findFirst()
                     .ifPresent(entityLogAttr -> setAttributeNewValue(entityLogAttr, itemToSave));
         }
+
+        for (EntityLogItem dynamicAttributeLogItem : dynamicAttributeChanges) {
+            dynamicAttributeLogItem.getAttributes().stream()
+                    .findFirst()
+                    .ifPresent(attr -> {
+                        setAttributeOldValue(attr, itemToSave);
+                        setAttributeNewValue(attr, itemToSave);
+                    });
+        }
+
+        sameEntityList.addAll(dynamicAttributeChanges);
 
         Properties properties = new Properties();
 
@@ -541,6 +560,9 @@ public class EntityLog implements EntityLogAPI {
             type = EntityLogItem.Type.MODIFY;
             Set<String> dirtyAttributes = new HashSet<>();
             for (String attributePath : attributes) {
+                if (DynamicAttributesUtils.isDynamicAttribute(attributePath)) {
+                    continue;
+                }
                 MetaPropertyPath propertyPath = metaClass.getPropertyPath(attributePath);
                 Preconditions.checkNotNullArgument(propertyPath,
                         "Property path %s isn't exists for type %s", attributePath, metaClass.getName());
