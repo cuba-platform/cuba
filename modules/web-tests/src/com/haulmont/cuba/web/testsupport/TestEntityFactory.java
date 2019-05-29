@@ -26,10 +26,12 @@ public class TestEntityFactory<E extends Entity> {
 
     private final Metadata metadata;
     private final Class<E> entityClass;
+    private TestEntityState entityState;
 
-    public TestEntityFactory(Metadata metadata, Class<E> entityClass) {
+    public TestEntityFactory(Metadata metadata, Class<E> entityClass, TestEntityState entityState) {
         this.metadata = metadata;
         this.entityClass = entityClass;
+        this.entityState = entityState;
     }
 
     public E create(Map<String, Object> properties) {
@@ -37,6 +39,7 @@ public class TestEntityFactory<E extends Entity> {
         for (Map.Entry<String, Object> entry : properties.entrySet()) {
             instance.setValueEx(entry.getKey(), entry.getValue());
         }
+        entityState.setState(instance);
         return instance;
     }
 
