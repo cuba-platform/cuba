@@ -36,11 +36,12 @@ import java.sql.SQLException
 class EntityLogDynamicAttributesTest extends AbstractEntityLogTest {
 
 
-    private UUID userId, categoryId, categoryAttributeId
+    private UUID userId, categoryId, categoryAttributeId, secondCategoryAttributeId
     private DataManager dataManager
     private DynamicAttributesManagerAPI dynamicAttributesManagerAPI
 
     private final String DYNAMIC_ATTRIBUTE_NAME = '+userAttribute'
+    private final String SECOND_DYNAMIC_ATTRIBUTE_NAME = '+userSecondAttribute'
 
 
     void setup() {
@@ -63,6 +64,7 @@ class EntityLogDynamicAttributesTest extends AbstractEntityLogTest {
 
         em.persist(new LoggedAttribute(entity: le, name: 'name'))
         em.persist(new LoggedAttribute(entity: le, name: DYNAMIC_ATTRIBUTE_NAME))
+        em.persist(new LoggedAttribute(entity: le, name: SECOND_DYNAMIC_ATTRIBUTE_NAME))
     }
 
     protected void initBeans() {
@@ -89,6 +91,17 @@ class EntityLogDynamicAttributesTest extends AbstractEntityLogTest {
         )
         categoryAttributeId = categoryAttribute.id
         em.persist(categoryAttribute)
+
+        CategoryAttribute secondCategoryAttribute = new CategoryAttribute(
+                name: "userSecondAttribute",
+                code: "userSecondAttribute",
+                category: category,
+                categoryEntityType: 'sec$User',
+                dataType: PropertyType.STRING,
+                defaultEntity: new ReferenceToEntity()
+        )
+        secondCategoryAttributeId = secondCategoryAttribute.id
+        em.persist(secondCategoryAttribute)
     }
 
 
@@ -100,6 +113,7 @@ class EntityLogDynamicAttributesTest extends AbstractEntityLogTest {
             cont.deleteRecord("SEC_USER", userId)
 
         cont.deleteRecord("SYS_CATEGORY_ATTR", categoryAttributeId)
+        cont.deleteRecord("SYS_CATEGORY_ATTR", secondCategoryAttributeId)
         cont.deleteRecord("SYS_CATEGORY", categoryId)
     }
 
@@ -182,6 +196,57 @@ class EntityLogDynamicAttributesTest extends AbstractEntityLogTest {
 
     }
 
+    def "EntityLog logs the creation of entity with two dynamic attributes (#1533 case 1)"() {
+        given:
+
+        User user = createUser()
+
+        when:
+
+        changeValuesAndSaveUser(user,'new-test-name', 'firstAttrValue', 'secondAttrValue')
+
+        def log = latestEntityLogItem(user)
+
+        then:
+
+        isCreateType(log)
+
+        and:
+
+        loggedValueMatches(log, DYNAMIC_ATTRIBUTE_NAME, 'firstAttrValue')
+        loggedValueMatches(log, SECOND_DYNAMIC_ATTRIBUTE_NAME, 'secondAttrValue')
+        loggedValueMatches(log, 'name', 'new-test-name')
+        log.entityInstanceName == metadataTools.getInstanceName(user)
+    }
+
+    def "Update entity with dynamic attributes (#1533 case 2)"() {
+
+        given:
+
+        User user = createAndSaveUserWithTwoDynamicAttributes('test-name', 'oldFirstAttrValue', 'oldSecondAttrValue')
+
+        when:
+
+        changeValuesAndSaveUser(user, 'new-test-name', 'updatedFirstAttrValue', 'updatedSecondAttrValue')
+
+        def log = latestEntityLogItem(user)
+
+        then:
+
+        isModifyType(log)
+
+        and:
+
+        loggedValueMatches(log, DYNAMIC_ATTRIBUTE_NAME, 'updatedFirstAttrValue')
+        loggedValueMatches(log, SECOND_DYNAMIC_ATTRIBUTE_NAME, 'updatedSecondAttrValue')
+        loggedValueMatches(log, 'name', 'new-test-name')
+        loggedOldValueMatches(log, DYNAMIC_ATTRIBUTE_NAME, 'oldFirstAttrValue')
+        loggedOldValueMatches(log, SECOND_DYNAMIC_ATTRIBUTE_NAME, 'oldSecondAttrValue')
+        loggedOldValueMatches(log, 'name', 'test-name')
+        log.entityInstanceName == metadataTools.getInstanceName(user)
+
+    }
+
     protected boolean isModifyType(EntityLogItem entityLogItem) {
         entityLogItem.type == EntityLogItem.Type.MODIFY
     }
@@ -212,6 +277,7 @@ class EntityLogDynamicAttributesTest extends AbstractEntityLogTest {
 
         // the dynamic attribute has to be loaded explicitly in order to work with it further down the road
         user.getValue(DYNAMIC_ATTRIBUTE_NAME)
+        user.getValue(SECOND_DYNAMIC_ATTRIBUTE_NAME)
 
 
         user
@@ -219,6 +285,16 @@ class EntityLogDynamicAttributesTest extends AbstractEntityLogTest {
 
     private User saveUserWithDynamicAttributeValue(User user, String newDynamicAttributeValue) {
         user.setValue(DYNAMIC_ATTRIBUTE_NAME, newDynamicAttributeValue)
+        dataManager.commit(user)
+    }
+
+    private User changeValuesAndSaveUser(User user,
+                                         String newName,
+                                         String newDynamicAttributeValue,
+                                         String newSecondDynamicAttributeValue) {
+        user.setValue("name", newName)
+        user.setValue(DYNAMIC_ATTRIBUTE_NAME, newDynamicAttributeValue)
+        user.setValue(SECOND_DYNAMIC_ATTRIBUTE_NAME, newSecondDynamicAttributeValue)
         dataManager.commit(user)
     }
 
@@ -232,6 +308,17 @@ class EntityLogDynamicAttributesTest extends AbstractEntityLogTest {
                 .setLoadDynamicAttributes(true)
         dataManager.load(loadContext)
 
+    }
+
+    private User createAndSaveUserWithTwoDynamicAttributes(String userName, String dynamicAttrValue, String secondDynamicAttrValue) {
+        User user = createUser()
+        changeValuesAndSaveUser(user, userName, dynamicAttrValue, secondDynamicAttrValue)
+
+        LoadContext loadContext = new LoadContext(User.class)
+                .setId(user)
+                .setView(View.LOCAL)
+                .setLoadDynamicAttributes(true)
+        dataManager.load(loadContext)
     }
 
 
