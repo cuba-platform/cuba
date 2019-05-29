@@ -46,12 +46,16 @@ import com.haulmont.cuba.web.settings.WebSettingsClient;
 import com.vaadin.ui.ComboBox;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class SettingsWindow extends AbstractWindow {
+
+    private static final Logger log = LoggerFactory.getLogger(SettingsWindow.class);
 
     protected boolean changeThemeEnabled = true;
     protected String msgTabbed;
@@ -205,17 +209,35 @@ public class SettingsWindow extends AbstractWindow {
             defaultScreenField.setDescription(getMessage("defaultScreenSelectionDisabled"));
         }
 
-        Map<String, String> map = new LinkedHashMap<>();
-        for (MenuItem item : collectPermittedScreens(menuConfig.getRootItems())) {
-            map.put(menuConfig.getItemCaption(item.getId()), item.getScreen());
-        }
-        defaultScreenField.setOptionsMap(map);
+        defaultScreenField.setOptionsMap(collectScreens());
 
         String defaultScreen = userSettingService.loadSetting(ClientType.WEB, "userDefaultScreen");
         if (StringUtils.isEmpty(defaultScreen) || !screenSelectionEnabled) {
             defaultScreen = webConfig.getDefaultScreenId();
         }
         defaultScreenField.setValue(defaultScreen);
+    }
+
+    protected Map<String, String> collectScreens() {
+        Map<String, String> map = new LinkedHashMap<>();
+        HashSet<String> differentIdScreenItems = new HashSet<>();
+        for (MenuItem item : collectPermittedScreens(menuConfig.getRootItems())) {
+            String screen = item.getScreen();
+
+            if (item.getId().equals(screen)) {
+                map.put(menuConfig.getItemCaption(item.getId()), screen);
+                continue;
+            }
+
+            if (!differentIdScreenItems.contains(screen)) {
+                differentIdScreenItems.add(screen);
+                map.put(menuConfig.getItemCaption(item.getId()), screen);
+            } else {
+                log.info("Menu contains items with the same screen: '{}'. " +
+                        "The entry with id '{}' will be ignored", screen, item.getId());
+            }
+        }
+        return map;
     }
 
     protected List<MenuItem> collectPermittedScreens(List<MenuItem> menuItems) {
