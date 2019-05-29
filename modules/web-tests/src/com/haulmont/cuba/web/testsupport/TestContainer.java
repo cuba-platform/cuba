@@ -309,9 +309,9 @@ public class TestContainer extends ExternalResource {
         }
     }
 
-    public <E extends Entity> TestEntityFactory<E> getEntityFactory(Class<E> clazz) {
+    public <E extends Entity> TestEntityFactory<E> getEntityFactory(Class<E> clazz, TestEntityState entityState) {
         Metadata metadata = getBean(Metadata.class);
 
-        return new TestEntityFactory<>(metadata, clazz);
+        return new TestEntityFactory<>(metadata, clazz, entityState);
     }
 }
