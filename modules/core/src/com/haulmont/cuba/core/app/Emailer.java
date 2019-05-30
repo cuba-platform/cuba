@@ -407,6 +407,11 @@ public class Emailer implements EmailerAPI {
         }
     }
 
+    @Override
+    public void updateSession() {
+        emailSender.updateSession();
+    }
+
     protected void loadBodyAndAttachments(SendingMessage message) {
         try {
             if (message.getContentTextFile() != null) {

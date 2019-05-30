@@ -72,6 +72,12 @@ public class EmailSender implements EmailSenderAPI {
         log.info("Email '{}' to '{}' has been sent successfully", msg.getSubject(), sendingMessage.getAddress());
     }
 
+    @Override
+    public void updateSession() {
+        if (mailSender instanceof CubaMailSender)
+            ((CubaMailSender) mailSender).updateSession();
+    }
+
     protected MimeMessage createMimeMessage(SendingMessage sendingMessage) throws MessagingException {
         MimeMessage msg = mailSender.createMimeMessage();
         assignRecipient(Message.RecipientType.TO, sendingMessage.getAddress(), msg);
