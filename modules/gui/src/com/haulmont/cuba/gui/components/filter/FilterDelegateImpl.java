@@ -21,6 +21,7 @@ import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.haulmont.bali.datastruct.Node;
+import com.haulmont.bali.datastruct.Pair;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.chile.core.model.MetaClass;
@@ -881,6 +882,8 @@ public class FilterDelegateImpl implements FilterDelegate {
 
         boolean currentFocusSet = initialFocusSet;
 
+        RuntimeException entityParamInformationException = null;
+
         for (int i = 0; i < visibleConditionNodes.size(); i++) {
             Node<AbstractCondition> node = visibleConditionNodes.get(i);
             final AbstractCondition condition = node.getData();
@@ -892,7 +895,12 @@ public class FilterDelegateImpl implements FilterDelegate {
                 level++;
             } else {
                 if (condition.getParam().getJavaClass() != null) {
-                    ParamEditor paramEditor = createParamEditor(condition, filterDataContext);
+
+                    Pair<ParamEditor, RuntimeException> pair = createParamEditorWithChecks(condition, filterDataContext);
+                    ParamEditor paramEditor = pair.getFirst();
+                    if (pair.getSecond() != null) {
+                        entityParamInformationException = pair.getSecond();
+                    }
 
                     if (firstParamEditor == null) firstParamEditor = paramEditor;
                     lastParamEditor = paramEditor;
@@ -980,6 +988,13 @@ public class FilterDelegateImpl implements FilterDelegate {
 
         if (level == 0)
             controlsLayout.setStyleName(getControlsLayoutStyleName());
+
+        if (entityParamInformationException != null) {
+            getDialogs()
+                    .createExceptionDialog()
+                    .withThrowable(entityParamInformationException)
+                    .show();
+        }
     }
 
     protected List<Node<AbstractCondition>> fetchVisibleNodes(List<Node<AbstractCondition>> nodes) {
@@ -1004,6 +1019,33 @@ public class FilterDelegateImpl implements FilterDelegate {
         }
         groupCellContent = groupBox;
         return groupCellContent;
+    }
+
+    protected Pair<ParamEditor, RuntimeException> createParamEditorWithChecks(final AbstractCondition condition,
+                                                                              FilterDataContext filterDataContext) {
+        ParamEditor paramEditor;
+        RuntimeException informationException = null;
+
+        //check that entity param view exists
+        try {
+            if (!Strings.isNullOrEmpty(condition.getEntityParamView())) {
+                metadata.getViewRepository()
+                        .getView(condition.getEntityMetaClass(), condition.getEntityParamView());
+            }
+        } catch (RuntimeException e) {
+            condition.getParam().entityView = null;
+            informationException = e;
+        }
+
+        try {
+            paramEditor = createParamEditor(condition, filterDataContext);
+        } catch (RuntimeException e) {
+            condition.getParam().entityWhere = null;
+            paramEditor = createParamEditor(condition, filterDataContext);
+            informationException = e;
+        }
+
+        return new Pair<>(paramEditor, informationException);
     }
 
     protected ParamEditor createParamEditor(final AbstractCondition condition, FilterDataContext filterDataContext) {
@@ -3164,7 +3206,7 @@ public class FilterDelegateImpl implements FilterDelegate {
         @Override
         public void pinQuery() {
             UserSession userSession = userSessionSource.getUserSession();
-            LoaderSupportsApplyToSelected supportsApplyToSelected = (LoaderSupportsApplyToSelected)loader;
+            LoaderSupportsApplyToSelected supportsApplyToSelected = (LoaderSupportsApplyToSelected) loader;
             List<LoadContext.Query> prevQueries = supportsApplyToSelected.getPrevQueries();
 
             if (prevQueries == null) {
