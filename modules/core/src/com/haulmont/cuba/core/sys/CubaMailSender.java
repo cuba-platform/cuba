@@ -95,6 +95,10 @@ public class CubaMailSender extends JavaMailSenderImpl {
         return super.getSession();
     }
 
+    public synchronized void updateSession(){
+        propertiesInitialized = false;
+    }
+
     protected Properties createJavaMailProperties() {
         long connectionTimeoutMillis = config.getSmtpConnectionTimeoutSec() * 1000;
         long timeoutMillis = config.getSmtpTimeoutSec() * 1000;

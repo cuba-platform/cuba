@@ -38,4 +38,6 @@ public interface EmailSenderAPI {
      * @throws MessagingException if delivery fails
      */
     void sendEmail(SendingMessage sendingMessage) throws MessagingException;
+
+    void updateSession();
 }
