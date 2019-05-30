@@ -22,6 +22,9 @@ import com.haulmont.cuba.core.global.Metadata;
 
 import java.util.Map;
 
+/**
+ * Convenient factory for creating entity instances for tests. The factory can be obtained via {@link TestContainer}.
+ */
 public class TestEntityFactory<E extends Entity> {
 
     private final Metadata metadata;

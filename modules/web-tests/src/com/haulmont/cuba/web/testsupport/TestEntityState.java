@@ -20,6 +20,9 @@ import com.haulmont.cuba.core.entity.BaseEntityInternalAccess;
 import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 import com.haulmont.cuba.core.entity.Entity;
 
+/**
+ * Indicates the required state of entity instances created by {@link TestEntityFactory}.
+ */
 public enum TestEntityState {
     NEW {
         @Override
