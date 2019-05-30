@@ -54,6 +54,9 @@ public interface EmailerMBean {
     int getSmtpConnectionTimeoutSec();
     void setSmtpConnectionTimeoutSec(int timeoutSec);
 
+    @ManagedOperation(description = "Update properties for JavaMail session")
+    void updateSession();
+
     @ManagedOperationParameters({@ManagedOperationParameter(name = "addresses", description = "")})
     String sendTestEmail(String addresses);
 

@@ -125,4 +125,9 @@ public interface EmailerAPI {
      * @return email content text
      */
     String loadContentText(SendingMessage sendingMessage);
+
+    /**
+     * Updates {@code Properties} for JavaMail {@code Session}
+     */
+    void updateSession();
 }

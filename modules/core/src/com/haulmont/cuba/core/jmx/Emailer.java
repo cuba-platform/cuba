@@ -32,8 +32,8 @@ import com.haulmont.cuba.security.app.Authenticated;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.stereotype.Component;
+
 import javax.inject.Inject;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -159,6 +159,12 @@ public class Emailer implements EmailerMBean {
     @Override
     public void setSmtpConnectionTimeoutSec(int timeoutSec) {
         config.setSmtpConnectionTimeoutSec(timeoutSec);
+    }
+
+    @Authenticated
+    @Override
+    public void updateSession() {
+        emailer.updateSession();
     }
 
     @Authenticated
