@@ -89,26 +89,26 @@ public interface Frame
     boolean validateAll();
 
     /**
-     * JavaDoc
+     * Registers the passed non-visual component in the frame.
      *
-     * @param facet
+     * @param facet facet
      */
     void addFacet(Facet facet);
 
     /**
-     * JavaDoc
+     * Finds registered facet by ID.
      *
-     * @param id
-     * @return
+     * @param id facet ID
+     * @return facet instance or null
      */
     @Nullable
     Facet getFacet(String id);
 
     /**
-     * JavaDoc
+     * Finds registered facet by ID. Throws {@link IllegalArgumentException} if not found.
      *
-     * @param id
-     * @return
+     * @param id facet ID
+     * @return facet instance
      */
     @Nonnull
     default Facet getFacetNN(String id) {
@@ -120,14 +120,14 @@ public interface Frame
     }
 
     /**
-     * JavaDoc
+     * Removes the non-visual component from the frame.
      *
-     * @param facet
+     * @param facet facet
      */
     void removeFacet(Facet facet);
 
     /**
-     * @return JavaDoc
+     * @return stream of registered non-visual components
      */
     Stream<Facet> getFacets();
 

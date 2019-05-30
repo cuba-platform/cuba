@@ -107,20 +107,36 @@ public class WebTimer extends WebAbstractFacet implements Timer {
         if (ownerComponent.isAttached()) {
             attachTimerToUi(ownerComponent);
         } else {
-            ownerComponent.addAttachListener(new ClientConnector.AttachListener() {
-                @Override
-                public void attach(ClientConnector.AttachEvent event) {
-                    attachTimerToUi((Component) event.getConnector());
-                    // execute attach listener only once
-                    event.getConnector().removeAttachListener(this);
-                }
-            });
+            registerOnAttach(ownerComponent);
         }
+
+        // unregister if owner component is detached
+        ownerComponent.addDetachListener(event -> {
+            timerImpl.remove();
+
+            log.trace("Timer '{}' unregistered from UI ", WebTimer.this.getId());
+
+            // can be registered again later, e.g. if fragment is attached again
+            WebTimer.this.registerOnAttach(ownerComponent);
+        });
+    }
+
+    protected void registerOnAttach(Component ownerComponent) {
+        ownerComponent.addAttachListener(new ClientConnector.AttachListener() {
+            @Override
+            public void attach(ClientConnector.AttachEvent event) {
+                attachTimerToUi((Component) event.getConnector());
+                // execute attach listener only once
+                event.getConnector().removeAttachListener(this);
+            }
+        });
     }
 
     protected void attachTimerToUi(Component ownerComponent) {
         AppUI appUI = (AppUI) ownerComponent.getUI();
         appUI.addTimer(timerImpl);
+
+        log.trace("Timer '{}' registered in UI ", getId());
     }
 
     protected class CubaTimerActionListenerWrapper implements Consumer<CubaTimer> {
