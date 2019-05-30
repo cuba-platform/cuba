@@ -60,7 +60,7 @@ import static org.apache.commons.lang3.reflect.FieldUtils.getDeclaredField;
 
 /**
  * Mocked UI environment for integration tests of Web tier. <br>
- * Automatically start and cleans the corresponding test container instance. <br>
+ * Automatically starts and cleans the corresponding test container instance. <br>
  * Provides {@link App}, {@link AppUI} and initialized {@link ClientUserSession}.
  *
  * Usually, you should use an additional mocking framework in order to mock middleware services, e.g. JMockit or Spock.
@@ -254,7 +254,7 @@ public class TestUiEnvironment extends ExternalResource {
         return user;
     }
 
-    public void cleanupEnvironment() {
+    protected void cleanupEnvironment() {
         resetScreens();
 
         UI.setCurrent(null);
@@ -270,7 +270,7 @@ public class TestUiEnvironment extends ExternalResource {
         container.after();
     }
 
-    public void exportScreens(String... packages) {
+    protected void exportScreens(String... packages) {
         TestWindowConfig windowConfig = container.getBean(TestWindowConfig.class);
 
         UiControllersConfiguration configuration = new UiControllersConfiguration();
@@ -281,7 +281,7 @@ public class TestUiEnvironment extends ExternalResource {
         windowConfig.reset();
     }
 
-    public void resetScreens() {
+    protected void resetScreens() {
         TestWindowConfig windowConfig = container.getBean(TestWindowConfig.class);
         windowConfig.setConfigurations(emptyList());
         windowConfig.reset();
@@ -295,7 +295,7 @@ public class TestUiEnvironment extends ExternalResource {
     }
 
     /**
-     * @return test container with Spring beans
+     * @return test Spring container
      */
     public TestContainer getContainer() {
         return container;

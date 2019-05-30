@@ -55,6 +55,9 @@ import java.util.*;
 /**
  * Container for integration tests of Web tier.
  *
+ * <p>It's recommended to use {@code TestContainer} with {@link TestUiEnvironment}, but you can also use it directly as
+ * shown below.</p>
+ *
  * <p>Usage of the common instance (time saving):</p>
  * <pre>
  *    {@literal @}ClassRule
@@ -309,9 +312,16 @@ public class TestContainer extends ExternalResource {
         }
     }
 
-    public <E extends Entity> TestEntityFactory<E> getEntityFactory(Class<E> clazz, TestEntityState entityState) {
+    /**
+     * Returns factory for creating entity instances for tests.
+     *
+     * @param entityClass entities of this class will be created by the factory
+     * @param entityState entities with this state will be created by the factory
+     * @return entity factory
+     */
+    public <E extends Entity> TestEntityFactory<E> getEntityFactory(Class<E> entityClass, TestEntityState entityState) {
         Metadata metadata = getBean(Metadata.class);
 
-        return new TestEntityFactory<>(metadata, clazz, entityState);
+        return new TestEntityFactory<>(metadata, entityClass, entityState);
     }
 }
