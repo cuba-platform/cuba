@@ -220,18 +220,13 @@ public class SettingsWindow extends AbstractWindow {
 
     protected Map<String, String> collectScreens() {
         Map<String, String> map = new LinkedHashMap<>();
-        HashSet<String> differentIdScreenItems = new HashSet<>();
+        HashSet<String> screens = new HashSet<>();
         for (MenuItem item : collectPermittedScreens(menuConfig.getRootItems())) {
             String screen = item.getScreen();
 
-            if (item.getId().equals(screen)) {
+            if (!screens.contains(screen)) {
                 map.put(menuConfig.getItemCaption(item), screen);
-                continue;
-            }
-
-            if (!differentIdScreenItems.contains(screen)) {
-                differentIdScreenItems.add(screen);
-                map.put(menuConfig.getItemCaption(item), screen);
+                screens.add(screen);
             } else {
                 log.info("Menu contains items with the same screen: '{}'. " +
                         "The entry with id '{}' will be ignored", screen, item.getId());
