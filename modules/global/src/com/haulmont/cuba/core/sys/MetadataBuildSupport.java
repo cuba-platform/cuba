@@ -189,9 +189,10 @@ public class MetadataBuildSupport {
                 }
 
                 if (!included) {
+                    String rootPackages = String.join(",\n", packages.keySet());
                     throw new IllegalStateException(
-                            String.format("Can not find a model for class %s. The class's package must be inside of some model's root package.",
-                                    className));
+                            String.format("Can not find a model for class %s. The class's package must be inside of some model's root package. " +
+                                            "Move the class to one of the following model's root packages: \n%s.", className, rootPackages));
                 }
             }
         }
