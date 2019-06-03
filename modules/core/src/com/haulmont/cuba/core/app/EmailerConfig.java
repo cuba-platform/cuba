@@ -23,6 +23,7 @@ import com.haulmont.cuba.core.config.SourceType;
 import com.haulmont.cuba.core.config.defaults.Default;
 import com.haulmont.cuba.core.config.defaults.DefaultBoolean;
 import com.haulmont.cuba.core.config.defaults.DefaultInt;
+import com.haulmont.cuba.core.global.Secret;
 
 /**
  * Configuration parameters interface used for sending emails.
@@ -85,6 +86,7 @@ public interface EmailerConfig extends Config {
     /**
      * User password for the SMTP server authentication.
      */
+    @Secret
     @Property("cuba.email.smtpPassword")
     String getSmtpPassword();
 

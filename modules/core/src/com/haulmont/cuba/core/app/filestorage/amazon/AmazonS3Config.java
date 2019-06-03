@@ -22,6 +22,7 @@ import com.haulmont.cuba.core.config.Property;
 import com.haulmont.cuba.core.config.Source;
 import com.haulmont.cuba.core.config.SourceType;
 import com.haulmont.cuba.core.config.defaults.DefaultInt;
+import com.haulmont.cuba.core.global.Secret;
 
 @Source(type = SourceType.DATABASE)
 public interface AmazonS3Config extends Config {
@@ -29,6 +30,7 @@ public interface AmazonS3Config extends Config {
     @Property("cuba.amazonS3.accessKey")
     String getAccessKey();
 
+    @Secret
     @Property("cuba.amazonS3.secretAccessKey")
     String getSecretAccessKey();
 
