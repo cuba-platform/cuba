@@ -26,6 +26,7 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.*;
+import com.haulmont.cuba.gui.components.data.value.ValueBinder;
 import com.haulmont.cuba.gui.components.mainwindow.AppWorkArea;
 import com.haulmont.cuba.gui.components.sys.FrameImplementation;
 import com.haulmont.cuba.gui.components.sys.ValuePathHelper;
@@ -611,8 +612,11 @@ public abstract class ComponentsHelper {
 
     /**
      * Set field's "required" flag to false if the value has been filtered by Row Level Security
-     * This is necessary to allow user to submit form with filtered attribute even if attribute is required
+     * This is necessary to allow user to submit form with filtered attribute even if attribute is required.
+     *
+     * @deprecated Is not required anymore. Implemented in {@link ValueBinder}.
      */
+    @Deprecated
     public static void handleFilteredAttributes(Field component, Datasource datasource, MetaPropertyPath mpp) {
         if (component.isRequired()
                 && datasource.getState() == Datasource.State.VALID
