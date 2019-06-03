@@ -29,7 +29,6 @@ import javax.inject.Inject;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
-import java.util.Locale;
 
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
 @org.springframework.stereotype.Component(CompositeComponentLayoutLoader.NAME)
@@ -42,9 +41,6 @@ public class CompositeComponentLayoutLoader {
     protected ComponentLoader.Context context;
     protected UiComponents factory;
     protected LayoutLoaderConfig config;
-
-    protected Locale locale;
-    protected String messagesPack;
 
     protected BeanLocator beanLocator;
 
