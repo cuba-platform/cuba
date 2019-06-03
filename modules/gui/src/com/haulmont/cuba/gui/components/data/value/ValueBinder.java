@@ -21,7 +21,9 @@ import com.haulmont.bali.events.Subscription;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.chile.core.model.MetadataObject;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
+import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.KeyValueEntity;
 import com.haulmont.cuba.core.global.*;
@@ -34,13 +36,18 @@ import com.haulmont.cuba.gui.components.data.ValueSource;
 import com.haulmont.cuba.gui.components.data.meta.EntityValueSource;
 import com.haulmont.cuba.gui.components.data.meta.ValueBinding;
 import com.haulmont.cuba.gui.components.validators.BeanPropertyValidator;
+import org.apache.commons.lang3.ArrayUtils;
 
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 import javax.validation.metadata.BeanDescriptor;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Objects;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
+
+import static com.haulmont.cuba.core.entity.BaseEntityInternalAccess.getFilteredAttributes;
 
 @org.springframework.stereotype.Component(ValueBinder.NAME)
 public class ValueBinder {
@@ -76,10 +83,6 @@ public class ValueBinder {
 
             if (component instanceof Field) {
                 initRequired((Field) component, metaPropertyPath);
-
-                // vaadin8 security listener
-                // todo reset required if the attribute is not available due to security rules
-                // todo on item change - reset required if needed
 
                 initBeanValidator((Field<?>) component, metaPropertyPath);
             }
@@ -215,7 +218,12 @@ public class ValueBinder {
             this.sourceValueChangeSubscription = source.addValueChangeListener(this::sourceValueChanged);
             this.sourceStateChangeSubscription = source.addStateChangeListener(this::valueSourceStateChanged);
             if (source instanceof EntityValueSource) {
-                this.sourceInstanceChangeSubscription = ((EntityValueSource<Entity, V>) source).addInstanceChangeListener(this::sourceInstanceChanged);
+                EntityValueSource<Entity, V> entityValueSource = (EntityValueSource<Entity, V>) this.source;
+                this.sourceInstanceChangeSubscription = entityValueSource.addInstanceChangeListener(this::sourceInstanceChanged);
+
+                if (component instanceof Field) {
+                    resetRequiredIfAttributeFiltered((Field) component, entityValueSource, entityValueSource.getMetaPropertyPath());
+                }
             }
         }
 
@@ -291,8 +299,55 @@ public class ValueBinder {
         protected void sourceInstanceChanged(@SuppressWarnings("unused") EntityValueSource.InstanceChangeEvent<Entity> event) {
             if (source.getState() == BindingState.ACTIVE
                     && !isBuffered()) {
+
+                if (source instanceof EntityValueSource
+                        && component instanceof Field) {
+                    EntityValueSource entityValueSource = (EntityValueSource) this.source;
+
+                    resetRequiredIfAttributeFiltered((Field) component, entityValueSource,
+                            entityValueSource.getMetaPropertyPath());
+                }
                 // read value to component
                 component.setValue(source.getValue());
+            }
+        }
+
+        /**
+         * Set field's "required" flag to false if the value has been filtered by Row Level Security.
+         * This is necessary to allow user to submit form with filtered attribute even if attribute is required.
+         */
+        protected void resetRequiredIfAttributeFiltered(Field<?> field, EntityValueSource valueSource,
+                                                        MetaPropertyPath metaPropertyPath) {
+            if (field.isRequired()
+                    && valueSource.getState() == BindingState.ACTIVE
+                    && valueSource.getItem() != null
+                    && metaPropertyPath.getMetaProperty().getRange().isClass()) {
+
+                Entity rootItem = valueSource.getItem();
+                Entity targetItem = rootItem;
+
+                MetaProperty[] propertiesChain = metaPropertyPath.getMetaProperties();
+                if (propertiesChain.length > 1) {
+                    String basePropertyItem = Arrays.stream(propertiesChain)
+                            .limit(propertiesChain.length - 1)
+                            .map(MetadataObject::getName)
+                            .collect(Collectors.joining("."));
+
+                    targetItem = rootItem.getValueEx(basePropertyItem);
+                }
+
+                if (targetItem instanceof BaseGenericIdEntity) {
+                    String metaPropertyName = metaPropertyPath.getMetaProperty().getName();
+                    Object value = targetItem.getValue(metaPropertyName);
+
+                    BaseGenericIdEntity baseGenericIdEntity = (BaseGenericIdEntity) targetItem;
+                    String[] filteredAttributes = getFilteredAttributes(baseGenericIdEntity);
+
+                    if (value == null && filteredAttributes != null
+                            && ArrayUtils.contains(filteredAttributes, metaPropertyName)) {
+                        field.setRequired(false);
+                    }
+                }
             }
         }
     }
