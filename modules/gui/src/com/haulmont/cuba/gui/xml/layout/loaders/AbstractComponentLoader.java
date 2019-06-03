@@ -17,7 +17,6 @@
 
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
-import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 import com.haulmont.bali.util.ReflectionHelper;
@@ -51,6 +50,7 @@ import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
 import com.haulmont.cuba.gui.xml.DeclarativeAction;
 import com.haulmont.cuba.gui.xml.DeclarativeTrackingAction;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
+import com.haulmont.cuba.gui.xml.layout.LayoutLoader;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import com.haulmont.cuba.security.entity.ConstraintOperationType;
 import org.apache.commons.lang3.StringUtils;
@@ -67,6 +67,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 
+import static com.google.common.base.Preconditions.checkState;
 import static com.haulmont.cuba.gui.icons.Icons.ICON_NAME_REGEX;
 import static org.apache.commons.lang3.StringUtils.trimToNull;
 
@@ -89,7 +90,6 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
                     .put("PICKER_CLEAR_SHORTCUT", ClientConfig::getPickerClearShortcut)
                     .build();
 
-    protected String messagesPack;
     protected Context context;
 
     protected UiComponents factory;
@@ -101,7 +101,6 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
     protected BeanLocator beanLocator;
 
     protected AbstractComponentLoader() {
-
     }
 
     @Override
@@ -120,27 +119,17 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
     }
 
     protected ComponentContext getComponentContext() {
-        Preconditions.checkState(context instanceof ComponentContext,
+        checkState(context instanceof ComponentContext,
                 "'context' must implement com.haulmont.cuba.gui.xml.layout.ComponentLoader.ComponentContext");
 
-        return (ComponentContext) getContext();
+        return (ComponentContext) context;
     }
 
     protected CompositeComponentContext getCompositeComponentContext() {
-        Preconditions.checkState(context instanceof CompositeComponentContext,
+        checkState(context instanceof CompositeComponentContext,
                 "'context' must implement com.haulmont.cuba.gui.xml.layout.ComponentLoader.CompositeComponentContext");
 
-        return (CompositeComponentContext) getContext();
-    }
-
-    @Override
-    public String getMessagesPack() {
-        return messagesPack;
-    }
-
-    @Override
-    public void setMessagesPack(String name) {
-        this.messagesPack = name;
+        return (CompositeComponentContext) context;
     }
 
     @Override
@@ -205,7 +194,15 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
 
     protected boolean isLegacyFrame() {
         return context instanceof ComponentContext
-                && getComponentContext().getFrame().getFrameOwner() instanceof LegacyFrame;
+                && ((ComponentContext) context).getFrame().getFrameOwner() instanceof LegacyFrame;
+    }
+
+    protected LayoutLoader getLayoutLoader() {
+        return beanLocator.getPrototype(LayoutLoader.NAME, context);
+    }
+
+    protected LayoutLoader getLayoutLoader(Context context) {
+        return beanLocator.getPrototype(LayoutLoader.NAME, context);
     }
 
     protected void loadId(Component component, Element element) {
@@ -345,7 +342,7 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
             return caption;
         }
 
-        return getMessageTools().loadString(messagesPack, caption);
+        return getMessageTools().loadString(context.getMessagesPack(), caption);
     }
 
     protected String loadThemeString(String value) {
@@ -417,7 +414,7 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
     }
 
     protected void loadWidth(Component component, Element element, @Nullable String defaultValue) {
-        final String width = element.attributeValue("width");
+        String width = element.attributeValue("width");
         if ("auto".equalsIgnoreCase(width)) {
             component.setWidth(Component.AUTO_SIZE);
         } else if (!StringUtils.isBlank(width)) {
@@ -451,7 +448,7 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
     }
 
     protected void loadMargin(HasMargin layout, Element element) {
-        final String margin = element.attributeValue("margin");
+        String margin = element.attributeValue("margin");
         if (!StringUtils.isEmpty(margin)) {
             MarginInfo marginInfo = parseMarginInfo(margin);
             layout.setMargin(marginInfo);
@@ -460,7 +457,7 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
 
     protected MarginInfo parseMarginInfo(String margin) {
         if (margin.contains(";") || margin.contains(",")) {
-            final String[] margins = margin.split("[;,]");
+            String[] margins = margin.split("[;,]");
             if (margins.length != 4) {
                 throw new GuiDevelopmentException(
                         "Margin attribute must contain 1 or 4 boolean values separated by ',' or ';", context);
@@ -477,18 +474,19 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
         }
     }
 
-    protected void assignFrame(final Component.BelongToFrame component) {
+    protected void assignFrame(Component.BelongToFrame component) {
         if (context instanceof ComponentContext
-                && getComponentContext().getFrame() != null) {
-            component.setFrame(getComponentContext().getFrame());
+                && ((ComponentContext) context).getFrame() != null) {
+            component.setFrame(((ComponentContext) context).getFrame());
         }
     }
 
     protected void loadAction(ActionOwner component, Element element) {
         String actionId = element.attributeValue("action");
         if (!StringUtils.isEmpty(actionId)) {
-            getComponentContext().addPostInitTask(
-                    new ActionOwnerAssignActionPostInitTask(component, actionId, getComponentContext().getFrame())
+            ComponentContext componentContext = getComponentContext();
+            componentContext.addPostInitTask(
+                    new ActionOwnerAssignActionPostInitTask(component, actionId, componentContext.getFrame())
             );
         }
     }
@@ -538,14 +536,14 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
         Field.Validator validator = null;
 
         if (StringUtils.isNotBlank(scriptPath) || StringUtils.isNotBlank(script)) {
-            validator = new ScriptValidator(validatorElement, getMessagesPack());
+            validator = new ScriptValidator(validatorElement, context.getMessagesPack());
         } else {
             Class aClass = getScripting().loadClass(className);
             if (aClass == null)
                 throw new GuiDevelopmentException(String.format("Class %s is not found", className), context);
-            if (!StringUtils.isBlank(getMessagesPack()))
+            if (!StringUtils.isBlank(context.getMessagesPack()))
                 try {
-                    validator = (Field.Validator) ReflectionHelper.newInstance(aClass, validatorElement, getMessagesPack());
+                    validator = (Field.Validator) ReflectionHelper.newInstance(aClass, validatorElement, context.getMessagesPack());
                 } catch (NoSuchMethodException e) {
                     //
                 }
@@ -887,7 +885,7 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
     protected Function<?, String> loadFormatter(Element element) {
         Element formatterElement = element.element("formatter");
         if (formatterElement != null) {
-            final String className = formatterElement.attributeValue("class");
+            String className = formatterElement.attributeValue("class");
 
             if (StringUtils.isEmpty(className)) {
                 throw new GuiDevelopmentException("Formatter's attribute 'class' is not specified", context);
@@ -899,7 +897,7 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
             }
 
             try {
-                final Constructor<?> constructor = aClass.getConstructor(Element.class);
+                Constructor<?> constructor = aClass.getConstructor(Element.class);
                 try {
                     //noinspection unchecked
                     return (Function<?, String>) constructor.newInstance(formatterElement);
@@ -935,51 +933,6 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
             throw new GuiDevelopmentException("Invalid orientation value: " + orientation, context,
                     "Component ID", ((Component) component).getId());
         }
-    }
-
-    protected ComponentLoader getLoader(Element element, String name) {
-        Class<? extends ComponentLoader> loaderClass = layoutLoaderConfig.getLoader(name);
-        if (loaderClass == null) {
-            throw new GuiDevelopmentException("Unknown component: " + name, context);
-        }
-
-        return getLoader(element, loaderClass);
-    }
-
-    // todo move to LayoutLoaderConfig
-    protected ComponentLoader getLoader(Element element, Class<? extends ComponentLoader> loaderClass) {
-        Constructor<? extends ComponentLoader> constructor;
-        try {
-            constructor = loaderClass.getConstructor();
-        } catch (NoSuchMethodException e) {
-            throw new GuiDevelopmentException(
-                    String.format("Unable to find constructor for loader: %s %s", loaderClass, e), context);
-        }
-
-        ComponentLoader loader;
-        try {
-            loader = constructor.newInstance();
-        } catch (InvocationTargetException | IllegalAccessException | InstantiationException e) {
-            String location = null;
-            if (context instanceof ComponentContext) {
-                location = getComponentContext().getFullFrameId();
-            }
-            if (context instanceof CompositeComponentContext) {
-                location = getCompositeComponentContext().getDescriptorPath();
-            }
-
-            throw new RuntimeException("Loader instantiate error in: " + location, e);
-        }
-
-        loader.setBeanLocator(beanLocator);
-
-        loader.setMessagesPack(messagesPack);
-        loader.setContext(context);
-        loader.setLayoutLoaderConfig(layoutLoaderConfig);
-        loader.setFactory(factory);
-        loader.setElement(element);
-
-        return loader;
     }
 
     protected void loadInputPrompt(HasInputPrompt component, Element element) {
@@ -1032,7 +985,6 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
                         String.format("Can't set container '%s' for component '%s' because 'property' " +
                                 "attribute is not defined", containerId, element.attributeValue("id")), context);
             }
-
 
             FrameOwner frameOwner = getComponentContext().getFrame().getFrameOwner();
             ScreenData screenData = UiControllerUtils.getScreenData(frameOwner);

@@ -19,6 +19,7 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.TabSheet;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
+import com.haulmont.cuba.gui.xml.layout.LayoutLoader;
 import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
 
@@ -35,12 +36,14 @@ public class TabSheetLoader extends ContainerLoader<TabSheet> {
         resultComponent = factory.create(TabSheet.NAME);
         loadId(resultComponent, element);
 
+        LayoutLoader layoutLoader = getLayoutLoader();
+
         List<Element> tabElements = element.elements("tab");
         for (Element tabElement : tabElements) {
             final String name = tabElement.attributeValue("id");
 
             boolean lazy = Boolean.parseBoolean(tabElement.attributeValue("lazy"));
-            ComponentLoader tabComponentLoader = getLoader(tabElement, TabComponentLoader.class);
+            ComponentLoader tabComponentLoader = layoutLoader.getLoader(tabElement, TabComponentLoader.class);
             TabSheet.Tab tab;
             if (lazy) {
                 tab = resultComponent.addLazyTab(name, tabElement, tabComponentLoader);

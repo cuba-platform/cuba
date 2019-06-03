@@ -42,8 +42,6 @@ public class LayoutLoader {
     protected UiComponents factory;
     protected LayoutLoaderConfig config;
 
-    protected String messagesPack;
-
     protected BeanLocator beanLocator;
 
     public LayoutLoader(ComponentLoader.Context context) {
@@ -63,14 +61,6 @@ public class LayoutLoader {
     @Inject
     protected void setConfig(LayoutLoaderConfig config) {
         this.config = config;
-    }
-
-    public String getMessagesPack() {
-        return messagesPack;
-    }
-
-    public void setMessagesPack(String messagesPack) {
-        this.messagesPack = messagesPack;
     }
 
     protected ComponentLoader getLoader(Element element) {
@@ -112,7 +102,6 @@ public class LayoutLoader {
 
         loader.setBeanLocator(beanLocator);
 
-        loader.setMessagesPack(messagesPack);
         loader.setContext(context);
         loader.setLayoutLoaderConfig(config);
         loader.setFactory(factory);
@@ -149,5 +138,18 @@ public class LayoutLoader {
             windowLoader.createContent(layout);
         }
         return windowLoader;
+    }
+
+    public ComponentLoader getLoader(Element element, String name) {
+        Class<? extends ComponentLoader> loaderClass = config.getLoader(name);
+        if (loaderClass == null) {
+            throw new GuiDevelopmentException("Unknown component: " + name, context);
+        }
+
+        return initLoader(element, loaderClass);
+    }
+
+    public ComponentLoader getLoader(Element element, Class<? extends ComponentLoader> loaderClass) {
+        return initLoader(element, loaderClass);
     }
 }

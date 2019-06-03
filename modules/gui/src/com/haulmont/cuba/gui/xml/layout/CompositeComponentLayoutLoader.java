@@ -67,22 +67,6 @@ public class CompositeComponentLayoutLoader {
         this.config = config;
     }
 
-    public Locale getLocale() {
-        return locale;
-    }
-
-    public void setLocale(Locale locale) {
-        this.locale = locale;
-    }
-
-    public String getMessagesPack() {
-        return messagesPack;
-    }
-
-    public void setMessagesPack(String messagesPack) {
-        this.messagesPack = messagesPack;
-    }
-
     protected ComponentLoader getLoader(Element element) {
         if (COMPOSITE_COMPONENT_ELEMENT_NAME.equals(element.getName())) {
             List<Element> elements = element.elements();
@@ -117,7 +101,6 @@ public class CompositeComponentLayoutLoader {
 
         loader.setBeanLocator(beanLocator);
 
-        loader.setMessagesPack(messagesPack);
         loader.setContext(context);
         loader.setLayoutLoaderConfig(config);
         loader.setFactory(factory);

@@ -99,6 +99,7 @@ public class CalendarLoader extends AbstractComponentLoader<Calendar> {
         loadEventProviderRelatedProperties(component, element);
     }
 
+    @SuppressWarnings("unchecked")
     protected void loadDataContainer(Calendar component, Element element) {
         String containerId = element.attributeValue("dataContainer");
         FrameOwner frameOwner = getComponentContext().getFrame().getFrameOwner();
@@ -114,7 +115,7 @@ public class CalendarLoader extends AbstractComponentLoader<Calendar> {
     }
 
     protected void loadDatasource(Calendar component, Element element) {
-        final String datasource = element.attributeValue("datasource");
+        String datasource = element.attributeValue("datasource");
         CollectionDatasource ds = (CollectionDatasource) getComponentContext().getDsContext().get(datasource);
         if (ds == null) {
             throw new GuiDevelopmentException(String.format("Datasource '%s' is not defined", datasource),

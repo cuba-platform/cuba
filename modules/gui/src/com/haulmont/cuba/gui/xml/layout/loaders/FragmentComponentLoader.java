@@ -116,21 +116,26 @@ public class FragmentComponentLoader extends ContainerLoader<Fragment> {
             }
 
             innerContext = new ComponentLoaderContext(getComponentContext().getOptions());
+            innerContext.setMessagesPack(fragmentHelper.getMessagePack(windowInfo.getTemplate()));
             innerContext.setCurrentFrameId(fragmentId);
             innerContext.setFullFrameId(frameId);
             innerContext.setFrame(fragment);
             innerContext.setParent(parentContext);
             innerContext.setProperties(loadProperties(element));
 
-            LayoutLoader layoutLoader = beanLocator.getPrototype(LayoutLoader.NAME, innerContext);
-            layoutLoader.setMessagesPack(fragmentHelper.getMessagePack(windowInfo.getTemplate()));
+            LayoutLoader layoutLoader = getLayoutLoader(innerContext);
 
             ScreenXmlLoader screenXmlLoader = beanLocator.get(ScreenXmlLoader.NAME);
 
-            Element windowElement = screenXmlLoader.load(windowInfo.getTemplate(), windowInfo.getId(),
+            Element rootElement = screenXmlLoader.load(windowInfo.getTemplate(), windowInfo.getId(),
                     getComponentContext().getParams());
 
-            this.fragmentLoader = layoutLoader.createFragmentContent(fragment, windowElement);
+            String messagesPack = rootElement.attributeValue("messagesPack");
+            if (messagesPack != null) {
+                innerContext.setMessagesPack(messagesPack);
+            }
+
+            this.fragmentLoader = layoutLoader.createFragmentContent(fragment, rootElement);
         }
 
         createStopWatch.stop();

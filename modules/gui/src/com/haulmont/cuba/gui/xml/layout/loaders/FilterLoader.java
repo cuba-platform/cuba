@@ -96,7 +96,7 @@ public class FilterLoader extends AbstractComponentLoader<Filter> {
         }
 
         String dataLoaderId = element.attributeValue("dataLoader");
-        if (!StringUtils.isBlank(dataLoaderId)) {
+        if (StringUtils.isNotBlank(dataLoaderId)) {
             FrameOwner frameOwner = getComponentContext().getFrame().getFrameOwner();
             ScreenData screenData = UiControllerUtils.getScreenData(frameOwner);
             DataLoader dataLoader = screenData.getLoader(dataLoaderId);
@@ -107,7 +107,7 @@ public class FilterLoader extends AbstractComponentLoader<Filter> {
 
         } else {
             String datasource = element.attributeValue("datasource");
-            if (!StringUtils.isBlank(datasource)) {
+            if (StringUtils.isNotBlank(datasource)) {
                 if (getComponentContext().getDsContext() == null) {
                     throw new IllegalStateException("'datasource' attribute can be used only in screens with 'dsContext' element. " +
                             "In a screen with 'data' element use 'dataContainer' attribute.");

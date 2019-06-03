@@ -437,22 +437,13 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
     protected void createButtonsPanel(T table, Element element) {
         panelElement = element.element("buttonsPanel");
         if (panelElement != null) {
-            ButtonsPanelLoader loader = (ButtonsPanelLoader) getLoader(panelElement, ButtonsPanel.NAME);
+            ButtonsPanelLoader loader = (ButtonsPanelLoader) getLayoutLoader().getLoader(panelElement, ButtonsPanel.NAME);
             loader.createComponent();
             ButtonsPanel panel = loader.getResultComponent();
 
             table.setButtonsPanel(panel);
 
             buttonsPanelLoader = loader;
-        }
-    }
-
-    @Override
-    public void setMessagesPack(String messagesPack) {
-        super.setMessagesPack(messagesPack);
-
-        if (buttonsPanelLoader != null) {
-            buttonsPanelLoader.setMessagesPack(messagesPack);
         }
     }
 

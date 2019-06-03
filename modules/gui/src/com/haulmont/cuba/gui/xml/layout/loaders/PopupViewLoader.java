@@ -89,8 +89,7 @@ public class PopupViewLoader extends AbstractComponentLoader<PopupView> {
 
     protected void createContent() {
         if (element != null) {
-            LayoutLoader loader = beanLocator.getPrototype(LayoutLoader.NAME, context);
-            loader.setMessagesPack(getMessagesPack());
+            LayoutLoader loader = getLayoutLoader();
 
             List<Element> elements = element.elements();
             if (elements.size() != 0) {

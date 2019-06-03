@@ -39,6 +39,7 @@ import com.haulmont.cuba.gui.model.*;
 import com.haulmont.cuba.gui.screen.FrameOwner;
 import com.haulmont.cuba.gui.screen.UiControllerUtils;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
+import com.haulmont.cuba.gui.xml.layout.LayoutLoader;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.IterableUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -68,7 +69,9 @@ public abstract class AbstractDataGridLoader<T extends DataGrid> extends Actions
     protected void createButtonsPanel(HasButtonsPanel dataGrid, Element element) {
         panelElement = element.element("buttonsPanel");
         if (panelElement != null) {
-            ButtonsPanelLoader loader = (ButtonsPanelLoader) getLoader(panelElement, ButtonsPanel.NAME);
+            LayoutLoader layoutLoader = getLayoutLoader();
+
+            ButtonsPanelLoader loader = (ButtonsPanelLoader) layoutLoader.getLoader(panelElement, ButtonsPanel.NAME);
             loader.createComponent();
             ButtonsPanel panel = loader.getResultComponent();
 
@@ -636,10 +639,6 @@ public abstract class AbstractDataGridLoader<T extends DataGrid> extends Actions
 
     @Nullable
     protected Element getOverriddenColumn(List<Element> columns, String property) {
-        if (CollectionUtils.isEmpty(columns)) {
-            return null;
-        }
-
         for (Element element : columns) {
             String propertyAttr = element.attributeValue("property");
             if (StringUtils.isNotEmpty(propertyAttr) && propertyAttr.equals(property)) {

@@ -161,19 +161,24 @@ public class WebFragments implements Fragments {
         // load XML if needed
         if (windowInfo.getTemplate() != null) {
             ComponentLoaderContext innerContext = new ComponentLoaderContext(options);
+            innerContext.setMessagesPack(fragmentHelper.getMessagePack(windowInfo.getTemplate()));
             innerContext.setCurrentFrameId(windowInfo.getId());
             innerContext.setFullFrameId(windowInfo.getId());
             innerContext.setFrame(fragment);
             innerContext.setParent(loaderContext);
 
             LayoutLoader layoutLoader = beanLocator.getPrototype(LayoutLoader.NAME, innerContext);
-            layoutLoader.setMessagesPack(fragmentHelper.getMessagePack(windowInfo.getTemplate()));
 
-            Element windowElement = screenXmlLoader.load(windowInfo.getTemplate(), windowInfo.getId(),
+            Element rootElement = screenXmlLoader.load(windowInfo.getTemplate(), windowInfo.getId(),
                     innerContext.getParams());
 
+            String messagesPack = rootElement.attributeValue("messagesPack");
+            if (messagesPack != null) {
+                innerContext.setMessagesPack(messagesPack);
+            }
+
             ComponentLoader<Fragment> fragmentLoader =
-                    layoutLoader.createFragmentContent(fragment, windowElement);
+                    layoutLoader.createFragmentContent(fragment, rootElement);
 
             fragmentLoader.loadComponent();
 

@@ -160,8 +160,7 @@ public class FormLoader extends AbstractComponentLoader<Form> {
         if ("field".equals(element.getName())) {
             component = loadField(element);
         } else {
-            LayoutLoader loader = beanLocator.getPrototype(LayoutLoader.NAME, context);
-            loader.setMessagesPack(getMessagesPack());
+            LayoutLoader loader = getLayoutLoader();
 
             ComponentLoader childComponentLoader = loader.createComponent(element);
             childComponentLoader.loadComponent();

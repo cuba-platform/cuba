@@ -41,7 +41,7 @@ public abstract class ActionsHolderLoader<T extends ActionsHolder> extends Abstr
         if (StringUtils.isEmpty(element.attributeValue("invoke"))) {
             // only in legacy frames
             if (context instanceof ComponentContext
-                    && getComponentContext().getFrame().getFrameOwner() instanceof LegacyFrame) {
+                    && ((ComponentContext) context).getFrame().getFrameOwner() instanceof LegacyFrame) {
                 // Try to create a standard list action
                 for (ListActionType type : ListActionType.values()) {
                     if (type.getId().equals(id)) {

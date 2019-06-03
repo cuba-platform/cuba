@@ -32,7 +32,7 @@ public class AppWorkAreaLoader extends ContainerLoader<AppWorkArea> {
         loadId(resultComponent, element);
 
         Element initialLayoutElement = element.element("initialLayout");
-        initialLayoutLoader = getLoader(initialLayoutElement, VBoxLayout.NAME);
+        initialLayoutLoader = getLayoutLoader().getLoader(initialLayoutElement, VBoxLayout.NAME);
         initialLayoutLoader.createComponent();
         VBoxLayout initialLayout = (VBoxLayout) initialLayoutLoader.getResultComponent();
         resultComponent.setInitialLayout(initialLayout);
@@ -55,14 +55,5 @@ public class AppWorkAreaLoader extends ContainerLoader<AppWorkArea> {
         loadCss(resultComponent, element);
 
         initialLayoutLoader.loadComponent();
-    }
-
-    @Override
-    public void setMessagesPack(String messagesPack) {
-        super.setMessagesPack(messagesPack);
-
-        if (initialLayoutLoader != null) {
-            initialLayoutLoader.setMessagesPack(messagesPack);
-        }
     }
 }

@@ -40,17 +40,6 @@ public abstract class ContainerLoader<T extends Component> extends AbstractCompo
         pendingLoadComponents.clear();
     }
 
-    @Override
-    public void setMessagesPack(String messagesPack) {
-        super.setMessagesPack(messagesPack);
-
-        for (ComponentLoader loader : pendingLoadComponents) {
-            if (!(loader instanceof FragmentComponentLoader) && !(loader instanceof RuntimePropertiesFrameLoader)) {
-                loader.setMessagesPack(messagesPack);
-            }
-        }
-    }
-
     protected void loadSpacing(HasSpacing layout, Element element) {
         String spacing = element.attributeValue("spacing");
         if (StringUtils.isNotEmpty(spacing)) {
@@ -59,8 +48,7 @@ public abstract class ContainerLoader<T extends Component> extends AbstractCompo
     }
 
     protected void createSubComponents(ComponentContainer container, Element containerElement) {
-        LayoutLoader loader = beanLocator.getPrototype(LayoutLoader.NAME, context);
-        loader.setMessagesPack(getMessagesPack());
+        LayoutLoader loader = getLayoutLoader();
 
         for (Element subElement : containerElement.elements()) {
             if (!isChildElementIgnored(subElement)) {
