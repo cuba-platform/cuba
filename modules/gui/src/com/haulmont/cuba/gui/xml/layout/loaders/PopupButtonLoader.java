@@ -89,8 +89,10 @@ public class PopupButtonLoader extends AbstractComponentLoader<PopupButton> {
             Action action = loadDeclarativeAction(actionsHolder, actionEl);
             actionsHolder.addAction(action);
 
-            getComponentContext().addPostInitTask(new ActionHolderAssignActionPostInitTask(actionsHolder,
-                    action.getId(), getComponentContext().getFrame()));
+            ComponentContext componentContext = getComponentContext();
+
+            componentContext.addPostInitTask(new ActionHolderAssignActionPostInitTask(actionsHolder,
+                    action.getId(), componentContext.getFrame()));
         }
     }
 
@@ -163,8 +165,7 @@ public class PopupButtonLoader extends AbstractComponentLoader<PopupButton> {
 
     protected void createContent() {
         if (element != null && element.element("popup") != null) {
-            LayoutLoader loader = beanLocator.getPrototype(LayoutLoader.NAME, context);
-            loader.setMessagesPack(getMessagesPack());
+            LayoutLoader loader = getLayoutLoader();
 
             List<Element> elements = element.element("popup").elements();
             if (elements.size() != 0) {

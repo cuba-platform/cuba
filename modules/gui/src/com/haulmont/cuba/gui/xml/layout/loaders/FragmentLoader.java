@@ -72,7 +72,9 @@ public class FragmentLoader extends ContainerLoader<Fragment> implements Compone
             getScreenViewsLoader().deployViews(element);
         }
 
-        if (getComponentContext().getParent() == null) {
+        ComponentContext componentContext = getComponentContext();
+
+        if (componentContext.getParent() == null) {
             throw new IllegalStateException("FragmentLoader is always called within parent ComponentLoaderContext");
         }
 
@@ -81,7 +83,7 @@ public class FragmentLoader extends ContainerLoader<Fragment> implements Compone
         Element layoutElement = element.element("layout");
         if (layoutElement == null) {
             throw new GuiDevelopmentException("Required 'layout' element is not found",
-                    getComponentContext().getFullFrameId());
+                    componentContext.getFullFrameId());
         }
 
         loadIcon(resultComponent, layoutElement);
@@ -111,7 +113,7 @@ public class FragmentLoader extends ContainerLoader<Fragment> implements Compone
         if (resultComponent.getFrameOwner() instanceof AbstractFrame) {
             Element companionsElem = element.element("companions");
             if (companionsElem != null) {
-                getComponentContext().addInjectTask(new FragmentLoaderCompanionTask(resultComponent));
+                componentContext.addInjectTask(new FragmentLoaderCompanionTask(resultComponent));
             }
         }
 

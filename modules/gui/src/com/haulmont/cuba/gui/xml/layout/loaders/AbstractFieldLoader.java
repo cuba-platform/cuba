@@ -105,11 +105,11 @@ public abstract class AbstractFieldLoader<T extends Field> extends AbstractDatas
             ValidatorLoadFactory loadFactory = beanLocator.get(ValidatorLoadFactory.NAME);
 
             for (Element validatorElem : validators) {
-                AbstractValidator validator = loadFactory.createValidator(validatorElem, getMessagesPack());
+                AbstractValidator validator = loadFactory.createValidator(validatorElem, context.getMessagesPack());
                 if (validator != null) {
                     component.addValidator(validator);
                 } else if (validatorElem.getName().equals("email")) {
-                    component.addValidator(new EmailValidator(validatorElem, getMessagesPack()));
+                    component.addValidator(new EmailValidator(validatorElem, context.getMessagesPack()));
                 }
             }
         }

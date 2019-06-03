@@ -17,6 +17,7 @@
 package com.haulmont.cuba.gui.xml.layout;
 
 import com.haulmont.cuba.core.global.BeanLocator;
+import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.gui.UiComponents;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Frame;
@@ -33,6 +34,10 @@ import java.util.Map;
 public interface ComponentLoader<T extends Component> {
 
     interface Context {
+        /**
+         * @return message pack of the context, should be used with {@link MessageTools#loadString(String)} in loaders
+         */
+        String getMessagesPack();
     }
 
     interface ComponentContext extends Context {
@@ -40,22 +45,12 @@ public interface ComponentLoader<T extends Component> {
 
         ScreenData getScreenData();
 
-        Map<String, Object> getParams();
-        DsContext getDsContext();
-
-        Map<String, String> getAliasesMap();
-
+        ComponentContext getParent();
         Frame getFrame();
-        void setFrame(Frame frame);
 
         String getFullFrameId();
-        void setFullFrameId(String frameId);
 
         String getCurrentFrameId();
-        void setCurrentFrameId(String currentFrameId);
-
-        ComponentContext getParent();
-        void setParent(ComponentContext parent);
 
         void addPostInitTask(PostInitTask task);
         void executePostInitTasks();
@@ -65,14 +60,18 @@ public interface ComponentLoader<T extends Component> {
 
         void addInitTask(InitTask task);
         void executeInitTasks();
+
+        /* old API */
+
+        Map<String, Object> getParams();
+        DsContext getDsContext();
+        Map<String, String> getAliasesMap();
     }
 
     interface CompositeComponentContext extends Context {
         Class<? extends Component> getComponentClass();
-        void setComponentClass(Class<? extends Component> componentClass);
 
         String getDescriptorPath();
-        void setDescriptorPath(String template);
     }
 
     /**
@@ -116,9 +115,6 @@ public interface ComponentLoader<T extends Component> {
 
     Context getContext();
     void setContext(Context context);
-
-    String getMessagesPack();
-    void setMessagesPack(String name);
 
     UiComponents getFactory();
     void setFactory(UiComponents factory);

@@ -25,13 +25,15 @@ import org.dom4j.Element;
 public abstract class AbstractDatasourceComponentLoader<T extends DatasourceComponent> extends AbstractComponentLoader<T> {
 
     protected void loadDatasource(DatasourceComponent component, Element element) {
-        final String datasource = element.attributeValue("datasource");
+        String datasource = element.attributeValue("datasource");
         if (!StringUtils.isEmpty(datasource)) {
-            if (getComponentContext().getDsContext() == null) {
+            ComponentContext componentContext = getComponentContext();
+
+            if (componentContext.getDsContext() == null) {
                 throw new IllegalStateException("'datasource' attribute can be used only in screens with 'dsContext' element. " +
                         "In a screen with 'data' element use 'dataContainer' attribute.");
             }
-            Datasource ds = getComponentContext().getDsContext().get(datasource);
+            Datasource ds = componentContext.getDsContext().get(datasource);
             if (ds == null) {
                 throw new GuiDevelopmentException(String.format("Datasource '%s' is not defined", datasource),
                         getContext(), "Component ID", component.getId());

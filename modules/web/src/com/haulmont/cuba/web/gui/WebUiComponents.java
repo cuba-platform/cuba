@@ -24,7 +24,6 @@ import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.UiComponents;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.mainwindow.*;
-import com.haulmont.cuba.gui.xml.layout.ComponentLoader.CompositeComponentContext;
 import com.haulmont.cuba.gui.xml.layout.CompositeComponentLayoutLoader;
 import com.haulmont.cuba.gui.xml.layout.CompositeDescriptorLoader;
 import com.haulmont.cuba.gui.xml.layout.loaders.CompositeComponentLoaderContext;
@@ -265,16 +264,15 @@ public class WebUiComponents implements UiComponents {
     }
 
     protected Component processCompositeDescriptor(Class<? extends Component> componentClass, String descriptorPath) {
-        CompositeComponentContext context = new CompositeComponentLoaderContext();
+        CompositeComponentLoaderContext context = new CompositeComponentLoaderContext();
         context.setComponentClass(componentClass);
         context.setDescriptorPath(descriptorPath);
+        context.setMessagesPack(getMessagePack(descriptorPath));
 
         Element element = compositeDescriptorLoader.load(descriptorPath);
 
         CompositeComponentLayoutLoader layoutLoader =
                 beanLocator.getPrototype(CompositeComponentLayoutLoader.NAME, context);
-        layoutLoader.setLocale(getLocale());
-        layoutLoader.setMessagesPack(getMessagePack(descriptorPath));
 
         return layoutLoader.createComponent(element);
     }

@@ -23,13 +23,22 @@ public class CompositeComponentLoaderContext implements ComponentLoader.Composit
 
     protected Class<? extends Component> componentClass;
     protected String descriptorPath;
+    protected String messagesPack;
+
+    @Override
+    public String getMessagesPack() {
+        return messagesPack;
+    }
+
+    public void setMessagesPack(String messagesPack) {
+        this.messagesPack = messagesPack;
+    }
 
     @Override
     public Class<? extends Component> getComponentClass() {
         return componentClass;
     }
 
-    @Override
     public void setComponentClass(Class<? extends Component> componentClass) {
         this.componentClass = componentClass;
     }
@@ -39,7 +48,6 @@ public class CompositeComponentLoaderContext implements ComponentLoader.Composit
         return descriptorPath;
     }
 
-    @Override
     public void setDescriptorPath(String descriptorPath) {
         this.descriptorPath = descriptorPath;
     }

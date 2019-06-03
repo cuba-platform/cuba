@@ -218,6 +218,7 @@ public class WebScreens implements Screens, WindowManager {
         ComponentLoaderContext componentLoaderContext = new ComponentLoaderContext(options);
         componentLoaderContext.setFullFrameId(windowInfo.getId());
         componentLoaderContext.setCurrentFrameId(windowInfo.getId());
+        componentLoaderContext.setMessagesPack(getPackage(resolvedScreenClass));
         componentLoaderContext.setFrame(window);
 
         if (element != null) {
@@ -331,11 +332,16 @@ public class WebScreens implements Screens, WindowManager {
 
     protected <T extends Screen> void loadWindowFromXml(Element element, WindowInfo windowInfo, Window window, T controller,
                                                         ComponentLoaderContext componentLoaderContext) {
-        LayoutLoader layoutLoader = beanLocator.getPrototype(LayoutLoader.NAME, componentLoaderContext);
         if (windowInfo.getTemplate() != null) {
-            layoutLoader.setMessagesPack(getMessagePack(windowInfo.getTemplate()));
+            String messagesPack = element.attributeValue("messagesPack");
+            if (messagesPack != null) {
+                componentLoaderContext.setMessagesPack(messagesPack);
+            } else {
+                componentLoaderContext.setMessagesPack(getMessagePack(windowInfo.getTemplate()));
+            }
         }
 
+        LayoutLoader layoutLoader = beanLocator.getPrototype(LayoutLoader.NAME, componentLoaderContext);
         ComponentLoader<Window> windowLoader = layoutLoader.createWindowContent(window, element);
 
         if (controller instanceof LegacyFrame) {

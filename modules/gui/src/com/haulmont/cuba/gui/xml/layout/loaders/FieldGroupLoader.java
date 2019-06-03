@@ -172,11 +172,13 @@ public class FieldGroupLoader extends AbstractComponentLoader<FieldGroup> {
 
         resultComponent.bind();
 
+        ComponentContext componentContext = getComponentContext();
+
         for (FieldGroup.FieldConfig field : resultComponent.getFields()) {
             if (field.getXmlDescriptor() != null) {
                 String generator = field.getXmlDescriptor().attributeValue("generator");
                 if (generator != null) {
-                    getComponentContext().addInjectTask((boundContext, window) -> {
+                    componentContext.addInjectTask((boundContext, window) -> {
                         DeclarativeFieldGenerator fieldGenerator = new DeclarativeFieldGenerator(resultComponent, generator);
                         Component fieldComponent = fieldGenerator.generateField(field.getTargetDatasource(), field.getProperty());
                         field.setComponent(fieldComponent);
@@ -454,8 +456,7 @@ public class FieldGroupLoader extends AbstractComponentLoader<FieldGroup> {
             // load nested component defined as inline
             Element customFieldElement = customElements.get(0);
 
-            LayoutLoader loader = beanLocator.getPrototype(LayoutLoader.NAME, context);
-            loader.setMessagesPack(getMessagesPack());
+            LayoutLoader loader = getLayoutLoader();
 
             ComponentLoader childComponentLoader = loader.createComponent(customFieldElement);
             childComponentLoader.loadComponent();

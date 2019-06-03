@@ -32,23 +32,25 @@ import java.util.*;
 
 public class ComponentLoaderContext implements ComponentLoader.ComponentContext {
 
+    protected ComponentLoader.ComponentContext parent;
     protected ScreenOptions options;
 
     protected ScreenData screenData;
-    protected DsContext dsContext;
+
+    protected String messagesPack;
     protected Frame frame;
     protected String fullFrameId;
     protected String currentFrameId;
+
+    protected List<UiControllerProperty> properties = Collections.emptyList();
 
     protected List<PostInitTask> postInitTasks = new ArrayList<>();
     protected List<InjectTask> injectTasks = new ArrayList<>();
     protected List<InitTask> initTasks = new ArrayList<>();
 
+    protected DsContext dsContext;
     protected Map<String, Object> parameters;
-    protected List<UiControllerProperty> properties = Collections.emptyList();
     protected Map<String, String> aliasesMap = new HashMap<>();
-
-    protected ComponentLoader.ComponentContext parent;
 
     public ComponentLoaderContext(ScreenOptions options) {
         this.options = options;
@@ -91,9 +93,17 @@ public class ComponentLoaderContext implements ComponentLoader.ComponentContext 
         return frame;
     }
 
-    @Override
     public void setFrame(Frame frame) {
         this.frame = frame;
+    }
+
+    @Override
+    public String getMessagesPack() {
+        return messagesPack;
+    }
+
+    public void setMessagesPack(String messagesPack) {
+        this.messagesPack = messagesPack;
     }
 
     @Override
@@ -101,7 +111,6 @@ public class ComponentLoaderContext implements ComponentLoader.ComponentContext 
         return fullFrameId;
     }
 
-    @Override
     public void setFullFrameId(String frameId) {
         this.fullFrameId = frameId;
     }
@@ -111,7 +120,6 @@ public class ComponentLoaderContext implements ComponentLoader.ComponentContext 
         return currentFrameId;
     }
 
-    @Override
     public void setCurrentFrameId(String currentFrameId) {
         this.currentFrameId = currentFrameId;
     }
@@ -126,7 +134,6 @@ public class ComponentLoaderContext implements ComponentLoader.ComponentContext 
         return parent;
     }
 
-    @Override
     public void setParent(ComponentLoader.ComponentContext parent) {
         this.parent = parent;
     }

@@ -69,7 +69,7 @@ public class TreeLoader extends ActionsHolderLoader<Tree> {
 
         String multiselect = element.attributeValue("multiselect");
         if (StringUtils.isNotEmpty(multiselect)) {
-            resultComponent.setMultiSelect(Boolean.parseBoolean(multiselect));
+            resultComponent.setSelectionMode(Tree.SelectionMode.MULTI);
         }
 
         loadTreeChildren();
@@ -130,7 +130,7 @@ public class TreeLoader extends ActionsHolderLoader<Tree> {
     protected void createButtonsPanel(Tree resultComponent, Element element) {
         buttonsPanelElement = element.element("buttonsPanel");
         if (buttonsPanelElement != null) {
-            ButtonsPanelLoader loader = (ButtonsPanelLoader) getLoader(buttonsPanelElement, ButtonsPanel.NAME);
+            ButtonsPanelLoader loader = (ButtonsPanelLoader) getLayoutLoader().getLoader(buttonsPanelElement, ButtonsPanel.NAME);
             loader.createComponent();
             ButtonsPanel panel = loader.getResultComponent();
 
