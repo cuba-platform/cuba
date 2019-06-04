@@ -141,7 +141,7 @@ public class SuggesterConnector extends AbstractExtensionConnector implements
 		if (keyCode == 32 && e.isCtrlKey()) {
 			startSuggesting();
 			return Command.NULL;
-		} else if (suggestOnDot && ".".equals(keyString)) {
+		} else if (suggestOnDot && ".".equals(e.getKey())) {
 			startSuggestingOnNextSelectionChange = true;
 			widget.addSelectionChangeListener(this);
 			return Command.DEFAULT;
