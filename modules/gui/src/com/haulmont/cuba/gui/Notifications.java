@@ -20,7 +20,6 @@ package com.haulmont.cuba.gui;
 import com.haulmont.cuba.gui.components.ContentMode;
 import com.haulmont.cuba.gui.components.HasUserOriginated;
 
-import java.util.EventObject;
 import java.util.function.Consumer;
 
 /**
