@@ -158,6 +158,8 @@ public class EntityLog implements EntityLogAPI {
                     });
         }
 
+        sameEntityList.addAll(dynamicAttributeChanges);
+
         Properties properties = new Properties();
 
         for (EntityLogAttr attr : itemToSave.getAttributes()) {
