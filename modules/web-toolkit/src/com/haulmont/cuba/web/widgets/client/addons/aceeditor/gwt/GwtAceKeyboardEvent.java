@@ -29,6 +29,10 @@ public class GwtAceKeyboardEvent extends GwtAceEvent {
 	public final native boolean isShiftKey() /*-{
 		return !!this.shiftKey;
 	}-*/;
+
+    public final native String getKey() /*-{
+		return this.key;
+	}-*/;
 	
 	public final native boolean getKeyCode() /*-{
 		return this.keyCode;
