@@ -20,7 +20,6 @@ import com.google.common.reflect.TypeToken;
 import com.haulmont.chile.core.datatypes.DatatypeRegistry;
 import com.haulmont.cuba.core.global.BeanLocator;
 import com.haulmont.cuba.core.global.DevelopmentException;
-import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.UiComponents;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.mainwindow.*;
@@ -41,7 +40,6 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -54,8 +52,6 @@ public class WebUiComponents implements UiComponents {
     protected DatatypeRegistry datatypeRegistry;
     @Inject
     protected CompositeDescriptorLoader compositeDescriptorLoader;
-    @Inject
-    protected UserSessionSource userSessionSource;
     @Inject
     protected BeanLocator beanLocator;
 
@@ -275,10 +271,6 @@ public class WebUiComponents implements UiComponents {
                 beanLocator.getPrototype(CompositeComponentLayoutLoader.NAME, context);
 
         return layoutLoader.createComponent(element);
-    }
-
-    protected Locale getLocale() {
-        return userSessionSource.getUserSession().getLocale();
     }
 
     protected String getMessagePack(String descriptorPath) {
