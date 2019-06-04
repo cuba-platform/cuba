@@ -115,8 +115,6 @@ public class WebScreens implements Screens, WindowManager {
     @Inject
     protected ScreenXmlLoader screenXmlLoader;
     @Inject
-    protected UserSessionSource userSessionSource;
-    @Inject
     protected IconResolver iconResolver;
     @Inject
     protected Messages messages;
@@ -404,10 +402,6 @@ public class WebScreens implements Screens, WindowManager {
         int start = messagesPack.startsWith(".") ? 1 : 0;
         messagesPack = messagesPack.substring(start);
         return messagesPack;
-    }
-
-    protected Locale getLocale() {
-        return userSessionSource.getUserSession().getLocale();
     }
 
     @Override

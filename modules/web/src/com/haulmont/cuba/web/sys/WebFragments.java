@@ -17,7 +17,6 @@
 package com.haulmont.cuba.web.sys;
 
 import com.haulmont.cuba.core.global.BeanLocator;
-import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.Fragments;
 import com.haulmont.cuba.gui.UiComponents;
 import com.haulmont.cuba.gui.components.AbstractWindow;
@@ -63,8 +62,6 @@ public class WebFragments implements Fragments {
     protected BeanLocator beanLocator;
     @Inject
     protected UiComponents uiComponents;
-    @Inject
-    protected UserSessionSource userSessionSource;
 
     @Inject
     protected FragmentHelper fragmentHelper;
