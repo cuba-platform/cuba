@@ -12,6 +12,7 @@ install:
 
 script:
   - ./gradlew --no-daemon test javadoc -Dlogback.configurationFile=com/haulmont/cuba/test-silent-logback.xml
+  - ./gradlew --no-daemon dependencyUpdates -PdependencyUpdates -Drevision=release
 
 cache:
   directories:

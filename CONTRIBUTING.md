@@ -111,6 +111,17 @@ Start the following command to run static code analysis:
 > gradlew javadoc findbugsMain
 ```
 
+### Check Maven dependency updates
+
+1. Install the corresponding cuba-gradle-plugin to .m2
+2. Run command:
+
+```
+> gradlew dependencyUpdates -PdependencyUpdates -Drevision=release
+```
+
+It will print available version updates for Maven dependencies.
+
 ## Development process guidelines
 
 ### Code style

@@ -25,7 +25,7 @@ buildscript {
     repositories {
         mavenLocal()
 
-        if (System.getenv('HAULMONT_REPOSITORY_URL')) {
+        if (System.getenv('HAULMONT_REPOSITORY_URL') && !rootProject.hasProperty('dependencyUpdates')) {
             maven {
                 credentials {
                     username System.getenv('HAULMONT_REPOSITORY_USER')
@@ -42,12 +42,45 @@ buildscript {
     dependencies {
         classpath group: 'com.haulmont.gradle', name: 'cuba-plugin', version: cubaVersion
         classpath group: 'gradle.plugin.com.github.spotbugs', name: 'spotbugs-gradle-plugin', version: '1.6.8'
+
+        if (rootProject.hasProperty('dependencyUpdates')) {
+            classpath "com.github.ben-manes:gradle-versions-plugin:0.21.0"
+        }
     }
 }
 
 apply(plugin: 'base')
 apply(plugin: 'maven')
 apply(plugin: 'cuba')
+
+if (rootProject.hasProperty('dependencyUpdates')) {
+    apply plugin: "com.github.ben-manes.versions"
+
+    dependencyUpdates {
+        resolutionStrategy {
+            componentSelection { rules ->
+                rules.all { ComponentSelection selection ->
+                    boolean rejected = ['alpha', 'beta', 'rc', 'RC', 'cr', 'm', 'preview', 'b', 'ea'].any { qualifier ->
+                        selection.candidate.version ==~ /(?i).*[.-]$qualifier[.\d-+]*/
+                    }
+                    if (rejected) {
+                        selection.reject('Release candidate')
+                    }
+                }
+            }
+        }
+
+        checkForGradleUpdate = false
+    }
+
+    /*
+     * Check dependency updates:
+     *
+     * 1. Install the corresponding cuba-gradle-plugin to .m2
+     * 2. Run command:
+     * > gradlew dependencyUpdates -PdependencyUpdates -Drevision=release
+     */
+}
 
 bom.load file('modules/global/src/com/haulmont/cuba/bom.properties')
 
