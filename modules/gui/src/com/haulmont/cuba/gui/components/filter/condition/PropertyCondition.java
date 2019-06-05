@@ -184,8 +184,8 @@ public class PropertyCondition extends AbstractCondition {
             this.operator = operator;
             String paramName = param.getName();
             ConditionParamBuilder paramBuilder = AppBeans.get(ConditionParamBuilder.class);
+            unary = false;
             if (operator.isUnary()) {
-                unary = true;
                 inExpr = false;
                 Param param = Param.Builder.getInstance()
                         .setName(paramName)
@@ -195,7 +195,6 @@ public class PropertyCondition extends AbstractCondition {
                         .build();
                 setParam(param);
             } else {
-                unary = false;
                 inExpr = operator.equals(Op.IN) || operator.equals(Op.NOT_IN);
                 Param param = paramBuilder.createParam(this);
                 if (operator == Op.DATE_INTERVAL) {
