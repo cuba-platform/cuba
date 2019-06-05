@@ -222,6 +222,7 @@ public class WebForm extends WebAbstractComponent<CubaFieldGroupLayout> implemen
 
         columnComponentMapping.clear();
         columnComponentMapping.add(new ArrayList<>());
+        component.setColumns(1);
 
         for (Component component : components) {
             component.setParent(null);

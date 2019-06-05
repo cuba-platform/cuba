@@ -188,7 +188,7 @@ public class DynamicAttributesPanel extends CompositeComponent<VBoxLayout> imple
     @Nullable
     protected Category getDefaultCategory() {
         for (Category category : getCategoriesOptions()) {
-            if (category.getIsDefault()) {
+            if (category != null && Boolean.TRUE.equals(category.getIsDefault())) {
                 return category;
             }
         }
