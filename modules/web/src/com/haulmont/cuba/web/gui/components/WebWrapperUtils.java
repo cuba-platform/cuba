@@ -18,6 +18,7 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.components.AggregationInfo;
 import com.haulmont.cuba.gui.components.CaptionMode;
+import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Component.Alignment;
 import com.haulmont.cuba.gui.components.ContentMode;
 import com.haulmont.cuba.gui.components.DataGrid;
@@ -58,6 +59,9 @@ import static com.vaadin.v7.ui.AbstractTextField.TextChangeEventMode;
  * Convenient class for methods that converts values from Vaadin to CUBA instances and vice versa.
  */
 public final class WebWrapperUtils {
+
+    public static final String AUTO_SIZE = "AUTO";
+
     private WebWrapperUtils() {
     }
 
@@ -640,5 +644,17 @@ public final class WebWrapperUtils {
             default:
                 throw new IllegalArgumentException("Can't be converted to Dependency.Type: " + type);
         }
+    }
+
+    public static String fromVaadinSize(String size) {
+        return Component.AUTO_SIZE.equalsIgnoreCase(size)
+                ? AUTO_SIZE
+                : size;
+    }
+
+    public static String toVaadinSize(String size) {
+        return AUTO_SIZE.equalsIgnoreCase(size)
+                ? Component.AUTO_SIZE
+                : size;
     }
 }
