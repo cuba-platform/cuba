@@ -18,6 +18,8 @@ package spec.cuba.web.dialogs
 
 import com.haulmont.cuba.gui.components.DialogWindow
 import com.haulmont.cuba.gui.screen.OpenMode
+import com.haulmont.cuba.security.app.UserManagementService
+import com.haulmont.cuba.web.testsupport.TestServiceProxy
 import spec.cuba.web.UiScreenSpec
 import spec.cuba.web.dialogs.screens.DialogAutoSizeTestScreen
 import spec.cuba.web.dialogs.screens.DialogSpecifiedSizeTestScreen
@@ -26,7 +28,11 @@ import spec.cuba.web.dialogs.screens.DialogSpecifiedSizeTestScreen
 class DialogModeTest extends UiScreenSpec {
 
     void setup() {
-        exportScreensPackages(['spec.cuba.web.dialogs.screens', 'com.haulmont.cuba.web.app.main'])
+        TestServiceProxy.mock(UserManagementService, Mock(UserManagementService) {
+            getSubstitutedUsers(_) >> Collections.emptyList()
+        })
+
+        exportScreensPackages(['spec.cuba.web.dialogs.screens'])
     }
 
     def 'DialogMode supports AUTO width and height'() {
