@@ -203,7 +203,7 @@ public class WebDialogWindow extends WebWindow implements DialogWindow, Initiali
 
     @Override
     public void setDialogWidth(String dialogWidth) {
-        dialogWindow.setWidth(dialogWidth);
+        dialogWindow.setWidth(WebWrapperUtils.toVaadinSize(dialogWidth));
 
         if (dialogWindow.getWidth() < 0) {
             component.setWidthUndefined();
@@ -224,7 +224,7 @@ public class WebDialogWindow extends WebWindow implements DialogWindow, Initiali
 
     @Override
     public void setDialogHeight(String dialogHeight) {
-        dialogWindow.setHeight(dialogHeight);
+        dialogWindow.setHeight(WebWrapperUtils.toVaadinSize(dialogHeight));
 
         if (dialogWindow.getHeight() < 0) {
             component.setHeightUndefined();
