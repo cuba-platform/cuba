@@ -43,7 +43,7 @@ public class SortJpqlGenerator {
     @Inject
     protected JpqlSortExpressionProvider jpqlSortExpressionProvider;
 
-    public String processQuery(String entityName, String queryString, Sort sort) {
+    public String processQuery(String entityName, List<String> valueProperties, String queryString, Sort sort) {
         List<Sort.Order> orders = sort.getOrders();
         if (orders.isEmpty()) {
             return queryString;
@@ -58,12 +58,19 @@ public class SortJpqlGenerator {
 
         List<String> sortExpressions = new ArrayList<>();
 
-        for (Sort.Order order : sort.getOrders()) {
+        if (entityName != null) {
             MetaClass metaClass = metadata.getClassNN(entityName);
-            MetaPropertyPath metaPropertyPath = metadata.getClassNN(entityName).getPropertyPath(order.getProperty());
-            checkNotNullArgument(metaPropertyPath, "Could not resolve property path '%s' in '%s'", order.getProperty(), metaClass);
+            for (Sort.Order order : sort.getOrders()) {
+                MetaPropertyPath metaPropertyPath = metaClass.getPropertyPath(order.getProperty());
+                checkNotNullArgument(metaPropertyPath, "Could not resolve property path '%s' in '%s'", order.getProperty(), metaClass);
 
-            sortExpressions.addAll(getPropertySortExpressions(metaPropertyPath, asc));
+                sortExpressions.addAll(getPropertySortExpressions(metaPropertyPath, asc));
+            }
+        } else if (valueProperties != null) {
+            List<String> selectedExpressions = queryTransformerFactory.parser(queryString).getSelectedExpressionsList();
+            for (Sort.Order order : sort.getOrders()) {
+                sortExpressions.addAll(getValuePropertySortExpression(order.getProperty(), valueProperties, selectedExpressions, asc));
+            }
         }
 
         return transformQuery(queryString, sortExpressions, asc);
@@ -148,6 +155,15 @@ public class SortJpqlGenerator {
         return Collections.emptyList();
     }
 
+    protected List<String> getValuePropertySortExpression(String property, List<String> valueProperties, List<String> selectedExpressions,
+                                                          boolean sortDirectionAsc) {
+        int index = valueProperties.indexOf(property);
+        if (index >= 0 && index < selectedExpressions.size()) {
+            return Collections.singletonList(selectedExpressions.get(index));
+        }
+
+        return Collections.emptyList();
+    }
 
     protected boolean supportsLobSorting(MetaPropertyPath metaPropertyPath) {
         MetaClass metaClass = metadataTools.getPropertyEnclosingMetaClass(metaPropertyPath);

@@ -196,26 +196,29 @@ public class QueryTreeTransformer {
         Set<String> joinVariables = new HashSet<>();
         for (OrderByFieldNode orderByItem : orderByItems) {
 
-            NodesFinder<PathNode> finder = NodesFinder.of(PathNode.class);
-            new TreeVisitor().visit(orderByItem, finder);
+            if (mainEntityName != null) {
 
-            for (PathNode node : finder.getFoundNodes()) {
-                if (node.getChildCount() > 1) {
-                    int nodeIdx = node.getChildIndex();
-                    List<PathNode> transitPaths = extractTransitPaths(node, mainEntityName);
+                NodesFinder<PathNode> finder = NodesFinder.of(PathNode.class);
+                new TreeVisitor().visit(orderByItem, finder);
 
-                    //replace path expression in the order item to the last path expression from transit paths
-                    PathNode lastNode = transitPaths.remove(transitPaths.size() - 1);
-                    node.getParent().replaceChildren(nodeIdx, nodeIdx, lastNode);
+                for (PathNode node : finder.getFoundNodes()) {
+                    if (node.getChildCount() > 1) {
+                        int nodeIdx = node.getChildIndex();
+                        List<PathNode> transitPaths = extractTransitPaths(node, mainEntityName);
 
-                    //add left join for
-                    for (PathNode joinPathNode : transitPaths) {
-                        String joinVariable = joinPathNode.asPathString('_');
-                        if (!joinVariables.contains(joinVariable)) {
-                            JoinVariableNode join = createLeftJoinByPath(joinVariable, joinPathNode);
+                        //replace path expression in the order item to the last path expression from transit paths
+                        PathNode lastNode = transitPaths.remove(transitPaths.size() - 1);
+                        node.getParent().replaceChildren(nodeIdx, nodeIdx, lastNode);
 
-                            queryTree.getAstFromNode().getChild(0).addChild(join);
-                            joinVariables.add(joinVariable);
+                        //add left join for
+                        for (PathNode joinPathNode : transitPaths) {
+                            String joinVariable = joinPathNode.asPathString('_');
+                            if (!joinVariables.contains(joinVariable)) {
+                                JoinVariableNode join = createLeftJoinByPath(joinVariable, joinPathNode);
+
+                                queryTree.getAstFromNode().getChild(0).addChild(join);
+                                joinVariables.add(joinVariable);
+                            }
                         }
                     }
                 }

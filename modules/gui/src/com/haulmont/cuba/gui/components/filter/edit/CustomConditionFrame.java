@@ -43,6 +43,7 @@ import javax.inject.Inject;
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class CustomConditionFrame extends ConditionFrame<CustomCondition> {
 
@@ -88,6 +89,8 @@ public class CustomConditionFrame extends ConditionFrame<CustomCondition> {
     protected boolean initializing;
 
     protected ConditionsTree conditionsTree;
+
+    protected static final Pattern PARAM_PATTERN = Pattern.compile(":([a-zA-Z_0-9$\\.]+)", Pattern.CASE_INSENSITIVE);
 
     @Override
     public void init(Map<String, Object> params) {
@@ -327,7 +330,7 @@ public class CustomConditionFrame extends ConditionFrame<CustomCondition> {
     protected String replaceParamWithQuestionMark(String where) {
         String res = StringUtils.trim(where);
         if (!StringUtils.isBlank(res)) {
-            Matcher matcher = QueryParserRegex.PARAM_PATTERN.matcher(res);
+            Matcher matcher = PARAM_PATTERN.matcher(res);
             StringBuffer sb = new StringBuffer();
             while (matcher.find()) {
                 if (!matcher.group().startsWith(":session$"))

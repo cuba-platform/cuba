@@ -458,4 +458,39 @@ public class NonEntityQueryTest {
             ((TestUserSessionSource) uss).setUserSession(savedUserSession);
         }
     }
+
+    @Test
+    public void testSortByProperty() {
+        ValueLoadContext context = ValueLoadContext.create();
+        ValueLoadContext.Query query = context.setQueryString("select u.id, u.login from sec$User u where u.id = :id1 or u.id = :id2");
+        query.setParameter("id1", TestSupport.ADMIN_USER_ID);
+        query.setParameter("id2", TestSupport.ANONYMOUS_USER_ID);
+        query.setSort(Sort.by(Sort.Direction.DESC, "login"));
+        context.addProperty("id");
+        context.addProperty("login");
+
+        List<KeyValueEntity> list = dataManager.loadValues(context);
+
+        assertEquals(2, list.size());
+        KeyValueEntity e = list.get(0);
+        assertEquals(TestSupport.ANONYMOUS_USER_ID, e.getValue("id"));
+    }
+
+    @Test
+    public void testSortByAggregatedProperty() {
+        ValueLoadContext context = ValueLoadContext.create();
+        ValueLoadContext.Query query = context.setQueryString("select u.id, min(u.login) from sec$User u where u.id = :id1 or u.id = :id2 " +
+                "group by u.id");
+        query.setParameter("id1", TestSupport.ADMIN_USER_ID);
+        query.setParameter("id2", TestSupport.ANONYMOUS_USER_ID);
+        query.setSort(Sort.by(Sort.Direction.DESC, "min"));
+        context.addProperty("id");
+        context.addProperty("min");
+
+        List<KeyValueEntity> list = dataManager.loadValues(context);
+
+        assertEquals(2, list.size());
+        KeyValueEntity e = list.get(0);
+        assertEquals(TestSupport.ANONYMOUS_USER_ID, e.getValue("id"));
+    }
 }

@@ -85,6 +85,8 @@ public interface QueryParser {
 
     boolean isParameterInCondition(String parameterName);
 
+    List<String> getSelectedExpressionsList();
+
     List<QueryPath> getQueryPaths();
 
     default boolean isParameterUsedInAnyCondition(String paramName) {
