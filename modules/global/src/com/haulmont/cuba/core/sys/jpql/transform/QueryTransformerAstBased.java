@@ -28,7 +28,10 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static java.lang.String.format;
@@ -101,7 +104,7 @@ public class QueryTransformerAstBased implements QueryTransformer {
      */
     @Override
     public void addWhere(String where) {
-        EntityVariable entityReference = createMainIdentificationVariable();
+        EntityVariable entityReference = createMainIdentificationVariableNN();
 
         where = replaceEntityPlaceholder(where, entityReference.getVariableName());
 
@@ -115,13 +118,13 @@ public class QueryTransformerAstBased implements QueryTransformer {
 
     @Override
     public void addJoin(String join) {
-        EntityVariable entityReference = createMainIdentificationVariable();
+        EntityVariable entityReference = createMainIdentificationVariableNN();
         addJoinInternal(join, entityReference);
     }
 
     @Override
     public void addJoinAndWhere(String join, String where) {
-        EntityVariable entityReference = createMainIdentificationVariable();
+        EntityVariable entityReference = createMainIdentificationVariableNN();
 
         where = replaceEntityPlaceholder(where, entityReference.getVariableName());
 
@@ -140,7 +143,7 @@ public class QueryTransformerAstBased implements QueryTransformer {
 
     @Override
     public void replaceWithCount() {
-        EntityVariable entityReference = createMainSelectedPathNodeVariable();
+        EntityVariable entityReference = createMainSelectedPathNodeVariableNN();
         getTransformer().replaceWithCount(entityReference.getVariableName());
     }
 
@@ -169,18 +172,25 @@ public class QueryTransformerAstBased implements QueryTransformer {
 
     @Override
     public void replaceOrderByExpressions(boolean directionDesc, String... sortExpressions) {
-        EntityVariable entityReference = createMainSelectedPathNodeVariable();
+        boolean isEntitySelect = getAnalyzer().getMainSelectedPathNode() != null;
+        EntityVariable entityReference = null;
+        if (isEntitySelect) {
+            entityReference = createMainSelectedPathNodeVariableNN();
+        }
         List<OrderByFieldNode> parsedNodes = new ArrayList<>(sortExpressions.length);
-        for (String expression: sortExpressions) {
-            expression = replaceEntityPlaceholder(expression, entityReference.getVariableName());
+        for (String expression : sortExpressions) {
+            if (isEntitySelect) {
+                expression = replaceEntityPlaceholder(expression, entityReference.getVariableName());
+            }
             parsedNodes.add(parseOrderByItem(expression));
         }
-        getTransformer().replaceOrderByItems(entityReference.getEntityName(), parsedNodes, directionDesc);
+        getTransformer().replaceOrderByItems(
+                entityReference != null ? entityReference.getEntityName() : null, parsedNodes, directionDesc);
     }
 
     @Override
     public void addOrderByIdIfNotExists(String pkName) {
-        EntityVariable entityReference = createMainSelectedPathNodeVariable();
+        EntityVariable entityReference = createMainSelectedPathNodeVariableNN();
         getTransformer().orderById(entityReference.getVariableName(), pkName);
     }
 
@@ -268,7 +278,7 @@ public class QueryTransformerAstBased implements QueryTransformer {
 
     protected String replaceEntityPlaceholder(String value, String variableName) {
         if (value.contains(ALIAS_PLACEHOLDER)) {
-             return value.replace(ALIAS_PLACEHOLDER, variableName);
+            return value.replace(ALIAS_PLACEHOLDER, variableName);
         } else {
             return value;
         }
@@ -302,14 +312,14 @@ public class QueryTransformerAstBased implements QueryTransformer {
         }
     }
 
-    protected EntityVariable createMainIdentificationVariable() {
+    protected EntityVariable createMainIdentificationVariableNN() {
         IdentificationVariableNode identificationVariable = getAnalyzer().getMainIdentificationVariableNode();
         String entityName = getAnalyzer().getMainEntityName(identificationVariable);
         String variableName = getAnalyzer().getMainEntityVariable(identificationVariable);
         return new EntityVariable(entityName, variableName);
     }
 
-    protected EntityVariable createMainSelectedPathNodeVariable() {
+    protected EntityVariable createMainSelectedPathNodeVariableNN() {
         PathNode pathNode = getAnalyzer().getMainSelectedPathNode();
         String entityName = getAnalyzer().getMainSelectedEntityName(pathNode);
         String variableName = getAnalyzer().getMainSelectedEntityVariable(pathNode);

@@ -27,6 +27,9 @@ import org.antlr.runtime.tree.Tree;
 import java.util.List;
 
 public class SelectedItemNode extends BaseCustomNode {
+
+    protected boolean skipSeparator;
+
     private SelectedItemNode(Token token) {
         super(token);
     }
@@ -51,11 +54,16 @@ public class SelectedItemNode extends BaseCustomNode {
     @Override
     public CommonTree treeToQueryPre(QueryBuilder sb, List<ErrorRec> invalidNodes) {
         CommonTree prevNode = getPrevNode();
-        if (prevNode != null && prevNode instanceof SelectedItemNode) {
+        if (prevNode != null && prevNode instanceof SelectedItemNode && !skipSeparator) {
             sb.appendString(", ");
         } else {
             sb.appendSpace();
         }
+        skipSeparator = false;
         return super.treeToQueryPre(sb, invalidNodes);
+    }
+
+    public void setSkipSeparator(boolean skipSeparator) {
+        this.skipSeparator = skipSeparator;
     }
 }

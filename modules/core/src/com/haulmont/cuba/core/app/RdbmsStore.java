@@ -189,7 +189,7 @@ public class RdbmsStore implements DataStore {
         if (log.isDebugEnabled())
             log.debug("loadList: metaClass=" + context.getMetaClass() + ", view=" + context.getView()
                     + (context.getPrevQueries().isEmpty() ? "" : ", from selected")
-                    + ", query=" + (context.getQuery() == null ? null : RdbmsQueryBuilder.printQuery(context.getQuery().getQueryString()))
+                    + ", query=" + (context.getQuery() == null ? null : JpqlQueryBuilder.printQuery(context.getQuery().getQueryString()))
                     + (context.getQuery() == null || context.getQuery().getFirstResult() == 0 ? "" : ", first=" + context.getQuery().getFirstResult())
                     + (context.getQuery() == null || context.getQuery().getMaxResults() == 0 ? "" : ", max=" + context.getQuery().getMaxResults()));
 
@@ -304,7 +304,7 @@ public class RdbmsStore implements DataStore {
         if (log.isDebugEnabled())
             log.debug("getCount: metaClass=" + context.getMetaClass()
                     + (context.getPrevQueries().isEmpty() ? "" : ", from selected")
-                    + ", query=" + (context.getQuery() == null ? null : RdbmsQueryBuilder.printQuery(context.getQuery().getQueryString())));
+                    + ", query=" + (context.getQuery() == null ? null : JpqlQueryBuilder.printQuery(context.getQuery().getQueryString())));
 
         MetaClass metaClass = metadata.getClassNN(context.getMetaClass());
 
@@ -557,7 +557,7 @@ public class RdbmsStore implements DataStore {
         ValueLoadContext.Query contextQuery = context.getQuery();
 
         if (log.isDebugEnabled())
-            log.debug("query: " + (RdbmsQueryBuilder.printQuery(contextQuery.getQueryString()))
+            log.debug("query: " + (JpqlQueryBuilder.printQuery(contextQuery.getQueryString()))
                     + (contextQuery.getFirstResult() == 0 ? "" : ", first=" + contextQuery.getFirstResult())
                     + (contextQuery.getMaxResults() == 0 ? "" : ", max=" + contextQuery.getMaxResults()));
 
@@ -574,10 +574,15 @@ public class RdbmsStore implements DataStore {
 
             List<String> keys = context.getProperties();
 
-            RdbmsQueryBuilder queryBuilder = AppBeans.get(RdbmsQueryBuilder.NAME);
-            queryBuilder.init(contextQuery.getQueryString(), contextQuery.getCondition(), contextQuery.getSort(),
-                    contextQuery.getParameters(), contextQuery.getNoConversionParams(),
-                    null, null, metadata.getClassNN(KeyValueEntity.class).getName());
+            JpqlQueryBuilder queryBuilder = AppBeans.get(JpqlQueryBuilder.NAME);
+
+            queryBuilder.setValueProperties(context.getProperties())
+                    .setQueryString(contextQuery.getQueryString())
+                    .setCondition(contextQuery.getCondition())
+                    .setSort(contextQuery.getSort())
+                    .setQueryParameters(contextQuery.getParameters())
+                    .setNoConversionParams(contextQuery.getNoConversionParams());
+
             Query query = queryBuilder.getQuery(em);
 
             if (contextQuery.getFirstResult() != 0)
@@ -653,24 +658,27 @@ public class RdbmsStore implements DataStore {
 
     protected Query createQuery(EntityManager em, LoadContext<?> context, boolean singleResult) {
         LoadContext.Query contextQuery = context.getQuery();
-        RdbmsQueryBuilder queryBuilder = AppBeans.get(RdbmsQueryBuilder.NAME);
-        queryBuilder.init(
-                contextQuery == null ? null : contextQuery.getQueryString(),
-                contextQuery == null ? null : contextQuery.getCondition(),
-                contextQuery == null ? null : contextQuery.getSort(),
-                contextQuery == null ? null : contextQuery.getParameters(),
-                contextQuery == null ? null : contextQuery.getNoConversionParams(),
-                context.getId(),
-                context.getIds(),
-                context.getMetaClass()
-        );
 
-        queryBuilder.setSingleResult(singleResult);
+        JpqlQueryBuilder queryBuilder = AppBeans.get(JpqlQueryBuilder.NAME);
+
+        queryBuilder.setId(context.getId())
+                .setIds(context.getIds())
+                .setEntityName(context.getMetaClass())
+                .setSingleResult(singleResult);
+
+        if (contextQuery != null) {
+            queryBuilder.setQueryString(contextQuery.getQueryString())
+                    .setCondition(contextQuery.getCondition())
+                    .setSort(contextQuery.getSort())
+                    .setQueryParameters(contextQuery.getParameters())
+                    .setNoConversionParams(contextQuery.getNoConversionParams());
+        }
 
         if (!context.getPrevQueries().isEmpty()) {
             log.debug("Restrict query by previous results");
-            queryBuilder.restrictByPreviousResults(userSessionSource.getUserSession().getId(), context.getQueryKey());
+            queryBuilder.setPreviousResults(userSessionSource.getUserSession().getId(), context.getQueryKey());
         }
+
         Query query = queryBuilder.getQuery(em);
 
         if (contextQuery != null) {

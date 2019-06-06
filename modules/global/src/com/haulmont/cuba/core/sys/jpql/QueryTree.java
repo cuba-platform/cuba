@@ -111,6 +111,14 @@ public class QueryTree {
         return (SelectedItemsNode) tree.getFirstChildWithType(JPA2Lexer.T_SELECTED_ITEMS);
     }
 
+    public Stream<SelectedItemNode> getAstSelectedNodes() {
+        SelectedItemsNode selectedItems = getAstSelectedItemsNode();
+        if (selectedItems != null) {
+            return generateChildrenByClass(selectedItems, SelectedItemNode.class);
+        }
+        return Stream.empty();
+    }
+
     public Stream<PathNode> getAstSelectedPathNodes() {
         SelectedItemsNode selectedItems = getAstSelectedItemsNode();
         if (selectedItems != null) {

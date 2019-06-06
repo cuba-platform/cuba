@@ -99,7 +99,7 @@ public class QueryTreeAnalyzer {
         List<PathNode> pathNodes = queryTree.getAstSelectedPathNodes()
                 .limit(2)
                 .collect(Collectors.toList());
-        if (pathNodes.size() == 0 || pathNodes.size() > 1) {
+        if (pathNodes.size() != 1) {
             return null;
         }
 

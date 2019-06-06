@@ -23,12 +23,14 @@ import com.haulmont.cuba.core.sys.jpql.NodesFinder;
 import com.haulmont.cuba.core.sys.jpql.tree.IdentificationVariableNode;
 import com.haulmont.cuba.core.sys.jpql.tree.PathNode;
 import com.haulmont.cuba.core.sys.jpql.tree.SimpleConditionNode;
+import org.antlr.runtime.tree.TreeVisitor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 
@@ -198,6 +200,18 @@ public class QueryParserAstBased implements QueryParser {
             queryPaths.add(queryPath);
         }
         return queryPaths;
+    }
+
+    @Override
+    public List<String> getSelectedExpressionsList() {
+        return getTree().getAstSelectedNodes()
+                .map(node -> {
+                    TreeToQuery toQuery = new TreeToQuery();
+                    node.setSkipSeparator(true);
+                    new TreeVisitor().visit(node, toQuery);
+                    return toQuery.getQueryString();
+                })
+                .collect(Collectors.toList());
     }
 
     protected EntityNameAndPath getOriginEntityNameAndPath() {
