@@ -26,6 +26,7 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.core.global.Scripting;
 import com.haulmont.cuba.core.global.filter.Op;
+import com.haulmont.cuba.core.global.filter.ParametersHelper;
 import com.haulmont.cuba.gui.components.filter.ConditionParamBuilder;
 import com.haulmont.cuba.gui.components.filter.Param;
 import com.haulmont.cuba.gui.components.filter.descriptor.AbstractConditionDescriptor;
@@ -338,7 +339,8 @@ public abstract class AbstractCondition extends BaseUuidEntity {
             element.addAttribute("operatorType", operator.name());
         }
 
-        if (param != null) {
+        // issue: #2171. Param should be set to the XML only if the condition text contains a parameter.
+        if (param != null && !ParametersHelper.parseQuery(text).isEmpty()) {
             param.toXml(element, valueProperty);
             if (entityParamWhere != null)
                 element.addAttribute("paramWhere", entityParamWhere);
