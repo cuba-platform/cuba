@@ -23,7 +23,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.function.Consumer;
 
-public class WebButtonsPanel extends WebHBoxLayout implements ButtonsPanel, VisibilityChangeNotifier {
+public class WebButtonsPanel extends WebFlowBoxLayout implements ButtonsPanel, VisibilityChangeNotifier {
     public static final String BUTTONS_PANEL_STYLENAME = "c-buttons-panel";
 
     protected boolean alwaysVisible = false;

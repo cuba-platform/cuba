@@ -68,12 +68,39 @@ $cuba-datagrid-highlight-hover-row: false !default;
     }
   }
 
-  .c-data-grid-composition.has-top-panel {
-    padding-top: $v-unit-size + ceil($v-layout-spacing-vertical);
+  .c-data-grid-composition {
+    display:flex;
+    flex-direction: column;
 
     .c-data-grid-top {
-      height: $v-unit-size;
-      margin-top: -1 * ($v-unit-size + ceil($v-layout-spacing-vertical));
+      display: flex;
+      justify-content: space-between;
+      flex-shrink: 0;
+      overflow: hidden;
+      min-height: $v-unit-size;
+    }
+  }
+
+  @if $cuba-buttonspanel-flow == false {
+    .c-data-grid-composition {
+      .v-csslayout.c-flowlayout {
+        white-space: nowrap;
+      }
+
+      .v-csslayout.c-flowlayout > * {
+        float: none;
+      }
+    }
+
+    .c-data-grid-composition.has-top-panel {
+      $top-panel-height: $v-unit-size + ceil($v-layout-spacing-vertical);
+
+      display: block;
+      padding-top: $top-panel-height;
+
+      .c-data-grid-top {
+        margin-top: -1 * $top-panel-height;
+      }
     }
   }
 

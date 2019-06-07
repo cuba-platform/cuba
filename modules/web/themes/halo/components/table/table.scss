@@ -259,12 +259,38 @@ $c-table-drag-indicator-color: $v-focus-color;
   }
 
   .c-table-composition.has-top-panel {
-    padding-top: $v-unit-size + ceil($v-layout-spacing-vertical);
+    display: flex;
+    flex-direction: column;
 
     .c-table-top {
-      overflow: hidden;
-      height: $v-unit-size;
-      margin-top: -1 * ($v-unit-size + ceil($v-layout-spacing-vertical));
+      display: flex;
+      justify-content: space-between;
+      flex-shrink: 0;
+      overflow-x: hidden;
+      min-height: $v-unit-size;
+    }
+  }
+
+  @if $cuba-buttonspanel-flow == false {
+    .c-table-composition {
+      .v-csslayout.c-flowlayout {
+        white-space: nowrap;
+      }
+
+      .v-csslayout.c-flowlayout > * {
+        float: none;
+      }
+    }
+
+    .c-table-composition.has-top-panel {
+      $top-panel-height: $v-unit-size + ceil($v-layout-spacing-vertical);
+
+      display: block;
+      padding-top: $top-panel-height;
+
+      .c-table-top {
+        margin-top: -1 * $top-panel-height;
+      }
     }
   }
 

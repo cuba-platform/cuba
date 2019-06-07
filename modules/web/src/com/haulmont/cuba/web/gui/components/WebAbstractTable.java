@@ -846,13 +846,10 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
         if (rowsCount != null) {
             if (topPanel == null) {
                 topPanel = createTopPanel();
-                topPanel.setWidth("100%");
                 componentComposition.addComponentAsFirst(topPanel);
             }
             com.vaadin.ui.Component rc = rowsCount.unwrap(com.vaadin.ui.Component.class);
             topPanel.addComponent(rc);
-            topPanel.setExpandRatio(rc, 1);
-            topPanel.setComponentAlignment(rc, com.vaadin.ui.Alignment.BOTTOM_RIGHT);
 
             if (rowsCount instanceof VisibilityChangeNotifier) {
                 ((VisibilityChangeNotifier) rowsCount).addVisibilityChangeListener(event ->
@@ -2281,7 +2278,6 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
 
             if (topPanel == null) {
                 topPanel = createTopPanel();
-                topPanel.setWidth(100, Sizeable.Unit.PERCENTAGE);
                 componentComposition.addComponentAsFirst(topPanel);
             }
             topPanel.addComponent(panel.unwrap(Component.class));

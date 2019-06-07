@@ -87,3 +87,8 @@ $cuba-hover-color: #d3eaf8 !default;
  * @group scrollbar
  */
 $cuba-scrollbars-style-enabled: false !default;
+/**
+ * Whether buttons should be placed in one row or can wrap onto multiple rows.
+ * @group buttonspanel
+ */
+$cuba-buttonspanel-flow: true !default;

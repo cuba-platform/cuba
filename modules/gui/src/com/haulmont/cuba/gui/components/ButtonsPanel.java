@@ -19,7 +19,7 @@ package com.haulmont.cuba.gui.components;
 import java.util.Collection;
 import java.util.function.Supplier;
 
-public interface ButtonsPanel extends BoxLayout {
+public interface ButtonsPanel extends FlowBoxLayout {
 
     String NAME = "buttonsPanel";
 
