@@ -47,6 +47,7 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
+import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 import static com.haulmont.cuba.gui.ComponentsHelper.walkComponents;
 
 public class WebTabSheet extends WebAbstractComponent<CubaTabSheet>
@@ -310,6 +311,8 @@ public class WebTabSheet extends WebAbstractComponent<CubaTabSheet>
 
     @Override
     public TabSheet.Tab addTab(String name, Component childComponent) {
+        checkNotNullArgument(childComponent, "Child component cannot be null");
+
         if (childComponent.getParent() != null && childComponent.getParent() != this) {
             throw new IllegalStateException("Component already has parent");
         }
