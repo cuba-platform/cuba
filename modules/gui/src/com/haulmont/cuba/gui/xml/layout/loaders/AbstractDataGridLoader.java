@@ -57,6 +57,8 @@ public abstract class AbstractDataGridLoader<T extends DataGrid> extends Actions
     protected ComponentLoader buttonsPanelLoader;
     protected Element panelElement;
 
+    protected String sortedColumnId;
+
     @Override
     public void createComponent() {
         resultComponent = createComponentInternal();
@@ -469,6 +471,11 @@ public abstract class AbstractDataGridLoader<T extends DataGrid> extends Actions
             column.setEditable(Boolean.parseBoolean(editable));
         }
 
+        String sort = element.attributeValue("sort");
+        if (StringUtils.isNotBlank(sort)) {
+            loadColumnSort(component, column, sort);
+        }
+
         String caption = loadCaption(element);
 
         if (caption == null) {
@@ -646,5 +653,24 @@ public abstract class AbstractDataGridLoader<T extends DataGrid> extends Actions
             }
         }
         return null;
+    }
+
+    protected void loadColumnSort(DataGrid component, Column column, String sort) {
+        if (sortedColumnId != null) {
+            throw new GuiDevelopmentException(String.format("Column '%s' cannot be sorted because DataGrid have already" +
+                    " sorted '%s' column", column.getId(), sortedColumnId), getContext());
+        }
+
+        if (column.getPropertyPath() == null) {
+            throw new GuiDevelopmentException(
+                    String.format("Can't sort column '%s' because it is not bounded with entity's property", column.getId()),
+                    getContext());
+        }
+
+        DataGrid.SortDirection sortDirection = DataGrid.SortDirection.valueOf(sort);
+        getComponentContext().addPostInitTask((context, window) ->
+                component.sort(column.getId(), sortDirection));
+
+        sortedColumnId = column.getId();
     }
 }

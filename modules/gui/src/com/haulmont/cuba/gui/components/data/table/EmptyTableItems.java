@@ -20,6 +20,7 @@ import com.haulmont.bali.events.Subscription;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.data.BindingState;
+import com.haulmont.cuba.gui.components.data.TableItems;
 import com.haulmont.cuba.gui.components.data.meta.EntityTableItems;
 
 import javax.annotation.Nullable;
@@ -27,7 +28,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.function.Consumer;
 
-public class EmptyTableItems<E extends Entity> implements EntityTableItems<E> {
+public class EmptyTableItems<E extends Entity> implements EntityTableItems<E>, TableItems.Sortable<E> {
 
     protected MetaClass metaClass;
 
@@ -120,5 +121,45 @@ public class EmptyTableItems<E extends Entity> implements EntityTableItems<E> {
     @Override
     public Subscription addStateChangeListener(Consumer<StateChangeEvent> listener) {
         return null;
+    }
+
+    @Override
+    public Object nextItemId(Object itemId) {
+        return null;
+    }
+
+    @Override
+    public Object prevItemId(Object itemId) {
+        return null;
+    }
+
+    @Override
+    public Object firstItemId() {
+        return null;
+    }
+
+    @Override
+    public Object lastItemId() {
+        return null;
+    }
+
+    @Override
+    public boolean isFirstId(Object itemId) {
+        return false;
+    }
+
+    @Override
+    public boolean isLastId(Object itemId) {
+        return false;
+    }
+
+    @Override
+    public void sort(Object[] propertyId, boolean[] ascending) {
+        // do nothing
+    }
+
+    @Override
+    public void resetSortOrder() {
+        // do nothing
     }
 }

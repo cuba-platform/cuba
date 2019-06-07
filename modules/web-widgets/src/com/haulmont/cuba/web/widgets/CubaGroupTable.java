@@ -25,7 +25,6 @@ import com.vaadin.server.PaintTarget;
 import com.vaadin.event.Action;
 import com.vaadin.v7.data.Container;
 import com.vaadin.v7.data.util.IndexedContainer;
-import com.vaadin.v7.ui.Table;
 import org.apache.commons.collections4.CollectionUtils;
 
 import javax.annotation.Nullable;
@@ -737,6 +736,11 @@ public class CubaGroupTable extends CubaTable implements GroupTableContainer {
 
             getState().clickableColumnKeys = clickableColumnKeys;
         }
+    }
+
+    @Override
+    public void setSortOptions(Object propertyId, boolean sortAscending) {
+        super.setContainerSortOptions(propertyId, sortAscending);
     }
 
     @Override

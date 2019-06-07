@@ -66,6 +66,8 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
     protected ComponentLoader buttonsPanelLoader;
     protected Element panelElement;
 
+    protected String sortedColumnId;
+
     @Override
     public void loadComponent() {
         assignXmlDescriptor(resultComponent, element);
@@ -520,6 +522,11 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
             column.setSortable(Boolean.parseBoolean(sortable));
         }
 
+        String sort = element.attributeValue("sort");
+        if (StringUtils.isNotBlank(sort)) {
+            loadColumnSort(column, sort);
+        }
+
         loadCaption(column, element);
         loadDescription(column, element);
 
@@ -742,5 +749,24 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
             }
         }
         return null;
+    }
+
+    protected void loadColumnSort(Table.Column column, String sort) {
+        if (sortedColumnId != null) {
+            throw new GuiDevelopmentException(String.format("Column '%s' cannot be sorted, because Table have already" +
+                    " sorted '%s' column", column.getStringId(), sortedColumnId), getContext());
+        }
+
+        if (column.getBoundProperty() == null) {
+            throw new GuiDevelopmentException(
+                    String.format("Can't sort column '%s' because it is not bounded with entity's property", column.getStringId()),
+                    getContext());
+        }
+
+        Table.SortDirection sortDirection = Table.SortDirection.valueOf(sort);
+        getComponentContext().addPostInitTask((context, window) ->
+                resultComponent.sort(column.getStringId(), sortDirection));
+
+        sortedColumnId = column.getStringId();
     }
 }

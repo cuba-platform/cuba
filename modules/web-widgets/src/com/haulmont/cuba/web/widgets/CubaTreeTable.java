@@ -1100,4 +1100,9 @@ public class CubaTreeTable extends com.vaadin.v7.ui.TreeTable implements TreeTab
 
         super.refreshRowCache();
     }
+
+    @Override
+    public void setSortOptions(Object propertyId, boolean sortAscending) {
+        super.setContainerSortOptions(propertyId, sortAscending);
+    }
 }

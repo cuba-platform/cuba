@@ -20,6 +20,7 @@ import com.haulmont.bali.events.Subscription;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.data.BindingState;
+import com.haulmont.cuba.gui.components.data.DataGridItems;
 import com.haulmont.cuba.gui.components.data.meta.EntityDataGridItems;
 
 import javax.annotation.Nullable;
@@ -29,7 +30,7 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 public class EmptyDataGridItems<E extends Entity>
-        implements EntityDataGridItems<E> {
+        implements EntityDataGridItems<E>, DataGridItems.Sortable<E> {
 
     protected MetaClass metaClass;
 
@@ -117,5 +118,15 @@ public class EmptyDataGridItems<E extends Entity>
     @Override
     public Subscription addStateChangeListener(Consumer<StateChangeEvent> listener) {
         return null;
+    }
+
+    @Override
+    public void sort(Object[] propertyId, boolean[] ascending) {
+        // do nothing
+    }
+
+    @Override
+    public void resetSortOrder() {
+        // do nothing
     }
 }

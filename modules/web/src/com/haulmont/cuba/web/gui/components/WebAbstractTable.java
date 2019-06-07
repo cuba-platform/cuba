@@ -157,6 +157,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
     protected Map<Object, Table.Column<E>> columns = new HashMap<>();
     protected List<Table.Column<E>> columnsOrder = new ArrayList<>();
 
+    protected boolean sortable = true;
     protected boolean editable;
     protected Action itemClickAction;
     protected Action enterPressAction;
@@ -765,6 +766,8 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
 
     @Override
     public void setSortable(boolean sortable) {
+        this.sortable = sortable;
+
         component.setSortEnabled(sortable && canBeSorted(getItems()));
     }
 
@@ -800,8 +803,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
     @Override
     public void sortBy(Object propertyId, boolean ascending) {
         if (isSortable()) {
-            component.setSortAscending(ascending);
-            component.setSortContainerPropertyId(propertyId);
+            component.setSortOptions(propertyId, ascending);
             component.sort();
         }
     }
@@ -814,8 +816,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
         }
 
         if (isSortable()) {
-            component.setSortAscending(direction == SortDirection.ASCENDING);
-            component.setSortContainerPropertyId(column.getId());
+            component.setSortOptions(column.getId(), direction == SortDirection.ASCENDING);
             component.sort();
         }
     }
@@ -1408,6 +1409,22 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
 
             if (!canBeSorted(tableItems)) {
                 setSortable(false);
+            } else { // restore sortable
+                setSortable(sortable);
+            }
+
+            // resort data if table have been sorted before setting items
+            if (isSortable()) {
+                if (getSortInfo() != null) {
+                    SortDirection sortDirection = getSortInfo().getAscending()
+                            ? SortDirection.ASCENDING : SortDirection.DESCENDING;
+
+                    Object columnId = getSortInfo().getPropertyId();
+                    String id = columnId instanceof MetaPropertyPath
+                            ? ((MetaPropertyPath) columnId).toPathString() : String.valueOf(columnId);
+
+                    sort(id, sortDirection);
+                }
             }
 
             refreshActionsState();

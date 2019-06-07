@@ -900,6 +900,16 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
                 setSortable(false);
             }
 
+            // resort data if dataGrid have been sorted before setting items
+            if (isSortable()) {
+                List<GridSortOrder<E>> sortOrders = component.getSortOrder();
+                if (!sortOrders.isEmpty()) {
+                    List<GridSortOrder<E>> copiedSortOrders = new ArrayList<>(sortOrders);
+                    component.clearSortOrder();
+                    component.setSortOrder(copiedSortOrders);
+                }
+            }
+
             refreshActionsState();
 
             setUiTestId(dataGridItems);

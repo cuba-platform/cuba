@@ -460,6 +460,13 @@
         </xs:restriction>
     </xs:simpleType>
 
+    <xs:simpleType name="sortDirection">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="ASCENDING"/>
+            <xs:enumeration value="DESCENDING"/>
+        </xs:restriction>
+    </xs:simpleType>
+
     <!-- Style names -->
 
     <xs:simpleType name="labelStylename">
@@ -2416,6 +2423,8 @@
         <xs:attributeGroup ref="hasCaptionSource"/>
         <xs:attribute name="resolution" type="dateFieldResolution"/>
         <xs:attribute name="dateFormat" type="xs:string"/>
+
+        <xs:attribute name="sort" type="sortDirection"/>
     </xs:complexType>
 
     <!-- Table -->
@@ -2508,6 +2517,8 @@
         <xs:attributeGroup ref="hasWidthProp"/>
         <xs:attribute name="minimumWidth" type="xs:string"/>
         <xs:attribute name="maximumWidth" type="xs:string"/>
+
+        <xs:attribute name="sort" type="sortDirection"/>
     </xs:complexType>
 
     <!-- DataGrid -->

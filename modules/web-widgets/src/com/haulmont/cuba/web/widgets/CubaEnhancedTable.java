@@ -117,6 +117,14 @@ public interface CubaEnhancedTable extends AggregationContainer {
     void setAggregationDistributionProvider(Function<AggregationInputValueChangeContext, Boolean> distributionProvider);
     Function<AggregationInputValueChangeContext, Boolean> getAggregationDistributionProvider();
 
+    /**
+     * Sets column id to sort and sorting direction. It doesn't invoke sorting after setting parameters.
+     *
+     * @param propertyId column id
+     * @param sortAscending sort ascending option
+     */
+    void setSortOptions(Object propertyId, boolean sortAscending);
+
     interface CellClickListener {
         void onClick(Object itemId, Object columnId);
     }
