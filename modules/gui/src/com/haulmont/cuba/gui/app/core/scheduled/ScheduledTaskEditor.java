@@ -106,9 +106,9 @@ public class ScheduledTaskEditor extends AbstractEditor<ScheduledTask> {
     protected BoxLayout methodNameHbox;
 
     @Inject
-    private CheckBox logStartField;
+    protected CheckBox logStartField;
     @Inject
-    private CheckBox logFinishField;
+    protected CheckBox logFinishField;
 
     //List holds an information about methods of selected bean
     protected List<MethodInfo> availableMethods = new ArrayList<>();
