@@ -974,9 +974,9 @@ task restart(dependsOn: ['stop', ':cuba-core:deploy', ':cuba-web:deploy', ':cuba
                 socket(server: 'localhost', port: '8787')
             }
         }
-        start.execute()
     }
 }
+restart.finalizedBy start
 
 zipProject {
     excludeFromZip = ['out']
