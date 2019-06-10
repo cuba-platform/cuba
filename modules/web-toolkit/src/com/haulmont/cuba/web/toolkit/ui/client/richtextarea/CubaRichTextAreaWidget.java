@@ -16,12 +16,36 @@
 
 package com.haulmont.cuba.web.toolkit.ui.client.richtextarea;
 
+import com.google.gwt.dev.util.HttpHeaders;
+import com.google.gwt.dom.client.Document;
+import com.google.gwt.dom.client.HeadElement;
+import com.google.gwt.dom.client.IFrameElement;
+import com.google.gwt.dom.client.MetaElement;
 import com.google.gwt.user.client.ui.RichTextArea;
 import com.vaadin.client.ui.VRichTextArea;
 
 import java.util.Map;
 
 public class CubaRichTextAreaWidget extends VRichTextArea {
+
+    public CubaRichTextAreaWidget() {
+        super();
+
+        setContentCharset();
+    }
+
+    protected void setContentCharset() {
+        rta.addInitializeHandler(event -> {
+            IFrameElement iFrameElement = IFrameElement.as(rta.getElement());
+            HeadElement headElement = iFrameElement.getContentDocument().getHead();
+
+            MetaElement charsetMetaElement = Document.get().createMetaElement();
+            charsetMetaElement.setHttpEquiv(HttpHeaders.CONTENT_TYPE);
+            charsetMetaElement.setContent(HttpHeaders.CONTENT_TYPE_TEXT_HTML_UTF8);
+
+            headElement.appendChild(charsetMetaElement);
+        });
+    }
 
     @Override
     protected void createRichTextToolbar(RichTextArea rta) {
