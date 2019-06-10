@@ -16,6 +16,7 @@
 
 package com.haulmont.cuba.web.gui.components;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 import com.haulmont.bali.events.Subscription;
 import com.haulmont.bali.util.Preconditions;
@@ -210,6 +211,7 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
     protected DataGridDataProvider<E> dataBinding;
 
     protected Map<E, Object> itemDatasources; // lazily initialized WeakHashMap;
+    protected Consumer<EmptyStateClickEvent<E>> emptyStateClickEventHandler;
 
     static {
         ImmutableMap.Builder<Class<? extends Renderer>, Class<? extends Renderer>> builder =
@@ -346,6 +348,8 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
 
         ((CubaEnhancedGrid<E>) component).setCubaEditorFieldFactory(createEditorFieldFactory());
         ((CubaEnhancedGrid<E>) component).setBeforeRefreshHandler(this::onBeforeRefreshGridData);
+
+        initEmptyState();
     }
 
     protected void onBeforeRefreshGridData(E item) {
@@ -914,6 +918,8 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
 
             setUiTestId(dataGridItems);
         }
+
+        initEmptyState();
     }
 
     protected void setUiTestId(DataGridItems<E> items) {
@@ -2932,6 +2938,40 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
         component.setTabIndex(tabIndex);
     }
 
+    @Override
+    public void setEmptyStateMessage(String message) {
+        component.setEmptyStateMessage(message);
+
+        showEmptyStateIfPossible();
+    }
+
+    @Override
+    public String getEmptyStateMessage() {
+        return component.getEmptyStateMessage();
+    }
+
+    @Override
+    public void setEmptyStateLinkMessage(String linkMessage) {
+        component.setEmptyStateLinkMessage(linkMessage);
+
+        showEmptyStateIfPossible();
+    }
+
+    @Override
+    public String getEmptyStateLinkMessage() {
+        return component.getEmptyStateLinkMessage();
+    }
+
+    @Override
+    public void setEmptyStateLinkClickHandler(Consumer<EmptyStateClickEvent<E>> handler) {
+        this.emptyStateClickEventHandler = handler;
+    }
+
+    @Override
+    public Consumer<EmptyStateClickEvent<E>> getEmptyStateLinkClickHandler() {
+        return emptyStateClickEventHandler;
+    }
+
     protected void enableCrossFieldValidationHandling(boolean enable) {
         if (isEditorEnabled()) {
             ((CubaEditorImpl<E>) component.getEditor()).setCrossFieldValidationHandler(
@@ -2985,6 +3025,28 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
         }
 
         return joinedStyle != null ? joinedStyle.toString() : null;
+    }
+
+    protected void initEmptyState() {
+        component.setEmptyStateLinkClickHandler(() -> {
+            if (emptyStateClickEventHandler != null) {
+                emptyStateClickEventHandler.accept(new EmptyStateClickEvent<>(this));
+            }
+        });
+
+        if (dataBinding != null) {
+            dataBinding.addDataProviderListener(event -> showEmptyStateIfPossible());
+        }
+
+        showEmptyStateIfPossible();
+    }
+
+    protected void showEmptyStateIfPossible() {
+        boolean emptyItems = (dataBinding != null && dataBinding.getDataGridItems().size() == 0) || getItems() == null;
+        boolean notEmptyMessages = !Strings.isNullOrEmpty(component.getEmptyStateMessage())
+                || !Strings.isNullOrEmpty(component.getEmptyStateLinkMessage());
+
+        component.setShowEmptyState(emptyItems && notEmptyMessages);
     }
 
     protected class CellStyleGeneratorAdapter<T extends E> implements StyleGenerator<T> {

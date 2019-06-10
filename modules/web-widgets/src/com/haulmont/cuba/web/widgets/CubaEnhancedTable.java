@@ -167,6 +167,16 @@ public interface CubaEnhancedTable extends AggregationContainer {
      */
     Object getItemByRowKey(String rowKey);
 
+    void setShowEmptyState(boolean show);
+
+    void setEmptyStateMessage(String message);
+    String getEmptyStateMessage();
+
+    void setEmptyStateLinkMessage(String linkMessage);
+    String getEmptyStateLinkMessage();
+
+    void setEmptyStateLinkClickHandler(Runnable handler);
+
     interface CellValueFormatter {
         String getFormattedValue(Object rowId, Object colId, Property<?> property);
     }

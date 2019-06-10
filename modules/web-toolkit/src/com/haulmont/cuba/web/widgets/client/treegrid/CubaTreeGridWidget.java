@@ -4,6 +4,7 @@ import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.user.client.ui.Widget;
 import com.haulmont.cuba.web.widgets.client.grid.CubaEditorEventHandler;
+import com.haulmont.cuba.web.widgets.client.grid.CubaGridEmptyState;
 import com.haulmont.cuba.web.widgets.client.grid.HasClickSettings;
 import com.vaadin.client.WidgetUtil;
 import com.vaadin.client.renderers.Renderer;
@@ -23,6 +24,9 @@ public class CubaTreeGridWidget extends TreeGrid {
     public static final String CUBA_ID_COLUMN_HIDING_TOGGLE_PREFIX = "cc_";
 
     protected Map<Column<?, JsonObject>, String> columnIds = null;
+
+    protected CubaGridEmptyState emptyState;
+    protected Runnable emptyStateLinkClickHandler;
 
     public Map<Column<?, JsonObject>, String> getColumnIds() {
         return columnIds;
@@ -44,6 +48,28 @@ public class CubaTreeGridWidget extends TreeGrid {
         if (columnIds != null) {
             columnIds.remove(column);
         }
+    }
+
+    public void showEmptyState(boolean show) {
+        if (show) {
+            if (emptyState == null) {
+                emptyState = new CubaGridEmptyState();
+            }
+
+            Element wrapper = getEscalator().getTableWrapper();
+            Element panelParent = emptyState.getElement().getParentElement();
+
+            if (panelParent == null || !panelParent.equals(wrapper)) {
+                wrapper.appendChild(emptyState.getElement());
+            }
+        } else if (emptyState != null) {
+            emptyState.getElement().removeFromParent();
+            emptyState = null;
+        }
+    }
+
+    public CubaGridEmptyState getEmptyState() {
+        return emptyState;
     }
 
     @Override

@@ -65,4 +65,13 @@ public class CubaTableState extends TableState {
 
     @NoLayout
     public String[] htmlCaptionColumns;
+
+    @NoLayout
+    public boolean showEmptyState = false;
+
+    @NoLayout
+    public String emptyStateMessage;
+
+    @NoLayout
+    public String emptyStateLinkMessage;
 }

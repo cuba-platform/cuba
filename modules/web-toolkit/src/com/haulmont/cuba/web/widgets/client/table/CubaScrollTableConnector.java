@@ -145,6 +145,27 @@ public class CubaScrollTableConnector extends TableConnector {
                 getWidget()._delegate.htmlCaptionColumns = null;
             }
         }
+
+        if (stateChangeEvent.hasPropertyChanged("showEmptyState")) {
+            getWidget().showEmptyState(getState().showEmptyState);
+            // as emptyState element can be recreated set all messages
+            if (getWidget()._delegate.tableEmptyState != null) {
+                getWidget()._delegate.tableEmptyState.setMessage(getState().emptyStateMessage);
+                getWidget()._delegate.tableEmptyState.setLinkMessage(getState().emptyStateLinkMessage);
+                getWidget()._delegate.tableEmptyState.setLinkClickHandler(getWidget()._delegate.emptyStateLinkClickHandler);
+            }
+        }
+
+        if (stateChangeEvent.hasPropertyChanged("emptyStateMessage")) {
+            if (getWidget()._delegate.tableEmptyState != null) {
+                getWidget()._delegate.tableEmptyState.setMessage(getState().emptyStateMessage);
+            }
+        }
+        if (stateChangeEvent.hasPropertyChanged("emptyStateLinkMessage")) {
+            if (getWidget()._delegate.tableEmptyState != null) {
+                getWidget()._delegate.tableEmptyState.setLinkMessage(getState().emptyStateLinkMessage);
+            }
+        }
     }
 
     @Override
@@ -262,6 +283,8 @@ public class CubaScrollTableConnector extends TableConnector {
         getWidget()._delegate.totalAggregationInputHandler = (columnKey, value, isFocused) -> {
             getRpcProxy(CubaTableServerRpc.class).onAggregationTotalInputChange(columnKey, value, isFocused);
         };
+
+        getWidget()._delegate.emptyStateLinkClickHandler = () -> getRpcProxy(CubaTableServerRpc.class).onEmptyStateLinkClick();
     }
 
     @Override

@@ -29,4 +29,14 @@ public interface CubaEnhancedGrid<T> {
     CubaEditorField<?> getColumnEditorField(T bean, Grid.Column<T, ?> column);
 
     void setBeforeRefreshHandler(Consumer<T> beforeRefreshHandler);
+
+    void setShowEmptyState(boolean show);
+
+    String getEmptyStateMessage();
+    void setEmptyStateMessage(String message);
+
+    String getEmptyStateLinkMessage();
+    void setEmptyStateLinkMessage(String linkMessage);
+
+    void setEmptyStateLinkClickHandler(Runnable handler);
 }

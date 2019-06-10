@@ -26,4 +26,6 @@ public interface CubaTableServerRpc extends ServerRpc {
     void onAggregationTotalInputChange(String columnKey, String value, boolean isFocused);
 
     void onAggregationGroupInputChange(String columnKey, String groupKey, String value, boolean isFocused);
+
+    void onEmptyStateLinkClick();
 }

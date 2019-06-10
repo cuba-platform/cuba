@@ -27,6 +27,7 @@ import com.google.gwt.user.client.ui.*;
 import com.haulmont.cuba.web.widgets.client.Tools;
 import com.haulmont.cuba.web.widgets.client.aggregation.TableAggregationRow;
 import com.haulmont.cuba.web.widgets.client.image.CubaImageWidget;
+import com.haulmont.cuba.web.widgets.client.tableshared.TableEmptyState;
 import com.haulmont.cuba.web.widgets.client.tableshared.TableWidget;
 import com.haulmont.cuba.web.widgets.client.tableshared.TableWidgetDelegate;
 import com.vaadin.client.Focusable;
@@ -297,6 +298,22 @@ public class CubaScrollTableWidget extends VScrollTable implements TableWidget {
         }
         _delegate.aggregationRow.updateFromUIDL(uidl);
         _delegate.aggregationRow.setHorizontalScrollPosition(scrollLeft);
+    }
+
+    protected void showEmptyState(boolean show) {
+        if (show) {
+            if (_delegate.tableEmptyState == null) {
+                _delegate.tableEmptyState = new TableEmptyState();
+            }
+
+            Element emptyState = _delegate.tableEmptyState.getElement();
+            if (!scrollBodyPanel.getElement().isOrHasChild(emptyState)) {
+                scrollBodyPanel.getElement().appendChild(emptyState);
+            }
+        } else if (_delegate.tableEmptyState != null) {
+            _delegate.tableEmptyState.getElement().removeFromParent();
+            _delegate.tableEmptyState = null;
+        }
     }
 
     protected TableAggregationRow createAggregationRow() {

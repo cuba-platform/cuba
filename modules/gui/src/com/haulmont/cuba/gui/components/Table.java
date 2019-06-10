@@ -300,6 +300,44 @@ public interface Table<E extends Entity>
         return getAction(name);
     }
 
+    /**
+     * Sets a message to the middle of Table body that should be appeared when Table is empty.
+     *
+     * @param message message that appears when Table is empty
+     */
+    void setEmptyStateMessage(String message);
+
+    /**
+     * @return message that should be appeared when Table is empty
+     */
+    String getEmptyStateMessage();
+
+    /**
+     * Sets a link message to the middle of Table body that should be appeared when Table is empty.
+     *
+     * @param linkMessage message that appears when Table is empty
+     * @see #setEmptyStateLinkClickHandler(Consumer)
+     */
+    void setEmptyStateLinkMessage(String linkMessage);
+
+    /**
+     * @return link message that should be appeared when Table is empty
+     */
+    String getEmptyStateLinkMessage();
+
+    /**
+     * Sets click handler for link message. Link message can be shown when Table is empty.
+     *
+     * @param handler handler to set
+     * @see #setEmptyStateLinkMessage(String)
+     */
+    void setEmptyStateLinkClickHandler(Consumer<EmptyStateClickEvent<E>> handler);
+
+    /**
+     * @return click handler for link message
+     */
+    Consumer<EmptyStateClickEvent<E>> getEmptyStateLinkClickHandler();
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
@@ -1358,4 +1396,25 @@ public interface Table<E extends Entity>
             return isTotalAggregation;
         }
     }
+
+    /**
+     * Describes empty state link click event.
+     *
+     * @param <E> entity class
+     * @see #setEmptyStateLinkMessage(String)
+     * @see #setEmptyStateLinkClickHandler(Consumer)
+     */
+    class EmptyStateClickEvent<E extends Entity> extends EventObject {
+
+        public EmptyStateClickEvent(Table<E> source) {
+            super(source);
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public Table<E> getSource() {
+            return (Table<E>) super.getSource();
+        }
+    }
+
 }

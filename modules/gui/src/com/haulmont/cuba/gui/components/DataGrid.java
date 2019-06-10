@@ -2551,6 +2551,44 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
     }
 
     /**
+     * Sets a message to the middle of DataGrid body that should be appeared when DataGrid is empty.
+     *
+     * @param message message that appears when DataGrid is empty
+     */
+    void setEmptyStateMessage(String message);
+
+    /**
+     * @return message that should be appeared when DataGrid is empty
+     */
+    String getEmptyStateMessage();
+
+    /**
+     * Sets a link message to the middle of DataGrid body that should be appeared when DataGrid is empty.
+     *
+     * @param linkMessage message that appears when DataGrid is empty
+     * @see #setEmptyStateLinkClickHandler(Consumer)
+     */
+    void setEmptyStateLinkMessage(String linkMessage);
+
+    /**
+     * @return link message that should be appeared when DataGrid is empty
+     */
+    String getEmptyStateLinkMessage();
+
+    /**
+     * Sets click handler for link message. Link message can be shown when DataGrid is empty.
+     *
+     * @param handler handler to set
+     * @see #setEmptyStateLinkMessage(String)
+     */
+    void setEmptyStateLinkClickHandler(Consumer<EmptyStateClickEvent<E>> handler);
+
+    /**
+     * @return click handler for link message
+     */
+    Consumer<EmptyStateClickEvent<E>> getEmptyStateLinkClickHandler();
+
+    /**
      * A column in the DataGrid.
      */
     interface Column<E extends Entity> extends HasFormatter, Serializable {
@@ -2978,5 +3016,25 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
          * @param owner The DataGrid this column belongs to
          */
         void setOwner(DataGrid<E> owner);
+    }
+
+    /**
+     * Describes empty state link click event.
+     *
+     * @param <E> entity class
+     * @see #setEmptyStateLinkMessage(String)
+     * @see #setEmptyStateLinkClickHandler(Consumer)
+     */
+    class EmptyStateClickEvent<E extends Entity> extends EventObject {
+
+        public EmptyStateClickEvent(DataGrid<E> source) {
+            super(source);
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public DataGrid<E> getSource() {
+            return (DataGrid<E>) super.getSource();
+        }
     }
 }

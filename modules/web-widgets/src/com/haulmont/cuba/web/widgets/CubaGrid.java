@@ -16,6 +16,7 @@
 
 package com.haulmont.cuba.web.widgets;
 
+import com.haulmont.cuba.web.widgets.client.grid.CubaGridServerRpc;
 import com.haulmont.cuba.web.widgets.client.grid.CubaGridState;
 import com.haulmont.cuba.web.widgets.grid.CubaEditorField;
 import com.haulmont.cuba.web.widgets.grid.CubaEditorImpl;
@@ -25,7 +26,6 @@ import com.vaadin.ui.Grid;
 import com.vaadin.ui.components.grid.Editor;
 import com.vaadin.ui.components.grid.GridSelectionModel;
 import com.vaadin.ui.renderers.AbstractRenderer;
-import com.vaadin.ui.renderers.Renderer;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -34,6 +34,16 @@ import java.util.function.Consumer;
 public class CubaGrid<T> extends Grid<T> implements CubaEnhancedGrid<T> {
 
     protected CubaGridEditorFieldFactory<T> editorFieldFactory;
+
+    protected Runnable emptyStateLinkClickHandler;
+
+    public CubaGrid() {
+        registerRpc((CubaGridServerRpc) () -> {
+            if (emptyStateLinkClickHandler != null) {
+                emptyStateLinkClickHandler.run();
+            }
+        });
+    }
 
     @Override
     public void setGridSelectionModel(GridSelectionModel<T> model) {
@@ -112,5 +122,37 @@ public class CubaGrid<T> extends Grid<T> implements CubaEnhancedGrid<T> {
     @Override
     public void setBeforeRefreshHandler(Consumer<T> beforeRefreshHandler) {
         getDataCommunicator().setBeforeRefreshHandler(beforeRefreshHandler);
+    }
+
+    @Override
+    public void setShowEmptyState(boolean show) {
+        if (getState(false).showEmptyState != show) {
+            getState().showEmptyState = show;
+        }
+    }
+
+    @Override
+    public String getEmptyStateMessage() {
+        return getState(false).emptyStateMessage;
+    }
+
+    @Override
+    public void setEmptyStateMessage(String message) {
+        getState().emptyStateMessage = message;
+    }
+
+    @Override
+    public String getEmptyStateLinkMessage() {
+        return getState(false).emptyStateLinkMessage;
+    }
+
+    @Override
+    public void setEmptyStateLinkMessage(String linkMessage) {
+        getState().emptyStateLinkMessage = linkMessage;
+    }
+
+    @Override
+    public void setEmptyStateLinkClickHandler(Runnable handler) {
+        this.emptyStateLinkClickHandler = handler;
     }
 }

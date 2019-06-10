@@ -201,6 +201,8 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
     protected com.vaadin.v7.ui.Table.ColumnGenerator VALUE_PROVIDER_GENERATOR =
             (source, itemId, columnId) -> formatCellValue(itemId, columnId, null);
 
+    protected Consumer<EmptyStateClickEvent<E>> emptyStateClickLinkHandler;
+
     protected WebAbstractTable() {
     }
 
@@ -1063,6 +1065,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
         componentComposition.setWidthUndefined();
 
         setClientCaching();
+        initEmptyState();
     }
 
     protected void onAfterUnregisterComponent(Component component) {
@@ -1431,6 +1434,8 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
 
             setUiTestId(tableItems);
         }
+
+        initEmptyState();
     }
 
     protected void setUiTestId(TableItems<E> items) {
@@ -3222,6 +3227,40 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
         return null;
     }
 
+    @Override
+    public void setEmptyStateMessage(String message) {
+        component.setEmptyStateMessage(message);
+
+        showEmptyStateIfPossible();
+    }
+
+    @Override
+    public String getEmptyStateMessage() {
+        return component.getEmptyStateMessage();
+    }
+
+    @Override
+    public void setEmptyStateLinkMessage(String linkMessage) {
+        component.setEmptyStateLinkMessage(linkMessage);
+
+        showEmptyStateIfPossible();
+    }
+
+    @Override
+    public String getEmptyStateLinkMessage() {
+        return component.getEmptyStateLinkMessage();
+    }
+
+    @Override
+    public void setEmptyStateLinkClickHandler(Consumer<EmptyStateClickEvent<E>> handler) {
+        this.emptyStateClickLinkHandler = handler;
+    }
+
+    @Override
+    public Consumer<EmptyStateClickEvent<E>> getEmptyStateLinkClickHandler() {
+        return emptyStateClickLinkHandler;
+    }
+
     protected static class InstalledStyleProvider implements StyleProvider {
         private final FrameOwner frameOwner;
         private final Method method;
@@ -3294,5 +3333,27 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
         screenContext.getNotifications().create(Notifications.NotificationType.TRAY)
                 .withDescription(message)
                 .show();
+    }
+
+    protected void initEmptyState() {
+        component.setEmptyStateLinkClickHandler(() -> {
+            if (emptyStateClickLinkHandler != null) {
+                emptyStateClickLinkHandler.accept(new EmptyStateClickEvent<>(this));
+            }
+        });
+
+        if (dataBinding != null) {
+            dataBinding.addItemSetChangeListener(event -> showEmptyStateIfPossible());
+        }
+
+        showEmptyStateIfPossible();
+    }
+
+    protected void showEmptyStateIfPossible() {
+        boolean emptyItems = (dataBinding != null && dataBinding.getTableItems().size() == 0) || getItems() == null;
+        boolean notEmptyMessages = !Strings.isNullOrEmpty(component.getEmptyStateMessage())
+                || !Strings.isNullOrEmpty(component.getEmptyStateLinkMessage());
+
+        component.setShowEmptyState(emptyItems && notEmptyMessages);
     }
 }

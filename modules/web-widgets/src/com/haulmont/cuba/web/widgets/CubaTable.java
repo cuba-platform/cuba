@@ -89,6 +89,8 @@ public class CubaTable extends com.vaadin.v7.ui.Table implements TableSortableCo
     protected Consumer<Component> afterUnregisterComponentHandler;
     protected Runnable beforeRefreshRowCacheHandler;
 
+    protected Runnable emptyStateLinkClickHandler;
+
     public CubaTable() {
         registerRpc(new CubaTableServerRpc() {
             @Override
@@ -122,6 +124,13 @@ public class CubaTable extends com.vaadin.v7.ui.Table implements TableSortableCo
             @Override
             public void onAggregationGroupInputChange(String columnKey, String groupKey, String value, boolean isFocused) {
                 handleAggregationGroupInputChange(columnKey, groupKey, value, isFocused);
+            }
+
+            @Override
+            public void onEmptyStateLinkClick() {
+                if (emptyStateLinkClickHandler != null) {
+                    emptyStateLinkClickHandler.run();
+                }
             }
         });
     }
@@ -920,6 +929,38 @@ public class CubaTable extends com.vaadin.v7.ui.Table implements TableSortableCo
             return aggregationTooltips.get(columnId);
         }
         return null;
+    }
+
+    @Override
+    public void setShowEmptyState(boolean show) {
+        if (getState(false).showEmptyState != show) {
+            getState().showEmptyState = show;
+        }
+    }
+
+    @Override
+    public void setEmptyStateMessage(String message) {
+        getState().emptyStateMessage = message;
+    }
+
+    @Override
+    public String getEmptyStateMessage() {
+        return getState(false).emptyStateMessage;
+    }
+
+    @Override
+    public void setEmptyStateLinkMessage(String linkMessage) {
+        getState().emptyStateLinkMessage = linkMessage;
+    }
+
+    @Override
+    public String getEmptyStateLinkMessage() {
+        return getState(false).emptyStateLinkMessage;
+    }
+
+    @Override
+    public void setEmptyStateLinkClickHandler(Runnable handler) {
+        this.emptyStateLinkClickHandler = handler;
     }
 
     protected void updateColumnDescriptions() {

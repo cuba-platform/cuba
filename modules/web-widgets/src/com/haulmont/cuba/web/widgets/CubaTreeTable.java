@@ -95,6 +95,8 @@ public class CubaTreeTable extends com.vaadin.v7.ui.TreeTable implements TreeTab
     protected Consumer<Component> afterUnregisterComponentHandler;
     protected Runnable beforeRefreshRowCacheHandler;
 
+    protected Runnable emptyStateLinkClickHandler;
+
     public CubaTreeTable() {
         registerRpc(new CubaTableServerRpc() {
             @Override
@@ -128,6 +130,13 @@ public class CubaTreeTable extends com.vaadin.v7.ui.TreeTable implements TreeTab
             @Override
             public void onAggregationGroupInputChange(String columnKey, String groupKey, String value, boolean isFocused) {
                 // is used by CubaGroupTable
+            }
+
+            @Override
+            public void onEmptyStateLinkClick() {
+                if (emptyStateLinkClickHandler != null) {
+                    emptyStateLinkClickHandler.run();
+                }
             }
         });
     }
@@ -1021,6 +1030,38 @@ public class CubaTreeTable extends com.vaadin.v7.ui.TreeTable implements TreeTab
     @Override
     public Object getItemByRowKey(String rowKey) {
         return itemIdMapper.get(rowKey);
+    }
+
+    @Override
+    public void setShowEmptyState(boolean show) {
+        if (getState(false).showEmptyState != show) {
+            getState().showEmptyState = show;
+        }
+    }
+
+    @Override
+    public String getEmptyStateMessage() {
+        return getState(false).emptyStateMessage;
+    }
+
+    @Override
+    public void setEmptyStateMessage(String message) {
+        getState().emptyStateMessage = message;
+    }
+
+    @Override
+    public String getEmptyStateLinkMessage() {
+        return getState(false).emptyStateLinkMessage;
+    }
+
+    @Override
+    public void setEmptyStateLinkMessage(String linkMessage) {
+        getState().emptyStateLinkMessage = linkMessage;
+    }
+
+    @Override
+    public void setEmptyStateLinkClickHandler(Runnable handler) {
+        this.emptyStateLinkClickHandler = handler;
     }
 
     public void expandAllHierarchical(List<Object> collapsedItemIds, List<Object> preOrder, List<Object> openItems) {

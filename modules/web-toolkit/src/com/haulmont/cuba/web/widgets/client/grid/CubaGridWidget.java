@@ -41,6 +41,9 @@ public class CubaGridWidget extends Grid<JsonObject> {
 
     protected Map<Column<?, JsonObject>, String> columnIds = null;
 
+    protected CubaGridEmptyState emptyState;
+    protected Runnable emptyStateLinkClickHandler;
+
     public Map<Column<?, JsonObject>, String> getColumnIds() {
         return columnIds;
     }
@@ -61,6 +64,28 @@ public class CubaGridWidget extends Grid<JsonObject> {
         if (columnIds != null) {
             columnIds.remove(column);
         }
+    }
+
+    public void showEmptyState(boolean show) {
+        if (show) {
+            if (emptyState == null) {
+                emptyState = new CubaGridEmptyState();
+            }
+
+            Element wrapper = getEscalator().getTableWrapper();
+            Element panelParent = emptyState.getElement().getParentElement();
+
+            if (panelParent == null || !panelParent.equals(wrapper)) {
+                wrapper.appendChild(emptyState.getElement());
+            }
+        } else if (emptyState != null) {
+            emptyState.getElement().removeFromParent();
+            emptyState = null;
+        }
+    }
+
+    public CubaGridEmptyState getEmptyState() {
+        return emptyState;
     }
 
     @Override

@@ -1,0 +1,65 @@
+/*!
+ * Copyright (c) 2008-2019 Haulmont.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+ @mixin cuba-datagrid-empty-state {
+
+   .c-datagrid-empty-state {
+     bottom: 0;
+     font-size: $v-font-size--h2;
+     left: 0;
+     margin: auto;
+     position: absolute;
+     right: 0;
+     text-align: center;
+     top: 0;
+
+     .v-button-link {
+       color: valo-font-color($v-focus-color, 0.40);
+     }
+   }
+
+   .c-datagrid-empty-state:after {
+     display: inline-block;
+     height: 100%;
+
+     vertical-align: middle;
+     content: "";
+   }
+
+   .c-datagrid-empty-state-message-box {
+     display: inline-block;
+   }
+
+   .c-datagrid-empty-state-message {
+     color: valo-font-color($v-font-color, 0.50);
+     display: inline-block;
+     user-select: none;
+     -moz-user-select: none;
+     -webkit-user-select: none;
+     -ms-user-select: none;
+     vertical-align: middle;
+     width: 100%;
+   }
+
+   .c-datagrid-empty-state-link-message {
+     text-align: center;
+     user-select: none;
+     -moz-user-select: none;
+     -webkit-user-select: none;
+     -ms-user-select: none;
+     vertical-align: middle;
+   }
+ }

@@ -65,4 +65,13 @@ public class CubaTreeTableState extends TreeTableState {
 
     @NoLayout
     public String[] htmlCaptionColumns;
+
+    @NoLayout
+    public boolean showEmptyState;
+
+    @NoLayout
+    public String emptyStateMessage;
+
+    @NoLayout
+    public String emptyStateLinkMessage;
 }

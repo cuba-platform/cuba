@@ -1,5 +1,6 @@
 package com.haulmont.cuba.web.widgets;
 
+import com.haulmont.cuba.web.widgets.client.grid.CubaGridServerRpc;
 import com.haulmont.cuba.web.widgets.client.treegrid.CubaTreeGridState;
 import com.haulmont.cuba.web.widgets.data.EnhancedHierarchicalDataProvider;
 import com.haulmont.cuba.web.widgets.grid.CubaEditorField;
@@ -18,6 +19,16 @@ import java.util.function.Consumer;
 public class CubaTreeGrid<T> extends TreeGrid<T> implements CubaEnhancedGrid<T> {
 
     protected CubaGridEditorFieldFactory<T> editorFieldFactory;
+
+    protected Runnable emptyStateLinkClickHandler;
+
+    public CubaTreeGrid() {
+        registerRpc((CubaGridServerRpc) () -> {
+            if (emptyStateLinkClickHandler != null) {
+                emptyStateLinkClickHandler.run();
+            }
+        });
+    }
 
     @Override
     public void setGridSelectionModel(GridSelectionModel<T> model) {
@@ -124,5 +135,37 @@ public class CubaTreeGrid<T> extends TreeGrid<T> implements CubaEnhancedGrid<T> 
     @Override
     public void setBeforeRefreshHandler(Consumer<T> beforeRefreshHandler) {
         getDataCommunicator().setBeforeRefreshHandler(beforeRefreshHandler);
+    }
+
+    @Override
+    public void setShowEmptyState(boolean show) {
+        if (getState(false).showEmptyState != show) {
+            getState().showEmptyState = show;
+        }
+    }
+
+    @Override
+    public String getEmptyStateMessage() {
+        return getState(false).emptyStateMessage;
+    }
+
+    @Override
+    public void setEmptyStateMessage(String message) {
+        getState().emptyStateMessage = message;
+    }
+
+    @Override
+    public String getEmptyStateLinkMessage() {
+        return getState(false).emptyStateLinkMessage;
+    }
+
+    @Override
+    public void setEmptyStateLinkMessage(String linkMessage) {
+        getState().emptyStateLinkMessage = linkMessage;
+    }
+
+    @Override
+    public void setEmptyStateLinkClickHandler(Runnable handler) {
+        this.emptyStateLinkClickHandler = handler;
     }
 }
