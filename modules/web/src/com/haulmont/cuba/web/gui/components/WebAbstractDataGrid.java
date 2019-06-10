@@ -754,7 +754,7 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
         gridColumn.setHidable(column.isCollapsible() && column.getOwner().isColumnsCollapsingAllowed());
         gridColumn.setResizable(column.isResizable());
         gridColumn.setSortable(column.isSortable() && column.getOwner().isSortable());
-        gridColumn.setEditable(column.isEditable() && column.getOwner().isEditorEnabled());
+        gridColumn.setEditable(column.isEditable());
 
         AppUI current = AppUI.getCurrent();
         if (current != null && current.isTestMode()) {
