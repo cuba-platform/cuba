@@ -66,7 +66,7 @@ public class ExceptionReportServiceBean implements ExceptionReportService {
         try {
             Map<String, Object> map = new HashMap<>(binding);
             User user = userSessionSource.getUserSession().getUser();
-            map.put("userEmail", user.getEmail() != null ? user.getEmail() : emailerConfig.getFromAddress());
+            map.put("user", user);
             map.put("toHtml", new MethodClosure(HtmlUtils.class, "convertToHtml"));
 
             String body = getExceptionReportBody(map);
