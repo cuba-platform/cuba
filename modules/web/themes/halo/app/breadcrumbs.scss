@@ -45,17 +45,31 @@
   }
 
   .c-headline-container {
-    height: $v-unit-size;
+    display: block;
+    flex-shrink: 0;
+    min-height: $v-unit-size;
     padding-top: ceil(($v-unit-size - $v-font-size * $v-line-height) / 2);
-    display: table;
+    white-space: nowrap;
   }
 
   .c-breadcrumbs-separator,
   .c-breadcrumbs-win-caption {
     vertical-align: bottom;
+    margin-left: 2px;
   }
 
   .c-breadcrumbs-container {
     margin-right: ceil($v-layout-spacing-horizontal/2);
+    max-width: 100%;
+  }
+
+  .c-breadcrumbs {
+    display: flex;
+    flex-wrap: wrap;
+
+    & > * {
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
   }
 }
