@@ -39,6 +39,8 @@ public class ExceptionReportServiceBean implements ExceptionReportService {
 
     private static final Logger log = LoggerFactory.getLogger(ExceptionReportServiceBean.class);
 
+    protected EmailerConfig emailerConfig;
+
     @Inject
     protected ServerConfig serverConfig;
 
@@ -54,21 +56,23 @@ public class ExceptionReportServiceBean implements ExceptionReportService {
     @Inject
     protected EmailerAPI emailer;
 
+    @Inject
+    protected void setEmailerConfig(EmailerConfig emailerConfig) {
+        this.emailerConfig = emailerConfig;
+    }
+
     @Override
     public void sendExceptionReport(String supportEmail, Map<String, Object> binding) {
         try {
             Map<String, Object> map = new HashMap<>(binding);
+            User user = userSessionSource.getUserSession().getUser();
+            map.put("userEmail", user.getEmail() != null ? user.getEmail() : emailerConfig.getFromAddress());
             map.put("toHtml", new MethodClosure(HtmlUtils.class, "convertToHtml"));
 
             String body = getExceptionReportBody(map);
             String subject = getExceptionReportSubject(map);
 
             EmailInfo info = new EmailInfo(supportEmail, subject, body);
-
-            User user = userSessionSource.getUserSession().getUser();
-            if (user.getEmail() != null) {
-                info.setFrom(user.getEmail());
-            }
 
             emailer.sendEmail(info);
         } catch (Exception e) {
