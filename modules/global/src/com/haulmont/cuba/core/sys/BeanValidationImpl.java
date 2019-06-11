@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2016 Haulmont.
+ * Copyright (c) 2008-2019 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,11 @@ import com.haulmont.cuba.core.sys.validation.CubaValidationTraversableResolver;
 import org.hibernate.validator.HibernateValidator;
 import org.hibernate.validator.HibernateValidatorConfiguration;
 import org.hibernate.validator.cfg.ConstraintMapping;
+import org.hibernate.validator.cfg.context.ConstraintDefinitionContext;
+import org.hibernate.validator.internal.constraintvalidators.bv.time.future.*;
+import org.hibernate.validator.internal.constraintvalidators.bv.time.futureorpresent.*;
+import org.hibernate.validator.internal.constraintvalidators.bv.time.past.*;
+import org.hibernate.validator.internal.constraintvalidators.bv.time.pastorpresent.*;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Nullable;
@@ -30,6 +35,12 @@ import javax.inject.Inject;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
+import javax.validation.constraints.Future;
+import javax.validation.constraints.FutureOrPresent;
+import javax.validation.constraints.Past;
+import javax.validation.constraints.PastOrPresent;
+import java.time.Instant;
+import java.util.Date;
 import java.util.Locale;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -111,12 +122,22 @@ public class BeanValidationImpl implements BeanValidation {
     }
 
     protected HibernateValidatorConfiguration getValidatorFactoryConfiguration(Locale locale) {
-        @SuppressWarnings("UnnecessaryLocalVariable")
         HibernateValidatorConfiguration configuration = Validation.byProvider(HibernateValidator.class)
                 .configure()
                 .clockProvider(new CubaValidationTimeProvider(timeSource))
                 .traversableResolver(new CubaValidationTraversableResolver(metadata, entityStates))
                 .messageInterpolator(new CubaValidationMessagesInterpolator(messages, locale));
+
+        ConstraintMapping constraintMapping = configuration.createConstraintMapping();
+
+        //Hibernate validators doesn't support java.sql.Date.
+        //Replace standard validators for java.util.Date with support java.sql.Date
+        registerPastValidators(constraintMapping.constraintDefinition(Past.class));
+        registerPastOrPresentValidators(constraintMapping.constraintDefinition(PastOrPresent.class));
+        registerFutureValidators(constraintMapping.constraintDefinition(Future.class));
+        registerFutureOrPresentValidators(constraintMapping.constraintDefinition(FutureOrPresent.class));
+
+        configuration.addMapping(constraintMapping);
 
         return configuration;
     }
@@ -129,5 +150,145 @@ public class BeanValidationImpl implements BeanValidation {
             locale = messages.getTools().getDefaultLocale();
         }
         return locale;
+    }
+
+    protected void registerPastValidators(ConstraintDefinitionContext<Past> context) {
+        context.includeExistingValidators(false)
+                .validatedBy(PastValidatorForCalendar.class)
+                .validatedBy(CubaPastValidatorForDate.class)
+                // Java 8 date/time API validators
+                .validatedBy(PastValidatorForHijrahDate.class)
+                .validatedBy(PastValidatorForInstant.class)
+                .validatedBy(PastValidatorForJapaneseDate.class)
+                .validatedBy(PastValidatorForLocalDate.class)
+                .validatedBy(PastValidatorForLocalDateTime.class)
+                .validatedBy(PastValidatorForLocalTime.class)
+                .validatedBy(PastValidatorForMinguoDate.class)
+                .validatedBy(PastValidatorForMonthDay.class)
+                .validatedBy(PastValidatorForOffsetDateTime.class)
+                .validatedBy(PastValidatorForOffsetTime.class)
+                .validatedBy(PastValidatorForThaiBuddhistDate.class)
+                .validatedBy(PastValidatorForYear.class)
+                .validatedBy(PastValidatorForYearMonth.class)
+                .validatedBy(PastValidatorForZonedDateTime.class);
+    }
+
+    protected void registerPastOrPresentValidators(ConstraintDefinitionContext<PastOrPresent> context) {
+        context.includeExistingValidators(false)
+                .validatedBy(PastOrPresentValidatorForCalendar.class)
+                .validatedBy(CubaPastOrPresentValidatorForDate.class)
+                // Java 8 date/time API validators
+                .validatedBy(PastOrPresentValidatorForHijrahDate.class)
+                .validatedBy(PastOrPresentValidatorForInstant.class)
+                .validatedBy(PastOrPresentValidatorForJapaneseDate.class)
+                .validatedBy(PastOrPresentValidatorForLocalDate.class)
+                .validatedBy(PastOrPresentValidatorForLocalDateTime.class)
+                .validatedBy(PastOrPresentValidatorForLocalTime.class)
+                .validatedBy(PastOrPresentValidatorForMinguoDate.class)
+                .validatedBy(PastOrPresentValidatorForMonthDay.class)
+                .validatedBy(PastOrPresentValidatorForOffsetDateTime.class)
+                .validatedBy(PastOrPresentValidatorForOffsetTime.class)
+                .validatedBy(PastOrPresentValidatorForThaiBuddhistDate.class)
+                .validatedBy(PastOrPresentValidatorForYear.class)
+                .validatedBy(PastOrPresentValidatorForYearMonth.class)
+                .validatedBy(PastOrPresentValidatorForZonedDateTime.class);
+    }
+
+    protected void registerFutureValidators(ConstraintDefinitionContext<Future> context) {
+        context.includeExistingValidators(false)
+                .validatedBy(FutureValidatorForCalendar.class)
+                .validatedBy(CubaFutureValidatorForDate.class)
+                // Java 8 date/time API validators
+                .validatedBy(FutureValidatorForHijrahDate.class)
+                .validatedBy(FutureValidatorForInstant.class)
+                .validatedBy(FutureValidatorForJapaneseDate.class)
+                .validatedBy(FutureValidatorForLocalDate.class)
+                .validatedBy(FutureValidatorForLocalDateTime.class)
+                .validatedBy(FutureValidatorForLocalTime.class)
+                .validatedBy(FutureValidatorForMinguoDate.class)
+                .validatedBy(FutureValidatorForMonthDay.class)
+                .validatedBy(FutureValidatorForOffsetDateTime.class)
+                .validatedBy(FutureValidatorForOffsetTime.class)
+                .validatedBy(FutureValidatorForThaiBuddhistDate.class)
+                .validatedBy(FutureValidatorForYear.class)
+                .validatedBy(FutureValidatorForYearMonth.class)
+                .validatedBy(FutureValidatorForZonedDateTime.class);
+    }
+
+    protected void registerFutureOrPresentValidators(ConstraintDefinitionContext<FutureOrPresent> context) {
+        context.includeExistingValidators(false)
+                .validatedBy(FutureOrPresentValidatorForCalendar.class)
+                .validatedBy(CubaFutureOrPresentValidatorForDate.class)
+                // Java 8 date/time API validators
+                .validatedBy(FutureOrPresentValidatorForHijrahDate.class)
+                .validatedBy(FutureOrPresentValidatorForInstant.class)
+                .validatedBy(FutureOrPresentValidatorForJapaneseDate.class)
+                .validatedBy(FutureOrPresentValidatorForLocalDate.class)
+                .validatedBy(FutureOrPresentValidatorForLocalDateTime.class)
+                .validatedBy(FutureOrPresentValidatorForLocalTime.class)
+                .validatedBy(FutureOrPresentValidatorForMinguoDate.class)
+                .validatedBy(FutureOrPresentValidatorForMonthDay.class)
+                .validatedBy(FutureOrPresentValidatorForOffsetDateTime.class)
+                .validatedBy(FutureOrPresentValidatorForOffsetTime.class)
+                .validatedBy(FutureOrPresentValidatorForThaiBuddhistDate.class)
+                .validatedBy(FutureOrPresentValidatorForYear.class)
+                .validatedBy(FutureOrPresentValidatorForYearMonth.class)
+                .validatedBy(FutureOrPresentValidatorForZonedDateTime.class);
+    }
+
+    protected static class CubaPastValidatorForDate extends PastValidatorForDate {
+        public CubaPastValidatorForDate() {
+        }
+
+        @Override
+        protected Instant getInstant(Date value) {
+            if (value instanceof java.sql.Date) {
+                return Instant.ofEpochMilli(value.getTime());
+            } else {
+                return super.getInstant(value);
+            }
+        }
+    }
+
+    protected static class CubaPastOrPresentValidatorForDate extends PastOrPresentValidatorForDate {
+        public CubaPastOrPresentValidatorForDate() {
+        }
+
+        @Override
+        protected Instant getInstant(Date value) {
+            if (value instanceof java.sql.Date) {
+                return Instant.ofEpochMilli(value.getTime());
+            } else {
+                return super.getInstant(value);
+            }
+        }
+    }
+
+    protected static class CubaFutureValidatorForDate extends FutureValidatorForDate {
+        public CubaFutureValidatorForDate() {
+        }
+
+        @Override
+        protected Instant getInstant(Date value) {
+            if (value instanceof java.sql.Date) {
+                return Instant.ofEpochMilli(value.getTime());
+            } else {
+                return super.getInstant(value);
+            }
+        }
+    }
+
+    protected static class CubaFutureOrPresentValidatorForDate extends FutureOrPresentValidatorForDate {
+        public CubaFutureOrPresentValidatorForDate() {
+        }
+
+        @Override
+        protected Instant getInstant(Date value) {
+            if (value instanceof java.sql.Date) {
+                return Instant.ofEpochMilli(value.getTime());
+            } else {
+                return super.getInstant(value);
+            }
+        }
     }
 }
