@@ -208,11 +208,14 @@ $cuba-menubar-lineheight: $cuba-menubar-height - 2px !default;
   }
 
   .c-app-window-wrap.c-breadcrumbs-visible {
-    padding-top: $v-unit-size;
+    display: flex;
+    flex-direction: column;
+    padding-top: 0;
+  }
 
-    .c-headline-container {
-      margin-top: -1 * $v-unit-size;
-    }
+  // Needed to fix wrong elements width in IE 11
+  .v-ie11 & .c-app-window-wrap.c-breadcrumbs-visible > * {
+    width: auto !important;
   }
 
   .c-welcome-text,
@@ -232,5 +235,9 @@ $cuba-menubar-lineheight: $cuba-menubar-height - 2px !default;
 
   .c-user-select-combobox {
     width: 200px;
+  }
+
+  .c-window-layout {
+    min-height: 0;
   }
 }
