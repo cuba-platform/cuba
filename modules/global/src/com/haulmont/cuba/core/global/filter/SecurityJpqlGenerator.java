@@ -21,7 +21,6 @@ import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import com.haulmont.cuba.core.entity.*;
 
 import java.util.Arrays;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static java.lang.String.format;
@@ -29,7 +28,7 @@ import static java.lang.String.format;
 public class SecurityJpqlGenerator extends AbstractJpqlGenerator {
     @Override
     protected String generateClauseText(Clause condition) {
-        ParameterInfo parameterInfo = condition.getParameters().iterator().next();
+        ParameterInfo parameterInfo = condition.getCompiledParameters().iterator().next();
         Class javaClass = parameterInfo.getJavaClass();
         if (javaClass == null) {
             throw new UnsupportedOperationException();

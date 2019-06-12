@@ -17,10 +17,12 @@
 
 package com.haulmont.cuba.core.global.filter;
 
+import com.haulmont.bali.util.ReflectionHelper;
 import org.dom4j.Attribute;
 import org.dom4j.Element;
 
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -59,34 +61,24 @@ public class FilterParser implements Serializable {
                     getJoinValue(conditionElement),
                     conditionElement.attributeValue("operatorType"),
                     conditionElement.attributeValue("type"));
-            // support unary conditions without parameters in text (e.g. "is null")
+            Set<ParameterInfo> params = new HashSet<>();
             for (Element paramElem : conditionElement.elements("param")) {
-                Set<ParameterInfo> params = ParametersHelper.parseQuery(":" + paramElem.attributeValue("name"));
+                Set<ParameterInfo> singleParam = ParametersHelper.parseQuery(":" + paramElem.attributeValue("name"));
                 Attribute javaClass = paramElem.attribute("javaClass");
                 if (javaClass != null) {
-                    for (ParameterInfo param : params) {
+                    for (ParameterInfo param : singleParam) {
+                        //noinspection CatchMayIgnoreException
                         try {
-                            param.setJavaClass(Class.forName(javaClass.getValue()));
+                            param.setJavaClass(ReflectionHelper.loadClass(javaClass.getValue()));
                             param.setConditionName(conditionName);
                             param.setValue(paramElem.getText());
                         } catch (ClassNotFoundException e) {
-                            //do not fail
-                        }
-
-                        if (condition.getParameters().contains(param)) {
-                            for (ParameterInfo parameterInfo : condition.getParameters()) {
-                                if (parameterInfo.equals(param)) {
-                                    parameterInfo.setJavaClass(param.getJavaClass());
-                                    parameterInfo.setConditionName(param.getConditionName());
-                                    parameterInfo.setValue(param.getValue());
-                                }
-                            }
                         }
                     }
                 }
-
-                condition.getParameters().addAll(params);
+                params.addAll(singleParam);
             }
+            ((Clause)condition).setInputParameters(params);
         } else {
             condition = new LogicalCondition(conditionName, LogicalOp.fromString(conditionElement.getName()));
         }

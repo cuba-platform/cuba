@@ -54,7 +54,7 @@ public class GroovyGenerator {
                 return sb.toString();
             }
         } else if (condition instanceof Clause) {
-            ParameterInfo parameterInfo = condition.getParameters().iterator().next();
+            ParameterInfo parameterInfo = condition.getCompiledParameters().iterator().next();
             Class javaClass = parameterInfo.getJavaClass();
             if (javaClass == null) {
                 throw new UnsupportedOperationException();
