@@ -20,14 +20,17 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.core.global.filter.ParameterInfo;
 import com.haulmont.cuba.core.global.filter.ParametersHelper;
+import com.haulmont.cuba.gui.model.CollectionContainer;
 import com.haulmont.cuba.gui.model.DataLoader;
 import com.haulmont.cuba.security.global.UserSession;
 
 import java.util.*;
+import java.util.function.Consumer;
 
 public class FilterDataContext {
 
     protected List<DataLoaderRegistration> collectionLoaderRegistrations;
+    protected List<ContainerRegistration> containerRegistrations;
     protected Frame frame;
 
     protected UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.class);
@@ -50,6 +53,24 @@ public class FilterDataContext {
         }
     }
 
+    protected static class ContainerRegistration {
+        protected CollectionContainer container;
+        protected Consumer<CollectionContainer.CollectionChangeEvent<?>> listener;
+
+        public ContainerRegistration(CollectionContainer container, Consumer<CollectionContainer.CollectionChangeEvent<?>> listener) {
+            this.container = container;
+            this.listener = listener;
+        }
+
+        public CollectionContainer getContainer() {
+            return container;
+        }
+
+        public Consumer<CollectionContainer.CollectionChangeEvent<?>> getListener() {
+            return listener;
+        }
+    }
+
     public FilterDataContext(Frame frame) {
         this.frame = frame;
     }
@@ -63,6 +84,14 @@ public class FilterDataContext {
         collectionLoaderRegistrations.add(new DataLoaderRegistration(loader, parameters));
     }
 
+    public void registerContainerCollectionChangeListener(CollectionContainer container,
+                                                          Consumer<CollectionContainer.CollectionChangeEvent<?>> listener) {
+        if (containerRegistrations == null) {
+            containerRegistrations = new ArrayList<>();
+        }
+        containerRegistrations.add(new ContainerRegistration(container, listener));
+    }
+
     public void loadAll() {
         if (collectionLoaderRegistrations != null) {
             for (DataLoaderRegistration registration : collectionLoaderRegistrations) {
@@ -72,6 +101,12 @@ public class FilterDataContext {
                     loader.setParameter(entry.getKey(), entry.getValue());
                 }
                 loader.load();
+            }
+        }
+        if (containerRegistrations != null) {
+            for (ContainerRegistration registration : containerRegistrations) {
+                //noinspection unchecked
+                registration.getContainer().addCollectionChangeListener(registration.getListener());
             }
         }
     }
