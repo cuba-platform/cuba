@@ -18,15 +18,19 @@ package com.haulmont.cuba.core.global.filter;
 
 import javax.annotation.Nullable;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class Clause extends Condition {
     protected String content;
 
     protected String join;
 
-    protected Set<ParameterInfo> parameters;
+    protected Set<ParameterInfo> inputParameters;
+
+    protected Set<ParameterInfo> queryParameters;
 
     protected Op operator;
 
@@ -37,7 +41,7 @@ public class Clause extends Condition {
 
         this.content = content;
         this.join = join;
-        this.parameters = ParametersHelper.parseQuery(content);
+        this.queryParameters = ParametersHelper.parseQuery(content);
         if (operator != null) {
             this.operator = Op.valueOf(operator);
         }
@@ -48,7 +52,7 @@ public class Clause extends Condition {
         super(fieldName);
 
         this.content = fieldName + operator.forJpql() + param;
-        this.parameters = ParametersHelper.parseQuery(content);
+        this.queryParameters = ParametersHelper.parseQuery(content);
         this.operator = operator;
     }
 
@@ -70,8 +74,42 @@ public class Clause extends Condition {
     }
 
     @Override
-    public Set<ParameterInfo> getParameters() {
-        return parameters;
+    public Set<ParameterInfo> getCompiledParameters() {
+        Set<ParameterInfo> set = new HashSet<>(queryParameters);
+        if (inputParameters != null) {
+            set.addAll(
+                    inputParameters.stream()
+                            .filter(e -> !queryParameters.contains(e))
+                            .collect(Collectors.toSet())
+            );
+        }
+        return set;
+    }
+
+    @Override
+    public Set<ParameterInfo> getQueryParameters() {
+        return queryParameters;
+    }
+
+    @Override
+    public Set<ParameterInfo> getInputParameters() {
+        return inputParameters == null ? Collections.emptySet() : inputParameters;
+    }
+
+    public void setInputParameters(Set<ParameterInfo> inputParameters) {
+        this.inputParameters = inputParameters;
+        for (ParameterInfo parameterInfo : queryParameters) {
+            if (inputParameters.contains(parameterInfo)) {
+                inputParameters.stream()
+                        .filter(e -> e.equals(parameterInfo))
+                        .findFirst()
+                        .ifPresent(e -> {
+                            parameterInfo.setJavaClass(e.getJavaClass());
+                            parameterInfo.setConditionName(e.getConditionName());
+                            parameterInfo.setValue(e.getValue());
+                        });
+            }
+        }
     }
 
     @Override

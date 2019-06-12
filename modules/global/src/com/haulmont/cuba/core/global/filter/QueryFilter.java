@@ -24,6 +24,7 @@ import org.dom4j.Element;
 import javax.annotation.Nullable;
 import java.io.Serializable;
 import java.util.*;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -51,8 +52,8 @@ public class QueryFilter extends FilterParser implements Serializable {
         return new QueryFilter(root);
     }
 
-    public Collection<ParameterInfo> getParameters() {
-        return root.getParameters();
+    public Collection<ParameterInfo> getCompiledParameters() {
+        return root.getCompiledParameters();
     }
 
     public String processQuery(String query, Map<String, Object> paramValues) {
@@ -108,7 +109,7 @@ public class QueryFilter extends FilterParser implements Serializable {
     }
 
     protected boolean isActual(Condition condition, Set<String> params) {
-        Set<ParameterInfo> declaredParams = condition.getParameters();
+        Set<ParameterInfo> declaredParams = condition.getCompiledParameters();
 
         if (declaredParams.isEmpty())
             return true;
@@ -137,8 +138,41 @@ public class QueryFilter extends FilterParser implements Serializable {
         }
     }
 
-    public com.haulmont.cuba.core.global.queryconditions.Condition toQueryCondition() {
-        return createQueryCondition(root);
+    public com.haulmont.cuba.core.global.queryconditions.Condition toQueryCondition(Set<String> parameters) {
+        return createQueryCondition(actualizeForQueryConditions(root, parameters));
+    }
+
+    public Set<String> getActualizedQueryParameterNames(Set<String> parameters) {
+        Condition condition = actualizeForQueryConditions(root, parameters);
+        return condition == null ? Collections.emptySet() : condition.getQueryParameters().stream()
+                .map(ParameterInfo::getName)
+                .collect(Collectors.toSet());
+    }
+
+    protected Condition actualizeForQueryConditions(Condition src, Set<String> parameters) {
+        Condition copy = src.copy();
+        List<Condition> list = new ArrayList<>();
+        for (Condition condition : src.getConditions()) {
+            if (condition instanceof Clause) {
+                Clause clause = (Clause) condition;
+                if (clause.getType() == ConditionType.CUSTOM ||
+                        clause.getType() == ConditionType.PROPERTY && clause.getOperator().isUnary()) {
+                    Predicate<ParameterInfo> paramHasValue = paramInfo -> parameters.contains(paramInfo.getName());
+                    if (clause.getInputParameters().stream().allMatch(paramHasValue)) {
+                        list.add(clause);
+                    }
+                } else {
+                    list.add(clause);
+                }
+            } else {
+                list.add(actualizeForQueryConditions(condition, parameters));
+            }
+        }
+        if (copy instanceof LogicalCondition && list.isEmpty()) {
+            return null;
+        }
+        copy.setConditions(list.isEmpty() ? Collections.emptyList() : list);
+        return copy;
     }
 
     protected com.haulmont.cuba.core.global.queryconditions.Condition createQueryCondition(Condition condition) {

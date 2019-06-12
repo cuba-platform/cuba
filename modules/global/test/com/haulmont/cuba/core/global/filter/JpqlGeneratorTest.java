@@ -133,8 +133,8 @@ public class JpqlGeneratorTest {
 
     private Clause clause(String fieldName, Op operation, Class clazz, String paramValue) {
         Clause clause = new Clause(fieldName, ":param$parameter1", null, operation.name(), "");
-        clause.parameters.iterator().next().setJavaClass(clazz);
-        clause.parameters.iterator().next().setValue(paramValue);
+        clause.getCompiledParameters().iterator().next().setJavaClass(clazz);
+        clause.getCompiledParameters().iterator().next().setValue(paramValue);
         return clause;
     }
 }

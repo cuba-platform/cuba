@@ -43,10 +43,28 @@ public class LogicalCondition extends Condition {
     }
 
     @Override
-    public Set<ParameterInfo> getParameters() {
+    public Set<ParameterInfo> getCompiledParameters() {
         Set<ParameterInfo> set = new HashSet<>();
         for (Condition condition : conditions) {
-            set.addAll(condition.getParameters());
+            set.addAll(condition.getCompiledParameters());
+        }
+        return set;
+    }
+
+    @Override
+    public Set<ParameterInfo> getQueryParameters() {
+        Set<ParameterInfo> set = new HashSet<>();
+        for (Condition condition : conditions) {
+            set.addAll(condition.getQueryParameters());
+        }
+        return set;
+    }
+
+    @Override
+    public Set<ParameterInfo> getInputParameters() {
+        Set<ParameterInfo> set = new HashSet<>();
+        for (Condition condition : conditions) {
+            set.addAll(condition.getInputParameters());
         }
         return set;
     }

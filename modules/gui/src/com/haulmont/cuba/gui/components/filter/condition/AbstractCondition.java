@@ -339,8 +339,7 @@ public abstract class AbstractCondition extends BaseUuidEntity {
             element.addAttribute("operatorType", operator.name());
         }
 
-        // issue: #2171. Param should be set to the XML only if the condition text contains a parameter.
-        if (param != null && !ParametersHelper.parseQuery(text).isEmpty()) {
+        if (param != null) {
             param.toXml(element, valueProperty);
             if (entityParamWhere != null)
                 element.addAttribute("paramWhere", entityParamWhere);

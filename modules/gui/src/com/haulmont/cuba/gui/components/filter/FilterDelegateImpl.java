@@ -66,6 +66,7 @@ import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
 import com.haulmont.cuba.security.entity.FilterEntity;
 import com.haulmont.cuba.security.entity.SearchFolder;
 import com.haulmont.cuba.security.global.UserSession;
+import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Attribute;
@@ -3034,6 +3035,7 @@ public class FilterDelegateImpl implements FilterDelegate {
 
         protected static final Pattern COMPONENT_PARAM_PATTERN = Pattern.compile("(:)component\\$([\\w.]+)");
         protected static final Pattern CUSTOM_PARAM_PATTERN = Pattern.compile("(:)custom\\$([\\w.]+)");
+        protected static final Pattern SESSION_PARAM_PATTERN = Pattern.compile("(:)session\\$([\\w.]+)");
 
         public LoaderAdapter(CollectionLoader loader, Filter filter) {
             this.filter = filter;
@@ -3113,8 +3115,8 @@ public class FilterDelegateImpl implements FilterDelegate {
 
             if (queryFilter != null) {
                 replaceParamNames(queryFilter.getRoot());
-
-                for (ParameterInfo parameterInfo : queryFilter.getParameters()) {
+                Map<String, Object> loaderParameters = new HashMap<>();
+                for (ParameterInfo parameterInfo : queryFilter.getCompiledParameters()) {
                     if (parameterInfo.getType() == ParameterInfo.Type.COMPONENT) {
                         String fullName = parameterInfo.getPath();
                         if (ftsComponentParameters.contains(parameterInfo.getName())) {
@@ -3126,28 +3128,50 @@ public class FilterDelegateImpl implements FilterDelegate {
                         parameterInfo.setType(ParameterInfo.Type.NONE);
                         parameterInfo.setPath(parameterInfo.getPath().replace(".", "_"));
 
-                        setLoaderParameter(parameterInfo.getFlatName(), filter.getParamValue(name));
+                        Object inputValue = filter.getParamValue(name);
+                        if (inputValue != null) {
+                            loaderParameters.put(parameterInfo.getFlatName(), filter.getParamValue(name));
+                        }
                         lastQueryFilterParameters.add(parameterInfo.getFlatName());
                     } else if (parameterInfo.getType() == ParameterInfo.Type.CUSTOM) {
                         if (ftsCustomParameters.contains(parameterInfo.getPath())) {
                             parameterInfo.setType(ParameterInfo.Type.NONE);
                             lastQueryFilterParameters.add(parameterInfo.getFlatName());
                         }
+                    } else if (parameterInfo.getType() == ParameterInfo.Type.SESSION) {
+                        UserSession userSession = userSessionSource.getUserSession();
+                        Object value = userSession.getAttribute(parameterInfo.getPath());
+                        if (value instanceof String && parameterInfo.isCaseInsensitive()) {
+                            value = makeCaseInsensitive((String) value);
+                        }
+                        parameterInfo.setType(ParameterInfo.Type.NONE);
+                        loaderParameters.put(parameterInfo.getFlatName(), value);
+                        lastQueryFilterParameters.add(parameterInfo.getFlatName());
                     }
                 }
                 ftsComponentParameters.clear();
                 ftsCustomParameters.clear();
 
-                com.haulmont.cuba.core.global.queryconditions.Condition condition = queryFilter.toQueryCondition();
+
+                com.haulmont.cuba.core.global.queryconditions.Condition condition = queryFilter.toQueryCondition(loaderParameters.keySet());
 
                 if (dataLoaderCondition != null) {
-                    com.haulmont.cuba.core.global.queryconditions.LogicalCondition combined = new com.haulmont.cuba.core.global.queryconditions.LogicalCondition(com.haulmont.cuba.core.global.queryconditions.LogicalCondition.Type.AND);
+                    com.haulmont.cuba.core.global.queryconditions.LogicalCondition combined =
+                            new com.haulmont.cuba.core.global.queryconditions.LogicalCondition(
+                                    com.haulmont.cuba.core.global.queryconditions.LogicalCondition.Type.AND);
                     combined.add(dataLoaderCondition);
                     combined.add(condition);
                     condition = combined;
                 }
 
                 loader.setCondition(condition);
+
+                Collection<String> actualizedParameters = queryFilter.getActualizedQueryParameterNames(loaderParameters.keySet());
+                for (Map.Entry<String, Object> entry : loaderParameters.entrySet()) {
+                    if (actualizedParameters.contains(entry.getKey())) {
+                        setLoaderParameter(entry.getKey(), entry.getValue());
+                    }
+                }
             } else {
                 loader.setCondition(dataLoaderCondition);
             }
@@ -3171,14 +3195,17 @@ public class FilterDelegateImpl implements FilterDelegate {
          * Recursively replaces parameter names in condition's text, e.g.
          * "u.name like :component$usersFilter.name26607" -&gt; "u.name like :usersFilter_name26607"
          * "u.name like :custom$usersFilter.name26607" -&gt; "u.name like :usersFilter_name26607"
+         * "u.name like :session$userLogin" -&gt; "u.name like :session_userLogin"
          */
         protected void replaceParamNames(Condition condition) {
             if (condition instanceof Clause) {
-                for (ParameterInfo parameterInfo : condition.getParameters()) {
+                for (ParameterInfo parameterInfo : condition.getCompiledParameters()) {
                     if (parameterInfo.getType() == ParameterInfo.Type.COMPONENT) {
                         replaceParamName(condition, COMPONENT_PARAM_PATTERN);
                     } else if (parameterInfo.getType() == ParameterInfo.Type.CUSTOM) {
                         replaceParamName(condition, CUSTOM_PARAM_PATTERN);
+                    } else if (parameterInfo.getType() == ParameterInfo.Type.SESSION) {
+                        replaceParamName(condition, SESSION_PARAM_PATTERN);
                     }
                 }
             } else if (condition instanceof LogicalCondition) {
@@ -3196,6 +3223,19 @@ public class FilterDelegateImpl implements FilterDelegate {
             }
             m.appendTail(sb);
             ((Clause) condition).setContent(sb.toString());
+        }
+
+        protected String makeCaseInsensitive(String value) {
+            StringBuilder sb = new StringBuilder();
+            sb.append(ParametersHelper.CASE_INSENSITIVE_MARKER);
+            if (!value.startsWith("%")) {
+                sb.append("%");
+            }
+            sb.append(value);
+            if (!value.endsWith("%")) {
+                sb.append("%");
+            }
+            return sb.toString();
         }
 
         @Override
