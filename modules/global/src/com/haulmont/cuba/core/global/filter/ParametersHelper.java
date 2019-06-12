@@ -95,7 +95,7 @@ public final class ParametersHelper {
         }
 
         if (filter != null) {
-            infos.addAll(filter.getParameters());
+            infos.addAll(filter.getCompiledParameters());
         }
 
         return infos.toArray(new ParameterInfo[infos.size()]);

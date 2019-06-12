@@ -39,7 +39,11 @@ public abstract class Condition implements Cloneable, Serializable {
 
     public abstract void setConditions(List<Condition> conditions);
 
-    public abstract Set<ParameterInfo> getParameters();
+    public abstract Set<ParameterInfo> getCompiledParameters();
+
+    public abstract Set<ParameterInfo> getInputParameters();
+
+    public abstract Set<ParameterInfo> getQueryParameters();
 
     public abstract Set<String> getJoins();
 
