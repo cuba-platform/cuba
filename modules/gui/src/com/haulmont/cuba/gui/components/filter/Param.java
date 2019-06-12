@@ -909,9 +909,6 @@ public class Param {
                 return listEditor;
             } else {
                 CollectionLoader<Entity> loader = createEntityOptionsLoader(metaClass);
-                if (filterDataContext != null) {
-                    filterDataContext.registerCollectionLoader(loader);
-                }
 
                 CollectionContainer<Entity> container =
                         dataComponents.createCollectionContainer(metaClass.getJavaClass());
@@ -922,10 +919,15 @@ public class Param {
                 lookup.addClearAction();
                 lookup.setOptions(new ContainerOptions<>(container));
 
-                container.addCollectionChangeListener(e -> lookup.setValue(null));
+                Consumer<CollectionContainer.CollectionChangeEvent<?>> listener = e -> lookup.setValue(null);
 
                 lookup.addValueChangeListener(e -> _setValue(e.getValue(), valueProperty));
                 lookup.setValue((Entity) _getValue(valueProperty));
+
+                if (filterDataContext != null) {
+                    filterDataContext.registerCollectionLoader(loader);
+                    filterDataContext.registerContainerCollectionChangeListener(container, listener);
+                }
 
                 return lookup;
             }
