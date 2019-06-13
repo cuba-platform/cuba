@@ -3160,7 +3160,9 @@ public class FilterDelegateImpl implements FilterDelegate {
                             new com.haulmont.cuba.core.global.queryconditions.LogicalCondition(
                                     com.haulmont.cuba.core.global.queryconditions.LogicalCondition.Type.AND);
                     combined.add(dataLoaderCondition);
-                    combined.add(condition);
+                    if (condition != null) {
+                        combined.add(condition);
+                    }
                     condition = combined;
                 }
 
