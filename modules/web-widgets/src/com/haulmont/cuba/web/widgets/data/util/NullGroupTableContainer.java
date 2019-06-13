@@ -134,6 +134,11 @@ public class NullGroupTableContainer extends ContainerOrderedWrapper
     }
 
     @Override
+    public Map<Object, Object> aggregateValues(Context context) {
+        throw new IllegalStateException(ERROR_MESSAGE);
+    }
+
+    @Override
     public void sort(Object[] propertyId, boolean[] ascending) {
         throw new IllegalStateException(ERROR_MESSAGE);
     }

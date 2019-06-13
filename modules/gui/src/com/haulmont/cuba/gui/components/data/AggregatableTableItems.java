@@ -24,5 +24,22 @@ import java.util.Map;
 
 public interface AggregatableTableItems<E extends Entity> extends TableItems<E> {
 
+    /**
+     * Perform aggregation and return map with formatted string values.
+     *
+     * @param aggregationInfos aggregation infos
+     * @param itemIds          collection of item ids
+     * @return map with aggregation info and formatted string values
+     */
     Map<AggregationInfo, String> aggregate(AggregationInfo[] aggregationInfos, Collection<?> itemIds);
+
+    /**
+     * Perform aggregation and return map with aggregation info and aggregation column type, i.e. if aggregation was
+     * performed for Long type column it will return pair: AggregationInfo - Long.
+     *
+     * @param aggregationInfos aggregation infos
+     * @param itemIds          collection of item ids
+     * @return map with aggregation info and aggregation column type
+     */
+    Map<AggregationInfo, Object> aggregateValues(AggregationInfo[] aggregationInfos, Collection<?> itemIds);
 }
