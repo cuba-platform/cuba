@@ -45,7 +45,7 @@
             </columns>
             <rows datasource="paramsDs"/>
         </table>
-        <buttonsPanel id="buttonsHbox">
+        <buttonsPanel id="buttonsPanel">
             <button id="insert" caption="msg://caption.generateInsert" invoke="generateInsert"/>
             <button id="update" caption="msg://caption.generateUpdate" invoke="generateUpdate"/>
             <button id="select" caption="msg://caption.generateSelect" invoke="generateSelect"/>

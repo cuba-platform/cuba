@@ -53,7 +53,7 @@ public class SystemInfoWindow extends AbstractWindow {
     @Inject
     protected TextArea<String> scriptArea;
     @Inject
-    protected BoxLayout buttonsHbox;
+    protected ButtonsPanel buttonsPanel;
 
     @Inject
     protected Metadata metadata;
@@ -79,7 +79,7 @@ public class SystemInfoWindow extends AbstractWindow {
         Companion companion = getCompanion();
         if (companion != null) {
             companion.initInfoTable(infoTable);
-            companion.addCopyButton(buttonsHbox, messages.getMainMessage("systemInfoWindow.copy"),
+            companion.addCopyButton(buttonsPanel, messages.getMainMessage("systemInfoWindow.copy"),
                     messages.getMainMessage("systemInfoWindow.copingSuccessful"),
                     messages.getMainMessage("systemInfoWindow.copingFailed"),
                     cubaCopyLogContentClass, uiComponents);
@@ -91,7 +91,7 @@ public class SystemInfoWindow extends AbstractWindow {
         if (!clientConfig.getSystemInfoScriptsEnabled()
                 || item == null
                 || !metadata.getTools().isPersistent(item.getMetaClass())) {
-            buttonsHbox.setVisible(false);
+            buttonsPanel.setVisible(false);
         }
     }
 
@@ -132,7 +132,7 @@ public class SystemInfoWindow extends AbstractWindow {
     }
 
     protected void setCopyButtonVisible() {
-        Component copyBtn = buttonsHbox.getComponent("copy");
+        Component copyBtn = buttonsPanel.getComponent("copy");
         if (copyBtn != null) {
             copyBtn.setVisible(true);
         }
