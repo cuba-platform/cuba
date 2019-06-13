@@ -139,7 +139,8 @@ public class QueryFilter extends FilterParser implements Serializable {
     }
 
     public com.haulmont.cuba.core.global.queryconditions.Condition toQueryCondition(Set<String> parameters) {
-        return createQueryCondition(actualizeForQueryConditions(root, parameters));
+        Condition condition = actualizeForQueryConditions(root, parameters);
+        return condition == null ? null : createQueryCondition(condition);
     }
 
     public Set<String> getActualizedQueryParameterNames(Set<String> parameters) {
