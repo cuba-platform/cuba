@@ -224,6 +224,15 @@ public class GroupTableContainerWrapper extends ContainerOrderedWrapper
     }
 
     @Override
+    public Map<Object, Object> aggregateValues(Context context) {
+        if (container instanceof AggregationContainer) {
+            return ((AggregationContainer) container).aggregateValues(context);
+        }
+        throw new IllegalStateException("Wrapped container is not AggregationContainer: "
+                + container.getClass());
+    }
+
+    @Override
     public void sort(Object[] propertyId, boolean[] ascending) {
         if (container instanceof Sortable) {
             ((Sortable) container).sort(propertyId, ascending);

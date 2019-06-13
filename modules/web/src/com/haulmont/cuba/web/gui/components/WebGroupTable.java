@@ -431,7 +431,7 @@ public class WebGroupTable<E extends Entity> extends WebAbstractTable<CubaGroupT
 
     @Override
     public Map<Object, Object> getAggregationResults(GroupInfo info) {
-        return component.aggregate(new CubaGroupTable.GroupAggregationContext(component, info));
+        return component.aggregateValues(new CubaGroupTable.GroupAggregationContext(component, info));
     }
 
     @Override
@@ -733,6 +733,11 @@ public class WebGroupTable<E extends Entity> extends WebAbstractTable<CubaGroupT
         @Override
         public Map<Object, Object> aggregate(Context context) {
             return __aggregate(this, context);
+        }
+
+        @Override
+        public Map<Object, Object> aggregateValues(Context context) {
+            return __aggregateValues(this, context);
         }
 
         @Override

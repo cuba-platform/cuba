@@ -142,6 +142,11 @@ public class WebTable<E extends Entity> extends WebAbstractTable<CubaTable, E> {
         public Map<Object, Object> aggregate(Context context) {
             return __aggregate(this, context);
         }
+
+        @Override
+        public Map<Object, Object> aggregateValues(Context context) {
+            return __aggregateValues(this, context);
+        }
     }
 
     protected class SortableTableDsWrapper extends SortableCollectionDsWrapper
@@ -214,6 +219,11 @@ public class WebTable<E extends Entity> extends WebAbstractTable<CubaTable, E> {
         @Override
         public Map<Object, Object> aggregate(Context context) {
             return __aggregate(this, context);
+        }
+
+        @Override
+        public Map<Object, Object> aggregateValues(Context context) {
+            return __aggregateValues(this, context);
         }
 
         @Override

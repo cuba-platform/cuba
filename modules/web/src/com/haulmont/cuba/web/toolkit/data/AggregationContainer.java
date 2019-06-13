@@ -38,7 +38,22 @@ public interface AggregationContainer extends Container {
     void addContainerPropertyAggregation(Object propertyId, Type type);
     void removeContainerPropertyAggregation(Object propertyId);
 
+    /**
+     * Perform aggregation and return map with formatted string values.
+     *
+     * @param context aggregation context
+     * @return map with aggregation info and formatted string values
+     */
     Map<Object, Object> aggregate(Context context);
+
+    /**
+     * Perform aggregation and return map with aggregation info and aggregation column type, i.e. if aggregation was
+     * performed for Long type column it will return pair: AggregationInfo - Long.
+     *
+     * @param context aggregation context
+     * @return map with aggregation info and aggregation column type
+     */
+    Map<Object, Object> aggregateValues(Context context);
 
     class Context {
         private final Collection itemIds;

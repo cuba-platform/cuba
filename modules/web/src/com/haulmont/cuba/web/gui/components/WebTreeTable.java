@@ -396,6 +396,11 @@ public class WebTreeTable<E extends Entity> extends WebAbstractTable<CubaTreeTab
         }
 
         @Override
+        public Map<Object, Object> aggregateValues(Context context) {
+            return __aggregateValues(this, context);
+        }
+
+        @Override
         public void resetSortOrder() {
             if (datasource instanceof CollectionDatasource.Sortable) {
                 ((CollectionDatasource.Sortable) datasource).resetSortOrder();

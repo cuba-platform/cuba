@@ -569,6 +569,14 @@ public class CubaTable extends com.vaadin.ui.Table implements TableContainer, Cu
     }
 
     @Override
+    public Map<Object, Object> aggregateValues(Context context) {
+        if (items instanceof AggregationContainer && isAggregatable()) {
+            return ((AggregationContainer) items).aggregateValues(context);
+        }
+        throw new IllegalStateException("Table container is not AggregationContainer: " + items.getClass());
+    }
+
+    @Override
     protected void paintAdditionalData(PaintTarget target) throws PaintException {
         if (reqFirstRowToPaint == -1) {
             boolean hasAggregation = items instanceof AggregationContainer && isAggregatable()

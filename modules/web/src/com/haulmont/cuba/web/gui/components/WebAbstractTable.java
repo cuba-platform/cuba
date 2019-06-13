@@ -599,7 +599,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
     @Override
     public Map<Object, Object> getAggregationResults() {
         CollectionDatasource ds = WebAbstractTable.this.getDatasource();
-        return component.aggregate(new AggregationContainer.Context(ds.getItemIds()));
+        return component.aggregateValues(new AggregationContainer.Context(ds.getItemIds()));
     }
 
     @Override
@@ -1947,30 +1947,54 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
     }
 
     protected Map<Object, Object> __aggregate(AggregationContainer container, AggregationContainer.Context context) {
-        final List<AggregationInfo> aggregationInfos = new LinkedList<>();
-        for (final Object propertyId : container.getAggregationPropertyIds()) {
-            final Table.Column column = columns.get(propertyId);
-            AggregationInfo aggregation = column.getAggregation();
-            if (aggregation != null) {
-                checkAggregation(aggregation);
-                aggregationInfos.add(aggregation);
-            }
-        }
+        List<AggregationInfo> aggregationInfos = getAggregationInfos(container);
 
         @SuppressWarnings("unchecked")
         Map<AggregationInfo, Object> results = ((CollectionDatasource.Aggregatable) datasource).aggregate(
                 aggregationInfos.toArray(new AggregationInfo[aggregationInfos.size()]),
                 context.getItemIds()
         );
-        Map<Object, Object> resultsByColumns = new LinkedHashMap<>();
-        for (final Object propertyId : container.getAggregationPropertyIds()) {
-            final Table.Column column = columns.get(propertyId);
-            if (column.getAggregation() != null) {
-                resultsByColumns.put(column.getId(), results.get(column.getAggregation()));
-            }
-        }
+
+        Map<Object, Object> resultsByColumns = convertAggregationKeyMapToColumnIdKeyMap(container, results);
         if (aggregationCells != null) {
             resultsByColumns = __handleAggregationResults(context, resultsByColumns);
+        }
+        return resultsByColumns;
+    }
+
+    protected Map<Object, Object> __aggregateValues(AggregationContainer container, AggregationContainer.Context context) {
+        List<AggregationInfo> aggregationInfos = getAggregationInfos(container);
+
+        @SuppressWarnings("unchecked")
+        Map<AggregationInfo, Object> results = ((CollectionDatasource.Aggregatable) datasource).aggregateValues(
+                aggregationInfos.toArray(new AggregationInfo[aggregationInfos.size()]),
+                context.getItemIds()
+        );
+
+        return convertAggregationKeyMapToColumnIdKeyMap(container, results);
+    }
+
+    protected List<AggregationInfo> getAggregationInfos(AggregationContainer container) {
+        List<AggregationInfo> aggregationInfos = new ArrayList<>();
+        for (Object propertyId : container.getAggregationPropertyIds()) {
+            Table.Column column = columns.get(propertyId);
+            AggregationInfo aggregation = column.getAggregation();
+            if (aggregation != null) {
+                checkAggregation(aggregation);
+                aggregationInfos.add(aggregation);
+            }
+        }
+        return aggregationInfos;
+    }
+
+    protected Map<Object, Object> convertAggregationKeyMapToColumnIdKeyMap(AggregationContainer container,
+                                                                           Map<AggregationInfo, ?> aggregationInfoMap) {
+        Map<Object, Object> resultsByColumns = new LinkedHashMap<>();
+        for (Object propertyId : container.getAggregationPropertyIds()) {
+            Table.Column column = columns.get(propertyId);
+            if (column.getAggregation() != null) {
+                resultsByColumns.put(column.getId(), aggregationInfoMap.get(column.getAggregation()));
+            }
         }
         return resultsByColumns;
     }

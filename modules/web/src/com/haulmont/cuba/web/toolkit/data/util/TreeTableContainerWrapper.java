@@ -478,6 +478,15 @@ public class TreeTableContainerWrapper
     }
 
     @Override
+    public Map<Object, Object> aggregateValues(Context context) {
+        if (container instanceof AggregationContainer) {
+            return ((AggregationContainer) container).aggregateValues(context);
+        }
+        throw new IllegalStateException("Wrapped container is not AggregationContainer: "
+                + container.getClass());
+    }
+
+    @Override
     public void resetSortOrder() {
         if (container instanceof TableContainer) {
             ((TableContainer) container).resetSortOrder();

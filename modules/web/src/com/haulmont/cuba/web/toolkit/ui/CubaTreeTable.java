@@ -657,6 +657,14 @@ public class CubaTreeTable extends com.vaadin.ui.TreeTable implements TreeTableC
     }
 
     @Override
+    public Map<Object, Object> aggregateValues(Context context) {
+        if (items instanceof AggregationContainer && isAggregatable()) {
+            return ((AggregationContainer) items).aggregateValues(context);
+        }
+        throw new IllegalStateException("Table container is not AggregationContainer: " + items.getClass());
+    }
+
+    @Override
     protected void paintAdditionalData(PaintTarget target) throws PaintException {
         if (reqFirstRowToPaint == -1 && items instanceof AggregationContainer && isAggregatable()
                 && !((AggregationContainer) items).getAggregationPropertyIds().isEmpty() && isShowTotalAggregation()
