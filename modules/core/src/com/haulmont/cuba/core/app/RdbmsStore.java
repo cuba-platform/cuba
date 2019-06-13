@@ -223,7 +223,7 @@ public class RdbmsStore implements DataStore {
             if (!context.getIds().isEmpty() && entityHasEmbeddedId(metaClass)) {
                 entities = loadBySeparateQueries(context, em, view);
             } else {
-                Query query = createQuery(em, context, false);
+                Query query = createQuery(em, context, false, false);
                 query.setView(view);
                 entities = getResultList(context, query, ensureDistinct);
             }
@@ -278,7 +278,7 @@ public class RdbmsStore implements DataStore {
         List<E> entities = new ArrayList<>(context.getIds().size());
         for (Object id : context.getIds()) {
             contextCopy.setId(id);
-            Query query = createQuery(em, contextCopy, true);
+            Query query = createQuery(em, contextCopy, true, false);
             query.setView(view);
             List<E> list = executeQuery(query, true);
             entities.addAll(list);
@@ -669,9 +669,11 @@ public class RdbmsStore implements DataStore {
         if (contextQuery != null) {
             queryBuilder.setQueryString(contextQuery.getQueryString())
                     .setCondition(contextQuery.getCondition())
-                    .setSort(contextQuery.getSort())
                     .setQueryParameters(contextQuery.getParameters())
                     .setNoConversionParams(contextQuery.getNoConversionParams());
+            if (!countQuery) {
+                queryBuilder.setSort(contextQuery.getSort());
+            }
         }
 
         if (!context.getPrevQueries().isEmpty()) {
