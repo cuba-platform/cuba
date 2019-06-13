@@ -1,13 +1,30 @@
 /*
- * Copyright (c) 2008-2019 Haulmont. All rights reserved.
- * Use is subject to license terms, see http://www.cuba-platform.com/commercial-software-license for details.
+ * Copyright (c) 2008-2018 Haulmont.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
+
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.bali.events.Subscription;
 import com.haulmont.cuba.core.global.RemoteException;
+import com.haulmont.cuba.gui.components.Fragment;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.Timer;
+import com.haulmont.cuba.gui.components.Window;
+import com.haulmont.cuba.gui.screen.Screen;
+import com.haulmont.cuba.gui.screen.ScreenFragment;
+import com.haulmont.cuba.gui.screen.UiControllerUtils;
 import com.haulmont.cuba.security.global.NoUserSessionException;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.gui.WebAbstractFacet;
@@ -110,15 +127,30 @@ public class WebTimer extends WebAbstractFacet implements Timer {
             registerOnAttach(ownerComponent);
         }
 
-        // unregister if owner component is detached
-        ownerComponent.addDetachListener(event -> {
+        addDetachListener(owner);
+    }
+
+    private void addDetachListener(Frame owner) {
+        if (owner instanceof Window) {
+            Screen frameOwner = (Screen) owner.getFrameOwner();
+
+            UiControllerUtils.addAfterDetachListener(frameOwner,
+                    event -> detachTimerExtension()
+            );
+        } else if (owner instanceof Fragment) {
+            ScreenFragment fragment = ((Fragment) owner).getFrameOwner();
+
+            UiControllerUtils.addDetachListener(fragment,
+                    event -> detachTimerExtension()
+            );
+        }
+    }
+
+    protected void detachTimerExtension() {
+        if (timerImpl.getParent() != null) {
             timerImpl.remove();
-
-            log.trace("Timer '{}' unregistered from UI ", WebTimer.this.getId());
-
-            // can be registered again later, e.g. if fragment is attached again
-            WebTimer.this.registerOnAttach(ownerComponent);
-        });
+        }
+        log.trace("Timer '{}' unregistered from UI ", WebTimer.this.getId());
     }
 
     protected void registerOnAttach(Component ownerComponent) {
