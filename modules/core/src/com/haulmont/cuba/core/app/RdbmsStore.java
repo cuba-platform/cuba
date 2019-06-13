@@ -137,7 +137,7 @@ public class RdbmsStore implements DataStore {
                     && context.getId() != null;
 
             View view = createRestrictedView(context);
-            com.haulmont.cuba.core.Query query = createQuery(em, context, singleResult);
+            com.haulmont.cuba.core.Query query = createQuery(em, context, singleResult, false);
             query.setView(view);
 
             //noinspection unchecked
@@ -341,7 +341,7 @@ public class RdbmsStore implements DataStore {
                 context.getQuery().setFirstResult(0);
                 context.getQuery().setMaxResults(0);
 
-                Query query = createQuery(em, context, false);
+                Query query = createQuery(em, context, false, false);
                 query.setView(createRestrictedView(context));
 
                 resultList = getResultList(context, query, ensureDistinct);
@@ -359,7 +359,7 @@ public class RdbmsStore implements DataStore {
                 EntityManager em = persistence.getEntityManager(storeName);
                 em.setSoftDeletion(context.isSoftDeletion());
 
-                Query query = createQuery(em, context, false);
+                Query query = createQuery(em, context, false, true);
                 result = (Number) query.getSingleResult();
 
                 tx.commit();
@@ -656,7 +656,7 @@ public class RdbmsStore implements DataStore {
                 && ((BaseGenericIdEntity) entity).getDynamicAttributes() != null;
     }
 
-    protected Query createQuery(EntityManager em, LoadContext<?> context, boolean singleResult) {
+    protected Query createQuery(EntityManager em, LoadContext<?> context, boolean singleResult, boolean countQuery) {
         LoadContext.Query contextQuery = context.getQuery();
 
         JpqlQueryBuilder queryBuilder = AppBeans.get(JpqlQueryBuilder.NAME);
