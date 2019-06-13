@@ -348,6 +348,11 @@ public class NullTreeTableContainer extends ContainerHierarchicalWrapper
     }
 
     @Override
+    public Map<Object, Object> aggregateValues(Context context) {
+        throw new IllegalStateException("Wrapped container is not AggregationContainer: " + _container().getClass());
+    }
+
+    @Override
     public void resetSortOrder() {
         throw new IllegalArgumentException(ERROR_MESSAGE);
     }

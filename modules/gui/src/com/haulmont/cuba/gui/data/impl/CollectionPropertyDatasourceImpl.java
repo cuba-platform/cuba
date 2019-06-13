@@ -976,6 +976,11 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
         return aggregatableDelegate.aggregate(aggregationInfos, itemIds);
     }
 
+    @Override
+    public Map<AggregationInfo, Object> aggregateValues(AggregationInfo[] aggregationInfos, Collection<K> itemIds) {
+        return aggregatableDelegate.aggregateValues(aggregationInfos, itemIds);
+    }
+
     protected Object getItemValue(MetaPropertyPath property, K itemId) {
         Instance instance = getItemNN(itemId);
         return instance.getValueEx(property);
