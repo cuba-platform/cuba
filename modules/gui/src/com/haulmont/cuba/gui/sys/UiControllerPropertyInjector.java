@@ -16,6 +16,7 @@
 
 package com.haulmont.cuba.gui.sys;
 
+import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.model.InstanceContainer;
@@ -25,8 +26,7 @@ import com.haulmont.cuba.gui.screen.ScreenFragment;
 import com.haulmont.cuba.gui.screen.UiControllerUtils;
 import com.haulmont.cuba.gui.screen.compatibility.LegacyFrame;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 
@@ -41,8 +41,6 @@ import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 @org.springframework.stereotype.Component(UiControllerPropertyInjector.NAME)
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
 public class UiControllerPropertyInjector {
-
-    private static final Logger log = LoggerFactory.getLogger(UiControllerPropertyInjector.class);
 
     public static final String NAME = "cuba_UiControllerPropertyInjector";
 
@@ -69,9 +67,10 @@ public class UiControllerPropertyInjector {
             String propName = property.getName();
             Method setter = findSuitableSetter(propName);
             if (setter == null) {
-                log.info("Unable to find suitable setter for property '{}'. Its value will not be injected into '{}'",
-                        propName, frameOwner);
-                continue;
+                throw new GuiDevelopmentException(String.format(
+                        "Unable to find suitable setter for property '%s'. Its value will not be injected into '%s'",
+                        propName, frameOwner),
+                        UiControllerUtils.getScreen(frameOwner).getId());
             }
 
             Object value = property.getValue();
@@ -81,17 +80,19 @@ public class UiControllerPropertyInjector {
                 value = parseParamValue(property, propType);
 
                 if (value == null) {
-                    log.info("Unable to parse '{}' as '{}' for property '{}'. It will not be injected into '{}'",
-                            property.getValue(), propType, propName, frameOwner);
-                    continue;
+                    throw new GuiDevelopmentException(String.format(
+                            "Unable to parse '%s' as '%s' for property '%s'. It will not be injected into '%s'",
+                            property.getValue(), propType, propName, frameOwner),
+                            UiControllerUtils.getScreen(frameOwner).getId());
                 }
             }
 
             try {
                 setter.invoke(frameOwner, value);
             } catch (IllegalAccessException | InvocationTargetException e) {
-                log.info("Unable to assign value through setter '{}' in '{}' for property '{}'",
-                        setter.getName(), frameOwner, propName, e);
+                throw new RuntimeException(String.format(
+                        "Unable to assign value through setter '%s' in '%s' for property '%s'",
+                        setter.getName(), frameOwner, propName), e);
             }
         }
     }
@@ -125,28 +126,23 @@ public class UiControllerPropertyInjector {
         Object value = null;
         String stringProperty = ((String) property.getValue());
 
-        try {
-            if (Byte.class == propType || Byte.TYPE == propType) {
-                value = Byte.valueOf(stringProperty);
+        if (Byte.class == propType || Byte.TYPE == propType) {
+            value = parseNumber(property, Byte.class);
 
-            } else if (Short.class == propType || Short.TYPE == propType) {
-                value = Short.valueOf(stringProperty);
+        } else if (Short.class == propType || Short.TYPE == propType) {
+            value = parseNumber(property, Short.class);
 
-            } else if (Integer.class == propType || Integer.TYPE == propType) {
-                value = Integer.valueOf(stringProperty);
+        } else if (Integer.class == propType || Integer.TYPE == propType) {
+            value = parseNumber(property, Integer.class);
 
-            } else if (Long.class == propType || Long.TYPE == propType) {
-                value = Long.valueOf(stringProperty);
+        } else if (Long.class == propType || Long.TYPE == propType) {
+            value = parseNumber(property, Long.class);
 
-            } else if (Float.class == propType || Float.TYPE == propType) {
-                value = Float.valueOf(stringProperty);
+        } else if (Float.class == propType || Float.TYPE == propType) {
+            value = parseNumber(property, Float.class);
 
-            } else if (Double.class == propType || Double.TYPE == propType) {
-                value = Double.valueOf(stringProperty);
-            }
-        } catch (NumberFormatException e) {
-            log.info("Unable to parse '{}' as '{}'. Property value '{}' will not be injected into '{}'",
-                    property.getValue(), propType, property.getName(), frameOwner);
+        } else if (Double.class == propType || Double.TYPE == propType) {
+            value = parseNumber(property, Double.class);
         }
 
         if (Boolean.class == propType || Boolean.TYPE == propType) {
@@ -158,6 +154,17 @@ public class UiControllerPropertyInjector {
         return value;
     }
 
+    protected Object parseNumber(UiControllerProperty property, Class<? extends Number> numberType) {
+        String stringValue = (String) property.getValue();
+        if (!NumberUtils.isParsable(stringValue)) {
+            throw new GuiDevelopmentException(String.format(
+                    "Unable to parse '%s' as '%s'. Property value '%s' will not be injected into '%s'",
+                    property.getValue(), numberType, property.getName(), frameOwner),
+                    UiControllerUtils.getScreen(frameOwner).getId());
+        }
+        return org.springframework.util.NumberUtils.parseNumber(stringValue, numberType);
+    }
+
     @Nullable
     protected Object findObjectByRef(UiControllerProperty property, Class<?> propType) {
         Object value = null;
@@ -166,22 +173,28 @@ public class UiControllerPropertyInjector {
         if (Component.class.isAssignableFrom(propType)) {
             value = findComponent(stringProp);
             if (value == null) {
-                log.info("Unable to find component with id '{}'. Property value '{}' will not be injected into '{}'",
-                        property.getValue(), property.getName(), frameOwner);
+                throw new GuiDevelopmentException(String.format(
+                        "Unable to find component with id '%s'. Property value '%s' will not be injected into '%s'",
+                        property.getValue(), property.getName(), frameOwner),
+                        UiControllerUtils.getScreen(frameOwner).getId());
             }
 
         } else if (InstanceContainer.class.isAssignableFrom(propType)) {
             value = findDataContainer(stringProp);
             if (value == null) {
-                log.info("Unable to find data container with id '{}'. Property value '{}' will not be injected into '{}'",
-                        property.getValue(), property.getName(), frameOwner);
+                throw new GuiDevelopmentException(String.format(
+                        "Unable to find data container with id '%s'. Property value '%s' will not be injected into '%s'",
+                        property.getValue(), property.getName(), frameOwner),
+                        UiControllerUtils.getScreen(frameOwner).getId());
             }
 
         } else if (Datasource.class.isAssignableFrom(propType)) {
             value = findDatasource(stringProp);
             if (value == null) {
-                log.info("Unable to find datasource with id '{}'. Property value '{}' will not be injected into '{}'",
-                        property.getValue(), property.getName(), frameOwner);
+                throw new GuiDevelopmentException(String.format(
+                        "Unable to find datasource with id '%s'. Property value '%s' will not be injected into '%s'",
+                        property.getValue(), property.getName(), frameOwner),
+                        UiControllerUtils.getScreen(frameOwner).getId());
             }
         }
 
