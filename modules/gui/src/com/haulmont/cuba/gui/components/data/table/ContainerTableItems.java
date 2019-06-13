@@ -275,4 +275,10 @@ public class ContainerTableItems<E extends Entity> implements EntityTableItems<E
     public Map<AggregationInfo, String> aggregate(AggregationInfo[] aggregationInfos, Collection<?> itemIds) {
         return aggregatableDelegate.aggregate(aggregationInfos, itemIds);
     }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public Map<AggregationInfo, Object> aggregateValues(AggregationInfo[] aggregationInfos, Collection<?> itemIds) {
+        return aggregatableDelegate.aggregateValues(aggregationInfos, itemIds);
+    }
 }

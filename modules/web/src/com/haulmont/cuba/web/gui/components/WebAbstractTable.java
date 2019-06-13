@@ -911,7 +911,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
     @Override
     public Map<Object, Object> getAggregationResults() {
         Collection<?> itemIds = WebAbstractTable.this.getItems().getItemIds();
-        return component.aggregate(new AggregationContainer.Context(itemIds));
+        return component.aggregateValues(new AggregationContainer.Context(itemIds));
     }
 
     @Override
@@ -1656,6 +1656,11 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
         public Map<Object, Object> aggregate(Context context) {
             return __aggregate(this, context);
         }
+
+        @Override
+        public Map<Object, Object> aggregateValues(Context context) {
+            return __aggregateValues(this, context);
+        }
     }
 
     protected class AggregatableSortableDataContainer<I> extends SortableDataContainer<I>
@@ -1699,6 +1704,11 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
         @Override
         public Map<Object, Object> aggregate(AggregationContainer.Context context) {
             return __aggregate(this, context);
+        }
+
+        @Override
+        public Map<Object, Object> aggregateValues(Context context) {
+            return __aggregateValues(this, context);
         }
     }
 
@@ -2607,12 +2617,44 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
         throw new IllegalArgumentException(msg);
     }
 
+    protected Map<Object, Object> __aggregateValues(AggregationContainer container, AggregationContainer.Context context) {
+        if (!(getItems() instanceof AggregatableTableItems)) {
+            throw new IllegalStateException("Table items must implement AggregatableTableItems in " +
+                    "order to use aggregation");
+        }
+
+        List<AggregationInfo> aggregationInfos = getAggregationInfos(container);
+
+        Map<AggregationInfo, Object> results = ((AggregatableTableItems<E>) getItems()).aggregateValues(
+                aggregationInfos.toArray(new AggregationInfo[0]),
+                context.getItemIds()
+        );
+
+        return convertAggregationKeyMapToColumnIdKeyMap(container, results);
+    }
+
     protected Map<Object, Object> __aggregate(AggregationContainer container, AggregationContainer.Context context) {
         if (!(getItems() instanceof AggregatableTableItems)) {
             throw new IllegalStateException("Table items must implement AggregatableTableItems in " +
                     "order to use aggregation");
         }
 
+        List<AggregationInfo> aggregationInfos = getAggregationInfos(container);
+
+        Map<AggregationInfo, String> results = ((AggregatableTableItems<E>) getItems()).aggregate(
+                aggregationInfos.toArray(new AggregationInfo[0]),
+                context.getItemIds()
+        );
+
+        Map<Object, Object> resultsByColumns = convertAggregationKeyMapToColumnIdKeyMap(container, results);
+
+        if (aggregationCells != null) {
+            resultsByColumns = __handleAggregationResults(context, resultsByColumns);
+        }
+        return resultsByColumns;
+    }
+
+    protected List<AggregationInfo> getAggregationInfos(AggregationContainer container) {
         List<AggregationInfo> aggregationInfos = new ArrayList<>();
         for (Object propertyId : container.getAggregationPropertyIds()) {
             Table.Column column = columns.get(propertyId);
@@ -2622,20 +2664,17 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
                 aggregationInfos.add(aggregation);
             }
         }
+        return aggregationInfos;
+    }
 
-        Map<AggregationInfo, String> results = ((AggregatableTableItems<E>) getItems()).aggregate(
-                aggregationInfos.toArray(new AggregationInfo[0]),
-                context.getItemIds()
-        );
+    protected Map<Object, Object> convertAggregationKeyMapToColumnIdKeyMap(AggregationContainer container,
+                                                                           Map<AggregationInfo, ?> aggregationInfoMap) {
         Map<Object, Object> resultsByColumns = new LinkedHashMap<>();
         for (Object propertyId : container.getAggregationPropertyIds()) {
             Table.Column column = columns.get(propertyId);
             if (column.getAggregation() != null) {
-                resultsByColumns.put(column.getId(), results.get(column.getAggregation()));
+                resultsByColumns.put(column.getId(), aggregationInfoMap.get(column.getAggregation()));
             }
-        }
-        if (aggregationCells != null) {
-            resultsByColumns = __handleAggregationResults(context, resultsByColumns);
         }
         return resultsByColumns;
     }

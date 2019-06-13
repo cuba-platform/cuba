@@ -104,6 +104,11 @@ public class WebTreeTable<E extends Entity> extends WebAbstractTable<CubaTreeTab
         public Map<Object, Object> aggregate(Context context) {
             return __aggregate(this, context);
         }
+
+        @Override
+        public Map<Object, Object> aggregateValues(Context context) {
+            return __aggregateValues(this, context);
+        }
     }
 
     protected TreeTableItems<E> getTreeTableSource() {

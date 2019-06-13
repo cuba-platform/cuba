@@ -86,6 +86,21 @@ public abstract class AggregatableDelegate<K> {
         return aggregationResults;
     }
 
+    public Map<AggregationInfo, Object> aggregateValues(AggregationInfo[] aggregationInfos, Collection<K> itemIds) {
+        if (aggregationInfos == null || aggregationInfos.length == 0) {
+            throw new NullPointerException("Aggregation must be executed at least by one field");
+        }
+
+        Map<AggregationInfo, Object> aggregationResults = new HashMap<>();
+
+        for (AggregationInfo aggregationInfo : aggregationInfos) {
+            Object value = doPropertyAggregation(aggregationInfo, itemIds);
+            aggregationResults.put(aggregationInfo, value);
+        }
+
+        return aggregationResults;
+    }
+
     @SuppressWarnings("unchecked")
     protected Object doPropertyAggregation(AggregationInfo aggregationInfo, Collection<K> itemIds) {
         List items;
