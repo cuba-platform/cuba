@@ -889,8 +889,8 @@ public class Param {
                 lookup.setValue((Entity) _getValue(valueProperty));
 
                 if (filterDataContext != null) {
-                    filterDataContext.registerCollectionLoader(loader);
-                    filterDataContext.registerContainerCollectionChangeListener(container, listener);
+                    filterDataContext.registerCollectionLoader(this, loader);
+                    filterDataContext.registerContainerCollectionChangeListener(this, container, listener);
                 }
 
                 return lookup;
