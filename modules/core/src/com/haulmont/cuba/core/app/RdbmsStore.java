@@ -137,7 +137,7 @@ public class RdbmsStore implements DataStore {
                     && context.getId() != null;
 
             View view = createRestrictedView(context);
-            com.haulmont.cuba.core.Query query = createQuery(em, context, singleResult);
+            com.haulmont.cuba.core.Query query = createQuery(em, context, singleResult, false);
             query.setView(view);
 
             //noinspection unchecked
@@ -219,7 +219,7 @@ public class RdbmsStore implements DataStore {
                 }
             }
             View view = createRestrictedView(context);
-            Query query = createQuery(em, context, false);
+            Query query = createQuery(em, context, false, false);
             query.setView(view);
 
             resultList = getResultList(context, query, ensureDistinct);
@@ -300,7 +300,7 @@ public class RdbmsStore implements DataStore {
                 context.getQuery().setFirstResult(0);
                 context.getQuery().setMaxResults(0);
 
-                Query query = createQuery(em, context, false);
+                Query query = createQuery(em, context, false, false);
                 query.setView(createRestrictedView(context));
 
                 resultList = getResultList(context, query, ensureDistinct);
@@ -319,7 +319,7 @@ public class RdbmsStore implements DataStore {
                 em.setSoftDeletion(context.isSoftDeletion());
                 persistence.getEntityManagerContext(storeName).setDbHints(context.getDbHints());
 
-                Query query = createQuery(em, context, false);
+                Query query = createQuery(em, context, false, true);
                 result = (Number) query.getSingleResult();
 
                 tx.commit();
@@ -613,13 +613,13 @@ public class RdbmsStore implements DataStore {
                 && ((BaseGenericIdEntity) entity).getDynamicAttributes() != null;
     }
 
-    protected Query createQuery(EntityManager em, LoadContext context, boolean singleResult) {
+    protected Query createQuery(EntityManager em, LoadContext context, boolean singleResult, boolean countQuery) {
         LoadContext.Query contextQuery = context.getQuery();
         RdbmsQueryBuilder queryBuilder = AppBeans.get(RdbmsQueryBuilder.NAME);
         queryBuilder.init(
                 contextQuery == null ? null : contextQuery.getQueryString(),
                 contextQuery == null ? null : contextQuery.getCondition(),
-                contextQuery == null ? null : contextQuery.getSort(),
+                contextQuery == null || countQuery ? null : contextQuery.getSort(),
                 contextQuery == null ? null : contextQuery.getParameters(),
                 contextQuery == null ? null : contextQuery.getNoConversionParams(),
                 context.getId(), context.getMetaClass()
