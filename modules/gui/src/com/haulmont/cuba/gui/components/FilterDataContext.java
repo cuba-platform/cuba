@@ -20,6 +20,7 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.core.global.filter.ParameterInfo;
 import com.haulmont.cuba.core.global.filter.ParametersHelper;
+import com.haulmont.cuba.gui.components.filter.Param;
 import com.haulmont.cuba.gui.model.CollectionContainer;
 import com.haulmont.cuba.gui.model.DataLoader;
 import com.haulmont.cuba.security.global.UserSession;
@@ -36,10 +37,12 @@ public class FilterDataContext {
     protected UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.class);
 
     protected static class DataLoaderRegistration {
+        protected Param param;
         protected DataLoader loader;
         protected ParameterInfo[] parameters;
 
-        public DataLoaderRegistration(DataLoader loader, ParameterInfo[] parameters) {
+        public DataLoaderRegistration(Param param, DataLoader loader, ParameterInfo[] parameters) {
+            this.param = param;
             this.loader = loader;
             this.parameters = parameters;
         }
@@ -51,13 +54,19 @@ public class FilterDataContext {
         public ParameterInfo[] getParameters() {
             return parameters;
         }
+
+        public Param getParam() {
+            return param;
+        }
     }
 
     protected static class ContainerRegistration {
+        protected Param param;
         protected CollectionContainer container;
         protected Consumer<CollectionContainer.CollectionChangeEvent<?>> listener;
 
-        public ContainerRegistration(CollectionContainer container, Consumer<CollectionContainer.CollectionChangeEvent<?>> listener) {
+        public ContainerRegistration(Param param, CollectionContainer container, Consumer<CollectionContainer.CollectionChangeEvent<?>> listener) {
+            this.param = param;
             this.container = container;
             this.listener = listener;
         }
@@ -69,27 +78,32 @@ public class FilterDataContext {
         public Consumer<CollectionContainer.CollectionChangeEvent<?>> getListener() {
             return listener;
         }
+
+        public Param getParam() {
+            return param;
+        }
     }
 
     public FilterDataContext(Frame frame) {
         this.frame = frame;
     }
 
-    public void registerCollectionLoader(DataLoader loader) {
+    public void registerCollectionLoader(Param param, DataLoader loader) {
         if (collectionLoaderRegistrations == null) {
             collectionLoaderRegistrations = new ArrayList<>();
         }
         ParameterInfo[] parameters = ParametersHelper.parseQuery(loader.getQuery(), null);
         prepareLoaderQuery(loader, parameters);
-        collectionLoaderRegistrations.add(new DataLoaderRegistration(loader, parameters));
+        collectionLoaderRegistrations.add(new DataLoaderRegistration(param, loader, parameters));
     }
 
-    public void registerContainerCollectionChangeListener(CollectionContainer container,
+    public void registerContainerCollectionChangeListener(Param param,
+                                                          CollectionContainer container,
                                                           Consumer<CollectionContainer.CollectionChangeEvent<?>> listener) {
         if (containerRegistrations == null) {
             containerRegistrations = new ArrayList<>();
         }
-        containerRegistrations.add(new ContainerRegistration(container, listener));
+        containerRegistrations.add(new ContainerRegistration(param, container, listener));
     }
 
     public void loadAll() {
@@ -108,6 +122,15 @@ public class FilterDataContext {
                 //noinspection unchecked
                 registration.getContainer().addCollectionChangeListener(registration.getListener());
             }
+        }
+    }
+
+    public void unregisterParam(Param param) {
+        if (collectionLoaderRegistrations != null) {
+            collectionLoaderRegistrations.removeIf(r -> Objects.equals(r.getParam(), param));
+        }
+        if (containerRegistrations != null) {
+            containerRegistrations.removeIf(r -> Objects.equals(r.getParam(), param));
         }
     }
 
