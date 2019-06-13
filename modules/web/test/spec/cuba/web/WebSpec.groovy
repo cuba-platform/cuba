@@ -23,6 +23,7 @@ import com.haulmont.cuba.core.global.*
 import com.haulmont.cuba.gui.UiComponents
 import com.haulmont.cuba.gui.model.DataComponents
 import com.haulmont.cuba.gui.theme.ThemeConstants
+import com.haulmont.cuba.security.global.UserSession
 import com.haulmont.cuba.web.App
 import com.haulmont.cuba.web.AppUI
 import com.haulmont.cuba.web.Connection
@@ -101,6 +102,7 @@ class WebSpec extends Specification {
         vaadinSession.setAttribute(App.NAME, app)
         vaadinSession.setAttribute(Connection.class, connection)
         vaadinSession.setAttribute(Connection.NAME, connection)
+        vaadinSession.setAttribute(UserSession.class, sessionSource.getSession())
 
         VaadinSession.setCurrent(vaadinSession)
 
