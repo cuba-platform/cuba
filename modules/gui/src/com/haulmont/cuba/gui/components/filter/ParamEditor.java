@@ -109,6 +109,9 @@ public class ParamEditor implements AbstractCondition.Listener {
         for (Component component : paramEditComponentLayout.getComponents()) {
             paramEditComponentLayout.remove(component);
         }
+        if (filterDataContext != null) {
+            filterDataContext.unregisterParam(oldParam);
+        }
         createParamEditLayout();
         if (paramEditComponent instanceof Field) {
             ((Field) paramEditComponent).setRequired(condition.getRequired());
@@ -116,6 +119,9 @@ public class ParamEditor implements AbstractCondition.Listener {
                     && paramEditComponent.getClass().equals(oldParamEditComponent.getClass())) {
                 ((Field) paramEditComponent).setValue(((Field) oldParamEditComponent).getValue());
             }
+        }
+        if (filterDataContext != null) {
+            filterDataContext.loadAll();
         }
     }
 
