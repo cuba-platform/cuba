@@ -127,7 +127,7 @@ public class CubaScrollTableWidget extends VScrollTable implements TableWidget {
         if (_delegate.contextMenuEnabled) {
             if (_delegate.customContextMenu == null) {
                 return super.handleBodyContextMenu(left, top);
-            } else if (enabled && !selectedRowKeys.isEmpty()) {
+            } else if (enabled) {
                 _delegate.showContextMenuPopup(left, top);
 
                 return true;
