@@ -209,7 +209,7 @@ public class FragmentComponentLoader extends ContainerLoader<Fragment> {
 
         ScreenOptions options = parentContext.getOptions();
         parentContext.addInjectTask(new FragmentLoaderInjectTask(resultComponent, options, beanLocator));
-        parentContext.addInitTask(new FragmentLoaderInitTask(resultComponent, options, (ComponentLoaderContext) context, beanLocator));
+        parentContext.addInitTask(new FragmentLoaderInitTask(resultComponent, options, innerContext, beanLocator));
     }
 
     protected List<UiControllerProperty> loadProperties(Element element) {
