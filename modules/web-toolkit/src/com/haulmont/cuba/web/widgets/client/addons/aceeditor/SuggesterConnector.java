@@ -46,7 +46,11 @@ import com.vaadin.shared.ui.Connect;
 public class SuggesterConnector extends AbstractExtensionConnector implements
 		GwtAceKeyboardHandler, SuggestionSelectedListener, SelectionChangeListener {
 
-	protected static final int Y_OFFSET = 20;
+	// Used when popup is shown below the entering text
+	protected static final int CURSOR_LINE_HEIGHT = 20;
+
+	// Used when popup is shown above the entering text
+	protected static final int POPUP_OFFSET = 3;
 
 //	private final Logger logger = Logger.getLogger(SuggesterConnector.class.getName());
 
@@ -63,6 +67,7 @@ public class SuggesterConnector extends AbstractExtensionConnector implements
 		@Override
 		public void showSuggestions(List<TransportSuggestion> suggs) {
 			setSuggs(suggs);
+			updatePopupPosition();
 		}
 
 		@Override
@@ -112,7 +117,7 @@ public class SuggesterConnector extends AbstractExtensionConnector implements
 	protected SuggestPopup createSuggestionPopup() {
 		SuggestPopup sp = new SuggestPopup();
 		sp.setOwner(widget);
-		updatePopupPosition(sp);
+		setPopupPosition(sp);
 		sp.setSuggestionSelectedListener(this);
 		sp.show();
 		return sp;
@@ -243,19 +248,45 @@ public class SuggesterConnector extends AbstractExtensionConnector implements
 		} else if (sel.getEndCol()<sug.getStartCol() || sel.getEndCol()>sug.getEndCol()) {
 			popup.close();
 		} else {
-			updatePopupPosition(popup);
+			updatePopupPosition();
 			String s = getWord(widget.getText(), sug.getEndRow(),
 					sug.getStartCol(), sug.getEndCol());
 			popup.setStartOfValue(s);
 		}
 	}
 
-	protected void updatePopupPosition(SuggestPopup popup) {
-		int[] coords = widget.getCursorCoords();
-		int sx = Window.getScrollLeft();
-		int sy = Window.getScrollTop();
-		int x = coords[0] - sx;
-		int y = coords[1] - sy + Y_OFFSET;
+    protected void setPopupPosition(SuggestPopup popup) {
+        int[] cursorPos = widget.getCursorCoords();
+        int scrollLeft = Window.getScrollLeft();
+        int scrollTop = Window.getScrollTop();
+        int leftPos = cursorPos[0] - scrollLeft;
+        int topPos = cursorPos[1] - scrollTop + CURSOR_LINE_HEIGHT;
+        popup.setPopupPosition(leftPos, topPos);
+    }
+
+    protected void updatePopupPosition() {
+        int[] cursorPos = widget.getCursorCoords();
+        int viewportWidth = Window.getClientWidth() + Window.getScrollLeft();
+        int viewportHeight = Window.getClientHeight() + Window.getScrollTop();
+        int leftPos = cursorPos[0];
+        int topPos = cursorPos[1] + CURSOR_LINE_HEIGHT;
+
+        if (leftPos + popup.getOffsetWidth() > viewportWidth) {
+            leftPos -= popup.getOffsetWidth();
+        }
+        if (topPos + popup.getOffsetHeight() > viewportHeight) {
+            topPos -= popup.getOffsetHeight() + CURSOR_LINE_HEIGHT + POPUP_OFFSET;
+        }
+        if (leftPos < 0) {
+            leftPos = 0;
+        }
+        if (topPos < 0) {
+            topPos = 0;
+        }
+
+        if (leftPos != cursorPos[0] || topPos != cursorPos[1] + POPUP_OFFSET) {
+            popup.setPopupPosition(leftPos, topPos);
+        }
 		/*
 		int wx = Window.getClientWidth();
 		int wy = Window.getClientHeight();
@@ -268,6 +299,5 @@ public class SuggesterConnector extends AbstractExtensionConnector implements
 			y -= SuggestPopup.HEIGHT + 50;
 		}
 		*/
-		popup.setPopupPosition(x, y);
 	}
 }
