@@ -334,6 +334,15 @@ public class UiControllerDependencyInjector {
                 }
             } else {
                 switch (annotation.target()) {
+                    case CONTROLLER:
+                        Object componentTarget = findMethodTarget(frame, target);
+                        if (!(componentTarget instanceof Fragment)) {
+                            throw new UnsupportedOperationException(
+                                    "Unsupported @Subscribe target " + annotation.target() + ". It is not a Fragment.");
+                        }
+                        eventTarget = ((Fragment) componentTarget).getFrameOwner();
+                        break;
+
                     case COMPONENT:
                         // component event
                         eventTarget = findMethodTarget(frame, target);
@@ -566,9 +575,7 @@ public class UiControllerDependencyInjector {
         } else if (Component.class.isAssignableFrom(type)) {
             /// if legacy frame - inject controller
             Component component = frame.getComponent(name);
-            if (component instanceof Fragment
-                && ((Fragment) component).getFrameOwner() instanceof LegacyFrame) {
-
+            if (component instanceof Fragment) {
                 ScreenFragment frameOwner = ((Fragment) component).getFrameOwner();
                 if (type.isAssignableFrom(frameOwner.getClass())) {
                     return frameOwner;

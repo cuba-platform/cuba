@@ -105,8 +105,6 @@ public abstract class ComponentsHelper {
         FrameImplementation frameImpl = (FrameImplementation) window;
         if (elements.length == 1) {
             return frameImpl.getRegisteredComponent(id);
-                // todo timers should be find using getFacet()
-//                return window.getTimer(id);
         } else {
             Component innerComponent = frameImpl.getRegisteredComponent(elements[0]);
             if (innerComponent instanceof FieldGroup) {
