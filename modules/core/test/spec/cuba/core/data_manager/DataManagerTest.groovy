@@ -86,6 +86,18 @@ class DataManagerTest extends Specification {
         thrown(IllegalArgumentException)
     }
 
+    def "count query with specified sorting"() {
+        when:
+
+        def query = LoadContext.createQuery('select u from sec$User u').setSort(Sort.by("login"))
+
+        def count = dataManager.getCount(LoadContext.create(User).setQuery(query).setView('user.browse'))
+
+        then:
+
+        count > 0
+    }
+
     def "loadList query parameter without implicit conversion - legacy behavior"() {
         def group = dataManager.load(LoadContext.create(Group).setId(TestSupport.COMPANY_GROUP_ID))
 
