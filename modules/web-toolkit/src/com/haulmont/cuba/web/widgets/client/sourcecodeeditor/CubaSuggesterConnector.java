@@ -30,7 +30,7 @@ public class CubaSuggesterConnector extends SuggesterConnector {
     protected SuggestPopup createSuggestionPopup() {
         SuggestPopup sp = GWT.create(CubaSuggestPopup.class);
         sp.setOwner(widget);
-        updatePopupPosition(sp);
+        setPopupPosition(sp);
         sp.setSuggestionSelectedListener(this);
         sp.show();
         return sp;
