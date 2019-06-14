@@ -225,6 +225,11 @@ public class WebCalendar extends WebAbstractComponent<CubaCalendar>
     }
 
     @Override
+    public void setFirstDayOfWeek(Integer dayOfWeek) {
+        component.setFirstDayOfWeek(dayOfWeek);
+    }
+
+    @Override
     public void setWeeklyCaptionFormat(String dateFormatPattern) {
         component.setWeeklyCaptionFormat(dateFormatPattern);
     }
