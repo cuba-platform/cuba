@@ -28,6 +28,7 @@ import com.haulmont.cuba.core.global.Resources;
 import com.haulmont.cuba.core.global.Scripting;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.NoSuchScreenException;
+import com.haulmont.cuba.gui.Route;
 import com.haulmont.cuba.gui.components.AbstractFrame;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.screen.*;
@@ -52,6 +53,9 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.*;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -101,6 +105,8 @@ public class WindowConfig {
     protected ApplicationContext applicationContext;
     @Inject
     protected AnnotationScanMetadataReaderFactory metadataReaderFactory;
+    @Inject
+    protected UiControllerMetaProvider uiControllerMetaProvider;
 
     protected volatile boolean initialized;
 
@@ -253,7 +259,7 @@ public class WindowConfig {
 
                 WindowInfo windowInfo = new WindowInfo(definition.getId(), windowAttributesProvider,
                         definition.getControllerClass(), definition.getRouteDefinition());
-                registerScreen(definition.getId(), windowInfo);
+                registerScreen(definition, windowInfo);
             }
 
             projectScreens.clear();
@@ -340,6 +346,18 @@ public class WindowConfig {
         return routeDefinition;
     }
 
+    protected void registerScreen(UiControllerDefinition controllerDefinition, WindowInfo windowInfo) {
+        String controllerClassName = windowInfo.getControllerClassName();
+        if (controllerClassName != null) {
+            registerPrimaryEditor(windowInfo, controllerDefinition);
+            registerPrimaryLookup(windowInfo, controllerDefinition);
+        }
+
+        screens.put(controllerDefinition.getId(), windowInfo);
+
+        registerScreenRoute(controllerDefinition.getId(), windowInfo);
+    }
+
     protected void registerScreen(String id, WindowInfo windowInfo) {
         String controllerClassName = windowInfo.getControllerClassName();
         if (controllerClassName != null) {
@@ -406,6 +424,16 @@ public class WindowConfig {
     protected void registerPrimaryEditor(WindowInfo windowInfo, AnnotationMetadata annotationMetadata) {
         Map<String, Object> primaryEditorAnnotation =
                 annotationMetadata.getAnnotationAttributes(PrimaryEditorScreen.class.getName());
+        registerPrimaryEditor(windowInfo, primaryEditorAnnotation);
+    }
+
+    protected void registerPrimaryEditor(WindowInfo windowInfo, UiControllerDefinition controllerDefinition) {
+        Map<String, Object> primaryEditorAnnotation = controllerDefinition.getControllerMeta()
+                .getAnnotationAttributes(PrimaryEditorScreen.class.getName());
+        registerPrimaryEditor(windowInfo, primaryEditorAnnotation);
+    }
+
+    protected void registerPrimaryEditor(WindowInfo windowInfo, Map<String, Object> primaryEditorAnnotation) {
         if (primaryEditorAnnotation != null) {
             Class entityClass = (Class) primaryEditorAnnotation.get("value");
             if (entityClass != null) {
@@ -419,6 +447,16 @@ public class WindowConfig {
     protected void registerPrimaryLookup(WindowInfo windowInfo, AnnotationMetadata annotationMetadata) {
         Map<String, Object> primaryEditorAnnotation =
                 annotationMetadata.getAnnotationAttributes(PrimaryLookupScreen.class.getName());
+        registerPrimaryLookup(windowInfo, primaryEditorAnnotation);
+    }
+
+    protected void registerPrimaryLookup(WindowInfo windowInfo, UiControllerDefinition controllerDefinition) {
+        Map<String, Object> primaryEditorAnnotation = controllerDefinition.getControllerMeta()
+                .getAnnotationAttributes(PrimaryLookupScreen.class.getName());
+        registerPrimaryLookup(windowInfo, primaryEditorAnnotation);
+    }
+
+    protected void registerPrimaryLookup(WindowInfo windowInfo, Map<String, Object> primaryEditorAnnotation) {
         if (primaryEditorAnnotation != null) {
             Class entityClass = (Class) primaryEditorAnnotation.get("value");
             if (entityClass != null) {
@@ -439,6 +477,34 @@ public class WindowConfig {
         } catch (IOException e) {
             throw new RuntimeException("Unable to read resource " + resource, e);
         }
+    }
+
+    /**
+     * Loads hot-deployed {@link UiController} screens and registers
+     * {@link UiControllersConfiguration} containing new {@link UiControllerDefinition}.
+     *
+     * @param className the fully qualified name of the screen class to load
+     */
+    public void loadScreenClass(final String className) {
+        final Class screenClass = scripting.loadClass(className);
+        if (screenClass == null
+                || !FrameOwner.class.isAssignableFrom(screenClass)) {
+            log.warn("Failed to hot deploy screen '{}'. Unable to load screen class", className);
+            return;
+        }
+
+        //noinspection unchecked
+        UiControllerDefinition uiControllerDefinition = new UiControllerDefinition(uiControllerMetaProvider.get(screenClass));
+
+        UiControllersConfiguration controllersConfiguration = new UiControllersConfiguration();
+
+        controllersConfiguration.setApplicationContext(applicationContext);
+        controllersConfiguration.setMetadataReaderFactory(metadataReaderFactory);
+        controllersConfiguration.setExplicitDefinitions(Collections.singletonList(uiControllerDefinition));
+
+        configurations.add(controllersConfiguration);
+
+        reset();
     }
 
     /**
