@@ -47,7 +47,7 @@ import java.util.function.Supplier;
  *     }
  * }</pre>
  *
- * Callers can subscribe on success/fail of the returned operation:
+ * Callers can subscribe on success/fail of the operation:
  * <pre>{@code
  *     commit()
  *         .then(() -> {
