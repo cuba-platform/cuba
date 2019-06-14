@@ -18,6 +18,10 @@ package com.haulmont.cuba.gui.util;
 
 import java.util.function.Supplier;
 
+/**
+ * Failed result of the operation. All {@link #otherwise(Runnable)} callbacks are executed immediately,
+ * all {@link #then(Runnable)} callbacks ignored.
+ */
 public final class FailedOperationResult implements OperationResult {
 
     public static final OperationResult INSTANCE = new FailedOperationResult();

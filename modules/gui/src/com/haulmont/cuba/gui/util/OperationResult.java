@@ -19,7 +19,44 @@ package com.haulmont.cuba.gui.util;
 import java.util.function.Supplier;
 
 /**
- * Operation result object.
+ * Operation result object with status: UNKNOWN, SUCCESS or FAIL.
+ *
+ * This pattern is usually used in UI code if a method could resume invocation after some modal dialog:
+ * <pre>{@code
+ *     public OperationResult commit() {
+ *         if (!valid()) {
+ *             return OperationResult.fail(); // result is FAIL
+ *         }
+ *         // create undetermined result object
+ *         UnknownOperationResult result = new UnknownOperationResult();
+ *
+ *         dialogs.createOptionDialog()
+ *                     .withCaption("Question")
+ *                     .withMessage("Are you sure?")
+ *                     .withActions(
+ *                             new DialogAction(DialogAction.Type.YES).withHandler(event -> {
+ *                                     commitData(); // here we resume work after modal dialog
+ *                                     result.success(); // send SUCCESS status to callbacks of the result
+ *                                 }),
+ *                             new DialogAction(DialogAction.Type.NO)
+ *                                     .withHandler(event -> result.fail()) // result is FAIL
+ *                     )
+ *                     .show();
+ *
+ *         return result;
+ *     }
+ * }</pre>
+ *
+ * Callers can subscribe on success/fail of the operation:
+ * <pre>{@code
+ *     commit()
+ *         .then(() -> {
+ *             // on success
+ *          })
+ *         .otherwise(() -> {
+ *             // on fail
+ *          });
+ * }</pre>
  */
 public interface OperationResult {
     static OperationResult fail() {
@@ -60,6 +97,9 @@ public interface OperationResult {
      */
     OperationResult otherwise(Runnable runnable);
 
+    /**
+     * Status of the operation invocation.
+     */
     enum Status {
         UNKNOWN,
         SUCCESS,

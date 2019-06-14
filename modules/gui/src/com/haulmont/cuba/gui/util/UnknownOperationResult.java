@@ -21,6 +21,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
+/**
+ * Undetermined result of the operation that can receive SUCCESS or FAIL status.
+ *
+ * @see OperationResult
+ */
 @NotThreadSafe
 public class UnknownOperationResult implements OperationResult {
     private List<Runnable> thenListeners = new ArrayList<>(2);
@@ -75,6 +80,8 @@ public class UnknownOperationResult implements OperationResult {
     }
 
     public void fail() {
+        this.status = Status.FAIL;
+
         for (Runnable otherwiseListener : otherwiseListeners) {
             otherwiseListener.run();
         }
@@ -82,6 +89,8 @@ public class UnknownOperationResult implements OperationResult {
     }
 
     public void success() {
+        this.status = Status.SUCCESS;
+
         for (Runnable thenListener : thenListeners) {
             thenListener.run();
         }
