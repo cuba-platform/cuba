@@ -203,11 +203,11 @@ public class FragmentComponentLoader extends ContainerLoader<Fragment> {
 
         ScreenOptions options = parentContext.getOptions();
         parentContext.addInjectTask(new FragmentLoaderInjectTask(resultComponent, options, beanLocator));
+        parentContext.addInitTask(new FragmentLoaderInitTask(resultComponent, options, innerContext, beanLocator));
 
         if (innerContext != null) {
             parentContext.getInjectTasks().addAll(innerContext.getInjectTasks());
             parentContext.getInitTasks().addAll(innerContext.getInitTasks());
-            parentContext.addInitTask(new FragmentLoaderInitTask(resultComponent, options, innerContext, beanLocator));
             parentContext.getPostInitTasks().addAll(innerContext.getPostInitTasks());
         }
     }
