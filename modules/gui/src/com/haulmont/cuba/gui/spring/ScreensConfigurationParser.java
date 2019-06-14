@@ -17,7 +17,9 @@
 package com.haulmont.cuba.gui.spring;
 
 import com.google.common.base.Strings;
+import com.haulmont.cuba.gui.sys.RouteDefinition;
 import com.haulmont.cuba.gui.sys.UiControllerDefinition;
+import com.haulmont.cuba.gui.sys.UiControllerMeta;
 import com.haulmont.cuba.gui.sys.UiControllersConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,9 +33,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 public class ScreensConfigurationParser extends AbstractBeanDefinitionParser implements BeanDefinitionParser {
 
@@ -77,7 +77,27 @@ public class ScreensConfigurationParser extends AbstractBeanDefinitionParser imp
                         continue;
                     }
 
-                    definitions.add(new UiControllerDefinition(id, clazz));
+                    definitions.add(new UiControllerDefinition(new UiControllerMeta() {
+                        @Override
+                        public String getId() {
+                            return id;
+                        }
+
+                        @Override
+                        public String getControllerClass() {
+                            return clazz;
+                        }
+
+                        @Override
+                        public RouteDefinition getRouteDefinition() {
+                            return null;
+                        }
+
+                        @Override
+                        public Map<String, Object> getAnnotationAttributes(String annotationName) {
+                            return Collections.emptyMap();
+                        }
+                    }));
                 }
             }
         }
