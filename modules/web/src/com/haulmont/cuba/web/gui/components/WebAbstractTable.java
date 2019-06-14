@@ -2407,6 +2407,15 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
     }
 
     @Override
+    public void addGeneratedColumn(String columnId, int index, ColumnGenerator<? super E> generator) {
+        addGeneratedColumn(columnId, generator);
+        columnsOrder.add(index, columnsOrder.remove(columnsOrder.size() - 1));
+        component.setVisibleColumns(columnsOrder.stream()
+                .map(Table.Column::getId)
+                .toArray());
+    }
+
+    @Override
     public void addGeneratedColumn(String columnId, ColumnGenerator<? super E> generator,
                                    Class<? extends com.haulmont.cuba.gui.components.Component> componentClass) {
         // web ui doesn't make any improvements with componentClass known
