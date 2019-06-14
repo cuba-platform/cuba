@@ -97,4 +97,31 @@ $cuba-highlight-primary-action: false !default;
       @include valo-button-style($background-color: $v-focus-color, $unit-size: null);
     }
   }
+
+  .#{$primary-stylename}.link {
+    display: inline-flex;
+
+    &.v-has-height {
+      overflow-y: hidden;
+    }
+
+    &.v-has-width {
+      overflow-x: hidden;
+    }
+
+    &:before,
+    &:after {
+      display: none;
+    }
+  }
+
+  .#{$primary-stylename}.link .#{$primary-stylename}-caption {
+    white-space: normal;
+    overflow-wrap: normal;
+  }
+
+  .#{$primary-stylename}.link .#{$primary-stylename}-wrap {
+    margin-bottom: auto;
+    margin-top: auto;
+  }
 }
