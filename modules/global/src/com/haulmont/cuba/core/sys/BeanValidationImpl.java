@@ -42,7 +42,6 @@ import javax.validation.constraints.PastOrPresent;
 import java.time.Instant;
 import java.util.Date;
 import java.util.Locale;
-import java.util.concurrent.ConcurrentHashMap;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
@@ -61,8 +60,6 @@ public class BeanValidationImpl implements BeanValidation {
     protected UserSessionSource userSessionSource;
     @Inject
     protected EntityStates entityStates;
-
-    protected ConcurrentHashMap<Locale, ValidatorFactory> validatorFactoriesCache = new ConcurrentHashMap<>();
 
     @Override
     public Validator getValidator() {
@@ -108,16 +105,8 @@ public class BeanValidationImpl implements BeanValidation {
     }
 
     protected Validator getValidatorWithDefaultFactory(Locale locale) {
-        ValidatorFactory validatorFactoryFromCache = validatorFactoriesCache.get(locale);
-        if (validatorFactoryFromCache != null) {
-            return validatorFactoryFromCache.getValidator();
-        }
-
         HibernateValidatorConfiguration configuration = getValidatorFactoryConfiguration(locale);
         ValidatorFactory factory = configuration.buildValidatorFactory();
-
-        validatorFactoriesCache.put(locale, factory);
-
         return factory.getValidator();
     }
 

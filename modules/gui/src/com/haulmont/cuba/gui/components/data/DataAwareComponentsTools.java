@@ -38,9 +38,7 @@ import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 import javax.persistence.TemporalType;
-import javax.validation.constraints.Future;
-import javax.validation.constraints.Past;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.*;
 import java.time.*;
 import java.util.Map;
 import java.util.TimeZone;
@@ -111,15 +109,16 @@ public class DataAwareComponentsTools {
         }
     }
 
+    @SuppressWarnings("unchecked")
     public void setupDateRange(HasRange component, EntityValueSource valueSource) {
         MetaProperty metaProperty = valueSource.getMetaPropertyPath().getMetaProperty();
         Class javaType = metaProperty.getRange().asDatatype().getJavaClass();
         TemporalType temporalType = getTemporalType(metaProperty, javaType);
 
-        if (metaProperty.getAnnotations().get(Past.class.getName()) != null) {
+        if (metaProperty.getAnnotations().get(Past.class.getName()) != null
+                || metaProperty.getAnnotations().get(PastOrPresent.class.getName()) != null) {
             LocalDateTime dateTime = LocalDateTime.of(LocalDate.now(), LocalTime.MAX);
             ZonedDateTime zonedDateTime = ZonedDateTime.of(dateTime, ZoneId.systemDefault());
-            //noinspection unchecked
             component.setRangeEnd(dateTimeTransformations.transformFromZDT(zonedDateTime, javaType));
         } else if (metaProperty.getAnnotations().get(Future.class.getName()) != null) {
             LocalDateTime dateTime = LocalDateTime.of(LocalDate.now(), LocalTime.MIN);
@@ -129,7 +128,10 @@ public class DataAwareComponentsTools {
                 dateTime = dateTime.plusDays(1);
             }
             ZonedDateTime zonedDateTime = ZonedDateTime.of(dateTime, ZoneId.systemDefault());
-            //noinspection unchecked
+            component.setRangeStart(dateTimeTransformations.transformFromZDT(zonedDateTime, javaType));
+        } else if (metaProperty.getAnnotations().get(FutureOrPresent.class.getName()) != null) {
+            LocalDateTime dateTime = LocalDateTime.of(LocalDate.now(), LocalTime.MIN);
+            ZonedDateTime zonedDateTime = ZonedDateTime.of(dateTime, ZoneId.systemDefault());
             component.setRangeStart(dateTimeTransformations.transformFromZDT(zonedDateTime, javaType));
         }
     }

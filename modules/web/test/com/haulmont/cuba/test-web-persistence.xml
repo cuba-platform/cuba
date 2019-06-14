@@ -35,5 +35,7 @@
         <class>com.haulmont.cuba.web.testmodel.sales.Catalog</class>
 
         <class>com.haulmont.cuba.web.testmodel.compositecomponent.Comment</class>
+
+        <class>com.haulmont.cuba.web.testmodel.beanvalidation.DateValidationEntity</class>
     </persistence-unit>
 </persistence>

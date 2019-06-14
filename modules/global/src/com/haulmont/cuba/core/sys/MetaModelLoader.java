@@ -703,6 +703,16 @@ public class MetaModelLoader {
         if (future != null && isDefinedForDefaultValidationGroup(future)) {
             metaProperty.getAnnotations().put(Future.class.getName(), true);
         }
+
+        PastOrPresent pastOrPresent = annotatedElement.getAnnotation(PastOrPresent.class);
+        if (pastOrPresent != null && isDefinedForDefaultValidationGroup(pastOrPresent)) {
+            metaProperty.getAnnotations().put(PastOrPresent.class.getName(), true);
+        }
+
+        FutureOrPresent futureOrPresent = annotatedElement.getAnnotation(FutureOrPresent.class);
+        if (futureOrPresent != null && isDefinedForDefaultValidationGroup(futureOrPresent)) {
+            metaProperty.getAnnotations().put(FutureOrPresent.class.getName(), true);
+        }
     }
 
     protected boolean isDefinedForDefaultValidationGroup(Annotation annotation) {
