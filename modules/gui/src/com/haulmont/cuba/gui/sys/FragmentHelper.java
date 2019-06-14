@@ -232,11 +232,13 @@ public class FragmentHelper {
             fireEvent(frameOwner, ScreenFragment.AfterInitEvent.class,
                     new ScreenFragment.AfterInitEvent(frameOwner, options));
 
-            List<UiControllerProperty> properties = fragmentLoaderContext.getProperties();
-            if (!properties.isEmpty()) {
-                UiControllerPropertyInjector propertyInjector =
-                        beanLocator.getPrototype(UiControllerPropertyInjector.NAME, frameOwner, properties);
-                propertyInjector.inject();
+            if (fragmentLoaderContext != null) {
+                List<UiControllerProperty> properties = fragmentLoaderContext.getProperties();
+                if (!properties.isEmpty()) {
+                    UiControllerPropertyInjector propertyInjector =
+                            beanLocator.getPrototype(UiControllerPropertyInjector.NAME, frameOwner, properties);
+                    propertyInjector.inject();
+                }
             }
 
             FragmentContextImpl fragmentContext = (FragmentContextImpl) fragment.getContext();
