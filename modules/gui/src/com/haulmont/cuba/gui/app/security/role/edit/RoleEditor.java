@@ -19,7 +19,8 @@ package com.haulmont.cuba.gui.app.security.role.edit;
 
 import com.haulmont.cuba.core.global.EntityStates;
 import com.haulmont.cuba.gui.app.security.role.edit.tabs.ScreenPermissionsFrame;
-import com.haulmont.cuba.gui.components.AbstractEditor;
+import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.security.entity.Role;
 
 import javax.inject.Inject;
@@ -30,11 +31,51 @@ public class RoleEditor extends AbstractEditor<Role> {
     @Inject
     protected EntityStates entityStates;
 
+    @Inject
+    protected Datasource<Role> roleDs;
+
+    @Inject
+    protected Button windowCommitAndClose;
+
+    @Inject
+    protected Button windowCommit;
+
+    @Inject
+    protected TextField name;
+
+    @Inject
+    protected LookupField typeLookup;
+
+    @Inject
+    protected TextArea description;
+
+    @Inject
+    protected TextField locName;
+
+    @Inject
+    protected CheckBox defaultRole;
+
     @Override
     protected void postInit() {
-        setCaption(entityStates.isNew(getItem()) ?
+        setCaption(entityStates.isNew(getItem()) && !getItem().isPredefined() ?
                 getMessage("createCaption") : formatMessage("editCaption", getItem().getName()));
 
         screensTabFrame.loadPermissions();
+
+        if (getItem().isPredefined()) {
+            restrictAccessForPredefinedRole();
+        }
+    }
+
+    protected void restrictAccessForPredefinedRole() {
+        windowCommit.setVisible(false);
+        windowCommitAndClose.setVisible(false);
+        name.setEditable(false);
+        typeLookup.setEditable(false);
+        description.setEditable(false);
+        locName.setEditable(false);
+        defaultRole.setEditable(false);
+
+        showNotification(getMessage("predefinedRoleIsUnchangeable"));
     }
 }

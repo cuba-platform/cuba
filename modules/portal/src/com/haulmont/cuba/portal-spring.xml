@@ -109,6 +109,7 @@
                 <entry key="cuba_ExceptionReportService" value="com.haulmont.cuba.core.app.ExceptionReportService"/>
                 <entry key="cuba_BulkEditorDataService" value="com.haulmont.cuba.core.app.BulkEditorDataService"/>
                 <entry key="cuba_AttributeOptionsLoaderService" value="com.haulmont.cuba.core.app.dynamicattributes.AttributeOptionsLoaderService"/>
+                <entry key="cuba_RolesService" value="com.haulmont.cuba.security.role.RolesService"/>
             </map>
         </property>
     </bean>

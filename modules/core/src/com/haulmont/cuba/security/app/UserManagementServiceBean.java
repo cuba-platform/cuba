@@ -23,7 +23,9 @@ import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.app.EmailerAPI;
 import com.haulmont.cuba.core.app.ServerConfig;
 import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.security.app.role.RolesRepository;
 import com.haulmont.cuba.security.entity.*;
+import com.haulmont.cuba.security.role.RoleDef;
 import groovy.text.SimpleTemplateEngine;
 import groovy.text.Template;
 import org.apache.commons.io.FilenameUtils;
@@ -97,6 +99,9 @@ public class UserManagementServiceBean implements UserManagementService {
     @Inject
     protected GlobalConfig globalConfig;
 
+    @Inject
+    protected RolesRepository rolesRepository;
+
     protected void checkUpdatePermission(Class entityClass) {
         checkPermission(entityClass, EntityOp.UPDATE);
     }
@@ -136,6 +141,46 @@ public class UserManagementServiceBean implements UserManagementService {
     }
 
     @Override
+    public Role copyRole(String predefinedRoleName) {
+        checkNotNullArgument(predefinedRoleName, "Null access role id");
+        checkUpdatePermission(Role.class);
+
+        if (!rolesRepository.isDatabaseModeAvailable()) {
+            throw new IllegalStateException("Unable to copy predefined role. Database mode for roles is unavailable.");
+        }
+
+        Role clone;
+
+        RoleDef predefinedRole = rolesRepository.getRoleDefByName(predefinedRoleName);
+        if (predefinedRole == null) {
+            throw new IllegalStateException("Unable to find specified role with name: " + predefinedRoleName);
+        }
+
+        Transaction tx = persistence.getTransaction();
+        try {
+            EntityManager em = persistence.getEntityManager();
+
+            clone = rolesRepository.getRoleWithPermissions(predefinedRole);
+
+            clone.setName(generateName(em, predefinedRole.getName()));
+            clone.setDefaultRole(false);
+            clone.setPredefined(false);
+
+            em.persist(clone);
+
+            for (Permission permission : clone.getPermissions()) {
+                em.persist(permission);
+            }
+
+            tx.commit();
+        } finally {
+            tx.end();
+        }
+
+        return clone;
+    }
+
+    @Override
     public Role copyRole(UUID roleId) {
         checkNotNullArgument(roleId, "Null access role id");
         checkUpdatePermission(Role.class);
@@ -145,15 +190,11 @@ public class UserManagementServiceBean implements UserManagementService {
         try (Transaction tx = persistence.createTransaction()) {
             EntityManager em = persistence.getEntityManager();
 
-            Query roleNamesQuery = em.createQuery("select g.name from sec$Role g");
-            @SuppressWarnings("unchecked")
-            Set<String> roleNames = new HashSet<>(roleNamesQuery.getResultList());
-
             Role role = em.find(Role.class, roleId, ROLE_COPY_VIEW);
             if (role == null)
                 throw new IllegalStateException("Unable to find specified role with id: " + roleId);
 
-            clone = cloneRole(role, roleNames, em);
+            clone = cloneRole(role, generateName(em, role.getName()), em);
             clone.setDefaultRole(false);
 
             tx.commit();
@@ -626,10 +667,17 @@ public class UserManagementServiceBean implements UserManagementService {
         return modifiedUsers;
     }
 
-    protected Role cloneRole(Role role, Set<String> roleNames, EntityManager em) {
+    protected String generateName(EntityManager em, String roleName) {
+        Query roleNamesQuery = em.createQuery("select g.name from sec$Role g");
+        @SuppressWarnings("unchecked")
+        Set<String> roleNames = new HashSet<>(roleNamesQuery.getResultList());
+
+        return generateName(roleName, roleNames);
+    }
+
+    protected Role cloneRole(Role role, String newRoleName, EntityManager em) {
         Role roleClone = metadata.create(Role.class);
 
-        String newRoleName = generateName(role.getName(), roleNames);
         roleClone.setName(newRoleName);
         roleClone.setType(role.getType());
         roleClone.setDefaultRole(role.getDefaultRole());

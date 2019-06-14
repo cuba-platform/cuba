@@ -33,6 +33,7 @@ import com.haulmont.cuba.security.entity.PermissionType;
 import com.haulmont.cuba.security.entity.Role;
 
 import javax.inject.Inject;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
@@ -126,7 +127,7 @@ public class SpecificPermissionsFrame extends AbstractFrame {
             }
         });
 
-        specificPermissionsDs.refresh();
+        specificPermissionsDs.refresh(getParamsForDatasource());
         specificPermissionsTreeDs.setPermissionDs(specificPermissionsDs);
         specificPermissionsTreeDs.refresh();
         specificPermissionsTree.expandAll();
@@ -162,10 +163,10 @@ public class SpecificPermissionsFrame extends AbstractFrame {
     }
 
     protected void applyPermissions(boolean editable) {
-        if (!editable) {
-            allowCheckBox.setEditable(false);
-            disallowCheckBox.setEditable(false);
-        }
+        editable = editable && !roleDs.getItem().isPredefined();
+
+        allowCheckBox.setEditable(editable);
+        disallowCheckBox.setEditable(editable);
     }
 
     protected void markItemPermission(PermissionVariant permissionVariant) {
@@ -194,5 +195,14 @@ public class SpecificPermissionsFrame extends AbstractFrame {
                 specificPermissionsTreeDs.updateItem(target);
             }
         }
+    }
+
+    protected Map<String, Object> getParamsForDatasource() {
+        Map<String, Object> params = new HashMap<>();
+
+        params.put("role", roleDs.getItem());
+        params.put("permissionType", PermissionType.SPECIFIC);
+
+        return params;
     }
 }

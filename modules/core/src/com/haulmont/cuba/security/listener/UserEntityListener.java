@@ -24,6 +24,7 @@ import com.haulmont.cuba.core.global.PasswordEncryption;
 import com.haulmont.cuba.core.listener.AfterDeleteEntityListener;
 import com.haulmont.cuba.core.listener.BeforeInsertEntityListener;
 import com.haulmont.cuba.core.listener.BeforeUpdateEntityListener;
+import com.haulmont.cuba.security.app.role.RolesRepository;
 import com.haulmont.cuba.security.entity.Role;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.entity.UserRole;
@@ -34,7 +35,7 @@ import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import java.sql.Connection;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Map;
 
 @Component("cuba_UserEntityListener")
 public class UserEntityListener implements BeforeInsertEntityListener<User>, BeforeUpdateEntityListener<User>,
@@ -52,6 +53,9 @@ public class UserEntityListener implements BeforeInsertEntityListener<User>, Bef
     @Inject
     protected PasswordEncryption passwordEncryption;
 
+    @Inject
+    protected RolesRepository rolesRepository;
+
     @Override
     public void onBeforeInsert(User entity, EntityManager entityManager) {
         addDefaultRoles(entity, entityManager);
@@ -63,18 +67,27 @@ public class UserEntityListener implements BeforeInsertEntityListener<User>, Bef
         if (user.isDisabledDefaultRoles())
             return;
 
-        List<Role> defaultRoles = entityManager.createQuery(
-                "select r from sec$Role r where r.defaultRole = true", Role.class)
-                .getResultList();
+        Map<String, Role> defaultRoles = rolesRepository.getDefaultRoles(entityManager);
 
         if (user.getUserRoles() == null)
             user.setUserRoles(new ArrayList<>());
 
-        for (Role defaultRole : defaultRoles) {
-            if (user.getUserRoles().stream().noneMatch(userRole -> userRole.getRole().equals(defaultRole))) {
+        for (Map.Entry<String, Role> entry : defaultRoles.entrySet()) {
+            if (entry.getValue() != null
+                    && user.getUserRoles().stream().noneMatch(userRole -> entry.getValue().equals(userRole.getRole()))) {
                 UserRole userRole = metadata.create(UserRole.class);
                 userRole.setUser(user);
-                userRole.setRole(defaultRole);
+                userRole.setRole(entry.getValue());
+
+                entityManager.persist(userRole);
+                user.getUserRoles().add(userRole);
+            }
+
+            if (entry.getValue() == null
+                    && user.getUserRoles().stream().noneMatch(userRole -> entry.getKey().equals(userRole.getRoleName()))) {
+                UserRole userRole = metadata.create(UserRole.class);
+                userRole.setUser(user);
+                userRole.setRoleName(entry.getKey());
 
                 entityManager.persist(userRole);
                 user.getUserRoles().add(userRole);

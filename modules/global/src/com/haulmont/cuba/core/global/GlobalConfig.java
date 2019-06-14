@@ -28,6 +28,8 @@ import com.haulmont.cuba.core.config.defaults.DefaultString;
 import com.haulmont.cuba.core.config.type.*;
 import com.haulmont.cuba.core.sys.AvailableLocalesFactory;
 import com.haulmont.cuba.security.entity.RememberMeToken;
+import com.haulmont.cuba.security.role.RolesStorageMode;
+import com.haulmont.cuba.security.role.RolesStorageModeFactory;
 import org.apache.commons.pool2.impl.GenericKeyedObjectPoolConfig;
 
 import java.util.List;
@@ -266,4 +268,17 @@ public interface GlobalConfig extends Config {
     @Property("cuba.rememberMeExpirationTimeoutSec")
     @DefaultInt(30 * 24 * 60 * 60)
     int getRememberMeExpirationTimeoutSec();
+
+    /**
+     * Defines the source from which roles are used in the application. There are 3 possible values:
+     * DATABASE - only roles from a database (sec$Role) will be used;
+     * SOURCE_CODE - only roles defined in the source code will be used;
+     * MIXED - mixed mode, both sources will be used. If there are roles with equal names in the database and in
+     * the source code, role from database will be used.
+     * Application uses mixed mode by default.
+     */
+    @Property("cuba.rolesStorageMode")
+    @Default("MIXED")
+    @Factory(factory = RolesStorageModeFactory.class)
+    RolesStorageMode getRolesStorageMode();
 }

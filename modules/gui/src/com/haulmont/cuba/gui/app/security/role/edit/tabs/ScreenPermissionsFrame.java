@@ -34,9 +34,7 @@ import com.haulmont.cuba.security.entity.PermissionType;
 import com.haulmont.cuba.security.entity.Role;
 
 import javax.inject.Inject;
-import java.util.Map;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 public class ScreenPermissionsFrame extends AbstractFrame {
 
@@ -154,6 +152,11 @@ public class ScreenPermissionsFrame extends AbstractFrame {
 
         boolean hasPermissionsToModifyPermission = isCreatePermitted && isDeletePermitted;
 
+        Role role = (Role) params.get("ITEM");
+        if (role != null && role.isPredefined()) {
+            hasPermissionsToModifyPermission = false;
+        }
+
         allowCheckBox.setEditable(hasPermissionsToModifyPermission);
         disallowCheckBox.setEditable(hasPermissionsToModifyPermission);
 
@@ -186,7 +189,7 @@ public class ScreenPermissionsFrame extends AbstractFrame {
     }
 
     public void loadPermissions() {
-        screenPermissionsDs.refresh();
+        screenPermissionsDs.refresh(getParamsForDatasource());
 
         screenPermissionsTreeDs.setPermissionDs(screenPermissionsDs);
         screenPermissionsTreeDs.refresh();
@@ -196,6 +199,8 @@ public class ScreenPermissionsFrame extends AbstractFrame {
     }
 
     public void setEditable(boolean editable) {
+        editable = editable && !roleDs.getItem().isPredefined();
+
         allowCheckBox.setEditable(editable);
         disallowCheckBox.setEditable(editable);
     }
@@ -228,5 +233,14 @@ public class ScreenPermissionsFrame extends AbstractFrame {
 
     public void applyFilter() {
         screenPermissionsTreeDs.refresh(ParamsMap.of("filtering", true));
+    }
+
+    protected Map<String, Object> getParamsForDatasource() {
+        Map<String, Object> params = new HashMap<>();
+
+        params.put("role", roleDs.getItem());
+        params.put("permissionType", PermissionType.SCREEN);
+
+        return params;
     }
 }

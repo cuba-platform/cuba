@@ -274,7 +274,7 @@ public class AttributePermissionsFrame extends AbstractFrame {
                 new EntityNameFilter<>(
                         metadata, assignedOnlyCheckBox, systemLevelCheckBox, entityFilter));
 
-        propertyPermissionsDs.refresh();
+        propertyPermissionsDs.refresh(getParamsForDatasource());
 
         // client specific code
         companion.initPermissionColoredColumn(propertyPermissionsTable);
@@ -379,6 +379,9 @@ public class AttributePermissionsFrame extends AbstractFrame {
     }
 
     protected void applyPermissions(boolean editable) {
+        boolean enabled = editable;
+        editable = editable && !roleDs.getItem().isPredefined();
+
         allHideCheck.setEditable(editable);
         allModifyCheck.setEditable(editable);
         allReadOnlyCheck.setEditable(editable);
@@ -386,16 +389,16 @@ public class AttributePermissionsFrame extends AbstractFrame {
         MetaClass metaClass = attributeTargetsDs.getItem().getEntityMetaClass();
         for (AttributePermissionControl attributePermissionControl : permissionControls) {
             attributePermissionControl.getHideCheckBox().setEditable(editable);
-            attributePermissionControl.getHideCheckBox().setEnabled(editable);
+            attributePermissionControl.getHideCheckBox().setEnabled(enabled);
 
             attributePermissionControl.getReadOnlyCheckBox().setEditable(editable);
-            attributePermissionControl.getReadOnlyCheckBox().setEnabled(editable);
+            attributePermissionControl.getReadOnlyCheckBox().setEnabled(enabled);
 
             String attributeName = attributePermissionControl.getAttributeName();
             if (userSession.isEntityAttrPermitted(metaClass, attributeName, EntityAttrAccess.MODIFY)) {
                 boolean canUpdateEntity = userSession.isEntityOpPermitted(metaClass, EntityOp.UPDATE);
                 attributePermissionControl.getModifyCheckBox().setEditable(canUpdateEntity && editable);
-                attributePermissionControl.getModifyCheckBox().setEnabled(canUpdateEntity && editable);
+                attributePermissionControl.getModifyCheckBox().setEnabled(canUpdateEntity && enabled);
             } else {
                 attributePermissionControl.getModifyCheckBox().setEditable(false);
                 attributePermissionControl.getModifyCheckBox().setEnabled(false);
@@ -526,5 +529,14 @@ public class AttributePermissionsFrame extends AbstractFrame {
         allModifyCheck.setAlignment(Alignment.MIDDLE_CENTER);
         allReadOnlyCheck.setAlignment(Alignment.MIDDLE_CENTER);
         allHideCheck.setAlignment(Alignment.MIDDLE_CENTER);
+    }
+
+    protected Map<String, Object> getParamsForDatasource() {
+        Map<String, Object> params = new HashMap<>();
+
+        params.put("role", roleDs.getItem());
+        params.put("permissionType", PermissionType.ENTITY_ATTR);
+
+        return params;
     }
 }

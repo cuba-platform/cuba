@@ -26,18 +26,21 @@ import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.WindowParams;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.ItemTrackingAction;
+import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.export.ByteArrayDataProvider;
 import com.haulmont.cuba.gui.export.ExportDisplay;
 import com.haulmont.cuba.gui.export.ExportFormat;
 import com.haulmont.cuba.gui.upload.FileUploadingAPI;
 import com.haulmont.cuba.security.app.UserManagementService;
+import com.haulmont.cuba.security.role.RolesService;
 import com.haulmont.cuba.security.entity.*;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -82,19 +85,49 @@ public class RoleBrowser extends AbstractLookup {
     @Inject
     protected PopupButton exportBtn;
 
+    @Inject
+    protected Button createBtn;
+
+    @Inject
+    protected Button removeBtn;
+
+    @Inject
+    protected Button copyBtn;
+
+    @Inject
+    protected RolesService rolesService;
+
+    @Named("rolesTable.remove")
+    protected RemoveAction removeRolesAction;
+
     @Override
     public void init(Map<String, Object> params) {
         super.init(params);
 
+        removeRolesAction.setBeforeActionPerformedHandler(() -> {
+            Set<Role> selectedRoles = rolesTable.getSelected();
+            for (Role role : selectedRoles) {
+                if (role.isPredefined()) {
+                    showNotification(getMessage("predefinedRoleDeletion"));
+                    return false;
+                }
+            }
+            return true;
+        });
+
         Action copyRoles = new ItemTrackingAction("copy")
                 .withCaption(getMessage("actions.Copy"))
                 .withHandler(event -> {
-                    userManagementService.copyRole(rolesTable.getSingleSelected().getId());
+                    if (rolesTable.getSingleSelected() != null && rolesTable.getSingleSelected().isPredefined()) {
+                        userManagementService.copyRole(rolesTable.getSingleSelected().getName());
+                    } else {
+                        userManagementService.copyRole(rolesTable.getSingleSelected().getId());
+                    }
                     rolesDs.refresh();
                 });
 
         boolean hasPermissionsToCreateRole = security.isEntityOpPermitted(Role.class, EntityOp.CREATE);
-        copyRoles.setEnabled(hasPermissionsToCreateRole);
+        copyRoles.setEnabled(hasPermissionsToCreateRole && rolesService.isDatabaseModeAvailable());
 
         rolesTable.addAction(copyRoles);
 
@@ -143,6 +176,14 @@ public class RoleBrowser extends AbstractLookup {
         );
         importRolesUpload.setCaption(null);
         importRolesUpload.setUploadButtonCaption(null);
+
+        if (!rolesService.isDatabaseModeAvailable()) {
+            createBtn.setVisible(false);
+            removeBtn.setVisible(false);
+            copyBtn.setVisible(false);
+            exportBtn.setVisible(false);
+            importRolesUpload.setVisible(false);
+        }
     }
 
     protected void importRoles() {
@@ -225,7 +266,8 @@ public class RoleBrowser extends AbstractLookup {
 
             boolean roleExist = false;
             for (UserRole userRole : userRoles) {
-                if (role.equals(userRole.getRole())) {
+                if ((!role.isPredefined() && role.equals(userRole.getRole())
+                        || (role.isPredefined() && role.getName().equals(userRole.getRoleName())))) {
                     roleExist = true;
                     break;
                 }
@@ -233,7 +275,11 @@ public class RoleBrowser extends AbstractLookup {
             if (!roleExist) {
                 UserRole ur = metadata.create(UserRole.class);
                 ur.setUser(user);
-                ur.setRole(role);
+                if (role.isPredefined()) {
+                    ur.setRoleName(role.getName());
+                } else {
+                    ur.setRole(role);
+                }
                 toCommit.add(ur);
             }
         }

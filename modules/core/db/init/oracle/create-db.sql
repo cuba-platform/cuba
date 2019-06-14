@@ -652,6 +652,7 @@ create table SEC_USER_ROLE (
     DELETED_BY varchar2(50 char),
     USER_ID varchar2(32),
     ROLE_ID varchar2(32),
+    ROLE_NAME varchar2(50),
     primary key(ID)
 )^
 create unique index IDX_SEC_USER_ROLE_UNIQ_ROLE on SEC_USER_ROLE(USER_ID, ROLE_ID, DELETE_TS)^
@@ -856,6 +857,12 @@ values ('c838be0a96d04ef4a7c0dff348347f93', current_timestamp, 0, '608859871b614
 
 insert into SEC_USER_ROLE (ID, CREATE_TS, VERSION, USER_ID, ROLE_ID)
 values ('f01fb532c2f0dc18b86c450cf8a8d8c5', current_timestamp, 0, 'a405db59e6744f638afe269dda788fe8', 'cd541dd4eeb7cd5b847ed32236552fa9')^
+
+insert into SEC_USER_ROLE (ID, CREATE_TS, VERSION, USER_ID, ROLE_NAME)
+values ('cbdddc701ee20fe4b63a2d92ef0b15a2', current_timestamp, 0, '608859871b61424794c7dff348347f93', 'Administrators')^
+
+insert into SEC_USER_ROLE (ID, CREATE_TS, VERSION, USER_ID, ROLE_NAME)
+values ('a848101b7d8a508a0e9cb53af9fad211', current_timestamp, 0, 'a405db59e6744f638afe269dda788fe8', 'Anonymous')^
 
 insert into SEC_FILTER (ID,CREATE_TS,CREATED_BY,VERSION,COMPONENT,NAME,XML,USER_ID,GLOBAL_DEFAULT)
 values (newid(), current_timestamp, 'admin', 0, '[sec$User.browse].genericFilter', 'Search by role',

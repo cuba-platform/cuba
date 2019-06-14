@@ -35,6 +35,7 @@ import com.haulmont.cuba.security.entity.Role;
 import com.haulmont.cuba.security.global.UserSession;
 
 import javax.inject.Inject;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -195,7 +196,7 @@ public class EntityPermissionsFrame extends AbstractFrame {
 
         initCheckBoxesControls();
 
-        entityPermissionsDs.refresh();
+        entityPermissionsDs.refresh(getParamsForDatasource());
 
         companion.initPermissionColoredColumns(entityPermissionsTable);
 
@@ -288,6 +289,9 @@ public class EntityPermissionsFrame extends AbstractFrame {
     }
 
     protected void applyPermissions(boolean editable) {
+
+        editable = editable && !roleDs.getItem().isPredefined();
+
         allAllowCheck.setEditable(editable);
         allDenyCheck.setEditable(editable);
         for(EntityOperationControl entityOperationControl : operationControls) {
@@ -554,5 +558,14 @@ public class EntityPermissionsFrame extends AbstractFrame {
                     entityPermissionsDs.removeItem(permission);
             }
         }
+    }
+
+    protected Map<String, Object> getParamsForDatasource() {
+        Map<String, Object> params = new HashMap<>();
+
+        params.put("role", roleDs.getItem());
+        params.put("permissionType", PermissionType.ENTITY_OP);
+
+        return params;
     }
 }

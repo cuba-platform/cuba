@@ -38,6 +38,11 @@ public class TestUserManagementService implements UserManagementService {
     }
 
     @Override
+    public Role copyRole(String predefinedRoleName) {
+        return null;
+    }
+
+    @Override
     public Integer moveUsersToGroup(List<UUID> userIds, @Nullable UUID targetAccessGroupId) {
         return 0;
     }

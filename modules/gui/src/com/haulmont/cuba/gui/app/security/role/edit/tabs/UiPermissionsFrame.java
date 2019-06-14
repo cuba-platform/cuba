@@ -151,7 +151,7 @@ public class UiPermissionsFrame extends AbstractFrame {
 
         uiPermissionTargetsDs.setPermissionDs(uiPermissionsDs);
 
-        uiPermissionsDs.refresh();
+        uiPermissionsDs.refresh(getParamsForDatasource());
         uiPermissionTargetsDs.refresh();
 
         boolean isCreatePermitted = security.isEntityOpPermitted(Permission.class, EntityOp.CREATE);
@@ -172,6 +172,9 @@ public class UiPermissionsFrame extends AbstractFrame {
         removeAction.setCaption(getMessage("actions.RemoveSelected"));
 
         removePermissionBtn.setAction(removeAction);
+        if (roleDs.getItem().isPredefined()) {
+            removePermissionBtn.setVisible(false);
+        }
         uiPermissionsTable.addAction(removeAction);
 
         editPane.setEnabled(security.isEntityOpPermitted(Role.class, EntityOp.UPDATE));
@@ -232,6 +235,8 @@ public class UiPermissionsFrame extends AbstractFrame {
     }
 
     protected void applyPermissions(boolean editable) {
+        editable = editable && !roleDs.getItem().isPredefined();
+
         if (!editable) {
             hideCheckBox.setEditable(false);
             showCheckBox.setEditable(false);
@@ -319,6 +324,15 @@ public class UiPermissionsFrame extends AbstractFrame {
 
     public void expandTree() {
         componentsTree.expandTree();
+    }
+
+    protected Map<String, Object> getParamsForDatasource() {
+        Map<String, Object> params = new HashMap<>();
+
+        params.put("role", roleDs.getItem());
+        params.put("permissionType", PermissionType.UI);
+
+        return params;
     }
 
     /**

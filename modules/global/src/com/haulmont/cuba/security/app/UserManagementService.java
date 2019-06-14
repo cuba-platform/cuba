@@ -52,6 +52,14 @@ public interface UserManagementService {
     Role copyRole(UUID roleId);
 
     /**
+     * Copy predefined user role with all its permissions.
+     *
+     * @param predefinedRoleName Source access role name
+     * @return Cloned role
+     */
+    Role copyRole(String predefinedRoleName);
+
+    /**
      * Move specified users to a new access group.
      *
      * @param userIds             Ids for moved users

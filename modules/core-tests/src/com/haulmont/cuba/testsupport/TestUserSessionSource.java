@@ -18,7 +18,6 @@
 package com.haulmont.cuba.testsupport;
 
 import com.haulmont.cuba.core.sys.AbstractUserSessionSource;
-import com.haulmont.cuba.security.entity.Role;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.NoUserSessionException;
 import com.haulmont.cuba.security.global.UserSession;
@@ -56,7 +55,7 @@ public class TestUserSessionSource extends AbstractUserSessionSource {
             user.setName("Test Administrator");
             user.setPassword(DigestUtils.md5Hex("test_admin"));
 
-            session = new UserSession(UUID.randomUUID(), user, Collections.<Role>emptyList(), Locale.forLanguageTag("en"), false);
+            session = new UserSession(UUID.randomUUID(), user, Collections.emptyList(), Locale.forLanguageTag("en"), false);
         }
         return session;
     }

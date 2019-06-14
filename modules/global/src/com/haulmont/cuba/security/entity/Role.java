@@ -24,10 +24,7 @@ import com.haulmont.cuba.core.entity.annotation.OnDelete;
 import com.haulmont.cuba.core.entity.annotation.TrackEditScreenHistory;
 import com.haulmont.cuba.core.global.DeletePolicy;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.Set;
 
 /**
@@ -60,6 +57,9 @@ public class Role extends StandardEntity {
     @OnDelete(DeletePolicy.CASCADE)
     @Composition
     private Set<Permission> permissions;
+
+    @Transient
+    private boolean isPredefined = false;
 
     public String getName() {
         return name;
@@ -107,5 +107,13 @@ public class Role extends StandardEntity {
 
     public void setDefaultRole(Boolean defaultRole) {
         this.defaultRole = defaultRole;
+    }
+
+    public boolean isPredefined() {
+        return isPredefined;
+    }
+
+    public void setPredefined(boolean predefined) {
+        isPredefined = predefined;
     }
 }

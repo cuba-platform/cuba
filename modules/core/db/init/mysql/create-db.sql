@@ -275,6 +275,7 @@ create table SEC_USER_ROLE (
     --
     USER_ID varchar(32),
     ROLE_ID varchar(32),
+    ROLE_NAME varchar(50),
     --
     primary key (ID),
     constraint SEC_USER_ROLE_PROFILE foreign key (USER_ID) references SEC_USER(ID),
@@ -985,6 +986,12 @@ values ('c838be0a96d04ef4a7c0dff348347f93', current_timestamp, 0, '608859871b614
 
 insert into SEC_USER_ROLE (ID, CREATE_TS, VERSION, USER_ID, ROLE_ID)
 values ('f01fb532c2f0dc18b86c450cf8a8d8c5', current_timestamp, 0, 'a405db59e6744f638afe269dda788fe8', 'cd541dd4eeb7cd5b847ed32236552fa9')^
+
+insert into SEC_USER_ROLE (ID, CREATE_TS, VERSION, USER_ID, ROLE_NAME)
+values ('cbdddc701ee20fe4b63a2d92ef0b15a2', current_timestamp, 0, '608859871b61424794c7dff348347f93', 'Administrators')^
+
+insert into SEC_USER_ROLE (ID, CREATE_TS, VERSION, USER_ID, ROLE_NAME)
+values ('a848101b7d8a508a0e9cb53af9fad211', current_timestamp, 0, 'a405db59e6744f638afe269dda788fe8', 'Anonymous')^
 
 insert into SEC_FILTER (ID,CREATE_TS,CREATED_BY,VERSION,UPDATE_TS,UPDATED_BY,DELETE_TS,DELETED_BY,COMPONENT,NAME,XML,USER_ID,GLOBAL_DEFAULT)
 values ('b61d18cbe79a46f3b16deaf4aebb10dd',{ts '2010-03-01 11:14:06.830'},'admin',2,{ts '2010-03-01 11:52:53.170'},'admin',null,null,'[sec$User.browse].genericFilter','Search by role',

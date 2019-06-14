@@ -23,10 +23,7 @@
         focusComponent="rolesTable">
 
     <dsContext>
-        <collectionDatasource id="rolesDs" class="com.haulmont.cuba.security.entity.Role" view="_local">
-            <query>
-                select r from sec$Role r order by r.name
-            </query>
+        <collectionDatasource id="rolesDs" class="com.haulmont.cuba.security.entity.Role" view="_local" datasourceClass="com.haulmont.cuba.gui.app.security.ds.RolesCollectionDatasource">
         </collectionDatasource>
     </dsContext>
 
@@ -47,12 +44,12 @@
                 <action id="refresh"/>
             </actions>
             <buttonsPanel alwaysVisible="true">
-                <button action="rolesTable.create"/>
+                <button id="createBtn" action="rolesTable.create"/>
                 <button action="rolesTable.edit"/>
-                <button action="rolesTable.remove"/>
+                <button id="removeBtn" action="rolesTable.remove"/>
                 <button action="rolesTable.refresh"/>
                 <button action="rolesTable.excel"/>
-                <button action="rolesTable.copy" icon="icons/copy.png"/>
+                <button id="copyBtn" action="rolesTable.copy" icon="icons/copy.png"/>
                 <button action="rolesTable.assignToUsers" icon="icons/user-group-ok.png"/>
                 <popupButton id="exportBtn" icon="icons/download.png">
                     <actions>

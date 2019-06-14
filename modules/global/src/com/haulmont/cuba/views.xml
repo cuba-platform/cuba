@@ -47,6 +47,7 @@
             <property name="locName"/>
             <property name="defaultRole"/>
         </property>
+        <property name="roleName"/>
     </view>
 
     <view class="com.haulmont.cuba.security.entity.UserRole" name="tmp.user.edit">

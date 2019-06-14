@@ -19,6 +19,10 @@ package com.haulmont.cuba.security.global;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.sys.UserInvocationContext;
 import com.haulmont.cuba.security.entity.*;
+import com.haulmont.cuba.security.role.BasicUserRoleDef;
+import com.haulmont.cuba.security.role.Permissions;
+import com.haulmont.cuba.security.role.PermissionsUtils;
+import com.haulmont.cuba.security.role.RoleDef;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
@@ -26,6 +30,8 @@ import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -51,7 +57,8 @@ public class UserSession implements Serializable {
     protected String clientInfo;
     protected boolean system;
 
-    protected Map<String, Integer>[] permissions;
+    protected RoleDef effectiveRole;
+//    protected Map<String, Integer>[] permissions;
     protected Map<String, List<ConstraintData>> constraints;
 
     protected Map<String, Serializable> attributes;
@@ -69,26 +76,23 @@ public class UserSession implements Serializable {
     /**
      * INTERNAL
      */
-    public UserSession(UUID id, User user, Collection<Role> roles, Locale locale, boolean system) {
+    public UserSession(UUID id, User user, Collection<RoleDef> roles, Locale locale, boolean system) {
         this.id = id;
         this.user = user;
         this.system = system;
 
-        for (Role role : roles) {
+        for (RoleDef role : roles) {
             this.roles.add(role.getName());
-            if (role.getType() != null)
-                roleTypes.add(role.getType());
+            if (role.getRoleType() != null)
+                roleTypes.add(role.getRoleType());
         }
 
         this.locale = locale;
         if (user.getTimeZone() != null)
             this.timeZone = TimeZone.getTimeZone(user.getTimeZone());
 
-        //noinspection unchecked
-        permissions = new Map[PermissionType.values().length];
-        for (int i = 0; i < permissions.length; i++) {
-            permissions[i] = new HashMap<>();
-        }
+        effectiveRole = new BasicUserRoleDef();
+        roleTypes.add(effectiveRole.getRoleType());
 
         constraints = new HashMap<>();
         attributes = new ConcurrentHashMap<>();
@@ -98,7 +102,7 @@ public class UserSession implements Serializable {
     /**
      * INTERNAL
      */
-    public UserSession(UserSession src, User user, Collection<Role> roles, Locale locale) {
+    public UserSession(UserSession src, User user, Collection<RoleDef> roles, Locale locale) {
         this(src.id, user, roles, locale, src.system);
         this.user = src.user;
         this.substitutedUser = this.user.equals(user) ? null : user;
@@ -115,7 +119,7 @@ public class UserSession implements Serializable {
         roles = src.roles;
         locale = src.locale;
         timeZone = src.timeZone;
-        permissions = src.permissions;
+        effectiveRole = src.effectiveRole;
         constraints = src.constraints;
         attributes = src.attributes;
         roleTypes = src.roleTypes;
@@ -255,44 +259,79 @@ public class UserSession implements Serializable {
         this.clientInfo = clientInfo;
     }
 
-    /**
-     * INTERNAL
-     */
-    public void addPermission(PermissionType type, String target, @Nullable String extTarget, int value) {
-        Integer currentValue = permissions[type.ordinal()].get(target);
-        if (currentValue == null || currentValue < value) {
-            permissions[type.ordinal()].put(target, value);
-            if (extTarget != null)
-                permissions[type.ordinal()].put(extTarget, value);
+    private void performPermissionsAction(PermissionType type, Consumer<Permissions> consumer) {
+        switch (type) {
+            case ENTITY_OP:
+                consumer.accept(effectiveRole.entityAccess());
+                break;
+            case ENTITY_ATTR:
+                consumer.accept(effectiveRole.attributeAccess());
+                break;
+            case SPECIFIC:
+                consumer.accept(effectiveRole.specificPermissions());
+                break;
+            case SCREEN:
+                consumer.accept(effectiveRole.screenAccess());
+                break;
+            case UI:
+                consumer.accept(effectiveRole.screenElementsAccess());
+                break;
+            default:
+                throw new IllegalArgumentException("Unsupported permission type.");
+        }
+    }
+
+    private Object performPermissionsFunction(PermissionType type, Function<Permissions, Object> function) {
+        switch (type) {
+            case ENTITY_OP:
+                return function.apply(effectiveRole.entityAccess());
+            case ENTITY_ATTR:
+                return function.apply(effectiveRole.attributeAccess());
+            case SPECIFIC:
+                return function.apply(effectiveRole.specificPermissions());
+            case SCREEN:
+                return function.apply(effectiveRole.screenAccess());
+            case UI:
+                return function.apply(effectiveRole.screenElementsAccess());
+            default:
+                throw new IllegalArgumentException("Unsupported permission type.");
         }
     }
 
     /**
      * INTERNAL
      */
+    public void addPermission(PermissionType type, String target, @Nullable String extTarget, int value) {
+        performPermissionsAction(type, p -> PermissionsUtils.addPermission(p, target, extTarget, value));
+    }
+
+    /**
+     * INTERNAL
+     */
     public void removePermission(PermissionType type, String target) {
-        permissions[type.ordinal()].remove(target);
+        performPermissionsAction(type, p -> PermissionsUtils.removePermission(p, target));
     }
 
     /**
      * INTERNAL
      */
     public void removePermissions(PermissionType type) {
-        permissions[type.ordinal()].clear();
+        performPermissionsAction(type, PermissionsUtils::removePermissions);
     }
 
     /**
      * INTERNAL
      */
     public Integer getPermissionValue(PermissionType type, String target) {
-        return permissions[type.ordinal()].get(target);
+        return (Integer) performPermissionsFunction(type, p -> PermissionsUtils.getPermissionValue(p, target));
     }
 
     /**
      * Get permissions by type
      */
     public Map<String, Integer> getPermissionsByType(PermissionType type) {
-        return Collections.unmodifiableMap(permissions[type.ordinal()]);
+        //noinspection unchecked
+        return (Map<String, Integer>) performPermissionsFunction(type, PermissionsUtils::getPermissions);
     }
 
     /**
@@ -364,7 +403,7 @@ public class UserSession implements Serializable {
         if (roleTypes.contains(RoleType.SUPER))
             return true;
         // Get permission value assigned by the set of permissions
-        Integer v = permissions[type.ordinal()].get(target);
+        Integer v = getPermissionValue(type, target);
         // Get permission value assigned by non-standard roles
         for (RoleType roleType : roleTypes) {
             Integer v1 = roleType.permissionValue(type, target);
@@ -540,6 +579,26 @@ public class UserSession implements Serializable {
      */
     public boolean isSystem() {
         return system;
+    }
+
+    /**
+     * Returns an instance of RoleDef interface. It can be used to retrieve information about user permissions.
+     * <p>
+     * If you need to modify user permissions, use {@code RoleDefBuilder} to construct a suitable role and then
+     * apply it using {@link UserSession#applyEffectiveRole} method.
+     */
+    public RoleDef getEffectiveRole() {
+        return effectiveRole;
+    }
+
+    /**
+     * Applies {@code effectiveRole} to the UserSession.
+     * After that user will only have permissions defined in the specified role.
+     * <p>
+     * Use {@code RoleDefBuilder} to construct a suitable role.
+     */
+    public void applyEffectiveRole(RoleDef effectiveRole) {
+        this.effectiveRole = effectiveRole;
     }
 
     @Override

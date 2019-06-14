@@ -74,7 +74,7 @@ class AfterCompleteTransactionListenerTest extends Specification {
         entityStates.isLoaded(user, 'login')
         entityStates.isLoaded(user, 'name')
         entityStates.isLoaded(user, 'userRoles')
-        user.userRoles.size() == 1
+        user.userRoles.size() == 2
 
         cleanup:
 

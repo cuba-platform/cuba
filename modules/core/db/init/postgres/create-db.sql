@@ -252,6 +252,7 @@ create table SEC_USER_ROLE (
     --
     USER_ID uuid,
     ROLE_ID uuid,
+    ROLE_NAME varchar(50),
     --
     primary key (ID),
     constraint SEC_USER_ROLE_PROFILE foreign key (USER_ID) references SEC_USER(ID),
@@ -948,6 +949,12 @@ values ('c838be0a-96d0-4ef4-a7c0-dff348347f93', now(), 0, '60885987-1b61-4247-94
 
 insert into SEC_USER_ROLE (ID, CREATE_TS, VERSION, USER_ID, ROLE_ID)
 values ('f01fb532-c2f0-dc18-b86c-450cf8a8d8c5', now(), 0, 'a405db59-e674-4f63-8afe-269dda788fe8', 'cd541dd4-eeb7-cd5b-847e-d32236552fa9')^
+
+insert into SEC_USER_ROLE (ID, CREATE_TS, VERSION, USER_ID, ROLE_NAME)
+values ('cbdddc70-1ee2-0fe4-b63a-2d92ef0b15a2', now(), 0, '60885987-1b61-4247-94c7-dff348347f93', 'Administrators')^
+
+insert into SEC_USER_ROLE (ID, CREATE_TS, VERSION, USER_ID, ROLE_NAME)
+values ('a848101b-7d8a-508a-0e9c-b53af9fad211', now(), 0, 'a405db59-e674-4f63-8afe-269dda788fe8', 'Anonymous')^
 
 insert into SEC_FILTER (ID, CREATE_TS, CREATED_BY, VERSION, COMPONENT, NAME, XML, USER_ID, GLOBAL_DEFAULT)
 values ('b61d18cb-e79a-46f3-b16d-eaf4aebb10dd', now(), 'admin', 0, '[sec$User.browse].genericFilter', 'Search by role',
