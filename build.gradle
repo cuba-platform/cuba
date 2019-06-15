@@ -487,7 +487,6 @@ configure(coreTestsModule) {
         compile(coreModule)
 
         compile(bom['org.apache.commons:commons-dbcp2'])
-        compile(bom['org.jmockit:jmockit'])
         compile(bom['junit:junit'])
     }
 
@@ -533,6 +532,10 @@ configure(clientTestsModule) {
     artifacts {
         archives sourceJar
     }
+
+    test {
+        jvmArgs "-javaagent:${classpath.find { it.name.contains("jmockit") }.absolutePath}"
+    }
 }
 
 configure(guiModule) {
@@ -556,6 +559,8 @@ configure(guiModule) {
 
         exclude 'com/haulmont/cuba/gui/components/*ComponentTest.class'
         exclude 'com/haulmont/cuba/gui/components/*FieldTest.class'
+
+        jvmArgs "-javaagent:${classpath.find { it.name.contains("jmockit") }.absolutePath}"
     }
 }
 
@@ -657,6 +662,8 @@ configure(webModule) {
 
         include 'com/haulmont/cuba/web/test/ds/api/consistency/WebCheckBoxDsTest/**'
         include 'com/haulmont/cuba/web/test/ui/**'
+
+        jvmArgs "-javaagent:${classpath.find { it.name.contains("jmockit") }.absolutePath}"
     }
 
     entitiesEnhancing {
