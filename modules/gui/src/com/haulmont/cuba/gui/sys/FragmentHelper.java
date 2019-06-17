@@ -43,6 +43,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import javax.inject.Inject;
 import java.lang.reflect.InvocationTargetException;
@@ -200,7 +201,7 @@ public class FragmentHelper {
         protected BeanLocator beanLocator;
 
         public FragmentLoaderInitTask(Fragment fragment, ScreenOptions options,
-                                      ComponentLoaderContext fragmentLoaderContext, BeanLocator beanLocator) {
+                                      @Nullable ComponentLoaderContext fragmentLoaderContext, BeanLocator beanLocator) {
             this.fragment = fragment;
             this.options = options;
             this.fragmentLoaderContext = fragmentLoaderContext;
