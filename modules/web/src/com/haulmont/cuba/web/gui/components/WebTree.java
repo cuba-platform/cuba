@@ -121,6 +121,10 @@ public class WebTree<E extends Entity>
     protected String hierarchyProperty;
     protected TreeDataProvider<E> dataBinding;
     protected Function<? super E, String> itemCaptionProvider;
+    protected Function<? super E, String> descriptionProvider;
+    protected Tree.DetailsGenerator<? super E> detailsGenerator;
+    protected Registration expandListener;
+    protected Registration collapseListener;
 
     public WebTree() {
         component = createComponent();
@@ -929,6 +933,86 @@ public class WebTree<E extends Entity>
         // Every time we change selection mode, the new selection model is set,
         // so we need to add selection listener again.
         component.addSelectionListener(this::onSelectionChange);
+    }
+
+    @Override
+    public void setDescriptionProvider(Function<? super E, String> provider) {
+        this.setDescriptionProvider(provider, ContentMode.PREFORMATTED);
+    }
+
+    @Override
+    public void setDescriptionProvider(Function<? super E, String> provider, ContentMode contentMode) {
+        descriptionProvider = provider;
+        if (provider != null) {
+            component.setItemDescriptionGenerator(descriptionProvider::apply,
+                    WebWrapperUtils.toVaadinContentMode(contentMode));
+        } else {
+            component.setItemDescriptionGenerator(null);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public Function<E, String> getDescriptionProvider() {
+        return (Function<E, String>) descriptionProvider;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Nullable
+    @Override
+    public Tree.DetailsGenerator<E> getDetailsGenerator() {
+        return (DetailsGenerator<E>) detailsGenerator;
+    }
+
+    @Override
+    public void setDetailsGenerator(Tree.DetailsGenerator<? super E> generator) {
+        detailsGenerator = generator;
+        component.getCompositionRoot().setDetailsGenerator(generator != null ? this::getItemDetails : null);
+    }
+
+    protected com.vaadin.ui.Component getItemDetails(E entity) {
+        Component detailsComponent = detailsGenerator.getDetails(entity);
+        return detailsComponent != null ? detailsComponent.unwrapComposition(com.vaadin.ui.Component.class) : null;
+    }
+
+    @Override
+    public boolean isDetailsVisible(E entity) {
+        return component.getCompositionRoot().isDetailsVisible(entity);
+    }
+
+    @Override
+    public void setDetailsVisible(E entity, boolean visible) {
+        component.getCompositionRoot().setDetailsVisible(entity, visible);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public Subscription addExpandListener(Consumer<ExpandEvent<E>> listener) {
+        if (this.expandListener == null) {
+            this.expandListener = component.addExpandListener(this::onItemExpand);
+        }
+
+        return getEventHub().subscribe(ExpandEvent.class, (Consumer) listener);
+    }
+
+    protected void onItemExpand(com.vaadin.event.ExpandEvent<E> e) {
+        ExpandEvent<E> event = new ExpandEvent<>(WebTree.this, e.getExpandedItem(), e.isUserOriginated());
+        publish(ExpandEvent.class, event);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public Subscription addCollapseListener(Consumer<CollapseEvent<E>> listener) {
+        if (this.collapseListener == null) {
+            this.collapseListener = component.addCollapseListener(this::onItemCollapse);
+        }
+
+        return getEventHub().subscribe(CollapseEvent.class, (Consumer) listener);
+    }
+
+    protected void onItemCollapse(com.vaadin.event.CollapseEvent<E> e) {
+        CollapseEvent<E> event = new CollapseEvent<>(WebTree.this, e.getCollapsedItem(), e.isUserOriginated());
+        publish(CollapseEvent.class, event);
     }
 
     protected void onSelectionChange(com.vaadin.event.selection.SelectionEvent<E> event) {

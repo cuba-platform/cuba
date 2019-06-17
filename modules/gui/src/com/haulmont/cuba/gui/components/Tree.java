@@ -188,6 +188,97 @@ public interface Tree<E extends Entity> extends ListComponent<E>, HasButtonsPane
      */
     void setSelectionMode(SelectionMode selectionMode);
 
+    /**
+     * Sets the description generator that is used for generating tooltip
+     * descriptions for items.
+     *
+     * @param provider the description generator to use or {@code null} to remove a
+     *                  previously set provider if any
+     */
+    void setDescriptionProvider(Function<? super E, String> provider);
+
+    /**
+     * Sets the description generator that is used for generating HTML tooltip
+     * descriptions for items.
+     *
+     * @param provider   the description generator to use or {@code null} to remove a
+     *                    previously set provider if any
+     * @param contentMode the content mode for row tooltips
+     */
+    void setDescriptionProvider(Function<? super E, String> provider, ContentMode contentMode);
+
+    /**
+     * Gets the item description generator.
+     *
+     * @return the item description generator
+     */
+    Function<E, String> getDescriptionProvider();
+
+    /**
+     * A callback interface for generating details for a particular item in Tree.
+     *
+     * @param <E> Tree data type
+     */
+    @FunctionalInterface
+    interface DetailsGenerator<E extends Entity> {
+
+        /**
+         * Returns the component which will be used as details for the given item.
+         *
+         * @param entity an entity instance represented by the current item
+         * @return the details for the given item, or {@code null} to leave the details empty.
+         */
+        @Nullable
+        Component getDetails(E entity);
+    }
+
+    /**
+     * @return the current details generator for item details or {@code null} if not set
+     */
+    @Nullable
+    Tree.DetailsGenerator<E> getDetailsGenerator();
+
+    /**
+     * Sets a new details generator for item details.
+     * <p>
+     * The currently opened item details will be re-rendered.
+     *
+     * @param generator the details generator to set
+     */
+    void setDetailsGenerator(Tree.DetailsGenerator<? super E> generator);
+
+    /**
+     * Checks whether details are visible for the given item.
+     *
+     * @param entity the item for which to check details visibility
+     * @return {@code true} if the details are visible
+     */
+    boolean isDetailsVisible(E entity);
+
+    /**
+     * Shows or hides the details for a specific item.
+     *
+     * @param entity  the item for which to set details visibility
+     * @param visible {@code true} to show the details, or {@code false} to hide them
+     */
+    void setDetailsVisible(E entity, boolean visible);
+
+    /**
+     * Registers a new expand listener.
+     *
+     * @param listener the listener to be added
+     * @return a registration object for removing an event listener added to a source
+     */
+    Subscription addExpandListener(Consumer<ExpandEvent<E>> listener);
+
+    /**
+     * Registers a new collapse listener.
+     *
+     * @param listener the listener to be added
+     * @return a registration object for removing an event listener added to a source
+     */
+    Subscription addCollapseListener(Consumer<CollapseEvent<E>> listener);
+
     enum SelectionMode {
         /**
          * A SelectionMode that supports for only single rows to be selected at a time.
@@ -203,6 +294,90 @@ public interface Tree<E extends Entity> extends ListComponent<E>, HasButtonsPane
          * A SelectionMode that does not allow for rows to be selected.
          */
         NONE
+    }
+
+    /**
+     * An event that is fired when an item is expanded.
+     *
+     * @param <E> item type
+     */
+    class ExpandEvent<E extends Entity> extends EventObject implements HasUserOriginated {
+
+        protected final E expandedItem;
+        protected final boolean userOriginated;
+
+        /**
+         * Constructor for the expand event.
+         *
+         * @param source         the Tree from which this event originates
+         * @param expandedItem   the expanded item
+         * @param userOriginated whether this event was triggered by user interaction or programmatically
+         */
+        public ExpandEvent(Tree<E> source, E expandedItem, boolean userOriginated) {
+            super(source);
+            this.expandedItem = expandedItem;
+            this.userOriginated = userOriginated;
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public Tree<E> getSource() {
+            return (Tree<E>) super.getSource();
+        }
+
+        /**
+         * @return the expanded item
+         */
+        public E getExpandedItem() {
+            return expandedItem;
+        }
+
+        @Override
+        public boolean isUserOriginated() {
+            return userOriginated;
+        }
+    }
+
+    /**
+     * An event that is fired when an item is collapsed.
+     *
+     * @param <E> item type
+     */
+    class CollapseEvent<E extends Entity> extends EventObject implements HasUserOriginated {
+
+        protected final E collapsedItem;
+        protected final boolean userOriginated;
+
+        /**
+         * Constructor for the collapse event.
+         *
+         * @param source         the Tree from which this event originates
+         * @param collapsedItem  the collapsed item
+         * @param userOriginated whether this event was triggered by user interaction or programmatically
+         */
+        public CollapseEvent(Tree<E> source, E collapsedItem, boolean userOriginated) {
+            super(source);
+            this.collapsedItem = collapsedItem;
+            this.userOriginated = userOriginated;
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public Tree<E> getSource() {
+            return (Tree<E>) super.getSource();
+        }
+
+        /**
+         * @return the collapsed item
+         */
+        public E getCollapsedItem() {
+            return collapsedItem;
+        }
+
+        @Override
+        public boolean isUserOriginated() {
+            return userOriginated;
+        }
     }
 
     /**
