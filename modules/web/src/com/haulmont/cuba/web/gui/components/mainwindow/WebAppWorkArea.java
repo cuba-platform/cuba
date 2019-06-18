@@ -62,6 +62,7 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
@@ -474,19 +475,13 @@ public class WebAppWorkArea extends WebAbstractComponent<CssLayout> implements A
         }
     }
 
-    protected void closeOtherTabWindows(ComponentContainer container) {
-        AppUI ui = (AppUI) component.getUI();
+    protected void closeOtherTabWindows(ComponentContainer tabToKeep) {
+        TabSheetBehaviour tabSheetBehaviour = getTabbedWindowContainer().getTabSheetBehaviour();
+        Set<Component> tabsToClose = tabSheetBehaviour.getTabComponentsStream()
+                .filter(tabComponent -> tabComponent != tabToKeep)
+                .collect(Collectors.toSet());
 
-        OpenedScreens openedScreens = ui.getScreens().getOpenedScreens();
-        for (WindowStack windowStack : openedScreens.getWorkAreaStacks()) {
-            if (!windowStack.isSelected()) {
-                boolean closed = closeWindowStack(windowStack);
-
-                if (!closed) {
-                    break;
-                }
-            }
-        }
+        tabsToClose.forEach(tabSheetBehaviour::closeTab);
     }
 
     protected boolean closeWindowStack(WindowStack windowStack) {
