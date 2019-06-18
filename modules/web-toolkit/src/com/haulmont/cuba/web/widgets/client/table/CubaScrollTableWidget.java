@@ -60,6 +60,15 @@ public class CubaScrollTableWidget extends VScrollTable implements TableWidget {
     }
 
     @Override
+    public void sizeInit() {
+        super.sizeInit();
+
+        if (_delegate.aggregationRow != null) {
+            _delegate.aggregationRow.toggleScrollbarSpacer(willHaveScrollbars());
+        }
+    }
+
+    @Override
     protected VScrollTableBody.VScrollTableRow getNextRowToFocus(VScrollTableBody.VScrollTableRow currentRow, int offset) {
         // Support select first N rows by Shift+Click #PL-3267
         if (focusedRow == currentRow && !focusedRow.isSelected()) {
@@ -968,5 +977,11 @@ public class CubaScrollTableWidget extends VScrollTable implements TableWidget {
                 && _delegate.aggregationRow != null) {
             client.sendPendingVariableChanges();
         }
+    }
+
+    // CAUTION: copied from com.vaadin.v7.client.ui.VScrollTable.hasVerticalScrollbar
+    @Override
+    public boolean hasVerticalScrollbar() {
+        return scrollBody.getOffsetHeight() > scrollBodyPanel.getOffsetHeight();
     }
 }
