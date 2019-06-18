@@ -24,12 +24,13 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.Widget;
-import com.haulmont.cuba.web.widgets.client.tableshared.TotalAggregationInputListener;
 import com.haulmont.cuba.web.widgets.client.Tools;
 import com.haulmont.cuba.web.widgets.client.tableshared.TableWidget;
+import com.haulmont.cuba.web.widgets.client.tableshared.TotalAggregationInputListener;
 import com.vaadin.client.BrowserInfo;
 import com.vaadin.client.ComputedStyle;
 import com.vaadin.client.UIDL;
+import com.vaadin.client.WidgetUtil;
 import com.vaadin.v7.client.ui.VScrollTable;
 
 import java.util.ArrayList;
@@ -42,6 +43,8 @@ import java.util.List;
  * {@link com.haulmont.cuba.web.widgets.client.treetable.CubaTreeTableWidget}
  */
 public class TableAggregationRow extends Panel {
+
+    protected static final String SCROLLBAR_SPACER_STYLENAME = "scrollbar-spacer";
 
     protected boolean initialized = false;
 
@@ -70,6 +73,46 @@ public class TableAggregationRow extends Panel {
     @Override
     public boolean remove(Widget child) {
         return false;
+    }
+
+    @Override
+    public void onBrowserEvent(Event event) {
+        super.onBrowserEvent(event);
+
+        final int type = DOM.eventGetType(event);
+        Element sourceElement = Element.as(event.getEventTarget());
+
+        if (type == Event.ONKEYDOWN
+                && (event.getKeyCode() == KeyCodes.KEY_ENTER)) {
+            AggregationInputFieldInfo info = getAggregationInputInfo(sourceElement);
+            if (info != null) {
+                String columnKey = info.getColumnKey();
+                String value = info.getInputElement().getValue();
+                info.setFocused(true);
+
+                if (columnKey != null) {
+                    totalAggregationInputHandler.onInputChange(columnKey, value, true);
+                }
+            }
+        }
+
+
+        if (type == Event.ONCHANGE && totalAggregationInputHandler != null) {
+            AggregationInputFieldInfo info = getAggregationInputInfo(sourceElement);
+            if (info != null) {
+                String columnKey = info.getColumnKey();
+                String value = info.getInputElement().getValue();
+                // do not send event, cause it was sent with `ENTER` key event
+                if (info.isFocused()) {
+                    info.setFocused(false);
+                    return;
+                }
+
+                if (columnKey != null) {
+                    totalAggregationInputHandler.onInputChange(columnKey, value, false);
+                }
+            }
+        }
     }
 
     public void updateFromUIDL(UIDL uidl) {
@@ -112,6 +155,95 @@ public class TableAggregationRow extends Panel {
         }
 
         initialized = getElement().hasChildNodes();
+
+        toggleScrollbarSpacer(tableWidget.hasVerticalScrollbar());
+    }
+
+    public void setCellWidth(int cellIx, int width) {
+        // CAUTION: copied from VScrollTableRow with small changes
+        final Element cell = DOM.getChild(tr, cellIx);
+        Style wrapperStyle = cell.getFirstChildElement().getStyle();
+        int wrapperWidth = width;
+        if (BrowserInfo.get().isWebkit()
+                || BrowserInfo.get().isOpera10()) {
+            /*
+             * Some versions of Webkit and Opera ignore the width
+             * definition of zero width table cells. Instead, use 1px
+             * and compensate with a negative margin.
+             */
+            if (width == 0) {
+                wrapperWidth = 1;
+                wrapperStyle.setMarginRight(-1, Style.Unit.PX);
+            } else {
+                wrapperStyle.clearMarginRight();
+            }
+        }
+        wrapperStyle.setPropertyPx("width", wrapperWidth);
+        cell.getStyle().setPropertyPx("width", width);
+    }
+
+    public boolean isInitialized() {
+        return initialized;
+    }
+
+    public void setHorizontalScrollPosition(int scrollLeft) {
+        getElement().setPropertyInt("scrollLeft", scrollLeft);
+    }
+
+    public TableWidget getTableWidget() {
+        return tableWidget;
+    }
+
+    public void setTotalAggregationInputHandler(TotalAggregationInputListener totalAggregationInputHandler) {
+        this.totalAggregationInputHandler = totalAggregationInputHandler;
+    }
+
+    public boolean isAggregationRowEditable() {
+        return inputsList != null && !inputsList.isEmpty();
+    }
+
+    // CAUTION copied from com.vaadin.client.ui.VScrollTable.VScrollTableBody.VScrollTableRow.getRealCellWidth
+    public double getRealCellWidth(int colIdx) {
+        if (colIdx >= tr.getChildCount()) {
+            return -1;
+        }
+
+        Element cell = DOM.getChild(tr, colIdx);
+        ComputedStyle cs = new ComputedStyle(cell);
+
+        return cs.getWidth() + cs.getPaddingWidth() + cs.getBorderWidth();
+    }
+
+    public void toggleScrollbarSpacer(boolean scrollbarEnabled) {
+        if (!isInitialized()) {
+            return;
+        }
+
+        if (scrollbarEnabled) {
+            com.google.gwt.user.client.Element lastChild = DOM.getChild(tr, DOM.getChildCount(tr) - 1);
+            if (lastChild.hasClassName(SCROLLBAR_SPACER_STYLENAME)) {
+                return;
+            }
+
+            com.google.gwt.user.client.Element spacer = DOM.createTD();
+            spacer.addClassName(SCROLLBAR_SPACER_STYLENAME);
+
+            int scrollbarWidth = WidgetUtil.getNativeScrollbarSize();
+
+            spacer.getStyle().setPropertyPx("width", scrollbarWidth);
+            spacer.getStyle().setPropertyPx("minWidth", scrollbarWidth);
+            spacer.getStyle().setPropertyPx("maxWidth", scrollbarWidth);
+
+            tr.appendChild(spacer);
+        } else {
+            int cellsCount = DOM.getChildCount(tr);
+            for (int i = 0; i < cellsCount; i++) {
+                com.google.gwt.user.client.Element cell = DOM.getChild(tr, i);
+                if (cell.hasClassName(SCROLLBAR_SPACER_STYLENAME)) {
+                    tr.removeChild(cell);
+                }
+            }
+        }
     }
 
     protected void addCellsFromUIDL(UIDL uidl) {
@@ -244,57 +376,6 @@ public class TableAggregationRow extends Panel {
         }
     }
 
-    public void setCellWidth(int cellIx, int width) {
-        // CAUTION: copied from VScrollTableRow with small changes
-        final Element cell = DOM.getChild(tr, cellIx);
-        Style wrapperStyle = cell.getFirstChildElement().getStyle();
-        int wrapperWidth = width;
-        if (BrowserInfo.get().isWebkit()
-                || BrowserInfo.get().isOpera10()) {
-                    /*
-                     * Some versions of Webkit and Opera ignore the width
-                     * definition of zero width table cells. Instead, use 1px
-                     * and compensate with a negative margin.
-                     */
-            if (width == 0) {
-                wrapperWidth = 1;
-                wrapperStyle.setMarginRight(-1, Style.Unit.PX);
-            } else {
-                wrapperStyle.clearMarginRight();
-            }
-        }
-        wrapperStyle.setPropertyPx("width", wrapperWidth);
-        cell.getStyle().setPropertyPx("width", width);
-    }
-
-    public boolean isInitialized() {
-        return initialized;
-    }
-
-    public void setHorizontalScrollPosition(int scrollLeft) {
-        getElement().setPropertyInt("scrollLeft", scrollLeft);
-    }
-
-    public TableWidget getTableWidget() {
-        return tableWidget;
-    }
-
-    // CAUTION copied from com.vaadin.client.ui.VScrollTable.VScrollTableBody.VScrollTableRow.getRealCellWidth
-    public double getRealCellWidth(int colIdx) {
-        if (colIdx >= tr.getChildCount()) {
-            return -1;
-        }
-
-        Element cell = DOM.getChild(tr, colIdx);
-        ComputedStyle cs = new ComputedStyle(cell);
-
-        return cs.getWidth() + cs.getPaddingWidth() + cs.getBorderWidth();
-    }
-
-    public void setTotalAggregationInputHandler(TotalAggregationInputListener totalAggregationInputHandler) {
-        this.totalAggregationInputHandler = totalAggregationInputHandler;
-    }
-
     protected AggregationInputFieldInfo getAggregationInputInfo(Element input) {
         if (inputsList == null) {
             return null;
@@ -306,49 +387,5 @@ public class TableAggregationRow extends Panel {
             }
         }
         return null;
-    }
-
-    public boolean isAggregationRowEditable() {
-        return inputsList != null && !inputsList.isEmpty();
-    }
-
-    @Override
-    public void onBrowserEvent(Event event) {
-        super.onBrowserEvent(event);
-
-        final int type = DOM.eventGetType(event);
-        Element sourceElement = Element.as(event.getEventTarget());
-
-        if (type == Event.ONKEYDOWN
-                && (event.getKeyCode() == KeyCodes.KEY_ENTER)) {
-            AggregationInputFieldInfo info = getAggregationInputInfo(sourceElement);
-            if (info != null) {
-                String columnKey = info.getColumnKey();
-                String value = info.getInputElement().getValue();
-                info.setFocused(true);
-
-                if (columnKey != null) {
-                    totalAggregationInputHandler.onInputChange(columnKey, value, true);
-                }
-            }
-        }
-
-
-        if (type == Event.ONCHANGE && totalAggregationInputHandler != null) {
-            AggregationInputFieldInfo info = getAggregationInputInfo(sourceElement);
-            if (info != null) {
-                String columnKey = info.getColumnKey();
-                String value = info.getInputElement().getValue();
-                // do not send event, cause it was sent with `ENTER` key event
-                if (info.isFocused()) {
-                    info.setFocused(false);
-                    return;
-                }
-
-                if (columnKey != null) {
-                    totalAggregationInputHandler.onInputChange(columnKey, value, false);
-                }
-            }
-        }
     }
 }

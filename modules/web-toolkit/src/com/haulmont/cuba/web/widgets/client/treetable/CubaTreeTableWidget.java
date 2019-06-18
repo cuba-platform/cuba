@@ -888,4 +888,10 @@ public class CubaTreeTableWidget extends VTreeTable implements TableWidget {
     public void removeAfterBodyUpdateListener(AfterBodyUpdateListener listener) {
         _delegate.removeAfterUpdateListener(listener);
     }
+
+    // CAUTION: copied from com.vaadin.v7.client.ui.VScrollTable.hasVerticalScrollbar
+    @Override
+    public boolean hasVerticalScrollbar() {
+        return scrollBody.getOffsetHeight() > scrollBodyPanel.getOffsetHeight();
+    }
 }

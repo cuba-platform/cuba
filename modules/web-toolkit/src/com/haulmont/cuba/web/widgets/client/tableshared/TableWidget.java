@@ -62,6 +62,8 @@ public interface TableWidget extends HasEnabled, ShortcutActionHandler.ShortcutA
     void addAfterBodyUpdateListener(AfterBodyUpdateListener listener);
     void removeAfterBodyUpdateListener(AfterBodyUpdateListener listener);
 
+    boolean hasVerticalScrollbar();
+
     interface AfterBodyUpdateListener {
         void onAfterBodyUpdate();
     }
