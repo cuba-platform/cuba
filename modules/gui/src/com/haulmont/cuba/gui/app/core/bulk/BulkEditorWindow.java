@@ -29,6 +29,7 @@ import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.AppConfig;
+import com.haulmont.cuba.gui.BulkEditors;
 import com.haulmont.cuba.gui.UiComponents;
 import com.haulmont.cuba.gui.WindowParam;
 import com.haulmont.cuba.gui.components.*;
@@ -53,6 +54,7 @@ import javax.inject.Inject;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
@@ -104,6 +106,8 @@ public class BulkEditorWindow extends AbstractWindow {
     protected Map<String, Consumer> fieldValidators;
     @WindowParam
     protected List<Consumer> modelValidators;
+    @WindowParam
+    protected BulkEditors.FieldSorter fieldSorter;
 
     protected Pattern excludeRegex;
 
@@ -183,7 +187,18 @@ public class BulkEditorWindow extends AbstractWindow {
         fieldsScrollBox.add(grid);
 
         List<ManagedField> editFields = new ArrayList<>(managedFields.values());
-        editFields.sort(Comparator.comparing(ManagedField::getLocalizedName));
+
+        // sort fields
+        Comparator comparator;
+        if (fieldSorter != null) {
+            Map<MetaProperty, Integer> sorted = fieldSorter.sort(editFields.stream()
+                    .map(ManagedField::getMetaProperty)
+                    .collect(Collectors.toList()));
+            comparator = Comparator.<ManagedField>comparingInt(item -> sorted.get(item.getMetaProperty()));
+        } else {
+            comparator = Comparator.comparing(ManagedField::getLocalizedName);
+        }
+        editFields.sort(comparator);
 
         String fieldWidth = themeConstants.get("cuba.gui.BulkEditorWindow.field.width");
 

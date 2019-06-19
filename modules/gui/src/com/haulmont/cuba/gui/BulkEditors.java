@@ -18,6 +18,7 @@ package com.haulmont.cuba.gui;
 
 import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.app.core.bulk.BulkEditorWindow;
 import com.haulmont.cuba.gui.components.Field;
@@ -53,6 +54,21 @@ public class BulkEditors {
 
     private static final Logger log = LoggerFactory.getLogger(BulkEditors.class);
 
+    /**
+     * Field sorter for bulk editor window.
+     */
+    @FunctionalInterface
+    public interface FieldSorter {
+
+        /**
+         * Sorts properties from bulk editor window.
+         *
+         * @param properties properties from bulk editor window to be sort
+         * @return map with metaProperties and their indexes
+         */
+        Map<MetaProperty, Integer> sort(List<MetaProperty> properties);
+    }
+
     @Inject
     protected WindowConfig windowConfig;
 
@@ -85,6 +101,7 @@ public class BulkEditors {
                 .pair("modelValidators", builder.getModelValidators())
                 .pair("loadDynamicAttributes", builder.isLoadDynamicAttributes())
                 .pair("useConfirmDialog", builder.isUseConfirmDialog())
+                .pair("fieldSorter", builder.getFieldSorter())
                 .create());
 
         BulkEditorWindow bulkEditorWindow = (BulkEditorWindow) screens.create("bulkEditor", builder.launchMode, options);
@@ -146,6 +163,7 @@ public class BulkEditors {
         protected List<Field.Validator> modelValidators;
         protected Boolean loadDynamicAttributes;
         protected Boolean useConfirmDialog;
+        protected FieldSorter fieldSorter;
 
         public EditorBuilder(EditorBuilder<E> builder) {
             this.metaClass = builder.metaClass;
@@ -162,6 +180,7 @@ public class BulkEditors {
             this.modelValidators = builder.modelValidators;
             this.loadDynamicAttributes = builder.loadDynamicAttributes;
             this.useConfirmDialog = builder.useConfirmDialog;
+            this.fieldSorter = builder.fieldSorter;
         }
 
         public EditorBuilder(MetaClass metaClass, Collection<E> entities, FrameOwner origin,
@@ -266,6 +285,17 @@ public class BulkEditors {
         }
 
         /**
+         * Sets field sorter that allows you to sort fields by custom logic.
+         *
+         * @param fieldSorter field sorter
+         * @return this builder
+         */
+        public EditorBuilder<E> withFieldSorter(FieldSorter fieldSorter) {
+            this.fieldSorter = fieldSorter;
+            return this;
+        }
+
+        /**
          * @return a {@link FrameOwner} of bulk editor
          */
         public FrameOwner getOrigin() {
@@ -342,6 +372,13 @@ public class BulkEditors {
          */
         public Boolean isUseConfirmDialog() {
             return useConfirmDialog;
+        }
+
+        /**
+         * @return field sorter
+         */
+        public FieldSorter getFieldSorter() {
+            return fieldSorter;
         }
 
         /**
