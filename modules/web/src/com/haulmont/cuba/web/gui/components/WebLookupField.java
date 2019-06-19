@@ -61,6 +61,7 @@ public class WebLookupField<V> extends WebV8AbstractField<CubaComboBox<V>, V, V>
     protected Consumer<String> newOptionHandler;
 
     protected Function<? super V, String> optionIconProvider;
+    protected Function<? super V, com.haulmont.cuba.gui.components.Resource> optionImageProvider;
     protected Function<? super V, String> optionCaptionProvider;
     protected Function<? super V, String> optionStyleProvider;
 
@@ -384,6 +385,40 @@ public class WebLookupField<V> extends WebV8AbstractField<CubaComboBox<V>, V, V>
         }
 
         return iconResolver.getIconResource(resourceId);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public void setOptionImageProvider(Function<? super V, com.haulmont.cuba.gui.components.Resource> optionImageProvider) {
+        if (this.optionImageProvider != optionImageProvider) {
+            this.optionImageProvider = optionImageProvider;
+
+            if (optionImageProvider != null) {
+                component.setItemIconGenerator(this::generateOptionImage);
+            } else {
+                component.setItemIconGenerator(NULL_ITEM_ICON_GENERATOR);
+            }
+        }
+    }
+
+    @Override
+    public Function<? super V, com.haulmont.cuba.gui.components.Resource> getOptionImageProvider() {
+        return optionImageProvider;
+    }
+
+    protected Resource generateOptionImage(V item) {
+        com.haulmont.cuba.gui.components.Resource resource;
+        try {
+            resource = optionImageProvider.apply(item);
+        } catch (Exception e) {
+            LoggerFactory.getLogger(WebLookupField.class)
+                    .warn("Error invoking optionImageProvider apply method", e);
+            return null;
+        }
+
+        return resource != null && ((WebResource) resource).hasSource()
+                ? ((WebResource) resource).getResource()
+                : null;
     }
 
     @Override

@@ -161,6 +161,19 @@ public interface LookupField<V> extends OptionsField<V, V>, HasInputPrompt, Buff
     Function<? super V, String> getOptionIconProvider();
 
     /**
+     * Sets a function that provides option images.
+     *
+     * @see Resource
+     * @param optionImageProvider options image provider
+     */
+    void setOptionImageProvider(Function<? super V, Resource> optionImageProvider);
+
+    /**
+     * @return options image provider.
+     */
+    Function<? super V, Resource> getOptionImageProvider();
+
+    /**
      * Enables to setup how items should be filtered.
      *
      * @param filterPredicate items filter predicate

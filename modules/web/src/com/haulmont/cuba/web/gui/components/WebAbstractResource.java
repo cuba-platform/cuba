@@ -32,7 +32,8 @@ public abstract class WebAbstractResource implements WebResource {
         return resource;
     }
 
-    protected boolean hasSource() {
+    @Override
+    public boolean hasSource() {
         return hasSource;
     }
 

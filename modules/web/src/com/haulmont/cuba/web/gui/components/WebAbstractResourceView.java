@@ -78,8 +78,8 @@ public abstract class WebAbstractResourceView<T extends AbstractEmbedded> extend
         this.resource = value;
 
         com.vaadin.server.Resource vResource = null;
-        if (value != null && ((WebAbstractResource) value).hasSource()) {
-            vResource = ((WebAbstractResource) value).getResource();
+        if (value != null && ((WebResource) value).hasSource()) {
+            vResource = ((WebResource) value).getResource();
         }
         component.setSource(vResource);
 

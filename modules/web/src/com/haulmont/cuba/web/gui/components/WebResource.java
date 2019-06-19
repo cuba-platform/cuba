@@ -21,4 +21,6 @@ import com.haulmont.cuba.gui.components.Resource;
 public interface WebResource extends Resource {
 
     com.vaadin.server.Resource getResource();
+
+    boolean hasSource();
 }
