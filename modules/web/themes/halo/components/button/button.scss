@@ -25,6 +25,11 @@ $cuba-button-font-weight: $v-font-weight !default;
  * @group button
  */
 $cuba-highlight-primary-action: false !default;
+/**
+ * Whether linkButton caption should be placed in one row or can wrap onto multiple rows.
+ * @group linkButton
+ */
+$cuba-link-button-caption-wrap: true !default;
 
 @mixin halo-button($primary-stylename: v-button) {
   $link-padding: 2px;
@@ -123,5 +128,33 @@ $cuba-highlight-primary-action: false !default;
   .#{$primary-stylename}.link .#{$primary-stylename}-wrap {
     margin-bottom: auto;
     margin-top: auto;
+  }
+
+  @if $cuba-link-button-caption-wrap == false {
+    .#{$primary-stylename}.link {
+      display: inline-block;
+
+      &.v-has-height {
+        overflow-y: inherit;
+      }
+
+      &.v-has-width {
+        overflow-x: inherit;
+      }
+
+      &:before,
+      &:after {
+        display: inline-block;
+      }
+    }
+
+    .#{$primary-stylename}.link .#{$primary-stylename}-caption {
+      white-space: nowrap;
+    }
+
+    .#{$primary-stylename}.link .#{$primary-stylename}-wrap {
+      margin-bottom: 0;
+      margin-top: 0;
+    }
   }
 }
