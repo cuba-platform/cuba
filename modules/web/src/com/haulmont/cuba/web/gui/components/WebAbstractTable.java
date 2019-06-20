@@ -65,6 +65,7 @@ import com.haulmont.cuba.gui.screen.UiControllerUtils;
 import com.haulmont.cuba.gui.sys.UiTestIds;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
+import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.entity.Presentation;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.WebConfig;
@@ -97,6 +98,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -117,6 +119,8 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
         extends WebAbstractActionsHolderComponent<T>
         implements Table<E>, TableItemsEventsDelegate<E>, LookupSelectionChangeNotifier<E>,
         HasInnerComponents, InstallTargetHandler, InitializingBean, ColumnManager {
+
+    private static final Logger log = LoggerFactory.getLogger(WebAbstractTable.class);
 
     public static final int MAX_TEXT_LENGTH_GAP = 10;
 
@@ -1482,11 +1486,15 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
             if (column != null) {
                 if (column.isEditable() && (columnId instanceof MetaPropertyPath)) {
                     MetaPropertyPath propertyPath = ((MetaPropertyPath) columnId);
-                    if (security.isEntityAttrUpdatePermitted(metaClass, propertyPath.toString())) {
+                    if (security.isEntityAttrUpdatePermitted(metaClass, propertyPath.toString())
+                            && security.isEntityAttrReadPermitted(metaClass, propertyPath.toString())) {
                         if (editableColumns.isEmpty()) {
                             editableColumns = new ArrayList<>();
                         }
                         editableColumns.add(propertyPath);
+                    } else {
+                        log.info("Editable column '{}' is not permitted to read or update",
+                                propertyPath.toString());
                     }
                 }
 
@@ -1507,7 +1515,13 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
         }
 
         if (isEditable() && !editableColumns.isEmpty()) {
-            setEditableColumns(editableColumns);
+            if (security.isEntityOpPermitted(metaClass, EntityOp.READ)
+                    && security.isEntityOpPermitted(metaClass, EntityOp.UPDATE)) {
+                setEditableColumns(editableColumns);
+            } else {
+                log.info("Entity '{}' is not permitted to read or update",
+                        metaClass.getName());
+            }
         }
     }
 
