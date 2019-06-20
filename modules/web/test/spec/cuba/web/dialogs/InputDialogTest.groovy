@@ -89,7 +89,7 @@ class InputDialogTest extends UiScreenSpec {
                         intParameter("int"),
                         doubleParameter("double"),
                         longParameter("long"),
-                        bigDecimalParamater("bigDecimal"),
+                        bigDecimalParameter("bigDecimal"),
                         booleanParameter("boolean"),
                         entityParameter("entity", GoodInfo),
                         timeParameter("time"),
@@ -277,7 +277,7 @@ class InputDialogTest extends UiScreenSpec {
 
         return dialogs.createInputDialog(mainWindow)
                 .withParameters(
-                        bigDecimalParamater("bigDecimal").withDefaultValue(bigDecimalValue),
+                        bigDecimalParameter("bigDecimal").withDefaultValue(bigDecimalValue),
                         booleanParameter("boolean").withDefaultValue(true))
                 .withCloseListener({ event ->
                     if (event.getCloseAction() == INPUT_DIALOG_OK_ACTION) {

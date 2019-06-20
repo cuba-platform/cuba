@@ -244,7 +244,7 @@ public class InputParameter {
      * @param id field id
      * @return input parameter
      */
-    public static InputParameter bigDecimalParamater(String id) {
+    public static InputParameter bigDecimalParameter(String id) {
         return new InputParameter(id).withDatatypeJavaClass(BigDecimal.class);
     }
 
