@@ -29,6 +29,10 @@
 
   .#{$primary-stylename}-slot > .v-caption {
     line-height: $v-unit-size;
+
+    .c-context-help-button {
+      line-height: $v-line-height;
+    }
   }
 
   .#{$primary-stylename}-slot.inline > .v-caption {
