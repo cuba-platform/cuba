@@ -35,15 +35,44 @@ public class UrlTools {
 
     private static final Logger log = LoggerFactory.getLogger(UrlTools.class);
 
-    protected static final String ROOT_ROUTE = "^(\\w+)$";
+    /**
+     * Root route regexp. Intended to match first part of a fragment:
+     *
+     * <pre>{@code
+     *    /#<root_route>
+     * }</pre>
+     */
+    protected static final String ROOT_ROUTE = "^([\\w-]+)$";
     protected static final Pattern ROOT_ROUTE_PATTERN = Pattern.compile(ROOT_ROUTE);
 
-    protected static final String NESTED_ROUTE = "^(\\w+)(?:/(\\d+))?(?:/([\\w-]+(?:|/[\\w-]+)*))?$";
+    /**
+     * Nested screens route regexp. Intended to match a fragment that contains root and nested screen routes
+     *
+     * <pre>{@code
+     *    /#<root_route>/[<url_state_mark>/]<nested_screen_route>[/<nested_screen_route>]
+     * }</pre>
+     */
+    protected static final String NESTED_ROUTE = "^([\\w-]+)(?:/(\\d+))?(?:/([\\w-]+(?:|/[\\w-]+)*))?$";
     protected static final Pattern NESTED_ROUTE_PATTERN = Pattern.compile(NESTED_ROUTE);
 
-    protected static final String PARAMS_ROUTE = "^(\\w+)(?:(?:/(\\d+))?/([\\w-]+(?:|/[\\w-]+)*))?\\?(.+)$";
+    /**
+     * Params route regexp. Intended to match a fragment that contains root and nested screen routes and URL params
+     * part:
+     *
+     * <pre>{@code
+     *    /#<root_route>/[<url_state_mark>/]<nested_screen_route>?<params_part>
+     * }</pre>
+     */
+    protected static final String PARAMS_ROUTE = "^([\\w-]+)(?:(?:/(\\d+))?/([\\w-]+(?:|/[\\w-]+)*))?\\?(.+)$";
     protected static final Pattern PARAMS_ROUTE_PATTERN = Pattern.compile(PARAMS_ROUTE);
 
+    /**
+     * URL params regexp. Intended to match param pairs:
+     *
+     * <pre>{@code
+     *    p1=v2[&p2=v2]...
+     * }</pre>
+     */
     protected static final String PARAMS_REGEX =
             "^(?:(?:\\w+=[-a-zA-Z0-9_/+%]+)?|\\w+=[-a-zA-Z0-9_/+%]+(?:&\\w+=[-a-zA-Z0-9_/+%]+)+)$";
     protected static final Pattern PARAMS_PATTERN = Pattern.compile(PARAMS_REGEX);
@@ -86,18 +115,6 @@ public class UrlTools {
         }
     }
 
-    protected static URI getEmptyFragmentUri() {
-        URI location = Page.getCurrent().getLocation();
-
-        try {
-            return new URI(location.getScheme(), location.getSchemeSpecificPart(), null);
-        } catch (URISyntaxException e) {
-            log.info("Failed to form new location to reset fragment");
-        }
-
-        return location;
-    }
-
     public static NavigationState parseState(String uriFragment) {
         if (uriFragment == null || uriFragment.isEmpty()) {
             return NavigationState.EMPTY;
@@ -123,6 +140,18 @@ public class UrlTools {
         }
 
         return navigationState;
+    }
+
+    protected static URI getEmptyFragmentUri() {
+        URI location = Page.getCurrent().getLocation();
+
+        try {
+            return new URI(location.getScheme(), location.getSchemeSpecificPart(), null);
+        } catch (URISyntaxException e) {
+            log.info("Failed to form new location to reset fragment");
+        }
+
+        return location;
     }
 
     protected static NavigationState parseRootRoute(String uriFragment) {

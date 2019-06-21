@@ -44,6 +44,7 @@
         <item id="printDomain"
               class="com.haulmont.cuba.web.app.domain.DomainProvider"/>
         <separator/>
+        <item id="settings"/>
         <item id="logWindow"
               class="com.haulmont.cuba.web.log.LogWindowLauncher"/>
         <separator/>

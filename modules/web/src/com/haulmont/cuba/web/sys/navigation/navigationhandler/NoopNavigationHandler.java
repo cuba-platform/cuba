@@ -42,7 +42,7 @@ public class NoopNavigationHandler implements NavigationHandler {
             return false;
         }
 
-        log.info("Failed to handle a route: '{}'", requestedState.asRoute());
+        log.debug("Unable handle a route: '{}'", requestedState.asRoute());
         urlChangeHandler.revertNavigationState();
 
         return false;
