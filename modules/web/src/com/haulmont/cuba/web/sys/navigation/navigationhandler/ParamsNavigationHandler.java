@@ -44,7 +44,7 @@ public class ParamsNavigationHandler implements NavigationHandler {
         Screen screen = ui.getUrlChangeHandler().getActiveScreen();
         if (screen == null) {
             log.debug("Unable to find a screen for state: '{}", requestedState);
-            return true;
+            return false;
         }
 
         Map<String, String> params = requestedState.getParams() != null
@@ -53,6 +53,10 @@ public class ParamsNavigationHandler implements NavigationHandler {
 
         WebWindow window = (WebWindow) screen.getWindow();
         NavigationState resolvedState = window.getResolvedState();
+
+        if (params.equals(resolvedState.getParams())) {
+            return false;
+        }
 
         NavigationState newState = new NavigationState(
                 resolvedState.getRoot(),
