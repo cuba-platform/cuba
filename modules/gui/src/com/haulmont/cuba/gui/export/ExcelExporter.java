@@ -416,7 +416,7 @@ public class ExcelExporter {
 
         DataFormat format = wb.createDataFormat();
         doubleFormatCellStyle = wb.createCellStyle();
-        doubleFormatCellStyle.setDataFormat(format.getFormat("#,##0.################"));
+        doubleFormatCellStyle.setDataFormat(format.getFormat("#,##0.00##############"));
     }
 
     @SuppressWarnings("unchecked")
