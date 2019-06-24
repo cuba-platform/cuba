@@ -29,6 +29,7 @@ import com.haulmont.cuba.gui.Notifications.NotificationType;
 import com.haulmont.cuba.gui.components.ComponentContainer;
 import com.haulmont.cuba.gui.components.FileUploadField;
 import com.haulmont.cuba.gui.components.Window;
+import com.haulmont.cuba.gui.components.data.ValueSource;
 import com.haulmont.cuba.gui.data.DataSupplier;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.export.ExportDisplay;
@@ -105,6 +106,13 @@ public class WebFileUploadField extends WebAbstractUploadField<CubaFileUploadWra
 
         initComponent();
         attachValueChangeListener(component);
+    }
+
+    @Override
+    protected void valueBindingConnected(ValueSource<FileDescriptor> valueSource) {
+        super.valueBindingConnected(valueSource);
+
+        setShowFileName(true);
     }
 
     @Inject
