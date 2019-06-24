@@ -99,7 +99,7 @@ public class WebDatePicker<V> extends WebV8AbstractField<InlineDateField, LocalD
             return null;
         }
 
-        LocalDateTime localDateTime = LocalDateTime.of(componentRawValue, getDataAwareLocalTime());
+        LocalDateTime localDateTime = LocalDateTime.of(componentRawValue, LocalTime.MIDNIGHT);
 
         ValueSource<V> valueSource = getValueSource();
         if (valueSource instanceof EntityValueSource) {
@@ -107,20 +107,6 @@ public class WebDatePicker<V> extends WebV8AbstractField<InlineDateField, LocalD
             return (V) convertFromLocalDateTime(localDateTime, metaProperty.getRange().asDatatype().getJavaClass());
         }
         return (V) convertFromLocalDateTime(localDateTime, datatype == null ? Date.class : datatype.getJavaClass());
-    }
-
-    protected LocalTime getDataAwareLocalTime() {
-        LocalTime dataAwareLocalTime = LocalTime.MIDNIGHT;
-
-        ValueSource<V> valueSource = getValueSource();
-        if (valueSource instanceof EntityValueSource) {
-            MetaProperty metaProperty = ((EntityValueSource) valueSource).getMetaPropertyPath().getMetaProperty();
-            if (metaProperty.getAnnotations().get(FutureOrPresent.class.getName()) != null) {
-                dataAwareLocalTime = LocalTime.MAX;
-            }
-        }
-
-        return dataAwareLocalTime;
     }
 
     @Override
