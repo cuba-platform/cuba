@@ -21,6 +21,8 @@ import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.HeadElement;
 import com.google.gwt.dom.client.IFrameElement;
 import com.google.gwt.dom.client.MetaElement;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.user.client.ui.RichTextArea;
 import com.vaadin.client.ui.VRichTextArea;
 
@@ -54,5 +56,21 @@ public class CubaRichTextAreaWidget extends VRichTextArea {
 
     public void setLocaleMap(Map<String, String> localeMap) {
         ((CubaRichTextToolbarWidget) formatter).setLocaleMap(localeMap);
+    }
+
+    @Override
+    public void onKeyDown(KeyDownEvent event) {
+        // Due to Vaadin logic, it's not possible to trigger the ShortcutActions individually.
+        // So, if any other component on a screen has ENTER shortcut listener,
+        // then RichTextArea ignores it, because it's handled by other component.
+        // As a workaround, ignore any ENTER shortcut listeners, even added to RichTextArea itself.
+        if (event.getNativeKeyCode() == KeyCodes.KEY_ENTER
+                && !event.isAltKeyDown()
+                && !event.isControlKeyDown()
+                && !event.isShiftKeyDown()
+                && !event.isMetaKeyDown()) {
+            return;
+        }
+        super.onKeyDown(event);
     }
 }
