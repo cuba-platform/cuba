@@ -48,7 +48,7 @@ public class SystemInfoWindowCompanion implements SystemInfoWindow.Companion {
 
             com.vaadin.ui.Button button = copyButton.unwrap(com.vaadin.ui.Button.class);
             CubaCopyButtonExtension copyExtension =
-                    CubaCopyButtonExtension.copyWith(button, cubaCopyLogContentClass + " textarea");
+                    CubaCopyButtonExtension.copyWith(button, cubaCopyLogContentClass);
 
             copyExtension.addCopyListener(event ->
                     Notification.show(event.isSuccess() ? successMessage : failMessage,
