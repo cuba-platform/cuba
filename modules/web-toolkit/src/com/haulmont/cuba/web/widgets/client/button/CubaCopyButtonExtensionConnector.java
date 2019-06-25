@@ -17,8 +17,6 @@
 
 package com.haulmont.cuba.web.widgets.client.button;
 
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.haulmont.cuba.web.widgets.CubaCopyButtonExtension;
 import com.vaadin.client.ComponentConnector;
 import com.vaadin.client.ServerConnector;
