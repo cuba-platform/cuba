@@ -29,6 +29,7 @@ import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.FieldGroup;
 import com.haulmont.cuba.gui.components.ListEditor;
 import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.data.RuntimePropsDatasource;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import org.apache.commons.lang.BooleanUtils;
 import org.slf4j.Logger;
@@ -48,7 +49,11 @@ public class DynamicAttributeCustomFieldGenerator implements FieldGroup.CustomFi
         ComponentsFactory componentsFactory = AppBeans.get(ComponentsFactory.class);
         ListEditor listEditor = componentsFactory.createComponent(ListEditor.class);
 
-        MetaPropertyPath metaPropertyPath = DynamicAttributesUtils.getMetaPropertyPath(datasource.getMetaClass(), propertyId);
+        MetaClass entityMetaClass = datasource instanceof RuntimePropsDatasource
+                                    ? ((RuntimePropsDatasource) datasource).resolveCategorizedEntityClass()
+                                    : datasource.getMetaClass();
+
+        MetaPropertyPath metaPropertyPath = DynamicAttributesUtils.getMetaPropertyPath(entityMetaClass, propertyId);
         if (metaPropertyPath == null) {
             log.error("MetaPropertyPath for dynamic attribute {} not found", propertyId);
             return null;

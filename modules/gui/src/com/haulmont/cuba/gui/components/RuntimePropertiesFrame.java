@@ -37,14 +37,12 @@ import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.RuntimePropsDatasource;
 import com.haulmont.cuba.gui.dynamicattributes.DynamicAttributesGuiTools;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 
 import javax.inject.Inject;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
@@ -173,6 +171,7 @@ public class RuntimePropertiesFrame extends AbstractFrame {
             loadValidators(newRuntimeFieldGroup, fieldConfig);
             loadRequired(newRuntimeFieldGroup, fieldConfig);
             loadEditable(newRuntimeFieldGroup, fieldConfig);
+            initCollectionAttribute(fieldConfig);
         }
 
         initFieldCaptionWidth(newRuntimeFieldGroup);
@@ -254,9 +253,24 @@ public class RuntimePropertiesFrame extends AbstractFrame {
         }
     }
 
+    protected void initCollectionAttribute(FieldGroup.FieldConfig field) {
+        MetaPropertyPath metaPropertyPath = rds.getMetaClass().getPropertyPath(field.getProperty());
+        if (metaPropertyPath != null) {
+            MetaProperty metaProperty = metaPropertyPath.getMetaProperty();
+            if (BooleanUtils.isTrue(DynamicAttributesUtils.getCategoryAttribute(metaProperty).getIsCollection())) {
+                Component component = field.getComponent();
+                if (component instanceof HasValue) {
+                    Object value = rds.getItem().getValue(metaProperty.getName());
+                    ((HasValue) component).setValue(value);
+                }
+            }
+        }
+    }
+
     protected Field.Validator getValidator(MetaProperty property) {
         Field.Validator validator = null;
-        if (property.getRange().isDatatype()) {
+        if (property.getRange().isDatatype()
+                && !Boolean.TRUE.equals(DynamicAttributesUtils.getCategoryAttribute(property).getIsCollection())) {
             Class type = property.getRange().asDatatype().getJavaClass();
 
             if (type.equals(Integer.class)) {

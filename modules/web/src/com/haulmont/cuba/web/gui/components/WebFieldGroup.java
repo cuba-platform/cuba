@@ -1027,7 +1027,9 @@ public class WebFieldGroup extends WebAbstractComponent<CubaFieldGroupLayout>
 
         @Override
         public String getProperty() {
-            if (component instanceof DatasourceComponent) {
+            // We need the second check in case we get the property from a collection dynamic attribute field component
+            // which MetaPropertyPath class attribute is null
+            if (component instanceof DatasourceComponent && !(component instanceof ListEditor)) {
                 MetaPropertyPath metaPropertyPath = ((DatasourceComponent) component).getMetaPropertyPath();
                 return metaPropertyPath != null ? metaPropertyPath.toString() : null;
             }
