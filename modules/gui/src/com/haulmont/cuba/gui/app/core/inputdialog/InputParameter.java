@@ -18,6 +18,7 @@ package com.haulmont.cuba.gui.app.core.inputdialog;
 
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.datatypes.Datatype;
+import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.Field;
 
@@ -38,6 +39,7 @@ public class InputParameter {
     protected Supplier<Field> field;
     protected Object defaultValue;
     protected Class<? extends Entity> entityClass;
+    protected Class<? extends EnumClass> enumClass;
 
     protected Class datatypeJavaClass;
 
@@ -114,7 +116,8 @@ public class InputParameter {
     }
 
     /**
-     * Sets datatype to the field. Cannot be used with {@link #withEntityClass(Class)} and with predefined static methods.
+     * Sets datatype to the field. Cannot be used with {@link #withEntityClass(Class)}, {@link #withEnumClass(Class)}
+     * and with predefined static methods.
      * <p>
      * Note, it doesn't support custom Datatype. Use {@link #withField(Supplier)}.
      *
@@ -122,8 +125,9 @@ public class InputParameter {
      * @return input parameter
      */
     public InputParameter withDatatype(Datatype datatype) {
-        checkNullEntityClass("InputParameter cannot contain Datatype and entity class at the same time");
-        checkNullDatatypeJavaClass("Datatype cannot be used with a parameter that has already data type");
+        checkNullEntityClass("Datatype cannot be used with a parameter that has already contained entity class");
+        checkNullDatatypeJavaClass("Datatype cannot be used with a parameter that has already contained data type");
+        checkNullEnumClass("Datatype cannot be used with a parameter that has already contained enum class");
 
         this.datatype = datatype;
         return this;
@@ -185,16 +189,41 @@ public class InputParameter {
     }
 
     /**
-     * Sets entity class. Cannot be used with {@link #withDatatype(Datatype)} and with predefined static methods.
+     * Sets entity class. Cannot be used with {@link #withDatatype(Datatype)}, {@link #withEnumClass(Class)}
+     * and with predefined static methods.
      *
      * @param entityClass entity class
      * @return input parameter
      */
     public InputParameter withEntityClass(Class<? extends Entity> entityClass) {
-        checkNullDatatype("InputParameter cannot contain entity class and Datatype at the same time");
-        checkNullDatatypeJavaClass("Entity class cannot be used with a parameter that has data type");
+        checkNullDatatype("Entity class cannot be used with a parameter that has already contained Datatype");
+        checkNullDatatypeJavaClass("Entity class cannot be used with a parameter that has already contained data type");
+        checkNullEnumClass("Entity class cannot be used with a parameter that has already contained enum class");
 
         this.entityClass = entityClass;
+        return this;
+    }
+
+    /**
+     * @return enum class
+     */
+    public Class<? extends EnumClass> getEnumClass() {
+        return enumClass;
+    }
+
+    /**
+     * Sets enum class. Cannot be used with {@link #withDatatype(Datatype)}, {@link #withEntityClass(Class)}
+     * and with predefined static methods.
+     *
+     * @param enumClass enum class
+     * @return input parameter
+     */
+    public InputParameter withEnumClass(Class<? extends EnumClass> enumClass) {
+        checkNullDatatype("Enum class cannot be used with a parameter that has already contained Datatype");
+        checkNullDatatypeJavaClass("Enum class cannot be used with a parameter that has already contained data type");
+        checkNullEntityClass("Enum class cannot be used with a parameter that has already contained entity class");
+
+        this.enumClass = enumClass;
         return this;
     }
 
@@ -309,6 +338,16 @@ public class InputParameter {
         return new InputParameter(id).withDatatypeJavaClass(Boolean.class);
     }
 
+    /**
+     * Creates parameter with Enum type.
+     *
+     * @param id        field id
+     * @param enumClass enum class
+     * @return input parameter
+     */
+    public static InputParameter enumParameter(String id, Class<? extends EnumClass> enumClass) {
+        return new InputParameter(id).withEnumClass(enumClass);
+    }
 
     protected void checkNullDatatype(String message) {
         if (datatype != null) {
@@ -318,6 +357,12 @@ public class InputParameter {
 
     protected void checkNullEntityClass(String message) {
         if (entityClass != null) {
+            throw new IllegalStateException(message);
+        }
+    }
+
+    protected void checkNullEnumClass(String message) {
+        if (enumClass != null) {
             throw new IllegalStateException(message);
         }
     }
