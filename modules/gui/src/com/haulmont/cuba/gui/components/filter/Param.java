@@ -344,9 +344,6 @@ public class Param {
                         //then we should set the string value (not the array) to the text field
                         String caption = new TextStringBuilder().appendWithSeparators((Collection) value, ",").toString();
                         textField.setValue(caption);
-                    } else if (textField.getDatatype() == null) {
-                        // it shows String
-                        textField.setValue(formatValue(value));
                     } else {
                         textField.setValue(value);
                     }
