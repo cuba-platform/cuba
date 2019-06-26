@@ -26,12 +26,12 @@ import com.haulmont.cuba.gui.components.*
 import com.haulmont.cuba.gui.components.inputdialog.InputDialogAction
 import com.haulmont.cuba.gui.screen.OpenMode
 import com.haulmont.cuba.gui.screen.Screen
+import com.haulmont.cuba.web.testmodel.sales.Status
 import com.haulmont.cuba.web.testmodel.sample.GoodInfo
 import spec.cuba.web.UiScreenSpec
 
 import static com.haulmont.cuba.gui.app.core.inputdialog.InputDialog.*
-import static com.haulmont.cuba.gui.app.core.inputdialog.InputDialog.InputDialogResult.ActionType.NO
-import static com.haulmont.cuba.gui.app.core.inputdialog.InputDialog.InputDialogResult.ActionType.YES
+import static com.haulmont.cuba.gui.app.core.inputdialog.InputDialog.InputDialogResult.ActionType.*
 import static com.haulmont.cuba.gui.app.core.inputdialog.InputParameter.*
 import static com.haulmont.cuba.gui.components.inputdialog.InputDialogAction.action
 import static com.haulmont.cuba.gui.screen.FrameOwner.WINDOW_CLOSE_ACTION
@@ -435,6 +435,36 @@ class InputDialogTest extends UiScreenSpec {
 
         // must be closed
         !screens.getOpenedScreens().getActiveScreens().contains(dialogA)
+    }
+
+    def "enum input parameter"() {
+        def screens = vaadinUi.screens
+
+        def mainWindow = screens.create("mainWindow", OpenMode.ROOT)
+        screens.show(mainWindow)
+
+        when: "validator and validationRequired in InputDialogAction"
+        def dialogs = getScreenContext(mainWindow).getDialogs()
+
+        InputDialog dialog = dialogs.createInputDialog(mainWindow)
+                .withParameters(enumParameter("enumField", Status)
+                .withDefaultValue(Status.OK))
+                .withActions(DialogActions.OK_CANCEL, { result ->
+                    switch (result.closeActionType) {
+                        case OK:
+                            Status status = result.getValue("enumField")
+                            assert status == Status.OK
+                            break
+                    }
+                })
+                .show()
+
+        then:
+        def okBtnA = getButtonFromDialog(dialog, 1)
+        okBtnA.getAction().actionPerform(okBtnA)
+
+        // must be closed
+        !screens.getOpenedScreens().getActiveScreens().contains(dialog)
     }
 
     protected static Button getButtonFromDialog(InputDialog dialog, int index) {

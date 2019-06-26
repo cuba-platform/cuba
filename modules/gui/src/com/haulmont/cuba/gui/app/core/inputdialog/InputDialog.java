@@ -314,6 +314,10 @@ public class InputDialog extends Screen {
         fieldIds = new ArrayList<>(parameters.size());
 
         for (InputParameter parameter : parameters) {
+            if (fieldIds.contains(parameter.getId())) {
+                throw new IllegalArgumentException("InputDialog cannot contain parameters with the same id: '" + parameter.getId() + "'");
+            }
+
             Field field;
             if (parameter.getField() != null) {
                 field = parameter.getField().get();
@@ -325,10 +329,6 @@ public class InputDialog extends Screen {
             }
             field.setId(parameter.getId());
 
-            if (fieldIds.contains(parameter.getId())) {
-                throw new IllegalArgumentException("InputDialog cannot contain parameters with the same id: '" + parameter.getId() + "'");
-            }
-
             fieldIds.add(field.getId());
             form.add(field);
         }
@@ -336,14 +336,21 @@ public class InputDialog extends Screen {
 
     @SuppressWarnings("unchecked")
     protected Field createField(InputParameter parameter) {
+        if (parameter.getEntityClass() != null) {
+            return createEntityField(parameter);
+        } else if (parameter.getEnumClass() != null) {
+            return createEnumField(parameter);
+        }
+
         Datatype datatype = null;
         if (parameter.getDatatypeJavaClass() != null) {
             datatype = datatypeRegistry.get(parameter.getDatatypeJavaClass());
         } else if (parameter.getDatatype() != null) {
             datatype = parameter.getDatatype();
-            // if there is no type is defined, set StringDatatype
-        } else if (parameter.getEntityClass() == null) {
-            datatype = datatypeRegistry.get(String.class);
+        }
+
+        if (datatype == null) {
+            datatype = datatypeRegistry.getNN(String.class);
         }
 
         if (datatype instanceof NumberDatatype
@@ -368,10 +375,8 @@ public class InputDialog extends Screen {
             return timeField;
         } else if (datatype instanceof BooleanDatatype) {
             return uiComponents.create(CheckBox.NAME);
-        } else if (datatype != null) {
-            throw new IllegalArgumentException("InputDialog doesn't support custom datatype: " + datatype.getClass());
         } else {
-            return createEntityField(parameter);
+            throw new IllegalArgumentException("InputDialog doesn't support datatype: " + datatype.getClass());
         }
     }
 
@@ -404,6 +409,14 @@ public class InputDialog extends Screen {
             lookupPickerField.setOptions(new ContainerOptions(container));
             return lookupPickerField;
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    protected Field createEnumField(InputParameter parameter) {
+        LookupField lookupField = uiComponents.create(LookupField.NAME);
+        lookupField.setOptionsEnum(parameter.getEnumClass());
+        lookupField.setWidthFull();
+        return lookupField;
     }
 
     protected void initActions(List<Action> actions) {
