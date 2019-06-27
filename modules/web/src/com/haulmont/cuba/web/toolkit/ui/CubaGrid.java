@@ -250,6 +250,21 @@ public class CubaGrid extends Grid implements Action.ShortcutNotifier {
         }
     }
 
+    @Override
+    public void beforeClientResponse(boolean initial) {
+        super.beforeClientResponse(initial);
+
+        if (initial && isEditorActive()) {
+            // If the editor is active when re-attaching grid, this probably
+            // means that the user switched tabs when the editor was active.
+            // In this case, we need silently "close" editor, i.e. clear editedItemId,
+            // clear all editor fields and set the 'editorActive' state to false.
+            editedItemId = null;
+            editorActive = false;
+            clearFields(editorFields);
+        }
+    }
+
     protected void fireEditorPreCommitEvent() {
         fireEvent(new EditorPreCommitEvent(this, editedItemId));
     }
