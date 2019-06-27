@@ -1427,6 +1427,10 @@ public class FilterDelegateImpl implements FilterDelegate {
             // set to false because it's initial value
             maxResultValueChanged = false;
         }
+
+        if (ftsSwitch != null && !isEntityAvailableForFts()) {
+            controlsLayout.remove(ftsSwitch);
+        }
     }
 
     @Override
