@@ -1381,6 +1381,9 @@ public class WebScreens implements Screens, WindowManager {
                 .withCaption(title)
                 .withMessage(message)
                 .withType(convertMessageType(messageType.getMessageMode()))
+                .withContentMode(
+                        Frame.MessageMode.isHTML(messageType.getMessageMode()) ? ContentMode.HTML : ContentMode.TEXT
+                )
                 .withActions(actions);
 
         if (messageType.getWidth() != null) {
