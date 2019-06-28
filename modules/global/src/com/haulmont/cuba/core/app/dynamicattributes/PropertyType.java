@@ -24,6 +24,7 @@ public enum PropertyType implements EnumClass<String> {
     STRING,
     INTEGER,
     DOUBLE,
+    DECIMAL,
     DATE,
     DATE_WITHOUT_TIME,
     BOOLEAN,

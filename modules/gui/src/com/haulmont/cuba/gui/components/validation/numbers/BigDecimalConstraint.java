@@ -73,6 +73,16 @@ public class BigDecimalConstraint implements NumberConstraint {
         return value.signum() > 0;
     }
 
+    @Override
+    public boolean isDoubleMax(Double max, boolean inclusive) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean isDoubleMin(Double min, boolean inclusive) {
+        throw new UnsupportedOperationException();
+    }
+
     protected int compareValueWith(long val) {
         return this.value.compareTo(BigDecimal.valueOf(val));
     }

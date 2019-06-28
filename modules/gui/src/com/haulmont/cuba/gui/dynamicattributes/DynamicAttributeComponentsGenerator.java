@@ -24,6 +24,8 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
+import java.util.Collection;
+import java.util.function.Consumer;
 
 /**
  * Creates components for editing dynamic attributes
@@ -38,6 +40,7 @@ public class DynamicAttributeComponentsGenerator {
     protected UiComponents uiComponents;
     protected Metadata metadata;
     protected Scripting scripting;
+    protected DynamicAttributesGuiTools dynamicAttributesGuiTools;
 
     @Inject
     public void setUiComponents(UiComponents uiComponents) {
@@ -52,6 +55,11 @@ public class DynamicAttributeComponentsGenerator {
     @Inject
     public void setScripting(Scripting scripting) {
         this.scripting = scripting;
+    }
+
+    @Inject
+    public void setDynamicAttributesGuiTools(DynamicAttributesGuiTools dynamicAttributesGuiTools) {
+        this.dynamicAttributesGuiTools = dynamicAttributesGuiTools;
     }
 
     /**
@@ -106,6 +114,14 @@ public class DynamicAttributeComponentsGenerator {
         listEditor.setEntityJoinClause(categoryAttribute.getJoinClause());
         listEditor.setEntityWhereClause(categoryAttribute.getWhereClause());
 
+        Collection<Consumer<?>> validators = dynamicAttributesGuiTools.createValidators(categoryAttribute);
+        if (validators != null && !validators.isEmpty()) {
+            for (Consumer<?> validator : validators) {
+                //noinspection unchecked
+                listEditor.addListItemValidator(validator);
+            }
+        }
+
         ListEditor.ItemType itemType = getListEditorItemType(categoryAttribute.getDataType());
         listEditor.setItemType(itemType);
 
@@ -142,6 +158,8 @@ public class DynamicAttributeComponentsGenerator {
                 return ListEditor.ItemType.DATE;
             case DOUBLE:
                 return ListEditor.ItemType.DOUBLE;
+            case DECIMAL:
+                return ListEditor.ItemType.BIGDECIMAL;
             case INTEGER:
                 return ListEditor.ItemType.INTEGER;
             case STRING:

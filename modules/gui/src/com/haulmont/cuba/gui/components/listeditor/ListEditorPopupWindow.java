@@ -40,6 +40,7 @@ import org.apache.commons.lang3.BooleanUtils;
 import javax.inject.Inject;
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -92,6 +93,9 @@ public class ListEditorPopupWindow extends AbstractWindow implements ListEditorW
 
     @WindowParam
     protected TimeZone timeZone;
+
+    @WindowParam
+    protected Collection<Consumer> validators;
 
     @Inject
     protected Metadata metadata;
@@ -202,6 +206,13 @@ public class ListEditorPopupWindow extends AbstractWindow implements ListEditorW
 
             componentForAdding.setId("listValueField");
 
+            if (validators != null && !validators.isEmpty()) {
+                for (Consumer validator : validators) {
+                    //noinspection unchecked
+                    componentForAdding.addValidator(validator);
+                }
+            }
+
             addItemLayout.add(componentForAdding);
             addItemLayout.expand(componentForAdding);
 
@@ -227,8 +238,10 @@ public class ListEditorPopupWindow extends AbstractWindow implements ListEditorW
 
     protected void _addValue(Field componentForAdding) {
         Object value = componentForAdding.getValue();
-        if (value != null) {
+
+        if (value != null && validate(Collections.singletonList(componentForAdding))) {
             componentForAdding.setValue(null);
+
             if (!valueExists(value)) {
                 addValueToLayout(value, ListEditorHelper.getValueCaption(value, itemType, timeZone, optionCaptionProvider));
             }

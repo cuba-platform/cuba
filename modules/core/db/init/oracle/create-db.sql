@@ -25,6 +25,7 @@ create table SYS_ATTR_VALUE (
     STRING_VALUE varchar2(4000),
     INTEGER_VALUE integer,
     DOUBLE_VALUE numeric(36,6),
+    DECIMAL_VALUE numeric(36,10),
     DATE_VALUE timestamp,
     DATE_WO_TIME_VALUE date,
     BOOLEAN_VALUE char(1),
@@ -80,6 +81,7 @@ create table SYS_CATEGORY_ATTR (
     DEFAULT_STRING varchar2(4000),
     DEFAULT_INT integer,
     DEFAULT_DOUBLE numeric(36,6),
+    DEFAULT_DECIMAL numeric(36,10),
     DEFAULT_DATE timestamp,
     DEFAULT_DATE_WO_TIME date,
     DEFAULT_DATE_IS_CURRENT char(1),
@@ -103,6 +105,7 @@ create table SYS_CATEGORY_ATTR (
     LOCALE_NAMES varchar2(1000 char),
     ENUMERATION_LOCALES clob,
     LOCALE_DESCRIPTIONS varchar2(4000),
+    ATTRIBUTE_CONFIGURATION_JSON clob,
 
     primary key(ID)
 )^

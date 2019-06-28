@@ -790,6 +790,7 @@ create table SYS_CATEGORY_ATTR (
     DEFAULT_STRING text,
     DEFAULT_INT integer,
     DEFAULT_DOUBLE numeric(36,6),
+    DEFAULT_DECIMAL numeric(36,10),
     DEFAULT_DATE datetime(3),
     DEFAULT_DATE_WO_TIME date,
     DEFAULT_DATE_IS_CURRENT boolean,
@@ -813,6 +814,7 @@ create table SYS_CATEGORY_ATTR (
     LOCALE_NAMES varchar(1000),
     ENUMERATION_LOCALES text,
     LOCALE_DESCRIPTIONS text,
+    ATTRIBUTE_CONFIGURATION_JSON text,
     --
     primary key (ID),
     constraint SYS_CATEGORY_ATTR_CATEGORY_ID foreign key (CATEGORY_ID) references SYS_CATEGORY(ID)
@@ -838,6 +840,7 @@ create table SYS_ATTR_VALUE (
     STRING_VALUE text,
     INTEGER_VALUE integer,
     DOUBLE_VALUE numeric(36,6),
+    DECIMAL_VALUE numeric(36,10),
     DATE_VALUE datetime(3),
     DATE_WO_TIME_VALUE date,
     BOOLEAN_VALUE boolean,

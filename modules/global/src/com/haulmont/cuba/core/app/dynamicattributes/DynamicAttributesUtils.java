@@ -24,6 +24,7 @@ import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.global.AppBeans;
 
 import javax.annotation.Nullable;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.UUID;
@@ -102,6 +103,8 @@ public final class DynamicAttributesUtils {
                 return Integer.class;
             case DOUBLE:
                 return Double.class;
+            case DECIMAL:
+                return BigDecimal.class;
             case BOOLEAN:
                 return Boolean.class;
             case DATE:

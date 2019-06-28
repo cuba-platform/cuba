@@ -849,6 +849,9 @@ public class EntityLog implements EntityLogAPI {
             case DOUBLE:
                 fieldName = "doubleValue";
                 break;
+            case DECIMAL:
+                fieldName = "decimalValue";
+                break;
             case BOOLEAN:
                 fieldName = "booleanValue";
                 break;

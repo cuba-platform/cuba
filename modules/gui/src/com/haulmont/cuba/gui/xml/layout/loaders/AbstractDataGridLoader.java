@@ -48,6 +48,7 @@ import org.dom4j.Element;
 import org.dom4j.datatype.DatatypeElementFactory;
 
 import javax.annotation.Nullable;
+import java.text.DecimalFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -598,18 +599,41 @@ public abstract class AbstractDataGridLoader<T extends DataGrid> extends Actions
                         continue;
                     }
 
-                    final Column column =
-                            component.addColumn(metaPropertyPath.getMetaProperty().getName(), metaPropertyPath);
-
-                    column.setCaption(LocaleHelper.isLocalizedValueDefined(attribute.getLocaleNames()) ?
-                            attribute.getLocaleName() :
-                            StringUtils.capitalize(attribute.getName()));
+                    addDynamicAttributeColumn(component, attribute, metaPropertyPath);
                 }
             }
 
             if (ds != null) {
                 getDynamicAttributesGuiTools().listenDynamicAttributesChanges(ds);
             }
+        }
+    }
+
+    protected void addDynamicAttributeColumn(DataGrid component, CategoryAttribute attribute, MetaPropertyPath metaPropertyPath) {
+
+        final Column column =
+                component.addColumn(metaPropertyPath.getMetaProperty().getName(), metaPropertyPath);
+
+        column.setCaption(getDynamicAttributesGuiTools().getColumnCapture(attribute));
+
+        //noinspection unchecked
+        column.setDescriptionProvider(value -> attribute.getLocaleDescription());
+
+        DecimalFormat formatter = getDynamicAttributesGuiTools().getDecimalFormat(attribute);
+        if (formatter != null) {
+            column.setFormatter(obj -> {
+                if (obj == null) {
+                    return null;
+                }
+                if (obj instanceof Number) {
+                    return formatter.format(obj);
+                }
+                return obj.toString();
+            });
+        }
+
+        if (attribute.getConfiguration().getColumnWidth() != null) {
+            column.setWidth(attribute.getConfiguration().getColumnWidth());
         }
     }
 

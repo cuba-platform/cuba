@@ -20,6 +20,7 @@ import com.haulmont.bali.events.Subscription;
 import com.haulmont.cuba.gui.components.data.Options;
 import com.haulmont.cuba.gui.components.data.options.EnumOptions;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
@@ -136,6 +137,14 @@ public interface ListEditor<V> extends OptionsField<List<V>, V>, Component.Focus
         ENUM,
         ENTITY
     }
+
+    /**
+     *
+     * @param validator validator for the child component
+     */
+    void addListItemValidator(Consumer<? super V> validator);
+
+    Collection<Consumer<? super V>> getListItemValidators();
 
     /**
      * Sets the type of elements of editable collection

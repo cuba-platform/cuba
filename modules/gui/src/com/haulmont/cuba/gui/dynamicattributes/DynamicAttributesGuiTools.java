@@ -20,19 +20,20 @@ package com.haulmont.cuba.gui.dynamicattributes;
 import com.google.common.base.Strings;
 import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.bali.util.Preconditions;
+import com.haulmont.chile.core.datatypes.Datatype;
+import com.haulmont.chile.core.datatypes.DatatypeRegistry;
+import com.haulmont.chile.core.datatypes.impl.AdaptiveNumberDatatype;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributes;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.app.dynamicattributes.PropertyType;
-import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
-import com.haulmont.cuba.core.entity.Categorized;
-import com.haulmont.cuba.core.entity.CategoryAttribute;
-import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.entity.*;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.WindowParams;
 import com.haulmont.cuba.gui.commonlookup.CommonLookupController;
 import com.haulmont.cuba.gui.components.PickerField;
+import com.haulmont.cuba.gui.components.validation.*;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -46,8 +47,12 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.time.ZonedDateTime;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import static java.lang.String.format;
@@ -76,6 +81,12 @@ public class DynamicAttributesGuiTools {
 
     @Inject
     protected Security security;
+
+    @Inject
+    protected BeanLocator beanLocator;
+
+    @Inject
+    protected UserSessionSource userSessionSource;
 
     /**
      * Enforce the datasource to change modified status if dynamic attribute is changed
@@ -340,5 +351,120 @@ public class DynamicAttributesGuiTools {
         if (reloadedEntity != null) {
             entity.setDynamicAttributes(reloadedEntity.getDynamicAttributes());
         }
+    }
+
+    public Collection<Consumer<?>> createValidators(CategoryAttribute attribute) {
+        Collection<Consumer<?>> validators;
+
+        switch (attribute.getDataType()) {
+            case INTEGER:
+                validators = createIntegerValidators(attribute);
+                break;
+            case DOUBLE:
+                validators = createDoubleValidators(attribute);
+                break;
+            case DECIMAL:
+                validators = createDecimalValidators(attribute);
+                break;
+            default:
+                validators = null;
+        }
+
+        // add custom groovy script validator
+        if (attribute.getConfiguration().getValidatorGroovyScript() != null) {
+            if (validators == null) {
+                validators = new ArrayList<>();
+            }
+            GroovyScriptValidator validator = beanLocator.getPrototype(GroovyScriptValidator.NAME,
+                    attribute.getConfiguration().getValidatorGroovyScript());
+            validators.add(validator);
+        }
+
+        return validators;
+    }
+
+    protected Collection<Consumer<?>> createIntegerValidators(CategoryAttribute attribute) {
+        List<Consumer<?>> validators = new ArrayList<>();
+        if (attribute.getConfiguration().getMinInt() != null) {
+            validators.add(beanLocator.getPrototype(MinValidator.NAME, attribute.getConfiguration().getMinInt()));
+        }
+        if (attribute.getConfiguration().getMaxInt() != null) {
+            validators.add(beanLocator.getPrototype(MaxValidator.NAME, attribute.getConfiguration().getMaxInt()));
+        }
+        return validators;
+    }
+
+    protected Collection<Consumer<?>> createDoubleValidators(CategoryAttribute attribute) {
+        List<Consumer<?>> validators = new ArrayList<>();
+        if (attribute.getConfiguration().getMinDouble() != null) {
+            validators.add(beanLocator.getPrototype(DoubleMinValidator.NAME, attribute.getConfiguration().getMinDouble()));
+        }
+        if (attribute.getConfiguration().getMaxDouble() != null) {
+            validators.add(beanLocator.getPrototype(DoubleMaxValidator.NAME, attribute.getConfiguration().getMaxDouble()));
+        }
+        return validators;
+    }
+
+    protected Collection<Consumer<?>> createDecimalValidators(CategoryAttribute attribute) {
+        List<Consumer<?>> validators = new ArrayList<>();
+        if (attribute.getConfiguration().getMinDecimal() != null) {
+            validators.add(beanLocator.getPrototype(DecimalMinValidator.NAME, attribute.getConfiguration().getMinDecimal()));
+        }
+        if (attribute.getConfiguration().getMaxDecimal() != null) {
+            validators.add(beanLocator.getPrototype(DecimalMaxValidator.NAME, attribute.getConfiguration().getMaxDecimal()));
+        }
+        return validators;
+    }
+
+    @Nullable
+    public DecimalFormat getDecimalFormat(CategoryAttribute attribute) {
+        if (attribute == null || attribute.getConfiguration().getNumberFormatPattern() == null) {
+            return null;
+        }
+
+        DecimalFormatSymbols symbols = new DecimalFormatSymbols(userSessionSource.getLocale());
+
+        return new DecimalFormat(attribute.getConfiguration().getNumberFormatPattern(), symbols);
+    }
+
+    @Nullable
+    public Datatype getCustomNumberDatatype(CategoryAttribute attribute) {
+        if (attribute == null
+                || attribute.getConfiguration().getNumberFormatPattern() == null
+                || Boolean.TRUE.equals(attribute.getIsCollection())) {
+            return null;
+        }
+
+        DatatypeRegistry registry = AppBeans.get(DatatypeRegistry.NAME);
+        String pattern = attribute.getConfiguration().getNumberFormatPattern();
+        String datatypeId = "customRuntimeDatatype-" + pattern;
+        Class type;
+        if (PropertyType.DECIMAL.equals(attribute.getDataType())) {
+            type = BigDecimal.class;
+        } else {
+            type = Number.class;
+        }
+
+        Datatype datatype;
+        try {
+            datatype = registry.get(datatypeId);
+        } catch (IllegalArgumentException e) {
+            datatype = new AdaptiveNumberDatatype(type, pattern, "", "");
+            registry.register(datatype, datatypeId, false);
+        }
+
+        return datatype;
+    }
+
+    public String getColumnCapture(CategoryAttribute attribute) {
+        String caption;
+        if (!Strings.isNullOrEmpty(attribute.getConfiguration().getColumnName())) {
+            caption = attribute.getConfiguration().getColumnName();
+        } else if (LocaleHelper.isLocalizedValueDefined(attribute.getLocaleNames())) {
+            caption = attribute.getLocaleName();
+        } else {
+            caption = StringUtils.capitalize(attribute.getName());
+        }
+        return caption;
     }
 }

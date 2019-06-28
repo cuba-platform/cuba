@@ -18,6 +18,8 @@
 package com.haulmont.cuba.core.entity;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
+import com.google.gson.Gson;
 import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.chile.core.annotations.NamePattern;
@@ -34,6 +36,7 @@ import javax.annotation.PostConstruct;
 import javax.persistence.*;
 import javax.persistence.Entity;
 import java.time.LocalDate;
+import java.math.BigDecimal;
 import java.util.*;
 
 @Entity(name = "sys$CategoryAttribute")
@@ -107,6 +110,9 @@ public class CategoryAttribute extends StandardEntity {
     @Column(name = "DEFAULT_DOUBLE")
     private Double defaultDouble;
 
+    @Column(name = "DEFAULT_DECIMAL", precision = 36, scale = 10)
+    private BigDecimal defaultDecimal;
+
     @Column(name = "DEFAULT_BOOLEAN")
     private Boolean defaultBoolean;
 
@@ -146,6 +152,10 @@ public class CategoryAttribute extends StandardEntity {
     @Column(name = "ENUMERATION_LOCALES")
     protected String enumerationLocales;
 
+    @Lob
+    @Column(name = "ATTRIBUTE_CONFIGURATION_JSON")
+    protected String attributeConfigurationJson;
+
     @Transient
     @MetaProperty(related = {"localeNames", "name"})
     protected String localeName;
@@ -157,6 +167,9 @@ public class CategoryAttribute extends StandardEntity {
     @Transient
     @MetaProperty(related = "enumerationLocales")
     protected String enumerationLocale;
+
+    @Transient
+    protected CategoryAttributeConfiguration configuration;
 
     @PostConstruct
     public void init() {
@@ -240,6 +253,14 @@ public class CategoryAttribute extends StandardEntity {
         this.defaultDouble = defaultDouble;
     }
 
+    public BigDecimal getDefaultDecimal() {
+        return defaultDecimal;
+    }
+
+    public void setDefaultDecimal(BigDecimal defaultDecimal) {
+        this.defaultDecimal = defaultDecimal;
+    }
+
     public Boolean getDefaultBoolean() {
         return defaultBoolean;
     }
@@ -269,6 +290,7 @@ public class CategoryAttribute extends StandardEntity {
             switch (PropertyType.fromId(dataType)) {
                 case INTEGER: return defaultInt;
                 case DOUBLE: return defaultDouble;
+                case DECIMAL: return defaultDecimal;
                 case BOOLEAN: return defaultBoolean;
                 case DATE: return defaultDate;
                 case DATE_WITHOUT_TIME: return defaultDateWithoutTime;
@@ -488,5 +510,27 @@ public class CategoryAttribute extends StandardEntity {
             map.put(LocaleHelper.getEnumLocalizedValue(s, enumerationLocales), s);
         }
         return map;
+    }
+
+    public String getAttributeConfigurationJson() {
+        return attributeConfigurationJson;
+    }
+
+    public void setAttributeConfigurationJson(String attributeConfigurationJson) {
+        this.attributeConfigurationJson = attributeConfigurationJson;
+    }
+
+    @Transient
+    @MetaProperty
+    public CategoryAttributeConfiguration getConfiguration() {
+        if (configuration == null) {
+            if (!Strings.isNullOrEmpty(attributeConfigurationJson)) {
+                configuration = new Gson().fromJson(attributeConfigurationJson, CategoryAttributeConfiguration.class);
+            } else {
+                configuration = new CategoryAttributeConfiguration();
+            }
+            configuration.setCategoryAttribute(this);
+        }
+        return configuration;
     }
 }

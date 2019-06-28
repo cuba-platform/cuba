@@ -56,6 +56,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.Constructor;
+import java.text.DecimalFormat;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -269,7 +270,6 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
         }
     }
 
-    @SuppressWarnings("unchecked")
     protected void addDynamicAttributes(Table component, MetaClass metaClass, Datasource ds, CollectionLoader collectionLoader,
                                         List<Table.Column> availableColumns) {
         if (getMetadataTools().isPersistent(metaClass)) {
@@ -298,32 +298,58 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
                         continue;
                     }
 
-                    Table.Column column = new Table.Column(metaPropertyPath);
-
-                    column.setCaption(LocaleHelper.isLocalizedValueDefined(attribute.getLocaleNames()) ?
-                            attribute.getLocaleName() :
-                            StringUtils.capitalize(attribute.getName()));
-
-                    column.setDescription(attribute.getLocaleDescription());
-
-                    if (attribute.getDataType().equals(PropertyType.STRING)) {
-                        ClientConfig clientConfig = getConfiguration().getConfig(ClientConfig.class);
-                        column.setMaxTextLength(clientConfig.getDynamicAttributesTableColumnMaxTextLength());
-                    }
-
-                    if (attribute.getDataType().equals(PropertyType.ENUMERATION)
-                            && BooleanUtils.isNotTrue(attribute.getIsCollection())) {
-                        column.setFormatter(value ->
-                                LocaleHelper.getEnumLocalizedValue((String) value, attribute.getEnumerationLocales())
-                        );
-                    }
-                    component.addColumn(column);
+                    addDynamicAttributeColumn(component, attribute, metaPropertyPath);
                 }
             }
 
             if (ds != null) {
                 getDynamicAttributesGuiTools().listenDynamicAttributesChanges(ds);
             }
+        }
+    }
+
+    protected void addDynamicAttributeColumn(Table component, CategoryAttribute attribute, MetaPropertyPath metaPropertyPath) {
+
+        Table.Column column = new Table.Column(metaPropertyPath);
+
+        column.setCaption(getDynamicAttributesGuiTools().getColumnCapture(attribute));
+
+        column.setDescription(attribute.getLocaleDescription());
+
+        if (attribute.getDataType().equals(PropertyType.STRING)) {
+            ClientConfig clientConfig = getConfiguration().getConfig(ClientConfig.class);
+            column.setMaxTextLength(clientConfig.getDynamicAttributesTableColumnMaxTextLength());
+        }
+
+        if (attribute.getDataType().equals(PropertyType.ENUMERATION)
+                && BooleanUtils.isNotTrue(attribute.getIsCollection())) {
+            column.setFormatter(value ->
+                    LocaleHelper.getEnumLocalizedValue((String) value, attribute.getEnumerationLocales())
+            );
+        }
+
+        if (!Strings.isNullOrEmpty(attribute.getConfiguration().getColumnAlignment())) {
+            column.setAlignment(Table.ColumnAlignment.valueOf(attribute.getConfiguration().getColumnAlignment()));
+        }
+
+        DecimalFormat formatter = getDynamicAttributesGuiTools().getDecimalFormat(attribute);
+        if (formatter != null) {
+            column.setFormatter(obj -> {
+                if (obj == null) {
+                    return null;
+                }
+                if (obj instanceof Number) {
+                    return formatter.format(obj);
+                }
+                return obj.toString();
+            });
+        }
+
+        //noinspection unchecked
+        component.addColumn(column);
+
+        if (attribute.getConfiguration().getColumnWidth() != null) {
+            column.setWidth(attribute.getConfiguration().getColumnWidth());
         }
     }
 

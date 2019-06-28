@@ -907,4 +907,158 @@ class ValidatorsTest extends UiScreenSpec {
         then:
         noExceptionThrown()
     }
+
+    def "double min validator test"() {
+        def screens = vaadinUi.screens
+
+        def mainWindow = screens.create("mainWindow", OpenMode.ROOT)
+        screens.show(mainWindow)
+
+        def validatorsScreen = screens.create(ValidatorsScreen)
+        validatorsScreen.show()
+
+        def doubleMinValidator = (DoubleMinValidator) cont.getBean(DoubleMinValidator.NAME, Double.valueOf(10.2))
+        def textField = (TextField) validatorsScreen.getWindow().getComponent("numberField")
+        textField.setDatatype(datatypeRegistry.get(Double))
+        textField.addValidator(doubleMinValidator)
+
+        def invalidInclusive = Double.valueOf(10.1)
+        def validInclusive = Double.valueOf(10.2)
+
+        when: "invalid value"
+        textField.setValue(invalidInclusive)
+        textField.validate()
+
+        then:
+        thrown(ValidationException)
+
+        when: "valid value"
+        textField.setValue(validInclusive)
+        textField.validate()
+
+        then:
+        noExceptionThrown()
+
+        when: "null value"
+        textField.setValue(null)
+        textField.validate()
+
+        then:
+        noExceptionThrown()
+
+        doubleMinValidator.setMin(new Double(5), false)
+        def invalidValue = Double.valueOf(5)
+        def validValue = Double.valueOf(6)
+
+        when: "invalid value"
+        textField.setValue(invalidValue)
+        textField.validate()
+
+        then:
+        thrown(ValidationException)
+
+        when: "valid value"
+        textField.setValue(validValue)
+        textField.validate()
+
+        then:
+        noExceptionThrown()
+    }
+
+    def "double max validator test"() {
+        def screens = vaadinUi.screens
+
+        def mainWindow = screens.create("mainWindow", OpenMode.ROOT)
+        screens.show(mainWindow)
+
+        def validatorsScreen = screens.create(ValidatorsScreen)
+        validatorsScreen.show()
+
+        def doubleMaxValidator = (DoubleMaxValidator) cont.getBean(DoubleMaxValidator.NAME, Double.valueOf(10.2))
+        def textField = (TextField) validatorsScreen.getWindow().getComponent("numberField")
+        textField.setDatatype(datatypeRegistry.get(Double))
+        textField.addValidator(doubleMaxValidator)
+
+        def invalidInclusive = Double.valueOf(10.3)
+        def validInclusive = Double.valueOf(10)
+
+        when: "invalid value"
+        textField.setValue(invalidInclusive)
+        textField.validate()
+
+        then:
+        thrown(ValidationException)
+
+        when: "valid value"
+        textField.setValue(validInclusive)
+        textField.validate()
+
+        then:
+        noExceptionThrown()
+
+        when: "null value"
+        textField.setValue(null)
+        textField.validate()
+
+        then:
+        noExceptionThrown()
+
+        doubleMaxValidator.setMax(Double.valueOf(5), false)
+        def invalidValue = Double.valueOf(5)
+        def validValue = Double.valueOf(4)
+
+        when: "invalid value"
+        textField.setValue(invalidValue)
+        textField.validate()
+
+        then:
+        thrown(ValidationException)
+
+        when: "valid value"
+        textField.setValue(validValue)
+        textField.validate()
+
+        then:
+        noExceptionThrown()
+    }
+
+    def "groovy script validator test"() {
+        def screens = vaadinUi.screens
+
+        def mainWindow = screens.create("mainWindow", OpenMode.ROOT)
+        screens.show(mainWindow)
+
+        def validatorsScreen = screens.create(ValidatorsScreen)
+        validatorsScreen.show()
+
+        def groovyScript = "if (!value.startsWith(\"correct\")) return \"validation error message\""
+        def groovyScriptValidator = (GroovyScriptValidator) cont.getBean(GroovyScriptValidator.NAME, groovyScript)
+        def textField = (TextField) validatorsScreen.getWindow().getComponent("stringField")
+        textField.setDatatype(datatypeRegistry.get(String))
+        textField.addValidator(groovyScriptValidator)
+
+        def invalidStringValue = "incorrectValue"
+        def validStringValue = "correctValue"
+
+        when: "invalid value"
+        textField.setValue(invalidStringValue)
+        textField.validate()
+
+        then:
+        thrown(ValidationException)
+
+        when: "valid value"
+        textField.setValue(validStringValue)
+        textField.validate()
+
+        then:
+        noExceptionThrown()
+
+        when: "null value"
+        textField.setValue(null)
+        textField.validate()
+
+        then:
+        noExceptionThrown()
+    }
 }
