@@ -65,12 +65,12 @@ public class InputDialog extends Screen {
     /**
      * Action is sent when user click on "YES" button and fields validation is successful.
      */
-    public static final CloseAction INPUT_DIALOG_APPLY_ACTION = new StandardCloseAction("inputDialogYes");
+    public static final CloseAction INPUT_DIALOG_YES_ACTION = new StandardCloseAction("inputDialogYes");
 
     /**
      * Action is sent when user click on "NO" button.
      */
-    public static final CloseAction INPUT_DIALOG_REJECT_ACTION = new StandardCloseAction("inputDialogNo");
+    public static final CloseAction INPUT_DIALOG_NO_ACTION = new StandardCloseAction("inputDialogNo");
 
 
     @Inject
@@ -443,16 +443,16 @@ public class InputDialog extends Screen {
                 actions.add(createDialogAction(DialogAction.Type.OK, INPUT_DIALOG_OK_ACTION));
                 break;
             case YES_NO:
-                actions.add(createDialogAction(DialogAction.Type.YES, INPUT_DIALOG_APPLY_ACTION));
-                actions.add(createDialogAction(DialogAction.Type.NO, INPUT_DIALOG_REJECT_ACTION));
+                actions.add(createDialogAction(DialogAction.Type.YES, INPUT_DIALOG_YES_ACTION));
+                actions.add(createDialogAction(DialogAction.Type.NO, INPUT_DIALOG_NO_ACTION));
                 break;
             case OK_CANCEL:
                 actions.add(createDialogAction(DialogAction.Type.OK, INPUT_DIALOG_OK_ACTION));
                 actions.add(createDialogAction(DialogAction.Type.CANCEL, INPUT_DIALOG_CANCEL_ACTION));
                 break;
             case YES_NO_CANCEL:
-                actions.add(createDialogAction(DialogAction.Type.YES, INPUT_DIALOG_APPLY_ACTION));
-                actions.add(createDialogAction(DialogAction.Type.NO, INPUT_DIALOG_REJECT_ACTION));
+                actions.add(createDialogAction(DialogAction.Type.YES, INPUT_DIALOG_YES_ACTION));
+                actions.add(createDialogAction(DialogAction.Type.NO, INPUT_DIALOG_NO_ACTION));
                 actions.add(createDialogAction(DialogAction.Type.CANCEL, INPUT_DIALOG_CANCEL_ACTION));
                 break;
         }
@@ -562,8 +562,8 @@ public class InputDialog extends Screen {
          * @return close action
          * @see #INPUT_DIALOG_OK_ACTION
          * @see #INPUT_DIALOG_CANCEL_ACTION
-         * @see #INPUT_DIALOG_APPLY_ACTION
-         * @see #INPUT_DIALOG_REJECT_ACTION
+         * @see #INPUT_DIALOG_YES_ACTION
+         * @see #INPUT_DIALOG_NO_ACTION
          */
         public CloseAction getCloseAction() {
             return closeAction;
@@ -577,9 +577,9 @@ public class InputDialog extends Screen {
         public ActionType getCloseActionType() {
             if (closeAction.equals(INPUT_DIALOG_OK_ACTION)) {
                 return ActionType.OK;
-            } else if (closeAction.equals(INPUT_DIALOG_REJECT_ACTION)) {
+            } else if (closeAction.equals(INPUT_DIALOG_NO_ACTION)) {
                 return ActionType.NO;
-            } else if (closeAction.equals(INPUT_DIALOG_APPLY_ACTION)) {
+            } else if (closeAction.equals(INPUT_DIALOG_YES_ACTION)) {
                 return ActionType.YES;
             } else {
                 return ActionType.CANCEL;
