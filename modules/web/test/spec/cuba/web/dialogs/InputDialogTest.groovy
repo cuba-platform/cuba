@@ -183,10 +183,10 @@ class InputDialogTest extends UiScreenSpec {
                         case YES:
                             assert result.getValue("string") == defaultString
                             assert result.getValue("entity") == goodInfo
-                            assert result.getCloseAction() == INPUT_DIALOG_APPLY_ACTION
+                            assert result.getCloseAction() == INPUT_DIALOG_YES_ACTION
                             break
                         case NO:
-                            assert result.getCloseAction() == INPUT_DIALOG_REJECT_ACTION
+                            assert result.getCloseAction() == INPUT_DIALOG_NO_ACTION
                             break
                     }
                 })
