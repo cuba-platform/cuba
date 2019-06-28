@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.core.global;
 
+import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 import com.haulmont.cuba.core.entity.Entity;
@@ -280,4 +281,17 @@ public interface DataManager {
      */
     @CheckReturnValue
     <T extends BaseGenericIdEntity<K>, K> T getReference(Class<T> entityClass, K id);
+
+    /**
+     * Returns an entity instance which can be used as a reference to an object which exists in the database.
+     *
+     * @param id id of an existing object
+     *
+     * @see #getReference(Class, Object)
+     */
+    @CheckReturnValue
+    default <T extends BaseGenericIdEntity<K>, K> T getReference(Id<T, K> id) {
+        Preconditions.checkNotNullArgument(id, "id is null");
+        return getReference(id.getEntityClass(), id.getValue());
+    }
 }

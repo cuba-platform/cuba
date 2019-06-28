@@ -17,6 +17,7 @@
 package spec.cuba.core.data_manager
 
 import com.haulmont.cuba.core.entity.KeyValueEntity
+import com.haulmont.cuba.core.entity.contracts.Id
 import com.haulmont.cuba.core.global.AppBeans
 import com.haulmont.cuba.core.global.CommitContext
 import com.haulmont.cuba.core.global.DataManager
@@ -95,6 +96,29 @@ class DataManagerCommitTest extends Specification {
 
         and:
         committedOrder.customer = dataManager.getReference(Customer, customer.id)
+
+        when:
+        Order recommittedOrder = dataManager.commit(committedOrder)
+
+        then:
+        recommittedOrder.customer == customer
+        recommittedOrder.customer.version > 0
+        recommittedOrder.customer.name == customer.name
+
+        cleanup:
+        cont.deleteRecord(order, customer)
+    }
+
+    def "getReference using Id"() {
+
+        given:
+        Order order = new Order(number: '111')
+
+        and:
+        Order committedOrder = dataManager.commit(customer, order).get(order)
+
+        and:
+        committedOrder.customer = dataManager.getReference(Id.of(customer))
 
         when:
         Order recommittedOrder = dataManager.commit(committedOrder)
