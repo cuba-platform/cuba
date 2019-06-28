@@ -18,6 +18,7 @@ package com.haulmont.cuba.core.sys;
 
 import com.haulmont.cuba.core.TransactionalDataManager;
 import com.haulmont.cuba.core.Transactions;
+import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.KeyValueEntity;
 import com.haulmont.cuba.core.entity.contracts.Id;
@@ -40,6 +41,12 @@ public class TransactionalDataManagerBean implements TransactionalDataManager {
 
     @Inject
     protected TransactionalActionFactory transactionalActionFactory;
+
+    @Inject
+    private Metadata metadata;
+
+    @Inject
+    private EntityStates entityStates;
 
     @Override
     public <E extends Entity<K>, K> FluentLoader<E, K> load(Class<E> entityClass) {
@@ -116,6 +123,19 @@ public class TransactionalDataManagerBean implements TransactionalDataManager {
         cc.addInstanceToRemove(entity);
         cc.setJoinTransaction(true);
         dataManager.commit(cc);
+    }
+
+    @Override
+    public <T> T create(Class<T> entityClass) {
+        return metadata.create(entityClass);
+    }
+
+    @Override
+    public <T extends BaseGenericIdEntity<K>, K> T getReference(Class<T> entityClass, K id) {
+        T entity = metadata.create(entityClass);
+        entity.setId(id);
+        entityStates.makePatch(entity);
+        return entity;
     }
 
     @Override
