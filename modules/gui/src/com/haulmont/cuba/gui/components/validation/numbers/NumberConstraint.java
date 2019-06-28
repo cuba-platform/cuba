@@ -64,4 +64,18 @@ public interface NumberConstraint {
      * @return true if value is strictly greater than 0
      */
     boolean isPositive();
+
+    /**
+     * @param max       max value
+     * @param inclusive inclusive option, true by default
+     * @return true if value less than or equal to max (depends on inclusive option)
+     */
+    boolean isDoubleMax(Double max, boolean inclusive);
+
+    /**
+     * @param min       min value
+     * @param inclusive inclusive option, true by default
+     * @return true if value less than or equal to min (depends on inclusive option)
+     */
+    boolean isDoubleMin(Double min, boolean inclusive);
 }

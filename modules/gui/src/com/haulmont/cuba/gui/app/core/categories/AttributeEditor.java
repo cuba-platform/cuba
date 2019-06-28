@@ -24,12 +24,15 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
+import com.google.gson.Gson;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.bali.util.ParamsMap;
+import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.app.dynamicattributes.PropertyType;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
+import com.haulmont.cuba.core.entity.CategoryAttributeConfiguration;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.HasUuid;
 import com.haulmont.cuba.core.global.*;
@@ -61,6 +64,7 @@ import org.apache.commons.text.TextStringBuilder;
 import org.dom4j.Element;
 
 import javax.inject.Inject;
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.function.Consumer;
 
@@ -72,7 +76,8 @@ import static java.lang.String.format;
 public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
 
     protected static final Multimap<PropertyType, String> FIELDS_VISIBLE_FOR_DATATYPES = ArrayListMultimap.create();
-    protected static final Set<String> ALWAYS_VISIBLE_FIELDS = ImmutableSet.of("name", "code", "required", "dataType", "description");
+    protected static final Set<String> ALWAYS_VISIBLE_FIELDS = ImmutableSet.of("name", "code", "required", "dataType",
+            "description", "configuration.validatorGroovyScript");
     protected static final String WHERE = " where ";
 
     static {
@@ -82,9 +87,19 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
         FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.STRING, "rowsCount");
         FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.STRING, "isCollection");
         FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.DOUBLE, "defaultDouble");
+        FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.DOUBLE, "configuration.minDouble");
+        FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.DOUBLE, "configuration.maxDouble");
         FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.DOUBLE, "width");
         FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.DOUBLE, "isCollection");
+        FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.DECIMAL, "defaultDecimal");
+        FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.DECIMAL, "configuration.minDecimal");
+        FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.DECIMAL, "configuration.maxDecimal");
+        FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.DECIMAL, "width");
+        FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.DECIMAL, "isCollection");
+        FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.DECIMAL, "configuration.numberFormatPattern");
         FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.INTEGER, "defaultInt");
+        FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.INTEGER, "configuration.minInt");
+        FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.INTEGER, "configuration.maxInt");
         FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.INTEGER, "width");
         FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.INTEGER, "isCollection");
         FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.DATE, "defaultDate");
@@ -115,16 +130,23 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
     @Inject
     protected FieldGroup attributeFieldGroup;
 
+    @Inject
+    protected FieldGroup columnSettingsFieldGroup;
+
     protected LookupField<PropertyType> dataTypeField;
     protected LookupField<String> screenField;
     protected LookupField<String> entityTypeField;
     protected PickerField<Entity> defaultEntityField;
     protected TextArea<String> descriptionField;
+    protected LookupField<String> columnAlignmentField;
 
     protected String fieldWidth;
 
     @Inject
     protected Datasource<CategoryAttribute> attributeDs;
+
+    @Inject
+    protected Datasource<CategoryAttributeConfiguration> configurationDs;
 
     @Inject
     protected UiComponents uiComponents;
@@ -180,6 +202,14 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
     protected SourceCodeEditor joinField;
     protected SourceCodeEditor whereField;
 
+    protected HBoxLayout hBoxLayoutField;
+    protected SourceCodeEditor validatorGroovyScriptField;
+    protected LinkButton validatorHelpLinkBtn;
+
+    protected TextField defaultDecimalField;
+    protected TextField minDecimalField;
+    protected TextField maxDecimalField;
+
     @Inject
     protected FilterParser filterParser;
 
@@ -191,12 +221,22 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
 
         initLocalizedFrame();
         initFieldGroup();
+        initColumnSettingsFieldGroup();
 
         Action createAction = initCreateScreenAndComponentAction();
         targetScreensTable.addAction(createAction);
         Action removeAction = new RemoveAction(targetScreensTable);
         removeAction.setCaption(getMessage("targetScreensTable.remove"));
         targetScreensTable.addAction(removeAction);
+    }
+
+    @Override
+    public void ready() {
+        defaultDecimalField = (TextField) attributeFieldGroup.getFieldNN("defaultDecimal").getComponentNN();
+        minDecimalField = (TextField) attributeFieldGroup.getFieldNN("configuration.minDecimal").getComponentNN();
+        maxDecimalField = (TextField) attributeFieldGroup.getFieldNN("configuration.maxDecimal").getComponentNN();
+
+        setupBigDecimalFormat();
     }
 
     protected Action initCreateScreenAndComponentAction() {
@@ -404,6 +444,57 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
                 dynamicAttributesGuiTools.initEntityPickerField(defaultEntityField, attribute);
             }
         });
+
+        configurationDs.addItemPropertyChangeListener(e -> {
+            ((DatasourceImplementation) attributeDs).modified(attribute);
+
+            if ("numberFormatPattern".equalsIgnoreCase(e.getProperty())) {
+                setupBigDecimalFormat();
+            }
+        });
+
+        attributeFieldGroup.addCustomField("configuration.validatorGroovyScript", (datasource, propertyId) -> {
+
+            validatorGroovyScriptField = uiComponents.create(SourceCodeEditor.class);
+            validatorGroovyScriptField.setMode(SourceCodeEditor.Mode.Groovy);
+            validatorGroovyScriptField.setDatasource(attributeDs, "configuration.validatorGroovyScript");
+            validatorGroovyScriptField.setWidthFull();
+            validatorGroovyScriptField.setHeight(themeConstants.get("cuba.gui.AttributeEditor.validatorGroovyScriptField.height"));
+            validatorGroovyScriptField.setHighlightActiveLine(false);
+            validatorGroovyScriptField.setShowGutter(false);
+
+            validatorHelpLinkBtn = uiComponents.create(LinkButton.class);
+            validatorHelpLinkBtn.setIcon("icons/question-white.png");
+            validatorHelpLinkBtn.addClickListener(event -> showMessageDialog(getMessage("validatorScript"), getMessage("validatorScriptHelp"),
+                    MessageType.CONFIRMATION_HTML
+                            .modal(false)
+                            .width(560f)));
+
+            hBoxLayoutField = uiComponents.create(HBoxLayout.class);
+            hBoxLayoutField.setWidthFull();
+            hBoxLayoutField.add(validatorGroovyScriptField, validatorHelpLinkBtn);
+            hBoxLayoutField.expand(validatorGroovyScriptField);
+
+            return hBoxLayoutField;
+        });
+    }
+
+    protected void initColumnSettingsFieldGroup() {
+        columnSettingsFieldGroup.addCustomField("configuration.columnAlignment", (datasource, propertyId) -> {
+            columnAlignmentField = uiComponents.create(LookupField.NAME);
+            columnAlignmentField.setDatasource(datasource, "configuration.columnAlignment");
+            columnAlignmentField.setWidth(fieldWidth);
+            columnAlignmentField.setFrame(frame);
+
+            List<String> options = new ArrayList<>();
+            for (Table.ColumnAlignment alignment : Table.ColumnAlignment.values()) {
+                options.add(alignment.name());
+            }
+
+            columnAlignmentField.setOptionsList(options);
+
+            return columnAlignmentField;
+        });
     }
 
     public void openConstraintWizard() {
@@ -576,11 +667,43 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
             attribute.setLocaleDescriptions(localizedFrame.getDescriptionsValue());
         }
 
+        if (getDsContext().isModified()) {
+            attribute.setAttributeConfigurationJson(new Gson().toJson(configurationDs.getItem()));
+        }
+
         return true;
     }
 
     @Override
     public void postValidate(ValidationErrors errors) {
+        if (attribute.getDataType() == PropertyType.INTEGER
+                || attribute.getDataType() == PropertyType.DOUBLE
+                || attribute.getDataType() == PropertyType.DECIMAL) {
+            if (attribute.getConfiguration().getMinValue() != null &&
+                    attribute.getConfiguration().getMaxValue() != null &&
+                    compareNumbers(attribute.getDataType(),
+                            attribute.getConfiguration().getMinValue(),
+                            attribute.getConfiguration().getMaxValue()) > 0) {
+
+                errors.add(getMessage("minGreaterThanMax"));
+
+            } else if (attribute.getDefaultValue() != null) {
+                if (attribute.getConfiguration().getMinValue() != null &&
+                        compareNumbers(attribute.getDataType(), attribute.getConfiguration().getMinValue(),
+                                (Number) attribute.getDefaultValue()) > 0) {
+
+                    errors.add(getMessage("defaultLessThanMin"));
+                }
+
+                if (attribute.getConfiguration().getMaxValue() != null &&
+                        compareNumbers(attribute.getDataType(),
+                                attribute.getConfiguration().getMaxValue(), (Number) attribute.getDefaultValue()) < 0) {
+
+                    errors.add(getMessage("defaultGreaterThanMax"));
+                }
+            }
+        }
+
         @SuppressWarnings("unchecked")
         CollectionDatasource<CategoryAttribute, UUID> parent
                 = (CollectionDatasource<CategoryAttribute, UUID>) ((DatasourceImplementation) attributeDs).getParent();
@@ -692,5 +815,33 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
         query = query.replace("{E}", entityAlias);
 
         return JpqlSuggestionFactory.requestHint(query, queryPosition, sender.getAutoCompleteSupport(), senderCursorPosition);
+    }
+
+    private int compareNumbers(PropertyType type, Number first, Number second) {
+        if (type == PropertyType.INTEGER) {
+            return Integer.compare((Integer) first, (Integer) second);
+        } else if (type == PropertyType.DOUBLE) {
+            return Double.compare((Double) first, (Double) second);
+        } else if (type == PropertyType.DECIMAL) {
+            return ((BigDecimal) first).compareTo((BigDecimal) second);
+        } else {
+            throw new UnsupportedOperationException();
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    protected void setupBigDecimalFormat() {
+
+        Datatype datatype = dynamicAttributesGuiTools.getCustomNumberDatatype(attribute);
+
+        if (datatype != null) {
+            defaultDecimalField.setDatatype(datatype);
+            minDecimalField.setDatatype(datatype);
+            maxDecimalField.setDatatype(datatype);
+
+            defaultDecimalField.setValue(defaultDecimalField.getValue());
+            minDecimalField.setValue(minDecimalField.getValue());
+            maxDecimalField.setValue(maxDecimalField.getValue());
+        }
     }
 }

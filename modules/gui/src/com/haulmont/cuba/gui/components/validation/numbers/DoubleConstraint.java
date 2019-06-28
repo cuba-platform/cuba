@@ -59,4 +59,26 @@ public class DoubleConstraint implements NumberConstraint {
     public boolean isPositive() {
         return value > 0;
     }
+
+    @Override
+    public boolean isDoubleMax(Double max, boolean inclusive) {
+        if (inclusive) {
+            return compareValueWith(max) <= 0;
+        } else {
+            return compareValueWith(max) < 0;
+        }
+    }
+
+    @Override
+    public boolean isDoubleMin(Double min, boolean inclusive) {
+        if (inclusive) {
+            return compareValueWith(min) >= 0;
+        } else {
+            return compareValueWith(min) > 0;
+        }
+    }
+
+    private int compareValueWith(Double val) {
+        return this.value.compareTo(val);
+    }
 }

@@ -75,6 +75,16 @@ public class LongConstraint implements NumberConstraint {
         return value > 0;
     }
 
+    @Override
+    public boolean isDoubleMax(Double max, boolean inclusive) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean isDoubleMin(Double min, boolean inclusive) {
+        throw new UnsupportedOperationException();
+    }
+
     protected int compareValueWith(BigDecimal val) {
         return bigDecimalValue.compareTo(val);
     }

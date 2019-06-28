@@ -29,10 +29,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.InitializingBean;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.TimeZone;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -279,6 +276,16 @@ public class WebListEditor<V> extends WebV8AbstractField<WebListEditor.CubaListE
     @Override
     public TimeZone getTimeZone() {
         return delegate.getTimeZone();
+    }
+
+    @Override
+    public void addListItemValidator(Consumer<? super V> validator) {
+        delegate.addListItemValidator(validator);
+    }
+
+    @Override
+    public Collection<Consumer<? super V>> getListItemValidators() {
+        return delegate.getListItemValidators();
     }
 
     @Override

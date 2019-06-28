@@ -26,6 +26,7 @@
                 id="attributeDs"
                 class="com.haulmont.cuba.core.entity.CategoryAttribute"
                 view="category.edit">
+            <datasource id="configurationDs" property="configuration" allowCommit="false"/>
         </datasource>
         <collectionDatasource id="screensDs" class="com.haulmont.cuba.gui.app.core.categories.ScreenAndComponent"
                               allowCommit="false" refreshMode="NEVER"/>
@@ -63,10 +64,21 @@
                         <field id="defaultString" width="100%"/>
                         <field id="defaultInt" width="100%"/>
                         <field id="defaultDouble" width="100%"/>
+                        <field id="defaultDecimal" width="100%"/>
                         <field id="defaultBoolean" custom="true" width="100%"/>
                         <field id="defaultDate" width="100%"/>
                         <field id="defaultDateWithoutTime" width="100%"/>
                         <field id="defaultDateIsCurrent" width="100%"/>
+
+                        <field id="configuration.numberFormatPattern" width="100%"/>
+
+                        <field id="configuration.minInt" width="100%"/>
+                        <field id="configuration.minDouble" width="100%"/>
+                        <field id="configuration.minDecimal" width="100%"/>
+                        <field id="configuration.maxInt" width="100%"/>
+                        <field id="configuration.maxDouble" width="100%"/>
+                        <field id="configuration.maxDecimal" width="100%"/>
+                        <field id="configuration.validatorGroovyScript" custom="true" width="100%"/>
                     </column>
                 </fieldGroup>
             </tab>
@@ -83,6 +95,15 @@
                     </columns>
                     <rows datasource="screensDs"/>
                 </table>
+            </tab>
+            <tab id="columnSettings" caption="msg://caption.columnSettingsTab" spacing="true"  margin="true">
+                <fieldGroup id="columnSettingsFieldGroup" datasource="attributeDs" width="100%">
+                    <column>
+                        <field id="configuration.columnName" width="100%"/>
+                        <field id="configuration.columnAlignment" custom="true" width="100%"/>
+                        <field id="configuration.columnWidth" width="100%"/>
+                    </column>
+                </fieldGroup>
             </tab>
         </tabSheet>
         <frame id="buttons" screen="editWindowActions"/>

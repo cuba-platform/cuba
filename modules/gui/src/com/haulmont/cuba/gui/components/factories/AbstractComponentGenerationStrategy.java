@@ -16,6 +16,7 @@
 
 package com.haulmont.cuba.gui.components.factories;
 
+import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
@@ -49,6 +50,7 @@ import java.time.*;
 import java.util.Collection;
 import java.util.Date;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 import static com.haulmont.cuba.gui.components.DateField.Resolution;
 
@@ -121,7 +123,7 @@ public abstract class AbstractComponentGenerationStrategy implements ComponentGe
                     return currencyField;
                 }
 
-                return createNumberField(context);
+                return createNumberField(context, type);
             }
         } else if (mppRange.isClass()) {
             MetaProperty metaProperty = mpp.getMetaProperty();
@@ -144,6 +146,7 @@ public abstract class AbstractComponentGenerationStrategy implements ComponentGe
     protected Component createDatatypeLinkField(ComponentGenerationContext context) {
         EntityLinkField linkField = uiComponents.create(EntityLinkField.class);
 
+        setValidators(linkField, context);
         setValueSource(linkField, context);
         setLinkFieldAttributes(linkField, context);
 
@@ -152,12 +155,14 @@ public abstract class AbstractComponentGenerationStrategy implements ComponentGe
 
     protected Field createEnumField(ComponentGenerationContext context) {
         LookupField component = uiComponents.create(LookupField.class);
+        setValidators(component, context);
         setValueSource(component, context);
         return component;
     }
 
     protected Component createMaskedField(ComponentGenerationContext context) {
         MaskedField maskedField = uiComponents.create(MaskedField.class);
+        setValidators(maskedField, context);
         setValueSource(maskedField, context);
 
         Element xmlDescriptor = context.getXmlDescriptor();
@@ -202,6 +207,7 @@ public abstract class AbstractComponentGenerationStrategy implements ComponentGe
             textField = uiComponents.create(TextField.class);
         }
 
+        setValidators(textField, context);
         setValueSource(textField, context);
 
         String maxLength = xmlDescriptor != null ? xmlDescriptor.attributeValue("maxLength") : null;
@@ -214,6 +220,7 @@ public abstract class AbstractComponentGenerationStrategy implements ComponentGe
 
     protected Field createUuidField(ComponentGenerationContext context) {
         MaskedField maskedField = uiComponents.create(MaskedField.class);
+        setValidators(maskedField, context);
         setValueSource(maskedField, context);
         maskedField.setMask("hhhhhhhh-hhhh-hhhh-hhhh-hhhhhhhhhhhh");
         maskedField.setSendNullRepresentation(false);
@@ -222,12 +229,14 @@ public abstract class AbstractComponentGenerationStrategy implements ComponentGe
 
     protected Field createBooleanField(ComponentGenerationContext context) {
         CheckBox component = uiComponents.create(CheckBox.class);
+        setValidators(component, context);
         setValueSource(component, context);
         return component;
     }
 
     protected Component createDateField(ComponentGenerationContext context) {
         DateField dateField = uiComponents.create(DateField.class);
+        setValidators(dateField, context);
         setValueSource(dateField, context);
 
         Element xmlDescriptor = context.getXmlDescriptor();
@@ -259,6 +268,7 @@ public abstract class AbstractComponentGenerationStrategy implements ComponentGe
 
     protected Component createTimeField(ComponentGenerationContext context) {
         TimeField timeField = uiComponents.create(TimeField.class);
+        setValidators(timeField, context);
         setValueSource(timeField, context);
 
         Element xmlDescriptor = context.getXmlDescriptor();
@@ -272,9 +282,12 @@ public abstract class AbstractComponentGenerationStrategy implements ComponentGe
         return timeField;
     }
 
-    protected Field createNumberField(ComponentGenerationContext context) {
+    protected Field createNumberField(ComponentGenerationContext context, Class<?> type) {
         TextField component = uiComponents.create(TextField.class);
+        setValidators(component, context);
+        setCustomDataType(component, context, type);
         setValueSource(component, context);
+
         return component;
     }
 
@@ -328,8 +341,7 @@ public abstract class AbstractComponentGenerationStrategy implements ComponentGe
                 DynamicAttributesMetaProperty metaProperty = (DynamicAttributesMetaProperty) mpp.getMetaProperty();
                 CategoryAttribute attribute = metaProperty.getAttribute();
                 if (Boolean.TRUE.equals(attribute.getLookup())) {
-                    DynamicAttributesGuiTools dynamicAttributesGuiTools = AppBeans.get(DynamicAttributesGuiTools.class);
-                    CollectionDatasource optionsDatasource = dynamicAttributesGuiTools
+                    CollectionDatasource optionsDatasource = getDynamicAttributesGuiTools()
                             .createOptionsDatasourceForLookup(metaProperty.getRange().asClass(),
                                     attribute.getJoinClause(), attribute.getWhereClause());
                     options = new DatasourceOptions<>(optionsDatasource);
@@ -344,12 +356,9 @@ public abstract class AbstractComponentGenerationStrategy implements ComponentGe
                 if (mpp.getMetaProperty().getType() == MetaProperty.Type.ASSOCIATION) {
                     pickerField.addLookupAction();
                     if (DynamicAttributesUtils.isDynamicAttribute(mpp.getMetaProperty())) {
-                        // todo use injection instead
-                        DynamicAttributesGuiTools dynamicAttributesGuiTools =
-                                AppBeans.get(DynamicAttributesGuiTools.class);
                         DynamicAttributesMetaProperty dynamicAttributesMetaProperty =
                                 (DynamicAttributesMetaProperty) mpp.getMetaProperty();
-                        dynamicAttributesGuiTools.initEntityPickerField(pickerField,
+                        getDynamicAttributesGuiTools().initEntityPickerField(pickerField,
                                 dynamicAttributesMetaProperty.getAttribute());
                     }
                     boolean actionsByMetaAnnotations = ComponentsHelper.createActionsByMetaAnnotations(pickerField);
@@ -378,6 +387,7 @@ public abstract class AbstractComponentGenerationStrategy implements ComponentGe
                     pickerField.setCaptionProperty(captionProperty);
                 }
             }
+            setValidators(pickerField, context);
 
             return pickerField;
         } else {
@@ -424,6 +434,47 @@ public abstract class AbstractComponentGenerationStrategy implements ComponentGe
     @SuppressWarnings("unchecked")
     protected void setValueSource(Field field, ComponentGenerationContext context) {
         field.setValueSource(context.getValueSource());
+    }
+
+    protected void setValidators(Field field, ComponentGenerationContext context) {
+        CategoryAttribute categoryAttribute = getCategoryAttribute(context);
+
+        if (categoryAttribute != null && BooleanUtils.isNotTrue(categoryAttribute.getIsCollection())) {
+
+            Collection<Consumer<?>> validators = getDynamicAttributesGuiTools().createValidators(categoryAttribute);
+            if (validators != null && !validators.isEmpty()) {
+                for (Consumer<?> validator : validators) {
+                    //noinspection unchecked
+                    field.addValidator(validator);
+                }
+            }
+        }
+    }
+
+    protected void setCustomDataType(TextField field, ComponentGenerationContext context, Class<?> type) {
+        CategoryAttribute categoryAttribute = getCategoryAttribute(context);
+        Datatype datatype = getDynamicAttributesGuiTools().getCustomNumberDatatype(categoryAttribute);
+
+        if (datatype != null) {
+            //noinspection unchecked
+            field.setDatatype(datatype);
+        }
+    }
+
+    protected CategoryAttribute getCategoryAttribute(ComponentGenerationContext context) {
+        MetaClass metaClass = context.getMetaClass();
+        MetaPropertyPath mpp = resolveMetaPropertyPath(metaClass, context.getProperty());
+        MetaProperty metaProperty = mpp.getMetaProperty();
+
+        if (DynamicAttributesUtils.isDynamicAttribute(metaProperty)) {
+            return DynamicAttributesUtils.getCategoryAttribute(metaProperty);
+        }
+
+        return null;
+    }
+
+    protected DynamicAttributesGuiTools getDynamicAttributesGuiTools() {
+        return AppBeans.get(DynamicAttributesGuiTools.class);
     }
 
     protected static class InvokeEntityLinkClickHandler implements EntityLinkField.EntityLinkClickHandler {

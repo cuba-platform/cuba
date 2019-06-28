@@ -775,6 +775,7 @@ create table SYS_CATEGORY_ATTR (
     DEFAULT_STRING varchar(max),
     DEFAULT_INT integer,
     DEFAULT_DOUBLE numeric(36,6),
+    DEFAULT_DECIMAL numeric(36,10),
     DEFAULT_DATE datetime,
     DEFAULT_DATE_WO_TIME datetime,
     DEFAULT_DATE_IS_CURRENT tinyint,
@@ -798,6 +799,7 @@ create table SYS_CATEGORY_ATTR (
     LOCALE_NAMES varchar(1000),
     LOCALE_DESCRIPTIONS varchar(4000),
     ENUMERATION_LOCALES varchar(5000),
+    ATTRIBUTE_CONFIGURATION_JSON varchar(max),
     --
     primary key nonclustered (ID),
     constraint SYS_CATEGORY_ATTR_CATEGORY_ID foreign key (CATEGORY_ID) references SYS_CATEGORY(ID)
@@ -825,6 +827,7 @@ create table SYS_ATTR_VALUE (
     STRING_VALUE varchar(max),
     INTEGER_VALUE integer,
     DOUBLE_VALUE numeric(36,6),
+    DECIMAL_VALUE numeric(36,10),
     DATE_VALUE datetime,
     DATE_WO_TIME_VALUE datetime,
     BOOLEAN_VALUE tinyint,

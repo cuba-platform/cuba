@@ -46,6 +46,7 @@ import org.dom4j.Element;
 
 import javax.annotation.Nullable;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -221,6 +222,15 @@ public class FieldGroupLoader extends AbstractComponentLoader<FieldGroup> {
                             "validation.required.defaultMsg",
                             attribute.getLocaleName()));
                     loadWidth(field, attribute.getWidth());
+
+                    if (!attribute.getIsCollection()) {
+                        Collection<Consumer<?>> validators = getDynamicAttributesGuiTools().createValidators(attribute);
+                        if (validators != null && !validators.isEmpty()) {
+                            for (Consumer<?> validator : validators) {
+                                field.addValidator(validator);
+                            }
+                        }
+                    }
 
                     fields.add(field);
                 }

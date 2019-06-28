@@ -248,8 +248,14 @@ public abstract class WebV8AbstractField<T extends com.vaadin.ui.Component & com
         }
 
         String msgKey = String.format("databinding.conversion.error.%s", datatypeId);
-
-        return beanLocator.get(Messages.class)
+        String msg = beanLocator.get(Messages.class)
                 .getMainMessage(msgKey);
+
+        if (msgKey.equals(msg)) {
+            msg = beanLocator.get(Messages.class)
+                    .getMainMessage("databinding.conversion.error.defaultMessage");
+        }
+
+        return msg;
     }
 }

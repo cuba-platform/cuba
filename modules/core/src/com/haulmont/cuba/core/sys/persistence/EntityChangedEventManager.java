@@ -194,6 +194,9 @@ public class EntityChangedEventManager {
                             case DOUBLE:
                                 oldValue = cav.getDoubleValue();
                                 break;
+                            case DECIMAL:
+                                oldValue = cav.getDecimalValue();
+                                break;
                             case BOOLEAN:
                                 oldValue = cav.getBooleanValue();
                                 break;
@@ -224,6 +227,7 @@ public class EntityChangedEventManager {
                                     case "stringValue":
                                     case "intValue":
                                     case "doubleValue":
+                                    case "decimalValue":
                                     case "booleanValue":
                                     case "dateWithoutTimeValue":
                                     case "dateValue":

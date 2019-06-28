@@ -65,6 +65,7 @@ public class ListEditorDelegateImpl<V> implements ListEditorDelegate<V> {
     protected String entityWhereClause;
     protected Class<? extends Enum> enumClass;
     protected TimeZone timeZone;
+    protected List<Consumer<? super V>> validators;
 
     protected TextField<String> displayValuesField;
     protected HBoxLayout layout;
@@ -115,6 +116,7 @@ public class ListEditorDelegateImpl<V> implements ListEditorDelegate<V> {
         params.put("values", getValue());
         params.put("editable", editable);
         params.put("timeZone", timeZone);
+        params.put("validators", validators);
 
         if (editorParamsSupplier != null) {
             Map<String, Object> additionalParams = getEditorParamsSupplier().get();
@@ -377,5 +379,18 @@ public class ListEditorDelegateImpl<V> implements ListEditorDelegate<V> {
     @Override
     public Function<? super V, String> getOptionCaptionProvider() {
         return optionCaptionProvider;
+    }
+
+    @Override
+    public void addListItemValidator(Consumer<? super V> validator) {
+        if (validators == null) {
+            validators = new ArrayList<>();
+        }
+        validators.add(validator);
+    }
+
+    @Override
+    public List<Consumer<? super V>> getListItemValidators() {
+        return validators;
     }
 }

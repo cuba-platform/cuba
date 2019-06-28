@@ -42,6 +42,11 @@ public class AdaptiveNumberDatatype extends NumberDatatype implements Datatype<N
         this.type = type;
     }
 
+    public AdaptiveNumberDatatype(Class<?> type, String pattern, String decimalSeparator, String groupingSeparator) {
+        super(pattern, decimalSeparator, groupingSeparator);
+        this.type = type;
+    }
+
     @Override
     protected java.text.NumberFormat createFormat() {
         java.text.NumberFormat numberFormat = super.createFormat();

@@ -29,10 +29,7 @@ import com.haulmont.cuba.core.global.DevelopmentException;
 import com.haulmont.cuba.core.global.Security;
 import com.haulmont.cuba.gui.UiComponents;
 import com.haulmont.cuba.gui.WindowParam;
-import com.haulmont.cuba.gui.components.validators.DateValidator;
-import com.haulmont.cuba.gui.components.validators.DoubleValidator;
-import com.haulmont.cuba.gui.components.validators.IntegerValidator;
-import com.haulmont.cuba.gui.components.validators.LongValidator;
+import com.haulmont.cuba.gui.components.validators.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.RuntimePropsDatasource;
@@ -270,12 +267,16 @@ public class RuntimePropertiesFrame extends AbstractFrame {
         }
     }
 
-    protected Consumer getValidator(MetaProperty property) {
-        Consumer validator = null;
+    protected Collection<Consumer<?>> getValidator(MetaProperty property) {
+        Collection<Consumer<?>> validators = null;
+        CategoryAttribute attribute = DynamicAttributesUtils.getCategoryAttribute(property);
         if (property.getRange().isDatatype()
-                && !Boolean.TRUE.equals(DynamicAttributesUtils.getCategoryAttribute(property).getIsCollection())) {
+                && !Boolean.TRUE.equals(attribute.getIsCollection())) {
             Class type = property.getRange().asDatatype().getJavaClass();
 
+            validators = dynamicAttributesGuiTools.createValidators(attribute);
+
+            Field.Validator validator = null;
             if (type.equals(Integer.class)) {
                 validator = new IntegerValidator(messages.getMainMessage("validation.invalidNumber"));
 
@@ -288,18 +289,23 @@ public class RuntimePropertiesFrame extends AbstractFrame {
             } else if (type.equals(java.sql.Date.class)) {
                 validator = new DateValidator(messages.getMainMessage("validation.invalidDate"));
             }
+            if (validator != null) {
+                validators.add(validator);
+            }
         }
-        return validator;
+        return validators;
     }
 
     protected void loadValidators(FieldGroup fieldGroup, FieldGroup.FieldConfig field) {
         MetaPropertyPath metaPropertyPath = rds.getMetaClass().getPropertyPath(field.getProperty());
         if (metaPropertyPath != null) {
             MetaProperty metaProperty = metaPropertyPath.getMetaProperty();
-            Consumer validator = getValidator(metaProperty);
+            Collection<Consumer<?>> validators = getValidator(metaProperty);
 
-            if (validator != null) {
-                field.addValidator(validator);
+            if (validators != null && !validators.isEmpty()) {
+                for (Consumer<?> validator : validators) {
+                    field.addValidator(validator);
+                }
             }
         }
     }
