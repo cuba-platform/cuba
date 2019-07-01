@@ -24,7 +24,6 @@ import org.dom4j.Element;
 import javax.annotation.Nullable;
 import java.io.Serializable;
 import java.util.*;
-import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -158,7 +157,8 @@ public class QueryFilter extends FilterParser implements Serializable {
                 Clause clause = (Clause) condition;
                 if (clause.getType() == ConditionType.CUSTOM ||
                         clause.getType() == ConditionType.PROPERTY && clause.getOperator().isUnary()) {
-                    Predicate<ParameterInfo> paramHasValue = paramInfo -> parameters.contains(paramInfo.getName());
+                    Predicate<ParameterInfo> paramHasValue = paramInfo -> parameters.contains(paramInfo.getName())
+                            || parameters.contains(paramInfo.getPath().replace(".", "_"));
                     if (clause.getInputParameters().stream().allMatch(paramHasValue)) {
                         list.add(clause);
                     }
