@@ -5,6 +5,7 @@
 
 package com.haulmont.cuba.gui.sys;
 
+import com.haulmont.cuba.gui.components.compatibility.LegacyFragmentAdapter;
 import com.haulmont.cuba.gui.screen.FrameOwner;
 import com.haulmont.cuba.gui.screen.ScreenOptions;
 
@@ -24,7 +25,12 @@ public interface ControllerDependencyInjector {
         protected ScreenOptions screenOptions;
 
         public InjectionContext(FrameOwner frameOwner, ScreenOptions screenOptions) {
-            this.frameOwner = frameOwner;
+            // support legacy windows inside of fragments
+            if (!(frameOwner instanceof LegacyFragmentAdapter)) {
+                this.frameOwner = frameOwner;
+            } else {
+                this.frameOwner = ((LegacyFragmentAdapter) frameOwner).getRealScreen();
+            }
             this.screenOptions = screenOptions;
         }
 
