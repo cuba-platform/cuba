@@ -34,4 +34,12 @@
         <property name="createTs"/>
         <property name="createdBy"/>
     </view>
+    <view entity="pc_Address" name="address-view" extends="_local">
+        <property name="country" view="_minimal"/>
+        <property name="city" view="_minimal"/>
+    </view>
+    <view name="owner-with-category-view" entity="pc_Owner" extends="_local">
+        <property name="category"/>
+        <property name="address" view="address-view"/>
+    </view>
 </views>

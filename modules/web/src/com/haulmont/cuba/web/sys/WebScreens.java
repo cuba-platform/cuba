@@ -529,10 +529,7 @@ public class WebScreens implements Screens, WindowManager {
     }
 
     protected void loadDataBeforeShow(Screen screen) {
-        LoadDataBeforeShow annotation = screen.getClass().getAnnotation(LoadDataBeforeShow.class);
-        if (annotation != null && annotation.value()) {
-            UiControllerUtils.getScreenData(screen).loadAll();
-        }
+        UiControllerUtils.getScreenData(screen).getLoadBeforeShowStrategy().loadData(screen);
     }
 
     protected void changeUrl(Screen screen) {

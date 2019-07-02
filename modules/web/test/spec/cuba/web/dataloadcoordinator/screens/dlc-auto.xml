@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--
+  ~ Copyright (c) 2008-2019 Haulmont.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<window xmlns="http://schemas.haulmont.com/cuba/screen/window.xsd"
+        xmlns:c="http://schemas.haulmont.com/cuba/screen/jpql_condition.xsd"
+        caption="Owners">
+    <data readOnly="true">
+        <collection id="ownersDc"
+                    class="com.haulmont.cuba.web.testmodel.petclinic.Owner"
+                    view="owner-with-category-view">
+            <loader id="ownersDl">
+                <query>
+                    <![CDATA[select e from pc_Owner e]]>
+                    <condition>
+                        <and>
+                            <c:jpql>
+                                <c:where>e.category = :component_categoryFilterField</c:where>
+                            </c:jpql>
+                            <c:jpql>
+                                <c:where>e.name like :component_nameFilterField</c:where>
+                            </c:jpql>
+                        </and>
+                    </condition>
+                </query>
+            </loader>
+        </collection>
+        <collection id="petsDc" class="com.haulmont.cuba.web.testmodel.petclinic.Pet">
+            <loader id="petsDl">
+                <query><![CDATA[select e from pc_Pet e where e.owner = :container_ownersDc]]></query>
+            </loader>
+        </collection>
+    </data>
+    <dialogMode height="600"
+                width="800"/>
+    <facets>
+        <dataLoadCoordinator id="dlc" auto="true"/>
+    </facets>
+    <layout expand="split"
+            spacing="true">
+        <filter id="filter"
+                applyTo="ownersTable"
+                dataLoader="ownersDl">
+            <properties include=".*"/>
+        </filter>
+        <split id="split" orientation="horizontal" width="100%">
+            <groupTable id="ownersTable"
+                        width="100%"
+                        dataContainer="ownersDc">
+                <columns>
+                    <column id="name"/>
+                    <column id="email"/>
+                    <column id="category"/>
+                </columns>
+                <rowsCount/>
+                <buttonsPanel id="buttonsPanel"
+                              alwaysVisible="true">
+                    <pickerField id="categoryFilterField" metaClass="pc_OwnerCategory" width="150px"/>
+                    <textField id="nameFilterField" width="100px"/>
+                </buttonsPanel>
+            </groupTable>
+            <table height="100%" width="100%" dataContainer="petsDc">
+                <columns>
+                    <column id="name"/>
+                </columns>
+            </table>
+        </split>
+    </layout>
+</window>

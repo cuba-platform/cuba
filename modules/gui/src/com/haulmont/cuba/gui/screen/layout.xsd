@@ -3285,11 +3285,59 @@
         <xs:attribute name="input" type="xs:string"/>
     </xs:complexType>
 
+    <xs:complexType name="dataLoadCoordinatorType">
+        <xs:sequence>
+            <xs:choice maxOccurs="unbounded">
+                <xs:element name="refresh" type="dataLoadCoordinatorTriggerType" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:choice>
+        </xs:sequence>
+        <xs:attribute name="id" type="xs:string"/>
+        <xs:attribute name="auto" type="xs:boolean"/>
+        <xs:attribute name="containerPrefix" type="xs:string"/>
+        <xs:attribute name="componentPrefix" type="xs:string"/>
+    </xs:complexType>
+
+    <xs:complexType name="dataLoadCoordinatorTriggerType">
+        <xs:attribute name="loader" type="xs:string" use="required"/>
+        <xs:attribute name="param" type="xs:string"/>
+        <xs:attribute name="onScreenEvent" type="onScreenEventEnum"/>
+        <xs:attribute name="onFragmentEvent" type="onFragmentEventEnum"/>
+        <xs:attribute name="onContainerItemChanged" type="xs:string"/>
+        <xs:attribute name="onComponentValueChanged" type="xs:string"/>
+        <xs:attribute name="likeClause" type="likeClauseEnum"/>
+    </xs:complexType>
+
+    <xs:simpleType name="onScreenEventEnum">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="Init"/>
+            <xs:enumeration value="AfterInit"/>
+            <xs:enumeration value="BeforeShow"/>
+            <xs:enumeration value="AfterShow"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="onFragmentEventEnum">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="Init"/>
+            <xs:enumeration value="AfterInit"/>
+            <xs:enumeration value="Attach"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="likeClauseEnum">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="NONE"/>
+            <xs:enumeration value="CASE_SENSITIVE"/>
+            <xs:enumeration value="CASE_INSENSITIVE"/>
+        </xs:restriction>
+    </xs:simpleType>
+
     <xs:complexType name="facets">
         <xs:sequence>
             <xs:choice minOccurs="0" maxOccurs="unbounded">
                 <xs:element name="timer" type="timerType" minOccurs="0" maxOccurs="unbounded"/>
                 <xs:element name="clipboardTrigger" type="clipboardTriggerType" minOccurs="0" maxOccurs="unbounded"/>
+                <xs:element name="dataLoadCoordinator" type="dataLoadCoordinatorType" minOccurs="0"/>
 
                 <!-- allow custom facets from any namespace -->
                 <xs:any/>

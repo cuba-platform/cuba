@@ -37,5 +37,12 @@
         <class>com.haulmont.cuba.web.testmodel.compositecomponent.Comment</class>
 
         <class>com.haulmont.cuba.web.testmodel.beanvalidation.DateValidationEntity</class>
+
+        <class>com.haulmont.cuba.web.testmodel.petclinic.Owner</class>
+        <class>com.haulmont.cuba.web.testmodel.petclinic.OwnerCategory</class>
+        <class>com.haulmont.cuba.web.testmodel.petclinic.Pet</class>
+        <class>com.haulmont.cuba.web.testmodel.petclinic.Country</class>
+        <class>com.haulmont.cuba.web.testmodel.petclinic.City</class>
+        <class>com.haulmont.cuba.web.testmodel.petclinic.Address</class>
     </persistence-unit>
 </persistence>
