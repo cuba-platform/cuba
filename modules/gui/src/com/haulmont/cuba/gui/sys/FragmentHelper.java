@@ -187,7 +187,7 @@ public class FragmentHelper {
             StopWatch injectStopWatch = createStopWatch(ScreenLifeCycle.INJECTION, loggingId);
 
             FrameOwner controller = fragment.getFrameOwner();
-            AppBeans.getAll(ControllerDependencyInjector.class).values()
+            beanLocator.getAll(ControllerDependencyInjector.class).values()
                     .forEach(uiControllerDependencyInjector ->
                             uiControllerDependencyInjector.inject(new ControllerDependencyInjector.InjectionContext(controller, options))
                     );
