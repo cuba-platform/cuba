@@ -137,6 +137,9 @@ public class WebScreens implements Screens, WindowManager {
     @Inject
     protected ClientConfig clientConfig;
 
+    @Inject
+    protected List<ControllerDependencyInjector> dependencyInjectors;
+
     protected AppUI ui;
 
     protected DataSupplier defaultDataSupplier = new GenericDataSupplier();
@@ -230,9 +233,9 @@ public class WebScreens implements Screens, WindowManager {
         // inject top level screen dependencies
         StopWatch injectStopWatch = createStopWatch(ScreenLifeCycle.INJECTION, windowInfo.getId());
 
-        UiControllerDependencyInjector dependencyInjector =
-                beanLocator.getPrototype(UiControllerDependencyInjector.NAME, controller, options);
-        dependencyInjector.inject();
+        for (ControllerDependencyInjector dependencyInjector : dependencyInjectors) {
+            dependencyInjector.inject(new ControllerDependencyInjector.InjectionContext(controller, options));
+        }
 
         injectStopWatch.stop();
 

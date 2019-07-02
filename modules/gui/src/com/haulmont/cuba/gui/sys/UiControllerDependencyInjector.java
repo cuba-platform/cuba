@@ -51,10 +51,10 @@ import org.dom4j.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.ApplicationListener;
-import org.springframework.context.annotation.Scope;
 import org.springframework.context.event.EventListener;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 
 import javax.annotation.Nullable;
 import javax.annotation.Resource;
@@ -82,29 +82,15 @@ import static org.springframework.core.annotation.AnnotatedElementUtils.findMerg
  * and {@link Subscribe}, {@link Install} and {@link EventListener} methods.
  */
 @org.springframework.stereotype.Component(UiControllerDependencyInjector.NAME)
-@Scope(BeanDefinition.SCOPE_PROTOTYPE)
-public class UiControllerDependencyInjector {
+@Order(Ordered.HIGHEST_PRECEDENCE)
+public class UiControllerDependencyInjector implements ControllerDependencyInjector {
 
     private static final Logger log = LoggerFactory.getLogger(UiControllerDependencyInjector.class);
 
     public static final String NAME = "cuba_UiControllerDependencyInjector";
 
-    protected FrameOwner frameOwner;
-    protected ScreenOptions options;
-
     protected BeanLocator beanLocator;
     protected UiControllerReflectionInspector reflectionInspector;
-
-    public UiControllerDependencyInjector(FrameOwner frameOwner, ScreenOptions options) {
-        // support legacy windows inside of fragments
-        if (!(frameOwner instanceof LegacyFragmentAdapter)) {
-            this.frameOwner = frameOwner;
-        } else {
-            this.frameOwner = ((LegacyFragmentAdapter) frameOwner).getRealScreen();
-        }
-
-        this.options = options;
-    }
 
     @Inject
     public void setBeanLocator(BeanLocator beanLocator) {
@@ -116,11 +102,14 @@ public class UiControllerDependencyInjector {
         this.reflectionInspector = reflectionInspector;
     }
 
-    public void inject() {
+    @Override
+    public void inject(InjectionContext injectionContext) {
+        FrameOwner frameOwner = injectionContext.getFrameOwner();
+
         ScreenIntrospectionData screenIntrospectionData =
                 reflectionInspector.getScreenIntrospectionData(frameOwner.getClass());
 
-        injectValues(frameOwner, screenIntrospectionData);
+        injectValues(injectionContext, screenIntrospectionData);
 
         initSubscribeListeners(frameOwner, screenIntrospectionData);
 
@@ -275,12 +264,12 @@ public class UiControllerDependencyInjector {
         }
     }
 
-    protected void injectValues(@SuppressWarnings("unused") FrameOwner frameOwner,
+    protected void injectValues(InjectionContext injectionContext,
                                 ScreenIntrospectionData screenIntrospectionData) {
         List<InjectElement> injectElements = screenIntrospectionData.getInjectElements();
 
         for (InjectElement entry : injectElements) {
-            doInjection(entry.getElement(), entry.getAnnotationClass());
+            doInjection(entry.getElement(), entry.getAnnotationClass(), injectionContext);
         }
     }
 
@@ -460,7 +449,7 @@ public class UiControllerDependencyInjector {
         }
     }
 
-    protected void doInjection(AnnotatedElement element, Class annotationClass) {
+    protected void doInjection(AnnotatedElement element, Class annotationClass, InjectionContext injectionContext) {
         Class<?> type;
         String name = null;
         if (annotationClass == Named.class) {
@@ -501,10 +490,12 @@ public class UiControllerDependencyInjector {
             throw new IllegalStateException("Can inject to fields and setter methods only");
         }
 
-        Object instance = getInjectedInstance(type, name, annotationClass, element);
+        Object instance = getInjectedInstance(type, name, annotationClass, element, injectionContext);
+
+        FrameOwner frameOwner = injectionContext.getFrameOwner();
 
         if (instance != null) {
-            assignValue(element, instance);
+            assignValue(element, instance, injectionContext);
         } else if (required) {
             Class<?> declaringClass = ((Member) element).getDeclaringClass();
             Class<? extends FrameOwner> frameClass = frameOwner.getClass();
@@ -533,7 +524,10 @@ public class UiControllerDependencyInjector {
     }
 
     @Nullable
-    protected Object getInjectedInstance(Class<?> type, String name, Class annotationClass, AnnotatedElement element) {
+    protected Object getInjectedInstance(Class<?> type, String name, Class annotationClass, AnnotatedElement element,
+                                         InjectionContext injectionContext) {
+        FrameOwner frameOwner = injectionContext.getFrameOwner();
+        ScreenOptions options = injectionContext.getScreenOptions();
         Frame frame = UiControllerUtils.getFrame(frameOwner);
 
         if (annotationClass == WindowParam.class) {
@@ -557,21 +551,21 @@ public class UiControllerDependencyInjector {
             if (fragment == null) {
                 return null;
             }
-            ScreenFragment frameOwner = ((Fragment) fragment).getFrameOwner();
-            if (frameOwner instanceof LegacyFragmentAdapter) {
-                return ((LegacyFragmentAdapter) frameOwner).getRealScreen();
+            ScreenFragment frameOwner1 = ((Fragment) fragment).getFrameOwner();
+            if (frameOwner1 instanceof LegacyFragmentAdapter) {
+                return ((LegacyFragmentAdapter) frameOwner1).getRealScreen();
             }
 
-            return frameOwner;
+            return frameOwner1;
         } else if (Component.class.isAssignableFrom(type)) {
             /// if legacy frame - inject controller
             Component component = frame.getComponent(name);
             if (component instanceof Fragment
                 && ((Fragment) component).getFrameOwner() instanceof LegacyFrame) {
 
-                ScreenFragment frameOwner = ((Fragment) component).getFrameOwner();
-                if (type.isAssignableFrom(frameOwner.getClass())) {
-                    return frameOwner;
+                ScreenFragment frameOwner1 = ((Fragment) component).getFrameOwner();
+                if (type.isAssignableFrom(frameOwner1.getClass())) {
+                    return frameOwner1;
                 }
             }
 
@@ -741,7 +735,8 @@ public class UiControllerDependencyInjector {
         return messageBundle;
     }
 
-    protected void assignValue(AnnotatedElement element, Object value) {
+    protected void assignValue(AnnotatedElement element, Object value, InjectionContext injectionContext) {
+        FrameOwner frameOwner = injectionContext.getFrameOwner();
         // element is already marked as accessible in UiControllerReflectionInspector
 
         if (element instanceof Field) {

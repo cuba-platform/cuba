@@ -32,6 +32,7 @@ import com.haulmont.cuba.gui.screen.Screen
 import com.haulmont.cuba.gui.screen.ScreenContext
 import com.haulmont.cuba.gui.screen.impl.MessageBundleImpl
 import com.haulmont.cuba.gui.sys.UiControllerDependencyInjector
+import com.haulmont.cuba.gui.sys.ControllerDependencyInjector
 import com.haulmont.cuba.gui.sys.UiControllerReflectionInspector
 import com.haulmont.cuba.security.entity.User
 import spec.cuba.web.screens.injection.*
@@ -43,7 +44,7 @@ class UiControllerDependencyInjectorTest extends Specification {
     def "Injector supports fields"() {
         def screen = new ScreenInjectToFields()
 
-        def injector = new UiControllerDependencyInjector(screen, FrameOwner.NO_OPTIONS)
+        def injector = new UiControllerDependencyInjector()
         def inspector = new UiControllerReflectionInspector()
         def beanLocator = Mock(BeanLocator)
         def window = Mock(Window)
@@ -85,7 +86,7 @@ class UiControllerDependencyInjectorTest extends Specification {
 
         when:
 
-        injector.inject()
+        injector.inject(new ControllerDependencyInjector.InjectionContext(screen, FrameOwner.NO_OPTIONS))
 
         then:
 
@@ -107,7 +108,7 @@ class UiControllerDependencyInjectorTest extends Specification {
     def "Injector supports setters"() {
         def screen = new ScreenInjectToSetters()
 
-        def injector = new UiControllerDependencyInjector(screen, FrameOwner.NO_OPTIONS)
+        def injector = new UiControllerDependencyInjector()
         def inspector = new UiControllerReflectionInspector()
         def beanLocator = Mock(BeanLocator)
         def window = Mock(Window)
@@ -127,7 +128,7 @@ class UiControllerDependencyInjectorTest extends Specification {
 
         when:
 
-        injector.inject()
+        injector.inject(new ControllerDependencyInjector.InjectionContext(screen, FrameOwner.NO_OPTIONS))
 
         then:
 
@@ -138,7 +139,7 @@ class UiControllerDependencyInjectorTest extends Specification {
     def "Injector supports UiEvent listeners"() {
         def screen = new ScreenBindEventListener()
 
-        def injector = new UiControllerDependencyInjector(screen, FrameOwner.NO_OPTIONS)
+        def injector = new UiControllerDependencyInjector()
         def inspector = new UiControllerReflectionInspector()
         def beanLocator = Mock(BeanLocator)
         def window = Mock(TestWindow)
@@ -154,7 +155,7 @@ class UiControllerDependencyInjectorTest extends Specification {
 
         when:
 
-        injector.inject()
+        injector.inject(new ControllerDependencyInjector.InjectionContext(screen, FrameOwner.NO_OPTIONS))
 
         then:
 
@@ -164,7 +165,7 @@ class UiControllerDependencyInjectorTest extends Specification {
     def "Injector supports @Subscribe listeners"() {
         def screen = new ScreenBindSubscribe()
 
-        def injector = new UiControllerDependencyInjector(screen, FrameOwner.NO_OPTIONS)
+        def injector = new UiControllerDependencyInjector()
         def inspector = new UiControllerReflectionInspector()
         def beanLocator = Mock(BeanLocator)
         def window = Mock(TestWindow)
@@ -189,7 +190,7 @@ class UiControllerDependencyInjectorTest extends Specification {
 
         when:
 
-        injector.inject()
+        injector.inject(new ControllerDependencyInjector.InjectionContext(screen, FrameOwner.NO_OPTIONS))
 
         then:
 
@@ -204,7 +205,7 @@ class UiControllerDependencyInjectorTest extends Specification {
     def "Injector supports @Install methods"() {
         def screen = new ScreenBindInstall()
 
-        def injector = new UiControllerDependencyInjector(screen, FrameOwner.NO_OPTIONS)
+        def injector = new UiControllerDependencyInjector()
         def inspector = new UiControllerReflectionInspector()
         def beanLocator = Mock(BeanLocator)
         def window = Mock(TestWindow)
@@ -239,7 +240,7 @@ class UiControllerDependencyInjectorTest extends Specification {
 
         when:
 
-        injector.inject()
+        injector.inject(new ControllerDependencyInjector.InjectionContext(screen, FrameOwner.NO_OPTIONS))
 
         then:
 
@@ -261,7 +262,7 @@ class UiControllerDependencyInjectorTest extends Specification {
     def "Injector supports non-required dependencies"() {
         def screen = new ScreenOptionalDependencies()
 
-        def injector = new UiControllerDependencyInjector(screen, FrameOwner.NO_OPTIONS)
+        def injector = new UiControllerDependencyInjector()
         def inspector = new UiControllerReflectionInspector()
         def beanLocator = Mock(BeanLocator)
         def window = Mock(TestWindow)
@@ -275,7 +276,7 @@ class UiControllerDependencyInjectorTest extends Specification {
 
         when:
 
-        injector.inject()
+        injector.inject(new ControllerDependencyInjector.InjectionContext(screen, FrameOwner.NO_OPTIONS))
 
         then:
 
@@ -285,7 +286,7 @@ class UiControllerDependencyInjectorTest extends Specification {
     def "Screen fires private event handlers"() {
         def screen = new ParentScreen()
 
-        def injector = new UiControllerDependencyInjector(screen, FrameOwner.NO_OPTIONS)
+        def injector = new UiControllerDependencyInjector()
         def inspector = new UiControllerReflectionInspector()
         def beanLocator = Mock(BeanLocator)
         def window = Mock(TestWindow)
@@ -298,7 +299,7 @@ class UiControllerDependencyInjectorTest extends Specification {
         injector.beanLocator = beanLocator
 
         when:
-        injector.inject()
+        injector.inject(new ControllerDependencyInjector.InjectionContext(screen, FrameOwner.NO_OPTIONS))
 
         then:
         screen.eventHub != null
@@ -315,7 +316,7 @@ class UiControllerDependencyInjectorTest extends Specification {
     def "Screen fires private event handlers from parent screen"() {
         def screen = new ChildScreen() // this screen inherits private event handler from parent class
 
-        def injector = new UiControllerDependencyInjector(screen, FrameOwner.NO_OPTIONS)
+        def injector = new UiControllerDependencyInjector()
         def inspector = new UiControllerReflectionInspector()
         def beanLocator = Mock(BeanLocator)
         def window = Mock(TestWindow)
@@ -328,7 +329,7 @@ class UiControllerDependencyInjectorTest extends Specification {
         injector.beanLocator = beanLocator
 
         when:
-        injector.inject()
+        injector.inject(new ControllerDependencyInjector.InjectionContext(screen, FrameOwner.NO_OPTIONS))
 
         then:
         screen.eventHub != null
