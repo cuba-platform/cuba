@@ -1654,6 +1654,7 @@ public class FilterDelegateImpl implements FilterDelegate {
 
         Map<String, Object> params = new HashMap<>();
 
+        conditions = new ConditionsTree();
         if (!Strings.isNullOrEmpty(searchTerm)) {
             FtsFilterHelper.FtsSearchResult ftsSearchResult = ftsFilterHelper.search(searchTerm, adapter.getMetaClass().getName());
             int queryKey = ftsSearchResult.getQueryKey();
@@ -1661,7 +1662,6 @@ public class FilterDelegateImpl implements FilterDelegate {
             params.put(FtsFilterHelper.QUERY_KEY_PARAM_NAME, queryKey);
 
             CustomCondition ftsCondition = ftsFilterHelper.createFtsCondition(adapter.getMetaClass().getName());
-            conditions = new ConditionsTree();
             conditions.getRootNodes().add(new Node<>(ftsCondition));
 
             if ((applyTo != null) && (Table.class.isAssignableFrom(applyTo.getClass()))) {
@@ -3102,6 +3102,13 @@ public class FilterDelegateImpl implements FilterDelegate {
                         if (ftsCustomParameters.contains(parameterInfo.getPath())) {
                             parameterInfo.setType(ParameterInfo.Type.NONE);
                             lastQueryFilterParameters.add(parameterInfo.getFlatName());
+                        }
+                        //when the Full-text search filter is used, query parameter names are "__queryKey" and "__sessionId"
+                        //we should add them to "lastQueryFilterParameters" list in order these parameters to be removed from
+                        //data loader params
+                        if (FtsFilterHelper.SESSION_ID_PARAM_NAME.equals(parameterInfo.getPath()) ||
+                                FtsFilterHelper.QUERY_KEY_PARAM_NAME.equals(parameterInfo.getPath())) {
+                            lastQueryFilterParameters.add(parameterInfo.getPath());
                         }
                     } else if (parameterInfo.getType() == ParameterInfo.Type.SESSION) {
                         UserSession userSession = userSessionSource.getUserSession();
