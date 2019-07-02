@@ -255,8 +255,8 @@ public class EclipseLinkSessionEventListener extends SessionEventAdapter {
     }
 
     private boolean hasMultipleTableConstraintDependency() {
-        return BooleanUtils.toBoolean(
-                AppContext.getProperty("cuba.hasMultipleTableConstraintDependency"));
+        String value = AppContext.getProperty("cuba.hasMultipleTableConstraintDependency");
+        return value == null || BooleanUtils.toBoolean(value);
     }
 
     private void setDatabaseFieldParameters(Session session, DatabaseField field) {
