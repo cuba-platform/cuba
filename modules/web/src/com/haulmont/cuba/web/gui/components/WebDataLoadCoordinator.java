@@ -21,7 +21,9 @@ import com.haulmont.cuba.core.global.DevelopmentException;
 import com.haulmont.cuba.core.global.queryconditions.Condition;
 import com.haulmont.cuba.core.global.queryconditions.JpqlCondition;
 import com.haulmont.cuba.core.global.queryconditions.LogicalCondition;
-import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.DataLoadCoordinator;
+import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.model.DataLoader;
 import com.haulmont.cuba.gui.model.InstanceContainer;
 import com.haulmont.cuba.gui.model.ScreenData;
@@ -117,8 +119,13 @@ public class WebDataLoadCoordinator extends WebAbstractFacet implements DataLoad
         return screenData.getLoaderIds().stream()
                 .map(screenData::<DataLoader>getLoader)
                 .distinct()
-                .filter(loader -> triggers.stream()
-                        .map(Trigger::getLoader).noneMatch(configuredLoader -> configuredLoader == loader));
+                .filter(this::loaderIsNotConfiguredYet);
+    }
+
+    private boolean loaderIsNotConfiguredYet(DataLoader loader) {
+        return triggers.stream()
+                .map(Trigger::getLoader)
+                .noneMatch(configuredLoader -> configuredLoader == loader);
     }
 
     private void configureAutomatically(DataLoader loader, FrameOwner frameOwner) {
@@ -131,26 +138,21 @@ public class WebDataLoadCoordinator extends WebAbstractFacet implements DataLoad
             if (parameter.startsWith(containerPrefix)) {
                 InstanceContainer container = UiControllerUtils.getScreenData(frameOwner).getContainer(
                         parameter.substring(containerPrefix.length()));
-                OnContainerItemChangedLoadTrigger loadTrigger = new OnContainerItemChangedLoadTrigger(
-                        loader, container, parameter);
-                triggers.add(loadTrigger);
+                addOnContainerItemChangedLoadTrigger(loader, container, parameter);
 
             } else if (parameter.startsWith(componentPrefix)) {
                 String componentId = parameter.substring(componentPrefix.length());
                 Component component = frameOwner instanceof Screen ?
                         ((Screen) frameOwner).getWindow().getComponentNN(componentId) :
                         ((ScreenFragment) frameOwner).getFragment().getComponentNN(componentId);
-                OnComponentValueChangedLoadTrigger loadTrigger = new OnComponentValueChangedLoadTrigger(
-                        loader, component, parameter, findLikeClause(loader, parameter));
-                triggers.add(loadTrigger);
+                LikeClause likeClause = findLikeClause(loader, parameter);
+                addOnComponentValueChangedLoadTrigger(loader, component, parameter, likeClause);
             }
         }
         // if the loader has no parameters in query, add trigger on BeforeShowEvent/AttachEvent
         if (queryParameters.isEmpty()) {
             Class eventClass = frameOwner instanceof Screen ? Screen.BeforeShowEvent.class : ScreenFragment.AttachEvent.class;
-            OnFrameOwnerEventLoadTrigger loadTrigger = new OnFrameOwnerEventLoadTrigger(
-                    frameOwner, reflectionInspector, loader, eventClass);
-            triggers.add(loadTrigger);
+            addOnFrameOwnerEventLoadTrigger(loader, eventClass);
         }
     }
 
