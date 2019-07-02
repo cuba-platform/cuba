@@ -35,6 +35,7 @@ public class AppCookies implements Serializable {
 
     private String cookiePath = "/";
     private boolean cookiesEnabled = true;
+    protected boolean httpOnly = true;
 
     private long lastRequestTimestamp = 0L;
 
@@ -69,6 +70,7 @@ public class AppCookies implements Serializable {
                 Cookie cookie = new Cookie(name, value);
                 cookie.setPath(getCookiePath());
                 cookie.setMaxAge(maxAge);
+                cookie.setHttpOnly(this.httpOnly);
                 addCookie(cookie);
             }
         }
@@ -81,6 +83,7 @@ public class AppCookies implements Serializable {
                 cookie.setValue(null);
                 cookie.setPath(getCookiePath());
                 cookie.setMaxAge(0);
+                cookie.setHttpOnly(this.httpOnly);
                 addCookie(cookie);
             }
         }
