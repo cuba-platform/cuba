@@ -1141,7 +1141,11 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
                     String captionProperty = column.getXmlDescriptor().attributeValue("captionProperty");
                     if (StringUtils.isNotEmpty(captionProperty)) {
                         E item = getItems().getItemNN(rowId);
-                        Object captionValue = item.getValueEx(captionProperty);
+
+                        String captionPropertyPath = String.format("%s.%s",
+                                ((MetaPropertyPath) colId).toPathString(), captionProperty);
+
+                        Object captionValue = item.getValueEx(captionPropertyPath);
                         return captionValue != null ? String.valueOf(captionValue) : null;
                     }
                 }
