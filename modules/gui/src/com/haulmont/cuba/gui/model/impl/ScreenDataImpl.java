@@ -16,14 +16,13 @@
 
 package com.haulmont.cuba.gui.model.impl;
 
-import com.haulmont.cuba.gui.model.DataContext;
-import com.haulmont.cuba.gui.model.DataLoader;
-import com.haulmont.cuba.gui.model.InstanceContainer;
-import com.haulmont.cuba.gui.model.ScreenData;
+import com.haulmont.cuba.gui.model.*;
+import com.haulmont.cuba.gui.screen.Screen;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Consumer;
 
 public class ScreenDataImpl implements ScreenData {
 
@@ -32,6 +31,8 @@ public class ScreenDataImpl implements ScreenData {
     protected Map<String, InstanceContainer> containers = new HashMap<>();
 
     protected Map<String, DataLoader> loaders = new HashMap<>();
+
+    protected LoadBeforeShowStrategy loadBeforeShowStrategy = new AnnotationBasedLoaderBeforeShow();
 
     @Override
     public DataContext getDataContext() {
@@ -78,6 +79,16 @@ public class ScreenDataImpl implements ScreenData {
         for (DataLoader loader : loaders.values()) {
             loader.load();
         }
+    }
+
+    @Override
+    public LoadBeforeShowStrategy getLoadBeforeShowStrategy() {
+        return loadBeforeShowStrategy;
+    }
+
+    @Override
+    public void setLoadBeforeShowStrategy(LoadBeforeShowStrategy strategy) {
+        loadBeforeShowStrategy = strategy;
     }
 
     @Override
