@@ -860,12 +860,28 @@ public class Param {
             }
         } else {
             if (inExpr) {
+                CollectionLoader<Entity> loader = createEntityOptionsLoader(metaClass);
+
+                CollectionContainer<Entity> container =
+                        dataComponents.createCollectionContainer(metaClass.getJavaClass());
+                loader.setContainer(container);
+
                 ListEditor listEditor = uiComponents.create(ListEditor.class);
+
                 listEditor.setItemType(ListEditor.ItemType.ENTITY);
                 listEditor.setEntityName(metaClass.getName());
-                listEditor.setUseLookupField(true);
-                listEditor.setEntityWhereClause(entityWhere);
+                //noinspection unchecked
+                listEditor.setOptions(new ContainerOptions<>(container));
+                //noinspection unchecked
                 initListEditor(listEditor, valueProperty);
+
+                //noinspection unchecked
+                Consumer<CollectionContainer.CollectionChangeEvent<?>> listener = e -> listEditor.setValue(null);
+
+                if (filterDataContext != null) {
+                    filterDataContext.registerCollectionLoader(this, loader);
+                    filterDataContext.registerContainerCollectionChangeListener(this, container, listener);
+                }
 
                 return listEditor;
             } else {
