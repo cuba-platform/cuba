@@ -155,6 +155,14 @@ $cuba-datagrid-highlight-hover-row: false !default;
     &:after {
       cursor: pointer;
     }
+
+    &.c-sort-last:after {
+      // We need to shift the sorting indicator
+      // if the Grid's SideBar button is present.
+      // Unfortunately, this button has no width,
+      // so we can only infer it.
+      margin-right: $v-font-size * 1.5;
+    }
   }
 
   .#{$primary-stylename}-body .#{$primary-stylename}-row {
