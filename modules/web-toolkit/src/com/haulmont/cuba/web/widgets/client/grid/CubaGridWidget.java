@@ -16,8 +16,8 @@
 
 package com.haulmont.cuba.web.widgets.client.grid;
 
-import com.google.gwt.dom.client.Element;
-import com.google.gwt.dom.client.NativeEvent;
+import com.google.gwt.core.shared.GWT;
+import com.google.gwt.dom.client.*;
 import com.google.gwt.user.client.ui.Widget;
 import com.vaadin.client.WidgetUtil;
 import com.vaadin.client.renderers.Renderer;
@@ -27,6 +27,7 @@ import com.vaadin.client.widget.escalator.RowContainer;
 import com.vaadin.client.widget.grid.AutoScroller;
 import com.vaadin.client.widget.grid.events.GridClickEvent;
 import com.vaadin.client.widget.grid.selection.SelectionModel;
+import com.vaadin.client.widgets.Escalator;
 import com.vaadin.client.widgets.Grid;
 import elemental.events.Event;
 import elemental.json.JsonObject;
@@ -38,6 +39,7 @@ public class CubaGridWidget extends Grid<JsonObject> {
 
     public static final String CUBA_ID_COLUMN_PREFIX = "column_";
     public static final String CUBA_ID_COLUMN_HIDING_TOGGLE_PREFIX = "cc_";
+    public static final String SORT_LAST_STYLENAME = "c-sort-last";
 
     protected Map<Column<?, JsonObject>, String> columnIds = null;
 
@@ -146,6 +148,80 @@ public class CubaGridWidget extends Grid<JsonObject> {
 
                 Element cellElement = cell.getElement();
                 cellElement.setAttribute("cuba-id", CUBA_ID_COLUMN_PREFIX + columnId);
+            }
+        }
+
+        @Override
+        protected void afterSortingIndicatorAdded(FlyweightCell cell) {
+            // if the last column, SidebarMenu is visible and no vertical scroll
+            if (cell.getColumn() == getVisibleColumns().size() - 1
+                    && getSidebar().getParent() != null
+                    && isHeaderDecoHidden()) {
+                TableCellElement cellElement = cell.getElement();
+                cellElement.addClassName(SORT_LAST_STYLENAME);
+            }
+        }
+
+        protected boolean isHeaderDecoHidden() {
+            DivElement headerDeco = getGrid().getEscalator().getHeaderDeco();
+            Style style = headerDeco.getStyle();
+
+            return Style.Display.NONE.getCssName().equals(style.getDisplay())
+                    || getEscalator().getVerticalScrollbar().isInvisibleScrollbar();
+        }
+
+        @Override
+        protected void cleanup(FlyweightCell cell) {
+            super.cleanup(cell);
+            cell.getElement().removeClassName("c-sort-last");
+        }
+    }
+
+    @Override
+    protected Sidebar createSidebar() {
+        return new CubaSidebar(this);
+    }
+
+    protected static class CubaSidebar extends Sidebar {
+
+        public CubaSidebar(CubaGridWidget grid) {
+            super(grid);
+        }
+
+        @Override
+        protected void updateVisibility() {
+            super.updateVisibility();
+
+            RowContainer header = getGrid().getEscalator().getHeader();
+            if (header.getRowCount() > 0) {
+                header.refreshRows(0, header.getRowCount());
+            }
+        }
+    }
+
+    @Override
+    protected Escalator createEscalator() {
+        return GWT.create(CubaEscalator.class);
+    }
+
+    public static class CubaEscalator extends Escalator {
+
+        public CubaEscalator() {
+            super();
+        }
+
+        @Override
+        protected Scroller createScroller() {
+            return new CubaScroller();
+        }
+
+        protected class CubaScroller extends Scroller {
+            @Override
+            protected void afterRecalculateScrollbarsForVirtualViewport() {
+                RowContainer header = getHeader();
+                if (header.getRowCount() > 0) {
+                    header.refreshRows(0, header.getRowCount());
+                }
             }
         }
     }
