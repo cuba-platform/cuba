@@ -82,7 +82,7 @@ public class FragmentHelper {
             try {
                 legacyScreen = (AbstractWindow) invokeConstructor(screenClass);
             } catch (NoSuchMethodException | IllegalAccessException
-                     | InvocationTargetException | InstantiationException e) {
+                    | InvocationTargetException | InstantiationException e) {
                 throw new DevelopmentException("Unable to create " + screenClass);
             }
             LegacyFragmentAdapter adapter = new LegacyFragmentAdapter(legacyScreen);
@@ -186,10 +186,10 @@ public class FragmentHelper {
             StopWatch injectStopWatch = createStopWatch(ScreenLifeCycle.INJECTION, loggingId);
 
             FrameOwner controller = fragment.getFrameOwner();
-            UiControllerDependencyInjector dependencyInjector =
-                    beanLocator.getPrototype(UiControllerDependencyInjector.NAME, controller, options);
-            dependencyInjector.inject();
-
+            beanLocator.getAll(ControllerDependencyInjector.class).values()
+                    .forEach(uiControllerDependencyInjector ->
+                            uiControllerDependencyInjector.inject(new ControllerDependencyInjector.InjectionContext(controller, options))
+                    );
             injectStopWatch.stop();
         }
     }

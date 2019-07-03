@@ -26,6 +26,7 @@ import com.haulmont.cuba.gui.components.AbstractWindow;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.screen.*;
+import com.haulmont.cuba.gui.sys.ControllerDependencyInjector;
 import com.haulmont.cuba.gui.sys.UiControllerDependencyInjector;
 import com.haulmont.cuba.gui.sys.UiControllerReflectionInspector;
 import mockit.Expectations;
@@ -86,11 +87,11 @@ public class ControllerDependencyInjectorTest extends CubaClientTestCase {
 
         UiControllerUtils.setScreenContext(controller, screenContext);
 
-        UiControllerDependencyInjector injector = new UiControllerDependencyInjector(controller, NO_OPTIONS);
+        UiControllerDependencyInjector injector = new UiControllerDependencyInjector();
         injector.setReflectionInspector(new UiControllerReflectionInspector());
         injector.setBeanLocator(beanLocator);
 
-        injector.inject();
+        injector.inject(new ControllerDependencyInjector.InjectionContext(controller, NO_OPTIONS));
         assertSame(controller.messages, messages);
 
         Field field = AbstractWindow.class.getDeclaredField("messages");
@@ -107,10 +108,10 @@ public class ControllerDependencyInjectorTest extends CubaClientTestCase {
 
         UiControllerUtils.setScreenContext(controller, screenContext);
 
-        UiControllerDependencyInjector injector = new UiControllerDependencyInjector(controller, new MapScreenOptions(testMap));
+        UiControllerDependencyInjector injector = new UiControllerDependencyInjector();
         injector.setReflectionInspector(new UiControllerReflectionInspector());
         injector.setBeanLocator(beanLocator);
-        injector.inject();
+        injector.inject(new ControllerDependencyInjector.InjectionContext(controller, new MapScreenOptions(testMap)));
 
         assertSame(controller.someObj, testMap.get("someObj"));
     }
