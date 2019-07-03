@@ -2123,6 +2123,10 @@ public class FilterDelegateImpl implements FilterDelegate {
     @Override
     public void setColumnsCount(int columnsCount) {
         this.columnsCount = columnsCount;
+        //if the filter is already initialized and there are conditions, then recreate conditions layout
+        if (!conditions.getRoots().isEmpty()) {
+            fillConditionsLayout(ConditionsFocusType.FIRST);
+        }
     }
 
     @Override
