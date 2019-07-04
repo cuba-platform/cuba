@@ -945,6 +945,87 @@ public class SoftDeleteTest {
     }
 
     @Test
+    public void testOneToOne_InnerJoinOnClause() {
+        System.out.println("===================== BEGIN testOneToOne_InnerJoinOnClause =====================");
+        // test fetchMode = AUTO
+        System.out.println("===================== BEGIN testOneToOne_InnerJoinOnClause fetchMode = AUTO =====================");
+        Transaction tx = cont.persistence().createTransaction();
+        try {
+            EntityManager em = cont.persistence().getEntityManager();
+            boolean prevValue = setPrintInnerJoinInWhereClause(em, false);
+
+            try {
+                View view = new View(SoftDeleteOneToOneA.class, "testView")
+                        .addProperty("name")
+                        .addProperty("b",
+                                new View(SoftDeleteOneToOneB.class, "testView").addProperty("name"));
+                SoftDeleteOneToOneA oneToOneA = em.find(SoftDeleteOneToOneA.class, oneToOneA2Id, view);
+                assertNotNull(oneToOneA);
+                assertNotNull(oneToOneA.getB());
+                assertEquals(oneToOneA.getB().getId(), oneToOneB2Id);
+            } finally {
+                setPrintInnerJoinInWhereClause(em, prevValue);
+            }
+
+            tx.commit();
+        } finally {
+            tx.end();
+        }
+
+        // test fetchMode = BATCH
+        System.out.println("===================== BEGIN testOneToOne_InnerJoinOnClause fetchMode = BATCH =====================");
+        tx = cont.persistence().createTransaction();
+        try {
+            EntityManager em = cont.persistence().getEntityManager();
+            boolean prevValue = setPrintInnerJoinInWhereClause(em, false);
+
+            try {
+                View view = new View(SoftDeleteOneToOneA.class, "testView")
+                        .addProperty("name")
+                        .addProperty("b",
+                                new View(SoftDeleteOneToOneB.class, "testView").addProperty("name"), FetchMode.BATCH);
+                SoftDeleteOneToOneA oneToOneA = em.find(SoftDeleteOneToOneA.class, oneToOneA2Id, view);
+                assertNotNull(oneToOneA);
+                assertNotNull(oneToOneA.getB());
+                assertEquals(oneToOneA.getB().getId(), oneToOneB2Id);
+            } finally {
+                setPrintInnerJoinInWhereClause(em, prevValue);
+            }
+
+            tx.commit();
+        } finally {
+            tx.end();
+        }
+
+        // test fetchMode = UNDEFINED
+        System.out.println("===================== BEGIN testOneToOne_InnerJoinOnClause fetchMode = UNDEFINED =====================");
+        tx = cont.persistence().createTransaction();
+        try {
+            EntityManager em = cont.persistence().getEntityManager();
+            boolean prevValue = setPrintInnerJoinInWhereClause(em, false);
+
+            try {
+                View view = new View(SoftDeleteOneToOneA.class, "testView")
+                        .addProperty("name")
+                        .addProperty("b",
+                                new View(SoftDeleteOneToOneB.class, "testView").addProperty("name"), FetchMode.UNDEFINED);
+                SoftDeleteOneToOneA oneToOneA = em.find(SoftDeleteOneToOneA.class, oneToOneA2Id, view);
+                assertNotNull(oneToOneA);
+                assertNotNull(oneToOneA.getB());
+                assertEquals(oneToOneA.getB().getId(), oneToOneB2Id);
+            } finally {
+                setPrintInnerJoinInWhereClause(em, prevValue);
+            }
+
+            tx.commit();
+        } finally {
+            tx.end();
+        }
+
+        System.out.println("===================== END testOneToOne =====================");
+    }
+
+    @Test
     public void testOneToOneQuery() {
         System.out.println("===================== BEGIN testOneToOneQuery =====================");
         // test fetchMode = AUTO
@@ -973,6 +1054,38 @@ public class SoftDeleteTest {
         System.out.println("===================== END testOneToOneQuery =====================");
     }
 
+    @Test
+    public void testOneToOneQuery_InnerJoinOnClause() {
+        System.out.println("===================== BEGIN testOneToOneQuery_InnerJoinOnClause =====================");
+        // test fetchMode = AUTO
+        Transaction tx = cont.persistence().createTransaction();
+        try {
+            EntityManager em = cont.persistence().getEntityManager();
+            boolean prevValue = setPrintInnerJoinInWhereClause(em, false);
+
+            try {
+                View view = new View(SoftDeleteOneToOneA.class, "testView")
+                        .addProperty("name")
+                        .addProperty("b",
+                                new View(SoftDeleteOneToOneB.class, "testView").addProperty("name"));
+
+                List<SoftDeleteOneToOneA> r = em.createQuery("select a from test$SoftDeleteOneToOneA a where a.name = :name",
+                        SoftDeleteOneToOneA.class)
+                        .setParameter("name", "oneToOneA2")
+                        .setView(view)
+                        .getResultList();
+
+                assertEquals(1, r.size());
+                assertEquals(r.get(0).getB().getId(), oneToOneB2Id);
+            } finally {
+                setPrintInnerJoinInWhereClause(em, prevValue);
+            }
+            tx.commit();
+        } finally {
+            tx.end();
+        }
+        System.out.println("===================== END testOneToOneQuery_InnerJoinOnClause =====================");
+    }
 
     private void loadDeletedUser() {
         try (Transaction tx = cont.persistence().createTransaction()) {
@@ -981,7 +1094,6 @@ public class SoftDeleteTest {
             tx.commit();
         }
     }
-
 
     @Test
     public void testReferenceToDeletedEntityThroughOneToMany() throws Exception {
@@ -1021,11 +1133,7 @@ public class SoftDeleteTest {
         Transaction tx = cont.persistence().createTransaction();
         try {
             EntityManager em = cont.persistence().getEntityManager();
-
-            JpaEntityManager jpaEntityManager = (JpaEntityManager) em.getDelegate();
-            DatabasePlatform platform = jpaEntityManager.getActiveSession().getPlatform();
-            boolean prevValue = platform.shouldPrintInnerJoinInWhereClause();
-            platform.setPrintInnerJoinInWhereClause(false);
+            boolean prevValue = setPrintInnerJoinInWhereClause(em, false);
 
             try {
                 Query query = em.createQuery("select r from sec$UserRole r join r.user u where u.login = :user");
@@ -1038,11 +1146,19 @@ public class SoftDeleteTest {
                 list = query.getResultList();
                 assertTrue(list.isEmpty());
             } finally {
-                platform.setPrintInnerJoinInWhereClause(prevValue);
+                setPrintInnerJoinInWhereClause(em, prevValue);
             }
             tx.commit();
         } finally {
             tx.end();
         }
+    }
+
+    protected boolean setPrintInnerJoinInWhereClause(EntityManager entityManager, boolean value) {
+        JpaEntityManager jpaEntityManager = (JpaEntityManager) entityManager.getDelegate();
+        DatabasePlatform platform = jpaEntityManager.getActiveSession().getPlatform();
+        boolean prevValue = platform.shouldPrintInnerJoinInWhereClause();
+        platform.setPrintInnerJoinInWhereClause(value);
+        return prevValue;
     }
 }
