@@ -17,6 +17,7 @@
 package com.haulmont.cuba.web.widgets.client.timefield;
 
 import com.haulmont.cuba.web.widgets.client.textfield.CubaMaskedTextFieldState;
+import com.vaadin.shared.annotations.NoLayout;
 
 public class CubaTimeFieldState extends CubaMaskedTextFieldState {
     {
@@ -25,4 +26,7 @@ public class CubaTimeFieldState extends CubaMaskedTextFieldState {
 
     public TimeResolution resolution = TimeResolution.MINUTE;
     public boolean captionManagedByLayout = true;
+
+    @NoLayout
+    public String timeFormat;
 }

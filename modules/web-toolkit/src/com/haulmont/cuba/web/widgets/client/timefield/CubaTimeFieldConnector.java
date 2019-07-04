@@ -56,5 +56,9 @@ public class CubaTimeFieldConnector extends CubaMaskedFieldConnector {
             setWidgetStyleName(widget.getStylePrimaryName() + "-"
                     + widget.resolutionAsString(), true);
         }
+
+        if (stateChangeEvent.hasPropertyChanged("timeFormat")) {
+            widget.setTimeFormat(getState().timeFormat);
+        }
     }
 }

@@ -145,6 +145,7 @@ public class CubaTimeField extends AbstractField<LocalTime> {
         String mask = StringUtils.replaceChars(timeFormat, "Hhmsa", "####U");
         placeholder = StringUtils.replaceChars(mask, "#U", "__");
         getState().mask = mask;
+        getState().timeFormat = timeFormat;
     }
 
     public TimeResolution getResolution() {
