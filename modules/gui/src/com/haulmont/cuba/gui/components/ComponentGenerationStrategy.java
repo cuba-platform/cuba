@@ -19,24 +19,24 @@ package com.haulmont.cuba.gui.components;
 import javax.annotation.Nullable;
 
 /**
- * An interface which realizations are used to create UI components.
+ * A strategy for creating UI components by {@link UiComponentsGenerator}.
  */
 public interface ComponentGenerationStrategy {
     /**
-     * Defines the highest precedence for {@link org.springframework.core.Ordered} component factories of the platform.
+     * Defines the highest precedence for {@link org.springframework.core.Ordered} component factories of the framework.
      */
     int HIGHEST_PLATFORM_PRECEDENCE = 100;
 
     /**
-     * Defines the lowest precedence for {@link org.springframework.core.Ordered} component factories of the platform.
+     * Defines the lowest precedence for {@link org.springframework.core.Ordered} component factories of the framework.
      */
     int LOWEST_PLATFORM_PRECEDENCE = 1000;
 
     /**
      * Creates a component according to the given {@link ComponentGenerationContext}.
      *
-     * @param context the {@link ComponentGenerationContext} instance
-     * @return a component according to the given {@link ComponentGenerationContext}
+     * @param context the context instance
+     * @return created component
      */
     @Nullable
     Component createComponent(ComponentGenerationContext context);

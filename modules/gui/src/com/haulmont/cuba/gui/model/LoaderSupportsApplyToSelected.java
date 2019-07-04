@@ -20,6 +20,9 @@ import com.haulmont.cuba.core.global.LoadContext;
 
 import java.util.List;
 
+/**
+ * Interface implemented by data loaders that can pass the stack of previous queries to {@link LoadContext}.
+ */
 public interface LoaderSupportsApplyToSelected {
 
     /**
