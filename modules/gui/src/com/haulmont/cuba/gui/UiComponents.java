@@ -17,13 +17,12 @@
 package com.haulmont.cuba.gui;
 
 import com.google.common.reflect.TypeToken;
-import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.gui.components.Component;
 
 /**
- * Factory to create UI components in client independent manner.
- * <br>
- * An instance of the factory can be injected into screen controllers or obtained through {@link AppBeans}.
+ * Factory to create UI components using their class, name or type token.
+ *
+ * @see com.haulmont.cuba.gui.components.UiComponentsGenerator
  */
 public interface UiComponents {
 

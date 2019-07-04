@@ -19,6 +19,11 @@ package com.haulmont.cuba.gui.components;
 import javax.inject.Inject;
 import java.util.List;
 
+/**
+ * Factory to create UI components using {@link ComponentGenerationStrategy}.
+ *
+ * @see com.haulmont.cuba.gui.UiComponents
+ */
 @org.springframework.stereotype.Component(UiComponentsGenerator.NAME)
 public class UiComponentsGenerator {
     public static final String NAME = "cuba_UiComponentsGenerator";

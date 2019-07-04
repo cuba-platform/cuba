@@ -31,8 +31,7 @@ import javax.annotation.Nullable;
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
 /**
- * A class which stores information that can be used
- * when creating a component by the {@link UiComponents}.
+ * Contains information for {@link ComponentGenerationStrategy} when creating components using {@link UiComponentsGenerator}.
  */
 public class ComponentGenerationContext {
     protected MetaClass metaClass;
