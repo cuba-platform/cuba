@@ -367,6 +367,102 @@ public class SoftDeleteTest {
     }
 
     @Test
+    public void testManyToOne_InnerJoinOnClause() throws SQLException {
+        System.out.println("===================== BEGIN testManyToOne =====================");
+
+        QueryRunner queryRunner = new QueryRunner(persistence.getDataSource());
+        queryRunner.update("update SEC_GROUP set DELETE_TS = current_timestamp, DELETED_BY = 'admin' where ID = ?", new Object[] {groupId.toString()});
+
+        // test without view
+        try (Transaction tx = persistence.createTransaction()) {
+            EntityManager em = persistence.getEntityManager();
+            boolean prevValue = setPrintInnerJoinInWhereClause(em, false);
+            Group group = null;
+            try {
+                User user = em.find(User.class, userId);
+                group = user.getGroup();
+            } finally {
+                setPrintInnerJoinInWhereClause(em, prevValue);
+            }
+
+            tx.commit();
+
+            assertNotNull(group);
+            assertTrue(group.isDeleted());
+        }
+
+        View view;
+
+        // test fetchMode = AUTO (JOIN is used)
+        view = new View(User.class, "testView")
+                .addProperty("name")
+                .addProperty("login")
+                .addProperty("group", new View(Group.class).addProperty("name"));
+        try (Transaction tx = persistence.createTransaction()) {
+            EntityManager em = persistence.getEntityManager();
+            boolean prevValue = setPrintInnerJoinInWhereClause(em, false);
+            Group group;
+            try {
+                User user = em.find(User.class, userId, view);
+                group = user.getGroup();
+            } finally {
+                setPrintInnerJoinInWhereClause(em, prevValue);
+            }
+
+            tx.commit();
+
+            assertNotNull(group);
+            assertTrue(group.isDeleted());
+        }
+
+        // test fetchMode = UNDEFINED
+        view = new View(User.class, "testView")
+                .addProperty("name")
+                .addProperty("login")
+                .addProperty("group", new View(Group.class).addProperty("name"), FetchMode.UNDEFINED);
+        try (Transaction tx = persistence.createTransaction()) {
+            EntityManager em = persistence.getEntityManager();
+            boolean prevValue = setPrintInnerJoinInWhereClause(em, false);
+            Group group;
+            try {
+                User user = em.find(User.class, userId, view);
+                group = user.getGroup();
+            } finally {
+                setPrintInnerJoinInWhereClause(em, prevValue);
+            }
+
+            tx.commit();
+
+            assertNotNull(group);
+            assertTrue(group.isDeleted());
+        }
+
+        // test fetchMode = BATCH
+        view = new View(User.class, "testView")
+                .addProperty("name")
+                .addProperty("login")
+                .addProperty("group", new View(Group.class).addProperty("name"), FetchMode.BATCH);
+        try (Transaction tx = persistence.createTransaction()) {
+            EntityManager em = persistence.getEntityManager();
+            boolean prevValue = setPrintInnerJoinInWhereClause(em, false);
+            Group group;
+            try {
+                User user = em.find(User.class, userId, view);
+                group = user.getGroup();
+            } finally {
+                setPrintInnerJoinInWhereClause(em, prevValue);
+            }
+
+            tx.commit();
+
+            assertNotNull(group);
+            assertTrue(group.isDeleted());
+        }
+
+        System.out.println("===================== END testManyToOne =====================");
+    }
+
+    @Test
     public void testOneToMany() {
         System.out.println("===================== BEGIN testOneToMany =====================");
         // test fetchMode = AUTO
@@ -1129,7 +1225,7 @@ public class SoftDeleteTest {
     }
 
     @Test
-    public void testSoftDeleteWithJPQLJoin() {
+    public void testSoftDeleteWithJPQLJoin_InnerJoinOnClause() {
         Transaction tx = cont.persistence().createTransaction();
         try {
             EntityManager em = cont.persistence().getEntityManager();
