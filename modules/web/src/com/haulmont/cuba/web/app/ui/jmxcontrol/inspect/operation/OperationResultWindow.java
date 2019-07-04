@@ -73,8 +73,8 @@ public class OperationResultWindow extends AbstractWindow {
             Label<String> traceLabel = uiComponents.create(Label.NAME);
             traceLabel.setValue(getExceptionMessage(exception));
 
-            com.vaadin.ui.Label vaadinLbl = traceLabel.unwrap(com.vaadin.ui.Label.class);
-            vaadinLbl.setContentMode(ContentMode.PREFORMATTED);
+            traceLabel.withUnwrapped(com.vaadin.ui.Label.class, vLabel ->
+                    vLabel.setContentMode(ContentMode.PREFORMATTED));
 
             resultLabel.setValue(getMessage("operationResult.exception"));
             resultContainer.add(traceLabel);
@@ -82,8 +82,8 @@ public class OperationResultWindow extends AbstractWindow {
             Label<String> valueHolder = uiComponents.create(Label.NAME);
             valueHolder.setValue(AttributeHelper.convertToString(result));
 
-            com.vaadin.ui.Label vaadinLbl = valueHolder.unwrap(com.vaadin.ui.Label.class);
-            vaadinLbl.setContentMode(ContentMode.PREFORMATTED);
+            valueHolder.withUnwrapped(com.vaadin.ui.Label.class, vLabel ->
+                    vLabel.setContentMode(ContentMode.PREFORMATTED));
 
             resultLabel.setValue(getMessage("operationResult.result"));
             resultContainer.add(valueHolder);

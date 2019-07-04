@@ -25,6 +25,7 @@ import com.haulmont.cuba.gui.components.TextField;
 import com.haulmont.cuba.gui.components.data.ValueSource;
 import com.haulmont.cuba.gui.icons.Icons;
 
+import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.function.Consumer;
@@ -188,9 +189,29 @@ public class TestTextField implements TextField<String> {
         return null;
     }
 
+    @Nullable
+    @Override
+    public <X> X unwrapOrNull(Class<X> internalComponentClass) {
+        return null;
+    }
+
+    @Override
+    public <X> void withUnwrapped(Class<X> internalComponentClass, Consumer<X> action) {
+    }
+
     @Override
     public <X> X unwrapComposition(Class<X> internalCompositionClass) {
         return null;
+    }
+
+    @Nullable
+    @Override
+    public <X> X unwrapCompositionOrNull(Class<X> internalCompositionClass) {
+        return null;
+    }
+
+    @Override
+    public <X> void withUnwrappedComposition(Class<X> internalCompositionClass, Consumer<X> action) {
     }
 
     @Override

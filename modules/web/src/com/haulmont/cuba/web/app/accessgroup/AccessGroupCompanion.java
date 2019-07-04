@@ -49,88 +49,89 @@ public class AccessGroupCompanion implements GroupBrowser.Companion {
     public void initDragAndDrop(Table<User> usersTable, Tree<Group> groupsTree,
                                 Consumer<UserGroupChangedEvent> userGroupChangedHandler,
                                 Consumer<GroupChangeEvent> groupChangeEventHandler) {
-        CubaTable vTable = usersTable.unwrap(CubaTable.class);
-        new CubaTableDragSourceExtension<>(vTable);
+        usersTable.withUnwrapped(CubaTable.class, CubaTableDragSourceExtension::new);
 
-        //noinspection unchecked
-        CubaTree<Group> vTree = groupsTree.unwrap(CubaTree.class);
+        groupsTree.withUnwrapped(CubaTree.class, vTree -> {
+            // tree as drag source
+            //noinspection unchecked
+            TreeGridDragSource<Group> treeGridDragSource = new TreeGridDragSource<>(vTree.getCompositionRoot());
+            treeGridDragSource.setDragDataGenerator(TRANSFER_DATA_TYPE, group -> group.getId().toString());
 
-        // tree as drag source
-        TreeGridDragSource<Group> treeGridDragSource = new TreeGridDragSource<>(vTree.getCompositionRoot());
-        treeGridDragSource.setDragDataGenerator(TRANSFER_DATA_TYPE, group -> group.getId().toString());
+            // tree as drop target
+            //noinspection unchecked
+            TreeGridDropTarget<Group> treeGridDropTarget = new TreeGridDropTarget<>(vTree.getCompositionRoot(), DropMode.ON_TOP);
+            treeGridDropTarget.addTreeGridDropListener(event -> {
+                // if we drop users from table
+                if (event.getDragSourceExtension().isPresent() &&
+                        event.getDragSourceExtension().get() instanceof CubaTableDragSourceExtension) {
+                    // return if we drop user between rows
+                    if (event.getDropLocation() == DropLocation.BELOW) {
+                        return;
+                    }
 
-        // tree as drop target
-        TreeGridDropTarget<Group> treeGridDropTarget = new TreeGridDropTarget<>(vTree.getCompositionRoot(), DropMode.ON_TOP);
-        treeGridDropTarget.addTreeGridDropListener(event -> {
-            // if we drop users from table
-            if (event.getDragSourceExtension().isPresent() &&
-                    event.getDragSourceExtension().get() instanceof CubaTableDragSourceExtension) {
-                // return if we drop user between rows
-                if (event.getDropLocation() == DropLocation.BELOW) {
-                    return;
-                }
+                    //noinspection unchecked
+                    CubaTableDragSourceExtension<CubaTable> sourceExtension =
+                            (CubaTableDragSourceExtension<CubaTable>) event.getDragSourceExtension().get();
 
-                //noinspection unchecked
-                CubaTableDragSourceExtension<CubaTable> sourceExtension =
-                        (CubaTableDragSourceExtension<CubaTable>) event.getDragSourceExtension().get();
+                    List<Object> itemIds = sourceExtension.getLastDraggedItemIds();
+                    TableItems<User> tableItems = usersTable.getItems();
 
-                List<Object> itemIds = sourceExtension.getLastDraggedItemIds();
-                TableItems<User> tableItems = usersTable.getItems();
-
-                List<User> users = new ArrayList<>();
-                for (Object id : itemIds) {
-                    users.add(tableItems.getItem(id));
-                }
-
-                if (event.getDropTargetRow().isPresent()) {
-                    Group group = event.getDropTargetRow().get();
-                    userGroupChangedHandler.accept(new UserGroupChangedEvent(groupsTree, users, group));
-                }
-                // if we reorder groups inside tree
-            } else {
-                String draggedItemId = event.getDataTransferData().get(TEXT_PLAIN_DATA_TYPE);
-
-                if (isEdgeOrIE() && draggedItemId == null) {
-                    draggedItemId = event.getDataTransferText();
-                }
-
-                if (draggedItemId == null) {
-                    return;
-                }
-
-                String[] draggedItemIds = draggedItemId.split("\\r?\\n");
-
-                for (String itemId : draggedItemIds) {
-
-                    Group draggedGroup = groupsTree.getItems().getItem(UUID.fromString(itemId));
+                    List<User> users = new ArrayList<>();
+                    for (Object id : itemIds) {
+                        users.add(tableItems.getItem(id));
+                    }
 
                     if (event.getDropTargetRow().isPresent()) {
-                        Group targetGroup = event.getDropTargetRow().get();
+                        Group group = event.getDropTargetRow().get();
+                        userGroupChangedHandler.accept(new UserGroupChangedEvent(groupsTree, users, group));
+                    }
+                    // if we reorder groups inside tree
+                } else {
+                    String draggedItemId = event.getDataTransferData().get(TEXT_PLAIN_DATA_TYPE);
 
-                        // if we drop to itself
-                        if (targetGroup.getId().equals(draggedGroup.getId())) {
-                            continue;
+                    if (isEdgeOrIE() && draggedItemId == null) {
+                        draggedItemId = event.getDataTransferText();
+                    }
+
+                    if (draggedItemId == null) {
+                        return;
+                    }
+
+                    String[] draggedItemIds = draggedItemId.split("\\r?\\n");
+
+                    for (String itemId : draggedItemIds) {
+
+                        Group draggedGroup = groupsTree.getItems().getItem(UUID.fromString(itemId));
+
+                        if (event.getDropTargetRow().isPresent()) {
+                            Group targetGroup = event.getDropTargetRow().get();
+
+                            // if we drop to itself
+                            if (targetGroup.getId().equals(draggedGroup.getId())) {
+                                continue;
+                            }
+
+                            // if we drop parent to its child
+                            //noinspection unchecked
+                            if (isParentDroppedToChild(draggedGroup, targetGroup, vTree)) {
+                                continue;
+                            }
+
+                            // if we drop child to the same parent
+                            if (draggedGroup.getParent() != null
+                                    && (draggedGroup.getParent().getId().equals(targetGroup.getId()))) {
+                                continue;
+                            }
+
+                            groupChangeEventHandler.accept(new GroupChangeEvent(groupsTree, draggedGroup.getId(), targetGroup.getId()));
+
+                            // if we drop group to empty space make it root
+                        } else if (event.getDropLocation() == DropLocation.EMPTY) {
+                            groupChangeEventHandler.accept(new GroupChangeEvent(groupsTree, draggedGroup.getId(), null));
                         }
-
-                        // if we drop parent to its child
-                        if (isParentDroppedToChild(draggedGroup, targetGroup, vTree)) {
-                            continue;
-                        }
-
-                        // if we drop child to the same parent
-                        if (draggedGroup.getParent() != null
-                                && (draggedGroup.getParent().getId().equals(targetGroup.getId()))) {
-                            continue;
-                        }
-
-                        groupChangeEventHandler.accept(new GroupChangeEvent(groupsTree, draggedGroup.getId(), targetGroup.getId()));
-
-                        // if we drop group to empty space make it root
-                    } else if (event.getDropLocation() == DropLocation.EMPTY) {
-                        groupChangeEventHandler.accept(new GroupChangeEvent(groupsTree, draggedGroup.getId(), null));
                     }
                 }
-            }
+            });
         });
     }
 

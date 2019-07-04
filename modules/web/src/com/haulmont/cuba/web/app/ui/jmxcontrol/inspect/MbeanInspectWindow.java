@@ -74,8 +74,8 @@ public class MbeanInspectWindow extends AbstractEditor {
     public void init(Map<String, Object> params) {
         super.init(params);
 
-        attributesTable.unwrap(CubaTable.class)
-                .setTextSelectionEnabled(true);
+        attributesTable.withUnwrapped(CubaTable.class, vTable ->
+                vTable.setTextSelectionEnabled(true));
 
         attributesTable.setItemClickAction(editAttributeAction);
         attributesTable.addGeneratedColumn("type", entity -> {

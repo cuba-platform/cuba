@@ -751,8 +751,7 @@ public class WebScreens implements Screens, WindowManager {
     protected void removeDialogWindow(Screen screen) {
         Window window = screen.getWindow();
 
-        CubaWindow cubaDialogWindow = window.unwrapComposition(CubaWindow.class);
-        cubaDialogWindow.forceClose();
+        window.withUnwrappedComposition(CubaWindow.class, CubaWindow::forceClose);
     }
 
     @Override
@@ -1721,23 +1720,24 @@ public class WebScreens implements Screens, WindowManager {
             ((WebWindow) window).setUrlStateMark(workArea.generateUrlStateMark());
         }
 
-        CubaWindow vWindow = window.unwrapComposition(CubaWindow.class);
-        vWindow.setErrorHandler(ui);
+        window.withUnwrappedComposition(CubaWindow.class, vWindow -> {
+            vWindow.setErrorHandler(ui);
 
-        String cubaId = "dialog_" + window.getId();
-        if (ui.isTestMode()) {
-            vWindow.setCubaId(cubaId);
-        }
-        if (ui.isPerformanceTestMode()) {
-            vWindow.setId(ui.getTestIdManager().getTestId(cubaId));
-        }
+            String cubaId = "dialog_" + window.getId();
+            if (ui.isTestMode()) {
+                vWindow.setCubaId(cubaId);
+            }
+            if (ui.isPerformanceTestMode()) {
+                vWindow.setId(ui.getTestIdManager().getTestId(cubaId));
+            }
 
-        if (hasModalWindow()) {
-            // force modal
-            window.setModal(true);
-        }
+            if (hasModalWindow()) {
+                // force modal
+                window.setModal(true);
+            }
 
-        ui.addWindow(vWindow);
+            ui.addWindow(vWindow);
+        });
     }
 
     protected void handleWindowBreadCrumbsNavigate(WindowBreadCrumbs breadCrumbs, Window window) {

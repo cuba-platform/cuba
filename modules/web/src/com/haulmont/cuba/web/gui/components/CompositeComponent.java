@@ -361,9 +361,31 @@ public class CompositeComponent<T extends Component>
         return getComposition().unwrap(internalComponentClass);
     }
 
+    @Nullable
+    @Override
+    public <X> X unwrapOrNull(Class<X> internalComponentClass) {
+        return getComposition().unwrapOrNull(internalComponentClass);
+    }
+
+    @Override
+    public <X> void withUnwrapped(Class<X> internalComponentClass, Consumer<X> action) {
+        getComposition().withUnwrapped(internalComponentClass, action);
+    }
+
     @Override
     public <X> X unwrapComposition(Class<X> internalCompositionClass) {
         return getComposition().unwrapComposition(internalCompositionClass);
+    }
+
+    @Nullable
+    @Override
+    public <X> X unwrapCompositionOrNull(Class<X> internalCompositionClass) {
+        return getComposition().unwrapCompositionOrNull(internalCompositionClass);
+    }
+
+    @Override
+    public <X> void withUnwrappedComposition(Class<X> internalCompositionClass, Consumer<X> action) {
+        getComposition().withUnwrappedComposition(internalCompositionClass, action);
     }
 
     @Override

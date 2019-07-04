@@ -300,8 +300,8 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
 
     @SuppressWarnings("deprecation")
     protected void resetCurrentDataPage(Table table) {
-        com.vaadin.v7.ui.Table vTable = table.unwrap(com.vaadin.v7.ui.Table.class);
-        vTable.setCurrentPageFirstItemIndex(0);
+        table.withUnwrapped(com.vaadin.v7.ui.Table.class, vTable ->
+                vTable.setCurrentPageFirstItemIndex(0));
     }
 
     protected boolean refreshData() {

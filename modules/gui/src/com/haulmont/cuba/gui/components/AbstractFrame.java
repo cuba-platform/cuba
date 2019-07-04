@@ -33,6 +33,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 /**
@@ -484,14 +485,67 @@ public class AbstractFrame extends ScreenFragment implements Frame, Frame.Wrappe
         return (X) frame;
     }
 
+    @Nullable
+    @Override
+    public <X> X unwrapOrNull(Class<X> internalComponentClass) {
+        if (getComponent() instanceof Component.Wrapper) {
+            Object component = ((Component.Wrapper) frame).getComponent();
+            return component.getClass().isAssignableFrom(internalComponentClass)
+                    ? internalComponentClass.cast(component)
+                    : null;
+        }
+        return frame.getClass().isAssignableFrom(internalComponentClass)
+                ? internalComponentClass.cast(frame)
+                : null;
+    }
+
+    @Override
+    public <X> void withUnwrapped(Class<X> internalComponentClass, Consumer<X> action) {
+        if (getComponent() instanceof Component.Wrapper) {
+            Object component = ((Component.Wrapper) frame).getComponent();
+            if (component.getClass().isAssignableFrom(internalComponentClass)) {
+                action.accept(internalComponentClass.cast(component));
+            }
+        }
+        if (frame.getClass().isAssignableFrom(internalComponentClass)) {
+            action.accept(internalComponentClass.cast(frame));
+        }
+    }
+
     @SuppressWarnings("unchecked")
     @Override
     public <X> X unwrapComposition(Class<X> internalCompositionClass) {
         if (getComposition() instanceof Component.Wrapper) {
             return (X) ((Component.Wrapper) frame).getComposition();
         }
-
         return (X) frame;
+    }
+
+    @Nullable
+    @Override
+    public <X> X unwrapCompositionOrNull(Class<X> internalCompositionClass) {
+        if (getComposition() instanceof Component.Wrapper) {
+            Object composition = ((Component.Wrapper) frame).getComposition();
+            return composition.getClass().isAssignableFrom(internalCompositionClass)
+                    ? internalCompositionClass.cast(composition)
+                    : null;
+        }
+        return frame.getClass().isAssignableFrom(internalCompositionClass)
+                ? internalCompositionClass.cast(frame)
+                : null;
+    }
+
+    @Override
+    public <X> void withUnwrappedComposition(Class<X> internalCompositionClass, Consumer<X> action) {
+        if (getComposition() instanceof Component.Wrapper) {
+            Object composition = ((Component.Wrapper) frame).getComposition();
+            if (composition.getClass().isAssignableFrom(internalCompositionClass)) {
+                action.accept(internalCompositionClass.cast(composition));
+            }
+        }
+        if (frame.getClass().isAssignableFrom(internalCompositionClass)) {
+            action.accept(internalCompositionClass.cast(frame));
+        }
     }
 
     @Override

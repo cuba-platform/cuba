@@ -31,6 +31,7 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.icons.Icons;
 import org.apache.commons.lang3.StringUtils;
 
+import javax.annotation.Nullable;
 import javax.swing.*;
 import javax.swing.BoxLayout;
 import javax.swing.border.EmptyBorder;
@@ -41,6 +42,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 import static java.awt.Component.CENTER_ALIGNMENT;
 
@@ -531,9 +533,29 @@ public class DesktopPopupButton extends DesktopAbstractActionsHolderComponent<JB
             return null;
         }
 
+        @Nullable
+        @Override
+        public <X> X unwrapOrNull(Class<X> internalComponentClass) {
+            return null;
+        }
+
+        @Override
+        public <X> void withUnwrapped(Class<X> internalComponentClass, Consumer<X> action) {
+        }
+
         @Override
         public <X> X unwrapComposition(Class<X> internalCompositionClass) {
             return null;
+        }
+
+        @Nullable
+        @Override
+        public <X> X unwrapCompositionOrNull(Class<X> internalCompositionClass) {
+            return null;
+        }
+
+        @Override
+        public <X> void withUnwrappedComposition(Class<X> internalCompositionClass, Consumer<X> action) {
         }
 
         @Override

@@ -30,8 +30,8 @@ import com.vaadin.ui.Notification;
 public class SystemInfoWindowCompanion implements SystemInfoWindow.Companion {
     @Override
     public void initInfoTable(Table infoTable) {
-        CubaTable vTable = infoTable.unwrap(CubaTable.class);
-        vTable.setTextSelectionEnabled(true);
+        infoTable.withUnwrapped(CubaTable.class, vTable ->
+                vTable.setTextSelectionEnabled(true));
     }
 
     @Override
@@ -46,13 +46,14 @@ public class SystemInfoWindowCompanion implements SystemInfoWindow.Companion {
             copyButton.setVisible(false);
             copyButton.setDescription(description);
 
-            com.vaadin.ui.Button button = copyButton.unwrap(com.vaadin.ui.Button.class);
-            CubaCopyButtonExtension copyExtension =
-                    CubaCopyButtonExtension.copyWith(button, cubaCopyLogContentClass);
+            copyButton.withUnwrapped(com.vaadin.ui.Button.class, vButton -> {
+                CubaCopyButtonExtension copyExtension =
+                        CubaCopyButtonExtension.copyWith(vButton, cubaCopyLogContentClass);
+                copyExtension.addCopyListener(event ->
+                        Notification.show(event.isSuccess() ? successMessage : failMessage,
+                                Notification.Type.TRAY_NOTIFICATION));
+            });
 
-            copyExtension.addCopyListener(event ->
-                    Notification.show(event.isSuccess() ? successMessage : failMessage,
-                            Notification.Type.TRAY_NOTIFICATION));
             container.add(copyButton);
         }
     }

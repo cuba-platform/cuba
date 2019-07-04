@@ -77,6 +77,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.*;
 import java.util.List;
+import java.util.function.Consumer;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
@@ -1128,9 +1129,39 @@ public class DesktopWindow implements Window, Component.Disposable,
         return (X) getComponent();
     }
 
+    @Nullable
+    @Override
+    public <X> X unwrapOrNull(Class<X> internalComponentClass) {
+        return getComponent().getClass().isAssignableFrom(internalComponentClass)
+                ? internalComponentClass.cast(getComponent())
+                : null;
+    }
+
+    @Override
+    public <X> void withUnwrapped(Class<X> internalComponentClass, Consumer<X> action) {
+        if (getComponent().getClass().isAssignableFrom(internalComponentClass)) {
+            action.accept(internalComponentClass.cast(getComponent()));
+        }
+    }
+
     @Override
     public <X> X unwrapComposition(Class<X> internalCompositionClass) {
         return (X) getComposition();
+    }
+
+    @Nullable
+    @Override
+    public <X> X unwrapCompositionOrNull(Class<X> internalCompositionClass) {
+        return getComposition().getClass().isAssignableFrom(internalCompositionClass)
+                ? internalCompositionClass.cast(getComposition())
+                : null;
+    }
+
+    @Override
+    public <X> void withUnwrappedComposition(Class<X> internalCompositionClass, Consumer<X> action) {
+        if (getComposition().getClass().isAssignableFrom(internalCompositionClass)) {
+            action.accept(internalCompositionClass.cast(getComposition()));
+        }
     }
 
     @Override

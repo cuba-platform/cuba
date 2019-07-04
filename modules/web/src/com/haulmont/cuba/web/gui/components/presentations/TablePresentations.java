@@ -70,7 +70,7 @@ public class TablePresentations extends VerticalLayout {
         this.table = component;
         this.messages = AppBeans.get(Messages.NAME);
 
-        this.tableImpl = table.unwrap(CubaEnhancedTable.class);
+        this.tableImpl = table.unwrapOrNull(CubaEnhancedTable.class);
 
         setMargin(false);
 

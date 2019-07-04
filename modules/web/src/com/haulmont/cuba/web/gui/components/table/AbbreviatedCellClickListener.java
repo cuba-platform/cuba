@@ -93,8 +93,9 @@ public class AbbreviatedCellClickListener implements Table.CellClickListener {
 
         layout.addComponent(content);
 
-        CubaEnhancedTable enhancedTable = table.unwrap(CubaEnhancedTable.class);
-        enhancedTable.showCustomPopup(layout);
-        enhancedTable.setCustomPopupAutoClose(false);
+        table.withUnwrapped(CubaEnhancedTable.class, enhancedTable -> {
+            enhancedTable.showCustomPopup(layout);
+            enhancedTable.setCustomPopupAutoClose(false);
+        });
     }
 }

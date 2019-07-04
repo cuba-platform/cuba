@@ -194,23 +194,25 @@ public class ServerLogWindow extends AbstractWindow {
 
         downloadButton.setEnabled(security.isSpecificPermitted("cuba.gui.administration.downloadlogs"));
 
-        ComboBox comboBox = logFileNameField.unwrap(ComboBox.class);
-        comboBox.addShortcutListener(
-                new ShortcutListenerDelegate("", KeyCode.D, new int[]{ModifierKey.CTRL, ModifierKey.SHIFT})
-                        .withHandler((sender, target) ->
-                                downloadLog()
-                        ));
+        logFileNameField.withUnwrapped(ComboBox.class, vComboBox -> {
+            vComboBox.addShortcutListener(
+                    new ShortcutListenerDelegate("", KeyCode.D, new int[]{ModifierKey.CTRL, ModifierKey.SHIFT})
+                            .withHandler((sender, target) ->
+                                    downloadLog()
+                            ));
 
-        comboBox.addShortcutListener(
-                new ShortcutListenerDelegate("", KeyCode.S, new int[]{ModifierKey.CTRL, ModifierKey.SHIFT})
-                    .withHandler((sender, target) ->
-                            showLogTail()
-                    ));
+            vComboBox.addShortcutListener(
+                    new ShortcutListenerDelegate("", KeyCode.S, new int[]{ModifierKey.CTRL, ModifierKey.SHIFT})
+                            .withHandler((sender, target) ->
+                                    showLogTail()
+                            ));
+        });
 
         downloadButton.setDescription("CTRL-SHIFT-D");
         showTailButton.setDescription("CTRL-SHIFT-S");
 
-        logContainer.unwrapComposition(CubaScrollBoxLayout.class).setDelayed(true);
+        logContainer.withUnwrappedComposition(CubaScrollBoxLayout.class, vScrollBox ->
+                vScrollBox.setDelayed(true));
     }
 
     protected void initLoweredAttentionPatterns() {
@@ -316,7 +318,8 @@ public class ServerLogWindow extends AbstractWindow {
             showNotification(getMessage("log.notSelected"), NotificationType.HUMANIZED);
         }
 
-        logContainer.unwrap(CubaScrollBoxLayout.class).setScrollTop(30000);
+        logContainer.withUnwrapped(CubaScrollBoxLayout.class, vScrollBox ->
+                vScrollBox.setScrollTop(30000));
     }
 
     protected String replaceSpaces(String value) {

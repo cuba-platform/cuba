@@ -223,13 +223,12 @@ public class WebComponentsHelper {
      */
     @Deprecated
     public static void addEnterShortcut(TextField textField, Runnable runnable) {
-        CubaTextField cubaTextField = textField.unwrap(CubaTextField.class);
-
-        cubaTextField.addShortcutListener(
-                new ShortcutListenerDelegate("", ShortcutAction.KeyCode.ENTER, null)
-                    .withHandler((sender, target) ->
-                            runnable.run()
-                    ));
+        textField.withUnwrapped(CubaTextField.class, vTextField ->
+                vTextField.addShortcutListener(
+                        new ShortcutListenerDelegate("", ShortcutAction.KeyCode.ENTER, null)
+                                .withHandler((sender, target) ->
+                                        runnable.run()
+                                )));
     }
 
     @Deprecated
@@ -295,7 +294,11 @@ public class WebComponentsHelper {
     @Nullable
     protected static com.haulmont.cuba.gui.components.Component findChildComponent(FieldGroup fieldGroup,
                                                                                    Component target) {
-        Component vaadinSource = fieldGroup.unwrap(CubaFieldGroupLayout.class);
+        Component vaadinSource = fieldGroup.unwrapOrNull(CubaFieldGroupLayout.class);
+        if (vaadinSource == null) {
+            return null;
+        }
+
         Collection<com.haulmont.cuba.gui.components.Component> components = fieldGroup.getFields().stream()
                 .map(FieldGroup.FieldConfig::getComponentNN)
                 .collect(Collectors.toList());

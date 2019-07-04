@@ -73,12 +73,11 @@ public class WebClipboardTrigger extends WebAbstractFacet implements ClipboardTr
     }
 
     protected void disableExtension(Button button) {
-        com.vaadin.ui.Button vButton = button.unwrap(com.vaadin.ui.Button.class);
-
-        vButton.getExtensions().stream()
-                .filter(e -> e instanceof CubaCopyButtonExtension)
-                .findFirst()
-                .ifPresent(vButton::removeExtension);
+        button.withUnwrapped(com.vaadin.ui.Button.class, vButton ->
+                vButton.getExtensions().stream()
+                        .filter(e -> e instanceof CubaCopyButtonExtension)
+                        .findFirst()
+                        .ifPresent(vButton::removeExtension));
     }
 
     protected void checkInitialized() {
@@ -89,14 +88,14 @@ public class WebClipboardTrigger extends WebAbstractFacet implements ClipboardTr
 
             this.input.addStyleName(generatedClassName);
 
-            com.vaadin.ui.Button vButton = button.unwrap(com.vaadin.ui.Button.class);
+            button.withUnwrapped(com.vaadin.ui.Button.class, vButton -> {
+                disableExtension(this.button);
 
-            disableExtension(this.button);
-
-            CubaCopyButtonExtension extension = copyWith(vButton, "." + generatedClassName);
-            extension.addCopyListener(event ->
-                    publish(CopyEvent.class, new CopyEvent(this, event.isSuccess()))
-            );
+                CubaCopyButtonExtension extension = copyWith(vButton, "." + generatedClassName);
+                extension.addCopyListener(event ->
+                        publish(CopyEvent.class, new CopyEvent(this, event.isSuccess()))
+                );
+            });
         }
     }
 }

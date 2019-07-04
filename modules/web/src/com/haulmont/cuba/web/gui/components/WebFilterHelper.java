@@ -79,7 +79,11 @@ public class WebFilterHelper implements FilterHelper {
         if (foldersPane == null)
             return null;
 
-        CubaFoldersPane foldersPaneImpl = foldersPane.unwrap(CubaFoldersPane.class);
+        CubaFoldersPane foldersPaneImpl = foldersPane.unwrapOrNull(CubaFoldersPane.class);
+        if (foldersPaneImpl == null) {
+            return null;
+        }
+
         AbstractSearchFolder savedFolder = (AbstractSearchFolder) foldersPaneImpl.saveFolder(folder);
         foldersPaneImpl.refreshFolders();
         return savedFolder;
@@ -119,7 +123,10 @@ public class WebFilterHelper implements FilterHelper {
     @SuppressWarnings("unchecked")
     @Override
     public void initConditionsDragAndDrop(final Tree tree, final ConditionsTree conditions) {
-        CubaTree vTree = tree.unwrap(CubaTree.class);
+        CubaTree vTree = tree.unwrapOrNull(CubaTree.class);
+        if (vTree == null) {
+            return;
+        }
 
         TreeGridDragSource<AbstractCondition> treeGridDragSource = new TreeGridDragSource<>(vTree.getCompositionRoot());
         treeGridDragSource.setDragDataGenerator(TREE_DRAGGED_ITEM_ID, item -> item.getId().toString());
@@ -240,7 +247,7 @@ public class WebFilterHelper implements FilterHelper {
             return null;
         }
 
-        return foldersPane.unwrap(CubaFoldersPane.class);
+        return foldersPane.unwrapOrNull(CubaFoldersPane.class);
     }
 
     @Override
@@ -251,10 +258,10 @@ public class WebFilterHelper implements FilterHelper {
             return;
         }
 
-        CubaFoldersPane foldersPaneImpl = foldersPane.unwrap(CubaFoldersPane.class);
-
-        foldersPaneImpl.removeFolder(folder);
-        foldersPaneImpl.refreshFolders();
+        foldersPane.withUnwrapped(CubaFoldersPane.class, vFoldersPane -> {
+            vFoldersPane.removeFolder(folder);
+            vFoldersPane.refreshFolders();
+        });
     }
 
     @Nullable
@@ -275,25 +282,26 @@ public class WebFilterHelper implements FilterHelper {
 
     @Override
     public void initTableFtsTooltips(Table table, final Map<Object, String> tooltips) {
-        com.vaadin.v7.ui.Table vTable = table.unwrap(com.vaadin.v7.ui.Table.class);
-        vTable.setItemDescriptionGenerator((source, itemId, propertyId) -> {
-            if (tooltips.keySet().contains(itemId)) {
-                return tooltips.get(itemId);
-            }
-            return null;
-        });
+        table.withUnwrapped(com.vaadin.v7.ui.Table.class, vTable ->
+                vTable.setItemDescriptionGenerator((source, itemId, propertyId) -> {
+                    if (tooltips.keySet().contains(itemId)) {
+                        return tooltips.get(itemId);
+                    }
+                    return null;
+                }));
     }
 
     @Override
     public void removeTableFtsTooltips(Table table) {
-        com.vaadin.v7.ui.Table vTable = table.unwrap(com.vaadin.v7.ui.Table.class);
-        vTable.setItemDescriptionGenerator(null);
+        table.withUnwrapped(com.vaadin.v7.ui.Table.class, vTable ->
+                vTable.setItemDescriptionGenerator(null));
+
     }
 
     @Override
     public void setFieldReadOnlyFocusable(TextField textField, boolean readOnlyFocusable) {
-        CubaTextField vTextField = textField.unwrap(CubaTextField.class);
-        vTextField.setReadOnlyFocusable(readOnlyFocusable);
+        textField.withUnwrapped(CubaTextField.class, vTextField ->
+                vTextField.setReadOnlyFocusable(readOnlyFocusable));
     }
 
     @Override
@@ -316,22 +324,23 @@ public class WebFilterHelper implements FilterHelper {
 
     @Override
     public void addShortcutListener(TextField textField, final ShortcutListener listener) {
-        CubaTextField vTextField = textField.unwrap(CubaTextField.class);
-        int[] modifiers = null;
-        KeyCombination.Modifier[] listenerModifiers = listener.getKeyCombination().getModifiers();
-        if (listenerModifiers != null) {
-            modifiers = new int[listenerModifiers.length];
-            for (int i = 0; i < modifiers.length; i++) {
-                modifiers[i] = listenerModifiers[i].getCode();
+        textField.withUnwrapped(CubaTextField.class, vTextField -> {
+            int[] modifiers = null;
+            KeyCombination.Modifier[] listenerModifiers = listener.getKeyCombination().getModifiers();
+            if (listenerModifiers != null) {
+                modifiers = new int[listenerModifiers.length];
+                for (int i = 0; i < modifiers.length; i++) {
+                    modifiers[i] = listenerModifiers[i].getCode();
+                }
             }
-        }
-        int keyCode = listener.getKeyCombination().getKey().getCode();
+            int keyCode = listener.getKeyCombination().getKey().getCode();
 
-        vTextField.addShortcutListener(
-                new ShortcutListenerDelegate(listener.getCaption(), keyCode, modifiers)
-                    .withHandler((sender, target) ->
-                            listener.handleShortcutPressed()
-                    ));
+            vTextField.addShortcutListener(
+                    new ShortcutListenerDelegate(listener.getCaption(), keyCode, modifiers)
+                            .withHandler((sender, target) ->
+                                    listener.handleShortcutPressed()
+                            ));
+        });
     }
 
     @Override

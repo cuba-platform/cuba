@@ -33,8 +33,10 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
 
+import javax.annotation.Nullable;
 import javax.swing.*;
 import java.util.*;
+import java.util.function.Consumer;
 
 public abstract class DesktopAbstractComponent<C extends JComponent>
         implements
@@ -504,14 +506,46 @@ public abstract class DesktopAbstractComponent<C extends JComponent>
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <X> X unwrap(Class<X> internalComponentClass) {
         return (X) getComponent();
     }
 
+    @Nullable
+    @Override
+    public <X> X unwrapOrNull(Class<X> internalComponentClass) {
+        return getComponent().getClass().isAssignableFrom(internalComponentClass)
+                ? internalComponentClass.cast(getComponent())
+                : null;
+    }
+
+    @Override
+    public <X> void withUnwrapped(Class<X> internalComponentClass, Consumer<X> action) {
+        if (getComponent().getClass().isAssignableFrom(internalComponentClass)) {
+            action.accept(internalComponentClass.cast(getComponent()));
+        }
+    }
+
+    @SuppressWarnings("unchecked")
     @Override
     public <X> X unwrapComposition(Class<X> internalCompositionClass) {
         return (X) getComposition();
+    }
+
+    @Nullable
+    @Override
+    public <X> X unwrapCompositionOrNull(Class<X> internalCompositionClass) {
+        return getComposition().getClass().isAssignableFrom(internalCompositionClass)
+                ? internalCompositionClass.cast(getComposition())
+                : null;
+    }
+
+    @Override
+    public <X> void withUnwrappedComposition(Class<X> internalCompositionClass, Consumer<X> action) {
+        if (getComposition().getClass().isAssignableFrom(internalCompositionClass)) {
+            action.accept(internalCompositionClass.cast(getComposition()));
+        }
     }
 
     @Override

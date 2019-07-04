@@ -25,10 +25,7 @@ import com.haulmont.cuba.gui.components.data.ValueSource;
 import com.haulmont.cuba.web.widgets.CubaScrollBoxLayout;
 import com.haulmont.cuba.web.widgets.CubaTokenListLabel;
 import com.vaadin.shared.ui.MarginInfo;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.CustomField;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.*;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.*;
@@ -169,7 +166,10 @@ public class CubaTokenList<T extends Entity> extends CustomField<Collection<T>> 
             addButtonSub = owner.addButton.addClickListener(e ->
                     owner.openLookup(() -> owner.addButton.focus()));
         }
-        editor.addComponent(owner.addButton.unwrap(com.vaadin.ui.Button.class));
+        Button vAddButton = owner.addButton.unwrapOrNull(Button.class);
+        if (vAddButton != null) {
+            editor.addComponent(vAddButton);
+        }
 
         owner.clearButton.setVisible(owner.clearEnabled);
         owner.clearButton.setStyleName(CLEAR_BTN_STYLENAME);
@@ -178,8 +178,8 @@ public class CubaTokenList<T extends Entity> extends CustomField<Collection<T>> 
             owner.clearButton.focus();
         });
 
-        com.vaadin.ui.Button vClearButton = owner.clearButton.unwrap(com.vaadin.ui.Button.class);
-        if (owner.isSimple()) {
+        com.vaadin.ui.Button vClearButton = owner.clearButton.unwrapOrNull(com.vaadin.ui.Button.class);
+        if (owner.isSimple() && vClearButton != null) {
             HorizontalLayout clearLayout = new HorizontalLayout();
             clearLayout.addComponent(vClearButton);
             editor.addComponent(clearLayout);

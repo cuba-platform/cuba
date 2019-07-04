@@ -33,6 +33,7 @@ import com.haulmont.cuba.gui.components.filter.condition.DynamicAttributesCondit
 import com.haulmont.cuba.gui.components.filter.condition.PropertyCondition;
 import org.apache.commons.lang3.StringUtils;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -275,8 +276,28 @@ public class ParamWrapper implements Component, HasValue<Object> {
         return null;
     }
 
+    @Nullable
+    @Override
+    public <X> X unwrapOrNull(Class<X> internalComponentClass) {
+        return null;
+    }
+
+    @Override
+    public <X> void withUnwrapped(Class<X> internalComponentClass, Consumer<X> action) {
+    }
+
     @Override
     public <X> X unwrapComposition(Class<X> internalCompositionClass) {
         return null;
+    }
+
+    @Nullable
+    @Override
+    public <X> X unwrapCompositionOrNull(Class<X> internalCompositionClass) {
+        return null;
+    }
+
+    @Override
+    public <X> void withUnwrappedComposition(Class<X> internalCompositionClass, Consumer<X> action) {
     }
 }
