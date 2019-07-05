@@ -137,6 +137,11 @@ public class FilterLoader extends AbstractComponentLoader<Filter> {
             resultComponent.setModeSwitchVisible(Boolean.parseBoolean(modeSwitchVisible));
         }
 
+        String immediatelySearch = element.attributeValue("applyImmediately");
+        if (!Strings.isNullOrEmpty(immediatelySearch)) {
+            resultComponent.setApplyImmediately(Boolean.parseBoolean(immediatelySearch));
+        }
+
         getComponentContext().addPostInitTask((context1, window) -> {
             ((FilterImplementation) resultComponent).loadFiltersAndApplyDefault();
             String defaultMode = element.attributeValue("defaultMode");

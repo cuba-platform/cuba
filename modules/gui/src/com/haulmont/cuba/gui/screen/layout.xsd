@@ -2627,6 +2627,7 @@
                 <xs:attribute name="columnsCount" type="xs:int"/>
                 <xs:attribute name="collapsable" type="xs:boolean"/>
                 <xs:attribute name="collapsed" type="xs:boolean"/>
+                <xs:attribute name="applyImmediately" type="xs:boolean"/>
                 <xs:attribute name="defaultMode">
                     <xs:simpleType>
                         <xs:restriction base="xs:string">

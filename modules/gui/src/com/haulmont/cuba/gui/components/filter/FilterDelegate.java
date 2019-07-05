@@ -153,6 +153,10 @@ public interface FilterDelegate {
 
     void setWindowCaptionUpdateEnabled(boolean windowCaptionUpdateEnabled);
 
+    void setApplyImmediately(boolean immediately);
+
+    boolean isApplyImmediately();
+
     class FDExpandedStateChangeEvent implements HasUserOriginated {
         private final FilterDelegate delegate;
         private final boolean expanded;
