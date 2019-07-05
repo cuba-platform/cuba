@@ -347,6 +347,7 @@ class MappingFileCreator {
             // or
             new OrderByHandler(field.getAnnotation(OrderBy.class)).toXml(el);
             new JoinTableHandler(field.getAnnotation(JoinTable.class)).toXml(el);
+            new MapsIdHandler(field.getAnnotation(MapsId.class)).toXml(el);
 
             return el;
         }
@@ -421,6 +422,21 @@ class MappingFileCreator {
             for (JoinColumn joinColumnAnnot : annotation.inverseJoinColumns()) {
                 new InverseJoinColumnHandler(joinColumnAnnot).toXml(el);
             }
+        }
+    }
+
+    private static class MapsIdHandler {
+        private MapsId annotation;
+
+        private MapsIdHandler(MapsId annotation) {
+            this.annotation = annotation;
+        }
+
+        private void toXml(Element parentEl) {
+            if (annotation == null)
+                return;
+
+            parentEl.addAttribute("maps-id", annotation.value());
         }
     }
 
