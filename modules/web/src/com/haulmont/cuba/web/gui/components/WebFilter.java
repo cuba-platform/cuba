@@ -446,6 +446,16 @@ public class WebFilter extends WebAbstractComponent<com.vaadin.ui.Component> imp
     }
 
     @Override
+    public void setApplyImmediately(boolean immediately) {
+        delegate.setApplyImmediately(immediately);
+    }
+
+    @Override
+    public boolean isApplyImmediately() {
+        return delegate.isApplyImmediately();
+    }
+
+    @Override
     public boolean isWindowCaptionUpdateEnabled() {
         return delegate.isWindowCaptionUpdateEnabled();
     }

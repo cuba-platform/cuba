@@ -217,6 +217,16 @@ public interface ClientConfig extends Config {
     String getGenericFilterMaxResultsOptions();
 
     /**
+     * If true, the filter will be applied immediately after every parameter's value changing. True by default.
+     *
+     * @return true if the filter should be applied immediately after every parameter's value changing
+     */
+    @Property("cuba.gui.genericFilterApplyImmediately")
+    @Source(type = SourceType.DATABASE)
+    @DefaultBoolean(true)
+    boolean getGenericFilterApplyImmediately();
+
+    /**
      * Support e-mail. Exception report emails are sent to this address.
      */
     @Property("cuba.supportEmail")

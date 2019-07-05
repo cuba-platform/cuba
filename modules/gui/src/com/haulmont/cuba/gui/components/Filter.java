@@ -17,6 +17,7 @@
 package com.haulmont.cuba.gui.components;
 
 import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.gui.components.filter.FilterDelegate;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.model.CollectionLoader;
@@ -234,6 +235,18 @@ public interface Filter extends HasMargin, Component.BelongToFrame, HasNamedComp
 
     boolean isWindowCaptionUpdateEnabled();
 
+    /**
+     * Set to true if filter should be applied immediately after every parameter's value changing. True, by default.
+     * Default value can be managed by using {@link ClientConfig#getGenericFilterApplyImmediately()} property.
+     *
+     * @param immediately immediately option
+     */
+    void setApplyImmediately(boolean immediately);
+
+    /**
+     * @return true if filter should be applied immediately after every parameter's value changing
+     */
+    boolean isApplyImmediately();
     /**
      * A predicate that tests whether a property with the given path should be available for filtering.
      */

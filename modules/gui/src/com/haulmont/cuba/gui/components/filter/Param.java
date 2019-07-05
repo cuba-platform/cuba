@@ -20,6 +20,7 @@ package com.haulmont.cuba.gui.components.filter;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.haulmont.bali.events.EventHub;
+import com.haulmont.bali.events.Subscription;
 import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.DatatypeRegistry;
@@ -1020,8 +1021,17 @@ public class Param {
         paramElem.setText(formatValue(_getValue(valueProperty)));
     }
 
+    /**
+     * @param valueChangeHandler value change handler
+     * @deprecated use {@link #addParamValueChangeListener(Consumer)}
+     */
+    @Deprecated
     public void addValueChangeListener(Consumer<ParamValueChangedEvent> valueChangeHandler) {
         getEventHub().subscribe(ParamValueChangedEvent.class, valueChangeHandler);
+    }
+
+    public Subscription addParamValueChangeListener(Consumer<ParamValueChangedEvent> valueChangeHandler) {
+        return getEventHub().subscribe(ParamValueChangedEvent.class, valueChangeHandler);
     }
 
     public MetaProperty getProperty() {

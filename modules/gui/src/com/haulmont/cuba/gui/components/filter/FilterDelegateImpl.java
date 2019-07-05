@@ -22,6 +22,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.haulmont.bali.datastruct.Node;
 import com.haulmont.bali.datastruct.Pair;
+import com.haulmont.bali.events.Subscription;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.chile.core.model.MetaClass;
@@ -65,7 +66,6 @@ import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
 import com.haulmont.cuba.security.entity.FilterEntity;
 import com.haulmont.cuba.security.entity.SearchFolder;
-import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -219,6 +219,9 @@ public class FilterDelegateImpl implements FilterDelegate {
     protected Consumer<String> captionChangedListener;
     protected boolean windowCaptionUpdateEnabled = true;
 
+    protected List<Subscription> paramValueChangeSubscriptions;
+    protected Boolean applyImmediately;
+
     protected enum ConditionsFocusType {
         NONE,
         FIRST,
@@ -239,6 +242,8 @@ public class FilterDelegateImpl implements FilterDelegate {
         filterMode = FilterMode.GENERIC_MODE;
 
         conditionsLocation = clientConfig.getGenericFilterConditionsLocation();
+        applyImmediately = clientConfig.getGenericFilterApplyImmediately();
+
         createLayout();
     }
 
@@ -844,7 +849,14 @@ public class FilterDelegateImpl implements FilterDelegate {
 
         paramEditComponentToFocus = null;
 
+        clearParamValueChangeSubscriptions();
+
         recursivelyCreateConditionsLayout(conditionsFocusType, false, conditions.getRootNodes(), conditionsLayout, 0);
+
+        if (isApplyImmediately()) {
+            List<Node<AbstractCondition>> nodes = conditions.getRootNodes();
+            subscribeToParamValueChangeEventRecursively(nodes);
+        }
 
         conditionsLayout.setVisible(!conditionsLayout.getComponents().isEmpty());
     }
@@ -1647,6 +1659,7 @@ public class FilterDelegateImpl implements FilterDelegate {
         if (afterFilterAppliedHandler != null) {
             afterFilterAppliedHandler.afterFilterApplied();
         }
+
         return true;
     }
 
@@ -2363,6 +2376,45 @@ public class FilterDelegateImpl implements FilterDelegate {
         return conditions;
     }
 
+    @Override
+    public void setApplyImmediately(boolean immediately) {
+        this.applyImmediately = immediately;
+    }
+
+    @Override
+    public boolean isApplyImmediately() {
+        return applyImmediately;
+    }
+
+    protected void clearParamValueChangeSubscriptions() {
+        if (paramValueChangeSubscriptions != null) {
+            paramValueChangeSubscriptions.forEach(Subscription::remove);
+            paramValueChangeSubscriptions.clear();
+        }
+    }
+
+    protected void subscribeToParamValueChangeEventRecursively(List<Node<AbstractCondition>> conditions) {
+        if (paramValueChangeSubscriptions == null) {
+            paramValueChangeSubscriptions = new ArrayList<>();
+        }
+
+        for (Node<AbstractCondition> node : conditions) {
+            AbstractCondition condition = node.getData();
+            if (condition.isGroup()) {
+                subscribeToParamValueChangeEventRecursively(node.getChildren());
+            } else {
+                paramValueChangeSubscriptions.add(
+                        condition.getParam().addParamValueChangeListener(this::handleParamValueChange));
+            }
+        }
+    }
+
+    protected void handleParamValueChange(Param.ParamValueChangedEvent event) {
+        if (isApplyImmediately()) {
+            apply(false);
+        }
+    }
+
     protected class FiltersLookupChangeListener implements Consumer<HasValue.ValueChangeEvent<FilterEntity>> {
         public FiltersLookupChangeListener() {
         }
@@ -2509,6 +2561,9 @@ public class FilterDelegateImpl implements FilterDelegate {
             params.put("filter", filter);
             params.put("conditionsTree", conditions);
 
+            // remove subscriptions because if param default value is editing it will invoke value change event
+            clearParamValueChangeSubscriptions();
+
             FilterEditor window = (FilterEditor) getWindowManager().openWindow(windowInfo, OpenType.DIALOG, params);
             window.addCloseListener(actionId -> {
                 if (Window.COMMIT_ACTION_ID.equals(actionId)) {
@@ -2532,6 +2587,10 @@ public class FilterDelegateImpl implements FilterDelegate {
                     updateFilterModifiedIndicator();
                 } else {
                     requestFocusToParamEditComponent();
+                    // subscribe if editor was closed without changes
+                    if (isApplyImmediately()) {
+                        subscribeToParamValueChangeEventRecursively(conditions.getRootNodes());
+                    }
                 }
                 settingsBtn.focus();
             });
@@ -2613,10 +2672,17 @@ public class FilterDelegateImpl implements FilterDelegate {
 
         @Override
         public void actionPerform(Component component) {
+            clearParamValueChangeSubscriptions();
+
             for (AbstractCondition condition : conditions.toConditionsList()) {
                 if (!Boolean.TRUE.equals(condition.getHidden()) && condition.getParam() != null) {
                     condition.getParam().setValue(null);
                 }
+            }
+
+            if (isApplyImmediately()) {
+                subscribeToParamValueChangeEventRecursively(conditions.getRootNodes());
+                apply(false);
             }
         }
 
