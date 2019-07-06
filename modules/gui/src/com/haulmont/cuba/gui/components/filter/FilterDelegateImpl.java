@@ -2394,9 +2394,8 @@ public class FilterDelegateImpl implements FilterDelegate {
         }
 
         if (conditionListeners != null) {
-            for (AbstractCondition condition : conditionListeners.keySet()) {
-                AbstractCondition.Listener listener = conditionListeners.get(condition);
-                condition.removeListener(listener);
+            for (Map.Entry<AbstractCondition, AbstractCondition.Listener> item : conditionListeners.entrySet()) {
+                item.getKey().removeListener(item.getValue());
             }
             conditionListeners.clear();
         }
