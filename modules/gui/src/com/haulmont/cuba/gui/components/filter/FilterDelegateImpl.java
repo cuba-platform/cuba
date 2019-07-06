@@ -220,6 +220,7 @@ public class FilterDelegateImpl implements FilterDelegate {
     protected boolean windowCaptionUpdateEnabled = true;
 
     protected List<Subscription> paramValueChangeSubscriptions;
+    protected Map<AbstractCondition, AbstractCondition.Listener> conditionListeners;
     protected Boolean applyImmediately;
 
     protected enum ConditionsFocusType {
@@ -2391,6 +2392,14 @@ public class FilterDelegateImpl implements FilterDelegate {
             paramValueChangeSubscriptions.forEach(Subscription::remove);
             paramValueChangeSubscriptions.clear();
         }
+
+        if (conditionListeners != null) {
+            for (AbstractCondition condition : conditionListeners.keySet()) {
+                AbstractCondition.Listener listener = conditionListeners.get(condition);
+                condition.removeListener(listener);
+            }
+            conditionListeners.clear();
+        }
     }
 
     protected void subscribeToParamValueChangeEventRecursively(List<Node<AbstractCondition>> conditions) {
@@ -2403,10 +2412,43 @@ public class FilterDelegateImpl implements FilterDelegate {
             if (condition.isGroup()) {
                 subscribeToParamValueChangeEventRecursively(node.getChildren());
             } else {
-                paramValueChangeSubscriptions.add(
-                        condition.getParam().addParamValueChangeListener(this::handleParamValueChange));
+                Subscription subscription = condition.getParam()
+                        .addParamValueChangeListener(this::handleParamValueChange);
+                paramValueChangeSubscriptions.add(subscription);
+
+                addConditionListener(condition, subscription);
             }
         }
+    }
+
+    protected void addConditionListener(AbstractCondition condition, Subscription current) {
+        if (conditionListeners == null) {
+            conditionListeners = new HashMap<>();
+        }
+
+        AbstractCondition.Listener listener = new AbstractCondition.Listener() {
+            protected Subscription previous = current;
+
+            @Override
+            public void captionChanged() {
+                // do nothing
+            }
+
+            @Override
+            public void paramChanged(Param oldParam, Param newParam) {
+                previous.remove();
+                paramValueChangeSubscriptions.remove(previous);
+
+                Subscription newSubscription = newParam.addParamValueChangeListener(
+                        event -> handleParamValueChange(event));
+                paramValueChangeSubscriptions.add(newSubscription);
+
+                previous = newSubscription;
+            }
+        };
+
+        condition.addListener(listener);
+        conditionListeners.put(condition, listener);
     }
 
     protected void handleParamValueChange(Param.ParamValueChangedEvent event) {
