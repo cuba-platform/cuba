@@ -28,10 +28,30 @@ import java.util.Map;
 
 public class CubaRichTextAreaWidget extends VRichTextArea {
 
+    protected AfterAttachedValueSupplier valueSupplier;
+
+    public interface AfterAttachedValueSupplier {
+        String getValue();
+    }
+
     public CubaRichTextAreaWidget() {
         super();
 
         setContentCharset();
+
+        rta.addAttachHandler(event -> {
+            if (event.isAttached()) {
+                // There are cases when 'ReachTextArea' is not attached but value has already set to 'HTML'
+                // that is also not attached. When 'ReachTextArea' is attached we should set value again.
+                if (valueSupplier != null) {
+                    setValue(valueSupplier.getValue());
+                }
+            }
+        });
+    }
+
+    public void setValueSupplier(AfterAttachedValueSupplier valueSupplier) {
+        this.valueSupplier = valueSupplier;
     }
 
     protected void setContentCharset() {
