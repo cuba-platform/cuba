@@ -23,6 +23,14 @@ import com.vaadin.shared.ui.Connect;
 
 @Connect(value = CubaRichTextArea.class, loadStyle = Connect.LoadStyle.LAZY)
 public class CubaRichTextAreaConnector extends RichTextAreaConnector {
+
+    @Override
+    protected void init() {
+        super.init();
+
+        getWidget().setValueSupplier(() -> getState().value);
+    }
+
     @Override
     public CubaRichTextAreaWidget getWidget() {
         return (CubaRichTextAreaWidget) super.getWidget();
