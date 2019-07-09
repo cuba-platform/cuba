@@ -231,7 +231,7 @@ public interface DataContext {
         private final Collection<Entity> removedInstances;
         private boolean commitPrevented;
         private List<Class> validationGroups;
-        private CommitContext.ValidationType validationType;
+        private CommitContext.ValidationMode validationMode;
 
         public PreCommitEvent(DataContext dataContext, Collection<Entity> modified, Collection<Entity> removed) {
             super(dataContext);
@@ -295,22 +295,22 @@ public interface DataContext {
         }
 
         /**
-         * @return {@link CommitContext.ValidationType} of associated commit.
+         * @return {@link CommitContext.ValidationMode} of associated commit.
          */
-        public CommitContext.ValidationType getValidationType() {
-            return validationType;
+        public CommitContext.ValidationMode getValidationMode() {
+            return validationMode;
         }
 
         /**
-         * Sets {@link CommitContext.ValidationType} for associated commit.
-         * Validation type is responsible for whether entity bean validation will be applied on {@link DataManager} level.
-         * Note that validation type will be ignored for child context.
+         * Sets {@link CommitContext.ValidationMode} for associated commit.
+         * Validation mode affects whether entity bean validation will be applied on {@link DataManager} level.
+         * Note that the validation mode will be ignored for child context.
          *
-         * @param validationType validation type
+         * @param validationMode validation type
          * @see BeanValidation
          */
-        public void setValidationType(CommitContext.ValidationType validationType) {
-            this.validationType = validationType;
+        public void setValidationMode(CommitContext.ValidationMode validationMode) {
+            this.validationMode = validationMode;
         }
     }
 

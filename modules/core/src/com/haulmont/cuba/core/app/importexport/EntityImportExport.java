@@ -244,10 +244,10 @@ public class EntityImportExport implements EntityImportExportAPI {
         }
 
         if (validate) {
-            commitContext.setValidationType(CommitContext.ValidationType.ALWAYS_VALIDATE);
+            commitContext.setValidationMode(CommitContext.ValidationMode.ALWAYS_VALIDATE);
             commitContext.setValidationGroups(Arrays.asList(Default.class, RestApiChecks.class));
         } else {
-            commitContext.setValidationType(CommitContext.ValidationType.NEVER_VALIDATE);
+            commitContext.setValidationMode(CommitContext.ValidationMode.NEVER_VALIDATE);
         }
 
         //we shouldn't remove entities with the softDeletion = false
