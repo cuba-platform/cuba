@@ -306,6 +306,7 @@ public interface ServerConfig extends Config {
      * If true, entity bean validation rules are enforced on {@code DataManager} level.
      */
     @Property("cuba.dataManagerBeanValidation")
+    @Source(type = SourceType.DATABASE)
     @DefaultBoolean(true)
     boolean getDataManagerBeanValidation();
 
