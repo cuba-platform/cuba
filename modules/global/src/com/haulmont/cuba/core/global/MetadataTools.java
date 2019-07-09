@@ -125,7 +125,7 @@ public class MetadataTools {
                 return LocaleHelper.getEnumLocalizedValue((String) value, categoryAttribute.getEnumerationLocales());
             }
 
-            if (categoryAttribute.getIsCollection() && value instanceof Collection) {
+            if (Boolean.TRUE.equals(categoryAttribute.getIsCollection()) && value instanceof Collection) {
                 return dynamicAttributesTools.getDynamicAttributeValueAsString(property, value);
             }
         }

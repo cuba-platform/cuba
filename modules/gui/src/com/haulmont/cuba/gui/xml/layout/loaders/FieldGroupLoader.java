@@ -223,7 +223,7 @@ public class FieldGroupLoader extends AbstractComponentLoader<FieldGroup> {
                             attribute.getLocaleName()));
                     loadWidth(field, attribute.getWidth());
 
-                    if (!attribute.getIsCollection()) {
+                    if (!Boolean.TRUE.equals(attribute.getIsCollection())) {
                         Collection<Consumer<?>> validators = getDynamicAttributesGuiTools().createValidators(attribute);
                         if (validators != null && !validators.isEmpty()) {
                             for (Consumer<?> validator : validators) {
