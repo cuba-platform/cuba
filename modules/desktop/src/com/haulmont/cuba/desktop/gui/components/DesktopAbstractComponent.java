@@ -515,14 +515,14 @@ public abstract class DesktopAbstractComponent<C extends JComponent>
     @Nullable
     @Override
     public <X> X unwrapOrNull(Class<X> internalComponentClass) {
-        return getComponent().getClass().isAssignableFrom(internalComponentClass)
+        return internalComponentClass.isAssignableFrom(getComponent().getClass())
                 ? internalComponentClass.cast(getComponent())
                 : null;
     }
 
     @Override
     public <X> void withUnwrapped(Class<X> internalComponentClass, Consumer<X> action) {
-        if (getComponent().getClass().isAssignableFrom(internalComponentClass)) {
+        if (internalComponentClass.isAssignableFrom(getComponent().getClass())) {
             action.accept(internalComponentClass.cast(getComponent()));
         }
     }
@@ -536,14 +536,14 @@ public abstract class DesktopAbstractComponent<C extends JComponent>
     @Nullable
     @Override
     public <X> X unwrapCompositionOrNull(Class<X> internalCompositionClass) {
-        return getComposition().getClass().isAssignableFrom(internalCompositionClass)
+        return internalCompositionClass.isAssignableFrom(getComposition().getClass())
                 ? internalCompositionClass.cast(getComposition())
                 : null;
     }
 
     @Override
     public <X> void withUnwrappedComposition(Class<X> internalCompositionClass, Consumer<X> action) {
-        if (getComposition().getClass().isAssignableFrom(internalCompositionClass)) {
+        if (internalCompositionClass.isAssignableFrom(getComposition().getClass())) {
             action.accept(internalCompositionClass.cast(getComposition()));
         }
     }

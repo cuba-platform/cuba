@@ -487,11 +487,11 @@ public class AbstractWindow extends Screen implements Window, LegacyFrame, Compo
     public <X> X unwrapOrNull(Class<X> internalComponentClass) {
         if (getComponent() instanceof Component.Wrapper) {
             Object component = ((Component.Wrapper) frame).getComponent();
-            return component.getClass().isAssignableFrom(internalComponentClass)
+            return internalComponentClass.isAssignableFrom(component.getClass())
                     ? internalComponentClass.cast(component)
                     : null;
         }
-        return frame.getClass().isAssignableFrom(internalComponentClass)
+        return internalComponentClass.isAssignableFrom(frame.getClass())
                 ? internalComponentClass.cast(frame)
                 : null;
     }
@@ -500,11 +500,11 @@ public class AbstractWindow extends Screen implements Window, LegacyFrame, Compo
     public <X> void withUnwrapped(Class<X> internalComponentClass, Consumer<X> action) {
         if (getComponent() instanceof Component.Wrapper) {
             Object component = ((Component.Wrapper) frame).getComponent();
-            if (component.getClass().isAssignableFrom(internalComponentClass)) {
+            if (internalComponentClass.isAssignableFrom(component.getClass())) {
                 action.accept(internalComponentClass.cast(component));
             }
         }
-        if (frame.getClass().isAssignableFrom(internalComponentClass)) {
+        if (internalComponentClass.isAssignableFrom(frame.getClass())) {
             action.accept(internalComponentClass.cast(frame));
         }
     }
@@ -523,11 +523,11 @@ public class AbstractWindow extends Screen implements Window, LegacyFrame, Compo
     public <X> X unwrapCompositionOrNull(Class<X> internalCompositionClass) {
         if (getComposition() instanceof Component.Wrapper) {
             Object composition = ((Component.Wrapper) frame).getComposition();
-            return composition.getClass().isAssignableFrom(internalCompositionClass)
+            return internalCompositionClass.isAssignableFrom(composition.getClass())
                     ? internalCompositionClass.cast(composition)
                     : null;
         }
-        return frame.getClass().isAssignableFrom(internalCompositionClass)
+        return internalCompositionClass.isAssignableFrom(frame.getClass())
                 ? internalCompositionClass.cast(frame)
                 : null;
     }
@@ -536,11 +536,11 @@ public class AbstractWindow extends Screen implements Window, LegacyFrame, Compo
     public <X> void withUnwrappedComposition(Class<X> internalCompositionClass, Consumer<X> action) {
         if (getComposition() instanceof Component.Wrapper) {
             Object composition = ((Component.Wrapper) frame).getComposition();
-            if (composition.getClass().isAssignableFrom(internalCompositionClass)) {
+            if (internalCompositionClass.isAssignableFrom(composition.getClass())) {
                 action.accept(internalCompositionClass.cast(composition));
             }
         }
-        if (frame.getClass().isAssignableFrom(internalCompositionClass)) {
+        if (internalCompositionClass.isAssignableFrom(frame.getClass())) {
             action.accept(internalCompositionClass.cast(frame));
         }
     }
