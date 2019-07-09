@@ -1159,6 +1159,25 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
     }
 
     /**
+     * INTERNAL
+     * <p>
+     * ColumnGenerator that is used for declaratively installed generators.
+     *
+     * @param <E> DataGrid data type
+     * @param <T> Column data type
+     */
+    interface GenericColumnGenerator<E extends Entity, T> {
+
+        /**
+         * Returns value for given event.
+         *
+         * @param event an event providing more information
+         * @return generated value
+         */
+        T getValue(ColumnGeneratorEvent<E> event);
+    }
+
+    /**
      * Event provided by a {@link ColumnGenerator}
      */
     class ColumnGeneratorEvent<E extends Entity> extends AbstractDataGridEvent {
@@ -1230,13 +1249,22 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
     Column<E> addGeneratedColumn(String columnId, ColumnGenerator<E, ?> generator, int index);
 
     /**
+     * INTERNAL
+     * <p>
+     * Adds a generated column to the DataGrid.
+     *
+     * @param columnId  column identifier as defined in XML descriptor
+     * @param generator column generator instance
+     */
+    Column<E> addGeneratedColumn(String columnId, GenericColumnGenerator<E, ?> generator);
+
+    /**
      * Gets the columns generator for the given column id.
      *
      * @param columnId the column id for which to return column generator
      * @return the column generator for given column id
      */
     ColumnGenerator<E, ?> getColumnGenerator(String columnId);
-
 
     /**
      * A callback interface for generating details for a particular row in Grid.
@@ -2911,6 +2939,22 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
         Class getType();
 
         /**
+         * INTERNAL
+         * <p>
+         * Sets a type of generated column.
+         *
+         * @param generatedType generated column type
+         */
+        void setGeneratedType(Class generatedType);
+
+        /**
+         * INTERNAL.
+         *
+         * @return generated column type
+         */
+        Class getGeneratedType();
+
+        /**
          * Returns whether the properties corresponding to this column should be
          * editable when the item editor is active.
          *
@@ -3016,6 +3060,17 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
          * @param owner The DataGrid this column belongs to
          */
         void setOwner(DataGrid<E> owner);
+
+        /**
+         * INTERNAL
+         * <p>
+         * Intended to install declarative {@code ColumnGenerator} instance.
+         *
+         * @param columnGenerator column generator instance
+         */
+        default void setColumnGenerator(GenericColumnGenerator<E, Object> columnGenerator) {
+            getOwner().addGeneratedColumn(getId(), columnGenerator);
+        }
     }
 
     /**

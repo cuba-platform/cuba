@@ -114,6 +114,7 @@ import java.beans.PropertyChangeEvent;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -2511,6 +2512,48 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
         return addGeneratedColumn(columnId, generator, columnsOrder.size());
     }
 
+    @SuppressWarnings("unchecked")
+    @Override
+    public Column<E> addGeneratedColumn(String columnId, GenericColumnGenerator<E, ?> generator) {
+        Column<E> column = getColumn(columnId);
+        if (column == null) {
+            throw new DevelopmentException("Unable to set ColumnGenerator for non-existing column: " + columnId);
+        }
+
+        Class<? extends Renderer> rendererType = null;
+
+        Renderer renderer = column.getRenderer();
+        if (renderer != null) {
+            Class<?>[] rendererInterfaces = renderer.getClass().getInterfaces();
+
+            rendererType = (Class<? extends Renderer>) Arrays.stream(rendererInterfaces)
+                    .filter(Renderer.class::isAssignableFrom)
+                    .findFirst()
+                    .orElseThrow(() ->
+                            new DevelopmentException(
+                                    "Renderer should be specified explicitly for generated column: " + columnId));
+        }
+
+
+        Column<E> generatedColumn = addGeneratedColumn(columnId, new ColumnGenerator<E, Object>() {
+            @Override
+            public Object getValue(ColumnGeneratorEvent<E> event) {
+                return generator.getValue(event);
+            }
+
+            @Override
+            public Class<Object> getType() {
+                return column.getGeneratedType();
+            }
+        });
+
+        if (renderer != null) {
+            generatedColumn.setRenderer(createRenderer(rendererType));
+        }
+
+        return column;
+    }
+
     @Override
     public Column<E> addGeneratedColumn(String columnId, ColumnGenerator<E, ?> generator, int index) {
         checkNotNullArgument(columnId, "columnId is null");
@@ -3205,6 +3248,7 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
         protected ContentMode descriptionContentMode = ContentMode.PREFORMATTED;
 
         protected final Class type;
+        protected Class generatedType;
         protected Element element;
 
         protected WebAbstractDataGrid<?, E> owner;
@@ -3598,6 +3642,16 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
         @Override
         public Class getType() {
             return type;
+        }
+
+        @Override
+        public void setGeneratedType(Class generatedType) {
+            this.generatedType = generatedType;
+        }
+
+        @Override
+        public Class getGeneratedType() {
+            return generatedType;
         }
 
         public boolean isGenerated() {

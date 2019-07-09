@@ -203,6 +203,10 @@ public abstract class AbstractDataGridLoader<T extends DataGrid> extends Actions
         loadTabIndex(resultComponent, element);
     }
 
+    protected Scripting getScripting() {
+        return beanLocator.get(Scripting.NAME);
+    }
+
     protected Metadata getMetadata() {
         return beanLocator.get(Metadata.NAME);
     }
@@ -528,9 +532,34 @@ public abstract class AbstractDataGridLoader<T extends DataGrid> extends Actions
             column.setMaximumWidth(maximumWidth);
         }
 
+        column.setGeneratedType(loadGeneratedType(element));
+
         column.setFormatter(loadFormatter(element));
+        column.setRenderer(loadRenderer(element));
 
         return column;
+    }
+
+    protected DataGrid.Renderer loadRenderer(Element columnElement) {
+        Element renderer = columnElement.element("renderer");
+        if (renderer == null) {
+            return null;
+        }
+        String rendererType = renderer.attributeValue("type");
+        if (StringUtils.isEmpty(rendererType)) {
+            return null;
+        }
+        Class<?> rendererClass = getScripting().loadClassNN(rendererType);
+
+        return resultComponent.createRenderer(rendererClass);
+    }
+
+    protected Class loadGeneratedType(Element columnElement) {
+        String colGenType = columnElement.attributeValue("generatedType");
+        if (StringUtils.isNotEmpty(colGenType)) {
+            return getScripting().loadClassNN(colGenType);
+        }
+        return null;
     }
 
     protected String loadCaption(Element element) {
