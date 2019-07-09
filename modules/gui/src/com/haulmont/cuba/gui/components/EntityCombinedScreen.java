@@ -307,13 +307,11 @@ public class EntityCombinedScreen extends AbstractLookup {
     }
 
     /**
-     * Method that is invoked by clicking Ok button after editing an existing or creating a new record.
+     * Validates editor fields.
+     *
+     * @return true if all fields are valid or false otherwise
      */
-    @SuppressWarnings("unchecked")
-    public void save() {
-        if (!editing)
-            return;
-
+    protected boolean validateEditor() {
         FieldGroup fieldGroup = getFieldGroup();
         List<Validatable> components = new ArrayList<>();
         for (Component component: fieldGroup.getComponents()) {
@@ -321,14 +319,25 @@ public class EntityCombinedScreen extends AbstractLookup {
                 components.add((Validatable)component);
             }
         }
-        if (!validate(components)) {
+        return validate(components);
+    }
+
+    /**
+     * Method that is invoked by clicking Ok button after editing an existing or creating a new record.
+     */
+    @SuppressWarnings("unchecked")
+    public void save() {
+        if (!editing)
+            return;
+
+        if (!validateEditor()) {
             return;
         }
         getDsContext().commit();
 
         ListComponent table = getTable();
         CollectionDatasource browseDs = table.getDatasource();
-        Entity editedItem = fieldGroup.getDatasource().getItem();
+        Entity editedItem = getFieldGroup().getDatasource().getItem();
         if (creating) {
             browseDs.includeItem(editedItem);
         } else {
