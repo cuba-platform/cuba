@@ -50,7 +50,7 @@ public class BulkEditorFieldFactory {
             if (attribute.getDataType().equals(PropertyType.ENUMERATION)
                     && BooleanUtils.isNotTrue(attribute.getIsCollection())) {
                 return createEnumField(datasource, property);
-            } else if (attribute.getIsCollection()) {
+            } else if (BooleanUtils.isTrue(attribute.getIsCollection())) {
                 return createListEditorField(datasource, property);
             }
         }

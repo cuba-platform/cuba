@@ -88,7 +88,7 @@ public class DynamicAttributesTools {
     @SuppressWarnings("unchecked")
     public String getDynamicAttributeValueAsString(MetaProperty metaProperty, Object value) {
         CategoryAttribute categoryAttribute = getCategoryAttribute(metaProperty);
-        if (categoryAttribute.getIsCollection()) {
+        if (Boolean.TRUE.equals(categoryAttribute.getIsCollection())) {
             if (value instanceof Collection) {
                 List<String> valuesList = ((Collection<Object>) value).stream()
                         .map(item -> metadataTools.format(item, metaProperty))

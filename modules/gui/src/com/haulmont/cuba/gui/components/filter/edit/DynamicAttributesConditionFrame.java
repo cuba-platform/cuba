@@ -149,7 +149,7 @@ public class DynamicAttributesConditionFrame extends ConditionFrame<DynamicAttri
             else if (Date.class.isAssignableFrom(javaClass))
                 valueFieldName = "dateValue";
 
-            if (!attribute.getIsCollection()) {
+            if (BooleanUtils.isNotTrue(attribute.getIsCollection())) {
                 condition.setJoin(", sys$CategoryAttributeValue " + cavAlias + " ");
 
                 String paramStr = " ? ";
