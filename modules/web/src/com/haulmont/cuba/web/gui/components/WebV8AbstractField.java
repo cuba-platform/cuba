@@ -25,6 +25,7 @@ import com.haulmont.cuba.gui.components.data.ConversionException;
 import com.vaadin.server.ErrorMessage;
 import com.vaadin.server.UserError;
 import com.vaadin.ui.AbstractComponent;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
@@ -240,8 +241,12 @@ public abstract class WebV8AbstractField<T extends com.vaadin.ui.Component & com
             return null;
         }
 
-        String datatypeId = beanLocator.get(DatatypeRegistry.class)
-                .getId(datatype);
+        DatatypeRegistry datatypeRegistry = beanLocator.get(DatatypeRegistry.class);
+
+        String datatypeId = datatypeRegistry.getIdOrNull(datatype);
+        if (StringUtils.isEmpty(datatypeId)) {
+            datatypeId = datatypeRegistry.getIdByJavaClass(datatype.getJavaClass());
+        }
 
         if (Strings.isNullOrEmpty(datatypeId)) {
             return null;

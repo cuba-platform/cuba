@@ -54,6 +54,12 @@ public interface DatatypeRegistry {
     String getId(Datatype datatype);
 
     /**
+     * Returns an ID of the given datatype in the registry or null if {@code datatype} is not registered
+     */
+    @Nullable
+    String getIdOrNull(Datatype datatype);
+
+    /**
      * Returns an ID of a first datatype handling the given Java class.
      * @throws IllegalArgumentException if no datatypes handle the given Java class
      */

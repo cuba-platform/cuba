@@ -85,6 +85,16 @@ public class DatatypeRegistryImpl implements DatatypeRegistry {
     }
 
     @Override
+    @Nullable
+    public String getIdOrNull(Datatype datatype) {
+        for (Map.Entry<String, Datatype> entry : datatypeById.entrySet()) {
+            if (entry.getValue().equals(datatype))
+                return entry.getKey();
+        }
+        return null;
+    }
+
+    @Override
     public String getIdByJavaClass(Class<?> javaClass) {
         for (Map.Entry<String, Datatype> entry : datatypeById.entrySet()) {
             if (entry.getValue().getJavaClass().equals(javaClass))
