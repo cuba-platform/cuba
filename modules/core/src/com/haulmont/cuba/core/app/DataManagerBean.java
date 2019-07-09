@@ -120,6 +120,15 @@ public class DataManagerBean implements DataManager {
         return reloaded;
     }
 
+    protected void validate(CommitContext context) {
+        if (CommitContext.ValidationMode.DEFAULT == context.getValidationMode() && serverConfig.getDataManagerBeanValidation()
+                || CommitContext.ValidationMode.ALWAYS_VALIDATE == context.getValidationMode()) {
+            for (Entity entity : context.getCommitInstances()) {
+                validateEntity(entity, context.getValidationGroups());
+            }
+        }
+    }
+
     protected void validateEntity(Entity entity, List<Class> validationGroups) {
         Validator validator = beanValidation.getValidator();
         Set<ConstraintViolation<Entity>> violations;
@@ -135,12 +144,7 @@ public class DataManagerBean implements DataManager {
     @Override
     @SuppressWarnings("unchecked")
     public EntitySet commit(CommitContext context) {
-        if (CommitContext.ValidationType.DEFAULT == context.getValidationType() && serverConfig.getDataManagerBeanValidation()
-                || CommitContext.ValidationType.ALWAYS_VALIDATE == context.getValidationType()) {
-            for (Entity entity : context.getCommitInstances()) {
-                validateEntity(entity, context.getValidationGroups());
-            }
-        }
+        validate(context);
 
         Map<String, CommitContext> storeToContextMap = new TreeMap<>();
         Set<Entity> toRepeat = new HashSet<>();
@@ -273,7 +277,7 @@ public class DataManagerBean implements DataManager {
         newCtx.setDiscardCommitted(context.isDiscardCommitted());
         newCtx.setAuthorizationRequired(context.isAuthorizationRequired());
         newCtx.setJoinTransaction(context.isJoinTransaction());
-        newCtx.setValidationType(context.getValidationType());
+        newCtx.setValidationMode(context.getValidationMode());
         newCtx.setValidationGroups(context.getValidationGroups());
         return newCtx;
     }

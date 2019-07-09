@@ -50,7 +50,7 @@ class EntityValidationTest extends Specification {
     def "ALWAYS_VALIDATE test"() {
         when:
         def context = new CommitContext()
-        context.setValidationType(CommitContext.ValidationType.ALWAYS_VALIDATE)
+        context.setValidationMode(CommitContext.ValidationMode.ALWAYS_VALIDATE)
         def validatedEntity = new ValidatedEntity(name: "1")
         context.addInstanceToCommit(validatedEntity)
         dataManager.commit(context)
@@ -62,7 +62,7 @@ class EntityValidationTest extends Specification {
     def "NEVER_VALIDATE test"() {
         when:
         def context = new CommitContext()
-        context.setValidationType(CommitContext.ValidationType.NEVER_VALIDATE)
+        context.setValidationMode(CommitContext.ValidationMode.NEVER_VALIDATE)
         def validatedEntity = new ValidatedEntity(name: "1")
         context.addInstanceToCommit(validatedEntity)
         def committedEntity = dataManager.commit(context).iterator().next()
@@ -99,7 +99,7 @@ class EntityValidationTest extends Specification {
     def "Entity remove test"() {
         when:
         def context = new CommitContext()
-        context.setValidationType(CommitContext.ValidationType.NEVER_VALIDATE)
+        context.setValidationMode(CommitContext.ValidationMode.NEVER_VALIDATE)
         def validatedEntity = new ValidatedEntity(name: "1")
         context.addInstanceToCommit(validatedEntity)
         def committedEntity = dataManager.commit(context).iterator().next()
@@ -109,7 +109,7 @@ class EntityValidationTest extends Specification {
 
         when:
         context = new CommitContext()
-        context.setValidationType(CommitContext.ValidationType.ALWAYS_VALIDATE)
+        context.setValidationMode(CommitContext.ValidationMode.ALWAYS_VALIDATE)
         context.addInstanceToRemove(committedEntity)
         dataManager.commit(context)
 

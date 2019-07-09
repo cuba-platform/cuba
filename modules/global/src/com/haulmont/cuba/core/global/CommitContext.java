@@ -40,7 +40,7 @@ public class CommitContext implements Serializable {
     protected boolean discardCommitted;
     protected boolean authorizationRequired;
     protected boolean joinTransaction;
-    protected ValidationType validationType = ValidationType.DEFAULT;
+    protected ValidationMode validationMode = ValidationMode.DEFAULT;
     protected Map<String, Object> dbHints = new HashMap<>();
     protected List<Class> validationGroups;
 
@@ -194,22 +194,22 @@ public class CommitContext implements Serializable {
     }
 
     /**
-     * @return {@link ValidationType} of commit context.
+     * @return {@link ValidationMode} of commit context.
      */
-    public ValidationType getValidationType() {
-        return validationType;
+    public ValidationMode getValidationMode() {
+        return validationMode;
     }
 
     /**
-     * Sets {@link ValidationType} for commit context.
+     * Sets {@link ValidationMode} for commit context.
      * Validation type is responsible for whether entity bean validation will be applied on {@link DataManager} level.
      *
      * @see BeanValidation
      *
-     * @param validationType validation type
+     * @param validationMode validation type
      */
-    public void setValidationType(ValidationType validationType) {
-        this.validationType = validationType;
+    public void setValidationMode(ValidationMode validationMode) {
+        this.validationMode = validationMode;
     }
 
     public boolean isAuthorizationRequired() {
@@ -256,9 +256,9 @@ public class CommitContext implements Serializable {
     }
 
     /**
-     * Validation type. Responsible for entity bean validation on {@link DataManager} level.
+     * Validation mode. Affects entity bean validation on {@link DataManager} level.
      */
-    public enum ValidationType {
+    public enum ValidationMode {
         /**
          * Use value from {@code cuba.dataManagerBeanValidation} application property.
          */
