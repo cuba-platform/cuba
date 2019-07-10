@@ -36,24 +36,25 @@
             <tab id="main" caption="msg://caption.mainTab" spacing="true" margin="true">
                 <fieldGroup id="attributeFieldGroup" datasource="attributeDs" width="100%">
                     <column>
-                        <field id="name" required="true" width="100%"/>
-                        <field id="code" required="true" width="100%"/>
+                        <field id="name" property="name" required="true" width="100%"/>
+                        <field id="code" property="code" required="true" width="100%"/>
                         <field id="description" custom="true" width="100%"/>
-                        <field id="required"/>
-                        <field id="isCollection"/>
+                        <field id="required" property="required"/>
+                        <field id="isCollection" property="isCollection"/>
                         <field id="dataType" custom="true" required="true" width="100%"/>
 
                         <field id="entityClass" custom="true" required="true" width="100%"/>
                         <field id="screen" custom="true" width="100%"/>
-                        <field id="lookup"/>
+                        <field id="lookup" property="lookup"/>
                         <field id="constraintWizard" custom="true" caption=""/>
                         <field id="joinClause" width="100%" custom="true"/>
                         <field id="whereClause" width="100%" rows="3" custom="true"/>
-                        <field id="width" width="100%">
-                            <validator class="com.haulmont.cuba.gui.app.core.categories.SizeWithUnitValidator"
-                                       message="msg://widthValidationMsg"/>
+                        <field id="width" property="width" width="100%">
+                            <validator
+                                    class="com.haulmont.cuba.gui.app.core.categories.SizeWithUnitValidator"
+                                    message="msg://widthValidationMsg"/>
                         </field>
-                        <field id="rowsCount" width="100%">
+                        <field id="rowsCount" property="rowsCount" width="100%">
                             <validator class="com.haulmont.cuba.gui.components.validators.RangeValidator"
                                        valueType="java.lang.Integer" minValue="1" maxValue="40"
                                        message="msg://rowsCountValidationMsg"/>
@@ -61,29 +62,68 @@
                         <field id="defaultEntityId" custom="true" width="100%"/>
 
                         <field id="enumeration" custom="true" required="true" width="100%"/>
-                        <field id="defaultString" width="100%"/>
-                        <field id="defaultInt" width="100%"/>
-                        <field id="defaultDouble" width="100%"/>
-                        <field id="defaultDecimal" width="100%"/>
+                        <field id="defaultString" property="defaultString" width="100%"/>
+                        <field id="defaultInt" property="defaultInt" width="100%"/>
+                        <field id="defaultDouble" property="defaultDouble" width="100%"/>
+                        <field id="defaultDecimal" property="defaultDecimal" width="100%"/>
                         <field id="defaultBoolean" custom="true" width="100%"/>
-                        <field id="defaultDate" width="100%"/>
-                        <field id="defaultDateWithoutTime" width="100%"/>
-                        <field id="defaultDateIsCurrent" width="100%"/>
+                        <field id="defaultDate" property="defaultDate" width="100%"/>
+                        <field id="defaultDateWithoutTime" property="defaultDateWithoutTime" width="100%"/>
+                        <field id="defaultDateIsCurrent" property="defaultDateIsCurrent" width="100%"/>
 
-                        <field id="configuration.numberFormatPattern" width="100%"/>
+                        <field id="numberFormatPattern" property="configuration.numberFormatPattern"
+                               width="100%"/>
 
-                        <field id="configuration.minInt" width="100%"/>
-                        <field id="configuration.minDouble" width="100%"/>
-                        <field id="configuration.minDecimal" width="100%"/>
-                        <field id="configuration.maxInt" width="100%"/>
-                        <field id="configuration.maxDouble" width="100%"/>
-                        <field id="configuration.maxDecimal" width="100%"/>
-                        <field id="configuration.validatorGroovyScript" custom="true" width="100%"/>
+                        <field id="minInt" property="configuration.minInt" width="100%"/>
+                        <field id="minDouble" property="configuration.minDouble" width="100%"/>
+                        <field id="minDecimal" property="configuration.minDecimal" width="100%"/>
+                        <field id="maxInt" property="configuration.maxInt" width="100%"/>
+                        <field id="maxDouble" property="configuration.maxDouble" width="100%"/>
+                        <field id="maxDecimal" property="configuration.maxDecimal" width="100%"/>
                     </column>
                 </fieldGroup>
             </tab>
             <tab id="localization" caption="msg://caption.localizedNameTab" margin="true" visible="false"/>
-            <tab id="visibility" caption="msg://caption.targetScreensTab" spacing="true"  margin="true">
+            <tab id="validation" caption="msg://caption.validationTab" margin="true,false,true,false">
+                <fieldGroup id="validationFieldGroup" datasource="attributeDs" width="100%">
+                    <column>
+                        <field id="validatorGroovyScript" property="configuration.validatorGroovyScript"
+                               width="100%"
+                               caption="">
+                            <sourceCodeEditor mode="Groovy"
+                                              highlightActiveLine="false"
+                                              showGutter="false"
+                                              property="configuration.validatorGroovyScript"
+                                              datasource="attributeDs"/>
+                        </field>
+                    </column>
+                </fieldGroup>
+            </tab>
+            <tab id="optionsLoader" caption="msg://caption.optionsLoaderTab" margin="true">
+                <fieldGroup id="optionsLoaderFieldGroup" datasource="configurationDs" width="100%">
+                    <column>
+                        <field id="optionsLoaderType" property="optionsLoaderType" width="100%"/>
+                        <field id="optionsLoaderScript" property="optionsLoaderScript" width="100%">
+                            <sourceCodeEditor highlightActiveLine="false"
+                                              showGutter="false"
+                                              property="optionsLoaderScript"
+                                              datasource="configurationDs"/>
+                        </field>
+                    </column>
+                </fieldGroup>
+            </tab>
+            <tab id="columnSettings" caption="msg://caption.columnSettingsTab" spacing="true" margin="true">
+                <fieldGroup id="columnSettingsFieldGroup" datasource="attributeDs" width="100%">
+                    <column>
+                        <field id="columnName" property="configuration.columnName" width="100%"/>
+                        <field id="columnAlignment" width="100%" property="configuration.columnAlignment">
+                            <lookupField property="configuration.columnAlignment" datasource="attributeDs"/>
+                        </field>
+                        <field id="columnWidth" property="configuration.columnWidth" width="100%"/>
+                    </column>
+                </fieldGroup>
+            </tab>
+            <tab id="visibility" caption="msg://caption.targetScreensTab" spacing="true" margin="true">
                 <table id="targetScreensTable" width="100%" height="250px" editable="true">
                     <buttonsPanel>
                         <button action="targetScreensTable.create"/>
@@ -96,19 +136,10 @@
                     <rows datasource="screensDs"/>
                 </table>
             </tab>
-            <tab id="columnSettings" caption="msg://caption.columnSettingsTab" spacing="true"  margin="true">
-                <fieldGroup id="columnSettingsFieldGroup" datasource="attributeDs" width="100%">
+            <tab id="recalculationTab" caption="msg://caption.recalculationTab" spacing="true"  margin="true">
+                <fieldGroup id="recalculationFieldGroup" datasource="configurationDs" width="100%">
                     <column>
-                        <field id="configuration.columnName" width="100%"/>
-                        <field id="configuration.columnAlignment" custom="true" width="100%"/>
-                        <field id="configuration.columnWidth" width="100%"/>
-                    </column>
-                </fieldGroup>
-            </tab>
-            <tab id="recalculationSettings" caption="msg://caption.recalculationSettingsTab" spacing="true"  margin="true">
-                <fieldGroup id="recalculationSettingsFieldGroup" datasource="attributeDs" width="100%">
-                    <column>
-                        <field id="configuration.dependsOnCategoryAttributes" custom="true" width="100%"/>
+                        <field id="dependsOnCategoryAttributes" custom="true" width="100%"/>
                         <field id="recalculationGroovyScript" property="recalculationGroovyScript" width="100%">
                             <sourceCodeEditor highlightActiveLine="false"
                                               showGutter="false"

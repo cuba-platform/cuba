@@ -20,10 +20,7 @@ package com.haulmont.cuba.gui.app.core.categories;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Multimap;
+import com.google.common.collect.*;
 import com.google.gson.Gson;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.bali.util.ParamsMap;
@@ -31,15 +28,13 @@ import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.app.dynamicattributes.PropertyType;
-import com.haulmont.cuba.core.entity.CategoryAttribute;
-import com.haulmont.cuba.core.entity.CategoryAttributeConfiguration;
-import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.entity.HasUuid;
+import com.haulmont.cuba.core.entity.*;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.global.filter.SecurityJpqlGenerator;
 import com.haulmont.cuba.gui.UiComponents;
 import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.components.actions.BaseAction;
 import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.cuba.gui.components.autocomplete.JpqlSuggestionFactory;
@@ -68,6 +63,7 @@ import javax.inject.Named;
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 
@@ -76,79 +72,97 @@ import static java.lang.String.format;
  */
 public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
 
-    protected static final Multimap<PropertyType, String> FIELDS_VISIBLE_FOR_DATATYPES = ArrayListMultimap.create();
+    protected static final Multimap<PropertyType, String> FIELDS_VISIBLE_FOR_TYPES = ArrayListMultimap.create();
     protected static final Set<String> ALWAYS_VISIBLE_FIELDS = ImmutableSet.of("name", "code", "required", "dataType",
-            "description", "configuration.validatorGroovyScript");
+            "description", "validatorGroovyScript");
+    protected static final Set<PropertyType> SUPPORTED_VALUES_LOADER_TYPES = ImmutableSet.of(PropertyType.STRING,
+            PropertyType.INTEGER, PropertyType.DOUBLE, PropertyType.DECIMAL, PropertyType.ENTITY);
+
     protected static final String WHERE = " where ";
 
     static {
-        FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.BOOLEAN, "defaultBoolean");
-        FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.STRING, "defaultString");
-        FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.STRING, "width");
-        FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.STRING, "rowsCount");
-        FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.STRING, "isCollection");
-        FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.DOUBLE, "defaultDouble");
-        FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.DOUBLE, "configuration.minDouble");
-        FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.DOUBLE, "configuration.maxDouble");
-        FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.DOUBLE, "width");
-        FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.DOUBLE, "isCollection");
-        FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.DECIMAL, "defaultDecimal");
-        FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.DECIMAL, "configuration.minDecimal");
-        FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.DECIMAL, "configuration.maxDecimal");
-        FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.DECIMAL, "width");
-        FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.DECIMAL, "isCollection");
-        FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.DECIMAL, "configuration.numberFormatPattern");
-        FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.INTEGER, "defaultInt");
-        FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.INTEGER, "configuration.minInt");
-        FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.INTEGER, "configuration.maxInt");
-        FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.INTEGER, "width");
-        FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.INTEGER, "isCollection");
-        FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.DATE, "defaultDate");
-        FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.DATE, "defaultDateIsCurrent");
-        FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.DATE, "width");
-        FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.DATE, "isCollection");
-        FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.DATE_WITHOUT_TIME, "defaultDateWithoutTime");
-        FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.DATE_WITHOUT_TIME, "defaultDateIsCurrent");
-        FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.DATE_WITHOUT_TIME, "width");
-        FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.DATE_WITHOUT_TIME, "isCollection");
-        FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.ENUMERATION, "enumeration");
-        FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.ENUMERATION, "defaultString");
-        FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.ENUMERATION, "width");
-        FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.ENUMERATION, "isCollection");
-        FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.ENTITY, "entityClass");
-        FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.ENTITY, "screen");
-        FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.ENTITY, "lookup");
-        FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.ENTITY, "defaultEntityId");
-        FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.ENTITY, "width");
-        FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.ENTITY, "joinClause");
-        FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.ENTITY, "whereClause");
-        FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.ENTITY, "constraintWizard");
-        FIELDS_VISIBLE_FOR_DATATYPES.put(PropertyType.ENTITY, "isCollection");
+        FIELDS_VISIBLE_FOR_TYPES.put(PropertyType.BOOLEAN, "defaultBoolean");
+        FIELDS_VISIBLE_FOR_TYPES.put(PropertyType.STRING, "defaultString");
+        FIELDS_VISIBLE_FOR_TYPES.put(PropertyType.STRING, "width");
+        FIELDS_VISIBLE_FOR_TYPES.put(PropertyType.STRING, "rowsCount");
+        FIELDS_VISIBLE_FOR_TYPES.put(PropertyType.STRING, "isCollection");
+        FIELDS_VISIBLE_FOR_TYPES.put(PropertyType.DOUBLE, "defaultDouble");
+        FIELDS_VISIBLE_FOR_TYPES.put(PropertyType.DOUBLE, "minDouble");
+        FIELDS_VISIBLE_FOR_TYPES.put(PropertyType.DOUBLE, "maxDouble");
+        FIELDS_VISIBLE_FOR_TYPES.put(PropertyType.DOUBLE, "width");
+        FIELDS_VISIBLE_FOR_TYPES.put(PropertyType.DOUBLE, "isCollection");
+        FIELDS_VISIBLE_FOR_TYPES.put(PropertyType.DECIMAL, "defaultDecimal");
+        FIELDS_VISIBLE_FOR_TYPES.put(PropertyType.DECIMAL, "minDecimal");
+        FIELDS_VISIBLE_FOR_TYPES.put(PropertyType.DECIMAL, "maxDecimal");
+        FIELDS_VISIBLE_FOR_TYPES.put(PropertyType.DECIMAL, "width");
+        FIELDS_VISIBLE_FOR_TYPES.put(PropertyType.DECIMAL, "isCollection");
+        FIELDS_VISIBLE_FOR_TYPES.put(PropertyType.DECIMAL, "numberFormatPattern");
+        FIELDS_VISIBLE_FOR_TYPES.put(PropertyType.INTEGER, "defaultInt");
+        FIELDS_VISIBLE_FOR_TYPES.put(PropertyType.INTEGER, "minInt");
+        FIELDS_VISIBLE_FOR_TYPES.put(PropertyType.INTEGER, "maxInt");
+        FIELDS_VISIBLE_FOR_TYPES.put(PropertyType.INTEGER, "width");
+        FIELDS_VISIBLE_FOR_TYPES.put(PropertyType.INTEGER, "isCollection");
+        FIELDS_VISIBLE_FOR_TYPES.put(PropertyType.DATE, "defaultDate");
+        FIELDS_VISIBLE_FOR_TYPES.put(PropertyType.DATE, "defaultDateIsCurrent");
+        FIELDS_VISIBLE_FOR_TYPES.put(PropertyType.DATE, "width");
+        FIELDS_VISIBLE_FOR_TYPES.put(PropertyType.DATE, "isCollection");
+        FIELDS_VISIBLE_FOR_TYPES.put(PropertyType.DATE_WITHOUT_TIME, "defaultDateWithoutTime");
+        FIELDS_VISIBLE_FOR_TYPES.put(PropertyType.DATE_WITHOUT_TIME, "defaultDateIsCurrent");
+        FIELDS_VISIBLE_FOR_TYPES.put(PropertyType.DATE_WITHOUT_TIME, "width");
+        FIELDS_VISIBLE_FOR_TYPES.put(PropertyType.DATE_WITHOUT_TIME, "isCollection");
+        FIELDS_VISIBLE_FOR_TYPES.put(PropertyType.ENUMERATION, "enumeration");
+        FIELDS_VISIBLE_FOR_TYPES.put(PropertyType.ENUMERATION, "defaultString");
+        FIELDS_VISIBLE_FOR_TYPES.put(PropertyType.ENUMERATION, "width");
+        FIELDS_VISIBLE_FOR_TYPES.put(PropertyType.ENUMERATION, "isCollection");
+        FIELDS_VISIBLE_FOR_TYPES.put(PropertyType.ENTITY, "entityClass");
+        FIELDS_VISIBLE_FOR_TYPES.put(PropertyType.ENTITY, "screen");
+        FIELDS_VISIBLE_FOR_TYPES.put(PropertyType.ENTITY, "lookup");
+        FIELDS_VISIBLE_FOR_TYPES.put(PropertyType.ENTITY, "defaultEntityId");
+        FIELDS_VISIBLE_FOR_TYPES.put(PropertyType.ENTITY, "width");
+        FIELDS_VISIBLE_FOR_TYPES.put(PropertyType.ENTITY, "joinClause");
+        FIELDS_VISIBLE_FOR_TYPES.put(PropertyType.ENTITY, "whereClause");
+        FIELDS_VISIBLE_FOR_TYPES.put(PropertyType.ENTITY, "constraintWizard");
+        FIELDS_VISIBLE_FOR_TYPES.put(PropertyType.ENTITY, "isCollection");
     }
-
-    protected CategoryAttribute attribute;
-
-    @Inject
-    protected FieldGroup attributeFieldGroup;
-
-    @Inject
-    protected FieldGroup columnSettingsFieldGroup;
-
-    @Inject
-    protected FieldGroup recalculationSettingsFieldGroup;
 
     protected LookupField<PropertyType> dataTypeField;
     protected LookupField<String> screenField;
     protected LookupField<String> entityTypeField;
     protected PickerField<Entity> defaultEntityField;
     protected TextArea<String> descriptionField;
-    protected LookupField<String> columnAlignmentField;
+    protected ListEditor<CategoryAttribute> dependsOnAttributesField;
 
-    protected String fieldWidth;
+    @Inject
+    protected FieldGroup attributeFieldGroup;
+    @Inject
+    protected FieldGroup recalculationFieldGroup;
+    @Inject
+    protected FieldGroup columnSettingsFieldGroup;
+    @Inject
+    protected Table<ScreenAndComponent> targetScreensTable;
+    @Inject
+    protected TabSheet tabsheet;
+    @Inject
+    protected CollectionDatasource<ScreenAndComponent, UUID> screensDs;
+    @Named("attributeFieldGroup.defaultDecimal")
+    protected TextField defaultDecimal;
+    @Named("attributeFieldGroup.minDecimal")
+    protected TextField minDecimal;
+    @Named("attributeFieldGroup.maxDecimal")
+    protected TextField maxDecimal;
+    @Named("validationFieldGroup.validatorGroovyScript")
+    protected SourceCodeEditor validatorGroovyScript;
+    @Named("columnSettingsFieldGroup.columnAlignment")
+    protected LookupField<String> columnAlignment;
+    @Named("optionsLoaderFieldGroup.optionsLoaderType")
+    protected LookupField optionsLoaderType;
+    @Named("optionsLoaderFieldGroup.optionsLoaderScript")
+    protected SourceCodeEditor optionsLoaderScript;
+    @Named("recalculationFieldGroup.recalculationGroovyScript")
+    protected SourceCodeEditor recalculationGroovyScriptField;
 
     @Inject
     protected Datasource<CategoryAttribute> attributeDs;
-
     @Inject
     protected Datasource<CategoryAttributeConfiguration> configurationDs;
 
@@ -183,15 +197,6 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
     protected ReferenceToEntitySupport referenceToEntitySupport;
 
     @Inject
-    protected Table<ScreenAndComponent> targetScreensTable;
-
-    @Inject
-    protected TabSheet tabsheet;
-
-    @Inject
-    protected CollectionDatasource<ScreenAndComponent, UUID> screensDs;
-
-    @Inject
     protected GlobalConfig globalConfig;
 
     @Inject
@@ -206,17 +211,7 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
     protected SourceCodeEditor joinField;
     protected SourceCodeEditor whereField;
 
-    protected HBoxLayout validatorHBoxLayoutField;
-    protected SourceCodeEditor validatorGroovyScriptField;
-    protected LinkButton validatorHelpLinkBtn;
-
-    @Named("recalculationSettingsFieldGroup.recalculationGroovyScript")
-    protected SourceCodeEditor recalculationGroovyScriptField;
-    protected ListEditor<CategoryAttribute> dependsOnAttributesField;
-
-    protected TextField defaultDecimalField;
-    protected TextField minDecimalField;
-    protected TextField maxDecimalField;
+    protected String fieldWidth;
 
     @Inject
     protected FilterParser filterParser;
@@ -240,14 +235,59 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
     }
 
     @Override
-    public void ready() {
-        defaultDecimalField = (TextField) attributeFieldGroup.getFieldNN("defaultDecimal").getComponentNN();
-        minDecimalField = (TextField) attributeFieldGroup.getFieldNN("configuration.minDecimal").getComponentNN();
-        maxDecimalField = (TextField) attributeFieldGroup.getFieldNN("configuration.maxDecimal").getComponentNN();
+    protected void postInit() {
+        CategoryAttribute attribute = getItem();
 
-        setupBigDecimalFormat();
+        Set<String> targetScreens = attribute.targetScreensSet();
+        for (String targetScreen : targetScreens) {
+            if (targetScreen.contains("#")) {
+                String[] split = targetScreen.split("#");
+                screensDs.addItem(new ScreenAndComponent(split[0], split[1]));
+            } else {
+                screensDs.addItem(new ScreenAndComponent(targetScreen, null));
+            }
+        }
+
+        MetaClass categorizedEntityMetaClass = metadata.getClass(attribute.getCategory().getEntityType());
+        Map<String, String> optionsMap = categorizedEntityMetaClass != null ?
+                new HashMap<>(screensHelper.getAvailableScreens(categorizedEntityMetaClass.getJavaClass(), true)) :
+                new HashMap<>();
+
+        targetScreensTable.addGeneratedColumn(
+                "screen",
+                entity -> {
+                    LookupField<String> lookupField = uiComponents.create(LookupField.NAME);
+                    lookupField.setDatasource(targetScreensTable.getItemDatasource(entity), "screen");
+                    lookupField.setOptionsMap(optionsMap);
+                    //noinspection RedundantCast
+                    lookupField.setNewOptionHandler((Consumer<String>) caption -> {
+                        if (caption != null && !optionsMap.containsKey(caption)) {
+                            optionsMap.put(caption, caption);
+                            lookupField.setValue(caption);
+                        }
+                    });
+                    lookupField.setRequired(true);
+                    lookupField.setWidth("100%");
+                    return lookupField;
+                }
+        );
+
+        String enumeration = attribute.getEnumeration();
+        if (!Strings.isNullOrEmpty(enumeration)) {
+            Iterable<String> items = Splitter.on(",").omitEmptyStrings().split(enumeration);
+            enumerationListEditor.setValue(Lists.newArrayList(items));
+        }
+
+        if (localizedFrame != null) {
+            localizedFrame.setNamesValue(attribute.getLocaleNames());
+            localizedFrame.setDescriptionsValue(attribute.getLocaleDescriptions());
+        }
 
         dependsOnAttributesField.setOptionsList(getCategoryAttributesOptionsLists());
+
+        setupVisibility();
+        setupNumberFormat();
+        setupValueLoaders();
     }
 
     protected Action initCreateScreenAndComponentAction() {
@@ -273,6 +313,7 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
 
     @SuppressWarnings("unchecked")
     protected void initFieldGroup() {
+        CategoryAttribute attribute = getItem();
         attributeFieldGroup.addCustomField("defaultBoolean", (datasource, propertyId) -> {
             LookupField<Boolean> lookupField = uiComponents.create(LookupField.NAME);
 
@@ -293,7 +334,6 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
             }
             dataTypeField.setWidth(fieldWidth);
 
-            dataTypeField.setNewOptionAllowed(false);
             dataTypeField.setRequired(true);
             dataTypeField.setRequiredMessage(getMessage("dataTypeRequired"));
             dataTypeField.setOptionsMap(options);
@@ -406,7 +446,7 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
             whereField.setWidthFull();
             whereField.setHeight(themeConstants.get("cuba.gui.customConditionFrame.whereField.height"));
             whereField.setSuggester((source, text, cursorPosition) ->
-                    requestHint(whereField, text, cursorPosition)
+                    requestHint(whereField, cursorPosition)
             );
             whereField.setHighlightActiveLine(false);
             whereField.setShowGutter(false);
@@ -418,7 +458,7 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
             joinField.setDatasource(attributeDs, "joinClause");
             joinField.setWidthFull();
             joinField.setHeight(themeConstants.get("cuba.gui.customConditionFrame.joinField.height"));
-            joinField.setSuggester((source, text, cursorPosition) -> requestHint(joinField, text, cursorPosition));
+            joinField.setSuggester((source, text, cursorPosition) -> requestHint(joinField, cursorPosition));
             joinField.setHighlightActiveLine(false);
             joinField.setShowGutter(false);
             return joinField;
@@ -433,15 +473,18 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
             linkButton.setCaption(getMessage("constraintWizard"));
             linkButton.setAlignment(Alignment.MIDDLE_LEFT);
 
-            HBoxLayout hbox = uiComponents.create(HBoxLayout.class);
-            hbox.setWidthFull();
-            hbox.add(linkButton);
-            return hbox;
+            HBoxLayout box = uiComponents.create(HBoxLayout.class);
+            box.setWidthFull();
+            box.add(linkButton);
+            return box;
         });
+
+        validatorGroovyScript.setContextHelpIconClickHandler(e -> showMessageDialog(getMessage("validatorScript"), getMessage("validatorScriptHelp"),
+                MessageType.CONFIRMATION_HTML.modal(false).width(560f)));
+        validatorGroovyScript.setHeight(themeConstants.get("cuba.gui.AttributeEditor.validatorGroovyScriptField.height"));
 
         attributeDs.addItemPropertyChangeListener(e -> {
             String property = e.getProperty();
-            CategoryAttribute attribute = getItem();
             if ("dataType".equalsIgnoreCase(property)
                     || "lookup".equalsIgnoreCase(property)
                     || "defaultDateIsCurrent".equalsIgnoreCase(property)
@@ -457,55 +500,18 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
         });
 
         configurationDs.addItemPropertyChangeListener(e -> {
-            ((DatasourceImplementation) attributeDs).modified(attribute);
-
+            ((DatasourceImplementation) attributeDs).modified(getItem());
             if ("numberFormatPattern".equalsIgnoreCase(e.getProperty())) {
-                setupBigDecimalFormat();
+                setupNumberFormat();
             }
-        });
-
-        attributeFieldGroup.addCustomField("configuration.validatorGroovyScript", (datasource, propertyId) -> {
-
-            validatorGroovyScriptField = uiComponents.create(SourceCodeEditor.class);
-            validatorGroovyScriptField.setMode(SourceCodeEditor.Mode.Groovy);
-            validatorGroovyScriptField.setDatasource(attributeDs, "configuration.validatorGroovyScript");
-            validatorGroovyScriptField.setWidthFull();
-            validatorGroovyScriptField.setHeight(themeConstants.get("cuba.gui.AttributeEditor.validatorGroovyScriptField.height"));
-            validatorGroovyScriptField.setHighlightActiveLine(false);
-            validatorGroovyScriptField.setShowGutter(false);
-
-            validatorHelpLinkBtn = uiComponents.create(LinkButton.class);
-            validatorHelpLinkBtn.setIcon("icons/question-white.png");
-            validatorHelpLinkBtn.addClickListener(event -> showMessageDialog(getMessage("validatorScript"), getMessage("validatorScriptHelp"),
-                    MessageType.CONFIRMATION_HTML
-                            .modal(false)
-                            .width(560f)));
-
-            validatorHBoxLayoutField = uiComponents.create(HBoxLayout.class);
-            validatorHBoxLayoutField.setWidthFull();
-            validatorHBoxLayoutField.add(validatorGroovyScriptField, validatorHelpLinkBtn);
-            validatorHBoxLayoutField.expand(validatorGroovyScriptField);
-
-            return validatorHBoxLayoutField;
         });
     }
 
     protected void initColumnSettingsFieldGroup() {
-        columnSettingsFieldGroup.addCustomField("configuration.columnAlignment", (datasource, propertyId) -> {
-            columnAlignmentField = uiComponents.create(LookupField.NAME);
-            columnAlignmentField.setDatasource(datasource, "configuration.columnAlignment");
-            columnAlignmentField.setWidth(fieldWidth);
-            columnAlignmentField.setFrame(frame);
-
-            List<String> options = new ArrayList<>();
-            for (Table.ColumnAlignment alignment : Table.ColumnAlignment.values()) {
-                options.add(alignment.name());
-            }
-
-            columnAlignmentField.setOptionsList(options);
-
-            return columnAlignmentField;
-        });
+        columnAlignment.setWidth(fieldWidth);
+        columnAlignment.setOptionsList(Arrays.stream(Table.ColumnAlignment.values())
+                .map(Enum::name)
+                .collect(Collectors.toList()));
     }
 
     protected void initRecalculationSettingsFieldGroup() {
@@ -523,24 +529,50 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
         dependsOnAttributesField.setItemType(ListEditor.ItemType.ENTITY);
         dependsOnAttributesField.setEntityName("sys$CategoryAttribute");
 
-        recalculationSettingsFieldGroup.getField("configuration.dependsOnCategoryAttributes")
-                .setComponent(dependsOnAttributesField);
+        recalculationFieldGroup.getFieldNN("dependsOnCategoryAttributes").setComponent(dependsOnAttributesField);
+    }
+
+    protected void setupValueLoaders() {
+        CategoryAttribute attribute = getItem();
+        CategoryAttributeConfiguration configuration = attribute.getConfiguration();
+        if (attribute.getDataType() != null && SUPPORTED_VALUES_LOADER_TYPES.contains(attribute.getDataType())) {
+            tabsheet.getTab("optionsLoader").setEnabled(true);
+            if (attribute.getDataType() == PropertyType.ENTITY) {
+                if (configuration.getOptionsLoaderType() == CategoryAttributeOptionsLoaderType.SQL) {
+                    configuration.setOptionsLoaderType(CategoryAttributeOptionsLoaderType.GROOVY);
+                    configuration.setOptionsLoaderScript(null);
+                } else if (configuration.getOptionsLoaderType() == null) {
+                    configuration.setOptionsLoaderType(CategoryAttributeOptionsLoaderType.GROOVY);
+                }
+                optionsLoaderType.setEnabled(false);
+            } else {
+                optionsLoaderType.setEnabled(true);
+            }
+            if (configuration.getOptionsLoaderType() == CategoryAttributeOptionsLoaderType.GROOVY) {
+                optionsLoaderScript.setContextHelpIconClickHandler(e -> showMessageDialog(getMessage("optionsLoaderGroovyScript"), getMessage("optionsLoaderGroovyScriptHelp"),
+                        MessageType.CONFIRMATION_HTML.modal(false).width(560f)));
+            }
+        } else {
+            configuration.setOptionsLoaderScript(null);
+            configuration.setOptionsLoaderType(null);
+            tabsheet.getTab("optionsLoader").setEnabled(false);
+        }
     }
 
     public void openConstraintWizard() {
+        CategoryAttribute attribute = getItem();
         Class entityClass = attribute.getJavaClassForEntity();
 
         if (entityClass == null) {
             showNotification(getMessage("selectEntityType"));
             return;
         }
-
         MetaClass metaClass = metadata.getClassNN(entityClass);
-        FakeFilterSupport fakeFilterSupport = new FakeFilterSupport(this, metaClass);
 
-        Filter fakeFilter = fakeFilterSupport.createFakeFilter();
-        FilterEntity filterEntity = fakeFilterSupport.createFakeFilterEntity(attribute.getFilterXml());
-        ConditionsTree conditionsTree = fakeFilterSupport.createFakeConditionsTree(fakeFilter, filterEntity);
+        FakeFilterSupport filterSupport = new FakeFilterSupport(this, metaClass);
+        Filter fakeFilter = filterSupport.createFakeFilter();
+        FilterEntity filterEntity = filterSupport.createFakeFilterEntity(attribute.getFilterXml());
+        ConditionsTree conditionsTree = filterSupport.createFakeConditionsTree(fakeFilter, filterEntity);
 
         Map<String, Object> params = new HashMap<>();
         params.put("filter", fakeFilter);
@@ -572,14 +604,16 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
         });
     }
 
-    private void setupVisibility() {
+    protected void setupVisibility() {
+        CategoryAttribute attribute = getItem();
+
         for (FieldGroup.FieldConfig fieldConfig : attributeFieldGroup.getFields()) {
             if (!ALWAYS_VISIBLE_FIELDS.contains(fieldConfig.getId())) {
-                attributeFieldGroup.setVisible(fieldConfig.getId(), false);
+                fieldConfig.setVisible(false);
             }
         }
 
-        Collection<String> componentIds = FIELDS_VISIBLE_FOR_DATATYPES.get(attribute.getDataType());
+        Collection<String> componentIds = FIELDS_VISIBLE_FOR_TYPES.get(attribute.getDataType());
         if (componentIds != null) {
             for (String componentId : componentIds) {
                 attributeFieldGroup.setVisible(componentId, true);
@@ -632,26 +666,28 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
         }
 
         if (attribute.getDataType() == PropertyType.BOOLEAN) {
-            attributeFieldGroup.setFieldValue("isCollection", null);
+            attribute.setIsCollection(null);
         }
+
+        setupValueLoaders();
     }
 
     protected void fillSelectEntityScreens(Class entityClass) {
+        CategoryAttribute attribute = getItem();
         Map<String, String> screensMap = screensHelper.getAvailableBrowserScreens(entityClass);
         screenField.setOptionsMap(screensMap);
-        String value = attribute.getScreen();
-        screenField.setValue(screensMap.containsValue(value) ? value : null);
+        screenField.setValue(screensMap.containsValue(attribute.getScreen()) ? attribute.getScreen() : null);
     }
 
     @SuppressWarnings("unchecked")
     protected void fillDefaultEntities(Class entityClass) {
+        CategoryAttribute attribute = getItem();
         MetaClass metaClass = metadata.getClassNN(entityClass);
         if (attribute.getObjectDefaultEntityId() != null) {
             LoadContext<Entity> lc = new LoadContext<>(entityClass).setView(View.MINIMAL);
             String pkName = referenceToEntitySupport.getPrimaryKeyForLoadingEntity(metaClass);
             lc.setQueryString(format("select e from %s e where e.%s = :entityId", metaClass.getName(), pkName))
                     .setParameter("entityId", attribute.getObjectDefaultEntityId());
-
             Entity entity = dataManager.load(lc);
             if (entity != null) {
                 defaultEntityField.setValue(entity);
@@ -674,6 +710,7 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
 
     @Override
     public boolean preCommit() {
+        CategoryAttribute attribute = getItem();
         Collection<ScreenAndComponent> screens = screensDs.getItems();
         StringBuilder stringBuilder = new StringBuilder();
         for (ScreenAndComponent screenAndComponent : screens) {
@@ -706,6 +743,7 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
 
     @Override
     public void postValidate(ValidationErrors errors) {
+        CategoryAttribute attribute = getItem();
         if (attribute.getDataType() == PropertyType.INTEGER
                 || attribute.getDataType() == PropertyType.DOUBLE
                 || attribute.getDataType() == PropertyType.DECIMAL) {
@@ -754,60 +792,7 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
         }
     }
 
-    @Override
-    protected void postInit() {
-        attribute = getItem();
-
-        Set<String> targetScreens = attribute.targetScreensSet();
-        for (String targetScreen : targetScreens) {
-            if (targetScreen.contains("#")) {
-                String[] split = targetScreen.split("#");
-                screensDs.addItem(new ScreenAndComponent(split[0], split[1]));
-            } else {
-                screensDs.addItem(new ScreenAndComponent(targetScreen, null));
-            }
-        }
-
-        MetaClass categorizedEntityMetaClass = metadata.getClass(attribute.getCategory().getEntityType());
-        Map<String, String> optionsMap = categorizedEntityMetaClass != null ?
-                new HashMap<>(screensHelper.getAvailableScreens(categorizedEntityMetaClass.getJavaClass(), true)) :
-                new HashMap<>();
-
-        targetScreensTable.addGeneratedColumn(
-                "screen",
-                entity -> {
-                    LookupField<String> lookupField = uiComponents.create(LookupField.NAME);
-                    lookupField.setDatasource(targetScreensTable.getItemDatasource(entity), "screen");
-                    lookupField.setOptionsMap(optionsMap);
-                    lookupField.setNewOptionAllowed(true);
-                    //noinspection RedundantCast
-                    lookupField.setNewOptionHandler((Consumer<String>) caption -> {
-                        if (caption != null && !optionsMap.containsKey(caption)) {
-                            optionsMap.put(caption, caption);
-                            lookupField.setValue(caption);
-                        }
-                    });
-                    lookupField.setRequired(true);
-                    lookupField.setWidth("100%");
-                    return lookupField;
-                }
-        );
-
-        String enumeration = attribute.getEnumeration();
-        if (!Strings.isNullOrEmpty(enumeration)) {
-            Iterable<String> items = Splitter.on(",").omitEmptyStrings().split(enumeration);
-            enumerationListEditor.setValue(Lists.newArrayList(items));
-        }
-
-        if (localizedFrame != null) {
-            localizedFrame.setNamesValue(attribute.getLocaleNames());
-            localizedFrame.setDescriptionsValue(attribute.getLocaleDescriptions());
-        }
-
-        setupVisibility();
-    }
-
-    protected List<Suggestion> requestHint(SourceCodeEditor sender, String text, int senderCursorPosition) {
+    protected List<Suggestion> requestHint(SourceCodeEditor sender, int senderCursorPosition) {
         String joinStr = joinField.getValue();
         String whereStr = whereField.getValue();
 
@@ -815,13 +800,13 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
         String entityAlias = "a39";
 
         int queryPosition = -1;
-        Class javaClassForEntity = attribute.getJavaClassForEntity();
+        Class javaClassForEntity = getItem().getJavaClassForEntity();
         if (javaClassForEntity == null) {
             return new ArrayList<>();
         }
 
         MetaClass metaClass = metadata.getClassNN(javaClassForEntity);
-        String queryStart = String.format("select %s from %s %s ", entityAlias, metaClass.getName(), entityAlias);
+        String queryStart = format("select %s from %s %s ", entityAlias, metaClass.getName(), entityAlias);
 
         StringBuilder queryBuilder = new StringBuilder(queryStart);
         if (StringUtils.isNotEmpty(joinStr)) {
@@ -860,18 +845,16 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
     }
 
     @SuppressWarnings("unchecked")
-    protected void setupBigDecimalFormat() {
-
-        Datatype datatype = dynamicAttributesGuiTools.getCustomNumberDatatype(attribute);
-
+    protected void setupNumberFormat() {
+        Datatype datatype = dynamicAttributesGuiTools.getCustomNumberDatatype(getItem());
         if (datatype != null) {
-            defaultDecimalField.setDatatype(datatype);
-            minDecimalField.setDatatype(datatype);
-            maxDecimalField.setDatatype(datatype);
+            defaultDecimal.setDatatype(datatype);
+            minDecimal.setDatatype(datatype);
+            maxDecimal.setDatatype(datatype);
 
-            defaultDecimalField.setValue(defaultDecimalField.getValue());
-            minDecimalField.setValue(minDecimalField.getValue());
-            maxDecimalField.setValue(maxDecimalField.getValue());
+            defaultDecimal.setValue(defaultDecimal.getValue());
+            minDecimal.setValue(minDecimal.getValue());
+            maxDecimal.setValue(maxDecimal.getValue());
         }
     }
 

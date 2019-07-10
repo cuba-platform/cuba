@@ -26,7 +26,10 @@ import com.haulmont.cuba.core.global.DataManager;
 
 import javax.persistence.Transient;
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @MetaClass(name = "sys$CategoryAttributeConfiguration")
@@ -71,6 +74,12 @@ public class CategoryAttributeConfiguration extends BaseGenericIdEntity<String> 
 
     @MetaProperty
     protected String numberFormatPattern;
+
+    @MetaProperty
+    protected String optionsLoaderType;
+
+    @MetaProperty
+    protected String optionsLoaderScript;
 
     @MetaProperty
     protected String recalculationGroovyScript;
@@ -137,10 +146,14 @@ public class CategoryAttributeConfiguration extends BaseGenericIdEntity<String> 
     public Number getMinValue() {
         if (categoryAttribute.getDataType() != null) {
             switch (categoryAttribute.getDataType()) {
-                case INTEGER: return minInt;
-                case DOUBLE: return minDouble;
-                case DECIMAL: return minDecimal;
-                default: return null;
+                case INTEGER:
+                    return minInt;
+                case DOUBLE:
+                    return minDouble;
+                case DECIMAL:
+                    return minDecimal;
+                default:
+                    return null;
             }
         }
         return null;
@@ -149,10 +162,14 @@ public class CategoryAttributeConfiguration extends BaseGenericIdEntity<String> 
     public Number getMaxValue() {
         if (categoryAttribute.getDataType() != null) {
             switch (categoryAttribute.getDataType()) {
-                case INTEGER: return maxInt;
-                case DOUBLE: return maxDouble;
-                case DECIMAL: return maxDecimal;
-                default: return null;
+                case INTEGER:
+                    return maxInt;
+                case DOUBLE:
+                    return maxDouble;
+                case DECIMAL:
+                    return maxDecimal;
+                default:
+                    return null;
             }
         }
         return null;
@@ -216,7 +233,8 @@ public class CategoryAttributeConfiguration extends BaseGenericIdEntity<String> 
 
     public Collection<CategoryAttribute> getDependentCategoryAttributes() {
         if (dependentCategoryAttributes == null) {
-            dependentCategoryAttributes = getDynamicAttributesTools().getDependentCategoryAttributes(categoryAttribute);
+            DynamicAttributesTools dynamicAttributesTools = AppBeans.get(DynamicAttributesTools.NAME);
+            dependentCategoryAttributes = dynamicAttributesTools.getDependentCategoryAttributes(categoryAttribute);
         }
 
         return dependentCategoryAttributes;
@@ -228,7 +246,8 @@ public class CategoryAttributeConfiguration extends BaseGenericIdEntity<String> 
         }
 
         if (dependsOnCategoryAttributes == null) {
-            dependsOnCategoryAttributes = getDataManager().load(CategoryAttribute.class)
+            DataManager dataManager = AppBeans.get(DataManager.class);
+            dependsOnCategoryAttributes = dataManager.load(CategoryAttribute.class)
                     .ids(dependsOnCategoryAttributesIds)
                     .list();
         }
@@ -254,6 +273,26 @@ public class CategoryAttributeConfiguration extends BaseGenericIdEntity<String> 
         return !Strings.isNullOrEmpty(recalculationGroovyScript);
     }
 
+    public CategoryAttributeOptionsLoaderType getOptionsLoaderType() {
+        return CategoryAttributeOptionsLoaderType.fromId(optionsLoaderType);
+    }
+
+    public void setOptionsLoaderType(CategoryAttributeOptionsLoaderType optionsLoaderType) {
+        this.optionsLoaderType = optionsLoaderType == null ? null : optionsLoaderType.getId();
+    }
+
+    public String getOptionsLoaderScript() {
+        return optionsLoaderScript;
+    }
+
+    public void setOptionsLoaderScript(String optionsLoaderScript) {
+        this.optionsLoaderScript = optionsLoaderScript;
+    }
+
+    public boolean hasOptionsLoader() {
+        return getOptionsLoaderType() != null && !Strings.isNullOrEmpty(getOptionsLoaderScript());
+    }
+
     @Override
     public void setId(String id) {
         this.id = id;
@@ -265,13 +304,5 @@ public class CategoryAttributeConfiguration extends BaseGenericIdEntity<String> 
             return categoryAttribute.getId().toString() + "-Configuration";
         }
         return id;
-    }
-
-    private DataManager getDataManager() {
-        return AppBeans.get(DataManager.NAME);
-    }
-
-    private DynamicAttributesTools getDynamicAttributesTools() {
-        return AppBeans.get(DynamicAttributesTools.NAME);
     }
 }

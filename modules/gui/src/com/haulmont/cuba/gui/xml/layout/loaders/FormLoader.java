@@ -29,6 +29,7 @@ import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.data.HasValueSource;
+import com.haulmont.cuba.gui.components.data.ValueSource;
 import com.haulmont.cuba.gui.components.data.ValueSourceProvider;
 import com.haulmont.cuba.gui.components.data.meta.EntityValueSource;
 import com.haulmont.cuba.gui.components.data.options.ContainerOptions;
@@ -287,12 +288,15 @@ public class FormLoader extends AbstractComponentLoader<Form> {
                 for (CategoryAttribute attribute : attributesToShow) {
                     String code = DynamicAttributesUtils.encodeAttributeCode(attribute.getCode());
 
+                    ValueSource<?> valueSource = provider.getValueSource(code);
+
                     Component dynamicAttrComponent;
                     if (Boolean.TRUE.equals(attribute.getIsCollection())) {
                         dynamicAttrComponent = getDynamicAttributesComponentsGenerator()
                                 .generateComponent(provider.getValueSource(code), attribute);
                     } else {
                         ComponentGenerationContext context = new ComponentGenerationContext(metaClass, code);
+                        context.setValueSource(valueSource);
                         dynamicAttrComponent = getUiComponentsGenerator().generate(context);
                     }
 
@@ -300,19 +304,23 @@ public class FormLoader extends AbstractComponentLoader<Form> {
                         ((Component.HasCaption) dynamicAttrComponent).setCaption(attribute.getLocaleName());
                         ((Component.HasCaption) dynamicAttrComponent).setDescription(attribute.getLocaleDescription());
                     }
+
                     if (dynamicAttrComponent instanceof HasValueSource) {
                         //noinspection unchecked
-                        ((HasValueSource) dynamicAttrComponent).setValueSource(provider.getValueSource(code));
+                        ((HasValueSource) dynamicAttrComponent).setValueSource(valueSource);
                     }
+
                     if (dynamicAttrComponent instanceof Component.Editable
                             && Boolean.TRUE.equals(attribute.getConfiguration().isReadOnly())) {
                         ((Component.Editable) dynamicAttrComponent).setEditable(false);
                     }
+
                     if (dynamicAttrComponent instanceof Field) {
                         ((Field) dynamicAttrComponent).setRequired(attribute.getRequired());
                         ((Field) dynamicAttrComponent).setRequiredMessage(getMessages()
                                 .formatMainMessage("validation.required.defaultMsg", attribute.getLocaleName()));
                     }
+
                     String defaultWidth =
                             Strings.isNullOrEmpty(attribute.getWidth())
                                     ? columnWidth : attribute.getWidth();
