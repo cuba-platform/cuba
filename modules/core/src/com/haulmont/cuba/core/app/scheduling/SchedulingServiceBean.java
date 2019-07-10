@@ -26,6 +26,9 @@ import com.haulmont.cuba.core.app.ClusterManagerAPI;
 import com.haulmont.cuba.core.app.SchedulingService;
 import com.haulmont.cuba.core.app.scheduled.MethodInfo;
 import com.haulmont.cuba.core.entity.ScheduledTask;
+import com.haulmont.cuba.core.global.DataManager;
+import com.haulmont.cuba.core.global.LoadContext;
+import com.haulmont.cuba.core.global.QueryUtils;
 import com.haulmont.cuba.security.entity.User;
 import org.springframework.stereotype.Service;
 
@@ -49,6 +52,9 @@ public class SchedulingServiceBean implements SchedulingService {
     protected SchedulingBeansMetadata schedulingBeansMetadata;
 
     private ClusterManagerAPI clusterManager;
+
+    @Inject
+    protected DataManager dataManager;
 
     @Inject
     public void setClusterManager(ClusterManagerAPI clusterManager) {
@@ -82,6 +88,31 @@ public class SchedulingServiceBean implements SchedulingService {
         } finally {
             tx.end();
         }
+
+        return result;
+    }
+
+    @Override
+    public User getUserByLogin(String login) {
+        User result;
+
+        result = dataManager.load(LoadContext.create(User.class).setQuery(
+                LoadContext.createQuery("select u from sec$User u where u.login = :login")
+                        .setParameter("login", login))
+                .setView("scheduling"));
+
+        return result;
+    }
+
+    @Override
+    public List<User> searchUsersByLogin(String searchString) {
+        List<User> result;
+
+        searchString = QueryUtils.escapeForLike(searchString);
+        result = dataManager.loadList(LoadContext.create(User.class).setQuery(
+                LoadContext.createQuery("select u from sec$User u where u.login like :login")
+                        .setParameter("login", "%" + searchString + "%"))
+                .setView("scheduling"));
 
         return result;
     }

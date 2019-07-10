@@ -89,6 +89,8 @@
         <property name="changePasswordAtNextLogon"/>
     </view>
 
+    <view class="com.haulmont.cuba.security.entity.User" name="scheduling" extends="_minimal"/>
+
     <view class="com.haulmont.cuba.security.entity.UserSubstitution" name="user.edit">
         <property name="substitutedUser">
             <property name="login"/>
