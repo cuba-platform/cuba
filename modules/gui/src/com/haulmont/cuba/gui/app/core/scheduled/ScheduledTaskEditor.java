@@ -28,6 +28,7 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
+import com.haulmont.cuba.security.entity.User;
 import org.apache.commons.lang.StringUtils;
 
 import javax.inject.Inject;
@@ -42,7 +43,7 @@ public class ScheduledTaskEditor extends AbstractEditor<ScheduledTask> {
     protected LookupField methodNameField;
 
     @Inject
-    protected LookupField userNameField;
+    protected SuggestionPickerField userNameField;
 
     @Inject
     protected OptionsGroup definedByField;
@@ -205,7 +206,8 @@ public class ScheduledTaskEditor extends AbstractEditor<ScheduledTask> {
             taskDs.getItem().updateMethodParameters(methodParams);
         });
 
-        userNameField.setOptionsList(service.getAvailableUsers());
+        userNameField.addValueChangeListener(e -> taskDs.getItem().setUserName(((User) e.getValue()).getLogin()));
+        userNameField.setSearchExecutor((searchString, searchParams) -> service.searchUsersByLogin(searchString));
 
         logFinishField.addValueChangeListener(e -> {
             if (Boolean.TRUE.equals(e.getValue())) {
@@ -242,6 +244,10 @@ public class ScheduledTaskEditor extends AbstractEditor<ScheduledTask> {
 
         if (StringUtils.isNotEmpty(getItem().getMethodName())) {
             setInitialMethodNameValue(getItem());
+        }
+
+        if (StringUtils.isNotEmpty(getItem().getUserName())) {
+            userNameField.setValue(service.getUserByLogin(getItem().getUserName()));
         }
     }
 
