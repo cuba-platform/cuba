@@ -315,7 +315,7 @@ public interface Component {
      * {@code internalComponentClass}.
      * Example:
      * <pre>
-     * textField.withUnwrapped(com.vaadin.ui.TextField.class, vTextField -> {
+     * textField.withUnwrapped(com.vaadin.ui.TextField.class, vTextField -&gt; {
      *     // do something
      * });
      * </pre>
@@ -365,7 +365,7 @@ public interface Component {
      * <br>
      * Example:
      * <pre>
-     * table.withUnwrappedComposition(com.vaadin.ui.Layout.class, vLayout -> {
+     * table.withUnwrappedComposition(com.vaadin.ui.Layout.class, vLayout -&gt; {
      *     // do something
      * });
      * </pre>
