@@ -73,7 +73,7 @@
                     </row>
                     <row>
                         <label value="msg://com.haulmont.cuba.core.entity/ScheduledTask.userName" align="MIDDLE_LEFT"/>
-                        <lookupField id="userNameField" datasource="taskDs" property="userName" width="${fieldWidth}"/>
+                        <suggestionPickerField id="userNameField" metaClass="sec$User" minSearchStringLength="1" width="${fieldWidth}"/>
                     </row>
                     <row>
                         <label value="msg://com.haulmont.cuba.core.entity/ScheduledTask.singleton" align="MIDDLE_LEFT"/>

@@ -20,6 +20,7 @@ package com.haulmont.cuba.core.app;
 import com.haulmont.cuba.core.app.scheduled.MethodInfo;
 import com.haulmont.cuba.core.entity.ScheduledTask;
 import com.haulmont.cuba.core.global.RunTaskOnceException;
+import com.haulmont.cuba.security.entity.User;
 
 import java.util.List;
 import java.util.Map;
@@ -27,8 +28,6 @@ import java.util.Set;
 
 /**
  * Service interface to control {@link com.haulmont.cuba.core.entity.ScheduledTask}s configuration and execution.
- *
- *
  */
 public interface SchedulingService {
 
@@ -41,10 +40,20 @@ public interface SchedulingService {
     Map<String, List<MethodInfo>> getAvailableBeans();
 
     /**
-     * Return a list of user login names that can be used by scheduled tasks.
-     * @return  list of user login names
+     * Return a user by user login name.
+     *
+     * @param login user login name
+     * @return user
      */
-    List<String> getAvailableUsers();
+    User getUserByLogin(String login);
+
+    /**
+     * Return a list of users filtered by login using LIKE clause.
+     *
+     * @param searchString login string
+     * @return  list of users
+     */
+    List<User> searchUsersByLogin(String searchString);
 
     /**
      * Activate/deactivate scheduling for all servers in the cluster.
