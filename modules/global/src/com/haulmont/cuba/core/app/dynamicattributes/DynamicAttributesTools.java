@@ -44,6 +44,9 @@ public class DynamicAttributesTools {
     @Inject
     protected MetadataTools metadataTools;
 
+    @Inject
+    protected AttributeOptionsLoader attributeOptionsLoader;
+
     /**
      * Get special meta property path object for dynamic attribute by code
      */
@@ -138,5 +141,9 @@ public class DynamicAttributesTools {
         }
 
         return dependentAttributes;
+    }
+
+    public AttributeOptionsLoader getOptionsLoader() {
+        return attributeOptionsLoader;
     }
 }
