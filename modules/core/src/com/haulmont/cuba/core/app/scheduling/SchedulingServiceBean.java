@@ -19,19 +19,20 @@ package com.haulmont.cuba.core.app.scheduling;
 
 import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Persistence;
-import com.haulmont.cuba.core.Query;
 import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.app.ClusterListenerAdapter;
 import com.haulmont.cuba.core.app.ClusterManagerAPI;
 import com.haulmont.cuba.core.app.SchedulingService;
 import com.haulmont.cuba.core.app.scheduled.MethodInfo;
 import com.haulmont.cuba.core.entity.ScheduledTask;
+import com.haulmont.cuba.core.global.DataManager;
+import com.haulmont.cuba.core.global.LoadContext;
+import com.haulmont.cuba.core.global.QueryUtils;
 import com.haulmont.cuba.security.entity.User;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -51,6 +52,9 @@ public class SchedulingServiceBean implements SchedulingService {
     private ClusterManagerAPI clusterManager;
 
     @Inject
+    protected DataManager dataManager;
+
+    @Inject
     public void setClusterManager(ClusterManagerAPI clusterManager) {
         this.clusterManager = clusterManager;
         clusterManager.addListener(SetSchedulingActiveMsg.class, new ClusterListenerAdapter<SetSchedulingActiveMsg>() {
@@ -67,21 +71,26 @@ public class SchedulingServiceBean implements SchedulingService {
     }
 
     @Override
-    public List<String> getAvailableUsers() {
-        List<String> result = new ArrayList<>();
+    public User getUserByLogin(String login) {
+        User result;
 
-        Transaction tx = persistence.createTransaction();
-        try {
-            EntityManager em = persistence.getEntityManager();
-            Query query = em.createQuery("select u from sec$User u");
-            List<User> userList = query.getResultList();
-            for (User user : userList) {
-                result.add(user.getLogin());
-            }
-            tx.commit();
-        } finally {
-            tx.end();
-        }
+        result = dataManager.load(LoadContext.create(User.class).setQuery(
+                LoadContext.createQuery("select u from sec$User u where u.login = :login")
+                        .setParameter("login", login))
+                .setView("scheduling"));
+
+        return result;
+    }
+
+    @Override
+    public List<User> searchUsersByLogin(String searchString) {
+        List<User> result;
+
+        searchString = QueryUtils.escapeForLike(searchString);
+        result = dataManager.loadList(LoadContext.create(User.class).setQuery(
+                LoadContext.createQuery("select u from sec$User u where u.login like :login")
+                        .setParameter("login", "%" + searchString + "%"))
+                .setView("scheduling"));
 
         return result;
     }
