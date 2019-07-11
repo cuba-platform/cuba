@@ -457,14 +457,14 @@ case_expression
 general_case_expression
     : CASE when_clause (when_clause)* ELSE scalar_expression END;
 when_clause
-    : WHEN conditional_expression THEN scalar_expression;
+    : WHEN conditional_expression THEN (scalar_expression | 'NULL');
 simple_case_expression
-    : CASE case_operand simple_when_clause (simple_when_clause)* ELSE scalar_expression END;
+    : CASE case_operand simple_when_clause (simple_when_clause)* ELSE (scalar_expression | 'NULL') END;
 case_operand
     : path_expression
     | type_discriminator;
 simple_when_clause
-    : WHEN scalar_expression THEN scalar_expression;
+    : WHEN scalar_expression THEN (scalar_expression | 'NULL');
 coalesce_expression
     : 'COALESCE('scalar_expression (',' scalar_expression)+')';
 nullif_expression
