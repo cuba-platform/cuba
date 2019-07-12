@@ -239,4 +239,11 @@ public interface GlobalConfig extends Config {
     @Factory(factory = CommaSeparatedStringListTypeFactory.class)
     @Stringify(stringify = CommaSeparatedStringListStringify.class)
     List<String> getDisableEscapingLikeForDataStores();
+
+    /**
+     * @return max recalculation level for dynamic attributes
+     */
+    @Property("cuba.dynamicAttributes.maxRecalculationLevel")
+    @DefaultInt(10)
+    int getMaxRecalculationLevel();
 }

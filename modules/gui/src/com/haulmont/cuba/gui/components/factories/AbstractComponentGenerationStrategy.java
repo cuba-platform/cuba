@@ -68,78 +68,101 @@ public abstract class AbstractComponentGenerationStrategy implements ComponentGe
     protected Component createComponentInternal(ComponentGenerationContext context) {
         MetaClass metaClass = context.getMetaClass();
         MetaPropertyPath mpp = resolveMetaPropertyPath(metaClass, context.getProperty());
-        Element xmlDescriptor = context.getXmlDescriptor();
 
         if (mpp == null) {
             return null;
         }
 
         Range mppRange = mpp.getRange();
+        Component resultComponent = null;
+
         if (mppRange.isDatatype()) {
-            Class type = mppRange.asDatatype().getJavaClass();
-
-            MetaProperty metaProperty = mpp.getMetaProperty();
-            if (DynamicAttributesUtils.isDynamicAttribute(metaProperty)) {
-                CategoryAttribute categoryAttribute = DynamicAttributesUtils.getCategoryAttribute(metaProperty);
-                if (categoryAttribute != null && categoryAttribute.getDataType() == PropertyType.ENUMERATION
-                    && BooleanUtils.isNotTrue(categoryAttribute.getIsCollection())) {
-                    return createEnumField(context);
-                }
-            }
-
-            if (xmlDescriptor != null
-                    && "true".equalsIgnoreCase(xmlDescriptor.attributeValue("link"))) {
-                return createDatatypeLinkField(context);
-            }
-
-            boolean hasMaskAttribute = xmlDescriptor != null
-                    && xmlDescriptor.attribute("mask") != null;
-
-            if (type.equals(String.class)) {
-                return hasMaskAttribute
-                        ? createMaskedField(context)
-                        : createStringField(context, mpp);
-            } else if (type.equals(UUID.class)) {
-                return createUuidField(context);
-            } else if (type.equals(Boolean.class)) {
-                return createBooleanField(context);
-            } else if (type.equals(java.sql.Date.class)
-                    || type.equals(Date.class)
-                    || type.equals(LocalDate.class)
-                    || type.equals(LocalDateTime.class)
-                    || type.equals(OffsetDateTime.class)) {
-                return createDateField(context);
-            } else if (type.equals(Time.class)
-                    || type.equals(LocalTime.class)
-                    || type.equals(OffsetTime.class)) {
-                return createTimeField(context);
-            } else if (Number.class.isAssignableFrom(type)) {
-                if (hasMaskAttribute) {
-                    return createMaskedField(context);
-                }
-
-                Field currencyField = createCurrencyField(context, mpp);
-                if (currencyField != null) {
-                    return currencyField;
-                }
-
-                return createNumberField(context, type);
-            }
+            resultComponent = createDatatypeComponentInternal(context, mpp);
         } else if (mppRange.isClass()) {
-            MetaProperty metaProperty = mpp.getMetaProperty();
-            Class<?> javaType = metaProperty.getJavaType();
-
-            if (FileDescriptor.class.isAssignableFrom(javaType)) {
-                return createFileUploadField(context);
-            }
-
-            if (!Collection.class.isAssignableFrom(javaType)) {
-                return createEntityField(context, mpp);
-            }
+            resultComponent = createClassComponentInternal(context, mpp);
         } else if (mppRange.isEnum()) {
-            return createEnumField(context);
+            resultComponent = createEnumField(context);
         }
 
+        if (resultComponent instanceof HasValue) {
+            setValueChangedListeners((HasValue) resultComponent, context);
+        }
+
+        if (resultComponent instanceof Component.Editable) {
+            setEditable((Component.Editable) resultComponent, context);
+        }
+
+        return resultComponent;
+    }
+
+    protected Component createClassComponentInternal(ComponentGenerationContext context, MetaPropertyPath mpp) {
+        MetaProperty metaProperty = mpp.getMetaProperty();
+        Class<?> javaType = metaProperty.getJavaType();
+
+        if (FileDescriptor.class.isAssignableFrom(javaType)) {
+            return createFileUploadField(context);
+        }
+
+        if (!Collection.class.isAssignableFrom(javaType)) {
+            return createEntityField(context, mpp);
+        }
+
+        return null;
+    }
+
+    protected Component createDatatypeComponentInternal(ComponentGenerationContext context, MetaPropertyPath mpp) {
+        Range mppRange = mpp.getRange();
+        Element xmlDescriptor = context.getXmlDescriptor();
+
+        Class type = mppRange.asDatatype().getJavaClass();
+
+        MetaProperty metaProperty = mpp.getMetaProperty();
+        if (DynamicAttributesUtils.isDynamicAttribute(metaProperty)) {
+            CategoryAttribute categoryAttribute = DynamicAttributesUtils.getCategoryAttribute(metaProperty);
+            if (categoryAttribute != null && categoryAttribute.getDataType() == PropertyType.ENUMERATION
+                    && BooleanUtils.isNotTrue(categoryAttribute.getIsCollection())) {
+                return createEnumField(context);
+            }
+        }
+
+        if (xmlDescriptor != null
+                && "true".equalsIgnoreCase(xmlDescriptor.attributeValue("link"))) {
+            return createDatatypeLinkField(context);
+        }
+
+        boolean hasMaskAttribute = xmlDescriptor != null
+                && xmlDescriptor.attribute("mask") != null;
+
+        if (type.equals(String.class)) {
+            return hasMaskAttribute
+                    ? createMaskedField(context)
+                    : createStringField(context, mpp);
+        } else if (type.equals(UUID.class)) {
+            return createUuidField(context);
+        } else if (type.equals(Boolean.class)) {
+            return createBooleanField(context);
+        } else if (type.equals(java.sql.Date.class)
+                || type.equals(Date.class)
+                || type.equals(LocalDate.class)
+                || type.equals(LocalDateTime.class)
+                || type.equals(OffsetDateTime.class)) {
+            return createDateField(context);
+        } else if (type.equals(Time.class)
+                || type.equals(LocalTime.class)
+                || type.equals(OffsetTime.class)) {
+            return createTimeField(context);
+        } else if (Number.class.isAssignableFrom(type)) {
+            if (hasMaskAttribute) {
+                return createMaskedField(context);
+            }
+
+            Field currencyField = createCurrencyField(context, mpp);
+            if (currencyField != null) {
+                return currencyField;
+            }
+
+            return createNumberField(context);
+        }
         return null;
     }
 
@@ -282,10 +305,10 @@ public abstract class AbstractComponentGenerationStrategy implements ComponentGe
         return timeField;
     }
 
-    protected Field createNumberField(ComponentGenerationContext context, Class<?> type) {
+    protected Field createNumberField(ComponentGenerationContext context) {
         TextField component = uiComponents.create(TextField.class);
         setValidators(component, context);
-        setCustomDataType(component, context, type);
+        setCustomDataType(component, context);
         setValueSource(component, context);
 
         return component;
@@ -451,13 +474,37 @@ public abstract class AbstractComponentGenerationStrategy implements ComponentGe
         }
     }
 
-    protected void setCustomDataType(TextField field, ComponentGenerationContext context, Class<?> type) {
+    protected void setCustomDataType(TextField field, ComponentGenerationContext context) {
         CategoryAttribute categoryAttribute = getCategoryAttribute(context);
         Datatype datatype = getDynamicAttributesGuiTools().getCustomNumberDatatype(categoryAttribute);
 
         if (datatype != null) {
             //noinspection unchecked
             field.setDatatype(datatype);
+        }
+    }
+
+    protected void setValueChangedListeners(HasValue component, ComponentGenerationContext context) {
+
+        CategoryAttribute attribute = getCategoryAttribute(context);
+        if (attribute == null) {
+            return;
+        }
+        Consumer<HasValue.ValueChangeEvent> valueChangedListener = getDynamicAttributesGuiTools()
+                .getValueChangeEventListener(attribute);
+
+        if (valueChangedListener != null) {
+            //noinspection unchecked
+            component.addValueChangeListener(valueChangedListener);
+        }
+    }
+
+    protected void setEditable(Component.Editable component, ComponentGenerationContext context) {
+        CategoryAttribute attribute = getCategoryAttribute(context);
+
+        if (attribute != null
+                && Boolean.TRUE.equals(attribute.getConfiguration().isReadOnly())) {
+            component.setEditable(false);
         }
     }
 
