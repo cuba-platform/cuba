@@ -24,4 +24,14 @@ import com.haulmont.cuba.gui.components.Component;
 public interface UserActionsButton extends Component.BelongToFrame, Component.HasIcon, Component.HasCaption {
 
     String NAME = "userActionsButton";
+
+    /**
+     * Sets custom login handler.
+     */
+    void setLoginHandler(Runnable loginHandler);
+
+    /**
+     * Sets custom logout handler.
+     */
+    void setLogoutHandler(Runnable logoutHandler);
 }

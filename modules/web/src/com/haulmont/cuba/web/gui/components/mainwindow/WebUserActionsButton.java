@@ -46,6 +46,9 @@ public class WebUserActionsButton extends WebAbstractComponent<CubaMenuBar>
     protected Messages messages;
     protected Security security;
 
+    protected Runnable loginHandler;
+    protected Runnable logoutHandler;
+
     public WebUserActionsButton() {
         component = new CubaMenuBar();
         component.addStyleName(USERACTIONS_BUTTON_STYLENAME);
@@ -79,6 +82,16 @@ public class WebUserActionsButton extends WebAbstractComponent<CubaMenuBar>
         this.security = security;
     }
 
+    @Override
+    public void setLoginHandler(Runnable loginHandler) {
+        this.loginHandler = loginHandler;
+    }
+
+    @Override
+    public void setLogoutHandler(Runnable logoutHandler) {
+        this.logoutHandler = logoutHandler;
+    }
+
     protected void initComponent(AppUI ui) {
         boolean authenticated = ui.hasAuthenticatedSession();
 
@@ -87,7 +100,13 @@ public class WebUserActionsButton extends WebAbstractComponent<CubaMenuBar>
     }
 
     protected void initLoginButton(boolean authenticated) {
-        MenuBar.MenuItem loginButton = component.addItem("", item -> login());
+        MenuBar.MenuItem loginButton = component.addItem("", item -> {
+            if (loginHandler != null) {
+                loginHandler.run();
+            } else {
+                defaultLogin();
+            }
+        });
         loginButton.setDescription(messages.getMainMessage("loginBtnDescription"));
         loginButton.setIcon(getIconResource(CubaIcon.SIGN_IN));
         loginButton.setVisible(!authenticated);
@@ -105,14 +124,20 @@ public class WebUserActionsButton extends WebAbstractComponent<CubaMenuBar>
         }
 
         userMenuButton.addItem(messages.getMainMessage("logoutBtnDescription"),
-                getIconResource(CubaIcon.SIGN_OUT), item -> logout());
+                getIconResource(CubaIcon.SIGN_OUT), item -> {
+                    if (logoutHandler != null) {
+                        logoutHandler.run();
+                    } else {
+                        defaultLogout();
+                    }
+                });
     }
 
     protected Resource getIconResource(Icons.Icon icon) {
         return iconResolver.getIconResource(icons.get(icon));
     }
 
-    protected void login() {
+    protected void defaultLogin() {
         AppUI ui = ((AppUI) component.getUI());
         if (ui == null) {
             throw new IllegalStateException("Logout button is not attached to UI");
@@ -127,7 +152,7 @@ public class WebUserActionsButton extends WebAbstractComponent<CubaMenuBar>
         loginScreen.show();
     }
 
-    protected void logout() {
+    protected void defaultLogout() {
         AppUI ui = ((AppUI) component.getUI());
         if (ui == null) {
             throw new IllegalStateException("Logout button is not attached to UI");
