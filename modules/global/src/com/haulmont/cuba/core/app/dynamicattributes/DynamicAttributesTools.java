@@ -20,15 +20,14 @@ import com.google.common.base.Joiner;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.global.MetadataTools;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
-import java.util.Collection;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils.decodeAttributeCode;
@@ -97,5 +96,47 @@ public class DynamicAttributesTools {
             }
         }
         return metadataTools.format(value, metaProperty);
+    }
+
+    /**
+     * Returns all independent (that does not have any 'depends on' attributes) dynamic attributes for given entity.
+     */
+    public Collection<CategoryAttribute> getIndependentCategoryAttributes(BaseGenericIdEntity entity) {
+        Collection<CategoryAttribute> attributes = dynamicAttributes.getAttributesForMetaClass(entity.getMetaClass());
+
+        if (attributes == null || attributes.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        Set<CategoryAttribute> independentAttributes = new HashSet<>();
+
+        for (CategoryAttribute attribute : attributes) {
+            if (attribute.getConfiguration().getDependsOnCategoryAttributes().isEmpty()) {
+                independentAttributes.add(attribute);
+            }
+        }
+
+        return independentAttributes;
+    }
+
+    /**
+     * Returns collection of dependent attributes for given category attribute.
+     */
+    public Collection<CategoryAttribute> getDependentCategoryAttributes(CategoryAttribute attribute) {
+        Collection<CategoryAttribute> attributes = attribute.getCategory().getCategoryAttrs();
+
+        if (attributes == null || attributes.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        Set<CategoryAttribute> dependentAttributes = new HashSet<>();
+
+        for (CategoryAttribute attr : attributes) {
+            if (attr.getConfiguration().getDependsOnCategoryAttributes().contains(attribute)) {
+                dependentAttributes.add(attr);
+            }
+        }
+
+        return dependentAttributes;
     }
 }

@@ -64,6 +64,7 @@ import org.apache.commons.text.TextStringBuilder;
 import org.dom4j.Element;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.function.Consumer;
@@ -132,6 +133,9 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
 
     @Inject
     protected FieldGroup columnSettingsFieldGroup;
+
+    @Inject
+    protected FieldGroup recalculationSettingsFieldGroup;
 
     protected LookupField<PropertyType> dataTypeField;
     protected LookupField<String> screenField;
@@ -202,9 +206,13 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
     protected SourceCodeEditor joinField;
     protected SourceCodeEditor whereField;
 
-    protected HBoxLayout hBoxLayoutField;
+    protected HBoxLayout validatorHBoxLayoutField;
     protected SourceCodeEditor validatorGroovyScriptField;
     protected LinkButton validatorHelpLinkBtn;
+
+    @Named("recalculationSettingsFieldGroup.recalculationGroovyScript")
+    protected SourceCodeEditor recalculationGroovyScriptField;
+    protected ListEditor<CategoryAttribute> dependsOnAttributesField;
 
     protected TextField defaultDecimalField;
     protected TextField minDecimalField;
@@ -222,6 +230,7 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
         initLocalizedFrame();
         initFieldGroup();
         initColumnSettingsFieldGroup();
+        initRecalculationSettingsFieldGroup();
 
         Action createAction = initCreateScreenAndComponentAction();
         targetScreensTable.addAction(createAction);
@@ -237,6 +246,8 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
         maxDecimalField = (TextField) attributeFieldGroup.getFieldNN("configuration.maxDecimal").getComponentNN();
 
         setupBigDecimalFormat();
+
+        dependsOnAttributesField.setOptionsList(getCategoryAttributesOptionsLists());
     }
 
     protected Action initCreateScreenAndComponentAction() {
@@ -470,12 +481,12 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
                             .modal(false)
                             .width(560f)));
 
-            hBoxLayoutField = uiComponents.create(HBoxLayout.class);
-            hBoxLayoutField.setWidthFull();
-            hBoxLayoutField.add(validatorGroovyScriptField, validatorHelpLinkBtn);
-            hBoxLayoutField.expand(validatorGroovyScriptField);
+            validatorHBoxLayoutField = uiComponents.create(HBoxLayout.class);
+            validatorHBoxLayoutField.setWidthFull();
+            validatorHBoxLayoutField.add(validatorGroovyScriptField, validatorHelpLinkBtn);
+            validatorHBoxLayoutField.expand(validatorGroovyScriptField);
 
-            return hBoxLayoutField;
+            return validatorHBoxLayoutField;
         });
     }
 
@@ -495,6 +506,25 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
 
             return columnAlignmentField;
         });
+    }
+
+    protected void initRecalculationSettingsFieldGroup() {
+        recalculationGroovyScriptField.setHeight(themeConstants.get("cuba.gui.AttributeEditor.recalculationGroovyScriptField.height"));
+        recalculationGroovyScriptField.setContextHelpIconClickHandler(e ->
+                showMessageDialog(getMessage("recalculationScript"), getMessage("recalculationScriptHelp"),
+                    MessageType.CONFIRMATION_HTML
+                            .modal(false)
+                            .width(560f)));
+
+        dependsOnAttributesField = uiComponents.create(ListEditor.NAME);
+        dependsOnAttributesField.setDatasource(configurationDs, "dependsOnCategoryAttributes");
+        dependsOnAttributesField.setWidth(fieldWidth);
+        dependsOnAttributesField.setFrame(frame);
+        dependsOnAttributesField.setItemType(ListEditor.ItemType.ENTITY);
+        dependsOnAttributesField.setEntityName("sys$CategoryAttribute");
+
+        recalculationSettingsFieldGroup.getField("configuration.dependsOnCategoryAttributes")
+                .setComponent(dependsOnAttributesField);
     }
 
     public void openConstraintWizard() {
@@ -843,5 +873,11 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
             minDecimalField.setValue(minDecimalField.getValue());
             maxDecimalField.setValue(maxDecimalField.getValue());
         }
+    }
+
+    protected List<CategoryAttribute> getCategoryAttributesOptionsLists() {
+        List<CategoryAttribute> optionsList = new ArrayList<>(attributeDs.getItem().getCategory().getCategoryAttrs());
+        optionsList.remove(attributeDs.getItem());
+        return optionsList;
     }
 }

@@ -304,6 +304,10 @@ public class FormLoader extends AbstractComponentLoader<Form> {
                         //noinspection unchecked
                         ((HasValueSource) dynamicAttrComponent).setValueSource(provider.getValueSource(code));
                     }
+                    if (dynamicAttrComponent instanceof Component.Editable
+                            && Boolean.TRUE.equals(attribute.getConfiguration().isReadOnly())) {
+                        ((Component.Editable) dynamicAttrComponent).setEditable(false);
+                    }
                     if (dynamicAttrComponent instanceof Field) {
                         ((Field) dynamicAttrComponent).setRequired(attribute.getRequired());
                         ((Field) dynamicAttrComponent).setRequiredMessage(getMessages()

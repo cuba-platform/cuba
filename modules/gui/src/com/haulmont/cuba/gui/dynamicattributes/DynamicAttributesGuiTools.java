@@ -25,6 +25,7 @@ import com.haulmont.chile.core.datatypes.DatatypeRegistry;
 import com.haulmont.chile.core.datatypes.impl.AdaptiveNumberDatatype;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributes;
+import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesRecalculationTools;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.app.dynamicattributes.PropertyType;
 import com.haulmont.cuba.core.entity.*;
@@ -32,13 +33,17 @@ import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.WindowParams;
 import com.haulmont.cuba.gui.commonlookup.CommonLookupController;
+import com.haulmont.cuba.gui.components.HasValue;
 import com.haulmont.cuba.gui.components.PickerField;
+import com.haulmont.cuba.gui.components.data.HasValueSource;
+import com.haulmont.cuba.gui.components.data.value.ContainerValueSource;
 import com.haulmont.cuba.gui.components.validation.*;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsBuilder;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
+import com.haulmont.cuba.gui.model.InstanceContainer;
 import com.haulmont.cuba.gui.sys.ScreensHelper;
 import com.haulmont.cuba.security.entity.EntityOp;
 import org.apache.commons.lang3.BooleanUtils;
@@ -87,6 +92,11 @@ public class DynamicAttributesGuiTools {
 
     @Inject
     protected UserSessionSource userSessionSource;
+
+    @Inject
+    protected DynamicAttributesRecalculationTools recalculationTools;
+
+    protected static final ThreadLocal<Boolean> recalculationInProgress = new ThreadLocal<>();
 
     /**
      * Enforce the datasource to change modified status if dynamic attribute is changed
@@ -353,6 +363,10 @@ public class DynamicAttributesGuiTools {
         }
     }
 
+    /**
+     * Returns validators for a dynamic attribute
+     * @return collection of validators
+     */
     public Collection<Consumer<?>> createValidators(CategoryAttribute attribute) {
         Collection<Consumer<?>> validators;
 
@@ -416,6 +430,9 @@ public class DynamicAttributesGuiTools {
         return validators;
     }
 
+    /**
+     * Returns custom DecimalFormat for dynamic attribute with specified {@code NumberFormatPattern}
+     */
     @Nullable
     public DecimalFormat getDecimalFormat(CategoryAttribute attribute) {
         if (attribute == null || attribute.getConfiguration().getNumberFormatPattern() == null) {
@@ -427,6 +444,9 @@ public class DynamicAttributesGuiTools {
         return new DecimalFormat(attribute.getConfiguration().getNumberFormatPattern(), symbols);
     }
 
+    /**
+     * Returns custom {@link AdaptiveNumberDatatype} for dynamic attribute with specified {@code NumberFormatPattern}
+     */
     @Nullable
     public Datatype getCustomNumberDatatype(CategoryAttribute attribute) {
         if (attribute == null
@@ -456,6 +476,9 @@ public class DynamicAttributesGuiTools {
         return datatype;
     }
 
+    /**
+     * Returns column capture for dynamic attribute
+     */
     public String getColumnCapture(CategoryAttribute attribute) {
         String caption;
         if (!Strings.isNullOrEmpty(attribute.getConfiguration().getColumnName())) {
@@ -466,5 +489,46 @@ public class DynamicAttributesGuiTools {
             caption = StringUtils.capitalize(attribute.getName());
         }
         return caption;
+    }
+
+    /**
+     * Returns {@code ValueChangeEventListener} for dynamic attribute that has one or more dependent attributes.
+     * This listener recalculates values for all dependent dynamic attributes hierarchically. The listener uses
+     * {@code recalculationInProgress} ThreadLocal variable to avoid unnecessary calculation.
+     */
+    @SuppressWarnings("unchecked")
+    public Consumer<HasValue.ValueChangeEvent> getValueChangeEventListener(final CategoryAttribute attribute) {
+        if (attribute.getConfiguration().getDependentCategoryAttributes() != null
+                && !attribute.getConfiguration().getDependentCategoryAttributes().isEmpty()) {
+
+            return valueChangeEvent -> {
+                if (Boolean.TRUE.equals(recalculationInProgress.get())) {
+                    return;
+                }
+                try {
+                    recalculationInProgress.set(true);
+
+                    com.haulmont.cuba.gui.components.Component component = valueChangeEvent.getComponent();
+                    if (component instanceof HasValueSource
+                            && ((HasValueSource) component).getValueSource() instanceof ContainerValueSource) {
+
+                        ContainerValueSource valueSource = (ContainerValueSource) ((HasValueSource) component).getValueSource();
+                        InstanceContainer container = valueSource.getContainer();
+
+                        if (container.getItem() instanceof BaseGenericIdEntity) {
+                            BaseGenericIdEntity entity = (BaseGenericIdEntity) container.getItem();
+                            String attributeCode = DynamicAttributesUtils.encodeAttributeCode(attribute.getCode());
+
+                            entity.setValue(attributeCode, valueChangeEvent.getValue());
+
+                            recalculationTools.recalculateDynamicAttributes(entity, attribute);
+                        }
+                    }
+                } finally {
+                    recalculationInProgress.remove();
+                }
+            };
+        }
+        return null;
     }
 }
