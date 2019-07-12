@@ -29,6 +29,7 @@ import com.vaadin.client.widget.grid.events.GridClickEvent;
 import com.vaadin.client.widget.grid.selection.SelectionModel;
 import com.vaadin.client.widgets.Escalator;
 import com.vaadin.client.widgets.Grid;
+import com.vaadin.shared.ui.grid.HeightMode;
 import elemental.events.Event;
 import elemental.json.JsonObject;
 
@@ -248,6 +249,18 @@ public class CubaGridWidget extends Grid<JsonObject> {
                     header.refreshRows(0, header.getRowCount());
                 }
             }
+        }
+
+        @Override
+        protected double recalculateHeightOfEscalator() {
+            double heightOfEscalator = super.recalculateHeightOfEscalator();
+            if (getHeightMode() == HeightMode.UNDEFINED) {
+                // In case of HeightMode.UNDEFINED we miss 1px, as the result:
+                // 1. if no rows then the Sidebar button is bigger than header row
+                // 2. if there are rows then the last row has the focus border cropped
+                heightOfEscalator += 1;
+            }
+            return heightOfEscalator;
         }
     }
 
