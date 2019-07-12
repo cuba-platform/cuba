@@ -342,9 +342,17 @@ $cuba-datagrid-highlight-hover-row: false !default;
 
   .#{$primary-stylename}-cell > div.component-wrap {
     display: flex;
-    align-items: center;
     box-sizing: border-box;
     height: 100%;
     width: 100%;
+
+    .v-checkbox,
+    .v-progressbar {
+      align-self: center;
+
+      &.v-has-height {
+        align-self: auto;
+      }
+    }
   }
 }
