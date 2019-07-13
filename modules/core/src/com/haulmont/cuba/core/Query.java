@@ -257,10 +257,11 @@ public interface Query {
     Query setFlushMode(FlushModeType flushMode);
 
     /**
-     * Set a query property or hint. The hints elements may be used
-     * to specify query properties and hints.
+     * Set a query property or hint.
+     * @see com.haulmont.cuba.core.global.QueryHints
+     *
      * @param hintName  name of property or hint
-     * @param value  value for the property or hint
+     * @param value  value of the property or hint
      * @return the same query instance
      */
     Query setHint(String hintName, Object value);
