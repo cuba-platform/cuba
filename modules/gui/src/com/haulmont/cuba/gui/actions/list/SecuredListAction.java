@@ -26,18 +26,7 @@ import com.haulmont.cuba.security.entity.ConstraintOperationType;
 import javax.inject.Inject;
 
 /**
- * Standard action that changes enabled property depending on selection of a bound {@link ListComponent}.
- * <br>
- * You can use fluent API to create instances of SecuredListAction and assign handlers to them:
- * <pre>{@code
- *     Action action = new SecuredListAction("moveToTrash")
- *             .withCaption("Move to trash")
- *             .withIcon("icons/trash.png")
- *             .withHandler(event -> {
- *                 // action logic here
- *             });
- *     docsTable.addAction(action);
- * }</pre>
+ * Action that changes its {@code enabled} property depending on a selected item in a bound {@link ListComponent}.
  */
 public abstract class SecuredListAction extends ListAction implements Action.HasSecurityConstraint {
 
