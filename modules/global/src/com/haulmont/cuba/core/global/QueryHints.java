@@ -17,22 +17,20 @@
 package com.haulmont.cuba.core.global;
 
 /**
- * The class defines CUBA query hints.
- * These query hints allow a JPA Query to be customized or optimized beyond
- * what is available in the JPA specification
- * <p>Query Hint Usage:
+ * Defines a set of CUBA query hints which enable customization of generated SQL statements.
  *
  * <p>Usage examples:
  * <pre>
  *     query.setHint(QueryHints.SQL_HINT, "OPTION(RECOMPILE)");
  *     query.setHint(QueryHints.MSSQL_RECOMPILE_HINT, true);
- * </pre>
+ * <pre/>
  */
 public interface QueryHints {
     /**
-     * Sets a SQL hint string into the query that will be generated into the SQL statement.
-     * A SQL hint can be used on certain database platforms to define how the query uses indexes
-     * and other such low level usages.
+     * Adds an SQL hint string after the SQL statement.
+     * <p>The SQL hint can be used on certain database platforms to define how the query uses indexes
+     * and other such low level usages. It should be the full hint string including the comment delimiters.
+     * <p>Corresponds to {@code org.eclipse.persistence.config.QueryHints#HINT}
      */
     String SQL_HINT = "sql.hint";
 

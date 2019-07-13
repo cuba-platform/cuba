@@ -238,14 +238,15 @@ public class LoadContext<E extends Entity> implements DataLoadContext, Serializa
     }
 
     /**
-     * @return custom hints which can be used later during query construction
+     * @return custom hints which are used by the query
      */
     public Map<String, Object> getHints() {
         return hints == null ? Collections.emptyMap() : Collections.unmodifiableMap(hints);
     }
 
     /**
-     * Sets custom hint that can be used later during query construction
+     * Sets custom hint that should be used by the query.
+     * @see com.haulmont.cuba.core.global.QueryHints
      */
     public LoadContext<E> setHint(String hintName, Object value) {
         if (hints == null) {
