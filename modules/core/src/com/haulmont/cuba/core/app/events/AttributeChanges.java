@@ -72,6 +72,15 @@ public class AttributeChanges {
      * If the attribute is not changed or does not exist at all, returns false.
      */
     public boolean isChanged(String attributeName) {
+        String[] embeddingStep = attributeName.split("\\.", 2);
+        if (embeddingStep.length > 1) {
+            String embeddedEntityName = embeddingStep[0];
+            String embeddedAttributeName = embeddingStep[1];
+            if (embeddedChanges.containsKey(embeddedEntityName)) {
+                return embeddedChanges.get(embeddedEntityName).isChanged(embeddedAttributeName);
+            }
+        }
+
         for (Change change : changes) {
             if (change.name.equals(attributeName))
                 return true;
