@@ -222,11 +222,11 @@ public class EntityInspectorEditor extends AbstractWindow {
 
     protected void initShortcuts() {
         Action commitAction = new BaseAction("commitAndClose")
-                    .withCaption(messages.getMainMessage("actions.OkClose"))
-                    .withShortcut(configuration.getConfig(ClientConfig.class).getCommitShortcut())
-                    .withHandler(e ->
-                            commitAndClose()
-                    );
+                .withCaption(messages.getMainMessage("actions.OkClose"))
+                .withShortcut(configuration.getConfig(ClientConfig.class).getCommitShortcut())
+                .withHandler(e ->
+                        commitAndClose()
+                );
         addAction(commitAction);
     }
 
@@ -393,7 +393,7 @@ public class EntityInspectorEditor extends AbstractWindow {
                             Entity propertyValue = item.getValue(metaProperty.getName());
                             addEmbeddedFieldGroup(metaProperty, "", propertyValue,
                                     (!metaProperty.getAnnotatedElement().isAnnotationPresent(javax.persistence.EmbeddedId.class)
-                                    || entityStates.isNew(item)));
+                                            || entityStates.isNew(item)));
                         } else {
                             addField(metaClass, metaProperty, item, fieldGroup, isRequired, true, isReadonly, customFields);
                         }
@@ -607,7 +607,13 @@ public class EntityInspectorEditor extends AbstractWindow {
         field.setCaption(getPropertyCaption(metaClass, metaProperty));
         field.setCustom(custom);
         field.setRequired(required);
-        field.setEditable(!readOnly);
+
+        if (metaProperty.getRange().isClass() && !metadata.getTools().isEmbedded(metaProperty)) {
+            field.setEditable(metadata.getTools().isOwningSide(metaProperty) && !readOnly);
+        } else {
+            field.setEditable(!readOnly);
+        }
+
         field.setWidth("400px");
 
         if (requireTextArea(metaProperty, item)) {
