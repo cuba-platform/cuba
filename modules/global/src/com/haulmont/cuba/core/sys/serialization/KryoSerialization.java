@@ -36,6 +36,9 @@ import com.haulmont.chile.core.model.impl.MetaPropertyImpl;
 import com.haulmont.cuba.core.entity.BaseEntityInternalAccess;
 import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.core.sys.AppContext;
 import de.javakaffee.kryoserializers.*;
 import de.javakaffee.kryoserializers.cglib.CGLibProxySerializer;
 import de.javakaffee.kryoserializers.guava.ImmutableListSerializer;
@@ -43,6 +46,9 @@ import de.javakaffee.kryoserializers.guava.ImmutableMapSerializer;
 import de.javakaffee.kryoserializers.guava.ImmutableMultimapSerializer;
 import de.javakaffee.kryoserializers.guava.ImmutableSetSerializer;
 import org.apache.commons.lang3.ClassUtils;
+import org.apache.commons.pool2.PooledObjectFactory;
+import org.apache.commons.pool2.impl.GenericObjectPool;
+import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.eclipse.persistence.indirection.IndirectCollection;
 import org.eclipse.persistence.indirection.IndirectContainer;
 import org.eclipse.persistence.internal.indirection.UnitOfWorkQueryValueHolder;
@@ -60,6 +66,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Modifier;
 import java.util.*;
+import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -73,14 +80,51 @@ public class KryoSerialization implements Serialization {
     protected static final List<String> INCLUDED_VALUE_HOLDER_FIELDS =
             ImmutableList.of("value", "isInstantiated", "mapping", "sourceAttributeName", "relationshipSourceObject");
 
-    protected boolean onlySerializable = true;
-    protected final ThreadLocal<Kryo> kryos = ThreadLocal.withInitial(this::newKryoInstance);
+    protected boolean onlySerializable;
+    protected KryoSerializationConfig config;
+    protected GenericObjectPool<Kryo> pool;
 
     public KryoSerialization() {
+        this(true);
     }
 
     public KryoSerialization(boolean onlySerializable) {
         this.onlySerializable = onlySerializable;
+
+        initPool();
+        initShutdownHook();
+    }
+
+    protected void initPool() {
+        // assume that application context is already initialized
+        Configuration configuration = AppBeans.get(Configuration.NAME);
+        config = configuration.getConfig(KryoSerializationConfig.class);
+
+        int poolSize = config.getMaxPoolSize();
+        GenericObjectPoolConfig<Kryo> poolConfig = new GenericObjectPoolConfig<>();
+        poolConfig.setMaxIdle(poolSize);
+        poolConfig.setMaxTotal(poolSize);
+        poolConfig.setMaxWaitMillis(config.getMaxBorrowWaitMillis());
+
+        String jmxName = "kryo-" + AppContext.getProperty("cuba.webContextName");
+        poolConfig.setJmxNamePrefix(jmxName);
+
+        PooledObjectFactory<Kryo> factory = new KryoObjectFactory(this);
+        pool = new GenericObjectPool<>(factory, poolConfig);
+    }
+
+    protected void initShutdownHook() {
+        AppContext.addListener(new AppContext.Listener() {
+            @Override
+            public void applicationStarted() {
+                // nothing
+            }
+
+            @Override
+            public void applicationStopped() {
+                shutdown();
+            }
+        });
     }
 
     protected Kryo newKryoInstance() {
@@ -138,24 +182,29 @@ public class KryoSerialization implements Serialization {
 
     @Override
     public void serialize(Object object, OutputStream os) {
-        try (Output output = new CubaOutput(os)) {
-            if (object instanceof BaseGenericIdEntity
-                    && BaseEntityInternalAccess.isManaged((BaseGenericIdEntity) object)) {
-                BaseEntityInternalAccess.setDetached((BaseGenericIdEntity) object, true);
+        withKryoFromPool(kryo -> {
+            try (Output output = new CubaOutput(os)) {
+                if (object instanceof BaseGenericIdEntity
+                        && BaseEntityInternalAccess.isManaged((BaseGenericIdEntity) object)) {
+                    BaseEntityInternalAccess.setDetached((BaseGenericIdEntity) object, true);
+                }
+                kryo.writeClassAndObject(output, object);
+            } catch (Exception e) {
+                throw new SerializationException(e);
             }
-            kryos.get().writeClassAndObject(output, object);
-        } catch (Exception e) {
-            throw new SerializationException(e);
-        }
+            return null;
+        });
     }
 
     @Override
     public Object deserialize(InputStream is) {
-        try (Input input = new Input(is)) {
-            return kryos.get().readClassAndObject(input);
-        } catch (Exception e) {
-            throw new SerializationException(e);
-        }
+        return withKryoFromPool(kryo -> {
+            try (Input input = new Input(is)) {
+                return kryo.readClassAndObject(input);
+            } catch (Exception e) {
+                throw new SerializationException(e);
+            }
+        });
     }
 
     @Override
@@ -178,7 +227,34 @@ public class KryoSerialization implements Serialization {
         if (object == null) {
             return null;
         }
-        return kryos.get().copy(object);
+
+        return withKryoFromPool(kryo -> {
+            return kryo.copy(object);
+        });
+    }
+
+    protected  <T> T withKryoFromPool(Function<Kryo, T> action) {
+        Kryo kryo;
+        try {
+            kryo = pool.borrowObject();
+        } catch (Exception e) {
+            throw new SerializationException("Failed to borrow Kryo context from pool", e);
+        }
+        try {
+            return action.apply(kryo);
+        } finally {
+            pool.returnObject(kryo);
+        }
+    }
+
+    /**
+     * Shuts down the pool, unregisters JMX.
+     */
+    public void shutdown() {
+        if (pool != null) {
+            pool.close();
+            pool = null;
+        }
     }
 
     protected void registerEntitySerializer(Kryo kryo) {
