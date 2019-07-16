@@ -25,7 +25,6 @@ import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.DatatypeRegistry;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.datatypes.ValueConversionException;
-import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.client.ClientConfig;
@@ -42,7 +41,6 @@ import com.haulmont.cuba.gui.UiComponents;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.WindowManagerProvider;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.filter.condition.FilterConditionUtils;
 import com.haulmont.cuba.gui.components.data.options.ContainerOptions;
 import com.haulmont.cuba.gui.components.filter.dateinterval.DateInIntervalComponent;
 import com.haulmont.cuba.gui.components.listeditor.ListEditorHelper;
@@ -451,27 +449,29 @@ public class Param {
     }
 
     protected List<Entity> loadEntityList(String[] ids) {
-        MetaClass metaClass = metadata.getSession().getClassNN(javaClass);
-        LoadContext ctx = new LoadContext(javaClass);
-        LoadContext.Query query = ctx.setQueryString(
-                String.format("select e from %s e where e.id in :ids", metaClass.getName())
-        );
-        query.setParameter("ids", Arrays.asList(ids));
+        MetaClass metaClass = metadata.getClassNN(javaClass);
+        //noinspection unchecked
+        LoadContext<Entity> ctx = new LoadContext<>(javaClass)
+                .setView(View.BASE);
+        ctx.setQueryString(String.format("select e from %s e where e.id in :ids", metaClass.getName()))
+                .setParameter("ids", Arrays.asList(ids));
         return dataManager.loadList(ctx);
     }
 
     protected Object loadEntity(String id) {
-        MetaProperty pkProp = metadata.getTools().getPrimaryKeyProperty(metadata.getClassNN(javaClass));
+        MetaProperty primaryKey = metadata.getTools().getPrimaryKeyProperty(metadata.getClassNN(javaClass));
         Object objectId = null;
-        if (pkProp != null) {
-            Datatype<Object> datatype = pkProp.getRange().asDatatype();
+        if (primaryKey != null) {
             try {
-                objectId = datatype.parse(id);
+                objectId = primaryKey.getRange().asDatatype().parse(id);
             } catch (ParseException e) {
                 throw new RuntimeException("Error parsing entity ID", e);
             }
         }
-        LoadContext ctx = new LoadContext(javaClass).setId(objectId);
+        //noinspection unchecked
+        LoadContext<Entity> ctx = new LoadContext<>(javaClass)
+                .setView(View.BASE)
+                .setId(objectId);
         return dataManager.load(ctx);
     }
 
@@ -508,39 +508,8 @@ public class Param {
                 if (isDateInterval) {
                     return (String) v;
                 }
-                @SuppressWarnings("unchecked")
-                Datatype<Object> datatype = Datatypes.getNN(javaClass);
-                return datatype.format(v);
-
-            default:
-                throw new IllegalStateException("Param type unknown");
-        }
-    }
-
-    protected String getValueCaption(Object v) {
-        if (v == null) {
-            return null;
-        }
-
-        switch (type) {
-            case ENTITY:
-                if (v instanceof Instance) {
-                    return metadata.getTools().getInstanceName((Instance) v);
-                } else {
-                    return v.toString();
-                }
-
-            case ENUM:
-                return messages.getMessage((Enum) v);
-
-            case RUNTIME_ENUM:
-                return (String) v;
-
-            case DATATYPE:
-                return FilterConditionUtils.formatParamValue(this, v);
-            case UNARY:
-                Datatype datatype = Datatypes.getNN(javaClass);
-                return datatype.format(v, userSessionSource.getLocale());
+                //noinspection unchecked
+                return Datatypes.getNN(javaClass).format(v);
 
             default:
                 throw new IllegalStateException("Param type unknown");
@@ -811,8 +780,8 @@ public class Param {
         field.setWidth(theme.get("cuba.gui.filter.Param.booleanLookup.width"));
 
         Map<String, Object> values = ParamsMap.of(
-            messages.getMainMessage("filter.param.boolean.true"), Boolean.TRUE,
-            messages.getMainMessage("filter.param.boolean.false"), Boolean.FALSE
+                messages.getMainMessage("filter.param.boolean.true"), Boolean.TRUE,
+                messages.getMainMessage("filter.param.boolean.false"), Boolean.FALSE
         );
 
         field.setOptionsMap(values);
