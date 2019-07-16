@@ -38,6 +38,7 @@ import com.haulmont.cuba.core.sys.persistence.PersistenceImplSupport;
 import org.eclipse.persistence.config.CascadePolicy;
 import org.eclipse.persistence.config.HintValues;
 import org.eclipse.persistence.config.QueryHints;
+import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.helper.CubaUtil;
 import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
 import org.eclipse.persistence.jpa.JpaQuery;
@@ -762,6 +763,8 @@ public class QueryImpl<T> implements TypedQuery<T> {
         protected Object value;
         protected TemporalType temporalType;
 
+        private Class<?> actualParamType;
+
         public Param(Object name, Object value) {
             this.name = name;
             this.value = value;
@@ -780,6 +783,9 @@ public class QueryImpl<T> implements TypedQuery<T> {
                 else
                     query.setParameter((String) name, (Date) value, temporalType);
             } else {
+                if (value instanceof Date && !isValidParamType(query))
+                    convertValue();
+
                 if (name instanceof Integer)
                     query.setParameter((int) name, value);
                 else
@@ -789,6 +795,33 @@ public class QueryImpl<T> implements TypedQuery<T> {
 
         public boolean isNamedParam() {
             return name instanceof String;
+        }
+
+        private boolean isValidParamType(JpaQuery query) {
+            if (value == null || query.getDatabaseQuery() == null)
+                return true;
+
+            int index = query.getDatabaseQuery().getArguments().indexOf(String.valueOf(name));
+            if (index == -1)
+                return true;
+            actualParamType = query.getDatabaseQuery().getArgumentTypes().get(index);
+
+            if (actualParamType == null)
+                return true;
+
+            return actualParamType.isAssignableFrom(value.getClass());
+        }
+
+        private void convertValue() {
+            if (value == null || actualParamType == null || actualParamType.isAssignableFrom(value.getClass()))
+                return;
+
+            ConversionManager conversionManager = ConversionManager.getDefaultManager();
+            try {
+                value = conversionManager.convertObject(value, actualParamType);
+            } catch (Exception e) {
+                throw new IllegalArgumentException(e);
+            }
         }
 
         @Override
