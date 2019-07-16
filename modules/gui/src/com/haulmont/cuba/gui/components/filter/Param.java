@@ -450,27 +450,29 @@ public class Param {
     }
 
     protected List<Entity> loadEntityList(String[] ids) {
-        MetaClass metaClass = metadata.getSession().getClassNN(javaClass);
-        LoadContext ctx = new LoadContext(javaClass);
-        LoadContext.Query query = ctx.setQueryString(
-                String.format("select e from %s e where e.id in :ids", metaClass.getName())
-        );
-        query.setParameter("ids", Arrays.asList(ids));
+        MetaClass metaClass = metadata.getClassNN(javaClass);
+        //noinspection unchecked
+        LoadContext<Entity> ctx = new LoadContext<>(javaClass)
+                .setView(View.BASE);
+        ctx.setQueryString(String.format("select e from %s e where e.id in :ids", metaClass.getName()))
+                .setParameter("ids", Arrays.asList(ids));
         return dataManager.loadList(ctx);
     }
 
     protected Object loadEntity(String id) {
-        MetaProperty pkProp = metadata.getTools().getPrimaryKeyProperty(metadata.getClassNN(javaClass));
+        MetaProperty primaryKey = metadata.getTools().getPrimaryKeyProperty(metadata.getClassNN(javaClass));
         Object objectId = null;
-        if (pkProp != null) {
-            Datatype<Object> datatype = pkProp.getRange().asDatatype();
+        if (primaryKey != null) {
             try {
-                objectId = datatype.parse(id);
+                objectId = primaryKey.getRange().asDatatype().parse(id);
             } catch (ParseException e) {
                 throw new RuntimeException("Error parsing entity ID", e);
             }
         }
-        LoadContext ctx = new LoadContext(javaClass).setId(objectId);
+        //noinspection unchecked
+        LoadContext<Entity> ctx = new LoadContext<>(javaClass)
+                .setView(View.BASE)
+                .setId(objectId);
         return dataManager.load(ctx);
     }
 
@@ -507,9 +509,8 @@ public class Param {
                 if (isDateInterval) {
                     return (String) v;
                 }
-                @SuppressWarnings("unchecked")
-                Datatype<Object> datatype = Datatypes.getNN(javaClass);
-                return datatype.format(v);
+                //noinspection unchecked
+                return Datatypes.getNN(javaClass).format(v);
 
             default:
                 throw new IllegalStateException("Param type unknown");
@@ -780,8 +781,8 @@ public class Param {
         field.setWidth(theme.get("cuba.gui.filter.Param.booleanLookup.width"));
 
         Map<String, Object> values = ParamsMap.of(
-            messages.getMainMessage("filter.param.boolean.true"), Boolean.TRUE,
-            messages.getMainMessage("filter.param.boolean.false"), Boolean.FALSE
+                messages.getMainMessage("filter.param.boolean.true"), Boolean.TRUE,
+                messages.getMainMessage("filter.param.boolean.false"), Boolean.FALSE
         );
 
         field.setOptionsMap(values);
