@@ -23,7 +23,7 @@ package com.haulmont.cuba.core.global;
  * <pre>
  *     query.setHint(QueryHints.SQL_HINT, "OPTION(RECOMPILE)");
  *     query.setHint(QueryHints.MSSQL_RECOMPILE_HINT, true);
- * <pre/>
+ * </pre>
  */
 public interface QueryHints {
     /**
