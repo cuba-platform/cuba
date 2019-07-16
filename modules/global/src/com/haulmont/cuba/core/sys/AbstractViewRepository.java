@@ -347,9 +347,7 @@ public class AbstractViewRepository implements ViewRepository {
     }
 
     protected void addPersistentAttributeToMinimalView(MetaClass metaClass, Set<ViewInfo> visited, ViewInfo info, View view, MetaProperty metaProperty) {
-        if (metaProperty.getRange().isClass()
-                && !metaProperty.getRange().getCardinality().isMany()) {
-
+        if (metaProperty.getRange().isClass()) {
             Map<String, View> views = storage.get(metaProperty.getRange().asClass());
             View refMinimalView = (views == null ? null : views.get(View.MINIMAL));
 
