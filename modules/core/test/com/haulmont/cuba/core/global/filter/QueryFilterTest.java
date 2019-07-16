@@ -18,15 +18,9 @@
 package com.haulmont.cuba.core.global.filter;
 
 import com.haulmont.bali.util.Dom4j;
-import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.testsupport.TestContainer;
-import mockit.Mock;
-import mockit.MockUp;
-import mockit.Mocked;
 import org.dom4j.Document;
-import org.junit.Before;
 import org.junit.ClassRule;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.InputStream;
