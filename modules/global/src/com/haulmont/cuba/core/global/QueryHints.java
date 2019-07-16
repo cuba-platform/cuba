@@ -22,9 +22,11 @@ package com.haulmont.cuba.core.global;
  * what is available in the JPA specification
  * <p>Query Hint Usage:
  *
- * <p><code>query.setHint(QueryHints.SQL_HINT, "OPTION(RECOMPILE)");</code>
- * <p>or
- * <p><code>query.setHint(QueryHints.MSSQL_RECOMPILE_HINT, true);</code>
+ * <p>Usage examples:
+ * <pre>
+ *     query.setHint(QueryHints.SQL_HINT, "OPTION(RECOMPILE)");
+ *     query.setHint(QueryHints.MSSQL_RECOMPILE_HINT, true);
+ * </pre>
  */
 public interface QueryHints {
     /**
