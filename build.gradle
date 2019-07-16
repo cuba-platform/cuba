@@ -358,6 +358,10 @@ configure(globalModule) {
             !it.path.contains(new File("com/haulmont/cuba/core/global/release.").path)
         }
     }
+
+    test {
+        jvmArgs "-javaagent:${classpath.find { it.name.contains("jmockit") }.absolutePath}"
+    }
 }
 
 configure(coreModule) {
