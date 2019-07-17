@@ -92,7 +92,6 @@ public class KryoSerialization implements Serialization {
         this.onlySerializable = onlySerializable;
 
         initPool();
-        initShutdownHook();
     }
 
     protected void initPool() {
@@ -111,20 +110,7 @@ public class KryoSerialization implements Serialization {
 
         PooledObjectFactory<Kryo> factory = new KryoObjectFactory(this);
         pool = new GenericObjectPool<>(factory, poolConfig);
-    }
-
-    protected void initShutdownHook() {
-        AppContext.addListener(new AppContext.Listener() {
-            @Override
-            public void applicationStarted() {
-                // nothing
-            }
-
-            @Override
-            public void applicationStopped() {
-                shutdown();
-            }
-        });
+        log.debug("Kryo context pool created");
     }
 
     protected Kryo newKryoInstance() {
@@ -252,6 +238,7 @@ public class KryoSerialization implements Serialization {
      */
     public void shutdown() {
         if (pool != null) {
+            log.debug("Shutdown kryo context pool");
             pool.close();
             pool = null;
         }
