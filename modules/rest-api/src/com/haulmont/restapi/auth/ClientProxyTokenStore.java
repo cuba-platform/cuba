@@ -31,7 +31,7 @@ import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.restapi.common.RestAuthUtils;
 import com.haulmont.restapi.common.RestTokenMasker;
 import com.haulmont.restapi.config.RestApiConfig;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHeaders;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -116,7 +116,18 @@ public class ClientProxyTokenStore implements TokenStore {
                 userLogin,
                 locale,
                 refreshTokenValue);
-        createNewUserSession(authentication, token.getValue(), locale);
+
+        @SuppressWarnings("unchecked")
+        Map<String, String> userAuthenticationDetails =
+                (Map<String, String>) authentication.getUserAuthentication().getDetails();
+        //sessionId parameter was put in the CubaUserAuthenticationProvider
+        String sessionIdStr = userAuthenticationDetails.get("sessionId");
+        if (!Strings.isNullOrEmpty(sessionIdStr)) {
+            UUID sessionId = UUID.fromString(sessionIdStr);
+            //Save the RestUserSessionInfo, so the "processSession()" method can find the UserSession associated with the access token.
+            //We need to set a proper locale here for the case when a refresh token request comes with the 'Accept-Language' header
+            serverTokenStore.putSessionInfo(token.getValue(), new RestUserSessionInfo(sessionId, locale));
+        }
         log.info("REST API access token stored: [{}] {}", authentication.getPrincipal(), tokenMasker.maskToken(token.getValue()));
     }
 
@@ -136,27 +147,6 @@ public class ClientProxyTokenStore implements TokenStore {
         String key = authenticationKeyGenerator.extractKey(authentication);
         byte[] accessTokenBytes = serverTokenStore.getAccessTokenByAuthentication(key);
         return accessTokenBytes != null ? deserializeAccessToken(accessTokenBytes) : null;
-    }
-
-
-    /**
-     * Creates a new user session associated with the given {@code authentication} and sets to the * {@link SecurityContext}.
-     */
-    protected void createNewUserSession(OAuth2Authentication authentication, String tokenValue, Locale requestLocale) {
-        Map<String, String> userAuthenticationDetails = (Map<String, String>) authentication.getUserAuthentication().getDetails();
-        String username = userAuthenticationDetails.get("username");
-        if (Strings.isNullOrEmpty(username)) {
-            throw new IllegalStateException("Empty username extracted from user authentication details");
-        }
-        TrustedClientCredentials credentials = createTrustedClientCredentials(username, requestLocale);
-        try {
-            UserSession session = authenticationService.login(credentials).getSession();
-            serverTokenStore.putSessionInfo(tokenValue, new RestUserSessionInfo(session));
-            AppContext.setSecurityContext(new SecurityContext(session));
-            log.debug("New session created for token '{}'", tokenMasker.maskToken(tokenValue));
-        } catch (LoginException e) {
-            throw new OAuth2Exception("Cannot login to the middleware", e);
-        }
     }
 
     /**
