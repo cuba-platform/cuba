@@ -221,6 +221,7 @@ public class FilterDelegateImpl implements FilterDelegate {
 
     protected List<Subscription> paramValueChangeSubscriptions;
     protected Map<AbstractCondition, AbstractCondition.Listener> conditionListeners;
+    protected Map<AbstractCondition, ParamEditor> paramEditors;
     protected Boolean applyImmediately;
 
     protected enum ConditionsFocusType {
@@ -912,6 +913,8 @@ public class FilterDelegateImpl implements FilterDelegate {
 
                     Pair<ParamEditor, RuntimeException> pair = createParamEditorWithChecks(condition, filterDataContext);
                     ParamEditor paramEditor = pair.getFirst();
+                    addParamEditor(condition, paramEditor);
+
                     if (pair.getSecond() != null) {
                         entityParamInformationException = pair.getSecond();
                     }
@@ -1009,6 +1012,14 @@ public class FilterDelegateImpl implements FilterDelegate {
                     .withThrowable(entityParamInformationException)
                     .show();
         }
+    }
+
+    protected void addParamEditor(AbstractCondition condition, ParamEditor paramEditor) {
+        if (paramEditors == null) {
+            paramEditors = new HashMap<>();
+        }
+
+        paramEditors.put(condition, paramEditor);
     }
 
     protected List<Node<AbstractCondition>> fetchVisibleNodes(List<Node<AbstractCondition>> nodes) {
@@ -2398,6 +2409,13 @@ public class FilterDelegateImpl implements FilterDelegate {
                 item.getKey().removeListener(item.getValue());
             }
             conditionListeners.clear();
+        }
+
+        if (paramEditors != null) {
+            for (Map.Entry<AbstractCondition, ParamEditor> item : paramEditors.entrySet()) {
+                item.getKey().removeListener(item.getValue());
+            }
+            paramEditors.clear();
         }
     }
 
