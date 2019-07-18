@@ -18,6 +18,8 @@ package com.haulmont.cuba.gui.components.mainwindow;
 
 import com.haulmont.cuba.gui.components.Component;
 
+import java.util.function.Consumer;
+
 /**
  * A component that combines link to Login screen and authenticated user menu.
  */
@@ -26,12 +28,38 @@ public interface UserActionsButton extends Component.BelongToFrame, Component.Ha
     String NAME = "userActionsButton";
 
     /**
-     * Sets custom login handler.
+     * Sets the given {@code Consumer} as custom login action handler.
      */
-    void setLoginHandler(Runnable loginHandler);
+    void setLoginHandler(Consumer<LoginHandlerContext> loginHandler);
 
     /**
-     * Sets custom logout handler.
+     * Sets the given {@code Consumer} as custom logout action handler.
      */
-    void setLogoutHandler(Runnable logoutHandler);
+    void setLogoutHandler(Consumer<LogoutHandlerContext> logoutHandler);
+
+    class LoginHandlerContext {
+
+        protected UserActionsButton source;
+
+        public LoginHandlerContext(UserActionsButton source) {
+            this.source = source;
+        }
+
+        public UserActionsButton getSource() {
+            return source;
+        }
+    }
+
+    class LogoutHandlerContext {
+
+        protected UserActionsButton source;
+
+        public LogoutHandlerContext(UserActionsButton source) {
+            this.source = source;
+        }
+
+        public UserActionsButton getSource() {
+            return source;
+        }
+    }
 }

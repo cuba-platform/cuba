@@ -35,6 +35,7 @@ import com.vaadin.ui.UI;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.inject.Inject;
+import java.util.function.Consumer;
 
 public class WebUserActionsButton extends WebAbstractComponent<CubaMenuBar>
         implements UserActionsButton {
@@ -46,8 +47,8 @@ public class WebUserActionsButton extends WebAbstractComponent<CubaMenuBar>
     protected Messages messages;
     protected Security security;
 
-    protected Runnable loginHandler;
-    protected Runnable logoutHandler;
+    protected Consumer<LoginHandlerContext> loginHandler;
+    protected Consumer<LogoutHandlerContext> logoutHandler;
 
     public WebUserActionsButton() {
         component = new CubaMenuBar();
@@ -83,12 +84,12 @@ public class WebUserActionsButton extends WebAbstractComponent<CubaMenuBar>
     }
 
     @Override
-    public void setLoginHandler(Runnable loginHandler) {
+    public void setLoginHandler(Consumer<LoginHandlerContext> loginHandler) {
         this.loginHandler = loginHandler;
     }
 
     @Override
-    public void setLogoutHandler(Runnable logoutHandler) {
+    public void setLogoutHandler(Consumer<LogoutHandlerContext> logoutHandler) {
         this.logoutHandler = logoutHandler;
     }
 
@@ -100,13 +101,7 @@ public class WebUserActionsButton extends WebAbstractComponent<CubaMenuBar>
     }
 
     protected void initLoginButton(boolean authenticated) {
-        MenuBar.MenuItem loginButton = component.addItem("", item -> {
-            if (loginHandler != null) {
-                loginHandler.run();
-            } else {
-                defaultLogin();
-            }
-        });
+        MenuBar.MenuItem loginButton = component.addItem("", item -> login());
         loginButton.setDescription(messages.getMainMessage("loginBtnDescription"));
         loginButton.setIcon(getIconResource(CubaIcon.SIGN_IN));
         loginButton.setVisible(!authenticated);
@@ -124,17 +119,27 @@ public class WebUserActionsButton extends WebAbstractComponent<CubaMenuBar>
         }
 
         userMenuButton.addItem(messages.getMainMessage("logoutBtnDescription"),
-                getIconResource(CubaIcon.SIGN_OUT), item -> {
-                    if (logoutHandler != null) {
-                        logoutHandler.run();
-                    } else {
-                        defaultLogout();
-                    }
-                });
+                getIconResource(CubaIcon.SIGN_OUT), item -> logout());
     }
 
     protected Resource getIconResource(Icons.Icon icon) {
         return iconResolver.getIconResource(icons.get(icon));
+    }
+
+    protected void login() {
+        if (loginHandler != null) {
+            loginHandler.accept(new LoginHandlerContext(this));
+        } else {
+            defaultLogin();
+        }
+    }
+
+    protected void logout() {
+        if (logoutHandler != null) {
+            logoutHandler.accept(new LogoutHandlerContext(this));
+        } else {
+            defaultLogout();
+        }
     }
 
     protected void defaultLogin() {
