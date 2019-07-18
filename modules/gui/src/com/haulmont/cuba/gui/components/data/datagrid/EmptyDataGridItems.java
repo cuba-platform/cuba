@@ -21,6 +21,7 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.data.BindingState;
 import com.haulmont.cuba.gui.components.data.DataGridItems;
+import com.haulmont.cuba.gui.components.data.meta.EmptyDataUnit;
 import com.haulmont.cuba.gui.components.data.meta.EntityDataGridItems;
 
 import javax.annotation.Nullable;
@@ -30,7 +31,7 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 public class EmptyDataGridItems<E extends Entity>
-        implements EntityDataGridItems<E>, DataGridItems.Sortable<E> {
+        implements EntityDataGridItems<E>, DataGridItems.Sortable<E>, EmptyDataUnit {
 
     protected MetaClass metaClass;
 

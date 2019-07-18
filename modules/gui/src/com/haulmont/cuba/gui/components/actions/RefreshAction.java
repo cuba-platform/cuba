@@ -20,6 +20,7 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.ListComponent;
+import com.haulmont.cuba.gui.components.data.meta.EmptyDataUnit;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.icons.CubaIcon;
 import com.haulmont.cuba.gui.icons.Icons;
@@ -109,6 +110,10 @@ public class RefreshAction extends BaseAction {
 
         CollectionDatasource datasource = owner.getDatasource();
         if (datasource == null) {
+            // In case of using the 'metaClass' attribute, no datasource is created, but EmptyDataUnit.
+            if (owner.getItems() instanceof EmptyDataUnit) {
+                return;
+            }
             throw new IllegalStateException("RefreshAction target is not bound to CollectionDatasource");
         }
 
