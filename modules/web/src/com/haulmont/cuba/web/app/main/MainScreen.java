@@ -188,7 +188,7 @@ public class MainScreen extends Screen implements Window.HasWorkArea, Window.Has
     }
 
     @Nullable
-    protected LogoutButton getLogoutButton() {
-        return (LogoutButton) getWindow().getComponent("logoutButton");
+    protected UserActionsButton getUserActionsButton() {
+        return (UserActionsButton) getWindow().getComponent("userActionsButton");
     }
 }
