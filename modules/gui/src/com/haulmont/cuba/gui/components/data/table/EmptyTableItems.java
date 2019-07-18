@@ -20,6 +20,7 @@ import com.haulmont.bali.events.Subscription;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.data.BindingState;
+import com.haulmont.cuba.gui.components.data.meta.EmptyDataUnit;
 import com.haulmont.cuba.gui.components.data.meta.EntityTableItems;
 
 import javax.annotation.Nullable;
@@ -27,7 +28,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.function.Consumer;
 
-public class EmptyTableItems<E extends Entity> implements EntityTableItems<E> {
+public class EmptyTableItems<E extends Entity> implements EntityTableItems<E>, EmptyDataUnit {
 
     protected MetaClass metaClass;
 
