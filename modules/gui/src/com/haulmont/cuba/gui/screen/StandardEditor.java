@@ -50,6 +50,7 @@ import java.util.function.Consumer;
  */
 public abstract class StandardEditor<T extends Entity> extends Screen implements EditorScreen<T> {
 
+    protected boolean showSaveNotification = true;
     protected boolean commitActionPerformed = false;
 
     private T entityToEdit;
@@ -488,7 +489,20 @@ public abstract class StandardEditor<T extends Entity> extends Screen implements
 
     protected void commit(@SuppressWarnings("unused") Action.ActionPerformedEvent event) {
         commitChanges()
-                .then(() -> commitActionPerformed = true);
+                .then(() -> {
+                    commitActionPerformed = true;
+                    if (showSaveNotification) {
+                        Entity entity = getEditedEntity();
+                        MetadataTools metadataTools = getBeanLocator().get(MetadataTools.NAME);
+                        Messages messages = getBeanLocator().get(Messages.NAME);
+
+                        getScreenContext().getNotifications().create(NotificationType.TRAY)
+                                .withCaption(messages.formatMainMessage("info.EntitySave",
+                                        messages.getTools().getEntityCaption(entity.getMetaClass()),
+                                        metadataTools.getInstanceName(entity)))
+                                .show();
+                    }
+                });
     }
 
     protected void cancel(@SuppressWarnings("unused") Action.ActionPerformedEvent event) {
@@ -515,6 +529,22 @@ public abstract class StandardEditor<T extends Entity> extends Screen implements
      */
     public OperationResult closeWithDiscard() {
         return close(WINDOW_DISCARD_AND_CLOSE_ACTION);
+    }
+
+    /**
+     * @return whether a notification will be shown in case of successful commit
+     */
+    public boolean isShowSaveNotification() {
+        return showSaveNotification;
+    }
+
+    /**
+     * Sets whether a notification will be shown in case of successful commit.
+     *
+     * @param showSaveNotification {@code true} if a notification needs to be shown, {@code false} otherwise
+     */
+    public void setShowSaveNotification(boolean showSaveNotification) {
+        this.showSaveNotification = showSaveNotification;
     }
 
     /**
