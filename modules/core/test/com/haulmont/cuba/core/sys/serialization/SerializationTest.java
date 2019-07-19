@@ -23,19 +23,15 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.core.global.ViewRepository;
-import com.haulmont.cuba.security.entity.Group;
-import com.haulmont.cuba.security.entity.Role;
-import com.haulmont.cuba.security.entity.User;
-import com.haulmont.cuba.security.entity.UserRole;
+import com.haulmont.cuba.security.entity.*;
 import com.haulmont.cuba.testsupport.TestContainer;
 import org.junit.*;
 
 import java.util.BitSet;
+import java.util.EnumSet;
 import java.util.UUID;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class SerializationTest {
     @ClassRule
@@ -264,5 +260,17 @@ public class SerializationTest {
                 .addProperty("userRoles", new View(UserRole.class)
                         .addProperty("user", userLocalView)
                         .addProperty("role", roleLocalView));
+    }
+
+    @Test
+    public void testKryoEnumSet() {
+        KryoSerialization kryoSerialization = new KryoSerialization();
+        EnumSet<RoleType> roles = EnumSet.of(RoleType.STANDARD);
+
+        EnumSet<RoleType> clone = (EnumSet<RoleType>) kryoSerialization.deserialize(kryoSerialization.serialize(roles));
+
+        assertEquals(clone.size(), 1);
+        assertTrue(clone.contains(RoleType.STANDARD));
+        assertFalse(clone.contains(RoleType.SUPER));
     }
 }
