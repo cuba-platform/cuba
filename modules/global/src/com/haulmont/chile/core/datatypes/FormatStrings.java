@@ -31,14 +31,17 @@ public class FormatStrings {
     private String decimalFormat;
     private String dateFormat;
     private String dateTimeFormat;
+    private String offsetDateTimeFormat;
     private String timeFormat;
+    private String offsetTimeFormat;
     private String trueString;
     private String falseString;
 
     public FormatStrings(char decimalSeparator, char groupingSeparator,
                          String integerFormat, String doubleFormat, String decimalFormat,
-                         String dateFormat, String dateTimeFormat,
-                         String timeFormat, String trueString, String falseString) {
+                         String dateFormat, String dateTimeFormat, String offsetDateTimeFormat,
+                         String timeFormat, String offsetTimeFormat,
+                         String trueString, String falseString) {
         formatSymbols = new DecimalFormatSymbols();
         formatSymbols.setDecimalSeparator(decimalSeparator);
         formatSymbols.setGroupingSeparator(groupingSeparator);
@@ -47,7 +50,9 @@ public class FormatStrings {
         this.decimalFormat = decimalFormat;
         this.dateFormat = dateFormat;
         this.dateTimeFormat = dateTimeFormat;
+        this.offsetDateTimeFormat = offsetDateTimeFormat;
         this.timeFormat = timeFormat;
+        this.offsetTimeFormat = offsetTimeFormat;
         this.trueString = trueString;
         this.falseString = falseString;
     }
@@ -76,8 +81,16 @@ public class FormatStrings {
         return dateTimeFormat;
     }
 
+    public String getOffsetDateTimeFormat() {
+        return offsetDateTimeFormat;
+    }
+
     public String getTimeFormat() {
         return timeFormat;
+    }
+
+    public String getOffsetTimeFormat() {
+        return offsetTimeFormat;
     }
 
     public String getTrueString() {

@@ -109,7 +109,9 @@ public abstract class AbstractMessages implements Messages {
             String decimalFormat = getMainMessage("decimalFormat", locale);
             String dateFormat = getMainMessage("dateFormat", locale);
             String dateTimeFormat = getMainMessage("dateTimeFormat", locale);
+            String offsetDateTimeFormat = getMainMessage("offsetDateTimeFormat", locale);
             String timeFormat = getMainMessage("timeFormat", locale);
+            String offsetTimeFormat = getMainMessage("offsetTimeFormat", locale);
             String trueString = getMainMessage("trueString", locale);
             String falseString = getMainMessage("falseString", locale);
             if (numberDecimalSeparator.equals("numberDecimalSeparator")
@@ -119,7 +121,9 @@ public abstract class AbstractMessages implements Messages {
                     || decimalFormat.equals("decimalFormat")
                     || dateFormat.equals("dateFormat")
                     || dateTimeFormat.equals("dateTimeFormat")
-                    || timeFormat.equals("timeFormat"))
+                    || offsetDateTimeFormat.equals("offsetDateTimeFormat")
+                    || timeFormat.equals("timeFormat")
+                    || offsetTimeFormat.equals("offsetTimeFormat"))
                 log.warn("Localized format strings are not defined. " +
                         "Check cuba.mainMessagePack application property, it must point to a valid set of main message packs.");
 
@@ -133,7 +137,9 @@ public abstract class AbstractMessages implements Messages {
                             decimalFormat,
                             dateFormat,
                             dateTimeFormat,
+                            offsetDateTimeFormat,
                             timeFormat,
+                            offsetTimeFormat,
                             trueString,
                             falseString
                     )
