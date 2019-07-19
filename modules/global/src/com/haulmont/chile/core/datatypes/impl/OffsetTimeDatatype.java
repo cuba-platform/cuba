@@ -45,7 +45,7 @@ public class OffsetTimeDatatype extends AbstractTemporalDatatype<OffsetTime> {
 
     @Override
     protected DateTimeFormatter getDateTimeFormatter(FormatStrings formatStrings, Locale locale) {
-        return DateTimeFormatter.ofPattern(formatStrings.getTimeFormat(), locale);
+        return DateTimeFormatter.ofPattern(formatStrings.getOffsetTimeFormat(), locale);
     }
 
     @Override

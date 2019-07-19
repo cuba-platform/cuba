@@ -18,16 +18,13 @@ package com.haulmont.chile.core.datatypes.impl;
 
 import com.haulmont.chile.core.annotations.Ddl;
 import com.haulmont.chile.core.annotations.JavaClass;
-import com.haulmont.chile.core.datatypes.DatatypeRegistry;
 import com.haulmont.chile.core.datatypes.FormatStrings;
 import com.haulmont.chile.core.datatypes.TimeZoneAwareDatatype;
 import org.dom4j.Element;
 
 import javax.annotation.Nullable;
-import java.text.ParseException;
-import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
-import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.time.temporal.TemporalQuery;
@@ -51,18 +48,18 @@ public class OffsetDateTimeDatatype extends AbstractTemporalDatatype<OffsetDateT
             return format(value, locale);
         }
         OffsetDateTime offsetDateTime = (OffsetDateTime) value;
-        LocalDateTime localDateTime = offsetDateTime.atZoneSameInstant(timeZone.toZoneId()).toLocalDateTime();
-        return format(localDateTime, locale);
+        ZonedDateTime zonedDateTime = offsetDateTime.atZoneSameInstant(timeZone.toZoneId());
+        return format(zonedDateTime, locale);
     }
 
     @Override
     protected DateTimeFormatter getDateTimeFormatter() {
-        return DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).withZone(ZoneId.systemDefault());
+        return DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT);
     }
 
     @Override
     protected DateTimeFormatter getDateTimeFormatter(FormatStrings formatStrings, Locale locale) {
-        return DateTimeFormatter.ofPattern(formatStrings.getDateTimeFormat(), locale).withZone(ZoneId.systemDefault());
+        return DateTimeFormatter.ofPattern(formatStrings.getOffsetDateTimeFormat(), locale);
     }
 
     @Override
