@@ -483,7 +483,10 @@ public class FilterDelegateImpl implements FilterDelegate {
         maxResultsLookupField.setStyleName("c-maxresults-select");
 
         maxResultsField = textMaxResults ? maxResultsTextField : maxResultsLookupField;
-        maxResultsField.addValueChangeListener(integerValueChangeEvent -> maxResultValueChanged = true);
+        maxResultsField.addValueChangeListener(integerValueChangeEvent -> {
+            maxResultValueChanged = true;
+            applyWithImmediateMode();
+        });
         maxResultsLayout.add(maxResultsField);
     }
 
@@ -1082,6 +1085,8 @@ public class FilterDelegateImpl implements FilterDelegate {
                 conditions.removeCondition(condition);
                 fillConditionsLayout(ConditionsFocusType.NONE);
                 updateFilterModifiedIndicator();
+
+                applyWithImmediateMode();
             }
         };
         removeConditionAction.setVisible(conditionRemoveEnabled);
@@ -1673,6 +1678,12 @@ public class FilterDelegateImpl implements FilterDelegate {
         }
 
         return true;
+    }
+
+    protected void applyWithImmediateMode() {
+        if (isApplyImmediately()) {
+            apply(false);
+        }
     }
 
     @Override
@@ -2430,7 +2441,7 @@ public class FilterDelegateImpl implements FilterDelegate {
                 subscribeToParamValueChangeEventRecursively(node.getChildren());
             } else {
                 Subscription subscription = condition.getParam()
-                        .addParamValueChangeListener(this::handleParamValueChange);
+                        .addParamValueChangeListener(event -> applyWithImmediateMode());
                 paramValueChangeSubscriptions.add(subscription);
 
                 addConditionListener(condition, subscription);
@@ -2456,22 +2467,17 @@ public class FilterDelegateImpl implements FilterDelegate {
                 previous.remove();
                 paramValueChangeSubscriptions.remove(previous);
 
-                Subscription newSubscription = newParam.addParamValueChangeListener(
-                        event -> handleParamValueChange(event));
+                Subscription newSubscription = newParam.addParamValueChangeListener(event -> applyWithImmediateMode());
                 paramValueChangeSubscriptions.add(newSubscription);
 
                 previous = newSubscription;
+
+                applyWithImmediateMode();
             }
         };
 
         condition.addListener(listener);
         conditionListeners.put(condition, listener);
-    }
-
-    protected void handleParamValueChange(Param.ParamValueChangedEvent event) {
-        if (isApplyImmediately()) {
-            apply(false);
-        }
     }
 
     protected class FiltersLookupChangeListener implements Consumer<HasValue.ValueChangeEvent<FilterEntity>> {
@@ -2644,6 +2650,7 @@ public class FilterDelegateImpl implements FilterDelegate {
                     fillConditionsLayout(ConditionsFocusType.FIRST);
                     requestFocusToParamEditComponent();
                     updateFilterModifiedIndicator();
+                    applyWithImmediateMode();
                 } else {
                     requestFocusToParamEditComponent();
                     // subscribe if editor was closed without changes
