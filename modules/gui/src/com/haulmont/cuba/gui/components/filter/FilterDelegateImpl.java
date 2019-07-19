@@ -483,9 +483,11 @@ public class FilterDelegateImpl implements FilterDelegate {
         maxResultsLookupField.setStyleName("c-maxresults-select");
 
         maxResultsField = textMaxResults ? maxResultsTextField : maxResultsLookupField;
-        maxResultsField.addValueChangeListener(integerValueChangeEvent -> {
+        maxResultsField.addValueChangeListener(valueChangeEvent -> {
             maxResultValueChanged = true;
-            applyWithImmediateMode();
+            if (valueChangeEvent.isUserOriginated()) {
+                applyWithImmediateMode();
+            }
         });
         maxResultsLayout.add(maxResultsField);
     }
