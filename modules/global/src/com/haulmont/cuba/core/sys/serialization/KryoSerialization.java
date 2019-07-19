@@ -22,6 +22,7 @@ import com.esotericsoftware.kryo.KryoException;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 import com.esotericsoftware.kryo.serializers.CollectionSerializer;
+import com.esotericsoftware.kryo.serializers.DefaultSerializers;
 import com.esotericsoftware.kryo.serializers.FieldSerializer;
 import com.esotericsoftware.kryo.serializers.JavaSerializer;
 import com.esotericsoftware.kryo.util.DefaultClassResolver;
@@ -105,6 +106,8 @@ public class KryoSerialization implements Serialization {
         kryo.register(BitSet.class, new BitSetSerializer());
         kryo.register(GregorianCalendar.class, new GregorianCalendarSerializer());
         kryo.register(InvocationHandler.class, new JdkProxySerializer());
+        kryo.register(EnumSet.class, new EnumSetSerializer());
+        kryo.register(TreeSet.class, new DefaultSerializers.TreeSetSerializer());
         UnmodifiableCollectionsSerializer.registerSerializers(kryo);
         SynchronizedCollectionsSerializer.registerSerializers(kryo);
         kryo.register(Pattern.class, new RegexSerializer());
