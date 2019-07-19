@@ -28,7 +28,7 @@ import com.haulmont.cuba.core.entity.diff.EntityDiff;
 import com.haulmont.cuba.core.entity.diff.EntityPropertyDiff;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Security;
-import com.haulmont.cuba.gui.data.impl.AbstractTreeDatasource;
+import com.haulmont.cuba.gui.data.impl.AbstractTreeTableDatasource;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
 import com.haulmont.cuba.security.entity.EntityOp;
 
@@ -37,7 +37,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-public class DiffTreeDatasource extends AbstractTreeDatasource<EntityPropertyDiff, UUID> {
+public class DiffTreeDatasource extends AbstractTreeTableDatasource<EntityPropertyDiff, UUID> {
 
     protected EntityDiff entityDiff;
 
