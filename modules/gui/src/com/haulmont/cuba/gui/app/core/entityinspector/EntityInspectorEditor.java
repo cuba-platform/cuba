@@ -1103,7 +1103,7 @@ public class EntityInspectorEditor extends AbstractWindow {
                 editorParams.put("parentDs", entitiesDs);
             }
 
-            Editor editor = (Editor) openWindow("entityInspector.edit", OPEN_TYPE, editorParams);
+            EntityInspectorEditor editor = (EntityInspectorEditor) openWindow("entityInspector.edit", OPEN_TYPE, editorParams);
             editor.addCloseListener(actionId -> {
                 if (COMMIT_ACTION_ID.equals(actionId) && metaProperty.getType() == MetaProperty.Type.ASSOCIATION) {
                     boolean modified = entitiesDs.isModified();
