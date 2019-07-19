@@ -588,7 +588,13 @@ public class EntityInspectorEditor extends AbstractWindow {
         field.setCaption(getPropertyCaption(metaClass, metaProperty));
         field.setCustom(custom);
         field.setRequired(required);
-        field.setEditable(!readOnly);
+
+        if (metaProperty.getRange().isClass() && !metadata.getTools().isEmbedded(metaProperty)) {
+            field.setEditable(metadata.getTools().isOwningSide(metaProperty) && !readOnly);
+        } else {
+            field.setEditable(!readOnly);
+        }
+
         field.setWidth("400px");
 
         if (requireTextArea(metaProperty, item)) {
