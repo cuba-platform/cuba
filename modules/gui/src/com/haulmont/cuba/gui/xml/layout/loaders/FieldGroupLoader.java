@@ -26,15 +26,14 @@ import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.core.global.MetadataTools;
-import com.haulmont.cuba.core.global.Security;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.FieldGroup.CustomFieldGenerator;
+import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.FieldGroup;
 import com.haulmont.cuba.gui.components.FieldGroup.FieldCaptionAlignment;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
-import com.haulmont.cuba.gui.dynamicattributes.DynamicAttributeCustomFieldGenerator;
 import com.haulmont.cuba.gui.dynamicattributes.DynamicAttributesGuiTools;
 import com.haulmont.cuba.gui.screen.compatibility.LegacyFrame;
 import com.haulmont.cuba.gui.xml.DeclarativeFieldGenerator;
@@ -47,6 +46,7 @@ import org.dom4j.Element;
 
 import javax.annotation.Nullable;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -515,7 +515,7 @@ public class FieldGroupLoader extends AbstractComponentLoader<FieldGroup> {
         if (validatorElements != null) {
             if (!validatorElements.isEmpty()) {
                 for (Element validatorElement : validatorElements) {
-                    Field.Validator validator = loadValidator(validatorElement);
+                    Consumer<?> validator = loadValidator(validatorElement);
                     if (validator != null) {
                         field.addValidator(validator);
                     }
@@ -535,7 +535,7 @@ public class FieldGroupLoader extends AbstractComponentLoader<FieldGroup> {
 
                 if (metaPropertyPath != null) {
                     MetaProperty metaProperty = metaPropertyPath.getMetaProperty();
-                    Field.Validator validator = null;
+                    Consumer<?> validator = null;
                     if (descriptor == null) {
                         validator = getDefaultValidator(metaProperty);
                     } else if (!"timeField".equals(descriptor.attributeValue("field"))) {

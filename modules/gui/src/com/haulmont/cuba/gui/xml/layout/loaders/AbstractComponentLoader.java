@@ -63,6 +63,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.util.Locale;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 import static com.haulmont.cuba.gui.icons.Icons.ICON_NAME_REGEX;
@@ -508,12 +509,12 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
 
     @Deprecated
     @SuppressWarnings("unchecked")
-    protected Field.Validator loadValidator(Element validatorElement) {
+    protected Consumer<?> loadValidator(Element validatorElement) {
         String className = validatorElement.attributeValue("class");
         String scriptPath = validatorElement.attributeValue("script");
         String script = validatorElement.getText();
 
-        Field.Validator validator = null;
+        Consumer<?> validator = null;
 
         if (StringUtils.isNotBlank(scriptPath) || StringUtils.isNotBlank(script)) {
             validator = new ScriptValidator(validatorElement, getMessagesPack());
@@ -523,16 +524,16 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
                 throw new GuiDevelopmentException(String.format("Class %s is not found", className), context.getFullFrameId());
             if (!StringUtils.isBlank(getMessagesPack()))
                 try {
-                    validator = (Field.Validator) ReflectionHelper.newInstance(aClass, validatorElement, getMessagesPack());
+                    validator = (Consumer<?>) ReflectionHelper.newInstance(aClass, validatorElement, getMessagesPack());
                 } catch (NoSuchMethodException e) {
                     //
                 }
             if (validator == null) {
                 try {
-                    validator = (Field.Validator) ReflectionHelper.newInstance(aClass, validatorElement);
+                    validator = (Consumer<?>) ReflectionHelper.newInstance(aClass, validatorElement);
                 } catch (NoSuchMethodException e) {
                     try {
-                        validator = (Field.Validator) ReflectionHelper.newInstance(aClass);
+                        validator = (Consumer<?>) ReflectionHelper.newInstance(aClass);
                     } catch (NoSuchMethodException e1) {
                         // todo log warn
                     }
@@ -548,8 +549,8 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
     }
 
     @Deprecated
-    protected Field.Validator getDefaultValidator(MetaProperty property) {
-        Field.Validator validator = null;
+    protected Consumer<?> getDefaultValidator(MetaProperty property) {
+        Consumer<?> validator = null;
         if (property.getRange().isDatatype()) {
             Messages messages = getMessages();
 

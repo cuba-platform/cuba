@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 public class BulkEditorLoader extends AbstractComponentLoader<BulkEditor> {
 
@@ -60,6 +61,17 @@ public class BulkEditorLoader extends AbstractComponentLoader<BulkEditor> {
                 component.setModelValidators(modelValidators);
             }
         }
+    }
+
+    @Override
+    protected Field.Validator loadValidator(Element validatorElement) {
+        Consumer<?> consumer = super.loadValidator(validatorElement);
+        if (!(consumer instanceof Field.Validator)) {
+            throw new GuiDevelopmentException(
+                    "BulkEditor validator must implement com.haulmont.cuba.gui.components.Field.Validator",
+                    context.getFullFrameId());
+        }
+        return (Field.Validator) consumer;
     }
 
     @Override
