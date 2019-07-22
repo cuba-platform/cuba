@@ -696,7 +696,7 @@ create table SYS_SENDING_ATTACHMENT (
     DELETED_BY varchar(50),
     --
     MESSAGE_ID varchar(32),
-    CONTENT blob,
+    CONTENT longblob,
     CONTENT_FILE_ID varchar(32),
     CONTENT_ID varchar(50),
     NAME varchar(500),
