@@ -28,6 +28,7 @@ import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.Connection;
 import com.haulmont.cuba.web.controllers.ControllerUtils;
+import com.haulmont.cuba.web.gui.components.WebButton;
 import com.haulmont.cuba.web.gui.icons.IconResolver;
 import com.haulmont.cuba.web.widgets.CubaButton;
 import com.haulmont.cuba.web.widgets.CubaLabel;
@@ -112,7 +113,7 @@ public class NoUserSessionHandler extends AbstractExceptionHandler
         dialog.setContent(layout);
 
         CubaButton reloginBtn = new CubaButton();
-        reloginBtn.addStyleName("c-primary-action");
+        reloginBtn.addStyleName(WebButton.PRIMARY_ACTION_STYLENAME);
         reloginBtn.addClickListener(event -> relogin());
         reloginBtn.setCaption(messages.getMainMessage(Type.OK.getMsgKey()));
 

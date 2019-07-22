@@ -27,6 +27,7 @@ import com.haulmont.cuba.security.global.MismatchedUserSessionException;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.Connection;
+import com.haulmont.cuba.web.gui.components.WebButton;
 import com.haulmont.cuba.web.gui.icons.IconResolver;
 import com.haulmont.cuba.web.widgets.CubaButton;
 import com.haulmont.cuba.web.widgets.CubaLabel;
@@ -116,7 +117,7 @@ public class MismatchedUserSessionHandler extends AbstractExceptionHandler
         dialog.setContent(layout);
 
         CubaButton reloginBtn = new CubaButton();
-        reloginBtn.addStyleName("c-primary-action");
+        reloginBtn.addStyleName(WebButton.PRIMARY_ACTION_STYLENAME);
         reloginBtn.setCaption(messages.getMainMessage(DialogAction.Type.OK.getMsgKey(), locale));
         reloginBtn.addClickListener(event ->
                 ui.getApp().recreateUi(ui));
