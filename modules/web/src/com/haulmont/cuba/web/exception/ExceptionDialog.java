@@ -353,7 +353,7 @@ public class ExceptionDialog extends CubaWindow {
                 binding.putAll(additionalExceptionReportBinding);
             }
 
-            reportService.sendExceptionReport(clientConfig.getSupportEmail(), MapUtils.unmodifiableMap(binding));
+            reportService.sendExceptionReport(clientConfig.getSupportEmail(), Collections.unmodifiableMap(binding));
 
             Notification.show(messages.getMainMessage("exceptionDialog.emailSent"));
         } catch (Throwable e) {
