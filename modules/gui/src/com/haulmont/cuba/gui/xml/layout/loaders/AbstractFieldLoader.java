@@ -27,6 +27,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
 
 import java.util.*;
+import java.util.function.Consumer;
 
 public abstract class AbstractFieldLoader<T extends Field> extends AbstractDatasourceComponentLoader<T> {
 
@@ -81,7 +82,7 @@ public abstract class AbstractFieldLoader<T extends Field> extends AbstractDatas
 
         if (!validatorElements.isEmpty()) {
             for (Element validatorElement : validatorElements) {
-                Field.Validator validator = loadValidator(validatorElement);
+                Consumer<?> validator = loadValidator(validatorElement);
                 if (validator != null) {
                     component.addValidator(validator);
                 }
@@ -89,7 +90,7 @@ public abstract class AbstractFieldLoader<T extends Field> extends AbstractDatas
 
         } else if (component.getDatasource() != null) {
             MetaProperty property = component.getMetaProperty();
-            Field.Validator validator = getDefaultValidator(property);
+            Consumer<?> validator = getDefaultValidator(property);
             if (validator != null) {
                 component.addValidator(validator);
             }
