@@ -58,6 +58,7 @@ import javax.annotation.Nullable;
 import java.lang.reflect.Constructor;
 import java.text.DecimalFormat;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -504,7 +505,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
 
         if (!validatorElements.isEmpty()) {
             for (Element validatorElement : validatorElements) {
-                Field.Validator validator = loadValidator(validatorElement);
+                Consumer<?> validator = loadValidator(validatorElement);
                 if (validator != null) {
                     component.addValidator(column, validator);
                 }
@@ -516,7 +517,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
             }
 
             MetaPropertyPath propertyPath = (MetaPropertyPath) column.getId();
-            Field.Validator validator = getDefaultValidator(propertyPath.getMetaProperty());
+            Consumer<?> validator = getDefaultValidator(propertyPath.getMetaProperty());
             if (validator != null) {
                 component.addValidator(column, validator);
             }
@@ -703,7 +704,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
         List<Element> validatorElements = element.elements("validator");
 
         for (Element validatorElement : validatorElements) {
-            Field.Validator validator = loadValidator(validatorElement);
+            Consumer<?> validator = loadValidator(validatorElement);
             if (validator != null) {
                 component.addValidator(validator);
             }

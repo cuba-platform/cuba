@@ -142,14 +142,14 @@ public interface Table<E extends Entity>
      * @deprecated automatic validation of Table is not supported
      */
     @Deprecated
-    default void addValidator(Column column, com.haulmont.cuba.gui.components.Field.Validator validator) {
+    default void addValidator(Column column, Consumer<?> validator) {
         LoggerFactory.getLogger(Table.class).warn("Field.Validator for Table is not supported");
     }
     /**
      * @deprecated automatic validation of Table is not supported
      */
     @Deprecated
-    default void addValidator(com.haulmont.cuba.gui.components.Field.Validator validator) {
+    default void addValidator(Consumer<?> validator) {
         LoggerFactory.getLogger(Table.class).warn("Field.Validator for Table is not supported");
     }
 
