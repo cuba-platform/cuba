@@ -33,6 +33,7 @@ import com.haulmont.cuba.gui.screen.OpenMode;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.exception.ExceptionDialog;
+import com.haulmont.cuba.web.gui.components.WebButton;
 import com.haulmont.cuba.web.gui.components.util.ShortcutListenerDelegate;
 import com.haulmont.cuba.web.gui.icons.IconResolver;
 import com.haulmont.cuba.web.widgets.CubaButton;
@@ -344,7 +345,7 @@ public class WebDialogs implements Dialogs {
 
                 if (action instanceof AbstractAction
                         && ((AbstractAction) action).isPrimary()) {
-                    button.addStyleName("c-primary-action");
+                    button.addStyleName(WebButton.PRIMARY_ACTION_STYLENAME);
                     button.focus();
 
                     hasPrimaryAction = true;

@@ -34,6 +34,8 @@ import java.util.function.Consumer;
 
 public class WebButton extends WebAbstractComponent<CubaButton> implements Button {
 
+    public static final String PRIMARY_ACTION_STYLENAME = "c-primary-action";
+
     protected Action action;
     protected Consumer<PropertyChangeEvent> actionPropertyChangeListener;
 
@@ -162,10 +164,12 @@ public class WebButton extends WebAbstractComponent<CubaButton> implements Butto
             }
 
             boolean primaryAction = action instanceof AbstractAction && ((AbstractAction) action).isPrimary();
-            if (primaryAction) {
-                addStyleName("c-primary-action");
+            boolean primaryButton = getStyleName().contains(PRIMARY_ACTION_STYLENAME);
+
+            if (primaryAction || primaryButton) {
+                addStyleName(PRIMARY_ACTION_STYLENAME);
             } else {
-                removeStyleName("c-primary-action");
+                removeStyleName(PRIMARY_ACTION_STYLENAME);
             }
         }
     }
