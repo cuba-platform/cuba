@@ -46,7 +46,8 @@
                       align="MIDDLE_CENTER"
                       spacing="true"
                       margin="true"
-                      expand="userIndicator">
+                      expand="userIndicator"
+                      width="100%">
                     <userIndicator id="userIndicator"
                                    align="MIDDLE_CENTER"/>
                     <newWindowButton id="newWindowButton"
