@@ -23,9 +23,6 @@ import com.vaadin.client.ui.VLabel;
 
 import java.util.function.Consumer;
 
-/**
- * @author glebfox
- */
 public class CubaLabelWidget extends VLabel {
 
     protected Element contextHelpIcon;
