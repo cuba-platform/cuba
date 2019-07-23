@@ -55,6 +55,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import static com.haulmont.cuba.gui.components.DateField.Resolution;
 
@@ -120,19 +121,19 @@ public abstract class AbstractComponentGenerationStrategy implements ComponentGe
 
         Class type = mppRange.asDatatype().getJavaClass();
 
-            MetaProperty metaProperty = mpp.getMetaProperty();
-            if (DynamicAttributesUtils.isDynamicAttribute(metaProperty)) {
-                CategoryAttribute categoryAttribute = DynamicAttributesUtils.getCategoryAttribute(metaProperty);
-                if (categoryAttribute != null) {
-                    CategoryAttributeConfiguration configuration = categoryAttribute.getConfiguration();
-                    if (categoryAttribute.getDataType() == PropertyType.ENUMERATION && BooleanUtils.isNotTrue(categoryAttribute.getIsCollection())) {
-                        return createEnumField(context);
-                    }
-                    if (configuration != null && configuration.hasOptionsLoader()) {
-                        return createDynamicDatatypeOptionsField(context, mpp, categoryAttribute);
-                    }
+        MetaProperty metaProperty = mpp.getMetaProperty();
+        if (DynamicAttributesUtils.isDynamicAttribute(metaProperty)) {
+            CategoryAttribute categoryAttribute = DynamicAttributesUtils.getCategoryAttribute(metaProperty);
+            if (categoryAttribute != null) {
+                CategoryAttributeConfiguration configuration = categoryAttribute.getConfiguration();
+                if (categoryAttribute.getDataType() == PropertyType.ENUMERATION && BooleanUtils.isNotTrue(categoryAttribute.getIsCollection())) {
+                    return createEnumField(context);
+                }
+                if (configuration != null && configuration.hasOptionsLoader()) {
+                    return createDynamicDatatypeOptionsField(context, mpp, categoryAttribute);
                 }
             }
+        }
 
         if (xmlDescriptor != null
                 && "true".equalsIgnoreCase(xmlDescriptor.attributeValue("link"))) {
@@ -261,6 +262,27 @@ public abstract class AbstractComponentGenerationStrategy implements ComponentGe
                 //noinspection unchecked
                 lookupField.setOptions(new ListOptions(options));
             });
+
+            List<CategoryAttribute> dependsOnAttributes = categoryAttribute.getConfiguration().getDependsOnCategoryAttributes();
+            if (dependsOnAttributes != null && !dependsOnAttributes.isEmpty()) {
+                List<String> dependsOnAttributesCodes = dependsOnAttributes.stream()
+                        .map(a -> DynamicAttributesUtils.encodeAttributeCode(a.getCode()))
+                        .collect(Collectors.toList());
+
+                container.addItemPropertyChangeListener(e -> {
+                    if (dependsOnAttributesCodes.contains(e.getProperty())) {
+                        List options = dynamicAttributesTools.getOptionsLoader()
+                                .loadOptions((BaseGenericIdEntity) e.getItem(), categoryAttribute);
+                        //noinspection unchecked
+                        lookupField.setOptions(new ListOptions(options));
+
+                        if (!options.contains(lookupField.getValue())) {
+                            //noinspection unchecked
+                            lookupField.setValue(null);
+                        }
+                    }
+                });
+            }
         }
 
         setValueSource(lookupField, context);
