@@ -737,12 +737,13 @@ public class CubaScrollTableWidget extends VScrollTable implements TableWidget {
                     }
 
                     if (!(widget instanceof VLabel)
+                            && !(widget instanceof com.vaadin.client.ui.VLabel)
+                            && !(widget instanceof CubaImageWidget)
                             && !(widget instanceof VEmbedded)
                             && !(widget instanceof VTextField && ((VTextField) widget).isReadOnly())
-                            && !(targetWidget instanceof VLabel)
                             && !(targetWidget instanceof Panel)
                             && !(targetWidget instanceof VEmbedded)
-                            && !(widget instanceof CubaImageWidget)
+                            && !(targetWidget instanceof VLabel)
                             && !(targetWidget instanceof VTextField && ((VTextField) targetWidget).isReadOnly())) {
                         return null;
                     }
