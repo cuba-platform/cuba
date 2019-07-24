@@ -62,6 +62,10 @@
     }
   }
 
+  .#{$primary-stylename} .filter-conditions {
+    overflow: hidden;
+  }
+
   .#{$primary-stylename} .filter-conditions .v-popupbutton .v-popup-indicator {
     display: none;
   }
