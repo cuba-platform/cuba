@@ -65,6 +65,10 @@ $cuba-filter-friendly-search-button: false !default;
     padding-bottom: 0;
   }
 
+  .#{$primary-stylename} .filter-conditions {
+    overflow: hidden;
+  }
+
   .#{$primary-stylename} .filter-settings-button .v-popup-indicator,
   .#{$primary-stylename} .filter-conditions .v-popupbutton .v-popup-indicator {
     display: none;
