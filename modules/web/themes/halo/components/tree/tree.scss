@@ -20,7 +20,7 @@
     @include user-select(none);
   }
 
-  .#{$primary-stylename}-row-selected  > .#{$primary-stylename}-cell {
+  .#{$primary-stylename}-row-selected > .#{$primary-stylename}-cell {
     $font-color: valo-font-color($v-selection-color, 0.9);
     color: $font-color;
   }
@@ -34,6 +34,14 @@
     &:focus {
       outline: none;
     }
+  }
+
+  .c-tree-composition .c-tree-wrapper {
+    @if $cuba-show-tree-border == true {
+      padding: round($v-unit-size/4);
+      border: valo-border();
+    }
+    display: inherit;
   }
 
   .c-tree-composition.has-top-panel {

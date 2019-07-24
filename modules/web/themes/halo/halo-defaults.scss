@@ -92,3 +92,7 @@ $cuba-scrollbars-style-enabled: false !default;
  * @group buttonspanel
  */
 $cuba-buttonspanel-flow: true !default;
+/**
+ *  Whether to show a border for the Tree component
+ */
+$cuba-show-tree-border: true !default;
