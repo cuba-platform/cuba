@@ -188,6 +188,11 @@ $cuba-app-menubar-padding-bottom: 0 !default;
  */
 $cuba-hover-color: #d3eaf8 !default;
 /**
+ * Whether buttons should be placed in one row or can wrap onto multiple rows.
+ * @group buttonspanel
+ */
+$cuba-buttonspanel-flow: true !default;
+/**
  *  Whether to show a border for the Tree component
  */
 $cuba-show-tree-border: true !default;

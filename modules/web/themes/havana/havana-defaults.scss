@@ -102,6 +102,11 @@ $c-row-selection-background-color: #c3e1ff !default;
  */
 $c-row-selection-text-color: #1e1e0d !default;
 /**
+ * Whether buttons should be placed in one row or can wrap onto multiple rows.
+ * @group buttonspanel
+ */
+$cuba-buttonspanel-flow: true !default;
+/**
  *  Whether to show a border for the Tree component
  */
 $cuba-show-tree-border: true !default;
