@@ -187,3 +187,7 @@ $cuba-app-menubar-padding-bottom: 0 !default;
  * The background color of hovered item.
  */
 $cuba-hover-color: #d3eaf8 !default;
+/**
+ *  Whether to show a border for the Tree component
+ */
+$cuba-show-tree-border: true !default;

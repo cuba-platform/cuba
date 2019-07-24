@@ -175,7 +175,6 @@ public class WebTree<E extends Entity>
     protected void initComponentComposition(TreeComposition composition) {
         composition.setPrimaryStyleName("c-tree-composition");
         composition.setTree(component);
-        composition.addComponent(component);
         composition.setWidthUndefined();
 
         composition.addShortcutListener(createEnterShortcutListener());
@@ -1103,23 +1102,47 @@ public class WebTree<E extends Entity>
 
     protected class TreeComposition extends CubaCssActionsLayout {
         protected CubaTree<?> tree;
+        protected com.vaadin.ui.CssLayout treeWrapper;
 
         public CubaTree<?> getTree() {
             return tree;
         }
 
         public void setTree(CubaTree<?> tree) {
+            checkNotNullArgument(tree, "Tree can't be null");
+
+            if (treeWrapper == null) {
+                // Wrapper is needed in order to provide
+                treeWrapper = createTreeWrapper();
+                addComponent(treeWrapper);
+            }
+
+            if (this.tree != null) {
+                treeWrapper.removeComponent(this.tree);
+            }
+
             this.tree = tree;
+            treeWrapper.addComponent(tree);
+
+            updateTreeHeight();
+            updateTreeWidth();
         }
 
         @Override
         public void setHeight(float height, Unit unit) {
             super.setHeight(height, unit);
+            updateTreeHeight();
+        }
 
+        protected void updateTreeHeight() {
             if (getHeight() < 0) {
+                treeWrapper.setHeightUndefined();
+
                 tree.setHeightUndefined();
                 tree.getCompositionRoot().setHeightMode(HeightMode.UNDEFINED);
             } else {
+                treeWrapper.setHeight(100, Unit.PERCENTAGE);
+
                 tree.setHeight(100, Unit.PERCENTAGE);
                 tree.getCompositionRoot().setHeightMode(HeightMode.CSS);
             }
@@ -1128,12 +1151,23 @@ public class WebTree<E extends Entity>
         @Override
         public void setWidth(float width, Unit unit) {
             super.setWidth(width, unit);
+            updateTreeWidth();
+        }
 
+        protected void updateTreeWidth() {
             if (getWidth() < 0) {
+                treeWrapper.setWidthUndefined();
                 tree.setWidthUndefined();
             } else {
+                treeWrapper.setWidth(100, Unit.PERCENTAGE);
                 tree.setWidth(100, Unit.PERCENTAGE);
             }
+        }
+
+        protected com.vaadin.ui.CssLayout createTreeWrapper() {
+            com.vaadin.ui.CssLayout treeWrapper = new com.vaadin.ui.CssLayout();
+            treeWrapper.setStyleName("c-tree-wrapper");
+            return treeWrapper;
         }
     }
 }
