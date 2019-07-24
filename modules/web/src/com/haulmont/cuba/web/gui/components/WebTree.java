@@ -1196,7 +1196,7 @@ public class WebTree<E extends Entity>
             checkNotNullArgument(tree, "Tree can't be null");
 
             if (treeWrapper == null) {
-                // Wrapper is needed in order to provide
+                // Wrapper is needed in order to provide a border
                 treeWrapper = createTreeWrapper();
                 addComponent(treeWrapper);
             }
