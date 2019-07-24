@@ -93,7 +93,6 @@ public abstract class WebWindow implements Window, Component.Wrapper, Component.
 
     private EventHub eventHub;
 
-    protected int urlStateMark;
     protected NavigationState resolvedState;
 
     protected boolean defaultScreenWindow = false;
@@ -1007,14 +1006,6 @@ public abstract class WebWindow implements Window, Component.Wrapper, Component.
     public float getExpandRatio(Component component) {
         com.vaadin.ui.Component vComponent = component.unwrap(com.vaadin.ui.Component.class);
         return this.component.getExpandRatio(vComponent);
-    }
-
-    public int getUrlStateMark() {
-        return urlStateMark;
-    }
-
-    public void setUrlStateMark(int urlStateMark) {
-        this.urlStateMark = urlStateMark;
     }
 
     public NavigationState getResolvedState() {

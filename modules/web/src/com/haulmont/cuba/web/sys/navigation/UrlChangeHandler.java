@@ -298,7 +298,7 @@ public class UrlChangeHandler implements InitializingBean {
 
     protected String getStateMark(Screen screen) {
         WebWindow webWindow = (WebWindow) screen.getWindow();
-        return String.valueOf(webWindow.getUrlStateMark());
+        return String.valueOf(webWindow.getResolvedState().getStateMark());
     }
 
     @Nullable

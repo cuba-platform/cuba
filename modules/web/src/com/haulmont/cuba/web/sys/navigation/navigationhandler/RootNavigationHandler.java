@@ -39,6 +39,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
+import java.util.Collections;
 
 @Component
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
@@ -119,8 +120,13 @@ public class RootNavigationHandler implements NavigationHandler {
     protected void handle404(String route, AppUI ui) {
         MapScreenOptions options = new MapScreenOptions(ParamsMap.of("requestedRoute", route));
 
-        ui.getScreens()
-                .create(NotFoundScreen.class, OpenMode.NEW_TAB, options)
-                .show();
+        NotFoundScreen notFoundScreen = ui.getScreens()
+                .create(NotFoundScreen.class, OpenMode.NEW_TAB, options);
+
+        NavigationState state = new NavigationState(route, "", "", Collections.emptyMap());
+        ((WebWindow) notFoundScreen.getWindow())
+                .setResolvedState(state);
+
+        notFoundScreen.show();
     }
 }

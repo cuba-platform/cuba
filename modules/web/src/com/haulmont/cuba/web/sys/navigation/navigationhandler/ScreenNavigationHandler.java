@@ -156,27 +156,21 @@ public class ScreenNavigationHandler implements NavigationHandler {
         return true;
     }
 
-    protected boolean fullyHandled(AppUI ui, NavigationState requestedState) {
-        Map<String, String> requestedParams = MapUtils.isNotEmpty(requestedState.getParams())
-                ? requestedState.getParams()
-                : Collections.emptyMap();
-
-        Screen screen = ui.getUrlChangeHandler().findActiveScreenByState(requestedState);
-        if (screen == null) {
-            return MapUtils.isEmpty(requestedParams);
-        }
-
-        Map<String, String> resolvedParams = ((WebWindow) screen.getWindow()).getResolvedState().getParams();
-
-        return requestedParams.equals(resolvedParams);
-    }
-
     protected void handle404(String route, AppUI ui) {
         MapScreenOptions options = new MapScreenOptions(ParamsMap.of("requestedRoute", route));
 
-        ui.getScreens()
-                .create(NotFoundScreen.class, OpenMode.NEW_TAB, options)
-                .show();
+        NotFoundScreen notFoundScreen = ui.getScreens()
+                .create(NotFoundScreen.class, OpenMode.NEW_TAB, options);
+
+        NavigationState state = new NavigationState(
+                ui.getUrlRouting().getState().getRoot(),
+                "",
+                route,
+                Collections.emptyMap());
+        ((WebWindow) notFoundScreen.getWindow())
+                .setResolvedState(state);
+
+        notFoundScreen.show();
     }
 
     protected boolean isScreenChanged(NavigationState requestedState, AppUI ui) {
@@ -235,8 +229,7 @@ public class ScreenNavigationHandler implements NavigationHandler {
             return;
         }
 
-        if (StringUtils.isNotEmpty(screenRoute)
-                && requestedState.getNestedRoute().endsWith(screenRoute)) {
+        if (requestedState.getNestedRoute().endsWith(screenRoute)) {
             Map<String, String> params = requestedState.getParams();
             if (MapUtils.isNotEmpty(params)) {
                 UiControllerUtils.fireEvent(screen, UrlParamsChangedEvent.class,
@@ -245,9 +238,24 @@ public class ScreenNavigationHandler implements NavigationHandler {
 
             ((WebWindow) screen.getWindow())
                     .setResolvedState(requestedState);
+        } else {
+            ((WebWindow) screen.getWindow())
+                    .setResolvedState(getNestedScreenState(screenRoute, requestedState));
         }
 
         screen.show();
+    }
+
+    protected NavigationState getNestedScreenState(String screenRoute, NavigationState requestedState) {
+        String nestedRoute = requestedState.getNestedRoute();
+        String subRoute = screenRoute + '/';
+        String nestedScreenRoute = nestedRoute.substring(0, nestedRoute.indexOf(subRoute) + subRoute.length() - 1);
+
+        return new NavigationState(
+                requestedState.getRoot(),
+                "",
+                nestedScreenRoute,
+                Collections.emptyMap());
     }
 
     protected Screen createScreen(NavigationState requestedState, String screenRoute, WindowInfo windowInfo, AppUI ui) {

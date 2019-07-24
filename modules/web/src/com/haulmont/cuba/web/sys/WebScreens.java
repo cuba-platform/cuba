@@ -1580,7 +1580,11 @@ public class WebScreens implements Screens, WindowManager {
         WindowBreadCrumbs breadCrumbs = createWindowBreadCrumbs(screen);
         breadCrumbs.setWindowNavigateHandler(this::handleWindowBreadCrumbsNavigate);
         breadCrumbs.addWindow(screen.getWindow());
-        ((WebWindow) screen.getWindow()).setUrlStateMark(getConfiguredWorkArea().generateUrlStateMark());
+
+        WebWindow webWindow = (WebWindow) screen.getWindow();
+        webWindow.setResolvedState(createOrUpdateState(
+                webWindow.getResolvedState(),
+                getConfiguredWorkArea().generateUrlStateMark()));
 
         TabWindowContainer windowContainer = new TabWindowContainerImpl();
         windowContainer.setPrimaryStyleName("c-app-window-wrap");
@@ -1684,7 +1688,11 @@ public class WebScreens implements Screens, WindowManager {
         windowContainer.addComponent(newWindowComposition);
 
         breadCrumbs.addWindow(newWindow);
-        ((WebWindow) newWindow).setUrlStateMark(workArea.generateUrlStateMark());
+
+        WebWindow webWindow = (WebWindow) screen.getWindow();
+        webWindow.setResolvedState(createOrUpdateState(
+                webWindow.getResolvedState(),
+                getConfiguredWorkArea().generateUrlStateMark()));
 
         if (workArea.getMode() == Mode.TABBED) {
             TabSheetBehaviour tabSheet = workArea.getTabbedWindowContainer().getTabSheetBehaviour();
@@ -1717,7 +1725,10 @@ public class WebScreens implements Screens, WindowManager {
 
         WebAppWorkArea workArea = getConfiguredWorkAreaOrNull();
         if (workArea != null) {
-            ((WebWindow) window).setUrlStateMark(workArea.generateUrlStateMark());
+            WebWindow webWindow = (WebWindow) screen.getWindow();
+            webWindow.setResolvedState(createOrUpdateState(
+                    webWindow.getResolvedState(),
+                    getConfiguredWorkArea().generateUrlStateMark()));
         }
 
         window.withUnwrappedComposition(CubaWindow.class, vWindow -> {
@@ -1738,6 +1749,17 @@ public class WebScreens implements Screens, WindowManager {
 
             ui.addWindow(vWindow);
         });
+    }
+
+    protected NavigationState createOrUpdateState(@Nullable NavigationState state, int stateMark) {
+        if (state == null) {
+            return new NavigationState("", String.valueOf(stateMark), "", Collections.emptyMap());
+        }
+        return new NavigationState(
+                state.getRoot(),
+                String.valueOf(stateMark),
+                state.getNestedRoute(),
+                state.getParams());
     }
 
     protected void handleWindowBreadCrumbsNavigate(WindowBreadCrumbs breadCrumbs, Window window) {

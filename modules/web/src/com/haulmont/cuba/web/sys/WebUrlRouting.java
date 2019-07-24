@@ -326,7 +326,7 @@ public class WebUrlRouting implements UrlRouting {
 
     protected String getStateMark(Screen screen) {
         WebWindow webWindow = (WebWindow) screen.getWindow();
-        return String.valueOf(webWindow.getUrlStateMark());
+        return String.valueOf(webWindow.getResolvedState().getStateMark());
     }
 
     protected boolean externalNavigation(NavigationState currentState, NavigationState newState) {

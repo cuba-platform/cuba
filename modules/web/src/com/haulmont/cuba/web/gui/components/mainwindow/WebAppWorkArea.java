@@ -284,8 +284,6 @@ public class WebAppWorkArea extends WebAbstractComponent<CssLayout> implements A
                     String.valueOf(stateMark),
                     resolvedState.getNestedRoute(),
                     resolvedState.getParams());
-
-            webWindow.setUrlStateMark(stateMark);
             webWindow.setResolvedState(newState);
 
             Screen screen = selectedWindow.getFrameOwner();
