@@ -82,4 +82,9 @@ public class OracleDbmsFeatures implements DbmsFeatures {
     public boolean supportsLobSortingAndFiltering() {
         return false;
     }
+
+    @Override
+    public Integer getMaxIdsBatchSize() {
+        return 1000;
+    }
 }
