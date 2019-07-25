@@ -354,6 +354,12 @@ public abstract class AbstractDataGridLoader<T extends DataGrid> extends Actions
         Element rowsCountElement = element.element("rowsCount");
         if (rowsCountElement != null) {
             RowsCount rowsCount = factory.create(RowsCount.class);
+
+            String autoLoad = rowsCountElement.attributeValue("autoLoad");
+            if (StringUtils.isNotEmpty(autoLoad)) {
+                rowsCount.setAutoLoad(Boolean.parseBoolean(autoLoad));
+            }
+
             rowsCount.setRowsCountTarget(component);
             component.setRowsCount(rowsCount);
         }

@@ -17,7 +17,6 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.bali.events.Subscription;
-import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.KeyValueEntity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.components.*;
@@ -28,7 +27,13 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.CollectionDatasource.Operation;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.WeakCollectionChangeListener;
+import com.haulmont.cuba.gui.executors.BackgroundTask;
+import com.haulmont.cuba.gui.executors.BackgroundTaskHandler;
+import com.haulmont.cuba.gui.executors.BackgroundWorker;
+import com.haulmont.cuba.gui.executors.TaskLifeCycle;
 import com.haulmont.cuba.gui.model.*;
+import com.haulmont.cuba.gui.screen.Screen;
+import com.haulmont.cuba.gui.screen.UiControllerUtils;
 import com.haulmont.cuba.web.gui.icons.IconResolver;
 import com.haulmont.cuba.web.widgets.CubaRowsCount;
 import com.vaadin.shared.Registration;
@@ -49,10 +54,12 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
         Component.HasXmlDescriptor {
 
     protected static final String TABLE_ROWS_COUNT_STYLENAME = "c-table-rows-count";
+    protected static final String PAGING_COUNT_NUMBER_STYLENAME = "c-paging-count-number";
 
     private static final Logger log = LoggerFactory.getLogger(WebRowsCount.class);
 
     protected Messages messages;
+    protected BackgroundWorker backgroundWorker;
 
     protected Adapter adapter;
 
@@ -66,6 +73,9 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
     protected int size;
     protected boolean samePage;
 
+    protected boolean autoLoad;
+    protected BackgroundTaskHandler<Integer> rowsCountTaskHandler;
+
     protected RowsCountTarget target;
 
     protected Registration onLinkClickRegistration;
@@ -73,7 +83,7 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
     protected Registration onNextClickRegistration;
     protected Registration onFirstClickRegistration;
     protected Registration onLastClickRegistration;
-    private Function<DataLoadContext, Long> totalCountDelegate;
+    protected Function<DataLoadContext, Long> totalCountDelegate;
 
     public WebRowsCount() {
         component = new CubaRowsCount();
@@ -92,6 +102,11 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
         component.getPrevButton().setIcon(iconResolver.getIconResource("icons/rows-count-prev.png"));
         component.getNextButton().setIcon(iconResolver.getIconResource("icons/rows-count-next.png"));
         component.getLastButton().setIcon(iconResolver.getIconResource("icons/rows-count-last.png"));
+    }
+
+    @Inject
+    public void setBackgroundWorker(BackgroundWorker backgroundWorker) {
+        this.backgroundWorker = backgroundWorker;
     }
 
     @Override
@@ -326,9 +341,12 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
     }
 
     protected void onLinkClick() {
-        int count = adapter.getCount();
+        showRowsCountValue(adapter.getCount());
+    }
+
+    protected void showRowsCountValue(int count) {
         component.getCountButton().setCaption(String.valueOf(count)); // todo rework with datatype
-        component.getCountButton().addStyleName("c-paging-count-number");
+        component.getCountButton().addStyleName(PAGING_COUNT_NUMBER_STYLENAME);
         component.getCountButton().setEnabled(false);
     }
 
@@ -428,9 +446,13 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
         component.getLabel().setValue(messages.formatMainMessage(msgKey, countValue));
 
         if (component.getCountButton().isVisible() && !refreshing || refreshSizeButton) {
-            component.getCountButton().setCaption(messages.getMainMessage("table.rowsCount.msg3"));
-            component.getCountButton().removeStyleName("c-paging-count-number");
-            component.getCountButton().setEnabled(true);
+            if (autoLoad) {
+                loadRowsCount();
+            } else {
+                component.getCountButton().setCaption(messages.getMainMessage("table.rowsCount.msg3"));
+                component.getCountButton().removeStyleName(PAGING_COUNT_NUMBER_STYLENAME);
+                component.getCountButton().setEnabled(true);
+            }
         }
     }
 
@@ -440,6 +462,44 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
         } else {
             return (start + 1) + "-" + (start + size);
         }
+    }
+
+    protected void loadRowsCount() {
+        if (rowsCountTaskHandler != null
+                && rowsCountTaskHandler.isAlive()) {
+            log.debug("Cancel previous rows count task");
+            rowsCountTaskHandler.cancel();
+            rowsCountTaskHandler = null;
+        }
+        rowsCountTaskHandler = backgroundWorker.handle(getLoadCountTask());
+        rowsCountTaskHandler.execute();
+    }
+
+    protected BackgroundTask<Long, Integer> getLoadCountTask() {
+        Screen screen = UiControllerUtils.getScreen(target.getFrame().getFrameOwner());
+        return new BackgroundTask<Long, Integer>(30, screen) {
+
+            @Override
+            public Integer run(TaskLifeCycle<Long> taskLifeCycle) {
+                return adapter.getCount();
+            }
+
+            @Override
+            public void done(Integer result) {
+                showRowsCountValue(result);
+            }
+
+            @Override
+            public void canceled() {
+                log.debug("Loading rows count for screen '{}' is canceled", screen);
+            }
+
+            @Override
+            public boolean handleTimeoutException() {
+                log.warn("Time out while loading rows count for screen '{}'", screen);
+                return true;
+            }
+        };
     }
 
     @Override
@@ -458,6 +518,16 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
     @Override
     public void removeVisibilityChangeListener(Consumer<VisibilityChangeEvent> listener) {
         unsubscribe(VisibilityChangeEvent.class, listener);
+    }
+
+    @Override
+    public boolean getAutoLoad() {
+        return autoLoad;
+    }
+
+    @Override
+    public void setAutoLoad(boolean autoLoad) {
+        this.autoLoad = autoLoad;
     }
 
     public interface Adapter {

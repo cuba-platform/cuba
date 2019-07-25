@@ -2459,7 +2459,9 @@
                     <xs:element name="actions" minOccurs="0" type="componentActions"/>
                     <xs:element name="buttonsPanel" minOccurs="0" type="buttonsPanelComponent"/>
                     <xs:element name="rowsCount" minOccurs="0">
-                        <xs:complexType/>
+                        <xs:complexType>
+                            <xs:attribute name="autoLoad" type="xs:boolean"/>
+                        </xs:complexType>
                     </xs:element>
                     <xs:element name="columns" type="tableColumnsList"/>
                     <xs:element name="rows" type="tableRowsType"/>
@@ -2481,7 +2483,9 @@
                     <xs:element name="actions" minOccurs="0" type="componentActions"/>
                     <xs:element name="buttonsPanel" minOccurs="0" type="buttonsPanelComponent"/>
                     <xs:element name="rowsCount" minOccurs="0">
-                        <xs:complexType/>
+                        <xs:complexType>
+                            <xs:attribute name="autoLoad" type="xs:boolean"/>
+                        </xs:complexType>
                     </xs:element>
                     <xs:element name="columns" type="tableColumnsList"/>
                     <xs:element name="rows" type="treeTableRowsType"/>
@@ -2504,7 +2508,9 @@
                     <xs:element name="actions" minOccurs="0" type="componentActions"/>
                     <xs:element name="buttonsPanel" minOccurs="0" type="buttonsPanelComponent"/>
                     <xs:element name="rowsCount" minOccurs="0">
-                        <xs:complexType/>
+                        <xs:complexType>
+                            <xs:attribute name="autoLoad" type="xs:boolean"/>
+                        </xs:complexType>
                     </xs:element>
                     <xs:element name="columns" type="groupTableColumnsType"/>
                     <xs:element name="rows" type="tableRowsType"/>
@@ -2556,7 +2562,9 @@
                     <xs:element name="actions" minOccurs="0" type="componentActions"/>
                     <xs:element name="buttonsPanel" minOccurs="0" type="buttonsPanelComponent"/>
                     <xs:element name="rowsCount" minOccurs="0">
-                        <xs:complexType/>
+                        <xs:complexType>
+                            <xs:attribute name="autoLoad" type="xs:boolean"/>
+                        </xs:complexType>
                     </xs:element>
                     <xs:element name="columns" type="dataGridColumnsList"/>
                 </xs:all>

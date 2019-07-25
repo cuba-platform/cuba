@@ -48,6 +48,8 @@ public class DesktopRowsCount extends DesktopAbstractComponent<DesktopRowsCount.
     protected int size;
     protected ListComponent owner;
     protected boolean samePage;
+    // just stub
+    protected boolean autoLoad;
 
     protected CollectionDatasource.CollectionChangeListener collectionChangeListener;
     protected List<BeforeRefreshListener> beforeRefreshListeners;
@@ -318,6 +320,17 @@ public class DesktopRowsCount extends DesktopAbstractComponent<DesktopRowsCount.
         }
     }
 
+    // just stub
+    @Override
+    public boolean getAutoLoad() {
+        return autoLoad;
+    }
+
+    // just stub
+    @Override
+    public void setAutoLoad(boolean autoLoad) {
+        this.autoLoad = autoLoad;
+    }
 
     private boolean refreshDatasource(CollectionDatasource.SupportsPaging ds) {
         if (beforeRefreshListeners != null) {

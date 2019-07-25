@@ -372,6 +372,12 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
         Element rowsCountElement = element.element("rowsCount");
         if (rowsCountElement != null) {
             RowsCount rowsCount = factory.create(RowsCount.class);
+
+            String autoLoad = rowsCountElement.attributeValue("autoLoad");
+            if (StringUtils.isNotEmpty(autoLoad)) {
+                rowsCount.setAutoLoad(Boolean.parseBoolean(autoLoad));
+            }
+
             rowsCount.setRowsCountTarget(table);
             table.setRowsCount(rowsCount);
         }

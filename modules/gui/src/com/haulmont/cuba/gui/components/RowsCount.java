@@ -38,6 +38,18 @@ public interface RowsCount extends Component.BelongToFrame {
     String NAME = "rowsCount";
 
     /**
+     * @return whether rows count should be loaded automatically
+     */
+    boolean getAutoLoad();
+
+    /**
+     * Sets whether rows count should be loaded automatically.
+     *
+     * @param autoLoad pass true to enable auto load, or false otherwise
+     */
+    void setAutoLoad(boolean autoLoad);
+
+    /**
      * @deprecated assign {@link RowsCountTarget} instead.
      */
     @Deprecated
@@ -65,7 +77,7 @@ public interface RowsCount extends Component.BelongToFrame {
     RowsCountTarget getRowsCountTarget();
     void setRowsCountTarget(RowsCountTarget target);
 
-    interface RowsCountTarget {
+    interface RowsCountTarget extends BelongToFrame {
     }
 
     /**
