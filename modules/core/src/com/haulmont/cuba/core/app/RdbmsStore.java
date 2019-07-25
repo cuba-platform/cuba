@@ -16,6 +16,7 @@
 
 package com.haulmont.cuba.core.app;
 
+import com.google.common.collect.Lists;
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
@@ -29,6 +30,7 @@ import com.haulmont.cuba.core.app.queryresults.QueryResultsManagerAPI;
 import com.haulmont.cuba.core.entity.*;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.EntityFetcher;
+import com.haulmont.cuba.core.sys.persistence.DbmsSpecificFactory;
 import com.haulmont.cuba.core.sys.persistence.EntityChangedEventManager;
 import com.haulmont.cuba.security.entity.ConstraintOperationType;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
@@ -220,8 +222,11 @@ public class RdbmsStore implements DataStore {
             View view = createRestrictedView(context);
 
             List<E> entities;
+            Integer maxIdsBatchSize = DbmsSpecificFactory.getDbmsFeatures(storeName).getMaxIdsBatchSize();
             if (!context.getIds().isEmpty() && entityHasEmbeddedId(metaClass)) {
-                entities = loadBySeparateQueries(context, em, view);
+                entities = loadListBySingleIds(context, em, view);
+            } else if (!context.getIds().isEmpty() && maxIdsBatchSize != null && context.getIds().size() > maxIdsBatchSize) {
+                entities = loadListByBatchesOfIds(context, em, view, maxIdsBatchSize);
             } else {
                 Query query = createQuery(em, context, false, false);
                 query.setView(view);
@@ -271,7 +276,7 @@ public class RdbmsStore implements DataStore {
         return pkProperty == null || pkProperty.getRange().isClass();
     }
 
-    protected  <E extends Entity> List<E> loadBySeparateQueries(LoadContext<E> context, EntityManager em, View view) {
+    protected  <E extends Entity> List<E> loadListBySingleIds(LoadContext<E> context, EntityManager em, View view) {
         LoadContext<?> contextCopy = context.copy();
         contextCopy.setIds(Collections.emptyList());
 
@@ -297,6 +302,24 @@ public class RdbmsStore implements DataStore {
             result.add(entity);
         }
         return result;
+    }
+
+    @SuppressWarnings("unchecked")
+    protected <E extends Entity> List<E> loadListByBatchesOfIds(LoadContext<E> context, EntityManager em, View view, int batchSize) {
+        List<List<Object>> partitions = Lists.partition((List<Object>) context.getIds(), batchSize);
+
+        List<E> entities = new ArrayList<>(context.getIds().size());
+        for (List partition : partitions) {
+            LoadContext<E> contextCopy = (LoadContext<E>) context.copy();
+            contextCopy.setIds(partition);
+
+            Query query = createQuery(em, contextCopy, false, false);
+            query.setView(view);
+            List<E> list = executeQuery(query, false);
+            entities.addAll(list);
+        }
+
+        return entities;
     }
 
     @Override

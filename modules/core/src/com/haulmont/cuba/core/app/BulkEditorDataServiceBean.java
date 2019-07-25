@@ -87,18 +87,13 @@ public class BulkEditorDataServiceBean implements BulkEditorDataService {
     }
 
     protected List<Entity> loadItemsWithDirectKey(LoadDescriptor ld) {
-        LoadContext.Query query = new LoadContext.Query(
-                String.format("select e from %s e where e.%s in :ids", ld.getMetaClass(),
-                        metadataTools.getPrimaryKeyName(ld.getMetaClass())));
-
         List<Object> ids = ld.getSelectedItems().stream()
                 .map(Entity::getId)
                 .collect(Collectors.toList());
-        query.setParameter("ids", ids);
 
         LoadContext<Entity> lc = new LoadContext<>(ld.getMetaClass());
         lc.setSoftDeletion(false);
-        lc.setQuery(query);
+        lc.setIds(ids);
         lc.setView(ld.getView());
         lc.setLoadDynamicAttributes(ld.isLoadDynamicAttributes());
 
