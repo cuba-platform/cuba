@@ -522,6 +522,9 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
                 configuration.setOptionsLoaderScript(null);
                 attribute.setWhereClause(null);
                 attribute.setJoinClause(null);
+                if (attribute.getDataType() == ENTITY) {
+                    configuration.setOptionsLoaderType(JPQL);
+                }
             }
         }
     }
