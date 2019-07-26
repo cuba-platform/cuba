@@ -59,12 +59,12 @@ public class DynamicAttributesRecalculationTools {
      */
     public void recalculateDynamicAttributes(BaseGenericIdEntity entity, CategoryAttribute attribute) {
 
-        if (attribute == null || attribute.getConfiguration().getDependentCategoryAttributes() == null
-                || attribute.getConfiguration().getDependentCategoryAttributes().isEmpty()) {
+        if (attribute == null || attribute.getConfiguration().getDependentAttributes() == null
+                || attribute.getConfiguration().getDependentAttributes().isEmpty()) {
             return;
         }
 
-        Set<CategoryAttribute> needToRecalculate = new HashSet<>(attribute.getConfiguration().getDependentCategoryAttributes());
+        Set<CategoryAttribute> needToRecalculate = new HashSet<>(attribute.getConfiguration().getDependentAttributes());
         int recalculationLevel = 1;
 
         while (!needToRecalculate.isEmpty()) {
@@ -77,7 +77,7 @@ public class DynamicAttributesRecalculationTools {
             Set<CategoryAttribute> nextLevelAttributes = new HashSet<>();
 
             for (CategoryAttribute dependentAttribute : needToRecalculate) {
-                String groovyScript = dependentAttribute.getConfiguration().getRecalculationGroovyScript();
+                String groovyScript = dependentAttribute.getConfiguration().getRecalculationScript();
 
                 if (Strings.isNullOrEmpty(groovyScript)) {
                     continue;
@@ -95,8 +95,8 @@ public class DynamicAttributesRecalculationTools {
 
                 entity.setValue(attributeCode, newValue);
 
-                if (dependentAttribute.getConfiguration().getDependentCategoryAttributes() != null) {
-                    nextLevelAttributes.addAll(dependentAttribute.getConfiguration().getDependentCategoryAttributes());
+                if (dependentAttribute.getConfiguration().getDependentAttributes() != null) {
+                    nextLevelAttributes.addAll(dependentAttribute.getConfiguration().getDependentAttributes());
                 }
             }
 

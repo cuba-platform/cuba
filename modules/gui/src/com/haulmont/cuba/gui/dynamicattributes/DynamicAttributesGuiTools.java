@@ -498,8 +498,8 @@ public class DynamicAttributesGuiTools {
      */
     @SuppressWarnings("unchecked")
     public Consumer<HasValue.ValueChangeEvent> getValueChangeEventListener(final CategoryAttribute attribute) {
-        if (attribute.getConfiguration().getDependentCategoryAttributes() != null
-                && !attribute.getConfiguration().getDependentCategoryAttributes().isEmpty()) {
+        if (attribute.getConfiguration().getDependentAttributes() != null
+                && !attribute.getConfiguration().getDependentAttributes().isEmpty()) {
 
             return valueChangeEvent -> {
                 if (Boolean.TRUE.equals(recalculationInProgress.get())) {

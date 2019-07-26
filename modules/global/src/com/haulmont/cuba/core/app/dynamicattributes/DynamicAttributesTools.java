@@ -45,7 +45,7 @@ public class DynamicAttributesTools {
     protected MetadataTools metadataTools;
 
     @Inject
-    protected AttributeOptionsLoader attributeOptionsLoader;
+    protected AttributeOptionsLoaderService attributeOptionsLoader;
 
     /**
      * Get special meta property path object for dynamic attribute by code
@@ -114,7 +114,7 @@ public class DynamicAttributesTools {
         Set<CategoryAttribute> independentAttributes = new HashSet<>();
 
         for (CategoryAttribute attribute : attributes) {
-            if (attribute.getConfiguration().getDependsOnCategoryAttributes().isEmpty()) {
+            if (attribute.getConfiguration().getDependsOnAttributes().isEmpty()) {
                 independentAttributes.add(attribute);
             }
         }
@@ -135,7 +135,7 @@ public class DynamicAttributesTools {
         Set<CategoryAttribute> dependentAttributes = new HashSet<>();
 
         for (CategoryAttribute attr : attributes) {
-            if (attr.getConfiguration().getDependsOnCategoryAttributes().contains(attribute)) {
+            if (attr.getConfiguration().getDependsOnAttributes().contains(attribute)) {
                 dependentAttributes.add(attr);
             }
         }
@@ -143,7 +143,7 @@ public class DynamicAttributesTools {
         return dependentAttributes;
     }
 
-    public AttributeOptionsLoader getOptionsLoader() {
-        return attributeOptionsLoader;
+    public List loadOptions(BaseGenericIdEntity entity, CategoryAttribute attribute) {
+        return attributeOptionsLoader.loadOptions(entity, attribute);
     }
 }

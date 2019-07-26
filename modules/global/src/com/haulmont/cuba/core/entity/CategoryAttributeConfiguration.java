@@ -32,6 +32,9 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import static com.haulmont.cuba.core.entity.CategoryAttributeOptionsLoaderType.GROOVY;
+import static com.haulmont.cuba.core.entity.CategoryAttributeOptionsLoaderType.SQL;
+
 @MetaClass(name = "sys$CategoryAttributeConfiguration")
 @SystemLevel
 public class CategoryAttributeConfiguration extends BaseGenericIdEntity<String> {
@@ -82,18 +85,18 @@ public class CategoryAttributeConfiguration extends BaseGenericIdEntity<String> 
     protected String optionsLoaderScript;
 
     @MetaProperty
-    protected String recalculationGroovyScript;
+    protected String recalculationScript;
 
     @MetaProperty
     @Transient
-    protected transient Collection<CategoryAttribute> dependentCategoryAttributes;
+    protected transient Collection<CategoryAttribute> dependentAttributes;
 
     @Transient
     protected List<UUID> dependsOnCategoryAttributesIds;
 
     @MetaProperty
     @Transient
-    protected transient List<CategoryAttribute> dependsOnCategoryAttributes;
+    protected transient List<CategoryAttribute> dependsOnAttributes;
 
     public Integer getMinInt() {
         return minInt;
@@ -223,54 +226,54 @@ public class CategoryAttributeConfiguration extends BaseGenericIdEntity<String> 
         this.numberFormatPattern = numberFormatPattern;
     }
 
-    public String getRecalculationGroovyScript() {
-        return recalculationGroovyScript;
+    public String getRecalculationScript() {
+        return recalculationScript;
     }
 
-    public void setRecalculationGroovyScript(String recalculationGroovyScript) {
-        this.recalculationGroovyScript = recalculationGroovyScript;
+    public void setRecalculationScript(String recalculationScript) {
+        this.recalculationScript = recalculationScript;
     }
 
-    public Collection<CategoryAttribute> getDependentCategoryAttributes() {
-        if (dependentCategoryAttributes == null) {
+    public Collection<CategoryAttribute> getDependentAttributes() {
+        if (dependentAttributes == null) {
             DynamicAttributesTools dynamicAttributesTools = AppBeans.get(DynamicAttributesTools.NAME);
-            dependentCategoryAttributes = dynamicAttributesTools.getDependentCategoryAttributes(categoryAttribute);
+            dependentAttributes = dynamicAttributesTools.getDependentCategoryAttributes(categoryAttribute);
         }
 
-        return dependentCategoryAttributes;
+        return dependentAttributes;
     }
 
-    public List<CategoryAttribute> getDependsOnCategoryAttributes() {
+    public List<CategoryAttribute> getDependsOnAttributes() {
         if (dependsOnCategoryAttributesIds == null || dependsOnCategoryAttributesIds.isEmpty()) {
             return Collections.emptyList();
         }
 
-        if (dependsOnCategoryAttributes == null) {
+        if (dependsOnAttributes == null) {
             DataManager dataManager = AppBeans.get(DataManager.class);
-            dependsOnCategoryAttributes = dataManager.load(CategoryAttribute.class)
+            dependsOnAttributes = dataManager.load(CategoryAttribute.class)
                     .ids(dependsOnCategoryAttributesIds)
                     .list();
         }
 
-        return dependsOnCategoryAttributes;
+        return dependsOnAttributes;
     }
 
-    public void setDependsOnCategoryAttributes(List<CategoryAttribute> dependsOnCategoryAttributes) {
-        if (dependsOnCategoryAttributes == null) {
+    public void setDependsOnAttributes(List<CategoryAttribute> dependsOnAttributes) {
+        if (dependsOnAttributes == null) {
             this.dependsOnCategoryAttributesIds = null;
-            this.dependsOnCategoryAttributes = null;
+            this.dependsOnAttributes = null;
             return;
         }
 
-        this.dependsOnCategoryAttributesIds = dependsOnCategoryAttributes.stream()
+        this.dependsOnCategoryAttributesIds = dependsOnAttributes.stream()
                 .map(BaseUuidEntity::getId)
                 .collect(Collectors.toList());
 
-        this.dependsOnCategoryAttributes = dependsOnCategoryAttributes;
+        this.dependsOnAttributes = dependsOnAttributes;
     }
 
     public Boolean isReadOnly() {
-        return !Strings.isNullOrEmpty(recalculationGroovyScript);
+        return !Strings.isNullOrEmpty(recalculationScript);
     }
 
     public CategoryAttributeOptionsLoaderType getOptionsLoaderType() {
@@ -290,7 +293,13 @@ public class CategoryAttributeConfiguration extends BaseGenericIdEntity<String> 
     }
 
     public boolean hasOptionsLoader() {
-        return getOptionsLoaderType() != null && !Strings.isNullOrEmpty(getOptionsLoaderScript());
+        if (getOptionsLoaderType() != null) {
+            CategoryAttributeOptionsLoaderType loaderType = getOptionsLoaderType();
+            if (SQL == loaderType || GROOVY == loaderType) {
+                return !Strings.isNullOrEmpty(getOptionsLoaderScript());
+            }
+        }
+        return false;
     }
 
     @Override
