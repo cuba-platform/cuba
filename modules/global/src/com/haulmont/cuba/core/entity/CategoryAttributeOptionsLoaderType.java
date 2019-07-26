@@ -20,6 +20,7 @@ import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import com.haulmont.chile.core.datatypes.impl.EnumUtils;
 
 public enum CategoryAttributeOptionsLoaderType implements EnumClass<String> {
+    JPQL,
     SQL,
     GROOVY;
 

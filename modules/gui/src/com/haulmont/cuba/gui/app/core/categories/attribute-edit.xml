@@ -38,17 +38,31 @@
                     <column>
                         <field id="name" property="name" required="true" width="100%"/>
                         <field id="code" property="code" required="true" width="100%"/>
-                        <field id="description" custom="true" width="100%"/>
+                        <field id="description" width="100%">
+                            <textArea property="description" datasource="attributeDs"
+                                      maxLength="1000" rows="3"/>
+                        </field>
                         <field id="required" property="required"/>
-                        <field id="isCollection" property="isCollection"/>
-                        <field id="dataType" custom="true" required="true" width="100%"/>
-
-                        <field id="entityClass" custom="true" required="true" width="100%"/>
-                        <field id="screen" custom="true" width="100%"/>
                         <field id="lookup" property="lookup"/>
-                        <field id="constraintWizard" custom="true" caption=""/>
-                        <field id="joinClause" width="100%" custom="true"/>
-                        <field id="whereClause" width="100%" rows="3" custom="true"/>
+                        <field id="isCollection" property="isCollection"/>
+                        <field id="dataType" width="100%">
+                            <lookupField property="dataType" datasource="attributeDs"
+                                         required="true" requiredMessage="msg://dataTypeRequired"
+                                         caption="msg://dataType"/>
+                        </field>
+
+                        <field id="entityClass" required="true" width="100%" caption="msg://entityType">
+                            <lookupField id="entityClass"
+                                         required="true"
+                                         requiredMessage="msg://entityTypeRequired"
+                                         datasource="attributeDs"
+                                         property="entityClass"/>
+                        </field>
+                        <field id="screen" width="100%">
+                            <lookupField datasource="attributeDs"
+                                         property="screen"
+                                         requiredMessage="msg://entityScreenRequired"/>
+                        </field>
                         <field id="width" property="width" width="100%">
                             <validator
                                     class="com.haulmont.cuba.gui.app.core.categories.SizeWithUnitValidator"
@@ -59,14 +73,26 @@
                                        valueType="java.lang.Integer" minValue="1" maxValue="40"
                                        message="msg://rowsCountValidationMsg"/>
                         </field>
-                        <field id="defaultEntityId" custom="true" width="100%"/>
+
+                        <field id="defaultEntityId" width="100%"
+                               caption="msg://com.haulmont.cuba.core.entity/CategoryAttribute.defaultEntityId">
+                            <pickerField id="defaultEntityId">
+                                <actions>
+                                    <action id="lookup"/>
+                                    <action id="clear"/>
+                                </actions>
+                            </pickerField>
+                        </field>
 
                         <field id="enumeration" custom="true" required="true" width="100%"/>
                         <field id="defaultString" property="defaultString" width="100%"/>
                         <field id="defaultInt" property="defaultInt" width="100%"/>
                         <field id="defaultDouble" property="defaultDouble" width="100%"/>
                         <field id="defaultDecimal" property="defaultDecimal" width="100%"/>
-                        <field id="defaultBoolean" custom="true" width="100%"/>
+                        <field id="defaultBoolean" width="100%">
+                            <lookupField property="defaultBoolean" datasource="attributeDs"/>
+                        </field>
+
                         <field id="defaultDate" property="defaultDate" width="100%"/>
                         <field id="defaultDateWithoutTime" property="defaultDateWithoutTime" width="100%"/>
                         <field id="defaultDateIsCurrent" property="defaultDateIsCurrent" width="100%"/>
@@ -80,16 +106,9 @@
                         <field id="maxInt" property="configuration.maxInt" width="100%"/>
                         <field id="maxDouble" property="configuration.maxDouble" width="100%"/>
                         <field id="maxDecimal" property="configuration.maxDecimal" width="100%"/>
-                    </column>
-                </fieldGroup>
-            </tab>
-            <tab id="localization" caption="msg://caption.localizedNameTab" margin="true" visible="false"/>
-            <tab id="validation" caption="msg://caption.validationTab" margin="true,false,true,false">
-                <fieldGroup id="validationFieldGroup" datasource="attributeDs" width="100%">
-                    <column>
+
                         <field id="validatorGroovyScript" property="configuration.validatorGroovyScript"
-                               width="100%"
-                               caption="">
+                               width="100%">
                             <sourceCodeEditor mode="Groovy"
                                               highlightActiveLine="false"
                                               showGutter="false"
@@ -99,30 +118,51 @@
                     </column>
                 </fieldGroup>
             </tab>
-            <tab id="optionsLoader" caption="msg://caption.optionsLoaderTab" margin="true">
-                <fieldGroup id="optionsLoaderFieldGroup" datasource="configurationDs" width="100%">
+            <tab id="calculatedAttrsAndOptions" caption="msg://caption.calculatedAttrsAndOptionsTab" margin="true">
+                <fieldGroup id="calculatedAttrsAndOptionsFieldGroup" datasource="attributeDs" width="100%">
                     <column>
-                        <field id="optionsLoaderType" property="optionsLoaderType" width="100%"/>
-                        <field id="optionsLoaderScript" property="optionsLoaderScript" width="100%">
+                        <field id="dependsOnAttributes" property="configuration.dependsOnAttributes" custom="true"
+                               width="100%"/>
+                        <field id="optionsLoaderType" property="optionsLoaderType" datasource="configurationDs"
+                               width="100%"/>
+                        <field id="optionsLoaderScript" property="configuration.optionsLoaderScript" width="100%">
                             <sourceCodeEditor highlightActiveLine="false"
                                               showGutter="false"
                                               property="optionsLoaderScript"
                                               datasource="configurationDs"/>
                         </field>
-                    </column>
-                </fieldGroup>
-            </tab>
-            <tab id="columnSettings" caption="msg://caption.columnSettingsTab" spacing="true" margin="true">
-                <fieldGroup id="columnSettingsFieldGroup" datasource="attributeDs" width="100%">
-                    <column>
-                        <field id="columnName" property="configuration.columnName" width="100%"/>
-                        <field id="columnAlignment" width="100%" property="configuration.columnAlignment">
-                            <lookupField property="configuration.columnAlignment" datasource="attributeDs"/>
+                        <field id="constraintWizard" caption="">
+                            <hbox width="100%">
+                                <linkButton id="constraintWizard"
+                                            caption="msg://constraintWizard"
+                                            align="MIDDLE_LEFT"
+                                            invoke="openConstraintWizard"/>
+                            </hbox>
                         </field>
-                        <field id="columnWidth" property="configuration.columnWidth" width="100%"/>
+                        <field id="joinClause" width="100%">
+                            <sourceCodeEditor highlightActiveLine="false"
+                                              showGutter="false"
+                                              property="joinClause"
+                                              datasource="attributeDs"/>
+                        </field>
+                        <field id="whereClause" property="whereClause" width="100%">
+                            <sourceCodeEditor highlightActiveLine="false"
+                                              showGutter="false"
+                                              property="whereClause"
+                                              datasource="attributeDs"/>
+                        </field>
+                        <field id="recalculationScript" property="configuration.recalculationScript"
+                               width="100%">
+                            <sourceCodeEditor highlightActiveLine="false"
+                                              showGutter="false"
+                                              mode="Groovy"
+                                              property="recalculationScript"
+                                              datasource="configurationDs"/>
+                        </field>
                     </column>
                 </fieldGroup>
             </tab>
+            <tab id="localization" caption="msg://caption.localizedNameTab" margin="true" visible="false"/>
             <tab id="visibility" caption="msg://caption.targetScreensTab" spacing="true" margin="true">
                 <table id="targetScreensTable" width="100%" height="250px" editable="true">
                     <buttonsPanel>
@@ -135,21 +175,6 @@
                     </columns>
                     <rows datasource="screensDs"/>
                 </table>
-            </tab>
-            <tab id="recalculationTab" caption="msg://caption.recalculationTab" spacing="true"  margin="true">
-                <fieldGroup id="recalculationFieldGroup" datasource="configurationDs" width="100%">
-                    <column>
-                        <field id="dependsOnCategoryAttributes" custom="true" width="100%"/>
-                        <field id="recalculationGroovyScript" property="recalculationGroovyScript" width="100%">
-                            <sourceCodeEditor highlightActiveLine="false"
-                                              showGutter="false"
-                                              mode="Groovy"
-                                              property="recalculationGroovyScript"
-                                              datasource="configurationDs"
-                                              caption="msg://com.haulmont.cuba.core.entity/CategoryAttributeConfiguration.recalculationGroovyScript"/>
-                        </field>
-                    </column>
-                </fieldGroup>
             </tab>
         </tabSheet>
         <frame id="buttons" screen="editWindowActions"/>

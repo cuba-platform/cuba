@@ -82,9 +82,9 @@ public abstract class AbstractComponentGenerationStrategy implements ComponentGe
         Component resultComponent = null;
 
         if (mppRange.isDatatype()) {
-            resultComponent = createDatatypeComponentInternal(context, mpp);
+            resultComponent = createDatatypeField(context, mpp);
         } else if (mppRange.isClass()) {
-            resultComponent = createClassComponentInternal(context, mpp);
+            resultComponent = createClassField(context, mpp);
         } else if (mppRange.isEnum()) {
             resultComponent = createEnumField(context);
         }
@@ -100,7 +100,7 @@ public abstract class AbstractComponentGenerationStrategy implements ComponentGe
         return resultComponent;
     }
 
-    protected Component createClassComponentInternal(ComponentGenerationContext context, MetaPropertyPath mpp) {
+    protected Component createClassField(ComponentGenerationContext context, MetaPropertyPath mpp) {
         MetaProperty metaProperty = mpp.getMetaProperty();
         Class<?> javaType = metaProperty.getJavaType();
 
@@ -115,7 +115,7 @@ public abstract class AbstractComponentGenerationStrategy implements ComponentGe
         return null;
     }
 
-    protected Component createDatatypeComponentInternal(ComponentGenerationContext context, MetaPropertyPath mpp) {
+    protected Component createDatatypeField(ComponentGenerationContext context, MetaPropertyPath mpp) {
         Range mppRange = mpp.getRange();
         Element xmlDescriptor = context.getXmlDescriptor();
 
@@ -129,8 +129,8 @@ public abstract class AbstractComponentGenerationStrategy implements ComponentGe
                 if (categoryAttribute.getDataType() == PropertyType.ENUMERATION && BooleanUtils.isNotTrue(categoryAttribute.getIsCollection())) {
                     return createEnumField(context);
                 }
-                if (configuration != null && configuration.hasOptionsLoader()) {
-                    return createDynamicDatatypeOptionsField(context, mpp, categoryAttribute);
+                if (Boolean.TRUE.equals(categoryAttribute.getLookup()) && configuration.hasOptionsLoader()) {
+                    return createLookupField(context, categoryAttribute);
                 }
             }
         }
@@ -251,38 +251,12 @@ public abstract class AbstractComponentGenerationStrategy implements ComponentGe
         return textField;
     }
 
-    protected Component createDynamicDatatypeOptionsField(ComponentGenerationContext context, MetaPropertyPath mpp, CategoryAttribute categoryAttribute) {
+    protected Component createLookupField(ComponentGenerationContext context, CategoryAttribute categoryAttribute) {
         LookupField lookupField = uiComponents.create(LookupField.class);
 
         ValueSource valueSource = context.getValueSource();
         if (valueSource instanceof ContainerValueSource) {
-            InstanceContainer<?> container = ((ContainerValueSource) valueSource).getContainer();
-            container.addItemChangeListener(e -> {
-                List options = dynamicAttributesTools.getOptionsLoader().loadOptions((BaseGenericIdEntity) e.getItem(), categoryAttribute);
-                //noinspection unchecked
-                lookupField.setOptions(new ListOptions(options));
-            });
-
-            List<CategoryAttribute> dependsOnAttributes = categoryAttribute.getConfiguration().getDependsOnCategoryAttributes();
-            if (dependsOnAttributes != null && !dependsOnAttributes.isEmpty()) {
-                List<String> dependsOnAttributesCodes = dependsOnAttributes.stream()
-                        .map(a -> DynamicAttributesUtils.encodeAttributeCode(a.getCode()))
-                        .collect(Collectors.toList());
-
-                container.addItemPropertyChangeListener(e -> {
-                    if (dependsOnAttributesCodes.contains(e.getProperty())) {
-                        List options = dynamicAttributesTools.getOptionsLoader()
-                                .loadOptions((BaseGenericIdEntity) e.getItem(), categoryAttribute);
-                        //noinspection unchecked
-                        lookupField.setOptions(new ListOptions(options));
-
-                        if (!options.contains(lookupField.getValue())) {
-                            //noinspection unchecked
-                            lookupField.setValue(null);
-                        }
-                    }
-                });
-            }
+            setOptionsLoader(categoryAttribute, lookupField, (ContainerValueSource) valueSource);
         }
 
         setValueSource(lookupField, context);
@@ -410,23 +384,25 @@ public abstract class AbstractComponentGenerationStrategy implements ComponentGe
 
         if (!Boolean.parseBoolean(linkAttribute)) {
             Options options = context.getOptions();
-            boolean dynamicAttributeWithOptionsLoader = false;
+            boolean useOptionsLoader = false;
             if (DynamicAttributesUtils.isDynamicAttribute(mpp.getMetaProperty())) {
                 DynamicAttributesMetaProperty metaProperty = (DynamicAttributesMetaProperty) mpp.getMetaProperty();
                 CategoryAttribute attribute = metaProperty.getAttribute();
                 CategoryAttributeConfiguration configuration = attribute.getConfiguration();
-                if (configuration != null && configuration.hasOptionsLoader()) {
-                    dynamicAttributeWithOptionsLoader = true;
-                } else if (Boolean.TRUE.equals(attribute.getLookup())) {
-                    CollectionDatasource optionsDatasource = getDynamicAttributesGuiTools()
-                            .createOptionsDatasourceForLookup(metaProperty.getRange().asClass(),
-                                    attribute.getJoinClause(), attribute.getWhereClause());
-                    options = new DatasourceOptions<>(optionsDatasource);
+                if (Boolean.TRUE.equals(attribute.getLookup())) {
+                    if (configuration != null && configuration.hasOptionsLoader()) {
+                        useOptionsLoader = true;
+                    } else {
+                        CollectionDatasource optionsDatasource = getDynamicAttributesGuiTools()
+                                .createOptionsDatasourceForLookup(metaProperty.getRange().asClass(),
+                                        attribute.getJoinClause(), attribute.getWhereClause());
+                        options = new DatasourceOptions<>(optionsDatasource);
+                    }
                 }
             }
 
             PickerField pickerField;
-            if (options == null && !dynamicAttributeWithOptionsLoader) {
+            if (options == null && !useOptionsLoader) {
                 pickerField = uiComponents.create(PickerField.class);
                 setValueSource(pickerField, context);
 
@@ -451,17 +427,12 @@ public abstract class AbstractComponentGenerationStrategy implements ComponentGe
 
                 setValueSource(lookupPickerField, context);
 
-                if (dynamicAttributeWithOptionsLoader) {
+                if (useOptionsLoader) {
                     DynamicAttributesMetaProperty metaProperty = (DynamicAttributesMetaProperty) mpp.getMetaProperty();
                     CategoryAttribute attribute = metaProperty.getAttribute();
                     ValueSource valueSource = context.getValueSource();
                     if (valueSource instanceof ContainerValueSource) {
-                        InstanceContainer<?> container = ((ContainerValueSource) valueSource).getContainer();
-                        container.addItemChangeListener(e -> {
-                            List optionsList = dynamicAttributesTools.getOptionsLoader().loadOptions((BaseGenericIdEntity) e.getItem(), attribute);
-                            //noinspection unchecked
-                            lookupPickerField.setOptions(new ListOptions(optionsList));
-                        });
+                        setOptionsLoader(attribute, lookupPickerField, (ContainerValueSource) valueSource);
                     }
                 } else {
                     lookupPickerField.setOptions(options);
@@ -591,6 +562,35 @@ public abstract class AbstractComponentGenerationStrategy implements ComponentGe
 
     protected DynamicAttributesGuiTools getDynamicAttributesGuiTools() {
         return AppBeans.get(DynamicAttributesGuiTools.class);
+    }
+
+    protected void setOptionsLoader(CategoryAttribute categoryAttribute, LookupField lookupField, ContainerValueSource valueSource) {
+        InstanceContainer<?> container = valueSource.getContainer();
+        container.addItemChangeListener(e -> {
+            List options = dynamicAttributesTools.loadOptions((BaseGenericIdEntity) e.getItem(), categoryAttribute);
+            //noinspection unchecked
+            lookupField.setOptions(new ListOptions(options));
+        });
+
+        List<CategoryAttribute> dependsOnAttributes = categoryAttribute.getConfiguration().getDependsOnAttributes();
+        if (dependsOnAttributes != null && !dependsOnAttributes.isEmpty()) {
+            List<String> dependsOnAttributesCodes = dependsOnAttributes.stream()
+                    .map(a -> DynamicAttributesUtils.encodeAttributeCode(a.getCode()))
+                    .collect(Collectors.toList());
+
+            container.addItemPropertyChangeListener(e -> {
+                if (dependsOnAttributesCodes.contains(e.getProperty())) {
+                    List options = dynamicAttributesTools.loadOptions((BaseGenericIdEntity) e.getItem(), categoryAttribute);
+                    //noinspection unchecked
+                    lookupField.setOptions(new ListOptions(options));
+
+                    if (!options.contains(lookupField.getValue())) {
+                        //noinspection unchecked
+                        lookupField.setValue(null);
+                    }
+                }
+            });
+        }
     }
 
     protected static class InvokeEntityLinkClickHandler implements EntityLinkField.EntityLinkClickHandler {

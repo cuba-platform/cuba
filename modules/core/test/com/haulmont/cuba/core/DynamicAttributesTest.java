@@ -250,14 +250,14 @@ public class DynamicAttributesTest {
             recalcAttr5.setDataType(PropertyType.STRING);
 
             configuration = new CategoryAttributeConfiguration();
-            configuration.setDependsOnCategoryAttributes(Collections.singletonList(recalcAttr1));
-            configuration.setRecalculationGroovyScript("entity.getValue(\"+recalcAttr1\") + \"Test\"");
+            configuration.setDependsOnAttributes(Collections.singletonList(recalcAttr1));
+            configuration.setRecalculationScript("entity.getValue(\"+recalcAttr1\") + \"Test\"");
             recalcAttr2.setAttributeConfigurationJson(gson.toJson(configuration));
             em.persist(recalcAttr2);
 
             configuration = new CategoryAttributeConfiguration();
-            configuration.setDependsOnCategoryAttributes(Collections.singletonList(recalcAttr2));
-            configuration.setRecalculationGroovyScript("entity.getValue(\"+recalcAttr2\") + \"Test\"");
+            configuration.setDependsOnAttributes(Collections.singletonList(recalcAttr2));
+            configuration.setRecalculationScript("entity.getValue(\"+recalcAttr2\") + \"Test\"");
             recalcAttr3.setAttributeConfigurationJson(gson.toJson(configuration));
             em.persist(recalcAttr3);
 
@@ -265,14 +265,14 @@ public class DynamicAttributesTest {
             em.persist(userCategoryWithoutLoop);
 
             configuration = new CategoryAttributeConfiguration();
-            configuration.setDependsOnCategoryAttributes(Collections.singletonList(recalcAttr5));
-            configuration.setRecalculationGroovyScript("entity.getValue(\"+recalcAttr5\") + \"Test\"");
+            configuration.setDependsOnAttributes(Collections.singletonList(recalcAttr5));
+            configuration.setRecalculationScript("entity.getValue(\"+recalcAttr5\") + \"Test\"");
             recalcAttr4.setAttributeConfigurationJson(gson.toJson(configuration));
             em.persist(recalcAttr4);
 
             configuration = new CategoryAttributeConfiguration();
-            configuration.setDependsOnCategoryAttributes(Collections.singletonList(recalcAttr4));
-            configuration.setRecalculationGroovyScript("entity.getValue(\"+recalcAttr4\") + \"Test\"");
+            configuration.setDependsOnAttributes(Collections.singletonList(recalcAttr4));
+            configuration.setRecalculationScript("entity.getValue(\"+recalcAttr4\") + \"Test\"");
             recalcAttr5.setAttributeConfigurationJson(gson.toJson(configuration));
             em.persist(recalcAttr5);
 
@@ -523,7 +523,7 @@ public class DynamicAttributesTest {
         assertNotNull(e);
 
         //remove cyclic dependency and test full recalculation
-        recalcAttr4.getConfiguration().setDependsOnCategoryAttributes(null);
+        recalcAttr4.getConfiguration().setDependsOnAttributes(null);
         recalcAttr4.setAttributeConfigurationJson(new Gson().toJson(recalcAttr4.getConfiguration()));
         dataManager.commit(recalcAttr4);
         dynamicAttributesCacheService.loadCache();
