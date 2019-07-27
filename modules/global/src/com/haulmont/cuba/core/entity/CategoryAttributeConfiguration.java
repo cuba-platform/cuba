@@ -20,6 +20,7 @@ import com.google.common.base.Strings;
 import com.haulmont.chile.core.annotations.MetaClass;
 import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesTools;
+import com.haulmont.cuba.core.app.dynamicattributes.PropertyType;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.DataManager;
@@ -32,8 +33,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static com.haulmont.cuba.core.entity.CategoryAttributeOptionsLoaderType.GROOVY;
-import static com.haulmont.cuba.core.entity.CategoryAttributeOptionsLoaderType.SQL;
+import static com.haulmont.cuba.core.entity.CategoryAttributeOptionsLoaderType.*;
 
 @MetaClass(name = "sys$CategoryAttributeConfiguration")
 @SystemLevel
@@ -297,6 +297,8 @@ public class CategoryAttributeConfiguration extends BaseGenericIdEntity<String> 
             CategoryAttributeOptionsLoaderType loaderType = getOptionsLoaderType();
             if (SQL == loaderType || GROOVY == loaderType) {
                 return !Strings.isNullOrEmpty(getOptionsLoaderScript());
+            } else if (JPQL == loaderType) {
+                return categoryAttribute != null && categoryAttribute.getDataType() == PropertyType.ENTITY;
             }
         }
         return false;

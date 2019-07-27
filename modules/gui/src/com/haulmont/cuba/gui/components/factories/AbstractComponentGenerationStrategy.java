@@ -389,15 +389,8 @@ public abstract class AbstractComponentGenerationStrategy implements ComponentGe
                 DynamicAttributesMetaProperty metaProperty = (DynamicAttributesMetaProperty) mpp.getMetaProperty();
                 CategoryAttribute attribute = metaProperty.getAttribute();
                 CategoryAttributeConfiguration configuration = attribute.getConfiguration();
-                if (Boolean.TRUE.equals(attribute.getLookup())) {
-                    if (configuration != null && configuration.hasOptionsLoader()) {
-                        useOptionsLoader = true;
-                    } else {
-                        CollectionDatasource optionsDatasource = getDynamicAttributesGuiTools()
-                                .createOptionsDatasourceForLookup(metaProperty.getRange().asClass(),
-                                        attribute.getJoinClause(), attribute.getWhereClause());
-                        options = new DatasourceOptions<>(optionsDatasource);
-                    }
+                if (Boolean.TRUE.equals(attribute.getLookup()) && configuration.hasOptionsLoader()) {
+                    useOptionsLoader = true;
                 }
             }
 
