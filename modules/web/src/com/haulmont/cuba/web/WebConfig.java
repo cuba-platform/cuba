@@ -34,8 +34,6 @@ import com.haulmont.cuba.web.gui.ManagedMainTabSheetMode;
 import com.haulmont.cuba.web.gui.ManagedMainTabSheetModeFactory;
 import com.haulmont.cuba.web.gui.UrlHandlingMode;
 import com.haulmont.cuba.web.gui.UrlHandlingModeFactory;
-import com.haulmont.cuba.web.gui.ConversionErrorDisplayType;
-import com.haulmont.cuba.web.gui.ConversionErrorDisplayTypeFactory;
 
 import java.util.List;
 
@@ -550,14 +548,4 @@ public interface WebConfig extends Config {
     @Property("cuba.web.allowAnonymousAccess")
     @DefaultBoolean(false)
     boolean getAllowAnonymousAccess();
-
-    /**
-     * Sets how conversion errors will be shown: as exceptions or notifications.
-     *
-     * @return one of {@link ConversionErrorDisplayType} values
-     */
-    @Property("cuba.web.conversionErrorDisplayType")
-    @Default("EXCEPTION")
-    @Factory(factory = ConversionErrorDisplayTypeFactory.class)
-    ConversionErrorDisplayType getConversionErrorDisplayType();
 }

@@ -18,20 +18,14 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.bali.events.Subscription;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
-import com.haulmont.cuba.core.global.Configuration;
-import com.haulmont.cuba.core.global.Messages;
-import com.haulmont.cuba.gui.Notifications;
 import com.haulmont.cuba.gui.components.HasValue;
 import com.haulmont.cuba.gui.components.data.ConversionException;
 import com.haulmont.cuba.gui.components.data.HasValueSource;
 import com.haulmont.cuba.gui.components.data.ValueSource;
 import com.haulmont.cuba.gui.components.data.meta.ValueBinding;
 import com.haulmont.cuba.gui.components.data.value.ValueBinder;
-import com.haulmont.cuba.gui.screen.UiControllerUtils;
 import com.haulmont.cuba.gui.sys.UiTestIds;
 import com.haulmont.cuba.web.AppUI;
-import com.haulmont.cuba.web.WebConfig;
-import com.haulmont.cuba.web.gui.ConversionErrorDisplayType;
 import org.slf4j.LoggerFactory;
 
 import java.util.function.Consumer;
@@ -143,22 +137,10 @@ public abstract class WebAbstractValueComponent<T extends com.vaadin.ui.Componen
             } catch (ConversionException ce) {
                 LoggerFactory.getLogger(getClass()).trace("Unable to convert presentation value to model", ce);
 
-                ConversionErrorDisplayType errorDisplayType = beanLocator.get(Configuration.class)
-                        .getConfig(WebConfig.class)
-                        .getConversionErrorDisplayType();
+                setValidationError(ce.getLocalizedMessage());
 
-                if (errorDisplayType == ConversionErrorDisplayType.EXCEPTION) {
-                    setValidationError(ce.getLocalizedMessage());
-                } else {
-                    Messages messages = beanLocator.get(Messages.NAME);
-                    UiControllerUtils.getScreenContext(getFrame().getFrameOwner())
-                            .getNotifications()
-                            .create(Notifications.NotificationType.TRAY)
-                            .withCaption(messages.getMainMessage("validationFail.caption"))
-                            .withDescription(ce.getLocalizedMessage())
-                            .show();
-                }
-                
+                // notification displaying: cuba-platform/cuba#1877
+
                 return;
             }
 
