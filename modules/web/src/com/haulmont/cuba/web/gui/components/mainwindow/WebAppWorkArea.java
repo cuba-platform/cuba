@@ -20,12 +20,14 @@ package com.haulmont.cuba.web.gui.components.mainwindow;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.global.BeanLocator;
 import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.core.global.Events;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.Screens;
 import com.haulmont.cuba.gui.Screens.OpenedScreens;
 import com.haulmont.cuba.gui.UiComponents;
 import com.haulmont.cuba.gui.UrlRouting;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.TabSheet.SelectedTabChangeEvent;
 import com.haulmont.cuba.gui.components.mainwindow.AppWorkArea;
 import com.haulmont.cuba.gui.screen.FrameOwner;
 import com.haulmont.cuba.gui.screen.Screen;
@@ -56,6 +58,7 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.themes.ValoTheme;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationEvent;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -234,7 +237,10 @@ public class WebAppWorkArea extends WebAbstractComponent<CssLayout> implements A
 
             cubaTabSheet.setCloseOthersHandler(this::closeOtherTabWindows);
             cubaTabSheet.setCloseAllTabsHandler(this::closeAllTabWindows);
-            cubaTabSheet.addSelectedTabChangeListener(event -> reflectTabChangeToUrl(event.isUserOriginated()));
+            cubaTabSheet.addSelectedTabChangeListener(event -> {
+                fireTabChangedEvent(tabbedContainer.getTabSheetBehaviour());
+                reflectTabChangeToUrl(event.isUserOriginated());
+            });
         } else {
             CubaManagedTabSheet cubaManagedTabSheet = new CubaManagedTabSheet();
 
@@ -251,7 +257,10 @@ public class WebAppWorkArea extends WebAbstractComponent<CssLayout> implements A
 
             cubaManagedTabSheet.setCloseOthersHandler(this::closeOtherTabWindows);
             cubaManagedTabSheet.setCloseAllTabsHandler(this::closeAllTabWindows);
-            cubaManagedTabSheet.addSelectedTabChangeListener(event -> reflectTabChangeToUrl(event.isUserOriginated()));
+            cubaManagedTabSheet.addSelectedTabChangeListener(event -> {
+                fireTabChangedEvent(tabbedContainer.getTabSheetBehaviour());
+                reflectTabChangeToUrl(event.isUserOriginated());
+            });
         }
 
         tabbedContainer.setHeight(100, Sizeable.Unit.PERCENTAGE);
@@ -758,6 +767,11 @@ public class WebAppWorkArea extends WebAbstractComponent<CssLayout> implements A
         return urlStateCounter++;
     }
 
+    protected void fireTabChangedEvent(TabSheetBehaviour tabSheet) {
+        beanLocator.get(Events.class)
+                .publish(new WorkAreaTabChangedEvent(tabSheet, this));
+    }
+
     // Allows Tabs reordering, do not support component / text drop to Tabs panel
     public static class TabSheetReorderingDropHandler extends DefaultTabSheetDropHandler {
         @Override
@@ -773,6 +787,35 @@ public class WebAppWorkArea extends WebAbstractComponent<CssLayout> implements A
         @Override
         protected void handleHTML5Drop(DragAndDropEvent event) {
             // do nothing
+        }
+    }
+
+    /**
+     * Application event that is sent after selected tab changed in the main TabSheet.
+     * <p>
+     * {@link ApplicationEvent} analogue of the {@link SelectedTabChangeEvent}.
+     */
+    public static class WorkAreaTabChangedEvent extends ApplicationEvent {
+
+        protected AppWorkArea workArea;
+
+        /**
+         * Creates a new WorkAreaTabChangedEvent.
+         *
+         * @param tabSheet the TabSheet on which the event initially occurred (never {@code null})
+         */
+        public WorkAreaTabChangedEvent(TabSheetBehaviour tabSheet, AppWorkArea workArea) {
+            super(tabSheet);
+            this.workArea = workArea;
+        }
+
+        @Override
+        public TabSheetBehaviour getSource() {
+            return (TabSheetBehaviour) super.getSource();
+        }
+
+        public AppWorkArea getWorkArea() {
+            return workArea;
         }
     }
 }

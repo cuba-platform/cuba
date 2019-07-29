@@ -16,6 +16,10 @@
 
 package spec.cuba.web.menu.commandtargets;
 
+import com.haulmont.cuba.gui.screen.event.ScreenClosedEvent;
+import com.haulmont.cuba.gui.screen.event.ScreenOpenedEvent;
+import com.haulmont.cuba.web.gui.components.mainwindow.WebAppWorkArea.WorkAreaTabChangedEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 @Component(TestWebBean.NAME)
@@ -25,7 +29,26 @@ public class TestWebBean {
 
     public static final ThreadLocal<Boolean> testMethodInvoked = new ThreadLocal<>();
 
+    public static final ThreadLocal<Boolean> screenOpenedEventHandled = new ThreadLocal<>();
+    public static final ThreadLocal<Boolean> screenClosedEventHandled = new ThreadLocal<>();
+    public static final ThreadLocal<Boolean> workAreaTabChangedEventHandled = new ThreadLocal<>();
+
     public void testMethod() {
         testMethodInvoked.set(true);
+    }
+
+    @EventListener
+    public void onScreenOpened(ScreenOpenedEvent evt) {
+        screenOpenedEventHandled.set(true);
+    }
+
+    @EventListener
+    public void onScreenClosed(ScreenClosedEvent evt) {
+        screenClosedEventHandled.set(true);
+    }
+
+    @EventListener
+    public void onWorkAreaTabChangedEvent(WorkAreaTabChangedEvent evt) {
+        workAreaTabChangedEventHandled.set(true);
     }
 }
