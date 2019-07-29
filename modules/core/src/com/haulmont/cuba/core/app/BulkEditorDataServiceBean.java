@@ -17,6 +17,7 @@
 package com.haulmont.cuba.core.app;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.TransactionalDataManager;
@@ -26,9 +27,11 @@ import com.haulmont.cuba.core.global.DataManager;
 import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.core.global.Stores;
+import com.haulmont.cuba.core.sys.persistence.DbmsType;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -87,13 +90,30 @@ public class BulkEditorDataServiceBean implements BulkEditorDataService {
     }
 
     protected List<Entity> loadItemsWithDirectKey(LoadDescriptor ld) {
-        LoadContext.Query query = new LoadContext.Query(
-                String.format("select e from %s e where e.%s in :ids", ld.getMetaClass(),
-                        metadataTools.getPrimaryKeyName(ld.getMetaClass())));
-
         List<Object> ids = ld.getSelectedItems().stream()
                 .map(Entity::getId)
                 .collect(Collectors.toList());
+
+        if (ids.size() > 1000
+                && "oracle".equalsIgnoreCase(DbmsType.getType(metadataTools.getStoreName(ld.getMetaClass())))) {
+
+            List<List<Object>> partitions = Lists.partition(ids, 1000);
+
+            List<Entity> entities = new ArrayList<>();
+            for (List<Object> partition : partitions) {
+                entities.addAll(loadItemsWithDirectKey(ld, partition));
+            }
+
+            return entities;
+        }
+
+        return loadItemsWithDirectKey(ld, ids);
+    }
+
+    protected List<Entity> loadItemsWithDirectKey(LoadDescriptor ld, List<Object> ids) {
+        LoadContext.Query query = new LoadContext.Query(
+                String.format("select e from %s e where e.%s in :ids", ld.getMetaClass(),
+                        metadataTools.getPrimaryKeyName(ld.getMetaClass())));
         query.setParameter("ids", ids);
 
         LoadContext<Entity> lc = new LoadContext<>(ld.getMetaClass());
