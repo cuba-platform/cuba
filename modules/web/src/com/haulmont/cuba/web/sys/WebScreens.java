@@ -52,6 +52,8 @@ import com.haulmont.cuba.gui.navigation.NavigationState;
 import com.haulmont.cuba.gui.screen.*;
 import com.haulmont.cuba.gui.screen.Screen.*;
 import com.haulmont.cuba.gui.screen.compatibility.*;
+import com.haulmont.cuba.gui.screen.event.ScreenClosedEvent;
+import com.haulmont.cuba.gui.screen.event.ScreenOpenedEvent;
 import com.haulmont.cuba.gui.settings.Settings;
 import com.haulmont.cuba.gui.settings.SettingsImpl;
 import com.haulmont.cuba.gui.sys.*;
@@ -125,6 +127,8 @@ public class WebScreens implements Screens, WindowManager {
     protected Messages messages;
     @Inject
     protected Icons icons;
+    @Inject
+    protected Events events;
     @Inject
     protected WindowCreationHelper windowCreationHelper;
     @Inject
@@ -464,6 +468,8 @@ public class WebScreens implements Screens, WindowManager {
         fireEvent(screen, AfterShowEvent.class, new AfterShowEvent(screen));
 
         afterShowWatch.stop();
+
+        events.publish(new ScreenOpenedEvent(screen));
     }
 
     @Override
@@ -633,6 +639,8 @@ public class WebScreens implements Screens, WindowManager {
         }
 
         fireEvent(screen, AfterDetachEvent.class, new AfterDetachEvent(screen));
+
+        events.publish(new ScreenClosedEvent(screen));
 
         afterScreenRemove(screen);
     }
