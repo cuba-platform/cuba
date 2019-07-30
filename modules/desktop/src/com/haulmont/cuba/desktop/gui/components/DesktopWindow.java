@@ -702,9 +702,10 @@ public class DesktopWindow implements Window, Component.Disposable,
         String formattedCaption = formatTabCaption(caption, description);
 
         JTabbedPaneExt jTabbedPaneExt = getJTabbedPaneExt();
-        jTabbedPaneExt.setTitleAt(jTabbedPaneExt.getSelectedIndex(), formattedCaption);
+        int tabIndex = jTabbedPaneExt.indexOfComponent(tabWindow);
+        jTabbedPaneExt.setTitleAt(tabIndex, formattedCaption);
 
-        java.awt.Component tabHeaderComponent = jTabbedPaneExt.getTabComponentAt(jTabbedPaneExt.getSelectedIndex());
+        java.awt.Component tabHeaderComponent = jTabbedPaneExt.getTabComponentAt(tabIndex);
         if (tabHeaderComponent != null) {
             tabHeaderComponent.invalidate();
             tabHeaderComponent.repaint();
