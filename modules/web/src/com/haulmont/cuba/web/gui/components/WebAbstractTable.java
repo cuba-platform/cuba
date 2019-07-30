@@ -41,9 +41,7 @@ import com.haulmont.cuba.gui.components.data.AggregatableTableItems;
 import com.haulmont.cuba.gui.components.data.BindingState;
 import com.haulmont.cuba.gui.components.data.HasValueSource;
 import com.haulmont.cuba.gui.components.data.TableItems;
-import com.haulmont.cuba.gui.components.data.meta.ContainerDataUnit;
-import com.haulmont.cuba.gui.components.data.meta.DatasourceDataUnit;
-import com.haulmont.cuba.gui.components.data.meta.EntityTableItems;
+import com.haulmont.cuba.gui.components.data.meta.*;
 import com.haulmont.cuba.gui.components.data.table.DatasourceTableItems;
 import com.haulmont.cuba.gui.components.sys.ShowInfoAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -1545,6 +1543,10 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
                     metadataTools.getViewPropertyPaths(datasource.getView(), datasource.getMetaClass()) :
                     // otherwise use all properties from meta-class
                     metadataTools.getPropertyPaths(datasource.getMetaClass());
+        }
+
+        if (entityTableSource instanceof EmptyDataUnit) {
+            return metadataTools.getPropertyPaths(entityTableSource.getEntityMetaClass());
         }
 
         return Collections.emptyList();

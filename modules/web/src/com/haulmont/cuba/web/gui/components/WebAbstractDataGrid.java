@@ -33,6 +33,7 @@ import com.haulmont.cuba.gui.components.data.DataGridItems;
 import com.haulmont.cuba.gui.components.data.ValueSourceProvider;
 import com.haulmont.cuba.gui.components.data.meta.ContainerDataUnit;
 import com.haulmont.cuba.gui.components.data.meta.DatasourceDataUnit;
+import com.haulmont.cuba.gui.components.data.meta.EmptyDataUnit;
 import com.haulmont.cuba.gui.components.data.meta.EntityDataGridItems;
 import com.haulmont.cuba.gui.components.data.value.ContainerValueSource;
 import com.haulmont.cuba.gui.components.data.value.ContainerValueSourceProvider;
@@ -936,9 +937,9 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
                 });
     }
 
-    protected Collection<MetaPropertyPath> getAutowiredProperties(EntityDataGridItems<E> entityTableSource) {
-        if (entityTableSource instanceof ContainerDataUnit) {
-            CollectionContainer container = ((ContainerDataUnit) entityTableSource).getContainer();
+    protected Collection<MetaPropertyPath> getAutowiredProperties(EntityDataGridItems<E> entityDataGridSource) {
+        if (entityDataGridSource instanceof ContainerDataUnit) {
+            CollectionContainer container = ((ContainerDataUnit) entityDataGridSource).getContainer();
 
             return container.getView() != null ?
                     // if a view is specified - use view properties
@@ -947,14 +948,18 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
                     metadataTools.getPropertyPaths(container.getEntityMetaClass());
         }
 
-        if (entityTableSource instanceof DatasourceDataUnit) {
-            CollectionDatasource datasource = ((DatasourceDataUnit) entityTableSource).getDatasource();
+        if (entityDataGridSource instanceof DatasourceDataUnit) {
+            CollectionDatasource datasource = ((DatasourceDataUnit) entityDataGridSource).getDatasource();
 
             return datasource.getView() != null ?
                     // if a view is specified - use view properties
                     metadataTools.getViewPropertyPaths(datasource.getView(), datasource.getMetaClass()) :
                     // otherwise use all properties from meta-class
                     metadataTools.getPropertyPaths(datasource.getMetaClass());
+        }
+
+        if (entityDataGridSource instanceof EmptyDataUnit) {
+            return metadataTools.getPropertyPaths(entityDataGridSource.getEntityMetaClass());
         }
 
         return Collections.emptyList();
