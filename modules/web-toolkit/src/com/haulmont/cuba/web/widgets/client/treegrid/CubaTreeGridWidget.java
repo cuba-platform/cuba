@@ -61,8 +61,35 @@ public class CubaTreeGridWidget extends TreeGrid {
         // ComponentRenderer lose focus because they are replaced with new instances,
         // so we prevent click handling for Focus widgets.
         Widget widget = WidgetUtil.findWidget(targetElement, null);
-        return !(widget instanceof com.vaadin.client.Focusable
-                || widget instanceof com.google.gwt.user.client.ui.Focusable);
+        return !isWidgetOrParentFocusable(widget);
+    }
+
+    protected boolean isWidgetOrParentFocusable(Widget widget) {
+        boolean widgetFocusable = isWidgetFocusable(widget);
+        if (!widgetFocusable) {
+            Widget parent = widget.getParent();
+            while (parent != null
+                    && !widgetFocusable
+                    && !isGridCell(parent)) {
+                widgetFocusable = isWidgetFocusable(parent);
+                parent = parent.getParent();
+            }
+        }
+        return widgetFocusable;
+    }
+
+    private boolean isGridCell(Widget parent) {
+        String styleName = parent.getStyleName();
+        // We assume that in most cases Widget is added by a ComponentRenderer,
+        // so it's wrapped by a div with the 'component-wrap' style name.
+        // If for some reason we didn't find a component wrapper, we stop when we reached a grid.
+        return styleName != null && styleName.contains("component-wrap")
+                || parent instanceof CubaTreeGridWidget;
+    }
+
+    protected boolean isWidgetFocusable(Widget widget) {
+        return widget instanceof com.vaadin.client.Focusable
+                || widget instanceof com.google.gwt.user.client.ui.Focusable;
     }
 
     @Override
@@ -75,8 +102,7 @@ public class CubaTreeGridWidget extends TreeGrid {
         // By default, clicking on widget renderer prevents cell focus changing
         // for some widget renderers we want to allow focus changing
         Widget widget = WidgetUtil.findWidget(targetElement, null);
-        return !(widget instanceof com.vaadin.client.Focusable
-                || widget instanceof com.google.gwt.user.client.ui.Focusable)
+        return !(isWidgetOrParentFocusable(widget))
                 || isClickThroughEnabled(targetElement);
     }
 
