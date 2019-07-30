@@ -48,6 +48,10 @@ public class DoubleDatatype extends NumberDatatype implements Datatype<Double> {
         if (value == null) {
             return "";
         }
+        if (value instanceof Double
+                && Double.isNaN((Double) value)) {
+            return "";
+        }
 
         FormatStrings formatStrings = AppBeans.get(FormatStringsRegistry.class).getFormatStrings(locale);
         if (formatStrings == null) {
