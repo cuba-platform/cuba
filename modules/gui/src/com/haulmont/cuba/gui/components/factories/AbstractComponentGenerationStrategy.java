@@ -22,10 +22,7 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.Range;
 import com.haulmont.cuba.core.app.dynamicattributes.*;
-import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
-import com.haulmont.cuba.core.entity.CategoryAttribute;
-import com.haulmont.cuba.core.entity.CategoryAttributeConfiguration;
-import com.haulmont.cuba.core.entity.FileDescriptor;
+import com.haulmont.cuba.core.entity.*;
 import com.haulmont.cuba.core.entity.annotation.CurrencyValue;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
@@ -559,6 +556,12 @@ public abstract class AbstractComponentGenerationStrategy implements ComponentGe
 
     protected void setOptionsLoader(CategoryAttribute categoryAttribute, LookupField lookupField, ContainerValueSource valueSource) {
         InstanceContainer<?> container = valueSource.getContainer();
+        Entity entity = container.getItemOrNull();
+        if (entity != null) {
+            List options = dynamicAttributesTools.loadOptions((BaseGenericIdEntity) entity, categoryAttribute);
+            //noinspection unchecked
+            lookupField.setOptions(new ListOptions(options));
+        }
         container.addItemChangeListener(e -> {
             List options = dynamicAttributesTools.loadOptions((BaseGenericIdEntity) e.getItem(), categoryAttribute);
             //noinspection unchecked
