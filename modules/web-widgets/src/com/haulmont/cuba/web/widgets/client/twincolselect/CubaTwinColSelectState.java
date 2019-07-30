@@ -22,4 +22,6 @@ import com.vaadin.shared.ui.twincolselect.TwinColSelectState;
 public class CubaTwinColSelectState extends TwinColSelectState {
 
     public boolean addAllBtnEnabled = false;
+
+    public boolean reorderable = true;
 }

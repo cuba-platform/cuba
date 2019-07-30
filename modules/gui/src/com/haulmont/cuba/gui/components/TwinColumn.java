@@ -82,6 +82,20 @@ public interface TwinColumn<V> extends OptionsField<Collection<V>, V>, Component
     }
 
     /**
+     * Allows you to configure whether items should be reordered after selection.
+     * <p>
+     * Reordering is enabled by default.
+     *
+     * @param reorderable pass 'true' to enable reordering or 'false' otherwise
+     */
+    void setReorderable(boolean reorderable);
+
+    /**
+     * @return true if items are reordered or false otherwise
+     */
+    boolean isReorderable();
+
+    /**
      * Enables "Add all" and "Remove all" buttons.
      *
      * @param enabled true if buttons should be enabled

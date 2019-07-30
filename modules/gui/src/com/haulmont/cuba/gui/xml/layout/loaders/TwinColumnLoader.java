@@ -43,36 +43,15 @@ public class TwinColumnLoader extends AbstractFieldLoader<TwinColumn> {
         super.loadComponent();
         loadOptionsContainer(resultComponent, element);
 
-        String captionProperty = element.attributeValue("captionProperty");
-        if (!StringUtils.isEmpty(captionProperty)) {
-            resultComponent.setCaptionMode(CaptionMode.PROPERTY);
-            resultComponent.setCaptionProperty(captionProperty);
-        }
+        loadColumns(resultComponent, element);
+        loadRows(resultComponent, element);
 
-        String columns = element.attributeValue("columns");
-        if (!StringUtils.isEmpty(columns)) {
-            resultComponent.setColumns(Integer.parseInt(columns));
-        }
+        loadCaptionProperty(resultComponent, element);
+        loadLeftColumnCaption(resultComponent, element);
+        loadRightColumnCaption(resultComponent, element);
 
-        String rows = element.attributeValue("rows");
-        if (StringUtils.isNotEmpty(rows)) {
-            resultComponent.setRows(Integer.parseInt(rows));
-        }
-
-        String addBtnEnabled = element.attributeValue("addAllBtnEnabled");
-        if (StringUtils.isNotEmpty(addBtnEnabled)) {
-            resultComponent.setAddAllBtnEnabled(Boolean.parseBoolean(addBtnEnabled));
-        }
-
-        String rightColumnCaption = element.attributeValue("rightColumnCaption");
-        if (StringUtils.isNotEmpty(rightColumnCaption)) {
-            resultComponent.setRightColumnCaption(loadResourceString(rightColumnCaption));
-        }
-
-        String leftColumnCaption = element.attributeValue("leftColumnCaption");
-        if (StringUtils.isNotEmpty(leftColumnCaption)) {
-            resultComponent.setLeftColumnCaption(loadResourceString(leftColumnCaption));
-        }
+        loadAddBtnEnabled(resultComponent, element);
+        loadReorderable(resultComponent, element);
 
         loadTabIndex(resultComponent, element);
     }
@@ -99,6 +78,56 @@ public class TwinColumnLoader extends AbstractFieldLoader<TwinColumn> {
             }
             //noinspection unchecked
             component.setOptions(new ContainerOptions((CollectionContainer) container));
+        }
+    }
+
+    protected void loadColumns(TwinColumn resultComponent, Element element) {
+        String columns = element.attributeValue("columns");
+        if (!StringUtils.isEmpty(columns)) {
+            resultComponent.setColumns(Integer.parseInt(columns));
+        }
+    }
+
+    protected void loadRows(TwinColumn resultComponent, Element element) {
+        String rows = element.attributeValue("rows");
+        if (StringUtils.isNotEmpty(rows)) {
+            resultComponent.setRows(Integer.parseInt(rows));
+        }
+    }
+
+    protected void loadCaptionProperty(TwinColumn resultComponent, Element element) {
+        String captionProperty = element.attributeValue("captionProperty");
+        if (!StringUtils.isEmpty(captionProperty)) {
+            resultComponent.setCaptionMode(CaptionMode.PROPERTY);
+            resultComponent.setCaptionProperty(captionProperty);
+        }
+    }
+
+    protected void loadLeftColumnCaption(TwinColumn resultComponent, Element element) {
+        String leftColumnCaption = element.attributeValue("leftColumnCaption");
+        if (StringUtils.isNotEmpty(leftColumnCaption)) {
+            resultComponent.setLeftColumnCaption(loadResourceString(leftColumnCaption));
+        }
+    }
+
+    protected void loadRightColumnCaption(TwinColumn resultComponent, Element element) {
+        String rightColumnCaption = element.attributeValue("rightColumnCaption");
+        if (StringUtils.isNotEmpty(rightColumnCaption)) {
+            resultComponent.setRightColumnCaption(loadResourceString(rightColumnCaption));
+        }
+    }
+
+    protected void loadAddBtnEnabled(TwinColumn resultComponent, Element element) {
+        String addBtnEnabled = element.attributeValue("addAllBtnEnabled");
+        if (StringUtils.isNotEmpty(addBtnEnabled)) {
+            resultComponent.setAddAllBtnEnabled(Boolean.parseBoolean(addBtnEnabled));
+        }
+    }
+
+    protected void loadReorderable(TwinColumn resultComponent, Element element) {
+        String reorderable = element.attributeValue("reorderable");
+        if (StringUtils.isNotEmpty(reorderable)) {
+            resultComponent.setReorderable(Boolean.parseBoolean(reorderable));
         }
     }
 }
