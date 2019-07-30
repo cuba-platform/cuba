@@ -161,6 +161,7 @@ public class RoleBrowser extends AbstractLookup {
 
         try {
             Collection<Entity> importedEntities;
+            deleteSoftDeletedEntities();
             if ("json".equals(Files.getFileExtension(importRolesUpload.getFileName()))) {
                 String jsonContent = new String(fileBytes, StandardCharsets.UTF_8);
                 importedEntities = entityImportExportService.importEntitiesFromJSON(jsonContent, createRolesImportView());
@@ -180,6 +181,31 @@ public class RoleBrowser extends AbstractLookup {
             fileUploadingAPI.deleteFile(importRolesUpload.getFileId());
         } catch (FileStorageException e) {
             log.error("Unable to delete temp file", e);
+        }
+    }
+
+    /**
+     * Physically remove soft-deleted Roles and Permissions from the database before the import to avoid unique constraint violations.
+     * Fix of the https://github.com/cuba-platform/cuba/issues/2288
+     */
+    protected void deleteSoftDeletedEntities() {
+        List<Role> deletedRoles = dataManager.load(Role.class)
+                .softDeletion(false)
+                .query("select p from sec$Role p where p.deleteTs is not null")
+                .list();
+        List<Permission> deletedPermissions = dataManager.load(Permission.class)
+                .softDeletion(false)
+                .query("select p from sec$Permission p where p.deleteTs is not null")
+                .list();
+        List<Entity> entitiesToRemove = new ArrayList<>();
+        entitiesToRemove.addAll(deletedRoles);
+        entitiesToRemove.addAll(deletedPermissions);
+        CommitContext ctx = new CommitContext();
+        ctx.setSoftDeletion(false);
+        ctx.setRemoveInstances(entitiesToRemove);
+        dataManager.commit(ctx);
+        if (!deletedPermissions.isEmpty() || !deletedRoles.isEmpty()) {
+            log.debug("Soft deleted entities removed: {} roles and {} permissions", deletedRoles.size(), deletedPermissions.size());
         }
     }
 
