@@ -18,6 +18,7 @@ package spec.cuba.core.entity_serialization
 
 import com.haulmont.cuba.core.app.serialization.EntitySerializationAPI
 import com.haulmont.cuba.core.global.AppBeans
+import com.haulmont.cuba.testmodel.entity_serialization.Serialization_MetaProperty
 import com.haulmont.cuba.testmodel.numberformat.TestNumberValuesEntity
 import com.haulmont.cuba.testsupport.TestContainer
 import org.junit.ClassRule
@@ -56,5 +57,20 @@ class EntityJsonDeserializationTest extends Specification {
         entity.doubleField2 == null
         entity.intField1 == 1
         entity.longField1 == 2
+    }
+
+    def "deserialize entity with collection @MetaProperty field"() {
+
+        def json = '''
+            {
+                data: ["aaa", "bbb", "ccc"]
+            }
+        '''
+
+        when:
+        Serialization_MetaProperty entity = entitySerializationAPI.entityFromJson(json, cont.metadata().getClassNN(Serialization_MetaProperty))
+
+        then:
+        entity.data == ['aaa', 'bbb', 'ccc']
     }
 }

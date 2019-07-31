@@ -109,6 +109,7 @@
 
         <class>com.haulmont.cuba.testmodel.entity_serialization.Serialization_Order</class>
         <class>com.haulmont.cuba.testmodel.entity_serialization.Serialization_OrderItem</class>
+        <class>com.haulmont.cuba.testmodel.entity_serialization.Serialization_MetaProperty</class>
 
         <class>com.haulmont.cuba.testmodel.entitycache_unfetched.CompositeOne</class>
         <class>com.haulmont.cuba.testmodel.entitycache_unfetched.CompositeTwo</class>
