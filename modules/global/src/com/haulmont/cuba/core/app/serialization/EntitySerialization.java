@@ -527,7 +527,13 @@ public class EntitySerialization implements EntitySerializationAPI {
                                 value = readSimpleProperty(propertyValue, propertyRange.asDatatype());
                             }
                         } else {
-                            value = readSimpleProperty(propertyValue, propertyRange.asDatatype());
+                            //for property with List<String> type the propertyRange.isDatatype() will be true and the property type will be a
+                            //collection
+                            if (Collection.class.isAssignableFrom(propertyType)) {
+                                value = readSimpleCollection(propertyValue.getAsJsonArray(), metaProperty);
+                            } else {
+                                value = readSimpleProperty(propertyValue, propertyRange.asDatatype());
+                            }
                         }
                         entity.setValue(propertyName, value);
                     } else if (propertyRange.isEnum()) {
