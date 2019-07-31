@@ -110,6 +110,10 @@ public final class UiControllerUtils {
         screen.applySettings(settings);
     }
 
+    public static void applyDataLoadingSettings(Screen screen, Settings settings) {
+        screen.applyDataLoadingSettings(settings);
+    }
+
     public static void saveSettings(Screen screen) {
         screen.saveSettings();
     }

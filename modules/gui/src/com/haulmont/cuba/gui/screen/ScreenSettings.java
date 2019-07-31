@@ -16,6 +16,7 @@
 
 package com.haulmont.cuba.gui.screen;
 
+import com.haulmont.cuba.gui.components.HasDataLoadingSettings;
 import com.haulmont.cuba.gui.components.HasPresentations;
 import com.haulmont.cuba.gui.components.HasSettings;
 import com.haulmont.cuba.gui.presentations.Presentations;
@@ -65,6 +66,30 @@ public class ScreenSettings {
                                 ((HasPresentations) component).applyPresentationAsDefault(defaultId);
                             }
                         }
+                    }
+                }
+        );
+    }
+
+    /**
+     * Apply settings for data components.
+     *
+     * @param screen   screen
+     * @param settings settings
+     */
+    public void applyDataLoadingSettings(Screen screen, Settings settings) {
+        checkNotNullArgument(screen);
+        checkNotNullArgument(settings);
+
+        walkComponents(
+                screen.getWindow(),
+                (component, name) -> {
+                    if (component.getId() != null
+                            && component instanceof HasDataLoadingSettings) {
+                        log.trace("Applying settings for {} : {} ", name, component);
+
+                        Element e = settings.get(name);
+                        ((HasDataLoadingSettings) component).applyDataLoadingSettings(e);
                     }
                 }
         );

@@ -424,6 +424,8 @@ public class WebScreens implements Screens, WindowManager {
 
         StopWatch beforeShowWatch = createStopWatch(ScreenLifeCycle.BEFORE_SHOW, screen.getId());
 
+        applyDataLoadingSettings(screen);
+
         fireEvent(screen, BeforeShowEvent.class, new BeforeShowEvent(screen));
 
         loadDataBeforeShow(screen);
@@ -563,6 +565,13 @@ public class WebScreens implements Screens, WindowManager {
                 .unwrapComposition(com.vaadin.ui.Component.class);
         if (!uiComponent.isAttached()) {
             throw new IllegalStateException("Screen is not opened " + screen.getId());
+        }
+    }
+
+    protected void applyDataLoadingSettings(Screen screen) {
+        WindowContext windowContext = screen.getWindow().getContext();
+        if (!WindowParams.DISABLE_APPLY_SETTINGS.getBool(windowContext)) {
+            UiControllerUtils.applyDataLoadingSettings(screen, getSettingsImpl(screen.getId()));
         }
     }
 

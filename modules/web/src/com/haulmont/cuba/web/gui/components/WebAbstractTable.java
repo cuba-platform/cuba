@@ -34,6 +34,7 @@ import com.haulmont.cuba.core.entity.LocaleHelper;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.Notifications;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.LookupComponent.LookupSelectionChangeNotifier;
 import com.haulmont.cuba.gui.components.actions.BaseAction;
 import com.haulmont.cuba.gui.components.columnmanager.ColumnManager;
@@ -41,7 +42,10 @@ import com.haulmont.cuba.gui.components.data.AggregatableTableItems;
 import com.haulmont.cuba.gui.components.data.BindingState;
 import com.haulmont.cuba.gui.components.data.HasValueSource;
 import com.haulmont.cuba.gui.components.data.TableItems;
-import com.haulmont.cuba.gui.components.data.meta.*;
+import com.haulmont.cuba.gui.components.data.meta.ContainerDataUnit;
+import com.haulmont.cuba.gui.components.data.meta.DatasourceDataUnit;
+import com.haulmont.cuba.gui.components.data.meta.EmptyDataUnit;
+import com.haulmont.cuba.gui.components.data.meta.EntityTableItems;
 import com.haulmont.cuba.gui.components.data.table.DatasourceTableItems;
 import com.haulmont.cuba.gui.components.sys.ShowInfoAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -50,9 +54,7 @@ import com.haulmont.cuba.gui.data.DsBuilder;
 import com.haulmont.cuba.gui.data.aggregation.Aggregation;
 import com.haulmont.cuba.gui.data.aggregation.Aggregations;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
-import com.haulmont.cuba.gui.model.CollectionContainer;
-import com.haulmont.cuba.gui.model.DataComponents;
-import com.haulmont.cuba.gui.model.InstanceContainer;
+import com.haulmont.cuba.gui.model.*;
 import com.haulmont.cuba.gui.model.impl.KeyValueContainerImpl;
 import com.haulmont.cuba.gui.presentations.Presentations;
 import com.haulmont.cuba.gui.presentations.PresentationsImpl;
@@ -79,13 +81,9 @@ import com.haulmont.cuba.web.widgets.compatibility.CubaValueChangeEvent;
 import com.haulmont.cuba.web.widgets.data.AggregationContainer;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.server.Resource;
-import com.vaadin.server.Sizeable;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.AbstractComponent;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.*;
 import com.vaadin.v7.data.Property;
 import com.vaadin.v7.data.util.converter.Converter;
 import com.vaadin.v7.data.util.converter.ConverterUtil;
@@ -1019,7 +1017,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
 
         component.addShortcutListener(
                 new ShortcutListenerDelegate("tableSelectAll", KeyCode.A,
-                        new int[] { com.vaadin.event.ShortcutAction.ModifierKey.CTRL })
+                        new int[]{com.vaadin.event.ShortcutAction.ModifierKey.CTRL})
                         .withHandler((sender, target) -> {
                             if (target == this.component) {
                                 selectAll();
@@ -1272,7 +1270,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
 
     @Override
     public void setLookupSelectHandler(Consumer<Collection<E>> selectHandler) {
-        Consumer<Action.ActionPerformedEvent> actionHandler = event ->  {
+        Consumer<Action.ActionPerformedEvent> actionHandler = event -> {
             Set<E> selected = getSelected();
             selectHandler.accept(selected);
         };
@@ -1335,7 +1333,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
 
             if (column != null && !(editable && column.isEditable())) {
                 String isLink = column.getXmlDescriptor() == null ?
-                                null : column.getXmlDescriptor().attributeValue("link");
+                        null : column.getXmlDescriptor().attributeValue("link");
 
                 if (propertyPath.getRange().isClass()) {
                     if (StringUtils.isNotEmpty(isLink)) {
@@ -1590,7 +1588,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
         }
 
         if (tableItems.getState() == BindingState.ACTIVE
-            && tableItems instanceof EntityTableItems) {
+                && tableItems instanceof EntityTableItems) {
 
             EntityTableItems entityTableSource = (EntityTableItems) tableItems;
 
@@ -1650,7 +1648,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
         return new AggregatableTableDataContainer<>(tableItems, this);
     }
 
-    protected class AggregatableTableDataContainer<I> extends TableDataContainer<I> implements AggregationContainer{
+    protected class AggregatableTableDataContainer<I> extends TableDataContainer<I> implements AggregationContainer {
 
         protected Collection<Object> aggregationProperties = null;
 
@@ -2020,6 +2018,42 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
         }
     }
 
+    @Override
+    public void applyDataLoadingSettings(Element element) {
+        if (!isSettingsEnabled()) {
+            return;
+        }
+        if (isSortable() && isApplyDataLoadingSettings()) {
+            @SuppressWarnings("unchecked")
+            EntityTableItems<E> entityTableSource = (EntityTableItems) getItems();
+            Element columnsElem = element.element("columns");
+            if (columnsElem != null) {
+                String sortProp = columnsElem.attributeValue("sortProperty");
+
+                if (!StringUtils.isEmpty(sortProp)) {
+                    List columns = Arrays.asList(component.getVisibleColumns());
+                    MetaPropertyPath sortProperty = entityTableSource.getEntityMetaClass().getPropertyPath(sortProp);
+                    if (columns.contains(sortProperty)) {
+                        boolean sortAscending = Boolean.parseBoolean(columnsElem.attributeValue("sortAscending"));
+
+                        if (getItems() instanceof TableItems.Sortable) {
+                            ((TableItems.Sortable<E>) getItems()).suppressSorting();
+                        }
+                        try {
+                            component.setSortContainerPropertyId(null);
+                            component.setSortAscending(sortAscending);
+                            component.setSortContainerPropertyId(sortProperty);
+                        } finally {
+                            if (getItems() instanceof TableItems.Sortable) {
+                                ((TableItems.Sortable<E>) getItems()).enableSorting();
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     protected void applyColumnSettings(Element element) {
         Element columnsElem = element.element("columns");
 
@@ -2064,13 +2098,11 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
 
         component.setVisibleColumns(newColumns.toArray());
 
-        if (isSortable()) {
-            //apply sorting
+        @SuppressWarnings("unchecked")
+        EntityTableItems<E> entityTableSource = (EntityTableItems) getItems();
+        if (isSortable() && !isApplyDataLoadingSettings()) {
             String sortProp = columnsElem.attributeValue("sortProperty");
             if (!StringUtils.isEmpty(sortProp)) {
-                @SuppressWarnings("unchecked")
-                EntityTableItems<E> entityTableSource = (EntityTableItems) getItems();
-
                 MetaPropertyPath sortProperty = entityTableSource.getEntityMetaClass().getPropertyPath(sortProp);
                 if (newColumns.contains(sortProperty)) {
                     boolean sortAscending = Boolean.parseBoolean(columnsElem.attributeValue("sortAscending"));
@@ -2083,6 +2115,15 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
                 component.setSortContainerPropertyId(null);
             }
         }
+    }
+
+    protected boolean isApplyDataLoadingSettings() {
+        TableItems<E> tableItems = getItems();
+        if (tableItems instanceof ContainerDataUnit) {
+            CollectionContainer container = ((ContainerDataUnit) tableItems).getContainer();
+            return container instanceof HasLoader && ((HasLoader) container).getLoader() instanceof CollectionLoader;
+        }
+        return false;
     }
 
     @Override
@@ -3018,7 +3059,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
         if (propertyId != null && itemId != null
                 && !component.isColumnEditable(propertyId)
                 && (component.getColumnGenerator(propertyId) == null
-                    || isValueGeneratedColumn(propertyId))) {
+                || isValueGeneratedColumn(propertyId))) {
 
             MetaPropertyPath propertyPath;
             if (propertyId instanceof MetaPropertyPath) {
@@ -3051,7 +3092,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
 
     protected boolean isValueGeneratedColumn(Object propertyId) {
         return component.getColumnGenerator(propertyId) instanceof AbbreviatedColumnGenerator
-                    || component.getColumnGenerator(propertyId) == VALUE_PROVIDER_GENERATOR;
+                || component.getColumnGenerator(propertyId) == VALUE_PROVIDER_GENERATOR;
     }
 
     protected String generateDefaultCellStyle(Object itemId, Object propertyId,
@@ -3346,6 +3387,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
                     ", method=" + method +
                     '}';
         }
+
     }
 
     protected Object getParsedAggregationValue(String value, Object columnId) throws ParseException {

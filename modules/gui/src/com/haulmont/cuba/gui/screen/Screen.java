@@ -435,6 +435,18 @@ public abstract class Screen implements FrameOwner {
     }
 
     /**
+     * Applies screen settings to data components.
+     *
+     * @param settings screen settings
+     */
+    protected void applyDataLoadingSettings(Settings settings) {
+        this.settings = settings;
+
+        ScreenSettings screenSettings = getBeanLocator().get(ScreenSettings.NAME);
+        screenSettings.applyDataLoadingSettings(this, settings);
+    }
+
+    /**
      * Deletes screen settings associated with this screen.
      */
     protected void deleteSettings() {

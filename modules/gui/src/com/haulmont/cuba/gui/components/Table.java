@@ -53,7 +53,7 @@ import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
  */
 public interface Table<E extends Entity>
         extends
-            ListComponent<E>, Component.Editable, HasSettings,
+            ListComponent<E>, Component.Editable, HasSettings, HasDataLoadingSettings,
             HasButtonsPanel, HasPresentations, Component.HasCaption, HasContextHelp,
             Component.HasIcon, HasRowsCount, LookupComponent<E>, Component.Focusable,
             RowsCount.RowsCountTarget, HasSubParts, HasHtmlCaption, HasHtmlDescription {
