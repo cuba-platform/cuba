@@ -279,6 +279,9 @@ public class FoldersServiceBean implements FoldersService {
         byteArrayInputStream.close();
 
         if (folder != null) {
+            if (folder.equals(parentFolder)) {
+                throw new RuntimeException("Cannot import the folder to itself. Select another parent folder.");
+            }
             checkImportPermissions(folder);
             folder.setParent(parentFolder);
             Transaction tx = persistence.createTransaction();
