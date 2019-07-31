@@ -1907,7 +1907,19 @@ public class FilterDelegateImpl implements FilterDelegate {
             Boolean expanded = Boolean.valueOf(groupBoxExpandedEl.getText());
             groupBoxLayout.setExpanded(expanded);
         }
+        if (!adapter.applyMaxResultsSettingsBeforeLoad()) {
+            applyDataLoadingSettings(element);
+        }
+    }
 
+    @Override
+    public void applyDataLoadingSettings(Element element) {
+        if (adapter.applyMaxResultsSettingsBeforeLoad()) {
+            applyMaxResultsSettings(element);
+        }
+    }
+
+    protected void applyMaxResultsSettings(Element element) {
         Element maxResultsEl = element.element("maxResults");
         if (maxResultsEl != null && !maxResultsEl.getText().equals("") && isMaxResultsLayoutVisible()) {
             try {
@@ -3147,6 +3159,8 @@ public class FilterDelegateImpl implements FilterDelegate {
 
         boolean supportsApplyToSelected();
 
+        boolean applyMaxResultsSettingsBeforeLoad();
+
         void pinQuery();
 
         void unpinAllQuery();
@@ -3169,6 +3183,7 @@ public class FilterDelegateImpl implements FilterDelegate {
         protected Set<String> ftsCustomParameters = new HashSet<>();
 
         protected UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.class);
+        protected PersistenceManagerClient persistenceManager = AppBeans.get(PersistenceManagerClient.class);
 
         /**
          * Condition which was set on DataLoader before applying the filter
@@ -3194,7 +3209,9 @@ public class FilterDelegateImpl implements FilterDelegate {
 
         @Override
         public int getMaxResults() {
-            return loader.getMaxResults();
+            return loader.getMaxResults() == Integer.MAX_VALUE && getMetaClass() != null ?
+                    persistenceManager.getFetchUI(getMetaClass().getName()) :
+                    loader.getMaxResults();
         }
 
         @Override
@@ -3395,6 +3412,11 @@ public class FilterDelegateImpl implements FilterDelegate {
         }
 
         @Override
+        public boolean applyMaxResultsSettingsBeforeLoad() {
+            return true;
+        }
+
+        @Override
         public void pinQuery() {
             UserSession userSession = userSessionSource.getUserSession();
             LoaderSupportsApplyToSelected supportsApplyToSelected = (LoaderSupportsApplyToSelected) loader;
@@ -3514,6 +3536,11 @@ public class FilterDelegateImpl implements FilterDelegate {
         @Override
         public boolean supportsApplyToSelected() {
             return true;
+        }
+
+        @Override
+        public boolean applyMaxResultsSettingsBeforeLoad() {
+            return false;
         }
 
         @Override

@@ -45,9 +45,7 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsBuilder;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
-import com.haulmont.cuba.gui.model.CollectionContainer;
-import com.haulmont.cuba.gui.model.DataComponents;
-import com.haulmont.cuba.gui.model.InstanceContainer;
+import com.haulmont.cuba.gui.model.*;
 import com.haulmont.cuba.gui.model.impl.KeyValueContainerImpl;
 import com.haulmont.cuba.gui.screen.ScreenValidation;
 import com.haulmont.cuba.gui.sys.UiTestIds;
@@ -60,11 +58,7 @@ import com.haulmont.cuba.web.gui.components.datagrid.DataGridItemsEventsDelegate
 import com.haulmont.cuba.web.gui.components.datagrid.SortableDataGridDataProvider;
 import com.haulmont.cuba.web.gui.components.renderers.*;
 import com.haulmont.cuba.web.gui.components.util.ShortcutListenerDelegate;
-import com.haulmont.cuba.web.gui.components.valueproviders.DataGridConverterBasedValueProvider;
-import com.haulmont.cuba.web.gui.components.valueproviders.EntityValueProvider;
-import com.haulmont.cuba.web.gui.components.valueproviders.FormatterBasedValueProvider;
-import com.haulmont.cuba.web.gui.components.valueproviders.StringPresentationValueProvider;
-import com.haulmont.cuba.web.gui.components.valueproviders.YesNoIconPresentationValueProvider;
+import com.haulmont.cuba.web.gui.components.valueproviders.*;
 import com.haulmont.cuba.web.gui.icons.IconResolver;
 import com.haulmont.cuba.web.widgets.CubaCssActionsLayout;
 import com.haulmont.cuba.web.widgets.CubaEnhancedGrid;
@@ -86,16 +80,9 @@ import com.vaadin.shared.Registration;
 import com.vaadin.shared.ui.grid.HeightMode;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.DescriptionGenerator;
-import com.vaadin.ui.Grid;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.MenuBar;
+import com.vaadin.ui.*;
 import com.vaadin.ui.MenuBar.MenuItem;
-import com.vaadin.ui.StyleGenerator;
-import com.vaadin.ui.components.grid.EditorCancelEvent;
-import com.vaadin.ui.components.grid.EditorSaveEvent;
-import com.vaadin.ui.components.grid.Footer;
-import com.vaadin.ui.components.grid.Header;
-import com.vaadin.ui.components.grid.StaticSection;
+import com.vaadin.ui.components.grid.*;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Document;
@@ -113,17 +100,7 @@ import javax.inject.Inject;
 import java.beans.PropertyChangeEvent;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.WeakHashMap;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -1428,7 +1405,7 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
             if (isEditorActive()
                     && !isEditorBuffered()
                     && item.equals(getEditedItem())) {
-                    return;
+                return;
             }
 
             Object removed = itemDatasources.remove(item);
@@ -2197,6 +2174,40 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
         }
     }
 
+    public void applyDataLoadingSettings(Element element) {
+        if (!isSettingsEnabled()) {
+            return;
+        }
+        if (isSortable() && isApplyDataLoadingSettings()) {
+            Element columnsElem = element.element("columns");
+            if (columnsElem != null) {
+                String sortColumnId = columnsElem.attributeValue("sortColumnId");
+                if (!StringUtils.isEmpty(sortColumnId)) {
+                    Grid.Column<E, ?> column = component.getColumn(sortColumnId);
+                    if (column != null) {
+                        if (getItems() instanceof DataGridItems.Sortable) {
+                            ((DataGridItems.Sortable<E>) getItems()).suppressSorting();
+                        }
+                        try {
+                            component.clearSortOrder();
+                            String sortDirection = columnsElem.attributeValue("sortDirection");
+                            if (StringUtils.isNotEmpty(sortDirection)) {
+                                List<GridSortOrder<E>> sortOrders = Collections.singletonList(new GridSortOrder<>(column,
+                                        com.vaadin.shared.data.sort.SortDirection.valueOf(sortDirection))
+                                );
+                                component.setSortOrder(sortOrders);
+                            }
+                        } finally {
+                            if (getItems() instanceof DataGridItems.Sortable) {
+                                ((DataGridItems.Sortable<E>) getItems()).enableSorting();
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     protected void applyColumnSettings(Element element, Collection<Column<E>> oldColumns) {
         Element columnsElem = element.element("columns");
 
@@ -2244,7 +2255,7 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
                 .map(Column::getId)
                 .toArray(String[]::new));
 
-        if (isSortable()) {
+        if (isSortable() && !isApplyDataLoadingSettings()) {
             // apply sorting
             component.clearSortOrder();
             String sortColumnId = columnsElem.attributeValue("sortColumnId");
@@ -2261,6 +2272,15 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
                 }
             }
         }
+    }
+
+    protected boolean isApplyDataLoadingSettings() {
+        DataGridItems<E> tableItems = getItems();
+        if (tableItems instanceof ContainerDataUnit) {
+            CollectionContainer container = ((ContainerDataUnit) tableItems).getContainer();
+            return container instanceof HasLoader && ((HasLoader) container).getLoader() instanceof CollectionLoader;
+        }
+        return false;
     }
 
     @Override
@@ -2606,7 +2626,7 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
                 ((InitializingBean) instance).afterPropertiesSet();
             } catch (Exception e) {
                 throw new RuntimeException("Unable to initialize Renderer - calling afterPropertiesSet for " +
-                                instance.getClass(), e);
+                        instance.getClass(), e);
             }
         }
     }

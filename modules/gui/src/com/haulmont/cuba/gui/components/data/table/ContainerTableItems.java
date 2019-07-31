@@ -30,6 +30,8 @@ import com.haulmont.cuba.gui.components.data.meta.ContainerDataUnit;
 import com.haulmont.cuba.gui.components.data.meta.EntityTableItems;
 import com.haulmont.cuba.gui.data.impl.AggregatableDelegate;
 import com.haulmont.cuba.gui.model.CollectionContainer;
+import com.haulmont.cuba.gui.model.CollectionLoader;
+import com.haulmont.cuba.gui.model.HasLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,6 +53,8 @@ public class ContainerTableItems<E extends Entity> implements EntityTableItems<E
     protected CollectionContainer<E> container;
 
     protected AggregatableDelegate aggregatableDelegate;
+
+    protected boolean suppressSorting;
 
     protected EventHub events = new EventHub();
 
@@ -176,19 +180,19 @@ public class ContainerTableItems<E extends Entity> implements EntityTableItems<E
     @SuppressWarnings("unchecked")
     @Override
     public Subscription addValueChangeListener(Consumer<ValueChangeEvent<E>> listener) {
-        return events.subscribe(ValueChangeEvent.class, (Consumer)listener);
+        return events.subscribe(ValueChangeEvent.class, (Consumer) listener);
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public Subscription addItemSetChangeListener(Consumer<ItemSetChangeEvent<E>> listener) {
-        return events.subscribe(ItemSetChangeEvent.class, (Consumer)listener);
+        return events.subscribe(ItemSetChangeEvent.class, (Consumer) listener);
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public Subscription addSelectedItemChangeListener(Consumer<SelectedItemChangeEvent<E>> listener) {
-        return events.subscribe(SelectedItemChangeEvent.class, (Consumer)listener);
+        return events.subscribe(SelectedItemChangeEvent.class, (Consumer) listener);
     }
 
     @Override
@@ -239,7 +243,11 @@ public class ContainerTableItems<E extends Entity> implements EntityTableItems<E
     @Override
     public void sort(Object[] propertyId, boolean[] ascending) {
         if (container.getSorter() != null) {
-            container.getSorter().sort(createSort(propertyId, ascending));
+            if (suppressSorting && container instanceof HasLoader && ((HasLoader) container).getLoader() instanceof CollectionLoader) {
+                ((CollectionLoader) ((HasLoader) container).getLoader()).setSort(createSort(propertyId, ascending));
+            } else {
+                container.getSorter().sort(createSort(propertyId, ascending));
+            }
         } else {
             log.debug("Container {} sorter is null", container);
         }
@@ -263,7 +271,11 @@ public class ContainerTableItems<E extends Entity> implements EntityTableItems<E
     @Override
     public void resetSortOrder() {
         if (container.getSorter() != null) {
-            container.getSorter().sort(Sort.UNSORTED);
+            if (suppressSorting && container instanceof HasLoader && ((HasLoader) container).getLoader() instanceof CollectionLoader) {
+                ((CollectionLoader) ((HasLoader) container).getLoader()).setSort(Sort.UNSORTED);
+            } else {
+                container.getSorter().sort(Sort.UNSORTED);
+            }
         } else {
             log.debug("Container {} sorter is null", container);
         }
@@ -280,5 +292,15 @@ public class ContainerTableItems<E extends Entity> implements EntityTableItems<E
     @Override
     public Map<AggregationInfo, Object> aggregateValues(AggregationInfo[] aggregationInfos, Collection<?> itemIds) {
         return aggregatableDelegate.aggregateValues(aggregationInfos, itemIds);
+    }
+
+    @Override
+    public void suppressSorting() {
+        suppressSorting = true;
+    }
+
+    @Override
+    public void enableSorting() {
+        suppressSorting = false;
     }
 }

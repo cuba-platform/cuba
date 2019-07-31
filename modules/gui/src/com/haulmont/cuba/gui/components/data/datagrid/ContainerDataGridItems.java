@@ -27,6 +27,8 @@ import com.haulmont.cuba.gui.components.data.DataGridItems;
 import com.haulmont.cuba.gui.components.data.meta.ContainerDataUnit;
 import com.haulmont.cuba.gui.components.data.meta.EntityDataGridItems;
 import com.haulmont.cuba.gui.model.CollectionContainer;
+import com.haulmont.cuba.gui.model.CollectionLoader;
+import com.haulmont.cuba.gui.model.HasLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,6 +44,8 @@ public class ContainerDataGridItems<E extends Entity>
     private static final Logger log = LoggerFactory.getLogger(ContainerDataGridItems.class);
 
     protected CollectionContainer<E> container;
+
+    protected boolean suppressSorting;
 
     protected EventHub events = new EventHub();
 
@@ -159,7 +163,11 @@ public class ContainerDataGridItems<E extends Entity>
     @Override
     public void sort(Object[] propertyId, boolean[] ascending) {
         if (container.getSorter() != null) {
-            container.getSorter().sort(createSort(propertyId, ascending));
+            if (suppressSorting && container instanceof HasLoader && ((HasLoader) container).getLoader() instanceof CollectionLoader) {
+                ((CollectionLoader) ((HasLoader) container).getLoader()).setSort(createSort(propertyId, ascending));
+            } else {
+                container.getSorter().sort(createSort(propertyId, ascending));
+            }
         } else {
             log.debug("Container {} sorter is null", container);
         }
@@ -183,9 +191,23 @@ public class ContainerDataGridItems<E extends Entity>
     @Override
     public void resetSortOrder() {
         if (container.getSorter() != null) {
-            container.getSorter().sort(Sort.UNSORTED);
+            if (suppressSorting && container instanceof HasLoader && ((HasLoader) container).getLoader() instanceof CollectionLoader) {
+                ((CollectionLoader) ((HasLoader) container).getLoader()).setSort(Sort.UNSORTED);
+            } else {
+                container.getSorter().sort(Sort.UNSORTED);
+            }
         } else {
             log.debug("Container {} sorter is null", container);
         }
+    }
+
+    @Override
+    public void suppressSorting() {
+        suppressSorting = true;
+    }
+
+    @Override
+    public void enableSorting() {
+        suppressSorting = false;
     }
 }

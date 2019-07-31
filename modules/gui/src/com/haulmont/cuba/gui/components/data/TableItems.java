@@ -157,6 +157,12 @@ public interface TableItems<I> extends DataUnit {
          * Resets sort order.
          */
         void resetSortOrder();
+
+        default void suppressSorting() {
+        }
+
+        default void enableSorting(){
+        }
     }
 
     /**

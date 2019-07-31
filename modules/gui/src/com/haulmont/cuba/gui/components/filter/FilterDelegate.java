@@ -133,6 +133,8 @@ public interface FilterDelegate {
 
     void applySettings(Element element);
 
+    void applyDataLoadingSettings(Element element);
+
     boolean isExpanded();
     void setExpanded(boolean expanded);
 

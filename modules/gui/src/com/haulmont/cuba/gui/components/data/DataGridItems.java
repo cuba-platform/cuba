@@ -126,6 +126,12 @@ public interface DataGridItems<T> extends DataUnit {
         void sort(Object[] propertyId, boolean[] ascending);
 
         void resetSortOrder();
+
+        default void suppressSorting() {
+        }
+
+        default void enableSorting() {
+        }
     }
 
     /**
