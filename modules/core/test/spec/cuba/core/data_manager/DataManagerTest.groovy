@@ -362,4 +362,50 @@ class DataManagerTest extends Specification {
         sql.execute("delete from TEST_COMPOSITE_KEY where TENANT = $id1.tenant and ENTITY_ID = $id1.entityId")
         sql.execute("delete from TEST_COMPOSITE_KEY where TENANT = $id2.tenant and ENTITY_ID = $id2.entityId")
     }
+
+    def "load by null id"() {
+
+        when:
+
+        Optional<User> optUser = dataManager.load(User).id(null).optional()
+
+        then:
+
+        !optUser.isPresent()
+
+        when:
+
+        dataManager.load(User).id(null).one()
+
+        then:
+
+        thrown(IllegalStateException)
+    }
+
+    def "load by empty ids"() {
+
+        when:
+
+        List<User> users = dataManager.load(User).ids([]).list()
+
+        then:
+
+        users.isEmpty()
+
+        when:
+
+        users = dataManager.load(User).ids().list()
+
+        then:
+
+        users.isEmpty()
+
+        when:
+
+        users = dataManager.load(User).ids(null).list()
+
+        then:
+
+        users.isEmpty()
+    }
 }
