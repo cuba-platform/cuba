@@ -307,7 +307,7 @@ public interface ServerConfig extends Config {
      */
     @Property("cuba.dataManagerBeanValidation")
     @Source(type = SourceType.DATABASE)
-    @DefaultBoolean(true)
+    @DefaultBoolean(false)
     boolean getDataManagerBeanValidation();
 
     /**
