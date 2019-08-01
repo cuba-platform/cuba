@@ -77,20 +77,27 @@ class EntityValidationTest extends Specification {
         dataManager.commit(validatedEntity)
 
         then:
-        thrown(EntityValidationException)
+        noExceptionThrown()
     }
 
     def "Entity update test"() {
         when:
         def validatedEntity = new ValidatedEntity(name: "11111")
-        def committedEntity = dataManager.commit(validatedEntity)
+        def context = new CommitContext()
+        context.setValidationMode(CommitContext.ValidationMode.ALWAYS_VALIDATE)
+        context.addInstanceToCommit(validatedEntity)
+        def entitySet = dataManager.commit(context)
+        def committedEntity = entitySet.iterator().next()
 
         then:
         committedEntity == validatedEntity
 
         when:
         committedEntity.setName("1")
-        dataManager.commit(committedEntity)
+        context = new CommitContext()
+        context.setValidationMode(CommitContext.ValidationMode.ALWAYS_VALIDATE)
+        context.addInstanceToCommit(committedEntity)
+        dataManager.commit(context)
 
         then:
         thrown(EntityValidationException)
@@ -118,9 +125,12 @@ class EntityValidationTest extends Specification {
 
     def "Embedded entity test"() {
         when:
+        def context = new CommitContext()
+        context.setValidationMode(CommitContext.ValidationMode.ALWAYS_VALIDATE)
         def validatedEntity = new ValidatedEntity(name: "11111")
         validatedEntity.setEmbeddedValidatedEntity(new EmbeddedValidatedEntity(name: "1"))
-        dataManager.commit(validatedEntity)
+        context.addInstanceToCommit(validatedEntity)
+        dataManager.commit(context)
 
         then:
         thrown(EntityValidationException)
