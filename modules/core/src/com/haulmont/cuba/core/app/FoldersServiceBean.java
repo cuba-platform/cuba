@@ -53,6 +53,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.zip.CRC32;
@@ -82,6 +83,8 @@ public class FoldersServiceBean implements FoldersService {
 
     @Inject
     protected TimeSource timeSource;
+    @Inject
+    protected DataManager dataManager;
 
     @Override
     public List<AppFolder> loadAppFolders() {
@@ -282,6 +285,17 @@ public class FoldersServiceBean implements FoldersService {
             if (folder.equals(parentFolder)) {
                 throw new RuntimeException("Cannot import the folder to itself. Select another parent folder.");
             }
+
+            try (Transaction tx = persistence.createTransaction()) {
+                List<Folder> allParentFolders = findAllParentFolders(parentFolder, new ArrayList<>());
+                if (allParentFolders.contains(folder)) {
+                    throw new RuntimeException("Cannot import the folder. The imported folder is found among ancestors of the target parent folder. " +
+                            "Select another parent folder.");
+                }
+                tx.commit();
+            }
+
+            //all parent folders starting with the target parent folder
             checkImportPermissions(folder);
             folder.setParent(parentFolder);
             Transaction tx = persistence.createTransaction();
@@ -310,6 +324,16 @@ public class FoldersServiceBean implements FoldersService {
             }
         }
         return folder;
+    }
+
+    protected List<Folder> findAllParentFolders(Folder folder, List<Folder> parentFolders) {
+        parentFolders.add(folder);
+        EntityManager em = persistence.getEntityManager();
+        Folder reloadedFolder = em.reload(folder);
+        if (reloadedFolder != null && reloadedFolder.getParent() != null) {
+            findAllParentFolders(reloadedFolder.getParent(), parentFolders);
+        }
+        return parentFolders;
     }
 
     protected void checkImportPermissions(Folder folder) {
