@@ -49,6 +49,16 @@ public class CubaTwinColSelect<V> extends TwinColSelect<V> {
         }
     }
 
+    public boolean isReorderable() {
+        return getState(false).reorderable;
+    }
+
+    public void setReorderable(boolean reorderable) {
+        if (isReorderable() != reorderable) {
+            getState(true).reorderable = reorderable;
+        }
+    }
+
     @Override
     protected CubaTwinColSelectState getState() {
         return (CubaTwinColSelectState) super.getState();

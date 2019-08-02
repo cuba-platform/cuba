@@ -187,8 +187,12 @@ public class FluentLoader<E extends Entity<K>, K> {
          * Loads a single instance and wraps it in Optional.
          */
         public Optional<E> optional() {
-            LoadContext<E> loadContext = createLoadContext();
-            return Optional.ofNullable(loader.dataManager.load(loadContext));
+            if (id != null) {
+                LoadContext<E> loadContext = createLoadContext();
+                return Optional.ofNullable(loader.dataManager.load(loadContext));
+            } else {
+                return Optional.empty();
+            }
         }
 
         /**
@@ -197,12 +201,14 @@ public class FluentLoader<E extends Entity<K>, K> {
          * @throws IllegalStateException if nothing was loaded
          */
         public E one() {
-            LoadContext<E> loadContext = createLoadContext();
-            E entity = loader.dataManager.load(loadContext);
-            if (entity != null)
-                return entity;
-            else
-                throw new IllegalStateException("No results");
+            if (id != null) {
+                LoadContext<E> loadContext = createLoadContext();
+                E entity = loader.dataManager.load(loadContext);
+                if (entity != null) {
+                    return entity;
+                }
+            }
+            throw new IllegalStateException("No results");
         }
 
         /**
@@ -258,8 +264,11 @@ public class FluentLoader<E extends Entity<K>, K> {
          * Loads a list of entities.
          */
         public List<E> list() {
-            LoadContext<E> loadContext = createLoadContext();
-            return loader.dataManager.loadList(loadContext);
+            if (ids != null && !ids.isEmpty()) {
+                LoadContext<E> loadContext = createLoadContext();
+                return loader.dataManager.loadList(loadContext);
+            }
+            return Collections.emptyList();
         }
 
         /**

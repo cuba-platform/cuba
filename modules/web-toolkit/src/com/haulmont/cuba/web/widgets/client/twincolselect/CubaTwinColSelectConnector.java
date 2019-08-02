@@ -38,6 +38,12 @@ public class CubaTwinColSelectConnector extends TwinColSelectConnector {
     @Override
     public void onStateChanged(StateChangeEvent stateChangeEvent) {
         super.onStateChanged(stateChangeEvent);
-        getWidget().setAddAllBtnEnabled(getState().addAllBtnEnabled);
+
+        if (stateChangeEvent.hasPropertyChanged("addAllBtnEnabled")) {
+            getWidget().setAddAllBtnEnabled(getState().addAllBtnEnabled);
+        }
+        if (stateChangeEvent.hasPropertyChanged("reorderable")) {
+            getWidget().setReorderable(getState().reorderable);
+        }
     }
 }

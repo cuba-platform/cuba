@@ -539,8 +539,31 @@ public class DataContextImpl implements DataContext {
     }
 
     @Override
+    public void setModified(Entity entity, boolean modified) {
+        Entity merged = find(entity);
+        if (merged == null) {
+            return;
+        }
+        if (modified) {
+            modifiedInstances.add(merged);
+        } else {
+            modifiedInstances.remove(merged);
+        }
+    }
+
+    @Override
+    public Set<Entity> getModified() {
+        return Collections.unmodifiableSet(modifiedInstances);
+    }
+
+    @Override
     public boolean isRemoved(Entity entity) {
         return removedInstances.contains(entity);
+    }
+
+    @Override
+    public Set<Entity> getRemoved() {
+        return Collections.unmodifiableSet(removedInstances);
     }
 
     @Override

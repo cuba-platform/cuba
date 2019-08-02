@@ -101,8 +101,13 @@ public class ExecutionsImpl implements Executions {
                 throw new IllegalStateException("No execution context found");
             }
             log.debug("End execution context: group={}, key={}", context.getGroup(), context.getKey());
-            UserSession userSession = userSessionSource.getUserSession();
-            removeExecutionContextFromUserSession(userSession, context);
+
+            if (userSessionSource.checkCurrentUserSession()) {
+                UserSession userSession = userSessionSource.getUserSession();
+                removeExecutionContextFromUserSession(userSession, context);
+            } else {
+                log.debug("No active user session: group={}, key={}", context.getGroup(), context.getKey());
+            }
             context.setState(ExecutionContextImpl.State.COMPLETED);
         } finally {
             ExecutionContextHolder.removeContext();

@@ -21,6 +21,7 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.DevelopmentException;
 import com.haulmont.cuba.core.global.ExtendedEntities;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.gui.Screens;
@@ -327,7 +328,13 @@ public class EditorBuilderProcessor {
             }
         }
         if (dataContext != null) {
-            UiControllerUtils.getScreenData(screen).getDataContext().setParent(dataContext);
+            DataContext childContext = UiControllerUtils.getScreenData(screen).getDataContext();
+            if (childContext == null) {
+                throw new DevelopmentException(
+                        String.format("No DataContext found in editor: '%s'", screen.getId()));
+            }
+
+            childContext.setParent(dataContext);
         }
         return dataContext;
     }

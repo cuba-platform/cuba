@@ -133,9 +133,27 @@ public interface DataContext {
     boolean isModified(Entity entity);
 
     /**
+     * Registers or unregisters the given entity as modified.
+     *
+     * @param entity   entity instance which is already merged into the context
+     * @param modified true to register or false to unregister
+     */
+    void setModified(Entity entity, boolean modified);
+
+    /**
+     * Returns an immutable set of entities registered as modified.
+     */
+    Set<Entity> getModified();
+
+    /**
      * Returns true if the context has registered removal of the given entity.
      */
     boolean isRemoved(Entity entity);
+
+    /**
+     * Returns an immutable set of entities registered for removal.
+     */
+    Set<Entity> getRemoved();
 
     /**
      * Commits changed and removed instances to the middleware. After successful commit, the context contains

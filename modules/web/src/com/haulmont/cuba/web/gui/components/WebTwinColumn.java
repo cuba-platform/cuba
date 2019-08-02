@@ -119,8 +119,18 @@ public class WebTwinColumn<V> extends WebV8AbstractField<CubaTwinColSelect<V>, S
 
     @Override
     protected Collection<V> convertToModel(Set<V> componentRawValue) throws ConversionException {
-        Stream<V> items = optionsBinding == null ? Stream.empty()
-                : optionsBinding.getSource().getOptions().filter(componentRawValue::contains);
+        Stream<V> items;
+        if (optionsBinding == null) {
+            items = Stream.empty();
+        } else {
+            Stream<V> options = optionsBinding.getSource().getOptions();
+            if (isReorderable()) {
+                items = options.filter(componentRawValue::contains);
+            } else {
+                Set<V> optionsSet = options.collect(Collectors.toSet());
+                items = componentRawValue.stream().filter(optionsSet::contains);
+            }
+        }
 
         if (valueBinding != null) {
             Class<?> targetType = valueBinding.getSource().getType();
@@ -221,6 +231,16 @@ public class WebTwinColumn<V> extends WebV8AbstractField<CubaTwinColSelect<V>, S
     @Override
     public boolean isAddAllBtnEnabled() {
         return component.isAddAllBtnEnabled();
+    }
+
+    @Override
+    public void setReorderable(boolean reorderable) {
+        component.setReorderable(reorderable);
+    }
+
+    @Override
+    public boolean isReorderable() {
+        return component.isReorderable();
     }
 
     @Override
