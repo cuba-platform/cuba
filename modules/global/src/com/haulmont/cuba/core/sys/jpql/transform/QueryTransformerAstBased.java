@@ -108,12 +108,16 @@ public class QueryTransformerAstBased implements QueryTransformer {
 
         where = replaceEntityPlaceholder(where, entityReference.getVariableName());
 
-        addWhereInternal(parseWhereCondition(where));
+        if (StringUtils.isNotBlank(where)) {
+            addWhereInternal(parseWhereCondition(where));
+        }
     }
 
     @Override
     public void addWhereAsIs(String where) {
-        addWhereInternal(parseWhereCondition(where));
+        if (StringUtils.isNotBlank(where)) {
+            addWhereInternal(parseWhereCondition(where));
+        }
     }
 
     @Override
@@ -129,7 +133,10 @@ public class QueryTransformerAstBased implements QueryTransformer {
         where = replaceEntityPlaceholder(where, entityReference.getVariableName());
 
         addJoinInternal(join, entityReference);
-        addWhereInternal(parseWhereCondition(where));
+
+        if (StringUtils.isNotBlank(where)) {
+            addWhereInternal(parseWhereCondition(where));
+        }
     }
 
     @Override
