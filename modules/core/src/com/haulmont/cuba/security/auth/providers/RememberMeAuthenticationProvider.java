@@ -20,7 +20,9 @@ import com.google.common.base.Strings;
 import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.TypedQuery;
+import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.core.global.TimeSource;
 import com.haulmont.cuba.security.auth.*;
 import com.haulmont.cuba.security.entity.RememberMeToken;
 import com.haulmont.cuba.security.entity.User;
@@ -43,6 +45,10 @@ public class RememberMeAuthenticationProvider extends AbstractAuthenticationProv
     protected List<UserCredentialsChecker> userCredentialsCheckers;
     @Inject
     protected UserSessionManager userSessionManager;
+    @Inject
+    protected TimeSource timeSource;
+    @Inject
+    protected GlobalConfig globalConfig;
 
     @Inject
     public RememberMeAuthenticationProvider(Persistence persistence, Messages messages) {
@@ -73,6 +79,10 @@ public class RememberMeAuthenticationProvider extends AbstractAuthenticationProv
         RememberMeToken loginToken = loadRememberMeToken(user, rememberMe.getRememberMeToken());
         if (loginToken == null) {
             throw new LoginException(getInvalidCredentialsMessage(login, credentialsLocale));
+        }
+
+        if (isTokenExpired(loginToken)) {
+            throw new LoginException(getExpiredRememberMeTokenMessage(login, credentialsLocale));
         }
 
         Locale userLocale = getUserLocale(rememberMe, user);
@@ -121,6 +131,18 @@ public class RememberMeAuthenticationProvider extends AbstractAuthenticationProv
         query.setParameter("userId", user.getId());
 
         return query.getFirstResult();
+    }
+
+    protected boolean isTokenExpired(RememberMeToken rememberMeToken) {
+        if (rememberMeToken.getCreateTs() == null) {
+            return true;
+        }
+
+        long tokenCreated = rememberMeToken.getCreateTs().getTime();
+        long now = timeSource.currentTimeMillis();
+        int expirationTimeout = globalConfig.getRememberMeExpirationTimeoutSec();
+
+        return tokenCreated + expirationTimeout < now;
     }
 
     @Override

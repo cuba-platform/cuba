@@ -21,6 +21,7 @@ import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 
 import javax.persistence.*;
+import java.util.Date;
 
 @Entity(name = "sec$RememberMeToken")
 @Table(name = "SEC_REMEMBER_ME")
@@ -38,6 +39,9 @@ public class RememberMeToken extends BaseUuidEntity {
     @Column(name = "TOKEN", nullable = false, length = TOKEN_LENGTH)
     protected String token;
 
+    @Column(name = "CREATE_TS")
+    protected Date createTs;
+
     public User getUser() {
         return user;
     }
@@ -52,5 +56,13 @@ public class RememberMeToken extends BaseUuidEntity {
 
     public void setToken(String token) {
         this.token = token;
+    }
+
+    public Date getCreateTs() {
+        return createTs;
+    }
+
+    public void setCreateTs(Date createTs) {
+        this.createTs = createTs;
     }
 }

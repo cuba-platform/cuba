@@ -27,6 +27,7 @@ import com.haulmont.cuba.core.config.defaults.DefaultInt;
 import com.haulmont.cuba.core.config.defaults.DefaultString;
 import com.haulmont.cuba.core.config.type.*;
 import com.haulmont.cuba.core.sys.AvailableLocalesFactory;
+import com.haulmont.cuba.security.entity.RememberMeToken;
 import org.apache.commons.pool2.impl.GenericKeyedObjectPoolConfig;
 
 import java.util.List;
@@ -253,4 +254,16 @@ public interface GlobalConfig extends Config {
     @Property("cuba.dynamicAttributes.dynamicAttributesPanelMaxColumns")
     @DefaultInt(4)
     int getDynamicAttributesPanelMaxColumnsCount();
+
+    /**
+     * Defines expiration timeout for remember me cookie and {@link RememberMeToken}
+     * in seconds.
+     * <p>
+     * Default expiration timeout is one month.
+     *
+     * @return remember me expiration timeout in seconds
+     */
+    @Property("cuba.web.rememberMeExpirationTimeoutSec")
+    @DefaultInt(30 * 24 * 60 * 60)
+    int getRememberMeExpirationTimeoutSec();
 }

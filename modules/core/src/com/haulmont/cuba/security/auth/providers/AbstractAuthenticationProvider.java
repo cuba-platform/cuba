@@ -75,6 +75,10 @@ public abstract class AbstractAuthenticationProvider implements AuthenticationPr
         return messages.formatMessage(MSG_PACK, "LoginException.InvalidLoginOrPassword", locale, login);
     }
 
+    protected String getExpiredRememberMeTokenMessage(String login, Locale locale) {
+        return messages.formatMessage(MSG_PACK, "LoginException.rememberMeTokenExpired", locale, login);
+    }
+
     protected Locale getUserLocale(LocalizedCredentials credentials, User user) {
         Locale userLocale = null;
         if (credentials.isOverrideLocale()) {

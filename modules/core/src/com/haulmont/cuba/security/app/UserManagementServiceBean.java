@@ -50,13 +50,10 @@ public class UserManagementServiceBean implements UserManagementService {
 
     protected static final String ROLE_COPY_VIEW = "role.copy";
 
-    protected static final String MOVE_USER_TO_GROUP_VIEW = "user.moveToGroup";
-
-    protected static final String RESET_PASSWORD_VIEW = "user.resetPassword";
-
-    protected static final String CHANGE_PASSWORD_VIEW = "user.changePassword";
-
-    protected static final String CHECK_PASSWORD_VIEW = "user.check";
+    protected static final String USER_MOVE_TO_GROUP_VIEW = "user.moveToGroup";
+    protected static final String USER_RESET_PASSWORD_VIEW = "user.resetPassword";
+    protected static final String USER_CHANGE_PASSWORD_VIEW = "user.changePassword";
+    protected static final String USER_CHECK_PASSWORD_VIEW = "user.check";
 
     @Inject
     protected Persistence persistence;
@@ -92,10 +89,13 @@ public class UserManagementServiceBean implements UserManagementService {
     protected Messages messages;
 
     @Inject
-    private DataManager dataManager;
+    protected DataManager dataManager;
 
     @Inject
     protected TimeSource timeSource;
+
+    @Inject
+    protected GlobalConfig globalConfig;
 
     protected void checkUpdatePermission(Class entityClass) {
         checkPermission(entityClass, EntityOp.UPDATE);
@@ -116,8 +116,7 @@ public class UserManagementServiceBean implements UserManagementService {
 
         Group clone;
 
-        Transaction tx = persistence.getTransaction();
-        try {
+        try (Transaction tx = persistence.createTransaction()) {
             EntityManager em = persistence.getEntityManager();
 
             Query groupNamesQuery = em.createQuery("select g.name from sec$Group g");
@@ -131,8 +130,6 @@ public class UserManagementServiceBean implements UserManagementService {
             clone = cloneGroup(accessGroup, accessGroup.getParent(), groupNames, em);
 
             tx.commit();
-        } finally {
-            tx.end();
         }
 
         return clone;
@@ -145,8 +142,7 @@ public class UserManagementServiceBean implements UserManagementService {
 
         Role clone;
 
-        Transaction tx = persistence.getTransaction();
-        try {
+        try (Transaction tx = persistence.createTransaction()) {
             EntityManager em = persistence.getEntityManager();
 
             Query roleNamesQuery = em.createQuery("select g.name from sec$Role g");
@@ -161,8 +157,6 @@ public class UserManagementServiceBean implements UserManagementService {
             clone.setDefaultRole(false);
 
             tx.commit();
-        } finally {
-            tx.end();
         }
 
         return clone;
@@ -176,10 +170,8 @@ public class UserManagementServiceBean implements UserManagementService {
         if (userIds.isEmpty())
             return 0;
 
-        Transaction tx = persistence.getTransaction();
-
         int modifiedUsers = 0;
-        try {
+        try (Transaction tx = persistence.createTransaction()) {
             EntityManager em = persistence.getEntityManager();
 
             Group targetAccessGroup = null;
@@ -191,7 +183,7 @@ public class UserManagementServiceBean implements UserManagementService {
 
             TypedQuery<User> query = em.createQuery("select u from sec$User u where u.id in :userIds", User.class);
             query.setParameter("userIds", userIds);
-            query.setViewName(MOVE_USER_TO_GROUP_VIEW);
+            query.setViewName(USER_MOVE_TO_GROUP_VIEW);
 
             List<User> users = query.getResultList();
             if (users == null || users.size() != userIds.size())
@@ -205,8 +197,6 @@ public class UserManagementServiceBean implements UserManagementService {
             }
 
             tx.commit();
-        } finally {
-            tx.end();
         }
         return modifiedUsers;
     }
@@ -274,17 +264,14 @@ public class UserManagementServiceBean implements UserManagementService {
 
         User user;
 
-        Transaction tx = persistence.getTransaction();
-        try {
+        try (Transaction tx = persistence.createTransaction()) {
             EntityManager em = persistence.getEntityManager();
 
-            user = em.find(User.class, userId, CHECK_PASSWORD_VIEW);
+            user = em.find(User.class, userId, USER_CHECK_PASSWORD_VIEW);
             if (user == null)
                 throw new RuntimeException("Unable to find user with id: " + userId);
 
             tx.commit();
-        } finally {
-            tx.end();
         }
 
         return passwordEncryption.checkPassword(user, passwordHash);
@@ -292,8 +279,7 @@ public class UserManagementServiceBean implements UserManagementService {
 
     @Override
     public void resetRememberMeTokens(List<UUID> userIds) {
-        Transaction tx = persistence.getTransaction();
-        try {
+        try (Transaction tx = persistence.createTransaction()) {
             EntityManager em = persistence.getEntityManager();
 
             Query query = em.createQuery("delete from sec$RememberMeToken rt where rt.user.id in :userIds");
@@ -301,43 +287,70 @@ public class UserManagementServiceBean implements UserManagementService {
             query.executeUpdate();
 
             tx.commit();
-        } finally {
-            tx.end();
         }
     }
 
     @Override
     public void resetRememberMeTokens() {
-        Transaction tx = persistence.createTransaction();
-        try {
+        try (Transaction tx = persistence.createTransaction()) {
             EntityManager em = persistence.getEntityManager();
 
             Query query = em.createQuery("delete from sec$RememberMeToken rt");
             query.executeUpdate();
 
             tx.commit();
-        } finally {
-            tx.end();
         }
+    }
+
+    @Override
+    public void removeRememberMeTokens(List<String> rememberMeTokens) {
+        try (Transaction tx = persistence.createTransaction()) {
+            EntityManager em = persistence.getEntityManager();
+
+            Query query = em.createQuery("delete from sec$RememberMeToken rt where rt.token in :tokens");
+            query.setParameter("tokens", rememberMeTokens);
+            query.executeUpdate();
+
+            tx.commit();
+        }
+    }
+
+    @Override
+    public boolean isRememberMeTokenValid(String login, String rememberMeToken) {
+        RememberMeToken token = loadRememberMeToken(login, rememberMeToken);
+        if (token == null) {
+            log.debug("Remember me token '{}' is not found. Consider it as not valid", rememberMeToken);
+            return false;
+        }
+
+        if (token.getCreateTs() == null) {
+            log.debug("Remember me token '{}' doesn't have createTs and will be considered as not valid",
+                    rememberMeToken);
+            return false;
+        }
+
+        long tokenCreated = token.getCreateTs().getTime();
+        long now = timeSource.currentTimeMillis();
+        int expirationTimeout = globalConfig.getRememberMeExpirationTimeoutSec();
+
+        return tokenCreated + expirationTimeout > now;
     }
 
     @Override
     public String generateRememberMeToken(UUID userId) {
         String token = RandomStringUtils.randomAlphanumeric(RememberMeToken.TOKEN_LENGTH);
 
-        Transaction tx = persistence.createTransaction();
-        try {
+        try (Transaction tx = persistence.createTransaction()) {
             EntityManager em = persistence.getEntityManager();
 
             RememberMeToken rememberMeToken = metadata.create(RememberMeToken.class);
             rememberMeToken.setToken(token);
             rememberMeToken.setUser(em.getReference(User.class, userId));
+            rememberMeToken.setCreateTs(new Date(timeSource.currentTimeMillis()));
 
             em.persist(rememberMeToken);
 
             tx.commit();
-        } finally {
-            tx.end();
         }
 
         return token;
@@ -371,24 +384,20 @@ public class UserManagementServiceBean implements UserManagementService {
 
     @Override
     public UserTimeZone loadOwnTimeZone() {
-        Transaction tx = persistence.createTransaction();
-        try {
+        try (Transaction tx = persistence.createTransaction()) {
             EntityManager em = persistence.getEntityManager();
             User user = em.find(User.class, userSessionSource.getUserSession().getUser().getId(), "user.timeZone");
             if (user == null)
                 throw new EntityAccessException(User.class, userSessionSource.getUserSession().getUser().getId());
             tx.commit();
             return new UserTimeZone(user.getTimeZone(), Boolean.TRUE.equals(user.getTimeZoneAuto()));
-        } finally {
-            tx.end();
         }
     }
 
     @Override
     public void saveOwnTimeZone(UserTimeZone timeZone) {
         log.debug("Saving user's time zone settings: " + timeZone);
-        Transaction tx = persistence.createTransaction();
-        try {
+        try (Transaction tx = persistence.createTransaction()) {
             EntityManager em = persistence.getEntityManager();
             User user = em.find(User.class, userSessionSource.getUserSession().getUser().getId(), "user.timeZone");
             if (user == null)
@@ -396,8 +405,6 @@ public class UserManagementServiceBean implements UserManagementService {
             user.setTimeZone(timeZone.name);
             user.setTimeZoneAuto(timeZone.auto);
             tx.commit();
-        } finally {
-            tx.end();
         }
     }
 
@@ -431,10 +438,9 @@ public class UserManagementServiceBean implements UserManagementService {
 
     @Override
     public void changeUserPassword(UUID userId, String newPasswordHash) {
-        Transaction tx = persistence.createTransaction();
-        try {
+        try (Transaction tx = persistence.createTransaction()) {
             EntityManager em = persistence.getEntityManager();
-            User user = em.find(User.class, userId, CHANGE_PASSWORD_VIEW);
+            User user = em.find(User.class, userId, USER_CHANGE_PASSWORD_VIEW);
             if (user == null) {
                 throw new EntityAccessException(User.class, userId);
             }
@@ -449,8 +455,6 @@ public class UserManagementServiceBean implements UserManagementService {
             query.executeUpdate();
 
             tx.commit();
-        } finally {
-            tx.end();
         }
     }
 
@@ -560,10 +564,9 @@ public class UserManagementServiceBean implements UserManagementService {
     }
 
     protected void sendResetPasswordEmail(User user, String password, Template subjectTemplate, Template bodyTemplate) {
-        Transaction tx = persistence.getTransaction();
         String emailBody;
         String emailSubject;
-        try {
+        try (Transaction tx = persistence.createTransaction()) {
             Map<String, Object> binding = new HashMap<>();
             binding.put("user", user);
             binding.put("password", password);
@@ -575,8 +578,6 @@ public class UserManagementServiceBean implements UserManagementService {
             tx.commit();
         } catch (IOException e) {
             throw new RuntimeException("Unable to write Groovy template content", e);
-        } finally {
-            tx.end();
         }
 
         EmailInfo emailInfo = EmailInfoBuilder.create()
@@ -590,13 +591,12 @@ public class UserManagementServiceBean implements UserManagementService {
     protected Map<User, String> updateUserPasswords(List<UUID> userIds, boolean generatePassword) {
         Map<User, String> modifiedUsers = new LinkedHashMap<>();
 
-        Transaction tx = persistence.getTransaction();
-        try {
+        try (Transaction tx = persistence.createTransaction()) {
             EntityManager em = persistence.getEntityManager();
 
             TypedQuery<User> query = em.createQuery("select u from sec$User u where u.id in :userIds", User.class);
             query.setParameter("userIds", userIds);
-            query.setViewName(RESET_PASSWORD_VIEW);
+            query.setViewName(USER_RESET_PASSWORD_VIEW);
 
             List<User> users = query.getResultList();
 
@@ -621,8 +621,6 @@ public class UserManagementServiceBean implements UserManagementService {
             resetRememberMeTokens(userIds);
 
             tx.commit();
-        } finally {
-            tx.end();
         }
 
         return modifiedUsers;
@@ -734,6 +732,25 @@ public class UserManagementServiceBean implements UserManagementService {
         resultPermission.setRole(role);
 
         return resultPermission;
+    }
+
+    @Nullable
+    protected RememberMeToken loadRememberMeToken(String login, String rememberMeToken) {
+        RememberMeToken token;
+        try (Transaction tx = persistence.createTransaction()) {
+            EntityManager em = persistence.getEntityManager();
+
+            TypedQuery<RememberMeToken> query = em.createQuery(
+                    "select rt from sec$RememberMeToken rt where rt.token = :token and rt.user.login = :userLogin",
+                    RememberMeToken.class);
+            query.setParameter("token", rememberMeToken);
+            query.setParameter("userLogin", login);
+
+            token = query.getFirstResult();
+
+            tx.commit();
+        }
+        return token;
     }
 
     /**

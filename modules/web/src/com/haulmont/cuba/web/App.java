@@ -37,6 +37,7 @@ import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.theme.ThemeConstantsRepository;
 import com.haulmont.cuba.gui.util.OperationResult;
 import com.haulmont.cuba.gui.util.UnknownOperationResult;
+import com.haulmont.cuba.security.app.UserManagementService;
 import com.haulmont.cuba.security.app.UserSessionService;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.NoUserSessionException;
@@ -79,6 +80,10 @@ public abstract class App {
     public static final String APP_THEME_COOKIE_PREFIX = "APP_THEME_NAME_";
 
     public static final String COOKIE_LOCALE = "LAST_LOCALE";
+
+    public static final String COOKIE_REMEMBER_ME = "rememberMe";
+    public static final String COOKIE_LOGIN = "rememberMe.Login";
+    public static final String COOKIE_PASSWORD = "rememberMe.Password";
 
     private static final Logger log = LoggerFactory.getLogger(App.class);
 
@@ -645,8 +650,22 @@ public abstract class App {
 
     protected void forceLogout() {
         removeAllWindows();
+        removeRememberMeTokens();
 
         Connection connection = getConnection();
         connection.logout();
+    }
+
+    protected void removeRememberMeTokens() {
+        String rememberMeToken = getCookieValue(COOKIE_PASSWORD);
+
+        removeCookie(COOKIE_REMEMBER_ME);
+        removeCookie(COOKIE_LOGIN);
+        removeCookie(COOKIE_PASSWORD);
+
+        if (StringUtils.isNotEmpty(rememberMeToken)) {
+            beanLocator.get(UserManagementService.class)
+                    .removeRememberMeTokens(Collections.singletonList(rememberMeToken));
+        }
     }
 }

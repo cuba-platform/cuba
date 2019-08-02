@@ -99,6 +99,20 @@ public interface UserManagementService {
     void resetRememberMeTokens();
 
     /**
+     * Removes the given {@code rememberMeTokens}.
+     *
+     * @param rememberMeTokens remember be tokens to remove
+     */
+    void removeRememberMeTokens(List<String> rememberMeTokens);
+
+    /**
+     * Checks that the given {@code rememberMeToken} exists and is not expired.
+     *
+     * @return true if token is valid or false otherwise
+     */
+    boolean isRememberMeTokenValid(String login, String rememberMeToken);
+
+    /**
      * Generate and store to DB {@link com.haulmont.cuba.security.entity.RememberMeToken}
      *
      * @return token string

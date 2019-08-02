@@ -66,6 +66,15 @@ public class TestUserManagementService implements UserManagementService {
     }
 
     @Override
+    public void removeRememberMeTokens(List<String> rememberMeTokens) {
+    }
+
+    @Override
+    public boolean isRememberMeTokenValid(String login, String rememberMeToken) {
+        return false;
+    }
+
+    @Override
     public String generateRememberMeToken(UUID userId) {
         return RandomStringUtils.randomAlphanumeric(20);
     }
