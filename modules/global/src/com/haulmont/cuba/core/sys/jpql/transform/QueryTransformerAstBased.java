@@ -109,12 +109,16 @@ public class QueryTransformerAstBased implements QueryTransformer {
         if (where.contains("{E}")) {
             where = entityReference.replaceEntries(where, "\\{E\\}");
         }
-        addWhere(parseWhereCondition(where), entityReference, false);
+        if (StringUtils.isNotBlank(where)) {
+            addWhere(parseWhereCondition(where), entityReference, false);
+        }
     }
 
     @Override
     public void addWhereAsIs(String where) {
-        addWhere(parseWhereCondition(where), null, false);
+        if (StringUtils.isNotBlank(where)) {
+            addWhere(parseWhereCondition(where), null, false);
+        }
     }
 
     /**
@@ -158,7 +162,9 @@ public class QueryTransformerAstBased implements QueryTransformer {
             CommonTree selectionSource = parseSelectionSource(strings[i]);
             getTransformer().addSelectionSource(selectionSource);
         }
-        addWhere(parseWhereCondition(where), entityReference, false);
+        if (StringUtils.isNotBlank(where)) {
+            addWhere(parseWhereCondition(where), entityReference, false);
+        }
     }
 
     @Override
