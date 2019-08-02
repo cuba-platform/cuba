@@ -22,16 +22,10 @@ import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.MessageTools;
-import com.haulmont.cuba.core.global.MetadataTools;
-import com.haulmont.cuba.core.global.UserSessionSource;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.components.filter.Param;
-import org.apache.commons.lang.StringUtils;
 
 import javax.persistence.TemporalType;
-import java.util.ArrayList;
-import java.util.List;
 
 public class FilterConditionUtils {
 
@@ -41,17 +35,24 @@ public class FilterConditionUtils {
         if (mpp == null) {
             return propertyPath;
         } else {
+            MetadataTools metadataTools = AppBeans.get(MetadataTools.class);
+
             MetaProperty[] metaProperties = mpp.getMetaProperties();
             StringBuilder sb = new StringBuilder();
 
-            List<String> metaPropertyNames = new ArrayList<>();
+            MetaPropertyPath parentMpp = null;
+            MetaClass tempMetaClass;
 
             for (int i = 0; i < metaProperties.length; i++) {
-                metaPropertyNames.add(metaProperties[i].getName());
+                if (i == 0) {
+                    parentMpp = new MetaPropertyPath(metaClass, metaProperties[i]);
+                    tempMetaClass = metaClass;
+                } else {
+                    parentMpp = new MetaPropertyPath(parentMpp, metaProperties[i]);
+                    tempMetaClass = metadataTools.getPropertyEnclosingMetaClass(parentMpp);
+                }
 
-                String currentMetaPropertyPath = StringUtils.join(metaPropertyNames, ".");
-
-                sb.append(messageTools.getPropertyCaption(metaClass, currentMetaPropertyPath));
+                sb.append(messageTools.getPropertyCaption(tempMetaClass, metaProperties[i].getName()));
                 if (i < metaProperties.length - 1) {
                     sb.append(".");
                 }
