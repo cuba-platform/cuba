@@ -50,10 +50,14 @@
                       width="100%">
                     <userIndicator id="userIndicator"
                                    align="MIDDLE_CENTER"/>
-                    <newWindowButton id="newWindowButton"
-                                     description="mainMsg://newWindowBtnDescription"
-                                     icon="app/images/new-window.png"/>
-                    <userActionsButton id="userActionsButton"/>
+                    <hbox id="userInfoButtonsBox"
+                          align="MIDDLE_RIGHT"
+                          spacing="true">
+                        <newWindowButton id="newWindowButton"
+                                         description="mainMsg://newWindowBtnDescription"
+                                         icon="app/images/new-window.png"/>
+                        <userActionsButton id="userActionsButton"/>
+                    </hbox>
                 </hbox>
                 <timeZoneIndicator id="timeZoneIndicator"
                                    align="MIDDLE_CENTER"/>
