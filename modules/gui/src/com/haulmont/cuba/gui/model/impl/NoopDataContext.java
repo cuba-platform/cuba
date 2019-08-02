@@ -85,8 +85,18 @@ public class NoopDataContext implements DataContext {
     }
 
     @Override
+    public Set<Entity> getModified() {
+        return Collections.emptySet();
+    }
+
+    @Override
     public boolean isRemoved(Entity entity) {
         return false;
+    }
+
+    @Override
+    public Set<Entity> getRemoved() {
+        return Collections.emptySet();
     }
 
     @Override
