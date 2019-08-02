@@ -17,10 +17,12 @@
 
 package com.haulmont.cuba.web.widgets.client.split;
 
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import com.haulmont.cuba.web.widgets.client.placeholder.CubaPlaceHolderWidget;
-import com.vaadin.client.ui.VOverlay;
 import com.vaadin.client.ui.VSplitPanelHorizontal;
 
 import java.util.function.Consumer;
@@ -32,7 +34,6 @@ public class CubaHorizontalSplitPanelWidget extends VSplitPanelHorizontal {
     protected static final String SP_DOCK_BUTTON = "c-splitpanel-dock-button";
     protected static final String SP_DOCK_BUTTON_LEFT = "c-splitpanel-dock-button-left";
     protected static final String SP_DOCK_BUTTON_RIGHT = "c-splitpanel-dock-button-right";
-    protected static final String SP_DOCK_OVERLAY = "c-splitpanel-dock-overlay";
     protected static final String SP_DOCK_LEFT = "c-splitpanel-dock-left";
     protected static final String SP_DOCK_RIGHT = "c-splitpanel-dock-right";
     protected static final String SP_DOCKABLE_LEFT = "c-splitpanel-dockable-left";
@@ -42,7 +43,6 @@ public class CubaHorizontalSplitPanelWidget extends VSplitPanelHorizontal {
     protected boolean reversed;
 
     protected int splitHeight;
-    protected int splitTop;
 
     protected enum DockButtonState {
         LEFT,
@@ -58,7 +58,7 @@ public class CubaHorizontalSplitPanelWidget extends VSplitPanelHorizontal {
     protected String defaultPosition = null;
     protected String beforeDockPosition = null;
 
-    private VOverlay dockButtonContainer;
+    private Element dockButtonContainer;
     private CubaPlaceHolderWidget dockButton;
 
     public boolean isDockable() {
@@ -71,37 +71,44 @@ public class CubaHorizontalSplitPanelWidget extends VSplitPanelHorizontal {
         }
 
         if (dockable) {
-            dockButton = new CubaPlaceHolderWidget();
-            dockButton.setStyleName(SP_DOCK_BUTTON);
-            dockButton.addStyleName(SP_DOCK_BUTTON_LEFT);
-            dockButton.addDomHandler(
-                    event -> onDockButtonClick(),
-                    ClickEvent.getType());
+            dockButton = createDockButton();
+            dockButtonContainer = createDockButtonContainer();
 
-            dockButtonContainer = new VOverlay();
-            dockButtonContainer.addStyleName(SP_DOCK_OVERLAY);
-            dockButtonContainer.getElement().getStyle().setZIndex(9999);
-
-            if (dockMode == SplitPanelDockMode.LEFT) {
-                dockButtonContainer.setStyleName(SP_DOCK_LEFT);
-            } else if (dockMode == SplitPanelDockMode.RIGHT) {
-                dockButtonContainer.setStyleName(SP_DOCK_RIGHT);
-            }
-
-            dockButtonContainer.setOwner(this);
-            dockButtonContainer.setWidget(dockButton);
-            dockButtonContainer.show();
+            add(dockButton, dockButtonContainer);
+            splitter.getParentElement().appendChild(dockButtonContainer);
 
             updateDockButtonPosition();
         } else {
             if (dockButtonContainer != null) {
-                dockButtonContainer.hide();
                 dockButtonContainer.removeFromParent();
 
                 dockButtonContainer = null;
                 dockButton = null;
             }
         }
+    }
+
+    protected CubaPlaceHolderWidget createDockButton() {
+        CubaPlaceHolderWidget dockBtn = new CubaPlaceHolderWidget();
+        dockBtn.setStyleName(SP_DOCK_BUTTON);
+        dockBtn.addStyleName(SP_DOCK_BUTTON_LEFT);
+        dockBtn.addDomHandler(
+                event -> onDockButtonClick(),
+                ClickEvent.getType());
+        return dockBtn;
+    }
+
+    protected Element createDockButtonContainer() {
+        Element dockBtnContainer = DOM.createDiv();
+        dockBtnContainer.getStyle().setZIndex(101);
+        dockBtnContainer.getStyle().setPosition(Style.Position.ABSOLUTE);
+
+        if (dockMode == SplitPanelDockMode.LEFT) {
+            dockBtnContainer.addClassName(SP_DOCK_LEFT);
+        } else if (dockMode == SplitPanelDockMode.RIGHT) {
+            dockBtnContainer.addClassName(SP_DOCK_RIGHT);
+        }
+        return dockBtnContainer;
     }
 
     private void onDockButtonClick() {
@@ -156,12 +163,12 @@ public class CubaHorizontalSplitPanelWidget extends VSplitPanelHorizontal {
     protected void updateDockButtonPosition() {
         if (isDockable()) {
 
+            Style dockButtonStyle = dockButtonContainer.getStyle();
             if (dockMode == SplitPanelDockMode.LEFT) {
-                int left = splitter.getAbsoluteLeft();
-                if (left > getAbsoluteLeft() + BUTTON_WIDTH_SPACE) {
-                    dockButtonContainer.setPopupPosition(
-                            left - (dockButton.getOffsetWidth() - getSplitterSize()),
-                            getDockBtnContainerVerticalPosition());
+                int left = splitter.getOffsetLeft();
+                if (left > BUTTON_WIDTH_SPACE) {
+                    dockButtonStyle.setLeft(left - (dockButton.getOffsetWidth() - getSplitterSize()), Style.Unit.PX);
+                    dockButtonStyle.setTop(getDockBtnContainerVerticalPosition(), Style.Unit.PX);
 
                     if (dockButtonState == DockButtonState.RIGHT) {
                         updateDockButtonStyle(SP_DOCK_BUTTON_LEFT, SP_DOCK_BUTTON_RIGHT);
@@ -170,9 +177,8 @@ public class CubaHorizontalSplitPanelWidget extends VSplitPanelHorizontal {
 
                     updateSplitPanelStyle(SP_DOCKABLE_LEFT, SP_DOCKABLE_RIGHT);
                 } else {
-                    dockButtonContainer.setPopupPosition(
-                            left,
-                            getDockBtnContainerVerticalPosition());
+                    dockButtonStyle.setLeft(left, Style.Unit.PX);
+                    dockButtonStyle.setTop(getDockBtnContainerVerticalPosition(), Style.Unit.PX);
 
                     if (dockButtonState == DockButtonState.LEFT) {
                         updateDockButtonStyle(SP_DOCK_BUTTON_RIGHT, SP_DOCK_BUTTON_LEFT);
@@ -182,13 +188,12 @@ public class CubaHorizontalSplitPanelWidget extends VSplitPanelHorizontal {
                     updateSplitPanelStyle(SP_DOCKABLE_RIGHT, SP_DOCKABLE_LEFT);
                 }
             } else if (dockMode == SplitPanelDockMode.RIGHT) {
-                int right = splitter.getAbsoluteRight();
+                int right = splitter.getOffsetLeft() + splitter.getOffsetWidth();
                 int splitRightPosition = getAbsoluteLeft() + getAbsoluteRight();
 
                 if (right < splitRightPosition - BUTTON_WIDTH_SPACE) {
-                    dockButtonContainer.setPopupPosition(
-                            right - getSplitterSize(),
-                            getDockBtnContainerVerticalPosition());
+                    dockButtonStyle.setLeft(right - getSplitterSize(), Style.Unit.PX);
+                    dockButtonStyle.setTop(getDockBtnContainerVerticalPosition(), Style.Unit.PX);
 
                     if (dockButtonState == DockButtonState.LEFT) {
                         updateDockButtonStyle(SP_DOCK_BUTTON_RIGHT, SP_DOCK_BUTTON_LEFT);
@@ -197,9 +202,8 @@ public class CubaHorizontalSplitPanelWidget extends VSplitPanelHorizontal {
 
                     updateSplitPanelStyle(SP_DOCKABLE_RIGHT, SP_DOCKABLE_LEFT);
                 } else {
-                    dockButtonContainer.setPopupPosition(
-                            right - (dockButton.getOffsetWidth()),
-                            getDockBtnContainerVerticalPosition());
+                    dockButtonStyle.setLeft(right - (dockButton.getOffsetWidth()), Style.Unit.PX);
+                    dockButtonStyle.setTop(getDockBtnContainerVerticalPosition(), Style.Unit.PX);
 
                     if (dockButtonState == DockButtonState.RIGHT) {
                         updateDockButtonStyle(SP_DOCK_BUTTON_LEFT, SP_DOCK_BUTTON_RIGHT);
@@ -213,12 +217,12 @@ public class CubaHorizontalSplitPanelWidget extends VSplitPanelHorizontal {
     }
 
     protected boolean isSplitterInRightChangeArea() {
-        int left = splitter.getAbsoluteLeft();
+        int left = splitter.getOffsetLeft();
         return left < getAbsoluteLeft() + BUTTON_WIDTH_SPACE;
     }
 
     protected boolean isSplitterInLeftChangeArea() {
-        int right = splitter.getAbsoluteRight();
+        int right = splitter.getOffsetLeft() + splitter.getOffsetWidth();
         int splitRightPosition = getAbsoluteLeft() + getAbsoluteRight();
         return right > splitRightPosition - BUTTON_WIDTH_SPACE;
     }
@@ -234,7 +238,7 @@ public class CubaHorizontalSplitPanelWidget extends VSplitPanelHorizontal {
     }
 
     private int getDockBtnContainerVerticalPosition() {
-        return splitTop + splitHeight / 2 - dockButton.getOffsetHeight() / 2;
+        return splitHeight / 2 - dockButton.getOffsetHeight() / 2;
     }
 
     public int getAbsoluteRight() {
@@ -246,9 +250,6 @@ public class CubaHorizontalSplitPanelWidget extends VSplitPanelHorizontal {
         super.updateSizes();
 
         splitHeight = splitter.getOffsetHeight();
-        if (splitTop == 0) {
-            splitTop = splitter.getAbsoluteTop();
-        }
 
         if (isAttached()) {
             updateDockButtonPosition();
@@ -267,7 +268,7 @@ public class CubaHorizontalSplitPanelWidget extends VSplitPanelHorizontal {
         super.onDetach();
 
         if (dockButtonContainer != null) {
-            dockButtonContainer.hide();
+            dockButtonContainer.removeFromParent();
         }
     }
 
