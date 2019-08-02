@@ -133,6 +133,14 @@ public interface DataContext {
     boolean isModified(Entity entity);
 
     /**
+     * Registers or unregisters the given entity as modified.
+     *
+     * @param entity   entity instance which is already merged into the context
+     * @param modified true to register or false to unregister
+     */
+    void setModified(Entity entity, boolean modified);
+
+    /**
      * Returns an immutable set of entities registered as modified.
      */
     Set<Entity> getModified();

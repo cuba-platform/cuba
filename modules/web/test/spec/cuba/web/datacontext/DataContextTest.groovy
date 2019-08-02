@@ -640,6 +640,78 @@ class DataContextTest extends Specification {
         !removed.contains(order)
     }
 
+    def "register as modified"() {
+        DataContext context = factory.createDataContext()
+
+        Order order = new Order(number: '111')
+        makeDetached(order)
+
+        when:
+
+        context.setModified(order, true)
+
+        then:
+
+        !context.hasChanges()
+        !context.getModified().contains(order)
+
+        when:
+
+        context.merge(order)
+        context.setModified(order, true)
+
+        then:
+
+        context.hasChanges()
+        context.getModified().contains(order)
+
+        when:
+
+        def modified = []
+        context.addPreCommitListener { e -> modified.addAll(e.modifiedInstances) }
+        context.commit()
+
+        then:
+
+        modified.contains(order)
+    }
+
+    def "unregister as modified"() {
+        DataContext context = factory.createDataContext()
+
+        Order order = new Order(number: '111')
+        makeDetached(order)
+        def mergedOrder = context.merge(order)
+
+        when:
+
+        mergedOrder.number = '222'
+
+        then:
+
+        context.hasChanges()
+        context.getModified().contains(order)
+
+        when:
+
+        context.setModified(order, false)
+
+        then:
+
+        !context.hasChanges()
+        !context.getModified().contains(order)
+
+        when:
+
+        def modified = []
+        context.addPreCommitListener { e -> modified.addAll(e.modifiedInstances) }
+        context.commit()
+
+        then:
+
+        !modified.contains(order)
+    }
+
     private void makeDetached(def entity) {
         entityStates.makeDetached(entity)
     }
