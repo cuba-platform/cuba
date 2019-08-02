@@ -85,6 +85,10 @@ public class NoopDataContext implements DataContext {
     }
 
     @Override
+    public void setModified(Entity entity, boolean modified) {
+    }
+
+    @Override
     public Set<Entity> getModified() {
         return Collections.emptySet();
     }
