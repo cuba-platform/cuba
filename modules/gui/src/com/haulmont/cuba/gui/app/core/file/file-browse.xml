@@ -35,7 +35,8 @@
 
     <layout expand="filesTable" spacing="true">
         <filter id="genericFilter" datasource="filesDs" margin="false,false,true,false" applyTo="filesTable">
-            <properties include=".*"/>
+            <properties include=".*"
+                        excludeProperties="createDate"/>
         </filter>
 
         <table id="filesTable" editable="false" width="100%" multiselect="true">
