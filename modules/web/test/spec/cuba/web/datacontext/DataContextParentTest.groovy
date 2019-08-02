@@ -36,6 +36,7 @@ import org.eclipse.persistence.queries.FetchGroupTracker
 import org.junit.ClassRule
 import spock.lang.Shared
 import spock.lang.Specification
+import spock.lang.Unroll
 
 @SuppressWarnings("GroovyAssignabilityCheck")
 class DataContextParentTest extends Specification {
@@ -205,6 +206,7 @@ class DataContextParentTest extends Specification {
         user1_ctx2 != null
         !user1_ctx2.is(user1_ctx1)
         isNew(user1_ctx2)
+        ctx2.hasChanges()
 
         when: "create new instances in child context and commit"
 
@@ -229,9 +231,12 @@ class DataContextParentTest extends Specification {
         ur1.role.is(r1)
 
         user1.userRoles[0].is(ur1)
+
+        ctx1.hasChanges()
     }
 
-    def "commit to parent"() {
+    @Unroll
+    def "commit to parent"(boolean detached) {
 
         DataContext ctx1 = factory.createDataContext()
 
@@ -239,6 +244,9 @@ class DataContextParentTest extends Specification {
         makeDetached(order, ['number', 'orderLines'])
 
         def line = new OrderLine(quantity: 1, order: order)
+        if (detached) {
+            makeDetached(line, ['quantity', 'order'])
+        }
         order.orderLines.add(line)
 
         when:
@@ -277,6 +285,15 @@ class DataContextParentTest extends Specification {
         line2.is(ctx2.find(OrderLine, line.id))
         order2.orderLines[0].is(line2)
         line2.order.is(order2)
+
+        and:
+
+        ctx1.hasChanges()
+        !ctx2.hasChanges()
+
+        where:
+
+        detached << [false, true]
     }
 
     private void makeDetached(def entity, List<String> attributes) {

@@ -133,9 +133,19 @@ public interface DataContext {
     boolean isModified(Entity entity);
 
     /**
+     * Returns an immutable set of entities registered as modified.
+     */
+    Set<Entity> getModified();
+
+    /**
      * Returns true if the context has registered removal of the given entity.
      */
     boolean isRemoved(Entity entity);
+
+    /**
+     * Returns an immutable set of entities registered for removal.
+     */
+    Set<Entity> getRemoved();
 
     /**
      * Commits changed and removed instances to the middleware. After successful commit, the context contains
