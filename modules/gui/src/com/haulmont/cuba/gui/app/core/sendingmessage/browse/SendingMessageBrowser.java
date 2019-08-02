@@ -22,8 +22,7 @@ import com.haulmont.cuba.core.app.EmailService;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.entity.SendingAttachment;
 import com.haulmont.cuba.core.entity.SendingMessage;
-import com.haulmont.cuba.core.global.FileLoader;
-import com.haulmont.cuba.core.global.FileStorageException;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.UiComponents;
 import com.haulmont.cuba.gui.components.*;
@@ -38,15 +37,16 @@ import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.upload.FileUploadingAPI;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.IterableUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-
+import java.util.*;
 import static com.haulmont.cuba.gui.WindowManager.OpenType;
 
 public class SendingMessageBrowser extends AbstractWindow {
@@ -158,6 +158,62 @@ public class SendingMessageBrowser extends AbstractWindow {
                 showNotification(messages.getMessage(getClass(), "sendingMessage.noAttachments"), NotificationType.HUMANIZED);
             }
         }
+    }
+
+    public void resendEmail() {
+        SendingMessage message = table.getSingleSelected();
+        if (message != null) {
+            EmailInfo emailInfo = new EmailInfo(message.getAddress(), message.getCaption(), emailBody(message));
+            emailInfo.setFrom(message.getFrom());
+            emailInfo.setBodyContentType(message.getBodyContentType());
+            emailInfo.setAttachments(getAttachmentsArray(message.getAttachments()));
+            emailInfo.setBcc(message.getBcc());
+            emailInfo.setCc(message.getCc());
+            emailInfo.setHeaders(parseHeadersString(message.getHeaders()));
+            try {
+                emailService.sendEmail(emailInfo);
+            } catch (EmailException e) {
+                throw new RuntimeException("Something went wrong during email resending", e);
+            }
+            showNotification("Successfully sent", NotificationType.HUMANIZED);
+        }
+    }
+
+    protected String emailBody(SendingMessage message) {
+        if (message.getContentTextFile() != null) {
+            try (InputStream inputStream = fileLoader.openStream(message.getContentTextFile());){
+                return IOUtils.toString(inputStream, Charset.defaultCharset());
+            } catch (FileStorageException | IOException e) {
+                throw new RuntimeException("Can't read message body from the file", e);
+            }
+        }
+        return message.getContentText();
+    }
+
+    protected List<EmailHeader> parseHeadersString(String headersString) {
+        List<EmailHeader> emailHeadersList = new ArrayList<>();
+        if (headersString != null) {
+            for (String header : headersString.split("\n")) {
+                emailHeadersList.add(EmailHeader.parse(header));
+            }
+        }
+        return emailHeadersList;
+    }
+
+    protected EmailAttachment[] getAttachmentsArray(List<SendingAttachment> sendingAttachments) {
+        EmailAttachment[] emailAttachments = new EmailAttachment[sendingAttachments.size()];
+        for (int i = 0; i < sendingAttachments.size(); i++) {
+            SendingAttachment sendingAttachment = sendingAttachments.get(i);
+            EmailAttachment emailAttachment = new EmailAttachment(
+                    sendingAttachment.getContent(),
+                    sendingAttachment.getName(),
+                    sendingAttachment.getContentId(),
+                    sendingAttachment.getDisposition(),
+                    sendingAttachment.getEncoding()
+            );
+            emailAttachments[i] = emailAttachment;
+        }
+        return emailAttachments;
     }
 
     protected void selectAttachmentDialog(SendingMessage message) {

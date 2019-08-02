@@ -211,6 +211,10 @@
         <property name="status"/>
         <property name="updateTs"/>
         <property name="bodyContentType"/>
+        <property name="contentText"/>
+        <property name="contentTextFile"/>
+        <property name="headers"/>
+        <property name="attachments" view="_local"/>
     </view>
 
     <view class="com.haulmont.cuba.core.entity.SendingMessage" name="sendingMessage.loadFromQueue" extends="_local"

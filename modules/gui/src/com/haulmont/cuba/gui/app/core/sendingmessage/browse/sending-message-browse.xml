@@ -42,6 +42,7 @@
                 <table id="table" width="100%">
                     <actions>
                         <action id="downloadAttachment" caption="msg://sendingMessage.downloadAttachments" invoke="download" trackSelection="true"/>
+                        <action id="resendEmail" caption="msg://sendingMessage.resendEmail" invoke="resendEmail" trackSelection="true"/>
                     </actions>
                     <rowsCount/>
                     <columns>
@@ -66,6 +67,7 @@
                     <rows datasource="sendingMessageDs"/>
                     <buttonsPanel id="buttonsPanel">
                         <button id="downloadAttachmentBtn" action="table.downloadAttachment"/>
+                        <button id="resendEmailBtn" action="table.resendEmail"/>
                     </buttonsPanel>
                 </table>
             </vbox>
