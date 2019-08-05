@@ -10,6 +10,7 @@ import com.haulmont.cuba.gui.components.actions.EditAction;
 import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.data.impl.AbstractDatasource;
 import com.haulmont.cuba.security.entity.EntityOp;
 
 import javax.annotation.Nullable;
@@ -352,6 +353,12 @@ public class EntityCombinedScreen extends AbstractLookup {
             browseDs.setItem(reloadedItem);
         } else {
             editDs.setItem(null);
+        }
+
+        for (Datasource dataSource : getDsContext().getAll()) {
+            if (AbstractDatasource.class.isAssignableFrom(dataSource.getClass())) {
+                ((AbstractDatasource) dataSource).clearCommitLists();
+            }
         }
 
         releaseLock();
