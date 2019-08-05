@@ -24,11 +24,14 @@ import java.util.Map;
 
 public class CubaFieldGroupLayout extends GridLayout {
 
+    protected static final String INLINE_CAPTION_STYLENAME = "inline-caption";
+
     protected Map<Integer, Integer> columnFieldCaptionWidth = null;
 
     public CubaFieldGroupLayout() {
         setHideEmptyRowsAndColumns(true);
         setSpacing(true);
+        updateStyleName();
     }
 
     @Override
@@ -92,6 +95,16 @@ public class CubaFieldGroupLayout extends GridLayout {
     public void setUseInlineCaption(boolean useInlineCaption) {
         if (getState(false).useInlineCaption != useInlineCaption) {
             getState().useInlineCaption = useInlineCaption;
+
+            updateStyleName();
+        }
+    }
+
+    protected void updateStyleName() {
+        if (getState(false).useInlineCaption) {
+            addStyleName(INLINE_CAPTION_STYLENAME);
+        } else {
+            removeStyleName(INLINE_CAPTION_STYLENAME);
         }
     }
 }
