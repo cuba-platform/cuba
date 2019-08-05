@@ -23,12 +23,12 @@
     outline: none;
   }
 
-  .#{$primary-stylename}-spacing-on {
+  .#{$primary-stylename}-inline-caption .#{$primary-stylename}-spacing-on {
     padding-top: $v-layout-spacing-vertical/2;
   }
 
   .#{$primary-stylename}-slot > .v-caption {
-    line-height: $v-unit-size;
+    line-height: $v-line-height;
 
     .c-context-help-button {
       line-height: $v-line-height;
@@ -37,6 +37,7 @@
 
   .#{$primary-stylename}-slot.inline > .v-caption {
     margin-right: $v-layout-spacing-horizontal/2;
+    line-height: $v-unit-size;
     vertical-align: middle;
     overflow: hidden;
   }
