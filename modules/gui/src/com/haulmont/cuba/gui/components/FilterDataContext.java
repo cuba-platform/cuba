@@ -162,7 +162,7 @@ public class FilterDataContext {
                             value = makeCaseInsensitive((String) value);
                         }
                         frame.getContext().addValueChangeListener(info.getPath(), e -> {
-                            loader.setParameter(info.getFlatName(), e.getValue());
+                            loader.setParameter(info.getFlatName(), e.getComponent().getValue());
                             loader.load();
                         });
                         values.put(info.getFlatName(), value);
