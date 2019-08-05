@@ -20,10 +20,12 @@ package com.haulmont.cuba.gui.app.core.scheduled;
 import com.haulmont.cuba.core.app.SchedulingService;
 import com.haulmont.cuba.core.entity.ScheduledTask;
 import com.haulmont.cuba.core.global.RunTaskOnceException;
+import com.haulmont.cuba.gui.Screens;
 import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.screen.Subscribe;
 import org.apache.commons.lang3.BooleanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,6 +49,8 @@ public class ScheduledTaskBrowser extends AbstractWindow {
     @Inject
     protected Button activateBtn;
 
+    @Inject
+    protected Screens screens;
     @Inject
     protected SchedulingService service;
 
@@ -101,6 +105,12 @@ public class ScheduledTaskBrowser extends AbstractWindow {
             showExecutionsAction.setEnabled(isSingleSelected);
             executeOnceAction.setEnabled(isSingleSelected && enableEdit);
         });
+    }
+
+    @Subscribe("showRunningTasksBtn")
+    protected void onShowRunningTasksBtnClick(Button.ClickEvent event) {
+        screens.create(ScheduledRunningTasksScreen.class)
+                .show();
     }
 
     protected boolean checkAllTasksHaveSameStatus(Set<ScheduledTask> tasks) {

@@ -134,6 +134,11 @@ public class SchedulingServiceBean implements SchedulingService {
         scheduling.runOnce(task);
     }
 
+    @Override
+    public List<ScheduledTask> getRunningTasks() {
+        return scheduling.getRunningTasks();
+    }
+
     public static class SetSchedulingActiveMsg implements Serializable {
         private static final long serialVersionUID = 6934530919733469448L;
 

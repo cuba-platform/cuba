@@ -1,0 +1,59 @@
+<!--
+  ~ Copyright (c) 2008-2019 Haulmont.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<window xmlns="http://schemas.haulmont.com/cuba/screen/window.xsd"
+        messagesPack="com.haulmont.cuba.gui.app.core.scheduled"
+        caption="msg://scheduledRunningTasksScreenCaption">
+
+    <data>
+        <collection id="scheduledTasksDc"
+                    class="com.haulmont.cuba.core.entity.ScheduledTask"
+                    view="_local">
+            <loader id="scheduledTasksDl"/>
+        </collection>
+    </data>
+
+    <layout expand="scheduledTasksTable" spacing="true">
+        <filter id="tasksFilter"
+                dataLoader="scheduledTasksDl"
+                applyTo="scheduledTasksTable">
+            <properties include=".*"/>
+        </filter>
+
+        <groupTable id="scheduledTasksTable"
+                    width="100%"
+                    dataContainer="scheduledTasksDc">
+            <actions>
+                <action id="refresh" type="refresh"/>
+            </actions>
+            <columns>
+                <column id="beanName"/>
+                <column id="methodName"/>
+                <column id="className"/>
+                <column id="scriptName"/>
+                <column id="userName"/>
+                <column id="startDate"/>
+                <column id="permittedServers"/>
+                <column id="methodParametersString"/>
+                <column id="description"/>
+            </columns>
+            <rowsCount/>
+            <buttonsPanel id="buttonsPanel" alwaysVisible="true">
+                <button id="refreshBtn" action="scheduledTasksTable.refresh"/>
+            </buttonsPanel>
+        </groupTable>
+    </layout>
+</window>

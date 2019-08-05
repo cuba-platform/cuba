@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.core.app.scheduling;
 
+import com.google.common.collect.ImmutableList;
 import com.haulmont.cuba.core.app.ClusterManagerAPI;
 import com.haulmont.cuba.core.app.ServerConfig;
 import com.haulmont.cuba.core.app.ServerInfoAPI;
@@ -442,5 +443,10 @@ public class Scheduling implements SchedulingAPI {
 
         lastStartCache.put(task, timeSource.currentTimeMillis());
         runner.runTaskOnce(task, timeSource.currentTimeMillis(), userSession);
+    }
+
+    @Override
+    public List<ScheduledTask> getRunningTasks() {
+        return ImmutableList.copyOf(runningTasks.keySet());
     }
 }

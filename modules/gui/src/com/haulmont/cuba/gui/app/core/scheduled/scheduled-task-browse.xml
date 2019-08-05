@@ -46,6 +46,7 @@
                 <button action="tasksTable.remove" icon="icons/remove.png"/>
                 <button action="tasksTable.executions"/>
                 <button action="tasksTable.executeOnce" description="msg://button.executeOnce.description"/>
+                <button id="showRunningTasksBtn" caption="msg://runningTasks"/>
             </buttonsPanel>
             <rowsCount/>
             <columns>

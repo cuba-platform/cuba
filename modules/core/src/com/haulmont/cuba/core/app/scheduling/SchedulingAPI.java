@@ -83,4 +83,9 @@ public interface SchedulingAPI {
      * @throws RunTaskOnceException if you try to execute task once from not permitted server
      */
     void runOnce(ScheduledTask task);
+
+    /**
+     * @return a list of running scheduled tasks
+     */
+    List<ScheduledTask> getRunningTasks();
 }
