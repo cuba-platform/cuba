@@ -76,6 +76,10 @@ public class EnvironmentChecksRunner {
             for (CheckFailedResult result : results) {
                 resultMessage.append("\n");
                 resultMessage.append(result.getMessage());
+                if (result.getException() != null) {
+                    resultMessage.append("\n\t");
+                    resultMessage.append(result.getException());
+                }
             }
             resultMessage.append("\n=================================================================");
             log.warn(resultMessage.toString());
