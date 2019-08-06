@@ -23,9 +23,9 @@ import javax.annotation.Nullable;
  */
 public class CheckFailedResult {
     protected String message;
-    protected Exception exception;
+    protected Throwable exception;
 
-    public CheckFailedResult (String message, @Nullable Exception exception){
+    public CheckFailedResult (String message, @Nullable Throwable exception){
         this.message = message;
         this.exception = exception;
     }
@@ -34,7 +34,7 @@ public class CheckFailedResult {
         return message;
     }
 
-    public Exception getException() {
+    public Throwable getException() {
         return exception;
     }
 }
