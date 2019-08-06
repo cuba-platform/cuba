@@ -406,7 +406,7 @@ public class PersistenceImplSupport implements ApplicationContextAware {
 
             if (!readOnly) {
                 traverseEntities(container, new OnCommitEntityVisitor(container.getStoreName()), false);
-                entityLog.flush();
+                entityLog.flush(container.getStoreName());
             }
 
             Collection<Entity> instances = container.getAllInstances();
