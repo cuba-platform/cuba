@@ -723,7 +723,7 @@ public class QueryImpl<T> implements TypedQuery<T> {
         if (jpaQuery.getFlushMode() == FlushModeType.AUTO
                 && (!isObjectLevelReadQuery || !((ObjectLevelReadQuery) elDbQuery).isReadOnly())) {
             // flush is expected
-            support.fireEntityListeners(entityManager, true);
+            support.processFlush(entityManager, true);
         }
     }
 

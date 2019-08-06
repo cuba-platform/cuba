@@ -189,10 +189,10 @@ public class PersistenceImplSupport implements ApplicationContextAware {
         return holder;
     }
 
-    public void fireEntityListeners(EntityManager entityManager, boolean warnAboutImplicitFlush) {
+    public void processFlush(EntityManager entityManager, boolean warnAboutImplicitFlush) {
         UnitOfWork unitOfWork = entityManager.getDelegate().unwrap(UnitOfWork.class);
         String storeName = getStorageName(unitOfWork);
-        traverseEntities(getInstanceContainerResourceHolder(storeName), new OnFlushEntityVisitor(storeName), warnAboutImplicitFlush);
+        traverseEntities(getInstanceContainerResourceHolder(storeName), new OnSaveEntityVisitor(storeName), warnAboutImplicitFlush);
     }
 
     protected void fireBeforeDetachEntityListener(BaseGenericIdEntity entity, String storeName) {
@@ -405,7 +405,7 @@ public class PersistenceImplSupport implements ApplicationContextAware {
                 log.trace("ContainerResourceSynchronization.beforeCommit: instances=" + container.getAllInstances() + ", readOnly=" + readOnly);
 
             if (!readOnly) {
-                traverseEntities(container, new OnCommitEntityVisitor(container.getStoreName()), false);
+                traverseEntities(container, new OnSaveEntityVisitor(container.getStoreName()), false);
                 entityLog.flush(container.getStoreName());
             }
 
@@ -527,11 +527,11 @@ public class PersistenceImplSupport implements ApplicationContextAware {
         }
     }
 
-    protected class OnCommitEntityVisitor implements EntityVisitor {
+    protected class OnSaveEntityVisitor implements EntityVisitor {
 
         private String storeName;
 
-        public OnCommitEntityVisitor(String storeName) {
+        public OnSaveEntityVisitor(String storeName) {
             this.storeName = storeName;
         }
 
@@ -606,50 +606,6 @@ public class PersistenceImplSupport implements ApplicationContextAware {
             DeletePolicyProcessor processor = AppBeans.get(DeletePolicyProcessor.NAME); // prototype
             processor.setEntity(entity);
             processor.process();
-        }
-    }
-
-    protected class OnFlushEntityVisitor implements EntityVisitor {
-
-        private String storeName;
-
-        public OnFlushEntityVisitor(String storeName) {
-            this.storeName = storeName;
-        }
-
-        @Override
-        public boolean visit(BaseGenericIdEntity entity) {
-            if (BaseEntityInternalAccess.isNew(entity)
-                    && !getSavedInstances(storeName).contains(entity)) {
-                entityListenerManager.fireListener(entity, EntityListenerType.BEFORE_INSERT, storeName);
-                entityLog.registerCreate(entity, true);
-                return true;
-            }
-
-            AttributeChangeListener changeListener =
-                    (AttributeChangeListener) ((ChangeTracker) entity)._persistence_getPropertyChangeListener();
-            if (changeListener == null)
-                return false;
-
-            if (isDeleted(entity, changeListener)) {
-                entityListenerManager.fireListener(entity, EntityListenerType.BEFORE_DELETE, storeName);
-                entityLog.registerDelete(entity, true);
-                return true;
-
-            } else if (changeListener.hasChanges()) {
-                entityListenerManager.fireListener(entity, EntityListenerType.BEFORE_UPDATE, storeName);
-                if (BaseEntityInternalAccess.isNew(entity)) {
-                    // it can happen if flush has already happened, so the entity is still New but was saved
-                    entityLog.registerCreate(entity, true);
-                } else {
-                    EntityAttributeChanges changes = new EntityAttributeChanges();
-                    changes.addChanges(entity);
-                    entityLog.registerModify(entity, true, changes);
-                }
-                return true;
-            }
-
-            return false;
         }
     }
 }
