@@ -1264,3 +1264,46 @@ create table TEST_SELF_REFERENCED_ENTITY (
 
 alter table TEST_SELF_REFERENCED_ENTITY add constraint FK_TEST_SELF_REFERENCED_ENTITY_ON_PARENT_CODE foreign key (PARENT_CODE) references TEST_SELF_REFERENCED_ENTITY(CODE)^
 create index IDX_TEST_SELF_REFERENCED_ENTITY_ON_PARENT_CODE on TEST_SELF_REFERENCED_ENTITY (PARENT_CODE)^
+
+------------------------------------------------------------------------------------------------------------------------
+
+create table TEST_ECE_PRODUCT (
+    ID varchar(36) not null,
+    CREATE_TS timestamp,
+    CREATED_BY varchar(50),
+    VERSION integer,
+    UPDATE_TS timestamp,
+    UPDATED_BY varchar(50),
+    DELETE_TS timestamp,
+    DELETED_BY varchar(50),
+    NAME varchar(255),
+    primary key (ID)
+)^
+
+create table TEST_ECE_STOCK (
+    ID varchar(36) not null,
+    CREATE_TS timestamp,
+    CREATED_BY varchar(50),
+    VERSION integer,
+    UPDATE_TS timestamp,
+    UPDATED_BY varchar(50),
+    DELETE_TS timestamp,
+    DELETED_BY varchar(50),
+    PRODUCT_ID varchar(36),
+    QUANTITY integer,
+    primary key (ID),
+    constraint FK_TEST_ECE_STOCK_PRODUCT foreign key (PRODUCT_ID) references TEST_ECE_PRODUCT (ID)
+)^
+
+create table TEST_ECE_LOG (
+    ID varchar(36) not null,
+    CREATE_TS timestamp,
+    CREATED_BY varchar(50),
+    VERSION integer,
+    UPDATE_TS timestamp,
+    UPDATED_BY varchar(50),
+    DELETE_TS timestamp,
+    DELETED_BY varchar(50),
+    MESSAGE varchar(200),
+    primary key (ID)
+)^
