@@ -1,0 +1,41 @@
+<!--
+  ~ Copyright (c) 2008-2019 Haulmont.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<window xmlns="http://schemas.haulmont.com/cuba/window.xsd"
+        class="com.haulmont.cuba.gui.app.core.categories.AttributesLocationFrame"
+        messagesPack="com.haulmont.cuba.gui.app.core.categories">
+    <companions>
+        <web class="com.haulmont.cuba.web.app.core.categories.AttributesLocationCompanion"/>
+    </companions>
+
+    <layout height="100%" spacing="true">
+        <hbox spacing="true" >
+            <lookupField id="columnsCountLookupField" caption="msg://attributesLocation.columnsCountLookupCaption"
+                         nullOptionVisible="false" width="175px"/>
+            <button id="saveBtn" invoke="saveCoordinates" caption="msg://attributesLocation.saveBtnCaption" align="BOTTOM_RIGHT"/>
+        </hbox>
+        <hbox id="hBox">
+            <hbox width="190px">
+                <dataGrid id="sourceDataGrid" metaClass="sys$CategoryAttribute"
+                          editorEnabled="false" width="175px" settingsEnabled="false">
+                    <columns>
+                        <column caption="msg://attributesLocation.sourceColumnCaption" id="name" property="localeName" sortable="false"/>
+                    </columns>
+                </dataGrid>
+            </hbox>
+        </hbox>
+    </layout>
+</window>

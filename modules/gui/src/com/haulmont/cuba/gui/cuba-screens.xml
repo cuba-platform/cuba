@@ -243,4 +243,7 @@
     <screen id="localizedEnumerationWindow"
             template="/com/haulmont/cuba/gui/app/core/categories/localized-enumeration-window.xml"/>
 
+    <screen id="attributesLocationFrame"
+            template="/com/haulmont/cuba/gui/app/core/categories/attributes-location-frame.xml"/>
+
 </screen-config>

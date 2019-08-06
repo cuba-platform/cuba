@@ -27,6 +27,7 @@ import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.Security;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
+import com.haulmont.cuba.gui.UiComponents;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.data.ValueSource;
 import com.haulmont.cuba.gui.components.data.value.ContainerValueSource;
@@ -39,10 +40,8 @@ import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @CompositeDescriptor("dynamic-attributes-panel.xml")
 public class DynamicAttributesPanel extends CompositeComponent<VBoxLayout> implements Validatable {
@@ -56,6 +55,9 @@ public class DynamicAttributesPanel extends CompositeComponent<VBoxLayout> imple
 
     @Inject
     protected UiComponentsGenerator uiComponentsGenerator;
+
+    @Inject
+    protected UiComponents uiComponents;
 
     @Inject
     protected DynamicAttributeComponentsGenerator dynamicAttributeComponentsGenerator;
@@ -92,28 +94,69 @@ public class DynamicAttributesPanel extends CompositeComponent<VBoxLayout> imple
         propertiesForm.removeAll();
 
         List<DynamicAttributesMetaProperty> metaProperties = getPropertiesFilteredByCategory();
-        List<Component> fields = new ArrayList<>(metaProperties.size());
+        Map<CategoryAttribute, Component> fields = new HashMap<>();
         for (DynamicAttributesMetaProperty property : metaProperties) {
             Component formField = generateFieldComponent(property);
-            fields.add(prepareFieldComponent(formField, property));
+            fields.put(property.getAttribute(), prepareFieldComponent(formField, property));
         }
         addFieldsToForm(propertiesForm, fields);
         initFieldCaptionWidth(propertiesForm);
     }
 
-    protected void addFieldsToForm(Form newPropertiesForm, List<Component> fields) {
-        int propertiesCount = getPropertiesFilteredByCategory().size();
-        int rowsPerColumn = getRowsPerColumn(propertiesCount);
-        int columnNo = 0;
-        int fieldsCount = 0;
-        for (Component field : fields) {
-            fieldsCount++;
-            newPropertiesForm.add(field, columnNo);
-            if (fieldsCount % rowsPerColumn == 0) {
-                columnNo++;
-                newPropertiesForm.setColumns(columnNo + 1);
+    protected void addFieldsToForm(Form newPropertiesForm, Map<CategoryAttribute, Component> fields) {
+        if (fields.keySet().stream().anyMatch(attr -> attr.getConfiguration().getXCoordinate() != null
+                && attr.getConfiguration().getYCoordinate() != null)) {
+
+            List<CategoryAttribute> attributesToAdd = fields.keySet().stream()
+                    .filter(attr -> attr.getConfiguration().getXCoordinate() != null
+                            && attr.getConfiguration().getYCoordinate() != null)
+                    .collect(Collectors.toList());
+
+            int maxColumnIndex = attributesToAdd.stream()
+                    .mapToInt(attr -> attr.getConfiguration().getXCoordinate())
+                    .max()
+                    .orElse(0);
+
+            newPropertiesForm.setColumns(maxColumnIndex + 1);
+
+            for (int i = 0; i <= maxColumnIndex; i++) {
+                int columnIndex = i;
+                List<CategoryAttribute> columnAttributes = attributesToAdd.stream()
+                        .filter(attr -> columnIndex == attr.getConfiguration().getXCoordinate())
+                        .sorted(Comparator.comparing(attr -> attr.getConfiguration().getYCoordinate()))
+                        .collect(Collectors.toList());
+
+                int currentRowNumber = 0;
+                for (CategoryAttribute attr : columnAttributes) {
+                    while (attr.getConfiguration().getYCoordinate() > currentRowNumber) {
+                        //add empty row
+                        newPropertiesForm.add(createEmptyComponent(), columnIndex, currentRowNumber);
+                        currentRowNumber++;
+                    }
+                    newPropertiesForm.add(fields.get(attr), columnIndex, currentRowNumber);
+                    currentRowNumber++;
+                }
+            }
+        } else {
+            int propertiesCount = getPropertiesFilteredByCategory().size();
+            int rowsPerColumn = getRowsPerColumn(propertiesCount);
+            int columnNo = 0;
+            int fieldsCount = 0;
+            for (Component field : fields.values()) {
+                fieldsCount++;
+                newPropertiesForm.add(field, columnNo);
+                if (fieldsCount % rowsPerColumn == 0) {
+                    columnNo++;
+                    newPropertiesForm.setColumns(columnNo + 1);
+                }
             }
         }
+    }
+
+    private Component createEmptyComponent() {
+        Label<String> component = uiComponents.create(Label.TYPE_STRING);
+        component.setValue("\u2060");
+        return component;
     }
 
     protected int getRowsPerColumn(int propertiesCount) {
