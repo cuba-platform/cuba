@@ -508,6 +508,19 @@ public class DataContextImpl implements DataContext {
     }
 
     @Override
+    public void evictAll() {
+        Set<Entity> tmpModifiedInstances = new HashSet<>(modifiedInstances);
+        Set<Entity> tmpRemovedInstances = new HashSet<>(removedInstances);
+
+        for (Entity entity : tmpModifiedInstances) {
+            evict(entity);
+        }
+        for (Entity entity : tmpRemovedInstances) {
+            evict(entity);
+        }
+    }
+
+    @Override
     public <T extends Entity> T create(Class<T> entityClass) {
         T entity = getMetadata().create(entityClass);
         return merge(entity);
