@@ -88,6 +88,12 @@ public class CategoryAttributeConfiguration extends BaseGenericIdEntity<String> 
     protected String recalculationScript;
 
     @MetaProperty
+    protected Integer xCoordinate;
+
+    @MetaProperty
+    protected Integer yCoordinate;
+
+    @MetaProperty
     @Transient
     protected transient Collection<CategoryAttribute> dependentAttributes;
 
@@ -302,6 +308,22 @@ public class CategoryAttributeConfiguration extends BaseGenericIdEntity<String> 
             }
         }
         return false;
+    }
+
+    public Integer getXCoordinate() {
+        return xCoordinate;
+    }
+
+    public void setXCoordinate(Integer xCoordinate) {
+        this.xCoordinate = xCoordinate;
+    }
+
+    public Integer getYCoordinate() {
+        return yCoordinate;
+    }
+
+    public void setYCoordinate(Integer yCoordinate) {
+        this.yCoordinate = yCoordinate;
     }
 
     @Override

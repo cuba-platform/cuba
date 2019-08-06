@@ -246,4 +246,11 @@ public interface GlobalConfig extends Config {
     @Property("cuba.dynamicAttributes.maxRecalculationLevel")
     @DefaultInt(10)
     int getMaxRecalculationLevel();
+
+    /**
+     * @return max columns count for DynamicAttributesPanel
+     */
+    @Property("cuba.dynamicAttributes.dynamicAttributesPanelMaxColumns")
+    @DefaultInt(4)
+    int getDynamicAttributesPanelMaxColumnsCount();
 }

@@ -19,18 +19,15 @@ package com.haulmont.cuba.gui.app.core.categories;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Category;
+import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.entity.HasUuid;
 import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.gui.components.AbstractEditor;
-import com.haulmont.cuba.gui.components.CheckBox;
-import com.haulmont.cuba.gui.components.GroupBoxLayout;
-import com.haulmont.cuba.gui.components.LookupField;
+import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.data.CollectionDatasource;
 import org.apache.commons.lang3.BooleanUtils;
 
 import javax.inject.Inject;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 public class CategoryEditor extends AbstractEditor<Category> {
     @Inject
@@ -53,6 +50,14 @@ public class CategoryEditor extends AbstractEditor<Category> {
     @Inject
     protected CheckBox isDefault;
 
+    @Inject
+    protected CollectionDatasource<CategoryAttribute, UUID> categoryAttrsDs;
+
+    @Inject
+    protected TabSheet tabsheet;
+
+    protected AttributesLocationFrame attributesLocationFrame;
+
     protected Category category;
 
     @Override
@@ -61,6 +66,8 @@ public class CategoryEditor extends AbstractEditor<Category> {
         initEntityTypeField();
         initIsDefaultCheckbox();
         initLocalizedFrame();
+        initAttributesLocationFrame();
+        categoryAttrsDs.addCollectionChangeListener(e -> initAttributesLocationFrame());
     }
 
     protected void initLocalizedFrame() {
@@ -71,6 +78,15 @@ public class CategoryEditor extends AbstractEditor<Category> {
             localizedFrame.setHeight(AUTO_SIZE);
             localizedFrame.setValue(category.getLocaleNames());
         }
+    }
+
+    protected void initAttributesLocationFrame() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("attributes", categoryAttrsDs.getItems());
+        attributesLocationFrame = (AttributesLocationFrame) openFrame(tabsheet.getTabComponent("dynamicAttributesLocation"),
+                "attributesLocationFrame", params);
+        attributesLocationFrame.setWidth("100%");
+        attributesLocationFrame.setHeight(AUTO_SIZE);
     }
 
     protected void initEntityTypeField() {
