@@ -404,6 +404,8 @@ public class RdbmsStore implements DataStore {
         List<BaseGenericIdEntity> identityEntitiesToStoreDynamicAttributes = new ArrayList<>();
         List<CategoryAttributeValue> attributeValuesToRemove = new ArrayList<>();
 
+        SavedEntitiesHolder savedEntitiesHolder;
+
         try (Transaction tx = getSaveTransaction(storeName, context.isJoinTransaction())) {
             EntityManager em = persistence.getEntityManager(storeName);
             checkPermissions(context);
@@ -523,6 +525,8 @@ public class RdbmsStore implements DataStore {
                 security.calculateFilteredData(saved);
             }
 
+            savedEntitiesHolder = SavedEntitiesHolder.setEntities(saved);
+
             if (context.isJoinTransaction()) {
                 List<EntityChangedEvent> events = entityChangedEventManager.collect(saved);
                 em.flush();
@@ -534,6 +538,8 @@ public class RdbmsStore implements DataStore {
 
             tx.commit();
         }
+
+        Set<Entity> resultEntities = savedEntitiesHolder.getEntities(saved);
 
         if (!attributeValuesToRemove.isEmpty()) {
             try (Transaction tx = getSaveTransaction(Stores.MAIN, context.isJoinTransaction())) {
@@ -555,21 +561,21 @@ public class RdbmsStore implements DataStore {
         }
 
         if (!context.isDiscardCommitted() && isAuthorizationRequired(context) && userSessionSource.getUserSession().hasConstraints()) {
-            security.applyConstraints(saved);
+            security.applyConstraints(resultEntities);
         }
 
         if (!context.isDiscardCommitted()) {
             if (isAuthorizationRequired(context)) {
-                for (Entity entity : saved) {
+                for (Entity entity : resultEntities) {
                     if (!persisted.contains(entity)) {
                         attributeSecurity.afterCommit(entity);
                     }
                 }
             }
-            updateReferences(persisted, saved);
+            updateReferences(persisted, resultEntities);
         }
 
-        return context.isDiscardCommitted() ? Collections.emptySet() : saved;
+        return context.isDiscardCommitted() ? Collections.emptySet() : resultEntities;
     }
 
     @Override

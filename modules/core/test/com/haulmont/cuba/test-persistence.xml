@@ -130,5 +130,9 @@
 
         <class>com.haulmont.cuba.testmodel.self_reference.BaseDictEntity</class>
         <class>com.haulmont.cuba.testmodel.self_reference.SelfReferencedEntity</class>
+
+        <class>com.haulmont.cuba.testmodel.entitychangedevent.EceTestProduct</class>
+        <class>com.haulmont.cuba.testmodel.entitychangedevent.EceTestStock</class>
+        <class>com.haulmont.cuba.testmodel.entitychangedevent.EceTestLogEntry</class>
     </persistence-unit>
 </persistence>
