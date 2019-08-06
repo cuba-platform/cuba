@@ -63,6 +63,11 @@ public interface DataContext {
     boolean contains(Entity entity);
 
     /**
+     * Cleans lists with information of created/modified/deleted entities for commit.
+     */
+    default void evictAll() {}
+
+    /**
      * Merge the given entity into the context. The whole object graph with all references will be merged.
      * <p>
      * If an entity with the same identifier already exists in the context, the passed entity state is copied into
