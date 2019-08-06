@@ -99,5 +99,5 @@ public interface EntityLogAPI {
      * Flush records accumulated by invocations of {@link #registerCreate(Entity)} and other registration methods
      * to the database.
      */
-    void flush();
+    void flush(String storeName);
 }

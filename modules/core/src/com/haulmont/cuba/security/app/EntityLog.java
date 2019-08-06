@@ -105,8 +105,8 @@ public class EntityLog implements EntityLogAPI {
     }
 
     @Override
-    public void flush() {
-        EntityManagerContext context = persistence.getEntityManagerContext();
+    public void flush(String storeName) {
+        EntityManagerContext context = persistence.getEntityManagerContext(storeName);
         List<EntityLogItem> items = context.getAttribute(EntityLog.class.getName());
         if (items == null || items.isEmpty())
             return;
@@ -387,15 +387,7 @@ public class EntityLog implements EntityLogAPI {
                 internalRegisterModifyAttributeValue((CategoryAttributeValue) entity, null, attributes);
             } else {
                 String storeName = metadata.getTools().getStoreName(metaClass);
-                if (Stores.isMain(storeName)) {
-                    internalRegisterCreate(entity, masterEntityName, attributes);
-                } else {
-                    // Create a new transaction in main DB if we are saving an entity from additional data store
-                    try (Transaction tx = persistence.createTransaction()) {
-                        internalRegisterCreate(entity, masterEntityName, attributes);
-                        tx.commit();
-                    }
-                }
+                internalRegisterCreate(entity, masterEntityName, storeName, attributes);
             }
         } catch (Exception e) {
             logError(entity, e);
@@ -415,24 +407,40 @@ public class EntityLog implements EntityLogAPI {
                 .collect(Collectors.toSet());
     }
 
-    protected void internalRegisterCreate(Entity entity, String entityName, Set<String> attributes) throws IOException {
-        Date ts = timeSource.currentTimestamp();
-        EntityManager em = persistence.getEntityManager();
-
-        EntityLogItem item = metadata.create(EntityLogItem.class);
-        item.setEventTs(ts);
-        item.setUser(findUser(em));
-        item.setType(EntityLogItem.Type.CREATE);
-        item.setEntity(entityName);
-        item.setEntityInstanceName(metadataTools.getInstanceName(entity));
-        if (entity instanceof BaseDbGeneratedIdEntity) {
-            item.setDbGeneratedIdEntity((BaseDbGeneratedIdEntity) entity);
-        } else {
-            item.setObjectEntityId(referenceToEntitySupport.getReferenceId(entity));
+    protected void internalRegisterCreate(Entity entity, String entityName, String storeName, Set<String> attributes) {
+        EntityLogItem item;
+        Transaction tx = null;
+        // Create a new transaction in main DB if we are saving an entity from additional data store
+        if (!Stores.isMain(storeName)) {
+            tx = persistence.createTransaction();
         }
-        item.setAttributes(createLogAttributes(entity, attributes, null));
 
-        enqueueItem(item);
+        try {
+            Date ts = timeSource.currentTimestamp();
+            EntityManager em = persistence.getEntityManager();
+
+            item = metadata.create(EntityLogItem.class);
+            item.setEventTs(ts);
+            item.setUser(findUser(em));
+            item.setType(EntityLogItem.Type.CREATE);
+            item.setEntity(entityName);
+            item.setEntityInstanceName(metadataTools.getInstanceName(entity));
+            if (entity instanceof BaseDbGeneratedIdEntity) {
+                item.setDbGeneratedIdEntity((BaseDbGeneratedIdEntity) entity);
+            } else {
+                item.setObjectEntityId(referenceToEntitySupport.getReferenceId(entity));
+            }
+            item.setAttributes(createLogAttributes(entity, attributes, null));
+
+            if (tx != null) {
+                tx.commit();
+            }
+        } finally {
+            if (tx != null) {
+                tx.end();
+            }
+        }
+        enqueueItem(item, storeName);
     }
 
     protected void internalRegisterModifyAttributeValue(CategoryAttributeValue entity, @Nullable EntityAttributeChanges changes,
@@ -460,7 +468,7 @@ public class EntityLog implements EntityLogAPI {
             item.setObjectEntityId(entity.getObjectEntityId());
             item.setAttributes(createDynamicLogAttribute(entity, changes, registerDeleteOp));
 
-            enqueueItem(item);
+            enqueueItem(item, Stores.MAIN);
         }
     }
 
@@ -491,8 +499,8 @@ public class EntityLog implements EntityLogAPI {
         }
     }
 
-    protected void enqueueItem(EntityLogItem item) {
-        EntityManagerContext context = persistence.getEntityManagerContext();
+    protected void enqueueItem(EntityLogItem item, String storeName) {
+        EntityManagerContext context = persistence.getEntityManagerContext(storeName);
         List<EntityLogItem> items = context.getAttribute(EntityLog.class.getName());
         if (items == null) {
             items = new ArrayList<>();
@@ -534,15 +542,7 @@ public class EntityLog implements EntityLogAPI {
                 internalRegisterModifyAttributeValue((CategoryAttributeValue) entity, changes, attributes);
             } else {
                 String storeName = metadataTools.getStoreName(metaClass);
-                if (Stores.isMain(storeName)) {
-                    internalRegisterModify(entity, changes, metaClass, storeName, attributes);
-                } else {
-                    // Create a new transaction in main DB if we are saving an entity from additional data store
-                    try (Transaction tx = persistence.createTransaction()) {
-                        internalRegisterModify(entity, changes, metaClass, storeName, attributes);
-                        tx.commit();
-                    }
-                }
+                internalRegisterModify(entity, changes, metaClass, storeName, attributes);
             }
         } catch (Exception e) {
             logError(entity, e);
@@ -551,47 +551,66 @@ public class EntityLog implements EntityLogAPI {
 
     protected void internalRegisterModify(Entity entity, @Nullable EntityAttributeChanges changes, MetaClass metaClass,
                                           String storeName, Set<String> attributes) {
-        Date ts = timeSource.currentTimestamp();
-        EntityManager em = persistence.getEntityManager();
+        EntityLogItem item = null;
+        Transaction tx = null;
+        // Create a new transaction in main DB if we are saving an entity from additional data store
+        if (!Stores.isMain(storeName)) {
+            tx = persistence.createTransaction();
+        }
 
-        Set<String> dirty = calculateDirtyFields(entity, changes);
-        Set<EntityLogAttr> entityLogAttrs;
-        EntityLogItem.Type type;
-        if (entity instanceof SoftDelete && dirty.contains("deleteTs") && !((SoftDelete) entity).isDeleted()) {
-            type = EntityLogItem.Type.RESTORE;
-            entityLogAttrs = createLogAttributes(entity, attributes, changes);
-        } else {
-            type = EntityLogItem.Type.MODIFY;
-            Set<String> dirtyAttributes = new HashSet<>();
-            for (String attributePath : attributes) {
-                if (DynamicAttributesUtils.isDynamicAttribute(attributePath)) {
-                    continue;
-                }
-                MetaPropertyPath propertyPath = metaClass.getPropertyPath(attributePath);
-                Preconditions.checkNotNullArgument(propertyPath,
-                        "Property path %s isn't exists for type %s", attributePath, metaClass.getName());
-                if (dirty.contains(attributePath)) {
-                    dirtyAttributes.add(attributePath);
-                } else if (!Stores.getAdditional().isEmpty()) {
-                    String idAttributePath = getIdAttributePath(propertyPath, storeName);
-                    if (idAttributePath != null && dirty.contains(idAttributePath)) {
+        try {
+            Date ts = timeSource.currentTimestamp();
+            EntityManager em = persistence.getEntityManager();
+
+            Set<String> dirty = calculateDirtyFields(entity, changes);
+            Set<EntityLogAttr> entityLogAttrs;
+            EntityLogItem.Type type;
+            if (entity instanceof SoftDelete && dirty.contains("deleteTs") && !((SoftDelete) entity).isDeleted()) {
+                type = EntityLogItem.Type.RESTORE;
+                entityLogAttrs = createLogAttributes(entity, attributes, changes);
+            } else {
+                type = EntityLogItem.Type.MODIFY;
+                Set<String> dirtyAttributes = new HashSet<>();
+                for (String attributePath : attributes) {
+                    if (DynamicAttributesUtils.isDynamicAttribute(attributePath)) {
+                        continue;
+                    }
+                    MetaPropertyPath propertyPath = metaClass.getPropertyPath(attributePath);
+                    Preconditions.checkNotNullArgument(propertyPath,
+                            "Property path %s isn't exists for type %s", attributePath, metaClass.getName());
+                    if (dirty.contains(attributePath)) {
                         dirtyAttributes.add(attributePath);
+                    } else if (!Stores.getAdditional().isEmpty()) {
+                        String idAttributePath = getIdAttributePath(propertyPath, storeName);
+                        if (idAttributePath != null && dirty.contains(idAttributePath)) {
+                            dirtyAttributes.add(attributePath);
+                        }
                     }
                 }
+                entityLogAttrs = createLogAttributes(entity, dirtyAttributes, changes);
             }
-            entityLogAttrs = createLogAttributes(entity, dirtyAttributes, changes);
-        }
-        if (!entityLogAttrs.isEmpty() || type == EntityLogItem.Type.RESTORE) {
-            EntityLogItem item = metadata.create(EntityLogItem.class);
-            item.setEventTs(ts);
-            item.setUser(findUser(em));
-            item.setType(type);
-            item.setEntity(metadata.getExtendedEntities().getOriginalOrThisMetaClass(metaClass).getName());
-            item.setEntityInstanceName(metadataTools.getInstanceName(entity));
-            item.setObjectEntityId(referenceToEntitySupport.getReferenceId(entity));
-            item.setAttributes(entityLogAttrs);
+            if (!entityLogAttrs.isEmpty() || type == EntityLogItem.Type.RESTORE) {
+                item = metadata.create(EntityLogItem.class);
+                item.setEventTs(ts);
+                item.setUser(findUser(em));
+                item.setType(type);
+                item.setEntity(metadata.getExtendedEntities().getOriginalOrThisMetaClass(metaClass).getName());
+                item.setEntityInstanceName(metadataTools.getInstanceName(entity));
+                item.setObjectEntityId(referenceToEntitySupport.getReferenceId(entity));
+                item.setAttributes(entityLogAttrs);
+            }
 
-            enqueueItem(item);
+            if (tx != null) {
+                tx.commit();
+            }
+        } finally {
+            if (tx != null) {
+                tx.end();
+            }
+        }
+
+        if (item != null) {
+            enqueueItem(item, storeName);
         }
     }
 
@@ -702,35 +721,44 @@ public class EntityLog implements EntityLogAPI {
                 internalRegisterModifyAttributeValue((CategoryAttributeValue) entity, null, attributes);
             } else {
                 String storeName = metadata.getTools().getStoreName(metaClass);
-                if (Stores.isMain(storeName)) {
-                    internalRegisterDelete(entity, masterEntityName, attributes);
-                } else {
-                    // Create a new transaction in main DB if we are saving an entity from additional data store
-                    try (Transaction tx = persistence.createTransaction()) {
-                        internalRegisterDelete(entity, masterEntityName, attributes);
-                        tx.commit();
-                    }
-                }
+                internalRegisterDelete(entity, masterEntityName, storeName, attributes);
             }
         } catch (Exception e) {
             logError(entity, e);
         }
     }
 
-    protected void internalRegisterDelete(Entity entity, String entityName, Set<String> attributes) throws IOException {
-        Date ts = timeSource.currentTimestamp();
-        EntityManager em = persistence.getEntityManager();
+    protected void internalRegisterDelete(Entity entity, String entityName, String storeName, Set<String> attributes) throws IOException {
+        EntityLogItem item;
+        Transaction tx = null;
+        // Create a new transaction in main DB if we are saving an entity from additional data store
+        if (!Stores.isMain(storeName)) {
+            tx = persistence.createTransaction();
+        }
 
-        EntityLogItem item = metadata.create(EntityLogItem.class);
-        item.setEventTs(ts);
-        item.setUser(findUser(em));
-        item.setType(EntityLogItem.Type.DELETE);
-        item.setEntity(entityName);
-        item.setEntityInstanceName(metadataTools.getInstanceName(entity));
-        item.setObjectEntityId(referenceToEntitySupport.getReferenceId(entity));
-        item.setAttributes(createLogAttributes(entity, attributes, null));
+        try {
+            Date ts = timeSource.currentTimestamp();
+            EntityManager em = persistence.getEntityManager();
 
-        enqueueItem(item);
+            item = metadata.create(EntityLogItem.class);
+            item.setEventTs(ts);
+            item.setUser(findUser(em));
+            item.setType(EntityLogItem.Type.DELETE);
+            item.setEntity(entityName);
+            item.setEntityInstanceName(metadataTools.getInstanceName(entity));
+            item.setObjectEntityId(referenceToEntitySupport.getReferenceId(entity));
+            item.setAttributes(createLogAttributes(entity, attributes, null));
+
+            if (tx != null) {
+                tx.commit();
+            }
+        } finally {
+            if (tx != null) {
+                tx.end();
+            }
+        }
+
+        enqueueItem(item, storeName);
     }
 
     protected Set<String> getAllAttributes(Entity entity) {
