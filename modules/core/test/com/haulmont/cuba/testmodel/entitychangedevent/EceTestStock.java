@@ -17,7 +17,9 @@
 package com.haulmont.cuba.testmodel.entitychangedevent;
 
 import com.haulmont.cuba.core.entity.StandardEntity;
+import com.haulmont.cuba.core.entity.annotation.OnDeleteInverse;
 import com.haulmont.cuba.core.entity.annotation.PublishEntityChangedEvents;
+import com.haulmont.cuba.core.global.DeletePolicy;
 
 import javax.persistence.*;
 
@@ -28,6 +30,7 @@ public class EceTestStock extends StandardEntity {
 
     @JoinColumn(name = "PRODUCT_ID")
     @ManyToOne(fetch = FetchType.LAZY)
+    @OnDeleteInverse(DeletePolicy.CASCADE)
     private EceTestProduct product;
 
     @Column(name = "QUANTITY")

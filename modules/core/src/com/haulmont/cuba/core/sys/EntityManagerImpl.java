@@ -316,7 +316,7 @@ public class EntityManagerImpl implements EntityManager {
     @Override
     public void flush() {
         log.debug("flush");
-        support.fireEntityListeners(this, false);
+        support.processFlush(this, false);
         delegate.flush();
     }
 
