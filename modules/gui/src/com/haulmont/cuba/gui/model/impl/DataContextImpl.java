@@ -251,7 +251,7 @@ public class DataContextImpl implements DataContext {
                 if (srcVer < dstVer) {
                     return;
                 }
-                replaceCollections = srcVer > dstVer;
+                replaceCollections = true;
             }
         }
 
