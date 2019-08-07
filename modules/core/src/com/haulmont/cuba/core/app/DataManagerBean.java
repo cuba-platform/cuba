@@ -186,11 +186,7 @@ public class DataManagerBean implements DataManager {
         for (Map.Entry<String, CommitContext> entry : storeToContextMap.entrySet()) {
             DataStore dataStore = storeFactory.get(entry.getKey());
             Set<Entity> committed = dataStore.commit(entry.getValue());
-            if (!committed.isEmpty()) {
-                Entity committedEntity = committed.iterator().next();
-                adjustState(committedEntity);
-                result.addAll(committed);
-            }
+            result.addAll(committed);
         }
 
         if (!toRepeat.isEmpty()) {
@@ -217,14 +213,6 @@ public class DataManagerBean implements DataManager {
         }
 
         return EntitySet.of(result);
-    }
-
-    protected void adjustState(Entity committedEntity) {
-        if (committedEntity instanceof AbstractNotPersistentEntity) {
-            BaseEntityInternalAccess.setNew((AbstractNotPersistentEntity) committedEntity, false);
-        } else if (committedEntity instanceof BaseGenericIdEntity && metadataTools.isTransient(committedEntity.getClass())) {
-            BaseEntityInternalAccess.setNew((BaseGenericIdEntity) committedEntity, false);
-        }
     }
 
     @Override
