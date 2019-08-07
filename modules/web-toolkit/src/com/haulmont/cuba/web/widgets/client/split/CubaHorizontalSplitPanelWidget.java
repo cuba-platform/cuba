@@ -91,7 +91,11 @@ public class CubaHorizontalSplitPanelWidget extends VSplitPanelHorizontal {
     protected CubaPlaceHolderWidget createDockButton() {
         CubaPlaceHolderWidget dockBtn = new CubaPlaceHolderWidget();
         dockBtn.setStyleName(SP_DOCK_BUTTON);
-        dockBtn.addStyleName(SP_DOCK_BUTTON_LEFT);
+        if (dockMode == SplitPanelDockMode.RIGHT) {
+            dockBtn.addStyleName(SP_DOCK_BUTTON_RIGHT);
+        } else {
+            dockBtn.addStyleName(SP_DOCK_BUTTON_LEFT);
+        }
         dockBtn.addDomHandler(
                 event -> onDockButtonClick(),
                 ClickEvent.getType());
@@ -189,7 +193,7 @@ public class CubaHorizontalSplitPanelWidget extends VSplitPanelHorizontal {
                 }
             } else if (dockMode == SplitPanelDockMode.RIGHT) {
                 int right = splitter.getOffsetLeft() + splitter.getOffsetWidth();
-                int splitRightPosition = getAbsoluteLeft() + getAbsoluteRight();
+                int splitRightPosition = getAbsoluteRight();
 
                 if (right < splitRightPosition - BUTTON_WIDTH_SPACE) {
                     dockButtonStyle.setLeft(right - getSplitterSize(), Style.Unit.PX);
