@@ -21,6 +21,7 @@ import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Widget;
+import com.vaadin.client.BrowserInfo;
 import com.vaadin.client.ui.ShortcutActionHandler;
 import com.vaadin.client.ui.VTextField;
 
@@ -44,6 +45,17 @@ public class CubaTextFieldWidget extends VTextField implements ShortcutActionHan
         DOM.sinkEvents(getElement(), Event.ONKEYDOWN);
 
         addInputHandler(getElement());
+
+        disableAutocompletion();
+    }
+
+    protected void disableAutocompletion() {
+        if (BrowserInfo.get().isChrome()) {
+            // Chrome supports "off" and random number does not work with Chrome
+            getElement().setAttribute("autocomplete", "off");
+        } else {
+            getElement().setAttribute("autocomplete", Math.random() + "");
+        }
     }
 
     protected native void addInputHandler(Element elementID)/*-{

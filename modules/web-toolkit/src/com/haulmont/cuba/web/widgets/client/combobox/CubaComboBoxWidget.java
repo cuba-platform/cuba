@@ -23,6 +23,7 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.Widget;
+import com.vaadin.client.BrowserInfo;
 import com.vaadin.client.ui.ShortcutActionHandler;
 import com.vaadin.client.ui.VComboBox;
 
@@ -45,6 +46,17 @@ public class CubaComboBoxWidget extends VComboBox
     public CubaComboBoxWidget() {
         // handle shortcuts
         DOM.sinkEvents(getElement(), Event.ONKEYDOWN);
+
+        disableAutocompletion();
+    }
+
+    protected void disableAutocompletion() {
+        if (BrowserInfo.get().isChrome()) {
+            // Chrome supports "off" and random number does not work with Chrome
+            tb.getElement().setAttribute("autocomplete", "off");
+        } else {
+            tb.getElement().setAttribute("autocomplete", Math.random() + "");
+        }
     }
 
     @Override

@@ -17,6 +17,7 @@
 package com.haulmont.cuba.web.widgets.client.textarea;
 
 import com.google.gwt.dom.client.Element;
+import com.vaadin.client.BrowserInfo;
 import com.vaadin.client.ui.VTextArea;
 
 public class CubaTextAreaWidget extends VTextArea {
@@ -32,6 +33,17 @@ public class CubaTextAreaWidget extends VTextArea {
         super();
 
         addInputHandler(getElement());
+
+        disableAutocompletion();
+    }
+
+    protected void disableAutocompletion() {
+        if (BrowserInfo.get().isChrome()) {
+            // Chrome supports "off" and random number does not work with Chrome
+            getElement().setAttribute("autocomplete", "off");
+        } else {
+            getElement().setAttribute("autocomplete", Math.random() + "");
+        }
     }
 
     protected native void addInputHandler(Element elementID)/*-{
