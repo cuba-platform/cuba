@@ -163,6 +163,8 @@ public class Jpa2GrammarTest {
         testQuery("select c from ref$Contract c order by c.select");
         testQuery("select c from ref$Contract c order by c.count");
         testQuery("select c from ref$Contract c order by c.group");
+        testQuery("select c from ref$Contract c order by c.desc");
+        testQuery("select c from ref$Contract c order by c.asc");
     }
 
     @Test
@@ -174,6 +176,8 @@ public class Jpa2GrammarTest {
         testQuery("select c from ref$Contract c group by c.select");
         testQuery("select c from ref$Contract c group by c.count");
         testQuery("select c from ref$Contract c group by c.group");
+        testQuery("select c from ref$Contract c group by c.desc");
+        testQuery("select c from ref$Contract c group by c.asc");
     }
 
     @Test
@@ -192,6 +196,8 @@ public class Jpa2GrammarTest {
         testQuery("select dB from taxi$DriverBan dB where dB.group is null");
         testQuery("select dB from taxi$DriverBan dB where dB.avg is null");
         testQuery("select dB from taxi$DriverBan dB where dB.size is null");
+        testQuery("select dB from taxi$DriverBan dB where dB.desc is null");
+        testQuery("select dB from taxi$DriverBan dB where dB.asc is null");
     }
 
     private void testQuery(String query) throws RecognitionException {
