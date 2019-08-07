@@ -289,17 +289,10 @@ class DataContextMergeTest extends Specification {
         mergedOrder1.is(mergedOrder2)
         mergedOrder1.number == '2'
 
-        and:
+        and: "attributes of merged root completely replace previously merged attributes"
 
-        mergedOrder1.customer == customer1
-        !mergedOrder1.customer.is(customer1)
-
-        mergedOrder1.orderLines.size() == 1
-
-        def mergedLine1 = mergedOrder1.orderLines[0]
-        mergedLine1 == line1
-
-        mergedLine1.order.is(mergedOrder1)
+        mergedOrder1.customer == null
+        mergedOrder1.orderLines == null
     }
 
     def "merge with existing - locals"() {
@@ -308,7 +301,7 @@ class DataContextMergeTest extends Specification {
 
         def cust1, cust2
 
-        when: "(1) src.new > dst.new : copy all non-null"
+        when: "(1) src.new -> dst.new : copy all"
 
         cust1 = new Customer(name: 'c1')
         cust2 = new Customer(name: 'c2', status: Status.OK, id: cust1.id)
@@ -322,7 +315,7 @@ class DataContextMergeTest extends Specification {
         merged1.name == 'c2'
         merged1.status == Status.OK
 
-        when: "(2) src.new -> dst.det : do nothing"
+        when: "(2) src.new -> dst.det : copy all"
 
         cust1 = new Customer(name: 'c1')
         makeDetached(cust1)
@@ -334,8 +327,8 @@ class DataContextMergeTest extends Specification {
         then:
 
         def merged2 = context.find(Customer, cust1.id)
-        merged2.name == 'c1'
-        merged2.status == null
+        merged2.name == 'c2'
+        merged2.status == Status.OK
 
         when: "(3) src.det -> dst.new : copy all loaded, make detached"
 
@@ -375,26 +368,6 @@ class DataContextMergeTest extends Specification {
         merged41.email == null
         merged41.status == Status.NOT_OK
         merged41.version == 2
-
-        when: "(4) src.det -> dst.det : if src.version < dst.version, do nothing"
-
-        cust1 = new Customer(name: 'c1', email: 'c1@aaa.aa', status: Status.NOT_OK, version: 2)
-        makeDetached(cust1)
-        cust2 = new Customer(name: 'c2', id: cust1.id, version: 1)
-        makeDetached(cust2)
-        ((FetchGroupTracker) cust2)._persistence_setFetchGroup(
-                new EntityFetchGroup('id', 'version', 'deleteTs', 'name', 'email'))
-
-        context.merge(cust1)
-        context.merge(cust2)
-
-        then:
-
-        def merged42 = context.find(Customer, cust1.id)
-        merged42.name == 'c1'
-        merged42.email == 'c1@aaa.aa'
-        merged42.status == Status.NOT_OK
-        merged42.version == 2
     }
 
     def "merge with existing - to-one refs"() {
@@ -407,7 +380,7 @@ class DataContextMergeTest extends Specification {
         cust2 = new Customer(name: 'c2', status: Status.OK)
         user1 = new User(login: 'u1')
 
-        when: "(1) src.new > dst.new : copy all non-null"
+        when: "(1) src.new -> dst.new : copy all"
 
         order1 = new Order(customer: cust1, user: user1)
         order2 = new Order(customer: cust2, id: order1.id)
@@ -419,9 +392,9 @@ class DataContextMergeTest extends Specification {
 
         def merged1 = context.find(Order, order1.id)
         merged1.customer == cust2
-        merged1.user == user1
+        merged1.user == null
 
-        when: "(2) src.new -> dst.det : do nothing"
+        when: "(2) src.new -> dst.det : copy all"
 
         order1 = new Order(customer: cust1)
         makeDetached(order1)
@@ -433,8 +406,8 @@ class DataContextMergeTest extends Specification {
         then:
 
         def merged2 = context.find(Order, order1.id)
-        merged2.customer == cust1
-        merged2.user == null
+        merged2.customer == cust2
+        merged2.user == user1
 
         when: "(3) src.det -> dst.new : copy all loaded, make detached"
 
@@ -472,25 +445,6 @@ class DataContextMergeTest extends Specification {
         merged41.customer == cust2
         merged41.user == null
         merged41.version == 2
-
-        when: "(4) src.det -> dst.det : if src.version < dst.version, do nothing"
-
-        order1 = new Order(customer: cust1, user: user1, version: 2)
-        makeDetached(order1)
-        order2 = new Order(customer: cust2, id: order1.id, version: 1)
-        makeDetached(order2)
-        ((FetchGroupTracker) order2)._persistence_setFetchGroup(
-                new EntityFetchGroup('id', 'version', 'deleteTs', 'customer', 'user'))
-
-        context.merge(order1)
-        context.merge(order2)
-
-        then:
-
-        def merged42 = context.find(Order, order1.id)
-        merged42.customer == cust1
-        merged42.user == user1
-        merged42.version == 2
     }
 
     def "merge with existing - to-many refs"() {
@@ -499,7 +453,7 @@ class DataContextMergeTest extends Specification {
 
         def order1, order2, line1, line2
 
-        when: "(1) src.new > dst.new : copy all non-null (join collections)"
+        when: "(1) src.new -> dst.new : copy all (replace collections)"
 
         order1 = new Order()
         order2 = new Order(id: order1.id)
@@ -514,10 +468,10 @@ class DataContextMergeTest extends Specification {
         then:
 
         def merged1 = context.find(Order, order1.id)
-        merged1.orderLines.size() == 2
-        merged1.orderLines.containsAll(line1, line2)
+        merged1.orderLines.size() == 1
+        merged1.orderLines.contains(line2)
 
-        when: "(1) src.new > dst.new : copy all non-null (ignore null collection)"
+        when: "(1) src.new > dst.new : copy all (replace null collection)"
 
         order1 = new Order()
         order2 = new Order(id: order1.id)
@@ -530,10 +484,9 @@ class DataContextMergeTest extends Specification {
         then:
 
         def merged11 = context.find(Order, order1.id)
-        merged11.orderLines.size() == 1
-        merged11.orderLines.containsAll(line1)
+        merged11.orderLines == null
 
-        when: "(2) src.new -> dst.det : do nothing"
+        when: "(2) src.new -> dst.det : copy all (replace collections)"
 
         order1 = new Order()
         makeDetached(order1)
@@ -550,7 +503,7 @@ class DataContextMergeTest extends Specification {
 
         def merged2 = context.find(Order, order1.id)
         merged2.orderLines.size() == 1
-        merged2.orderLines.containsAll(line1)
+        merged2.orderLines.containsAll(line2)
 
         when: "(3) src.det -> dst.new : copy all loaded, make detached"
 
@@ -620,29 +573,6 @@ class DataContextMergeTest extends Specification {
         merged42.orderLines.size() == 1
         merged42.orderLines[0] == line2
         !merged42.orderLines[0].is(line2)
-
-        when: "(4) src.det -> dst.det : if src.version < dst.version, do nothing"
-
-        order1 = new Order(version: 2)
-        makeDetached(order1)
-        order2 = new Order(id: order1.id, version: 1)
-        makeDetached(order2)
-        ((FetchGroupTracker) order2)._persistence_setFetchGroup(
-                new EntityFetchGroup('id', 'version', 'deleteTs', 'orderLines'))
-        line1 = new OrderLine(order: order1)
-        order1.orderLines = [line1]
-        line2 = new OrderLine(order: order2)
-        order2.orderLines = [line2]
-
-        context.merge(order1)
-        context.merge(order2)
-
-        then:
-
-        def merged43 = context.find(Order, order1.id)
-        merged43.orderLines.size() == 1
-        merged43.orderLines[0] == line1
-        !merged43.orderLines[0].is(line1)
     }
 
     def "property change events on commit"(orderId, line1Id, line2Id) {
