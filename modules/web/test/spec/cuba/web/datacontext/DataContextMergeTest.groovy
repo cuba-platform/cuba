@@ -575,7 +575,7 @@ class DataContextMergeTest extends Specification {
         !merged3.orderLines[0].is(line2)
 
 
-        when: "(4) src.det -> dst.det : if src.version >= dst.version, copy all loaded, replace collections"
+        when: "(4) src.det -> dst.det : if src.version > dst.version, copy all loaded, replace collections"
 
         order1 = new Order(version: 1)
         makeDetached(order1)
@@ -617,11 +617,9 @@ class DataContextMergeTest extends Specification {
         then:
 
         def merged42 = context.find(Order, order1.id)
-        merged42.orderLines.size() == 2
-        merged42.orderLines[0] == line1
-        !merged42.orderLines[0].is(line1)
-        merged42.orderLines[1] == line2
-        !merged42.orderLines[1].is(line2)
+        merged42.orderLines.size() == 1
+        merged42.orderLines[0] == line2
+        !merged42.orderLines[0].is(line2)
 
         when: "(4) src.det -> dst.det : if src.version < dst.version, do nothing"
 
