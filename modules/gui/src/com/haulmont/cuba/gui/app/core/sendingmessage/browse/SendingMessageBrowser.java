@@ -24,7 +24,9 @@ import com.haulmont.cuba.core.entity.SendingAttachment;
 import com.haulmont.cuba.core.entity.SendingMessage;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.AppConfig;
+import com.haulmont.cuba.gui.ScreenBuilders;
 import com.haulmont.cuba.gui.UiComponents;
+import com.haulmont.cuba.gui.app.core.sendingmessage.browse.resendmessage.ResendMessage;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.DataSupplier;
@@ -33,6 +35,7 @@ import com.haulmont.cuba.gui.export.ByteArrayDataProvider;
 import com.haulmont.cuba.gui.export.ExportDisplay;
 import com.haulmont.cuba.gui.export.ExportFormat;
 import com.haulmont.cuba.gui.export.FileDataProvider;
+import com.haulmont.cuba.gui.screen.OpenMode;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.upload.FileUploadingAPI;
 import org.apache.commons.collections4.CollectionUtils;
@@ -57,19 +60,17 @@ public class SendingMessageBrowser extends AbstractWindow {
     protected CollectionDatasource<SendingMessage, UUID> sendingMessageDs;
 
     @Inject
+    protected ScreenBuilders screenBuilders;
+    @Inject
     protected EmailService emailService;
-
     @Inject
     protected FieldGroup fg;
-
     @Inject
     protected UiComponents uiComponents;
     @Inject
     protected ThemeConstants themeConstants;
-
     @Inject
     protected Table<SendingMessage> table;
-
     @Inject
     protected FileUploadingAPI fileUploading;
     @Inject
@@ -161,63 +162,12 @@ public class SendingMessageBrowser extends AbstractWindow {
     }
 
     public void resendEmail() {
-        SendingMessage message = table.getSingleSelected();
-        if (message != null) {
-            EmailInfo emailInfo = EmailInfoBuilder.create()
-                    .setAddresses(message.getAddress())
-                    .setCaption(message.getCaption())
-                    .setBody(emailBody(message))
-                    .setFrom(message.getFrom())
-                    .setBodyContentType(message.getBodyContentType())
-                    .setAttachments(getAttachmentsArray(message.getAttachments()))
-                    .setBcc(message.getBcc())
-                    .setCc(message.getCc())
-                    .setHeaders(parseHeadersString(message.getHeaders()))
-                    .build();
-            try {
-                emailService.sendEmail(emailInfo);
-            } catch (EmailException e) {
-                throw new RuntimeException("Something went wrong during email resending", e);
-            }
-            showNotification("Successfully sent", NotificationType.HUMANIZED);
-        }
-    }
-
-    protected String emailBody(SendingMessage message) {
-        if (message.getContentTextFile() != null) {
-            try (InputStream inputStream = fileLoader.openStream(message.getContentTextFile());){
-                return IOUtils.toString(inputStream, Charset.defaultCharset());
-            } catch (FileStorageException | IOException e) {
-                throw new RuntimeException("Can't read message body from the file", e);
-            }
-        }
-        return message.getContentText();
-    }
-
-    protected List<EmailHeader> parseHeadersString(String headersString) {
-        List<EmailHeader> emailHeadersList = new ArrayList<>();
-        if (headersString != null) {
-            for (String header : headersString.split("\n")) {
-                emailHeadersList.add(EmailHeader.parse(header));
-            }
-        }
-        return emailHeadersList;
-    }
-
-    protected EmailAttachment[] getAttachmentsArray(List<SendingAttachment> sendingAttachments) {
-        EmailAttachment[] emailAttachments = new EmailAttachment[sendingAttachments.size()];
-        for (int i = 0; i < sendingAttachments.size(); i++) {
-            SendingAttachment sendingAttachment = sendingAttachments.get(i);
-            EmailAttachment emailAttachment = new EmailAttachment(
-                    sendingAttachment.getContent(),
-                    sendingAttachment.getName(),
-                    sendingAttachment.getContentId(),
-                    sendingAttachment.getDisposition(),
-                    sendingAttachment.getEncoding()
-            );
-            emailAttachments[i] = emailAttachment;
-        }
-        return emailAttachments;
+        ResendMessage resendMessage = screenBuilders.screen(this)
+                .withOpenMode(OpenMode.DIALOG)
+                .withScreenClass(ResendMessage.class)
+                .build();
+        resendMessage.setMessage(table.getSingleSelected());
+        resendMessage.show();
     }
 
     protected void selectAttachmentDialog(SendingMessage message) {
