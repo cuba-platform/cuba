@@ -138,5 +138,7 @@
         <class>com.haulmont.cuba.testmodel.petclinic.Pet</class>
         <class>com.haulmont.cuba.testmodel.petclinic.Address</class>
         <class>com.haulmont.cuba.testmodel.petclinic.Owner</class>
+
+        <class>com.haulmont.cuba.testmodel.related_properties.EntityWithRelatedProperties</class>
     </persistence-unit>
 </persistence>

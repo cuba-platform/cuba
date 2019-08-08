@@ -18,16 +18,17 @@
 package com.haulmont.chile.core.model.impl;
 
 import com.haulmont.chile.core.model.Instance;
+import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.chile.core.model.utils.MethodsCache;
+import com.haulmont.chile.core.model.utils.RelatedPropertiesCache;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.MetadataTools;
 
 import javax.annotation.Nullable;
 import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
@@ -40,8 +41,11 @@ public abstract class AbstractInstance implements Instance {
 
     private static transient Map<Class, MethodsCache> methodCacheMap = new ConcurrentHashMap<>();
 
+    private static transient Map<Class, RelatedPropertiesCache> relatedPropertiesCacheMap = new ConcurrentHashMap<>();
+
     protected void propertyChanged(String s, Object prev, Object curr) {
         if (__propertyChangeListeners != null) {
+
             for (Object referenceObject : __propertyChangeListeners.toArray()) {
                 @SuppressWarnings("unchecked")
                 WeakReference<PropertyChangeListener> reference = (WeakReference<PropertyChangeListener>) referenceObject;
@@ -51,6 +55,11 @@ public abstract class AbstractInstance implements Instance {
                     __propertyChangeListeners.remove(reference);
                 } else {
                     listener.propertyChanged(new PropertyChangeEvent(this, s, prev, curr));
+
+                    for (String property : getRelatedReadOnlyProperties(s)) {
+                        listener.propertyChanged(
+                                new PropertyChangeEvent(this, property, null, getValue(property)));
+                    }
                 }
             }
         }
@@ -105,6 +114,25 @@ public abstract class AbstractInstance implements Instance {
         if (cache == null) {
             cache = new MethodsCache(cls);
             methodCacheMap.put(cls, cache);
+        }
+        return cache;
+    }
+
+    protected Collection<String> getRelatedReadOnlyProperties(String propertyName) {
+        Collection<String> result = getRelatedPropertiesCache().getRelatedReadOnlyProperties(propertyName);
+        if (result == null) {
+            return Collections.emptyList();
+        }
+        return result;
+    }
+
+    protected RelatedPropertiesCache getRelatedPropertiesCache() {
+        Class cls = getClass();
+        RelatedPropertiesCache cache = relatedPropertiesCacheMap.get(cls);
+        if (cache == null) {
+            MetaClass metaClass = AppBeans.get(Metadata.class).getClassNN(cls);
+            cache = new RelatedPropertiesCache(metaClass);
+            relatedPropertiesCacheMap.put(cls, cache);
         }
         return cache;
     }
