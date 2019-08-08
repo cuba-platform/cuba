@@ -179,7 +179,7 @@ public class DataContextImpl implements DataContext {
         Map<Object, Entity> entityMap = content.computeIfAbsent(entity.getClass(), aClass -> new HashMap<>());
         Entity managed = entityMap.get(entity.getId());
 
-        if (mergedSet.contains(entity)) {
+        if (!isRoot && mergedSet.contains(entity)) {
             if (managed != null) {
                 return managed;
             } else {
@@ -231,7 +231,7 @@ public class DataContextImpl implements DataContext {
         boolean srcNew = entityStates.isNew(srcEntity);
         boolean dstNew = entityStates.isNew(dstEntity);
 
-        mergeSystemState(srcEntity, dstEntity);
+        mergeSystemState(srcEntity, dstEntity, isRoot);
 
         MetaClass metaClass = getMetadata().getClassNN(srcEntity.getClass());
 
@@ -326,9 +326,11 @@ public class DataContextImpl implements DataContext {
         }
     }
 
-    protected void mergeSystemState(Entity srcEntity, Entity dstEntity) {
+    protected void mergeSystemState(Entity srcEntity, Entity dstEntity, boolean isRoot) {
         if (dstEntity instanceof BaseGenericIdEntity) {
-            BaseEntityInternalAccess.copySystemState((BaseGenericIdEntity) srcEntity, (BaseGenericIdEntity) dstEntity);
+            if (isRoot) {
+                BaseEntityInternalAccess.copySystemState((BaseGenericIdEntity) srcEntity, (BaseGenericIdEntity) dstEntity);
+            }
 
             if (srcEntity instanceof FetchGroupTracker && dstEntity instanceof FetchGroupTracker) {
                 FetchGroup srcFetchGroup = ((FetchGroupTracker) srcEntity)._persistence_getFetchGroup();

@@ -17,6 +17,8 @@
 package spec.cuba.web.datacontext
 
 import com.haulmont.chile.core.model.Instance
+import com.haulmont.cuba.core.entity.BaseEntityInternalAccess
+import com.haulmont.cuba.core.entity.SecurityState
 import com.haulmont.cuba.core.global.EntityStates
 import com.haulmont.cuba.core.global.Metadata
 import com.haulmont.cuba.gui.model.DataComponents
@@ -618,6 +620,34 @@ class DataContextMergeTest extends Specification {
         orderId << [uuid(0), uuid(1), uuid(2)]
         line1Id << [uuid(1), uuid(0), uuid(1)]
         line2Id << [uuid(2), uuid(2), uuid(0)]
+    }
+
+    def "system state should not be merged for non root entities"() {
+        DataContext context = factory.createDataContext()
+
+        Order order1 = new Order(amount: 1)
+        Order order2 = new Order(id: order1.id)
+        OrderLine line1 = new OrderLine(quantity: 1, order: order2)
+        order1.orderLines = [line1]
+
+        when: "parent entity has system state and child entity has link to the object without system state"
+
+        def securityState = new SecurityState()
+        BaseEntityInternalAccess.setSecurityState(order1, securityState)
+        BaseEntityInternalAccess.setNew(order1, true)
+        context.merge(order1)
+
+        order2.amount = 4
+        BaseEntityInternalAccess.setNew(order2, false)
+        context.merge(line1)
+
+        then:
+
+        def orderInContext = context.find(Order, order1.id)
+        orderInContext.amount == 4
+        BaseEntityInternalAccess.getSecurityState(orderInContext).is(securityState)
+        BaseEntityInternalAccess.isNew(orderInContext)
+
     }
 
     private UUID uuid(int val) {
