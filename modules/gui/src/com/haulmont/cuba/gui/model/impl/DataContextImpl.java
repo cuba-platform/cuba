@@ -427,7 +427,7 @@ public class DataContextImpl implements DataContext {
         checkNotNullArgument(entity, "entity is null");
 
         modifiedInstances.remove(entity);
-        if (!getEntityStates().isNew(entity)) {
+        if (!getEntityStates().isNew(entity) || parentContext != null) {
             removedInstances.add(entity);
         }
         removeListeners(entity);
@@ -441,6 +441,8 @@ public class DataContextImpl implements DataContext {
                 removeFromCollections(mergedEntity);
             }
         }
+
+        cleanupContextAfterRemoveEntity(this, entity);
     }
 
     protected void removeFromCollections(Entity entityToRemove) {
@@ -635,8 +637,31 @@ public class DataContextImpl implements DataContext {
         }
         for (Entity entity : removedInstances) {
             parentContext.remove(entity);
+            cleanupContextAfterRemoveEntity(parentContext, entity);
         }
         return committedEntities;
+    }
+
+    protected void cleanupContextAfterRemoveEntity(DataContextImpl context, Entity removedEntity) {
+        EntityStates entityStates = getEntityStates();
+        if (entityStates.isNew(removedEntity)) {
+            for (Entity modifiedInstance : new ArrayList<>(context.modifiedInstances)) {
+                if (entityStates.isNew(modifiedInstance) && entityHasReference(modifiedInstance, removedEntity)) {
+                    context.modifiedInstances.remove(modifiedInstance);
+                }
+            }
+        }
+    }
+
+    protected boolean entityHasReference(Entity entity, Entity refEntity) {
+        MetaClass metaClass = getMetadata().getClassNN(entity.getClass());
+        MetaClass refMetaClass = getMetadata().getClassNN(refEntity.getClass());
+
+        return metaClass.getProperties().stream()
+                .anyMatch(metaProperty ->
+                            metaProperty.getRange().isClass()
+                            && metaProperty.getRange().asClass().equals(refMetaClass)
+                            && Objects.equals(entity.getValue(metaProperty.getName()), refEntity));
     }
 
     protected EntitySet mergeCommitted(Set<Entity> committed) {
