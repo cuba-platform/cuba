@@ -17,9 +17,12 @@
 package com.haulmont.cuba.gui.model.impl;
 
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.model.InstanceContainer;
 import com.haulmont.cuba.gui.model.InstancePropertyContainer;
+
+import javax.annotation.Nullable;
 
 public class InstancePropertyContainerImpl<E extends Entity>
         extends InstanceContainerImpl<E> implements InstancePropertyContainer<E> {
@@ -41,5 +44,32 @@ public class InstancePropertyContainerImpl<E extends Entity>
     @Override
     public String getProperty() {
         return property;
+    }
+
+    @Override
+    public void setItem(@Nullable E item) {
+        super.setItem(item);
+        Entity masterItem = master.getItemOrNull();
+        if (masterItem != null) {
+            MetaProperty masterProperty = getMasterProperty();
+            Entity masterValue = masterItem.getValue(masterProperty.getName());
+            if (masterValue != item) {
+                mute();
+                try {
+                    masterItem.setValue(masterProperty.getName(), item);
+                } finally {
+                    unmute();
+                }
+            }
+        }
+    }
+
+    protected MetaProperty getMasterProperty() {
+        MetaClass masterMetaClass = master.getEntityMetaClass();
+        MetaProperty masterProperty = masterMetaClass.getPropertyNN(property);
+        if (!masterProperty.getRange().isClass() || masterProperty.getRange().getCardinality().isMany()) {
+            throw new IllegalStateException(String.format("Property '%s' is not a single-value reference", property));
+        }
+        return masterProperty;
     }
 }
