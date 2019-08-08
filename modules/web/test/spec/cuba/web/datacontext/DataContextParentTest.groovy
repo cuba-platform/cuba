@@ -29,6 +29,7 @@ import com.haulmont.cuba.security.entity.UserRole
 import com.haulmont.cuba.web.container.CubaTestContainer
 import com.haulmont.cuba.web.testmodel.sales.Order
 import com.haulmont.cuba.web.testmodel.sales.OrderLine
+import com.haulmont.cuba.web.testmodel.sales.OrderLineParam
 import com.haulmont.cuba.web.testsupport.TestContainer
 import com.haulmont.cuba.web.testsupport.proxy.TestServiceProxy
 import org.eclipse.persistence.internal.queries.EntityFetchGroup
@@ -294,6 +295,128 @@ class DataContextParentTest extends Specification {
         where:
 
         detached << [false, true]
+    }
+
+    def "removing just created composition item"() {
+        DataContext ctx1 = factory.createDataContext()
+        DataContext ctx2 = factory.createDataContext()
+        ctx2.setParent(ctx1)
+
+        def order = new Order(number: 1, orderLines: [])
+        makeDetached(order, ['number', 'orderLines'])
+
+        def order1 = ctx1.merge(order)
+
+        def line = new OrderLine(order: order1, quantity: 1)
+        order1.orderLines.add(line)
+
+        ctx2.merge(line)
+
+        when:
+
+        ctx2.commit()
+
+        then:
+
+        ctx1.getModified().contains(line)
+
+        when:
+
+        ctx2.merge(ctx1.find(line))
+        ctx2.remove(line)
+        ctx2.commit()
+
+        then:
+
+        !ctx1.getModified().contains(line)
+    }
+
+    def "removing just created composition item having new child"() {
+        DataContext ctx1 = factory.createDataContext()
+        DataContext ctx2 = factory.createDataContext()
+        DataContext ctx3 = factory.createDataContext()
+
+        ctx2.setParent(ctx1)
+        ctx3.setParent(ctx2)
+
+        def order = new Order(number: 1, orderLines: [])
+        makeDetached(order, ['number', 'orderLines'])
+
+        def order1 = ctx1.merge(order)
+
+        def line = new OrderLine(order: order1, quantity: 1, params: [])
+        order1.orderLines.add(line)
+
+        def line1 = ctx2.merge(line)
+
+        def param = new OrderLineParam(orderLine: line1, name: 'p1')
+        line1.params.add(param)
+
+        ctx3.merge(param)
+
+        when:
+
+        ctx3.commit()
+        ctx2.commit()
+
+        then:
+
+        ctx1.getModified().containsAll(line, param)
+
+        when:
+
+        ctx2.merge(ctx1.find(line))
+        ctx2.remove(line)
+        ctx2.commit()
+
+        then:
+
+        !ctx1.getModified().contains(line)
+        !ctx1.getModified().contains(param)
+    }
+
+    def "removing in root context just created composition item having new child"() {
+        DataContext ctx1 = factory.createDataContext()
+        DataContext ctx2 = factory.createDataContext()
+        DataContext ctx3 = factory.createDataContext()
+
+        ctx2.setParent(ctx1)
+        ctx3.setParent(ctx2)
+
+        def order = new Order(number: 1, orderLines: [])
+        makeDetached(order, ['number', 'orderLines'])
+
+        def order1 = ctx1.merge(order)
+
+        def line = new OrderLine(order: order1, quantity: 1, params: [])
+        order1.orderLines.add(line)
+
+        def line1 = ctx2.merge(line)
+
+        def param = new OrderLineParam(orderLine: line1, name: 'p1')
+        line1.params.add(param)
+
+        ctx3.merge(param)
+
+        when:
+
+        ctx3.commit()
+        ctx2.commit()
+
+        then:
+
+        ctx1.getModified().containsAll(line, param)
+
+        when:
+
+        ctx2.merge(ctx1.find(line))
+        ctx2.commit() // commit to root context
+        ctx1.remove(line) // then remove
+
+        then:
+
+        !ctx1.getModified().contains(line)
+        !ctx1.getModified().contains(param)
     }
 
     private void makeDetached(def entity, List<String> attributes) {
