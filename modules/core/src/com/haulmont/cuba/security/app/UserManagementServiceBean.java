@@ -579,7 +579,11 @@ public class UserManagementServiceBean implements UserManagementService {
             tx.end();
         }
 
-        EmailInfo emailInfo = new EmailInfo(user.getEmail(), emailSubject, emailBody);
+        EmailInfo emailInfo = EmailInfoBuilder.create()
+                .setAddresses(user.getEmail())
+                .setCaption(emailSubject)
+                .setBody(emailBody)
+                .build();
         emailerAPI.sendEmailAsync(emailInfo);
     }
 

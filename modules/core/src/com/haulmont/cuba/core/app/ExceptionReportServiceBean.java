@@ -18,6 +18,7 @@ package com.haulmont.cuba.core.app;
 
 import com.haulmont.bali.util.HtmlUtils;
 import com.haulmont.cuba.core.global.EmailInfo;
+import com.haulmont.cuba.core.global.EmailInfoBuilder;
 import com.haulmont.cuba.core.global.Scripting;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.security.entity.User;
@@ -72,7 +73,11 @@ public class ExceptionReportServiceBean implements ExceptionReportService {
             String body = getExceptionReportBody(map);
             String subject = getExceptionReportSubject(map);
 
-            EmailInfo info = new EmailInfo(supportEmail, subject, body);
+            EmailInfo info = EmailInfoBuilder.create()
+                    .setAddresses(supportEmail)
+                    .setCaption(subject)
+                    .setBody(body)
+                    .build();
 
             emailer.sendEmail(info);
         } catch (Exception e) {

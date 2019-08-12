@@ -25,9 +25,10 @@ import java.util.Map;
 
 /**
  * Contains email details: list of recipients, from address, caption, body and attachments.
- * See constructors for more information.
+ * See {@link EmailInfoBuilder} for more information.
  *
  * @see com.haulmont.cuba.core.app.EmailService
+ * @see EmailInfoBuilder
  */
 public class EmailInfo implements Serializable {
 
@@ -57,6 +58,8 @@ public class EmailInfo implements Serializable {
     private List<EmailHeader> headers;
 
     /**
+     * Deprecated. Use {@link EmailInfoBuilder} instead.
+     *
      * Constructor. Example usage:
      * <pre>{@code
      *     EmailInfo emailInfo = new EmailInfo(
@@ -80,6 +83,7 @@ public class EmailInfo implements Serializable {
      * @param templateParameters map of parameters to be passed to the template
      * @param attachments        email attachments. Omit this parameter if there are no attachments.
      */
+    @Deprecated
     public EmailInfo(String addresses, String caption, @Nullable String from, String templatePath,
                      Map<String, Serializable> templateParameters, EmailAttachment... attachments) {
         this.addresses = addresses;
@@ -91,6 +95,8 @@ public class EmailInfo implements Serializable {
     }
 
     /**
+     * Deprecated. Use {@link EmailInfoBuilder} instead.
+     *
      * Constructor. Example usage:
      * <pre>{@code
      *     EmailInfo emailInfo = new EmailInfo(
@@ -112,6 +118,7 @@ public class EmailInfo implements Serializable {
      * @param templateParameters map of parameters to be passed to the template
      * @param attachments        email attachments. Omit this parameter if there are no attachments.
      */
+    @Deprecated
     public EmailInfo(String addresses, String caption, @Nullable String from, String bodyContentType,
                      String templatePath, Map<String, Serializable> templateParameters,
                      EmailAttachment... attachments) {
@@ -125,6 +132,8 @@ public class EmailInfo implements Serializable {
     }
 
     /**
+     * Deprecated. Use {@link EmailInfoBuilder} instead.
+     *
      * Constructor.
      * <pre>{@code
      *     EmailInfo emailInfo = new EmailInfo(
@@ -145,6 +154,7 @@ public class EmailInfo implements Serializable {
      * @param body        email body
      * @param attachments email attachments. Omit this parameter if there are no attachments.
      */
+    @Deprecated
     public EmailInfo(String addresses, String caption, @Nullable String from, String body, EmailAttachment... attachments) {
         this.addresses = addresses;
         this.caption = caption;
@@ -154,6 +164,8 @@ public class EmailInfo implements Serializable {
     }
 
     /**
+     * Deprecated. Use {@link EmailInfoBuilder} instead.
+     *
      * Constructor.
      * <pre>{@code
      *     EmailInfo emailInfo = new EmailInfo(
@@ -172,6 +184,7 @@ public class EmailInfo implements Serializable {
      * @param bodyContentType email body like "text/plain; charset=UTF-8" or "text/html; charset=UTF-8", etc
      * @param attachments     email attachments. Omit this parameter if there are no attachments.
      */
+    @Deprecated
     public EmailInfo(String addresses, String caption, @Nullable String from, String body, String bodyContentType,
                      EmailAttachment... attachments) {
         this.addresses = addresses;
@@ -183,6 +196,8 @@ public class EmailInfo implements Serializable {
     }
 
     /**
+     * Deprecated. Use {@link EmailInfoBuilder} instead.
+     *
      * Constructor. The "from" address is taken from the {@code cuba.email.fromAddress} app property.
      * <pre>{@code
      *     EmailInfo emailInfo = new EmailInfo(
@@ -199,6 +214,7 @@ public class EmailInfo implements Serializable {
      * @param caption   email subject
      * @param body      email body
      */
+    @Deprecated
     public EmailInfo(String addresses, String caption, String body) {
         this.addresses = addresses;
         this.caption = caption;
@@ -206,6 +222,8 @@ public class EmailInfo implements Serializable {
     }
 
     /**
+     * Deprecated. Use {@link EmailInfoBuilder} instead.
+     *
      * Constructor. The "from" address is taken from the {@code cuba.email.fromAddress} app property.
      * <pre>{@code
      *     EmailInfo emailInfo = new EmailInfo(
@@ -221,11 +239,42 @@ public class EmailInfo implements Serializable {
      * @param body            email body
      * @param bodyContentType email body like "text/plain; charset=UTF-8" or "text/html; charset=UTF-8", etc
      */
+    @Deprecated
     public EmailInfo(String addresses, String caption, String body, String bodyContentType) {
         this.addresses = addresses;
         this.caption = caption;
         this.body = body;
         this.bodyContentType = bodyContentType;
+    }
+
+    /**
+     * INTERNAL
+     */
+    EmailInfo(String addresses,
+              String cc,
+              String bcc,
+              boolean sendInOneMessage,
+              String caption,
+              String from,
+              String templatePath,
+              Map<String, Serializable> templateParameters,
+              String body,
+              String bodyContentType,
+              List<EmailHeader> headers,
+              EmailAttachment... attachments) {
+        this.addresses = addresses;
+        this.cc = cc;
+        this.bcc = bcc;
+        this.sendInOneMessage = sendInOneMessage;
+        this.caption = caption;
+        this.from = from;
+        this.templatePath = templatePath;
+        this.templateParameters = templateParameters;
+        this.body = body;
+        this.bodyContentType = bodyContentType;
+        this.headers = headers;
+        this.attachments = attachments;
+
     }
 
     public String getAddresses() {

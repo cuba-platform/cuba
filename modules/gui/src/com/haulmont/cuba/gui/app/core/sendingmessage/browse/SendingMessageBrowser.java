@@ -163,13 +163,17 @@ public class SendingMessageBrowser extends AbstractWindow {
     public void resendEmail() {
         SendingMessage message = table.getSingleSelected();
         if (message != null) {
-            EmailInfo emailInfo = new EmailInfo(message.getAddress(), message.getCaption(), emailBody(message));
-            emailInfo.setFrom(message.getFrom());
-            emailInfo.setBodyContentType(message.getBodyContentType());
-            emailInfo.setAttachments(getAttachmentsArray(message.getAttachments()));
-            emailInfo.setBcc(message.getBcc());
-            emailInfo.setCc(message.getCc());
-            emailInfo.setHeaders(parseHeadersString(message.getHeaders()));
+            EmailInfo emailInfo = EmailInfoBuilder.create()
+                    .setAddresses(message.getAddress())
+                    .setCaption(message.getCaption())
+                    .setBody(emailBody(message))
+                    .setFrom(message.getFrom())
+                    .setBodyContentType(message.getBodyContentType())
+                    .setAttachments(getAttachmentsArray(message.getAttachments()))
+                    .setBcc(message.getBcc())
+                    .setCc(message.getCc())
+                    .setHeaders(parseHeadersString(message.getHeaders()))
+                    .build();
             try {
                 emailService.sendEmail(emailInfo);
             } catch (EmailException e) {

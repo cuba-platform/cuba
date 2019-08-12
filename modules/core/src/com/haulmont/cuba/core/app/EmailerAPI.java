@@ -40,7 +40,7 @@ public interface EmailerAPI {
     String NAME = "cuba_Emailer";
 
     /**
-     * Use {@link #sendEmail(String, String, String, String, EmailAttachment...)} instead.
+     * Use {@link #sendEmail(EmailInfo)} instead.
      * <p>
      *
      * Send email synchronously.
@@ -55,6 +55,9 @@ public interface EmailerAPI {
     void sendEmail(String address, String caption, String body, EmailAttachment... attachments) throws EmailException;
 
     /**
+     * Use {@link #sendEmail(EmailInfo)} instead.
+     * <p>
+     *
      * Send email synchronously.
      *
      * @param address            comma or semicolon separated list of addresses
@@ -64,6 +67,7 @@ public interface EmailerAPI {
      * @param attachments        email attachments
      * @throws EmailException in case of any errors
      */
+    @Deprecated
     void sendEmail(String address, String caption, String body, String bodyContentType, EmailAttachment... attachments)
             throws EmailException;
 

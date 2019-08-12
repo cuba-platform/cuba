@@ -20,6 +20,7 @@ import com.haulmont.cuba.core.entity.SendingMessage;
 import com.haulmont.cuba.core.global.EmailAttachment;
 import com.haulmont.cuba.core.global.EmailException;
 import com.haulmont.cuba.core.global.EmailInfo;
+import com.haulmont.cuba.core.global.EmailInfoBuilder;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -36,13 +37,20 @@ public class EmailServiceBean implements EmailService {
 
     @Override
     public void sendEmail(String address, String caption, String body, EmailAttachment... attachment) throws EmailException {
-        emailer.sendEmail(address, caption, body, null, attachment);
+        EmailInfo emailInfo = EmailInfoBuilder.create(address, caption, body)
+                .setAttachments(attachment)
+                .build();
+        emailer.sendEmail(emailInfo);
     }
 
     @Override
     public void sendEmail(String address, String caption, String body, String bodyContentType,
                           EmailAttachment... attachment) throws EmailException {
-        emailer.sendEmail(address, caption, body, bodyContentType, attachment);
+        EmailInfo emailInfo = EmailInfoBuilder.create(address, caption, body)
+                .setBodyContentType(bodyContentType)
+                .setAttachments(attachment)
+                .build();
+        emailer.sendEmail(emailInfo);
     }
 
     @Override

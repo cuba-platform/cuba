@@ -97,13 +97,26 @@ public class Emailer implements EmailerAPI {
     @Override
     public void sendEmail(String addresses, String caption, String body, EmailAttachment... attachments)
             throws EmailException {
-        sendEmail(new EmailInfo(addresses, caption, null, body, attachments));
+        EmailInfo emailInfo = EmailInfoBuilder.create()
+                .setAddresses(addresses)
+                .setCaption(caption)
+                .setBody(body)
+                .setAttachments(attachments)
+                .build();
+        sendEmail(emailInfo);
     }
 
     @Override
     public void sendEmail(String addresses, String caption, String body, String bodyContentType,
                           EmailAttachment... attachments) throws EmailException {
-        sendEmail(new EmailInfo(addresses, caption, null, body, bodyContentType, attachments));
+        EmailInfo emailInfo = EmailInfoBuilder.create()
+                .setAddresses(addresses)
+                .setCaption(caption)
+                .setBody(body)
+                .setBodyContentType(bodyContentType)
+                .setAttachments(attachments)
+                .build();
+        sendEmail(emailInfo);
     }
 
     @Override

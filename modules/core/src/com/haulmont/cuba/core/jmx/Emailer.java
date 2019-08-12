@@ -25,9 +25,7 @@ import com.haulmont.cuba.core.app.EmailerAPI;
 import com.haulmont.cuba.core.app.EmailerConfig;
 import com.haulmont.cuba.core.entity.SendingAttachment;
 import com.haulmont.cuba.core.entity.SendingMessage;
-import com.haulmont.cuba.core.global.Configuration;
-import com.haulmont.cuba.core.global.EmailAttachment;
-import com.haulmont.cuba.core.global.View;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.security.app.Authenticated;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
@@ -173,7 +171,10 @@ public class Emailer implements EmailerMBean {
         try {
             String att = "<html><body><h1>Test attachment</h1></body></html>";
             EmailAttachment emailAtt = EmailAttachment.createTextAttachment(att, StandardCharsets.UTF_8.name(), "test attachment.html");
-            emailer.sendEmail(addresses, "Test email", "<html><body><h1>Test email</h1></body></html>", emailAtt);
+            EmailInfo emailInfo = EmailInfoBuilder.create(addresses, "Test email", "<html><body><h1>Test email</h1></body></html>")
+                    .setAttachments(emailAtt)
+                    .build();
+            emailer.sendEmail(emailInfo);
             return "Email to '" + addresses + "' sent successfully";
         } catch (Exception e) {
             return ExceptionUtils.getStackTrace(e);

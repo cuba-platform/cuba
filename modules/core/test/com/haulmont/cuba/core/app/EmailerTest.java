@@ -94,7 +94,11 @@ public class EmailerTest {
         emailerConfig.setFileStorageUsed(useFs);
         testMailSender.clearBuffer();
 
-        EmailInfo myInfo = new EmailInfo("testemail@example.com", "Test Email", "Test Body");
+        EmailInfo myInfo = EmailInfoBuilder.create()
+                .setAddresses("testemail@example.com")
+                .setCaption("Test Email")
+                .setBody("Test Body")
+                .build();
         emailer.sendEmail(myInfo);
 
         assertEquals(1, testMailSender.getBufferSize());
@@ -115,10 +119,14 @@ public class EmailerTest {
         emailerConfig.setFileStorageUsed(useFs);
         testMailSender.clearBuffer();
 
-        EmailInfo myInfo = new EmailInfo("testemail@example.com,testemail2@example.com", "Test Email", "Test Body");
-        myInfo.setSendInOneMessage(true);
-        myInfo.setCc("testemail3@example.com,testemail4@example.com");
-        myInfo.setBcc("testemail5@example.com,testemail6@example.com");
+        EmailInfo myInfo = EmailInfoBuilder.create()
+                .setAddresses("testemail@example.com,testemail2@example.com")
+                .setCaption("Test Email")
+                .setBody("Test Body")
+                .setSendInOneMessage(true)
+                .setCc("testemail3@example.com,testemail4@example.com")
+                .setBcc("testemail5@example.com,testemail6@example.com")
+                .build();
         emailer.sendEmail(myInfo);
 
         assertEquals(1, testMailSender.getBufferSize());
@@ -142,13 +150,14 @@ public class EmailerTest {
     }
 
     /*
-     * Test sendEmail() with parameter list.
+     * Test EmailInfoBuilder.create() with parameter list.
      */
     @Test
     public void testSimpleParamList() throws Exception {
         testMailSender.clearBuffer();
 
-        emailer.sendEmail("myemail@example.com", "Test Email", "Test Body 2");
+        EmailInfo emailInfo = EmailInfoBuilder.create("myemail@example.com", "Test Email", "Test Body 2").build();
+        emailer.sendEmail(emailInfo);
 
         assertEquals(1, testMailSender.getBufferSize());
         MimeMessage msg = testMailSender.fetchSentEmail();
@@ -177,7 +186,11 @@ public class EmailerTest {
         testMailSender.clearBuffer();
 
         String body = "Test Email Body";
-        EmailInfo myInfo = new EmailInfo("recipient@example.com", "Test", body);
+        EmailInfo myInfo = EmailInfoBuilder.create()
+                .setAddresses("recipient@example.com")
+                .setCaption("Test")
+                .setBody(body)
+                .build();
         List<SendingMessage> messages = emailer.sendEmailAsync(myInfo);
         assertEquals(1, messages.size());
 
@@ -199,7 +212,11 @@ public class EmailerTest {
         testMailSender.clearBuffer();
 
         String body = "Test Email Body";
-        EmailInfo myInfo = new EmailInfo("recipient@example.com", "Test", body);
+        EmailInfo myInfo = EmailInfoBuilder.create()
+                .setAddresses("recipient@example.com")
+                .setCaption("Test")
+                .setBody(body)
+                .build();
         List<SendingMessage> messages = emailer.sendEmailAsync(myInfo);
         assertEquals(1, messages.size());
 
@@ -231,7 +248,11 @@ public class EmailerTest {
         testMailSender.clearBuffer();
 
         String body = "<html><body><b>Hi</b></body></html>";
-        EmailInfo myInfo = new EmailInfo("recipient@example.com", "Test", body);
+        EmailInfo myInfo = EmailInfoBuilder.create()
+                .setAddresses("recipient@example.com")
+                .setCaption("Test")
+                .setBody(body)
+                .build();
         emailer.sendEmail(myInfo);
 
         assertEquals(1, testMailSender.getBufferSize());
@@ -246,13 +267,21 @@ public class EmailerTest {
 
         // synchronous
         emailerConfig.setFromAddress("implicit@example.com");
-        myInfo = new EmailInfo("test@example.com", "Test Email", "Test Body");
+        myInfo = EmailInfoBuilder.create()
+                .setAddresses("test@example.com")
+                .setCaption("Test Email")
+                .setBody("Test Body")
+                .build();
         emailer.sendEmail(myInfo);
         assertEquals("implicit@example.com", testMailSender.fetchSentEmail().getFrom()[0].toString());
 
         // asynchronous
         emailerConfig.setFromAddress("implicit2@example.com");
-        myInfo = new EmailInfo("test@example.com", "Test Email", "Test Body");
+        myInfo = EmailInfoBuilder.create()
+                .setAddresses("test@example.com")
+                .setCaption("Test Email")
+                .setBody("Test Body")
+                .build();
         emailer.sendEmailAsync(myInfo);
 
         emailer.processQueuedEmails();
@@ -265,15 +294,23 @@ public class EmailerTest {
         MimeMessage msg;
 
         // synchronous
-        myInfo = new EmailInfo("test@example.com", "Test Email", "Test Body");
-        myInfo.setFrom("explicit@example.com");
+        myInfo = EmailInfoBuilder.create()
+                .setAddresses("test@example.com")
+                .setCaption("Test Email")
+                .setBody("Test Body")
+                .setFrom("explicit@example.com")
+                .build();
         emailer.sendEmail(myInfo);
         msg = testMailSender.fetchSentEmail();
         assertEquals("explicit@example.com", msg.getFrom()[0].toString());
 
         // asynchronous
-        myInfo = new EmailInfo("test@example.com", "Test Email", "Test Body");
-        myInfo.setFrom("explicit2@example.com");
+        myInfo = EmailInfoBuilder.create()
+                .setAddresses("test@example.com")
+                .setCaption("Test Email")
+                .setBody("Test Body")
+                .setFrom("explicit2@example.com")
+                .build();
         emailer.sendEmailAsync(myInfo);
 
         emailer.processQueuedEmails();
@@ -287,7 +324,8 @@ public class EmailerTest {
 
         testMailSender.failPlease();
         try {
-            emailer.sendEmail("myemail@example.com", "Test Email", "Test Body 2");
+            EmailInfo emailInfo = EmailInfoBuilder.create("myemail@example.com", "Test Email", "Test Body 2").build();
+            emailer.sendEmail(emailInfo);
             fail("Must fail with EmailException");
         } catch (EmailException e) {
             assertEquals(1, e.getFailedAddresses().size());
@@ -303,7 +341,11 @@ public class EmailerTest {
         testMailSender.clearBuffer();
 
         String body = "Test Email Body";
-        EmailInfo myInfo = new EmailInfo("recipient@example.com", "Test", body);
+        EmailInfo myInfo = EmailInfoBuilder.create()
+                .setAddresses("recipient@example.com")
+                .setCaption("Test")
+                .setBody(body)
+                .build();
         List<SendingMessage> messages = emailer.sendEmailAsync(myInfo, 2, getDeadlineWhichDoesntMatter());
         assertEquals(1, messages.size());
 
@@ -351,7 +393,11 @@ public class EmailerTest {
         testMailSender.clearBuffer();
 
         String body = "Test Email Body";
-        EmailInfo myInfo = new EmailInfo("recipient@example.com", "Test", body);
+        EmailInfo myInfo = EmailInfoBuilder.create()
+                .setAddresses("recipient@example.com")
+                .setCaption("Test")
+                .setBody(body)
+                .build();
         List<SendingMessage> messages = emailer.sendEmailAsync(myInfo, 2, getDeadlineWhichDoesntMatter());
         assertEquals(1, messages.size());
 
@@ -395,7 +441,11 @@ public class EmailerTest {
 
         String body = "Test Email Body";
         String recipients = "misha@example.com,kolya@example.com;tanya@example.com;"; // 3 recipients
-        EmailInfo myInfo = new EmailInfo(recipients, "Test", body);
+        EmailInfo myInfo = EmailInfoBuilder.create()
+                .setAddresses(recipients)
+                .setCaption("Test")
+                .setBody(body)
+                .build();
         List<SendingMessage> messages = emailer.sendEmailAsync(myInfo);
         assertEquals(3, messages.size());
 
@@ -422,9 +472,11 @@ public class EmailerTest {
         emailerConfig.setSendAllToAdmin(true);
         emailerConfig.setAdminAddress("admin@example.com");
         try {
-            emailer.sendEmail("michael@example.com", "Test Email 5", "Test Body 5");
+            EmailInfo emailInfo1 = EmailInfoBuilder.create("michael@example.com", "Test Email 5", "Test Body 5").build();
+            emailer.sendEmail(emailInfo1);
 
-            emailer.sendEmailAsync(new EmailInfo("nikolay@example.com", "Test Email 6", "Test Body 6"));
+            EmailInfo emailInfo2 = EmailInfoBuilder.create("nikolay@example.com", "Test Email 6", "Test Body 6").build();
+            emailer.sendEmailAsync(emailInfo2);
             emailer.processQueuedEmails();
 
             for (int i = 0; i < 2; i++) {
@@ -448,7 +500,12 @@ public class EmailerTest {
         params.put("userName", "Bob");
         params.put("dateParam", new SimpleDateFormat("dd/MM/yyyy").parse("01/05/2013"));
 
-        EmailInfo info = new EmailInfo("bob@example.com", "Test", null, templateFileName, params);
+        EmailInfo info = EmailInfoBuilder.create()
+                .setAddresses("bob@example.com")
+                .setCaption("Test")
+                .setTemplatePath(templateFileName)
+                .setTemplateParameters(params)
+                .build();
         emailer.sendEmailAsync(info);
         emailer.processQueuedEmails();
 
@@ -473,7 +530,12 @@ public class EmailerTest {
         String attachmentText = "Test Attachment Text";
         EmailAttachment textAttach = EmailAttachment.createTextAttachment(attachmentText, "ISO-8859-1", "test.txt");
 
-        EmailInfo myInfo = new EmailInfo("test@example.com", "Test", null, "Test", textAttach);
+        EmailInfo myInfo = EmailInfoBuilder.create()
+                .setAddresses("test@example.com")
+                .setCaption("Test")
+                .setBody("Test")
+                .setAttachments(textAttach)
+                .build();
         emailer.sendEmailAsync(myInfo);
 
         emailer.processQueuedEmails();
@@ -513,7 +575,12 @@ public class EmailerTest {
         String fileName = "logo.png";
         EmailAttachment imageAttach = new EmailAttachment(imageBytes, fileName, "logo");
 
-        EmailInfo myInfo = new EmailInfo("test@example.com", "Test", null, "Test", imageAttach);
+        EmailInfo myInfo = EmailInfoBuilder.create()
+                .setAddresses("test@example.com")
+                .setCaption("Test")
+                .setBody("Test")
+                .setAttachments(imageAttach)
+                .build();
         emailer.sendEmailAsync(myInfo);
 
         emailer.processQueuedEmails();
@@ -552,7 +619,12 @@ public class EmailerTest {
         String fileName = "invoice.pdf";
         EmailAttachment pdfAttach = new EmailAttachment(pdfBytes, fileName);
 
-        EmailInfo myInfo = new EmailInfo("test@example.com", "Test", null, "Test", pdfAttach);
+        EmailInfo myInfo = EmailInfoBuilder.create()
+                .setAddresses("test@example.com")
+                .setCaption("Test")
+                .setBody("Test")
+                .setAttachments(pdfAttach)
+                .build();
         emailer.sendEmailAsync(myInfo);
 
         emailer.processQueuedEmails();
@@ -587,7 +659,11 @@ public class EmailerTest {
         emailerConfig.setFileStorageUsed(useFs);
 
         String body = "Hi! This is test email. Bye.";
-        EmailInfo emailInfo = new EmailInfo("test@example.com", "Test", body);
+        EmailInfo emailInfo = EmailInfoBuilder.create()
+                .setAddresses("test@example.com")
+                .setCaption("Test")
+                .setBody(body)
+                .build();
         List<SendingMessage> messages = emailer.sendEmailAsync(emailInfo);
 
         SendingMessage msg = reload(messages.get(0));
@@ -604,8 +680,12 @@ public class EmailerTest {
         EmailAttachment fileAttachment = new EmailAttachment(expectedBytes, "invoice.pdf");
 
         String body = "Hi! This is test email. Bye.";
-        EmailInfo emailInfo = new EmailInfo("test@example.com", "Test", body);
-        emailInfo.setAttachments(new EmailAttachment[]{fileAttachment});
+        EmailInfo emailInfo = EmailInfoBuilder.create()
+                .setAddresses("test@example.com")
+                .setCaption("Test")
+                .setBody(body)
+                .setAttachments(fileAttachment)
+                .build();
 
         List<SendingMessage> messages = emailer.sendEmailAsync(emailInfo);
         SendingMessage msg;
