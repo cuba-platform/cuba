@@ -138,9 +138,6 @@ configure([sharedLibModule, globalModule, coreModule, clientModule, guiModule,
 
     test {
         maxHeapSize = '256m'
-        systemProperties = [
-                'jdk.attach.allowAttachSelf' : 'true'
-        ]
 
         if (System.getProperty('logback.configurationFile')) {
             systemProperty 'logback.configurationFile', System.getProperty('logback.configurationFile')
@@ -407,10 +404,6 @@ configure(coreModule) {
     test {
         scanForTestClasses = false
         includes = ['**/*Test.class']
-
-        systemProperties = [
-                'jdk.attach.allowAttachSelf' : 'true'
-        ]
 
         if (System.getProperty('logback.configurationFile')) {
             systemProperty 'logback.configurationFile', System.getProperty('logback.configurationFile')
@@ -683,9 +676,6 @@ configure(webModule) {
 
     task testUiComponents(type: Test) {
         maxHeapSize = '256m'
-        systemProperties = [
-                'jdk.attach.allowAttachSelf' : 'true'
-        ]
 
         if (System.getProperty('logback.configurationFile')) {
             systemProperty 'logback.configurationFile', System.getProperty('logback.configurationFile')
