@@ -652,8 +652,10 @@ configure(webModule) {
 
         include 'com/haulmont/cuba/web/test/ds/api/consistency/WebCheckBoxDsTest/**'
         include 'com/haulmont/cuba/web/test/ui/**'
+   }
 
-        jvmArgs "-javaagent:${classpath.find { it.name.contains("jmockit") }.absolutePath}"
+    testUiComponents.doFirst {
+        jvmArgs "-javaagent:${classpath.find { it.name.contains("jmockit")}}"
     }
 
     entitiesEnhancing {
