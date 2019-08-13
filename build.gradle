@@ -428,6 +428,8 @@ configure(coreModule) {
         testCompile(bom['org.hsqldb:hsqldb'])
 
         testCompile(bom['org.codehaus.groovy:groovy-json'])
+
+        compile(bom['software.amazon.awssdk:s3'])
     }
 
     entitiesEnhancing {

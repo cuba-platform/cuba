@@ -19,174 +19,164 @@ package com.haulmont.cuba.core.app.filestorage.amazon;
 
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.core.app.FileStorageAPI;
-import com.haulmont.cuba.core.app.filestorage.amazon.auth.AWS4SignerBase;
-import com.haulmont.cuba.core.app.filestorage.amazon.auth.AWS4SignerForAuthorizationHeader;
-import com.haulmont.cuba.core.app.filestorage.amazon.auth.AWS4SignerForChunkedUpload;
-import com.haulmont.cuba.core.app.filestorage.amazon.util.HttpUtils;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.FileStorageException;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import software.amazon.awssdk.auth.credentials.*;
+import software.amazon.awssdk.core.exception.SdkClientException;
+import software.amazon.awssdk.core.sync.RequestBody;
+import software.amazon.awssdk.core.sync.ResponseTransformer;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.*;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
-import java.io.ByteArrayInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
 public class AmazonS3FileStorage implements FileStorageAPI {
-
     @Inject
     protected AmazonS3Config amazonS3Config;
+
+    protected S3Client s3Client;
+
+    @PostConstruct
+    protected void initS3Client() {
+        AwsCredentialsProvider awsCredentialsProvider = getAwsCredentialsProvider();
+        s3Client = S3Client.builder()
+                .credentialsProvider(awsCredentialsProvider)
+                .region(Region.of(getRegionName()))
+                .build();
+    }
+
+    protected AwsCredentialsProvider getAwsCredentialsProvider() {
+        if (getAccessKey() != null && getSecretAccessKey() != null) {
+            AwsCredentials awsCredentials = AwsBasicCredentials.create(getAccessKey(), getSecretAccessKey());
+            return StaticCredentialsProvider.create(awsCredentials);
+        } else {
+            return DefaultCredentialsProvider.create();
+        }
+    }
 
     @Override
     public long saveStream(FileDescriptor fileDescr, InputStream inputStream) throws FileStorageException {
         Preconditions.checkNotNullArgument(fileDescr.getSize());
-
-        int chunkSize = amazonS3Config.getChunkSize();
-        URL amazonUrl = getAmazonUrl(fileDescr);
-
-        AWS4SignerForChunkedUpload signer = new AWS4SignerForChunkedUpload(
-                amazonUrl, "PUT", "s3", getRegionName());
-
-        Map<String, String> headers = getSaveStreamHttpHeaders(fileDescr, chunkSize, signer);
-
-        // start consuming the data payload in blocks which we subsequently chunk; this prefixes
-        // the data with a 'chunk header' containing signature data from the prior chunk (or header
-        // signing, if the first chunk) plus length and other data. Each completed chunk is
-        // written to the request stream and to complete the upload, we send a final chunk with
-        // a zero-length data payload.
-
         try {
-            // first set up the connection
-            HttpURLConnection connection = HttpUtils.createHttpConnection(amazonUrl, "PUT", headers);
-
-            writeDataToConnectionOutputStream(inputStream, chunkSize, signer, connection);
-
-            // make the call to Amazon S3
-            HttpUtils.HttpResponse httpResponse = HttpUtils.executeHttpRequest(connection);
-            if (!httpResponse.isStatusOk()) {
-                String message = String.format("Could not save file %s. %s",
-                        getFileName(fileDescr), getInputStreamContent(httpResponse));
-                throw new FileStorageException(FileStorageException.Type.IO_EXCEPTION, message);
-            }
+            saveFile(fileDescr, IOUtils.toByteArray(inputStream));
         } catch (IOException e) {
-            throw new RuntimeException("Error when sending chunked upload request", e);
+            String message = String.format("Could not save file %s.",
+                    getFileName(fileDescr));
+            throw new FileStorageException(FileStorageException.Type.IO_EXCEPTION, message);
         }
-
         return fileDescr.getSize();
     }
-
-    private void writeDataToConnectionOutputStream(InputStream inputStream, int chunkSize, AWS4SignerForChunkedUpload signer, HttpURLConnection connection) throws IOException {
-        // get the request stream and start writing the user data as chunks, as outlined
-        // above;
-        int bytesRead;
-        byte[] buffer = new byte[chunkSize];
-        DataOutputStream outputStream = new DataOutputStream(connection.getOutputStream());
-        //guarantees that it will read as many bytes as possible, this may not always be the case for
-        //subclasses of InputStream
-        while ((bytesRead = IOUtils.read(inputStream, buffer, 0, chunkSize)) > 0) {
-            // process into a chunk
-            byte[] chunk = signer.constructSignedChunk(bytesRead, buffer);
-
-            // send the chunk
-            outputStream.write(chunk);
-            outputStream.flush();
-        }
-
-        // last step is to send a signed zero-length chunk to complete the upload
-        byte[] finalChunk = signer.constructSignedChunk(0, buffer);
-        outputStream.write(finalChunk);
-        outputStream.flush();
-        outputStream.close();
-    }
-
 
     @Override
     public void saveFile(FileDescriptor fileDescr, byte[] data) throws FileStorageException {
         checkNotNullArgument(data, "File content is null");
-        saveStream(fileDescr, new ByteArrayInputStream(data));
+        try {
+            int chunkSize = amazonS3Config.getChunkSize() * 1024;
+
+            CreateMultipartUploadRequest createMultipartUploadRequest = CreateMultipartUploadRequest.builder()
+                    .bucket(getBucket()).key(resolveFileName(fileDescr))
+                    .build();
+            CreateMultipartUploadResponse response = s3Client.createMultipartUpload(createMultipartUploadRequest);
+
+            List<CompletedPart> completedParts = new ArrayList<>();
+            for (int i = 0; i * chunkSize < data.length; i++) {
+                int partNumber = i + 1;
+                UploadPartRequest uploadPartRequest = UploadPartRequest.builder()
+                        .bucket(getBucket())
+                        .key(resolveFileName(fileDescr))
+                        .uploadId(response.uploadId())
+                        .partNumber(partNumber)
+                        .build();
+                int endChunkPosition = Math.min(partNumber * chunkSize, data.length);
+                byte[] chunkBytes = getChunkBytes(data, i * chunkSize, endChunkPosition);
+                String eTag = s3Client.uploadPart(uploadPartRequest, RequestBody.fromBytes(chunkBytes)).eTag();
+                CompletedPart part = CompletedPart.builder()
+                        .partNumber(partNumber)
+                        .eTag(eTag)
+                        .build();
+                completedParts.add(part);
+            }
+
+            CompletedMultipartUpload completedMultipartUpload = CompletedMultipartUpload.builder().parts(completedParts).build();
+            CompleteMultipartUploadRequest completeMultipartUploadRequest =
+                    CompleteMultipartUploadRequest.builder()
+                            .bucket(getBucket())
+                            .key(resolveFileName(fileDescr))
+                            .uploadId(response.uploadId())
+                            .multipartUpload(completedMultipartUpload).build();
+            s3Client.completeMultipartUpload(completeMultipartUploadRequest);
+        } catch (SdkClientException e) {
+            String message = String.format("Could not save file %s.", getFileName(fileDescr));
+            throw new FileStorageException(FileStorageException.Type.IO_EXCEPTION, message);
+        }
+    }
+
+    protected byte[] getChunkBytes(byte[] data, int start, int end) {
+        byte[] chunkBytes = new byte[end - start];
+        System.arraycopy(data, start, chunkBytes, 0, end - start);
+        return chunkBytes;
     }
 
     @Override
     public void removeFile(FileDescriptor fileDescr) throws FileStorageException {
-        URL amazonUrl = getAmazonUrl(fileDescr);
-
-        // for a simple DELETE, we have no body so supply the precomputed 'empty' hash
-        Map<String, String> headers = new HashMap<>();
-        headers.put("x-amz-content-sha256", AWS4SignerBase.EMPTY_BODY_SHA256);
-
-        String authorization = createAuthorizationHeader(amazonUrl, "DELETE", headers);
-
-        headers.put("Authorization", authorization);
-        HttpUtils.HttpResponse httpResponse = HttpUtils.invokeHttpRequest(amazonUrl, "DELETE", headers, null);
-        if (!httpResponse.isStatusOk()) {
-            String message = String.format("Could not remove file %s. %s",
-                    getFileName(fileDescr), getInputStreamContent(httpResponse));
+        try {
+            DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder()
+                    .bucket(getBucket())
+                    .key(resolveFileName(fileDescr))
+                    .build();
+            s3Client.deleteObject(deleteObjectRequest);
+        } catch (SdkClientException e) {
+            String message = String.format("Could not delete file %s.", getFileName(fileDescr));
             throw new FileStorageException(FileStorageException.Type.IO_EXCEPTION, message);
         }
     }
 
     @Override
     public InputStream openStream(FileDescriptor fileDescr) throws FileStorageException {
-        URL amazonUrl = getAmazonUrl(fileDescr);
-
-        // for a simple GET, we have no body so supply the precomputed 'empty' hash
-        Map<String, String> headers = new HashMap<>();
-        headers.put("x-amz-content-sha256", AWS4SignerBase.EMPTY_BODY_SHA256);
-
-        String authorization = createAuthorizationHeader(amazonUrl, "GET", headers);
-
-        headers.put("Authorization", authorization);
-        HttpUtils.HttpResponse httpResponse = HttpUtils.invokeHttpRequest(amazonUrl, "GET", headers, null);
-
-        if (httpResponse.isStatusOk()) {
-            return httpResponse.getInputStream();
-        } else if (httpResponse.isStatusNotFound()) {
-            throw new FileStorageException(FileStorageException.Type.FILE_NOT_FOUND,
-                    "File not found" + getFileName(fileDescr));
-        } else {
-            String message = String.format("Could not get file %s. %s",
-                    getFileName(fileDescr), getInputStreamContent(httpResponse));
+        InputStream is;
+        try {
+            GetObjectRequest getObjectRequest = GetObjectRequest.builder()
+                    .bucket(getBucket())
+                    .key(resolveFileName(fileDescr))
+                    .build();
+            is = s3Client.getObject(getObjectRequest, ResponseTransformer.toInputStream());
+        } catch (SdkClientException e) {
+            String message = String.format("Could not load file %s.", getFileName(fileDescr));
             throw new FileStorageException(FileStorageException.Type.IO_EXCEPTION, message);
         }
+        return is;
     }
 
     @Override
     public byte[] loadFile(FileDescriptor fileDescr) throws FileStorageException {
-        InputStream inputStream = openStream(fileDescr);
-        try {
+        try (InputStream inputStream = openStream(fileDescr)) {
             return IOUtils.toByteArray(inputStream);
         } catch (IOException e) {
             throw new FileStorageException(FileStorageException.Type.IO_EXCEPTION, fileDescr.getId().toString(), e);
-        } finally {
-            IOUtils.closeQuietly(inputStream);
         }
     }
 
     @Override
     public boolean fileExists(FileDescriptor fileDescr) {
-        URL amazonUrl = getAmazonUrl(fileDescr);
-
-        // for a simple HEAD, we have no body so supply the precomputed 'empty' hash
-        Map<String, String> headers = new HashMap<>();
-        headers.put("x-amz-content-sha256", AWS4SignerBase.EMPTY_BODY_SHA256);
-
-        String authorization = createAuthorizationHeader(amazonUrl, "HEAD", headers);
-
-        headers.put("Authorization", authorization);
-        HttpUtils.HttpResponse httpResponse = HttpUtils.invokeHttpRequest(amazonUrl, "HEAD", headers, null);
-        return httpResponse.isStatusOk();
+        ListObjectsV2Request listObjectsReqManual = ListObjectsV2Request.builder()
+                .bucket(getBucket())
+                .maxKeys(1)
+                .build();
+        ListObjectsV2Response listObjResponse = s3Client.listObjectsV2(listObjectsReqManual);
+        return listObjResponse.contents().stream()
+                .map(S3Object::key)
+                .collect(Collectors.toList())
+                .contains(resolveFileName(fileDescr));
     }
 
     protected String resolveFileName(FileDescriptor fileDescr) {
@@ -203,18 +193,9 @@ public class AmazonS3FileStorage implements FileStorageAPI {
         int month = cal.get(Calendar.MONTH) + 1;
         int day = cal.get(Calendar.DAY_OF_MONTH);
 
-        return String.format("%d/%s/%s",
-                year, StringUtils.leftPad(String.valueOf(month), 2, '0'), StringUtils.leftPad(String.valueOf(day), 2, '0'));
-    }
-
-    protected URL getAmazonUrl(FileDescriptor fileDescr) {
-        // the region-specific endpoint to the target object expressed in path style
-        try {
-            return new URL(String.format("https://%s.s3.amazonaws.com/%s",
-                    getBucket(), resolveFileName(fileDescr)));
-        } catch (MalformedURLException e) {
-            throw new RuntimeException("Unable to parse service endpoint: " + e.getMessage());
-        }
+        return String.format("%d/%s/%s", year,
+                StringUtils.leftPad(String.valueOf(month), 2, '0'),
+                StringUtils.leftPad(String.valueOf(day), 2, '0'));
     }
 
     protected String getFileName(FileDescriptor fileDescriptor) {
@@ -223,63 +204,6 @@ public class AmazonS3FileStorage implements FileStorageAPI {
         } else {
             return fileDescriptor.getId().toString();
         }
-    }
-
-    protected String createAuthorizationHeader(URL endpointUrl, String method, Map<String, String> headers) {
-        AWS4SignerForAuthorizationHeader signer = new AWS4SignerForAuthorizationHeader(
-                endpointUrl, method, "s3", getRegionName());
-        return signer.computeSignature(headers,
-                null, // no query parameters
-                AWS4SignerBase.EMPTY_BODY_SHA256,
-                getAccessKey(),
-                getSecretAccessKey());
-    }
-
-
-    protected String getInputStreamContent(HttpUtils.HttpResponse httpResponse) {
-        try {
-            return IOUtils.toString(httpResponse.getInputStream(), StandardCharsets.UTF_8);
-        } catch (IOException e) {
-            return null;
-        }
-    }
-
-
-
-    protected Map<String, String> getSaveStreamHttpHeaders(FileDescriptor fileDescr, int chunkSize, AWS4SignerForChunkedUpload signer) {
-        long fileSize = fileDescr.getSize();
-        // set the markers indicating we're going to send the upload as a series
-        // of chunks:
-        //   -- 'x-amz-content-sha256' is the fixed marker indicating chunked
-        //      upload
-        //   -- 'content-length' becomes the total size in bytes of the upload
-        //      (including chunk headers),
-        //   -- 'x-amz-decoded-content-length' is used to transmit the actual
-        //      length of the data payload, less chunk headers
-        Map<String, String> headers = new HashMap<>();
-        headers.put("x-amz-storage-class", getS3StorageClass());
-        headers.put("x-amz-content-sha256", AWS4SignerForChunkedUpload.STREAMING_BODY_SHA256);
-        headers.put("content-encoding", "aws-chunked");
-        headers.put("x-amz-decoded-content-length", "" + fileSize);
-
-
-        // how big is the overall request stream going to be once we add the signature
-        // 'headers' to each chunk?
-        long totalLength = AWS4SignerForChunkedUpload.calculateChunkedContentLength(
-                fileSize, chunkSize);
-        headers.put("content-length", "" + totalLength);
-
-
-        String authorization = signer.computeSignature(headers,
-                null, // no query parameters
-                AWS4SignerForChunkedUpload.STREAMING_BODY_SHA256,
-                getAccessKey(),
-                getSecretAccessKey());
-
-        // place the computed signature into a formatted 'Authorization' header
-        // and call S3
-        headers.put("Authorization", authorization);
-        return headers;
     }
 
     protected String getS3StorageClass() {
