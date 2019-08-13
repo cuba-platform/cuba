@@ -1908,7 +1908,7 @@ public class FilterDelegateImpl implements FilterDelegate {
             groupBoxLayout.setExpanded(expanded);
         }
         if (!adapter.applyMaxResultsSettingsBeforeLoad()) {
-            applyDataLoadingSettings(element);
+            applyMaxResultsSettings(element);
         }
     }
 
