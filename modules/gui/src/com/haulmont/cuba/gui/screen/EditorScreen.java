@@ -42,6 +42,11 @@ public interface EditorScreen<T extends Entity> extends ChangeTracker {
     String WINDOW_CLOSE = "windowClose";
 
     /**
+     * Name of action that enables screen editing, i.e. sets the 'readOnly' mode to {@code false}.
+     */
+    String ENABLE_EDITING = "enableEditing";
+
+    /**
      * Sets entity instance to editor.
      *
      * @param entity entity

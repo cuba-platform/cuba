@@ -34,6 +34,7 @@ public enum CubaIcon implements Icons.Icon {
 
     CREATE_ACTION("font-icon:FILE_O"),
     EDIT_ACTION("font-icon:PENCIL"),
+    VIEW_ACTION("font-icon:EYE"),
     REMOVE_ACTION("font-icon:TIMES"),
     REFRESH_ACTION("font-icon:REFRESH"),
     ADD_ACTION("font-icon:FILE_O"),
@@ -53,6 +54,8 @@ public enum CubaIcon implements Icons.Icon {
     LOOKUP_CANCEL("font-icon:BAN"),
     EDITOR_OK("font-icon:CHECK"),
     EDITOR_CANCEL("font-icon:BAN"),
+
+    ENABLE_EDITING("font-icon:PENCIL"),
 
     _500PX("font-icon:_500PX"),
     ADDRESS_BOOK("font-icon:ADDRESS_BOOK"),

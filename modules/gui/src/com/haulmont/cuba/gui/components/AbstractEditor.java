@@ -37,6 +37,8 @@ import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import com.haulmont.cuba.gui.data.impl.DsContextImplementation;
 import com.haulmont.cuba.gui.data.impl.EntityCopyUtils;
 import com.haulmont.cuba.gui.dynamicattributes.DynamicAttributesGuiTools;
+import com.haulmont.cuba.gui.screen.ReadOnlyScreensSupport;
+import com.haulmont.cuba.gui.screen.ReadOnlyAwareScreen;
 import com.haulmont.cuba.gui.util.OperationResult;
 import com.haulmont.cuba.security.entity.EntityOp;
 import org.apache.commons.lang3.StringUtils;
@@ -54,11 +56,13 @@ import java.util.Set;
 /**
  * Base class for edit screen controllers.
  */
-public class AbstractEditor<T extends Entity> extends AbstractWindow implements Window.Editor<T> {
+public class AbstractEditor<T extends Entity> extends AbstractWindow
+        implements Window.Editor<T>, ReadOnlyAwareScreen {
 
     protected boolean showSaveNotification = true;
 
     protected boolean readOnly = false;
+    protected boolean readOnlyDueToLock = false;
     protected boolean justLocked = false;
     protected boolean crossFieldValidate = true;
 
@@ -111,6 +115,21 @@ public class AbstractEditor<T extends Entity> extends AbstractWindow implements 
                 );
 
         getFrame().addAction(closeAction);
+
+        Action enableEditingAction = new BaseAction(ENABLE_EDITING)
+                .withCaption(messages.getMainMessage("actions.EnableEditing"))
+                .withHandler(e ->
+                        showOptionDialog(messages.getMainMessage("dialogs.Confirmation"),
+                                messages.getMainMessage("dialogs.Confirmation.EnableEditing"),
+                                MessageType.CONFIRMATION,
+                                new Action[]{
+                                        new DialogAction(DialogAction.Type.YES, true)
+                                                .withHandler(actionPerformedEvent ->
+                                                setReadOnly(false)),
+                                        new DialogAction(DialogAction.Type.NO)
+                                }));
+        enableEditingAction.setVisible(false);
+        getFrame().addAction(enableEditingAction);
     }
 
     @SuppressWarnings("unchecked")
@@ -240,7 +259,7 @@ public class AbstractEditor<T extends Entity> extends AbstractWindow implements 
 
         Security security = getBeanLocator().get(Security.NAME);
         if (!PersistenceHelper.isNew(item) && security.isEntityOpPermitted(ds.getMetaClass(), EntityOp.UPDATE)) {
-            readOnly = false;
+            readOnlyDueToLock = false;
 
             LockService lockService = getBeanLocator().get(LockService.NAME);
 
@@ -261,13 +280,8 @@ public class AbstractEditor<T extends Entity> extends AbstractWindow implements 
                         ),
                         Frame.NotificationType.HUMANIZED
                 );
-                Action action = getFrame().getAction(WINDOW_COMMIT);
-                if (action != null)
-                    action.setEnabled(false);
-                action = getFrame().getAction(WINDOW_COMMIT_AND_CLOSE);
-                if (action != null)
-                    action.setEnabled(false);
-                readOnly = true;
+                disableCommitAction();
+                readOnlyDueToLock = true;
             }
         }
     }
@@ -445,6 +459,37 @@ public class AbstractEditor<T extends Entity> extends AbstractWindow implements 
     @Override
     public boolean isLocked() {
         return justLocked;
+    }
+
+    @Override
+    public boolean isReadOnly() {
+        return readOnly;
+    }
+
+    @Override
+    public void setReadOnly(boolean readOnly) {
+        if (this.readOnly != readOnly) {
+            this.readOnly = readOnly;
+
+            ReadOnlyScreensSupport readOnlyScreensSupport = getBeanLocator().get(ReadOnlyScreensSupport.NAME);
+            readOnlyScreensSupport.setScreenReadOnly(this, readOnly);
+
+            if (readOnlyDueToLock) {
+                disableCommitAction();
+            }
+        }
+    }
+
+    protected void disableCommitAction() {
+        Action action = getFrame().getAction(WINDOW_COMMIT);
+        if (action != null) {
+            action.setEnabled(false);
+        }
+
+        action = getFrame().getAction(WINDOW_COMMIT_AND_CLOSE);
+        if (action != null) {
+            action.setEnabled(false);
+        }
     }
 
     @Override

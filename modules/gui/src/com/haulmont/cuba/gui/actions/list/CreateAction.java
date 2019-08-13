@@ -22,6 +22,7 @@ import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.Security;
 import com.haulmont.cuba.gui.ScreenBuilders;
+import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.ActionType;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.actions.ListAction;
@@ -34,7 +35,7 @@ import com.haulmont.cuba.security.entity.EntityOp;
 import javax.inject.Inject;
 
 @ActionType(CreateAction.ID)
-public class CreateAction extends ListAction {
+public class CreateAction extends ListAction implements Action.DisabledWhenScreenReadOnly {
 
     public static final String ID = "create";
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2018 Haulmont.
+ * Copyright (c) 2008-2019 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,64 +22,63 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.ScreenBuilders;
-import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.ActionType;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.data.meta.EntityDataUnit;
 import com.haulmont.cuba.gui.icons.CubaIcon;
 import com.haulmont.cuba.gui.icons.Icons;
+import com.haulmont.cuba.gui.screen.ReadOnlyAwareScreen;
 import com.haulmont.cuba.gui.screen.Screen;
 import com.haulmont.cuba.security.entity.EntityOp;
 
 import javax.inject.Inject;
 
-@ActionType(EditAction.ID)
-public class EditAction extends SecuredListAction implements Action.DisabledWhenScreenReadOnly {
+/**
+ * An action that opens an editor screen in the read-only mode.
+ * <p>
+ * The opening screen must implement the {@link ReadOnlyAwareScreen} interface.
+ */
+@ActionType(ViewAction.ID)
+public class ViewAction extends SecuredListAction {
 
-    public static final String ID = "edit";
+    public static final String ID = "view";
 
-    @Inject
+    protected Messages messages;
     protected ScreenBuilders screenBuilders;
 
-    // Set default caption only once
-    protected boolean captionInitialized = false;
-    protected Messages messages;
-
-    public EditAction() {
-        super(ID);
+    public ViewAction() {
+        this(ID);
     }
 
-    public EditAction(String id) {
+    public ViewAction(String id) {
         super(id);
     }
 
     @Inject
+    protected void setScreenBuilders(ScreenBuilders screenBuilders) {
+        this.screenBuilders = screenBuilders;
+    }
+
+    @Inject
     protected void setIcons(Icons icons) {
-        this.icon = icons.get(CubaIcon.EDIT_ACTION);
+        this.icon = icons.get(CubaIcon.VIEW_ACTION);
     }
 
     @Inject
     protected void setMessages(Messages messages) {
         this.messages = messages;
-        this.caption = messages.getMainMessage("actions.Edit");
+        this.caption = messages.getMainMessage("actions.View");
     }
 
     @Inject
     protected void setConfiguration(Configuration configuration) {
         ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
-        setShortcut(clientConfig.getTableEditShortcut());
-    }
-
-    @Override
-    public void setCaption(String caption) {
-        super.setCaption(caption);
-
-        this.captionInitialized = true;
+        setShortcut(clientConfig.getTableViewShortcut());
     }
 
     @Override
     protected boolean isPermitted() {
-        if (target == null ||!(target.getItems() instanceof EntityDataUnit)) {
+        if (target == null || !(target.getItems() instanceof EntityDataUnit)) {
             return false;
         }
 
@@ -96,37 +95,17 @@ public class EditAction extends SecuredListAction implements Action.DisabledWhen
         return super.isPermitted();
     }
 
-    @Override
-    public void refreshState() {
-        super.refreshState();
-
-        if (!(target.getItems() instanceof EntityDataUnit)) {
-            return;
-        }
-
-        if (!captionInitialized) {
-            MetaClass metaClass = ((EntityDataUnit) target.getItems()).getEntityMetaClass();
-            if (metaClass != null) {
-                if (security.isEntityOpPermitted(metaClass, EntityOp.UPDATE)) {
-                    setCaption(messages.getMainMessage("actions.Edit"));
-                } else {
-                    setCaption(messages.getMainMessage("actions.View"));
-                }
-            }
-        }
-    }
-
     @SuppressWarnings("unchecked")
     @Override
     public void actionPerform(Component component) {
         // if standard behaviour
         if (!hasSubscriptions(ActionPerformedEvent.class)) {
             if (target == null) {
-                throw new IllegalStateException("EditAction target is not set");
+                throw new IllegalStateException("ViewAction target is not set");
             }
 
             if (!(target.getItems() instanceof EntityDataUnit)) {
-                throw new IllegalStateException("EditAction target dataSource is null or does not implement EntityDataUnit");
+                throw new IllegalStateException("ViewAction target dataSource is null or does not implement EntityDataUnit");
             }
 
             MetaClass metaClass = ((EntityDataUnit) target.getItems()).getEntityMetaClass();
@@ -136,12 +115,20 @@ public class EditAction extends SecuredListAction implements Action.DisabledWhen
 
             Entity editedEntity = target.getSingleSelected();
             if (editedEntity == null) {
-                throw new IllegalStateException("There is not selected item in EditAction target");
+                throw new IllegalStateException("There is not selected item in ViewAction target");
             }
 
             Screen editor = screenBuilders.editor(target)
                     .editEntity(editedEntity)
                     .build();
+
+            if (editor instanceof ReadOnlyAwareScreen) {
+                ((ReadOnlyAwareScreen) editor).setReadOnly(true);
+            } else {
+                throw new IllegalStateException(String.format("Screen '%s' does not implement ReadOnlyAwareScreen: %s",
+                        editor.getId(), editor.getClass()));
+            }
+
             editor.show();
         } else {
             super.actionPerform(component);

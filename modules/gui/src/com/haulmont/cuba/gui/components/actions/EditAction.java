@@ -57,7 +57,8 @@ import java.util.function.Supplier;
  */
 @org.springframework.stereotype.Component("cuba_EditAction")
 @Scope("prototype")
-public class EditAction extends ItemTrackingAction implements Action.HasOpenType, Action.HasBeforeActionPerformedHandler {
+public class EditAction extends ItemTrackingAction
+        implements Action.HasOpenType, Action.HasBeforeActionPerformedHandler, Action.DisabledWhenScreenReadOnly {
 
     public static final String ACTION_ID = ListActionType.EDIT.getId();
 

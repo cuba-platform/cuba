@@ -25,6 +25,7 @@ import com.haulmont.cuba.core.app.LockService;
 import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.gui.Dialogs;
 import com.haulmont.cuba.gui.Notifications.NotificationType;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.BaseAction;
@@ -48,7 +49,8 @@ import java.util.function.Consumer;
  *
  * @param <T> type of entity
  */
-public abstract class StandardEditor<T extends Entity> extends Screen implements EditorScreen<T> {
+public abstract class StandardEditor<T extends Entity> extends Screen
+        implements EditorScreen<T>, ReadOnlyAwareScreen {
 
     protected boolean showSaveNotification = true;
     protected boolean commitActionPerformed = false;
@@ -57,6 +59,7 @@ public abstract class StandardEditor<T extends Entity> extends Screen implements
     private boolean crossFieldValidate = true;
     private boolean justLocked = false;
     private boolean readOnly = false;
+    private boolean readOnlyDueToLock = false;
 
     // whether user has edited entity after screen opening
     private boolean modifiedAfterOpen = false;
@@ -98,6 +101,25 @@ public abstract class StandardEditor<T extends Entity> extends Screen implements
                 .withHandler(this::cancel);
 
         window.addAction(closeAction);
+
+        Action enableEditingAction = new BaseAction(ENABLE_EDITING)
+                .withCaption(messages.getMainMessage("actions.EnableEditing"))
+                .withIcon(icons.get(CubaIcon.ENABLE_EDITING))
+                .withHandler(this::enableEditing);
+        enableEditingAction.setVisible(false);
+        window.addAction(enableEditingAction);
+    }
+
+    protected void enableEditing(Action.ActionPerformedEvent actionPerformedEvent) {
+        Messages messages = getBeanLocator().get(Messages.NAME);
+        getScreenContext().getDialogs().createOptionDialog(Dialogs.MessageType.CONFIRMATION)
+                .withCaption(messages.getMainMessage("dialogs.Confirmation"))
+                .withMessage(messages.getMainMessage("dialogs.Confirmation.EnableEditing"))
+                .withActions(new DialogAction(DialogAction.Type.YES, true)
+                                .withHandler(event ->
+                                        setReadOnly(false)),
+                        new DialogAction(DialogAction.Type.NO))
+                .show();
     }
 
     private void beforeShow(@SuppressWarnings("unused") BeforeShowEvent beforeShowEvent) {
@@ -202,7 +224,7 @@ public abstract class StandardEditor<T extends Entity> extends Screen implements
 
         if (!getEntityStates().isNew(entityToEdit)
                 && security.isEntityOpPermitted(container.getEntityMetaClass(), EntityOp.UPDATE)) {
-            this.readOnly = false;
+            this.readOnlyDueToLock = false;
 
             LockService lockService = getBeanLocator().get(LockService.class);
 
@@ -226,17 +248,9 @@ public abstract class StandardEditor<T extends Entity> extends Screen implements
                                 ))
                         .show();
 
-                Action commitAction = getWindow().getAction(WINDOW_COMMIT);
-                if (commitAction != null) {
-                    commitAction.setEnabled(false);
-                }
+                disableCommitActions();
 
-                Action commitCloseAction = getWindow().getAction(WINDOW_COMMIT_AND_CLOSE);
-                if (commitCloseAction != null) {
-                    commitCloseAction.setEnabled(false);
-                }
-
-                this.readOnly = true;
+                this.readOnlyDueToLock = true;
             }
         }
     }
@@ -367,7 +381,7 @@ public abstract class StandardEditor<T extends Entity> extends Screen implements
 
     @Override
     public boolean hasUnsavedChanges() {
-        if (isReadOnly()) {
+        if (isReadOnlyDueToLock()) {
             return false;
         }
 
@@ -445,8 +459,39 @@ public abstract class StandardEditor<T extends Entity> extends Screen implements
     /**
      * @return true if the editor switched to read-only mode because the entity is locked by another user
      */
-    protected boolean isReadOnly() {
+    protected boolean isReadOnlyDueToLock() {
+        return readOnlyDueToLock;
+    }
+
+    @Override
+    public boolean isReadOnly() {
         return readOnly;
+    }
+
+    @Override
+    public void setReadOnly(boolean readOnly) {
+        if (this.readOnly != readOnly) {
+            this.readOnly = readOnly;
+
+            ReadOnlyScreensSupport readOnlyScreensSupport = getBeanLocator().get(ReadOnlyScreensSupport.NAME);
+            readOnlyScreensSupport.setScreenReadOnly(this, readOnly);
+
+            if (readOnlyDueToLock) {
+                disableCommitActions();
+            }
+        }
+    }
+
+    protected void disableCommitActions() {
+        Action commitAction = getWindow().getAction(WINDOW_COMMIT);
+        if (commitAction != null) {
+            commitAction.setEnabled(false);
+        }
+
+        Action commitCloseAction = getWindow().getAction(WINDOW_COMMIT_AND_CLOSE);
+        if (commitCloseAction != null) {
+            commitCloseAction.setEnabled(false);
+        }
     }
 
     /**

@@ -261,6 +261,11 @@ public interface ClientConfig extends Config {
     @DefaultString("ENTER")
     String getTableEditShortcut();
 
+    @Property("cuba.gui.tableShortcut.view")
+    @Source(type = SourceType.DATABASE)
+    @DefaultString("ENTER")
+    String getTableViewShortcut();
+
     @Property("cuba.gui.commitShortcut")
     @Source(type = SourceType.DATABASE)
     @DefaultString("CTRL-ENTER")

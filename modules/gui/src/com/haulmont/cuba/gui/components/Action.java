@@ -204,6 +204,13 @@ public interface Action {
     }
 
     /**
+     * Marker interface that indicates that the implementing action will
+     * change its 'enabled' state according to the screen read-only mode.
+     */
+    interface DisabledWhenScreenReadOnly {
+    }
+
+    /**
      * Used in dialogs to assign a special visual style for a button representing the action.
      */
     enum Status {

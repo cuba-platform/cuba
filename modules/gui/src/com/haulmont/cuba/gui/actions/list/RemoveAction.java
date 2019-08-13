@@ -22,6 +22,7 @@ import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.RemoveOperation;
+import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.ActionType;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.data.meta.ContainerDataUnit;
@@ -34,7 +35,7 @@ import com.haulmont.cuba.security.entity.EntityOp;
 import javax.inject.Inject;
 
 @ActionType(RemoveAction.ID)
-public class RemoveAction extends SecuredListAction {
+public class RemoveAction extends SecuredListAction implements Action.DisabledWhenScreenReadOnly {
 
     public static final String ID = "remove";
 

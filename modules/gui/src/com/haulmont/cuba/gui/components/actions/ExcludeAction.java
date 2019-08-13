@@ -23,6 +23,7 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.ExtendedEntities;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.Metadata;
+import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.ListComponent;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -48,7 +49,7 @@ import java.util.Set;
  */
 @org.springframework.stereotype.Component("cuba_ExcludeAction")
 @Scope("prototype")
-public class ExcludeAction extends RemoveAction {
+public class ExcludeAction extends RemoveAction implements Action.DisabledWhenScreenReadOnly {
 
     public static final String ACTION_ID = ListActionType.EXCLUDE.getId();
 

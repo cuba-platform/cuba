@@ -21,6 +21,7 @@
         <hbox spacing="true" stylename="c-extended-edit-window-actions">
             <button id="windowCommitAndClose" action="windowCommitAndClose" icon="EDITOR_OK"/>
             <button id="windowCommit" action="windowCommit"/>
+            <button id="enableEditing" action="enableEditing" icon="ENABLE_EDITING" visible="false"/>
             <button id="windowClose" action="windowClose" icon="EDITOR_CANCEL"/>
         </hbox>
     </layout>
