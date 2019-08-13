@@ -349,6 +349,10 @@ configure(globalModule) {
     }
     sourceJar.dependsOn filterDummyEntities
 
+    test.doFirst {
+        jvmArgs "-javaagent:${classpath.find { it.name.contains("jmockit") }.absolutePath}"
+    }
+
     spotbugsMain {
         classes = classes.filter {
             !it.path.contains(new File("com/haulmont/cuba/core/global/release.").path)
@@ -900,6 +904,10 @@ configure(restApiModule) {
     }
 
     spotbugsMain.enabled = false
+
+    test.doFirst {
+        jvmArgs "-javaagent:${classpath.find { it.name.contains("jmockit") }.absolutePath}"
+    }
 }
 
 configure(portalModule) {
