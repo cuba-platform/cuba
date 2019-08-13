@@ -38,6 +38,7 @@ import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 import org.apache.commons.io.IOUtils;
+import org.springframework.aop.support.AopUtils;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Nullable;
@@ -295,7 +296,7 @@ public class EntityImportExport implements EntityImportExportAPI {
         if (dstEntity instanceof BaseGenericIdEntity && !createOp) {
             String storeName = metadata.getTools().getStoreName(dstEntity.getMetaClass());
             DataStore dataStore = storeFactory.get(storeName);
-            if (dataStore instanceof RdbmsStore) {
+            if (RdbmsStore.class.equals(AopUtils.getTargetClass(dataStore))) {
                 if (useSecurityToken()) {
                     persistenceSecurity.assertTokenForREST(srcEntity, regularView);
                     persistenceSecurity.restoreSecurityState(srcEntity);
@@ -511,7 +512,7 @@ public class EntityImportExport implements EntityImportExportAPI {
             String storeName = metadata.getTools().getStoreName(dstEntity.getMetaClass());
             DataStore dataStore = storeFactory.get(storeName);
             //row-level security works only for entities from RdbmsStore
-            if (dataStore instanceof RdbmsStore) {
+            if (RdbmsStore.class.equals(AopUtils.getTargetClass(dataStore))) {
                 if (useSecurityToken()) {
                     persistenceSecurity.assertTokenForREST(srcEmbeddedEntity, regularView);
                     persistenceSecurity.restoreSecurityState(srcEmbeddedEntity);
@@ -653,7 +654,7 @@ public class EntityImportExport implements EntityImportExportAPI {
         if (entity instanceof BaseGenericIdEntity) {
             String storeName = metadata.getTools().getStoreName(entity.getMetaClass());
             DataStore dataStore = storeFactory.get(storeName);
-            if (dataStore instanceof RdbmsStore) {
+            if (RdbmsStore.class.equals(AopUtils.getTargetClass(dataStore))) {
                 persistenceSecurity.restoreSecurityState(entity);
                 return Optional.ofNullable(BaseEntityInternalAccess.getFilteredData(entity))
                         .map(v -> v.get(propertyName))
