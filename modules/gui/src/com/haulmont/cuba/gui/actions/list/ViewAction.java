@@ -43,7 +43,6 @@ public class ViewAction extends SecuredListAction {
 
     public static final String ID = "view";
 
-    protected Messages messages;
     protected ScreenBuilders screenBuilders;
 
     public ViewAction() {
@@ -66,7 +65,6 @@ public class ViewAction extends SecuredListAction {
 
     @Inject
     protected void setMessages(Messages messages) {
-        this.messages = messages;
         this.caption = messages.getMainMessage("actions.View");
     }
 
