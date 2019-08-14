@@ -443,6 +443,12 @@ public class AbstractEditor<T extends Entity> extends AbstractWindow implements 
     }
 
     @Override
+    public boolean hasUnsavedChanges() {
+        return !readOnly
+                && super.hasUnsavedChanges();
+    }
+
+    @Override
     public boolean isLocked() {
         return justLocked;
     }
