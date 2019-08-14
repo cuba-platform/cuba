@@ -192,6 +192,7 @@ public class AttributesLocationFrame extends AbstractFrame {
         column.setSortable(false);
         column.setCaption(getMessage("attributesLocation.columnCaption") + " " + i);
         dataGrid.setSettingsEnabled(false);
+        dataGrid.setColumnsCollapsingAllowed(false);
         dataGrid.setWidth("175px");
 
         return dataGrid;
