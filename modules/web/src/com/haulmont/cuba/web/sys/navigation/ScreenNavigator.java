@@ -16,7 +16,6 @@
 
 package com.haulmont.cuba.web.sys.navigation;
 
-import com.haulmont.cuba.gui.Screens;
 import com.haulmont.cuba.gui.navigation.NavigationState;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.sys.navigation.navigationhandler.NavigationHandler;
@@ -39,12 +38,10 @@ public class ScreenNavigator {
     @Inject
     protected List<NavigationHandler> navigationHandlers;
 
-    protected UrlChangeHandler urlChangeHandler;
     protected AppUI ui;
 
     @SuppressWarnings("unused")
-    public ScreenNavigator(UrlChangeHandler urlChangeHandler, AppUI ui) {
-        this.urlChangeHandler = urlChangeHandler;
+    public ScreenNavigator(AppUI ui) {
         this.ui = ui;
     }
 
@@ -52,27 +49,5 @@ public class ScreenNavigator {
         for (NavigationHandler handler : navigationHandlers)
             if (handler.doHandle(requestedState, ui))
                 return;
-    }
-
-    protected boolean handleCurrentRootNavigation(NavigationState requestedState) {
-        if (!currentRootNavigated(requestedState)) {
-            return true;
-        }
-
-        for (Screens.WindowStack windowStack : urlChangeHandler.getOpenedScreens().getWorkAreaStacks()) {
-            boolean closed = urlChangeHandler.closeWindowStack(windowStack);
-            if (!closed) {
-                urlChangeHandler.revertNavigationState();
-                return true;
-            }
-        }
-
-        return true;
-    }
-
-    protected boolean currentRootNavigated(NavigationState requestedState) {
-        NavigationState currentState = ui.getHistory().getNow();
-        return !urlChangeHandler.isRootState(currentState)
-                && urlChangeHandler.isRootState(requestedState);
     }
 }

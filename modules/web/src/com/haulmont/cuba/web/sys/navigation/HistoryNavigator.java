@@ -16,7 +16,9 @@
 
 package com.haulmont.cuba.web.sys.navigation;
 
+import com.haulmont.cuba.gui.Screens;
 import com.haulmont.cuba.gui.components.RootWindow;
+import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.navigation.NavigationState;
 import com.haulmont.cuba.gui.screen.FrameOwner;
@@ -25,12 +27,16 @@ import com.haulmont.cuba.gui.util.OperationResult;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.sys.navigation.accessfilter.NavigationFilter;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Objects;
 
 import static com.haulmont.cuba.web.sys.navigation.UrlTools.replaceState;
 
 public class HistoryNavigator {
+
+    private static final Logger log = LoggerFactory.getLogger(HistoryNavigator.class);
 
     protected final AppUI ui;
 
@@ -48,67 +54,103 @@ public class HistoryNavigator {
         if (backward) {
             handleHistoryBackward(requestedState);
         }
-
         return backward;
     }
 
     protected void handleHistoryBackward(NavigationState requestedState) {
         NavigationState currentState = history.getNow();
 
-        requestedState = findPreviousState(requestedState);
-        if (requestedState == null) {
+        NavigationState previousState = findPreviousState(requestedState);
+        if (previousState == null) {
             urlChangeHandler.revertNavigationState();
             return;
         }
 
-        NavigationFilter.AccessCheckResult accessCheckResult = urlChangeHandler.navigationAllowed(requestedState);
+        NavigationFilter.AccessCheckResult accessCheckResult = urlChangeHandler.navigationAllowed(previousState);
         if (accessCheckResult.isRejected()) {
             if (StringUtils.isNotEmpty(accessCheckResult.getMessage())) {
                 urlChangeHandler.showNotification(accessCheckResult.getMessage());
             }
-
             urlChangeHandler.revertNavigationState();
             return;
         }
 
-        if (urlChangeHandler.isRootState(requestedState)) {
-            WindowInfo rootWindowInfo = urlChangeHandler.windowConfig.findWindowInfoByRoute(requestedState.getRoot());
-            if (rootWindowInfo != null) {
-                Class<? extends FrameOwner> clazz = rootWindowInfo.getControllerClass();
-                RootWindow topLevelWindow = AppUI.getCurrent().getTopLevelWindow();
-                if (topLevelWindow != null
-                        && clazz.isAssignableFrom(topLevelWindow.getFrameOwner().getClass())) {
-
-                    urlChangeHandler.getScreenNavigator().handleCurrentRootNavigation(requestedState);
-                } else {
-                    urlChangeHandler.getScreenNavigator().handleScreenNavigation(requestedState);
-                }
-            }
+        if (urlChangeHandler.isRootState(previousState)) {
+            handleRootBackNavigation(previousState);
+        } else {
+            handleScreenBackNavigation(currentState, previousState);
         }
+    }
 
+    protected void handleScreenBackNavigation(NavigationState currentState, NavigationState previousState) {
         Screen lastOpenedScreen = urlChangeHandler.findActiveScreenByState(currentState);
         if (lastOpenedScreen != null
                 && urlChangeHandler.isNotCloseable(lastOpenedScreen.getWindow())) {
-
             urlChangeHandler.revertNavigationState();
             return;
         }
 
         if (lastOpenedScreen != null) {
-            NavigationState _requestedState = requestedState;
-
             OperationResult screenCloseResult = lastOpenedScreen.getWindow()
                     .getFrameOwner()
                     .close(FrameOwner.WINDOW_CLOSE_ACTION)
-                    .then(() -> proceedHistoryBackward(_requestedState));
+                    .then(() -> proceedHistoryBackward(previousState));
 
             if (OperationResult.Status.FAIL == screenCloseResult.getStatus()
                     || OperationResult.Status.UNKNOWN == screenCloseResult.getStatus()) {
                 urlChangeHandler.revertNavigationState();
             }
         } else {
-            proceedHistoryBackward(requestedState);
+            proceedHistoryBackward(previousState);
         }
+    }
+
+    protected void handleRootBackNavigation(NavigationState previousState) {
+        WindowInfo rootWindowInfo = urlChangeHandler.windowConfig.findWindowInfoByRoute(previousState.getRoot());
+        if (rootWindowInfo == null) {
+            log.debug("Unable to find registered root screen with route: '{}'", previousState.getRoot());
+            urlChangeHandler.revertNavigationState();
+            return;
+        }
+
+        Class<? extends FrameOwner> requestedScreenClass = rootWindowInfo.getControllerClass();
+
+        RootWindow topLevelWindow = AppUI.getCurrent().getTopLevelWindow();
+        Class<? extends FrameOwner> currentScreenClass = topLevelWindow != null
+                ? topLevelWindow.getFrameOwner().getClass()
+                : null;
+
+        if (currentScreenClass != null
+                && requestedScreenClass.isAssignableFrom(currentScreenClass)) {
+
+            if (Window.HasWorkArea.class.isAssignableFrom(requestedScreenClass)) {
+                if (closeWorkAreaScreens()) {
+                    history.backward();
+                }
+            } else {
+                history.backward();
+            }
+        } else {
+            urlChangeHandler.getScreenNavigator()
+                    .handleScreenNavigation(previousState);
+            /*
+             * Since back navigation from one root screen to another root screen
+             * can be performed only via screen opening we have to trigger history
+             * back twice.
+             */
+            history.backward();
+            history.backward();
+        }
+    }
+
+    protected boolean closeWorkAreaScreens() {
+        for (Screens.WindowStack windowStack : urlChangeHandler.getOpenedScreens().getWorkAreaStacks()) {
+            if (!urlChangeHandler.closeWindowStack(windowStack)) {
+                urlChangeHandler.revertNavigationState();
+                return false;
+            }
+        }
+        return true;
     }
 
     protected void proceedHistoryBackward(NavigationState requestedState) {
@@ -125,7 +167,6 @@ public class HistoryNavigator {
             return requestedState;
         }
 
-        // TODO: while ???
         if (Objects.equals(requestedState, history.getNow())) {
             requestedState = history.getPrevious();
         }
