@@ -457,6 +457,12 @@ public class AbstractEditor<T extends Entity> extends AbstractWindow
     }
 
     @Override
+    public boolean hasUnsavedChanges() {
+        return !readOnlyDueToLock
+                && super.hasUnsavedChanges();
+    }
+
+    @Override
     public boolean isLocked() {
         return justLocked;
     }
