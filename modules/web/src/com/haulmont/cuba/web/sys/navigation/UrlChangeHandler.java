@@ -91,7 +91,7 @@ public class UrlChangeHandler implements InitializingBean {
     @Override
     public void afterPropertiesSet() {
         historyNavigator = new HistoryNavigator(ui, this);
-        screenNavigator = beanLocator.getPrototype(ScreenNavigator.NAME, this, ui);
+        screenNavigator = beanLocator.getPrototype(ScreenNavigator.NAME, ui);
     }
 
     public void handleUrlChange(Page.PopStateEvent event) {
