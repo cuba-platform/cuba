@@ -25,6 +25,7 @@ import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.server.SerializablePredicate;
 import com.vaadin.shared.ui.grid.DropLocation;
 import com.vaadin.shared.ui.grid.DropMode;
+import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.components.grid.*;
 
 import java.util.ArrayList;
@@ -34,6 +35,8 @@ public class AttributesLocationCompanion implements AttributesLocationFrame.Comp
 
     protected CategoryAttribute draggedItem;
     protected boolean droppedSuccessful;
+    protected int dropIndex = -1;
+    protected AbstractComponent dropComponent;
 
     protected List<CategoryAttribute> sourceDataContainer = new ArrayList<>();
     protected DataProvider<CategoryAttribute, SerializablePredicate<CategoryAttribute>> sourceDataProvider;
@@ -74,6 +77,8 @@ public class AttributesLocationCompanion implements AttributesLocationFrame.Comp
     protected void onGridDragStart(GridDragStartEvent<CategoryAttribute> event) {
         draggedItem = event.getDraggedItems().get(0);
         droppedSuccessful = false;
+        dropComponent = null;
+        dropIndex = -1;
     }
 
     protected void onGridDragEnd(GridDragEndEvent<CategoryAttribute> event, CubaGrid grid, boolean isSourceGrid) {
@@ -81,7 +86,18 @@ public class AttributesLocationCompanion implements AttributesLocationFrame.Comp
             return;
         }
 
-        ((ListDataProvider)grid.getDataProvider()).getItems().remove(draggedItem);
+        //noinspection unchecked
+        List<CategoryAttribute> items = (List<CategoryAttribute>) ((ListDataProvider) grid.getDataProvider()).getItems();
+        if (grid.equals(dropComponent) && dropIndex >= 0) {
+            int removeIndex = items.indexOf(draggedItem) == dropIndex
+                    ? items.lastIndexOf(draggedItem)
+                    : items.indexOf(draggedItem);
+            if (removeIndex >= 0 && removeIndex != dropIndex) {
+                items.remove(removeIndex);
+            }
+        } else {
+            items.remove(draggedItem);
+        }
 
         if (isSourceGrid && AttributesLocationFrame.EMPTY_ATTRIBUTE_NAME.equals(draggedItem.getName())) {
             sourceDataContainer.add(createEmptyAttribute());
@@ -103,12 +119,15 @@ public class AttributesLocationCompanion implements AttributesLocationFrame.Comp
                         event.getComponent().getDataProvider();
                 List<CategoryAttribute> items = (List<CategoryAttribute>) dataProvider.getItems();
 
+                dropComponent = event.getComponent();
+
                 int i = items.size();
                 if (event.getDropTargetRow().isPresent()) {
                     i = items.indexOf(event.getDropTargetRow().get())
                             + (event.getDropLocation() == DropLocation.BELOW ? 1 : 0);
                 }
 
+                dropIndex = i;
                 items.add(i, draggedItem);
                 dataProvider.refreshAll();
 

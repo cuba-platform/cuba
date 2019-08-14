@@ -27,15 +27,14 @@
                          nullOptionVisible="false" width="175px"/>
             <button id="saveBtn" invoke="saveCoordinates" caption="msg://attributesLocation.saveBtnCaption" align="BOTTOM_RIGHT"/>
         </hbox>
-        <hbox id="hBox">
-            <hbox width="190px">
-                <dataGrid id="sourceDataGrid" metaClass="sys$CategoryAttribute"
-                          editorEnabled="false" width="175px" settingsEnabled="false">
-                    <columns>
-                        <column caption="msg://attributesLocation.sourceColumnCaption" id="name" property="localeName" sortable="false"/>
-                    </columns>
-                </dataGrid>
-            </hbox>
+        <hbox spacing="true">
+            <dataGrid id="sourceDataGrid" metaClass="sys$CategoryAttribute"
+                      editorEnabled="false" width="175px" settingsEnabled="false" columnsCollapsingAllowed="false">
+                <columns>
+                    <column caption="msg://attributesLocation.sourceColumnCaption" id="name" property="localeName" sortable="false"/>
+                </columns>
+            </dataGrid>
+            <hbox id="hBox"/>
         </hbox>
     </layout>
 </window>
