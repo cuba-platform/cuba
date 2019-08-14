@@ -427,7 +427,7 @@ public class DynamicAttributesManager implements DynamicAttributesManagerAPI {
                     .collect(Collectors.toList());
 
             List<CategoryAttributeValue> cavsOfCollectionType = resultList.stream()
-                    .filter(cav -> cav.getCategoryAttribute().getIsCollection())
+                    .filter(cav -> BooleanUtils.isTrue(cav.getCategoryAttribute().getIsCollection()))
                     .collect(Collectors.toList());
 
             if (cavsOfCollectionType.isEmpty()) {
