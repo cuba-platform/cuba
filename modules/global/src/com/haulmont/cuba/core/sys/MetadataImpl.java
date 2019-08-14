@@ -35,6 +35,7 @@ import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.events.AppContextInitializedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.annotation.Order;
@@ -48,6 +49,7 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -221,7 +223,18 @@ public class MetadataImpl implements Metadata {
         List<Method> postConstructMethods = postConstructMethodsCache.getUnchecked(entity.getClass());
         // methods are store in the correct execution order
         for (Method method : postConstructMethods) {
-            method.invoke(entity);
+            List<Object> params = new ArrayList<>();
+            for (Parameter parameter : method.getParameters()) {
+                Class<?> parameterClass = parameter.getType();
+                try {
+                    params.add(AppBeans.get(parameterClass));
+                } catch (NoSuchBeanDefinitionException e) {
+                    String message = String.format("Unable to create %s entity. Argument of the %s type at the @PostConstruct method is not a bean",
+                            entity.getClass().getName(), parameter.getType().getName());
+                    throw new IllegalArgumentException(message, e);
+                }
+            }
+            method.invoke(entity, params.toArray());
         }
     }
 
