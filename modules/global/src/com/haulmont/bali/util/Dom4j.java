@@ -44,11 +44,9 @@ import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
 /**
  * Helper class for XML parsing.
- * Caches SAXParser instance if application property cuba.saxParserThreadLocalCache is not set or set to true.
  */
 public final class Dom4j {
 
-    private static final ThreadLocal<SAXParser> saxParserHolder = new ThreadLocal<>();
     private static final Logger log = LoggerFactory.getLogger(Dom4j.class);
 
     private Dom4j() {
@@ -58,8 +56,15 @@ public final class Dom4j {
         return readDocument(new StringReader(xmlString));
     }
 
+    public static Document readDocument(String xmlString, SAXReader xmlReader) {
+        return readDocument(new StringReader(xmlString), xmlReader);
+    }
+
     public static Document readDocument(Reader reader) {
-        SAXReader xmlReader = getSaxReader();
+        return readDocument(reader, getSaxReader());
+    }
+
+    public static Document readDocument(Reader reader, SAXReader xmlReader) {
         try {
             return xmlReader.read(reader);
         } catch (DocumentException e) {
@@ -68,47 +73,39 @@ public final class Dom4j {
     }
 
     private static SAXReader getSaxReader() {
-        String useThreadLocalCache = System.getProperty("cuba.saxParserThreadLocalCache");
-        if (useThreadLocalCache == null || Boolean.parseBoolean(useThreadLocalCache)) {
-            try {
-                return new SAXReader(getParser().getXMLReader());
-            } catch (SAXException e) {
-                throw new RuntimeException("Unable to create SAX reader", e);
-            }
-        } else {
-            return new SAXReader();
+        try {
+            return new SAXReader(getParser().getXMLReader());
+        } catch (SAXException e) {
+            throw new RuntimeException("Unable to create SAX reader", e);
         }
     }
 
     public static SAXParser getParser() {
-        SAXParser parser = saxParserHolder.get();
-        if (parser == null) {
-            SAXParserFactory factory = SAXParserFactory.newInstance();
-            factory.setValidating(false);
-            factory.setNamespaceAware(false);
-            XMLReader xmlReader;
-            try {
-                parser = factory.newSAXParser();
-                xmlReader = parser.getXMLReader();
-            } catch (ParserConfigurationException | SAXException e) {
-                throw new RuntimeException("Unable to create SAX parser", e);
-            }
-
-            setParserFeature(xmlReader, "http://xml.org/sax/features/namespaces", true);
-            setParserFeature(xmlReader, "http://xml.org/sax/features/namespace-prefixes", false);
-
-            // external entites
-            setParserFeature(xmlReader, "http://xml.org/sax/properties/external-general-entities", false);
-            setParserFeature(xmlReader, "http://xml.org/sax/properties/external-parameter-entities", false);
-
-            // external DTD
-            setParserFeature(xmlReader, "http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
-
-            // use Locator2 if possible
-            setParserFeature(xmlReader, "http://xml.org/sax/features/use-locator2", true);
-
-            saxParserHolder.set(parser);
+        SAXParser parser;
+        SAXParserFactory factory = SAXParserFactory.newInstance();
+        factory.setValidating(false);
+        factory.setNamespaceAware(false);
+        XMLReader xmlReader;
+        try {
+            parser = factory.newSAXParser();
+            xmlReader = parser.getXMLReader();
+        } catch (ParserConfigurationException | SAXException e) {
+            throw new RuntimeException("Unable to create SAX parser", e);
         }
+
+        setParserFeature(xmlReader, "http://xml.org/sax/features/namespaces", true);
+        setParserFeature(xmlReader, "http://xml.org/sax/features/namespace-prefixes", false);
+
+        // external entites
+        setParserFeature(xmlReader, "http://xml.org/sax/properties/external-general-entities", false);
+        setParserFeature(xmlReader, "http://xml.org/sax/properties/external-parameter-entities", false);
+
+        // external DTD
+        setParserFeature(xmlReader, "http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+
+        // use Locator2 if possible
+        setParserFeature(xmlReader, "http://xml.org/sax/features/use-locator2", true);
+
         return parser;
     }
 
@@ -122,7 +119,10 @@ public final class Dom4j {
     }
 
     public static Document readDocument(InputStream stream) {
-        SAXReader xmlReader = getSaxReader();
+        return readDocument(stream, getSaxReader());
+    }
+
+    public static Document readDocument(InputStream stream, SAXReader xmlReader) {
         try (InputStreamReader reader = new InputStreamReader(stream, StandardCharsets.UTF_8)) {
             return xmlReader.read(reader);
         } catch (IOException | DocumentException e) {
@@ -131,10 +131,14 @@ public final class Dom4j {
     }
 
     public static Document readDocument(File file) {
+        return readDocument(file, getSaxReader());
+    }
+
+    public static Document readDocument(File file, SAXReader xmlReader) {
         FileInputStream inputStream = null;
         try {
             inputStream = new FileInputStream(file);
-            return readDocument(inputStream);
+            return readDocument(inputStream, xmlReader);
         } catch (FileNotFoundException e) {
             throw new RuntimeException("Unable to read XML from file", e);
         } finally {

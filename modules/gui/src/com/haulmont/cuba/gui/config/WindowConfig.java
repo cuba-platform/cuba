@@ -20,15 +20,14 @@ import com.google.common.base.Strings;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableList;
-import com.haulmont.bali.util.Dom4j;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.Resources;
 import com.haulmont.cuba.core.global.Scripting;
 import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.core.sys.xmlparsing.Dom4jTools;
 import com.haulmont.cuba.gui.NoSuchScreenException;
-import com.haulmont.cuba.gui.Route;
 import com.haulmont.cuba.gui.components.AbstractFrame;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.screen.*;
@@ -53,9 +52,6 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.*;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -100,6 +96,8 @@ public class WindowConfig {
     protected Metadata metadata;
     @Inject
     protected ScreenXmlLoader screenXmlLoader;
+    @Inject
+    protected Dom4jTools dom4JTools;
 
     @Inject
     protected ApplicationContext applicationContext;
@@ -273,7 +271,7 @@ public class WindowConfig {
             Resource resource = resources.getResource(location);
             if (resource.exists()) {
                 try (InputStream stream = resource.getInputStream()) {
-                    loadConfig(Dom4j.readDocument(stream).getRootElement());
+                    loadConfig(dom4JTools.readDocument(stream).getRootElement());
                 } catch (IOException e) {
                     throw new RuntimeException("Unable to read window config from " + location, e);
                 }
@@ -292,7 +290,7 @@ public class WindowConfig {
                     log.warn("File {} not found, ignore it", fileName);
                     continue;
                 }
-                loadConfig(Dom4j.readDocument(incXml).getRootElement());
+                loadConfig(dom4JTools.readDocument(incXml).getRootElement());
             }
         }
         for (Element element : rootElem.elements("screen")) {

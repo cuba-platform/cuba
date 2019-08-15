@@ -25,7 +25,6 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.google.gson.Gson;
-import com.haulmont.bali.util.Dom4j;
 import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.model.MetaClass;
@@ -34,6 +33,7 @@ import com.haulmont.cuba.core.app.dynamicattributes.PropertyType;
 import com.haulmont.cuba.core.entity.*;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.global.filter.SecurityJpqlGenerator;
+import com.haulmont.cuba.core.sys.xmlparsing.Dom4jTools;
 import com.haulmont.cuba.gui.UiComponents;
 import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.components.*;
@@ -126,6 +126,9 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
         FIELDS_VISIBLE_FOR_TYPES.put(ENTITY, "isCollection");
         FIELDS_VISIBLE_FOR_TYPES.put(ENTITY, "width");
     }
+
+    @Inject
+    protected Dom4jTools dom4JTools;
 
     @Inject
     protected FieldGroup attributeFieldGroup;
@@ -743,7 +746,7 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
             filterEntity.setXml(filterParser.getXml(filterEditor.getConditions(), Param.ValueProperty.DEFAULT_VALUE));
 
             if (filterEntity.getXml() != null) {
-                Element element = Dom4j.readDocument(filterEntity.getXml()).getRootElement();
+                Element element = dom4JTools.readDocument(filterEntity.getXml()).getRootElement();
                 com.haulmont.cuba.core.global.filter.FilterParser filterParser =
                         new com.haulmont.cuba.core.global.filter.FilterParser(element);
                 String jpql = new SecurityJpqlGenerator().generateJpql(filterParser.getRoot());

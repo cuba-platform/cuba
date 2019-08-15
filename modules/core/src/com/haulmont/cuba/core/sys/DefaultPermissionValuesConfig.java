@@ -18,9 +18,9 @@
 package com.haulmont.cuba.core.sys;
 
 import com.google.common.base.Strings;
-import com.haulmont.bali.util.Dom4j;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.Resources;
+import com.haulmont.cuba.core.sys.xmlparsing.Dom4jTools;
 import com.haulmont.cuba.security.entity.Permission;
 import com.haulmont.cuba.security.entity.PermissionType;
 import org.apache.commons.lang3.StringUtils;
@@ -61,6 +61,9 @@ public class DefaultPermissionValuesConfig {
     @Inject
     protected Metadata metadata;
 
+    @Inject
+    protected Dom4jTools dom4JTools;
+
     protected void checkInitialized() {
         if (!initialized) {
             lock.readLock().unlock();
@@ -93,7 +96,7 @@ public class DefaultPermissionValuesConfig {
     protected void parseConfigFile(String fileName) {
         String fileContent = resources.getResourceAsString(fileName);
         if (!Strings.isNullOrEmpty(fileContent)) {
-            Document document = Dom4j.readDocument(fileContent);
+            Document document = dom4JTools.readDocument(fileContent);
             List<Element> permissionElements = document.getRootElement().elements("permission");
 
             for (Element element : permissionElements) {

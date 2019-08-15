@@ -16,7 +16,7 @@
 
 package com.haulmont.cuba.gui.xml.layout;
 
-import com.haulmont.bali.util.Dom4j;
+import com.haulmont.cuba.core.sys.xmlparsing.Dom4jTools;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
 import org.apache.commons.io.IOUtils;
@@ -46,6 +46,9 @@ public class ScreenXmlParser {
     @Inject
     protected ThemeConstantsManager themeConstantsManager;
 
+    @Inject
+    protected Dom4jTools dom4JTools;
+
     public Document parseDescriptor(InputStream stream) {
         checkNotNullArgument(stream, "Input stream is null");
 
@@ -62,7 +65,7 @@ public class ScreenXmlParser {
     public Document parseDescriptor(String template) {
         checkNotNullArgument(template, "template is null");
 
-        Document document = Dom4j.readDocument(template);
+        Document document = dom4JTools.readDocument(template);
 
         replaceAssignParameters(document);
 
@@ -96,7 +99,7 @@ public class ScreenXmlParser {
         if (!assignedParams.isEmpty()) {
             Element layoutElement = document.getRootElement().element("layout");
             if (layoutElement != null) {
-                Dom4j.walkAttributesRecursive(layoutElement, (element, attribute) -> {
+                dom4JTools.walkAttributesRecursive(layoutElement, (element, attribute) -> {
                     String attributeValue = attribute.getValue();
                     if (StringUtils.isNotEmpty(attributeValue)
                             && attributeValue.startsWith("${")

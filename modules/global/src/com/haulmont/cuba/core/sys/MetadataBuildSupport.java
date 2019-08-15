@@ -17,11 +17,11 @@
 
 package com.haulmont.cuba.core.sys;
 
-import com.haulmont.bali.util.Dom4j;
 import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.chile.core.datatypes.DatatypeRegistry;
 import com.haulmont.cuba.core.global.Resources;
 import com.haulmont.cuba.core.global.Stores;
+import com.haulmont.cuba.core.sys.xmlparsing.Dom4jTools;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringTokenizer;
 import org.dom4j.Document;
@@ -41,6 +41,9 @@ import java.util.regex.Pattern;
 
 @Component("cuba_MetadataBuildSupport")
 public class MetadataBuildSupport {
+
+    @Inject
+    protected Dom4jTools dom4JTools;
 
     public static class XmlAnnotation {
         public final Object value;
@@ -204,7 +207,7 @@ public class MetadataBuildSupport {
                 throw new IllegalStateException("Resource not found: " + path);
             }
 
-            Document document = Dom4j.readDocument(stream);
+            Document document = dom4JTools.readDocument(stream);
             return document.getRootElement();
         } catch (IOException e) {
             throw new IllegalStateException("Unable to read resource: " + path);

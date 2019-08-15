@@ -16,8 +16,8 @@
  */
 package com.haulmont.cuba.gui.settings;
 
-import com.haulmont.bali.util.Dom4j;
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.sys.xmlparsing.Dom4jTools;
 import org.apache.commons.lang3.StringUtils;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
@@ -49,7 +49,7 @@ public class SettingsImpl implements Settings {
             if (StringUtils.isBlank(xml)) {
                 root = DocumentHelper.createDocument().addElement("settings");
             } else {
-                root = Dom4j.readDocument(xml).getRootElement();
+                root = AppBeans.get(Dom4jTools.class).readDocument(xml).getRootElement();
             }
         }
     }
@@ -92,7 +92,7 @@ public class SettingsImpl implements Settings {
     @Override
     public void commit() {
         if (modified && root != null) {
-            String xml = Dom4j.writeDocument(root.getDocument(), true);
+            String xml = AppBeans.get(Dom4jTools.class).writeDocument(root.getDocument(), true);
             getSettingsClient().setSetting(name, xml);
             modified = false;
         }

@@ -18,8 +18,8 @@
 package com.haulmont.cuba.gui.components.filter;
 
 import com.haulmont.bali.datastruct.Node;
-import com.haulmont.bali.util.Dom4j;
 import com.haulmont.cuba.core.global.filter.ConditionType;
+import com.haulmont.cuba.core.sys.xmlparsing.Dom4jTools;
 import com.haulmont.cuba.gui.components.Filter;
 import com.haulmont.cuba.gui.components.FilterImplementation;
 import com.haulmont.cuba.gui.components.filter.condition.*;
@@ -34,16 +34,20 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Nullable;
+import javax.inject.Inject;
 
 @Component(FilterParser.NAME)
 public class FilterParserImpl implements FilterParser {
     private static final Logger log = LoggerFactory.getLogger(FilterParser.class);
 
+    @Inject
+    protected Dom4jTools dom4JTools;
+
     @Override
     public ConditionsTree getConditions(Filter filter, String xml) {
         ConditionsTree conditions = new ConditionsTree();
         if (!StringUtils.isBlank(xml)) {
-            Element root = Dom4j.readDocument(xml).getRootElement();
+            Element root = dom4JTools.readDocument(xml).getRootElement();
             Element andElem = root.element("and");
             if (andElem == null)
                 throw new IllegalStateException("Root element doesn't contain 'and': " + xml);
@@ -124,7 +128,7 @@ public class FilterParserImpl implements FilterParser {
             for (Node<AbstractCondition> node : conditions.getRootNodes()) {
                 recursiveToXml(node, element, valueProperty);
             }
-            xml = Dom4j.writeDocument(document, true);
+            xml = dom4JTools.writeDocument(document, true);
         }
         log.trace("toXML: {}", xml);
         return xml;

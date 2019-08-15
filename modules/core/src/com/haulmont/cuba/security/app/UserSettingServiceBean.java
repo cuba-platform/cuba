@@ -16,10 +16,10 @@
  */
 package com.haulmont.cuba.security.app;
 
-import com.haulmont.bali.util.Dom4j;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.sys.xmlparsing.Dom4jTools;
 import com.haulmont.cuba.security.entity.*;
 import org.dom4j.Attribute;
 import org.dom4j.Document;
@@ -44,6 +44,9 @@ public class UserSettingServiceBean implements UserSettingService {
 
     @Inject
     protected Security security;
+
+    @Inject
+    protected Dom4jTools dom4JTools;
 
     @Override
     public String loadSetting(String name) {
@@ -132,7 +135,7 @@ public class UserSettingServiceBean implements UserSettingService {
                 newSetting.setName(currSetting.getName());
 
                 try {
-                    Document doc = Dom4j.readDocument(currSetting.getValue());
+                    Document doc = dom4JTools.readDocument(currSetting.getValue());
 
                     List<Element> components = doc.getRootElement().element("components").elements("component");
                     for (Element component : components) {
@@ -157,7 +160,7 @@ public class UserSettingServiceBean implements UserSettingService {
                         }
                     }
 
-                    newSetting.setValue(Dom4j.writeDocument(doc, true));
+                    newSetting.setValue(dom4JTools.writeDocument(doc, true));
                 } catch (Exception e) {
                     newSetting.setValue(currSetting.getValue());
                 }

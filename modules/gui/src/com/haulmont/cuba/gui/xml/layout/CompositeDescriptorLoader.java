@@ -18,9 +18,9 @@ package com.haulmont.cuba.gui.xml.layout;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import com.haulmont.bali.util.Dom4j;
 import com.haulmont.cuba.core.global.DevelopmentException;
 import com.haulmont.cuba.core.global.Resources;
+import com.haulmont.cuba.core.sys.xmlparsing.Dom4jTools;
 import org.apache.commons.io.IOUtils;
 import org.dom4j.Document;
 import org.dom4j.Element;
@@ -41,6 +41,9 @@ public class CompositeDescriptorLoader {
 
     @Inject
     protected Resources resources;
+
+    @Inject
+    protected Dom4jTools dom4JTools;
 
     public Element load(String path) {
         String descriptor = loadDescriptor(path);
@@ -76,6 +79,6 @@ public class CompositeDescriptorLoader {
     }
 
     protected Document createDocument(String descriptor) {
-        return Dom4j.readDocument(descriptor);
+        return dom4JTools.readDocument(descriptor);
     }
 }

@@ -16,11 +16,11 @@
  */
 package com.haulmont.cuba.gui.config;
 
-import com.haulmont.bali.util.Dom4j;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.Resources;
 import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.core.sys.xmlparsing.Dom4jTools;
 import com.haulmont.cuba.gui.components.KeyCombination;
 import com.haulmont.cuba.gui.icons.Icons;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
@@ -66,6 +66,9 @@ public class MenuConfig {
 
     @Inject
     protected ThemeConstantsManager themeConstantsManager;
+
+    @Inject
+    protected Dom4jTools dom4JTools;
 
     protected volatile boolean initialized;
 
@@ -124,7 +127,7 @@ public class MenuConfig {
             Resource resource = resources.getResource(location);
             if (resource.exists()) {
                 try (InputStream stream = resource.getInputStream()) {
-                    Element rootElement = Dom4j.readDocument(stream).getRootElement();
+                    Element rootElement = dom4JTools.readDocument(stream).getRootElement();
                     loadMenuItems(rootElement, null);
                 } catch (IOException e) {
                     throw new RuntimeException("Unable to read menu config", e);

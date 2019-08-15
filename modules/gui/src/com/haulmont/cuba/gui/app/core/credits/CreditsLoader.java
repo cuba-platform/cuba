@@ -17,10 +17,10 @@
 
 package com.haulmont.cuba.gui.app.core.credits;
 
-import com.haulmont.bali.util.Dom4j;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Resources;
 import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.core.sys.xmlparsing.Dom4jTools;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringTokenizer;
 import org.dom4j.Element;
@@ -58,7 +58,7 @@ public class CreditsLoader {
                 log.debug("Resource {} not found, ignore it", location);
                 continue;
             }
-            Element rootElement = Dom4j.readDocument(xml).getRootElement();
+            Element rootElement = AppBeans.get(Dom4jTools.class).readDocument(xml).getRootElement();
             loadLicenses(rootElement);
             loadConfig(rootElement);
         }

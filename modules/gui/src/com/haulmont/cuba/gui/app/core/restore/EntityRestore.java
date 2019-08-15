@@ -16,7 +16,6 @@
  */
 package com.haulmont.cuba.gui.app.core.restore;
 
-import com.haulmont.bali.util.Dom4j;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.Range;
@@ -25,6 +24,7 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.SoftDelete;
 import com.haulmont.cuba.core.entity.annotation.EnableRestore;
 import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.sys.xmlparsing.Dom4jTools;
 import com.haulmont.cuba.gui.UiComponents;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Action.Status;
@@ -62,6 +62,8 @@ public class EntityRestore extends AbstractWindow {
     protected UiComponents uiComponents;
     @Inject
     protected EntityRestoreService restoreService;
+    @Inject
+    protected Dom4jTools dom4JTools;
 
     protected GroupDatasource entitiesDs;
 
@@ -183,7 +185,7 @@ public class EntityRestore extends AbstractWindow {
                         sb.append(property.getName()).append("|");
                     }
                 }
-                Element filterElement = Dom4j.readDocument(String.format(
+                Element filterElement = dom4JTools.readDocument(String.format(
                         "<filter id=\"%s\">\n" +
                         "    <properties include=\".*\" exclude=\"\"/>\n" +
                         "</filter>", filterId)).getRootElement();

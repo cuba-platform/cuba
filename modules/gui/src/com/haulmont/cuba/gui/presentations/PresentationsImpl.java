@@ -16,10 +16,10 @@
  */
 package com.haulmont.cuba.gui.presentations;
 
-import com.haulmont.bali.util.Dom4j;
 import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.sys.xmlparsing.Dom4jTools;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.security.entity.Presentation;
@@ -91,7 +91,7 @@ public class PresentationsImpl implements Presentations {
         if (p != null) {
             Document doc;
             if (!StringUtils.isEmpty(p.getXml())) {
-                doc = Dom4j.readDocument(p.getXml());
+                doc = AppBeans.get(Dom4jTools.class).readDocument(p.getXml());
             } else {
                 doc = DocumentHelper.createDocument();
                 doc.setRootElement(doc.addElement("presentation"));
@@ -106,7 +106,7 @@ public class PresentationsImpl implements Presentations {
     public void setSettings(Presentation p, Element e) {
         p = getPresentation(p.getId());
         if (p != null) {
-            p.setXml(Dom4j.writeDocument(e.getDocument(), false));
+            p.setXml(AppBeans.get(Dom4jTools.class).writeDocument(e.getDocument(), false));
             modify(p);
         }
     }

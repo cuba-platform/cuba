@@ -23,7 +23,6 @@ import com.google.common.collect.Lists;
 import com.haulmont.bali.datastruct.Node;
 import com.haulmont.bali.datastruct.Pair;
 import com.haulmont.bali.events.Subscription;
-import com.haulmont.bali.util.Dom4j;
 import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
@@ -37,6 +36,7 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.global.filter.*;
 import com.haulmont.cuba.core.global.queryconditions.JpqlCondition;
+import com.haulmont.cuba.core.sys.xmlparsing.Dom4jTools;
 import com.haulmont.cuba.gui.*;
 import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.components.*;
@@ -121,6 +121,8 @@ public class FilterDelegateImpl implements FilterDelegate {
     @Inject
     protected MaxResultsFieldHelper maxResultsFieldHelper;
     protected ScreenBuilders screenBuilders;
+    @Inject
+    protected Dom4jTools dom4JTools;
 
     @Inject
     protected DataService dataService;
@@ -1794,7 +1796,7 @@ public class FilterDelegateImpl implements FilterDelegate {
         String currentFilterXml = filterParser.getXml(conditions, Param.ValueProperty.VALUE);
 
         if (!Strings.isNullOrEmpty(currentFilterXml)) {
-            Element element = Dom4j.readDocument(currentFilterXml).getRootElement();
+            Element element = dom4JTools.readDocument(currentFilterXml).getRootElement();
             QueryFilter queryFilter = new QueryFilter(element);
 
             if (dsQueryFilter != null) {

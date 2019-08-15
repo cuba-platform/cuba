@@ -19,10 +19,11 @@ package com.haulmont.cuba.gui.xml;
 
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.cuba.client.testsupport.CubaClientTestCase;
-import com.haulmont.cuba.core.global.BeanLocator;
-import com.haulmont.cuba.core.global.Resources;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.BeanLocatorImpl;
 import com.haulmont.cuba.core.sys.ResourcesImpl;
+import com.haulmont.cuba.core.sys.xmlparsing.Dom4jTools;
+import com.haulmont.cuba.core.sys.xmlparsing.Dom4jToolsConfig;
 import com.haulmont.cuba.gui.xml.layout.ScreenXmlParser;
 import org.dom4j.Document;
 import org.dom4j.Element;
@@ -48,7 +49,21 @@ public class XmlInheritanceTest extends CubaClientTestCase {
         setupInfrastructure();
 
         resources = new ResourcesImpl(getClass().getClassLoader());
-        screenXmlParser = new ScreenXmlParser();
+        screenXmlParser = new ScreenXmlParser() {
+            {
+                dom4JTools = new Dom4jTools(AppBeans.get(GlobalConfig.class), new Dom4jToolsConfig() {
+                    @Override
+                    public int getMaxPoolSize() {
+                        return 10;
+                    }
+
+                    @Override
+                    public long getMaxBorrowWaitMillis() {
+                        return 10000;
+                    }
+                });
+            }
+        };
         beanLocator = new BeanLocatorImpl() {
             @Override
             public <T> T getPrototype(String name, Object... args) {

@@ -19,12 +19,12 @@ package com.haulmont.cuba.web.sys;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
-import com.haulmont.bali.util.Dom4j;
 import com.haulmont.cuba.core.global.Events;
 import com.haulmont.cuba.core.global.Resources;
 import com.haulmont.cuba.core.global.Scripting;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.events.AppContextInitializedEvent;
+import com.haulmont.cuba.core.sys.xmlparsing.Dom4jTools;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import com.haulmont.cuba.gui.xml.layout.ExternalUIComponentsSource;
@@ -80,6 +80,8 @@ public class WebExternalUIComponentsSource implements ExternalUIComponentsSource
     protected WebUiComponents webUiComponents;
     @Inject
     protected LayoutLoaderConfig layoutLoaderConfig;
+    @Inject
+    protected Dom4jTools dom4JTools;
 
     @EventListener
     @Order(Events.HIGHEST_PLATFORM_PRECEDENCE + 100)
@@ -140,7 +142,7 @@ public class WebExternalUIComponentsSource implements ExternalUIComponentsSource
     protected void _registerComponent(InputStream is) throws ClassNotFoundException {
         ClassLoader classLoader = App.class.getClassLoader();
 
-        Element rootElement = Dom4j.readDocument(is).getRootElement();
+        Element rootElement = dom4JTools.readDocument(is).getRootElement();
         List<Element> components = rootElement.elements("component");
         for (Element component : components) {
             String name = trimToEmpty(component.elementText("name"));

@@ -18,7 +18,6 @@
 package com.haulmont.cuba.gui.app.security.constraint.edit;
 
 import com.google.common.base.Strings;
-import com.haulmont.bali.util.Dom4j;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 import com.haulmont.cuba.core.entity.annotation.UnavailableInSecurityConstraints;
@@ -27,6 +26,7 @@ import com.haulmont.cuba.core.global.filter.GroovyGenerator;
 import com.haulmont.cuba.core.global.filter.SecurityJpqlGenerator;
 import com.haulmont.cuba.core.sys.jpql.ErrorRec;
 import com.haulmont.cuba.core.sys.jpql.JpqlSyntaxException;
+import com.haulmont.cuba.core.sys.xmlparsing.Dom4jTools;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.autocomplete.JpqlSuggestionFactory;
@@ -107,6 +107,9 @@ public class ConstraintEditor extends AbstractEditor<Constraint> {
 
     @Inject
     protected Security security;
+
+    @Inject
+    protected Dom4jTools dom4JTools;
 
     protected Map<Object, String> entities;
 
@@ -315,7 +318,7 @@ public class ConstraintEditor extends AbstractEditor<Constraint> {
             //todo eude rename com.haulmont.cuba.gui.components.filter.FilterParser
             filterEntity.setXml(filterParser1.getXml(filterEditor.getConditions(), Param.ValueProperty.DEFAULT_VALUE));
             if (filterEntity.getXml() != null) {
-                Element element = Dom4j.readDocument(filterEntity.getXml()).getRootElement();
+                Element element = dom4JTools.readDocument(filterEntity.getXml()).getRootElement();
                 com.haulmont.cuba.core.global.filter.FilterParser filterParser = new com.haulmont.cuba.core.global.filter.FilterParser(element);
 
                 Constraint item = getItem();

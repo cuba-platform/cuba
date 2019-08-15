@@ -18,13 +18,13 @@ package com.haulmont.cuba.gui.config;
 
 import com.haulmont.bali.datastruct.Node;
 import com.haulmont.bali.datastruct.Tree;
-import com.haulmont.bali.util.Dom4j;
 import com.haulmont.chile.core.model.*;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributes;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.core.sys.xmlparsing.Dom4jTools;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.app.security.entity.AttributeTarget;
 import com.haulmont.cuba.gui.app.security.entity.BasicPermissionTarget;
@@ -62,6 +62,9 @@ public class PermissionConfig {
 
     @Inject
     protected MetadataTools metadataTools;
+
+    @Inject
+    protected Dom4jTools dom4JTools;
 
     public static final String PERMISSION_CONFIG_XML_PROP = "cuba.permissionConfig";
 
@@ -226,7 +229,7 @@ public class PermissionConfig {
         }
 
         private void compileSpecific(String xml, Node<BasicPermissionTarget> root) {
-            Document doc = Dom4j.readDocument(xml);
+            Document doc = dom4JTools.readDocument(xml);
             Element rootElem = doc.getRootElement();
 
             for (Element element : rootElem.elements("include")) {

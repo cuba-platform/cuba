@@ -20,7 +20,6 @@ package com.haulmont.cuba.gui.sys;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import com.haulmont.bali.util.Dom4j;
 import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
@@ -30,6 +29,7 @@ import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.core.global.Resources;
 import com.haulmont.cuba.core.global.UserSessionSource;
+import com.haulmont.cuba.core.sys.xmlparsing.Dom4jTools;
 import com.haulmont.cuba.gui.components.FieldGroup;
 import com.haulmont.cuba.gui.components.Form;
 import com.haulmont.cuba.gui.components.Fragment;
@@ -91,6 +91,9 @@ public class ScreensHelper {
 
     @Inject
     protected BeanLocator beanLocator;
+
+    @Inject
+    protected Dom4jTools dom4JTools;
 
     protected Map<String, String> captionCache = new ConcurrentHashMap<>();
     protected Map<String, Map<String, String>> availableScreensCache = new ConcurrentHashMap<>();
@@ -549,7 +552,7 @@ public class ScreensHelper {
         String text = resources.getResourceAsString(src);
         if (StringUtils.isNotEmpty(text)) {
             try {
-                Document document = Dom4j.readDocument(text);
+                Document document = dom4JTools.readDocument(text);
                 XmlInheritanceProcessor processor =
                         beanLocator.getPrototype(XmlInheritanceProcessor.NAME, document, emptyMap());
                 Element root = processor.getResultRoot();

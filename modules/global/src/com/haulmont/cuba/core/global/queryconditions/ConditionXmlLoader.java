@@ -1,9 +1,10 @@
 package com.haulmont.cuba.core.global.queryconditions;
 
-import com.haulmont.bali.util.Dom4j;
+import com.haulmont.cuba.core.sys.xmlparsing.Dom4jTools;
 import org.dom4j.Element;
 import org.springframework.stereotype.Component;
 
+import javax.inject.Inject;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,6 +21,9 @@ import java.util.stream.Collectors;
 public class ConditionXmlLoader {
 
     public static final String NAME = "cuba_ConditionXmlLoader";
+
+    @Inject
+    protected Dom4jTools dom4JTools;
 
     private Map<String, Function<Element, Condition>> factories = new LinkedHashMap<>();
 
@@ -80,7 +84,7 @@ public class ConditionXmlLoader {
      * Creates a conditions tree from XML string.
      */
     public Condition fromXml(String xml) {
-        Element element = Dom4j.readDocument(xml).getRootElement();
+        Element element = dom4JTools.readDocument(xml).getRootElement();
         return fromXml(element);
     }
 
