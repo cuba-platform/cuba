@@ -15,6 +15,17 @@
  *
  */
 
+/**
+ * PopupView popup horizontal margin.
+ * @group popupView
+ */
+$popup-horizontal-margin: $v-layout-spacing-horizontal !default;
+/**
+ * PopupView popup vertical margin.
+ * @group popupView
+ */
+$popup-vertical-margin: $v-layout-spacing-vertical !default;
+
 @mixin halo-popupview($primary-stylename: v-popupview) {
   .v-caption-popupview-icon-on-left {
     display: inline-block;
@@ -23,5 +34,55 @@
 
   .#{$primary-stylename}-popupview-icon-on-left {
     margin-left: round($v-unit-size/5);
+  }
+
+  .popup-top-left {
+    top: $popup-vertical-margin;
+    left: $popup-horizontal-margin;
+  }
+
+  .popup-top-center {
+    top: $popup-vertical-margin;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .popup-top-right {
+    top: $popup-vertical-margin;
+    right: $popup-horizontal-margin;
+  }
+
+  .popup-middle-left {
+    top: 50%;
+    left: $popup-horizontal-margin;
+    transform: translateY(-50%);
+  }
+
+  .popup-middle-center {
+    top: 50%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-50%);
+  }
+
+  .popup-middle-right {
+    top: 50%;
+    right: $popup-horizontal-margin;
+    transform: translateY(-50%);
+  }
+
+  .popup-bottom-left {
+    bottom: $popup-vertical-margin;
+    left: $popup-horizontal-margin;
+  }
+
+  .popup-bottom-center {
+    bottom: $popup-vertical-margin;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .popup-bottom-right {
+    bottom: $popup-vertical-margin;
+    right: $popup-horizontal-margin;
   }
 }

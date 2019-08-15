@@ -239,6 +239,21 @@
         </xs:union>
     </xs:simpleType>
 
+    <xs:simpleType name="popupPositionEnum">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="DEFAULT"/>
+            <xs:enumeration value="TOP_RIGHT"/>
+            <xs:enumeration value="TOP_LEFT"/>
+            <xs:enumeration value="TOP_CENTER"/>
+            <xs:enumeration value="MIDDLE_RIGHT"/>
+            <xs:enumeration value="MIDDLE_LEFT"/>
+            <xs:enumeration value="MIDDLE_CENTER"/>
+            <xs:enumeration value="BOTTOM_RIGHT"/>
+            <xs:enumeration value="BOTTOM_LEFT"/>
+            <xs:enumeration value="BOTTOM_CENTER"/>
+        </xs:restriction>
+    </xs:simpleType>
+
     <xs:simpleType name="orientation">
         <xs:restriction base="xs:string">
             <xs:enumeration value="horizontal"/>
@@ -2374,6 +2389,10 @@
                 <xs:attribute name="minimizedValue" type="resourceString"/>
                 <xs:attribute name="captionAsHtml" type="xs:boolean"/>
                 <xs:attribute name="hideOnMouseOut" type="xs:boolean"/>
+
+                <xs:attribute name="popupPosition" type="popupPositionEnum"/>
+                <xs:attribute name="popupTop" type="xs:int"/>
+                <xs:attribute name="popupLeft" type="xs:int"/>
 
                 <xs:attributeGroup ref="hasTabIndex"/>
                 <xs:attributeGroup ref="hasContextHelp"/>

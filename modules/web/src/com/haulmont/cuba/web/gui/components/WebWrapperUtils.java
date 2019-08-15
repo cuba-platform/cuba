@@ -29,11 +29,13 @@ import com.haulmont.cuba.gui.components.HasOrientation;
 import com.haulmont.cuba.gui.components.LookupField.FilterMode;
 import com.haulmont.cuba.gui.components.MouseEventDetails;
 import com.haulmont.cuba.gui.components.PopupButton;
+import com.haulmont.cuba.gui.components.PopupView;
 import com.haulmont.cuba.gui.components.ResizableTextArea;
 import com.haulmont.cuba.gui.components.SizeUnit;
 import com.haulmont.cuba.gui.components.TextInputField;
 import com.haulmont.cuba.gui.components.TimeField;
 import com.haulmont.cuba.web.gui.components.JavaScriptComponent.DependencyType;
+import com.haulmont.cuba.web.widgets.client.popupview.PopupPosition;
 import com.haulmont.cuba.web.widgets.client.resizabletextarea.ResizeDirection;
 import com.haulmont.cuba.web.widgets.client.timefield.TimeResolution;
 import com.haulmont.cuba.web.widgets.data.AggregationContainer;
@@ -656,5 +658,33 @@ public final class WebWrapperUtils {
         return AUTO_SIZE.equalsIgnoreCase(size)
                 ? Component.AUTO_SIZE
                 : size;
+    }
+
+    @Nullable
+    public static PopupPosition toVaadinPopupPosition(PopupView.PopupPosition popupPosition) {
+        if (popupPosition == null) {
+            return null;
+        }
+
+        for (PopupPosition position : PopupPosition.values()) {
+            if (position.name().equals(popupPosition.name())) {
+                return position;
+            }
+        }
+        return null;
+    }
+
+    @Nullable
+    public static PopupView.PopupPosition fromVaadinPopupPosition(PopupPosition popupPosition) {
+        if (popupPosition == null) {
+            return null;
+        }
+
+        for (PopupView.PopupPosition position : PopupView.PopupPosition.values()) {
+            if (position.name().equals(popupPosition.name())) {
+                return position;
+            }
+        }
+        return null;
     }
 }

@@ -16,6 +16,7 @@
 
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
+import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.PopupView;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoader;
@@ -46,6 +47,8 @@ public class PopupViewLoader extends AbstractComponentLoader<PopupView> {
 
         loadWidth(resultComponent, element);
         loadHeight(resultComponent, element);
+
+        loadPopupPosition(resultComponent, element);
 
         loadCaption(resultComponent, element);
         loadDescription(resultComponent, element);
@@ -84,6 +87,44 @@ public class PopupViewLoader extends AbstractComponentLoader<PopupView> {
         String hideOnMouseOut = element.attributeValue("hideOnMouseOut");
         if (StringUtils.isNotEmpty(hideOnMouseOut)) {
             component.setHideOnMouseOut(Boolean.parseBoolean(hideOnMouseOut));
+        }
+    }
+
+    protected void loadPopupPosition(PopupView component, Element element) {
+        String popupPosition = element.attributeValue("popupPosition");
+        String popupTop = element.attributeValue("popupTop");
+        String popupLeft = element.attributeValue("popupLeft");
+
+        if (StringUtils.isNotEmpty(popupPosition)
+                && (StringUtils.isNotEmpty(popupTop) || StringUtils.isNotEmpty(popupLeft))) {
+            throw new GuiDevelopmentException(
+                    "'popupTop' / 'popupLeft' and 'popupPosition' cannot be used in the same time for PopupView",
+                    context);
+        }
+
+        if (StringUtils.isNotEmpty(popupPosition)) {
+            PopupView.PopupPosition position = PopupView.PopupPosition.fromId(popupPosition);
+            if (position != null) {
+                component.setPopupPosition(position);
+            }
+        } else {
+            if (StringUtils.isNotEmpty(popupTop)) {
+                int top = Integer.parseInt(popupTop);
+
+                if (top < 0) {
+                    throw new GuiDevelopmentException("'popupTop' must be positive or zero for PopupView", context);
+                }
+                component.setPopupPositionTop(top);
+            }
+
+            if (StringUtils.isNotEmpty(popupLeft)) {
+                int left = Integer.parseInt(popupLeft);
+
+                if (left < 0) {
+                    throw new GuiDevelopmentException("'popupLeft' must be positive or zero for PopupView", context);
+                }
+                component.setPopupPositionLeft(left);
+            }
         }
     }
 

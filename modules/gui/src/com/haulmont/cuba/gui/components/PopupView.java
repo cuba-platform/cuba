@@ -84,6 +84,81 @@ public interface PopupView extends Component.HasCaption, Component.BelongToFrame
      */
     boolean isCaptionAsHtml();
 
+    /**
+     * Sets the popup position.
+     *
+     * @param top  the top popup position in pixels
+     * @param left the left popup position in pixels
+     */
+    void setPopupPosition(int top, int left);
+
+    /**
+     * Sets the top popup position.
+     *
+     * @param top the top popup position in pixels
+     */
+    void setPopupPositionTop(int top);
+
+    /**
+     * @return top popup position if position is set via {@link #setPopupPosition(int, int)}
+     */
+    int getPopupPositionTop();
+
+    /**
+     * Sets the left popup position.
+     *
+     * @param left the left popup position in pixels
+     */
+    void setPopupPositionLeft(int left);
+
+    /**
+     * @return left popup position if position is set via {@link #setPopupPosition(int, int)}
+     */
+    int getPopupPositionLeft();
+
+    /**
+     * Sets the popup position.
+     *
+     * @param position the popup position
+     */
+    void setPopupPosition(PopupPosition position);
+
+    /**
+     * return {@code PopupPosition} or {@code null} if position is set via {@link #setPopupPosition(PopupPosition)}
+     */
+    PopupPosition getPopupPosition();
+
+    /**
+     * Popup position.
+     */
+    enum PopupPosition {
+        /**
+         * The default popup position is in the middle of the minimized value.
+         */
+        DEFAULT,
+
+        TOP_LEFT,
+        TOP_CENTER,
+        TOP_RIGHT,
+
+        MIDDLE_LEFT,
+        MIDDLE_CENTER,
+        MIDDLE_RIGHT,
+
+        BOTTOM_LEFT,
+        BOTTOM_CENTER,
+        BOTTOM_RIGHT;
+
+        public static PopupPosition fromId(String position) {
+            for (PopupPosition popupPosition : values()) {
+                if (popupPosition.name().equals(position)) {
+                    return popupPosition;
+                }
+            }
+            return null;
+        }
+    }
+
     Subscription addPopupVisibilityListener(Consumer<PopupVisibilityEvent> listener);
 
     /**

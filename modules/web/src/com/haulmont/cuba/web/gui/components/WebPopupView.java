@@ -21,20 +21,21 @@ import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.PopupView;
 import com.haulmont.cuba.gui.components.sys.FrameImplementation;
+import com.haulmont.cuba.web.widgets.CubaPopupView;
 import com.vaadin.shared.Registration;
 import com.vaadin.ui.Label;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.function.Consumer;
 
-public class WebPopupView extends WebAbstractComponent<com.vaadin.ui.PopupView> implements PopupView {
+public class WebPopupView extends WebAbstractComponent<CubaPopupView> implements PopupView {
     protected Component popupContent;
     protected String minimizedValue;
 
     protected Registration popupVisibilityListenerRegistration;
 
     public WebPopupView() {
-        component = new com.vaadin.ui.PopupView(new EmptyContent());
+        component = new CubaPopupView(new EmptyContent());
     }
 
     @Override
@@ -156,6 +157,41 @@ public class WebPopupView extends WebAbstractComponent<com.vaadin.ui.PopupView> 
     @Override
     public boolean isCaptionAsHtml() {
         return component.isCaptionAsHtml();
+    }
+
+    @Override
+    public void setPopupPosition(int top, int left) {
+        component.setPopupPosition(top, left);
+    }
+
+    @Override
+    public void setPopupPositionTop(int top) {
+        component.setPopupPositionTop(top);
+    }
+
+    @Override
+    public int getPopupPositionTop() {
+        return component.getPopupPositionTop();
+    }
+
+    @Override
+    public void setPopupPositionLeft(int left) {
+        component.setPopupPositionLeft(left);
+    }
+
+    @Override
+    public int getPopupPositionLeft() {
+        return component.getPopupPositionLeft();
+    }
+
+    @Override
+    public void setPopupPosition(PopupPosition position) {
+        component.setPopupPosition(WebWrapperUtils.toVaadinPopupPosition(position));
+    }
+
+    @Override
+    public PopupPosition getPopupPosition() {
+        return WebWrapperUtils.fromVaadinPopupPosition(component.getPopupPosition());
     }
 
     protected class EmptyContent implements com.vaadin.ui.PopupView.Content {
