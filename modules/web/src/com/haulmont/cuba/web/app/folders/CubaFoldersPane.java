@@ -47,7 +47,6 @@ import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.app.UserSettingsTools;
 import com.haulmont.cuba.web.filestorage.WebExportDisplay;
 import com.haulmont.cuba.web.gui.components.util.ShortcutListenerDelegate;
-import com.haulmont.cuba.web.gui.icons.IconResolver;
 import com.haulmont.cuba.web.widgets.CubaTimer;
 import com.haulmont.cuba.web.widgets.CubaTree;
 import com.haulmont.cuba.web.widgets.CubaVerticalActionsLayout;
@@ -60,19 +59,20 @@ import com.vaadin.data.provider.TreeDataProvider;
 import com.vaadin.event.Action;
 import com.vaadin.event.ContextClickEvent;
 import com.vaadin.event.ShortcutAction;
-import com.vaadin.server.Resource;
 import com.vaadin.server.SerializableFunction;
 import com.vaadin.shared.MouseEventDetails;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.*;
 import com.vaadin.ui.MenuBar.Command;
 import com.vaadin.ui.MenuBar.MenuItem;
+import com.vaadin.util.ReflectTools;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
+import java.io.Serializable;
+import java.lang.reflect.Method;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -88,6 +88,9 @@ public class CubaFoldersPane extends VerticalLayout {
 
     private static final long serialVersionUID = 6666603397626574763L;
     public static final String C_FOLDERS_PANE = "c-folders-pane";
+
+    protected static final Method REFRESH_FOLDERS_METHOD = ReflectTools.findMethod(
+            RefreshFoldersListener.class, "refreshFolders", RefreshFoldersEvent.class);
 
     protected boolean visible;
 
@@ -117,8 +120,6 @@ public class CubaFoldersPane extends VerticalLayout {
     protected FoldersService foldersService = AppBeans.get(FoldersService.NAME);
 
     protected DataService dataService = AppBeans.get(DataService.NAME);
-
-    protected IconResolver iconResolver = AppBeans.get(IconResolver.NAME);
 
     protected UserSettingsTools userSettingsTools = AppBeans.get(UserSettingsTools.NAME);
 
@@ -412,6 +413,8 @@ public class CubaFoldersPane extends VerticalLayout {
         if (visible) {
             showFolders(false);
             showFolders(true);
+
+            fireEvent(new RefreshFoldersEvent(this));
         }
     }
 
@@ -528,9 +531,6 @@ public class CubaFoldersPane extends VerticalLayout {
 
         fillTree(appFoldersTree, appFolders);
         appFoldersTree.addItemClickListener(new FolderClickListener<>());
-        if (webConfig.getShowFolderIcons()) {
-            appFoldersTree.setItemIconGenerator(this::getAppFolderIcon);
-        }
         appFoldersTree.setItemCaptionGenerator(this::getFolderTreeItemCaption);
 
         initAppFoldersContextMenu();
@@ -544,8 +544,13 @@ public class CubaFoldersPane extends VerticalLayout {
         new AppFolderGridContextMenu<>(appFoldersTree.getCompositionRoot());
     }
 
-    protected Resource getAppFolderIcon(AppFolder item) {
-        return iconResolver.getIconResource("icons/app-folder-small.png");
+    public void setIconGenerator(IconGenerator<AbstractSearchFolder> iconGenerator) {
+        if (appFoldersTree != null) {
+            appFoldersTree.setItemIconGenerator(iconGenerator::apply);
+        }
+        if (searchFoldersTree != null) {
+            searchFoldersTree.setItemIconGenerator(iconGenerator::apply);
+        }
     }
 
     protected Component createSearchFoldersPane() {
@@ -560,9 +565,6 @@ public class CubaFoldersPane extends VerticalLayout {
         List<SearchFolder> searchFolders = foldersService.loadSearchFolders();
 
         searchFoldersTree.addItemClickListener(new FolderClickListener<>());
-        if (webConfig.getShowFolderIcons()) {
-            searchFoldersTree.setItemIconGenerator(this::getSearchFolderIcon);
-        }
         searchFoldersTree.setItemCaptionGenerator(this::getFolderTreeItemCaption);
 
         initSearchFoldersContextMenu();
@@ -587,12 +589,6 @@ public class CubaFoldersPane extends VerticalLayout {
 
     private String getFolderTreeItemCaption(Folder folder) {
         return folder.getCaption();
-    }
-
-    protected Resource getSearchFolderIcon(SearchFolder item) {
-        return BooleanUtils.isTrue(item.getIsSet())
-                ? iconResolver.getIconResource("icons/set-small.png")
-                : iconResolver.getIconResource("icons/search-folder-small.png");
     }
 
     protected <T extends Folder> void fillTree(CubaTree<T> tree, List<T> folders) {
@@ -691,6 +687,10 @@ public class CubaFoldersPane extends VerticalLayout {
 
     public Frame getFrame() {
         return frame;
+    }
+
+    public void addRefreshFoldersListener(RefreshFoldersListener listener) {
+        addListener(RefreshFoldersEvent.class, listener, REFRESH_FOLDERS_METHOD);
     }
 
     protected class FolderTreeStyleProvider<T extends AbstractSearchFolder> implements StyleGenerator<T> {
@@ -1207,5 +1207,21 @@ public class CubaFoldersPane extends VerticalLayout {
             Folder folder = selectedFolderProvider.get();
             action.perform(folder);
         }
+    }
+
+    public static class RefreshFoldersEvent extends EventObject {
+        public RefreshFoldersEvent(CubaFoldersPane source) {
+            super(source);
+        }
+
+        @Override
+        public CubaFoldersPane getSource() {
+            return (CubaFoldersPane) super.getSource();
+        }
+    }
+
+    public interface RefreshFoldersListener extends Serializable {
+
+        void refreshFolders(RefreshFoldersEvent event);
     }
 }
