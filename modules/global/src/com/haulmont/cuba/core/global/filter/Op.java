@@ -35,13 +35,14 @@ public enum Op implements EnumClass<String> {
     NOT_EMPTY("is not null", "!= null", true),
     STARTS_WITH("like", "startsWith", false),
     DATE_INTERVAL("", "", false),
-    ENDS_WITH("like", "endsWith", false);
+    ENDS_WITH("like", "endsWith", false),
+    IS_NULL("is null", "== null", false);
 
     private String forJpql;
     private String forGroovy;
     private boolean unary;
 
-    Op(String forJpql,String forGroovy, boolean unary) {
+    Op(String forJpql, String forGroovy, boolean unary) {
         this.forGroovy = forGroovy;
         this.unary = unary;
         this.forJpql = forJpql;

@@ -49,24 +49,24 @@ public class OpManagerImpl implements OpManager {
     @Override
     public EnumSet<Op> availableOps(Class javaClass) {
         if (String.class.equals(javaClass))
-            return EnumSet.of(EQUAL, IN, NOT_IN, NOT_EQUAL, CONTAINS, DOES_NOT_CONTAIN, NOT_EMPTY, STARTS_WITH, ENDS_WITH);
+            return EnumSet.of(EQUAL, IN, NOT_IN, NOT_EQUAL, CONTAINS, DOES_NOT_CONTAIN, NOT_EMPTY, STARTS_WITH, ENDS_WITH, IS_NULL);
 
         else if (dateTimeClasses.contains(javaClass))
-            return EnumSet.of(EQUAL, IN, NOT_IN, NOT_EQUAL, GREATER, GREATER_OR_EQUAL, LESSER, LESSER_OR_EQUAL, NOT_EMPTY, DATE_INTERVAL);
+            return EnumSet.of(EQUAL, IN, NOT_IN, NOT_EQUAL, GREATER, GREATER_OR_EQUAL, LESSER, LESSER_OR_EQUAL, NOT_EMPTY, DATE_INTERVAL, IS_NULL);
 
         else if (timeClasses.contains(javaClass))
-            return EnumSet.of(EQUAL, NOT_EQUAL, GREATER, GREATER_OR_EQUAL, LESSER, LESSER_OR_EQUAL, NOT_EMPTY, DATE_INTERVAL);
+            return EnumSet.of(EQUAL, NOT_EQUAL, GREATER, GREATER_OR_EQUAL, LESSER, LESSER_OR_EQUAL, NOT_EMPTY, DATE_INTERVAL, IS_NULL);
 
         else if (Number.class.isAssignableFrom(javaClass))
-            return EnumSet.of(EQUAL, IN, NOT_IN, NOT_EQUAL, GREATER, GREATER_OR_EQUAL, LESSER, LESSER_OR_EQUAL, NOT_EMPTY);
+            return EnumSet.of(EQUAL, IN, NOT_IN, NOT_EQUAL, GREATER, GREATER_OR_EQUAL, LESSER, LESSER_OR_EQUAL, NOT_EMPTY, IS_NULL);
 
         else if (Boolean.class.equals(javaClass))
-            return EnumSet.of(EQUAL, NOT_EQUAL, NOT_EMPTY);
+            return EnumSet.of(EQUAL, NOT_EQUAL, NOT_EMPTY, IS_NULL);
 
         else if (UUID.class.equals(javaClass)
                 || Enum.class.isAssignableFrom(javaClass)
                 || Entity.class.isAssignableFrom(javaClass))
-            return EnumSet.of(EQUAL, IN, NOT_IN, NOT_EQUAL, NOT_EMPTY);
+            return EnumSet.of(EQUAL, IN, NOT_IN, NOT_EQUAL, NOT_EMPTY, IS_NULL);
 
         else
             throw new UnsupportedOperationException("Unsupported java class: " + javaClass);
@@ -74,7 +74,7 @@ public class OpManagerImpl implements OpManager {
 
     @Override
     public EnumSet<Op> availableOpsForCollectionDynamicAttribute() {
-        return EnumSet.of(CONTAINS, DOES_NOT_CONTAIN, NOT_EMPTY);
+        return EnumSet.of(CONTAINS, DOES_NOT_CONTAIN, NOT_EMPTY, IS_NULL);
     }
 
     @Override
@@ -84,7 +84,7 @@ public class OpManagerImpl implements OpManager {
             String storeName = metadata.getTools().getStoreName(metaClass);
             PersistenceManagerService persistenceManagerService = AppBeans.get(PersistenceManagerService.class);
             if (!persistenceManagerService.supportsLobSortingAndFiltering(storeName)) {
-                return EnumSet.of(CONTAINS, DOES_NOT_CONTAIN, NOT_EMPTY, STARTS_WITH, ENDS_WITH);
+                return EnumSet.of(CONTAINS, DOES_NOT_CONTAIN, NOT_EMPTY, STARTS_WITH, ENDS_WITH, IS_NULL);
             }
         }
         return availableOps(javaClass);
