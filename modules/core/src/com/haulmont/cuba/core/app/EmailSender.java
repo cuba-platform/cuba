@@ -21,12 +21,8 @@ import com.google.common.base.CharMatcher;
 import com.google.common.base.Splitter;
 import com.haulmont.cuba.core.entity.SendingAttachment;
 import com.haulmont.cuba.core.entity.SendingMessage;
-import com.haulmont.cuba.core.global.EmailHeader;
-import com.haulmont.cuba.core.global.FileTypesHelper;
-import com.haulmont.cuba.core.global.TimeSource;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.CubaMailSender;
-import org.apache.commons.codec.EncoderException;
-import org.apache.commons.codec.net.QCodec;
 import org.apache.commons.lang3.StringUtils;
 import org.perf4j.StopWatch;
 import org.perf4j.slf4j.Slf4JStopWatch;
@@ -44,6 +40,7 @@ import javax.mail.MessagingException;
 import javax.mail.Part;
 import javax.mail.internet.*;
 import java.io.*;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
 @Component(EmailSenderAPI.NAME)
@@ -55,6 +52,9 @@ public class EmailSender implements EmailSenderAPI {
 
     @Inject
     protected TimeSource timeSource;
+
+    @Inject
+    protected GlobalConfig globalConfig;
 
     @Resource(name = CubaMailSender.NAME)
     public void setMailSender(JavaMailSender mailSender) {
@@ -168,37 +168,44 @@ public class EmailSender implements EmailSenderAPI {
         DataSource source = new MyByteArrayDataSource(attachment.getContent());
 
         String mimeType = FileTypesHelper.getMIMEType(attachment.getName());
-        String encodedFileName = encodeAttachmentName(attachment);
 
         String contentId = attachment.getContentId();
         if (contentId == null) {
-            contentId = encodedFileName;
+            contentId = generateAttachmentContentId(attachment.getName());
         }
 
         String disposition = attachment.getDisposition() != null ? attachment.getDisposition() : Part.INLINE;
         String charset = MimeUtility.mimeCharset(attachment.getEncoding() != null ?
                 attachment.getEncoding() : StandardCharsets.UTF_8.name());
-        String contentTypeValue = String.format("%s; charset=%s; name=\"%s\"", mimeType, charset, encodedFileName);
+        String contentTypeValue = String.format("%s; charset=%s; name=\"%s\"", mimeType, charset, attachment.getName());
 
         MimeBodyPart attachmentPart = new MimeBodyPart();
         attachmentPart.setDataHandler(new DataHandler(source));
         attachmentPart.setHeader("Content-ID", "<" + contentId + ">");
         attachmentPart.setHeader("Content-Type", contentTypeValue);
-        attachmentPart.setFileName(encodedFileName);
+        attachmentPart.setFileName(attachment.getName());
         attachmentPart.setDisposition(disposition);
 
         return attachmentPart;
     }
 
-    protected String encodeAttachmentName(SendingAttachment attachment) {
-        String encodedFileName;
-        try {
-            QCodec qCodec = new QCodec();
-            encodedFileName = qCodec.encode(attachment.getName());
-        } catch (EncoderException e) {
-            encodedFileName = attachment.getName();
+    protected String generateAttachmentContentId(String attachmentName) {
+        if (StringUtils.isEmpty(attachmentName)) {
+            return "";
         }
-        return encodedFileName;
+
+        String contentId;
+        try {
+            contentId = URLEncoder.encode(attachmentName, StandardCharsets.UTF_8.name());
+        } catch (UnsupportedEncodingException e) {
+            contentId = attachmentName;
+        }
+
+        if (StringUtils.isNotEmpty(globalConfig.getWebHostName())) {
+            contentId += "@" + globalConfig.getWebHostName();
+        }
+
+        return contentId;
     }
 
     protected static class MyByteArrayDataSource implements DataSource {
