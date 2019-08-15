@@ -27,24 +27,22 @@
          enable_diagnostics="true"
          thread_naming_pattern="cl"/>
     <PING/>
-    <MERGE2 max_interval="30000"
+    <MERGE3 max_interval="30000"
             min_interval="10000"/>
     <FD_SOCK/>
     <FD_ALL/>
     <VERIFY_SUSPECT timeout="1500"/>
     <BARRIER/>
-    <pbcast.NAKACK use_mcast_xmit="true"
-                   retransmit_timeout="300,600,1200"
+    <pbcast.NAKACK2 use_mcast_xmit="true"
                    discard_delivered_msgs="true"/>
-    <UNICAST/>
+    <UNICAST3/>
     <RSVP resend_interval="2000" timeout="10000"/>
     <pbcast.STABLE stability_delay="1000"
                    desired_avg_gossip="50000"
                    max_bytes="1M"/>
     <pbcast.GMS join_timeout="3000"
                 view_bundling="true"/>
-    <FC max_credits="500K"
-        min_threshold="0.20"/>
+    <MFC max_credits="500K" min_threshold="0.20"/>
     <FRAG2 frag_size="60K"/>
     <pbcast.STATE_TRANSFER/>
 

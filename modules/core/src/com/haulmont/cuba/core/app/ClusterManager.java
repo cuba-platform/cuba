@@ -89,12 +89,9 @@ public class ClusterManager implements ClusterManagerAPI {
         executor = new ThreadPoolExecutor(nThreads, nThreads,
                 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>(clusterConfig.getClusterMessageSendingQueueCapacity()),
                 new ThreadFactoryBuilder().setNameFormat("ClusterManagerMessageSender-%d").build(),
-                new RejectedExecutionHandler() {
-                    @Override
-                    public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
-                        SendMessageRunnable sendMessageRunnable = (SendMessageRunnable) r;
-                        log.info("Queue capacity is exceeded. Message: {}: {}", sendMessageRunnable.message.getClass(), sendMessageRunnable.message);
-                    }
+                (r, executor) -> {
+                    SendMessageRunnable sendMessageRunnable = (SendMessageRunnable) r;
+                    log.info("Queue capacity is exceeded. Message: {}: {}", sendMessageRunnable.message.getClass(), sendMessageRunnable.message);
                 });
     }
 
@@ -149,7 +146,8 @@ public class ClusterManager implements ClusterManagerAPI {
             if (stat != null) {
                 stat.updateSent(bytes.length);
             }
-            Message msg = new Message(null, null, bytes);
+            Message msg = new Message()
+                    .setBuffer(bytes);
             if (sync) {
                 msg.setFlag(Message.Flag.RSVP);
             }
