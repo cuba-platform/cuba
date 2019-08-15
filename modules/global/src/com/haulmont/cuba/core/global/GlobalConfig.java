@@ -263,7 +263,7 @@ public interface GlobalConfig extends Config {
      *
      * @return remember me expiration timeout in seconds
      */
-    @Property("cuba.web.rememberMeExpirationTimeoutSec")
+    @Property("cuba.rememberMeExpirationTimeoutSec")
     @DefaultInt(30 * 24 * 60 * 60)
     int getRememberMeExpirationTimeoutSec();
 }
