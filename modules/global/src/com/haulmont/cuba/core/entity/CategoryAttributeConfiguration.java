@@ -93,7 +93,6 @@ public class CategoryAttributeConfiguration extends BaseGenericIdEntity<String> 
     @MetaProperty
     protected Integer yCoordinate;
 
-    @MetaProperty
     @Transient
     protected transient Collection<CategoryAttribute> dependentAttributes;
 
@@ -222,6 +221,7 @@ public class CategoryAttributeConfiguration extends BaseGenericIdEntity<String> 
 
     public void setCategoryAttribute(CategoryAttribute categoryAttribute) {
         this.categoryAttribute = categoryAttribute;
+        this.id = generateId(categoryAttribute);
     }
 
     public String getNumberFormatPattern() {
@@ -334,8 +334,16 @@ public class CategoryAttributeConfiguration extends BaseGenericIdEntity<String> 
     @Override
     public String getId() {
         if (id == null) {
-            return categoryAttribute.getId().toString() + "-Configuration";
+            id = generateId(categoryAttribute);
         }
         return id;
+    }
+
+    protected String generateId(CategoryAttribute attribute) {
+        String suffix = "-Configuration";
+        if (attribute == null) {
+            return UUID.randomUUID().toString() + suffix;
+        }
+        return attribute.getId().toString() + suffix;
     }
 }
