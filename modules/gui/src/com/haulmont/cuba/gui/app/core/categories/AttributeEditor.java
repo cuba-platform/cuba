@@ -66,7 +66,6 @@ import javax.inject.Named;
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 import static com.haulmont.cuba.core.app.dynamicattributes.PropertyType.*;
 import static com.haulmont.cuba.core.entity.CategoryAttributeOptionsLoaderType.*;
@@ -78,8 +77,6 @@ import static java.lang.String.format;
 public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
 
     protected static final Multimap<PropertyType, String> FIELDS_VISIBLE_FOR_TYPES = ArrayListMultimap.create();
-    protected static final Set<String> ALWAYS_VISIBLE_FIELDS = ImmutableSet.of("name", "code", "required", "dataType",
-            "description", "validatorGroovyScript");
     protected static final Set<PropertyType> SUPPORTED_OPTIONS_TYPES = ImmutableSet.of(STRING, DOUBLE, DECIMAL, INTEGER, ENTITY);
 
     protected static final String WHERE = " where ";
@@ -133,6 +130,8 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
     @Inject
     protected FieldGroup attributeFieldGroup;
     @Inject
+    protected FieldGroup optionalAttributeFieldGroup;
+    @Inject
     protected FieldGroup calculatedAttrsAndOptionsFieldGroup;
     @Inject
     protected Table<ScreenAndComponent> targetScreensTable;
@@ -140,19 +139,19 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
     protected TabSheet tabsheet;
     @Named("attributeFieldGroup.dataType")
     protected LookupField<PropertyType> dataType;
-    @Named("attributeFieldGroup.entityClass")
+    @Named("optionalAttributeFieldGroup.entityClass")
     protected LookupField<String> entityClassField;
-    @Named("attributeFieldGroup.screen")
+    @Named("optionalAttributeFieldGroup.screen")
     protected LookupField<String> screen;
-    @Named("attributeFieldGroup.defaultBoolean")
+    @Named("optionalAttributeFieldGroup.defaultBoolean")
     protected LookupField defaultBoolean;
-    @Named("attributeFieldGroup.defaultDecimal")
+    @Named("optionalAttributeFieldGroup.defaultDecimal")
     protected TextField defaultDecimal;
-    @Named("attributeFieldGroup.defaultEntityId")
+    @Named("optionalAttributeFieldGroup.defaultEntityId")
     protected PickerField<Entity> defaultEntityId;
-    @Named("attributeFieldGroup.minDecimal")
+    @Named("optionalAttributeFieldGroup.minDecimal")
     protected TextField minDecimal;
-    @Named("attributeFieldGroup.maxDecimal")
+    @Named("optionalAttributeFieldGroup.maxDecimal")
     protected TextField maxDecimal;
     @Named("attributeFieldGroup.validatorGroovyScript")
     protected SourceCodeEditor validatorGroovyScript;
@@ -215,10 +214,18 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
         getDialogOptions().setWidth(themeConstants.get("cuba.gui.AttributeEditor.width"));
         fieldWidth = themeConstants.get("cuba.gui.AttributeEditor.field.width");
 
+        tabsheet.addSelectedTabChangeListener(event -> {
+            String tabName = event.getSelectedTab().getName();
+            getDialogOptions().setWidth(themeConstants.get("cuba.gui.AttributeEditor.width"));
+            if ("main".equals(tabName) && getItem().getDataType() != null) {
+                getDialogOptions().setWidth(themeConstants.get("cuba.gui.AttributeEditor.twoColumnsWidth"));
+            }
+        });
+
         initLocalizedFrame();
         initAttributesFieldGroup();
         initCalculatedAttrsAndOptionsFieldGroup();
-        iniScreenTableActions();
+        initScreenTableActions();
     }
 
     @Override
@@ -253,7 +260,7 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
         getDialogOptions().center();
     }
 
-    protected void iniScreenTableActions() {
+    protected void initScreenTableActions() {
         Action createAction = new BaseAction("create")
                 .withCaption(getMessage("targetScreensTable.create"))
                 .withIcon(icons.get(CubaIcon.CREATE_ACTION))
@@ -371,7 +378,7 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
             });
         }
 
-        attributeFieldGroup.getFieldNN("enumeration").setComponent(enumerationListEditor);
+        optionalAttributeFieldGroup.getFieldNN("enumeration").setComponent(enumerationListEditor);
 
         validatorGroovyScript.setContextHelpIconClickHandler(e -> showMessageDialog(getMessage("validatorScript"), getMessage("validatorScriptHelp"),
                 MessageType.CONFIRMATION_HTML.modal(false).width(560f)));
@@ -417,19 +424,18 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
         CategoryAttribute attribute = getItem();
         CategoryAttributeConfiguration configuration = attribute.getConfiguration();
 
-        for (FieldGroup.FieldConfig fieldConfig : attributeFieldGroup.getFields()) {
-            if (!ALWAYS_VISIBLE_FIELDS.contains(fieldConfig.getId())) {
-                fieldConfig.setVisible(false);
-            }
+        for (FieldGroup.FieldConfig fieldConfig : optionalAttributeFieldGroup.getFields()) {
+            fieldConfig.setVisible(false);
         }
 
         Collection<String> fields = FIELDS_VISIBLE_FOR_TYPES.get(attribute.getDataType());
-        if (fields != null) {
+        if (fields != null && fields.size() > 0) {
             for (String componentId : fields) {
-                attributeFieldGroup.getFieldNN(componentId).setVisible(true);
+                optionalAttributeFieldGroup.getFieldNN(componentId).setVisible(true);
             }
+            getDialogOptions().setWidth(themeConstants.get("cuba.gui.AttributeEditor.twoColumnsWidth"));
+            optionalAttributeFieldGroup.setVisible(true);
         }
-
         if (attribute.getDataType() == ENTITY) {
             if (!Strings.isNullOrEmpty(attribute.getEntityClass())) {
                 Class entityClass = attribute.getJavaClassForEntity();
@@ -445,11 +451,11 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
         }
 
         if (attribute.getDataType() == PropertyType.DATE) {
-            attributeFieldGroup.getFieldNN("defaultDate").setVisible(!Boolean.TRUE.equals(attribute.getDefaultDateIsCurrent()));
+            optionalAttributeFieldGroup.getFieldNN("defaultDate").setVisible(!Boolean.TRUE.equals(attribute.getDefaultDateIsCurrent()));
         }
 
         if (attribute.getDataType() == PropertyType.DATE_WITHOUT_TIME) {
-            attributeFieldGroup.getFieldNN("defaultDateWithoutTime").setVisible(!Boolean.TRUE.equals(attribute.getDefaultDateIsCurrent()));
+            optionalAttributeFieldGroup.getFieldNN("defaultDateWithoutTime").setVisible(!Boolean.TRUE.equals(attribute.getDefaultDateIsCurrent()));
         }
 
         CategoryAttributeOptionsLoaderType optionsType = configuration.getOptionsLoaderType();

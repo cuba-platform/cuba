@@ -34,8 +34,8 @@
     <layout spacing="true" expand="buttons">
         <tabSheet id="tabsheet">
             <tab id="main" caption="msg://caption.mainTab" spacing="true" margin="true">
-                <fieldGroup id="attributeFieldGroup" datasource="attributeDs" width="100%">
-                    <column>
+                <hbox width="100%" spacing="true">
+                    <fieldGroup id="attributeFieldGroup" datasource="attributeDs" width="100%">
                         <field id="name" property="name" required="true" width="100%"/>
                         <field id="code" property="code" required="true" width="100%"/>
                         <field id="description" width="100%">
@@ -43,14 +43,25 @@
                                       maxLength="1000" rows="3"/>
                         </field>
                         <field id="required" property="required"/>
-                        <field id="lookup" property="lookup"/>
-                        <field id="isCollection" property="isCollection"/>
                         <field id="dataType" width="100%">
                             <lookupField property="dataType" datasource="attributeDs"
                                          required="true" requiredMessage="msg://dataTypeRequired"
                                          caption="msg://dataType"/>
                         </field>
 
+                        <field id="validatorGroovyScript" property="configuration.validatorGroovyScript"
+                               width="100%">
+                            <sourceCodeEditor id="sourceCodeEditor" mode="Groovy"
+                                              highlightActiveLine="false"
+                                              showGutter="false"
+                                              property="configuration.validatorGroovyScript"
+                                              datasource="attributeDs"
+                                              width="100%"/>
+                        </field>
+                    </fieldGroup>
+                    <fieldGroup id="optionalAttributeFieldGroup" datasource="attributeDs" width="100%" visible="false">
+                        <field id="lookup" property="lookup"/>
+                        <field id="isCollection" property="isCollection"/>
                         <field id="entityClass" required="true" width="100%" caption="msg://entityType">
                             <lookupField id="entityClass"
                                          required="true"
@@ -106,17 +117,8 @@
                         <field id="maxInt" property="configuration.maxInt" width="100%"/>
                         <field id="maxDouble" property="configuration.maxDouble" width="100%"/>
                         <field id="maxDecimal" property="configuration.maxDecimal" width="100%"/>
-
-                        <field id="validatorGroovyScript" property="configuration.validatorGroovyScript"
-                               width="100%">
-                            <sourceCodeEditor mode="Groovy"
-                                              highlightActiveLine="false"
-                                              showGutter="false"
-                                              property="configuration.validatorGroovyScript"
-                                              datasource="attributeDs"/>
-                        </field>
-                    </column>
-                </fieldGroup>
+                    </fieldGroup>
+                </hbox>
             </tab>
             <tab id="calculatedAttrsAndOptions" caption="msg://caption.calculatedAttrsAndOptionsTab" margin="true">
                 <fieldGroup id="calculatedAttrsAndOptionsFieldGroup" datasource="attributeDs" width="100%">
