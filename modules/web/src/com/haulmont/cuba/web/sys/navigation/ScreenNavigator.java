@@ -100,7 +100,8 @@ public class ScreenNavigator {
     }
 
     protected boolean handleCurrentRootNavigation(NavigationState requestedState) {
-        if (!currentRootNavigated(requestedState)) {
+        if (NavigationState.EMPTY.equals(requestedState)
+                || !currentRootNavigated(requestedState)) {
             return false;
         }
 

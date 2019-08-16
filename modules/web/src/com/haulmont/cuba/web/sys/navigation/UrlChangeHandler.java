@@ -39,7 +39,6 @@ import com.haulmont.cuba.web.sys.RedirectHandler;
 import com.haulmont.cuba.web.sys.navigation.accessfilter.NavigationFilter;
 import com.haulmont.cuba.web.sys.navigation.accessfilter.NavigationFilter.AccessCheckResult;
 import com.vaadin.server.Page;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -52,6 +51,8 @@ import java.util.List;
 import java.util.Objects;
 
 import static com.haulmont.cuba.web.sys.navigation.UrlTools.pushState;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
 public class UrlChangeHandler implements InitializingBean {
 
@@ -148,7 +149,7 @@ public class UrlChangeHandler implements InitializingBean {
         }
 
         String nestedRoute = requestedState.getNestedRoute();
-        if (StringUtils.isNotEmpty(nestedRoute)) {
+        if (isNotEmpty(nestedRoute)) {
             RedirectHandler redirectHandler = beanLocator.getPrototype(RedirectHandler.NAME, ui);
             redirectHandler.schedule(requestedState);
             App.getInstance().setRedirectHandler(redirectHandler);
@@ -171,8 +172,9 @@ public class UrlChangeHandler implements InitializingBean {
     }
 
     protected boolean isRootState(NavigationState requestedState) {
-        return StringUtils.isEmpty(requestedState.getStateMark())
-                && StringUtils.isEmpty(requestedState.getNestedRoute());
+        return isNotEmpty(requestedState.getRoot())
+                && isEmpty(requestedState.getStateMark())
+                && isEmpty(requestedState.getNestedRoute());
     }
 
     protected boolean isCurrentRootState(NavigationState requestedState) {
