@@ -639,21 +639,31 @@ public class AppUI extends CubaUI implements ErrorHandler, EnhancedUI, UiExcepti
     protected void updateClientSystemMessages(Locale locale) {
         SystemMessages msgs = new SystemMessages();
 
-        msgs.communicationErrorCaption = messages.getMainMessage("communicationErrorCaption", locale);
-        msgs.communicationErrorMessage = messages.getMainMessage("communicationErrorMessage", locale);
+        Locale actualLocale = locale;
+        if (getApp() != null) {
+            Locale appLocale = getApp().getLocale();
+            if (appLocale != null
+                    && !Objects.equals(locale, appLocale)) {
+                log.debug("Application and UI locales are mismatched. App locale will be used.");
+                actualLocale = appLocale;
+            }
+        }
 
-        msgs.sessionExpiredErrorCaption = messages.getMainMessage("sessionExpiredErrorCaption", locale);
-        msgs.sessionExpiredErrorMessage = messages.getMainMessage("sessionExpiredErrorMessage", locale);
+        msgs.communicationErrorCaption = messages.getMainMessage("communicationErrorCaption", actualLocale);
+        msgs.communicationErrorMessage = messages.getMainMessage("communicationErrorMessage", actualLocale);
 
-        msgs.authorizationErrorCaption = messages.getMainMessage("authorizationErrorCaption", locale);
-        msgs.authorizationErrorMessage = messages.getMainMessage("authorizationErrorMessage", locale);
+        msgs.sessionExpiredErrorCaption = messages.getMainMessage("sessionExpiredErrorCaption", actualLocale);
+        msgs.sessionExpiredErrorMessage = messages.getMainMessage("sessionExpiredErrorMessage", actualLocale);
+
+        msgs.authorizationErrorCaption = messages.getMainMessage("authorizationErrorCaption", actualLocale);
+        msgs.authorizationErrorMessage = messages.getMainMessage("authorizationErrorMessage", actualLocale);
 
         updateSystemMessagesLocale(msgs);
 
         ReconnectDialogConfiguration reconnectDialogConfiguration = getReconnectDialogConfiguration();
 
-        reconnectDialogConfiguration.setDialogText(messages.getMainMessage("reconnectDialogText", locale));
-        reconnectDialogConfiguration.setDialogTextGaveUp(messages.getMainMessage("reconnectDialogTextGaveUp", locale));
+        reconnectDialogConfiguration.setDialogText(messages.getMainMessage("reconnectDialogText", actualLocale));
+        reconnectDialogConfiguration.setDialogTextGaveUp(messages.getMainMessage("reconnectDialogTextGaveUp", actualLocale));
     }
 
     protected void onHistoryBackPerformed() {
