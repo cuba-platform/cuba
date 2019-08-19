@@ -27,6 +27,22 @@ public class DateTimeTransformations {
     public static final String NAME = "cuba_DateTimeTransformations";
 
     /**
+     * Converts a date instance to the passed java type corresponding to one of the date types.
+     *
+     * @param date     the date object, not {@code null}
+     * @param javaType the java type to convert to
+     * @param zoneId   the zone ID to use or {@code null} to use default system timezone
+     * @return the date object converted to the passed java type, not {@code null}
+     */
+    public Object transformToType(Object date, Class javaType, ZoneId zoneId) {
+        Preconditions.checkNotNull(date);
+        Preconditions.checkNotNull(javaType);
+
+        ZonedDateTime zonedDateTime = transformToZDT(date, zoneId);
+        return transformFromZdtInternal(zonedDateTime, javaType);
+    }
+
+    /**
      * Obtains an instance of ZonedDateTime
      * from Date or LocalDate or LocalDateTime or OffsetDateTime
      * ZonedDateTime is created for LocalDate, LocalDateTime with default system timezone
@@ -34,8 +50,12 @@ public class DateTimeTransformations {
      * @return the ZonedDateTime, not null
      */
     public ZonedDateTime transformToZDT(Object date) {
+        return transformToZDT(date, null);
+    }
+
+    protected ZonedDateTime transformToZDT(Object date, ZoneId fromZoneId) {
         Preconditions.checkNotNull(date);
-        ZoneId zoneId = ZoneId.systemDefault();
+        ZoneId zoneId = fromZoneId != null ? fromZoneId : ZoneId.systemDefault();
         if (date instanceof java.sql.Date) {
             return ((java.sql.Date) date).toLocalDate().atStartOfDay(zoneId);
         } else if (date instanceof Date) {
@@ -61,6 +81,10 @@ public class DateTimeTransformations {
     public Object transformFromZDT(ZonedDateTime zonedDateTime, Class javaType) {
         Preconditions.checkNotNull(zonedDateTime);
         zonedDateTime = zonedDateTime.withZoneSameInstant(ZoneId.systemDefault());
+        return transformFromZdtInternal(zonedDateTime, javaType);
+    }
+
+    protected Object transformFromZdtInternal(ZonedDateTime zonedDateTime, Class javaType) {
         if (java.sql.Date.class.equals(javaType)) {
             return java.sql.Date.valueOf(zonedDateTime.toLocalDate());
         } else if (Date.class.equals(javaType)) {
