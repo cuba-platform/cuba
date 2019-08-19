@@ -16,13 +16,19 @@
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
+import com.haulmont.chile.core.datatypes.Datatype;
+import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.cuba.core.global.DateTimeTransformations;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.DateField;
+import com.haulmont.cuba.gui.components.data.ValueSource;
+import com.haulmont.cuba.gui.components.data.meta.EntityValueSource;
 import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.ZonedDateTime;
 import java.util.Date;
 
 public class DateFieldLoader extends AbstractFieldLoader<DateField> {
@@ -91,10 +97,12 @@ public class DateFieldLoader extends AbstractFieldLoader<DateField> {
         String rangeStart = element.attributeValue("rangeStart");
         if (StringUtils.isNotEmpty(rangeStart)) {
             try {
-                resultComponent.setRangeStart(parseDateOrDateTime(rangeStart));
+                Date date = parseDateOrDateTime(rangeStart);
+                resultComponent.setRangeStart(getDateTimeTransformations().
+                        transformToType(date, getJavaType(resultComponent), resultComponent.getZoneId()));
             } catch (ParseException e) {
                 throw new GuiDevelopmentException("'rangeStart' parsing error for date picker: " +
-                        rangeStart, context, "DatePicker ID", resultComponent.getId());
+                        rangeStart, context, "DateField ID", resultComponent.getId());
             }
         }
     }
@@ -103,12 +111,18 @@ public class DateFieldLoader extends AbstractFieldLoader<DateField> {
         String rangeEnd = element.attributeValue("rangeEnd");
         if (StringUtils.isNotEmpty(rangeEnd)) {
             try {
-                resultComponent.setRangeEnd(parseDateOrDateTime(rangeEnd));
+                Date date = parseDateOrDateTime(rangeEnd);
+                resultComponent.setRangeEnd(getDateTimeTransformations().
+                        transformToType(date, getJavaType(resultComponent), resultComponent.getZoneId()));
             } catch (ParseException e) {
                 throw new GuiDevelopmentException("'rangeEnd' parsing error for date picker: " +
-                        rangeEnd, context, "DatePicker ID", resultComponent.getId());
+                        rangeEnd, context, "DateField ID", resultComponent.getId());
             }
         }
+    }
+
+    protected DateTimeTransformations getDateTimeTransformations() {
+        return beanLocator.get(DateTimeTransformations.NAME);
     }
 
     protected Date parseDateOrDateTime(String value) throws ParseException {
@@ -119,5 +133,16 @@ public class DateFieldLoader extends AbstractFieldLoader<DateField> {
             rangeDF = new SimpleDateFormat(DATE_PATTERN_MIN);
         }
         return rangeDF.parse(value);
+    }
+
+    protected Class getJavaType(DateField resultComponent) {
+        ValueSource valueSource = resultComponent.getValueSource();
+        if (valueSource instanceof EntityValueSource) {
+            MetaProperty metaProperty = ((EntityValueSource) valueSource).getMetaPropertyPath().getMetaProperty();
+            return metaProperty.getRange().asDatatype().getJavaClass();
+        }
+
+        Datatype datatype = resultComponent.getDatatype();
+        return datatype == null ? Date.class : datatype.getJavaClass();
     }
 }
