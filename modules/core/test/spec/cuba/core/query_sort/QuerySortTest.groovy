@@ -30,7 +30,7 @@ class QuerySortTest extends Specification {
 
         then:
 
-        queryBuilder.getResultQueryString() == 'select u from sec$User u order by u.name'
+        queryBuilder.getResultQueryString() == 'select u from sec$User u order by u.name, u.id'
 
         when: "by two properties"
 
@@ -41,7 +41,7 @@ class QuerySortTest extends Specification {
 
         then:
 
-        queryBuilder.getResultQueryString() == 'select u from sec$User u order by u.login, u.name'
+        queryBuilder.getResultQueryString() == 'select u from sec$User u order by u.login, u.name, u.id'
 
         when: "by two properties desc"
 
@@ -52,7 +52,7 @@ class QuerySortTest extends Specification {
 
         then:
 
-        queryBuilder.getResultQueryString() == 'select u from sec$User u order by u.login desc, u.name desc'
+        queryBuilder.getResultQueryString() == 'select u from sec$User u order by u.login desc, u.name desc, u.id desc'
 
         when: "by reference property"
 
@@ -63,7 +63,7 @@ class QuerySortTest extends Specification {
 
         then:
 
-        queryBuilder.getResultQueryString() == 'select u from sec$User u left join u.group u_group order by u_group.name'
+        queryBuilder.getResultQueryString() == 'select u from sec$User u left join u.group u_group order by u_group.name, u.id'
 
         when: "by reference property desc"
 
@@ -74,7 +74,23 @@ class QuerySortTest extends Specification {
 
         then:
 
-        queryBuilder.getResultQueryString() == 'select u from sec$User u left join u.group u_group order by u_group.name desc'
+        queryBuilder.getResultQueryString() == 'select u from sec$User u left join u.group u_group order by u_group.name desc, u.id desc'
+    }
+
+    def "sort by unique id property"() {
+
+        JpqlQueryBuilder queryBuilder
+
+        when:
+
+        queryBuilder = AppBeans.get(JpqlQueryBuilder)
+        queryBuilder.setQueryString('select e from sys$QueryResult e')
+                .setSort(Sort.by('queryKey'))
+                .setEntityName('sys$QueryResult')
+
+        then:
+
+        queryBuilder.getResultQueryString() == 'select e from sys$QueryResult e order by e.queryKey, e.id'
     }
 
     def "sort by single property with order function and nulls first"() {
@@ -96,7 +112,7 @@ class QuerySortTest extends Specification {
 
         then:
 
-        queryBuilder.getResultQueryString() == 'select e from test$Order e order by upper( e.number) asc nulls first'
+        queryBuilder.getResultQueryString() == 'select e from test$Order e order by upper( e.number) asc nulls first, e.id'
 
         cleanup:
         sortExpressionProvider.resetToUpperPaths()
@@ -131,7 +147,7 @@ class QuerySortTest extends Specification {
 
         then:
 
-        queryBuilder.getResultQueryString() == 'select e from sys$EntitySnapshot e order by e.snapshotDate'
+        queryBuilder.getResultQueryString() == 'select e from sys$EntitySnapshot e order by e.snapshotDate, e.id'
 
         when: "by persistent and non-persistent property"
 
@@ -142,7 +158,7 @@ class QuerySortTest extends Specification {
 
         then:
 
-        queryBuilder.getResultQueryString() == 'select e from sys$EntitySnapshot e order by e.createTs, e.snapshotDate'
+        queryBuilder.getResultQueryString() == 'select e from sys$EntitySnapshot e order by e.createTs, e.snapshotDate, e.id'
 
         when: "by single non-persistent property desc"
 
@@ -153,7 +169,7 @@ class QuerySortTest extends Specification {
 
         then:
 
-        queryBuilder.getResultQueryString() == 'select e from sys$EntitySnapshot e order by e.snapshotDate desc'
+        queryBuilder.getResultQueryString() == 'select e from sys$EntitySnapshot e order by e.snapshotDate desc, e.id desc'
 
         when: "by non-persistent property related to two other properties"
 
@@ -164,7 +180,7 @@ class QuerySortTest extends Specification {
 
         then:
 
-        queryBuilder.getResultQueryString() == 'select e from sys$EntitySnapshot e left join e.author e_author order by e.snapshotDate, e_author.login, e_author.name'
+        queryBuilder.getResultQueryString() == 'select e from sys$EntitySnapshot e left join e.author e_author order by e.snapshotDate, e_author.login, e_author.name, e.id'
 
         when: "by non-persistent property related to two other properties desc"
 
@@ -175,6 +191,6 @@ class QuerySortTest extends Specification {
 
         then:
 
-        queryBuilder.getResultQueryString() == 'select e from sys$EntitySnapshot e left join e.author e_author order by e.snapshotDate desc, e_author.login desc, e_author.name desc'
+        queryBuilder.getResultQueryString() == 'select e from sys$EntitySnapshot e left join e.author e_author order by e.snapshotDate desc, e_author.login desc, e_author.name desc, e.id desc'
     }
 }

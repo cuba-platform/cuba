@@ -66,6 +66,9 @@ public class SortJpqlGenerator {
 
                 sortExpressions.addAll(getPropertySortExpressions(metaPropertyPath, asc));
             }
+            if (!sortExpressions.isEmpty()) {
+                sortExpressions.addAll(getUniqueSortExpression(sortExpressions, metaClass, asc));
+            }
         } else if (valueProperties != null) {
             List<String> selectedExpressions = queryTransformerFactory.parser(queryString).getSelectedExpressionsList();
             for (Sort.Order order : sort.getOrders()) {
@@ -74,6 +77,15 @@ public class SortJpqlGenerator {
         }
 
         return transformQuery(queryString, sortExpressions, asc);
+    }
+
+    protected List<String> getUniqueSortExpression(List<String> sortExpressions, MetaClass metaClass, boolean asc) {
+        MetaPropertyPath idProperty = metaClass.getPropertyPath(metadataTools.getPrimaryKeyName(metaClass));
+        List<String> uniqueSortExpressions = getPropertySortExpressions(Objects.requireNonNull(idProperty), asc);
+        if (uniqueSortExpressions.stream().noneMatch(sortExpressions::contains)) {
+            return uniqueSortExpressions;
+        }
+        return Collections.emptyList();
     }
 
     protected String transformQuery(String queryString, List<String> sortExpressions, boolean asc) {
