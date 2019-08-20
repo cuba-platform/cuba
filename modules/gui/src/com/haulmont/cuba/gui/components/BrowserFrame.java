@@ -104,7 +104,7 @@ public interface BrowserFrame extends ResourceView {
          */
         ALLOW_TOP_NAVIGATION_BY_USER_ACTIVATION("allow-top-navigation-by-user-activation"),
         /**
-         * Lets the resource navigate the top-level browsing context (the one named _top).
+         * Allows for downloads to occur without a gesture from the user.
          */
         ALLOW_DOWNLOADS_WITHOUT_USER_ACTIVATION("allow-downloads-without-user-activation"),
         /**
