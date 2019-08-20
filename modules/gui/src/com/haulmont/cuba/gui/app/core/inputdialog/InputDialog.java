@@ -373,6 +373,29 @@ public class InputDialog extends Screen {
             TimeField timeField = uiComponents.create(TimeField.NAME);
             timeField.setDatatype(datatype);
             return timeField;
+        } else if (datatype instanceof LocalDateDatatype) {
+            DateField dateField = uiComponents.create(DateField.NAME);
+            dateField.setDatatype(datatype);
+            dateField.setResolution(DateField.Resolution.DAY);
+            return dateField;
+        } else if (datatype instanceof LocalDateTimeDatatype) {
+            DateField dateField = uiComponents.create(DateField.NAME);
+            dateField.setDatatype(datatype);
+            dateField.setResolution(DateField.Resolution.MIN);
+            return dateField;
+        } else if (datatype instanceof LocalTimeDatatype) {
+            TimeField timeField = uiComponents.create(TimeField.NAME);
+            timeField.setDatatype(datatype);
+            return timeField;
+        } else if (datatype instanceof OffsetDateTimeDatatype) {
+            DateField dateField = uiComponents.create(DateField.NAME);
+            dateField.setDatatype(datatype);
+            dateField.setResolution(DateField.Resolution.MIN);
+            return dateField;
+        } else if (datatype instanceof OffsetTimeDatatype) {
+            TimeField timeField = uiComponents.create(TimeField.NAME);
+            timeField.setDatatype(datatype);
+            return timeField;
         } else if (datatype instanceof BooleanDatatype) {
             return uiComponents.create(CheckBox.NAME);
         } else {

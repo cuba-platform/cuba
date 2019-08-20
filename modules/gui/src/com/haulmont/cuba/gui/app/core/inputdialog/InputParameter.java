@@ -23,6 +23,11 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.Field;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.OffsetDateTime;
+import java.time.OffsetTime;
 import java.util.Date;
 import java.sql.Time;
 import java.util.function.Supplier;
@@ -315,6 +320,56 @@ public class InputParameter {
      */
     public static InputParameter dateTimeParameter(String id) {
         return new InputParameter(id).withDatatypeJavaClass(Date.class);
+    }
+
+    /**
+     * Creates parameter with LocalDate type.
+     *
+     * @param id field id
+     * @return input parameter
+     */
+    public static InputParameter localDateParameter(String id) {
+        return new InputParameter(id).withDatatypeJavaClass(LocalDate.class);
+    }
+
+    /**
+     * Creates parameter with LocalDateTime type.
+     *
+     * @param id field id
+     * @return input parameter
+     */
+    public static InputParameter localDateTimeParameter(String id) {
+        return new InputParameter(id).withDatatypeJavaClass(LocalDateTime.class);
+    }
+
+    /**
+     * Creates parameter with LocalTime type.
+     *
+     * @param id field id
+     * @return input parameter
+     */
+    public static InputParameter localTimeParameter(String id) {
+        return new InputParameter(id).withDatatypeJavaClass(LocalTime.class);
+    }
+
+    /**
+     * Creates parameter with OffsetDateTime type.
+     *
+     * @param id field id
+     * @return input parameter
+     */
+    public static InputParameter offsetDateTimeParameter(String id) {
+        return new InputParameter(id).withDatatypeJavaClass(OffsetDateTime.class);
+    }
+
+    /**
+     * Creates parameter with OffsetTime type.
+     *
+     * @param id field id
+     * @return input parameter
+     */
+    public static InputParameter offsetTimeParameter(String id) {
+        return new InputParameter(id).withDatatypeJavaClass(OffsetTime.class);
     }
 
     /**
