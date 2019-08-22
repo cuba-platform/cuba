@@ -115,19 +115,26 @@ public class CubaVaadinServletService extends VaadinServletService
 
         setSystemMessagesProvider(systemMessagesInfo -> {
             Locale locale = systemMessagesInfo.getLocale();
+            Locale defaultLocale = messages.getTools().getDefaultLocale();
+            Locale actualLocale = locale;
+            if (defaultLocale != null
+                    && !Objects.equals(locale, defaultLocale)) {
+                log.debug("Request and default locales are not matched. Default locale will be used");
+                actualLocale = defaultLocale;
+            }
 
             CustomizedSystemMessages msgs = new CustomizedSystemMessages();
 
             if (AppContext.isStarted()) {
                 try {
-                    msgs.setInternalErrorCaption(messages.getMainMessage("internalErrorCaption", locale));
-                    msgs.setInternalErrorMessage(messages.getMainMessage("internalErrorMessage", locale));
+                    msgs.setInternalErrorCaption(messages.getMainMessage("internalErrorCaption", actualLocale));
+                    msgs.setInternalErrorMessage(messages.getMainMessage("internalErrorMessage", actualLocale));
 
-                    msgs.setCommunicationErrorCaption(messages.getMainMessage("communicationErrorCaption", locale));
-                    msgs.setCommunicationErrorMessage(messages.getMainMessage("communicationErrorMessage", locale));
+                    msgs.setCommunicationErrorCaption(messages.getMainMessage("communicationErrorCaption", actualLocale));
+                    msgs.setCommunicationErrorMessage(messages.getMainMessage("communicationErrorMessage", actualLocale));
 
-                    msgs.setSessionExpiredCaption(messages.getMainMessage("sessionExpiredErrorCaption", locale));
-                    msgs.setSessionExpiredMessage(messages.getMainMessage("sessionExpiredErrorMessage", locale));
+                    msgs.setSessionExpiredCaption(messages.getMainMessage("sessionExpiredErrorCaption", actualLocale));
+                    msgs.setSessionExpiredMessage(messages.getMainMessage("sessionExpiredErrorMessage", actualLocale));
                 } catch (Exception e) {
                     log.error("Unable to set system messages", e);
                     throw new RuntimeException("Unable to set system messages. " +
