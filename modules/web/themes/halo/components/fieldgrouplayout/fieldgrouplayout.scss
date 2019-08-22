@@ -48,6 +48,7 @@
 
   .#{$primary-stylename}-slot.inline > .v-caption.caption-indicators {
     margin-right: 0;
+    line-height: inherit;
   }
 
   .#{$primary-stylename}-slot.inline > .v-caption .v-captiontext {
