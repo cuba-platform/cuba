@@ -18,42 +18,33 @@
 package com.haulmont.cuba.core.jmx;
 
 import com.haulmont.cuba.core.app.MiddlewareStatisticsAccumulator;
+import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.core.sys.connectionpoolinfo.CommonsConnectionPoolInfo;
+import com.haulmont.cuba.core.sys.connectionpoolinfo.ConnectionPoolInfo;
+import com.haulmont.cuba.core.sys.connectionpoolinfo.HikariConnectionPoolInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.stereotype.Component;
+
 import javax.inject.Inject;
-import javax.management.MBeanServerConnection;
-import javax.management.ObjectName;
+import javax.management.*;
 import java.lang.management.ManagementFactory;
-import java.util.Set;
-import java.util.regex.Pattern;
 
 @Component("cuba_StatisticsCounterMBean")
 public class StatisticsCounter implements StatisticsCounterMBean {
 
     private static final Logger log = LoggerFactory.getLogger(StatisticsCounter.class);
-
-    protected final Pattern DS_MBEAN_PATTERN;
+    protected volatile boolean dbConnPoolNotFound;
 
     @Inject
     protected MiddlewareStatisticsAccumulator accumulator;
 
-    protected volatile ObjectName dbConnPoolObjectName;
+    @Inject
+    protected GlobalConfig globalConfig;
 
-    protected volatile boolean dbConnPoolNotFound;
-
-    public StatisticsCounter() {
-        String name = "CubaDS";
-        String jndiName = AppContext.getProperty("cuba.dataSourceJndiName");
-        if (jndiName != null) {
-            String[] parts = jndiName.split("/");
-            name = parts[parts.length - 1];
-        }
-        String re = "Catalina:type=DataSource,.*,class=javax.sql.DataSource,name=\".*" + name + "\"";
-        DS_MBEAN_PATTERN = Pattern.compile(re);
-    }
+    protected volatile ConnectionPoolInfo connectionPoolInfo;
 
     @Override
     public Long getActiveTransactionsCount() {
@@ -115,44 +106,51 @@ public class StatisticsCounter implements StatisticsCounterMBean {
         return accumulator.getImplicitFlushCount();
     }
 
-    private int getDbConnectionPoolMBeanAttr(String attrName) {
-        if (dbConnPoolNotFound)
-            return 0;
-        try {
-            MBeanServerConnection connection = ManagementFactory.getPlatformMBeanServer();
-            if (dbConnPoolObjectName == null) {
-                Set<ObjectName> names = connection.queryNames(null, null);
-                for (ObjectName name : names) {
-                    if (DS_MBEAN_PATTERN.matcher(name.toString()).matches()) {
-                        dbConnPoolObjectName = name;
-                        break;
-                    }
-                }
-            }
-            if (dbConnPoolObjectName != null) {
-                return (int) connection.getAttribute(dbConnPoolObjectName, attrName);
-            } else {
-                dbConnPoolNotFound = true;
-            }
-        } catch (Exception e) {
-            log.warn("Error DB connection pool attribute " + attrName + ": " + e);
-        }
-        return 0;
-    }
-
     @Override
     public int getDbConnectionPoolNumActive() {
-        return getDbConnectionPoolMBeanAttr("numActive");
+        connectionPoolInfo = getConnectionPoolInfo();
+        return connectionPoolInfo == null ? 0 : getDbConnectionPoolMBeanAttr(connectionPoolInfo.getActiveConnectionsAttrName());
     }
 
     @Override
     public int getDbConnectionPoolNumIdle() {
-        return getDbConnectionPoolMBeanAttr("numIdle");
+        connectionPoolInfo = getConnectionPoolInfo();
+        return connectionPoolInfo == null ? 0 : getDbConnectionPoolMBeanAttr(connectionPoolInfo.getIdleConnectionsAttrName());
     }
 
     @Override
     public int getDbConnectionPoolMaxTotal() {
-        return getDbConnectionPoolMBeanAttr("maxTotal");
+        connectionPoolInfo = getConnectionPoolInfo();
+        return connectionPoolInfo == null ? 0 : getDbConnectionPoolMBeanAttr(connectionPoolInfo.getTotalConnectionsAttrName());
+    }
+
+    protected ConnectionPoolInfo getConnectionPoolInfo() {
+        if (dbConnPoolNotFound) {
+            return null;
+        }
+
+        String dsProvider = AppContext.getProperty("cuba.dataSourceProvider");
+        ConnectionPoolInfo connectionPoolInfo = new CommonsConnectionPoolInfo();
+        if ("application".equals(dsProvider)) {
+            connectionPoolInfo = new HikariConnectionPoolInfo();
+        }
+
+        if (connectionPoolInfo.getRegisteredMBeanName() == null) {
+            log.warn("No one connection pool was found for statistics counting!");
+            dbConnPoolNotFound = true;
+            return null;
+        }
+        return connectionPoolInfo;
+    }
+
+    private int getDbConnectionPoolMBeanAttr(String attrName) {
+        ObjectName registeredMbeanPoolName = connectionPoolInfo.getRegisteredMBeanName();
+        try {
+            return (Integer) ManagementFactory.getPlatformMBeanServer().getAttribute(registeredMbeanPoolName, attrName);
+        } catch (JMException e) {
+            log.warn(String.format("Can't get MBean attribute %s from %s pool!", attrName, registeredMbeanPoolName.getCanonicalName()), e);
+        }
+        return 0;
     }
 
     @Override
