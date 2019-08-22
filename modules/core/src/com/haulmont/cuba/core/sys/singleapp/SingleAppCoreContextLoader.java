@@ -98,6 +98,11 @@ public class SingleAppCoreContextLoader extends AppContextLoader {
         return sc.getInitParameter("appPropertiesConfigCore");
     }
 
+    @Override
+    protected boolean runningInSingleWar() {
+        return true;
+    }
+
     protected static class SetClassLoaderFilter implements Filter {
         @Override
         public void init(FilterConfig filterConfig) {

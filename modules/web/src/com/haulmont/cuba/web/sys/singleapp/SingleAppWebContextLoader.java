@@ -226,6 +226,11 @@ public class SingleAppWebContextLoader extends WebAppContextLoader {
         }
     }
 
+    @Override
+    protected boolean runningInSingleWar() {
+        return true;
+    }
+
     protected static class SetClassLoaderFilter implements Filter {
         @Override
         public void init(FilterConfig filterConfig) {

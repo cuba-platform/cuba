@@ -45,6 +45,8 @@ public class SingleAppCoreServletListener implements ServletContextListener {
 
     private static final Logger log = LoggerFactory.getLogger(SingleAppCoreServletListener.class);
 
+    private URLClassLoader coreClassLoader;
+
     @Override
     public void contextInitialized(ServletContextEvent sce) {
         try {
@@ -63,7 +65,7 @@ public class SingleAppCoreServletListener implements ServletContextListener {
                         }
                     })
                     .toArray(URL[]::new);
-            URLClassLoader coreClassLoader = new URLClassLoader(urls, contextClassLoader);
+            coreClassLoader = new URLClassLoader(urls, contextClassLoader);
 
             Thread.currentThread().setContextClassLoader(coreClassLoader);
             Class<?> appContextLoaderClass = coreClassLoader.loadClass(getAppContextLoaderClassName());
@@ -86,6 +88,10 @@ public class SingleAppCoreServletListener implements ServletContextListener {
         try {
             Method contextDestroyed = appContextLoader.getClass().getMethod("contextDestroyed", ServletContextEvent.class);
             contextDestroyed.invoke(appContextLoader, sce);
+
+            if (coreClassLoader != null) {
+                coreClassLoader.close();
+            }
         } catch (Exception e) {
             throw new RuntimeException("An error occurred while destroying context of single WAR application", e);
         }

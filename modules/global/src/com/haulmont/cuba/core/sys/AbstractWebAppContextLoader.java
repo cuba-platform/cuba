@@ -20,6 +20,8 @@ package com.haulmont.cuba.core.sys;
 import ch.qos.logback.classic.LoggerContext;
 import com.google.common.base.Splitter;
 import com.haulmont.cuba.core.global.Events;
+import com.haulmont.cuba.core.sys.cleanup.CleanupTools;
+import com.haulmont.cuba.core.sys.cleanup.StopThreadsCleanUp;
 import com.haulmont.cuba.core.sys.servlet.events.ServletContextDestroyedEvent;
 import com.haulmont.cuba.core.sys.servlet.events.ServletContextInitializedEvent;
 import org.apache.commons.io.IOUtils;
@@ -42,10 +44,7 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -109,12 +108,31 @@ public abstract class AbstractWebAppContextLoader extends AbstractAppContextLoad
                                 applicationContext
                         ));
 
+        String stopThreadsStr = AppContext.getProperty("cuba.stopManuallyCreatedThreadsOnShutdown");
+        boolean stopThreads = true;
+        if (StringUtils.isNotEmpty(stopThreadsStr)) {
+            stopThreads = Boolean.valueOf(stopThreadsStr);
+        }
+
         AppContext.Internals.stopContext();
         AppContext.Internals.setApplicationContext(null);
 
         if (LoggerFactory.getILoggerFactory() instanceof LoggerContext) {
             ((LoggerContext) LoggerFactory.getILoggerFactory()).stop();
         }
+
+        cleanup(stopThreads);
+    }
+
+    protected void cleanup(boolean stopThreads) {
+        CleanupTools cleanupTools = new CleanupTools(runningInSingleWar());
+        StopThreadsCleanUp stopThreadsCleanUp = new StopThreadsCleanUp(stopThreads);
+
+        stopThreadsCleanUp.cleanUp(cleanupTools);
+    }
+
+    protected boolean runningInSingleWar() {
+        return false;
     }
 
     protected void initAppComponents(ServletContext sc) {
