@@ -223,6 +223,7 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
             if ("main".equals(tabName) && getItem().getDataType() != null) {
                 getDialogOptions().setWidth(themeConstants.get("cuba.gui.AttributeEditor.twoColumnsWidth"));
             }
+            getDialogOptions().center();
         });
 
         initLocalizedFrame();
@@ -322,6 +323,8 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
                     || "entityClass".equals(property)) {
                 changeAttributesUI();
                 changeAttributeValues();
+            }
+            if (e.getPrevValue()==null && "dataType".equals(property)) {
                 getDialogOptions().center();
             }
             if ("name".equals(property)) {
@@ -436,8 +439,10 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
             for (String componentId : fields) {
                 optionalAttributeFieldGroup.getFieldNN(componentId).setVisible(true);
             }
-            getDialogOptions().setWidth(themeConstants.get("cuba.gui.AttributeEditor.twoColumnsWidth"));
-            optionalAttributeFieldGroup.setVisible(true);
+            if ("main".equals(tabsheet.getSelectedTab().getName())) {
+                getDialogOptions().setWidth(themeConstants.get("cuba.gui.AttributeEditor.twoColumnsWidth"));
+                optionalAttributeFieldGroup.setVisible(true);
+            }
         }
         if (attribute.getDataType() == ENTITY) {
             if (!Strings.isNullOrEmpty(attribute.getEntityClass())) {
