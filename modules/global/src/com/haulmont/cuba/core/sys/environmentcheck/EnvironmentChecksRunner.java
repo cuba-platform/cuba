@@ -70,7 +70,7 @@ public class EnvironmentChecksRunner {
         if (!results.isEmpty()) {
             StringBuilder resultMessage = new StringBuilder();
             resultMessage.append("\n=================================================================");
-            resultMessage.append("\nSome of environment sanity checks failed on ");
+            resultMessage.append("\nSome of environment checks failed on ");
             resultMessage.append(moduleName);
             resultMessage.append(" module:");
             for (CheckFailedResult result : results) {

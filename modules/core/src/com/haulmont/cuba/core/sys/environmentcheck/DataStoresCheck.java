@@ -100,7 +100,7 @@ public class DataStoresCheck implements EnvironmentCheck {
                     }
                 }
                 if (!found) {
-                    result.add(new CheckFailedResult("Main Data Store checked but SEC_USER table is not found", null));
+                    result.add(new CheckFailedResult("Main Data Store checked but SEC_USER table is not found - Data Store does not look like CUBA database", null));
                 }
             }
         } catch (Throwable e) {
