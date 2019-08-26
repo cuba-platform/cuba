@@ -55,6 +55,13 @@ $cuba-highlight-primary-action: false !default;
     }
   }
 
+  .#{$primary-stylename}-wrap {
+    img.v-icon {
+      height: round($v-unit-size/2);
+      width: round($v-unit-size/2);
+    }
+  }
+
   .#{$primary-stylename}-empty-caption {
     .#{$primary-stylename}-caption {
       display: none;
