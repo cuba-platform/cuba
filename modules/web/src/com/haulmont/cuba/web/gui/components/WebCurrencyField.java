@@ -259,6 +259,21 @@ public class WebCurrencyField<V extends Number> extends WebV8AbstractField<CubaC
         return super.isModified();
     }
 
+    @Override
+    public void focus() {
+        component.focus();
+    }
+
+    @Override
+    public int getTabIndex() {
+        return component.getTabIndex();
+    }
+
+    @Override
+    public void setTabIndex(int tabIndex) {
+        component.setTabIndex(tabIndex);
+    }
+
     protected com.haulmont.cuba.web.widgets.CurrencyLabelPosition toWidgetLabelPosition(CurrencyLabelPosition labelPosition) {
         return com.haulmont.cuba.web.widgets.CurrencyLabelPosition.valueOf(labelPosition.name());
     }

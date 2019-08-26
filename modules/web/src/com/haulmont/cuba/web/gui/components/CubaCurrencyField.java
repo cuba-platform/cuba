@@ -178,6 +178,11 @@ public class CubaCurrencyField extends CustomField<String> {
     }
 
     @Override
+    public int getTabIndex() {
+        return textField.getTabIndex();
+    }
+
+    @Override
     public void setReadOnly(boolean readOnly) {
         super.setReadOnly(readOnly);
 
