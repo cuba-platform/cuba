@@ -23,7 +23,8 @@ import java.math.BigDecimal;
 /**
  * The CurrencyField component is intended for displaying currency values.
  */
-public interface CurrencyField<V extends Number> extends Field<V>, HasDatatype<V>, HasConversionErrorMessage, Buffered {
+public interface CurrencyField<V extends Number> extends Field<V>, HasDatatype<V>, HasConversionErrorMessage, Buffered,
+                                                         Component.Focusable {
 
     String NAME = "currencyField";
 
