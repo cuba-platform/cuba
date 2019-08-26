@@ -465,15 +465,10 @@ public class EntityInspectorBrowse extends AbstractLookup {
                 case ASSOCIATION:
                 case COMPOSITION:
                     Range.Cardinality cardinality = metaProperty.getRange().getCardinality();
-                    switch (cardinality) {
-                        case MANY_TO_ONE:
-                            entityImportView.addManyToOneProperty(metaProperty.getName(), ReferenceImportBehaviour.IGNORE_MISSING);
-                            break;
-                        case ONE_TO_ONE:
-                            entityImportView.addOneToOneProperty(metaProperty.getName(), ReferenceImportBehaviour.IGNORE_MISSING);
-                            break;
-                        default:
-                            throw new UnsupportedOperationException(String.format("@Composition with cardinality %s is not supported", cardinality));
+                    if (cardinality == Range.Cardinality.MANY_TO_ONE) {
+                        entityImportView.addManyToOneProperty(metaProperty.getName(), ReferenceImportBehaviour.IGNORE_MISSING);
+                    } else if (cardinality == Range.Cardinality.ONE_TO_ONE) {
+                        entityImportView.addOneToOneProperty(metaProperty.getName(), ReferenceImportBehaviour.IGNORE_MISSING);
                     }
                     break;
                 default:
