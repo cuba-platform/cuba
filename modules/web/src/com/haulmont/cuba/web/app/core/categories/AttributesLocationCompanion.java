@@ -26,7 +26,9 @@ import com.vaadin.server.SerializablePredicate;
 import com.vaadin.shared.ui.grid.DropLocation;
 import com.vaadin.shared.ui.grid.DropMode;
 import com.vaadin.ui.AbstractComponent;
+import com.vaadin.ui.Grid;
 import com.vaadin.ui.components.grid.*;
+import com.vaadin.ui.dnd.DragSourceExtension;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,24 +37,25 @@ public class AttributesLocationCompanion implements AttributesLocationFrame.Comp
 
     protected CategoryAttribute draggedItem;
     protected boolean droppedSuccessful;
-    protected int dropIndex = -1;
-    protected AbstractComponent dropComponent;
+    protected Grid<CategoryAttribute> dragSourceGrid;
 
-    protected List<CategoryAttribute> sourceDataContainer = new ArrayList<>();
-    protected DataProvider<CategoryAttribute, SerializablePredicate<CategoryAttribute>> sourceDataProvider;
+    protected List<CategoryAttribute> attributesSourceDataContainer = new ArrayList<>();
+    protected DataProvider<CategoryAttribute, SerializablePredicate<CategoryAttribute>> attributesSourceDataProvider;
+    protected Grid<CategoryAttribute> attributesSourceGrid;
 
 
     @Override
     @SuppressWarnings("unchecked")
     public void initGridDragAndDrop(DataGrid<CategoryAttribute> dataGrid,
                                     List<CategoryAttribute> dataContainer,
-                                    boolean isSourceDataGrid) {
+                                    boolean isAttributesSourceDataGrid) {
 
         DataProvider<CategoryAttribute, SerializablePredicate<CategoryAttribute>> dataProvider =  new ListDataProvider<>(dataContainer);
 
-        if (isSourceDataGrid) {
-            sourceDataContainer = dataContainer;
-            sourceDataProvider = dataProvider;
+        if (isAttributesSourceDataGrid) {
+            attributesSourceDataContainer = dataContainer;
+            attributesSourceDataProvider = dataProvider;
+            attributesSourceGrid = dataGrid.unwrap(CubaGrid.class);
         }
 
         dataGrid.withUnwrapped(CubaGrid.class, grid -> {
@@ -60,35 +63,69 @@ public class AttributesLocationCompanion implements AttributesLocationFrame.Comp
 
             GridDragSource<CategoryAttribute> gridDragSource = new GridDragSource<>(grid);
             gridDragSource.addGridDragStartListener(this::onGridDragStart);
-            gridDragSource.addGridDragEndListener(e -> onGridDragEnd(e, grid, isSourceDataGrid));
 
             GridDropTarget<CategoryAttribute> gridDropTarget = new GridDropTarget<>(grid, DropMode.BETWEEN);
-            gridDropTarget.addGridDropListener(e -> onGridDrop(e, isSourceDataGrid));
+            gridDropTarget.addGridDropListener(e -> onGridDrop(e, isAttributesSourceDataGrid));
         });
     }
 
     @Override
     public void refreshSourceDataProvider() {
-        if (sourceDataProvider != null) {
-            sourceDataProvider.refreshAll();
+        if (attributesSourceDataProvider != null) {
+            attributesSourceDataProvider.refreshAll();
         }
     }
 
     protected void onGridDragStart(GridDragStartEvent<CategoryAttribute> event) {
+        dragSourceGrid = event.getComponent();
         draggedItem = event.getDraggedItems().get(0);
         droppedSuccessful = false;
-        dropComponent = null;
-        dropIndex = -1;
     }
 
-    protected void onGridDragEnd(GridDragEndEvent<CategoryAttribute> event, CubaGrid grid, boolean isSourceGrid) {
+    protected void onGridDrop(GridDropEvent<CategoryAttribute> event, boolean isAttributesSourceGrid) {
+        event.getDragSourceExtension().ifPresent(source -> {
+            int dropIndex = addToDestinationGrid(event, isAttributesSourceGrid, source);
+            removeFromSourceGrid(dragSourceGrid, dragSourceGrid == attributesSourceGrid, event.getComponent(), dropIndex);
+        });
+    }
+
+    protected int addToDestinationGrid(GridDropEvent<CategoryAttribute> event, boolean isSourceGrid, DragSourceExtension source) {
+        if (isSourceGrid && AttributesLocationFrame.EMPTY_ATTRIBUTE_NAME.equals(draggedItem.getName())) {
+            droppedSuccessful = true;
+            return -1;
+        }
+
+        if (source instanceof GridDragSource) {
+            //noinspection unchecked
+            ListDataProvider<CategoryAttribute> dataProvider = (ListDataProvider<CategoryAttribute>)
+                    event.getComponent().getDataProvider();
+            List<CategoryAttribute> items = (List<CategoryAttribute>) dataProvider.getItems();
+
+            int i = items.size();
+            if (event.getDropTargetRow().isPresent()) {
+                i = items.indexOf(event.getDropTargetRow().get())
+                        + (event.getDropLocation() == DropLocation.BELOW ? 1 : 0);
+            }
+
+            items.add(i, draggedItem);
+            dataProvider.refreshAll();
+
+            droppedSuccessful = true;
+
+            return i;
+        }
+
+        return -1;
+    }
+
+    protected void removeFromSourceGrid(Grid currentSourceGrid, boolean isAttributesSourceGrid, AbstractComponent dropComponent, int dropIndex) {
         if (!droppedSuccessful || draggedItem == null) {
             return;
         }
 
         //noinspection unchecked
-        List<CategoryAttribute> items = (List<CategoryAttribute>) ((ListDataProvider) grid.getDataProvider()).getItems();
-        if (grid.equals(dropComponent) && dropIndex >= 0) {
+        List<CategoryAttribute> items = (List<CategoryAttribute>) ((ListDataProvider) currentSourceGrid.getDataProvider()).getItems();
+        if (currentSourceGrid.equals(dropComponent) && dropIndex >= 0) {
             int removeIndex = items.indexOf(draggedItem) == dropIndex
                     ? items.lastIndexOf(draggedItem)
                     : items.indexOf(draggedItem);
@@ -99,41 +136,11 @@ public class AttributesLocationCompanion implements AttributesLocationFrame.Comp
             items.remove(draggedItem);
         }
 
-        if (isSourceGrid && AttributesLocationFrame.EMPTY_ATTRIBUTE_NAME.equals(draggedItem.getName())) {
-            sourceDataContainer.add(createEmptyAttribute());
+        if (isAttributesSourceGrid && AttributesLocationFrame.EMPTY_ATTRIBUTE_NAME.equals(draggedItem.getName())) {
+            attributesSourceDataContainer.add(createEmptyAttribute());
         }
 
-        grid.getDataProvider().refreshAll();
-    }
-
-    protected void onGridDrop(GridDropEvent<CategoryAttribute> event, boolean isSourceGrid) {
-        event.getDragSourceExtension().ifPresent(source -> {
-            if (isSourceGrid && AttributesLocationFrame.EMPTY_ATTRIBUTE_NAME.equals(draggedItem.getName())) {
-                droppedSuccessful = true;
-                return;
-            }
-
-            if (source instanceof GridDragSource) {
-                //noinspection unchecked
-                ListDataProvider<CategoryAttribute> dataProvider = (ListDataProvider<CategoryAttribute>)
-                        event.getComponent().getDataProvider();
-                List<CategoryAttribute> items = (List<CategoryAttribute>) dataProvider.getItems();
-
-                dropComponent = event.getComponent();
-
-                int i = items.size();
-                if (event.getDropTargetRow().isPresent()) {
-                    i = items.indexOf(event.getDropTargetRow().get())
-                            + (event.getDropLocation() == DropLocation.BELOW ? 1 : 0);
-                }
-
-                dropIndex = i;
-                items.add(i, draggedItem);
-                dataProvider.refreshAll();
-
-                droppedSuccessful = true;
-            }
-        });
+        currentSourceGrid.getDataProvider().refreshAll();
     }
 
     protected CategoryAttribute createEmptyAttribute() {
