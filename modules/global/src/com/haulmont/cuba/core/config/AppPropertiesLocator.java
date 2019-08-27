@@ -44,6 +44,8 @@ import javax.inject.Inject;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -74,6 +76,9 @@ public class AppPropertiesLocator {
 
     @Inject
     protected DataManager dataManager;
+
+    @Inject
+    protected UserSessionSource userSessionSource;
 
     public List<AppPropertyEntity> getAppProperties() {
         log.trace("Locating app properties");
@@ -232,6 +237,11 @@ public class AppPropertiesLocator {
                     return typeStringify;
             }
 
+            if (Double.class.isAssignableFrom(method.getReturnType())
+                    || Float.class.isAssignableFrom(method.getReturnType())) {
+                return new DecimalStringify();
+            }
+
             if (Date.class.isAssignableFrom(method.getReturnType())) {
                 return new DateStringify();
             }
@@ -302,11 +312,13 @@ public class AppPropertiesLocator {
         }
         DefaultDouble defaultDoubleAnn = method.getAnnotation(DefaultDouble.class);
         if (defaultDoubleAnn != null) {
-            return String.valueOf(defaultDoubleAnn.value());
+            NumberFormat decimalFormat = DecimalFormat.getInstance(userSessionSource.getLocale());
+            return decimalFormat.format(defaultDoubleAnn.value());
         }
         DefaultFloat defaultFloatAnn = method.getAnnotation(DefaultFloat.class);
         if (defaultFloatAnn != null) {
-            return String.valueOf(defaultFloatAnn.value());
+            NumberFormat decimalFormat = DecimalFormat.getInstance(userSessionSource.getLocale());
+            return decimalFormat.format(defaultFloatAnn.value());
         }
         DefaultChar defaultCharAnn = method.getAnnotation(DefaultChar.class);
         if (defaultCharAnn != null) {
@@ -350,13 +362,14 @@ public class AppPropertiesLocator {
 
         String dataTypeName = entity.getDataTypeName();
         if (!dataTypeName.equals("enum")) {
+            Locale locale = userSessionSource.getLocale();
             Datatype datatype = Datatypes.get(dataTypeName);
             String v = null;
             try {
                 v = entity.getDefaultValue();
-                datatype.parse(v);
+                datatype.parse(v, locale);
                 v = entity.getCurrentValue();
-                datatype.parse(v);
+                datatype.parse(v, locale);
             } catch (ParseException e) {
                 log.debug("Cannot parse '{}' with {} datatype, using StringDatatype for property {}", v, datatype, entity.getName());
                 entity.setDataTypeName(datatypes.getIdByJavaClass(String.class));
