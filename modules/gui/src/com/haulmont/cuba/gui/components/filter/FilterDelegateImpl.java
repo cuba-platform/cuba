@@ -309,7 +309,7 @@ public class FilterDelegateImpl implements FilterDelegate {
         searchBtn = uiComponents.create(Button.class);
         filtersPopupBox.add(searchBtn);
         searchBtn.setStyleName("filter-search-button");
-        searchBtn.setCaption(getMainMessage("filter.search"));
+        searchBtn.setCaption(getSearchBtnCaption());
         searchBtn.setIcon("icons/search.png");
         searchBtn.setDescription(getMainMessage("filter.searchBtn.description"));
         searchBtn.addClickListener(e ->
@@ -2416,6 +2416,11 @@ public class FilterDelegateImpl implements FilterDelegate {
     @Override
     public void setApplyImmediately(boolean immediately) {
         this.applyImmediately = immediately;
+
+        String caption = getSearchBtnCaption();
+        if (searchBtn != null && !caption.equals(searchBtn.getCaption())) {
+            searchBtn.setCaption(caption);
+        }
     }
 
     @Override
@@ -2492,6 +2497,12 @@ public class FilterDelegateImpl implements FilterDelegate {
 
         condition.addListener(listener);
         conditionListeners.put(condition, listener);
+    }
+
+    protected String getSearchBtnCaption() {
+        return isApplyImmediately()
+                ? getMainMessage("filter.searchBtn.applyImmediately.caption")
+                : getMainMessage("filter.search");
     }
 
     protected class FiltersLookupChangeListener implements Consumer<HasValue.ValueChangeEvent<FilterEntity>> {
