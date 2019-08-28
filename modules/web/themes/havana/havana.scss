@@ -31,6 +31,7 @@
 @import "components/datagrid/datagrid";
 @import "components/treedatagrid/treedatagrid";
 @import "components/resizabletextarea/resizabletextarea";
+@import "components/button/button";
 
 @mixin havana {
   @include halo;
@@ -45,6 +46,7 @@
   @include havana-cuba-resizabletextarea;
   @include havana-notification;
   @include havana-vaadin-contextmenu-addon;
+  @include havana-button;
 
   @include havana-main-window;
   @include havana-window;
