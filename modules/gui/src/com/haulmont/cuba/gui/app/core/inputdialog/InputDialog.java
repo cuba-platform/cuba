@@ -22,6 +22,7 @@ import com.haulmont.chile.core.datatypes.DatatypeRegistry;
 import com.haulmont.chile.core.datatypes.impl.*;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.app.PersistenceManagerService;
+import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.View;
@@ -350,6 +351,10 @@ public class InputDialog extends Screen {
         }
 
         if (datatype == null) {
+            Field field = createFieldByClass(parameter.getDatatypeJavaClass());
+            if (field != null) {
+                return field;
+            }
             datatype = datatypeRegistry.getNN(String.class);
         }
 
@@ -440,6 +445,22 @@ public class InputDialog extends Screen {
         lookupField.setOptionsEnum(parameter.getEnumClass());
         lookupField.setWidthFull();
         return lookupField;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Nullable
+    protected Field createFieldByClass(@Nullable Class datatypeJavaClass) {
+        if (datatypeJavaClass == null) {
+            return null;
+        }
+
+        if (datatypeJavaClass.isAssignableFrom(FileDescriptor.class)) {
+            FileUploadField fileUploadField = uiComponents.create(FileUploadField.NAME);
+            fileUploadField.setShowFileName(true);
+            fileUploadField.setShowClearButton(true);
+            return fileUploadField;
+        }
+        return null;
     }
 
     protected void initActions(List<Action> actions) {
