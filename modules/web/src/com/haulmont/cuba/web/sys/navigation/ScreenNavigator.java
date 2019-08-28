@@ -50,6 +50,8 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.*;
 
+import static com.haulmont.cuba.web.sys.WebUrlRouting.NEW_ENTITY_ID;
+
 @Component(ScreenNavigator.NAME)
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
 public class ScreenNavigator {
@@ -371,6 +373,14 @@ public class ScreenNavigator {
         if (!security.isEntityOpPermitted(metaClass, EntityOp.READ)) {
             owner.revertNavigationState();
             throw new AccessDeniedException(PermissionType.ENTITY_OP, EntityOp.READ, entityClass.getSimpleName());
+        }
+
+        if (NEW_ENTITY_ID.equals(idParam)) {
+            boolean createPermitted = security.isEntityOpPermitted(metaClass, EntityOp.CREATE);
+            if (!createPermitted) {
+                throw new AccessDeniedException(PermissionType.ENTITY_OP, EntityOp.CREATE, entityClass.getSimpleName());
+            }
+            return ParamsMap.of(WindowParams.ITEM.name(), metadata.create(entityClass));
         }
 
         Class<?> idType = metaClass.getPropertyNN("id")

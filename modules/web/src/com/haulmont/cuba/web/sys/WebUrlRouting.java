@@ -18,6 +18,7 @@ package com.haulmont.cuba.web.sys;
 
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.Events;
+import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.gui.Route;
 import com.haulmont.cuba.gui.Screens;
 import com.haulmont.cuba.gui.UrlRouting;
@@ -52,6 +53,7 @@ import static com.haulmont.cuba.gui.screen.UiControllerUtils.getScreenContext;
 
 public class WebUrlRouting implements UrlRouting {
 
+    public static final String NEW_ENTITY_ID = "new";
     protected static final int MAX_NESTING = 2;
 
     private static final Logger log = LoggerFactory.getLogger(WebUrlRouting.class);
@@ -243,11 +245,15 @@ public class WebUrlRouting implements UrlRouting {
         if (isEditor(screen)) {
             Entity editedEntity = ((EditorScreen) screen).getEditedEntity();
             if (editedEntity != null) {
-                Object entityId = editedEntity.getId();
-                if (entityId != null) {
-                    String serializedId = UrlIdSerializer.serializeId(entityId);
-                    if (!"".equals(serializedId)) {
-                        params.put("id", serializedId);
+                if (PersistenceHelper.isNew(editedEntity)) {
+                    params.put("id", NEW_ENTITY_ID);
+                } else {
+                    Object entityId = editedEntity.getId();
+                    if (entityId != null) {
+                        String serializedId = UrlIdSerializer.serializeId(entityId);
+                        if (!"".equals(serializedId)) {
+                            params.put("id", serializedId);
+                        }
                     }
                 }
             }
