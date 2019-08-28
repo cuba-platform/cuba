@@ -242,10 +242,10 @@ public class ScreenNavigator {
             currentScreen = screensIterator.hasNext()
                     ? screensIterator.next()
                     : null;
-        }
 
-        if (currentScreen == null) {
-            return true;
+            if (currentScreen == null) {
+                return true;
+            }
         }
 
         NavigationState currentState = owner.getResolvedState(currentScreen);
@@ -516,17 +516,12 @@ public class ScreenNavigator {
                 .show();
     }
 
-    protected boolean navigationIsNotPermitted(WindowInfo windowInfo) {
-        WindowInfo loginWindowInfo = windowConfig.getWindowInfo("loginWindow");
-        WindowInfo mainWindowInfo = windowConfig.getWindowInfo("mainWindow");
-
-        return loginWindowInfo.equals(windowInfo)
-                || mainWindowInfo.equals(windowInfo);
-    }
-
     protected boolean paramsChanged(NavigationState requestedState) {
-        String currentParams = owner.getResolvedState(owner.getActiveScreen())
-                .getParamsString();
+        NavigationState resolvedState = owner.getResolvedState(owner.getActiveScreen());
+        if (resolvedState == null) {
+            return false;
+        }
+        String currentParams = resolvedState.getParamsString();
 
         return !Objects.equals(currentParams, requestedState.getParamsString());
     }
