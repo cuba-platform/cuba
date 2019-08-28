@@ -189,13 +189,17 @@ public class ScreenNavigationHandler implements NavigationHandler {
             currentScreen = screensIterator.hasNext()
                     ? screensIterator.next()
                     : null;
-        }
 
-        if (currentScreen == null) {
-            return true;
+            if (currentScreen == null) {
+                return true;
+            }
         }
 
         NavigationState currentState = urlChangeHandler.getResolvedState(currentScreen);
+        if (currentState == null) {
+            return true;
+        }
+
         return !Objects.equals(currentState.getStateMark(), requestedState.getStateMark())
                 || !Objects.equals(currentState.getNestedRoute(), requestedState.getNestedRoute());
     }

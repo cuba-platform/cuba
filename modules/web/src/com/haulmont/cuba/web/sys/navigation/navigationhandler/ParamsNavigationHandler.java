@@ -22,6 +22,7 @@ import com.haulmont.cuba.gui.screen.Screen;
 import com.haulmont.cuba.gui.screen.UiControllerUtils;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.gui.WebWindow;
+import com.haulmont.cuba.web.sys.navigation.UrlChangeHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -41,7 +42,12 @@ public class ParamsNavigationHandler implements NavigationHandler {
 
     @Override
     public boolean doHandle(NavigationState requestedState, AppUI ui) {
-        Screen screen = ui.getUrlChangeHandler().getActiveScreen();
+        UrlChangeHandler urlChangeHandler = ui.getUrlChangeHandler();
+        if (urlChangeHandler.isEmptyState(requestedState)) {
+            return false;
+        }
+
+        Screen screen = urlChangeHandler.getActiveScreen();
         if (screen == null) {
             log.debug("Unable to find a screen for state: '{}", requestedState);
             return false;
@@ -54,7 +60,8 @@ public class ParamsNavigationHandler implements NavigationHandler {
         WebWindow window = (WebWindow) screen.getWindow();
         NavigationState resolvedState = window.getResolvedState();
 
-        if (params.equals(resolvedState.getParams())) {
+        if (resolvedState == null
+                || params.equals(resolvedState.getParams())) {
             return false;
         }
 
