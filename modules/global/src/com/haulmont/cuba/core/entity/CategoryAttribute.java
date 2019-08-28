@@ -41,7 +41,7 @@ import java.util.*;
 
 @Entity(name = "sys$CategoryAttribute")
 @Table(name = "SYS_CATEGORY_ATTR")
-@NamePattern("%s|localeName")
+@NamePattern("%s (%s)|localeName,code")
 @SystemLevel
 @Listeners("report_CategoryAttributeListener")
 public class CategoryAttribute extends StandardEntity {
