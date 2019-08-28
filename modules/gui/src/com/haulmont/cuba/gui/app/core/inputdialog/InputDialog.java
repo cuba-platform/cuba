@@ -46,6 +46,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -152,6 +153,16 @@ public class InputDialog extends Screen {
         }
 
         throw new IllegalArgumentException("InputDialog doesn't contains parameter with id: " + parameterId);
+    }
+
+    /**
+     * Returns optional value from parameter by its id.
+     *
+     * @param parameterId parameter id
+     * @return optional parameter value
+     */
+    public <T> Optional<T> getOptional(String parameterId) {
+        return Optional.ofNullable(getValue(parameterId));
     }
 
     /**
@@ -562,6 +573,16 @@ public class InputDialog extends Screen {
         public <T> T getValue(String parameterId) {
             return (T) values.get(parameterId);
         }
+
+        /**
+         * Returns optional value from parameter by its id.
+         *
+         * @param parameterId parameter id
+         * @return optional parameter value
+         */
+        public <T> Optional<T> getOptional(String parameterId) {
+            return Optional.ofNullable(getValue(parameterId));
+        }
     }
 
     /**
@@ -600,6 +621,16 @@ public class InputDialog extends Screen {
         @Nullable
         public <T> T getValue(String parameterId) {
             return (T) values.get(parameterId);
+        }
+
+        /**
+         * Returns optional value from parameter by its id.
+         *
+         * @param parameterId parameter id
+         * @return optional parameter value
+         */
+        public <T> Optional<T> getOptional(String parameterId) {
+            return Optional.ofNullable(getValue(parameterId));
         }
 
         /**
@@ -661,6 +692,14 @@ public class InputDialog extends Screen {
         @Nullable
         public <T> T getValue(String parameterId) {
             return (T) values.get(parameterId);
+        }
+
+        /**
+         * @param parameterId parameter id
+         * @return optional parameter value
+         */
+        public <T> Optional<T> getOptional(String parameterId) {
+            return Optional.ofNullable(getValue(parameterId));
         }
 
         /**
