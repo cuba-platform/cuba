@@ -57,6 +57,8 @@ import java.util.List;
 import java.util.Objects;
 
 import static com.haulmont.cuba.web.sys.navigation.UrlTools.replaceState;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
 public class UrlChangeHandler implements InitializingBean {
 
@@ -207,7 +209,7 @@ public class UrlChangeHandler implements InitializingBean {
 
         NavigationFilter.AccessCheckResult navigationAllowed = navigationAllowed(requestedState);
         if (navigationAllowed.isRejected()) {
-            if (StringUtils.isNotEmpty(navigationAllowed.getMessage())) {
+            if (isNotEmpty(navigationAllowed.getMessage())) {
                 showNotification(navigationAllowed.getMessage());
             }
 
@@ -267,9 +269,9 @@ public class UrlChangeHandler implements InitializingBean {
         if (requestedState == null) {
             return false;
         }
-
-        return StringUtils.isEmpty(requestedState.getStateMark())
-                && StringUtils.isEmpty(requestedState.getNestedRoute());
+        return isNotEmpty(requestedState.getRoot())
+                && isEmpty(requestedState.getStateMark())
+                && isEmpty(requestedState.getNestedRoute());
     }
 
     protected boolean isCurrentRootState(NavigationState requestedState) {
