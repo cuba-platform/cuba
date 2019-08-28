@@ -41,6 +41,7 @@ public class WebBulkEditor extends WebButton implements BulkEditor {
     protected ConstraintOperationType constraintOperationType;
     protected boolean loadDynamicAttributes = true;
     protected boolean useConfirmDialog = true;
+    protected int columns = 2;
 
     @Override
     public OpenType getOpenType() {
@@ -135,6 +136,7 @@ public class WebBulkEditor extends WebButton implements BulkEditor {
             bulkEditAction.setConstraintOperationType(constraintOperationType);
             bulkEditAction.setLoadDynamicAttributes(loadDynamicAttributes);
             bulkEditAction.setUseConfirmDialog(useConfirmDialog);
+            bulkEditAction.setColumns(columns);
 
             listComponent.addAction(bulkEditAction);
         }
@@ -200,5 +202,18 @@ public class WebBulkEditor extends WebButton implements BulkEditor {
     @Override
     public boolean getUseConfirmDialog() {
         return useConfirmDialog;
+    }
+
+    @Override
+    public int getColumns() {
+        return columns;
+    }
+
+    @Override
+    public void setColumns(int columns) {
+        this.columns = columns;
+        if (bulkEditAction != null) {
+            bulkEditAction.setColumns(columns);
+        }
     }
 }

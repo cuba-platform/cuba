@@ -63,6 +63,7 @@ public class BulkEditAction extends ItemTrackingAction implements Action.HasBefo
     protected List<Field.Validator> modelValidators;
     protected Boolean loadDynamicAttributes;
     protected Boolean useConfirmDialog;
+    protected int columns;
 
     protected BeforeActionPerformedHandler beforeActionPerformedHandler;
 
@@ -146,6 +147,14 @@ public class BulkEditAction extends ItemTrackingAction implements Action.HasBefo
         return useConfirmDialog;
     }
 
+    public int getColumns() {
+        return columns;
+    }
+
+    public void setColumns(int columns) {
+        this.columns = columns;
+    }
+
     @Override
     public void actionPerform(Component component) {
         if (beforeActionPerformedHandler != null
@@ -196,6 +205,7 @@ public class BulkEditAction extends ItemTrackingAction implements Action.HasBefo
                 .pair("modelValidators", modelValidators)
                 .pair("loadDynamicAttributes", loadDynamicAttributes)
                 .pair("useConfirmDialog", useConfirmDialog)
+                .pair("columns", columns)
                 .create();
 
         WindowManager wm = ((WindowManager) getScreenContext(target.getFrame()).getScreens());

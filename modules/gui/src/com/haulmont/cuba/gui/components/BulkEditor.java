@@ -63,6 +63,19 @@ public interface BulkEditor extends Component, Component.HasCaption, Component.B
 
     void setLoadDynamicAttributes(boolean loadDynamicAttributes);
     boolean isLoadDynamicAttributes();
+
+    /**
+     * @return the number of editor columns
+     */
+    int getColumns();
+
+    /**
+     * Sets the number of editor columns.
+     *
+     * @param columns the number of editor columns
+     */
+    void setColumns(int columns);
+
     /**
      * Sets the given <code>constraintOperationType</code> to the BulkEditAction.
      *

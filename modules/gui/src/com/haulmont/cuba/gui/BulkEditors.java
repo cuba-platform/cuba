@@ -102,6 +102,7 @@ public class BulkEditors {
                 .pair("loadDynamicAttributes", builder.isLoadDynamicAttributes())
                 .pair("useConfirmDialog", builder.isUseConfirmDialog())
                 .pair("fieldSorter", builder.getFieldSorter())
+                .pair("columns", builder.getColumns())
                 .create());
 
         BulkEditorWindow bulkEditorWindow = (BulkEditorWindow) screens.create("bulkEditor", builder.launchMode, options);
@@ -164,6 +165,7 @@ public class BulkEditors {
         protected Boolean loadDynamicAttributes;
         protected Boolean useConfirmDialog;
         protected FieldSorter fieldSorter;
+        protected Integer columns;
 
         public EditorBuilder(EditorBuilder<E> builder) {
             this.metaClass = builder.metaClass;
@@ -181,6 +183,7 @@ public class BulkEditors {
             this.loadDynamicAttributes = builder.loadDynamicAttributes;
             this.useConfirmDialog = builder.useConfirmDialog;
             this.fieldSorter = builder.fieldSorter;
+            this.columns = builder.columns;
         }
 
         public EditorBuilder(MetaClass metaClass, Collection<E> entities, FrameOwner origin,
@@ -296,6 +299,17 @@ public class BulkEditors {
         }
 
         /**
+         * Sets the number of editor columns.
+         *
+         * @param columns the number of editor columns
+         * @return this builder
+         */
+        public EditorBuilder<E> withColumns(Integer columns) {
+            this.columns = columns;
+            return this;
+        }
+
+        /**
          * @return a {@link FrameOwner} of bulk editor
          */
         public FrameOwner getOrigin() {
@@ -379,6 +393,13 @@ public class BulkEditors {
          */
         public FieldSorter getFieldSorter() {
             return fieldSorter;
+        }
+
+        /**
+         * @return the number of editor columns
+         */
+        public Integer getColumns() {
+            return columns;
         }
 
         /**

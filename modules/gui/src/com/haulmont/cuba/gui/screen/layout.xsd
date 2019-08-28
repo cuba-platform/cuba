@@ -3292,6 +3292,7 @@
                 <xs:attribute name="focusable" type="xs:boolean"/>
                 <xs:attribute name="loadDynamicAttributes" type="xs:boolean"/>
                 <xs:attribute name="useConfirmDialog" type="xs:boolean"/>
+                <xs:attribute name="columns" type="xs:int"/>
 
                 <xs:attributeGroup ref="hasTabIndex"/>
             </xs:extension>

@@ -105,6 +105,8 @@ public class BulkEditorLoader extends AbstractComponentLoader<BulkEditor> {
         loadResponsive(resultComponent, element);
         loadCss(resultComponent, element);
 
+        loadColumns(resultComponent, element);
+
         loadTabIndex(resultComponent, element);
 
         UserSession userSession = getUserSessionSource().getUserSession();
@@ -166,6 +168,18 @@ public class BulkEditorLoader extends AbstractComponentLoader<BulkEditor> {
         loadValidators(resultComponent, element);
 
         loadFocusable(resultComponent, element);
+    }
+
+    protected void loadColumns(BulkEditor component, Element element) {
+        String value = element.attributeValue("columns");
+        if (StringUtils.isNotEmpty(value)) {
+            int columns = Integer.parseInt(value);
+            if (columns <= 0) {
+                throw new GuiDevelopmentException("The number of BulkEditor columns must be greater than zero",
+                        context);
+            }
+            component.setColumns(columns);
+        }
     }
 
     protected UserSessionSource getUserSessionSource() {

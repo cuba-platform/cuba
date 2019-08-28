@@ -108,6 +108,8 @@ public class BulkEditorWindow extends AbstractWindow {
     protected List<Consumer> modelValidators;
     @WindowParam
     protected BulkEditors.FieldSorter fieldSorter;
+    @WindowParam
+    protected int columns = 2;
 
     protected Pattern excludeRegex;
 
@@ -180,8 +182,12 @@ public class BulkEditorWindow extends AbstractWindow {
 
         GridLayout grid = uiComponents.create(GridLayout.class);
         grid.setSpacing(true);
-        grid.setColumns(4);
-        grid.setRows((managedFields.size() + 1) / 2);
+        grid.setColumns(columns * 2);
+        int rows = managedFields.size() / columns;
+        if (managedFields.size() % columns != 0) {
+            rows++;
+        }
+        grid.setRows(rows);
         grid.setStyleName("c-bulk-editor-grid");
 
         fieldsScrollBox.add(grid);
