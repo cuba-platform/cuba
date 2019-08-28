@@ -55,6 +55,8 @@ import javax.inject.Inject;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.haulmont.cuba.web.sys.WebUrlRouting.NEW_ENTITY_ID;
+
 @Component
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
 @Order(NavigationHandler.LOWEST_PLATFORM_PRECEDENCE - 30)
@@ -314,6 +316,14 @@ public class ScreenNavigationHandler implements NavigationHandler {
         if (!security.isEntityOpPermitted(metaClass, EntityOp.READ)) {
             urlChangeHandler.revertNavigationState();
             throw new AccessDeniedException(PermissionType.ENTITY_OP, EntityOp.READ, entityClass.getSimpleName());
+        }
+
+        if (NEW_ENTITY_ID.equals(idParam)) {
+            boolean createPermitted = security.isEntityOpPermitted(metaClass, EntityOp.CREATE);
+            if (!createPermitted) {
+                throw new AccessDeniedException(PermissionType.ENTITY_OP, EntityOp.CREATE, entityClass.getSimpleName());
+            }
+            return ParamsMap.of(WindowParams.ITEM.name(), metadata.create(entityClass));
         }
 
         Class<?> idType = metaClass.getPropertyNN("id")
