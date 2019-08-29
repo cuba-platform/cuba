@@ -376,14 +376,23 @@ public class FilterDelegateImpl implements FilterDelegate {
         ftsSearchCriteriaField = uiComponents.create(TextField.NAME);
         ftsSearchCriteriaField.setWidth(theme.get("cuba.gui.filter.ftsSearchCriteriaField.width"));
         ftsSearchCriteriaField.setInputPrompt(getMainMessage("filter.enterSearchPhrase"));
+        if (!isApplyImmediately()) {
+            filterHelper.addShortcutListener(ftsSearchCriteriaField, createFtsSearchShortcutListener());
+        } else {
+            ftsSearchCriteriaField.addValueChangeListener(stringValueChangeEvent -> {
+                if (isApplyImmediately()) {
+                    applyFts();
+                }
+            });
+        }
+
         filterHelper.setInternalDebugId(ftsSearchCriteriaField, "ftsSearchCriteriaField");
-        filterHelper.addShortcutListener(ftsSearchCriteriaField, createFtsSearchShortcutListener());
 
         paramEditComponentToFocus = ftsSearchCriteriaField;
         controlsLayout.add(ftsSearchCriteriaField);
 
         searchBtn = uiComponents.create(Button.class);
-        searchBtn.setCaption(getMainMessage("filter.search"));
+        searchBtn.setCaption(getSearchBtnCaption());
         searchBtn.setIcon("icons/search.png");
         searchBtn.setAction(new AbstractAction("search") {
             @Override
@@ -425,6 +434,8 @@ public class FilterDelegateImpl implements FilterDelegate {
         ftsSwitch.addValueChangeListener(e -> {
             filterMode = Boolean.TRUE.equals(e.getValue()) ? FilterMode.FTS_MODE : FilterMode.GENERIC_MODE;
             switchFilterMode(filterMode);
+            // try to apply in order to actualize showed data
+            applyWithImmediateMode();
         });
 
         ftsSwitch.setVisible(modeSwitchVisible);
@@ -487,8 +498,13 @@ public class FilterDelegateImpl implements FilterDelegate {
         maxResultsField = textMaxResults ? maxResultsTextField : maxResultsLookupField;
         maxResultsField.addValueChangeListener(valueChangeEvent -> {
             maxResultValueChanged = true;
-            if (valueChangeEvent.isUserOriginated()) {
-                applyWithImmediateMode();
+            if (valueChangeEvent.isUserOriginated() && isApplyImmediately()) {
+                if (filterMode == FilterMode.FTS_MODE) {
+                    applyFts();
+                }
+                if (filterMode == FilterMode.GENERIC_MODE) {
+                    applyWithImmediateMode();
+                }
             }
         });
         maxResultsLayout.add(maxResultsField);
@@ -1249,6 +1265,7 @@ public class FilterDelegateImpl implements FilterDelegate {
             public void actionPerform(Component component) {
                 if (fe != filterEntity) {
                     setFilterEntity(fe);
+                    applyWithImmediateMode();
                 }
             }
 
@@ -1272,6 +1289,7 @@ public class FilterDelegateImpl implements FilterDelegate {
                     if (Window.COMMIT_ACTION_ID.equals(actionId)) {
                         FilterEntity selectedEntity = window.getFilterEntity();
                         setFilterEntity(selectedEntity);
+                        applyWithImmediateMode();
                     }
                 });
             }
@@ -1289,6 +1307,7 @@ public class FilterDelegateImpl implements FilterDelegate {
             public void actionPerform(Component component) {
                 conditions = new ConditionsTree();
                 setFilterEntity(adHocFilter);
+                applyWithImmediateMode();
             }
 
             @Override
