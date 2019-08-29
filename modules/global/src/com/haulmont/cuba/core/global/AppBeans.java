@@ -76,6 +76,16 @@ public class AppBeans {
     }
 
     /**
+     * Return an instance of prototype bean, specifying explicit constructor arguments.
+     * @param beanType type the bean must match; can be an interface or superclass. {@code null} is disallowed.
+     * @param args  constructor arguments
+     * @return      bean instance
+     */
+    public static <T> T getPrototype(Class<T> beanType, Object... args) {
+        return getBeanLocator().getPrototype(beanType, args);
+    }
+
+    /**
      * Return the bean instances that match the given object type (including
      * subclasses).
      * <p>The Map returned by this method should always return bean names and

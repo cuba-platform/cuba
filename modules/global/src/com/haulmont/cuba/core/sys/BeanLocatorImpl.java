@@ -40,20 +40,7 @@ public class BeanLocatorImpl implements BeanLocator, ApplicationContextAware {
     @Override
     public <T> T get(Class<T> beanType) {
         Preconditions.checkNotNullArgument(beanType, "beanType is null");
-        String name = null;
-        Optional<String> optName = names.get(beanType);
-        //noinspection OptionalAssignedToNull
-        if (optName == null) {
-            // Try to find a bean name defined in its NAME static field
-            try {
-                Field nameField = beanType.getField("NAME");
-                name = (String) nameField.get(null);
-            } catch (NoSuchFieldException | IllegalAccessException ignore) {
-            }
-            names.put(beanType, Optional.ofNullable(name));
-        } else {
-            name = optName.orElse(null);
-        }
+        String name = findName(beanType);
         // If the name is found, look up the bean by name because it is much faster
         if (name == null)
             return applicationContext.getBean(beanType);
@@ -85,6 +72,18 @@ public class BeanLocatorImpl implements BeanLocator, ApplicationContextAware {
         return (T) applicationContext.getBean(name, args);
     }
 
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> T getPrototype(Class<T> beanType, Object... args) {
+        Preconditions.checkNotNullArgument(beanType, "beanType is null");
+        String name = findName(beanType);
+        // If the name is found, look up the bean by name
+        if (name == null)
+            return applicationContext.getBean(beanType);
+        else
+            return (T) applicationContext.getBean(name, args);
+    }
+
     @Override
     public <T> Map<String, T> getAll(Class<T> beanType) {
         return applicationContext.getBeansOfType(beanType);
@@ -98,5 +97,24 @@ public class BeanLocatorImpl implements BeanLocator, ApplicationContextAware {
     @Override
     public void setApplicationContext(@Nonnull ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
+    }
+
+    @Nullable
+    private <T> String findName(Class<T> beanType) {
+        String name = null;
+        Optional<String> optName = names.get(beanType);
+        //noinspection OptionalAssignedToNull
+        if (optName == null) {
+            // Try to find a bean name defined in its NAME static field
+            try {
+                Field nameField = beanType.getField("NAME");
+                name = (String) nameField.get(null);
+            } catch (NoSuchFieldException | IllegalAccessException ignore) {
+            }
+            names.put(beanType, Optional.ofNullable(name));
+        } else {
+            name = optName.orElse(null);
+        }
+        return name;
     }
 }
