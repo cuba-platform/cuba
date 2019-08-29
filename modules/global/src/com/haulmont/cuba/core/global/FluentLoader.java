@@ -24,6 +24,7 @@ import com.haulmont.cuba.core.global.queryconditions.Condition;
 import javax.annotation.CheckReturnValue;
 import javax.persistence.TemporalType;
 import java.util.*;
+import java.util.function.Consumer;
 
 public class FluentLoader<E extends Entity<K>, K> {
 
@@ -34,6 +35,7 @@ public class FluentLoader<E extends Entity<K>, K> {
 
     private View view;
     private String viewName;
+    private ViewBuilder viewBuilder;
     private boolean softDeletion = true;
     private boolean dynamicAttributes;
 
@@ -66,9 +68,17 @@ public class FluentLoader<E extends Entity<K>, K> {
             loadContext.setView(view);
         else if (!Strings.isNullOrEmpty(viewName))
             loadContext.setView(viewName);
+        else if (viewBuilder != null)
+            loadContext.setView(viewBuilder.build());
 
         loadContext.setSoftDeletion(softDeletion);
         loadContext.setLoadDynamicAttributes(dynamicAttributes);
+    }
+
+    private void createViewBuilder() {
+        if (viewBuilder == null) {
+            viewBuilder = AppBeans.getPrototype(ViewBuilder.NAME, entityClass);
+        }
     }
 
     /**
@@ -119,6 +129,42 @@ public class FluentLoader<E extends Entity<K>, K> {
      */
     public FluentLoader<E, K> view(String viewName) {
         this.viewName = viewName;
+        return this;
+    }
+
+    /**
+     * Sets a view configured by the {@link ViewBuilder}. For example:
+     * <pre>
+     *     dataManager.load(Pet.class)
+     *         .id(petId)
+     *         .view(viewBuilder -> viewBuilder.addAll(
+     *                 "name",
+     *                 "owner.name"))
+     *         .one();
+     * </pre>
+     */
+    public FluentLoader<E, K> view(Consumer<ViewBuilder> viewBuilderConfigurer) {
+        createViewBuilder();
+        viewBuilderConfigurer.accept(viewBuilder);
+        return this;
+    }
+
+    /**
+     * Sets a view containing the given properties. A property can be designated by a path in the entity graph.
+     * For example:
+     * <pre>
+     *     dataManager.load(Pet.class)
+     *         .id(petId)
+     *         .viewProperties(
+     *                 "name",
+     *                 "owner.name",
+     *                 "owner.address.city")
+     *         .one();
+     * </pre>
+     */
+    public FluentLoader<E, K> viewProperties(String... properties) {
+        createViewBuilder();
+        viewBuilder.addAll(properties);
         return this;
     }
 
@@ -228,6 +274,42 @@ public class FluentLoader<E extends Entity<K>, K> {
         }
 
         /**
+         * Sets a view configured by the {@link ViewBuilder}. For example:
+         * <pre>
+         *     dataManager.load(Pet.class)
+         *         .id(petId)
+         *         .view(viewBuilder -> viewBuilder.addAll(
+         *                 "name",
+         *                 "owner.name"))
+         *         .one();
+         * </pre>
+         */
+        public ById<E, K> view(Consumer<ViewBuilder> viewBuilderConfigurer) {
+            loader.createViewBuilder();
+            viewBuilderConfigurer.accept(loader.viewBuilder);
+            return this;
+        }
+
+        /**
+         * Sets a view containing the given properties. A property can be designated by a path in the entity graph.
+         * For example:
+         * <pre>
+         *     dataManager.load(Pet.class)
+         *         .id(petId)
+         *         .viewProperties(
+         *                 "name",
+         *                 "owner.name",
+         *                 "owner.address.city")
+         *         .one();
+         * </pre>
+         */
+        public ById<E, K> viewProperties(String... properties) {
+            loader.createViewBuilder();
+            loader.viewBuilder.addAll(properties);
+            return this;
+        }
+
+        /**
          * Sets soft deletion. The soft deletion is true by default.
          */
         public ById<E, K> softDeletion(boolean softDeletion) {
@@ -284,6 +366,42 @@ public class FluentLoader<E extends Entity<K>, K> {
          */
         public ByIds<E, K> view(String viewName) {
             loader.viewName = viewName;
+            return this;
+        }
+
+        /**
+         * Sets a view configured by the {@link ViewBuilder}. For example:
+         * <pre>
+         *     dataManager.load(Pet.class)
+         *         .ids(id1, id2)
+         *         .view(viewBuilder -> viewBuilder.addAll(
+         *                 "name",
+         *                 "owner.name"))
+         *         .list();
+         * </pre>
+         */
+        public ByIds<E, K> view(Consumer<ViewBuilder> viewBuilderConfigurer) {
+            loader.createViewBuilder();
+            viewBuilderConfigurer.accept(loader.viewBuilder);
+            return this;
+        }
+
+        /**
+         * Sets a view containing the given properties. A property can be designated by a path in the entity graph.
+         * For example:
+         * <pre>
+         *     dataManager.load(Pet.class)
+         *         .ids(id1, id2)
+         *         .viewProperties(
+         *                 "name",
+         *                 "owner.name",
+         *                 "owner.address.city")
+         *         .list();
+         * </pre>
+         */
+        public ByIds<E, K> viewProperties(String... properties) {
+            loader.createViewBuilder();
+            loader.viewBuilder.addAll(properties);
             return this;
         }
 
@@ -386,6 +504,42 @@ public class FluentLoader<E extends Entity<K>, K> {
          */
         public ByQuery<E, K> view(String viewName) {
             loader.viewName = viewName;
+            return this;
+        }
+
+        /**
+         * Sets a view configured by the {@link ViewBuilder}. For example:
+         * <pre>
+         *     dataManager.load(Pet.class)
+         *         .query("...")
+         *         .view(viewBuilder -> viewBuilder.addAll(
+         *                 "name",
+         *                 "owner.name"))
+         *         .list();
+         * </pre>
+         */
+        public ByQuery<E, K> view(Consumer<ViewBuilder> viewBuilderConfigurer) {
+            loader.createViewBuilder();
+            viewBuilderConfigurer.accept(loader.viewBuilder);
+            return this;
+        }
+
+        /**
+         * Sets a view containing the given properties. A property can be designated by a path in the entity graph.
+         * For example:
+         * <pre>
+         *     dataManager.load(Pet.class)
+         *         .query("...")
+         *         .viewProperties(
+         *                 "name",
+         *                 "owner.name",
+         *                 "owner.address.city")
+         *         .list();
+         * </pre>
+         */
+        public ByQuery<E, K> viewProperties(String... properties) {
+            loader.createViewBuilder();
+            loader.viewBuilder.addAll(properties);
             return this;
         }
 

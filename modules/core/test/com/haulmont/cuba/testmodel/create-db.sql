@@ -1307,3 +1307,35 @@ create table TEST_ECE_LOG (
     MESSAGE varchar(200),
     primary key (ID)
 )^
+
+------------------------------------------------------------------------------------------------------------------------
+
+create table TEST_PC_OWNER (
+    ID varchar(36) not null,
+    CREATE_TS timestamp,
+    CREATED_BY varchar(50),
+    VERSION integer,
+    UPDATE_TS timestamp,
+    UPDATED_BY varchar(50),
+    DELETE_TS timestamp,
+    DELETED_BY varchar(50),
+    NAME varchar(255),
+    CITY varchar(255),
+    ZIP varchar(10),
+    primary key (ID)
+)^
+
+create table TEST_PC_PET (
+    ID varchar(36) not null,
+    CREATE_TS timestamp,
+    CREATED_BY varchar(50),
+    VERSION integer,
+    UPDATE_TS timestamp,
+    UPDATED_BY varchar(50),
+    DELETE_TS timestamp,
+    DELETED_BY varchar(50),
+    NAME varchar(255),
+    OWNER_ID varchar(36),
+    primary key (ID),
+    constraint FK_TEST_PC_PET_OWNER foreign key (OWNER_ID) references TEST_PC_OWNER
+)^
