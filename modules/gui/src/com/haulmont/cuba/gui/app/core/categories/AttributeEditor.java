@@ -477,8 +477,12 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
         if (optionsType == GROOVY) {
             optionsLoaderScript.setContextHelpIconClickHandler(e -> showMessageDialog(getMessage("optionsLoaderGroovyScript"), getMessage("optionsLoaderGroovyScriptHelp"),
                     MessageType.CONFIRMATION_HTML.modal(false).width(560f)));
+            optionsLoaderScript.setMode(SourceCodeEditor.Mode.Groovy);
+        } else if (optionsType == SQL) {
+            optionsLoaderScript.setMode(SourceCodeEditor.Mode.SQL);
         } else {
             optionsLoaderScript.setContextHelpIconClickHandler(null);
+            optionsLoaderScript.setMode(SourceCodeEditor.Mode.Text);
         }
 
         optionsLoaderType.setEnabled(Boolean.TRUE.equals(attribute.getLookup()));

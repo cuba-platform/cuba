@@ -60,7 +60,7 @@
                         </field>
                     </fieldGroup>
                     <fieldGroup id="optionalAttributeFieldGroup" datasource="attributeDs" width="100%" visible="false">
-                        <field id="lookup" property="lookup"/>
+                        <field id="lookup" property="lookup" width="17px" contextHelpText="msg://lookupContextHelp"/>
                         <field id="isCollection" property="isCollection"/>
                         <field id="entityClass" required="true" width="100%" caption="msg://entityType">
                             <lookupField id="entityClass"
