@@ -238,7 +238,9 @@ public class AppPropertiesLocator {
             }
 
             if (Double.class.isAssignableFrom(method.getReturnType())
-                    || Float.class.isAssignableFrom(method.getReturnType())) {
+                    || Float.class.isAssignableFrom(method.getReturnType())
+                    || double.class.isAssignableFrom(method.getReturnType())
+                    || float.class.isAssignableFrom(method.getReturnType())) {
                 return new DecimalStringify();
             }
 
@@ -352,6 +354,8 @@ public class AppPropertiesLocator {
                         .map(Object::toString)
                         .collect(Collectors.joining(",")));
             }
+        } else if (returnType == Float.class) {
+            entity.setDataTypeName(datatypes.getIdByJavaClass(Double.class));
         } else {
             Datatype<?> datatype = datatypes.get(returnType);
             if (datatype != null)

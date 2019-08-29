@@ -108,8 +108,11 @@ public class AppPropertiesEdit extends AbstractWindow {
                         textField.setValue(item.getCurrentValue());
 
                         try {
-                            datatype.parse(item.getCurrentValue(), userSessionSource.getLocale());
+                            Object value = datatype.parse(item.getCurrentValue(), userSessionSource.getLocale());
                             textField.setDatatype(datatype);
+                            if (value != null) {
+                                item.setCurrentValue(value.toString());
+                            }
                         } catch (ParseException e) {
                             // do not assign datatype then
                             log.trace("Localized parsing by datatype cannot be used for value {}", item.getCurrentValue());
