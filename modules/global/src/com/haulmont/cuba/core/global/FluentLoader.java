@@ -137,7 +137,7 @@ public class FluentLoader<E extends Entity<K>, K> {
      * <pre>
      *     dataManager.load(Pet.class)
      *         .id(petId)
-     *         .view(viewBuilder -> viewBuilder.addAll(
+     *         .view(viewBuilder -&gt; viewBuilder.addAll(
      *                 "name",
      *                 "owner.name"))
      *         .one();
