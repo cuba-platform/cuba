@@ -376,15 +376,12 @@ public class FilterDelegateImpl implements FilterDelegate {
         ftsSearchCriteriaField = uiComponents.create(TextField.NAME);
         ftsSearchCriteriaField.setWidth(theme.get("cuba.gui.filter.ftsSearchCriteriaField.width"));
         ftsSearchCriteriaField.setInputPrompt(getMainMessage("filter.enterSearchPhrase"));
-        if (!isApplyImmediately()) {
-            filterHelper.addShortcutListener(ftsSearchCriteriaField, createFtsSearchShortcutListener());
-        } else {
-            ftsSearchCriteriaField.addValueChangeListener(stringValueChangeEvent -> {
-                if (isApplyImmediately()) {
-                    applyFts();
-                }
-            });
-        }
+        filterHelper.addShortcutListener(ftsSearchCriteriaField, createFtsSearchShortcutListener());
+        ftsSearchCriteriaField.addValueChangeListener(valueChangeEvent -> {
+            if (isApplyImmediately()) {
+                applyFts();
+            }
+        });
 
         filterHelper.setInternalDebugId(ftsSearchCriteriaField, "ftsSearchCriteriaField");
 
@@ -421,7 +418,10 @@ public class FilterDelegateImpl implements FilterDelegate {
         return new FilterHelper.ShortcutListener("ftsSearch", new KeyCombination(Key.ENTER)) {
             @Override
             public void handleShortcutPressed() {
-                applyFts();
+                // disable search in immediate mode, because it will be handled in value change listener
+                if (!isApplyImmediately()) {
+                    applyFts();
+                }
             }
         };
     }
