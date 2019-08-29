@@ -278,7 +278,7 @@ public class FluentLoader<E extends Entity<K>, K> {
          * <pre>
          *     dataManager.load(Pet.class)
          *         .id(petId)
-         *         .view(viewBuilder -> viewBuilder.addAll(
+         *         .view(viewBuilder -&gt; viewBuilder.addAll(
          *                 "name",
          *                 "owner.name"))
          *         .one();
@@ -374,7 +374,7 @@ public class FluentLoader<E extends Entity<K>, K> {
          * <pre>
          *     dataManager.load(Pet.class)
          *         .ids(id1, id2)
-         *         .view(viewBuilder -> viewBuilder.addAll(
+         *         .view(viewBuilder -&gt; viewBuilder.addAll(
          *                 "name",
          *                 "owner.name"))
          *         .list();
@@ -512,7 +512,7 @@ public class FluentLoader<E extends Entity<K>, K> {
          * <pre>
          *     dataManager.load(Pet.class)
          *         .query("...")
-         *         .view(viewBuilder -> viewBuilder.addAll(
+         *         .view(viewBuilder -&gt; viewBuilder.addAll(
          *                 "name",
          *                 "owner.name"))
          *         .list();
