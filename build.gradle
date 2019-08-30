@@ -438,6 +438,8 @@ configure(coreModule) {
         testCompile(bom['org.codehaus.groovy:groovy-json'])
 
         compile(bom['software.amazon.awssdk:s3'])
+
+        compile(bom['com.zaxxer:HikariCP'])
     }
 
     entitiesEnhancing {
