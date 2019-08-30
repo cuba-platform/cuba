@@ -25,6 +25,13 @@ public interface BrowserFrame extends ResourceView {
     String NAME = "browserFrame";
 
     /**
+     * Resets the component source and disposes of the corresponding resource.
+     */
+    default void reset() {
+        setSource((Resource) null);
+    }
+
+    /**
      * @return value of the attribute sandbox
      */
     String getSandbox();

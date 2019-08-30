@@ -75,6 +75,13 @@ public interface Image extends ResourceView, HasValueSource<FileDescriptor> {
     }
 
     /**
+     * Resets the component source and disposes of the corresponding resource.
+     */
+    default void reset() {
+        setSource((Resource) null);
+    }
+
+    /**
      * @return image scale mode
      */
     ScaleMode getScaleMode();
