@@ -37,17 +37,13 @@ public class CubaTextField extends TextField implements Action.Container, Legacy
      */
     protected ActionManager shortcutsManager;
 
-    protected boolean actionsInitialized = false;
-
     public CubaTextField() {
     }
 
     @Override
     public void paintContent(PaintTarget target) throws PaintException {
-        if (shortcutsManager != null && !actionsInitialized) {
+        if (shortcutsManager != null) {
             shortcutsManager.paintActions(null, target);
-
-            actionsInitialized = true;
         }
     }
 
