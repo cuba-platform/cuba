@@ -2957,7 +2957,7 @@ public class FilterDelegateImpl implements FilterDelegate {
                 throw new UnsupportedOperationException("Unsupported data unit " + target.getItems());
             }
 
-            if (size == 1) {
+            if (size == selected.size()) {
                 filterHelper.removeFolderFromFoldersPane(filterEntity.getFolder());
                 removeFilterEntity();
 
