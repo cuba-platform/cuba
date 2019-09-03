@@ -2592,7 +2592,10 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
         Grid.Column<E, Object> generatedColumn =
                 component.addColumn(createGeneratedColumnValueProvider(columnId, generator));
 
-        ColumnImpl<E> column = new ColumnImpl<>(columnId, generator.getType(), this);
+        // Pass propertyPath from the existing column to support sorting
+        ColumnImpl<E> column = new ColumnImpl<>(columnId,
+                existingColumn != null ? existingColumn.getPropertyPath() : null,
+                generator.getType(), this);
         if (existingColumn != null) {
             copyColumnProperties(column, existingColumn);
         } else {
@@ -2640,6 +2643,15 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
         column.setStyleProvider(existingColumn.getStyleProvider());
         column.setDescriptionProvider(existingColumn.getDescriptionProvider(),
                 ((ColumnImpl) existingColumn).getDescriptionContentMode());
+
+        // If the new column has propertyPath and it equals to propertyPath
+        // of the existing column, then coping the Sortable state, as it seems
+        // that the new column corresponds to the generated column that is
+        // related to the existing Entity attribute, so that this column can be sortable
+        if (column.getPropertyPath() != null
+                && column.getPropertyPath().equals(existingColumn.getPropertyPath())) {
+            column.setSortable(existingColumn.isSortable());
+        }
     }
 
     @Override
@@ -3290,7 +3302,7 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
         }
 
         protected ColumnImpl(String id,
-                             @Nullable MetaPropertyPath propertyPath, Class type, WebAbstractDataGrid<?, E> owner) {
+                          @Nullable MetaPropertyPath propertyPath, Class type, WebAbstractDataGrid<?, E> owner) {
             this.id = id;
             this.propertyPath = propertyPath;
             this.type = type;
