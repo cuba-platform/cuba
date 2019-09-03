@@ -2581,7 +2581,7 @@ public class FilterDelegateImpl implements FilterDelegate {
                 return;
             }
 
-            if (target.getDatasource().getItemIds().size() == 1) {
+            if (target.getDatasource().getItemIds().size() == selected.size()) {
                 filterHelper.removeFolderFromFoldersPane(filterEntity.getFolder());
                 removeFilterEntity();
 
