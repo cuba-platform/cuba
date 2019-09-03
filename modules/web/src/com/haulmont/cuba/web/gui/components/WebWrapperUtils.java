@@ -48,6 +48,7 @@ import com.vaadin.shared.ui.datefield.DateResolution;
 import com.vaadin.shared.ui.grid.ColumnResizeMode;
 import com.vaadin.shared.ui.grid.GridStaticCellType;
 import com.vaadin.shared.ui.grid.ScrollDestination;
+import com.vaadin.shared.ui.slider.SliderOrientation;
 import com.vaadin.ui.Dependency;
 import com.vaadin.v7.shared.ui.combobox.FilteringMode;
 import com.vaadin.v7.ui.AbstractSelect;
@@ -613,6 +614,32 @@ public final class WebWrapperUtils {
                 return Orientation.HORIZONTAL;
             default:
                 throw new IllegalArgumentException("Can't be converted to Orientation: " + orientation);
+        }
+    }
+
+    public static HasOrientation.Orientation fromVaadinSliderOrientation(SliderOrientation orientation) {
+        checkNotNullArgument(orientation);
+
+        switch (orientation) {
+            case VERTICAL:
+                return HasOrientation.Orientation.VERTICAL;
+            case HORIZONTAL:
+                return HasOrientation.Orientation.HORIZONTAL;
+            default:
+                throw new IllegalArgumentException("Can't be converted to HasOrientation.Orientation: " + orientation);
+        }
+    }
+
+    public static SliderOrientation toVaadinSliderOrientation(HasOrientation.Orientation orientation) {
+        checkNotNullArgument(orientation);
+
+        switch (orientation) {
+            case VERTICAL:
+                return SliderOrientation.VERTICAL;
+            case HORIZONTAL:
+                return SliderOrientation.HORIZONTAL;
+            default:
+                throw new IllegalArgumentException("Can't be converted to SliderOrientation: " + orientation);
         }
     }
 

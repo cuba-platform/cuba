@@ -81,6 +81,7 @@ public class WebUiComponents implements UiComponents {
         classes.put(SourceCodeEditor.NAME, WebSourceCodeEditor.class);
         classes.put(TextField.NAME, WebTextField.class);
         classes.put(PasswordField.NAME, WebPasswordField.class);
+        classes.put(Slider.NAME, WebSlider.class);
 
         classes.put(ResizableTextArea.NAME, WebResizableTextArea.class);
         classes.put(TextArea.NAME, WebTextArea.class);

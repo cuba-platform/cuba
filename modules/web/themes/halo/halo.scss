@@ -83,6 +83,7 @@
 @import "components/image/image";
 @import "components/capslockindicator/capslockindicator";
 @import "components/accordion/accordion";
+@import "components/slider/slider";
 
 // Application specific
 @import "app/log-control";
@@ -168,6 +169,7 @@
   @include halo-accordion;
   @include halo-cuba-image;
   @include halo-cuba-currencyfield;
+  @include halo-slider;
 
   @include halo-cuba-groupbox;
   @include halo-cuba-tokenlist;

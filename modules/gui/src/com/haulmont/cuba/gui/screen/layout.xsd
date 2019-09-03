@@ -1563,6 +1563,23 @@
         </xs:complexContent>
     </xs:complexType>
 
+    <!-- Slider -->
+    <xs:complexType name="sliderComponent">
+        <xs:complexContent>
+            <xs:extension base="baseFieldComponent">
+                <xs:attribute name="datatype" type="numericDatatypeEnum"/>
+
+                <xs:attribute name="min" type="xs:double"/>
+                <xs:attribute name="max" type="xs:double"/>
+
+                <xs:attribute name="orientation" type="orientation"/>
+                <xs:attribute name="resolution" type="xs:int"/>
+
+                <xs:attribute name="updateValueOnClick" type="xs:boolean"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
     <!-- DatePicker -->
     <xs:complexType name="datePickerComponent">
         <xs:complexContent>
@@ -3536,6 +3553,7 @@
                 <xs:element name="link" type="linkComponent"/>
                 <xs:element name="checkBox" type="checkBoxComponent"/>
                 <xs:element name="datePicker" type="datePickerComponent"/>
+                <xs:element name="slider" type="sliderComponent"/>
 
                 <xs:element name="textArea" type="textAreaComponent"/>
                 <xs:element name="resizableTextArea" type="resizableTextAreaComponent"/>

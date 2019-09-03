@@ -57,6 +57,7 @@ public class LayoutLoaderConfig {
         loaders.put(CheckBox.NAME, CheckBoxLoader.class);
         loaders.put(Label.NAME, LabelLoader.class);
         loaders.put(Link.NAME, LinkLoader.class);
+        loaders.put(Slider.NAME, SliderLoader.class);
 
         loaders.put(TextField.NAME, TextFieldLoader.class);
         loaders.put(MaskedField.NAME, MaskedFieldLoader.class);
