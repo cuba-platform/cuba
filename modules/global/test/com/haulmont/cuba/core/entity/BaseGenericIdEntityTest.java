@@ -110,7 +110,7 @@ public class BaseGenericIdEntityTest {
             }
 
              @Override
-            public <T> T create(Class<T> entityClass) {
+            public <T extends Entity> T create(Class<T> entityClass) {
                 if (User.class.equals(entityClass)) {
                     return (T) new User();
                 }

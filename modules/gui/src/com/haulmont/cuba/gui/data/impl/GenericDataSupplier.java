@@ -91,7 +91,7 @@ public class GenericDataSupplier implements DataSupplier {
     }
 
     @Override
-    public <T> T create(Class<T> entityClass) {
+    public <T extends Entity> T create(Class<T> entityClass) {
         return getDataManager().create(entityClass);
     }
 

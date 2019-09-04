@@ -257,7 +257,7 @@ public class SecurityImpl implements Security {
     protected Object parseValue(Class<?> clazz, String string) {
         try {
             if (Entity.class.isAssignableFrom(clazz)) {
-                Object entity = metadata.create(clazz);
+                Object entity = metadata.create((Class<Entity>)clazz);
                 if (entity instanceof BaseIntegerIdEntity) {
                     ((BaseIntegerIdEntity) entity).setId(Integer.valueOf(string));
                 } else if (entity instanceof BaseLongIdEntity) {

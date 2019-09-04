@@ -260,7 +260,7 @@ public interface DataManager {
      * Creates a new entity instance in memory. This is a shortcut to {@code Metadata.create()}.
      * @param entityClass   entity class
      */
-    <T> T create(Class<T> entityClass);
+    <T extends Entity> T create(Class<T> entityClass);
 
     /**
      * Returns an entity instance which can be used as a reference to an object which exists in the database.

@@ -291,7 +291,7 @@ public class DataManagerBean implements DataManager {
     }
 
     @Override
-    public <T> T create(Class<T> entityClass) {
+    public <T extends Entity> T create(Class<T> entityClass) {
         return metadata.create(entityClass);
     }
 

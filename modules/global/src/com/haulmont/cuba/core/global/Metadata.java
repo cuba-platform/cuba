@@ -66,7 +66,7 @@ public interface Metadata extends Session {
      * @param entityClass   entity class
      * @return              entity instance
      */
-    <T> T create(Class<T> entityClass);
+    <T extends Entity> T create(Class<T> entityClass);
 
     /**
      * Instantiate an entity, taking into account extended entities.
