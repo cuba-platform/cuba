@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.ListIterator;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 /**
  *
@@ -32,11 +33,14 @@ class ObservableListIterator<T> extends ForwardingListIterator<T> {
 
     private ListIterator<T> delegate;
     private BiConsumer<CollectionChangeType, Collection<? extends T>> onCollectionChanged;
+    private Consumer<T> onAddItem;
 
     protected ObservableListIterator(ListIterator<T> delegate,
-                                     BiConsumer<CollectionChangeType, Collection<? extends T>> onCollectionChanged) {
+                                     BiConsumer<CollectionChangeType, Collection<? extends T>> onCollectionChanged,
+                                     Consumer<T> onAddItem) {
         this.delegate = delegate;
         this.onCollectionChanged = onCollectionChanged;
+        this.onAddItem = onAddItem;
     }
 
     protected void fireCollectionChanged(CollectionChangeType type, Collection<? extends T> changes) {
@@ -52,20 +56,23 @@ class ObservableListIterator<T> extends ForwardingListIterator<T> {
     @Override
     public void add(T element) {
         super.add(element);
+        doOnAddItem(element);
         fireCollectionChanged(CollectionChangeType.ADD_ITEMS, Collections.singletonList(element));
     }
 
     @Override
     public void set(T element) {
-        super.set(element);
-        fireCollectionChanged(CollectionChangeType.SET_ITEM, Collections.singletonList(element));
+        throw new UnsupportedOperationException("ObservableListIterator does not support 'set' operation");
     }
 
     @Override
     public void remove() {
-        super.remove();
-        fireCollectionChanged(CollectionChangeType.REFRESH, Collections.emptyList());
+        throw new UnsupportedOperationException("ObservableListIterator does not support 'remove' operation");
     }
 
-
+    protected void doOnAddItem(T item) {
+        if (item != null && onAddItem != null) {
+            onAddItem.accept(item);
+        }
+    }
 }

@@ -142,4 +142,25 @@ class CollectionPropertyContainerTest extends WebSpec {
 
         order.orderLines == [orderLine2, orderLine1]
     }
+
+    def "items added to mutableItems produce PropertyChangeEvent"() {
+        orderCt.setItem(order)
+        def orderLine3 = new OrderLine(order: this.order, quantity: 3)
+
+        def listener = Mock(Consumer)
+
+        linesCt.mutableItems.add(orderLine3)
+        linesCt.addItemPropertyChangeListener(listener)
+
+        when:
+        orderLine3.quantity = 33
+
+        then:
+        1 * listener.accept(_) >> { List arguments ->
+            InstanceContainer.ItemPropertyChangeEvent event = arguments[0]
+            assert event.item == orderLine3
+            assert event.property == 'quantity'
+            assert event.value == 33
+        }
+    }
 }

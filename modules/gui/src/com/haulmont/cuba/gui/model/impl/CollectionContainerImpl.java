@@ -71,11 +71,15 @@ public class CollectionContainerImpl<E extends Entity>
 
     @Override
     public List<E> getMutableItems() {
-        return new ObservableList<>(collection, idMap, (changeType, changes) -> {
-            buildIdMap();
-            clearItemIfNotExists();
-            fireCollectionChanged(changeType, changes);
-        });
+        return new ObservableList<>(collection, idMap,
+                (changeType, changes) -> {
+                    buildIdMap();
+                    clearItemIfNotExists();
+                    fireCollectionChanged(changeType, changes);
+                },
+                this::detachListener,
+                this::attachListener
+        );
     }
 
     @Override

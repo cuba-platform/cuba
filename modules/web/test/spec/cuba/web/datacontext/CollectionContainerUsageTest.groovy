@@ -22,6 +22,7 @@ import com.haulmont.cuba.gui.components.data.table.ContainerTableItems
 import com.haulmont.cuba.gui.model.CollectionChangeType
 import com.haulmont.cuba.gui.model.CollectionContainer
 import com.haulmont.cuba.gui.model.DataContext
+import com.haulmont.cuba.gui.model.InstanceContainer
 import com.haulmont.cuba.web.testmodel.datacontext.Foo
 import spec.cuba.web.WebSpec
 
@@ -351,6 +352,26 @@ class CollectionContainerUsageTest extends WebSpec {
             CollectionChangeEvent event = arguments[0]
             assert event.changeType == CollectionChangeType.REMOVE_ITEMS
             assert event.changes == [foo2, foo3]
+        }
+    }
+
+    def "items added to mutableItems produce PropertyChangeEvent"() {
+        Foo foo1 = new Foo(name: 'foo1')
+
+        def listener = Mock(Consumer)
+
+        container.mutableItems.add(foo1)
+        container.addItemPropertyChangeListener(listener)
+
+        when:
+        foo1.name = '111'
+
+        then:
+        1 * listener.accept(_) >> { List arguments ->
+            InstanceContainer.ItemPropertyChangeEvent event = arguments[0]
+            assert event.item == foo1
+            assert event.property == 'name'
+            assert event.value == '111'
         }
     }
 }

@@ -17,28 +17,15 @@
 package com.haulmont.cuba.gui.model.impl;
 
 import com.google.common.collect.ForwardingIterator;
-import com.haulmont.cuba.gui.model.CollectionChangeType;
 
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
-import java.util.function.BiConsumer;
 
 class ObservableIterator<T> extends ForwardingIterator<T> {
 
     private Iterator<T> delegate;
-    private BiConsumer<CollectionChangeType, Collection<? extends T>> onCollectionChanged;
 
-    protected ObservableIterator(Iterator<T> delegate,
-                                 BiConsumer<CollectionChangeType, Collection<? extends T>> onCollectionChanged) {
+    protected ObservableIterator(Iterator<T> delegate) {
         this.delegate = delegate;
-        this.onCollectionChanged = onCollectionChanged;
-    }
-
-    protected void fireCollectionChanged(CollectionChangeType type, Collection<? extends T> changes) {
-        if (onCollectionChanged != null) {
-            onCollectionChanged.accept(type, changes);
-        }
     }
 
     @Override
@@ -48,7 +35,6 @@ class ObservableIterator<T> extends ForwardingIterator<T> {
 
     @Override
     public void remove() {
-        super.remove();
-        fireCollectionChanged(CollectionChangeType.REFRESH, Collections.emptyList());
+        throw new UnsupportedOperationException("ObservableIterator does not support 'remove' operation");
     }
 }

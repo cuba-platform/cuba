@@ -113,6 +113,6 @@ public class ObservableSet<T> extends ForwardingSet<T> implements Serializable {
 
     @Override
     public Iterator<T> iterator() {
-        return new ObservableIterator<>(super.iterator(), onCollectionChanged);
+        return new ObservableIterator<>(super.iterator());
     }
 }
