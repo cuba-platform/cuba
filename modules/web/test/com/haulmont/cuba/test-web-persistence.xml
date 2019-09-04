@@ -24,6 +24,7 @@
         <class>com.haulmont.cuba.web.testmodel.datacontext.Foo</class>
         <class>com.haulmont.cuba.web.testmodel.datacontext.TestStringIdEntity</class>
         <class>com.haulmont.cuba.web.testmodel.datacontext.TestIdentityIdEntity</class>
+        <class>com.haulmont.cuba.web.testmodel.datacontext.TestReadOnlyPropertyEntity</class>
 
         <class>com.haulmont.cuba.web.testmodel.sales.Address</class>
         <class>com.haulmont.cuba.web.testmodel.sales.Customer</class>

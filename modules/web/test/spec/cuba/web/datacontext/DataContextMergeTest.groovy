@@ -25,6 +25,7 @@ import com.haulmont.cuba.gui.model.DataComponents
 import com.haulmont.cuba.gui.model.DataContext
 import com.haulmont.cuba.security.entity.User
 import com.haulmont.cuba.web.container.CubaTestContainer
+import com.haulmont.cuba.web.testmodel.datacontext.TestReadOnlyPropertyEntity
 import com.haulmont.cuba.web.testmodel.sales.Customer
 import com.haulmont.cuba.web.testmodel.sales.Order
 import com.haulmont.cuba.web.testmodel.sales.OrderLine
@@ -648,6 +649,20 @@ class DataContextMergeTest extends Specification {
         BaseEntityInternalAccess.getSecurityState(orderInContext).is(securityState)
         BaseEntityInternalAccess.isNew(orderInContext)
 
+    }
+
+    def "read-only properties are copied on merge"() {
+        DataContext context = factory.createDataContext()
+
+        def entity = new TestReadOnlyPropertyEntity(name: 'name1')
+        entity.initReadOnlyProperties()
+
+        when:
+        def mergedEntity = context.merge(entity)
+
+        then:
+        mergedEntity.getRoName() == 'roValue'
+        mergedEntity.getRoList().size() == 1
     }
 
     private UUID uuid(int val) {

@@ -35,6 +35,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 
 import javax.annotation.Nullable;
+import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.function.Consumer;
@@ -234,11 +236,12 @@ public class DataContextImpl implements DataContext {
         mergeSystemState(srcEntity, dstEntity, isRoot);
 
         MetaClass metaClass = getMetadata().getClassNN(srcEntity.getClass());
+        MetaProperty primaryKeyProperty = getMetadataTools().getPrimaryKeyProperty(metaClass);
 
         for (MetaProperty property : metaClass.getProperties()) {
             String propertyName = property.getName();
             if (!property.getRange().isClass()                                             // local
-                    && !property.isReadOnly()                                              // read-write
+                    && property != primaryKeyProperty                                      // not PK
                     && (srcNew || entityStates.isLoaded(srcEntity, propertyName))          // loaded src
                     && (dstNew || entityStates.isLoaded(dstEntity, propertyName))) {       // loaded dst
 
@@ -249,14 +252,14 @@ public class DataContextImpl implements DataContext {
                     continue;
                 }
 
-                dstEntity.setValue(propertyName, value);
+                setPropertyValue(dstEntity, property, value);
             }
         }
 
         for (MetaProperty property : metaClass.getProperties()) {
             String propertyName = property.getName();
             if (property.getRange().isClass()                                              // refs and collections
-                    && !property.isReadOnly()                                              // read-write
+                    && property != primaryKeyProperty                                      // not PK
                     && (srcNew || entityStates.isLoaded(srcEntity, propertyName))          // loaded src
                     && (dstNew || entityStates.isLoaded(dstEntity, propertyName))) {       // loaded dst
 
@@ -268,15 +271,15 @@ public class DataContextImpl implements DataContext {
                 }
 
                 if (value == null) {
-                    dstEntity.setValue(propertyName, null);
+                    setPropertyValue(dstEntity, property, null);
                     continue;
                 }
 
                 if (value instanceof Collection) {
                     if (value instanceof List) {
-                        mergeList((List) value, dstEntity, property.getName(), isRoot, mergedSet);
+                        mergeList((List) value, dstEntity, property, isRoot, mergedSet);
                     } else if (value instanceof Set) {
-                        mergeSet((Set) value, dstEntity, property.getName(), isRoot, mergedSet);
+                        mergeSet((Set) value, dstEntity, property, isRoot, mergedSet);
                     } else {
                         throw new UnsupportedOperationException("Unsupported collection type: " + value.getClass().getName());
                     }
@@ -299,6 +302,23 @@ public class DataContextImpl implements DataContext {
                             log.debug("Instance was merged but managed instance is null: {}", srcRef);
                         }
                     }
+                }
+            }
+        }
+    }
+
+    protected void setPropertyValue(Entity entity, MetaProperty property, Object value) {
+        if (!property.isReadOnly()) {
+            entity.setValue(property.getName(), value);
+        } else {
+            AnnotatedElement annotatedElement = property.getAnnotatedElement();
+            if (annotatedElement instanceof Field) {
+                Field field = (Field) annotatedElement;
+                field.setAccessible(true);
+                try {
+                    field.set(entity, value);
+                } catch (IllegalAccessException e) {
+                    throw new RuntimeException("Unable to set property value", e);
                 }
             }
         }
@@ -346,7 +366,7 @@ public class DataContextImpl implements DataContext {
         }
     }
 
-    protected void mergeList(List<Entity> list, Entity managedEntity, String propertyName, boolean replace,
+    protected void mergeList(List<Entity> list, Entity managedEntity, MetaProperty property, boolean replace,
                              Set<Entity> mergedSet) {
         if (replace) {
             List<Entity> managedRefs = new ArrayList<>(list.size());
@@ -355,13 +375,13 @@ public class DataContextImpl implements DataContext {
                 managedRefs.add(managedRef);
             }
             List<Entity> dstList = createObservableList(managedRefs, managedEntity);
-            managedEntity.setValue(propertyName, dstList);
+            setPropertyValue(managedEntity, property, dstList);
 
         } else {
-            List<Entity> dstList = managedEntity.getValue(propertyName);
+            List<Entity> dstList = managedEntity.getValue(property.getName());
             if (dstList == null) {
                 dstList = createObservableList(managedEntity);
-                managedEntity.setValue(propertyName, dstList);
+                setPropertyValue(managedEntity, property, dstList);
             }
             if (dstList.size() == 0) {
                 for (Entity srcRef : list) {
@@ -378,7 +398,7 @@ public class DataContextImpl implements DataContext {
         }
     }
 
-    protected void mergeSet(Set<Entity> set, Entity managedEntity, String propertyName, boolean replace,
+    protected void mergeSet(Set<Entity> set, Entity managedEntity, MetaProperty property, boolean replace,
                             Set<Entity> mergedSet) {
         if (replace) {
             Set<Entity> managedRefs = new LinkedHashSet<>(set.size());
@@ -387,13 +407,13 @@ public class DataContextImpl implements DataContext {
                 managedRefs.add(managedRef);
             }
             Set<Entity> dstList = createObservableSet(managedRefs, managedEntity);
-            managedEntity.setValue(propertyName, dstList);
+            setPropertyValue(managedEntity, property, dstList);
 
         } else {
-            Set<Entity> dstSet = managedEntity.getValue(propertyName);
+            Set<Entity> dstSet = managedEntity.getValue(property.getName());
             if (dstSet == null) {
                 dstSet = createObservableSet(managedEntity);
-                managedEntity.setValue(propertyName, dstSet);
+                setPropertyValue(managedEntity, property, dstSet);
             }
             if (dstSet.size() == 0) {
                 for (Entity srcRef : set) {

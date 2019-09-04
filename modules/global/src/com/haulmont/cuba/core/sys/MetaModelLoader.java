@@ -422,6 +422,7 @@ public class MetaModelLoader {
             assignInverse(property, range, inverseField);
         }
         property.setMandatory(mandatory);
+        property.setReadOnly(!setterExists(field));
 
         tasks.addAll(info.getTasks());
 
