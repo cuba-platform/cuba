@@ -302,7 +302,7 @@ public class CleanupTools {
      * executing.
      *
      * @param thread    The thread to wake up and wait for
-     * @param waitMs    The no of milliseconds to wait. If <= 0 this method does nothing.
+     * @param waitMs    The no of milliseconds to wait. If &lt;= 0 this method does nothing.
      * @param interrupt Should {@link Thread#interrupt()} be called first, to make thread stop sleep(), wait() or join()?
      */
     public void waitForThread(Thread thread, long waitMs, boolean interrupt) {
