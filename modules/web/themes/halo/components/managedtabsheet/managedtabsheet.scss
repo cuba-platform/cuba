@@ -82,6 +82,10 @@ $c-managed-tabsheet-tabbar-height:
         visibility: hidden;
       }
 
+      &.hidden-tab svg {
+        display: none;
+      }
+
       &.visible-tab {
         display: block;
         visibility: visible;
