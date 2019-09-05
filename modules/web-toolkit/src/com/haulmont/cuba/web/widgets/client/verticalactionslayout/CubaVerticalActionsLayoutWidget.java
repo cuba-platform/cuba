@@ -17,7 +17,10 @@
 
 package com.haulmont.cuba.web.widgets.client.verticalactionslayout;
 
+import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.ui.Widget;
 import com.haulmont.cuba.web.widgets.client.orderedactionslayout.CubaOrderedActionsLayoutWidget;
+import com.vaadin.client.ComputedStyle;
 
 public class CubaVerticalActionsLayoutWidget extends CubaOrderedActionsLayoutWidget {
 
@@ -25,5 +28,11 @@ public class CubaVerticalActionsLayoutWidget extends CubaOrderedActionsLayoutWid
 
     public CubaVerticalActionsLayoutWidget(){
         super(CLASSNAME, true);
+    }
+
+    @Override
+    protected int computeWidgetHeight(Widget w) {
+        Element el = w.getElement();
+        return (int) new ComputedStyle(el).getHeight();
     }
 }
