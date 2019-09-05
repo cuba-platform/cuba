@@ -21,11 +21,11 @@ import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Label;
-import com.vaadin.client.ui.VPanel;
+import com.vaadin.client.ui.VCssLayout;
 
-public class CubaTokenListLabelWidget extends VPanel {
+public class CubaTokenListLabelWidget extends VCssLayout {
 
-    public static final String CLASSNAME = "c-tokenlist-label";
+    protected static final String CLOSE_STYLENAME = "c-tokenlist-label-close";
 
     private Label label = new Label();
     private Element closeDiv = DOM.createDiv();
@@ -36,7 +36,6 @@ public class CubaTokenListLabelWidget extends VPanel {
     protected TokenListLabelHandler handler;
 
     public CubaTokenListLabelWidget() {
-        setStyleName(CLASSNAME);
         add(label);
         label.setStyleName("content");
         label.addClickHandler(event -> {
@@ -45,8 +44,8 @@ public class CubaTokenListLabelWidget extends VPanel {
             }
         });
 
-        closeDiv.setClassName(CLASSNAME + "-close");
-        contentNode.appendChild(closeDiv);
+        closeDiv.setClassName(CLOSE_STYLENAME);
+        getElement().appendChild(closeDiv);
         DOM.sinkEvents(closeDiv, Event.ONCLICK);
     }
 

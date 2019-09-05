@@ -18,31 +18,16 @@
 package com.haulmont.cuba.web.widgets.client.tokenlistlabel;
 
 import com.haulmont.cuba.web.widgets.CubaTokenListLabel;
-import com.haulmont.cuba.web.widgets.client.Tools;
-import com.vaadin.client.ApplicationConnection;
-import com.vaadin.client.UIDL;
 import com.vaadin.client.communication.StateChangeEvent;
-import com.vaadin.client.ui.VPanel;
-import com.vaadin.client.ui.panel.PanelConnector;
+import com.vaadin.client.ui.csslayout.CssLayoutConnector;
 import com.vaadin.shared.ui.Connect;
 
 @Connect(CubaTokenListLabel.class)
-public class CubaTokenListLabelConnector extends PanelConnector {
+public class CubaTokenListLabelConnector extends CssLayoutConnector {
 
     @Override
     public CubaTokenListLabelWidget getWidget() {
         return (CubaTokenListLabelWidget) super.getWidget();
-    }
-
-    @Override
-    public void updateFromUIDL(UIDL uidl, ApplicationConnection client) {
-        super.updateFromUIDL(uidl, client);
-
-        // replace VPanel class names
-        Tools.replaceClassNames(getWidget().captionNode, VPanel.CLASSNAME, CubaTokenListLabelWidget.CLASSNAME);
-        Tools.replaceClassNames(getWidget().contentNode, VPanel.CLASSNAME, CubaTokenListLabelWidget.CLASSNAME);
-        Tools.replaceClassNames(getWidget().bottomDecoration, VPanel.CLASSNAME, CubaTokenListLabelWidget.CLASSNAME);
-        Tools.replaceClassNames(getWidget().getElement(), VPanel.CLASSNAME, CubaTokenListLabelWidget.CLASSNAME);
     }
 
     @Override
@@ -70,8 +55,17 @@ public class CubaTokenListLabelConnector extends PanelConnector {
     @Override
     public void onStateChanged(StateChangeEvent stateChangeEvent) {
         super.onStateChanged(stateChangeEvent);
-        getWidget().setEditable(getState().editable);
-        getWidget().setCanOpen(getState().canOpen);
-        getWidget().setText(getState().text);
+
+        if (stateChangeEvent.hasPropertyChanged("editable")) {
+            getWidget().setEditable(getState().editable);
+        }
+
+        if (stateChangeEvent.hasPropertyChanged("canOpen")) {
+            getWidget().setCanOpen(getState().canOpen);
+        }
+
+        if (stateChangeEvent.hasPropertyChanged("text")) {
+            getWidget().setText(getState().text);
+        }
     }
 }

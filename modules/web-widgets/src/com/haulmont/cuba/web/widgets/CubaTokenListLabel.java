@@ -17,29 +17,34 @@ package com.haulmont.cuba.web.widgets;
 
 import com.haulmont.cuba.web.widgets.client.tokenlistlabel.CubaTokenListLabelServerRpc;
 import com.haulmont.cuba.web.widgets.client.tokenlistlabel.CubaTokenListLabelState;
-import com.vaadin.ui.Panel;
+import com.vaadin.ui.CssLayout;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class CubaTokenListLabel extends Panel {
+public class CubaTokenListLabel extends CssLayout {
 
-    private List<RemoveTokenListener> listeners;
-    private ClickListener clickListener;
+    protected static final String LABEL_STYLENAME = "c-tokenlist-label";
+
+    protected ClickListener clickListener;
+
+    protected List<RemoveTokenListener> listeners;
+
+    protected CubaTokenListLabelServerRpc rpc = new CubaTokenListLabelServerRpc() {
+        @Override
+        public void removeToken() {
+            fireRemoveListeners();
+        }
+
+        @Override
+        public void itemClick() {
+            fireClick();
+        }
+    };
 
     public CubaTokenListLabel() {
-        CubaTokenListLabelServerRpc rpc = new CubaTokenListLabelServerRpc() {
-            @Override
-            public void removeToken() {
-                fireRemoveListeners();
-            }
-
-            @Override
-            public void itemClick() {
-                fireClick();
-            }
-        };
         registerRpc(rpc);
+        setStyleName(LABEL_STYLENAME);
     }
 
     @Override

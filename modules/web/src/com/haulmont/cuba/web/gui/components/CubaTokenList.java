@@ -20,12 +20,14 @@ import com.haulmont.bali.events.Subscription;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.TokenList;
-import com.haulmont.cuba.gui.components.data.BindingState;
 import com.haulmont.cuba.gui.components.data.ValueSource;
 import com.haulmont.cuba.web.widgets.CubaScrollBoxLayout;
 import com.haulmont.cuba.web.widgets.CubaTokenListLabel;
 import com.vaadin.shared.ui.MarginInfo;
-import com.vaadin.ui.*;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.CustomField;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.*;
@@ -33,18 +35,25 @@ import java.util.*;
 public class CubaTokenList<T extends Entity> extends CustomField<Collection<T>> {
 
     protected static final String TOKENLIST_STYLENAME = "c-tokenlist";
+    protected static final String TOKENLIST_EDITOR_STYLENAME = "c-tokenlist-editor";
+    protected static final String TOKENLIST_COMPOSITION_STYLENAME = "c-tokenlist-composition";
     protected static final String TOKENLIST_SCROLLBOX_STYLENAME = "c-tokenlist-scrollbox";
+    protected static final String TOKENLIST_WRAPPER_STYLENAME = "c-tokenlist-wrapper";
 
     protected static final String ADD_BTN_STYLENAME = "add-btn";
     protected static final String CLEAR_BTN_STYLENAME = "clear-btn";
     protected static final String INLINE_STYLENAME = "inline";
     protected static final String READONLY_STYLENAME = "readonly";
 
+    protected static final String POSITION_TOP_STYLENAME = "position-top";
+    protected static final String POSITION_BOTTOM_STYLENAME = "position-bottom";
+
     protected WebTokenList<T> owner;
 
-    protected VerticalLayout composition;
+    protected CssLayout composition;
+    protected CssLayout tokenContainerWrapper;
     protected CubaScrollBoxLayout tokenContainer;
-    protected HorizontalLayout editor;
+    protected CssLayout editor;
 
     protected Map<T, CubaTokenListLabel> itemComponents = new HashMap<>();
     protected Map<CubaTokenListLabel, T> componentItems = new HashMap<>();
@@ -54,17 +63,20 @@ public class CubaTokenList<T extends Entity> extends CustomField<Collection<T>> 
     public CubaTokenList(WebTokenList<T> owner) {
         this.owner = owner;
 
-        composition = new VerticalLayout();
+        composition = new CssLayout();
         composition.setWidthUndefined();
-        composition.setSpacing(false);
-        composition.setMargin(false);
+        composition.setStyleName(TOKENLIST_COMPOSITION_STYLENAME);
+
+        tokenContainerWrapper = new CssLayout();
+        tokenContainerWrapper.setStyleName(TOKENLIST_WRAPPER_STYLENAME);
 
         tokenContainer = new CubaScrollBoxLayout();
         tokenContainer.setStyleName(TOKENLIST_SCROLLBOX_STYLENAME);
         tokenContainer.setWidthUndefined();
         tokenContainer.setMargin(new MarginInfo(true, false, false, false));
 
-        composition.addComponent(tokenContainer);
+        tokenContainerWrapper.addComponent(tokenContainer);
+        composition.addComponent(tokenContainerWrapper);
         setPrimaryStyleName(TOKENLIST_STYLENAME);
 
         // do not trigger overridden method
@@ -94,12 +106,10 @@ public class CubaTokenList<T extends Entity> extends CustomField<Collection<T>> 
 
         if (height > 0) {
             composition.setHeight("100%");
-            composition.setExpandRatio(tokenContainer, 1);
-            tokenContainer.setHeight("100%");
+            tokenContainerWrapper.setHeight("100%");
         } else {
             composition.setHeightUndefined();
-            composition.setExpandRatio(tokenContainer, 0);
-            tokenContainer.setHeightUndefined();
+            tokenContainerWrapper.setHeightUndefined();
         }
     }
 
@@ -115,7 +125,6 @@ public class CubaTokenList<T extends Entity> extends CustomField<Collection<T>> 
 
                 if (!owner.isSimple()) {
                     owner.lookupPickerField.setWidthFull();
-                    editor.setExpandRatio(WebComponentsHelper.getComposition(owner.lookupPickerField), 1);
                 }
             } else {
                 composition.setWidthUndefined();
@@ -123,7 +132,6 @@ public class CubaTokenList<T extends Entity> extends CustomField<Collection<T>> 
 
                 if (!owner.isSimple()) {
                     owner.lookupPickerField.setWidthAuto();
-                    editor.setExpandRatio(WebComponentsHelper.getComposition(owner.lookupPickerField), 0);
                 }
             }
         }
@@ -136,9 +144,9 @@ public class CubaTokenList<T extends Entity> extends CustomField<Collection<T>> 
 
     protected void initField() {
         if (editor == null) {
-            editor = new HorizontalLayout();
-            editor.setSpacing(true);
+            editor = new CssLayout();
             editor.setWidthUndefined();
+            editor.setStyleName(TOKENLIST_EDITOR_STYLENAME);
         }
         editor.removeAllComponents();
 
@@ -179,14 +187,7 @@ public class CubaTokenList<T extends Entity> extends CustomField<Collection<T>> 
         });
 
         com.vaadin.ui.Button vClearButton = owner.clearButton.unwrapOrNull(com.vaadin.ui.Button.class);
-        if (owner.isSimple() && vClearButton != null) {
-            HorizontalLayout clearLayout = new HorizontalLayout();
-            clearLayout.addComponent(vClearButton);
-            editor.addComponent(clearLayout);
-            editor.setExpandRatio(clearLayout, 1);
-        } else {
-            editor.addComponent(vClearButton);
-        }
+        editor.addComponent(vClearButton);
     }
 
     protected void clearValue() {
@@ -305,34 +306,30 @@ public class CubaTokenList<T extends Entity> extends CustomField<Collection<T>> 
     }
 
     protected void updateTokenContainerVisibility() {
-        if (getHeight() < 0) {
-            tokenContainer.setVisible(!isEmpty());
-        } else {
-            tokenContainer.setVisible(true);
-        }
+        tokenContainer.setVisible(!isEmpty());
     }
 
     protected void updateEditorMargins() {
         if (tokenContainer.isVisible()) {
             if (owner.position == TokenList.Position.TOP) {
-                editor.setMargin(new MarginInfo(false, false, true, false));
+                editor.removeStyleName(POSITION_BOTTOM_STYLENAME);
+                editor.addStyleName(POSITION_TOP_STYLENAME);
             } else {
-                editor.setMargin(new MarginInfo(true, false, false, false));
+                editor.removeStyleName(POSITION_TOP_STYLENAME);
+                editor.addStyleName(POSITION_BOTTOM_STYLENAME);
             }
         } else {
-            editor.setMargin(false);
+            editor.removeStyleNames(POSITION_TOP_STYLENAME, POSITION_BOTTOM_STYLENAME);
         }
     }
 
     protected void updateSizes() {
         if (getHeight() > 0) {
             composition.setHeight("100%");
-            composition.setExpandRatio(tokenContainer, 1);
-            tokenContainer.setHeight("100%");
+            tokenContainerWrapper.setHeight("100%");
         } else {
             composition.setHeightUndefined();
-            composition.setExpandRatio(tokenContainer, 0);
-            tokenContainer.setHeightUndefined();
+            tokenContainerWrapper.setHeightUndefined();
         }
 
         if (getWidth() > 0) {
@@ -341,7 +338,6 @@ public class CubaTokenList<T extends Entity> extends CustomField<Collection<T>> 
 
             if (!owner.isSimple()) {
                 owner.lookupPickerField.setWidthFull();
-                editor.setExpandRatio(WebComponentsHelper.getComposition(owner.lookupPickerField), 1);
             }
         } else {
             composition.setWidthUndefined();
@@ -349,7 +345,6 @@ public class CubaTokenList<T extends Entity> extends CustomField<Collection<T>> 
 
             if (!owner.isSimple()) {
                 owner.lookupPickerField.setWidthAuto();
-                editor.setExpandRatio(WebComponentsHelper.getComposition(owner.lookupPickerField), 0);
             }
         }
     }

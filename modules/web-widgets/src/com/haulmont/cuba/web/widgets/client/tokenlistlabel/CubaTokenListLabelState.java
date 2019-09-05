@@ -17,9 +17,9 @@
 
 package com.haulmont.cuba.web.widgets.client.tokenlistlabel;
 
-import com.vaadin.shared.ui.panel.PanelState;
+import com.vaadin.shared.ui.csslayout.CssLayoutState;
 
-public class CubaTokenListLabelState extends PanelState {
+public class CubaTokenListLabelState extends CssLayoutState {
 
     public String text;
     public boolean editable;
