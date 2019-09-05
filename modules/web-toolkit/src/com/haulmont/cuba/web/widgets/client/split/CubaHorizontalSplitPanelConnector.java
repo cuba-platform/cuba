@@ -17,13 +17,16 @@
 
 package com.haulmont.cuba.web.widgets.client.split;
 
+import com.google.gwt.core.client.Scheduler;
 import com.haulmont.cuba.web.widgets.CubaHorizontalSplitPanel;
 import com.vaadin.client.communication.StateChangeEvent;
+import com.vaadin.client.ui.PostLayoutListener;
 import com.vaadin.client.ui.splitpanel.HorizontalSplitPanelConnector;
 import com.vaadin.shared.ui.Connect;
 
 @Connect(value = CubaHorizontalSplitPanel.class, loadStyle = Connect.LoadStyle.EAGER)
-public class CubaHorizontalSplitPanelConnector extends HorizontalSplitPanelConnector {
+public class CubaHorizontalSplitPanelConnector extends HorizontalSplitPanelConnector
+        implements PostLayoutListener {
 
     @Override
     protected void init() {
@@ -59,5 +62,12 @@ public class CubaHorizontalSplitPanelConnector extends HorizontalSplitPanelConne
         if (stateChangeEvent.hasPropertyChanged("beforeDockPosition")) {
             getWidget().beforeDockPosition = getState().beforeDockPosition;
         }
+    }
+
+    @Override
+    public void postLayout() {
+        // Have to re-layout after parent layout expand hack applied
+        // to avoid split position glitch.
+        Scheduler.get().scheduleFinally(this::layout);
     }
 }
