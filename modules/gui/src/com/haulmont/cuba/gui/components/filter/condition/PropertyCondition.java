@@ -22,6 +22,7 @@ import com.haulmont.chile.core.annotations.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.client.sys.PersistenceManagerClient;
+import com.haulmont.cuba.core.app.keyvalue.KeyValueMetaClass;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.global.filter.ConditionType;
@@ -46,6 +47,7 @@ public class PropertyCondition extends AbstractCondition {
     private static Pattern PATTERN = Pattern.compile("\\s*(\\S+)\\s+((?:not\\s+)*\\S+)\\s+(\\S+)\\s*(?:ESCAPE '\\S+')?\\s*");
     private static Pattern PATTERN_NOT_IN = Pattern.compile("\\s*[(]\\s*[(]\\s*(\\S+)\\s+((:not\\s+)*\\S+)\\s+(\\S+)[\\S\\s]*");
     private static Pattern PATTERN_NULL = Pattern.compile("\\s*(\\S+)\\s+(is\\s+(?:not\\s+)?null)\\s*");
+    private Boolean useOnlyAlias = false;
 
     public PropertyCondition(PropertyCondition condition) {
         super(condition);
@@ -56,33 +58,45 @@ public class PropertyCondition extends AbstractCondition {
         super(element, messagesPack, filterComponentName, metaClass);
 
         String text = element.getText();
-        if (operator != Op.DATE_INTERVAL) {
-            Matcher matcher = PATTERN_NULL.matcher(text);
-            if (!matcher.matches()) {
-                matcher = PATTERN_NOT_IN.matcher(text);
-                if (!matcher.matches()) {
-                    matcher = PATTERN.matcher(text);
-                }
-                if (!matcher.matches()) {
-                    throw new IllegalStateException("Unable to build condition from: " + text);
-                }
+        if (metaClass instanceof KeyValueMetaClass){
+            if (metaClass.getOwnProperties().contains(metaClass.getProperty(name))){
+                useOnlyAlias = true;
             }
-
-            if (operator == null) {
-                operator = Op.fromJpqlString(matcher.group(2));
-            }
-
-            String prop = matcher.group(1);
-            entityAlias = prop.substring(0, prop.indexOf('.'));
+            entityAlias = element.attributeValue("entityAlias");
         } else {
-            entityAlias = "{E}";
-            param.setDateInterval(true);
+            if (operator != Op.DATE_INTERVAL) {
+                Matcher matcher = PATTERN_NULL.matcher(text);
+                if (!matcher.matches()) {
+                    matcher = PATTERN_NOT_IN.matcher(text);
+                    if (!matcher.matches()) {
+                        matcher = PATTERN.matcher(text);
+                    }
+                    if (!matcher.matches()) {
+                        throw new IllegalStateException("Unable to build condition from: " + text);
+                    }
+                }
+
+                if (operator == null) {
+                    operator = Op.fromJpqlString(matcher.group(2));
+                }
+
+                String prop = matcher.group(1);
+                entityAlias = prop.substring(0, prop.indexOf('.'));
+            } else {
+                entityAlias = "{E}";
+                param.setDateInterval(true);
+            }
         }
     }
 
     public PropertyCondition(AbstractConditionDescriptor descriptor, String entityAlias) {
         super(descriptor);
         this.entityAlias = entityAlias;
+        if (metaClass instanceof KeyValueMetaClass){
+            if (metaClass.getOwnProperties().contains(metaClass.getProperty(name))){
+                useOnlyAlias = true;
+            }
+        }
     }
 
     @Override
@@ -90,7 +104,17 @@ public class PropertyCondition extends AbstractCondition {
         Metadata metadata = AppBeans.get(Metadata.class);
         MetadataTools metadataTools = metadata.getTools();
 
-        String nameToUse = name;
+        String nameToUse;
+        if (useOnlyAlias){
+            nameToUse = entityAlias;
+        } else {
+            if (metaClass instanceof KeyValueMetaClass){
+                nameToUse = name.substring(name.indexOf('.') + 1);
+            } else {
+                nameToUse = name;
+            }
+        }
+
         boolean useCrossDataStoreRefId = false;
         boolean stringType = false;
         String thisStore = metadataTools.getStoreName(metaClass);
@@ -119,7 +143,11 @@ public class PropertyCondition extends AbstractCondition {
         if (operator == Op.NOT_IN) {
             sb.append("((");
         }
-        sb.append(entityAlias).append(".").append(nameToUse);
+        if (useOnlyAlias){
+            sb.append(entityAlias);
+        } else {
+            sb.append(entityAlias).append(".").append(nameToUse);
+        }
 
         if (Param.Type.ENTITY == param.getType() && !useCrossDataStoreRefId) {
             com.haulmont.chile.core.model.MetaClass metaClass = metadata.getClassNN(param.getJavaClass());
@@ -176,6 +204,10 @@ public class PropertyCondition extends AbstractCondition {
         super.toXml(element, valueProperty);
         element.addAttribute("type", ConditionType.PROPERTY.name());
         element.addAttribute("operatorType", getOperatorType());
+
+        if (metaClass instanceof KeyValueMetaClass){
+            element.addAttribute("entityAlias", entityAlias);
+        }
     }
 
     @Override

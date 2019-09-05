@@ -23,6 +23,7 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributes;
+import com.haulmont.cuba.core.app.keyvalue.KeyValueMetaClass;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Component.HasXmlDescriptor;
@@ -116,8 +117,13 @@ public class ConditionDescriptorsTreeBuilder implements ConditionDescriptorsTree
                     addMultiplePropertyDescriptors(element, propertyDescriptors, filter);
                     propertiesExplicitlyDefined = true;
                 } else if ("property".equals(element.getName())) {
-                    conditionDescriptor = new PropertyConditionDescriptor(element, messagesPack, filterComponentName,
-                            entityMetaClass, entityAlias);
+                    if (entityMetaClass instanceof KeyValueMetaClass){
+                        conditionDescriptor = new PropertyConditionDescriptor(element, messagesPack, filterComponentName,
+                                entityMetaClass, parseEntityAlias(element.attributeValue("name")));
+                    } else {
+                        conditionDescriptor = new PropertyConditionDescriptor(element, messagesPack, filterComponentName,
+                                entityMetaClass, entityAlias);
+                    }
                     propertyDescriptors.add(conditionDescriptor);
                     propertiesExplicitlyDefined = true;
                 } else if ("custom".equals(element.getName())) {
@@ -226,10 +232,14 @@ public class ConditionDescriptorsTreeBuilder implements ConditionDescriptorsTree
 
                     Class<? extends FrameOwner> controllerClass = filter.getFrame().getFrameOwner().getClass();
                     String messagesPack = UiControllerUtils.getPackage(controllerClass); // todo rework
-
-                    PropertyConditionDescriptor childPropertyConditionDescriptor =
-                            new PropertyConditionDescriptor(propertyPath, null, messagesPack,
-                                    filterComponentName, entityMetaClass, entityAlias);
+                    PropertyConditionDescriptor childPropertyConditionDescriptor;
+                    if (entityMetaClass instanceof KeyValueMetaClass) {
+                        childPropertyConditionDescriptor = new PropertyConditionDescriptor(propertyPath, null, messagesPack,
+                                        filterComponentName, entityMetaClass, ((PropertyConditionDescriptor) parentNode.data).getEntityAlias());
+                    } else {
+                        childPropertyConditionDescriptor = new PropertyConditionDescriptor(propertyPath, null, messagesPack,
+                                        filterComponentName, entityMetaClass, entityAlias);
+                    }
                     descriptors.add(childPropertyConditionDescriptor);
                 }
             }
@@ -298,9 +308,14 @@ public class ConditionDescriptorsTreeBuilder implements ConditionDescriptorsTree
                 Class<? extends FrameOwner> controllerClass = filter.getFrame().getFrameOwner().getClass();
                 String messagesPack = UiControllerUtils.getPackage(controllerClass); // todo rework
 
-                AbstractConditionDescriptor conditionDescriptor =
-                        new PropertyConditionDescriptor(prop, null, messagesPack,
-                                filterComponentName, entityMetaClass, entityAlias);
+                AbstractConditionDescriptor conditionDescriptor;
+                if (entityMetaClass instanceof KeyValueMetaClass){
+                    conditionDescriptor = new PropertyConditionDescriptor(prop, null, messagesPack,
+                            filterComponentName, entityMetaClass, parseEntityAlias(prop));
+                } else {
+                    conditionDescriptor = new PropertyConditionDescriptor(prop, null, messagesPack,
+                            filterComponentName, entityMetaClass, entityAlias);
+                }
                 descriptors.add(conditionDescriptor);
             }
         }
@@ -309,8 +324,8 @@ public class ConditionDescriptorsTreeBuilder implements ConditionDescriptorsTree
     protected boolean isPropertyAllowed(MetaClass metaClass, MetaProperty property) {
         return security.isEntityAttrPermitted(metaClass, property.getName(), EntityAttrAccess.VIEW)
                 && !metadataTools.isSystemLevel(property)           // exclude system level attributes
-                && (metadataTools.isPersistent(property)            // exclude transient properties
-                || (metadataTools.getCrossDataStoreReferenceIdProperty(storeName, property) != null))
+                && ((metaClass instanceof KeyValueMetaClass) || (metadataTools.isPersistent(property)            // exclude transient properties
+                || (metadataTools.getCrossDataStoreReferenceIdProperty(storeName, property) != null)))
                 && !defaultExcludedProps.contains(property.getName())
                 && !(byte[].class.equals(property.getJavaType()))
                 && !property.getRange().getCardinality().isMany();  // exclude ToMany
@@ -330,5 +345,23 @@ public class ConditionDescriptorsTreeBuilder implements ConditionDescriptorsTree
         public int compare(AbstractConditionDescriptor cd1, AbstractConditionDescriptor cd2) {
             return cd1.getLocCaption().compareTo(cd2.getLocCaption());
         }
+    }
+
+    private String parseEntityAlias(String property){
+        String alias = "";
+        while (alias == "") {
+            int index = new ArrayList<>(entityMetaClass.getProperties()).indexOf(entityMetaClass.getProperty(property));
+            if (index == -1){
+                int indexOfDot = property.lastIndexOf(".");
+                if (indexOfDot == -1){
+                    return alias;
+                }
+                property = property.substring(0, indexOfDot);
+                continue;
+            }
+            alias = filter.getDataLoader().getQuery().split("from", 2)[0].replace("select", "").replaceAll(" ", "")
+                    .split(",")[index];
+        }
+        return alias;
     }
 }

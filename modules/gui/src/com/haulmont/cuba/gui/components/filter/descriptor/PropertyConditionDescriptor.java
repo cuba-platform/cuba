@@ -127,4 +127,8 @@ public class PropertyConditionDescriptor extends AbstractConditionDescriptor {
         MetaPropertyPath propertyPath = datasourceMetaClass.getPropertyPath(name);
         return propertyPath != null ? propertyPath.getMetaProperty() : null;
     }
+
+    public String getEntityAlias(){
+        return entityAlias;
+    }
 }

@@ -17,10 +17,7 @@
 
 package com.haulmont.cuba.core.app.keyvalue;
 
-import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.chile.core.model.MetaModel;
-import com.haulmont.chile.core.model.MetaProperty;
-import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.chile.core.model.*;
 import com.haulmont.chile.core.model.impl.MetadataObjectImpl;
 import com.haulmont.cuba.core.entity.KeyValueEntity;
 
@@ -87,12 +84,30 @@ public class KeyValueMetaClass extends MetadataObjectImpl implements MetaClass {
 
     @Override
     public MetaPropertyPath getPropertyPath(String propertyPath) {
+        String[] properties = propertyPath.split("\\."); // split should not create java.util.regex.Pattern
+
+        // do not use ArrayList, leads to excessive memory allocation
+        MetaProperty[] metaProperties = new MetaProperty[properties.length];
+
         MetaProperty currentProperty;
+        MetaClass currentClass = this;
 
-        currentProperty = this.getProperty(propertyPath);
-        if (currentProperty == null) return null;
+        for (int i = 0; i < properties.length; i++) {
+            if (currentClass == null) {
+                return null;
+            }
+            currentProperty = currentClass.getProperty(properties[i]);
+            if (currentProperty == null) {
+                return null;
+            }
 
-        return new MetaPropertyPath(this, currentProperty);
+            Range range = currentProperty.getRange();
+            currentClass = range.isClass() ? range.asClass() : null;
+
+            metaProperties[i] = currentProperty;
+        }
+
+        return new MetaPropertyPath(this, metaProperties);
     }
 
     @Override
