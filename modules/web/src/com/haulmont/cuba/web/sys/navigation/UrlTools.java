@@ -16,6 +16,7 @@
 
 package com.haulmont.cuba.web.sys.navigation;
 
+import com.haulmont.bali.util.URLEncodeUtils;
 import com.haulmont.cuba.gui.navigation.NavigationState;
 import com.vaadin.server.Page;
 import org.slf4j.Logger;
@@ -43,7 +44,7 @@ public class UrlTools {
     protected static final Pattern PARAMS_ROUTE_PATTERN = Pattern.compile(PARAMS_ROUTE);
 
     protected static final String PARAMS_REGEX =
-            "^(?:(?:\\w+=[-a-zA-Z0-9_/+%]+)?|\\w+=[-a-zA-Z0-9_/+%]+(?:&\\w+=[-a-zA-Z0-9_/+%]+)+)$";
+            "^(?:(?:\\w+=[-a-zA-Z0-9_/.+%]+)?|\\w+=[-a-zA-Z0-9_/.+%]+(?:&\\w+=[-a-zA-Z0-9_/.+%]+)+)$";
     protected static final Pattern PARAMS_PATTERN = Pattern.compile(PARAMS_REGEX);
 
     public static void pushState(String navigationState) {
@@ -154,7 +155,9 @@ public class UrlTools {
             return Collections.emptyMap();
         }
 
-        String[] paramPairs = paramsString.split("&");
+        String decoded = URLEncodeUtils.decodeUtf8(paramsString);
+
+        String[] paramPairs = decoded.split("&");
         Map<String, String> paramsMap = new LinkedHashMap<>(paramPairs.length);
 
         for (String paramPair : paramPairs) {
