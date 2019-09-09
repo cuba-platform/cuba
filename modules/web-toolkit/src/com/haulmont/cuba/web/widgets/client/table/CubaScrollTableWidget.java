@@ -352,6 +352,11 @@ public class CubaScrollTableWidget extends VScrollTable implements TableWidget {
         if (_delegate.aggregationRow != null) {
             _delegate.aggregationRow.setHorizontalScrollPosition(scrollLeft);
         }
+
+        if (!enabled) {
+            tHead.setHorizontalScrollPosition(scrollLeft);
+            tFoot.setHorizontalScrollPosition(scrollLeft);
+        }
     }
 
     @Override
