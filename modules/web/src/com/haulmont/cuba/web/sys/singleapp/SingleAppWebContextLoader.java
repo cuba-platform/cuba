@@ -209,6 +209,20 @@ public class SingleAppWebContextLoader extends WebAppContextLoader {
     }
 
     @Override
+    protected ClassPathXmlApplicationContext createApplicationContext(String[] locations, ServletContext servletContext) {
+        return new CubaClassPathXmlApplicationContext(locations, servletContext) {
+            /**
+             * Here we create resource resolver which scans only web jars which should be placed into /lib-web/ folder.
+             */
+            @Override
+            @Nonnull
+            protected ResourcePatternResolver getResourcePatternResolver() {
+                return new SingleAppResourcePatternResolver(this, "/lib-web/");
+            }
+        };
+    }
+
+    @Override
     protected String getAppPropertiesConfig(ServletContext sc) {
         return sc.getInitParameter("appPropertiesConfigWeb");
     }

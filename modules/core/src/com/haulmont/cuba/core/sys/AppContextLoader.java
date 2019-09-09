@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContext;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -104,6 +105,11 @@ public class AppContextLoader extends AbstractWebAppContextLoader {
     @Override
     protected ClassPathXmlApplicationContext createApplicationContext(String[] locations) {
         return new CubaCoreApplicationContext(locations);
+    }
+
+    @Override
+    protected ClassPathXmlApplicationContext createApplicationContext(String[] locations, ServletContext servletContext) {
+        return new CubaCoreApplicationContext(locations, servletContext);
     }
 
     protected void runEnvironmentSanityChecks() {

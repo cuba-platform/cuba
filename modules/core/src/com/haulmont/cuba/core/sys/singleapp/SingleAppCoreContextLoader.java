@@ -94,6 +94,20 @@ public class SingleAppCoreContextLoader extends AppContextLoader {
     }
 
     @Override
+    protected ClassPathXmlApplicationContext createApplicationContext(String[] locations, ServletContext servletContext) {
+        return new CubaCoreApplicationContext(locations, servletContext) {
+            /**
+             * Here we create resource resolver which scans only core jars which should be placed into /lib-core/ folder.
+             */
+            @Override
+            @Nonnull
+            protected ResourcePatternResolver getResourcePatternResolver() {
+                return new SingleAppResourcePatternResolver(this, "/lib-core/");
+            }
+        };
+    }
+
+    @Override
     protected String getAppPropertiesConfig(ServletContext sc) {
         return sc.getInitParameter("appPropertiesConfigCore");
     }

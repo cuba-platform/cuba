@@ -17,18 +17,17 @@
 
 package com.haulmont.cuba.core.sys;
 
-import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Events;
 import com.haulmont.cuba.core.sys.events.AppContextInitializedEvent;
 import com.haulmont.cuba.core.sys.persistence.EclipseLinkCustomizer;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.text.StrTokenizer;
 import org.apache.commons.text.StringTokenizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.util.ResourceUtils;
 
+import javax.servlet.ServletContext;
 import java.io.File;
 
 /**
@@ -50,6 +49,10 @@ public abstract class AbstractAppContextLoader {
     }
 
     protected void initAppContext() {
+        initAppContext(null);
+    }
+
+    protected void initAppContext(ServletContext sc) {
         String configProperty = AppContext.getProperty(SPRING_CONTEXT_CONFIG);
         if (StringUtils.isBlank(configProperty)) {
             throw new IllegalStateException("Missing " + SPRING_CONTEXT_CONFIG + " application property");
@@ -59,7 +62,7 @@ public abstract class AbstractAppContextLoader {
         String[] locations = tokenizer.getTokenArray();
         replaceLocationsFromConf(locations);
 
-        ApplicationContext appContext = createApplicationContext(locations);
+        ApplicationContext appContext = createApplicationContext(locations, sc);
         AppContext.Internals.setApplicationContext(appContext);
 
         Events events = appContext.getBean(Events.NAME, Events.class);
@@ -88,6 +91,10 @@ public abstract class AbstractAppContextLoader {
 
     protected ApplicationContext createApplicationContext(String[] locations) {
         return new CubaClassPathXmlApplicationContext(locations);
+    }
+
+    protected ApplicationContext createApplicationContext(String[] locations, ServletContext servletContext) {
+        return new CubaClassPathXmlApplicationContext(locations, servletContext);
     }
 
     protected void afterInitAppContext() {

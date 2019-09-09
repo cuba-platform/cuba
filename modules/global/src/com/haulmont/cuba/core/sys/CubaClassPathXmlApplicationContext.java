@@ -20,11 +20,23 @@ package com.haulmont.cuba.core.sys;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.web.context.support.StandardServletEnvironment;
+
+import javax.servlet.ServletContext;
 
 public class CubaClassPathXmlApplicationContext extends ClassPathXmlApplicationContext {
+    ServletContext servletContext;
 
     public CubaClassPathXmlApplicationContext(String[] locations) {
         super(locations);
+    }
+
+    public CubaClassPathXmlApplicationContext(String[] locations, ServletContext sc) {
+        super();
+        servletContext = sc;
+        setConfigLocations(locations);
+        afterPropertiesSet();
     }
 
     @Override
@@ -36,5 +48,12 @@ public class CubaClassPathXmlApplicationContext extends ClassPathXmlApplicationC
     @Override
     protected DefaultListableBeanFactory createBeanFactory() {
         return new CubaDefaultListableBeanFactory(getInternalParentBeanFactory());
+    }
+
+    @Override
+    protected ConfigurableEnvironment createEnvironment() {
+        StandardServletEnvironment standardServletEnvironment = new StandardServletEnvironment();
+        standardServletEnvironment.initPropertySources(servletContext, null);
+        return standardServletEnvironment;
     }
 }

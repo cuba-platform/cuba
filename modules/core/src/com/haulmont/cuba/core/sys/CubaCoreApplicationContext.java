@@ -20,10 +20,16 @@ package com.haulmont.cuba.core.sys;
 import com.haulmont.cuba.core.sys.persistence.OrmXmlAwareClassLoader;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 
+import javax.servlet.ServletContext;
+
 public class CubaCoreApplicationContext extends CubaClassPathXmlApplicationContext {
 
     public CubaCoreApplicationContext(String[] locations) {
         super(locations);
+    }
+
+    public CubaCoreApplicationContext(String[] locations, ServletContext servletContext) {
+        super(locations, servletContext);
     }
 
     @Override
