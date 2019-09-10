@@ -61,4 +61,8 @@ public class Stores {
         else
             return Collections.emptyList();
     }
+
+    public static String storeNameToString(String storeName) {
+        return Stores.MAIN.equals(storeName) ? "Main" : storeName;
+    }
 }

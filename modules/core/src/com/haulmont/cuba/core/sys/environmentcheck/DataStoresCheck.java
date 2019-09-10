@@ -79,7 +79,7 @@ public class DataStoresCheck implements EnvironmentCheck {
         List<CheckFailedResult> result = new ArrayList<>();
         Connection connection = null;
         try {
-            log.info("Checking connection to data store {}", storeName);
+            log.info("Checking connection to data store {}", Stores.storeNameToString(storeName));
 
             connection = dataSource.getConnection();
             DatabaseMetaData dbMetaData = connection.getMetaData();

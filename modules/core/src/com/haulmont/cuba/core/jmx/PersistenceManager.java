@@ -23,10 +23,7 @@ import com.haulmont.cuba.core.app.PersistenceConfig;
 import com.haulmont.cuba.core.app.PersistenceManagerAPI;
 import com.haulmont.cuba.core.app.ServerConfig;
 import com.haulmont.cuba.core.entity.EntityStatistics;
-import com.haulmont.cuba.core.global.Configuration;
-import com.haulmont.cuba.core.global.Metadata;
-import com.haulmont.cuba.core.global.QueryParser;
-import com.haulmont.cuba.core.global.QueryTransformerFactory;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.DbInitializationException;
 import com.haulmont.cuba.core.sys.DbUpdater;
 import com.haulmont.cuba.core.sys.persistence.DbmsType;
@@ -59,9 +56,6 @@ public class PersistenceManager implements PersistenceManagerMBean {
 
     @Inject
     protected Metadata metadata;
-
-    @Inject
-    protected DbUpdater dbUpdater;
 
     @Inject
     protected PersistenceSecurity security;
@@ -146,7 +140,7 @@ public class PersistenceManager implements PersistenceManagerMBean {
         if (!"update".equals(token))
             return "Pass 'update' in the method parameter if you really want to update database.";
         try {
-            dbUpdater.updateDatabase();
+            AppBeans.getPrototype(DbUpdater.class, Stores.MAIN).updateDatabase();
             return "Updated";
         } catch (Throwable e) {
             return ExceptionUtils.getStackTrace(e);
@@ -156,7 +150,7 @@ public class PersistenceManager implements PersistenceManagerMBean {
     @Override
     public String findUpdateDatabaseScripts() {
         try {
-            List<String> list = dbUpdater.findUpdateDatabaseScripts();
+            List<String> list = AppBeans.getPrototype(DbUpdater.class, Stores.MAIN).findUpdateDatabaseScripts();
             if (!list.isEmpty()) {
                 File dbDir = new File(serverConfig.getDbDir());
 

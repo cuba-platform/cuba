@@ -20,6 +20,7 @@ package com.haulmont.cuba.core.sys.dbupdate;
 import com.google.common.collect.ImmutableList;
 import com.haulmont.bali.db.DbUtils;
 import com.haulmont.bali.db.QueryRunner;
+import com.haulmont.cuba.core.global.Stores;
 import com.haulmont.cuba.core.sys.DbInitializationException;
 import com.haulmont.cuba.core.sys.DbUpdater;
 import com.haulmont.cuba.core.sys.PostUpdateScripts;
@@ -42,6 +43,8 @@ import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import static com.haulmont.cuba.core.global.Stores.storeNameToString;
+
 public class DbUpdaterEngine implements DbUpdater {
     private static final String SQL_EXTENSION = "sql";
     private static final String SQL_COMMENT_PREFIX = "--";
@@ -55,19 +58,21 @@ public class DbUpdaterEngine implements DbUpdater {
     protected static final List<Pattern> EXCLUDED_ADDONS = ImmutableList.of(RESTAPI_REGEX);
 
     protected static final String ERROR = "\n" +
-                        "=================================================\n" +
-                        "ERROR: Database update failed. See details below.\n" +
-                        "=================================================\n";
+            "=================================================\n" +
+            "ERROR: Data store update failed. See details below.\n" +
+            "=================================================\n";
 
     protected static final Logger log = LoggerFactory.getLogger(DbUpdaterEngine.class);
 
     protected DataSource dataSource;
 
     protected String dbScriptsDirectory;
+    protected String storeName = Stores.MAIN;
     protected String dbmsType;
     protected String dbmsVersion;
 
     protected boolean changelogTableExists = false;
+    protected boolean scriptsExists = false;
 
     // register handlers for script files
     protected final Map<String, FileHandler> extensionHandlers = new HashMap<>();
@@ -80,32 +85,38 @@ public class DbUpdaterEngine implements DbUpdater {
     protected DbUpdaterEngine() {
     }
 
-    public DataSource getDataSource() {
+    protected DataSource getDataSource() {
         return dataSource;
     }
 
     public List<ScriptResource> getScripts(ScriptType scriptType, @Nullable String moduleName) {
         List<ScriptResource> scripts = scriptScanner().getScripts(scriptType, moduleName);
-        log.trace("Found {} scripts: {}", scriptType, scripts);
+        log.trace("Found {} scripts for data store [{}]: {}", scriptType, storeNameToString(storeName), scripts);
         return scripts;
     }
 
     @Override
     public void updateDatabase() throws DbInitializationException {
-        if (dbInitialized())
-            doUpdate();
-        else
-            doInit();
+        if (getDataSource() != null) {
+            if (dbInitialized()) {
+                doUpdate();
+            } else {
+                doInit();
+            }
+        }
     }
 
     @Override
     public List<String> findUpdateDatabaseScripts() throws DbInitializationException {
-        List<String> list = new ArrayList<>();
         if (dbInitialized()) {
+            if (!scriptsExists) {
+                return Collections.emptyList();
+            }
             if (!changelogTableExists) {
                 throw new DbInitializationException(
                         "Unable to determine required updates because SYS_DB_CHANGELOG table doesn't exist");
             } else {
+                List<String> list = new ArrayList<>();
                 List<ScriptResource> files = getUpdateScripts();
                 Set<String> scripts = getExecutedScripts();
                 for (ScriptResource file : files) {
@@ -114,16 +125,15 @@ public class DbUpdaterEngine implements DbUpdater {
                         list.add(name);
                     }
                 }
+                return list;
             }
         } else {
-            throw new DbInitializationException(
-                    "Unable to determine required updates because SEC_USER table doesn't exist");
+            throw new DbInitializationException("Unable to determine required updates");
         }
-        return list;
     }
 
     protected ScriptScanner scriptScanner() {
-        return new ScriptScanner(dbScriptsDirectory, dbmsType, dbmsVersion);
+        return new ScriptScanner(dbScriptsDirectory, storeName, dbmsType, dbmsVersion);
     }
 
     protected String dbScriptDirectoryPath() {
@@ -131,7 +141,7 @@ public class DbUpdaterEngine implements DbUpdater {
     }
 
     protected void createChangelogTable() {
-        log.trace("Creating SYS_DB_CHANGELOG table");
+        log.trace("Creating SYS_DB_CHANGELOG table for data store [{}]", storeNameToString(storeName));
         String timeStampType = DbmsSpecificFactory.getDbmsFeatures().getTimeStampType();
         QueryRunner runner = new QueryRunner(getDataSource());
         try {
@@ -141,7 +151,7 @@ public class DbUpdaterEngine implements DbUpdater {
                     "CREATE_TS " + timeStampType + " default current_timestamp, " +
                     "IS_INIT integer default 0)");
         } catch (SQLException e) {
-            throw new RuntimeException(ERROR + "Error creating changelog table", e);
+            throw new RuntimeException(ERROR + String.format("Error creating changelog table for data store [%s]", storeNameToString(storeName)), e);
         }
     }
 
@@ -158,9 +168,23 @@ public class DbUpdaterEngine implements DbUpdater {
     }
 
     public boolean dbInitialized() throws DbInitializationException {
-        log.trace("Checking if the database is initialized");
+        log.trace("Checking if the data store [{}] is initialized", storeNameToString(storeName));
 
-        try (Connection connection = getDataSource().getConnection()) {
+        DataSource dataSource = getDataSource();
+        if (dataSource == null) {
+            log.trace("Database pool isn't initialized for data store [{}], so data store is initialized", storeNameToString(storeName));
+            return true;
+        }
+
+        try (Connection connection = dataSource.getConnection()) {
+            List<ScriptResource> initScripts = getInitScripts();
+            List<ScriptResource> updateScripts = getUpdateScripts();
+            if (initScripts.isEmpty() && updateScripts.isEmpty()) {
+                log.trace("Init/Update scripts folder is empty for data store [{}], so data store is initialized", storeNameToString(storeName));
+                return true;
+            }
+
+            scriptsExists = true;
             DatabaseMetaData dbMetaData = connection.getMetaData();
             DbProperties dbProperties = new DbProperties(getConnectionUrl(connection));
             boolean isSchemaByUser = DbmsSpecificFactory.getDbmsFeatures().isSchemaByUser();
@@ -169,27 +193,31 @@ public class DbUpdaterEngine implements DbUpdater {
                     dbMetaData.getUserName() : dbProperties.getCurrentSchemaProperty();
             String catalogName = isRequiresCatalog ? connection.getCatalog() : null;
             ResultSet tables = dbMetaData.getTables(catalogName, schemaName, "%", null);
+
             while (tables.next()) {
                 String tableName = tables.getString("TABLE_NAME");
                 if ("SYS_DB_CHANGELOG".equalsIgnoreCase(tableName)) {
                     log.trace("Found SYS_DB_CHANGELOG table");
                     changelogTableExists = true;
-                    return true;
                 }
             }
-            return false;
+
+            return changelogTableExists;
         } catch (SQLException e) {
-            throw new DbInitializationException(true, "Error connecting to database: " + e.getMessage(), e);
+            throw new DbInitializationException(true,
+                    String.format("Error connecting to data store [%s]: %s", storeNameToString(storeName), e.getMessage()), e);
         }
     }
 
     protected void doInit() {
-        log.info("Initializing database");
-
-        if (!changelogTableExists)
-            createChangelogTable();
-
         List<ScriptResource> initFiles = getInitScripts();
+
+        log.info("Initializing data store [{}]", storeNameToString(storeName));
+
+        if (!changelogTableExists) {
+            createChangelogTable();
+        }
+
         try {
             for (ScriptResource file : initFiles) {
                 executeScript(file);
@@ -199,32 +227,20 @@ public class DbUpdaterEngine implements DbUpdater {
             prepareScripts();
         }
 
-        log.info("Database initialized");
+        log.info("Data store [{}] initialized", storeNameToString(storeName));
     }
 
     protected void doUpdate() {
-        log.info("Updating database...");
+        log.info("Updating data store [{}] ...", storeNameToString(storeName));
 
         if (!changelogTableExists) {
-            log.info("Changelog table not found, creating it and marking all scripts as executed");
-
+            log.info("Changelog table not found for data store [{}], creating it", storeNameToString(storeName));
             createChangelogTable();
-
-            List<ScriptResource> initFiles = getInitScripts();
-            try {
-                for (ScriptResource file : initFiles) {
-                    markScript(getScriptName(file), true);
-                }
-            } finally {
-                prepareScripts();
-            }
-
-            return;
         }
 
         runRequiredInitScripts();
 
-        log.trace("Checking existing and executed update scripts");
+        log.trace("Checking existing and executed update scripts for data store [{}]", storeNameToString(storeName));
         List<ScriptResource> files = getUpdateScripts();
         Set<String> scripts = getExecutedScripts();
         for (ScriptResource file : files) {
@@ -235,11 +251,11 @@ public class DbUpdaterEngine implements DbUpdater {
                 }
             }
         }
-        log.info("Database is up-to-date");
+        log.info("Data store [{}] is up-to-date", storeNameToString(storeName));
     }
 
     protected void runRequiredInitScripts() {
-        log.trace("Checking executed init scripts for components");
+        log.trace("Checking executed init scripts for components. Data store [{}]", storeNameToString(storeName));
         Set<String> executedScripts = getExecutedScripts();
         List<String> dirs = getModuleDirs();
         if (dirs.size() > 1) {
@@ -402,7 +418,7 @@ public class DbUpdaterEngine implements DbUpdater {
                     public void add(Closure closure) {
                         super.add(closure);
 
-                        log.warn("Added post update action will be ignored");
+                        log.warn("Added post update action will be ignored for data store [{}]", storeNameToString(storeName));
                     }
                 });
             }
@@ -463,7 +479,7 @@ public class DbUpdaterEngine implements DbUpdater {
             DatabaseMetaData databaseMetaData = connection.getMetaData();
             return databaseMetaData.getURL();
         } catch (Throwable e) {
-            log.warn("Unable to get connection url");
+            log.warn("Unable to get connection url for data store [{}]", storeNameToString(storeName));
             return null;
         }
     }

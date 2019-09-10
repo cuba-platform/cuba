@@ -43,8 +43,10 @@ public class DbUpdaterEngineTest {
 
     private List<File> mssqlInitFiles = new ArrayList<>();
     private List<File> mssql2012InitFiles = new ArrayList<>();
+    private List<File> mssqlInitAddStoreFiles = new ArrayList<>();
     private List<File> mssqlUpdateFiles = new ArrayList<>();
     private List<File> mssql2012UpdateFiles = new ArrayList<>();
+    private List<File> mssqlUpdateAddStoreFiles = new ArrayList<>();
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
     @BeforeEach
@@ -83,6 +85,12 @@ public class DbUpdaterEngineTest {
         file = new File(dir, "create-db.sql");
         file.createNewFile();
         mssql2012InitFiles.add(file);
+
+        dir = new File(dbmsDir, "10-cuba/init_addstore/mssql");
+        dir.mkdirs();
+        file = new File(dir, "create-db.sql");
+        file.createNewFile();
+        mssqlInitAddStoreFiles.add(file);
 
         dir = new File(dbmsDir, "50-app/init/mssql");
         dir.mkdirs();
@@ -194,6 +202,15 @@ public class DbUpdaterEngineTest {
         file.createNewFile();
         mssqlUpdateFiles.add(file);
         mssql2012UpdateFiles.add(file);
+
+        dir = new File(dbmsDir, "100-app2/update_addstore/mssql");
+        dir.mkdirs();
+        file = new File(dir, "app-update-1.sql");
+        file.createNewFile();
+        mssqlUpdateAddStoreFiles.add(file);
+        file = new File(dir, "app-update-2.sql");
+        file.createNewFile();
+        mssqlUpdateAddStoreFiles.add(file);
     }
 
     @Test
@@ -214,6 +231,18 @@ public class DbUpdaterEngineTest {
     }
 
     @Test
+    public void testGetInitScriptsForAdditionalStore() throws Exception {
+        DbUpdaterEngine engine = new DbUpdaterEngine();
+        engine.dbScriptsDirectory = dbmsDir.getAbsolutePath();
+        engine.dbmsType = "mssql";
+        engine.storeName = "addStore";
+
+        List<ScriptResource> scripts = engine.getInitScripts();
+        List<File> files = scripts.stream().map(sr -> new File(sr.getPath())).collect(Collectors.toList());
+        assertEquals(mssqlInitAddStoreFiles, files);
+    }
+
+    @Test
     public void testGetUpdateScripts() throws Exception {
         DbUpdaterEngine engine = new DbUpdaterEngine();
         engine.dbScriptsDirectory = dbmsDir.getAbsolutePath();
@@ -229,6 +258,19 @@ public class DbUpdaterEngineTest {
         scripts = engine.getUpdateScripts();
         files = scripts.stream().map(sr -> new File(sr.getPath())).collect(Collectors.toList());
         assertEquals(mssql2012UpdateFiles, files);
+    }
+
+    @Test
+    public void testGetUpdateScriptsForAdditionalDatastore() throws Exception {
+        DbUpdaterEngine engine = new DbUpdaterEngine();
+        engine.dbScriptsDirectory = dbmsDir.getAbsolutePath();
+        engine.dbmsType = "mssql";
+        engine.storeName = "addStore";
+
+        List<ScriptResource> scripts = engine.getUpdateScripts();
+        List<File> files = scripts.stream().map(sr -> new File(sr.getPath())).collect(Collectors.toList());
+
+        assertEquals(mssqlUpdateAddStoreFiles, files);
     }
 
     @Test
