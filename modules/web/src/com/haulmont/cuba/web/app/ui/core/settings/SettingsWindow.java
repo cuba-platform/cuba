@@ -96,10 +96,11 @@ public class SettingsWindow extends AbstractWindow {
     @Inject
     protected LookupField<String> timeZoneLookup;
     @Inject
-    protected LookupField<String> appLangField;
-    @Inject
     protected CheckBox timeZoneAutoField;
-
+    @Inject
+    protected Label<String> languageLabel;
+    @Inject
+    protected LookupField<String> appLangField;
     @Inject
     protected LookupField<String> defaultScreenField;
 
@@ -142,6 +143,10 @@ public class SettingsWindow extends AbstractWindow {
         ComboBox vAppThemeField = (ComboBox) WebComponentsHelper.unwrap(appThemeField);
         vAppThemeField.setTextInputAllowed(false);
         appThemeField.setEditable(changeThemeEnabled);
+
+        boolean langFieldVisible = !globalConfig.getLocaleSelectVisible();
+        languageLabel.setVisible(langFieldVisible);
+        appLangField.setVisible(langFieldVisible);
 
         initTimeZoneFields();
 
