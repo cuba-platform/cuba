@@ -114,7 +114,7 @@ public interface QueryParser {
 
         public String getPropertyPath() {
             if (pathString.contains(".")) {
-                return pathString.replace(variableName + ".", "");
+                return pathString.substring(variableName.length() + 1);
             } else {
                 return pathString;
             }
