@@ -677,7 +677,11 @@ public class QueryTransformerAstBasedTest {
         builder.addReferenceAttribute("group", "sec$GroupHierarchy");
         JpqlEntityModel constraintEntity = builder.produce();
 
-        JpqlEntityModel userEntity = builder.produceImmediately("sec$User", "login");
+        builder = new EntityBuilder();
+        builder.startNewEntity("sec$User");
+        builder.addStringAttribute("login");
+        builder.addSingleValueAttribute(Long.class, "version");
+        JpqlEntityModel userEntity = builder.produce();
 
         builder = new EntityBuilder();
         builder.startNewEntity("fake$EmbeddedToken");
@@ -973,6 +977,13 @@ public class QueryTransformerAstBasedTest {
         res = transformer.getResult();
         assertEquals(
                 "select u from sec$User u where concat( lower ( u.name), ' ', lower ( u.login)) = :name",
+                res);
+
+        transformer = new QueryTransformerAstBased(model, "select u from sec$User u where concat(u.name, ' ', u.version) = :name");
+        transformer.handleCaseInsensitiveParam("name");
+        res = transformer.getResult();
+        assertEquals(
+                "select u from sec$User u where concat( lower ( u.name), ' ', u.version) = :name",
                 res);
     }
 
