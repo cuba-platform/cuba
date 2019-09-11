@@ -858,6 +858,11 @@ public class CubaTreeTableWidget extends VTreeTable implements TableWidget {
     public void updateBody(UIDL uidl, int firstRow, int reqRows) {
         super.updateBody(uidl, firstRow, reqRows);
 
+        // Have to scroll after row is expanded when table has vertical scroll
+        if (BrowserInfo.get().isFirefox()) {
+            enableLazyScroller();
+        }
+
         handleUpdateBodyRows();
     }
 
