@@ -392,14 +392,16 @@ public class CubaApplicationServlet extends VaadinServlet {
         resp.setContentType("text/html");
         resp.setCharacterEncoding(StandardCharsets.UTF_8.name());
 
-        PrintWriter out = resp.getWriter();
-
-        try {
+        try (PrintWriter out = resp.getWriter()) {
             String errorHtml = prepareErrorHtml(req, exception);
-            out.print(errorHtml);
+            try {
+                out.print(errorHtml);
+            } catch (Throwable t) {
+                log.error("Unable to show error page", t);
+                out.print(INTERNAL_ERROR_TEXT);
+            }
         } catch (Throwable t) {
-            log.error("Unable to show error page", t);
-            out.print(INTERNAL_ERROR_TEXT);
+            log.debug("Unable to get response writer", t);
         }
     }
 
