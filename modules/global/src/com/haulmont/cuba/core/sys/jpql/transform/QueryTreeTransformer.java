@@ -24,6 +24,8 @@ import com.haulmont.cuba.core.sys.jpql.EntityVariable;
 import com.haulmont.cuba.core.sys.jpql.antlr2.JPA2Lexer;
 import com.haulmont.cuba.core.sys.jpql.model.Attribute;
 import com.haulmont.cuba.core.sys.jpql.model.JpqlEntityModel;
+import com.haulmont.cuba.core.sys.jpql.pointer.Pointer;
+import com.haulmont.cuba.core.sys.jpql.pointer.SimpleAttributePointer;
 import com.haulmont.cuba.core.sys.jpql.tree.*;
 import org.antlr.runtime.tree.CommonTree;
 import org.antlr.runtime.tree.Tree;
@@ -271,6 +273,14 @@ public class QueryTreeTransformer {
                 }
             }
             for (PathNode pathNode : pathNodes) {
+                //skip number attributes for lower case
+                Pointer pointer = pathNode.resolvePointer(queryTree.getModel(), queryTree.getQueryVariableContext());
+                if (pointer instanceof SimpleAttributePointer) {
+                    Attribute attribute = ((SimpleAttributePointer) pointer).getAttribute();
+                    if (attribute != null && Number.class.isAssignableFrom(attribute.getSimpleType())) {
+                        continue;
+                    }
+                }
                 for (int idx = 0; idx < condition.getChildCount(); idx++) {
                     Tree child = condition.getChild(idx);
                     if (child == pathNode) {
