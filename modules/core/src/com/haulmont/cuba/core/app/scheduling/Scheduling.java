@@ -240,7 +240,7 @@ public class Scheduling implements SchedulingAPI {
                         long delay = giveChanceToPreviousHost ? period + period / 2 : period;
                         if (SchedulingType.FIXED_DELAY == task.getSchedulingType()) {
                             long lastFinish = coordinator.getLastFinished(task);
-                            if ((task.getLastStart() < lastFinish || !lastFinishCache.containsKey(task)) && lastFinish + delay < now) {
+                            if ((task.getLastStart() <= lastFinish || !lastFinishCache.containsKey(task)) && lastFinish + delay < now) {
                                 runSingletonTask(task, now, me);
                             } else {
                                 log.trace("{}\n time has not come and we shouldn't switch", task);
@@ -272,7 +272,7 @@ public class Scheduling implements SchedulingAPI {
                 } else {
                     log.trace("{}\n now={} lastStart={} lastFinish={}", task, now, lastStart, lastFinish);
                     if (SchedulingType.FIXED_DELAY == task.getSchedulingType()) {
-                        if ((lastStart == 0 || lastStart < lastFinish) && now >= lastFinish + period) {
+                        if ((lastStart == 0 || lastStart <= lastFinish) && now >= lastFinish + period) {
                             runTask(task, now);
                         } else {
                             log.trace("{}\n time has not come", task);
