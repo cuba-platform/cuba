@@ -61,6 +61,7 @@ import com.haulmont.cuba.gui.model.CollectionContainer;
 import com.haulmont.cuba.gui.model.CollectionLoader;
 import com.haulmont.cuba.gui.model.LoaderSupportsApplyToSelected;
 import com.haulmont.cuba.gui.presentations.Presentations;
+import com.haulmont.cuba.gui.screen.compatibility.LegacyFrame;
 import com.haulmont.cuba.gui.settings.SettingsImpl;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
@@ -2093,6 +2094,11 @@ public class FilterDelegateImpl implements FilterDelegate {
             removeFromCurSetBtn.setVisible(false);
         }
         if ((filterEntity != null) && (BooleanUtils.isTrue(filterEntity.getIsSet()))) {
+            addToSet = table.getAction("addToSet");
+            if (addToSet != null) {
+                addToSet.setVisible(false);
+            }
+
             addToCurrSet = new AddToCurrSetAction();
 
             if (addToCurSetBtn == null) {
@@ -2124,7 +2130,7 @@ public class FilterDelegateImpl implements FilterDelegate {
             removeFromCurSetBtn.setAction(removeFromCurrSet);
 
             table.addAction(removeFromCurrSet);
-        } else {
+        } else if (filter.getFrame().getFrameOwner() instanceof LegacyFrame) {
             addToSet = new AddToSetAction(table);
             if (addToSetBtn == null) {
                 addToSetBtn = uiComponents.create(Button.class);

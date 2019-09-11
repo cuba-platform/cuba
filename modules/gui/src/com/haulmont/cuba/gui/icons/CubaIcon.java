@@ -42,6 +42,7 @@ public enum CubaIcon implements Icons.Icon {
     EXCEL_ACTION("font-icon:FILE_EXCEL_O"),
     UNLOCK_ACTION("font-icon:UNLOCK"),
     BULK_EDIT_ACTION("font-icon:TABLE"),
+    ADD_TO_SET_ACTION("font-icon:PLUS_CIRCLE"),
 
     PICKERFIELD_CLEAR("font-icon:TIMES"),
     PICKERFIELD_CLEAR_READONLY("font-icon:TIMES"),
