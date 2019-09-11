@@ -98,11 +98,9 @@ public class CubaTokenList<T extends Entity> extends CustomField<Collection<T>> 
         if (height > 0) {
             composition.setHeight("100%");
             composition.setExpandRatio(tokenContainer, 1);
-            tokenContainer.setHeight("100%");
         } else {
             composition.setHeightUndefined();
             composition.setExpandRatio(tokenContainer, 0);
-            tokenContainer.setHeightUndefined();
         }
     }
 
@@ -328,11 +326,9 @@ public class CubaTokenList<T extends Entity> extends CustomField<Collection<T>> 
         if (getHeight() > 0) {
             composition.setHeight("100%");
             composition.setExpandRatio(tokenContainer, 1);
-            tokenContainer.setHeight("100%");
         } else {
             composition.setHeightUndefined();
             composition.setExpandRatio(tokenContainer, 0);
-            tokenContainer.setHeightUndefined();
         }
 
         if (getWidth() > 0) {
