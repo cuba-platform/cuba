@@ -17,12 +17,14 @@
 
 package com.haulmont.cuba.web.widgets.client.fieldgrouplayout;
 
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.Element;
 import com.haulmont.cuba.web.widgets.CubaFieldGroupLayout;
 import com.haulmont.cuba.web.widgets.client.caption.CubaCaptionWidget;
 import com.haulmont.cuba.web.widgets.client.gridlayout.CubaGridLayoutConnector;
 import com.vaadin.client.ComponentConnector;
 import com.vaadin.client.ConnectorHierarchyChangeEvent;
+import com.vaadin.client.VCaption;
 import com.vaadin.client.communication.StateChangeEvent;
 import com.vaadin.client.ui.VGridLayout;
 import com.vaadin.shared.ui.Connect;
@@ -123,7 +125,7 @@ public class CubaFieldGroupLayoutConnector extends CubaGridLayoutConnector {
         for (VGridLayout.Cell cell : column) {
             if (cell != null && isCaptionInlineApplicable(cell)) {
                 if (fixedCaptionWidth == -1) {
-                    maxCaptionWidth = Math.max(maxCaptionWidth, cell.slot.getCaption().getRenderedWidth());
+                    maxCaptionWidth = Math.max(maxCaptionWidth, getMaxCaptionWidth(cell));
                 }
 
                 maxIndicatorsWidth = Math.max(maxIndicatorsWidth, ((CubaFieldGroupLayoutComponentSlot) cell.slot).getIndicatorsWidth());
@@ -150,6 +152,34 @@ public class CubaFieldGroupLayoutConnector extends CubaGridLayoutConnector {
                 }
             }
         }
+    }
+
+    protected int getMaxCaptionWidth(VGridLayout.Cell cell) {
+        VCaption caption = cell.slot.getCaption();
+        Element captionElement = caption.getElement();
+        com.google.gwt.dom.client.Element childElement = captionElement.getFirstChildElement();
+        if (childElement != null) {
+            // In some cases, e.g. by changing CheckBox 'captionManagedByLayout' attribute,
+            // a slot has no Caption at first iteration of 'maxCaptionWidth' calculation,
+            // as the result, for the second and so forth iterations, when the rest of
+            // components get their captions, 'caption.getRenderedWidth()' returns an incorrect value.
+            // In order to calculate the really required caption width, regardless of the 'white-space' mode,
+            // we need to explicitly set it to 'nowrap'. After calculation, it's reverted back.
+            Style style = childElement.getStyle();
+            String prevWhiteSpace = style.getWhiteSpace();
+            style.setWhiteSpace(Style.WhiteSpace.NOWRAP);
+            int renderedWidth = caption.getRenderedWidth();
+
+            if (prevWhiteSpace != null && !prevWhiteSpace.isEmpty()) {
+                style.setWhiteSpace(Style.WhiteSpace.valueOf(prevWhiteSpace));
+            } else {
+                style.clearWhiteSpace();
+            }
+
+            return renderedWidth;
+        }
+
+        return caption.getRenderedWidth();
     }
 
     protected void resetIndicatorsWidth(VGridLayout.Cell[] column) {
