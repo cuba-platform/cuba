@@ -43,10 +43,9 @@ import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.internal.descriptors.PersistenceObject;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.weaving.PersistenceWeaved;
-import org.eclipse.persistence.internal.weaving.PersistenceWeavedChangeTracking;
 import org.eclipse.persistence.internal.weaving.PersistenceWeavedFetchGroups;
 import org.eclipse.persistence.mappings.*;
-import org.eclipse.persistence.platform.database.PostgreSQLPlatform;
+import org.eclipse.persistence.platform.database.*;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.SessionEvent;
 import org.eclipse.persistence.sessions.SessionEventAdapter;
@@ -263,11 +262,27 @@ public class EclipseLinkSessionEventListener extends SessionEventAdapter {
         if (session.getPlatform() instanceof PostgreSQLPlatform) {
             field.setSqlType(Types.OTHER);
             field.setType(UUID.class);
+            field.setColumnDefinition("UUID");
+        } else if (session.getPlatform() instanceof MySQLPlatform) {
+            field.setSqlType(Types.VARCHAR);
+            field.setType(String.class);
+            field.setColumnDefinition("varchar(32)");
+        } else if (session.getPlatform() instanceof HSQLPlatform) {
+            field.setSqlType(Types.VARCHAR);
+            field.setType(String.class);
+            field.setColumnDefinition("varchar(36)");
+        } else if (session.getPlatform() instanceof SQLServerPlatform) {
+            field.setSqlType(Types.VARCHAR);
+            field.setType(String.class);
+            field.setColumnDefinition("uniqueidentifier");
+        } else if (session.getPlatform() instanceof OraclePlatform) {
+            field.setSqlType(Types.VARCHAR);
+            field.setType(String.class);
+            field.setColumnDefinition("varchar2(32)");
         } else {
             field.setSqlType(Types.VARCHAR);
             field.setType(String.class);
         }
-        field.setColumnDefinition("UUID");
     }
 
     private void setPrintInnerJoinOnClause(Session session) {
