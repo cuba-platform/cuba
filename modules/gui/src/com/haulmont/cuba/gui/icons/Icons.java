@@ -50,7 +50,7 @@ public interface Icons {
     String get(@Nullable Icon icon);
 
     /**
-     * For the given {@link Icon#name()}, returns the icon source that can be used to set this icon to components.
+     * For the given {@link Icon#iconName()}, returns the icon source that can be used to set this icon to components.
      * <p>
      * Example:
      * <pre>
@@ -74,6 +74,6 @@ public interface Icons {
         /**
          * @return icon name: "ADD", "CREATE", etc
          */
-        String name();
+        String iconName();
     }
 }

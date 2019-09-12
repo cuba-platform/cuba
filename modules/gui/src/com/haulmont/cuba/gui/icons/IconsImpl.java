@@ -93,7 +93,7 @@ public class IconsImpl implements Icons {
         if (icon == null)
             return null;
 
-        return get(icon.name());
+        return get(icon.iconName());
     }
 
     @Override

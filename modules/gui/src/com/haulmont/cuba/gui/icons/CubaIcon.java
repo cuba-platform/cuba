@@ -849,6 +849,11 @@ public enum CubaIcon implements Icons.Icon {
     }
 
     @Override
+    public String iconName() {
+        return name();
+    }
+
+    @Override
     public String source() {
         return source;
     }
