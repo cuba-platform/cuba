@@ -19,8 +19,10 @@ package com.haulmont.cuba.web.sys.navigation;
 import com.haulmont.bali.util.URLEncodeUtils;
 import com.haulmont.cuba.gui.navigation.NavigationState;
 import com.vaadin.server.Page;
+import com.vaadin.ui.UI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -32,7 +34,13 @@ import java.util.regex.Pattern;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
+/**
+ * Helper for working with URL.
+ */
+@Component(UrlTools.NAME)
 public class UrlTools {
+
+    public static final String NAME = "cuba_UrlTools";
 
     private static final Logger log = LoggerFactory.getLogger(UrlTools.class);
 
@@ -78,7 +86,7 @@ public class UrlTools {
             "^(?:(?:\\w+=[-a-zA-Z0-9_/.+%]+)?|\\w+=[-a-zA-Z0-9_/.+%]+(?:&\\w+=[-a-zA-Z0-9_/.+%]+)+)$";
     protected static final Pattern PARAMS_PATTERN = Pattern.compile(PARAMS_REGEX);
 
-    public static void pushState(String navigationState) {
+    public void pushState(String navigationState, UI ui) {
         checkNotNullArgument(navigationState, "Navigation state cannot be null");
 
         if (headless()) {
@@ -90,14 +98,15 @@ public class UrlTools {
                 ? "#" + navigationState
                 : "";
 
+        Page page = ui.getPage();
         if (!state.isEmpty()) {
-            Page.getCurrent().pushState(state);
+            page.pushState(state);
         } else {
-            Page.getCurrent().pushState(getEmptyFragmentUri());
+            page.pushState(getEmptyFragmentUri(page));
         }
     }
 
-    public static void replaceState(String navigationState) {
+    public void replaceState(String navigationState, UI ui) {
         checkNotNullArgument(navigationState, "Navigation state cannot be null");
 
         if (headless()) {
@@ -109,14 +118,15 @@ public class UrlTools {
                 ? "#" + navigationState
                 : "";
 
+        Page page = ui.getPage();
         if (!state.isEmpty()) {
-            Page.getCurrent().replaceState(state);
+            page.replaceState(state);
         } else {
-            Page.getCurrent().replaceState(getEmptyFragmentUri());
+            page.replaceState(getEmptyFragmentUri(page));
         }
     }
 
-    public static NavigationState parseState(String uriFragment) {
+    public NavigationState parseState(String uriFragment) {
         if (uriFragment == null || uriFragment.isEmpty()) {
             return NavigationState.EMPTY;
         }
@@ -143,8 +153,8 @@ public class UrlTools {
         return navigationState;
     }
 
-    protected static URI getEmptyFragmentUri() {
-        URI location = Page.getCurrent().getLocation();
+    protected URI getEmptyFragmentUri(Page page) {
+        URI location = page.getLocation();
 
         try {
             return new URI(location.getScheme(), location.getSchemeSpecificPart(), null);
@@ -155,7 +165,7 @@ public class UrlTools {
         return location;
     }
 
-    protected static NavigationState parseRootRoute(String uriFragment) {
+    protected NavigationState parseRootRoute(String uriFragment) {
         Matcher matcher = ROOT_ROUTE_PATTERN.matcher(uriFragment);
         if (!matcher.matches()) {
             return null;
@@ -165,7 +175,7 @@ public class UrlTools {
         return new NavigationState(root, "", "", Collections.emptyMap());
     }
 
-    protected static NavigationState parseNestedRoute(String uriFragment) {
+    protected NavigationState parseNestedRoute(String uriFragment) {
         Matcher matcher = NESTED_ROUTE_PATTERN.matcher(uriFragment);
         if (!matcher.matches()) {
             return null;
@@ -186,7 +196,7 @@ public class UrlTools {
         return new NavigationState(root, stateMark, nestedRoute, Collections.emptyMap());
     }
 
-    protected static NavigationState parseParamsRoute(String uriFragment) {
+    protected NavigationState parseParamsRoute(String uriFragment) {
         Matcher matcher = PARAMS_ROUTE_PATTERN.matcher(uriFragment);
         if (!matcher.matches()) {
             return null;
@@ -208,7 +218,7 @@ public class UrlTools {
         return new NavigationState(root, stateMark, nestedRoute, extractParams(params));
     }
 
-    protected static Map<String, String> extractParams(String paramsString) {
+    protected Map<String, String> extractParams(String paramsString) {
         if (!PARAMS_PATTERN.matcher(paramsString).matches()) {
             log.info("Unable to extract params from the given params string: \"{}\"", paramsString);
             return Collections.emptyMap();
@@ -227,12 +237,16 @@ public class UrlTools {
         return paramsMap;
     }
 
+    /**
+     * INTERNAL
+     *
+     * @return whether application is running in headless mode
+     */
     public static boolean headless() {
         Page current = Page.getCurrent();
         if (current == null) {
             return true;
         }
-
         return current.getUI().getSession() == null;
     }
 }

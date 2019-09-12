@@ -125,6 +125,8 @@ public class WebScreens implements Screens, WindowManager {
     @Inject
     protected Events events;
     @Inject
+    protected UrlTools urlTools;
+    @Inject
     protected WindowCreationHelper windowCreationHelper;
     @Inject
     protected AttributeAccessSupport attributeAccessSupport;
@@ -662,7 +664,7 @@ public class WebScreens implements Screens, WindowManager {
             NavigationState resolvedState = ((WebWindow) currentScreen.getWindow()).getResolvedState();
             if (resolvedState != null) {
                 String currentScreenRoute = resolvedState.asRoute();
-                UrlTools.replaceState(currentScreenRoute);
+                urlTools.replaceState(currentScreenRoute, ui);
             }
         }
     }

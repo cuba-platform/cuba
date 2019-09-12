@@ -29,14 +29,26 @@ import com.haulmont.cuba.web.sys.navigation.accessfilter.NavigationFilter;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
+import javax.inject.Inject;
 import java.util.Objects;
 
-import static com.haulmont.cuba.web.sys.navigation.UrlTools.replaceState;
-
+/**
+ * Bean that handles URL history transitions.
+ */
+@Component(HistoryNavigator.NAME)
+@Scope(BeanDefinition.SCOPE_PROTOTYPE)
 public class HistoryNavigator {
 
+    public static final String NAME = "cuba_HistoryNavigator";
+
     private static final Logger log = LoggerFactory.getLogger(HistoryNavigator.class);
+
+    @Inject
+    protected UrlTools urlTools;
 
     protected final AppUI ui;
 
@@ -157,7 +169,7 @@ public class HistoryNavigator {
         Screen screen = urlChangeHandler.findActiveScreenByState(requestedState);
         urlChangeHandler.selectScreen(screen);
 
-        replaceState(requestedState.asRoute());
+        urlTools.replaceState(requestedState.asRoute(), ui);
 
         history.backward();
     }

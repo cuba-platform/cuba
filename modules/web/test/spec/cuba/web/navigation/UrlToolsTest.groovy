@@ -18,55 +18,61 @@ package spec.cuba.web.navigation
 
 import com.haulmont.cuba.gui.navigation.NavigationState
 import com.haulmont.cuba.web.sys.navigation.UrlTools
-import spock.lang.Specification
+import spec.cuba.web.UiScreenSpec
 
-class UrlToolsTest extends Specification {
+class UrlToolsTest extends UiScreenSpec {
 
     def 'Empty state is returned in case of failure parsing'() {
+        def urlTools = cont.getBean(UrlTools)
+
         when: 'Null fragment is passed'
-        def state = UrlTools.parseState(null)
+        def state = urlTools.parseState(null)
 
         then:
         NavigationState.EMPTY == state
 
         when: 'Empty fragment is passed'
-        state = UrlTools.parseState('')
+        state = urlTools.parseState('')
 
         then:
         NavigationState.EMPTY == state
 
         when: 'Bad format fragment is passed'
-        state = UrlTools.parseState('#!root/42?qwerty=asd')
+        state = urlTools.parseState('#!root/42?qwerty=asd')
 
         then:
         NavigationState.EMPTY == state
     }
 
     def 'Root route may contain letters, digits and dashes'() {
+        def urlTools = cont.getBean(UrlTools)
+
         def lettersRoute = 'root'
         def lettersAndDigitsRoute = 'root42'
         def lettersAndDashesRoute = 'dashed-route'
 
         when: 'Letters are used in root route'
-        def state = UrlTools.parseState(lettersRoute)
+        def state = urlTools.parseState(lettersRoute)
 
         then: 'State is correctly parsed'
         lettersRoute == state.getRoot()
 
         when: 'Letters and digits are used in root route'
-        state = UrlTools.parseState(lettersAndDigitsRoute)
+        state = urlTools.parseState(lettersAndDigitsRoute)
 
         then: 'State is correctly parsed'
         lettersAndDigitsRoute == state.getRoot()
 
         when: 'Letters and dashed are used in root route'
-        state = UrlTools.parseState(lettersAndDashesRoute)
+        state = urlTools.parseState(lettersAndDashesRoute)
 
         then: 'State is correctly parsed'
         lettersAndDashesRoute == state.getRoot()
     }
 
     def 'Nested screen route considering URL state mark is parsed'() {
+        def urlTools = cont.getBean(UrlTools)
+
         def nestedScreenRoute = 'main/users'
         def twoNestedScreensRoute = 'main/users/roles'
 
@@ -74,21 +80,21 @@ class UrlToolsTest extends Specification {
         def twoNestedScreensRouteStateMarkRoute = 'main/0/users/roles'
 
         when: 'Simple nested screen route is passed'
-        def state = UrlTools.parseState(nestedScreenRoute)
+        def state = urlTools.parseState(nestedScreenRoute)
 
         then: 'State is correctly parsed'
         state.getRoot() == 'main'
         state.getNestedRoute() == 'users'
 
         when: 'Two nested screens route is passed'
-        state = UrlTools.parseState(twoNestedScreensRoute)
+        state = urlTools.parseState(twoNestedScreensRoute)
 
         then: 'State is correctly parsed'
         state.getRoot() == 'main'
         state.getNestedRoute() == 'users/roles'
 
         when: 'Nested screen route with state mark is passed'
-        state = UrlTools.parseState(nestedScreenStateMarkRoute)
+        state = urlTools.parseState(nestedScreenStateMarkRoute)
 
         then: 'State is correctly parsed'
         state.getRoot() == 'main'
@@ -96,7 +102,7 @@ class UrlToolsTest extends Specification {
         state.getNestedRoute() == 'users'
 
         when: 'Two nested screens with state mark route is passed'
-        state = UrlTools.parseState(twoNestedScreensRouteStateMarkRoute)
+        state = urlTools.parseState(twoNestedScreensRouteStateMarkRoute)
 
         then: 'State is correctly parsed'
         state.getRoot() == 'main'
@@ -105,6 +111,8 @@ class UrlToolsTest extends Specification {
     }
 
     def 'Params route considering URL state mark is parsed'() {
+        def urlTools = cont.getBean(UrlTools)
+
         def params = 'p1=v1&p2=v2&p3=v3'
 
         def rootRouteWithParams = "login?redirectTo=users&${params}"
@@ -115,14 +123,14 @@ class UrlToolsTest extends Specification {
         def twoNestedRoutesStateMarkParams = "main/0/users/roles?${params}"
 
         when: 'Root route with params is passed'
-        def state = UrlTools.parseState(rootRouteWithParams)
+        def state = urlTools.parseState(rootRouteWithParams)
 
         then: 'State is correctly parsed'
         state.getRoot() == 'login'
         state.getParamsString() == "redirectTo=users&${params}"
 
         when: 'Nested route with params is passed'
-        state = UrlTools.parseState(nestedRouteWithParams)
+        state = urlTools.parseState(nestedRouteWithParams)
 
         then: 'State is correctly parsed'
         state.getRoot() == 'main'
@@ -130,7 +138,7 @@ class UrlToolsTest extends Specification {
         state.getParamsString() == params
 
         when: 'Two nested routes with params are passed'
-        state = UrlTools.parseState(twoNestedRoutesWithParams)
+        state = urlTools.parseState(twoNestedRoutesWithParams)
 
         then: 'State is correctly parsed'
         state.getRoot() == 'main'
@@ -138,7 +146,7 @@ class UrlToolsTest extends Specification {
         state.getParamsString() == params
 
         when: 'Nested route with state mark and params are passed'
-        state = UrlTools.parseState(nestedRouteStateMarkParams)
+        state = urlTools.parseState(nestedRouteStateMarkParams)
 
         then: 'State is correctly parsed'
         state.getRoot() == 'main'
@@ -147,7 +155,7 @@ class UrlToolsTest extends Specification {
         state.getParamsString() == params
 
         when: 'Two nested routes with state mark and params are passed'
-        state = UrlTools.parseState(twoNestedRoutesStateMarkParams)
+        state = urlTools.parseState(twoNestedRoutesStateMarkParams)
 
         then: 'State is correctly parsed'
         state.getRoot() == 'main'

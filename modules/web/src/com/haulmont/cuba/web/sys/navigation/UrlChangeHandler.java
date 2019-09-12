@@ -56,7 +56,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 
-import static com.haulmont.cuba.web.sys.navigation.UrlTools.replaceState;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
@@ -70,6 +69,8 @@ public class UrlChangeHandler implements InitializingBean {
     protected Security security;
     @Inject
     protected BeanLocator beanLocator;
+    @Inject
+    protected UrlTools urlTools;
 
     @Inject
     protected WebConfig webConfig;
@@ -92,7 +93,7 @@ public class UrlChangeHandler implements InitializingBean {
 
     @Override
     public void afterPropertiesSet() {
-        historyNavigator = new HistoryNavigator(ui, this);
+        historyNavigator = beanLocator.getPrototype(HistoryNavigator.NAME, ui, this);
         screenNavigator = beanLocator.getPrototype(ScreenNavigator.NAME, ui);
     }
 
@@ -105,7 +106,7 @@ public class UrlChangeHandler implements InitializingBean {
         int hashIdx = event.getUri().indexOf("#");
         NavigationState requestedState = hashIdx < 0
                 ? NavigationState.EMPTY
-                : UrlTools.parseState(event.getUri().substring(hashIdx + 1));
+                : urlTools.parseState(event.getUri().substring(hashIdx + 1));
 
         if (requestedState == null) {
             log.debug("Unable to handle requested state: '{}'", Page.getCurrent().getUriFragment());
@@ -162,7 +163,7 @@ public class UrlChangeHandler implements InitializingBean {
     }
 
     public void restoreState() {
-        NavigationState currentState = UrlTools.parseState(ui.getPage().getUriFragment());
+        NavigationState currentState = urlTools.parseState(ui.getPage().getUriFragment());
 
         if (currentState == null
                 || currentState == NavigationState.EMPTY) {
@@ -170,7 +171,7 @@ public class UrlChangeHandler implements InitializingBean {
             if (topLevelWindow instanceof WebWindow) {
                 NavigationState topScreenState = ((WebWindow) topLevelWindow).getResolvedState();
 
-                replaceState(topScreenState.asRoute());
+                urlTools.replaceState(topScreenState.asRoute(), ui);
             }
         }
     }
@@ -234,7 +235,7 @@ public class UrlChangeHandler implements InitializingBean {
             screen = getActiveScreen();
         }
 
-        replaceState(getResolvedState(screen).asRoute());
+        urlTools.replaceState(getResolvedState(screen).asRoute(), ui);
     }
 
     public NavigationState getResolvedState(@Nullable Screen screen) {

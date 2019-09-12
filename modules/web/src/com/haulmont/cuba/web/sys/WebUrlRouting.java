@@ -75,6 +75,8 @@ public class WebUrlRouting implements UrlRouting {
     protected WindowConfig windowConfig;
     @Inject
     protected Metadata metadata;
+    @Inject
+    protected UrlTools urlTools;
 
     protected AppUI ui;
 
@@ -114,7 +116,7 @@ public class WebUrlRouting implements UrlRouting {
             return NavigationState.EMPTY;
         }
 
-        return UrlTools.parseState(Page.getCurrent().getLocation().getRawFragment());
+        return urlTools.parseState(Page.getCurrent().getLocation().getRawFragment());
     }
 
     @Override
@@ -130,11 +132,11 @@ public class WebUrlRouting implements UrlRouting {
         if (!pushState
                 || externalNavigation(currentState, newState)
                 || isNotFoundScreen(screen)) {
-            UrlTools.replaceState(newState.asRoute());
+            urlTools.replaceState(newState.asRoute(), ui);
 
             lastHistoryOperation = CubaUIConstants.HISTORY_REPLACE_OP;
         } else {
-            UrlTools.pushState(newState.asRoute());
+            urlTools.pushState(newState.asRoute(), ui);
 
             lastHistoryOperation = CubaUIConstants.HISTORY_PUSH_OP;
         }
