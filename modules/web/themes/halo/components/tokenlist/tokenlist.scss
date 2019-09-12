@@ -136,4 +136,15 @@
       }
     }
   }
+
+  .#{$primary-stylename}-error .c-pickerfield {
+    .v-filterselect-input {
+      @include valo-textfield-error-style;
+    }
+
+    .v-filterselect-button {
+      color: $v-error-indicator-color;
+      border-color: $v-error-indicator-color;
+    }
+  }
 }
