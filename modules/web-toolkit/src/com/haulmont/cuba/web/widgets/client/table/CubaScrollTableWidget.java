@@ -64,6 +64,8 @@ public class CubaScrollTableWidget extends VScrollTable implements TableWidget {
     public void sizeInit() {
         super.sizeInit();
 
+        tHead.enableBrowserIntelligence();
+
         if (_delegate.aggregationRow != null) {
             _delegate.aggregationRow.toggleScrollbarSpacer(willHaveScrollbars());
         }
