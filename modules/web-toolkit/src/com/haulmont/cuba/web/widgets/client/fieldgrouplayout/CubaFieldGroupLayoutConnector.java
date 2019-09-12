@@ -17,6 +17,8 @@
 
 package com.haulmont.cuba.web.widgets.client.fieldgrouplayout;
 
+import com.google.gwt.dom.client.Node;
+import com.google.gwt.dom.client.NodeList;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.Element;
 import com.haulmont.cuba.web.widgets.CubaFieldGroupLayout;
@@ -29,8 +31,12 @@ import com.vaadin.client.communication.StateChangeEvent;
 import com.vaadin.client.ui.VGridLayout;
 import com.vaadin.shared.ui.Connect;
 
+import javax.annotation.Nullable;
+
 @Connect(CubaFieldGroupLayout.class)
 public class CubaFieldGroupLayoutConnector extends CubaGridLayoutConnector {
+
+    protected static final String CAPTIONTEXT_STYLENAME = "v-captiontext";
 
     protected boolean initialStateChangePerformed = false;
 
@@ -157,7 +163,7 @@ public class CubaFieldGroupLayoutConnector extends CubaGridLayoutConnector {
     protected int getMaxCaptionWidth(VGridLayout.Cell cell) {
         VCaption caption = cell.slot.getCaption();
         Element captionElement = caption.getElement();
-        com.google.gwt.dom.client.Element childElement = captionElement.getFirstChildElement();
+        com.google.gwt.dom.client.Element childElement = findCaptionTextChildElement(captionElement);
         if (childElement != null) {
             // In some cases, e.g. by changing CheckBox 'captionManagedByLayout' attribute,
             // a slot has no Caption at first iteration of 'maxCaptionWidth' calculation,
@@ -180,6 +186,20 @@ public class CubaFieldGroupLayoutConnector extends CubaGridLayoutConnector {
         }
 
         return caption.getRenderedWidth();
+    }
+
+    @Nullable
+    protected com.google.gwt.dom.client.Element findCaptionTextChildElement(Element captionElement) {
+        NodeList<Node> childNodes = captionElement.getChildNodes();
+        for (int i = 0; i < childNodes.getLength(); i++) {
+            Node child = childNodes.getItem(i);
+            if (child instanceof com.google.gwt.dom.client.Element
+                && ((com.google.gwt.dom.client.Element) child).getClassName().contains(CAPTIONTEXT_STYLENAME)) {
+                return (com.google.gwt.dom.client.Element) child;
+            }
+        }
+
+        return null;
     }
 
     protected void resetIndicatorsWidth(VGridLayout.Cell[] column) {
