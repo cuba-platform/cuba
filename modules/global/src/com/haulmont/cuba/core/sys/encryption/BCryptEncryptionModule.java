@@ -57,6 +57,9 @@ public class BCryptEncryptionModule implements EncryptionModule {
 
     @Override
     public boolean checkPassword(User user, String rawPassword) {
+        if (user.getPassword() == null) {
+            return false;
+        }
         return BCrypt.checkpw(rawPassword, user.getPassword());
     }
 }
