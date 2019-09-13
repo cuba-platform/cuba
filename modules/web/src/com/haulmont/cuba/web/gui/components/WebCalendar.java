@@ -288,9 +288,7 @@ public class WebCalendar extends WebAbstractComponent<CubaCalendar>
             CalendarEvent calendarEventWrapper = ((CalendarEventWrapper) calendarEvent).getCalendarEvent();
             Entity entity = null;
             if (calendarEventWrapper instanceof EntityCalendarEvent) {
-                entity = ((EntityCalendarEvent) ((CalendarEventWrapper) calendarEvent)
-                        .getCalendarEvent())
-                        .getEntity();
+                entity = ((EntityCalendarEvent) calendarEventWrapper).getEntity();
             }
 
             CalendarEventClickEvent calendarEventClickEvent = new CalendarEventClickEvent(
@@ -323,9 +321,7 @@ public class WebCalendar extends WebAbstractComponent<CubaCalendar>
             CalendarEvent calendarEventWrapper = ((CalendarEventWrapper) calendarEvent).getCalendarEvent();
             Entity entity = null;
             if (calendarEventWrapper instanceof EntityCalendarEvent) {
-                entity = ((EntityCalendarEvent) ((CalendarEventWrapper) calendarEvent)
-                        .getCalendarEvent())
-                        .getEntity();
+                entity = ((EntityCalendarEvent) calendarEventWrapper).getEntity();
             }
 
             CalendarEventResizeEvent calendarEventResizeEvent = new CalendarEventResizeEvent(
@@ -358,10 +354,16 @@ public class WebCalendar extends WebAbstractComponent<CubaCalendar>
         com.vaadin.v7.ui.components.calendar.event.CalendarEvent calendarEvent = event.getCalendarEvent();
         CalendarEvent calendarEventWrapper = ((CalendarEventWrapper) calendarEvent).getCalendarEvent();
 
+        Entity entity = null;
+        if (calendarEventWrapper instanceof EntityCalendarEvent) {
+            entity = ((EntityCalendarEvent) calendarEventWrapper).getEntity();
+        }
+
         CalendarEventMoveEvent calendarEventMoveEvent = new CalendarEventMoveEvent(
                 WebCalendar.this,
                 calendarEventWrapper,
-                event.getNewStart());
+                event.getNewStart(),
+                entity);
         publish(CalendarEventMoveEvent.class, calendarEventMoveEvent);
     }
 
