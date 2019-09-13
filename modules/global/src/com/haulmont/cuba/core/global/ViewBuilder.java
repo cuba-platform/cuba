@@ -143,7 +143,9 @@ public class ViewBuilder {
 
     public ViewBuilder addView(View view) {
         for (ViewProperty viewProperty : view.getProperties()) {
-            add(viewProperty.getName());
+            properties.add(viewProperty.getName());
+            views.put(viewProperty.getName(), viewProperty.getView());
+            fetchModes.put(viewProperty.getName(), viewProperty.getFetchMode());
         }
         return this;
     }

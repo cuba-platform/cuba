@@ -192,6 +192,22 @@ public class ViewBuilderTest {
         assertTrue(addressView.containsProperty("city"));
     }
 
+    @Test
+    public void testMerging() {
+        View view1 = ViewBuilder.of(Pet.class)
+                .add("owner", View.LOCAL)
+                .build();
+
+        View view2 = ViewBuilder.of(Pet.class)
+                .addView(view1)
+                .add("name")
+                .build();
+
+        ViewProperty ownerProp = view2.getProperty("owner");
+        assertTrue(ownerProp != null && ownerProp.getView() != null);
+        assertTrue(ownerProp.getView().containsProperty("name"));
+    }
+
     private boolean containsSystemProperties(View view) {
         return view.containsProperty("id")
                 && view.containsProperty("version")
