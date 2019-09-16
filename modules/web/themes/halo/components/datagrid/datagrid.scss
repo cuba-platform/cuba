@@ -79,6 +79,13 @@ $cuba-datagrid-highlight-hover-row: false !default;
       overflow: hidden;
       min-height: $v-unit-size;
     }
+
+    .v-ie11 &,
+    .v-edge & {
+      .c-buttons-panel {
+        overflow-x: hidden
+      }
+    }
   }
 
   @if $cuba-buttonspanel-flow == false {
