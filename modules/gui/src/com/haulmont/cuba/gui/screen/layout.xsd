@@ -2884,6 +2884,7 @@
                             <xs:attributeGroup ref="hasIcon"/>
                         </xs:complexType>
                     </xs:element>
+                    <xs:element name="validators" minOccurs="0" type="collectionValidatorType"/>
                 </xs:all>
 
                 <xs:attributeGroup ref="hasEditable"/>
