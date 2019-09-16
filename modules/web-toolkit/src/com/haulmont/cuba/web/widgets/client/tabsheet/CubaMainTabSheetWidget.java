@@ -25,6 +25,7 @@ import com.google.gwt.event.dom.client.ContextMenuEvent;
 import com.google.gwt.event.dom.client.DragEndEvent;
 import com.google.gwt.event.dom.client.DragLeaveEvent;
 import com.google.gwt.event.dom.client.DropEvent;
+import com.google.gwt.event.dom.client.FocusEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.RootPanel;
@@ -210,5 +211,21 @@ public class CubaMainTabSheetWidget extends VDDTabSheet {
             currentlyDisplayedWidget.getElement().getStyle().setOpacity(0);
         }
         return loaded;
+    }
+
+    @Override
+    protected CubaTabSelectionHandler createTabSelectionHandler() {
+        return new CubaTabSelectionHandler();
+    }
+
+    public class CubaTabSelectionHandler extends TabSelectionHandler {
+        @Override
+        public void onFocus(FocusEvent event) {
+            super.onFocus(event);
+            if (event.getSource() instanceof Tab) {
+                int focusedTabIndex = tabBar.getWidgetIndex((Tab) event.getSource());
+                setFocusedTabIndex(focusedTabIndex);
+            }
+        }
     }
 }
