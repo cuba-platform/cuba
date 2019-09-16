@@ -17,6 +17,7 @@
 package com.haulmont.cuba.gui.screen;
 
 import com.haulmont.bali.events.Subscription;
+import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.core.app.LockService;
 import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 import com.haulmont.cuba.core.entity.Entity;
@@ -546,6 +547,10 @@ public abstract class MasterDetailScreen<T extends Entity> extends StandardLooku
                     screenValidation.validateCrossFieldRules(this, getEditContainer().getItem());
 
             errors.addAll(validationErrors);
+
+            ValidationEvent validateEvent = new ValidationEvent(this);
+            fireEvent(ValidationEvent.class, validateEvent);
+            errors.addAll(validateEvent.getErrors());
         }
     }
 
@@ -561,7 +566,7 @@ public abstract class MasterDetailScreen<T extends Entity> extends StandardLooku
     }
 
     /**
-     * Adds a listener to {@link StandardEditor.BeforeCommitChangesEvent}.
+     * Adds a listener to {@link BeforeCommitChangesEvent}.
      *
      * @param listener listener
      * @return subscription
@@ -571,13 +576,23 @@ public abstract class MasterDetailScreen<T extends Entity> extends StandardLooku
     }
 
     /**
-     * Adds a listener to {@link StandardEditor.AfterCommitChangesEvent}.
+     * Adds a listener to {@link AfterCommitChangesEvent}.
      *
      * @param listener listener
      * @return subscription
      */
     protected Subscription addAfterCommitChangesListener(Consumer<AfterCommitChangesEvent> listener) {
         return getEventHub().subscribe(AfterCommitChangesEvent.class, listener);
+    }
+
+    /**
+     * Adds a listener to {@link ValidationEvent}.
+     *
+     * @param listener listener
+     * @return subscription
+     */
+    protected Subscription addValidationEventListener(Consumer<ValidationEvent> listener) {
+        return getEventHub().subscribe(ValidationEvent.class, listener);
     }
 
     /**
@@ -765,6 +780,42 @@ public abstract class MasterDetailScreen<T extends Entity> extends StandardLooku
          */
         public DataContext getDataContext() {
             return getSource().getScreenData().getDataContext();
+        }
+    }
+
+    /**
+     * Event sent when screen is validated from {@link #validateAdditionalRules(ValidationErrors)} call.
+     * <br>
+     * Use this event listener to perform additional screen validation, for example:
+     * <pre>
+     *     &#64;Subscribe
+     *     protected void onScreenValidation(ValidationEvent event) {
+     *         ValidationErrors errors = performCustomValidation();
+     *         event.addErrors(errors);
+     *     }
+     * </pre>
+     */
+    public static class ValidationEvent extends EventObject {
+
+        ValidationErrors errors = new ValidationErrors();
+
+        public ValidationEvent(Screen source) {
+            super(source);
+        }
+
+        @Override
+        public Screen getSource() {
+            return (Screen) super.getSource();
+        }
+
+        public void addErrors(ValidationErrors errors) {
+            Preconditions.checkNotNullArgument(errors, "Validation errors cannot be null");
+
+            this.errors.addAll(errors);
+        }
+
+        public ValidationErrors getErrors() {
+            return errors;
         }
     }
 }
