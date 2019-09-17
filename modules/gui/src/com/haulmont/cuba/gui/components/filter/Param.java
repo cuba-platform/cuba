@@ -54,6 +54,8 @@ import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.TextStringBuilder;
 import org.dom4j.Element;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 
@@ -134,6 +136,8 @@ public class Param {
     protected ThemeConstants theme;
 
     private EventHub eventHub;
+
+    private static final Logger log = LoggerFactory.getLogger(Param.class);
 
     protected EventHub getEventHub() {
         if (eventHub == null) {
@@ -415,7 +419,12 @@ public class Param {
                 break;
 
             case ENUM:
-                value = Enum.valueOf(javaClass, text);
+                try {
+                    value = Enum.valueOf(javaClass, text);
+                } catch (IllegalArgumentException e) {
+                    log.error("Cannot evaluate enum value: {}", e.getMessage());
+                    value = null;
+                }
                 break;
 
             case RUNTIME_ENUM:
