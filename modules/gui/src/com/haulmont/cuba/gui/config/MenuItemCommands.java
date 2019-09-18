@@ -302,13 +302,17 @@ public class MenuItemCommands {
             Screen screen;
             WindowInfo windowInfo = windowConfig.getWindowInfo(this.screen);
 
-            if (screenId.endsWith(Window.CREATE_WINDOW_SUFFIX)
-                    || screenId.endsWith(Window.EDITOR_WINDOW_SUFFIX)) {
-                if (windowInfo.getDescriptor() != null) {
-                    // legacy editor
-                    screen = ((WindowManager) screens).createEditor(windowInfo, getEntityToEdit(screenId), openType, params);
+            if (windowInfo.getDescriptor() != null) {
+                // legacy screens
+
+                Map<String, Object> paramsMap = parseLegacyScreenParams(windowInfo.getDescriptor());
+                paramsMap.putAll(params);
+
+                if (screenId.endsWith(Window.CREATE_WINDOW_SUFFIX)
+                        || screenId.endsWith(Window.EDITOR_WINDOW_SUFFIX)) {
+                    screen = ((WindowManager) screens).createEditor(windowInfo, getEntityToEdit(screenId), openType, paramsMap);
                 } else {
-                    screen = screens.create(screenId, openType.getOpenMode(), new MapScreenOptions(params));
+                    screen = screens.create(screenId, openType.getOpenMode(), new MapScreenOptions(paramsMap));
                 }
             } else {
                 screen = screens.create(screenId, openType.getOpenMode(), new MapScreenOptions(params));
@@ -361,6 +365,28 @@ public class MenuItemCommands {
                 }
             }
             return entityItem;
+        }
+
+        // CAUTION copied from com.haulmont.cuba.web.sys.WebScreens#createParametersMap
+        protected Map<String, Object> parseLegacyScreenParams(Element descriptor) {
+            Map<String, Object> map = new HashMap<>();
+
+            Element paramsElement = descriptor.element("params") != null ? descriptor.element("params") : descriptor;
+            if (paramsElement != null) {
+                List<Element> paramElements = paramsElement.elements("param");
+                for (Element paramElement : paramElements) {
+                    String name = paramElement.attributeValue("name");
+                    String value = paramElement.attributeValue("value");
+                    if ("true".equalsIgnoreCase(value) || "false".equalsIgnoreCase(value)) {
+                        Boolean booleanValue = Boolean.valueOf(value);
+                        map.put(name, booleanValue);
+                    } else {
+                        map.put(name, value);
+                    }
+                }
+            }
+
+            return map;
         }
 
         @Override
