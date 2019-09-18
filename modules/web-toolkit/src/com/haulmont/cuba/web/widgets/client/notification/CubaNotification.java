@@ -87,21 +87,19 @@ public class CubaNotification extends VNotification {
 
     @Override
     protected void afterRemoveNotificationFromCollection(VNotification removedNotification, int removedIdx) {
-        if (removedIdx == 0) {
-            return;
-        }
-
-        if (!isTrayNotification(removedNotification)) {
-            return;
-        }
-
         List<VNotification> trayList = getCurrentTrayList();
+        int upperBound = trayList == null ? -1 : trayList.indexOf(removedNotification);
+        if (upperBound <= 0) {
+            return;
+        }
+
         trayList.remove(removedNotification);
+        upperBound--;
 
         Element removedElement = removedNotification.getElement();
         int removedElementHeight = WidgetUtil.getRequiredHeight(removedElement);
 
-        for (int i = removedIdx - 1; i >= 0; i--) {
+        for (int i = upperBound; i >= 0; i--) {
             VNotification notification = trayList.get(i);
             Element el = notification.getElement();
             if (isTrayNotification(notification)) {
@@ -121,6 +119,7 @@ public class CubaNotification extends VNotification {
             }
         }
     }
+
 
     protected boolean isTrayNotification(VNotification notification) {
         return notification.getElement().hasClassName("v-position-bottom")
