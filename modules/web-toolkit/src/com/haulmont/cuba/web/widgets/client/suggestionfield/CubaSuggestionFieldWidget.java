@@ -96,6 +96,7 @@ public class CubaSuggestionFieldWidget extends Composite implements HasEnabled, 
         textField.addKeyUpHandler(events);
         textField.addValueChangeHandler(events);
         textField.addBlurHandler(events);
+        textField.addFocusHandler(events);
     }
 
     protected void setAsyncSearchDelayMs(int asyncSearchDelayMs) {
