@@ -57,11 +57,12 @@ public class OptimisticExceptionHandler extends AbstractGenericExceptionHandler 
             String localizedEntityName = messages.getMessage(packageName, entityName);
 
             msg = messages.formatMessage(messages.getMainMessagePack(),
-                    "optimisticException.message", "\"" + localizedEntityName + "\"");
+                    "optimisticException.message", localizedEntityName);
         } else {
             msg = messages.getMessage(messages.getMainMessagePack(), "optimisticExceptionUnknownObject.message");
         }
-        windowManager.showNotification(msg, Frame.NotificationType.ERROR);
+        String description = messages.getMessage(messages.getMainMessagePack(), "optimisticException.description");
+        windowManager.showNotification(msg, description, Frame.NotificationType.ERROR);
     }
 
     @Override
