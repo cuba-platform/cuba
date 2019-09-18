@@ -76,6 +76,8 @@ public class CubaSuggestionFieldWidget extends Composite implements HasEnabled, 
     protected String popupStylename = "";
     protected String popupWidth;
 
+    protected boolean focused = false;
+
     public CubaSuggestionFieldWidget() {
         textField = GWT.create(VTextField.class);
         initTextField();
@@ -140,7 +142,7 @@ public class CubaSuggestionFieldWidget extends Composite implements HasEnabled, 
             suggestionsPopup.removeAutoHidePartner(getElement());
             suggestionsPopup.addAutoHidePartner(getElement());
 
-            if (!suggestionsPopup.isAttached() || !suggestionsPopup.isVisible()) {
+            if (isFocused() && (!suggestionsPopup.isAttached() || !suggestionsPopup.isVisible())) {
                 suggestionsPopup.showPopup();
             }
 
@@ -198,6 +200,10 @@ public class CubaSuggestionFieldWidget extends Composite implements HasEnabled, 
         if (query.length() >= minSearchStringLength) {
             scheduleQuery(query);
         }
+    }
+
+    public boolean isFocused() {
+        return focused;
     }
 
     public int getTabIndex() {
@@ -519,7 +525,8 @@ public class CubaSuggestionFieldWidget extends Composite implements HasEnabled, 
         return s.getMarginWidth() + s.getBorderWidth() + s.getPaddingWidth();
     }
 
-    protected class CubaTextFieldEvents implements KeyDownHandler, KeyUpHandler, ValueChangeHandler<String>, BlurHandler {
+    protected class CubaTextFieldEvents implements KeyDownHandler, KeyUpHandler, ValueChangeHandler<String>, BlurHandler,
+                                                    FocusHandler {
         @Override
         public void onKeyDown(KeyDownEvent event) {
             switch (event.getNativeKeyCode()) {
@@ -545,11 +552,17 @@ public class CubaSuggestionFieldWidget extends Composite implements HasEnabled, 
         @Override
         public void onBlur(BlurEvent event) {
             handleOnBlur(event);
+            focused = false;
         }
 
         @Override
         public void onKeyUp(KeyUpEvent event) {
             searchSuggestions(textField.getText());
+        }
+
+        @Override
+        public void onFocus(FocusEvent event) {
+            focused = true;
         }
     }
 
