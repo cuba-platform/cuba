@@ -16,6 +16,7 @@
 
 package com.haulmont.cuba.gui.navigation;
 
+import com.haulmont.bali.util.URLEncodeUtils;
 import com.haulmont.cuba.gui.UrlRouting;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -89,7 +90,7 @@ public class NavigationState {
 
         return params.entrySet()
                 .stream()
-                .map(entry -> String.format("%s=%s", entry.getKey(), entry.getValue()))
+                .map(entry -> String.format("%s=%s", entry.getKey(), URLEncodeUtils.encodeUtf8(entry.getValue())))
                 .collect(Collectors.joining("&"));
     }
 
