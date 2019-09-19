@@ -27,11 +27,11 @@
         <property name="cuba.webHostName" value="localhost"/>
         <property name="cuba.webPort" value="8080"/>
 
-        <property name="cuba.confDir" value="${catalina.base}/conf/${cuba.webContextName}"/>
+        <property name="cuba.confDir" value="${app.home}/${cuba.webContextName}/conf"/>
         <property name="cuba.dbDir" value="${catalina.base}/webapps/${cuba.webContextName}/WEB-INF/db"/>
-        <property name="cuba.logDir" value="${catalina.base}/logs"/>
-        <property name="cuba.tempDir" value="${catalina.base}/temp/${cuba.webContextName}"/>
-        <property name="cuba.dataDir" value="${catalina.base}/work/${cuba.webContextName}"/>
+        <property name="cuba.logDir" value="${app.home}/logs"/>
+        <property name="cuba.tempDir" value="${app.home}/${cuba.webContextName}/temp"/>
+        <property name="cuba.dataDir" value="${app.home}/${cuba.webContextName}/work"/>
         <property name="cuba.classpath.directories" value="${catalina.base}/lib;${catalina.base}/shared/classes;${catalina.base}/shared/lib;${catalina.base}/webapps/${cuba.webContextName}/WEB-INF/classes;${catalina.base}/webapps/${cuba.webContextName}/WEB-INF/lib"/>
 
         <property name="cuba.passwordEncryptionModule" value="cuba_BCryptEncryptionModule"/>

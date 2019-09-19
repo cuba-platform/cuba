@@ -44,7 +44,10 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.Properties;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -61,10 +64,13 @@ public abstract class AbstractWebAppContextLoader extends AbstractAppContextLoad
 
     public static final String APP_PROPS_PARAM = "appProperties";
 
+    public static final String APP_HOME_PROP = "app.home";
+
     private final Logger log = LoggerFactory.getLogger(AbstractWebAppContextLoader.class);
 
     @Override
     public void contextInitialized(ServletContextEvent servletContextEvent) {
+        checkAppHome();
         try {
             ServletContext sc = servletContextEvent.getServletContext();
             ServletContextHolder.setServletContext(sc);
@@ -95,6 +101,25 @@ public abstract class AbstractWebAppContextLoader extends AbstractAppContextLoad
                 log.debug("Error closing application context: {}", e1.toString());
             }
             throw e;
+        }
+    }
+
+    protected void checkAppHome() {
+        String appHome = System.getProperty(APP_HOME_PROP);
+        if (StringUtils.isBlank(appHome)) {
+            File appHomeDir = new File(System.getProperty("user.home"), ".app_home");
+            appHome = appHomeDir.getAbsolutePath();
+            System.setProperty(APP_HOME_PROP, appHome);
+
+            String message = String.format(
+                    "Required '%s' Java system property is automatically set\n" +
+                    "to '%s'.\n" +
+                    "Consider providing it in '-D' Java command line parameter, \n" +
+                    "for example '-Dapp.home=/path_to_app_home'",
+                    APP_HOME_PROP, appHome);
+            log.warn("\n=================================================================\n" +
+                    message +
+                    "\n=================================================================");
         }
     }
 
