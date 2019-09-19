@@ -45,6 +45,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
@@ -184,41 +185,77 @@ public class MenuItemCommands {
 
             Screens screens = getScreenContext(origin).getScreens();
 
-            if (screenId.endsWith(Window.CREATE_WINDOW_SUFFIX)
-                    || screenId.endsWith(Window.EDITOR_WINDOW_SUFFIX)) {
-                // only for legacy screens
-
-                Entity entityItem;
-                if (params.containsKey("item")) {
-                    entityItem = (Entity) params.get("item");
-                } else {
-                    String[] strings = screenId.split("[.]");
-                    String metaClassName;
-                    if (strings.length == 2) {
-                        metaClassName = strings[0];
-                    } else if (strings.length == 3) {
-                        metaClassName = strings[1];
-                    } else {
-                        throw new UnsupportedOperationException("Incorrect screen parameters in menu item " + item.getId());
-                    }
-
-                    entityItem = metadata.create(metaClassName);
+            WindowInfo windowInfo = windowConfig.getWindowInfo(this.screen);
+            if (windowInfo.getDescriptor() != null) {
+                // legacy screens
+                Map<String, Object> paramsMap = new HashMap<>(parseLegacyScreenParams(windowInfo.getDescriptor()));
+                if (params != null) {
+                    paramsMap.putAll(params);
                 }
 
-                WindowInfo windowInfo = windowConfig.getWindowInfo(this.screen);
-                ((WindowManager) screens).openEditor(windowInfo, entityItem, openType, params);
+                if (screenId.endsWith(Window.CREATE_WINDOW_SUFFIX)
+                        || screenId.endsWith(Window.EDITOR_WINDOW_SUFFIX)) {
+                    // legacy create and edit screens
+                    ((WindowManager) screens).openEditor(windowInfo, getEntityItem(screenId), openType, params);
+                } else {
+                    Screen screen = screens.create(screenId, openType.getOpenMode(), new MapScreenOptions(paramsMap));
 
+                    screens.showFromNavigation(screen);
+                }
             } else {
                 Screen screen = screens.create(screenId, openType.getOpenMode(), new MapScreenOptions(params));
+
                 screens.showFromNavigation(screen);
             }
 
             sw.stop();
         }
 
+        protected Entity getEntityItem(String screenId) {
+            Entity entityItem;
+            if (params.containsKey("item")) {
+                entityItem = (Entity) params.get("item");
+            } else {
+                String[] strings = screenId.split("[.]");
+                String metaClassName;
+                if (strings.length == 2) {
+                    metaClassName = strings[0];
+                } else if (strings.length == 3) {
+                    metaClassName = strings[1];
+                } else {
+                    throw new UnsupportedOperationException("Incorrect screen parameters in menu item " + item.getId());
+                }
+
+                entityItem = metadata.create(metaClassName);
+            }
+            return entityItem;
+        }
+
         @Override
         public String getDescription() {
             return String.format("Opening window: \"%s\"", screen);
+        }
+
+        // CAUTION copied from com.haulmont.cuba.web.sys.WebScreens#createParametersMap
+        protected Map<String, Object> parseLegacyScreenParams(Element screenDescriptor) {
+            Map<String, Object> map = new HashMap<>();
+            Element paramsElement = screenDescriptor.element("params") != null
+                    ? screenDescriptor.element("params")
+                    : screenDescriptor;
+            if (paramsElement != null) {
+                List<Element> paramElements = paramsElement.elements("param");
+                for (Element paramElement : paramElements) {
+                    String name = paramElement.attributeValue("name");
+                    String value = paramElement.attributeValue("value");
+                    if ("true".equalsIgnoreCase(value) || "false".equalsIgnoreCase(value)) {
+                        Boolean booleanValue = Boolean.valueOf(value);
+                        map.put(name, booleanValue);
+                    } else {
+                        map.put(name, value);
+                    }
+                }
+            }
+            return map;
         }
     }
 
