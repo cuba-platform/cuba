@@ -117,24 +117,6 @@
     max-width: 400px;
     max-height: 250px;
     overflow: auto;
-
-    // To enable scrollbars in Edge, if necessary
-    .v-edge & {
-      -ms-scroll-limit-x-max: auto;
-      -ms-scroll-limit-y-max: auto;
-    }
-
-    .v-ie11 & {
-      // To enable scrollbars in IE11, if necessary
-      -ms-scroll-limit-x-max: auto;
-      // In IE11 '-ms-scroll-limit-y-max' does not have 'auto' value
-      -ms-scroll-limit-y-max: inherit;
-
-      // Hack to remove redundant vertical scrollbar in IE11
-      .#{$primary-stylename}-scrollbox {
-        vertical-align: baseline;
-      }
-    }
   }
 
   .#{$primary-stylename}-error .c-pickerfield {
