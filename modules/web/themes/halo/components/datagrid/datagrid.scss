@@ -66,6 +66,70 @@ $cuba-datagrid-highlight-hover-row: false !default;
     &:focus {
       outline: none;
     }
+
+    &.borderless {
+      .#{$primary-stylename} {
+        .#{$primary-stylename}-scroller,
+        .#{$primary-stylename}-horizontal-scrollbar-deco,
+        .#{$primary-stylename}-header-deco,
+        .#{$primary-stylename}-footer-deco,
+        .#{$primary-stylename}-sidebar.v-contextmenu,
+        .#{$primary-stylename}-tablewrapper {
+          border: none;
+        }
+
+        .#{$primary-stylename}-row  > .#{$primary-stylename}-cell:last-child {
+          border-right: none;
+        }
+
+        .#{$primary-stylename}-editor .#{$primary-stylename}-editor-cells {
+          margin-left: -$v-grid-border-size;
+        }
+      }
+    }
+
+    &.no-vertical-lines {
+      /* force rerendering for Safari as it does not apply style */
+      .v-sa:not(.v-ch) & {
+        .#{$primary-stylename}-body .#{$primary-stylename}-row > td:not(:first-child) {
+          -webkit-transform: scale(1);
+          transform: scale(1);
+        }
+      }
+
+      .#{$primary-stylename}-body .#{$primary-stylename}-row > td:not(:first-child) {
+        border-left: none;
+        padding-left: $v-grid-border-size + $v-grid-cell-padding-horizontal;
+      }
+    }
+
+    &.no-horizontal-lines {
+       /* force rerendering for Safari as it does not apply style */
+      .v-sa:not(.v-ch) & {
+        .#{$primary-stylename}-body .#{$primary-stylename}-row > td {
+          -webkit-transform: scale(1);
+          transform: scale(1);
+         }
+      }
+
+      .#{$primary-stylename}-body .#{$primary-stylename}-row > td {
+       border-bottom: none;
+      }
+    }
+
+    &.no-stripes {
+      .#{$primary-stylename}-body .#{$primary-stylename}-row > td,
+        .#{$primary-stylename}-body .#{$primary-stylename}-row-stripes > td {
+          background: $background-color;
+      }
+
+     .#{$primary-stylename} .#{$primary-stylename}-body .#{$primary-stylename}-row-selected  > .#{$primary-stylename}-cell {
+       $font-color: valo-font-color($v-selection-color, 0.9);
+       color: $font-color;
+
+       @include valo-gradient($v-selection-color);
+     }
+    }
   }
 
   .c-data-grid-composition {

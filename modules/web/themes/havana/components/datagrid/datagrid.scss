@@ -31,6 +31,16 @@ $c-datagrid-header-cell-hover-background-color: #f2f5f7 !default;
 
 @mixin havana-datagrid($primary-stylename: v-grid) {
 
+  .c-data-grid-composition {
+    &.no-stripes {
+      .#{$primary-stylename} .#{$primary-stylename}-body .#{$primary-stylename}-row-selected  > .#{$primary-stylename}-cell {
+        color: $c-row-selection-text-color;
+
+        @include linear-gradient(to bottom, $c-row-selection-background-color 0%, $c-row-selection-background-color 100%);
+      }
+    }
+  }
+
   .#{$primary-stylename}-row-selected > .#{$primary-stylename}-cell {
     background-color: $c-row-selection-background-color;
     border-color: $c-datagrid-selected-row-cell-border-color;

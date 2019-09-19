@@ -18,6 +18,7 @@ package com.haulmont.cuba.web.widgets;
 
 import com.haulmont.cuba.web.widgets.client.grid.CubaGridServerRpc;
 import com.haulmont.cuba.web.widgets.client.grid.CubaGridState;
+import com.haulmont.cuba.web.widgets.client.grid.CubsGridClientRpc;
 import com.haulmont.cuba.web.widgets.grid.CubaEditorField;
 import com.haulmont.cuba.web.widgets.grid.CubaEditorImpl;
 import com.haulmont.cuba.web.widgets.grid.CubaGridColumn;
@@ -154,5 +155,10 @@ public class CubaGrid<T> extends Grid<T> implements CubaEnhancedGrid<T> {
     @Override
     public void setEmptyStateLinkClickHandler(Runnable handler) {
         this.emptyStateLinkClickHandler = handler;
+    }
+
+    @Override
+    public void updateFooterVisibility() {
+        getRpcProxy(CubsGridClientRpc.class).updateFooterVisibility();
     }
 }

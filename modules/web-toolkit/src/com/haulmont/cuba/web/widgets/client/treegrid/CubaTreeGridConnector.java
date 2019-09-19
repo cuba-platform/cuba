@@ -2,6 +2,7 @@ package com.haulmont.cuba.web.widgets.client.treegrid;
 
 import com.haulmont.cuba.web.widgets.CubaTreeGrid;
 import com.haulmont.cuba.web.widgets.client.grid.CubaGridServerRpc;
+import com.haulmont.cuba.web.widgets.client.grid.CubsGridClientRpc;
 import com.vaadin.client.communication.StateChangeEvent;
 import com.vaadin.client.ui.treegrid.TreeGridConnector;
 import com.vaadin.client.widgets.Grid;
@@ -12,6 +13,10 @@ import java.util.List;
 
 @Connect(CubaTreeGrid.class)
 public class CubaTreeGridConnector extends TreeGridConnector {
+
+    public CubaTreeGridConnector() {
+        registerRpc(CubsGridClientRpc.class, () -> getWidget().updateFooterVisibility());
+    }
 
     @Override
     public CubaTreeGridWidget getWidget() {

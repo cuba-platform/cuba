@@ -69,6 +69,19 @@ public class CubaGridWidget extends Grid<JsonObject> {
         }
     }
 
+    /*
+     * Workaround to avoid disappearing footer when changing the predefined styles at runtime in Safari
+     */
+    public void updateFooterVisibility() {
+        Footer footer = getFooter();
+        if (!footer.isVisible()) {
+            return;
+        }
+
+        footer.setVisible(false);
+        footer.setVisible(true);
+    }
+
     public void showEmptyState(boolean show) {
         if (show) {
             if (emptyState == null) {

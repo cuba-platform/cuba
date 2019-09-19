@@ -77,6 +77,8 @@ import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.event.ShortcutListener;
 import com.vaadin.event.selection.MultiSelectionEvent;
+import com.vaadin.server.Page;
+import com.vaadin.server.WebBrowser;
 import com.vaadin.shared.Registration;
 import com.vaadin.shared.ui.grid.HeightMode;
 import com.vaadin.ui.Component;
@@ -4178,6 +4180,10 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
     protected static class GridComposition extends CubaCssActionsLayout {
         protected Grid<?> grid;
 
+        public static final String BORDERLESS_STYLE = "borderless";
+        public static final String NO_HORIZONTAL_LINES_STYLE = "no-horizontal-lines";
+        public static final String NO_VERTICAL_LINES_STYLE = "no-vertical-lines";
+
         public Grid<?> getGrid() {
             return grid;
         }
@@ -4207,6 +4213,40 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
                 grid.setWidthUndefined();
             } else {
                 grid.setWidth(100, Unit.PERCENTAGE);
+            }
+        }
+
+        @Override
+        public void addStyleName(String style) {
+            super.addStyleName(style);
+
+            // Safari hides footer while changing predefined styles at runtime
+            updateFooterVisibility(style);
+        }
+
+        @Override
+        public void removeStyleName(String style) {
+            super.removeStyleName(style);
+
+            // Safari hides footer while changing predefined styles at runtime
+            updateFooterVisibility(style);
+        }
+
+        protected void updateFooterVisibility(String style) {
+            Page page = Page.getCurrent();
+            if (page == null) {
+                return;
+            }
+            WebBrowser webBrowser = page.getWebBrowser();
+            boolean isPredefinedStyle = style.equals(BORDERLESS_STYLE)
+                    || style.equals(NO_HORIZONTAL_LINES_STYLE)
+                    || style.equals(NO_VERTICAL_LINES_STYLE);
+
+            if (webBrowser.isSafari()
+                    && isPredefinedStyle
+                    && grid.getFooterRowCount() > 0
+                    && grid.isFooterVisible()) {
+                ((CubaEnhancedGrid) grid).updateFooterVisibility();
             }
         }
     }

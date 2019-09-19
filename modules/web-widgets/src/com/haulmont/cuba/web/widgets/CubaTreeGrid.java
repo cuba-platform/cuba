@@ -1,6 +1,7 @@
 package com.haulmont.cuba.web.widgets;
 
 import com.haulmont.cuba.web.widgets.client.grid.CubaGridServerRpc;
+import com.haulmont.cuba.web.widgets.client.grid.CubsGridClientRpc;
 import com.haulmont.cuba.web.widgets.client.treegrid.CubaTreeGridState;
 import com.haulmont.cuba.web.widgets.data.EnhancedHierarchicalDataProvider;
 import com.haulmont.cuba.web.widgets.grid.CubaEditorField;
@@ -167,5 +168,10 @@ public class CubaTreeGrid<T> extends TreeGrid<T> implements CubaEnhancedGrid<T> 
     @Override
     public void setEmptyStateLinkClickHandler(Runnable handler) {
         this.emptyStateLinkClickHandler = handler;
+    }
+
+    @Override
+    public void updateFooterVisibility() {
+        getRpcProxy(CubsGridClientRpc.class).updateFooterVisibility();
     }
 }
