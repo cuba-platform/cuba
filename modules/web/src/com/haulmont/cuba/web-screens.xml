@@ -31,8 +31,7 @@
             route="jmx-console"/>
 
     <screen id="jmxConsoleInspectMbean"
-            template="/com/haulmont/cuba/web/app/ui/jmxcontrol/inspect/mbean-inspect.xml"
-            route="mbean"/>
+            template="/com/haulmont/cuba/web/app/ui/jmxcontrol/inspect/mbean-inspect.xml"/>
 
     <screen id="jmxConsoleEditAttribute"
             template="/com/haulmont/cuba/web/app/ui/jmxcontrol/inspect/attribute/attribute-edit.xml"/>

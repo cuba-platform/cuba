@@ -300,11 +300,7 @@ public class ScreenNavigationHandler implements NavigationHandler {
 
         String idParam = MapUtils.isNotEmpty(requestedState.getParams())
                 ? requestedState.getParams().get("id")
-                : null;
-
-        if (StringUtils.isEmpty(idParam)) {
-            return null;
-        }
+                : NEW_ENTITY_ID;
 
         Class<? extends Entity> entityClass = EditorTypeExtractor.extractEntityClass(windowInfo);
         if (entityClass == null) {
