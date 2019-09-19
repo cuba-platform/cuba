@@ -357,11 +357,7 @@ public class ScreenNavigator {
     protected Map<String, Object> createEditorScreenOptions(WindowInfo windowInfo, NavigationState requestedState) {
         String idParam = MapUtils.isNotEmpty(requestedState.getParams())
                 ? requestedState.getParams().get("id")
-                : null;
-
-        if (StringUtils.isEmpty(idParam)) {
-            return null;
-        }
+                : NEW_ENTITY_ID;
 
         Class<? extends Entity> entityClass = extractEntityClass(windowInfo);
         if (entityClass == null) {
