@@ -70,6 +70,7 @@ public class AppProperties {
 
     public synchronized void initSystemProperties() {
         systemProperties.clear();
+        systemProperties.putAll(System.getenv());
         for (String name : System.getProperties().stringPropertyNames()) {
             systemProperties.put(name, System.getProperty(name));
         }

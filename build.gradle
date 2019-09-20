@@ -175,6 +175,11 @@ configure([sharedLibModule, globalModule, coreModule, clientModule, guiModule,
         if (System.getProperty('logback.configurationFile')) {
             systemProperty 'logback.configurationFile', System.getProperty('logback.configurationFile')
         }
+
+        environment('TEST_ENV_PROP_1', 'envValue1')
+        environment('TEST_ENV_PROP_2', 'envValue2')
+        environment('TEST_ENV_PROP_3', 'envValue3')
+        systemProperty('TEST_ENV_PROP_2', 'systemValue2')
     }
 
     javadoc {
