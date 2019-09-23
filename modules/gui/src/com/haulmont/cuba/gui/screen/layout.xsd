@@ -2427,7 +2427,6 @@
                     </xs:choice>
                 </xs:sequence>
 
-                <xs:attributeGroup ref="hasExpand"/>
                 <xs:attributeGroup ref="hasContextHelp"/>
 
                 <xs:attribute name="providerClass" type="xs:string"/>
