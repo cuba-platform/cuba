@@ -39,7 +39,7 @@ public class CubaNotification extends VNotification {
         if ((type == Event.ONCLICK || type == Event.ONTOUCHEND)
                 && event.getEventTarget() != null) {
             Element target = Element.as(event.getEventTarget());
-            if (target.getClassName() != null && target.getClassName().contains(CUBA_NOTIFICATION_MODALITY_CURTAIN)) {
+            if (containsSubstring(target.getClassName(), CUBA_NOTIFICATION_MODALITY_CURTAIN)) {
                 hide();
                 return false;
             }
@@ -54,6 +54,15 @@ public class CubaNotification extends VNotification {
 
         return super.onEventPreview(event);
     }
+
+    // Some elements, e.g. SVGElement, return an object as className instead of a string,
+    // as the result TypeError is thrown then the 'contains' method is called.
+    // Due to GWT compiler optimization functionality, checking the type of 'className' in Java
+    // is ignored because the 'target.getClassName()' method has the String return type.
+    // As a workaround, we check if 'className' contains required sub-string in JavaScript.
+    private native boolean containsSubstring(Object className, String subString) /*-{
+        return (typeof className === 'string') && className.indexOf(subString) !== -1;
+    }-*/;
 
     @Override
     protected void beforeAddNotificationToCollection() {
