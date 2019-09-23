@@ -32,6 +32,9 @@ import org.apache.commons.io.input.BOMInputStream;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringSubstitutor;
 import org.apache.commons.text.StringTokenizer;
+import org.junit.jupiter.api.extension.AfterAllCallback;
+import org.junit.jupiter.api.extension.BeforeAllCallback;
+import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.rules.ExternalResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,7 +78,7 @@ import java.util.*;
  *     }
  * </pre>
  */
-public class TestContainer extends ExternalResource {
+public class TestContainer extends ExternalResource implements BeforeAllCallback, AfterAllCallback {
 
     public static class Common extends TestContainer {
 
@@ -267,6 +270,20 @@ public class TestContainer extends ExternalResource {
 
     public Map<String, String> getAppProperties() {
         return appProperties;
+    }
+
+    @Override
+    public void afterAll(ExtensionContext extensionContext) throws Exception {
+        after();
+    }
+
+    @Override
+    public void beforeAll(ExtensionContext extensionContext) throws Exception {
+        try {
+            before();
+        } catch (Throwable throwable) {
+            log.error("TestContainer extension initialization failed.", throwable);
+        }
     }
 
     @Override

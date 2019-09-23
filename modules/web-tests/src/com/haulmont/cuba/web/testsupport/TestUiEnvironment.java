@@ -48,7 +48,10 @@ import com.vaadin.server.WebBrowser;
 import com.vaadin.ui.ConnectorTracker;
 import com.vaadin.ui.UI;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.junit.jupiter.api.extension.*;
 import org.junit.rules.ExternalResource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 
 import java.util.*;
@@ -103,7 +106,7 @@ import static org.apache.commons.lang3.reflect.FieldUtils.getDeclaredField;
  *
  * @see TestContainer
  */
-public class TestUiEnvironment extends ExternalResource {
+public class TestUiEnvironment extends ExternalResource implements BeforeEachCallback, AfterEachCallback {
 
     public static final String USER_ID = "b8a050db-3ade-487e-817d-781a31918657";
 
@@ -113,6 +116,7 @@ public class TestUiEnvironment extends ExternalResource {
     protected App app;
     protected AppUI ui;
 
+    protected Logger log = LoggerFactory.getLogger(TestUiEnvironment.class);
     protected boolean sessionAuthenticated = true;
     protected Locale locale = Locale.ENGLISH;
     protected String userLogin = "test_admin";
@@ -136,6 +140,20 @@ public class TestUiEnvironment extends ExternalResource {
         super.after();
 
         cleanupEnvironment();
+    }
+
+    @Override
+    public void afterEach(ExtensionContext extensionContext) throws Exception {
+        after();
+    }
+
+    @Override
+    public void beforeEach(ExtensionContext extensionContext) throws Exception {
+        try {
+            before();
+        } catch (Throwable throwable) {
+            log.error("TestContainer extension initialization failed.", throwable);
+        }
     }
 
     protected void setupEnvironment() {

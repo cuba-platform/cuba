@@ -17,10 +17,13 @@
 
 package com.haulmont.cuba.testsupport;
 
+import org.junit.jupiter.api.extension.AfterEachCallback;
+import org.junit.jupiter.api.extension.BeforeEachCallback;
+import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.rules.TestWatcher;
 import org.junit.runner.Description;
 
-public class TestNamePrinter extends TestWatcher {
+public class TestNamePrinter extends TestWatcher implements BeforeEachCallback, AfterEachCallback {
 
     @Override
     protected void starting(Description description) {
@@ -30,5 +33,15 @@ public class TestNamePrinter extends TestWatcher {
     @Override
     protected void finished(Description description) {
         System.out.println(">>>>\n>>> Finished " + description.getMethodName() + "\n>>>");
+    }
+
+    @Override
+    public void afterEach(ExtensionContext extensionContext) throws Exception {
+        System.out.println(">>>\n>>> Finished " + extensionContext.getDisplayName() + "\n>>>");
+    }
+
+    @Override
+    public void beforeEach(ExtensionContext extensionContext) throws Exception {
+        System.out.println(">>>\n>>> Starting " + extensionContext.getDisplayName() + "\n>>>");
     }
 }
