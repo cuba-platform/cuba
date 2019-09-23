@@ -36,6 +36,11 @@ import javax.inject.Inject;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Standard action for exporting a list of entities to XLS file.
+ * <p>
+ * Should be defined for a list component ({@code Table}, {@code DataGrid}, etc.) in a screen XML descriptor.
+ */
 @ActionType(ExcelAction.ID)
 public class ExcelAction extends ListAction {
 
@@ -78,46 +83,53 @@ public class ExcelAction extends ListAction {
     @Override
     public void actionPerform(Component component) {
         if (!hasSubscriptions(ActionPerformedEvent.class)) {
-            if (target == null) {
-                throw new IllegalStateException("ExcelAction target is not set");
-            }
-
-            if (needExportAll()) {
-                export(ExcelExporter.ExportMode.ALL_ROWS);
-            } else {
-                AbstractAction exportSelectedAction = new AbstractAction("actions.export.SELECTED_ROWS", Status.PRIMARY) {
-                    @Override
-                    public void actionPerform(Component component) {
-                        export(ExcelExporter.ExportMode.SELECTED_ROWS);
-                    }
-                };
-                exportSelectedAction.setCaption(messages.getMainMessage(exportSelectedAction.getId()));
-
-                AbstractAction exportAllAction = new AbstractAction("actions.export.ALL_ROWS") {
-                    @Override
-                    public void actionPerform(Component component) {
-                        export(ExcelExporter.ExportMode.ALL_ROWS);
-                    }
-                };
-                exportAllAction.setCaption(messages.getMainMessage(exportAllAction.getId()));
-
-                Action[] actions = new Action[]{
-                        exportSelectedAction,
-                        exportAllAction,
-                        new DialogAction(DialogAction.Type.CANCEL)
-                };
-
-                Dialogs dialogs = ComponentsHelper.getScreenContext(target).getDialogs();
-
-                dialogs.createOptionDialog()
-                        .withCaption(messages.getMainMessage("actions.exportSelectedTitle"))
-                        .withMessage(messages.getMainMessage("actions.exportSelectedCaption"))
-                        .withType(Dialogs.MessageType.CONFIRMATION)
-                        .withActions(actions)
-                        .show();
-            }
+            execute();
         } else {
             super.actionPerform(component);
+        }
+    }
+
+    /**
+     * Executes the action.
+     */
+    public void execute() {
+        if (target == null) {
+            throw new IllegalStateException("ExcelAction target is not set");
+        }
+
+        if (needExportAll()) {
+            export(ExcelExporter.ExportMode.ALL_ROWS);
+        } else {
+            AbstractAction exportSelectedAction = new AbstractAction("actions.export.SELECTED_ROWS", Status.PRIMARY) {
+                @Override
+                public void actionPerform(Component component) {
+                    export(ExcelExporter.ExportMode.SELECTED_ROWS);
+                }
+            };
+            exportSelectedAction.setCaption(messages.getMainMessage(exportSelectedAction.getId()));
+
+            AbstractAction exportAllAction = new AbstractAction("actions.export.ALL_ROWS") {
+                @Override
+                public void actionPerform(Component component) {
+                    export(ExcelExporter.ExportMode.ALL_ROWS);
+                }
+            };
+            exportAllAction.setCaption(messages.getMainMessage(exportAllAction.getId()));
+
+            Action[] actions = new Action[]{
+                    exportSelectedAction,
+                    exportAllAction,
+                    new DialogAction(DialogAction.Type.CANCEL)
+            };
+
+            Dialogs dialogs = ComponentsHelper.getScreenContext(target).getDialogs();
+
+            dialogs.createOptionDialog()
+                    .withCaption(messages.getMainMessage("actions.exportSelectedTitle"))
+                    .withMessage(messages.getMainMessage("actions.exportSelectedCaption"))
+                    .withType(Dialogs.MessageType.CONFIRMATION)
+                    .withActions(actions)
+                    .show();
         }
     }
 

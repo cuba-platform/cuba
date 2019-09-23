@@ -32,6 +32,11 @@ import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 
+/**
+ * Standard action for reloading a list of entities from the database.
+ * <p>
+ * Should be defined for a list component ({@code Table}, {@code DataGrid}, etc.) in a screen XML descriptor.
+ */
 @ActionType(RefreshAction.ID)
 public class RefreshAction extends ListAction {
 
@@ -63,34 +68,41 @@ public class RefreshAction extends ListAction {
     @Override
     public void actionPerform(Component component) {
         if (!hasSubscriptions(ActionPerformedEvent.class)) {
-            if (target == null) {
-                throw new IllegalStateException("RefreshAction target is not set");
-            }
-
-            if (target.getItems() instanceof EmptyDataUnit) {
-                return;
-            }
-
-            if (!(target.getItems() instanceof ContainerDataUnit)) {
-                throw new IllegalStateException("RefreshAction target is null or does not implement SupportsContainerBinding");
-            }
-
-            CollectionContainer container = ((ContainerDataUnit) target.getItems()).getContainer();
-            if (container == null) {
-                throw new IllegalStateException("RefreshAction target is not bound to CollectionContainer");
-            }
-
-            DataLoader loader = null;
-            if (container instanceof HasLoader) {
-                loader = ((HasLoader) container).getLoader();
-            }
-            if (loader != null) {
-                loader.load();
-            } else {
-                log.warn("RefreshAction '{}' target container has no loader, refresh is impossible", getId());
-            }
+            execute();
         } else {
             super.actionPerform(component);
+        }
+    }
+
+    /**
+     * Executes the action.
+     */
+    public void execute() {
+        if (target == null) {
+            throw new IllegalStateException("RefreshAction target is not set");
+        }
+
+        if (target.getItems() instanceof EmptyDataUnit) {
+            return;
+        }
+
+        if (!(target.getItems() instanceof ContainerDataUnit)) {
+            throw new IllegalStateException("RefreshAction target is null or does not implement SupportsContainerBinding");
+        }
+
+        CollectionContainer container = ((ContainerDataUnit) target.getItems()).getContainer();
+        if (container == null) {
+            throw new IllegalStateException("RefreshAction target is not bound to CollectionContainer");
+        }
+
+        DataLoader loader = null;
+        if (container instanceof HasLoader) {
+            loader = ((HasLoader) container).getLoader();
+        }
+        if (loader != null) {
+            loader.load();
+        } else {
+            log.warn("RefreshAction '{}' target container has no loader, refresh is impossible", getId());
         }
     }
 }

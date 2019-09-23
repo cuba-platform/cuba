@@ -37,6 +37,11 @@ import org.springframework.beans.factory.InitializingBean;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 
+/**
+ * Standard picker field action for clearing the field value.
+ * <p>
+ * Should be defined for {@code PickerField} or its subclass in a screen XML descriptor.
+ */
 @ActionType(ClearAction.ID)
 public class ClearAction extends BaseAction implements PickerField.PickerFieldAction, InitializingBean {
 
@@ -114,24 +119,32 @@ public class ClearAction extends BaseAction implements PickerField.PickerFieldAc
     public void actionPerform(Component component) {
         // if standard behaviour
         if (!hasSubscriptions(ActionPerformedEvent.class)) {
-            // remove entity if it is a composition
-            Object value = pickerField.getValue();
-            ValueSource valueSource = pickerField.getValueSource();
-            if (value != null && !value.equals(pickerField.getEmptyValue()) && valueSource instanceof EntityValueSource) {
-                EntityValueSource entityValueSource = (EntityValueSource) pickerField.getValueSource();
-                Entity entity = (Entity) pickerField.getValue();
-                if (entityValueSource.getMetaPropertyPath() != null
-                        && entityValueSource.getMetaPropertyPath().getMetaProperty().getType() == MetaProperty.Type.COMPOSITION) {
-                    FrameOwner screen = pickerField.getFrame().getFrameOwner();
-                    DataContext dataContext = UiControllerUtils.getScreenData(screen).getDataContext();
-                    dataContext.remove(entity);
-                }
-            }
-            // Set the value as if the user had set it
-            pickerField.setValueFromUser(pickerField.getEmptyValue());
+            execute();
         } else {
             // call action perform handlers from super, delegate execution
             super.actionPerform(component);
         }
+    }
+
+    /**
+     * Executes the action.
+     */
+    @SuppressWarnings("unchecked")
+    public void execute() {
+        // remove entity if it is a composition
+        Object value = pickerField.getValue();
+        ValueSource valueSource = pickerField.getValueSource();
+        if (value != null && !value.equals(pickerField.getEmptyValue()) && valueSource instanceof EntityValueSource) {
+            EntityValueSource entityValueSource = (EntityValueSource) pickerField.getValueSource();
+            Entity entity = (Entity) pickerField.getValue();
+            if (entityValueSource.getMetaPropertyPath() != null
+                    && entityValueSource.getMetaPropertyPath().getMetaProperty().getType() == MetaProperty.Type.COMPOSITION) {
+                FrameOwner screen = pickerField.getFrame().getFrameOwner();
+                DataContext dataContext = UiControllerUtils.getScreenData(screen).getDataContext();
+                dataContext.remove(entity);
+            }
+        }
+        // Set the value as if the user had set it
+        pickerField.setValueFromUser(pickerField.getEmptyValue());
     }
 }

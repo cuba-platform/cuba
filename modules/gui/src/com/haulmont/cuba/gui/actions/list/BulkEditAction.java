@@ -23,18 +23,29 @@ import com.haulmont.cuba.gui.BulkEditors;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.Notifications;
 import com.haulmont.cuba.gui.Notifications.NotificationType;
-import com.haulmont.cuba.gui.components.ActionType;
-import com.haulmont.cuba.gui.components.BulkEditor;
-import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.Window;
+import com.haulmont.cuba.gui.Screens;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.data.meta.EntityDataUnit;
 import com.haulmont.cuba.gui.icons.CubaIcon;
 import com.haulmont.cuba.gui.icons.Icons;
+import com.haulmont.cuba.gui.screen.OpenMode;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
+
+import java.util.List;
+import java.util.Map;
 
 import static com.haulmont.cuba.gui.ComponentsHelper.getScreenContext;
 
+/**
+ * Standard action for changing attribute values for several entity instances at once.
+ * <p>
+ * Should be defined for a list component ({@code Table}, {@code DataGrid}, etc.) in a screen XML descriptor.
+ * <p>
+ * The action instance can be parameterized using the nested {@code properties} XML element or programmatically in the
+ * screen controller.
+ */
 @ActionType(BulkEditAction.ID)
 public class BulkEditAction extends SecuredListAction {
 
@@ -44,12 +55,127 @@ public class BulkEditAction extends SecuredListAction {
 
     protected BulkEditors bulkEditors;
 
+    protected Integer columns;
+    protected String exclude;
+    protected BulkEditors.FieldSorter fieldSorter;
+    protected List<String> includeProperties;
+    protected OpenMode openMode;
+    protected Boolean loadDynamicAttributes;
+    protected Boolean useConfirmDialog;
+
     public BulkEditAction() {
         this(ID);
     }
 
     public BulkEditAction(String id) {
         super(id);
+    }
+
+    /**
+     * Returns the the number of editor columns if it was set by {@link #setColumns(Integer)} or in the screen XML.
+     * Otherwise returns null.
+     */
+    @Nullable
+    public Integer getColumns() {
+        return columns;
+    }
+
+    /**
+     * Sets the number of editor columns.
+     */
+    public void setColumns(Integer columns) {
+        this.columns = columns;
+    }
+
+    /**
+     * Returns a regular expression to exclude fields if it was set by {@link #setExclude(String)} or in the screen XML.
+     * Otherwise returns null.
+     */
+    @Nullable
+    public String getExclude() {
+        return exclude;
+    }
+
+    /**
+     * Sets a regular expression to exclude some fields explicitly
+     * from the list of attributes available for editing.
+     */
+    public void setExclude(String exclude) {
+        this.exclude = exclude;
+    }
+
+    /**
+     * Sets field sorter that allows you to sort fields by custom logic.
+     */
+    public void setFieldSorter(BulkEditors.FieldSorter fieldSorter) {
+        this.fieldSorter = fieldSorter;
+    }
+
+    /**
+     * Returns a list entity attributes to be included to bulk editor window if it was set by {@link #setIncludeProperties(List)} or in the screen XML.
+     * Otherwise returns null.
+     */
+    @Nullable
+    public List<String> getIncludeProperties() {
+        return includeProperties;
+    }
+
+    /**
+     * Sets the entity attributes to be included to bulk editor window.
+     * If set, other attributes will be ignored.
+     */
+    public void setIncludeProperties(List<String> includeProperties) {
+        this.includeProperties = includeProperties;
+    }
+
+    /**
+     * Returns the bulk editor screen open mode if it was set by {@link #setOpenMode(OpenMode)} or in the screen XML.
+     * Otherwise returns null.
+     */
+    @Nullable
+    public OpenMode getOpenMode() {
+        return openMode;
+    }
+
+    /**
+     * Sets the bulk editor screen open mode.
+     */
+    public void setOpenMode(OpenMode openMode) {
+        this.openMode = openMode;
+    }
+
+    /**
+     * Returns true/false if the flag was set by {@link #setLoadDynamicAttributes(Boolean)} or in the screen XML.
+     * Otherwise returns null.
+     */
+    @Nullable
+    public Boolean getLoadDynamicAttributes() {
+        return loadDynamicAttributes;
+    }
+
+    /**
+     * Sets whether dynamic attributes of the edited entity should be displayed on
+     * the entity's bulk editor screen. The default value is true.
+     */
+    public void setLoadDynamicAttributes(Boolean loadDynamicAttributes) {
+        this.loadDynamicAttributes = loadDynamicAttributes;
+    }
+
+    /**
+     * Returns true/false if the flag was set by {@link #setUseConfirmDialog(Boolean)} or in the screen XML.
+     * Otherwise returns null.
+     */
+    @Nullable
+    public Boolean getUseConfirmDialog() {
+        return useConfirmDialog;
+    }
+
+    /**
+     * Sets whether or not the confirmation dialog should be displayed to
+     * the user before saving the changes. The default value is true.
+     */
+    public void setUseConfirmDialog(Boolean useConfirmDialog) {
+        this.useConfirmDialog = useConfirmDialog;
     }
 
     @Inject
@@ -97,45 +223,80 @@ public class BulkEditAction extends SecuredListAction {
         return super.isPermitted();
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public void actionPerform(Component component) {
         // if standard behaviour
         if (!hasSubscriptions(ActionPerformedEvent.class)) {
-            if (!(target.getItems() instanceof EntityDataUnit)) {
-                throw new IllegalStateException("BulkEditAction target Items is null " +
-                        "or does not implement EntityDataUnit");
-            }
-
-            MetaClass metaClass = ((EntityDataUnit) target.getItems()).getEntityMetaClass();
-            if (metaClass == null) {
-                throw new IllegalStateException("Target is not bound to entity");
-            }
-
-            if (!security.isSpecificPermitted(BulkEditor.PERMISSION)) {
-                Notifications notifications = getScreenContext(target.getFrame()).getNotifications();
-                notifications.create(NotificationType.ERROR)
-                        .withCaption(messages.getMainMessage("accessDenied.message"))
-                        .show();
-                return;
-            }
-
-            if (target.getSelected().isEmpty()) {
-                Notifications notifications = getScreenContext(target.getFrame()).getNotifications();
-                notifications.create(NotificationType.ERROR)
-                        .withCaption(messages.getMainMessage("actions.BulkEdit.emptySelection"))
-                        .show();
-                return;
-            }
-
-            Window window = ComponentsHelper.getWindowNN(target);
-
-            bulkEditors.builder(metaClass, target.getSelected(), window.getFrameOwner())
-                    .withListComponent(target)
-                    .create()
-                    .show();
+            execute();
         } else {
             super.actionPerform(component);
         }
+    }
+
+    /**
+     * Executes the action.
+     */
+    @SuppressWarnings("unchecked")
+    public void execute() {
+        if (!(target.getItems() instanceof EntityDataUnit)) {
+            throw new IllegalStateException("BulkEditAction target Items is null " +
+                    "or does not implement EntityDataUnit");
+        }
+
+        MetaClass metaClass = ((EntityDataUnit) target.getItems()).getEntityMetaClass();
+        if (metaClass == null) {
+            throw new IllegalStateException("Target is not bound to entity");
+        }
+
+        if (!security.isSpecificPermitted(BulkEditor.PERMISSION)) {
+            Notifications notifications = getScreenContext(target.getFrame()).getNotifications();
+            notifications.create(NotificationType.ERROR)
+                    .withCaption(messages.getMainMessage("accessDenied.message"))
+                    .show();
+            return;
+        }
+
+        if (target.getSelected().isEmpty()) {
+            Notifications notifications = getScreenContext(target.getFrame()).getNotifications();
+            notifications.create(NotificationType.ERROR)
+                    .withCaption(messages.getMainMessage("actions.BulkEdit.emptySelection"))
+                    .show();
+            return;
+        }
+
+        Window window = ComponentsHelper.getWindowNN(target);
+
+        BulkEditors.EditorBuilder builder = bulkEditors.builder(metaClass, target.getSelected(), window.getFrameOwner())
+                .withListComponent(target);
+
+        if (columns != null) {
+            builder = builder.withColumns(columns);
+        }
+
+        if (exclude != null) {
+            builder = builder.withExclude(exclude);
+        }
+
+        if (fieldSorter != null) {
+            builder = builder.withFieldSorter(fieldSorter);
+        }
+
+        if (includeProperties != null) {
+            builder = builder.withIncludeProperties(includeProperties);
+        }
+
+        if (openMode != null) {
+            builder = builder.withLaunchMode(openMode);
+        }
+
+        if (loadDynamicAttributes != null) {
+            builder = builder.withLoadDynamicAttributes(loadDynamicAttributes);
+        }
+
+        if (useConfirmDialog != null) {
+            builder = builder.withUseConfirmDialog(useConfirmDialog);
+        }
+
+        builder.create().show();
     }
 }

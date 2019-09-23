@@ -1463,6 +1463,10 @@
     </xs:complexType>
 
     <xs:complexType name="componentAction">
+        <xs:sequence>
+            <xs:element name="properties" type="actionProperties" minOccurs="0"/>
+        </xs:sequence>
+
         <xs:attributeGroup ref="requiresId"/>
         <xs:attributeGroup ref="hasCaption"/>
         <xs:attributeGroup ref="hasEnableProp"/>
@@ -1477,6 +1481,17 @@
         <xs:attribute name="shortcut" type="shortcut"/>
         <xs:attribute name="constraintOperationType" type="constraintOperationType"/>
         <xs:attribute name="constraintCode" type="xs:string"/>
+    </xs:complexType>
+
+    <xs:complexType name="actionProperties">
+        <xs:sequence>
+            <xs:element name="property" type="actionProperty" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="actionProperty">
+        <xs:attribute name="name" type="xs:string" use="required"/>
+        <xs:attribute name="value" type="xs:string"/>
     </xs:complexType>
 
     <xs:complexType name="popupButtonAction">

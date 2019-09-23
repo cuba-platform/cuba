@@ -18,6 +18,14 @@ package com.haulmont.cuba.gui.actions.picker;
 
 import com.haulmont.cuba.gui.components.ActionType;
 
+/**
+ * Standard picker field action for opening an entity instance if it is a one-to-one composition.
+ * <p>
+ * Should be defined for {@code PickerField} or its subclass in a screen XML descriptor.
+ * <p>
+ * The action instance can be parameterized using the nested {@code properties} XML element or programmatically in the
+ * screen controller.
+ */
 @ActionType(OpenCompositionAction.ID)
 public class OpenCompositionAction extends OpenAction {
 

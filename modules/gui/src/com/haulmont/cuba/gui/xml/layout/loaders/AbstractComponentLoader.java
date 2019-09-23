@@ -717,6 +717,15 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
         if (shortcut != null) {
             targetAction.setShortcut(loadShortcut(shortcut));
         }
+
+        Element propertiesEl = element.element("properties");
+        if (propertiesEl != null) {
+            ActionCustomPropertyLoader propertyLoader = beanLocator.get(ActionCustomPropertyLoader.class);
+            for (Element propertyEl : propertiesEl.elements("property")) {
+                propertyLoader.load(targetAction,
+                        propertyEl.attributeValue("name"), propertyEl.attributeValue("value"));
+            }
+        }
     }
 
     protected void loadActionConstraint(Action action, Element element) {

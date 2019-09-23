@@ -22,21 +22,29 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.ScreenBuilders;
+import com.haulmont.cuba.gui.builders.EditorBuilder;
 import com.haulmont.cuba.gui.components.ActionType;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.data.meta.EntityDataUnit;
 import com.haulmont.cuba.gui.icons.CubaIcon;
 import com.haulmont.cuba.gui.icons.Icons;
-import com.haulmont.cuba.gui.screen.ReadOnlyAwareScreen;
-import com.haulmont.cuba.gui.screen.Screen;
+import com.haulmont.cuba.gui.screen.*;
+import com.haulmont.cuba.gui.sys.ActionScreenInitializer;
 import com.haulmont.cuba.security.entity.EntityOp;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /**
- * An action that opens an editor screen in the read-only mode.
+ * Standard action for opening an editor screen in the read-only mode.
+ * The editor screen must implement the {@link ReadOnlyAwareScreen} interface.
  * <p>
- * The opening screen must implement the {@link ReadOnlyAwareScreen} interface.
+ * Should be defined for a list component ({@code Table}, {@code DataGrid}, etc.) in a screen XML descriptor.
+ * <p>
+ * The action instance can be parameterized using the nested {@code properties} XML element or programmatically in the
+ * screen controller.
  */
 @ActionType(ViewAction.ID)
 public class ViewAction extends SecuredListAction {
@@ -45,12 +53,110 @@ public class ViewAction extends SecuredListAction {
 
     protected ScreenBuilders screenBuilders;
 
+    protected ActionScreenInitializer screenInitializer = new ActionScreenInitializer();
+
     public ViewAction() {
         this(ID);
     }
 
     public ViewAction(String id) {
         super(id);
+    }
+
+    /**
+     * Returns the editor screen open mode if it was set by {@link #setOpenMode(OpenMode)} or in the screen XML.
+     * Otherwise returns null.
+     */
+    @Nullable
+    public OpenMode getOpenMode() {
+        return screenInitializer.getOpenMode();
+    }
+
+    /**
+     * Sets the editor screen open mode.
+     */
+    public void setOpenMode(OpenMode openMode) {
+        screenInitializer.setOpenMode(openMode);
+    }
+
+    /**
+     * Returns the editor screen id if it was set by {@link #setScreenId(String)} or in the screen XML.
+     * Otherwise returns null.
+     */
+    @Nullable
+    public String getScreenId() {
+        return screenInitializer.getScreenId();
+    }
+
+    /**
+     * Sets the editor screen id.
+     */
+    public void setScreenId(String screenId) {
+        screenInitializer.setScreenId(screenId);
+    }
+
+    /**
+     * Returns the editor screen class if it was set by {@link #setScreenClass(Class)} or in the screen XML.
+     * Otherwise returns null.
+     */
+    @Nullable
+    public Class getScreenClass() {
+        return screenInitializer.getScreenClass();
+    }
+
+    /**
+     * Sets the editor screen id.
+     */
+    public void setScreenClass(Class screenClass) {
+        screenInitializer.setScreenClass(screenClass);
+    }
+
+    /**
+     * Sets the editor screen options supplier. The supplier provides {@code ScreenOptions} to the
+     * opened screen.
+     * <p>
+     * The preferred way to set the supplier is using a controller method annotated with {@link Install}, e.g.:
+     * <pre>
+     * &#64;Install(to = "petsTable.view", subject = "screenOptionsSupplier")
+     * protected ScreenOptions petsTableViewScreenOptionsSupplier() {
+     *     return new MapScreenOptions(ParamsMap.of("someParameter", 10));
+     * }
+     * </pre>
+     */
+    public void setScreenOptionsSupplier(Supplier<ScreenOptions> screenOptionsSupplier) {
+        screenInitializer.setScreenOptionsSupplier(screenOptionsSupplier);
+    }
+
+    /**
+     * Sets the editor screen configurer. Use the configurer if you need to provide parameters to the
+     * opened screen through setters.
+     * <p>
+     * The preferred way to set the configurer is using a controller method annotated with {@link Install}, e.g.:
+     * <pre>
+     * &#64;Install(to = "petsTable.view", subject = "screenConfigurer")
+     * protected void petsTableViewScreenConfigurer(Screen editorScreen) {
+     *     ((PetEdit) editorScreen).setSomeParameter(someValue);
+     * }
+     * </pre>
+     */
+    public void setScreenConfigurer(Consumer<Screen> screenConfigurer) {
+        screenInitializer.setScreenConfigurer(screenConfigurer);
+    }
+
+    /**
+     * Sets the handler to be invoked when the editor screen closes.
+     * <p>
+     * The preferred way to set the handler is using a controller method annotated with {@link Install}, e.g.:
+     * <pre>
+     * &#64;Install(to = "petsTable.view", subject = "afterCloseHandler")
+     * protected void petsTableViewAfterCloseHandler(AfterCloseEvent event) {
+     *     CloseAction closeAction = event.getCloseAction();
+     *     System.out.println("Closed with " + closeAction);
+     * }
+     * </pre>
+     */
+    public void setAfterCloseHandler(Consumer<Screen.AfterCloseEvent> afterCloseHandler) {
+        screenInitializer.setAfterCloseHandler(afterCloseHandler);
     }
 
     @Inject
@@ -93,43 +199,55 @@ public class ViewAction extends SecuredListAction {
         return super.isPermitted();
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public void actionPerform(Component component) {
         // if standard behaviour
         if (!hasSubscriptions(ActionPerformedEvent.class)) {
-            if (target == null) {
-                throw new IllegalStateException("ViewAction target is not set");
-            }
-
-            if (!(target.getItems() instanceof EntityDataUnit)) {
-                throw new IllegalStateException("ViewAction target dataSource is null or does not implement EntityDataUnit");
-            }
-
-            MetaClass metaClass = ((EntityDataUnit) target.getItems()).getEntityMetaClass();
-            if (metaClass == null) {
-                throw new IllegalStateException("Target is not bound to entity");
-            }
-
-            Entity editedEntity = target.getSingleSelected();
-            if (editedEntity == null) {
-                throw new IllegalStateException("There is not selected item in ViewAction target");
-            }
-
-            Screen editor = screenBuilders.editor(target)
-                    .editEntity(editedEntity)
-                    .build();
-
-            if (editor instanceof ReadOnlyAwareScreen) {
-                ((ReadOnlyAwareScreen) editor).setReadOnly(true);
-            } else {
-                throw new IllegalStateException(String.format("Screen '%s' does not implement ReadOnlyAwareScreen: %s",
-                        editor.getId(), editor.getClass()));
-            }
-
-            editor.show();
+            execute();
         } else {
             super.actionPerform(component);
         }
+    }
+
+    /**
+     * Executes the action.
+     */
+    @SuppressWarnings("unchecked")
+    public void execute() {
+        if (target == null) {
+            throw new IllegalStateException("ViewAction target is not set");
+        }
+
+        if (!(target.getItems() instanceof EntityDataUnit)) {
+            throw new IllegalStateException("ViewAction target dataSource is null or does not implement EntityDataUnit");
+        }
+
+        MetaClass metaClass = ((EntityDataUnit) target.getItems()).getEntityMetaClass();
+        if (metaClass == null) {
+            throw new IllegalStateException("Target is not bound to entity");
+        }
+
+        Entity editedEntity = target.getSingleSelected();
+        if (editedEntity == null) {
+            throw new IllegalStateException("There is not selected item in ViewAction target");
+        }
+
+        EditorBuilder builder = screenBuilders.editor(target)
+                .editEntity(editedEntity);
+
+        builder = screenInitializer.initBuilder(builder);
+
+        Screen editor = builder.build();
+
+        screenInitializer.initScreen(editor);
+
+        if (editor instanceof ReadOnlyAwareScreen) {
+            ((ReadOnlyAwareScreen) editor).setReadOnly(true);
+        } else {
+            throw new IllegalStateException(String.format("Screen '%s' does not implement ReadOnlyAwareScreen: %s",
+                    editor.getId(), editor.getClass()));
+        }
+
+        editor.show();
     }
 }

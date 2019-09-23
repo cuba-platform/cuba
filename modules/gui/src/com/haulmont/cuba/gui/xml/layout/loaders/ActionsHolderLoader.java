@@ -70,6 +70,8 @@ public abstract class ActionsHolderLoader<T extends ActionsHolder> extends Abstr
 
                     loadShortcut(instance, element);
 
+                    loadCustomProperties(instance, element);
+
                     return instance;
                 }
             }
@@ -109,6 +111,17 @@ public abstract class ActionsHolderLoader<T extends ActionsHolder> extends Abstr
         String icon = element.attributeValue("icon");
         if (StringUtils.isNotEmpty(icon)) {
             instance.setIcon(getIconPath(icon));
+        }
+    }
+
+    protected void loadCustomProperties(Action instance, Element element) {
+        Element propertiesEl = element.element("properties");
+        if (propertiesEl != null) {
+            ActionCustomPropertyLoader propertyLoader = beanLocator.get(ActionCustomPropertyLoader.class);
+            for (Element propertyEl : propertiesEl.elements("property")) {
+                propertyLoader.load(instance,
+                        propertyEl.attributeValue("name"), propertyEl.attributeValue("value"));
+            }
         }
     }
 
