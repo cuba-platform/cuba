@@ -91,6 +91,8 @@ public class DateFieldLoader extends AbstractFieldLoader<DateField> {
 
         loadRangeStart(resultComponent, element);
         loadRangeEnd(resultComponent, element);
+
+        loadAutofill(resultComponent, element);
     }
 
     protected void loadRangeStart(DateField resultComponent, Element element) {
@@ -144,5 +146,12 @@ public class DateFieldLoader extends AbstractFieldLoader<DateField> {
 
         Datatype datatype = resultComponent.getDatatype();
         return datatype == null ? Date.class : datatype.getJavaClass();
+    }
+
+    protected void loadAutofill(DateField resultComponent, Element element) {
+        String autofill = element.attributeValue("autofill");
+        if (StringUtils.isNotEmpty(autofill)) {
+            resultComponent.setAutofill(Boolean.parseBoolean(autofill));
+        }
     }
 }

@@ -48,5 +48,17 @@ public class CubaDateFieldConnector extends PopupDateFieldConnector {
         if (stateChangeEvent.hasPropertyChanged("tabIndex")) {
             getWidget().updateTabIndex(getState().tabIndex);
         }
+
+        if (stateChangeEvent.hasPropertyChanged("autofill")) {
+            getWidget().setAutofill(getState().autofill);
+        }
+
+        if (stateChangeEvent.hasPropertyChanged("rangeStart")) {
+            getWidget().setDateRangeStart(getState().rangeStart);
+        }
+
+        if (stateChangeEvent.hasPropertyChanged("rangeEnd")) {
+            getWidget().setDateRangeEnd(getState().rangeEnd);
+        }
     }
 }

@@ -327,6 +327,16 @@ public class WebDateField<V extends Comparable<V>>
     }
 
     @Override
+    public void setAutofill(boolean autofill) {
+        dateField.setAutofill(autofill);
+    }
+
+    @Override
+    public boolean isAutofill() {
+        return dateField.isAutofill();
+    }
+
+    @Override
     public void setZoneId(ZoneId zoneId) {
         ZoneId prevZoneId = this.zoneId;
         V value = getValue();

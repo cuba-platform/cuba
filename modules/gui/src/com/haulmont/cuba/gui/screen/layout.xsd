@@ -1836,6 +1836,8 @@
                 <xs:attribute name="dateFormat" type="xs:string"/>
                 <xs:attribute name="datatype" type="dateTimeDatatypeEnum"/>
 
+                <xs:attribute name="autofill" type="xs:boolean"/>
+
                 <xs:attributeGroup ref="hasBuffered"/>
                 <xs:attributeGroup ref="hasTabIndex"/>
                 <xs:attributeGroup ref="hasContextHelp"/>

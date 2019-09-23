@@ -153,4 +153,14 @@ public class CubaDateField extends com.vaadin.ui.DateField implements Action.Con
             getState().captionManagedByLayout = captionManagedByLayout;
         }
     }
+
+    public void setAutofill(boolean autofill) {
+        if (isAutofill() != autofill) {
+            getState().autofill = autofill;
+        }
+    }
+
+    public boolean isAutofill() {
+        return getState(false).autofill;
+    }
 }

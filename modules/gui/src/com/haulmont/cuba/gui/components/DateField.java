@@ -68,4 +68,18 @@ public interface DateField<V> extends Field<V>, HasDatatype<V>, Buffered, Compon
     void setZoneId(ZoneId zoneId);
 
     ZoneId getZoneId();
+
+    /**
+     * Sets whether autofill feature is enabled.
+     * <p>
+     * When enabled uses current month and year.
+     *
+     * @param autofill whether autofill is enabled
+     */
+    void setAutofill(boolean autofill);
+
+    /**
+     * @return whether autofill is enabled
+     */
+    boolean isAutofill();
 }
