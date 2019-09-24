@@ -27,13 +27,14 @@ import com.haulmont.cuba.testmodel.softdelete_notfounddeleted.SoftDelete_Service
 import com.haulmont.cuba.testmodel.softdelete_notfounddeleted.SoftDelete_Task;
 import com.haulmont.cuba.testmodel.softdelete_notfounddeleted.SoftDelete_TaskValue;
 import com.haulmont.cuba.testsupport.TestContainer;
-import org.junit.*;
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.util.UUID;
 
 public class SoftDeleteNotFoundDeletedTest {
 
-    @ClassRule
+    @RegisterExtension
     public static TestContainer cont = TestContainer.Common.INSTANCE;
 
     private UUID taskId;
@@ -42,7 +43,7 @@ public class SoftDeleteNotFoundDeletedTest {
     private UUID taskValueId;
     private DataManager dataManager;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         dataManager = AppBeans.get(DataManager.class);
 
@@ -87,7 +88,7 @@ public class SoftDeleteNotFoundDeletedTest {
         }
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         cont.deleteRecord("TEST_SOFT_DELETE_PROJECT", projectId);
         cont.deleteRecord("TEST_SOFT_DELETE_TASK_VALUE", taskValueId);
@@ -112,8 +113,8 @@ public class SoftDeleteNotFoundDeletedTest {
                 .setView(projectView).setId(projectId);
         SoftDelete_Project project = dataManager.load(loadContext);
 
-        Assert.assertNotNull(project);
-        Assert.assertNotNull(project.getTask());
-        Assert.assertTrue(project.getTask().isDeleted());
+        Assertions.assertNotNull(project);
+        Assertions.assertNotNull(project.getTask());
+        Assertions.assertTrue(project.getTask().isDeleted());
     }
 }

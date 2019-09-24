@@ -29,25 +29,25 @@ import com.haulmont.cuba.security.entity.Group;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.testsupport.TestContainer;
 import org.apache.commons.lang3.StringUtils;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.ClassRule;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
 import java.util.*;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SuppressWarnings("IncorrectCreateEntity")
 public class QueryResultTest {
 
-    @ClassRule
+    @RegisterExtension
     public static TestContainer cont = TestContainer.Common.INSTANCE;
 
     private List<UUID> userIds = new ArrayList<>();
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         QueryRunner runner = new QueryRunner(cont.persistence().getDataSource());
         try {
@@ -59,7 +59,7 @@ public class QueryResultTest {
         createEntities();
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         for (UUID userId : userIds) {
             cont.deleteRecord("SEC_USER", userId);

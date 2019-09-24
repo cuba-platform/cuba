@@ -456,8 +456,9 @@ configure(coreModule) {
     }
 
     task testEntityCache(type: Test) {
+        useJUnitPlatform()
         scanForTestClasses = false
-        includes = ['com/haulmont/cuba/entity_cache/EntityCacheTestSuite.class']
+        includes = ['**/**CacheTestClass.class']
 
         if (System.getProperty('logback.configurationFile')) {
             systemProperty 'logback.configurationFile', System.getProperty('logback.testEntityCache.configurationFile')
@@ -724,6 +725,7 @@ configure(webModule) {
     }
 
     task testUiComponents(type: Test) {
+        useJUnitPlatform()
         maxHeapSize = '256m'
 
         if (System.getProperty('logback.configurationFile')) {

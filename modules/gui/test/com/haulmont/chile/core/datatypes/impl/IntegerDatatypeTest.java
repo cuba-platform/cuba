@@ -19,20 +19,21 @@ package com.haulmont.chile.core.datatypes.impl;
 
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.text.ParseException;
 import java.util.Locale;
 
-import static junit.framework.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class IntegerDatatypeTest extends AbstractDatatypeTestCase {
 
     private Datatype<Integer> intDt;
 
     @Override
-    @Before
+    @BeforeEach
     public void setUp() {
         super.setUp();
 
@@ -96,33 +97,33 @@ public class IntegerDatatypeTest extends AbstractDatatypeTestCase {
         assertEquals(intDt.format(null), intDt.format(null, Locale.FRENCH));
     }
 
-    @Test(expected = ParseException.class)
-    public void parseDouble() throws ParseException {
-        intDt.parse("12.1");
+    @Test
+    public void parseDouble() {
+        Assertions.assertThrows(ParseException.class, () -> intDt.parse("12.1"));
     }
 
-    @Test(expected = ParseException.class)
-    public void parseRoundedDouble() throws ParseException {
-        intDt.parse("12.0");
+    @Test
+    public void parseRoundedDouble() {
+        Assertions.assertThrows(ParseException.class, () -> intDt.parse("12.0"));
     }
 
-    @Test(expected = ParseException.class)
-    public void parseLowerThanMIN() throws ParseException {
-        intDt.parse("-1000000000000");
+    @Test
+    public void parseLowerThanMIN() {
+        Assertions.assertThrows(ParseException.class, () -> intDt.parse("-1000000000000"));
     }
 
-    @Test(expected = ParseException.class)
-    public void parseGreaterThanMAX() throws ParseException {
-        intDt.parse("1000000000000");
+    @Test
+    public void parseGreaterThanMAX() {
+        Assertions.assertThrows(ParseException.class, () -> intDt.parse("1000000000000"));
     }
 
-    @Test(expected = ParseException.class)
-    public void parseLowerThanMINLong() throws ParseException {
-        intDt.parse("-1000000000000000000000");
+    @Test
+    public void parseLowerThanMINLong() {
+        Assertions.assertThrows(ParseException.class, () -> intDt.parse("-1000000000000000000000"));
     }
 
-    @Test(expected = ParseException.class)
-    public void parseGreaterThanMAXLong() throws ParseException {
-        intDt.parse("1000000000000000000000");
+    @Test
+    public void parseGreaterThanMAXLong() {
+        Assertions.assertThrows(ParseException.class, () -> intDt.parse("1000000000000000000000"));
     }
 }

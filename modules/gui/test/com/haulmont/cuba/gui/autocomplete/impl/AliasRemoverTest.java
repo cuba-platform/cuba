@@ -20,8 +20,8 @@ package com.haulmont.cuba.gui.autocomplete.impl;
 import com.haulmont.cuba.core.sys.jpql.InferredType;
 import com.haulmont.cuba.gui.components.autocomplete.impl.AliasRemover;
 import com.haulmont.cuba.gui.components.autocomplete.impl.HintRequest;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.util.EnumSet;
 
@@ -36,32 +36,32 @@ public class AliasRemoverTest {
         input.setPosition(input.getQuery().indexOf("!"));
         input.setExpectedTypes(EnumSet.of(InferredType.Any));
         HintRequest result = aliasRemover.replaceAliases(input);
-        Assert.assertEquals('!', result.getQuery().charAt(result.getPosition()));
-        Assert.assertTrue(!result.getQuery().contains("as \""));
+        Assertions.assertEquals('!', result.getQuery().charAt(result.getPosition()));
+        Assertions.assertTrue(!result.getQuery().contains("as \""));
         System.out.println(result.getQuery());
 
         input.setQuery("select queryEntity.vin as \"vin\", queryEntity.!version as \"version\" from ref$Car queryEntity");
         input.setPosition(input.getQuery().indexOf("!"));
         input.setExpectedTypes(EnumSet.of(InferredType.Any));
         result = aliasRemover.replaceAliases(input);
-        Assert.assertEquals('!', result.getQuery().charAt(result.getPosition()));
-        Assert.assertTrue(!result.getQuery().contains("as \""));
+        Assertions.assertEquals('!', result.getQuery().charAt(result.getPosition()));
+        Assertions.assertTrue(!result.getQuery().contains("as \""));
         System.out.println(result.getQuery());
 
         input.setQuery("select queryEntity.!vin as \"vin\", queryEntity.version as \"version\" from ref$Car queryEntity");
         input.setPosition(input.getQuery().indexOf("!"));
         input.setExpectedTypes(EnumSet.of(InferredType.Any));
         result = aliasRemover.replaceAliases(input);
-        Assert.assertEquals('!', result.getQuery().charAt(result.getPosition()));
-        Assert.assertTrue(!result.getQuery().contains("as \""));
+        Assertions.assertEquals('!', result.getQuery().charAt(result.getPosition()));
+        Assertions.assertTrue(!result.getQuery().contains("as \""));
         System.out.println(result.getQuery());
 
         input.setQuery("select queryEntity.vin as \"vin\", queryEntity.version as \"version\" from ref$Car queryEntity");
         input.setPosition(input.getQuery().indexOf("\"ver"));
         input.setExpectedTypes(EnumSet.of(InferredType.Any));
         result = aliasRemover.replaceAliases(input);
-        Assert.assertEquals(' ', result.getQuery().charAt(result.getPosition()));
-        Assert.assertTrue(!result.getQuery().contains("as \""));
+        Assertions.assertEquals(' ', result.getQuery().charAt(result.getPosition()));
+        Assertions.assertTrue(!result.getQuery().contains("as \""));
         System.out.println(result.getQuery());
     }
 }

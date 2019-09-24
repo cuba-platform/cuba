@@ -22,16 +22,17 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.testsupport.TestContainer;
 import org.apache.commons.io.IOUtils;
-import org.junit.*;
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
-@Ignore
+@Disabled
 public class AmazonS3FileStorageTest {
     public static final String FILE_CONTENT = "This text is for Amazon S3 service test. Second version.";
-    @ClassRule
+    @RegisterExtension
     public static TestContainer cont = TestContainer.Common.INSTANCE;
 
     protected AmazonS3FileStorage fileStorageAPI;
@@ -39,7 +40,7 @@ public class AmazonS3FileStorageTest {
     protected FileDescriptor fileDescr;
     protected FileDescriptor fileDescr2;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         fileDescr = new FileDescriptor();
         fileDescr.setCreateDate(new Date());
@@ -61,10 +62,10 @@ public class AmazonS3FileStorageTest {
         fileStorageAPI.saveFile(fileDescr, FILE_CONTENT.getBytes());
 
         InputStream inputStream = fileStorageAPI.openStream(fileDescr);
-        Assert.assertEquals(FILE_CONTENT, IOUtils.toString(inputStream, StandardCharsets.UTF_8));
+        Assertions.assertEquals(FILE_CONTENT, IOUtils.toString(inputStream, StandardCharsets.UTF_8));
 
         boolean fileExists = fileStorageAPI.fileExists(fileDescr);
-        Assert.assertTrue(fileExists);
+        Assertions.assertTrue(fileExists);
 
         fileStorageAPI.removeFile(fileDescr);
     }
@@ -74,10 +75,10 @@ public class AmazonS3FileStorageTest {
         fileStorageAPI.saveFile(fileDescr2, FILE_CONTENT.getBytes());
 
         InputStream inputStream = fileStorageAPI.openStream(fileDescr2);
-        Assert.assertEquals(FILE_CONTENT, IOUtils.toString(inputStream, StandardCharsets.UTF_8));
+        Assertions.assertEquals(FILE_CONTENT, IOUtils.toString(inputStream, StandardCharsets.UTF_8));
 
         boolean fileExists = fileStorageAPI.fileExists(fileDescr2);
-        Assert.assertTrue(fileExists);
+        Assertions.assertTrue(fileExists);
 
         fileStorageAPI.removeFile(fileDescr2);
     }

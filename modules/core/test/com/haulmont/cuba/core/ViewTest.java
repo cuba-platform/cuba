@@ -30,10 +30,10 @@ import com.haulmont.cuba.testmodel.selfinherited.RootEntity;
 import com.haulmont.cuba.testmodel.selfinherited.RootEntityDetail;
 import com.haulmont.cuba.testsupport.TestContainer;
 import org.eclipse.persistence.queries.FetchGroupTracker;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.ClassRule;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.Test;
 import org.slf4j.LoggerFactory;
 
 import java.sql.ResultSet;
@@ -43,11 +43,11 @@ import java.util.UUID;
 
 import static com.haulmont.cuba.testsupport.TestSupport.assertFail;
 import static com.haulmont.cuba.testsupport.TestSupport.reserialize;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ViewTest {
 
-    @ClassRule
+    @RegisterExtension
     public static TestContainer cont = TestContainer.Common.INSTANCE;
     
     private TimeSource timeSource;
@@ -60,7 +60,7 @@ public class ViewTest {
     private Persistence persistence;
     private Metadata metadata;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
         context.getLogger("com.haulmont.cuba.core.sys.FetchGroupManager").setLevel(Level.TRACE);
@@ -127,7 +127,7 @@ public class ViewTest {
         }
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
         context.getLogger("com.haulmont.cuba.core.sys.FetchGroupManager").setLevel(Level.DEBUG);

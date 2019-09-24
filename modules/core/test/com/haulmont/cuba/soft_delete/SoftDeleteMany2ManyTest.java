@@ -26,24 +26,24 @@ import com.haulmont.cuba.testmodel.many2many.Many2ManyA;
 import com.haulmont.cuba.testmodel.many2many.Many2ManyB;
 import com.haulmont.cuba.testsupport.TestContainer;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.ClassRule;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.Test;
 
 import java.util.HashSet;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class SoftDeleteMany2ManyTest {
 
-    @ClassRule
+    @RegisterExtension
     public static TestContainer cont = TestContainer.Common.INSTANCE;
 
     private Many2ManyA many2ManyA, many2ManyA2, a1, a2;
     private Many2ManyB many2ManyB, many2ManyB2, b1, b2, b3;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         DataManager dataManager = AppBeans.get(DataManager.class);
 
@@ -79,7 +79,7 @@ public class SoftDeleteMany2ManyTest {
         dataManager.commit(new CommitContext(a1, a2, b1, b2, b3));
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         cont.deleteRecord("TEST_MANY2MANY_AB_LINK", "A_ID", many2ManyA.getId(), a1.getId(), a2.getId());
         cont.deleteRecord("TEST_MANY2MANY_AB_LINK2", "A_ID", many2ManyA2.getId());

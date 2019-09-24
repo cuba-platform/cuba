@@ -6,9 +6,9 @@ import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.core.global.queryconditions.LogicalCondition;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.testsupport.TestContainer;
-import org.junit.Before;
-import org.junit.ClassRule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Optional;
@@ -16,17 +16,17 @@ import java.util.Optional;
 import static com.haulmont.cuba.core.global.queryconditions.JpqlCondition.where;
 import static com.haulmont.cuba.core.global.queryconditions.LogicalCondition.and;
 import static com.haulmont.cuba.core.global.queryconditions.LogicalCondition.or;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class QueryConditionsUsageTest {
 
-    @ClassRule
+    @RegisterExtension
     public static TestContainer cont = TestContainer.Common.INSTANCE;
 
     private DataManager dataManager;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         dataManager = AppBeans.get(DataManager.class);
     }

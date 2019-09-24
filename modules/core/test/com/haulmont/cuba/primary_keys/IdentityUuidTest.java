@@ -25,26 +25,26 @@ import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.testmodel.primary_keys.IdentityUuidEntity;
 import com.haulmont.cuba.testsupport.TestContainer;
 import com.haulmont.cuba.testsupport.TestSupport;
-import org.junit.Before;
-import org.junit.ClassRule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class IdentityUuidTest {
 
-    @ClassRule
+    @RegisterExtension
     public static TestContainer cont = TestContainer.Common.INSTANCE;
 
     private Metadata metadata;
     private Persistence persistence;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         QueryRunner runner = new QueryRunner(cont.persistence().getDataSource());
         runner.update("delete from TEST_IDENTITY_UUID");

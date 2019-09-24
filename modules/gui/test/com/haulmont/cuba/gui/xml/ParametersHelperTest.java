@@ -22,7 +22,7 @@ import com.haulmont.cuba.core.global.filter.ParameterInfo;
 import com.haulmont.cuba.core.global.filter.ParametersHelper;
 import com.google.common.collect.Iterables;
 import junit.framework.TestCase;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import javax.annotation.Nullable;
 import java.util.Arrays;

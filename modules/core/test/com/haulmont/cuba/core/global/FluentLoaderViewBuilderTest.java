@@ -19,22 +19,22 @@ package com.haulmont.cuba.core.global;
 
 import com.haulmont.cuba.testmodel.petclinic.Pet;
 import com.haulmont.cuba.testsupport.TestContainer;
-import org.junit.Before;
-import org.junit.ClassRule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.Test;
 
 import java.util.UUID;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class FluentLoaderViewBuilderTest {
 
-    @ClassRule
+    @RegisterExtension
     public static TestContainer cont = TestContainer.Common.INSTANCE;
 
     private DataManager dataManager;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         dataManager = AppBeans.get(DataManager.class);
     }

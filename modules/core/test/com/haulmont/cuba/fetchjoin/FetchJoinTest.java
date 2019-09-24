@@ -21,18 +21,18 @@ import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.testmodel.fetchjoin.*;
 import com.haulmont.cuba.testsupport.TestContainer;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.ClassRule;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class FetchJoinTest {
-    @ClassRule
+    @RegisterExtension
     public static TestContainer cont = TestContainer.Common.INSTANCE;
 
     protected JoinC joinC;
@@ -53,7 +53,7 @@ public class FetchJoinTest {
     protected JoinType type;
     protected JoinClassType classType;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         Transaction tx = cont.persistence().createTransaction();
         try {
@@ -144,7 +144,7 @@ public class FetchJoinTest {
         }
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         cont.deleteRecord(joinA, joinB, joinC, joinD, joinE, joinF);
         cont.deleteRecord(orderLine, order, product, salesPerson, customer, partyCustomer, partyPerson);

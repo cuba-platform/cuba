@@ -20,14 +20,14 @@ package com.haulmont.cuba.core.sys;
 import com.haulmont.cuba.core.app.TestingService;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.testsupport.TestContainer;
-import org.junit.ClassRule;
-import org.junit.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class DeclarativeTransactionTest {
 
-    @ClassRule
+    @RegisterExtension
     public static TestContainer cont = TestContainer.Common.INSTANCE;
 
     @Test

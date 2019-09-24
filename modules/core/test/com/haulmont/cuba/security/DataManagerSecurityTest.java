@@ -29,19 +29,19 @@ import com.haulmont.cuba.security.entity.*;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.testsupport.TestContainer;
 import com.haulmont.cuba.testsupport.TestUserSessionSource;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.ClassRule;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Locale;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class DataManagerSecurityTest {
 
-    @ClassRule
+    @RegisterExtension
     public static TestContainer cont = TestContainer.Common.INSTANCE;
 
     private static final String USER_NAME = "testUser";
@@ -56,7 +56,7 @@ public class DataManagerSecurityTest {
     private UserRole userRole;
     private Server server;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         passwordEncryption = AppBeans.get(PasswordEncryption.class);
 
@@ -102,7 +102,7 @@ public class DataManagerSecurityTest {
         }
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         cont.deleteRecord(userRole, user, group, permission, role, server);
     }
@@ -122,13 +122,13 @@ public class DataManagerSecurityTest {
             LoadContext<Server> loadContext = LoadContext.create(Server.class)
                     .setQuery(new LoadContext.Query("select s from sys$Server s"));
             List<Server> list = dm.loadList(loadContext);
-            assertFalse("Permission took effect when calling DataManager inside middleware", list.isEmpty());
+            assertFalse(list.isEmpty(), "Permission took effect when calling DataManager inside middleware");
 
             DataService ds = AppBeans.get(DataService.NAME);
             loadContext = LoadContext.create(Server.class)
                     .setQuery(new LoadContext.Query("select s from sys$Server s"));
             list = ds.loadList(loadContext);
-            assertTrue("Permission did not take effect when calling DataService", list.isEmpty());
+            assertTrue(list.isEmpty(), "Permission did not take effect when calling DataService");
 
         } finally {
             ((TestUserSessionSource) uss).setUserSession(savedUserSession);

@@ -17,14 +17,14 @@
 package com.haulmont.cuba.core;
 
 import com.haulmont.cuba.testsupport.TestContainer;
-import org.junit.ClassRule;
-import org.junit.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
 public class FolderTest {
 
-    @ClassRule
+    @RegisterExtension
     public static TestContainer cont = TestContainer.Common.INSTANCE;
 
     @Test

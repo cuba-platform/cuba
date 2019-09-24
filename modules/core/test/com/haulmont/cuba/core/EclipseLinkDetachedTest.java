@@ -25,26 +25,26 @@ import com.haulmont.cuba.security.entity.UserRole;
 import com.haulmont.cuba.testsupport.TestContainer;
 import org.eclipse.persistence.internal.queries.EntityFetchGroup;
 import org.eclipse.persistence.queries.FetchGroupTracker;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.ClassRule;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.Test;
 
 import java.util.Set;
 import java.util.UUID;
 
 import static com.haulmont.cuba.testsupport.TestSupport.reserialize;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class EclipseLinkDetachedTest {
 
-    @ClassRule
+    @RegisterExtension
     public static TestContainer cont = TestContainer.Common.INSTANCE;
 
     private UUID userId;
     private UUID userRoleId;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         Transaction tx = cont.persistence().createTransaction();
         try {
@@ -70,7 +70,7 @@ public class EclipseLinkDetachedTest {
         }
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         cont.deleteRecord("SEC_USER_ROLE", userRoleId);
         cont.deleteRecord("SEC_USER", userId);

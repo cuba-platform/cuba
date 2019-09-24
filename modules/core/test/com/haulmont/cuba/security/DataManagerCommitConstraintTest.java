@@ -27,18 +27,18 @@ import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.testsupport.TestContainer;
 import com.haulmont.cuba.testsupport.TestUserSessionSource;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.ClassRule;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.Test;
 
 import java.util.Locale;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class DataManagerCommitConstraintTest {
 
-    @ClassRule
+    @RegisterExtension
     public static TestContainer cont = TestContainer.Common.INSTANCE;
 
     private Group parentGroup;
@@ -52,7 +52,7 @@ public class DataManagerCommitConstraintTest {
 
     private static final String PASSWORD = "1";
 
-    @Before
+    @BeforeEach
     public void setUp() {
         passwordEncryption = AppBeans.get(PasswordEncryption.class);
 
@@ -348,7 +348,7 @@ public class DataManagerCommitConstraintTest {
         }
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         cont.deleteRecord("SEC_ROLE", role.getId());
         cont.deleteRecord("SEC_USER",

@@ -29,21 +29,21 @@ import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.testsupport.TestContainer;
 import com.haulmont.cuba.testsupport.TestUserSessionSource;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.ClassRule;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SuppressWarnings("IncorrectCreateEntity")
 public class ConstraintTest {
 
-    @ClassRule
+    @RegisterExtension
     public static TestContainer cont = TestContainer.Common.INSTANCE;
 
     private static final String USER_LOGIN = "testUser";
@@ -55,7 +55,7 @@ public class ConstraintTest {
 
     private PasswordEncryption passwordEncryption;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         passwordEncryption = AppBeans.get(PasswordEncryption.class);
 
@@ -143,7 +143,7 @@ public class ConstraintTest {
         }
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         cont.deleteRecord("SYS_SERVER", serverId);
         cont.deleteRecord("SEC_USER_ROLE", userRoleId);

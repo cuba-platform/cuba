@@ -25,22 +25,23 @@ import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.core.global.ViewRepository;
 import com.haulmont.cuba.security.entity.*;
 import com.haulmont.cuba.testsupport.TestContainer;
-import org.junit.*;
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.util.BitSet;
 import java.util.EnumSet;
 import java.util.UUID;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class SerializationTest {
-    @ClassRule
+    @RegisterExtension
     public static TestContainer cont = TestContainer.Common.INSTANCE;
 
     private UUID userId;
     private UUID userRoleId;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         Transaction tx = cont.persistence().createTransaction();
         try {
@@ -66,14 +67,14 @@ public class SerializationTest {
         }
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         cont.deleteRecord("SEC_USER_ROLE", userRoleId);
         cont.deleteRecord("SEC_USER", userId);
     }
 
     @Test
-    @Ignore
+    @Disabled
     public void testCompareSpeedAndSize() throws Exception {
         View view = getView();
         User user;
@@ -215,25 +216,25 @@ public class SerializationTest {
 
         try {
             standardUser.getGroup();
-            Assert.fail();
+            Assertions.fail();
         } catch (Exception ignored) {
         }
 
         try {
             kryoUser.getGroup();
-            Assert.fail();
+            Assertions.fail();
         } catch (Exception ignored) {
         }
 
         try {
             standardUser.getUserRoles().size();
-            Assert.fail();
+            Assertions.fail();
         } catch (Exception ignored) {
         }
 
         try {
             kryoUser.getUserRoles().size();
-            Assert.fail();
+            Assertions.fail();
         } catch (Exception ignored) {
         }
     }

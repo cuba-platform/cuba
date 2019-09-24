@@ -27,7 +27,8 @@ import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.testmodel.severalfetchgroups.SeveralFetchGroups_Tariff;
 import com.haulmont.cuba.testmodel.severalfetchgroups.SeveralFetchGroups_TariffVersion;
 import com.haulmont.cuba.testsupport.TestContainer;
-import org.junit.*;
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -35,7 +36,7 @@ import java.util.UUID;
 
 public class SeveralFetchGroupsTest {
 
-    @ClassRule
+    @RegisterExtension
     public static TestContainer cont = TestContainer.Common.INSTANCE;
 
     private Metadata metadata;
@@ -44,7 +45,7 @@ public class SeveralFetchGroupsTest {
     private UUID tariffId1, tariffId2_1, tariffId3_1, tariffId4_2;
     private UUID tariffVersionId1, tariffVersionId2, tariffVersionId3;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         metadata = cont.metadata();
         persistence = cont.persistence();
@@ -107,7 +108,7 @@ public class SeveralFetchGroupsTest {
         }
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws SQLException {
         QueryRunner runner = new QueryRunner(cont.persistence().getDataSource());
         runner.update("update TEST_SEVERAL_FETCH_GROUPS_TARIFF set ACTIVE_VERSION_ID = null");
@@ -122,7 +123,7 @@ public class SeveralFetchGroupsTest {
         loadContext.setView("tariffVersion.withParent");
         List<SeveralFetchGroups_TariffVersion> result = dataManager.loadList(loadContext);
         for (SeveralFetchGroups_TariffVersion version : result) {
-            Assert.assertNotNull(version.getParent());
+            Assertions.assertNotNull(version.getParent());
         }
     }
 }

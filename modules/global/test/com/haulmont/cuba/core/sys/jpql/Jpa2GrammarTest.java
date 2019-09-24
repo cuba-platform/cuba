@@ -26,9 +26,9 @@ import org.antlr.runtime.TokenStream;
 import org.antlr.runtime.tree.CommonErrorNode;
 import org.antlr.runtime.tree.CommonTree;
 import org.antlr.runtime.tree.TreeVisitor;
-import org.junit.Assert;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
@@ -77,7 +77,7 @@ public class Jpa2GrammarTest {
     }
 
     @Test
-    @Ignore
+    @Disabled
     public void testFunction() throws Exception {
         testQuery("select u from sec$User u where function('DAYOFMONTH', u.createTs) = 1");
         testQuery("select u from sec$User u where function('hasRoles', u.createdBy, u.login)");
@@ -107,7 +107,7 @@ public class Jpa2GrammarTest {
         TokenStream tstream = new CommonTokenStream(lexer);
         JPA2Parser jpa2Parser = new JPA2Parser(tstream);
         JPA2Parser.like_expression_return aReturn = jpa2Parser.like_expression();
-        Assert.assertNotNull(aReturn);
+        Assertions.assertNotNull(aReturn);
 
         query = "c.name like :pattern escape '.'";
         cs = new AntlrNoCaseStringStream(query);
@@ -115,7 +115,7 @@ public class Jpa2GrammarTest {
         tstream = new CommonTokenStream(lexer);
         jpa2Parser = new JPA2Parser(tstream);
         aReturn = jpa2Parser.like_expression();
-        Assert.assertTrue(isValid((CommonTree) aReturn.getTree()));
+        Assertions.assertTrue(isValid((CommonTree) aReturn.getTree()));
     }
 
     @Test
@@ -126,11 +126,11 @@ public class Jpa2GrammarTest {
         TokenStream tstream = new CommonTokenStream(lexer);
         JPA2Parser jpa2Parser = new JPA2Parser(tstream);
         JPA2Parser.where_clause_return aReturn = jpa2Parser.where_clause();
-        Assert.assertTrue(isValid((CommonTree) aReturn.getTree()));
+        Assertions.assertTrue(isValid((CommonTree) aReturn.getTree()));
     }
 
     @Test
-    @Ignore
+    @Disabled
     public void testMemberOf() throws Exception {
         String query = "where p.owner.id = :userParam or (select u from tamsy$User u where u.id = :userParam) member of p.developers";
         CharStream cs = new AntlrNoCaseStringStream(query);
@@ -138,7 +138,7 @@ public class Jpa2GrammarTest {
         TokenStream tstream = new CommonTokenStream(lexer);
         JPA2Parser jpa2Parser = new JPA2Parser(tstream);
         JPA2Parser.where_clause_return aReturn = jpa2Parser.where_clause();
-        Assert.assertTrue(isValid((CommonTree) aReturn.getTree()));
+        Assertions.assertTrue(isValid((CommonTree) aReturn.getTree()));
 
         testQuery("SELECT d FROM app$Department d WHERE (select e from app$Employee e where e.id = :eParam) MEMBER OF e.employees");
         testQuery("SELECT e FROM app$Employee e WHERE 'write code' MEMBER OF e.codes");
@@ -206,7 +206,7 @@ public class Jpa2GrammarTest {
         TokenStream tstream = new CommonTokenStream(lexer);
         JPA2Parser jpa2Parser = new JPA2Parser(tstream);
         JPA2Parser.ql_statement_return aReturn = jpa2Parser.ql_statement();
-        Assert.assertTrue(isValid((CommonTree) aReturn.getTree()));
+        Assertions.assertTrue(isValid((CommonTree) aReturn.getTree()));
     }
 
     @Test
@@ -224,7 +224,7 @@ public class Jpa2GrammarTest {
         TokenStream tstream = new CommonTokenStream(lexer);
         JPA2Parser jpa2Parser = new JPA2Parser(tstream);
         JPA2Parser.update_statement_return aReturn = jpa2Parser.update_statement();
-        Assert.assertTrue(isValid((CommonTree) aReturn.getTree()));
+        Assertions.assertTrue(isValid((CommonTree) aReturn.getTree()));
     }
 
     protected boolean isValid(CommonTree tree) {
@@ -247,7 +247,7 @@ public class Jpa2GrammarTest {
     }
 
     @Test
-    @Ignore
+    @Disabled
     public void testTreat() throws Exception {
         testQuery("SELECT e FROM app$Employee e JOIN TREAT(e.projects AS app$LargeProject) p WHERE p.budget > 1000000");
         testQuery("SELECT e FROM app$Employee e JOIN e.projects p WHERE TREAT(p as app$LargeProject).budget > 1000000");
@@ -265,7 +265,7 @@ public class Jpa2GrammarTest {
     }
 
     @Test
-    @Ignore
+    @Disabled
     public void testEntityTypeExpression() throws Exception {
         testQuery("SELECT e FROM app$Employee e WHERE TYPE(e) IN :empTypes");
         testQuery("SELECT e FROM app$Employee e WHERE TYPE(e) IN (:empType1, :empType2)");
@@ -274,7 +274,7 @@ public class Jpa2GrammarTest {
     }
 
     @Test
-    @Ignore
+    @Disabled
     public void testCaseExpression() throws Exception {
         testQuery("UPDATE app$Employee e SET e.salary = CASE e.rating WHEN 1 THEN e.salary * 1.1 WHEN 2 THEN e.salary * 1.05 ELSE e.salary * 1.01 END");
         testQuery("UPDATE app$Employee e SET e.salary = CASE WHEN e.rating = 1 THEN e.salary * 1.1 WHEN e.rating = 2 THEN e.salary * 1.05 ELSE e.salary * 1.01 END");
@@ -295,7 +295,7 @@ public class Jpa2GrammarTest {
 
 
     @Test
-    @Ignore
+    @Disabled
     public void testStringFunctions() throws Exception {
         testQuery("SELECT x FROM app$Magazine x WHERE CONCAT(x.title, 's') = 'JDJs'");
 
@@ -349,13 +349,13 @@ public class Jpa2GrammarTest {
     }
 
     @Test
-    @Ignore
+    @Disabled
     public void testKeyValueColection() throws RecognitionException {
         testQuery("SELECT v.location.street, KEY(i).title, VALUE(i) FROM app$VideoStore v JOIN v.videoInventory i WHERE v.location.zipcode = '94301' AND VALUE(i) > 0");
     }
 
     @Test
-    @Ignore
+    @Disabled
     public void testLiterals() throws RecognitionException {
         testQuery("SELECT e FROM app$Employee e WHERE e.name = 'Bob'");
 
@@ -396,7 +396,7 @@ public class Jpa2GrammarTest {
     }
 
     @Test
-    @Ignore
+    @Disabled
     public void testSubQueries() throws RecognitionException {
         testQuery("SELECT goodCustomer FROM app$Customer goodCustomer WHERE goodCustomer.balanceOwed < (SELECT AVG(c.balanceOwed)/2.0 FROM app$Customer c)");
         testQuery("SELECT c FROM app$Customer c WHERE (SELECT AVG(o.price) FROM c.orders o) > 100");

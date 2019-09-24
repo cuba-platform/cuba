@@ -29,17 +29,18 @@ import com.haulmont.cuba.testsupport.TestContainer;
 import org.eclipse.persistence.internal.helper.CubaUtil;
 import org.eclipse.persistence.jpa.JpaEntityManager;
 import org.eclipse.persistence.platform.database.DatabasePlatform;
-import org.junit.*;
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.sql.SQLException;
 import java.util.List;
 import java.util.UUID;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class SoftDeleteTest {
 
-    @ClassRule
+    @RegisterExtension
     public static TestContainer cont = TestContainer.Common.INSTANCE;
     
     private UUID groupId;
@@ -56,7 +57,7 @@ public class SoftDeleteTest {
     private UUID group1Id, groupHierarchyId, constraint1Id, constraint2Id;
     private Persistence persistence;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         persistence = cont.persistence();
 
@@ -211,7 +212,7 @@ public class SoftDeleteTest {
         queryRunner.update("update SEC_USER set DELETE_TS = current_timestamp, DELETED_BY = 'admin' where ID = ?", new Object[] {user2Id.toString()});
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         cont.deleteRecord("SEC_USER_ROLE", userRole1Id, userRole2Id, userRole3Id, userRole4Id);
         cont.deleteRecord("SEC_GROUP_HIERARCHY", groupHierarchyId);
@@ -1206,7 +1207,7 @@ public class SoftDeleteTest {
 
         User user = cont.persistence().callInTransaction((em) -> em.find(User.class, user1Id, userView));
         assertEquals(role3Id, user.getUserRoles().iterator().next().getRole().getId());
-        Assert.assertTrue(user.getUserRoles().iterator().next().getRole().isDeleted());
+        Assertions.assertTrue(user.getUserRoles().iterator().next().getRole().isDeleted());
     }
 
     @Test

@@ -24,23 +24,23 @@ import com.haulmont.cuba.security.entity.Group;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.testsupport.TestContainer;
 import com.haulmont.cuba.testsupport.TestSupport;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.ClassRule;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class AfterCompleteTransactionListenerTest {
 
-    @ClassRule
+    @RegisterExtension
     public static TestContainer cont = TestContainer.Common.INSTANCE;
 
     private Persistence persistence;
     private Metadata metadata;
     private Group companyGroup;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         persistence = cont.persistence();
         metadata = cont.metadata();
@@ -51,7 +51,7 @@ public class AfterCompleteTransactionListenerTest {
         }
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         QueryRunner runner = new QueryRunner(persistence.getDataSource());
         runner.update("delete from SEC_USER where LOGIN_LC like 'txlstnrtst-%'");

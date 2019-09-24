@@ -17,11 +17,11 @@
 
 package com.haulmont.cuba.core.sys.jpql;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class EntityPathTest {
     @Test
@@ -47,7 +47,7 @@ public class EntityPathTest {
         assertArrayEquals(new String[]{"team", "owner"}, path.traversedFields);
 
         path = EntityPath.parseEntityPath(".");
-        Assert.assertNull(path.topEntityVariableName);
+        Assertions.assertNull(path.topEntityVariableName);
         assertEquals(null, path.lastEntityFieldPattern);
         assertArrayEquals(new String[0], path.traversedFields);
     }

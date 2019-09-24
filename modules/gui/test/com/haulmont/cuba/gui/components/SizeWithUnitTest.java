@@ -16,12 +16,10 @@
 
 package com.haulmont.cuba.gui.components;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.core.Is.is;
-
-public class SizeWithUnitTest extends Assert {
+public class SizeWithUnitTest extends Assertions {
 
     @Test
     public void testPixelSize() {
@@ -130,8 +128,8 @@ public class SizeWithUnitTest extends Assert {
                 SizeWithUnit.parseStringSize(sizeString);
                 fail("Expected an IllegalArgumentException to be thrown");
             } catch (IllegalArgumentException ex) {
-                assertThat(ex.getMessage(), is("Invalid size argument: \"" + sizeString
-                        + "\" (should match " + SizeWithUnit.SIZE_PATTERN.pattern() + ")"));
+                assertEquals("Invalid size argument: \"" + sizeString
+                        + "\" (should match " + SizeWithUnit.SIZE_PATTERN.pattern() + ")", ex.getMessage());
             }
         }
     }

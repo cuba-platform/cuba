@@ -22,20 +22,20 @@ import com.haulmont.cuba.core.global.Scripting;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.testsupport.TestContainer;
 import groovy.lang.Binding;
-import org.junit.Before;
-import org.junit.ClassRule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ScriptingTest {
 
-    @ClassRule
+    @RegisterExtension
     public static TestContainer cont = TestContainer.Common.INSTANCE;
 
     protected Scripting scripting;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         scripting = AppBeans.get(Scripting.class);
     }

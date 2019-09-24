@@ -27,7 +27,7 @@ import com.haulmont.cuba.web.test.stubs.TestUiComponents;
 import com.vaadin.server.VaadinSession;
 import mockit.Expectations;
 import mockit.Mocked;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.text.ParseException;
 import java.util.Locale;

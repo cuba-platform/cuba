@@ -29,8 +29,8 @@ import com.haulmont.cuba.security.entity.Group;
 import com.haulmont.cuba.security.entity.User;
 import mockit.Mocked;
 import mockit.Expectations;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -38,9 +38,9 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
-@Ignore
+@Disabled
 public class LookupFieldTest extends AbstractComponentTestCase {
 
     @Mocked PersistenceManagerService persistenceManagerService;
@@ -281,7 +281,7 @@ public class LookupFieldTest extends AbstractComponentTestCase {
 
         component.setDatasource(testDs, "group");
 
-        assertTrue("Value should be from value ds", g == component.getValue());
+        assertTrue(g == component.getValue(), "Value should be from value ds");
 
         component.setValue(g2);
 

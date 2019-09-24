@@ -24,18 +24,18 @@ import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.entity.UserRole;
 import com.haulmont.cuba.testsupport.TestContainer;
 import com.haulmont.cuba.testsupport.TestSupport;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.ClassRule;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.Test;
 
 import java.util.UUID;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class DataManagerCommitTest {
 
-    @ClassRule
+    @RegisterExtension
     public static TestContainer cont = TestContainer.Common.INSTANCE;
     
     private DataManager dataManager;
@@ -44,7 +44,7 @@ public class DataManagerCommitTest {
     private UUID userRoleId;
     private View view;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         dataManager = AppBeans.get(DataManager.class);
 
@@ -80,7 +80,7 @@ public class DataManagerCommitTest {
                 .addProperty("userRoles", new View(UserRole.class));
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         cont.deleteRecord("SEC_USER_ROLE", userRoleId);
         cont.deleteRecord("SEC_USER", userId);

@@ -16,8 +16,8 @@
 
 package com.haulmont.cuba.core.sys.dbupdate;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.util.Map;
 
@@ -29,58 +29,58 @@ public class DbPropertiesTest {
     @Test
     public void testNullOrEmptyUrl() {
         DbProperties dbProperties = new DbProperties(null);
-        Assert.assertNull(dbProperties.getProperties());
+        Assertions.assertNull(dbProperties.getProperties());
 
         dbProperties = new DbProperties("jdbc:sqlserver://localhost");
-        Assert.assertNull(dbProperties.getProperties());
+        Assertions.assertNull(dbProperties.getProperties());
     }
 
     @Test
     public void testWithParamsPostgres() {
         DbProperties dbProperties = new DbProperties("jdbc:sqlserver://localhost;databaseName=refapp_6;currentSchema=Person");
         Map<String, String> properties = dbProperties.getProperties();
-        Assert.assertNotNull(properties);
-        Assert.assertTrue(properties.size() == 2);
-        Assert.assertTrue("Person".equals(properties.get("currentSchema")));
+        Assertions.assertNotNull(properties);
+        Assertions.assertTrue(properties.size() == 2);
+        Assertions.assertTrue("Person".equals(properties.get("currentSchema")));
 
         dbProperties = new DbProperties("jdbc:postgresql://localhost/refapp_6?currentSchema=Person");
         properties = dbProperties.getProperties();
-        Assert.assertNotNull(properties);
-        Assert.assertTrue(properties.size() == 1);
-        Assert.assertTrue("Person".equals(properties.get("currentSchema")));
-        Assert.assertTrue("Person".equals(dbProperties.getCurrentSchemaProperty()));
+        Assertions.assertNotNull(properties);
+        Assertions.assertTrue(properties.size() == 1);
+        Assertions.assertTrue("Person".equals(properties.get("currentSchema")));
+        Assertions.assertTrue("Person".equals(dbProperties.getCurrentSchemaProperty()));
 
         dbProperties = new DbProperties("jdbc:postgresql://localhost/refapp_6?currentSchema=\"Person\"");
         properties = dbProperties.getProperties();
-        Assert.assertNotNull(properties);
-        Assert.assertTrue(properties.size() == 1);
-        Assert.assertTrue("\"Person\"".equals(properties.get("currentSchema")));
-        Assert.assertTrue("Person".equals(dbProperties.getCurrentSchemaProperty()));
+        Assertions.assertNotNull(properties);
+        Assertions.assertTrue(properties.size() == 1);
+        Assertions.assertTrue("\"Person\"".equals(properties.get("currentSchema")));
+        Assertions.assertTrue("Person".equals(dbProperties.getCurrentSchemaProperty()));
     }
 
     @Test
     public void testWithParamsMssql() {
         DbProperties dbProperties = new DbProperties("jdbc:jtds:sqlserver://localhost/refapp_6;currentSchema=Person");
         Map<String, String> properties = dbProperties.getProperties();
-        Assert.assertNotNull(properties);
-        Assert.assertTrue(properties.size() == 1);
-        Assert.assertTrue("Person".equals(properties.get("currentSchema")));
-        Assert.assertTrue("Person".equals(dbProperties.getCurrentSchemaProperty()));
+        Assertions.assertNotNull(properties);
+        Assertions.assertTrue(properties.size() == 1);
+        Assertions.assertTrue("Person".equals(properties.get("currentSchema")));
+        Assertions.assertTrue("Person".equals(dbProperties.getCurrentSchemaProperty()));
 
         dbProperties = new DbProperties("jdbc:sqlserver://localhost;databaseName=refapp_6;currentSchema=Person");
         properties = dbProperties.getProperties();
-        Assert.assertNotNull(properties);
-        Assert.assertTrue(properties.size() == 2);
-        Assert.assertTrue("Person".equals(properties.get("currentSchema")));
-        Assert.assertTrue("Person".equals(dbProperties.getCurrentSchemaProperty()));
+        Assertions.assertNotNull(properties);
+        Assertions.assertTrue(properties.size() == 2);
+        Assertions.assertTrue("Person".equals(properties.get("currentSchema")));
+        Assertions.assertTrue("Person".equals(dbProperties.getCurrentSchemaProperty()));
 
         dbProperties = new DbProperties("jdbc:sqlserver://;serverName=3ffe:8311:eeee:f70f:0:5eae:10.203.31.9\\\\instance1;integratedSecurity=true;currentSchema=Person");
         properties = dbProperties.getProperties();
-        Assert.assertNotNull(properties);
-        Assert.assertTrue(properties.size() == 3);
-        Assert.assertTrue("Person".equals(properties.get("currentSchema")));
-        Assert.assertTrue("3ffe:8311:eeee:f70f:0:5eae:10.203.31.9\\\\instance1".equals(properties.get("serverName")));
-        Assert.assertTrue("true".equals(properties.get("integratedSecurity")));
-        Assert.assertTrue("Person".equals(dbProperties.getCurrentSchemaProperty()));
+        Assertions.assertNotNull(properties);
+        Assertions.assertTrue(properties.size() == 3);
+        Assertions.assertTrue("Person".equals(properties.get("currentSchema")));
+        Assertions.assertTrue("3ffe:8311:eeee:f70f:0:5eae:10.203.31.9\\\\instance1".equals(properties.get("serverName")));
+        Assertions.assertTrue("true".equals(properties.get("integratedSecurity")));
+        Assertions.assertTrue("Person".equals(dbProperties.getCurrentSchemaProperty()));
     }
 }

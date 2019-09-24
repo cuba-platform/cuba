@@ -22,20 +22,20 @@ import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.testsupport.TestContainer;
 import org.apache.commons.io.FileUtils;
-import org.junit.Before;
-import org.junit.ClassRule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class DbUpdaterEngineTest {
 
-    @ClassRule
+    @RegisterExtension
     public static TestContainer cont = TestContainer.Common.INSTANCE;
 
     private File dbmsDir;
@@ -47,7 +47,7 @@ public class DbUpdaterEngineTest {
     private List<File> mssql2012UpdateFiles = new ArrayList<>();
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         GlobalConfig config = AppBeans.get(Configuration.class).getConfig(GlobalConfig.class);
         dbmsDir = new File(config.getTempDir(), "db. dir");

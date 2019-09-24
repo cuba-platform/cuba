@@ -23,23 +23,23 @@ import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.sys.listener.EntityListenerManager;
 import com.haulmont.cuba.testmodel.cascadedelete.CascadeEntity;
 import com.haulmont.cuba.testsupport.TestContainer;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.ClassRule;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class CascadeDeleteTest {
-    @ClassRule
+    @RegisterExtension
     public static TestContainer cont = TestContainer.Common.INSTANCE;
 
     protected CascadeEntity root, first, second, third;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         Transaction tx = cont.persistence().createTransaction();
         try {
@@ -71,7 +71,7 @@ public class CascadeDeleteTest {
         }
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         cont.deleteRecord(third, second, first, root);
     }

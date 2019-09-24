@@ -21,16 +21,16 @@ import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.security.entity.Group;
 import com.haulmont.cuba.security.entity.GroupHierarchy;
 import com.haulmont.cuba.testsupport.TestContainer;
-import org.junit.ClassRule;
-import org.junit.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.Test;
 
 import java.util.UUID;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class GroupTest {
 
-    @ClassRule
+    @RegisterExtension
     public static TestContainer cont = TestContainer.Common.INSTANCE;
 
     private UUID rootId, group1Id, group2Id, group3Id;

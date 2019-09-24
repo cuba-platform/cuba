@@ -27,20 +27,21 @@ import com.haulmont.cuba.testmodel.many2many_fetchsameentity.Many2Many_FetchSame
 import com.haulmont.cuba.testmodel.many2many_fetchsameentity.Many2Many_FetchSame2;
 import com.haulmont.cuba.testmodel.many2many_fetchsameentity.Many2Many_FetchSame3;
 import com.haulmont.cuba.testsupport.TestContainer;
-import org.junit.*;
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.util.Collections;
 import java.util.List;
 
 public class ManyToManyFetchSameEntityTest {
-    @ClassRule
+    @RegisterExtension
     public static TestContainer cont = TestContainer.Common.INSTANCE;
 
     protected Many2Many_FetchSame1 same1_1, same1_2, same1_3;
     protected Many2Many_FetchSame2 same2_1, same2_2, same2_3, same2_4;
     protected Many2Many_FetchSame3 same3_1, same3_2;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         Transaction tx = cont.persistence().createTransaction();
         try {
@@ -99,7 +100,7 @@ public class ManyToManyFetchSameEntityTest {
         }
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         cont.deleteRecord("TEST_MANY2_MANY_FETCH_SAME1_MANY2_MANY_FETCH_SAME2_LINK", "MANY2_MANY__FETCH_SAME1_ID",
                 same1_1.getId(), same1_2.getId(), same1_3.getId());
@@ -116,7 +117,7 @@ public class ManyToManyFetchSameEntityTest {
 
         List<Many2Many_FetchSame1> result = dataManager.loadList(loadContext);
         for (Many2Many_FetchSame1 e : result) {
-            Assert.assertTrue(!e.getMany2().isEmpty());
+            Assertions.assertTrue(!e.getMany2().isEmpty());
         }
     }
 
@@ -128,9 +129,9 @@ public class ManyToManyFetchSameEntityTest {
                 .setView("Many2Many_FetchSame1-sameEntityTwice").setId(same1_3);
 
         Many2Many_FetchSame1 result = dataManager.load(loadContext);
-        Assert.assertNotNull(result);
-        Assert.assertNotNull(result.getOneToMany2());
-        Assert.assertNotNull(result.getOneToMany2().get(0).getMany3());
-        Assert.assertNotNull(result.getOneToMany2().get(1).getMany3());
+        Assertions.assertNotNull(result);
+        Assertions.assertNotNull(result.getOneToMany2());
+        Assertions.assertNotNull(result.getOneToMany2().get(0).getMany3());
+        Assertions.assertNotNull(result.getOneToMany2().get(1).getMany3());
     }
 }

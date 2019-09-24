@@ -27,19 +27,19 @@ import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.testsupport.TestContainer;
 import com.haulmont.cuba.testsupport.TestUserSessionSource;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.ClassRule;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.Test;
 
 import java.util.Locale;
 import java.util.UUID;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @SuppressWarnings("IncorrectCreateEntity")
 public class DistinctConstraintTest {
-    @ClassRule
+    @RegisterExtension
     public static TestContainer cont = TestContainer.Common.INSTANCE;
 
     private static final String USER_LOGIN = "testUser";
@@ -51,7 +51,7 @@ public class DistinctConstraintTest {
             userRole1Id, userRole2Id,
             role1Id, role2Id;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         PasswordEncryption passwordEncryption = AppBeans.get(PasswordEncryption.class);
 
@@ -125,7 +125,7 @@ public class DistinctConstraintTest {
         }
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         cont.deleteRecord("SEC_USER_ROLE", userRole1Id, userRole2Id);
         cont.deleteRecord("SEC_ROLE", role1Id, role2Id);

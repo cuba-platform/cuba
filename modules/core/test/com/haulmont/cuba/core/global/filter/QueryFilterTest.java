@@ -20,17 +20,17 @@ package com.haulmont.cuba.core.global.filter;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.cuba.testsupport.TestContainer;
 import org.dom4j.Document;
-import org.junit.ClassRule;
-import org.junit.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.Test;
 
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class QueryFilterTest {
-    @ClassRule
+    @RegisterExtension
     public static TestContainer cont = TestContainer.Common.INSTANCE;
 
     private QueryFilter createFilter(String name) {

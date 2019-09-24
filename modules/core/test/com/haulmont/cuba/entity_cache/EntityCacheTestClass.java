@@ -38,13 +38,14 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.jpa.EntityManagerFactoryDelegate;
 import org.eclipse.persistence.jpa.JpaCache;
 import org.eclipse.persistence.sessions.server.ServerSession;
-import org.junit.*;
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.rules.TestRule;
 import org.slf4j.LoggerFactory;
 
 import javax.persistence.EntityManagerFactory;
+import java.util.Arrays;
 import java.util.List;
-import java.util.UUID;
 import java.util.function.Predicate;
 
 import static com.haulmont.cuba.testsupport.TestSupport.assertFail;
@@ -57,10 +58,12 @@ import static org.junit.Assert.*;
  */
 public class EntityCacheTestClass {
 
-    @ClassRule
-    public static TestContainer cont = EntityCacheTestSuite.cont;
+    @RegisterExtension
+    public static TestContainer cont = new TestContainer()
+            .setAppPropertiesFiles(Arrays.asList("com/haulmont/cuba/app.properties", "com/haulmont/cuba/testsupport/test-app.properties", "com/haulmont/cuba/test-app.properties",
+                    "com/haulmont/cuba/entity_cache/test-entitycache-app.properties"));
 
-    @Rule
+    @RegisterExtension
     public TestRule testNamePrinter = new TestNamePrinter();
 
     private JpaCache cache;
@@ -88,7 +91,7 @@ public class EntityCacheTestClass {
         logger.addAppender(appender);
     }
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         assertTrue(cont.getSpringAppContext() == AppContext.getApplicationContext());
 
@@ -167,7 +170,7 @@ public class EntityCacheTestClass {
         cache.clear();
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         cont.deleteRecord(userSetting, userRole, role, userSubstitution, user, user2);
         cont.deleteRecord(compositePropertyTwo, compositePropertyOne, compositeTwo, compositeOne);
@@ -826,7 +829,7 @@ public class EntityCacheTestClass {
     }
 
     @Test
-    @Ignore
+    @Disabled
     public void testAccessConnectionWithCacheInvalidation() {
         appender.clearMessages();
 
@@ -912,15 +915,15 @@ public class EntityCacheTestClass {
         loadContextList.setQueryString("select e from test$CompositeOne e where e.name = 'compositeOne'").setMaxResults(1);
 
         List<CompositeOne> results = dataManager.loadList(loadContextList);
-        Assert.assertEquals(1, results.size());
+        Assertions.assertEquals(1, results.size());
         CompositeOne compositeOne = results.get(0);
-        Assert.assertEquals(1, compositeOne.getCompositePropertyOne().size());
+        Assertions.assertEquals(1, compositeOne.getCompositePropertyOne().size());
         CompositePropertyOne compositePropertyOne = compositeOne.getCompositePropertyOne().get(0);
         CompositeTwo compositeTwo = compositePropertyOne.getCompositeTwo();
-        Assert.assertNotNull(compositeTwo);
-        Assert.assertEquals(1, compositeTwo.getCompositePropertyTwo().size());
+        Assertions.assertNotNull(compositeTwo);
+        Assertions.assertEquals(1, compositeTwo.getCompositePropertyTwo().size());
         CompositePropertyTwo compositePropertyTwo = compositeTwo.getCompositePropertyTwo().get(0);
-        Assert.assertEquals("compositePropertyTwo", compositePropertyTwo.getName());
+        Assertions.assertEquals("compositePropertyTwo", compositePropertyTwo.getName());
 
         assertEquals(4, appender.filterMessages(selectsOnly).count()); // UserSubstitution, User, User
 

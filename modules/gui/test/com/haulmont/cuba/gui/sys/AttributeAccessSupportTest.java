@@ -20,8 +20,8 @@ import com.haulmont.cuba.core.entity.BaseEntityInternalAccess;
 import com.haulmont.cuba.core.entity.EmbeddableEntity;
 import com.haulmont.cuba.core.entity.SecurityState;
 import com.haulmont.cuba.gui.data.impl.testmodel1.TestEmbeddableEntity;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class AttributeAccessSupportTest {
 
@@ -33,9 +33,9 @@ public class AttributeAccessSupportTest {
         BaseEntityInternalAccess.setSecurityState(entity, securityState);
 
         AttributeAccessSupport attributeAccessSupport = new AttributeAccessSupport();
-        Assert.assertNotNull(
-                "com.haulmont.cuba.gui.AttributeAccessSupport#getSecurityState returns null",
-                attributeAccessSupport.getSecurityState(entity)
+        Assertions.assertNotNull(
+                attributeAccessSupport.getSecurityState(entity),
+                "com.haulmont.cuba.gui.AttributeAccessSupport#getSecurityState returns null"
         );
     }
 }

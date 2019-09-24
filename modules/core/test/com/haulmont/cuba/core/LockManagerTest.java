@@ -23,22 +23,22 @@ import com.haulmont.cuba.core.entity.Server;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.LockInfo;
 import com.haulmont.cuba.testsupport.TestContainer;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.ClassRule;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class LockManagerTest {
 
-    @ClassRule
+    @RegisterExtension
     public static TestContainer cont = TestContainer.Common.INSTANCE;
 
     private LockManagerAPI lockManager;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         cont.persistence().runInTransaction(em -> {
             LockDescriptor lockDescriptor = cont.metadata().create(LockDescriptor.class);
@@ -51,7 +51,7 @@ public class LockManagerTest {
         lockManager.reloadConfiguration();
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         cont.persistence().runInTransaction(em -> {
             em.createQuery("delete from sys$LockDescriptor d").executeUpdate();

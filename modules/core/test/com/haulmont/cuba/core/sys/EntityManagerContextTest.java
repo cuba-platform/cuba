@@ -19,15 +19,15 @@ package com.haulmont.cuba.core.sys;
 
 import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.testsupport.TestContainer;
-import org.junit.ClassRule;
-import org.junit.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class EntityManagerContextTest {
 
-    @ClassRule
+    @RegisterExtension
     public static TestContainer cont = TestContainer.Common.INSTANCE;
 
     public static final String ATTR = "testAttr";

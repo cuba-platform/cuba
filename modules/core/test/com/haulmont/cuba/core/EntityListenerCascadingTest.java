@@ -24,16 +24,16 @@ import com.haulmont.cuba.security.entity.Group;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.testsupport.TestContainer;
 import com.haulmont.cuba.testsupport.TestSupport;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.ClassRule;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class EntityListenerCascadingTest {
 
-    @ClassRule
+    @RegisterExtension
     public static TestContainer cont = TestContainer.Common.INSTANCE;
 
     private Metadata metadata;
@@ -43,7 +43,7 @@ public class EntityListenerCascadingTest {
 
     private User user;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         persistence = cont.persistence();
         metadata = cont.metadata();
@@ -62,7 +62,7 @@ public class EntityListenerCascadingTest {
         TestCascadingEntityListener.events.clear();
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         entityListenerManager.removeListener(User.class, TestCascadingEntityListener.class);
         cont.deleteRecord(user);

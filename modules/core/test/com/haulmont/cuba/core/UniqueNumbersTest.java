@@ -22,8 +22,8 @@ import com.haulmont.cuba.core.app.UniqueNumbersAPI;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.testsupport.TestContainer;
 import org.apache.commons.lang3.StringUtils;
-import org.junit.ClassRule;
-import org.junit.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -31,12 +31,12 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class UniqueNumbersTest {
 
-    @ClassRule
+    @RegisterExtension
     public static TestContainer cont = TestContainer.Common.INSTANCE;
 
     String[] seqNames = {"t1", "t2", "t3", "t4"};

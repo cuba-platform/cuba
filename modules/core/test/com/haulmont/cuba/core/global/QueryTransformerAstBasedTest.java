@@ -24,17 +24,17 @@ import com.haulmont.cuba.core.sys.jpql.model.JpqlEntityModel;
 import com.haulmont.cuba.core.sys.jpql.model.JpqlEntityModelImpl;
 import com.haulmont.cuba.core.sys.jpql.transform.QueryTransformerAstBased;
 import org.antlr.runtime.RecognitionException;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.Date;
 import java.util.Set;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class QueryTransformerAstBasedTest {
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
     }
 

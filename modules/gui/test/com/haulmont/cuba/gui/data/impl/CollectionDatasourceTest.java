@@ -25,22 +25,22 @@ import com.haulmont.cuba.gui.data.impl.testmodel1.TestMasterEntity;
 import com.haulmont.cuba.gui.executors.BackgroundWorker;
 import mockit.Mocked;
 import mockit.Expectations;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class CollectionDatasourceTest extends CubaClientTestCase {
 
     @Mocked
     protected BackgroundWorker backgroundWorker;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         addEntityPackage("com.haulmont.cuba");
         setupInfrastructure();
@@ -134,7 +134,7 @@ public class CollectionDatasourceTest extends CubaClientTestCase {
         ArrayList<TestMasterEntity> addedItems = new ArrayList<>();
 
         cds.addCollectionChangeListener(e -> {
-            assertFalse("CollectionChange listener worked, when they they are suspended", cds.listenersSuspended);
+            assertFalse(cds.listenersSuspended, "CollectionChange listener worked, when they they are suspended");
             if (CollectionDatasource.Operation.ADD.equals(e.getOperation())) {
                 addedItems.clear();
                 addedItems.addAll(e.getItems());
@@ -151,9 +151,9 @@ public class CollectionDatasourceTest extends CubaClientTestCase {
         cds.resumeListeners();
 
         assertEquals(2, operations.size());
-        assertTrue("Not right order of operations", operations.get(0).equals(CollectionDatasource.Operation.REMOVE)
-                && operations.get(1).equals(CollectionDatasource.Operation.ADD));
-        assertTrue("Not all removed items passed on resume", removedItems.containsAll(itemsToRemove));
-        assertTrue("Not all added items passed on resume", addedItems.containsAll(itemsToAdd));
+        assertTrue(operations.get(0).equals(CollectionDatasource.Operation.REMOVE)
+                && operations.get(1).equals(CollectionDatasource.Operation.ADD), "Not right order of operations");
+        assertTrue(removedItems.containsAll(itemsToRemove), "Not all removed items passed on resume");
+        assertTrue(addedItems.containsAll(itemsToAdd), "Not all added items passed on resume");
     }
 }

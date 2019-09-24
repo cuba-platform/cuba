@@ -17,8 +17,8 @@
 package com.haulmont.cuba.core.sys.javacl;
 
 import com.haulmont.cuba.core.sys.SpringBeanLoader;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.lang.reflect.Method;
@@ -42,7 +42,7 @@ public class JavaClassLoaderTest {
         Class<?> class2 = Class.forName("com.haulmont.cuba.core.sys.javacl.test0.Simple", false, javaClassLoader);
         System.out.println("Class loaded " + class2);
 
-        Assert.assertEquals(class1, class2);
+        Assertions.assertEquals(class1, class2);
     }
 
     @Test
@@ -61,20 +61,20 @@ public class JavaClassLoaderTest {
         modifyFile("./test-data/javacl-sources/com/haulmont/cuba/core/sys/javacl/test/SimpleClass.java");
         System.out.println("SimpleClass modified");
         Class<?> class2 = javaClassLoader.loadClass("com.haulmont.cuba.core.sys.javacl.test.SimpleClass");
-        Assert.assertNotSame(class1, class2);
-        Assert.assertEquals(javaClassLoader.compiled.size(), 4);
+        Assertions.assertNotSame(class1, class2);
+        Assertions.assertEquals(javaClassLoader.compiled.size(), 4);
         System.out.println("Class reloaded");
 
         System.out.println("No changes");
         Class<?> class3 = javaClassLoader.loadClass("com.haulmont.cuba.core.sys.javacl.test.SimpleClass");
-        Assert.assertEquals(class2, class3);
+        Assertions.assertEquals(class2, class3);
         System.out.println("Class reloaded, same class received");
 
         modifyFile("./test-data/javacl-sources/com/haulmont/cuba/core/sys/javacl/test/pack1/SimpleClass1.java");
         System.out.println("SimpleClass1 modified");
 
         Class<?> class4 = javaClassLoader.loadClass("com.haulmont.cuba.core.sys.javacl.test.SimpleClass");
-        Assert.assertNotSame(class3, class4);
+        Assertions.assertNotSame(class3, class4);
         System.out.println("Class reloaded");
     }
 
@@ -99,16 +99,16 @@ public class JavaClassLoaderTest {
         Class<?> simpleClass4_2 = javaClassLoader.loadClass("com.haulmont.cuba.core.sys.javacl.test.pack4.SimpleClass4");
         System.out.println("SimpleClass4 loaded " + simpleClass4_2.hashCode());
 
-        Assert.assertNotSame(simpleClass, simpleClass_2);
-        Assert.assertNotSame(simpleClass4, simpleClass4_2);
+        Assertions.assertNotSame(simpleClass, simpleClass_2);
+        Assertions.assertNotSame(simpleClass4, simpleClass4_2);
 
         Class<?> simpleClass_3 = javaClassLoader.loadClass("com.haulmont.cuba.core.sys.javacl.test.SimpleClass");
         System.out.println("SimpleClass loaded " + simpleClass_3.hashCode());
         Class<?> simpleClass4_3 = javaClassLoader.loadClass("com.haulmont.cuba.core.sys.javacl.test.pack4.SimpleClass4");
         System.out.println("SimpleClass4 loaded " + simpleClass4_3.hashCode());
 
-        Assert.assertEquals(simpleClass_2, simpleClass_3);
-        Assert.assertEquals(simpleClass4_2, simpleClass4_3);
+        Assertions.assertEquals(simpleClass_2, simpleClass_3);
+        Assertions.assertEquals(simpleClass4_2, simpleClass4_3);
     }
 
     @Test
@@ -154,7 +154,7 @@ public class JavaClassLoaderTest {
         Class<?> dependencyClass1 = javaClassLoader.loadClass("com.haulmont.cuba.core.sys.javacl.test2.pack1.DependencyClass");
         Class<?> dependency2Class1 = javaClassLoader.loadClass("com.haulmont.cuba.core.sys.javacl.test2.pack2.Dependency2Class");
         System.out.println("Class loaded");
-        Assert.assertEquals(javaClassLoader.compiled.size(), 3);
+        Assertions.assertEquals(javaClassLoader.compiled.size(), 3);
         modifyFile("./test-data/javacl-sources/com/haulmont/cuba/core/sys/javacl/test2/DependentClass.java");
         modifyFile("./test-data/javacl-sources/com/haulmont/cuba/core/sys/javacl/test2/pack1/DependencyClass.java");
         System.out.println("DependentClass modified");
@@ -163,9 +163,9 @@ public class JavaClassLoaderTest {
         Class<?> class2 = javaClassLoader.loadClass("com.haulmont.cuba.core.sys.javacl.test2.DependentClass");
         Class<?> dependencyClass2 = javaClassLoader.loadClass("com.haulmont.cuba.core.sys.javacl.test2.pack1.DependencyClass");
         Class<?> dependency2Class2 = javaClassLoader.loadClass("com.haulmont.cuba.core.sys.javacl.test2.pack2.Dependency2Class");
-        Assert.assertNotSame(class1, class2);
-        Assert.assertNotSame(dependencyClass1, dependencyClass2);
-        Assert.assertSame(dependency2Class1, dependency2Class2);
+        Assertions.assertNotSame(class1, class2);
+        Assertions.assertNotSame(dependencyClass1, dependencyClass2);
+        Assertions.assertSame(dependency2Class1, dependency2Class2);
     }
 
     @Test
@@ -181,15 +181,15 @@ public class JavaClassLoaderTest {
         Class<?> innerClass1 = javaClassLoader.compiled.get("com.haulmont.cuba.core.sys.javacl.test3.OuterClass$InnerClass").clazz;
         Class<?> innerClass2 = javaClassLoader.compiled.get("com.haulmont.cuba.core.sys.javacl.test3.OuterClass$1").clazz;
         System.out.println("Class loaded");
-        Assert.assertEquals(javaClassLoader.compiled.size(), 3);
+        Assertions.assertEquals(javaClassLoader.compiled.size(), 3);
         modifyFile("./test-data/javacl-sources/com/haulmont/cuba/core/sys/javacl/test3/OuterClass.java");
 
         Class<?> class2 = javaClassLoader.loadClass("com.haulmont.cuba.core.sys.javacl.test3.OuterClass");
         Class<?> innerClass3 = javaClassLoader.compiled.get("com.haulmont.cuba.core.sys.javacl.test3.OuterClass$InnerClass").clazz;
         Class<?> innerClass4 = javaClassLoader.compiled.get("com.haulmont.cuba.core.sys.javacl.test3.OuterClass$1").clazz;
-        Assert.assertNotSame(class1, class2);
-        Assert.assertNotSame(innerClass1, innerClass3);
-        Assert.assertNotSame(innerClass2, innerClass4);
+        Assertions.assertNotSame(class1, class2);
+        Assertions.assertNotSame(innerClass1, innerClass3);
+        Assertions.assertNotSame(innerClass2, innerClass4);
     }
 
     @Test

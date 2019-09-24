@@ -24,20 +24,20 @@ import com.haulmont.cuba.testmodel.fetchsameentity.FetchSameLinkAEntity;
 import com.haulmont.cuba.testmodel.fetchsameentity.FetchSameLinkBEntity;
 import com.haulmont.cuba.testmodel.fetchsameentity.FetchSameMainEntity;
 import com.haulmont.cuba.testsupport.TestContainer;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.ClassRule;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.Test;
 
 public class FetchSameEntityTest {
-    @ClassRule
+    @RegisterExtension
     public static TestContainer cont = TestContainer.Common.INSTANCE;
 
     protected FetchSameMainEntity mainEntity;
     protected FetchSameLinkBEntity linkB1, linkB2;
     protected FetchSameLinkAEntity linkA1, linkA2;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         Transaction tx = cont.persistence().createTransaction();
         try {
@@ -79,7 +79,7 @@ public class FetchSameEntityTest {
         }
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         cont.deleteRecord(linkB1, linkB2, linkA1, linkA2, mainEntity);
     }

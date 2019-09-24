@@ -25,9 +25,9 @@ import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.security.entity.RoleType;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.testsupport.TestContainer;
-import org.junit.After;
-import org.junit.ClassRule;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Method;
 import java.text.ParseException;
@@ -37,14 +37,14 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ConfigProviderTest {
 
-    @ClassRule
+    @RegisterExtension
     public static TestContainer cont = TestContainer.Common.INSTANCE;
 
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         cleanup();
     }

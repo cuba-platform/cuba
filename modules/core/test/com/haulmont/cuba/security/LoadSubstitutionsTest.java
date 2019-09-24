@@ -28,24 +28,25 @@ import com.haulmont.cuba.security.entity.Group;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.entity.UserSubstitution;
 import com.haulmont.cuba.testsupport.TestContainer;
-import org.junit.*;
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.util.ArrayList;
 import java.util.UUID;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class LoadSubstitutionsTest {
 
-    @ClassRule
+    @RegisterExtension
     public static TestContainer cont = TestContainer.Common.INSTANCE;
 
     private User user;
     private User substitutedUser;
     private UserSubstitution userSubstitution;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         Transaction tx = cont.persistence().createTransaction();
         try {
@@ -81,7 +82,7 @@ public class LoadSubstitutionsTest {
         cont.setupLogging("com.haulmont.cuba.core.sys.FetchGroupManager", Level.TRACE);
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         cont.setupLogging("com.haulmont.cuba.core.sys.FetchGroupManager", Level.DEBUG);
 
@@ -114,7 +115,7 @@ public class LoadSubstitutionsTest {
 
         assertNotNull(loadedUser);
         assertNotNull(loadedUser.getSubstitutions());
-        Assert.assertEquals(1, loadedUser.getSubstitutions().size());
+        Assertions.assertEquals(1, loadedUser.getSubstitutions().size());
 
         UserSubstitution loadedSubstitution = loadedUser.getSubstitutions().iterator().next();
         assertEquals(user, loadedSubstitution.getUser());

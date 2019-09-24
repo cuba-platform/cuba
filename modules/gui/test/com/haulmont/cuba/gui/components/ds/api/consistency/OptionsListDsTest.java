@@ -10,17 +10,17 @@ import com.haulmont.cuba.gui.components.OptionsList;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.security.entity.Role;
 import com.haulmont.cuba.security.entity.RoleType;
-import org.junit.Assert;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import java.util.function.Consumer;
 
 import static junit.framework.TestCase.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SuppressWarnings("unchecked")
-@Ignore
+@Disabled
 public class OptionsListDsTest extends DsApiConsistencyTestCase {
 
     @Test
@@ -80,7 +80,7 @@ public class OptionsListDsTest extends DsApiConsistencyTestCase {
         optionsList.addValueChangeListener(listener);
 
         roleDs.getItem().setType(RoleType.READONLY);
-        Assert.assertEquals(true, valueWasChanged[0]);
+        Assertions.assertEquals(true, valueWasChanged[0]);
 
         // reset state
         valueWasChanged[0] = false;
@@ -91,7 +91,7 @@ public class OptionsListDsTest extends DsApiConsistencyTestCase {
         // listener before datasource
         optionsList.addValueChangeListener(listener);
         optionsList.setDatasource(roleDs, "type");
-        Assert.assertEquals(true, valueWasChanged[0]);
+        Assertions.assertEquals(true, valueWasChanged[0]);
     }
 
     @Test
@@ -173,6 +173,6 @@ public class OptionsListDsTest extends DsApiConsistencyTestCase {
 
         optionsList.setDatasource(roleDs2, "type");
         optionsList.setValue(RoleType.DENYING);
-        Assert.assertEquals(RoleType.STANDARD, roleDs1.getItem().getType());
+        Assertions.assertEquals(RoleType.STANDARD, roleDs1.getItem().getType());
     }
 }

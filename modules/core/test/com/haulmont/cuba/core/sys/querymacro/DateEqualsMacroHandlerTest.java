@@ -19,9 +19,9 @@ package com.haulmont.cuba.core.sys.querymacro;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.testsupport.TestContainer;
 import org.apache.commons.lang3.time.DateUtils;
-import org.junit.Assert;
-import org.junit.ClassRule;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.Test;
 
 import java.util.Calendar;
 import java.util.Collections;
@@ -30,7 +30,7 @@ import java.util.Map;
 
 public class DateEqualsMacroHandlerTest {
 
-    @ClassRule
+    @RegisterExtension
     public static TestContainer cont = TestContainer.Common.INSTANCE;
 
     @Test
@@ -45,8 +45,8 @@ public class DateEqualsMacroHandlerTest {
         System.out.println(res);
         System.out.println(params);
 
-        Assert.assertEquals("select distinct t from tm$Task t where t.id <> :param_exclItem  and (t.createTs >= :component_genericFilter_nLxPpRlkOq29857 and t.createTs < :t_createTs_1)     order by t.num desc", res);
-        Assert.assertEquals(DateUtils.truncate(date, Calendar.DAY_OF_MONTH), params.get("component_genericFilter_nLxPpRlkOq29857"));
-        Assert.assertEquals(DateUtils.addDays(DateUtils.truncate(date, Calendar.DAY_OF_MONTH), 1), params.get("t_createTs_1"));
+        Assertions.assertEquals("select distinct t from tm$Task t where t.id <> :param_exclItem  and (t.createTs >= :component_genericFilter_nLxPpRlkOq29857 and t.createTs < :t_createTs_1)     order by t.num desc", res);
+        Assertions.assertEquals(DateUtils.truncate(date, Calendar.DAY_OF_MONTH), params.get("component_genericFilter_nLxPpRlkOq29857"));
+        Assertions.assertEquals(DateUtils.addDays(DateUtils.truncate(date, Calendar.DAY_OF_MONTH), 1), params.get("t_createTs_1"));
     }
 }

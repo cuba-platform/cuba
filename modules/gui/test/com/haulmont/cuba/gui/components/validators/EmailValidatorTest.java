@@ -20,8 +20,8 @@ package com.haulmont.cuba.gui.components.validators;
 import com.haulmont.cuba.client.testsupport.CubaClientTestCase;
 import com.haulmont.cuba.gui.components.ValidationException;
 import org.hibernate.validator.HibernateValidator;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import javax.validation.Validation;
 import javax.validation.Validator;
@@ -31,7 +31,7 @@ import static junit.framework.TestCase.assertTrue;
 
 public class EmailValidatorTest extends CubaClientTestCase {
 
-    @Before
+    @BeforeEach
     public void setUp() {
         setupInfrastructure();
     }

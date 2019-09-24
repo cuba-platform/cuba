@@ -17,13 +17,14 @@
 
 package com.haulmont.bali.util;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.springframework.util.Assert;
 
 import java.lang.reflect.Method;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class ReflectionHelperTest {
 
@@ -52,7 +53,7 @@ public class ReflectionHelperTest {
         assertNotNull(method);
 
         method = ReflectionHelper.findMethod(MyParamExt.class, "noSuchMethod");
-        Assert.isNull(method, "Should be null");
+        Assertions.assertNull(method, "Should be null");
     }
 
     public static class MyParam {

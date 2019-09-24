@@ -22,8 +22,9 @@ import com.haulmont.cuba.core.entity.SchedulingType;
 import com.haulmont.cuba.core.global.TimeSource;
 import com.haulmont.cuba.testsupport.TestContainer;
 import junit.framework.Assert;
-import org.junit.ClassRule;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.Test;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -31,15 +32,15 @@ import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.TimeZone;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class SchedulingTest {
 
     private SimpleDateFormat simpleDateFormat;
 
-    @ClassRule
+    @RegisterExtension
     public static TestContainer cont = TestContainer.Common.INSTANCE;
 
     public SchedulingTest() {
@@ -104,7 +105,7 @@ public class SchedulingTest {
         try {
             return simpleDateFormat.parse(s);
         } catch (ParseException e) {
-            Assert.fail();
+            Assertions.fail();
         }
 
         return null;

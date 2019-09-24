@@ -34,9 +34,10 @@ import mockit.Delegate;
 import mockit.Expectations;
 import mockit.Mocked;
 import org.apache.commons.lang3.reflect.MethodUtils;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.ApplicationContext;
 
@@ -46,9 +47,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
-@Ignore
+@Disabled
 public class FieldGroupTest extends CubaClientTestCase {
 
     @Mocked
@@ -69,7 +70,7 @@ public class FieldGroupTest extends CubaClientTestCase {
     protected ValueBinder valueBinder;
     protected OptionsBinder optionsBinder;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         addEntityPackage("com.haulmont.cuba");
         setupInfrastructure();
@@ -81,36 +82,70 @@ public class FieldGroupTest extends CubaClientTestCase {
 
         new Expectations() {
             {
-                AppBeans.get(BackgroundWorker.NAME); result = backgroundWorker; minTimes = 0;
-                AppBeans.get(BackgroundWorker.class); result = backgroundWorker; minTimes = 0;
-                AppBeans.get(BackgroundWorker.NAME, BackgroundWorker.class); result = backgroundWorker; minTimes = 0;
+                AppBeans.get(BackgroundWorker.NAME);
+                result = backgroundWorker;
+                minTimes = 0;
+                AppBeans.get(BackgroundWorker.class);
+                result = backgroundWorker;
+                minTimes = 0;
+                AppBeans.get(BackgroundWorker.NAME, BackgroundWorker.class);
+                result = backgroundWorker;
+                minTimes = 0;
 
-                AppBeans.get(FieldGroupFieldFactory.NAME); result = fieldFactory; minTimes = 0;
-                AppBeans.get(FieldGroupFieldFactory.class); result = fieldFactory; minTimes = 0;
-                AppBeans.get(FieldGroupFieldFactory.NAME, FieldGroupFieldFactory.class); result = fieldFactory; minTimes = 0;
+                AppBeans.get(FieldGroupFieldFactory.NAME);
+                result = fieldFactory;
+                minTimes = 0;
+                AppBeans.get(FieldGroupFieldFactory.class);
+                result = fieldFactory;
+                minTimes = 0;
+                AppBeans.get(FieldGroupFieldFactory.NAME, FieldGroupFieldFactory.class);
+                result = fieldFactory;
+                minTimes = 0;
 
-                applicationContext.getAutowireCapableBeanFactory(); result = beanFactory; minTimes = 0;
+                applicationContext.getAutowireCapableBeanFactory();
+                result = beanFactory;
+                minTimes = 0;
 
-                beanFactory.autowireBean(any); result = new Delegate() {
-                @SuppressWarnings("unused")
-                void autowireBean(java.lang.Object o) throws org.springframework.beans.BeansException {
-                    autowireUiComponent((Component) o);
-                }
-            }; minTimes = 0;
+                beanFactory.autowireBean(any);
+                result = new Delegate() {
+                    @SuppressWarnings("unused")
+                    void autowireBean(java.lang.Object o) throws org.springframework.beans.BeansException {
+                        autowireUiComponent((Component) o);
+                    }
+                };
+                minTimes = 0;
 
-                userSessionSource.getLocale(); result = Locale.ENGLISH; minTimes = 0;
+                userSessionSource.getLocale();
+                result = Locale.ENGLISH;
+                minTimes = 0;
 
-                beanLocator.get(MetadataTools.NAME); result = metadata.getTools(); minTimes = 0;
+                beanLocator.get(MetadataTools.NAME);
+                result = metadata.getTools();
+                minTimes = 0;
 
-                beanLocator.get(ValueBinder.NAME); result = valueBinder; minTimes = 0;
-                beanLocator.get(ValueBinder.class); result = valueBinder; minTimes = 0;
-                beanLocator.get(ValueBinder.NAME, ValueBinder.class); result = valueBinder; minTimes = 0;
+                beanLocator.get(ValueBinder.NAME);
+                result = valueBinder;
+                minTimes = 0;
+                beanLocator.get(ValueBinder.class);
+                result = valueBinder;
+                minTimes = 0;
+                beanLocator.get(ValueBinder.NAME, ValueBinder.class);
+                result = valueBinder;
+                minTimes = 0;
 
-                beanLocator.get(OptionsBinder.NAME); result = optionsBinder; minTimes = 0;
-                beanLocator.get(OptionsBinder.NAME, OptionsBinder.class); result = optionsBinder; minTimes = 0;
+                beanLocator.get(OptionsBinder.NAME);
+                result = optionsBinder;
+                minTimes = 0;
+                beanLocator.get(OptionsBinder.NAME, OptionsBinder.class);
+                result = optionsBinder;
+                minTimes = 0;
 
-                beanLocator.get(Configuration.NAME); result = configuration; minTimes = 0;
-                beanLocator.get(FormatStringsRegistry.NAME); result = formatStringsRegistry; minTimes = 0;
+                beanLocator.get(Configuration.NAME);
+                result = configuration;
+                minTimes = 0;
+                beanLocator.get(FormatStringsRegistry.NAME);
+                result = formatStringsRegistry;
+                minTimes = 0;
             }
         };
 
@@ -120,7 +155,7 @@ public class FieldGroupTest extends CubaClientTestCase {
 
         DefaultComponentGenerationStrategy strategy = new DefaultComponentGenerationStrategy(messages, null);
 
-        UiComponentsGenerator uiComponentsGenerator = new UiComponentsGenerator(){
+        UiComponentsGenerator uiComponentsGenerator = new UiComponentsGenerator() {
             @Override
             protected List<ComponentGenerationStrategy> getComponentGenerationStrategies() {
                 return Collections.singletonList(strategy);
@@ -244,8 +279,8 @@ public class FieldGroupTest extends CubaClientTestCase {
         assertEquals(2, getGridRows(fieldGroup));
         assertEquals(1, getGridColumns(fieldGroup));
 
-        assertEquals(getComposition(fcName), getGridCellComposition(fieldGroup,0, 0));
-        assertEquals(getComposition(fcLogin), getGridCellComposition(fieldGroup,0, 1));
+        assertEquals(getComposition(fcName), getGridCellComposition(fieldGroup, 0, 0));
+        assertEquals(getComposition(fcLogin), getGridCellComposition(fieldGroup, 0, 1));
     }
 
     @Test
@@ -279,8 +314,8 @@ public class FieldGroupTest extends CubaClientTestCase {
         assertEquals(1, getGridRows(fieldGroup));
         assertEquals(2, getGridColumns(fieldGroup));
 
-        assertEquals(getComposition(fcName), getGridCellComposition(fieldGroup,0, 0));
-        assertEquals(getComposition(fcLogin), getGridCellComposition(fieldGroup,1, 0));
+        assertEquals(getComposition(fcName), getGridCellComposition(fieldGroup, 0, 0));
+        assertEquals(getComposition(fcLogin), getGridCellComposition(fieldGroup, 1, 0));
     }
 
     @Test
@@ -313,8 +348,8 @@ public class FieldGroupTest extends CubaClientTestCase {
         assertEquals(2, getGridRows(fieldGroup));
         assertEquals(1, getGridColumns(fieldGroup));
 
-        assertEquals(getComposition(fcName), getGridCellComposition(fieldGroup,0, 1));
-        assertEquals(getComposition(fcLogin), getGridCellComposition(fieldGroup,0, 0));
+        assertEquals(getComposition(fcName), getGridCellComposition(fieldGroup, 0, 1));
+        assertEquals(getComposition(fcLogin), getGridCellComposition(fieldGroup, 0, 0));
     }
 
     @Test
@@ -346,7 +381,7 @@ public class FieldGroupTest extends CubaClientTestCase {
         assertEquals(1, getGridRows(fieldGroup));
         assertEquals(1, getGridColumns(fieldGroup));
 
-        assertEquals(getComposition(fcName), getGridCellComposition(fieldGroup,0, 0));
+        assertEquals(getComposition(fcName), getGridCellComposition(fieldGroup, 0, 0));
     }
 
     @Test
@@ -378,7 +413,7 @@ public class FieldGroupTest extends CubaClientTestCase {
         assertEquals(1, getGridRows(fieldGroup));
         assertEquals(1, getGridColumns(fieldGroup));
 
-        assertEquals(getComposition(fcName), getGridCellComposition(fieldGroup,0, 0));
+        assertEquals(getComposition(fcName), getGridCellComposition(fieldGroup, 0, 0));
     }
 
     @Test
@@ -417,66 +452,76 @@ public class FieldGroupTest extends CubaClientTestCase {
         assertEquals(getComposition(fcLogin), getGridCellComposition(fieldGroup, 1, 0));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void addExistingField() {
-        FieldGroup fieldGroup = uiComponents.create(FieldGroup.class);
-        fieldGroup.setColumns(2);
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+            FieldGroup fieldGroup = uiComponents.create(FieldGroup.class);
+            fieldGroup.setColumns(2);
 
-        FieldGroup.FieldConfig fcName = fieldGroup.createField("name");
-        fcName.setProperty("name");
-        fcName.setEditable(false);
-        fieldGroup.addField(fcName);
+            FieldGroup.FieldConfig fcName = fieldGroup.createField("name");
+            fcName.setProperty("name");
+            fcName.setEditable(false);
+            fieldGroup.addField(fcName);
 
-        fieldGroup.addField(fcName);
+            fieldGroup.addField(fcName);
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void addIncorrectColumn() {
-        FieldGroup fieldGroup = uiComponents.create(FieldGroup.class);
-        fieldGroup.setColumns(2);
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+            FieldGroup fieldGroup = uiComponents.create(FieldGroup.class);
+            fieldGroup.setColumns(2);
 
-        FieldGroup.FieldConfig fcName = fieldGroup.createField("name");
-        fcName.setProperty("name");
-        fcName.setEditable(false);
-        fieldGroup.addField(fcName);
+            FieldGroup.FieldConfig fcName = fieldGroup.createField("name");
+            fcName.setProperty("name");
+            fcName.setEditable(false);
+            fieldGroup.addField(fcName);
 
-        fieldGroup.addField(fcName, 2);
+            fieldGroup.addField(fcName, 2);
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void addIncorrectRow() {
-        FieldGroup fieldGroup = uiComponents.create(FieldGroup.class);
-        fieldGroup.setColumns(2);
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+            FieldGroup fieldGroup = uiComponents.create(FieldGroup.class);
+            fieldGroup.setColumns(2);
 
-        FieldGroup.FieldConfig fcName = fieldGroup.createField("name");
-        fcName.setProperty("name");
-        fcName.setEditable(false);
-        fieldGroup.addField(fcName);
+            FieldGroup.FieldConfig fcName = fieldGroup.createField("name");
+            fcName.setProperty("name");
+            fcName.setEditable(false);
+            fieldGroup.addField(fcName);
 
-        fieldGroup.addField(fcName, 0, 3);
+            fieldGroup.addField(fcName, 0, 3);
+        });
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void changeBoundComponent() {
-        FieldGroup fieldGroup = uiComponents.create(FieldGroup.class);
-        fieldGroup.setColumns(2);
+        Assertions.assertThrows(IllegalStateException.class, () -> {
+            FieldGroup fieldGroup = uiComponents.create(FieldGroup.class);
+            fieldGroup.setColumns(2);
 
-        FieldGroup.FieldConfig fcName = fieldGroup.createField("name");
-        fcName.setProperty("name");
-        fcName.setEditable(false);
-        fieldGroup.addField(fcName);
+            FieldGroup.FieldConfig fcName = fieldGroup.createField("name");
+            fcName.setProperty("name");
+            fcName.setEditable(false);
+            fieldGroup.addField(fcName);
 
-        fieldGroup.bind();
+            fieldGroup.bind();
 
-        fcName.setComponent(uiComponents.create(TextArea.NAME));
+            fcName.setComponent(uiComponents.create(TextArea.NAME));
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void removeNonDefinedField() {
-        FieldGroup fieldGroup = uiComponents.create(FieldGroup.class);
-        fieldGroup.setColumns(2);
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+            FieldGroup fieldGroup = uiComponents.create(FieldGroup.class);
+            fieldGroup.setColumns(2);
 
-        fieldGroup.removeField("none");
+            fieldGroup.removeField("none");
+        });
     }
 
     protected Object getComposition(FieldGroup.FieldConfig fc) {

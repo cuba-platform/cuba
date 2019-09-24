@@ -19,8 +19,8 @@ package com.haulmont.cuba.core.global;
 import com.haulmont.cuba.core.sys.jpql.DomainModel;
 import com.haulmont.cuba.core.sys.jpql.model.EntityBuilder;
 import com.haulmont.cuba.core.sys.jpql.model.JpqlEntityModel;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class QueryParserAstKeywordsTest {
     @Test
@@ -29,7 +29,7 @@ public class QueryParserAstKeywordsTest {
         QueryParserAstBased parser = new QueryParserAstBased(model,
                 "select e from test_Entity e where e.set = :par"
         );
-        Assert.assertEquals("test_Entity", parser.getEntityName());
+        Assertions.assertEquals("test_Entity", parser.getEntityName());
     }
 
     private DomainModel prepareDomainModel() {

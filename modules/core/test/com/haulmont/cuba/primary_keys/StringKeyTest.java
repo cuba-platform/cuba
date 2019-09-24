@@ -22,16 +22,16 @@ import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.testmodel.primary_keys.StringKeyEntity;
 import com.haulmont.cuba.testsupport.TestContainer;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.ClassRule;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class StringKeyTest {
 
-    @ClassRule
+    @RegisterExtension
     public static TestContainer cont = TestContainer.Common.INSTANCE;
 
     private Persistence persistence;
@@ -39,7 +39,7 @@ public class StringKeyTest {
 
     private StringKeyEntity entity;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         persistence = cont.persistence();
         metadata = cont.metadata();
@@ -53,7 +53,7 @@ public class StringKeyTest {
         }
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         cont.deleteRecord(entity);
     }

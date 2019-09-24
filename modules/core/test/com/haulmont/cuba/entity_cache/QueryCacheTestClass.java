@@ -38,7 +38,8 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.jpa.EntityManagerFactoryDelegate;
 import org.eclipse.persistence.jpa.JpaCache;
 import org.eclipse.persistence.sessions.server.ServerSession;
-import org.junit.*;
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.rules.TestRule;
 import org.slf4j.LoggerFactory;
 
@@ -55,10 +56,12 @@ import static org.junit.Assert.*;
 
 public class QueryCacheTestClass {
 
-    @ClassRule
-    public static TestContainer cont = EntityCacheTestSuite.cont;
+    @RegisterExtension
+    public static TestContainer cont = new TestContainer()
+            .setAppPropertiesFiles(Arrays.asList("com/haulmont/cuba/app.properties", "com/haulmont/cuba/testsupport/test-app.properties", "com/haulmont/cuba/test-app.properties",
+                    "com/haulmont/cuba/entity_cache/test-entitycache-app.properties"));
 
-    @Rule
+    @RegisterExtension
     public TestRule testNamePrinter = new TestNamePrinter();
 
     private JpaCache cache;
@@ -83,7 +86,7 @@ public class QueryCacheTestClass {
         logger.addAppender(appender);
     }
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         assertTrue(cont.getSpringAppContext() == AppContext.getApplicationContext());
         queryCache = AppBeans.get(QueryCache.NAME);
@@ -148,7 +151,7 @@ public class QueryCacheTestClass {
         queryCache.invalidateAll();
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         cont.deleteRecord(userSetting, userRole, role, user, user2);
         if (role1 != null)
@@ -631,7 +634,7 @@ public class QueryCacheTestClass {
     }
 
     @Test
-    @Ignore
+    @Disabled
     public void testWarningInLog() throws Exception {
         try (Transaction tx = cont.persistence().createTransaction()) {
             EntityManager em = cont.entityManager();

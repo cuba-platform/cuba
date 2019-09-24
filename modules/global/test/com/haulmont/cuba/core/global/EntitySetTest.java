@@ -18,11 +18,11 @@ package com.haulmont.cuba.core.global;
 
 import com.haulmont.cuba.core.entity.Server;
 import com.haulmont.cuba.security.entity.User;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.*;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class EntitySetTest {
 

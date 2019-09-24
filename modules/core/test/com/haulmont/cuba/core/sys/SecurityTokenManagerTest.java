@@ -21,21 +21,21 @@ import com.haulmont.cuba.core.entity.BaseEntityInternalAccess;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.testsupport.TestContainer;
-import org.junit.Assert;
-import org.junit.ClassRule;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.UUID;
 
 public class SecurityTokenManagerTest {
 
-    @ClassRule
+    @RegisterExtension
     public static TestContainer testContainer = TestContainer.Common.INSTANCE;
 
     @Test
-    @Ignore
+    @Disabled
     public void testSecurityToken() throws Exception {
         SecurityTokenManager securityTokenManager = AppBeans.get(SecurityTokenManager.class);
         User user = new User();
@@ -52,10 +52,10 @@ public class SecurityTokenManagerTest {
         securityTokenManager.readSecurityToken(user);
 
         List<Object> userRoles = (List<Object>) BaseEntityInternalAccess.getFilteredData(user).get("userRoles");
-        Assert.assertEquals(4, userRoles.size());
-        Assert.assertEquals(id1, userRoles.get(0));
-        Assert.assertEquals(id2, userRoles.get(1));
-        Assert.assertEquals(id3, userRoles.get(2));
-        Assert.assertEquals(id4, userRoles.get(3));
+        Assertions.assertEquals(4, userRoles.size());
+        Assertions.assertEquals(id1, userRoles.get(0));
+        Assertions.assertEquals(id2, userRoles.get(1));
+        Assertions.assertEquals(id3, userRoles.get(2));
+        Assertions.assertEquals(id4, userRoles.get(3));
     }
 }

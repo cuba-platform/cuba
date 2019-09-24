@@ -17,7 +17,7 @@
 package com.haulmont.cuba.core;
 
 import org.apache.commons.lang3.SystemUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class JdkVersionTest {
     @Test

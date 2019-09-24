@@ -27,26 +27,26 @@ import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.testmodel.primary_keys.CompositeKeyEntity;
 import com.haulmont.cuba.testmodel.primary_keys.EntityKey;
 import com.haulmont.cuba.testsupport.TestContainer;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.ClassRule;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class CompositeKeyTest {
 
-    @ClassRule
+    @RegisterExtension
     public static TestContainer cont = TestContainer.Common.INSTANCE;
 
     private Metadata metadata;
     private Persistence persistence;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         QueryRunner runner = new QueryRunner(cont.persistence().getDataSource());
         runner.update("delete from TEST_COMPOSITE_KEY");

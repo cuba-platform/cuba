@@ -28,21 +28,21 @@ import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.security.app.EntityLogAPI;
 import com.haulmont.cuba.security.entity.*;
 import com.haulmont.cuba.testsupport.TestContainer;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.ClassRule;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
 import java.util.List;
 import java.util.UUID;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class EntityLogTest {
 
-    @ClassRule
+    @RegisterExtension
     public static TestContainer cont = TestContainer.Common.INSTANCE;
     
     private UUID userId;
@@ -50,7 +50,7 @@ public class EntityLogTest {
 
     private EntityLogAPI entityLog;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         cleanup();
 
@@ -91,7 +91,7 @@ public class EntityLogTest {
         entityLog.invalidateCache();
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         cleanup();
 

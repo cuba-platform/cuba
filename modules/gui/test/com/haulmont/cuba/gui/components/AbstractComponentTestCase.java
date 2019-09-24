@@ -28,7 +28,7 @@ import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import mockit.Delegate;
 import mockit.Expectations;
 import mockit.Mocked;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.ApplicationContext;
 
@@ -54,7 +54,7 @@ public class AbstractComponentTestCase extends CubaClientTestCase {
     protected ValueBinder valueBinder;
     protected OptionsBinder optionsBinder;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         addEntityPackage("com.haulmont.cuba");
         setupInfrastructure();

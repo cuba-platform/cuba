@@ -28,20 +28,20 @@ import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.testsupport.TestContainer;
 import com.haulmont.cuba.testsupport.TestSupport;
 import org.apache.commons.collections4.CollectionUtils;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.ClassRule;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Date;
 import java.util.UUID;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class EntityListenerTest {
 
-    @ClassRule
+    @RegisterExtension
     public static TestContainer cont = TestContainer.Common.INSTANCE;
 
     private Metadata metadata;
@@ -52,7 +52,7 @@ public class EntityListenerTest {
 
     private EntityListenerManager entityListenerManager;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         persistence = cont.persistence();
         metadata = cont.metadata();
@@ -77,7 +77,7 @@ public class EntityListenerTest {
         entityListenerManager.addListener(Server.class, "cuba_TestListenerUsingEntityManager");
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         entityListenerManager.removeListener(Server.class, "cuba_TestListenerUsingEntityManager");
         entityListenerManager.removeListener(Server.class, "cuba_TestDetachAttachListener");

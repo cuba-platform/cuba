@@ -30,19 +30,19 @@ import com.haulmont.cuba.security.entity.UserSubstitution;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.testsupport.TestContainer;
 import com.haulmont.cuba.testsupport.TestUserSessionSource;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.ClassRule;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.Test;
 
 import java.util.Locale;
 import java.util.UUID;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class LoginTest {
 
-    @ClassRule
+    @RegisterExtension
     public static TestContainer cont = TestContainer.Common.INSTANCE;
 
     private AuthenticationManager authenticationManager;
@@ -53,7 +53,7 @@ public class LoginTest {
     private TestUserSessionSource userSessionSource;
     private UserSession standardTestUserSession;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         PasswordEncryption passwordEncryption = AppBeans.get(PasswordEncryption.NAME);
         authenticationManager = AppBeans.get(AuthenticationManager.NAME);
@@ -86,7 +86,7 @@ public class LoginTest {
         }
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         cont.deleteRecord("SEC_USER_SUBSTITUTION", substitutionId);
         cont.deleteRecord("SEC_USER", user1Id);

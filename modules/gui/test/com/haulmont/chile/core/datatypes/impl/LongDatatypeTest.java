@@ -19,13 +19,14 @@ package com.haulmont.chile.core.datatypes.impl;
 
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.text.ParseException;
 import java.util.Locale;
 
-import static junit.framework.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class LongDatatypeTest extends AbstractDatatypeTestCase {
 
@@ -34,7 +35,7 @@ public class LongDatatypeTest extends AbstractDatatypeTestCase {
     private Long long10 = (long) 10;
 
     @Override
-    @Before
+    @BeforeEach
     public void setUp() {
         super.setUp();
 
@@ -98,23 +99,23 @@ public class LongDatatypeTest extends AbstractDatatypeTestCase {
         assertEquals(longDt.format(null), longDt.format(null, Locale.FRENCH));
     }
 
-    @Test(expected = ParseException.class)
-    public void parseDouble() throws ParseException {
-        longDt.parse("12.1");
+    @Test
+    public void parseDouble() {
+        Assertions.assertThrows(ParseException.class, () -> longDt.parse("12.1"));
     }
 
-    @Test(expected = ParseException.class)
-    public void parseRoundedDouble() throws ParseException {
-        longDt.parse("12.0");
+    @Test
+    public void parseRoundedDouble() {
+        Assertions.assertThrows(ParseException.class, () -> longDt.parse("12.0"));
     }
 
-    @Test(expected = ParseException.class)
-    public void parseLowerThanMIN() throws ParseException {
-        longDt.parse("-1000000000000000000000");
+    @Test
+    public void parseLowerThanMIN() {
+        Assertions.assertThrows(ParseException.class, () -> longDt.parse("-1000000000000000000000"));
     }
 
-    @Test(expected = ParseException.class)
-    public void parseGreaterThanMAX() throws ParseException {
-        longDt.parse("1000000000000000000000");
+    @Test
+    public void parseGreaterThanMAX() {
+        Assertions.assertThrows(ParseException.class, () -> longDt.parse("1000000000000000000000"));
     }
 }

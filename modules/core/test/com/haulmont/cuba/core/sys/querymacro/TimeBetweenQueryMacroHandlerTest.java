@@ -19,8 +19,8 @@ package com.haulmont.cuba.core.sys.querymacro;
 import com.google.common.collect.ImmutableMap;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.testsupport.TestContainer;
-import org.junit.ClassRule;
-import org.junit.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
@@ -30,7 +30,7 @@ import java.util.Map;
 
 public class TimeBetweenQueryMacroHandlerTest {
 
-    @ClassRule
+    @RegisterExtension
     public static TestContainer cont = TestContainer.Common.INSTANCE;
 
     @Test

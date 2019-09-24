@@ -21,11 +21,11 @@ import com.haulmont.cuba.core.entity.contracts.Id;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.testmodel.sales_1.Product;
 import com.haulmont.cuba.testsupport.TestContainer;
-import org.junit.Before;
-import org.junit.ClassRule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class TransactionalActionUsageTest {
 
@@ -36,10 +36,10 @@ public class TransactionalActionUsageTest {
     private TransactionalDataManager transactionalDataManager;
     private Metadata metadata;
 
-    @ClassRule
+    @RegisterExtension
     public static TestContainer cont = TestContainer.Common.INSTANCE;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         transactionalActionFactory = AppBeans.get(TransactionalActionFactory.NAME);
         transactionalDataManager = AppBeans.get(TransactionalDataManager.NAME);

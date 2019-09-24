@@ -24,16 +24,17 @@ import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.entity.UserRole;
 import com.haulmont.cuba.testsupport.TestContainer;
 import com.haulmont.cuba.testsupport.TestSupport;
-import org.junit.*;
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.util.UUID;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class PersistenceAttributeLoadedCheckTest {
-    @ClassRule
+    @RegisterExtension
     public static final TestContainer cont = TestContainer.Common.INSTANCE;
 
     private DataManager dataManager;
@@ -44,7 +45,7 @@ public class PersistenceAttributeLoadedCheckTest {
     private View taskView;
     private View userView;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         dataManager = AppBeans.get(DataManager.class);
         persistence = AppBeans.get(Persistence.class);
@@ -82,7 +83,7 @@ public class PersistenceAttributeLoadedCheckTest {
                 .addProperty("userRoles", new View(UserRole.class));
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         cont.deleteRecord("SEC_USER", userId);
         cont.deleteRecord("SYS_SCHEDULED_TASK", taskId);
@@ -103,7 +104,7 @@ public class PersistenceAttributeLoadedCheckTest {
         assertTrue(!PersistenceHelper.isLoaded(user, "substitutions"));//if attribute is not in the view - it should not be loaded
         try {
             PersistenceHelper.isLoaded(user, "notExistingAttribute");
-            Assert.fail("Should throw an exception for not existing attribute");
+            Assertions.fail("Should throw an exception for not existing attribute");
         } catch (Exception ignored) {
         }
 
@@ -119,7 +120,7 @@ public class PersistenceAttributeLoadedCheckTest {
         assertTrue(!PersistenceHelper.isLoaded(user, "substitutions"));//if attribute is not in the view - it should not be loaded
         try {
             PersistenceHelper.isLoaded(user, "notExistingAttribute");
-            Assert.fail("Should throw an exception for not existing attribute");
+            Assertions.fail("Should throw an exception for not existing attribute");
         } catch (Exception ignored) {
         }
 

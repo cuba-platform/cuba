@@ -29,9 +29,9 @@ import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.security.entity.User;
 import mockit.Expectations;
 import mockit.Mocked;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
@@ -51,7 +51,7 @@ public class BaseGenericIdEntityTest {
     @Mocked
     protected ReferenceToEntitySupport referenceToEntitySupport;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         dynamicAttributes = new DynamicAttributes() {
             @Override
@@ -190,7 +190,7 @@ public class BaseGenericIdEntityTest {
 
         try {
             user.setValue("+extend", null);
-            Assert.fail("should fail with exception");
+            Assertions.fail("should fail with exception");
         } catch (Exception e) {
             //do nothing
         }
@@ -198,9 +198,9 @@ public class BaseGenericIdEntityTest {
         user.setDynamicAttributes(new HashMap<>());
 
         user.setValue("+extend", "some dynamic value");
-        Assert.assertEquals("some dynamic value", user.getValue("+extend"));
+        Assertions.assertEquals("some dynamic value", user.getValue("+extend"));
 
         user.setValue("+extend", "another dynamic value");
-        Assert.assertEquals("another dynamic value", user.getValue("+extend"));
+        Assertions.assertEquals("another dynamic value", user.getValue("+extend"));
     }
 }

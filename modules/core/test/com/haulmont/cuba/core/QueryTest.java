@@ -25,10 +25,10 @@ import com.haulmont.cuba.security.entity.RoleType;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.testsupport.TestContainer;
 import com.haulmont.cuba.testsupport.TestSupport;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.ClassRule;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.Test;
 
 import javax.persistence.FlushModeType;
 import java.util.Arrays;
@@ -36,18 +36,18 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class QueryTest {
 
-    @ClassRule
+    @RegisterExtension
     public static TestContainer cont = TestContainer.Common.INSTANCE;
 
     private UUID userId;
     private UUID user2Id;
     private UUID groupId;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
 
         try (Transaction tx = cont.persistence().createTransaction()) {
@@ -76,7 +76,7 @@ public class QueryTest {
         }
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         cont.deleteRecord("SEC_USER", userId, user2Id);
         cont.deleteRecord("SEC_GROUP", groupId);

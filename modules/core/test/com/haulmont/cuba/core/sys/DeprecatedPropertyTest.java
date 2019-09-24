@@ -18,27 +18,27 @@
 package com.haulmont.cuba.core.sys;
 
 import com.haulmont.cuba.testsupport.TestContainer;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.ClassRule;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class DeprecatedPropertyTest {
 
-    @ClassRule
+    @RegisterExtension
     public static TestContainer cont = TestContainer.Common.INSTANCE;
 
     private static final String VALUE = "someValue";
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         cleanup();
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         cleanup();
     }
