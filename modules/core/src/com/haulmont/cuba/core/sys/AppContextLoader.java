@@ -25,10 +25,12 @@ import com.haulmont.cuba.core.sys.environmentcheck.EnvironmentChecksRunner;
 import com.haulmont.cuba.core.sys.environmentcheck.JvmCheck;
 import com.haulmont.cuba.core.sys.persistence.DbmsType;
 import com.haulmont.cuba.core.sys.persistence.PersistenceConfigProcessor;
+import com.haulmont.cuba.core.sys.remoting.LocalServiceDirectory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
+import javax.servlet.ServletContextEvent;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,6 +43,16 @@ public class AppContextLoader extends AbstractWebAppContextLoader {
     public static final String PERSISTENCE_CONFIG = "cuba.persistenceConfig";
 
     private static final Logger log = LoggerFactory.getLogger(AppContextLoader.class);
+
+    @Override
+    public void contextInitialized(ServletContextEvent servletContextEvent) {
+        try {
+            super.contextInitialized(servletContextEvent);
+        } catch (Throwable e) {
+            // unlock to avoid freeze in case of core startup error
+            LocalServiceDirectory.start();
+        }
+    }
 
     public static void createPersistenceXml(String storeName) {
         String configPropertyName = AppContextLoader.PERSISTENCE_CONFIG;

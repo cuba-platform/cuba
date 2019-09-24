@@ -102,7 +102,8 @@ public class LocalServiceProxy extends RemoteAccessor implements FactoryBean<Obj
             String entryName = connectionUrlList.substring(connectionUrlList.lastIndexOf('/') + 1) + serviceName;
             LocalServiceInvoker invoker = LocalServiceDirectory.getInvoker(entryName);
             if (invoker == null)
-                throw new IllegalArgumentException("Service " + entryName + " is not registered in LocalServiceDirectory");
+                throw new RuntimeException(String.format(
+                        "Unable to connect to middleware. Service %s is not registered in LocalServiceDirectory", entryName));
 
             Parameter[] parameters = method.getParameters();
             Class<?>[] parameterTypes = method.getParameterTypes();

@@ -19,6 +19,7 @@ package com.haulmont.cuba.web;
 
 import com.haulmont.cuba.client.ClientUserSession;
 import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.*;
 import com.haulmont.cuba.gui.components.RootWindow;
 import com.haulmont.cuba.gui.components.Window;
@@ -44,6 +45,7 @@ import com.haulmont.cuba.web.sys.navigation.History;
 import com.haulmont.cuba.gui.navigation.NavigationState;
 import com.haulmont.cuba.web.sys.navigation.UrlChangeHandler;
 import com.haulmont.cuba.web.sys.navigation.WebHistory;
+import com.haulmont.cuba.web.sys.remoting.LocalServiceAccessException;
 import com.haulmont.cuba.web.widgets.*;
 import com.haulmont.cuba.web.widgets.client.ui.CubaUIConstants;
 import com.vaadin.annotations.PreserveOnRefresh;
@@ -65,6 +67,7 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Scope;
+import org.springframework.remoting.RemoteAccessException;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -425,9 +428,6 @@ public class AppUI extends CubaUI implements ErrorHandler, EnhancedUI, UiExcepti
     }
 
     protected void showCriticalExceptionMessage(@SuppressWarnings("unused") Exception exception) {
-        String initErrorCaption = messages.getMainMessage("app.initErrorCaption");
-        String initErrorMessage = messages.getMainMessage("app.initErrorMessage");
-
         VerticalLayout content = new VerticalLayout();
         content.setMargin(false);
         content.setSpacing(false);
@@ -440,20 +440,33 @@ public class AppUI extends CubaUI implements ErrorHandler, EnhancedUI, UiExcepti
         errorPanel.setMargin(false);
         errorPanel.setSpacing(true);
 
-        Label captionLabel = new Label(initErrorCaption);
+        Label captionLabel = new Label();
         captionLabel.setWidthUndefined();
         captionLabel.setStyleName("c-init-error-caption");
         captionLabel.addStyleName("h2");
-        captionLabel.setValue(initErrorCaption);
+        captionLabel.setValue(messages.getMainMessage("app.initErrorCaption"));
 
         errorPanel.addComponent(captionLabel);
 
-        Label messageLabel = new Label(initErrorCaption);
-        messageLabel.setWidthUndefined();
-        messageLabel.setStyleName("c-init-error-message");
-        messageLabel.setValue(initErrorMessage);
+        if (Boolean.parseBoolean(AppContext.getProperty("cuba.web.productionMode"))) {
+            Label messageLabel = new Label();
+            messageLabel.setWidthUndefined();
+            messageLabel.setStyleName("c-init-error-message");
+            messageLabel.setValue(messages.getMainMessage("app.initErrorMessage"));
 
-        errorPanel.addComponent(messageLabel);
+            errorPanel.addComponent(messageLabel);
+        } else {
+            TextArea errorTextArea = new TextArea(messages.getMainMessage("app.initErrorDebugInfoTitle"));
+            errorTextArea.setValue(getExceptionCauseMessage(exception) +
+                    "\n\nYou can turn off this information using 'cuba.web.productionMode' application property.");
+            errorTextArea.setReadOnly(true);
+            errorTextArea.setWidth("600px");
+            errorTextArea.setHeight("200px");
+            errorTextArea.setStyleName("c-init-error-area");
+
+            errorPanel.addComponent(errorTextArea);
+            errorPanel.setComponentAlignment(errorTextArea, Alignment.MIDDLE_CENTER);
+        }
 
         Button retryButton = new Button(messages.getMainMessage("app.initRetry"));
         retryButton.setStyleName("c-init-error-retry");
@@ -464,12 +477,32 @@ public class AppUI extends CubaUI implements ErrorHandler, EnhancedUI, UiExcepti
         });
 
         errorPanel.addComponent(retryButton);
-        errorPanel.setComponentAlignment(retryButton, Alignment.MIDDLE_CENTER);
+        errorPanel.setComponentAlignment(retryButton, Alignment.MIDDLE_LEFT);
 
         content.addComponent(errorPanel);
         content.setComponentAlignment(errorPanel, Alignment.MIDDLE_CENTER);
 
         setContent(content);
+    }
+
+    protected String getExceptionCauseMessage(Exception exception) {
+        for (Throwable throwable : ExceptionUtils.getThrowableList(exception)) {
+            if (throwable instanceof RemoteAccessException) {
+                return throwable.toString() +
+                        "\n\nDue to this error, 'web' block cannot connect to the remote 'core' block.\n" +
+                        "First, check the 'core' server log for exceptions to ensure it has started properly.\n" +
+                        "If there are no exceptions in the 'core' log, check that 'cuba.connectionUrlList' property value " +
+                        "contains the valid address of the 'core' server and ends with the web context name of the 'core' block, " +
+                        "e.g. 'cuba.connectionUrlList = http://somehost:8080/app-core'";
+            } else if (throwable instanceof LocalServiceAccessException) {
+                return throwable.toString() +
+                        "\n\nDue to this error, 'web' block cannot connect to the co-located 'core' block.\n" +
+                        "Most probably the 'core' block didn't start properly, so check the server log for exceptions.\n" +
+                        "If there are no prior exceptions in the log, check that 'cuba.connectionUrlList' property value ends with the web context name of the 'core' block, " +
+                        "e.g. 'cuba.connectionUrlList = http://localhost:8080/app-core'";
+            }
+        }
+        return ExceptionUtils.getRootCauseMessage(exception);
     }
 
     protected void setupUI() throws LoginException {
