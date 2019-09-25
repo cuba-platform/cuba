@@ -21,6 +21,10 @@
 
     @include valo-textfield-style($padding: $padding-width);
     height: auto;
+
+    .v-ch & {
+      vertical-align: top;
+    }
   }
 
   .#{$primary-stylename} select:focus {
