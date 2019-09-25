@@ -58,7 +58,13 @@ public final class ReflectionHelper {
             case "boolean":
                 return boolean.class;
         }
-        return Thread.currentThread().getContextClassLoader().loadClass(name);
+        ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
+        if (contextClassLoader == null) {
+            throw new IllegalStateException("Current thread context classloader is null. " +
+                    "Consider setting it in a new thread using 'Thread.currentThread().setContextClassLoader()' " +
+                    "to the classloader of the parent thread or executing class.");
+        }
+        return contextClassLoader.loadClass(name);
     }
 
     /**
