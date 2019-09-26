@@ -22,6 +22,12 @@ import com.google.gwt.user.client.Event;
 import com.haulmont.cuba.web.widgets.client.textfield.CubaMaskedFieldWidget;
 import com.vaadin.client.ui.ShortcutActionHandler;
 import com.vaadin.client.ui.VPopupCalendar;
+import com.vaadin.shared.ui.datefield.DateResolution;
+
+import java.util.Date;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class CubaDateFieldWidget extends VPopupCalendar implements ShortcutActionHandler.ShortcutActionHandlerOwner {
 
@@ -41,6 +47,29 @@ public class CubaDateFieldWidget extends VPopupCalendar implements ShortcutActio
         super.setTextFieldEnabled(textFieldEnabled);
 
         calendarToggle.getElement().setTabIndex(-1);
+    }
+
+    @Override
+    public void updateValue(Date newDate) {
+        DateResolution currentResolution = getCurrentResolution();
+        if (getDate() == null
+                && currentResolution != null
+                && currentResolution.compareTo(DateResolution.DAY) > 0) {
+            Date date = newDate;
+            // Collects a map of current date values depending on date resolution
+            Map<DateResolution, Integer> dateValues = getResolutions()
+                    .collect(Collectors.toMap(Function.identity(),
+                            res -> currentResolution.compareTo(res) <= 0
+                                    ? res == DateResolution.MONTH
+                                        ? date.getMonth() + 1
+                                        : date.getYear() + 1900
+                                    : null));
+            if (!dateValues.isEmpty()) {
+                newDate = makeDate(dateValues);
+                calendar.setDate(newDate);
+            }
+        }
+        super.updateValue(newDate);
     }
 
     @Override
