@@ -28,6 +28,8 @@ import com.vaadin.shared.ui.Connect;
 public class CubaHorizontalSplitPanelConnector extends HorizontalSplitPanelConnector
         implements PostLayoutListener {
 
+    protected boolean updateLayout = false;
+
     @Override
     protected void init() {
         super.init();
@@ -62,12 +64,17 @@ public class CubaHorizontalSplitPanelConnector extends HorizontalSplitPanelConne
         if (stateChangeEvent.hasPropertyChanged("beforeDockPosition")) {
             getWidget().beforeDockPosition = getState().beforeDockPosition;
         }
+
+        updateLayout = true;
     }
 
     @Override
     public void postLayout() {
         // Have to re-layout after parent layout expand hack applied
         // to avoid split position glitch.
-        Scheduler.get().scheduleFinally(this::layout);
+        if (updateLayout) {
+            Scheduler.get().scheduleFinally(this::layout);
+            updateLayout = false;
+        }
     }
 }
