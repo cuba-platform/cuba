@@ -446,9 +446,11 @@ public class InputDialog extends Screen {
         for (Action action : actions) {
             Button button = uiComponents.create(Button.NAME);
             button.setAction(action);
+            button.setId(action.getId());
 
             if (action instanceof DialogAction) {
                 DialogAction.Type type = ((DialogAction) action).getType();
+                button.setId(type.getId());
                 button.setCaption(messages.getMainMessage(type.getMsgKey()));
 
                 String iconPath = icons.get(type.getIconKey());
