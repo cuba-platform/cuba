@@ -20,6 +20,7 @@ package com.haulmont.cuba.client.testsupport;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.sys.AbstractViewRepository;
 import com.haulmont.cuba.core.sys.ResourcesImpl;
+import com.haulmont.cuba.core.sys.ViewLoader;
 import org.apache.commons.lang3.StringUtils;
 
 public class TestViewRepositoryClient extends AbstractViewRepository {
@@ -29,10 +30,12 @@ public class TestViewRepositoryClient extends AbstractViewRepository {
     public TestViewRepositoryClient(String viewsConfig) {
         this.viewsConfig = viewsConfig;
         this.resources = new ResourcesImpl(getClass().getClassLoader());
+        this.viewLoader = new ViewLoader();
     }
 
     public void setMetadata(Metadata metadata) {
         this.metadata = metadata;
+        this.viewLoader.setMetadata(metadata);
     }
 
     @Override

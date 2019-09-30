@@ -16,13 +16,10 @@
  */
 package com.haulmont.cuba.core.sys;
 
-import com.google.common.base.Splitter;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.bali.util.Preconditions;
-import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
-import com.haulmont.chile.core.model.Range;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import org.apache.commons.io.IOUtils;
@@ -48,10 +45,6 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-import java.util.stream.Collectors;
-
-import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 /**
  * Base implementation of the {@link ViewRepository}. Contains methods to store {@link View} objects and deploy
@@ -71,6 +64,9 @@ public class AbstractViewRepository implements ViewRepository {
 
     @Inject
     protected Resources resources;
+
+    @Inject
+    protected ViewLoader viewLoader;
 
     protected volatile boolean initialized;
 
@@ -108,7 +104,7 @@ public class AbstractViewRepository implements ViewRepository {
                 addFile(rootElem, fileName);
             }
 
-            checkDuplicates(rootElem);
+            viewLoader.checkDuplicates(rootElem);
 
             for (Element viewElem : Dom4j.elements(rootElem, "view")) {
                 deployView(rootElem, viewElem, new HashSet<>());
@@ -116,29 +112,6 @@ public class AbstractViewRepository implements ViewRepository {
         }
 
         initTiming.stop();
-    }
-
-    protected void checkDuplicates(Element rootElem) {
-        Set<String> checked = new HashSet<>();
-        for (Element viewElem : Dom4j.elements(rootElem, "view")) {
-            String viewName = getViewName(viewElem);
-            String key = getMetaClass(viewElem) + "/" + viewName;
-            if (!Boolean.parseBoolean(viewElem.attributeValue("overwrite"))) {
-                String extend = viewElem.attributeValue("extends");
-                if (extend != null) {
-                    List<String> ancestors = splitExtends(extend);
-
-                    if (!ancestors.contains(viewName) && checked.contains(key)) {
-                        log.warn("Duplicate view definition without 'overwrite' attribute and not extending parent view: " + key);
-                    }
-                }
-            }
-            checked.add(key);
-        }
-    }
-
-    protected List<String> splitExtends(String extend) {
-        return Splitter.on(',').omitEmptyStrings().trimResults().splitToList(extend);
     }
 
     protected void addFile(Element commonRootElem, String fileName) {
@@ -286,10 +259,10 @@ public class AbstractViewRepository implements ViewRepository {
         return getViewNames(metaClass);
     }
 
-    protected View deployDefaultView(MetaClass metaClass, String name, Set<ViewInfo> visited) {
+    protected View deployDefaultView(MetaClass metaClass, String name, Set<ViewLoader.ViewInfo> visited) {
         Class<? extends Entity> javaClass = metaClass.getJavaClass();
 
-        ViewInfo info = new ViewInfo(javaClass, name);
+        ViewLoader.ViewInfo info = new ViewLoader.ViewInfo(metaClass, name);
         if (visited.contains(info)) {
             throw new DevelopmentException(String.format("Views cannot have cyclic references. View %s for class %s",
                     name, metaClass.getName()));
@@ -325,7 +298,7 @@ public class AbstractViewRepository implements ViewRepository {
         }
     }
 
-    protected void addAttributesToMinimalView(MetaClass metaClass, View view, ViewInfo info, Set<ViewInfo> visited) {
+    protected void addAttributesToMinimalView(MetaClass metaClass, View view, ViewLoader.ViewInfo info, Set<ViewLoader.ViewInfo> visited) {
         Collection<MetaProperty> metaProperties = metadata.getTools().getNamePatternProperties(metaClass, true);
         for (MetaProperty metaProperty : metaProperties) {
             if (metadata.getTools().isPersistent(metaProperty)) {
@@ -346,7 +319,7 @@ public class AbstractViewRepository implements ViewRepository {
         }
     }
 
-    protected void addPersistentAttributeToMinimalView(MetaClass metaClass, Set<ViewInfo> visited, ViewInfo info, View view, MetaProperty metaProperty) {
+    protected void addPersistentAttributeToMinimalView(MetaClass metaClass, Set<ViewLoader.ViewInfo> visited, ViewLoader.ViewInfo info, View view, MetaProperty metaProperty) {
         if (metaProperty.getRange().isClass()) {
             Map<String, View> views = storage.get(metaProperty.getRange().asClass());
             View refMinimalView = (views == null ? null : views.get(View.MINIMAL));
@@ -419,7 +392,7 @@ public class AbstractViewRepository implements ViewRepository {
         }
     }
 
-    protected View retrieveView(MetaClass metaClass, String name, Set<ViewInfo> visited) {
+    protected View retrieveView(MetaClass metaClass, String name, Set<ViewLoader.ViewInfo> visited) {
         Map<String, View> views = storage.get(metaClass);
         View view = (views == null ? null : views.get(name));
         if (view == null && (name.equals(View.LOCAL) || name.equals(View.MINIMAL) || name.equals(View.BASE))) {
@@ -437,54 +410,68 @@ public class AbstractViewRepository implements ViewRepository {
         }
     }
 
-    protected View deployView(Element rootElem, Element viewElem, Set<ViewInfo> visited) {
-        String viewName = getViewName(viewElem);
-        MetaClass metaClass = getMetaClass(viewElem);
+    protected View deployView(Element rootElem, Element viewElem, Set<ViewLoader.ViewInfo> visited) {
+        ViewLoader.ViewInfo viewInfo = viewLoader.getViewInfo(viewElem);
+        MetaClass metaClass = viewInfo.getMetaClass();
+        String viewName = viewInfo.getName();
 
-        ViewInfo info = new ViewInfo(metaClass.getJavaClass(), viewName);
-        if (visited.contains(info)) {
+        if (StringUtils.isBlank(viewName)) {
+            throw new DevelopmentException("Invalid view definition: no 'name' attribute present");
+        }
+
+        if (visited.contains(viewInfo)) {
             throw new DevelopmentException(String.format("Views cannot have cyclic references. View %s for class %s",
                     viewName, metaClass.getName()));
         }
 
-        View v = retrieveView(metaClass, viewName, visited);
-        boolean overwrite = Boolean.parseBoolean(viewElem.attributeValue("overwrite"));
+        View defaultView = retrieveView(metaClass, viewName, visited);
 
-        String extended = viewElem.attributeValue("extends");
-        List<String> ancestors = null;
-
-        if (isNotBlank(extended)) {
-            ancestors = splitExtends(extended);
+        if (defaultView != null && !viewInfo.isOverwrite()) {
+            return defaultView;
         }
 
-        if (!overwrite && ancestors != null) {
-            overwrite = ancestors.contains(viewName);
-        }
+        View.ViewParams viewParams = viewLoader.getViewParams(
+                viewInfo,
+                ancestorViewName -> getAncestorView(metaClass, ancestorViewName, visited)
+        );
 
-        if (v != null && !overwrite) {
-            return v;
-        }
+        View view = new View(viewParams);
 
-        boolean systemProperties = Boolean.valueOf(viewElem.attributeValue("systemProperties"));
+        visited.add(viewInfo);
+        viewLoader.loadViewProperties(viewElem, view, viewInfo.isSystemProperties(), (MetaClass refMetaClass, String refViewName) -> {
+            if (refViewName == null) {
+                return null;
+            }
+            View refView = retrieveView(refMetaClass, refViewName, visited);
+            if (refView == null) {
+                for (Element e : Dom4j.elements(rootElem, "view")) {
+                    if (refMetaClass.equals(viewLoader.getMetaClass(e.attributeValue("entity"), e.attributeValue("class")))
+                            && refViewName.equals(e.attributeValue("name"))) {
+                        refView = deployView(rootElem, e, visited);
+                        break;
+                    }
+                }
 
-        View.ViewParams viewParam = new View.ViewParams().entityClass(metaClass.getJavaClass()).name(viewName);
-        if (isNotEmpty(ancestors)) {
-            List<View> ancestorsViews = ancestors.stream()
-                    .map(a -> getAncestorView(metaClass, a, visited))
-                    .collect(Collectors.toList());
+                if (refView == null) {
+                    MetaClass originalMetaClass = metadata.getExtendedEntities().getOriginalMetaClass(refMetaClass);
+                    if (originalMetaClass != null) {
+                        refView = retrieveView(originalMetaClass, refViewName, visited);
+                    }
+                }
 
-            viewParam.src(ancestorsViews);
-        }
-        viewParam.includeSystemProperties(systemProperties);
-        View view = new View(viewParam);
-
-        visited.add(info);
-        loadView(rootElem, viewElem, view, systemProperties, visited);
-        visited.remove(info);
+                if (refView == null) {
+                    throw new DevelopmentException(
+                            String.format("View %s/%s definition error: unable to find/deploy referenced view %s/%s",
+                                    metaClass.getName(), viewName, refMetaClass, refViewName));
+                }
+            }
+            return refView;
+        });
+        visited.remove(viewInfo);
 
         storeView(metaClass, view);
 
-        if (overwrite) {
+        if (viewInfo.isOverwrite()) {
             replaceOverridden(view);
         }
 
@@ -533,7 +520,7 @@ public class AbstractViewRepository implements ViewRepository {
         }
     }
 
-    protected View getAncestorView(MetaClass metaClass, String ancestor, Set<ViewInfo> visited) {
+    protected View getAncestorView(MetaClass metaClass, String ancestor, Set<ViewLoader.ViewInfo> visited) {
         View ancestorView = retrieveView(metaClass, ancestor, visited);
         if (ancestorView == null) {
             ExtendedEntities extendedEntities = metadata.getExtendedEntities();
@@ -556,139 +543,6 @@ public class AbstractViewRepository implements ViewRepository {
             }
         }
         return ancestorView;
-    }
-
-    protected void loadView(Element rootElem, Element viewElem, View view, boolean systemProperties, Set<ViewInfo> visited) {
-        final MetaClass metaClass = metadata.getClassNN(view.getEntityClass());
-        final String viewName = view.getName();
-
-        Set<String> propertyNames = new HashSet<>();
-
-        for (Element propElem : viewElem.elements("property")) {
-            String propertyName = propElem.attributeValue("name");
-
-            if (propertyNames.contains(propertyName)) {
-                throw new DevelopmentException(String.format("View %s/%s definition error: view declared property %s twice",
-                        metaClass.getName(), viewName, propertyName));
-            }
-            propertyNames.add(propertyName);
-
-            MetaProperty metaProperty = metaClass.getProperty(propertyName);
-            if (metaProperty == null) {
-                throw new DevelopmentException(String.format("View %s/%s definition error: property %s doesn't exist",
-                        metaClass.getName(), viewName, propertyName));
-            }
-
-            View refView = null;
-            String refViewName = propElem.attributeValue("view");
-
-            MetaClass refMetaClass;
-            Range range = metaProperty.getRange();
-            if (range == null) {
-                throw new RuntimeException("cannot find range for meta property: " + metaProperty);
-            }
-
-            final List<Element> propertyElements = Dom4j.elements(propElem, "property");
-            boolean inlineView = !propertyElements.isEmpty();
-
-            if (!range.isClass() && (refViewName != null || inlineView)) {
-                throw new DevelopmentException(String.format("View %s/%s definition error: property %s is not an entity",
-                        metaClass.getName(), viewName, propertyName));
-            }
-
-            if (refViewName != null) {
-                refMetaClass = getMetaClass(propElem, range);
-
-                refView = retrieveView(refMetaClass, refViewName, visited);
-                if (refView == null) {
-                    for (Element e : Dom4j.elements(rootElem, "view")) {
-                        if (refMetaClass.equals(getMetaClass(e.attributeValue("entity"), e.attributeValue("class")))
-                                && refViewName.equals(e.attributeValue("name"))) {
-                            refView = deployView(rootElem, e, visited);
-                            break;
-                        }
-                    }
-
-                    if (refView == null) {
-                        MetaClass originalMetaClass = metadata.getExtendedEntities().getOriginalMetaClass(refMetaClass);
-                        if (originalMetaClass != null) {
-                            refView = retrieveView(originalMetaClass, refViewName, visited);
-                        }
-                    }
-
-                    if (refView == null) {
-                        throw new DevelopmentException(
-                                String.format("View %s/%s definition error: unable to find/deploy referenced view %s/%s",
-                                        metaClass.getName(), viewName, range.asClass().getName(), refViewName));
-                    }
-                }
-            }
-
-            if (inlineView) {
-                // try to import anonymous views
-                Class<? extends Entity> rangeClass = range.asClass().getJavaClass();
-
-                if (refView != null) {
-                    refView = new View(refView, rangeClass, "", false); // system properties are already in the source view
-                } else {
-                    ViewProperty existingProperty = view.getProperty(propertyName);
-                    if (existingProperty != null && existingProperty.getView() != null) {
-                        refView = new View(existingProperty.getView(), rangeClass, "", systemProperties);
-                    } else {
-                        refView = new View(rangeClass, systemProperties);
-                    }
-                }
-                loadView(rootElem, propElem, refView, systemProperties, visited);
-            }
-
-            FetchMode fetchMode = FetchMode.AUTO;
-            String fetch = propElem.attributeValue("fetch");
-            if (fetch != null)
-                fetchMode = FetchMode.valueOf(fetch);
-
-            view.addProperty(propertyName, refView, fetchMode);
-        }
-    }
-
-    protected String getViewName(Element viewElem) {
-        String viewName = viewElem.attributeValue("name");
-        if (StringUtils.isBlank(viewName))
-            throw new DevelopmentException("Invalid view definition: no 'name' attribute present");
-        return viewName;
-    }
-
-    protected MetaClass getMetaClass(Element viewElem) {
-        MetaClass metaClass;
-        String entity = viewElem.attributeValue("entity");
-        if (StringUtils.isBlank(entity)) {
-            String className = viewElem.attributeValue("class");
-            if (StringUtils.isBlank(className))
-                throw new DevelopmentException("Invalid view definition: no 'entity' or 'class' attribute present");
-            Class entityClass = ReflectionHelper.getClass(className);
-            metaClass = metadata.getClassNN(entityClass);
-        } else {
-            metaClass = metadata.getClassNN(entity);
-        }
-        return metaClass;
-    }
-
-    protected MetaClass getMetaClass(String entityName, String entityClass) {
-        if (entityName != null) {
-            return metadata.getClassNN(entityName);
-        } else {
-            return metadata.getClassNN(ReflectionHelper.getClass(entityClass));
-        }
-    }
-
-    protected MetaClass getMetaClass(Element propElem, Range range) {
-        MetaClass refMetaClass;
-        String refEntityName = propElem.attributeValue("entity"); // this attribute is deprecated
-        if (refEntityName == null) {
-            refMetaClass = range.asClass();
-        } else {
-            refMetaClass = metadata.getClassNN(refEntityName);
-        }
-        return refMetaClass;
     }
 
     protected void storeView(MetaClass metaClass, View view) {
@@ -723,46 +577,4 @@ public class AbstractViewRepository implements ViewRepository {
         }
     }
 
-    protected static class ViewInfo {
-        protected Class javaClass;
-        protected String name;
-
-        public ViewInfo(Class javaClass, String name) {
-            this.javaClass = javaClass;
-            this.name = name;
-        }
-
-        public Class getJavaClass() {
-            return javaClass;
-        }
-
-        public void setJavaClass(Class javaClass) {
-            this.javaClass = javaClass;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public void setName(String name) {
-            this.name = name;
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            if (!(obj instanceof ViewInfo)) {
-                return false;
-            }
-
-            ViewInfo that = (ViewInfo) obj;
-            return this.javaClass == that.javaClass && Objects.equals(this.name, that.name);
-        }
-
-        @Override
-        public int hashCode() {
-            int result = javaClass.hashCode();
-            result = 31 * result + name.hashCode();
-            return result;
-        }
-    }
 }

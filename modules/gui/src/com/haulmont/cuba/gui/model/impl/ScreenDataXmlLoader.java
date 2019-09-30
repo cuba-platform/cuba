@@ -23,11 +23,10 @@ import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.DevelopmentException;
-import com.haulmont.cuba.core.global.MetadataTools;
-import com.haulmont.cuba.core.global.ViewRepository;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.global.queryconditions.Condition;
 import com.haulmont.cuba.core.global.queryconditions.ConditionXmlLoader;
+import com.haulmont.cuba.core.sys.ViewLoader;
 import com.haulmont.cuba.gui.model.*;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.dom4j.Element;
@@ -44,6 +43,12 @@ public class ScreenDataXmlLoader {
 
     @Inject
     protected ViewRepository viewRepository;
+
+    @Inject
+    protected ViewLoader viewLoader;
+
+    @Inject
+    protected Metadata metadata;
 
     @Inject
     protected MetadataTools metadataTools;
@@ -373,10 +378,24 @@ public class ScreenDataXmlLoader {
     }
 
     protected void loadView(Element element, Class<Entity> entityClass, InstanceContainer<Entity> container) {
+        Element viewElement = element.element("view");
+        if (viewElement != null) {
+            container.setView(loadAdHocView(viewElement, entityClass));
+            return;
+        }
+
         String viewName = element.attributeValue("view");
         if (viewName != null) {
             container.setView(viewRepository.getView(entityClass, viewName));
         }
+    }
+
+    protected View loadAdHocView(Element viewElem, Class<Entity> entityClass) {
+        ViewLoader.ViewInfo viewInfo = viewLoader.getViewInfo(viewElem, metadata.getClassNN(entityClass));
+        View.ViewParams viewParams = viewLoader.getViewParams(viewInfo, a -> viewRepository.getView(viewInfo.getMetaClass(), a));
+        View view = new View(viewParams);
+        viewLoader.loadViewProperties(viewElem, view, viewInfo.isSystemProperties(), (metaClass, viewName) -> viewRepository.getView(metaClass, viewName));
+        return view;
     }
 
     protected void loadQuery(Element element, DataLoader loader) {
