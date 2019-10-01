@@ -17,10 +17,12 @@
 
 package com.haulmont.cuba.gui.upload;
 
+import com.haulmont.bali.util.StreamUtils.LazySupplier;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.executors.TaskLifeCycle;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -252,13 +254,13 @@ public class FileUploading implements FileUploadingAPI, FileUploadingMBean {
 
         long fileSize = file.length();
 
-        Supplier<InputStream> inputStreamSupplier = () -> {
+        LazySupplier<InputStream> inputStreamSupplier = LazySupplier.of(() -> {
             try {
                 return new FileInputStream(file);
             } catch (FileNotFoundException e) {
                 throw new FileLoader.InputStreamSupplierException("Temp file is not found " + file.getAbsolutePath());
             }
-        };
+        });
 
         if (listener != null) {
             fileLoader.saveStream(fileDescr, inputStreamSupplier, transferredBytes -> {
@@ -271,6 +273,10 @@ public class FileUploading implements FileUploadingAPI, FileUploadingMBean {
             });
         } else {
             fileLoader.saveStream(fileDescr, inputStreamSupplier);
+        }
+
+        if (inputStreamSupplier.supplied()) {
+            IOUtils.closeQuietly(inputStreamSupplier.get());
         }
     }
 
