@@ -28,6 +28,7 @@ import com.haulmont.cuba.gui.WindowParams;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.logging.UIPerformanceLogger;
 import com.haulmont.cuba.gui.logging.UserActionsLogger;
+import com.haulmont.cuba.gui.screen.EditorScreen;
 import com.haulmont.cuba.gui.screen.FrameOwner;
 import com.haulmont.cuba.gui.screen.MapScreenOptions;
 import com.haulmont.cuba.gui.screen.OpenMode;
@@ -204,6 +205,9 @@ public class MenuItemCommands {
                 }
             } else {
                 Screen screen = screens.create(screenId, openType.getOpenMode(), new MapScreenOptions(params));
+                if (screen instanceof EditorScreen) {
+                    ((EditorScreen) screen).setEntityToEdit(getEntityItem(screenId));
+                }
 
                 screens.showFromNavigation(screen);
             }
