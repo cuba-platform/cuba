@@ -253,9 +253,11 @@ public class WebGridLayout extends WebAbstractComponent<CubaGridLayout> implemen
         if (layoutClickListener == null) {
             layoutClickListener = event -> {
                 Component childComponent = findChildComponent(event.getChildComponent());
+                Component clickedComponent = findChildComponent(event.getClickedComponent());
                 MouseEventDetails mouseEventDetails = WebWrapperUtils.toMouseEventDetails(event);
 
-                LayoutClickEvent layoutClickEvent = new LayoutClickEvent(this, childComponent, mouseEventDetails);
+                LayoutClickEvent layoutClickEvent =
+                        new LayoutClickEvent(this, childComponent, clickedComponent, mouseEventDetails);
 
                 publish(LayoutClickEvent.class, layoutClickEvent);
             };

@@ -18,6 +18,7 @@ package com.haulmont.cuba.gui.components;
 
 import com.haulmont.bali.events.Subscription;
 
+import javax.annotation.Nullable;
 import java.util.EventObject;
 import java.util.function.Consumer;
 
@@ -45,13 +46,15 @@ public interface LayoutClickNotifier {
      */
     class LayoutClickEvent extends EventObject {
         private final Component childComponent;
+        private final Component clickedComponent;
         private final MouseEventDetails mouseEventDetails;
 
         public LayoutClickEvent(ComponentContainer layout,
-                                Component childComponent, MouseEventDetails mouseEventDetails) {
+                                Component childComponent, Component clickedComponent, MouseEventDetails mouseEventDetails) {
             super(layout);
             this.childComponent = childComponent;
             this.mouseEventDetails = mouseEventDetails;
+            this.clickedComponent = clickedComponent;
         }
 
         @Override
@@ -59,12 +62,29 @@ public interface LayoutClickNotifier {
             return (ComponentContainer) super.getSource();
         }
 
+        /**
+         * Returns the direct child component of the layout which contains the clicked component. For the clicked
+         * component inside that child component of the layout, see {@link #getClickedComponent()}.
+         *
+         * @return direct child Component of the layout which contains the clicked Component, null if none found
+         */
         public Component getChildComponent() {
             return childComponent;
         }
 
         public MouseEventDetails getMouseEventDetails() {
             return mouseEventDetails;
+        }
+
+        /**
+         * Returns the component that was clicked, which is somewhere inside the parent layout on which the listener
+         * was registered. For the direct child component of the layout, see {@link #getChildComponent()}.
+         *
+         * @return clicked Component, null if none found
+         */
+        @Nullable
+        public Component getClickedComponent() {
+            return clickedComponent;
         }
     }
 }
