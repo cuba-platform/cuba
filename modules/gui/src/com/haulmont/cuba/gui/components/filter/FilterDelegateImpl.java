@@ -1693,7 +1693,7 @@ public class FilterDelegateImpl implements FilterDelegate {
         Map<String, Object> parameters = prepareDatasourceCustomParams();
         refreshDatasource(parameters);
 
-        if ((applyTo != null) && (Table.class.isAssignableFrom(applyTo.getClass()))) {
+        if (clientConfig.getGenericFilterFtsTableTooltipsEnabled() && (applyTo != null) && (Table.class.isAssignableFrom(applyTo.getClass()))) {
             filterHelper.removeTableFtsTooltips((Table) applyTo);
         }
 
@@ -1773,11 +1773,11 @@ public class FilterDelegateImpl implements FilterDelegate {
             CustomCondition ftsCondition = ftsFilterHelper.createFtsCondition(adapter.getMetaClass().getName());
             conditions.getRootNodes().add(new Node<>(ftsCondition));
 
-            if ((applyTo != null) && (Table.class.isAssignableFrom(applyTo.getClass()))) {
-                filterHelper.initTableFtsTooltips((Table) applyTo, ftsSearchResult.getHitInfos());
+            if (clientConfig.getGenericFilterFtsTableTooltipsEnabled() && (applyTo != null) && (Table.class.isAssignableFrom(applyTo.getClass()))) {
+                filterHelper.initTableFtsTooltips((Table) applyTo, adapter.getMetaClass(), searchTerm);
             }
-        } else if ((applyTo != null) && (Table.class.isAssignableFrom(applyTo.getClass()))) {
-            filterHelper.initTableFtsTooltips((Table) applyTo, Collections.emptyMap());
+        } else if (clientConfig.getGenericFilterFtsTableTooltipsEnabled() && (applyTo != null) && (Table.class.isAssignableFrom(applyTo.getClass()))) {
+            filterHelper.removeTableFtsTooltips((Table) applyTo);
         }
 
         applyDatasourceFilter();

@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.gui.components.filter;
 
+import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.AbstractSearchFolder;
 import com.haulmont.cuba.core.entity.Folder;
 import com.haulmont.cuba.gui.components.*;
@@ -81,7 +82,7 @@ public interface FilterHelper {
 
     boolean isTableActionsEnabled();
 
-    void initTableFtsTooltips(Table table, Map<Object, String> tooltips);
+    void initTableFtsTooltips(Table table, MetaClass metaClass, String searchTerm);
 
     void removeTableFtsTooltips(Table table);
 

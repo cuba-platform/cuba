@@ -18,6 +18,7 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.bali.datastruct.Node;
+import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.AbstractSearchFolder;
 import com.haulmont.cuba.core.entity.Folder;
 import com.haulmont.cuba.core.global.Configuration;
@@ -25,6 +26,7 @@ import com.haulmont.cuba.gui.UiComponents;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.filter.ConditionsTree;
 import com.haulmont.cuba.gui.components.filter.FilterHelper;
+import com.haulmont.cuba.gui.components.filter.FtsFilterHelper;
 import com.haulmont.cuba.gui.components.filter.condition.AbstractCondition;
 import com.haulmont.cuba.gui.components.filter.condition.GroupCondition;
 import com.haulmont.cuba.gui.components.mainwindow.FoldersPane;
@@ -43,7 +45,8 @@ import com.haulmont.cuba.web.widgets.CubaTree;
 import com.vaadin.shared.ui.grid.DropLocation;
 import com.vaadin.shared.ui.grid.DropMode;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.components.grid.*;
+import com.vaadin.ui.components.grid.TreeGridDragSource;
+import com.vaadin.ui.components.grid.TreeGridDropTarget;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -58,8 +61,12 @@ public class WebFilterHelper implements FilterHelper {
 
     @Inject
     protected Configuration configuration;
+
     @Inject
     protected UiComponents uiComponents;
+
+    @Inject
+    protected FtsFilterHelper ftsFilterHelper;
 
     @Override
     public void setLookupNullSelectionAllowed(LookupField lookupField, boolean value) {
@@ -281,13 +288,10 @@ public class WebFilterHelper implements FilterHelper {
     }
 
     @Override
-    public void initTableFtsTooltips(Table table, final Map<Object, String> tooltips) {
+    public void initTableFtsTooltips(Table table, MetaClass metaClass, String searchTerm) {
         table.withUnwrapped(com.vaadin.v7.ui.Table.class, vTable ->
                 vTable.setItemDescriptionGenerator((source, itemId, propertyId) -> {
-                    if (tooltips.keySet().contains(itemId)) {
-                        return tooltips.get(itemId);
-                    }
-                    return null;
+                    return ftsFilterHelper.buildTableTooltip(metaClass.getName(), itemId, searchTerm);
                 }));
     }
 

@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.desktop.gui.components;
 
+import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.AbstractSearchFolder;
 import com.haulmont.cuba.core.entity.Folder;
 import com.haulmont.cuba.gui.components.*;
@@ -86,7 +87,7 @@ public class DesktopFilterHelper implements FilterHelper {
     }
 
     @Override
-    public void initTableFtsTooltips(Table table, Map<Object, String> tooltips) {
+    public void initTableFtsTooltips(Table table, MetaClass metaClass, String searchTerm) {
     }
 
     @Override

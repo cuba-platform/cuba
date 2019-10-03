@@ -19,8 +19,6 @@ package com.haulmont.cuba.gui.components.filter;
 
 import com.haulmont.cuba.gui.components.filter.condition.CustomCondition;
 
-import java.util.Map;
-
 /**
  * Interface provides full text search functionality necessary to generic filter component.
  * Its implementation is in FTS module.
@@ -59,18 +57,18 @@ public interface FtsFilterHelper {
     String createFtsWhereClause(String entityName, String queryParamName, String sessionIdParamName);
 
     /**
+     * Builds a tooltip with hit information for a single entity
+     */
+    String buildTableTooltip(String entityName, Object entityId, String searchTerm);
+
+    /**
      * Class for holding search result.
      * <p>
      *     {@code queryKey} property contains an unique identifier for stored entities set
      * </p>
-     * <p>
-     *     {@code hitInfos} property is a map. Key is entity id, value is a text that describes
-     *     where search term was found in current entity
-     * </p>
      */
     class FtsSearchResult {
         private int queryKey;
-        private Map<Object, String> hitInfos;
 
         public int getQueryKey() {
             return queryKey;
@@ -78,14 +76,6 @@ public interface FtsFilterHelper {
 
         public void setQueryKey(int queryKey) {
             this.queryKey = queryKey;
-        }
-
-        public Map<Object, String> getHitInfos() {
-            return hitInfos;
-        }
-
-        public void setHitInfos(Map<Object, String> hitInfos) {
-            this.hitInfos = hitInfos;
         }
     }
 

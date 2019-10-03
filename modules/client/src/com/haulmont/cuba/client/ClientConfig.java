@@ -227,6 +227,13 @@ public interface ClientConfig extends Config {
     boolean getGenericFilterApplyImmediately();
 
     /**
+     * If true, then table rows tooltips with hit information will be generated in case of full text search in generic filter component
+     */
+    @Property("cuba.gui.genericFilterFtsTableTooltipsEnabled")
+    @DefaultBoolean(true)
+    boolean getGenericFilterFtsTableTooltipsEnabled();
+
+    /**
      * Support e-mail. Exception report emails are sent to this address.
      */
     @Property("cuba.supportEmail")
