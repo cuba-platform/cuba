@@ -163,7 +163,7 @@ public class WebDateField<V extends Comparable<V>>
             try {
                 value = constructModelValue();
 
-                if (!checkRange(value)) {
+                if (!checkRange(value, true)) {
                     return;
                 }
 
@@ -244,7 +244,7 @@ public class WebDateField<V extends Comparable<V>>
         return rangeEnd;
     }
 
-    protected boolean checkRange(V value) {
+    protected boolean checkRange(V value, boolean handleError) {
         if (updatingInstance) {
             return true;
         }
@@ -252,13 +252,17 @@ public class WebDateField<V extends Comparable<V>>
         if (value != null) {
             V rangeStart = getRangeStart();
             if (rangeStart != null && rangeStart.compareTo(value) > 0) {
-                handleDateOutOfRange(value);
+                if (handleError) {
+                    handleDateOutOfRange(value);
+                }
                 return false;
             }
 
             V rangeEnd = getRangeEnd();
             if (rangeEnd != null && rangeEnd.compareTo(value) < 0) {
-                handleDateOutOfRange(value);
+                if (handleError) {
+                    handleDateOutOfRange(value);
+                }
                 return false;
             }
         }
@@ -643,16 +647,26 @@ public class WebDateField<V extends Comparable<V>>
             return;
         }
 
+        Messages messages = beanLocator.get(Messages.NAME);
+
+        V value = constructModelValue();
+        if (!checkRange(value, false)) {
+            LoggerFactory.getLogger(WebDateField.class)
+                    .trace("DateField value is out of range");
+            String dateOutOfRangeMessage = messages.getMainMessage("datePicker.dateOutOfRangeMessage");
+            setValidationError(dateOutOfRangeMessage);
+            throw new ValidationException(dateOutOfRangeMessage);
+        }
+
         if (isEmpty() && isRequired()) {
             String requiredMessage = getRequiredMessage();
             if (requiredMessage == null) {
-                Messages messages = beanLocator.get(Messages.NAME);
                 requiredMessage = messages.getMainMessage("validationFail.defaultRequiredMessage");
             }
             throw new RequiredValueMissingException(requiredMessage, this);
         }
 
-        V value = getValue();
+        value = getValue();
         triggerValidators(value);
     }
 
