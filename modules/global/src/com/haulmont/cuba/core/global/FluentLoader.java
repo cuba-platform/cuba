@@ -213,6 +213,13 @@ public class FluentLoader<E extends Entity<K>, K> {
         return new ByQuery<>(this, queryString);
     }
 
+    /**
+     * Sets the query with positional parameters (e.g. {@code "e.name = ?1 and e.status = ?2"}).
+     */
+    public ByQuery<E, K> query(String queryString, Object... parameters) {
+        return new ByQuery<>(this, queryString, parameters);
+    }
+
     public static class ById<E extends Entity<K>, K> {
 
         private FluentLoader<E, K> loader;
@@ -440,11 +447,30 @@ public class FluentLoader<E extends Entity<K>, K> {
             this.queryString = queryString;
         }
 
+        ByQuery(FluentLoader<E, K> loader, String queryString, Object[] positionalParams) {
+            this(loader, queryString);
+            processPositionalParams(positionalParams);
+        }
+
+        private void processPositionalParams(Object[] positionalParams) {
+            if (positionalParams == null) {
+                return;
+            }
+            for (int i = 1; i <= positionalParams.length; i++) {
+                String paramName = "_p" + i;
+                parameters.put(paramName, positionalParams[i - 1]);
+                queryString = queryString.replace("?" + i, ":" + paramName);
+            }
+        }
+
         LoadContext<E> createLoadContext() {
+            Preconditions.checkNotEmptyString(queryString, "query is empty");
+
             LoadContext<E> loadContext = LoadContext.create(loader.entityClass);
             loader.initCommonLoadContextParameters(loadContext);
 
-            LoadContext.Query query = LoadContext.createQuery(queryString);
+            String processedQuery = AppBeans.get(QueryStringProcessor.class).process(queryString, loader.entityClass);
+            LoadContext.Query query = LoadContext.createQuery(processedQuery);
             for (Map.Entry<String, Object> entry : parameters.entrySet()) {
                 if (noConversionParams.contains(entry.getKey()))
                     query.setParameter(entry.getKey(), entry.getValue(), false);

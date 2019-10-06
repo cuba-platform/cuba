@@ -67,6 +67,10 @@ public class InstanceLoaderImpl<E extends Entity> implements InstanceLoader<E> {
         return applicationContext.getBean(ViewRepository.NAME, ViewRepository.class);
     }
 
+    protected QueryStringProcessor getQueryStringProcessor() {
+        return applicationContext.getBean(QueryStringProcessor.NAME, QueryStringProcessor.class);
+    }
+
     @Nullable
     @Override
     public DataContext getDataContext() {
@@ -120,12 +124,15 @@ public class InstanceLoaderImpl<E extends Entity> implements InstanceLoader<E> {
     }
 
     public LoadContext<E> createLoadContext() {
-        LoadContext<E> loadContext = LoadContext.create(container.getEntityMetaClass().getJavaClass());
+        Class<E> entityClass = container.getEntityMetaClass().getJavaClass();
+
+        LoadContext<E> loadContext = LoadContext.create(entityClass);
 
         if (entityId != null) {
             loadContext.setId(entityId);
         } else {
-            LoadContext.Query query = loadContext.setQueryString(this.query);
+            String queryString = getQueryStringProcessor().process(this.query, entityClass);
+            LoadContext.Query query = loadContext.setQueryString(queryString);
             query.setCondition(condition);
             query.setParameters(parameters);
         }

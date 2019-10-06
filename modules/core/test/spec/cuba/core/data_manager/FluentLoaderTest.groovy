@@ -24,6 +24,7 @@ import com.haulmont.cuba.core.global.TemporalValue
 import com.haulmont.cuba.core.global.View
 import com.haulmont.cuba.core.global.ViewRepository
 import com.haulmont.cuba.testmodel.sales.Customer
+import com.haulmont.cuba.testmodel.sales.Status
 import com.haulmont.cuba.testsupport.TestContainer
 import org.junit.ClassRule
 import spock.lang.Shared
@@ -49,6 +50,7 @@ class FluentLoaderTest extends Specification {
 
         customer = cont.metadata().create(Customer)
         customer.name = 'Smith'
+        customer.status = Status.OK
         customerId = customer.id
 
         customer2 = cont.metadata().create(Customer)
@@ -107,6 +109,16 @@ class FluentLoaderTest extends Specification {
                 .firstResult(10)
                 .maxResults(100)
                 .list() instanceof List
+
+        // load by simplified query
+
+        dataManager.load(Customer).query('e.name = ?1', 'Smith').one() == customer
+
+        dataManager.load(Customer).query('e.name = ?1 and e.status = ?2', 'Smith', Status.OK).one() == customer
+
+        dataManager.load(Customer).query('from test$Customer c, test$Order o where o.customer = c').list() instanceof List
+
+        dataManager.load(Customer).query('order by e.name').list() instanceof List
 
         // load by collection of ids
 
@@ -326,4 +338,40 @@ class FluentLoaderTest extends Specification {
         loadContext.view == baseView
     }
 
+    def "test positional params"() {
+        def loader
+        LoadContext loadContext
+
+        when:
+
+        loader = dataManager.load(Customer).query('select c from test$Customer c where c.name = ?1 and c.email = ?2', "Joe", "joe@mail.com")
+        loadContext = FluentLoaderTestAccess.createLoadContext(loader)
+
+        then:
+
+        loadContext.query.queryString == 'select c from test$Customer c where c.name = :_p1 and c.email = :_p2'
+        loadContext.query.parameters['_p1'] == 'Joe'
+        loadContext.query.parameters['_p2'] == 'joe@mail.com'
+
+        when:
+
+        loader = dataManager.load(Customer).query('select c from test$Customer c where c.a1=?1 and c.a2=?2 and c.a3=?3 and c.a4=?4 and c.a5=?5 and c.a6=?6 and c.a7=?7 and c.a8=?8 and c.a9=?9 and c.a10=?10 and c.a11=?11',
+                "v1", "v2", "v3", "v4", "v5", "v6", "v7", "v8", "v9", "v10", "v11")
+        loadContext = FluentLoaderTestAccess.createLoadContext(loader)
+
+        then:
+
+        loadContext.query.queryString == 'select c from test$Customer c where c.a1=:_p1 and c.a2=:_p2 and c.a3=:_p3 and c.a4=:_p4 and c.a5=:_p5 and c.a6=:_p6 and c.a7=:_p7 and c.a8=:_p8 and c.a9=:_p9 and c.a10=:_p10 and c.a11=:_p11'
+        loadContext.query.parameters['_p1'] == 'v1'
+        loadContext.query.parameters['_p2'] == 'v2'
+        loadContext.query.parameters['_p3'] == 'v3'
+        loadContext.query.parameters['_p4'] == 'v4'
+        loadContext.query.parameters['_p5'] == 'v5'
+        loadContext.query.parameters['_p6'] == 'v6'
+        loadContext.query.parameters['_p7'] == 'v7'
+        loadContext.query.parameters['_p8'] == 'v8'
+        loadContext.query.parameters['_p9'] == 'v9'
+        loadContext.query.parameters['_p10'] == 'v10'
+        loadContext.query.parameters['_p11'] == 'v11'
+    }
 }
