@@ -17,6 +17,7 @@
 package com.haulmont.cuba.core.global;
 
 import com.haulmont.bali.util.Preconditions;
+import com.haulmont.bali.util.StringHelper;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.queryconditions.Condition;
@@ -561,11 +562,14 @@ public class LoadContext<E extends Entity> implements DataLoadContext, Serializa
 
         @Override
         public String toString() {
-            return "Query{" +
+            String stringResult = "Query{" +
                     "queryString='" + queryString + '\'' +
+                    ", condition=" + condition +
+                    ", sort=" + sort +
                     ", firstResult=" + firstResult +
                     ", maxResults=" + maxResults +
-                    '}';
+                    "}";
+            return StringHelper.removeExtraSpaces(stringResult.replace('\n', ' '));
         }
     }
 }

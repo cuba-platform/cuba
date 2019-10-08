@@ -16,6 +16,7 @@
 
 package com.haulmont.cuba.core.global;
 
+import com.haulmont.bali.util.StringHelper;
 import com.haulmont.cuba.core.global.queryconditions.Condition;
 
 import javax.annotation.Nullable;
@@ -344,11 +345,14 @@ public class ValueLoadContext implements DataLoadContext, Serializable {
 
         @Override
         public String toString() {
-            return "Query{" +
+            String stringResult = "Query{" +
                     "queryString='" + queryString + '\'' +
+                    ", condition=" + condition +
+                    ", sort=" + sort +
                     ", firstResult=" + firstResult +
                     ", maxResults=" + maxResults +
-                    '}';
+                    "}";
+            return StringHelper.removeExtraSpaces(stringResult.replace('\n', ' '));
         }
     }
 }
