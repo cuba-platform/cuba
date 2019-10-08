@@ -82,9 +82,9 @@ public interface FilterHelper {
 
     boolean isTableActionsEnabled();
 
-    void initTableFtsTooltips(Table table, MetaClass metaClass, String searchTerm);
+    void initTableFtsTooltips(ListComponent listComponent, MetaClass metaClass, String searchTerm);
 
-    void removeTableFtsTooltips(Table table);
+    void removeTableFtsTooltips(ListComponent listComponent);
 
     void setFieldReadOnlyFocusable(TextField textField, boolean readOnlyFocusable);
 

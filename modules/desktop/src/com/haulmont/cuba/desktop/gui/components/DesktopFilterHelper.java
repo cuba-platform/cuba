@@ -87,12 +87,11 @@ public class DesktopFilterHelper implements FilterHelper {
     }
 
     @Override
-    public void initTableFtsTooltips(Table table, MetaClass metaClass, String searchTerm) {
+    public void initTableFtsTooltips(ListComponent listComponent, MetaClass metaClass, String searchTerm) {
     }
 
     @Override
-    public void removeTableFtsTooltips(Table table) {
-
+    public void removeTableFtsTooltips(ListComponent listComponent) {
     }
 
     @Override

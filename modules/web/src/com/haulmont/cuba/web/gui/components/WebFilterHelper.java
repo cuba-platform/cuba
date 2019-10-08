@@ -20,7 +20,9 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.bali.datastruct.Node;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.AbstractSearchFolder;
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.Folder;
+import com.haulmont.cuba.core.global.BeanLocator;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.gui.UiComponents;
 import com.haulmont.cuba.gui.components.*;
@@ -66,7 +68,7 @@ public class WebFilterHelper implements FilterHelper {
     protected UiComponents uiComponents;
 
     @Inject
-    protected FtsFilterHelper ftsFilterHelper;
+    protected BeanLocator beanLocator;
 
     @Override
     public void setLookupNullSelectionAllowed(LookupField lookupField, boolean value) {
@@ -288,18 +290,38 @@ public class WebFilterHelper implements FilterHelper {
     }
 
     @Override
-    public void initTableFtsTooltips(Table table, MetaClass metaClass, String searchTerm) {
-        table.withUnwrapped(com.vaadin.v7.ui.Table.class, vTable ->
-                vTable.setItemDescriptionGenerator((source, itemId, propertyId) -> {
-                    return ftsFilterHelper.buildTableTooltip(metaClass.getName(), itemId, searchTerm);
-                }));
+    public void initTableFtsTooltips(ListComponent listComponent, MetaClass metaClass, String searchTerm) {
+        FtsFilterHelper ftsFilterHelper;
+        if (beanLocator.containsBean(FtsFilterHelper.NAME)) {
+            ftsFilterHelper = beanLocator.get(FtsFilterHelper.class);
+        } else {
+            return;
+        }
+
+        if (listComponent instanceof Table) {
+            listComponent.withUnwrapped(com.vaadin.v7.ui.Table.class, vTable ->
+                    vTable.setItemDescriptionGenerator((source, itemId, propertyId) -> {
+                        return ftsFilterHelper.buildTableTooltip(metaClass.getName(), itemId, searchTerm);
+                    }));
+        } else if (listComponent instanceof DataGrid) {
+            ((DataGrid) listComponent).setRowDescriptionProvider(o -> {
+                if (o instanceof Entity) {
+                    return ftsFilterHelper.buildTableTooltip(metaClass.getName(), ((Entity) o).getId(), searchTerm);
+                } else {
+                    return null;
+                }
+            });
+        }
     }
 
     @Override
-    public void removeTableFtsTooltips(Table table) {
-        table.withUnwrapped(com.vaadin.v7.ui.Table.class, vTable ->
-                vTable.setItemDescriptionGenerator(null));
-
+    public void removeTableFtsTooltips(ListComponent listComponent) {
+        if (listComponent instanceof Table) {
+            listComponent.withUnwrapped(com.vaadin.v7.ui.Table.class, vTable ->
+                    vTable.setItemDescriptionGenerator(null));
+        } else if (listComponent instanceof DataGrid) {
+            ((DataGrid) listComponent).setRowDescriptionProvider(null);
+        }
     }
 
     @Override

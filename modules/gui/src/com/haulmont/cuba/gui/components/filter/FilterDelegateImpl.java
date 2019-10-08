@@ -1120,8 +1120,8 @@ public class FilterDelegateImpl implements FilterDelegate {
     }
 
     /**
-     * Adds empty containers to grid row. If not to complete the row with gaps then in case of grid with one element (element width = 1)
-     * this element will occupy 100% of grid width, but expected behaviour is to occupy 1/3 of grid width
+     * Adds empty containers to grid row. If not to complete the row with gaps then in case of grid with one element (element width = 1) this element
+     * will occupy 100% of grid width, but expected behaviour is to occupy 1/3 of grid width
      */
     protected void completeGridRowWithGaps(GridLayout grid, int row, int startColumn, boolean lastRow) {
         for (int i = startColumn * 2; i < grid.getColumns(); i++) {
@@ -1773,11 +1773,13 @@ public class FilterDelegateImpl implements FilterDelegate {
             CustomCondition ftsCondition = ftsFilterHelper.createFtsCondition(adapter.getMetaClass().getName());
             conditions.getRootNodes().add(new Node<>(ftsCondition));
 
-            if (clientConfig.getGenericFilterFtsTableTooltipsEnabled() && (applyTo != null) && (Table.class.isAssignableFrom(applyTo.getClass()))) {
-                filterHelper.initTableFtsTooltips((Table) applyTo, adapter.getMetaClass(), searchTerm);
+            if (clientConfig.getGenericFilterFtsTableTooltipsEnabled() && (applyTo != null)
+                    && ListComponent.class.isAssignableFrom(applyTo.getClass())) {
+                filterHelper.initTableFtsTooltips((ListComponent) applyTo, adapter.getMetaClass(), searchTerm);
             }
-        } else if (clientConfig.getGenericFilterFtsTableTooltipsEnabled() && (applyTo != null) && (Table.class.isAssignableFrom(applyTo.getClass()))) {
-            filterHelper.removeTableFtsTooltips((Table) applyTo);
+        } else if (clientConfig.getGenericFilterFtsTableTooltipsEnabled() && (applyTo != null)
+                && ListComponent.class.isAssignableFrom(applyTo.getClass())) {
+            filterHelper.removeTableFtsTooltips((ListComponent) applyTo);
         }
 
         applyDatasourceFilter();
@@ -1790,9 +1792,8 @@ public class FilterDelegateImpl implements FilterDelegate {
     }
 
     /**
-     * The method is invoked before search. It sets datasource {@code maxResults} value based on the maxResults
-     * field (if visible) or on maxFetchUI value.
-     * Method also resets the datasource {@code firstResult} value
+     * The method is invoked before search. It sets datasource {@code maxResults} value based on the maxResults field (if visible) or on maxFetchUI
+     * value. Method also resets the datasource {@code firstResult} value
      */
     protected void initDatasourceMaxResults() {
         checkState();
@@ -1854,8 +1855,7 @@ public class FilterDelegateImpl implements FilterDelegate {
     }
 
     /**
-     * extenders should be able to modify the datasource
-     * before it will be refreshed
+     * extenders should be able to modify the datasource before it will be refreshed
      */
     protected void refreshDatasource(Map<String, Object> parameters) {
         adapter.refreshIfNotSuspended(parameters);
@@ -3027,8 +3027,8 @@ public class FilterDelegateImpl implements FilterDelegate {
     }
 
     /**
-     * Class creates filter controls layout based on template.
-     * See template format in documentation for {@link ClientConfig#getGenericFilterControlsLayout()}
+     * Class creates filter controls layout based on template. See template format in documentation for {@link
+     * ClientConfig#getGenericFilterControlsLayout()}
      */
     protected class ControlsLayoutBuilder {
 
@@ -3398,10 +3398,9 @@ public class FilterDelegateImpl implements FilterDelegate {
         }
 
         /**
-         * Recursively replaces parameter names in condition's text, e.g.
-         * "u.name like :component$usersFilter.name26607" -&gt; "u.name like :usersFilter_name26607"
-         * "u.name like :custom$usersFilter.name26607" -&gt; "u.name like :usersFilter_name26607"
-         * "u.name like :session$userLogin" -&gt; "u.name like :session_userLogin"
+         * Recursively replaces parameter names in condition's text, e.g. "u.name like :component$usersFilter.name26607" -&gt; "u.name like
+         * :usersFilter_name26607" "u.name like :custom$usersFilter.name26607" -&gt; "u.name like :usersFilter_name26607" "u.name like
+         * :session$userLogin" -&gt; "u.name like :session_userLogin"
          */
         protected void replaceParamNames(Condition condition) {
             if (condition instanceof Clause) {
@@ -3477,7 +3476,7 @@ public class FilterDelegateImpl implements FilterDelegate {
 
         @Override
         public void unpinAllQuery() {
-            LoaderSupportsApplyToSelected supportsApplyToSelected = (LoaderSupportsApplyToSelected)loader;
+            LoaderSupportsApplyToSelected supportsApplyToSelected = (LoaderSupportsApplyToSelected) loader;
             supportsApplyToSelected.setPrevQueries(null);
             supportsApplyToSelected.setQueryKey(null);
         }
