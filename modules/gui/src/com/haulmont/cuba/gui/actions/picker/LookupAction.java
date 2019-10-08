@@ -30,6 +30,9 @@ import com.haulmont.cuba.gui.components.PickerField;
 import com.haulmont.cuba.gui.components.actions.BaseAction;
 import com.haulmont.cuba.gui.icons.CubaIcon;
 import com.haulmont.cuba.gui.icons.Icons;
+import com.haulmont.cuba.gui.meta.StudioAction;
+import com.haulmont.cuba.gui.meta.StudioDelegate;
+import com.haulmont.cuba.gui.meta.StudioPropertiesItem;
 import com.haulmont.cuba.gui.screen.*;
 import com.haulmont.cuba.gui.sys.ActionScreenInitializer;
 import org.springframework.beans.factory.InitializingBean;
@@ -43,7 +46,7 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 /**
- * Standard action for setting an entity to the picker field using its lookup screen.
+ * Standard action for setting an entity to the picker field using the entity lookup screen.
  * <p>
  * Should be defined for {@code PickerField} or its subclass in a screen XML descriptor.
  * <p>
@@ -52,6 +55,7 @@ import java.util.function.Supplier;
  *
  * @param <E> type of entity
  */
+@StudioAction(category = "Picker Actions", description = "Sets an entity to the picker field using the entity lookup screen")
 @ActionType(LookupAction.ID)
 public class LookupAction<E extends Entity> extends BaseAction implements PickerField.PickerFieldAction, InitializingBean {
 
@@ -92,6 +96,7 @@ public class LookupAction<E extends Entity> extends BaseAction implements Picker
     /**
      * Sets the lookup screen open mode.
      */
+    @StudioPropertiesItem
     public void setOpenMode(OpenMode openMode) {
         screenInitializer.setOpenMode(openMode);
     }
@@ -108,6 +113,7 @@ public class LookupAction<E extends Entity> extends BaseAction implements Picker
     /**
      * Sets the lookup screen id.
      */
+    @StudioPropertiesItem
     public void setScreenId(String screenId) {
         screenInitializer.setScreenId(screenId);
     }
@@ -124,6 +130,7 @@ public class LookupAction<E extends Entity> extends BaseAction implements Picker
     /**
      * Sets the lookup screen id.
      */
+    @StudioPropertiesItem
     public void setScreenClass(Class screenClass) {
         screenInitializer.setScreenClass(screenClass);
     }
@@ -140,6 +147,7 @@ public class LookupAction<E extends Entity> extends BaseAction implements Picker
      * }
      * </pre>
      */
+    @StudioDelegate
     public void setScreenOptionsSupplier(Supplier<ScreenOptions> screenOptionsSupplier) {
         screenInitializer.setScreenOptionsSupplier(screenOptionsSupplier);
     }
@@ -156,6 +164,7 @@ public class LookupAction<E extends Entity> extends BaseAction implements Picker
      * }
      * </pre>
      */
+    @StudioDelegate
     public void setScreenConfigurer(Consumer<Screen> screenConfigurer) {
         screenInitializer.setScreenConfigurer(screenConfigurer);
     }
@@ -172,6 +181,7 @@ public class LookupAction<E extends Entity> extends BaseAction implements Picker
      * }
      * </pre>
      */
+    @StudioDelegate
     public void setAfterCloseHandler(Consumer<Screen.AfterCloseEvent> afterCloseHandler) {
         screenInitializer.setAfterCloseHandler(afterCloseHandler);
     }
@@ -187,6 +197,7 @@ public class LookupAction<E extends Entity> extends BaseAction implements Picker
      * }
      * </pre>
      */
+    @StudioDelegate
     public void setSelectValidator(Predicate<LookupScreen.ValidationContext<E>> selectValidator) {
         this.selectValidator = selectValidator;
     }
@@ -202,6 +213,7 @@ public class LookupAction<E extends Entity> extends BaseAction implements Picker
      * }
      * </pre>
      */
+    @StudioDelegate
     public void setTransformation(Function<Collection<E>, Collection<E>> transformation) {
         this.transformation = transformation;
     }

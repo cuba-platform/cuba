@@ -28,6 +28,9 @@ import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.data.meta.ContainerDataUnit;
 import com.haulmont.cuba.gui.icons.CubaIcon;
 import com.haulmont.cuba.gui.icons.Icons;
+import com.haulmont.cuba.gui.meta.StudioAction;
+import com.haulmont.cuba.gui.meta.StudioDelegate;
+import com.haulmont.cuba.gui.meta.StudioPropertiesItem;
 import com.haulmont.cuba.gui.model.CollectionContainer;
 import com.haulmont.cuba.gui.model.Nested;
 import com.haulmont.cuba.gui.screen.Install;
@@ -45,6 +48,7 @@ import java.util.function.Consumer;
  * The action instance can be parameterized using the nested {@code properties} XML element or programmatically in the
  * screen controller.
  */
+@StudioAction(category = "List Actions", description = "Removes an entity instance from the list and from the database")
 @ActionType(RemoveAction.ID)
 public class RemoveAction extends SecuredListAction implements Action.DisabledWhenScreenReadOnly {
 
@@ -79,6 +83,7 @@ public class RemoveAction extends SecuredListAction implements Action.DisabledWh
     /**
      * Sets whether to ask confirmation from the user.
      */
+    @StudioPropertiesItem
     public void setConfirmation(Boolean confirmation) {
         this.confirmation = confirmation;
     }
@@ -95,6 +100,7 @@ public class RemoveAction extends SecuredListAction implements Action.DisabledWh
     /**
      * Sets confirmation dialog message.
      */
+    @StudioPropertiesItem
     public void setConfirmationMessage(String confirmationMessage) {
         this.confirmationMessage = confirmationMessage;
     }
@@ -111,6 +117,7 @@ public class RemoveAction extends SecuredListAction implements Action.DisabledWh
     /**
      * Sets confirmation dialog title.
      */
+    @StudioPropertiesItem
     public void setConfirmationTitle(String confirmationTitle) {
         this.confirmationTitle = confirmationTitle;
     }
@@ -126,6 +133,7 @@ public class RemoveAction extends SecuredListAction implements Action.DisabledWh
      * }
      * </pre>
      */
+    @StudioDelegate
     public void setAfterActionPerformedHandler(Consumer<RemoveOperation.AfterActionPerformedEvent> afterActionPerformedHandler) {
         this.afterActionPerformedHandler = afterActionPerformedHandler;
     }
@@ -141,6 +149,7 @@ public class RemoveAction extends SecuredListAction implements Action.DisabledWh
      * }
      * </pre>
      */
+    @StudioDelegate
     public void setActionCancelledHandler(Consumer<RemoveOperation.ActionCancelledEvent> actionCancelledHandler) {
         this.actionCancelledHandler = actionCancelledHandler;
     }

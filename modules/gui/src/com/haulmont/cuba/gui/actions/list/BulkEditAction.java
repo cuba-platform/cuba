@@ -16,6 +16,7 @@
 
 package com.haulmont.cuba.gui.actions.list;
 
+import com.google.gson.internal.$Gson$Types;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.Security;
@@ -28,6 +29,10 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.data.meta.EntityDataUnit;
 import com.haulmont.cuba.gui.icons.CubaIcon;
 import com.haulmont.cuba.gui.icons.Icons;
+import com.haulmont.cuba.gui.meta.PropertyType;
+import com.haulmont.cuba.gui.meta.StudioAction;
+import com.haulmont.cuba.gui.meta.StudioDelegate;
+import com.haulmont.cuba.gui.meta.StudioPropertiesItem;
 import com.haulmont.cuba.gui.screen.OpenMode;
 
 import javax.annotation.Nullable;
@@ -46,6 +51,7 @@ import static com.haulmont.cuba.gui.ComponentsHelper.getScreenContext;
  * The action instance can be parameterized using the nested {@code properties} XML element or programmatically in the
  * screen controller.
  */
+@StudioAction(category = "List Actions", description = "Opens an editor for changing attribute values for several entity instances at once")
 @ActionType(BulkEditAction.ID)
 public class BulkEditAction extends SecuredListAction {
 
@@ -83,6 +89,7 @@ public class BulkEditAction extends SecuredListAction {
     /**
      * Sets the number of editor columns.
      */
+    @StudioPropertiesItem
     public void setColumns(Integer columns) {
         this.columns = columns;
     }
@@ -100,6 +107,7 @@ public class BulkEditAction extends SecuredListAction {
      * Sets a regular expression to exclude some fields explicitly
      * from the list of attributes available for editing.
      */
+    @StudioPropertiesItem
     public void setExclude(String exclude) {
         this.exclude = exclude;
     }
@@ -107,6 +115,7 @@ public class BulkEditAction extends SecuredListAction {
     /**
      * Sets field sorter that allows you to sort fields by custom logic.
      */
+    @StudioDelegate
     public void setFieldSorter(BulkEditors.FieldSorter fieldSorter) {
         this.fieldSorter = fieldSorter;
     }
@@ -124,6 +133,7 @@ public class BulkEditAction extends SecuredListAction {
      * Sets the entity attributes to be included to bulk editor window.
      * If set, other attributes will be ignored.
      */
+    @StudioPropertiesItem(type = PropertyType.STRING)
     public void setIncludeProperties(List<String> includeProperties) {
         this.includeProperties = includeProperties;
     }
@@ -140,6 +150,7 @@ public class BulkEditAction extends SecuredListAction {
     /**
      * Sets the bulk editor screen open mode.
      */
+    @StudioPropertiesItem
     public void setOpenMode(OpenMode openMode) {
         this.openMode = openMode;
     }
@@ -157,6 +168,7 @@ public class BulkEditAction extends SecuredListAction {
      * Sets whether dynamic attributes of the edited entity should be displayed on
      * the entity's bulk editor screen. The default value is true.
      */
+    @StudioPropertiesItem
     public void setLoadDynamicAttributes(Boolean loadDynamicAttributes) {
         this.loadDynamicAttributes = loadDynamicAttributes;
     }
@@ -174,6 +186,7 @@ public class BulkEditAction extends SecuredListAction {
      * Sets whether or not the confirmation dialog should be displayed to
      * the user before saving the changes. The default value is true.
      */
+    @StudioPropertiesItem
     public void setUseConfirmDialog(Boolean useConfirmDialog) {
         this.useConfirmDialog = useConfirmDialog;
     }

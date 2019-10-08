@@ -31,6 +31,7 @@ import com.haulmont.cuba.gui.components.actions.ListAction;
 import com.haulmont.cuba.gui.components.data.meta.EntityDataUnit;
 import com.haulmont.cuba.gui.icons.CubaIcon;
 import com.haulmont.cuba.gui.icons.Icons;
+import com.haulmont.cuba.gui.meta.*;
 import com.haulmont.cuba.gui.screen.*;
 import com.haulmont.cuba.gui.sys.ActionScreenInitializer;
 import com.haulmont.cuba.security.entity.EntityOp;
@@ -52,6 +53,7 @@ import static com.haulmont.cuba.gui.screen.FrameOwner.WINDOW_COMMIT_AND_CLOSE_AC
  *
  * @param <E> type of entity
  */
+@StudioAction(category = "List Actions", description = "Creates an entity instance using its editor screen")
 @ActionType(CreateAction.ID)
 public class CreateAction<E extends Entity> extends ListAction implements Action.DisabledWhenScreenReadOnly {
 
@@ -89,6 +91,7 @@ public class CreateAction<E extends Entity> extends ListAction implements Action
     /**
      * Sets the editor screen open mode.
      */
+    @StudioPropertiesItem
     public void setOpenMode(OpenMode openMode) {
         screenInitializer.setOpenMode(openMode);
     }
@@ -105,6 +108,7 @@ public class CreateAction<E extends Entity> extends ListAction implements Action
     /**
      * Sets the editor screen id.
      */
+    @StudioPropertiesItem
     public void setScreenId(String screenId) {
         screenInitializer.setScreenId(screenId);
     }
@@ -119,8 +123,9 @@ public class CreateAction<E extends Entity> extends ListAction implements Action
     }
 
     /**
-     * Sets the editor screen id.
+     * Sets the editor screen class.
      */
+    @StudioPropertiesItem
     public void setScreenClass(Class screenClass) {
         screenInitializer.setScreenClass(screenClass);
     }
@@ -137,6 +142,7 @@ public class CreateAction<E extends Entity> extends ListAction implements Action
      * }
      * </pre>
      */
+    @StudioDelegate
     public void setScreenOptionsSupplier(Supplier<ScreenOptions> screenOptionsSupplier) {
         screenInitializer.setScreenOptionsSupplier(screenOptionsSupplier);
     }
@@ -153,6 +159,7 @@ public class CreateAction<E extends Entity> extends ListAction implements Action
      * }
      * </pre>
      */
+    @StudioDelegate
     public void setScreenConfigurer(Consumer<Screen> screenConfigurer) {
         screenInitializer.setScreenConfigurer(screenConfigurer);
     }
@@ -169,6 +176,7 @@ public class CreateAction<E extends Entity> extends ListAction implements Action
      * }
      * </pre>
      */
+    @StudioDelegate
     public void setAfterCloseHandler(Consumer<Screen.AfterCloseEvent> afterCloseHandler) {
         screenInitializer.setAfterCloseHandler(afterCloseHandler);
     }
@@ -186,6 +194,7 @@ public class CreateAction<E extends Entity> extends ListAction implements Action
      * }
      * </pre>
      */
+    @StudioDelegate
     public void setNewEntitySupplier(Supplier<E> newEntitySupplier) {
         this.newEntitySupplier = newEntitySupplier;
     }
@@ -202,6 +211,7 @@ public class CreateAction<E extends Entity> extends ListAction implements Action
      * }
      * </pre>
      */
+    @StudioDelegate
     public void setInitializer(Consumer<E> initializer) {
         this.initializer = initializer;
     }
@@ -217,6 +227,7 @@ public class CreateAction<E extends Entity> extends ListAction implements Action
      * }
      * </pre>
      */
+    @StudioDelegate
     public void setAfterCommitHandler(Consumer<E> afterCommitHandler) {
         this.afterCommitHandler = afterCommitHandler;
     }

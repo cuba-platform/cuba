@@ -29,6 +29,7 @@ import com.haulmont.cuba.gui.components.data.ValueSource;
 import com.haulmont.cuba.gui.components.data.meta.EntityValueSource;
 import com.haulmont.cuba.gui.icons.CubaIcon;
 import com.haulmont.cuba.gui.icons.Icons;
+import com.haulmont.cuba.gui.meta.StudioAction;
 import com.haulmont.cuba.gui.model.DataContext;
 import com.haulmont.cuba.gui.screen.FrameOwner;
 import com.haulmont.cuba.gui.screen.UiControllerUtils;
@@ -42,6 +43,7 @@ import javax.inject.Inject;
  * <p>
  * Should be defined for {@code PickerField} or its subclass in a screen XML descriptor.
  */
+@StudioAction(category = "Picker Actions", description = "Clears the picker field value")
 @ActionType(ClearAction.ID)
 public class ClearAction extends BaseAction implements PickerField.PickerFieldAction, InitializingBean {
 

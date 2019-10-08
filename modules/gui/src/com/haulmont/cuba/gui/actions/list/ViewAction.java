@@ -28,6 +28,9 @@ import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.data.meta.EntityDataUnit;
 import com.haulmont.cuba.gui.icons.CubaIcon;
 import com.haulmont.cuba.gui.icons.Icons;
+import com.haulmont.cuba.gui.meta.StudioAction;
+import com.haulmont.cuba.gui.meta.StudioDelegate;
+import com.haulmont.cuba.gui.meta.StudioPropertiesItem;
 import com.haulmont.cuba.gui.screen.*;
 import com.haulmont.cuba.gui.sys.ActionScreenInitializer;
 import com.haulmont.cuba.security.entity.EntityOp;
@@ -46,6 +49,7 @@ import java.util.function.Supplier;
  * The action instance can be parameterized using the nested {@code properties} XML element or programmatically in the
  * screen controller.
  */
+@StudioAction(category = "List Actions", description = "Opens an editor screen for an entity instance in read-only mode")
 @ActionType(ViewAction.ID)
 public class ViewAction extends SecuredListAction {
 
@@ -75,6 +79,7 @@ public class ViewAction extends SecuredListAction {
     /**
      * Sets the editor screen open mode.
      */
+    @StudioPropertiesItem
     public void setOpenMode(OpenMode openMode) {
         screenInitializer.setOpenMode(openMode);
     }
@@ -91,6 +96,7 @@ public class ViewAction extends SecuredListAction {
     /**
      * Sets the editor screen id.
      */
+    @StudioPropertiesItem
     public void setScreenId(String screenId) {
         screenInitializer.setScreenId(screenId);
     }
@@ -107,6 +113,7 @@ public class ViewAction extends SecuredListAction {
     /**
      * Sets the editor screen id.
      */
+    @StudioPropertiesItem
     public void setScreenClass(Class screenClass) {
         screenInitializer.setScreenClass(screenClass);
     }
@@ -123,6 +130,7 @@ public class ViewAction extends SecuredListAction {
      * }
      * </pre>
      */
+    @StudioDelegate
     public void setScreenOptionsSupplier(Supplier<ScreenOptions> screenOptionsSupplier) {
         screenInitializer.setScreenOptionsSupplier(screenOptionsSupplier);
     }
@@ -139,6 +147,7 @@ public class ViewAction extends SecuredListAction {
      * }
      * </pre>
      */
+    @StudioDelegate
     public void setScreenConfigurer(Consumer<Screen> screenConfigurer) {
         screenInitializer.setScreenConfigurer(screenConfigurer);
     }

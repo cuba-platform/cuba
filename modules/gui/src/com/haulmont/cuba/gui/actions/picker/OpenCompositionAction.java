@@ -17,6 +17,7 @@
 package com.haulmont.cuba.gui.actions.picker;
 
 import com.haulmont.cuba.gui.components.ActionType;
+import com.haulmont.cuba.gui.meta.StudioAction;
 
 /**
  * Standard picker field action for opening an entity instance if it is a one-to-one composition.
@@ -26,6 +27,7 @@ import com.haulmont.cuba.gui.components.ActionType;
  * The action instance can be parameterized using the nested {@code properties} XML element or programmatically in the
  * screen controller.
  */
+@StudioAction(category = "Picker Actions", description = "Opens a one-to-one composition entity using the entity edit screen")
 @ActionType(OpenCompositionAction.ID)
 public class OpenCompositionAction extends OpenAction {
 

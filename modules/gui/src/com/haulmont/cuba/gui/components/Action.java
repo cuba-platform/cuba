@@ -17,6 +17,8 @@
 package com.haulmont.cuba.gui.components;
 
 import com.haulmont.cuba.gui.icons.Icons;
+import com.haulmont.cuba.gui.meta.PropertyType;
+import com.haulmont.cuba.gui.meta.StudioProperty;
 import com.haulmont.cuba.security.entity.ConstraintOperationType;
 
 import java.beans.PropertyChangeEvent;
@@ -48,12 +50,14 @@ public interface Action {
      * @return  action's localized caption
      */
     String getCaption();
+    @StudioProperty
     void setCaption(String caption);
 
     /**
      * @return  action's description
      */
     String getDescription();
+    @StudioProperty
     void setDescription(String description);
 
     /**
@@ -68,12 +72,14 @@ public interface Action {
      *
      * @param shortcut string of type "Modifiers-Key", e.g. "Alt-N". Case-insensitive.
      */
+    @StudioProperty(type = PropertyType.SHORTCUT)
     void setShortcut(String shortcut);
 
     /**
      * @return  action's icon
      */
     String getIcon();
+    @StudioProperty
     void setIcon(String icon);
     /**
      * Set an icon from an icon set.
@@ -84,12 +90,14 @@ public interface Action {
      * @return  whether the action is currently enabled
      */
     boolean isEnabled();
+    @StudioProperty(name = "enable")
     void setEnabled(boolean enabled);
 
     /**
      * @return  whether the action is currently visible
      */
     boolean isVisible();
+    @StudioProperty
     void setVisible(boolean visible);
 
     /**
@@ -196,10 +204,12 @@ public interface Action {
      * Interface defining constraintOperationType and constraintCode options.
      */
     interface HasSecurityConstraint {
+        @StudioProperty
         void setConstraintOperationType(ConstraintOperationType constraintOperationType);
         ConstraintOperationType getConstraintOperationType();
 
         String getConstraintCode();
+        @StudioProperty
         void setConstraintCode(String constraintCode);
     }
 

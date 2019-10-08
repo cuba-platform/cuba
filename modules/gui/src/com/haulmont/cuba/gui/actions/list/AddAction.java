@@ -30,6 +30,9 @@ import com.haulmont.cuba.gui.components.actions.ListAction;
 import com.haulmont.cuba.gui.components.data.meta.ContainerDataUnit;
 import com.haulmont.cuba.gui.icons.CubaIcon;
 import com.haulmont.cuba.gui.icons.Icons;
+import com.haulmont.cuba.gui.meta.StudioAction;
+import com.haulmont.cuba.gui.meta.StudioDelegate;
+import com.haulmont.cuba.gui.meta.StudioPropertiesItem;
 import com.haulmont.cuba.gui.model.Nested;
 import com.haulmont.cuba.gui.screen.*;
 import com.haulmont.cuba.gui.sys.ActionScreenInitializer;
@@ -52,6 +55,7 @@ import java.util.function.Supplier;
  *
  * @param <E> type of entity
  */
+@StudioAction(category = "List Actions", description = "Adds entities to the list using a lookup screen")
 @ActionType(AddAction.ID)
 public class AddAction<E extends Entity> extends ListAction implements Action.DisabledWhenScreenReadOnly {
 
@@ -87,6 +91,7 @@ public class AddAction<E extends Entity> extends ListAction implements Action.Di
     /**
      * Sets the lookup screen open mode.
      */
+    @StudioPropertiesItem
     public void setOpenMode(OpenMode openMode) {
         screenInitializer.setOpenMode(openMode);
     }
@@ -103,6 +108,7 @@ public class AddAction<E extends Entity> extends ListAction implements Action.Di
     /**
      * Sets the lookup screen id.
      */
+    @StudioPropertiesItem
     public void setScreenId(String screenId) {
         screenInitializer.setScreenId(screenId);
     }
@@ -119,6 +125,7 @@ public class AddAction<E extends Entity> extends ListAction implements Action.Di
     /**
      * Sets the lookup screen id.
      */
+    @StudioPropertiesItem
     public void setScreenClass(Class screenClass) {
         screenInitializer.setScreenClass(screenClass);
     }
@@ -135,6 +142,7 @@ public class AddAction<E extends Entity> extends ListAction implements Action.Di
      * }
      * </pre>
      */
+    @StudioDelegate
     public void setScreenOptionsSupplier(Supplier<ScreenOptions> screenOptionsSupplier) {
         screenInitializer.setScreenOptionsSupplier(screenOptionsSupplier);
     }
@@ -151,6 +159,7 @@ public class AddAction<E extends Entity> extends ListAction implements Action.Di
      * }
      * </pre>
      */
+    @StudioDelegate
     public void setScreenConfigurer(Consumer<Screen> screenConfigurer) {
         screenInitializer.setScreenConfigurer(screenConfigurer);
     }
@@ -167,6 +176,7 @@ public class AddAction<E extends Entity> extends ListAction implements Action.Di
      * }
      * </pre>
      */
+    @StudioDelegate
     public void setAfterCloseHandler(Consumer<Screen.AfterCloseEvent> afterCloseHandler) {
         screenInitializer.setAfterCloseHandler(afterCloseHandler);
     }
@@ -182,6 +192,7 @@ public class AddAction<E extends Entity> extends ListAction implements Action.Di
      * }
      * </pre>
      */
+    @StudioDelegate
     public void setSelectValidator(Predicate<LookupScreen.ValidationContext<E>> selectValidator) {
         this.selectValidator = selectValidator;
     }
@@ -197,6 +208,7 @@ public class AddAction<E extends Entity> extends ListAction implements Action.Di
      * }
      * </pre>
      */
+    @StudioDelegate
     public void setTransformation(Function<Collection<E>, Collection<E>> transformation) {
         this.transformation = transformation;
     }

@@ -24,6 +24,7 @@ import com.haulmont.cuba.gui.components.data.meta.ContainerDataUnit;
 import com.haulmont.cuba.gui.components.data.meta.EmptyDataUnit;
 import com.haulmont.cuba.gui.icons.CubaIcon;
 import com.haulmont.cuba.gui.icons.Icons;
+import com.haulmont.cuba.gui.meta.StudioAction;
 import com.haulmont.cuba.gui.model.CollectionContainer;
 import com.haulmont.cuba.gui.model.DataLoader;
 import com.haulmont.cuba.gui.model.HasLoader;
@@ -37,6 +38,7 @@ import javax.inject.Inject;
  * <p>
  * Should be defined for a list component ({@code Table}, {@code DataGrid}, etc.) in a screen XML descriptor.
  */
+@StudioAction(category = "List Actions", description = "Reloads a list of entities from the database")
 @ActionType(RefreshAction.ID)
 public class RefreshAction extends ListAction {
 

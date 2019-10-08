@@ -159,5 +159,10 @@ public enum PropertyType {
     /**
      * Nested element of UI component, e.g. validator, formatter.
      */
-    ELEMENT
+    ELEMENT,
+
+    /**
+     * Keyboard shortcut.
+     */
+    SHORTCUT
 }

@@ -29,6 +29,9 @@ import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.data.meta.EntityDataUnit;
 import com.haulmont.cuba.gui.icons.CubaIcon;
 import com.haulmont.cuba.gui.icons.Icons;
+import com.haulmont.cuba.gui.meta.StudioAction;
+import com.haulmont.cuba.gui.meta.StudioDelegate;
+import com.haulmont.cuba.gui.meta.StudioPropertiesItem;
 import com.haulmont.cuba.gui.screen.*;
 import com.haulmont.cuba.gui.sys.ActionScreenInitializer;
 import com.haulmont.cuba.security.entity.EntityOp;
@@ -50,6 +53,7 @@ import static com.haulmont.cuba.gui.screen.FrameOwner.WINDOW_COMMIT_AND_CLOSE_AC
  *
  * @param <E> type of entity
  */
+@StudioAction(category = "List Actions", description = "Edits an entity instance using its editor screen")
 @ActionType(EditAction.ID)
 public class EditAction<E extends Entity> extends SecuredListAction implements Action.DisabledWhenScreenReadOnly {
 
@@ -86,6 +90,7 @@ public class EditAction<E extends Entity> extends SecuredListAction implements A
     /**
      * Sets the editor screen open mode.
      */
+    @StudioPropertiesItem
     public void setOpenMode(OpenMode openMode) {
         screenInitializer.setOpenMode(openMode);
     }
@@ -102,6 +107,7 @@ public class EditAction<E extends Entity> extends SecuredListAction implements A
     /**
      * Sets the editor screen id.
      */
+    @StudioPropertiesItem
     public void setScreenId(String screenId) {
         screenInitializer.setScreenId(screenId);
     }
@@ -118,6 +124,7 @@ public class EditAction<E extends Entity> extends SecuredListAction implements A
     /**
      * Sets the editor screen id.
      */
+    @StudioPropertiesItem
     public void setScreenClass(Class screenClass) {
         screenInitializer.setScreenClass(screenClass);
     }
@@ -134,6 +141,7 @@ public class EditAction<E extends Entity> extends SecuredListAction implements A
      * }
      * </pre>
      */
+    @StudioDelegate
     public void setScreenOptionsSupplier(Supplier<ScreenOptions> screenOptionsSupplier) {
         screenInitializer.setScreenOptionsSupplier(screenOptionsSupplier);
     }
@@ -150,6 +158,7 @@ public class EditAction<E extends Entity> extends SecuredListAction implements A
      * }
      * </pre>
      */
+    @StudioDelegate
     public void setScreenConfigurer(Consumer<Screen> screenConfigurer) {
         screenInitializer.setScreenConfigurer(screenConfigurer);
     }
@@ -166,6 +175,7 @@ public class EditAction<E extends Entity> extends SecuredListAction implements A
      * }
      * </pre>
      */
+    @StudioDelegate
     public void setAfterCloseHandler(Consumer<Screen.AfterCloseEvent> afterCloseHandler) {
         screenInitializer.setAfterCloseHandler(afterCloseHandler);
     }
@@ -181,6 +191,7 @@ public class EditAction<E extends Entity> extends SecuredListAction implements A
      * }
      * </pre>
      */
+    @StudioDelegate
     public void setAfterCommitHandler(Consumer<E> afterCommitHandler) {
         this.afterCommitHandler = afterCommitHandler;
     }

@@ -28,6 +28,7 @@ import com.haulmont.cuba.gui.components.filter.FilterHelper;
 import com.haulmont.cuba.gui.components.sys.ValuePathHelper;
 import com.haulmont.cuba.gui.icons.CubaIcon;
 import com.haulmont.cuba.gui.icons.Icons;
+import com.haulmont.cuba.gui.meta.StudioAction;
 import com.haulmont.cuba.gui.screen.MapScreenOptions;
 import com.haulmont.cuba.gui.screen.OpenMode;
 
@@ -40,6 +41,7 @@ import java.util.Set;
 /**
  * An action that adds a record to the set.
  */
+@StudioAction(category = "List Actions", description = "Adds the selected entity to a set")
 @ActionType(AddToSetAction.ID)
 public class AddToSetAction extends SecuredListAction {
 

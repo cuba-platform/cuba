@@ -30,6 +30,7 @@ import com.haulmont.cuba.gui.export.ExcelExporter;
 import com.haulmont.cuba.gui.export.ExportDisplay;
 import com.haulmont.cuba.gui.icons.CubaIcon;
 import com.haulmont.cuba.gui.icons.Icons;
+import com.haulmont.cuba.gui.meta.StudioAction;
 import com.haulmont.cuba.gui.model.CollectionContainer;
 
 import javax.inject.Inject;
@@ -41,6 +42,7 @@ import java.util.stream.Collectors;
  * <p>
  * Should be defined for a list component ({@code Table}, {@code DataGrid}, etc.) in a screen XML descriptor.
  */
+@StudioAction(category = "List Actions", description = "Exports a list of entities to XLS file")
 @ActionType(ExcelAction.ID)
 public class ExcelAction extends ListAction {
 
