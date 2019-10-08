@@ -88,6 +88,11 @@ public class Sort implements Serializable {
         return orders;
     }
 
+    @Override
+    public String toString() {
+        return orders.toString();
+    }
+
     /**
      * Sort order defines a property and corresponding {@link Direction}.
      */
@@ -121,6 +126,11 @@ public class Sort implements Serializable {
 
         public String getProperty() {
             return property;
+        }
+
+        @Override
+        public String toString() {
+            return property + ": " + direction;
         }
     }
 
