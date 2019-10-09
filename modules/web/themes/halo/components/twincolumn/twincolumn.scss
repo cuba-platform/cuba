@@ -22,7 +22,8 @@
     @include valo-textfield-style($padding: $padding-width);
     height: auto;
 
-    .v-ch & {
+    .v-ch &,
+    .v-edge & {
       vertical-align: top;
     }
   }
