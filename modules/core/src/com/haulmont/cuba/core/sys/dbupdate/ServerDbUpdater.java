@@ -64,7 +64,7 @@ public class ServerDbUpdater extends DbUpdaterEngine {
             this.dbScriptsDirectory = dbDirName;
         }
 
-        dbmsType = DbmsType.getType(storeName);
+        dbmsType = DbmsType.getTypeOrNull(storeName);
         dbmsVersion = DbmsType.getVersion(storeName);
     }
 

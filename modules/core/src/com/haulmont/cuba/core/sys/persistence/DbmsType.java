@@ -38,14 +38,14 @@ public class DbmsType {
     }
 
     public static String getType(String storeName) {
-        String propName = "cuba.dbmsType";
-        if (!Stores.isMain(storeName))
-            propName = propName + "_" + storeName;
+        String type = AppContext.getProperty(getDbmsTypePropertyName(storeName));
+        if (StringUtils.isBlank(type))
+            throw new IllegalStateException("Property " + getDbmsTypePropertyName(storeName) + " is not set");
+        return type;
+    }
 
-        String id = AppContext.getProperty(propName);
-        if (StringUtils.isBlank(id))
-            throw new IllegalStateException("Property " + propName + " is not set");
-        return id;
+    public static String getTypeOrNull(String storeName) {
+        return StringUtils.trimToNull(AppContext.getProperty(getDbmsTypePropertyName(storeName)));
     }
 
     public static String getVersion() {
@@ -58,5 +58,13 @@ public class DbmsType {
             propName = propName + "_" + storeName;
 
         return StringUtils.trimToEmpty(AppContext.getProperty(propName));
+    }
+
+    protected static String getDbmsTypePropertyName(String storeName) {
+        String propName = "cuba.dbmsType";
+        if (!Stores.isMain(storeName)) {
+            propName = propName + "_" + storeName;
+        }
+        return propName;
     }
 }
