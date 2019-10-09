@@ -41,6 +41,7 @@ public class CubaHorizontalSplitPanelWidget extends VSplitPanelHorizontal {
 
     protected static final int BUTTON_WIDTH_SPACE = 10;
     protected boolean reversed;
+    protected boolean docked;
 
     protected int splitHeight;
 
@@ -117,11 +118,13 @@ public class CubaHorizontalSplitPanelWidget extends VSplitPanelHorizontal {
 
     private void onDockButtonClick() {
         String newPosition = position;
+        boolean isDocked = false;
 
         if (dockMode == SplitPanelDockMode.LEFT) {
             if (dockButtonState == DockButtonState.LEFT) {
                 defaultPosition = position;
                 newPosition = "0px";
+                isDocked = true;
             } else if (defaultPosition != null) {
                 newPosition = defaultPosition;
             } else if (beforeDockPosition != null) {
@@ -133,11 +136,13 @@ public class CubaHorizontalSplitPanelWidget extends VSplitPanelHorizontal {
                 // So we replace it to the absolute RIGHT position.
                 defaultPosition = position;
                 newPosition = reversed ? "0px" : getAbsoluteRight() + "px";
+                isDocked = true;
             }
         } else if (dockMode == SplitPanelDockMode.RIGHT) {
             if (dockButtonState == DockButtonState.RIGHT) {
                 defaultPosition = position;
                 newPosition = reversed ? "0px" : getAbsoluteRight() + "px";
+                isDocked = true;
             } else if (defaultPosition != null) {
                 newPosition = defaultPosition;
             } else if (beforeDockPosition != null) {
@@ -149,11 +154,13 @@ public class CubaHorizontalSplitPanelWidget extends VSplitPanelHorizontal {
                 // So we replace it to the absolute LEFT position.
                 defaultPosition = position;
                 newPosition = "0px";
+                isDocked = true;
             }
         }
 
         // save last position before dock changes position
         beforeDockPositionHandler.accept(defaultPosition);
+        setDocked(isDocked);
         setSplitPosition(newPosition);
         fireEvent(new SplitterMoveHandler.SplitterMoveEvent(this));
     }
@@ -261,6 +268,46 @@ public class CubaHorizontalSplitPanelWidget extends VSplitPanelHorizontal {
     }
 
     @Override
+    public void onMouseDown(Event event) {
+        if (isDockable()
+                && isDocked()
+                && (isMinPositionSet() || isMaxPositionSet())) {
+            return;
+        }
+        super.onMouseDown(event);
+    }
+
+    @Override
+    public void setSplitPosition(String pos) {
+        if (isDockable()
+                && isDocked()
+                && !isExtremePosition(pos)) {
+            setDocked(false);
+        }
+        super.setSplitPosition(pos);
+    }
+
+    protected boolean isMinPositionSet() {
+        return dockMode == SplitPanelDockMode.LEFT
+                && !minimumPosition.equals("0%")
+                && !minimumPosition.equals("0px");
+    }
+
+    protected boolean isMaxPositionSet() {
+        return dockMode == SplitPanelDockMode.RIGHT
+                && !maximumPosition.equals("100%")
+                && !maximumPosition.equals(getAbsoluteRight() + "px");
+    }
+
+    protected boolean isExtremePosition(String pos) {
+        boolean dockedToLeft = dockMode == SplitPanelDockMode.LEFT
+                && (pos.equals("0%") || pos.equals("0px"));
+        boolean dockedToRight = dockMode == SplitPanelDockMode.RIGHT
+                && (pos.equals("100%") || pos.equals(getAbsoluteRight() + "px"));
+        return dockedToLeft || dockedToRight;
+    }
+
+    @Override
     public void onMouseUp(Event event) {
         super.onMouseUp(event);
 
@@ -277,9 +324,24 @@ public class CubaHorizontalSplitPanelWidget extends VSplitPanelHorizontal {
     }
 
     @Override
+    protected String checkSplitPositionLimits(String pos) {
+        return isDocked() ? pos : super.checkSplitPositionLimits(pos);
+    }
+
+    @Override
     public void setPositionReversed(boolean reversed) {
         super.setPositionReversed(reversed);
 
         this.reversed = reversed;
+    }
+
+    protected void setDocked(boolean docked) {
+        if (this.docked != docked) {
+            this.docked = docked;
+        }
+    }
+
+    protected boolean isDocked() {
+        return docked;
     }
 }
