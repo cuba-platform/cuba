@@ -19,6 +19,7 @@ package com.haulmont.cuba.gui.app.security.constraint.edit;
 
 import com.google.common.base.Strings;
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.cuba.core.app.ConstraintScriptValidationService;
 import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 import com.haulmont.cuba.core.entity.annotation.UnavailableInSecurityConstraints;
 import com.haulmont.cuba.core.global.*;
@@ -49,7 +50,6 @@ import com.haulmont.cuba.security.entity.FilterEntity;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.text.TextStringBuilder;
-import org.codehaus.groovy.control.CompilationFailedException;
 import org.dom4j.Element;
 
 import javax.inject.Inject;
@@ -59,19 +59,16 @@ import static com.haulmont.cuba.gui.WindowManager.OpenType;
 import static java.util.Arrays.asList;
 
 public class ConstraintEditor extends AbstractEditor<Constraint> {
-
+    @Inject
+    private ConstraintScriptValidationService constraintScriptValidationService;
     @Inject
     protected LookupField<String> entityName;
-
     @Inject
     protected SourceCodeEditor joinClause;
-
     @Inject
     protected SourceCodeEditor whereClause;
-
     @Inject
     protected SourceCodeEditor groovyScript;
-
     @Inject
     protected Label<String> groovyScriptLabel;
     @Inject
@@ -388,18 +385,16 @@ public class ConstraintEditor extends AbstractEditor<Constraint> {
             }
 
             if (!Strings.isNullOrEmpty(constraint.getGroovyScript())) {
-                try {
-                    security.evaluateConstraintScript(metadata.create(entityName), constraint.getGroovyScript());
-                } catch (CompilationFailedException e) {
+                ConstraintScriptValidationService.ScriptValidationResult result =
+                        constraintScriptValidationService.evaluateConstraintScript(metadata.create(entityName), constraint.getGroovyScript());
+                if (result.isCompilationFailedException()) {
                     showMessageDialog(getMessage("notification.error"),
-                            formatMessage("notification.scriptCompilationError", e.toString()), MessageType.WARNING_HTML);
+                                formatMessage("notification.scriptCompilationError", result.getErrorMessage()), MessageType.WARNING_HTML);
                     return;
-                } catch (Exception e) {
-                    // ignore
                 }
             }
-
-            showNotification(getMessage("notification.success"), NotificationType.HUMANIZED);
         }
+
+        showNotification(getMessage("notification.success"), NotificationType.HUMANIZED);
     }
 }
