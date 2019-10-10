@@ -64,13 +64,14 @@ public class ServerDbUpdater extends DbUpdaterEngine {
             this.dbScriptsDirectory = dbDirName;
         }
 
+        //dbms type is not null for RDBMS stores
         dbmsType = DbmsType.getTypeOrNull(storeName);
         dbmsVersion = DbmsType.getVersion(storeName);
     }
 
     @Override
     public DataSource getDataSource() {
-        return persistence.getDataSource(storeName);
+        return dbmsType != null ? persistence.getDataSource(storeName) : null;
     }
 
     @Override
