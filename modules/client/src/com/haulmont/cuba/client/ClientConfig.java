@@ -230,6 +230,7 @@ public interface ClientConfig extends Config {
      * If true, then table rows tooltips with hit information will be generated in case of full text search in generic filter component
      */
     @Property("cuba.gui.genericFilterFtsTableTooltipsEnabled")
+    @Source(type = SourceType.DATABASE)
     @DefaultBoolean(true)
     boolean getGenericFilterFtsTableTooltipsEnabled();
 
