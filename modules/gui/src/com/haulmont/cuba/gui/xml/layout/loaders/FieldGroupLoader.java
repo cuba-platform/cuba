@@ -135,7 +135,7 @@ public class FieldGroupLoader extends AbstractComponentLoader<FieldGroup> {
 
                 Iterable<FieldGroup.FieldConfig> columnFields = loadFields(resultComponent, columnElement, ds, columnWidth);
                 if (colIndex == 0) {
-                     columnFields = Iterables.concat(columnFields, loadDynamicAttributeFields(ds));
+                    columnFields = Iterables.concat(columnFields, loadDynamicAttributeFields(ds));
                 }
                 for (FieldGroup.FieldConfig field : columnFields) {
                     resultComponent.addField(field, colIndex);
@@ -643,7 +643,9 @@ public class FieldGroupLoader extends AbstractComponentLoader<FieldGroup> {
 
             checkNotNullArgument(propertyPath, "Could not resolve property path '%s' in '%s'", field.getId(), metaClass);
 
-            if (!getSecurity().isEntityAttrUpdatePermitted(metaClass, propertyPath.toString())) {
+            if (!getSecurity().isEntityAttrUpdatePermitted(metaClass, propertyPath.toString()) ||
+                    (getMetadataTools().isEmbeddable(metaClass) &&
+                            !getSecurity().isEntityOpPermitted(getParentEntityMetaClass(resultComponent), EntityOp.UPDATE))) {
                 field.setEditable(false);
             }
         }
@@ -668,6 +670,10 @@ public class FieldGroupLoader extends AbstractComponentLoader<FieldGroup> {
                 field.setVisible(false);
             }
         }
+    }
+
+    protected MetaClass getParentEntityMetaClass(FieldGroup resultComponent) {
+        return resultComponent.getDatasource().getMetaClass();
     }
 
     protected void loadEnable(FieldGroup resultComponent, FieldGroup.FieldConfig field) {

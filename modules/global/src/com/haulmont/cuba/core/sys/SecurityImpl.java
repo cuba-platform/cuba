@@ -144,7 +144,8 @@ public class SecurityImpl implements Security {
 
         if (metadata.getTools().isEmbeddable(propertyMetaClass)) {
             return isEntityOpPermitted(propertyMetaClass, EntityOp.UPDATE)
-                    && isEntityAttrPermitted(propertyMetaClass, mpp, EntityAttrAccess.MODIFY);
+                    && isEntityAttrPermitted(propertyMetaClass, mpp, EntityAttrAccess.MODIFY)
+                    && isEntityOpPermitted(mpp.getMetaClass(), EntityOp.UPDATE);
         }
 
         return (isEntityOpPermitted(propertyMetaClass, EntityOp.CREATE)
