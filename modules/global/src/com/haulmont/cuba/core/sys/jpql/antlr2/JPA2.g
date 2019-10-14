@@ -308,7 +308,7 @@ between_expression
     | string_expression ('NOT')? 'BETWEEN' string_expression 'AND' string_expression
     | datetime_expression ('NOT')? 'BETWEEN' datetime_expression 'AND' datetime_expression;
 in_expression
-    : (path_expression | type_discriminator | identification_variable) (NOT)? IN
+    : (path_expression | type_discriminator | identification_variable | extract_function) (NOT)? IN
             ( '(' in_item (',' in_item)* ')'
             | subquery
             | collection_valued_input_parameter
