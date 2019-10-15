@@ -24,10 +24,14 @@ import com.haulmont.cuba.web.widgets.CubaCheckBox;
 
 public class WebCheckBox extends WebV8AbstractField<com.vaadin.ui.CheckBox, Boolean, Boolean> implements CheckBox {
     public WebCheckBox() {
-        this.component = new CubaCheckBox();
+        this.component = createComponent();
         this.internalValue = false;
 
         attachValueChangeListener(component);
+    }
+
+    protected CubaCheckBox createComponent() {
+        return new CubaCheckBox();
     }
 
     @Override
