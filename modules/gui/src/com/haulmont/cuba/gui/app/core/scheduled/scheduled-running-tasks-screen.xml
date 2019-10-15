@@ -36,9 +36,6 @@
         <groupTable id="scheduledTasksTable"
                     width="100%"
                     dataContainer="scheduledTasksDc">
-            <actions>
-                <action id="refresh" type="refresh"/>
-            </actions>
             <columns>
                 <column id="beanName"/>
                 <column id="methodName"/>
@@ -51,9 +48,6 @@
                 <column id="description"/>
             </columns>
             <rowsCount/>
-            <buttonsPanel id="buttonsPanel" alwaysVisible="true">
-                <button id="refreshBtn" action="scheduledTasksTable.refresh"/>
-            </buttonsPanel>
         </groupTable>
     </layout>
 </window>
