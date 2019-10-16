@@ -303,6 +303,16 @@ public class WebSplitPanel extends WebAbstractComponent<AbstractSplitPanel> impl
     }
 
     @Override
+    public float getMinSplitPosition() {
+        return component.getMinSplitPosition();
+    }
+
+    @Override
+    public SizeUnit getMinSplitPositionSizeUnit() {
+        return WebWrapperUtils.toSizeUnit(component.getMinSplitPositionUnit());
+    }
+
+    @Override
     public void setMaxSplitPosition(int pos, int unit) {
         setMaxSplitPosition(pos, ComponentsHelper.convertToSizeUnit(unit));
     }
@@ -310,6 +320,16 @@ public class WebSplitPanel extends WebAbstractComponent<AbstractSplitPanel> impl
     @Override
     public void setMaxSplitPosition(int pos, SizeUnit unit) {
         component.setMaxSplitPosition(pos, WebWrapperUtils.toVaadinUnit(unit));
+    }
+
+    @Override
+    public float getMaxSplitPosition() {
+        return component.getMaxSplitPosition();
+    }
+
+    @Override
+    public SizeUnit getMaxSplitPositionSizeUnit() {
+        return WebWrapperUtils.toSizeUnit(component.getMaxSplitPositionUnit());
     }
 
     @Override

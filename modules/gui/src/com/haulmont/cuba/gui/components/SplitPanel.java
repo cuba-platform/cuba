@@ -123,6 +123,20 @@ public interface SplitPanel extends ComponentContainer, Component.BelongToFrame,
     void setMinSplitPosition(int pos, SizeUnit unit);
 
     /**
+     * Returns the minimum position of the splitter.
+     *
+     * @return minimum position of the splitter
+     */
+    float getMinSplitPosition();
+
+    /**
+     * Returns the unit of the minimum position of the splitter.
+     *
+     * @return unit of the minimum position of the splitter
+     */
+    SizeUnit getMinSplitPositionSizeUnit();
+
+    /**
      * Set maximum available position of split.
      * Maximum position of split will be set from the right if position is reversed.
      *
@@ -139,6 +153,20 @@ public interface SplitPanel extends ComponentContainer, Component.BelongToFrame,
      * @param unit the unit (from {@link SizeUnit}) in which the size is given.
      */
     void setMaxSplitPosition(int pos, SizeUnit unit);
+
+    /**
+     * Returns the maximum position of the splitter.
+     *
+     * @return maximum position of the splitter
+     */
+    float getMaxSplitPosition();
+
+    /**
+     * Returns the unit of the maximum position of the splitter.
+     *
+     * @return unit of the maximum position of the splitter
+     */
+    SizeUnit getMaxSplitPositionSizeUnit();
 
     /**
      * Sets whether users are able to change the separator position or not.
