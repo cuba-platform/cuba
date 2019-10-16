@@ -135,13 +135,8 @@ public class FormLoader extends AbstractComponentLoader<Form> {
                 String flexAttr = columnElement.attributeValue("flex");
                 Float flex = null;
                 if (!Strings.isNullOrEmpty(flexAttr)) {
-                    try {
-                        flex = Float.parseFloat(flexAttr);
-                        if (flex > 0.0F) {
-                            resultComponent.setColumnFlex(colIndex, flex);
-                        }
-                    } catch (Exception e) {
-                    }
+                    flex = Float.parseFloat(flexAttr);
+                    resultComponent.setColumnFlex(colIndex, flex);
                 }
 
                 Iterable<ComponentPosition> columnComponents = loadComponents(columnElement, columnWidth, flex);
