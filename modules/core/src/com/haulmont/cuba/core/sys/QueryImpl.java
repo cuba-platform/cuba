@@ -38,6 +38,7 @@ import com.haulmont.cuba.core.sys.persistence.PersistenceImplSupport;
 import org.eclipse.persistence.config.CascadePolicy;
 import org.eclipse.persistence.config.HintValues;
 import org.eclipse.persistence.config.QueryHints;
+import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.helper.CubaUtil;
 import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
@@ -53,6 +54,7 @@ import org.springframework.stereotype.Component;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.persistence.*;
+import java.time.ZoneId;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -833,6 +835,13 @@ public class QueryImpl<T> implements TypedQuery<T> {
         private void convertValue() {
             if (value == null || actualParamType == null || actualParamType.isAssignableFrom(value.getClass()))
                 return;
+
+            // Since ConversionManager incorrectly converts Date into LocalDate
+            if (value instanceof java.util.Date && actualParamType == ClassConstants.TIME_LDATE){
+                java.util.Date date = (java.util.Date) value;
+                value = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+                return;
+            }
 
             ConversionManager conversionManager = ConversionManager.getDefaultManager();
             try {
