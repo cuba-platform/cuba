@@ -189,8 +189,7 @@ public class FormLoader extends AbstractComponentLoader<Form> {
         if (Strings.isNullOrEmpty(componentWidth)) {
             if (columnWidth != null) {
                 component.setWidth(columnWidth);
-            }
-            if (flex != null) {
+            } else if (flex != null) {
                 component.setWidthFull();
             }
         }
