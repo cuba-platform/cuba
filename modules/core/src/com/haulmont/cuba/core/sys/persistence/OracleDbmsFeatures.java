@@ -65,7 +65,7 @@ public class OracleDbmsFeatures implements DbmsFeatures {
 
     @Override
     public String getUniqueConstraintViolationPattern() {
-        return "unique constraint \\((.+)\\) violated";
+        return "ORA-00001: (?:.*) \\((?:.*\\.)(.+)\\)";
     }
 
     @Override
