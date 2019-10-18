@@ -231,7 +231,7 @@ public class WebSuggestionField<V> extends WebV8AbstractField<CubaSuggestionFiel
     }
 
     protected void handleSearchResult(List<V> results) {
-        showSuggestions(results);
+        showSuggestions(results, false);
     }
 
     @Override
@@ -288,7 +288,11 @@ public class WebSuggestionField<V> extends WebV8AbstractField<CubaSuggestionFiel
 
     @Override
     public void showSuggestions(List<V> suggestions) {
-        component.showSuggestions(suggestions);
+        showSuggestions(suggestions, true);
+    }
+
+    protected void showSuggestions(List<V> suggestions, boolean ignoreFocus) {
+        component.showSuggestions(suggestions, ignoreFocus);
     }
 
     @Override
