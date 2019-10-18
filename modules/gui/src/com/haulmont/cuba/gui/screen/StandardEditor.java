@@ -62,6 +62,8 @@ public abstract class StandardEditor<T extends Entity> extends Screen
     private boolean readOnly = false;
     private boolean readOnlyDueToLock = false;
 
+    protected boolean showEnableEditingBtn = true;
+
     // whether user has edited entity after screen opening
     private boolean modifiedAfterOpen = false;
 
@@ -223,35 +225,39 @@ public abstract class StandardEditor<T extends Entity> extends Screen
         InstanceContainer<T> container = getEditedEntityContainer();
         Security security = getBeanLocator().get(Security.class);
 
-        if (!getEntityStates().isNew(entityToEdit)
-                && security.isEntityOpPermitted(container.getEntityMetaClass(), EntityOp.UPDATE)) {
-            this.readOnlyDueToLock = false;
+        if (!getEntityStates().isNew(entityToEdit)) {
+            if (security.isEntityOpPermitted(container.getEntityMetaClass(), EntityOp.UPDATE)) {
+                this.readOnlyDueToLock = false;
 
-            LockService lockService = getBeanLocator().get(LockService.class);
+                LockService lockService = getBeanLocator().get(LockService.class);
 
-            LockInfo lockInfo = lockService.lock(getLockName(), entityToEdit.getId().toString());
-            if (lockInfo == null) {
-                this.justLocked = true;
+                LockInfo lockInfo = lockService.lock(getLockName(), entityToEdit.getId().toString());
+                if (lockInfo == null) {
+                    this.justLocked = true;
 
-                addAfterDetachListener(afterDetachEvent ->
-                        releaseLock()
-                );
-            } else if (!(lockInfo instanceof LockNotSupported)) {
-                Messages messages = getBeanLocator().get(Messages.class);
-                DatatypeFormatter datatypeFormatter = getBeanLocator().get(DatatypeFormatter.class);
+                    addAfterDetachListener(afterDetachEvent ->
+                            releaseLock()
+                    );
+                } else if (!(lockInfo instanceof LockNotSupported)) {
+                    Messages messages = getBeanLocator().get(Messages.class);
+                    DatatypeFormatter datatypeFormatter = getBeanLocator().get(DatatypeFormatter.class);
 
-                getScreenContext().getNotifications().create(NotificationType.HUMANIZED)
-                        .withCaption(messages.getMainMessage("entityLocked.msg"))
-                        .withDescription(
-                                messages.formatMainMessage("entityLocked.desc",
-                                        lockInfo.getUser().getLogin(),
-                                        datatypeFormatter.formatDateTime(lockInfo.getSince())
-                                ))
-                        .show();
+                    getScreenContext().getNotifications().create(NotificationType.HUMANIZED)
+                            .withCaption(messages.getMainMessage("entityLocked.msg"))
+                            .withDescription(
+                                    messages.formatMainMessage("entityLocked.desc",
+                                            lockInfo.getUser().getLogin(),
+                                            datatypeFormatter.formatDateTime(lockInfo.getSince())
+                                    ))
+                            .show();
 
-                disableCommitActions();
-
-                this.readOnlyDueToLock = true;
+                    this.readOnlyDueToLock = true;
+                    this.showEnableEditingBtn = false;
+                    setReadOnly(true);
+                }
+            } else {
+                this.showEnableEditingBtn = false;
+                setReadOnly(true);
             }
         }
     }
@@ -475,7 +481,7 @@ public abstract class StandardEditor<T extends Entity> extends Screen
             this.readOnly = readOnly;
 
             ReadOnlyScreensSupport readOnlyScreensSupport = getBeanLocator().get(ReadOnlyScreensSupport.NAME);
-            readOnlyScreensSupport.setScreenReadOnly(this, readOnly);
+            readOnlyScreensSupport.setScreenReadOnly(this, readOnly, showEnableEditingBtn);
 
             if (readOnlyDueToLock) {
                 disableCommitActions();

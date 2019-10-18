@@ -66,6 +66,8 @@ public class AbstractEditor<T extends Entity> extends AbstractWindow
     protected boolean justLocked = false;
     protected boolean crossFieldValidate = true;
 
+    protected boolean showEnableEditingBtn = true;
+
     protected boolean commitActionPerformed = false;
 
     public AbstractEditor() {
@@ -258,30 +260,37 @@ public class AbstractEditor<T extends Entity> extends AbstractWindow
         ((DatasourceImplementation) ds).setModified(false);
 
         Security security = getBeanLocator().get(Security.NAME);
-        if (!PersistenceHelper.isNew(item) && security.isEntityOpPermitted(ds.getMetaClass(), EntityOp.UPDATE)) {
-            readOnlyDueToLock = false;
+        if (!PersistenceHelper.isNew(item)) {
+            if (security.isEntityOpPermitted(ds.getMetaClass(), EntityOp.UPDATE)) {
+                readOnlyDueToLock = false;
 
-            LockService lockService = getBeanLocator().get(LockService.NAME);
+                LockService lockService = getBeanLocator().get(LockService.NAME);
 
-            LockInfo lockInfo = lockService.lock(getMetaClassForLocking(ds).getName(), item.getId().toString());
-            if (lockInfo == null) {
-                justLocked = true;
-                addAfterCloseListener(afterCloseEvent -> {
-                    releaseLock();
-                });
-            } else if (!(lockInfo instanceof LockNotSupported)) {
-                UserSessionSource userSessionSource = getBeanLocator().get(UserSessionSource.NAME);
+                LockInfo lockInfo = lockService.lock(getMetaClassForLocking(ds).getName(), item.getId().toString());
+                if (lockInfo == null) {
+                    justLocked = true;
+                    addAfterCloseListener(afterCloseEvent -> {
+                        releaseLock();
+                    });
+                } else if (!(lockInfo instanceof LockNotSupported)) {
+                    UserSessionSource userSessionSource = getBeanLocator().get(UserSessionSource.NAME);
 
-                getFrame().getWindowManager().showNotification(
-                        messages.getMainMessage("entityLocked.msg"),
-                        String.format(messages.getMainMessage("entityLocked.desc"),
-                                lockInfo.getUser().getLogin(),
-                                Datatypes.getNN(Date.class).format(lockInfo.getSince(), userSessionSource.getLocale())
-                        ),
-                        Frame.NotificationType.HUMANIZED
-                );
-                disableCommitAction();
-                readOnlyDueToLock = true;
+                    getFrame().getWindowManager().showNotification(
+                            messages.getMainMessage("entityLocked.msg"),
+                            String.format(messages.getMainMessage("entityLocked.desc"),
+                                    lockInfo.getUser().getLogin(),
+                                    Datatypes.getNN(Date.class).format(lockInfo.getSince(), userSessionSource.getLocale())
+                            ),
+                            Frame.NotificationType.HUMANIZED
+                    );
+
+                    readOnlyDueToLock = true;
+                    showEnableEditingBtn = false;
+                    setReadOnly(true);
+                }
+            } else {
+                showEnableEditingBtn = false;
+                setReadOnly(true);
             }
         }
     }
@@ -478,7 +487,7 @@ public class AbstractEditor<T extends Entity> extends AbstractWindow
             this.readOnly = readOnly;
 
             ReadOnlyScreensSupport readOnlyScreensSupport = getBeanLocator().get(ReadOnlyScreensSupport.NAME);
-            readOnlyScreensSupport.setScreenReadOnly(this, readOnly);
+            readOnlyScreensSupport.setScreenReadOnly(this, readOnly, showEnableEditingBtn);
 
             if (readOnlyDueToLock) {
                 disableCommitAction();

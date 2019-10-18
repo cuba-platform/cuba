@@ -64,12 +64,33 @@ public class ReadOnlyScreensSupport {
      * @param readOnly whether a screen in the read-only mode
      */
     public void setScreenReadOnly(Screen screen, boolean readOnly) {
+        setScreenReadOnly(screen, readOnly, true);
+    }
+
+    /**
+     * Changes the read-only mode of the given screen.
+     * <p>
+     * The following components and actions change their state:
+     * <ul>
+     *     <li>All {@link Editable} components that has a not null {@link ValueSource}</li>
+     *     <li>All {@link Action.DisabledWhenScreenReadOnly} actions obtained from {@link ActionsHolder} components</li>
+     *     <li>All own screen actions except {@link EditorScreen#WINDOW_CLOSE}
+     *     and {@link EditorScreen#ENABLE_EDITING}</li>
+     * </ul>
+     * <p>
+     *
+     * @param screen               a screen to set the read-only mode
+     * @param readOnly             whether a screen in the read-only mode
+     * @param showEnableEditingBtn whether or not the {@link EditorScreen#ENABLE_EDITING}
+     *                             should be displayed in the read-only mode
+     */
+    public void setScreenReadOnly(Screen screen, boolean readOnly, boolean showEnableEditingBtn) {
         updateComponentsEditableState(screen, readOnly);
         updateOwnActionsEnableState(screen, readOnly);
 
         Action action = screen.getWindow().getAction(ENABLE_EDITING);
         if (action != null) {
-            action.setVisible(readOnly);
+            action.setVisible(showEnableEditingBtn && readOnly);
         }
     }
 
