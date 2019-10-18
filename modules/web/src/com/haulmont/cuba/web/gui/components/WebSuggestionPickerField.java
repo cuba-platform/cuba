@@ -188,7 +188,7 @@ public class WebSuggestionPickerField<V extends Entity> extends WebPickerField<V
     }
 
     protected void handleSearchResult(List<V> results) {
-        showSuggestions(results);
+        showSuggestions(results, false);
     }
 
     @SuppressWarnings("unchecked")
@@ -274,7 +274,11 @@ public class WebSuggestionPickerField<V extends Entity> extends WebPickerField<V
 
     @Override
     public void showSuggestions(List<V> suggestions) {
-        getComponent().showSuggestions(suggestions);
+        showSuggestions(suggestions, true);
+    }
+
+    protected void showSuggestions(List<V> suggestions, boolean ignoreFocus) {
+        getComponent().showSuggestions(suggestions, ignoreFocus);
     }
 
     @Override
