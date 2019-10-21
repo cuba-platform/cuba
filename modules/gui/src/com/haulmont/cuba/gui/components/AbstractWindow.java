@@ -24,6 +24,7 @@ import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.DialogOptions;
 import com.haulmont.cuba.gui.WindowContext;
 import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.components.actions.BaseAction;
 import com.haulmont.cuba.gui.components.security.ActionsPermissions;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.data.DsContext;
@@ -96,7 +97,27 @@ public class AbstractWindow extends Screen implements Window, LegacyFrame, Compo
             params = ((MapScreenOptions) options).getParams();
         }
 
+        initEnableEditingActionStub();
+
         init(params);
+    }
+
+    protected void initEnableEditingActionStub() {
+        String enableEditingActionId = "enableEditing";
+        Action enableEditingAction = getAction(enableEditingActionId);
+        if (enableEditingAction == null) {
+            enableEditingAction = new BaseAction(enableEditingActionId)
+                    .withCaption(messages.getMainMessage("actions.EnableEditing"))
+                    .withHandler(actionPerformedEvent -> {
+                        // Because 'editWindowActions' and 'extendedEditWindowActions' frames
+                        // can be misused in not-editor screens, we need to provide
+                        // 'enableEditing' action stub, in order to prevent breaking changes.
+                        throw new IllegalStateException("Only com.haulmont.cuba.gui.screen.ReadOnlyAwareScreen " +
+                                "inheritors must support the 'enableEditing' action");
+                    });
+            enableEditingAction.setVisible(false);
+            addAction(enableEditingAction);
+        }
     }
 
     @Order(Events.HIGHEST_PLATFORM_PRECEDENCE + 10)
