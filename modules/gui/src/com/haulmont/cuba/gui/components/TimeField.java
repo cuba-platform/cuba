@@ -23,9 +23,9 @@ import java.time.LocalTime;
 import java.time.OffsetTime;
 
 /**
- * todo
+ * A time entry component, which displays the actual time.
  *
- * @param <V>
+ * @param <V> type of value
  */
 public interface TimeField<V> extends Field<V>, HasDatatype<V>, Buffered, Component.Focusable {
     String NAME = "timeField";
@@ -43,29 +43,46 @@ public interface TimeField<V> extends Field<V>, HasDatatype<V>, Buffered, Compon
     }
 
     /**
-     * Return resolution of the TimeField.
+     * Returns the resolution of the TimeField.
      *
      * @return Resolution
      */
     Resolution getResolution();
 
     /**
-     * Set resolution of the TimeField.
+     * Sets the resolution of the TimeField.
      *
      * @param resolution resolution
      */
     void setResolution(Resolution resolution);
 
+    /**
+     * @return whether the TimeField should display seconds
+     *
+     * @deprecated Use either {@link #getResolution()} or {@link #getFormat()}
+     */
     @Deprecated
     boolean getShowSeconds();
 
     /**
+     * Sets whether the TimeField should display seconds.
+     *
      * @deprecated Use either {@link #setResolution(Resolution)} or {@link #setFormat(String)}
      */
     @Deprecated
     void setShowSeconds(boolean showSeconds);
 
+    /**
+     * Returns the time format of the TimeField.
+     *
+     * @return time format
+     */
     String getFormat();
 
+    /**
+     * Sets the time format of the TimeField. It can be either a format string, or a key in message pack.
+     *
+     * @param timeFormat time format
+     */
     void setFormat(String timeFormat);
 }
