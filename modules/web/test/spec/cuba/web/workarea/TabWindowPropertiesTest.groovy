@@ -35,10 +35,7 @@ class TabWindowPropertiesTest extends UiScreenSpec {
     }
 
     def "change window caption from screen"() {
-        def screens = vaadinUi.screens
-
-        def mainWindow = screens.create("mainWindow", OpenMode.ROOT)
-        screens.show(mainWindow)
+        showMainWindow()
 
         def screen = screens.create(TabbedScreen)
         def window = screen.getWindow()
@@ -73,10 +70,7 @@ class TabWindowPropertiesTest extends UiScreenSpec {
     }
 
     def "change window description from screen"() {
-        def screens = vaadinUi.screens
-
-        def mainWindow = screens.create("mainWindow", OpenMode.ROOT)
-        screens.show(mainWindow)
+        showMainWindow()
 
         def screen = screens.create(TabbedScreen)
         def window = screen.getWindow()
@@ -105,10 +99,7 @@ class TabWindowPropertiesTest extends UiScreenSpec {
 
     @SuppressWarnings("GroovyPointlessBoolean")
     def "change window closeable from screen"() {
-        def screens = vaadinUi.screens
-
-        def mainWindow = screens.create("mainWindow", OpenMode.ROOT)
-        screens.show(mainWindow)
+        showMainWindow()
 
         def screen = screens.create(TabbedScreen)
         def window = screen.getWindow()
@@ -136,10 +127,7 @@ class TabWindowPropertiesTest extends UiScreenSpec {
 
     @SuppressWarnings("GroovyPointlessBoolean")
     def "change window icon from screen"() {
-        def screens = vaadinUi.screens
-
-        def mainWindow = screens.create("mainWindow", OpenMode.ROOT)
-        screens.show(mainWindow)
+        showMainWindow()
 
         def screen = screens.create(TabbedScreen)
         def window = screen.getWindow()

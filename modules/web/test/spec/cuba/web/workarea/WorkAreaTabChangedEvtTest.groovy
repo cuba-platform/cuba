@@ -24,10 +24,7 @@ import spec.cuba.web.menu.commandtargets.TestWebBean
 class WorkAreaTabChangedEvtTest extends UiScreenSpec {
 
     def 'WorkAreaTabChangedEvent is fired when screen is opened or closed'() {
-        def screens = vaadinUi.screens
-
-        def mainWindow = screens.create("mainWindow", OpenMode.ROOT)
-        screens.show(mainWindow)
+        showMainWindow()
 
         def testWebBean = cont.getBean(TestWebBean)
 

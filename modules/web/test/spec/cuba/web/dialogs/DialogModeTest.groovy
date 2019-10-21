@@ -30,10 +30,7 @@ class DialogModeTest extends UiScreenSpec {
     }
 
     def 'DialogMode supports AUTO width and height'() {
-        def screens = vaadinUi.screens
-
-        def mainWindow = screens.create("mainWindow", OpenMode.ROOT)
-        screens.show(mainWindow)
+        showMainWindow()
 
         def screen = screens.create(DialogAutoSizeTestScreen)
         screen.show()
@@ -49,10 +46,7 @@ class DialogModeTest extends UiScreenSpec {
     }
 
     def 'DialogMode supports specified width and height'() {
-        def screens = vaadinUi.screens
-
-        def mainWindow = screens.create("mainWindow", OpenMode.ROOT)
-        screens.show(mainWindow)
+        showMainWindow()
 
         def screen = screens.create(DialogSpecifiedSizeTestScreen)
         screen.show()

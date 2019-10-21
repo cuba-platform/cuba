@@ -34,10 +34,7 @@ class TimeFieldDatatypeTest extends UiScreenSpec {
     }
 
     def "datatype is applied from the screen descriptor"(String id, Class<Datatype> datatypeClass) {
-        def screens = vaadinUi.screens
-
-        def mainWindow = screens.create("mainWindow", OpenMode.ROOT)
-        screens.show(mainWindow)
+        showMainWindow()
 
         def datatypesScreen = screens.create(TimeFieldDatatypeScreen)
         datatypesScreen.show()

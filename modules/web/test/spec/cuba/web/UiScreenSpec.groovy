@@ -22,7 +22,10 @@ import com.haulmont.cuba.client.sys.cache.DynamicAttributesCacheStrategy
 import com.haulmont.cuba.client.testsupport.TestUserSessionSource
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesCache
 import com.haulmont.cuba.core.global.UserSessionSource
+import com.haulmont.cuba.gui.Screens
 import com.haulmont.cuba.gui.config.WindowConfig
+import com.haulmont.cuba.gui.screen.OpenMode
+import com.haulmont.cuba.gui.screen.Screen
 import com.haulmont.cuba.gui.sys.UiControllersConfiguration
 import com.haulmont.cuba.security.app.UserManagementService
 import com.haulmont.cuba.web.testsupport.proxy.TestServiceProxy
@@ -74,5 +77,15 @@ class UiScreenSpec extends WebSpec {
 
         def userSessionSource = (TestUserSessionSource) cont.getBean(UserSessionSource.class)
         userSessionSource.setSession(null)
+    }
+
+    protected Screens getScreens() {
+        vaadinUi.screens
+    }
+
+    protected Screen showMainWindow() {
+        def mainWindow = screens.create("mainWindow", OpenMode.ROOT)
+        screens.show(mainWindow)
+        mainWindow
     }
 }

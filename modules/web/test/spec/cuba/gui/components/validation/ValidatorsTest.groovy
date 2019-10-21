@@ -43,10 +43,7 @@ class ValidatorsTest extends UiScreenSpec {
     }
 
     def "load validators from screen"() {
-        def screens = vaadinUi.screens
-
-        def mainWindow = screens.create("mainWindow", OpenMode.ROOT)
-        screens.show(mainWindow)
+        showMainWindow()
 
         when:
         def validatorsScreen = screens.create(ValidatorsScreen)
@@ -57,10 +54,7 @@ class ValidatorsTest extends UiScreenSpec {
     }
 
     def "size validator string test"() {
-        def screens = vaadinUi.screens
-
-        def mainWindow = screens.create("mainWindow", OpenMode.ROOT)
-        screens.show(mainWindow)
+        showMainWindow()
 
         def validatorsScreen = screens.create(ValidatorsScreen)
         validatorsScreen.show()
@@ -99,10 +93,7 @@ class ValidatorsTest extends UiScreenSpec {
     }
 
     def "size validator collection test"() {
-        def screens = vaadinUi.screens
-
-        def mainWindow = screens.create("mainWindow", OpenMode.ROOT)
-        screens.show(mainWindow)
+        showMainWindow()
 
         def validatorsScreen = screens.create(ValidatorsScreen)
         validatorsScreen.show()
@@ -140,10 +131,7 @@ class ValidatorsTest extends UiScreenSpec {
     }
 
     def "regexp validator text"() {
-        def screens = vaadinUi.screens
-
-        def mainWindow = screens.create("mainWindow", OpenMode.ROOT)
-        screens.show(mainWindow)
+        showMainWindow()
 
         def validatorsScreen = screens.create(ValidatorsScreen)
         validatorsScreen.show()
@@ -176,10 +164,7 @@ class ValidatorsTest extends UiScreenSpec {
     }
 
     def "positive validator test"() {
-        def screens = vaadinUi.screens
-
-        def mainWindow = screens.create("mainWindow", OpenMode.ROOT)
-        screens.show(mainWindow)
+        showMainWindow()
 
         def validatorsScreen = screens.create(ValidatorsScreen)
         validatorsScreen.show()
@@ -216,10 +201,7 @@ class ValidatorsTest extends UiScreenSpec {
     }
 
     def "positiveOrZero validator test"() {
-        def screens = vaadinUi.screens
-
-        def mainWindow = screens.create("mainWindow", OpenMode.ROOT)
-        screens.show(mainWindow)
+        showMainWindow()
 
         def validatorsScreen = screens.create(ValidatorsScreen)
         validatorsScreen.show()
@@ -255,10 +237,7 @@ class ValidatorsTest extends UiScreenSpec {
 
     // CAUTION test depends on time duration, so if you try to debug test can be failed
     def "past validator test"() {
-        def screens = vaadinUi.screens
-
-        def mainWindow = screens.create("mainWindow", OpenMode.ROOT)
-        screens.show(mainWindow)
+        showMainWindow()
 
         def validatorsScreen = screens.create(ValidatorsScreen)
         validatorsScreen.show()
@@ -314,10 +293,7 @@ class ValidatorsTest extends UiScreenSpec {
 
     // CAUTION test depends on time duration, so if you try to debug test can be failed
     def "pastOrPresent validator test"() {
-        def screens = vaadinUi.screens
-
-        def mainWindow = screens.create("mainWindow", OpenMode.ROOT)
-        screens.show(mainWindow)
+        showMainWindow()
 
         def validatorsScreen = screens.create(ValidatorsScreen)
         validatorsScreen.show()
@@ -369,10 +345,7 @@ class ValidatorsTest extends UiScreenSpec {
     }
 
     def "notNull validator test"() {
-        def screens = vaadinUi.screens
-
-        def mainWindow = screens.create("mainWindow", OpenMode.ROOT)
-        screens.show(mainWindow)
+        showMainWindow()
 
         def validatorsScreen = screens.create(ValidatorsScreen)
         validatorsScreen.show()
@@ -397,10 +370,7 @@ class ValidatorsTest extends UiScreenSpec {
     }
 
     def "notEmpty validator string test"() {
-        def screens = vaadinUi.screens
-
-        def mainWindow = screens.create("mainWindow", OpenMode.ROOT)
-        screens.show(mainWindow)
+        showMainWindow()
 
         def validatorsScreen = screens.create(ValidatorsScreen)
         validatorsScreen.show()
@@ -432,10 +402,7 @@ class ValidatorsTest extends UiScreenSpec {
     }
 
     def "notEmpty validator collection test"() {
-        def screens = vaadinUi.screens
-
-        def mainWindow = screens.create("mainWindow", OpenMode.ROOT)
-        screens.show(mainWindow)
+        showMainWindow()
 
         def validatorsScreen = screens.create(ValidatorsScreen)
         validatorsScreen.show()
@@ -468,10 +435,7 @@ class ValidatorsTest extends UiScreenSpec {
     }
 
     def "notBlank validator test"() {
-        def screens = vaadinUi.screens
-
-        def mainWindow = screens.create("mainWindow", OpenMode.ROOT)
-        screens.show(mainWindow)
+        showMainWindow()
 
         def validatorsScreen = screens.create(ValidatorsScreen)
         validatorsScreen.show()
@@ -506,10 +470,7 @@ class ValidatorsTest extends UiScreenSpec {
     }
 
     def "negative validator test"() {
-        def screens = vaadinUi.screens
-
-        def mainWindow = screens.create("mainWindow", OpenMode.ROOT)
-        screens.show(mainWindow)
+        showMainWindow()
 
         def validatorsScreen = screens.create(ValidatorsScreen)
         validatorsScreen.show()
@@ -545,10 +506,7 @@ class ValidatorsTest extends UiScreenSpec {
     }
 
     def "negativeOrZero validator test"() {
-        def screens = vaadinUi.screens
-
-        def mainWindow = screens.create("mainWindow", OpenMode.ROOT)
-        screens.show(mainWindow)
+        showMainWindow()
 
         def validatorsScreen = screens.create(ValidatorsScreen)
         validatorsScreen.show()
@@ -584,10 +542,7 @@ class ValidatorsTest extends UiScreenSpec {
     }
 
     def "min validator test"() {
-        def screens = vaadinUi.screens
-
-        def mainWindow = screens.create("mainWindow", OpenMode.ROOT)
-        screens.show(mainWindow)
+        showMainWindow()
 
         def validatorsScreen = screens.create(ValidatorsScreen)
         validatorsScreen.show()
@@ -623,10 +578,7 @@ class ValidatorsTest extends UiScreenSpec {
     }
 
     def "max validator test"() {
-        def screens = vaadinUi.screens
-
-        def mainWindow = screens.create("mainWindow", OpenMode.ROOT)
-        screens.show(mainWindow)
+        showMainWindow()
 
         def validatorsScreen = screens.create(ValidatorsScreen)
         validatorsScreen.show()
@@ -663,10 +615,7 @@ class ValidatorsTest extends UiScreenSpec {
 
     // CAUTION test depends on time duration, so if you try to debug test can be failed
     def "future validator test"() {
-        def screens = vaadinUi.screens
-
-        def mainWindow = screens.create("mainWindow", OpenMode.ROOT)
-        screens.show(mainWindow)
+        showMainWindow()
 
         def validatorsScreen = screens.create(ValidatorsScreen)
         validatorsScreen.show()
@@ -703,10 +652,7 @@ class ValidatorsTest extends UiScreenSpec {
 
     // CAUTION test depends on time duration, so if you try to debug test can be failed
     def "futureOrPresent validator test"() {
-        def screens = vaadinUi.screens
-
-        def mainWindow = screens.create("mainWindow", OpenMode.ROOT)
-        screens.show(mainWindow)
+        showMainWindow()
 
         def validatorsScreen = screens.create(ValidatorsScreen)
         validatorsScreen.show()
@@ -743,10 +689,7 @@ class ValidatorsTest extends UiScreenSpec {
     }
 
     def "digits validator test"() {
-        def screens = vaadinUi.screens
-
-        def mainWindow = screens.create("mainWindow", OpenMode.ROOT)
-        screens.show(mainWindow)
+        showMainWindow()
 
         def validatorsScreen = screens.create(ValidatorsScreen)
         validatorsScreen.show()
@@ -795,10 +738,7 @@ class ValidatorsTest extends UiScreenSpec {
     }
 
     def "decimal min validator test"() {
-        def screens = vaadinUi.screens
-
-        def mainWindow = screens.create("mainWindow", OpenMode.ROOT)
-        screens.show(mainWindow)
+        showMainWindow()
 
         def validatorsScreen = screens.create(ValidatorsScreen)
         validatorsScreen.show()
@@ -852,10 +792,7 @@ class ValidatorsTest extends UiScreenSpec {
     }
 
     def "decimal max validator test"() {
-        def screens = vaadinUi.screens
-
-        def mainWindow = screens.create("mainWindow", OpenMode.ROOT)
-        screens.show(mainWindow)
+        showMainWindow()
 
         def validatorsScreen = screens.create(ValidatorsScreen)
         validatorsScreen.show()
@@ -909,10 +846,7 @@ class ValidatorsTest extends UiScreenSpec {
     }
 
     def "double min validator test"() {
-        def screens = vaadinUi.screens
-
-        def mainWindow = screens.create("mainWindow", OpenMode.ROOT)
-        screens.show(mainWindow)
+        showMainWindow()
 
         def validatorsScreen = screens.create(ValidatorsScreen)
         validatorsScreen.show()
@@ -966,10 +900,7 @@ class ValidatorsTest extends UiScreenSpec {
     }
 
     def "double max validator test"() {
-        def screens = vaadinUi.screens
-
-        def mainWindow = screens.create("mainWindow", OpenMode.ROOT)
-        screens.show(mainWindow)
+        showMainWindow()
 
         def validatorsScreen = screens.create(ValidatorsScreen)
         validatorsScreen.show()
@@ -1023,10 +954,7 @@ class ValidatorsTest extends UiScreenSpec {
     }
 
     def "groovy script validator test"() {
-        def screens = vaadinUi.screens
-
-        def mainWindow = screens.create("mainWindow", OpenMode.ROOT)
-        screens.show(mainWindow)
+        showMainWindow()
 
         def validatorsScreen = screens.create(ValidatorsScreen)
         validatorsScreen.show()

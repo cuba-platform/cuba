@@ -29,10 +29,7 @@ class BrowserFrameSetAttributesTest extends UiScreenSpec {
     }
 
     def "Sets allow attribute to BrowserFrame"() {
-        def screens = vaadinUi.screens
-
-        def mainWindow = screens.create("mainWindow", OpenMode.ROOT)
-        screens.show(mainWindow)
+        showMainWindow()
 
         def bfAllowScreen = screens.create(BrowserFrameAllowScreen)
         bfAllowScreen.show()
@@ -53,10 +50,7 @@ class BrowserFrameSetAttributesTest extends UiScreenSpec {
     }
 
     def "Sets referrerpolicy attribute to BrowserFrame"() {
-        def screens = vaadinUi.screens
-
-        def mainWindow = screens.create("mainWindow", OpenMode.ROOT)
-        screens.show(mainWindow)
+        showMainWindow()
 
         def bfReferrerPolicyScreen = screens.create(BrowserFrameReferrerPolicyScreen)
         bfReferrerPolicyScreen.show()
@@ -77,10 +71,7 @@ class BrowserFrameSetAttributesTest extends UiScreenSpec {
     }
 
     def "Sets sandbox attribute to BrowserFrame"() {
-        def screens = vaadinUi.screens
-
-        def mainWindow = screens.create("mainWindow", OpenMode.ROOT)
-        screens.show(mainWindow)
+        showMainWindow()
 
         def bfSandboxScreen = screens.create(BrowserFrameSandboxScreen)
         bfSandboxScreen.show()
@@ -101,10 +92,7 @@ class BrowserFrameSetAttributesTest extends UiScreenSpec {
     }
 
     def "Sets srcdoc attribute to BrowserFrame"() {
-        def screens = vaadinUi.screens
-
-        def mainWindow = screens.create("mainWindow", OpenMode.ROOT)
-        screens.show(mainWindow)
+        showMainWindow()
 
         def bfSrcdocScreen = screens.create(BrowserFrameSrcdocScreen)
         bfSrcdocScreen.show()
@@ -127,10 +115,7 @@ class BrowserFrameSetAttributesTest extends UiScreenSpec {
     }
 
     def "Sets srcdocFile attribute to BrowserFrame"() {
-        def screens = vaadinUi.screens
-
-        def mainWindow = screens.create("mainWindow", OpenMode.ROOT)
-        screens.show(mainWindow)
+        showMainWindow()
 
         def bfSrcdocFileScreen = screens.create(BrowserFrameSrcdocFileScreen)
         bfSrcdocFileScreen.show()
