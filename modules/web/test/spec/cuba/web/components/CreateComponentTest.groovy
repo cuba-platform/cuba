@@ -21,11 +21,13 @@ import com.haulmont.cuba.gui.components.*
 import com.haulmont.cuba.gui.components.mainwindow.*
 import com.haulmont.cuba.web.gui.components.JavaScriptComponent
 import spec.cuba.web.WebSpec
+import spock.lang.Unroll
 
 @SuppressWarnings("GroovyAccessibility")
 class CreateComponentTest extends WebSpec {
 
-    def "create all standard UI components with UiComponents"() {
+    @Unroll
+    def "create standard UI component: '#name' with UiComponents"() {
         expect:
         uiComponents.create(name) != null
 
@@ -123,14 +125,20 @@ class CreateComponentTest extends WebSpec {
         ]
     }
 
-    def "create all standard facets with Facets"() {
+    @Unroll
+    def "create standard facet: '#facet' with Facets"() {
+
+        given:
+
         def facets = cont.getBean(Facets.class)
 
         expect:
-        facets.create(clazz) != null
+
+        facets.create(facet) != null
 
         where:
-        clazz << [
+
+        facet << [
                 Timer.class,
                 ClipboardTrigger.class
         ]
