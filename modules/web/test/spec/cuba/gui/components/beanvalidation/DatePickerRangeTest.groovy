@@ -48,10 +48,7 @@ class DatePickerRangeTest extends UiScreenSpec {
 
     def "futureDatePicker and futureOrPresentDatePicker range test"() {
         given:
-        def screens = vaadinUi.screens
-
-        def mainWindow = screens.create("mainWindow", OpenMode.ROOT)
-        screens.show(mainWindow)
+        showMainWindow()
 
         def dateValidationScreen = screens.create(DateValidationScreen)
         dateValidationScreen.show()
@@ -72,10 +69,7 @@ class DatePickerRangeTest extends UiScreenSpec {
 
     def "pastDatePicker and pasteOrPresentDatePicker range test"() {
         given:
-        def screens = vaadinUi.screens
-
-        def mainWindow = screens.create("mainWindow", OpenMode.ROOT)
-        screens.show(mainWindow)
+        showMainWindow()
 
         def dateValidationScreen = screens.create(DateValidationScreen)
         dateValidationScreen.show()
@@ -96,10 +90,7 @@ class DatePickerRangeTest extends UiScreenSpec {
 
     def "specificFutureDatePicker range test"() {
         given:
-        def screens = vaadinUi.screens
-
-        def mainWindow = screens.create("mainWindow", OpenMode.ROOT)
-        screens.show(mainWindow)
+        showMainWindow()
 
         def dateValidationScreen = screens.create(DateValidationScreen)
         dateValidationScreen.show()

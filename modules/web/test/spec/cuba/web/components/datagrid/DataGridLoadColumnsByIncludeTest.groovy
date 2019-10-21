@@ -29,10 +29,7 @@ class DataGridLoadColumnsByIncludeTest extends UiScreenSpec {
     }
 
     def "load columns by includeAll"() {
-        def screens = vaadinUi.screens
-
-        def mainWindow = screens.create("mainWindow", OpenMode.ROOT)
-        screens.show(mainWindow)
+        showMainWindow()
 
         def dataGridScreen = screens.create(DataGridLoadColumnsByIncludeScreen)
         dataGridScreen.show()
@@ -81,10 +78,7 @@ class DataGridLoadColumnsByIncludeTest extends UiScreenSpec {
     }
 
     def "entity with embedded property"() {
-        def screens = vaadinUi.screens
-
-        def mainWindow = screens.create("mainWindow", OpenMode.ROOT)
-        screens.show(mainWindow)
+        showMainWindow()
 
         def dataGridScreen = screens.create(DataGridLoadColumnsByIncludeScreen)
         dataGridScreen.show()
@@ -102,10 +96,7 @@ class DataGridLoadColumnsByIncludeTest extends UiScreenSpec {
     }
 
     def "overriding columns"() {
-        def screens = vaadinUi.screens
-
-        def mainWindow = screens.create("mainWindow", OpenMode.ROOT)
-        screens.show(mainWindow)
+        showMainWindow()
 
         def groupTableScreen = screens.create(DataGridLoadColumnsByIncludeScreen)
         groupTableScreen.show()
@@ -121,10 +112,7 @@ class DataGridLoadColumnsByIncludeTest extends UiScreenSpec {
     }
 
     def "includeAll with non-persistent entity"() {
-        def screens = vaadinUi.screens
-
-        def mainWindow = screens.create("mainWindow", OpenMode.ROOT)
-        screens.show(mainWindow)
+        showMainWindow()
 
         def dataGridTableScreen = screens.create(DataGridLoadColumnsByIncludeScreen)
         dataGridTableScreen.show()
@@ -140,10 +128,7 @@ class DataGridLoadColumnsByIncludeTest extends UiScreenSpec {
     }
 
     def "load columns without view"() {
-        def screens = vaadinUi.screens
-
-        def mainWindow = screens.create("mainWindow", OpenMode.ROOT)
-        screens.show(mainWindow)
+        showMainWindow()
 
         def dataGridTableScreen = screens.create(DataGridLoadColumnsByIncludeScreen)
         dataGridTableScreen.show()

@@ -92,10 +92,7 @@ class CompositeComponentTest extends UiScreenSpec {
     }
 
     def "composite component containing a DataGrid with MetaClass and full path to descriptor"() {
-        def screens = vaadinUi.screens
-
-        def mainWindow = screens.create("mainWindow", OpenMode.ROOT)
-        screens.show(mainWindow)
+        showMainWindow()
 
         def commentsScreen = screens.create(CommentScreen)
         commentsScreen.show()

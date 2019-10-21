@@ -39,10 +39,7 @@ class CompositionScreensTest extends UiScreenSpec {
     @Unroll
     def "create and immediate edit of the same nested instance"(boolean explicitParentDc) {
 
-        def screens = vaadinUi.screens
-
-        def mainWindow = screens.create("mainWindow", OpenMode.ROOT)
-        screens.show(mainWindow)
+        showMainWindow()
 
         def orderScreen = screens.create(OrderScreen)
         def order = metadata.create(Order)
@@ -88,10 +85,7 @@ class CompositionScreensTest extends UiScreenSpec {
 
     def "remove nested instance on 2nd level"() {
 
-        def screens = vaadinUi.screens
-
-        def mainWindow = screens.create("mainWindow", OpenMode.ROOT)
-        screens.show(mainWindow)
+        showMainWindow()
 
         def orderScreen = screens.create(OrderScreen)
 
@@ -136,10 +130,7 @@ class CompositionScreensTest extends UiScreenSpec {
 
     def "remove nested instance on 2nd level if the root entity did not have the full object graph"() {
 
-        def screens = vaadinUi.screens
-
-        def mainWindow = screens.create("mainWindow", OpenMode.ROOT)
-        screens.show(mainWindow)
+        showMainWindow()
 
         def orderScreen = screens.create(OrderScreen)
 

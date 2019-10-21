@@ -47,11 +47,9 @@ class DateFieldRangeTest extends UiScreenSpec {
     }
 
     def "futureDateField and futureOrPresentDateField range test"() {
-        given:
-        def screens = vaadinUi.screens
 
-        def mainWindow = screens.create("mainWindow", OpenMode.ROOT)
-        screens.show(mainWindow)
+        given:
+        showMainWindow()
 
         def dateValidationScreen = screens.create(DateValidationScreen)
         dateValidationScreen.show()
@@ -72,10 +70,7 @@ class DateFieldRangeTest extends UiScreenSpec {
 
     def "pastDateField and pastOrPresentDateField range test"() {
         given:
-        def screens = vaadinUi.screens
-
-        def mainWindow = screens.create("mainWindow", OpenMode.ROOT)
-        screens.show(mainWindow)
+        showMainWindow()
 
         def dateValidationScreen = screens.create(DateValidationScreen)
         dateValidationScreen.show()
@@ -96,10 +91,7 @@ class DateFieldRangeTest extends UiScreenSpec {
 
     def "specificFutureDateField range test"() {
         given:
-        def screens = vaadinUi.screens
-
-        def mainWindow = screens.create("mainWindow", OpenMode.ROOT)
-        screens.show(mainWindow)
+        showMainWindow()
 
         def dateValidationScreen = screens.create(DateValidationScreen)
         dateValidationScreen.show()

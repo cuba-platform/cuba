@@ -19,12 +19,12 @@ package spec.cuba.web.dialogs
 import com.google.common.base.Strings
 import com.haulmont.chile.core.datatypes.DatatypeRegistry
 import com.haulmont.chile.core.datatypes.impl.*
+import com.haulmont.cuba.gui.Dialogs
 import com.haulmont.cuba.gui.app.core.inputdialog.DialogActions
 import com.haulmont.cuba.gui.app.core.inputdialog.InputDialog
 import com.haulmont.cuba.gui.app.core.inputdialog.InputParameter
 import com.haulmont.cuba.gui.components.*
 import com.haulmont.cuba.gui.components.inputdialog.InputDialogAction
-import com.haulmont.cuba.gui.screen.OpenMode
 import com.haulmont.cuba.gui.screen.Screen
 import com.haulmont.cuba.web.testmodel.sales.Status
 import com.haulmont.cuba.web.testmodel.sample.GoodInfo
@@ -39,18 +39,19 @@ import static com.haulmont.cuba.gui.screen.UiControllerUtils.getScreenContext
 
 class InputDialogTest extends UiScreenSpec {
 
+    Dialogs dialogs
+    Screen mainWindow
+
     @SuppressWarnings("GroovyAssignabilityCheck")
     void setup() {
         exportScreensPackages(['com.haulmont.cuba.gui.app'])
+
+        mainWindow = showMainWindow()
+
+        dialogs = getScreenContext(mainWindow).getDialogs()
     }
 
     def "input parameter ids should be different"() {
-        def screens = vaadinUi.screens
-
-        def mainWindow = screens.create("mainWindow", OpenMode.ROOT)
-        screens.show(mainWindow)
-
-        def dialogs = getScreenContext(mainWindow).getDialogs()
 
         when: "the same id is used"
         dialogs.createInputDialog(mainWindow)
@@ -74,12 +75,6 @@ class InputDialogTest extends UiScreenSpec {
     }
 
     def "input parameter types are presented"() {
-        def screens = vaadinUi.screens
-
-        def mainWindow = screens.create("mainWindow", OpenMode.ROOT)
-        screens.show(mainWindow)
-
-        def dialogs = getScreenContext(mainWindow).getDialogs()
 
         when: "all types are used"
         InputDialog dialog = dialogs.createInputDialog(mainWindow)
@@ -128,12 +123,6 @@ class InputDialogTest extends UiScreenSpec {
     }
 
     def "default actions are created"() {
-        def screens = vaadinUi.screens
-
-        def mainWindow = screens.create("mainWindow", OpenMode.ROOT)
-        screens.show(mainWindow)
-
-        def dialogs = getScreenContext(mainWindow).getDialogs()
 
         when: "YES NO CANCEL are created"
         InputDialog dialog = dialogs.createInputDialog(mainWindow)
@@ -163,12 +152,8 @@ class InputDialogTest extends UiScreenSpec {
     }
 
     def "default actions with result handler"() {
-        def screens = vaadinUi.screens
 
-        def mainWindow = screens.create("mainWindow", OpenMode.ROOT)
-        screens.show(mainWindow)
-
-        def dialogs = getScreenContext(mainWindow).getDialogs()
+        given:
 
         def goodInfo = new GoodInfo()
         def defaultString = "default value"
@@ -205,12 +190,9 @@ class InputDialogTest extends UiScreenSpec {
     }
 
     def "custom input dialog actions"() {
-        def screens = vaadinUi.screens
 
-        def mainWindow = screens.create("mainWindow", OpenMode.ROOT)
-        screens.show(mainWindow)
+        given:
 
-        def dialogs = getScreenContext(mainWindow).getDialogs()
         def dateValue = new Date()
         def stringValue = "Default value"
 
@@ -247,13 +229,9 @@ class InputDialogTest extends UiScreenSpec {
     }
 
     def "open with close listener"() {
-        def screens = vaadinUi.screens
-
-        def mainWindow = screens.create("mainWindow", OpenMode.ROOT)
-        screens.show(mainWindow)
 
         when: "check closing with OK action"
-        def dialog = (InputDialog) createDialogWithCloseListener(mainWindow)
+        def dialog = (InputDialog) createDialogWithCloseListener()
 
         then:
         def okBtn = getButtonFromDialog(dialog, 1) // because 0 - spacer
@@ -262,7 +240,7 @@ class InputDialogTest extends UiScreenSpec {
         !screens.getOpenedScreens().getActiveScreens().contains(dialog)
 
         when: "check closing with CANCEL action"
-        def cancelDialog = (InputDialog) createDialogWithCloseListener(mainWindow)
+        def cancelDialog = (InputDialog) createDialogWithCloseListener()
 
         then:
         def cancelBtn = getButtonFromDialog(cancelDialog, 2)
@@ -271,8 +249,7 @@ class InputDialogTest extends UiScreenSpec {
         !screens.getOpenedScreens().getActiveScreens().contains(dialog)
     }
 
-    protected InputDialog createDialogWithCloseListener(Screen mainWindow) {
-        def dialogs = getScreenContext(mainWindow).getDialogs()
+    protected InputDialog createDialogWithCloseListener() {
         def bigDecimalValue = 1234
 
         return dialogs.createInputDialog(mainWindow)
@@ -291,12 +268,9 @@ class InputDialogTest extends UiScreenSpec {
     }
 
     def "input parameter with custom field"() {
-        def screens = vaadinUi.screens
 
-        def mainWindow = screens.create("mainWindow", OpenMode.ROOT)
-        screens.show(mainWindow)
+        given:
 
-        def dialogs = getScreenContext(mainWindow).getDialogs()
         def customValue = "default value"
         def dateTimeValue = new Date()
 
@@ -321,13 +295,7 @@ class InputDialogTest extends UiScreenSpec {
     }
 
     def "field validation"() {
-        def screens = vaadinUi.screens
         def datatypeRegistry = cont.getBean(DatatypeRegistry)
-
-        def mainWindow = screens.create("mainWindow", OpenMode.ROOT)
-        screens.show(mainWindow)
-
-        def dialogs = getScreenContext(mainWindow).getDialogs()
 
         when: "custom field has incorrect value"
         InputDialog dialog = dialogs.createInputDialog(mainWindow)
@@ -361,12 +329,6 @@ class InputDialogTest extends UiScreenSpec {
     }
 
     def "validator and default DialogActions"() {
-        def screens = vaadinUi.screens
-
-        def mainWindow = screens.create("mainWindow", OpenMode.ROOT)
-        screens.show(mainWindow)
-
-        def dialogs = getScreenContext(mainWindow).getDialogs()
 
         when: "create dialog with default actions and custom validator"
         InputDialog dialog = dialogs.createInputDialog(mainWindow)
@@ -391,13 +353,8 @@ class InputDialogTest extends UiScreenSpec {
     }
 
     def "validator and validationRequired in InputDialogAction"() {
-        def screens = vaadinUi.screens
-
-        def mainWindow = screens.create("mainWindow", OpenMode.ROOT)
-        screens.show(mainWindow)
 
         when: "validator and validationRequired in InputDialogAction"
-        def dialogs = getScreenContext(mainWindow).getDialogs()
         def targetValue = 100100
         def date = new Date(targetValue)
 
@@ -438,13 +395,8 @@ class InputDialogTest extends UiScreenSpec {
     }
 
     def "enum input parameter"() {
-        def screens = vaadinUi.screens
-
-        def mainWindow = screens.create("mainWindow", OpenMode.ROOT)
-        screens.show(mainWindow)
 
         when: "validator and validationRequired in InputDialogAction"
-        def dialogs = getScreenContext(mainWindow).getDialogs()
 
         InputDialog dialog = dialogs.createInputDialog(mainWindow)
                 .withParameters(enumParameter("enumField", Status)

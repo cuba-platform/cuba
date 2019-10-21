@@ -32,10 +32,7 @@ class MasterDetailInitEntityTest extends UiScreenSpec {
     }
 
     def "MasterDetailScreen fires InitEntityEvent on Create"() {
-        def screens = vaadinUi.screens
-
-        def mainWindow = screens.create("mainWindow", OpenMode.ROOT)
-        screens.show(mainWindow)
+        showMainWindow()
 
         def initEntityListener = Mock(Consumer)
 

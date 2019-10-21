@@ -24,10 +24,7 @@ import spec.cuba.web.menu.commandtargets.TestWebBean
 class ScreenOpenedClosedEvtTest extends UiScreenSpec {
 
     def 'ScreenOpenedEvent is fired'() {
-        def screens = vaadinUi.screens
-
-        def mainWindow = screens.create("mainWindow", OpenMode.ROOT)
-        screens.show(mainWindow)
+        showMainWindow()
 
         def testWebBean = cont.getBean(TestWebBean)
 
@@ -40,10 +37,7 @@ class ScreenOpenedClosedEvtTest extends UiScreenSpec {
     }
 
     def 'ScreenClosedEvent is fired'() {
-        def screens = vaadinUi.screens
-
-        def mainWindow = screens.create("mainWindow", OpenMode.ROOT)
-        screens.show(mainWindow)
+        showMainWindow()
 
         def testWebBean = cont.getBean(TestWebBean)
 

@@ -17,7 +17,6 @@
 package spec.cuba.web.view
 
 
-import com.haulmont.cuba.gui.screen.OpenMode
 import com.haulmont.cuba.security.entity.User
 import spec.cuba.web.UiScreenSpec
 import spec.cuba.web.view.screens.UserEditEmbeddedViewScreen
@@ -30,10 +29,9 @@ class ScreenViewTest extends UiScreenSpec {
     }
 
     def "Embedded view initialized in instance container"() {
-        def screens = vaadinUi.screens
 
-        def mainWindow = screens.create("mainWindow", OpenMode.ROOT)
-        screens.show(mainWindow)
+        given:
+        showMainWindow()
 
         when: "show screen"
 
@@ -76,5 +74,6 @@ class ScreenViewTest extends UiScreenSpec {
         userRolesViewProperty.view.properties.find { it.name == "role" } != null
 
     }
+
 
 }
