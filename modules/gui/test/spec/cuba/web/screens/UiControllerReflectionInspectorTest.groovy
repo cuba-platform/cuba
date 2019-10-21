@@ -27,61 +27,62 @@ import java.lang.reflect.Method
 import java.util.function.Consumer
 
 class UiControllerReflectionInspectorTest extends Specification {
+
+    UiControllerReflectionInspector inspector
+
+    def setup() {
+
+        inspector = new UiControllerReflectionInspector()
+
+    }
+
     def "Get annotated @Inject elements"() {
-        def inspector = new UiControllerReflectionInspector()
 
         when:
 
-        def elements = inspector.getAnnotatedInjectElements(ScreenWithInjection)
+        List<UiControllerReflectionInspector.InjectElement> elements = inspector.getAnnotatedInjectElements(ScreenWithInjection)
 
         then:
 
         elements.size() == 6
+        isField(elements, 'label')
+        isField(elements, 'nameField')
+        isField(elements, 'scripting')
+        isField(elements, 'resources')
 
-        elements.find({ it.element.name == 'label' }).element.class == Field
-        elements.find({ it.element.name == 'nameField' }).element.class == Field
-        elements.find({ it.element.name == 'scripting' }).element.class == Field
-        elements.find({ it.element.name == 'resources' }).element.class == Field
-
-        elements.find({ it.element.name == 'setMessages' }).element.class == Method
-        elements.find({ it.element.name == 'setBeanLocator' }).element.class == Method
+        isMethod(elements, 'setMessages')
+        isMethod(elements, 'setBeanLocator')
 
         then: "all elements are accessible"
 
-        elements.findAll({ it.element.isAccessible() }).size() == 6
+        accessibleElementsEqualTo(elements, 6)
+
     }
 
+
     def "Get annotated @EventListener methods"() {
-        def inspector = new UiControllerReflectionInspector()
 
         when:
 
-        def methods = inspector.getAnnotatedListenerMethods(ScreenWithEventListeners)
+        List<Method> methods = inspector.getAnnotatedListenerMethods(ScreenWithEventListeners)
 
         then:
 
         methods.size() == 2
-        methods.find({ it.name == 'handleSomeEvent' }) != null
-        methods.find({ it.name == 'handlePrivateEvent' }) != null
+        isAvailable(methods, 'handleSomeEvent')
+        isAvailable(methods, 'handlePrivateEvent')
 
         when:
 
-        def childMethods = inspector.getAnnotatedListenerMethods(ScreenWithParentEventListeners)
+        List<Method> childMethods = inspector.getAnnotatedListenerMethods(ScreenWithParentEventListeners)
 
         then: "Subclass can override event handlers without explicit @EventListener annotation"
 
-        childMethods.size() == 3
-        childMethods.find({ it.name == 'handleSomeEvent' }) != null
-        childMethods.find({ it.name == 'handlePrivateEvent' }) != null
-        childMethods.find({ it.name == 'handleAdditionalEvent' }) != null
+        methodsAreAvailableAndAccessible(childMethods, ['handleSomeEvent', 'handlePrivateEvent', 'handleAdditionalEvent'])
 
-        then: "all methods are accessible"
-
-        childMethods.findAll({ it.isAccessible() }).size() == 3
     }
 
     def "Get annotated @Subscribe methods"() {
-        def inspector = new UiControllerReflectionInspector()
 
         when:
 
@@ -89,11 +90,7 @@ class UiControllerReflectionInspectorTest extends Specification {
 
         then:
 
-        methods.size() == 4
-        methods.find({ it.name == 'onClick' }) != null
-        methods.find({ it.name == 'onShow' }) != null
-        methods.find({ it.name == 'onAfterShow' }) != null
-        methods.find({ it.name == 'init' }) != null
+        methodsAreAvailableAndAccessible(methods, ['onClick', 'onShow', 'onAfterShow', 'init'])
 
         when:
 
@@ -101,22 +98,11 @@ class UiControllerReflectionInspectorTest extends Specification {
 
         then: "Subclass can override event handlers without explicit @Subscribe annotation"
 
-        childMethods.size() == 5
-        childMethods.find({ it.name == 'onClick' }) != null
-        childMethods.find({ it.name == 'onShow' }) != null
-        childMethods.find({ it.name == 'onAfterShow' }) != null
-        childMethods.find({ it.name == 'init' }) != null
+        methodsAreAvailableAndAccessible(childMethods, ['onClick', 'onShow', 'onAfterShow', 'init', 'onClick2'])
 
-        childMethods.find({ it.name == 'onClick2' }) != null
-
-        then: "all methods are accessible"
-
-        childMethods.findAll({ it.isAccessible() }).size() == 5
     }
 
     def "Inspector sorts @Subscribe methods by @Order"() {
-
-        def inspector = new UiControllerReflectionInspector()
 
         when:
 
@@ -134,8 +120,6 @@ class UiControllerReflectionInspectorTest extends Specification {
     }
 
     def "Inspector sorts @Subscribe methods by @Order with parent"() {
-
-        def inspector = new UiControllerReflectionInspector()
 
         when:
 
@@ -156,7 +140,6 @@ class UiControllerReflectionInspectorTest extends Specification {
     }
 
     def "Inspector finds @Subscribe default methods in mixin interfaces"() {
-        def inspector = new UiControllerReflectionInspector()
 
         when:
 
@@ -164,16 +147,10 @@ class UiControllerReflectionInspectorTest extends Specification {
 
         then:
 
-        methods.size() == 5
-        methods.find({ it.name == 'onClick' }) != null
-        methods.find({ it.name == 'onShow' }) != null
-        methods.find({ it.name == 'onAfterShow' }) != null
-        methods.find({ it.name == 'init' }) != null
-        methods.find({ it.name == 'onInitMixin' }) != null
+        methodsAreAvailableAndAccessible(methods, ['onClick', 'onShow', 'onAfterShow', 'init', 'onInitMixin'])
     }
 
     def "Get annotated @Install methods"() {
-        def inspector = new UiControllerReflectionInspector()
 
         when:
 
@@ -181,16 +158,13 @@ class UiControllerReflectionInspectorTest extends Specification {
 
         then:
 
-        methods.size() == 5
-        methods.find({ it.name == 'format' }) != null
-        methods.find({ it.name == 'runnableMethod' }) != null
-        methods.find({ it.name == 'getCellStyleName' }) != null
-        methods.find({ it.name == 'getData' }) != null
-        methods.find({ it.name == 'consumeEvent' }) != null
+        methodsAreAvailableAndAccessible(methods, ['format', 'runnableMethod', 'getCellStyleName', 'getData', 'consumeEvent'])
     }
 
     def "Get addListener methods"() {
-        def inspector = new UiControllerReflectionInspector()
+
+        given:
+
         def textField = new TestTextField()
         def listener = Mock(Consumer)
 
@@ -213,10 +187,12 @@ class UiControllerReflectionInspectorTest extends Specification {
     }
 
     def "Get lambda factory for @Subscribe method"() {
+
+        given:
+
         def screen = new ScreenWithSubscribe()
         def screen2 = new ScreenWithSubscribe()
 
-        def inspector = new UiControllerReflectionInspector()
         def button = Mock(Button)
 
         when:
@@ -245,7 +221,7 @@ class UiControllerReflectionInspectorTest extends Specification {
 
         when: "Lambda invoked"
 
-        ((Consumer)consumer).accept(new Button.ClickEvent(button))
+        ((Consumer) consumer).accept(new Button.ClickEvent(button))
 
         then: "Listener calls method from screen"
 
@@ -261,7 +237,6 @@ class UiControllerReflectionInspectorTest extends Specification {
     }
 
     def "Get property setters"() {
-        def inspector = new UiControllerReflectionInspector()
 
         when: "screen is inspected for setters"
 
@@ -269,11 +244,7 @@ class UiControllerReflectionInspectorTest extends Specification {
 
         then: "public methods with single argument should be returned"
 
-        setters.size() == 3
-
-        setters.find({ it.name == 'setIntProperty' }) != null
-        setters.find({ it.name == 'setStringProperty' }) != null
-        setters.find({ it.name == 'setTableProperty' }) != null
+        methodsAreAvailable(setters, ['setIntProperty', 'setStringProperty', 'setTableProperty'])
 
         when: "subclass is inspected"
 
@@ -281,10 +252,56 @@ class UiControllerReflectionInspectorTest extends Specification {
 
         then: "the same methods list should be returned"
 
-        childSetters.size() == 3
+        methodsAreAvailable(childSetters, ['setIntProperty', 'setStringProperty', 'setTableProperty'])
 
-        childSetters.find({ it.name == 'setIntProperty' }) != null
-        childSetters.find({ it.name == 'setStringProperty' }) != null
-        childSetters.find({ it.name == 'setTableProperty' }) != null
+    }
+
+
+    boolean methodsAreAvailableAndAccessible(List<Method> methods, List<String> methodNames) {
+
+        methodNames.each {
+            assert isAvailable(methods, it)
+            assert isAccessible(methods, it)
+        }
+
+        assert methodNames.size() == methods.size()
+        true
+    }
+
+
+    boolean methodsAreAvailable(List<Method> methods, List<String> methodNames) {
+
+        methodNames.each {
+            assert isAvailable(methods, it)
+        }
+
+        assert methodNames.size() == methods.size()
+        true
+    }
+
+
+
+    private boolean isAvailable(List<Method> methods, String methodName) {
+        methods.find({ it.name == methodName }) != null
+    }
+
+    private boolean isAccessible(List<Method> methods, String methodName) {
+        methods.find({ it.name == methodName }).isAccessible()
+    }
+
+    boolean accessibleElementsEqualTo(List<UiControllerReflectionInspector.InjectElement> elements, int expectedAmount) {
+        elements.findAll({ it.element.isAccessible() }).size() == expectedAmount
+    }
+
+    private boolean isMethod(List<UiControllerReflectionInspector.InjectElement> elements, elementName) {
+        findElementByName(elements, elementName).element.class == Method
+    }
+
+    private UiControllerReflectionInspector.InjectElement findElementByName(List<UiControllerReflectionInspector.InjectElement> elements, elementName) {
+        elements.find({ it.element.name == elementName })
+    }
+
+    private boolean isField(List<UiControllerReflectionInspector.InjectElement> elements, elementName) {
+        findElementByName(elements, elementName).element.class == Field
     }
 }
