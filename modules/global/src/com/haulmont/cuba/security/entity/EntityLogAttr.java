@@ -19,12 +19,14 @@ package com.haulmont.cuba.security.entity;
 import com.google.common.base.Strings;
 import com.haulmont.chile.core.annotations.MetaClass;
 import com.haulmont.chile.core.annotations.MetaProperty;
+import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.Metadata;
 import org.apache.commons.lang3.StringUtils;
+import java.util.List;
 
 /**
  * Record containing changed entity attribute.
@@ -114,11 +116,16 @@ public class EntityLogAttr extends BaseUuidEntity {
             if (property != null) {
                 if (property.getRange().isDatatype()) {
                     return value;
-                } else if (property.getRange().isEnum()) {
-                    String nameKey = property.getRange().asEnumeration().getJavaClass().getSimpleName() + "." + value;
-                    String packageName = property.getRange().asEnumeration().getJavaClass().getPackage().getName();
+                } else if (property.getRange().isEnum() && EnumClass.class.isAssignableFrom(property.getJavaType())) {
                     Messages messages = AppBeans.get(Messages.NAME);
-                    return messages.getMessage(packageName, nameKey);
+                    Enum en = getEnumById(property.getRange().asEnumeration().getValues(), value);
+                    if (en != null) {
+                        return messages.getMessage(en);
+                    } else  {
+                        String nameKey = property.getRange().asEnumeration().getJavaClass().getSimpleName() + "." + value;
+                        String packageName = property.getRange().asEnumeration().getJavaClass().getPackage().getName();
+                        return messages.getMessage(packageName, nameKey);
+                    }
                 } else {
                     return value;
                 }
@@ -128,6 +135,18 @@ public class EntityLogAttr extends BaseUuidEntity {
         } else {
             return value;
         }
+    }
+
+    protected Enum getEnumById(List<Enum> enums, String id) {
+        for (Enum e : enums) {
+            if (e instanceof EnumClass) {
+                Object enumId = ((EnumClass) e).getId();
+                if (id.equals(String.valueOf(enumId))) {
+                    return e;
+                }
+            }
+        }
+        return null;
     }
 
     public String getValueId() {

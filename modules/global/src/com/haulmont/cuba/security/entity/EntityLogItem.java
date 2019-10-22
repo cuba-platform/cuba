@@ -18,6 +18,7 @@ package com.haulmont.cuba.security.entity;
 
 import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
+import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.BaseDbGeneratedIdEntity;
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.entity.Creatable;
@@ -26,6 +27,7 @@ import com.haulmont.cuba.core.entity.annotation.EmbeddedParameters;
 import com.haulmont.cuba.core.entity.annotation.Listeners;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.Metadata;
 
 import javax.annotation.PostConstruct;
@@ -144,6 +146,18 @@ public class EntityLogItem extends BaseUuidEntity implements Creatable {
 
     public void setEntity(String entity) {
         this.entity = entity;
+    }
+
+    @MetaProperty
+    public String getDisplayedEntityName() {
+        Metadata metadata = AppBeans.get(Metadata.NAME);
+        Messages messages = AppBeans.get(Messages.NAME);
+        MetaClass metaClass = metadata.getSession().getClass(entity);
+        if (metaClass != null) {
+            metaClass = metadata.getExtendedEntities().getEffectiveMetaClass(metaClass);
+            return messages.getTools().getEntityCaption(metaClass);
+        }
+        return entity;
     }
 
     public Date getEventTs() {
