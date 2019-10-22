@@ -359,7 +359,7 @@ public class CubaGroupTableWidget extends CubaScrollTableWidget {
 
     @Override
     protected boolean isColumnCollapsingEnabled() {
-        return visibleColOrder.length > 2; // +1 for divider column
+        return (columnOrder.length - 1) > collapsedColumns.size();
     }
 
     @Override

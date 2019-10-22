@@ -87,6 +87,9 @@ public class TableWidgetDelegate {
     public String tableSortAscendingLabel;
     public String tableSortDescendingLabel;
 
+    public String selectAllLabel;
+    public String deselectAllLabel;
+
     public List<AfterBodyUpdateListener> afterBodyUpdateListeners;
 
     public void requestFocus(final String itemKey, final String columnKey) {

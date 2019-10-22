@@ -32,6 +32,7 @@ import com.haulmont.cuba.web.widgets.client.tableshared.TableWidget;
 import com.haulmont.cuba.web.widgets.client.tableshared.TableWidgetDelegate;
 import com.vaadin.client.Focusable;
 import com.vaadin.client.*;
+import com.vaadin.client.ui.Action;
 import com.vaadin.client.ui.ShortcutActionHandler;
 import com.vaadin.client.ui.VEmbedded;
 import com.vaadin.v7.client.ui.VLabel;
@@ -414,6 +415,16 @@ public class CubaScrollTableWidget extends VScrollTable implements TableWidget {
         }
 
         @Override
+        public Action[] getActions() {
+            Action[] tableActions = super.getActions();
+            Action[] actions = new Action[tableActions.length + 2];
+            actions[0] = new SelectAllAction(tableActions);
+            actions[1] = new DeselectAllAction(tableActions);
+            System.arraycopy(tableActions, 0, actions, 2, tableActions.length);
+            return actions;
+        }
+
+        @Override
         protected int getIconsOffsetWidth() {
             Style presentationsIconStyle = presentationsEditIcon.getElement().getStyle();
             if ("none".equals(presentationsIconStyle.getDisplay())) {
@@ -456,6 +467,77 @@ public class CubaScrollTableWidget extends VScrollTable implements TableWidget {
         protected boolean shouldRecalcColWidths(HeaderCell cell) {
             HeaderCell lastCell = getHeaderCell(tHead.getVisibleCellCount() - 1);
             return cell == lastCell && getIconsOffsetWidth() > 0;
+        }
+
+        protected class SelectAllAction extends Action {
+
+            protected Action[] actions;
+
+            public SelectAllAction(Action[] actions) {
+                super(CubaScrollTableHead.this);
+                this.actions = actions;
+                setCaption(_delegate.selectAllLabel);
+            }
+
+            @Override
+            public void execute() {
+                if (actions == null || actions.length == 0) {
+                    return;
+                }
+
+                for (Action action : actions) {
+                    if (action instanceof VisibleColumnAction
+                            && collapsedColumns.contains(((VisibleColumnAction) action).getColKey())) {
+                        action.execute();
+                    }
+                }
+            }
+
+            @Override
+            public String getHTML() {
+                return "<span id=\"tableSelectAllAction\" class=\"v-off\">" +
+                        super.getHTML() +
+                        "</span>";
+            }
+        }
+
+        protected class DeselectAllAction extends Action {
+
+            protected Action[] actions;
+
+            public DeselectAllAction(Action[] actions) {
+                super(CubaScrollTableHead.this);
+                this.actions = actions;
+                setCaption(_delegate.deselectAllLabel);
+            }
+
+            @Override
+            public void execute() {
+                if (actions == null || actions.length == 0) {
+                    return;
+                }
+
+                Action firstAction = actions[0];
+                if (firstAction instanceof VisibleColumnAction
+                        && collapsedColumns.contains(((VisibleColumnAction) firstAction).getColKey())) {
+                    firstAction.execute();
+                }
+
+                for (int i = 1; i < actions.length; i++) {
+                    Action action = actions[i];
+                    if (action instanceof VisibleColumnAction
+                            && !collapsedColumns.contains(((VisibleColumnAction) action).getColKey())) {
+                        action.execute();
+                    }
+                }
+            }
+
+            @Override
+            public String getHTML() {
+                return "<span id=\"tableDeselectAllAction\" class=\"v-off\">" +
+                        super.getHTML() +
+                        "</span>";
+            }
         }
     }
 
@@ -919,7 +1001,7 @@ public class CubaScrollTableWidget extends VScrollTable implements TableWidget {
 
     @Override
     protected boolean isColumnCollapsingEnabled() {
-        return visibleColOrder.length > 1;
+        return (columnOrder.length - 1) > collapsedColumns.size();
     }
 
     @Override

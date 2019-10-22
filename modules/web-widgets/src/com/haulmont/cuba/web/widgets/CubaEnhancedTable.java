@@ -49,6 +49,12 @@ public interface CubaEnhancedTable extends AggregationContainer {
     String getSortResetLabel();
     void setSortResetLabel(String tableSortResetLabel);
 
+    String getSelectAllLabel();
+    void setSelectAllLabel(String selectAllLabel);
+
+    String getDeselectAllLabel();
+    void setDeselectAllLabel(String deselectAllLabel);
+
     boolean isColumnEditable(Object columnId);
 
     void setMultiLineCells(boolean multiLineCells);

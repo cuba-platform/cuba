@@ -979,6 +979,9 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
         component.setSortResetLabel(messages.getMainMessage("tableSort.reset"));
         component.setSortDescendingLabel(messages.getMainMessage("tableSort.descending"));
 
+        component.setSelectAllLabel(messages.getMainMessage("tableColumnSelector.selectAll"));
+        component.setDeselectAllLabel(messages.getMainMessage("tableColumnSelector.deselectAll"));
+
         int defaultRowHeaderWidth = 16;
         ThemeConstantsManager themeConstantsManager =
                 beanLocator.get(ThemeConstantsManager.NAME, ThemeConstantsManager.class);

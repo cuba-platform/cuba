@@ -74,4 +74,10 @@ public class CubaTableState extends TableState {
 
     @NoLayout
     public String emptyStateLinkMessage;
+
+    @NoLayout
+    public String selectAllLabel;
+
+    @NoLayout
+    public String deselectAllLabel;
 }

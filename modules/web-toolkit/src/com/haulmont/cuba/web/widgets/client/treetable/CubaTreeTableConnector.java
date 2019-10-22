@@ -142,6 +142,12 @@ public class CubaTreeTableConnector extends TreeTableConnector {
         if (stateChangeEvent.hasPropertyChanged("tableSortDescendingLabel")) {
             getWidget()._delegate.tableSortDescendingLabel = getState().tableSortDescendingLabel;
         }
+        if (stateChangeEvent.hasPropertyChanged("selectAllLabel")) {
+            getWidget()._delegate.selectAllLabel = getState().selectAllLabel;
+        }
+        if (stateChangeEvent.hasPropertyChanged("deselectAllLabel")) {
+            getWidget()._delegate.deselectAllLabel = getState().deselectAllLabel;
+        }
         if (stateChangeEvent.hasPropertyChanged("htmlCaptionColumns")) {
             if (getState().htmlCaptionColumns != null) {
                 getWidget()._delegate.htmlCaptionColumns = new HashSet<>(Arrays.asList(getState().htmlCaptionColumns));

@@ -208,6 +208,26 @@ public class CubaTable extends com.vaadin.v7.ui.Table implements TableSortableCo
     }
 
     @Override
+    public String getSelectAllLabel() {
+        return getState().selectAllLabel;
+    }
+
+    @Override
+    public void setSelectAllLabel(String selectAllLabel) {
+        getState(true).selectAllLabel = selectAllLabel;
+    }
+
+    @Override
+    public String getDeselectAllLabel() {
+        return getState().deselectAllLabel;
+    }
+
+    @Override
+    public void setDeselectAllLabel(String deselectAllLabel) {
+        getState(true).deselectAllLabel = deselectAllLabel;
+    }
+
+    @Override
     public String getSortDescendingLabel() {
         return getState().tableSortDescendingLabel;
     }
