@@ -18,7 +18,9 @@
 package com.haulmont.cuba.gui.components.filter;
 
 import com.haulmont.bali.util.Dom4j;
-import com.haulmont.cuba.core.entity.BaseUuidEntity;
+import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.ReferenceToEntitySupport;
 import com.haulmont.cuba.core.global.filter.ConditionType;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -80,7 +82,7 @@ public class UserSetHelper {
     public static String createIdsString(Set<String> current, Collection entities) {
         Set<String> convertedSet = new HashSet<>();
         for (Object entity : entities) {
-            convertedSet.add(((BaseUuidEntity) entity).getId().toString());
+            convertedSet.add(getReferenceToEntitySupport().getReferenceIdForLink((Entity) entity).toString());
         }
         current.addAll(convertedSet);
         if (current.isEmpty()) {
@@ -100,7 +102,7 @@ public class UserSetHelper {
     public static String removeIds(Set<String> current, Collection entities) {
         Set<String> convertedSet = new HashSet<>();
         for (Object entity : entities) {
-            convertedSet.add(((BaseUuidEntity) entity).getId().toString());
+            convertedSet.add(getReferenceToEntitySupport().getReferenceIdForLink((Entity) entity).toString());
         }
         current.removeAll(convertedSet);
         if (current.isEmpty()) {
@@ -145,5 +147,9 @@ public class UserSetHelper {
         String listOfIds = createIdsString(set, ids);
         param.setText(listOfIds);
         return document.asXML();
+    }
+
+    private static ReferenceToEntitySupport getReferenceToEntitySupport() {
+        return AppBeans.get(ReferenceToEntitySupport.class);
     }
 }
