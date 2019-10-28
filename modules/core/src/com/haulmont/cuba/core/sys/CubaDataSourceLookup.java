@@ -23,15 +23,27 @@ import com.haulmont.cuba.core.sys.persistence.DbmsType;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.jdbc.datasource.lookup.DataSourceLookup;
+import org.springframework.jdbc.datasource.lookup.JndiDataSourceLookup;
 
 import javax.sql.DataSource;
 import java.lang.reflect.Method;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-public class ApplicationDataSourceInitialization {
+public class CubaDataSourceLookup {
 
+    private static final Logger log = LoggerFactory.getLogger(CubaDataSourceLookup.class);
+
+    protected static final String DATASOURCE_PROVIDER_PROPERTY_NAME = "cuba.dataSourceProvider";
+    protected static final String DATASOURCE_JNDI_NAME_PROPERTY_NAME = "cuba.dataSourceJndiName";
+    protected static final String MAIN_DATASOURCE_DEFAULT_JNDI_NAME = "jdbc/CubaDS";
+    protected static final String APPLICATION = "application";
+    protected static final String JNDI = "jndi";
     protected static final String JDBC_URL = "jdbcUrl";
     protected static final String MS_SQL_2005 = "2005";
     protected static final String POSTGRES_DBMS = "postgres";
@@ -45,7 +57,35 @@ public class ApplicationDataSourceInitialization {
     protected static final String CONNECTION_PARAMS = "connectionParams";
     protected static final ImmutableList<String> cubaDsDefaultParams = ImmutableList.of(HOST, PORT, DB_NAME, CONNECTION_PARAMS);
 
-    public DataSource getApplicationDataSource(String storeName) {
+    public DataSource getDataSource(String storeName) {
+        String dataSourceProvider = getDataSourceProvider(storeName);
+        String dsJndiName = getDataSourceJndiName(storeName);
+
+        if (dataSourceProvider == null || JNDI.equals(dataSourceProvider)) {
+            DataSourceLookup lookup = new JndiDataSourceLookup();
+            return lookup.getDataSource(dsJndiName);
+        }
+        if (APPLICATION.equals(dataSourceProvider)) {
+            return getApplicationDataSource(storeName);
+        }
+        throw new RuntimeException(String.format("DataSource provider '%s' is unsupported! Available: 'jndi', 'application'", dataSourceProvider));
+    }
+
+    public boolean closeApplicationDataSource(String storeName, DataSource dataSource) {
+        String dataSourceProvider = getDataSourceProvider(storeName);
+        try {
+            if (APPLICATION.equals(dataSourceProvider) && dataSource != null &&
+                    ProxyDataSource.class.isAssignableFrom(dataSource.getClass()) && dataSource.isWrapperFor(HikariDataSource.class)) {
+                dataSource.unwrap(HikariDataSource.class).close();
+            }
+            return true;
+        } catch (SQLException | ClassCastException e) {
+            log.error("Can't close sanity application data source.", e);
+            return false;
+        }
+    }
+
+    protected DataSource getApplicationDataSource(String storeName) {
         if (storeName == null) {
             storeName = Stores.MAIN;
         }
@@ -166,5 +206,20 @@ public class ApplicationDataSourceInitialization {
             default:
                 throw new RuntimeException(String.format("dbmsType '%s' is unsupported!", dbmsType));
         }
+    }
+
+    protected String getDataSourceProvider(String storeName) {
+        if (Stores.MAIN.equals(storeName)) {
+            return AppContext.getProperty(DATASOURCE_PROVIDER_PROPERTY_NAME);
+        }
+        return AppContext.getProperty(DATASOURCE_PROVIDER_PROPERTY_NAME + "_" + storeName);
+    }
+
+    protected String getDataSourceJndiName(String storeName) {
+        if (Stores.MAIN.equals(storeName)) {
+            String mainDsJndiName = AppContext.getProperty(DATASOURCE_JNDI_NAME_PROPERTY_NAME);
+            return mainDsJndiName == null ? MAIN_DATASOURCE_DEFAULT_JNDI_NAME : mainDsJndiName;
+        }
+        return AppContext.getProperty(DATASOURCE_JNDI_NAME_PROPERTY_NAME + "_" + storeName);
     }
 }

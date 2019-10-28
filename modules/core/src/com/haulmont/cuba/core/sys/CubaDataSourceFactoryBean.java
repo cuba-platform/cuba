@@ -16,6 +16,7 @@
 
 package com.haulmont.cuba.core.sys;
 
+import com.haulmont.cuba.core.global.Stores;
 import com.haulmont.cuba.core.sys.jdbc.ProxyDataSource;
 import com.zaxxer.hikari.HikariDataSource;
 import org.springframework.lang.NonNull;
@@ -25,7 +26,7 @@ import javax.sql.DataSource;
 
 public class CubaDataSourceFactoryBean extends CubaJndiObjectFactoryBean {
 
-    protected static final String DATASOURCE_PROVIDER_PROPERTY_NAME = "cuba.dataSourceProvider";
+    private CubaDataSourceLookup cubaDataSourceLookup = new CubaDataSourceLookup();
 
     private String storeName;
 
@@ -44,21 +45,13 @@ public class CubaDataSourceFactoryBean extends CubaJndiObjectFactoryBean {
 
     @Override
     public Object getObject() {
-        String dataSourceProvider = getDataSourceProvider();
-        if (dataSourceProvider == null || "jndi".equals(dataSourceProvider)) {
-            return super.getObject();
-        }
-        if ("application".equals(dataSourceProvider)) {
-            ApplicationDataSourceInitialization applicationDataSourceInitialization = new ApplicationDataSourceInitialization();
-            return applicationDataSourceInitialization.getApplicationDataSource(storeName);
-        }
-        throw new RuntimeException(String.format("DataSource provider '%s' is unsupported! Available: 'jndi', 'application'", dataSourceProvider));
+        return cubaDataSourceLookup.getDataSource(storeName == null ? Stores.MAIN : storeName);
     }
 
     @Override
     @NonNull
     protected Object lookupWithFallback() throws NamingException {
-        String dataSourceProvider = getDataSourceProvider();
+        String dataSourceProvider = cubaDataSourceLookup.getDataSourceProvider(storeName == null ? Stores.MAIN : storeName);
         Object object = new HikariDataSource();
         if (dataSourceProvider == null || "jndi".equals(dataSourceProvider)) {
             object = super.lookupWithFallback();
@@ -67,16 +60,5 @@ public class CubaDataSourceFactoryBean extends CubaJndiObjectFactoryBean {
             }
         }
         return object;
-    }
-
-    protected String getDataSourceProvider() {
-        return AppContext.getProperty(getDsProviderPropertyName());
-    }
-
-    protected String getDsProviderPropertyName() {
-        if (storeName != null) {
-            return DATASOURCE_PROVIDER_PROPERTY_NAME + "_" + storeName;
-        }
-        return DATASOURCE_PROVIDER_PROPERTY_NAME;
     }
 }
