@@ -379,15 +379,23 @@ public interface Calendar extends Component.BelongToFrame, Component.HasCaption,
         }
     }
 
-    class CalendarForwardClickEvent {
-        protected Calendar calendar;
-
+    class CalendarForwardClickEvent extends EventObject {
         public CalendarForwardClickEvent(Calendar calendar) {
-            this.calendar = calendar;
+            super(calendar);
         }
 
+        @Override
+        public Calendar getSource() {
+            return (Calendar) super.getSource();
+        }
+
+        /**
+         * @return an event source
+         * @deprecated Use {@link #getSource()} instead
+         */
+        @Deprecated
         public Calendar getCalendar() {
-            return calendar;
+            return getSource();
         }
     }
 
