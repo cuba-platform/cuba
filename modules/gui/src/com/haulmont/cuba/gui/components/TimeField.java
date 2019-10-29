@@ -85,4 +85,26 @@ public interface TimeField<V> extends Field<V>, HasDatatype<V>, Buffered, Compon
      * @param timeFormat time format
      */
     void setFormat(String timeFormat);
+
+    /**
+     * Sets time mode to use (12h AM/PM or 24h).
+     * <p>
+     * By default the 24h mode is used.
+     *
+     * @param timeMode time mode
+     */
+    void setTimeMode(TimeMode timeMode);
+
+    /**
+     * @return {@link TimeMode} that is used by component
+     */
+    TimeMode getTimeMode();
+
+    /**
+     * Defines component time mode (12h AP/PM or 24h).
+     */
+    enum TimeMode {
+        H_12,
+        H_24
+    }
 }

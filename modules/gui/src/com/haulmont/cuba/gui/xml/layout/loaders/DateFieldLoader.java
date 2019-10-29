@@ -21,6 +21,7 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.global.DateTimeTransformations;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.DateField;
+import com.haulmont.cuba.gui.components.TimeField;
 import com.haulmont.cuba.gui.components.data.ValueSource;
 import com.haulmont.cuba.gui.components.data.meta.EntityValueSource;
 import org.apache.commons.lang3.StringUtils;
@@ -28,7 +29,6 @@ import org.dom4j.Element;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.ZonedDateTime;
 import java.util.Date;
 
 public class DateFieldLoader extends AbstractFieldLoader<DateField> {
@@ -91,6 +91,7 @@ public class DateFieldLoader extends AbstractFieldLoader<DateField> {
 
         loadRangeStart(resultComponent, element);
         loadRangeEnd(resultComponent, element);
+        loadTimeMode(resultComponent, element);
 
         loadAutofill(resultComponent, element);
     }
@@ -120,6 +121,13 @@ public class DateFieldLoader extends AbstractFieldLoader<DateField> {
                 throw new GuiDevelopmentException("'rangeEnd' parsing error for date picker: " +
                         rangeEnd, context, "DateField ID", resultComponent.getId());
             }
+        }
+    }
+
+    protected void loadTimeMode(DateField resultComponent, Element element) {
+        String timeMode = element.attributeValue("timeMode");
+        if (StringUtils.isNotEmpty(timeMode)) {
+            resultComponent.setTimeMode(TimeField.TimeMode.valueOf(timeMode));
         }
     }
 

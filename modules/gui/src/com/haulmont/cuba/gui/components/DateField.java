@@ -82,4 +82,18 @@ public interface DateField<V> extends Field<V>, HasDatatype<V>, Buffered, Compon
      * @return whether autofill is enabled
      */
     boolean isAutofill();
+
+    /**
+     * Sets time mode to use (12h AM/PM or 24h).
+     * <p>
+     * By default the 24h mode is used.
+     *
+     * @param timeMode time mode
+     */
+    void setTimeMode(TimeField.TimeMode timeMode);
+
+    /**
+     * @return {@link TimeField.TimeMode} that is used by component
+     */
+    TimeField.TimeMode getTimeMode();
 }

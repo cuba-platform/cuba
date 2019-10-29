@@ -130,6 +130,13 @@
         </xs:union>
     </xs:simpleType>
 
+    <xs:simpleType name="timeModeEnum">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="H_12"/>
+            <xs:enumeration value="H_24"/>
+        </xs:restriction>
+    </xs:simpleType>
+
     <xs:simpleType name="fileStoragePutMode">
         <xs:restriction base="xs:string">
             <xs:enumeration value="MANUAL"/>
@@ -1850,6 +1857,7 @@
                 <xs:attribute name="resolution" type="dateFieldResolution"/>
                 <xs:attribute name="dateFormat" type="xs:string"/>
                 <xs:attribute name="datatype" type="dateTimeDatatypeEnum"/>
+                <xs:attribute name="timeMode" type="timeModeEnum"/>
 
                 <xs:attribute name="autofill" type="xs:boolean"/>
 
@@ -1904,6 +1912,7 @@
                 <xs:attribute name="timeFormat" type="xs:string"/>
                 <xs:attribute name="resolution" type="timeFieldResolution"/>
                 <xs:attribute name="datatype" type="timeDatatypeEnum"/>
+                <xs:attribute name="timeMode" type="timeModeEnum"/>
 
                 <xs:attributeGroup ref="hasBuffered"/>
                 <xs:attributeGroup ref="hasTabIndex"/>

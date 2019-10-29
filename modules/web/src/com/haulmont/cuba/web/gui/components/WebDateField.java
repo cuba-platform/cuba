@@ -14,6 +14,7 @@
  * limitations under the License.
  *
  */
+
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.bali.events.Subscription;
@@ -27,6 +28,7 @@ import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.Notifications;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.TimeField.TimeMode;
 import com.haulmont.cuba.gui.components.data.ConversionException;
 import com.haulmont.cuba.gui.components.data.DataAwareComponentsTools;
 import com.haulmont.cuba.gui.components.data.ValueSource;
@@ -37,7 +39,7 @@ import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.widgets.CubaCssActionsLayout;
 import com.haulmont.cuba.web.widgets.CubaDateField;
-import com.haulmont.cuba.web.widgets.CubaTimeField;
+import com.haulmont.cuba.web.widgets.CubaTimeFieldWrapper;
 import com.vaadin.data.HasValue;
 import com.vaadin.server.ErrorMessage;
 import com.vaadin.server.UserError;
@@ -52,9 +54,15 @@ import java.time.*;
 import java.util.*;
 import java.util.function.Consumer;
 
+import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
+import static com.haulmont.cuba.web.gui.components.WebWrapperUtils.fromVaadinTimeMode;
+import static com.haulmont.cuba.web.gui.components.WebWrapperUtils.toVaadinTimeMode;
+
 public class WebDateField<V extends Comparable<V>>
         extends WebAbstractViewComponent<CubaCssActionsLayout, LocalDateTime, V>
         implements DateField<V>, InitializingBean {
+
+    public static final String DATEFIELD_WITH_TIME_STYLENAME = "c-datefield-withtime";
 
     protected static final int VALIDATORS_LIST_INITIAL_CAPACITY = 2;
 
@@ -71,7 +79,7 @@ public class WebDateField<V extends Comparable<V>>
     protected boolean updatingInstance;
 
     protected CubaDateField dateField;
-    protected CubaTimeField timeField;
+    protected CubaTimeFieldWrapper timeField;
 
     protected String dateTimeFormat;
 
@@ -98,8 +106,8 @@ public class WebDateField<V extends Comparable<V>>
 
         setWidthAuto();
 
-        dateField.addValueChangeListener(createDateValueChangeListener());
-        timeField.addValueChangeListener(createTimeValueChangeListener());
+        dateField.addValueChangeListener(this::componentValueChanged);
+        timeField.addValueChangeListener(this::componentValueChanged);
     }
 
     protected CubaCssActionsLayout createComponent() {
@@ -114,11 +122,11 @@ public class WebDateField<V extends Comparable<V>>
         dateField.setCaptionManagedByLayout(false);
     }
 
-    protected CubaTimeField createTimeField() {
-        return new CubaTimeField();
+    protected CubaTimeFieldWrapper createTimeField() {
+        return new CubaTimeFieldWrapper();
     }
 
-    protected void initTimeField(CubaTimeField timeField) {
+    protected void initTimeField(CubaTimeFieldWrapper timeField) {
         timeField.setCaptionManagedByLayout(false);
     }
 
@@ -153,18 +161,8 @@ public class WebDateField<V extends Comparable<V>>
         }
     }
 
-    protected HasValue.ValueChangeListener<LocalDate> createDateValueChangeListener() {
-        return event ->
-                componentValueChanged(event.isUserOriginated());
-    }
-
-    protected HasValue.ValueChangeListener<LocalTime> createTimeValueChangeListener() {
-        return event ->
-                componentValueChanged(event.isUserOriginated());
-    }
-
-    protected void componentValueChanged(boolean isUserOriginated) {
-        if (isUserOriginated) {
+    protected void componentValueChanged(HasValue.ValueChangeEvent<?> e) {
+        if (e.isUserOriginated()) {
             V value;
 
             try {
@@ -188,7 +186,7 @@ public class WebDateField<V extends Comparable<V>>
             internalValue = value;
 
             if (!fieldValueEquals(value, oldValue)) {
-                ValueChangeEvent<V> event = new ValueChangeEvent<>(this, oldValue, value, isUserOriginated);
+                ValueChangeEvent<V> event = new ValueChangeEvent<>(this, oldValue, value, true);
                 publish(ValueChangeEvent.class, event);
             }
         }
@@ -210,7 +208,7 @@ public class WebDateField<V extends Comparable<V>>
         dateField.setResolution(WebWrapperUtils.convertDateTimeResolution(resolution));
 
         if (resolution.ordinal() < Resolution.DAY.ordinal()) {
-            timeField.setResolution(WebWrapperUtils.convertTimeResolution(resolution));
+            timeField.setResolution(WebWrapperUtils.toVaadinTimeResolution(resolution));
         } else {
             // Set time field value to zero in case of resolution without time.
             // If we don't set value to zero then after changing resolution back to
@@ -357,7 +355,7 @@ public class WebDateField<V extends Comparable<V>>
 
         if (resolution.ordinal() < Resolution.DAY.ordinal()) {
             component.addComponent(timeField);
-            component.addStyleName("c-datefield-withtime");
+            component.addStyleName(DATEFIELD_WITH_TIME_STYLENAME);
         } else {
             component.removeStyleName("c-datefield-withtime");
         }
@@ -718,5 +716,17 @@ public class WebDateField<V extends Comparable<V>>
             dateField.setComponentError(userError);
             timeField.setComponentError(userError);
         }
+    }
+
+    @Override
+    public void setTimeMode(TimeMode timeMode) {
+        checkNotNullArgument("Time mode cannot be null");
+
+        timeField.setTimeMode(toVaadinTimeMode(timeMode));
+    }
+
+    @Override
+    public TimeMode getTimeMode() {
+        return fromVaadinTimeMode(timeField.getTimeMode());
     }
 }

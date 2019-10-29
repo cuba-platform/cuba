@@ -52,4 +52,9 @@ $c-timefield-second-width: 84px;
   .c-focus-move::-moz-selection {
     background: transparent;
   }
+
+  .#{$primary-stylename}-ampm {
+    width: 70px;
+    margin-left: $v-layout-spacing-horizontal;
+  }
 }
