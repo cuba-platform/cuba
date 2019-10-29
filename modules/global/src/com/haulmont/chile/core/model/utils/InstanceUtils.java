@@ -49,6 +49,9 @@ public final class InstanceUtils {
         if (path == null)
             return new String[0];
 
+        if (path.startsWith("+"))
+            return new String[] { path };
+
         List<String> elements = new ArrayList<>(4);
 
         int bracketCount = 0;
