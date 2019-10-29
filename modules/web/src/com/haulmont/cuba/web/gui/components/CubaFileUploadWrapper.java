@@ -20,20 +20,18 @@ import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.web.widgets.CubaButton;
 import com.haulmont.cuba.web.widgets.UploadComponent;
 import com.vaadin.server.Resource;
-import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.CustomField;
+import com.vaadin.ui.themes.ValoTheme;
 import org.apache.commons.lang3.StringUtils;
 
-// todo CssLayout
 public class CubaFileUploadWrapper extends CustomField<FileDescriptor> {
     protected static final String FILE_UPLOAD_WRAPPER_STYLENAME = "c-fileupload-wrapper";
     protected static final String EMPTY_VALUE_STYLENAME = "c-fileupload-empty";
 
-    protected HorizontalLayout container;
+    protected CssLayout container;
     protected Button fileNameButton;
     protected Button clearButton;
     protected UploadComponent uploadButton;
@@ -83,12 +81,10 @@ public class CubaFileUploadWrapper extends CustomField<FileDescriptor> {
         if (getWidth() >= 0) {
             container.setWidth(100, Unit.PERCENTAGE);
             if (isShowFileName()) {
-                container.setExpandRatio(fileNameButton, 1);
                 fileNameButton.setWidth(100, Unit.PERCENTAGE);
                 uploadButton.setWidthUndefined();
                 clearButton.setWidthUndefined();
             } else {
-                container.setExpandRatio(fileNameButton, 0);
                 fileNameButton.setWidthUndefined();
                 if (isShowClearButton() && !isRequiredIndicatorVisible()) {
                     uploadButton.setWidth(100, Unit.PERCENTAGE);
@@ -178,8 +174,7 @@ public class CubaFileUploadWrapper extends CustomField<FileDescriptor> {
     protected void initLayout(UploadComponent uploadComponent) {
         this.uploadButton = uploadComponent;
 
-        container = new HorizontalLayout();
-        container.setSpacing(true);
+        container = new CssLayout();
         container.addStyleName("c-fileupload-container");
 
         fileNameButton = new CubaButton();
@@ -188,7 +183,6 @@ public class CubaFileUploadWrapper extends CustomField<FileDescriptor> {
         fileNameButton.addStyleName("c-fileupload-filename");
         setFileNameButtonCaption(null);
         container.addComponent(fileNameButton);
-        container.setComponentAlignment(fileNameButton, Alignment.MIDDLE_LEFT);
 
         container.addComponent(uploadComponent);
 

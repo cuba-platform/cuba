@@ -17,15 +17,11 @@
 
 @mixin halo-cuba-fileupload-wrapper($primary-stylename: c-fileupload-wrapper) {
   .c-fileupload-container {
-    height: $v-unit-size;
     min-height: $v-unit-size;
+    display: inline-flex;
   }
 
-  .c-fileupload-container > .v-expand > .v-spacing {
-    width: $v-layout-spacing-horizontal/2;
-  }
-
-  .c-fileupload-filename.v-has-width {
+  .c-fileupload-filename.v-has-width > * {
     overflow: hidden;
     text-overflow: ellipsis;
   }
@@ -68,6 +64,26 @@
        &:focus:after {
          border: 1px dashed $v-error-indicator-color !important;
        }
+    }
+  }
+
+  .c-fileupload-container {
+    .c-fileupload-filename {
+      margin-right: $v-layout-margin-right;
+    }
+
+    .c-fileupload-clear {
+      margin-left: $v-layout-margin-left;
+    }
+  }
+
+  .v-ie11 & .c-fileupload-filename .v-button-wrap {
+    display: inline-flex;
+    align-items: center;
+
+    .v-button-caption {
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
   }
 }
