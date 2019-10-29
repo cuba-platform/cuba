@@ -65,6 +65,9 @@ public class CubaScrollTableWidget extends VScrollTable implements TableWidget {
 
         tHead.enableBrowserIntelligence();
 
+        if (tHead instanceof CubaScrollTableHead) {
+            ((CubaScrollTableHead) tHead).toggleScrollbarSpacer(willHaveScrollbars());
+        }
         if (_delegate.aggregationRow != null) {
             _delegate.aggregationRow.toggleScrollbarSpacer(willHaveScrollbars());
         }
@@ -383,6 +386,8 @@ public class CubaScrollTableWidget extends VScrollTable implements TableWidget {
 
     protected class CubaScrollTableHead extends TableHead {
 
+        protected static final String SCROLLBAR_SPACER_STYLENAME = "scrollbar-spacer";
+
         protected final SimplePanel presentationsEditIcon = GWT.create(SimplePanel.class);
 
         public CubaScrollTableHead() {
@@ -394,6 +399,38 @@ public class CubaScrollTableWidget extends VScrollTable implements TableWidget {
             DOM.insertChild(getElement(), iconElement, DOM.getChildIndex(getElement(), columnSelector));
 
             DOM.sinkEvents(iconElement, Event.ONCLICK);
+        }
+
+        public void toggleScrollbarSpacer(boolean scrollbarEnabled) {
+            if (!initializedAndAttached) {
+                return;
+            }
+
+            if (scrollbarEnabled) {
+                com.google.gwt.user.client.Element lastChild = DOM.getChild(tr, DOM.getChildCount(tr) - 1);
+                if (lastChild.hasClassName(SCROLLBAR_SPACER_STYLENAME)) {
+                    return;
+                }
+
+                com.google.gwt.user.client.Element spacer = DOM.createTD();
+                spacer.addClassName(SCROLLBAR_SPACER_STYLENAME);
+
+                int scrollbarWidth = WidgetUtil.getNativeScrollbarSize();
+
+                spacer.getStyle().setPropertyPx("width", scrollbarWidth);
+                spacer.getStyle().setPropertyPx("minWidth", scrollbarWidth);
+                spacer.getStyle().setPropertyPx("maxWidth", scrollbarWidth);
+
+                tr.appendChild(spacer);
+            } else {
+                int cellsCount = DOM.getChildCount(tr);
+                for (int i = 0; i < cellsCount; i++) {
+                    com.google.gwt.user.client.Element cell = DOM.getChild(tr, i);
+                    if (cell.hasClassName(SCROLLBAR_SPACER_STYLENAME)) {
+                        tr.removeChild(cell);
+                    }
+                }
+            }
         }
 
         @Override
@@ -990,6 +1027,7 @@ public class CubaScrollTableWidget extends VScrollTable implements TableWidget {
     // CAUTION: copied from com.vaadin.v7.client.ui.VScrollTable.hasVerticalScrollbar
     @Override
     public boolean hasVerticalScrollbar() {
-        return scrollBody.getOffsetHeight() > scrollBodyPanel.getOffsetHeight();
+        return scrollBody != null && scrollBodyPanel != null &&
+                scrollBody.getOffsetHeight() > scrollBodyPanel.getOffsetHeight();
     }
 }
