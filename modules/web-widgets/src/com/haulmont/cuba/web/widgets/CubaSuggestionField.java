@@ -161,12 +161,12 @@ public class CubaSuggestionField<T> extends AbstractField<T> {
         this.searchExecutor = searchExecutor;
     }
 
-    public void showSuggestions(List<T> suggestions, boolean ignoreFocus) {
+    public void showSuggestions(List<T> suggestions, boolean userOriginated) {
         final JsonArray jsonArray = Json.createArray();
         for (int i = 0; i < suggestions.size() && i < suggestionsLimit; i++) {
             jsonArray.set(i, getJsonObject(suggestions.get(i)));
         }
-        getRpcProxy(CubaSuggestionFieldClientRpc.class).showSuggestions(jsonArray, ignoreFocus);
+        getRpcProxy(CubaSuggestionFieldClientRpc.class).showSuggestions(jsonArray, userOriginated);
     }
 
     public void setCancelSearchHandler(Runnable cancelSearchHandler) {

@@ -118,7 +118,7 @@ public class CubaSuggestionFieldWidget extends Composite implements HasEnabled, 
         this.minSearchStringLength = minSearchStringLength;
     }
 
-    protected void showSuggestions(JsonArray suggestions, boolean ignoreFocus) {
+    protected void showSuggestions(JsonArray suggestions, boolean userOriginated) {
         this.suggestions.clear();
 
         for (int i = 0; i < suggestions.length(); i++) {
@@ -131,10 +131,10 @@ public class CubaSuggestionFieldWidget extends Composite implements HasEnabled, 
             this.suggestions.add(suggestion);
         }
 
-        showSuggestions(ignoreFocus);
+        showSuggestions(userOriginated);
     }
 
-    protected void showSuggestions(boolean ignoreFocus) {
+    protected void showSuggestions(boolean userOriginated) {
         Scheduler.get().scheduleDeferred(() -> {
             suggestionsContainer.clearItems();
 
@@ -154,7 +154,7 @@ public class CubaSuggestionFieldWidget extends Composite implements HasEnabled, 
             suggestionsPopup.removeAutoHidePartner(getElement());
             suggestionsPopup.addAutoHidePartner(getElement());
 
-            if ((ignoreFocus || isFocused())
+            if ((isFocused() || !userOriginated)
                     && (!suggestionsPopup.isAttached() || !suggestionsPopup.isVisible())) {
                 suggestionsPopup.showPopup();
             }
