@@ -190,8 +190,12 @@ public class UserSessionLogBean implements UserSessionLog {
                     entry.setLastAction(SessionAction.EXPIRATION);
                     cc.addInstanceToCommit(entry);
                 }
-                dataManager.commit(cc);
-                log.info("Dead session records have been closed");
+                try {
+                    dataManager.commit(cc);
+                    log.info("Dead session records have been closed");
+                } catch (Exception e) {
+                    log.warn("Failed to close dead session records. Perhaps several CUBA applications use the same database and don't work in a cluster. Exception:\n", e);
+                }
                 return null;
             });
         }
