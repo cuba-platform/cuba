@@ -32,8 +32,8 @@ public class CubaSuggestionFieldConnector extends AbstractFieldConnector {
         //noinspection Convert2Lambda
         registerRpc(CubaSuggestionFieldClientRpc.class, new CubaSuggestionFieldClientRpc() {
             @Override
-            public void showSuggestions(JsonArray suggestions, boolean ignoreFocus) {
-                getWidget().showSuggestions(suggestions, ignoreFocus);
+            public void showSuggestions(JsonArray suggestions, boolean userOriginated) {
+                getWidget().showSuggestions(suggestions, userOriginated);
             }
         });
     }
