@@ -21,5 +21,5 @@ import elemental.json.JsonArray;
 
 public interface CubaSuggestionFieldClientRpc extends ClientRpc {
 
-    void showSuggestions(JsonArray suggestions, boolean ignoreFocus);
+    void showSuggestions(JsonArray suggestions, boolean userOriginated);
 }

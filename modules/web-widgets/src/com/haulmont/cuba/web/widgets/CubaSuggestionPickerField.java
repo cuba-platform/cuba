@@ -104,8 +104,8 @@ public class CubaSuggestionPickerField<T> extends CubaPickerField<T> {
         getFieldInternal().setSearchExecutor(searchExecutor);
     }
 
-    public void showSuggestions(List<T> suggestions, boolean ignoreFocus) {
-        getFieldInternal().showSuggestions(suggestions, ignoreFocus);
+    public void showSuggestions(List<T> suggestions, boolean userOriginated) {
+        getFieldInternal().showSuggestions(suggestions, userOriginated);
     }
 
     public void setCancelSearchHandler(Runnable cancelSearchHandler) {
