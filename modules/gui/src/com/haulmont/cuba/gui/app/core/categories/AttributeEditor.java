@@ -322,7 +322,7 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
                 changeAttributesUI();
                 changeAttributeValues();
             }
-            if (e.getPrevValue()==null && "dataType".equals(property)) {
+            if (e.getPrevValue() == null && "dataType".equals(property)) {
                 getDialogOptions().center();
             }
             if ("name".equals(property)) {
@@ -505,6 +505,11 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
                 Map<String, String> options = ((MapOptions<String>) screen.getOptions()).getItemsCollection();
                 attribute.setScreen(options.containsValue(attribute.getScreen()) ? attribute.getScreen() : null);
             }
+            if (configuration.getOptionsLoaderType() == SQL) {
+                configuration.setOptionsLoaderType(JPQL);
+            }
+        } else if (configuration.getOptionsLoaderType() == JPQL) {
+            configuration.setOptionsLoaderType(null);
         }
 
         if (attribute.getDataType() == PropertyType.DATE) {
