@@ -410,20 +410,25 @@ public class ExcelExporter {
 
     protected void createFormats() {
         timeFormatCellStyle = wb.createCellStyle();
-        timeFormatCellStyle.setDataFormat(HSSFDataFormat.getBuiltinFormat("h:mm"));
+        String timeFormat = messages.getMainMessage("excelExporter.timeFormat");
+        timeFormatCellStyle.setDataFormat(HSSFDataFormat.getBuiltinFormat(timeFormat));
 
         dateFormatCellStyle = wb.createCellStyle();
-        dateFormatCellStyle.setDataFormat(HSSFDataFormat.getBuiltinFormat("m/d/yy"));
+        String dateFormat = messages.getMainMessage("excelExporter.dateFormat");
+        dateFormatCellStyle.setDataFormat(HSSFDataFormat.getBuiltinFormat(dateFormat));
 
         dateTimeFormatCellStyle = wb.createCellStyle();
-        dateTimeFormatCellStyle.setDataFormat(HSSFDataFormat.getBuiltinFormat("m/d/yy h:mm"));
+        String dateTimeFormat = messages.getMainMessage("excelExporter.dateTimeFormat");
+        dateTimeFormatCellStyle.setDataFormat(HSSFDataFormat.getBuiltinFormat(dateTimeFormat));
 
         integerFormatCellStyle = wb.createCellStyle();
-        integerFormatCellStyle.setDataFormat(HSSFDataFormat.getBuiltinFormat("#,##0"));
+        String integerFormat = messages.getMainMessage("excelExporter.integerFormat");
+        integerFormatCellStyle.setDataFormat(HSSFDataFormat.getBuiltinFormat(integerFormat));
 
         DataFormat format = wb.createDataFormat();
         doubleFormatCellStyle = wb.createCellStyle();
-        doubleFormatCellStyle.setDataFormat(format.getFormat("#,##0.00##############"));
+        String doubleFormat = messages.getMainMessage("excelExporter.doubleFormat");
+        doubleFormatCellStyle.setDataFormat(format.getFormat(doubleFormat));
     }
 
     protected int createHierarhicalRow(TreeTable table, List<Table.Column> columns,
