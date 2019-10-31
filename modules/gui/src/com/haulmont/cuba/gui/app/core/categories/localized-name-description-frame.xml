@@ -18,11 +18,5 @@
         class="com.haulmont.cuba.gui.app.core.categories.LocalizedNameAndDescriptionFrame"
         messagesPack="com.haulmont.cuba.gui.app.core.categories">
     <layout>
-        <scrollBox id="localesScrollBox"
-                   spacing="true"
-                   stylename="c-localizedname-scrollbox"
-                   height="100%"
-                   width="100%">
-        </scrollBox>
     </layout>
 </window>

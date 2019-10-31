@@ -107,7 +107,6 @@
 @import "app/report-parameters";
 @import "app/report-templates";
 @import "app/report-source-code";
-@import "app/localized-frame";
 @import "app/entity-inspector-browse";
 @import "app/fts-search-window";
 @import "app/dialogs";
@@ -219,7 +218,6 @@
   @include cuba-report-parameters;
   @include cuba-report-templates;
   @include cuba-report-source-code;
-  @include cuba-localized-frame;
   @include cuba-entity-inspector-browse;
   @include fts-search-window;
   @include cuba-dialogs;

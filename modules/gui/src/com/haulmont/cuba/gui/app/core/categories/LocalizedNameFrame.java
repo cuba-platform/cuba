@@ -16,49 +16,56 @@
 
 package com.haulmont.cuba.gui.app.core.categories;
 
-import com.haulmont.cuba.core.global.GlobalConfig;
-import com.haulmont.cuba.core.global.LocaleResolver;
+import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.cuba.core.entity.AttributeLocaleData;
 import com.haulmont.cuba.gui.components.*;
-
-import javax.inject.Inject;
-import java.util.*;
 
 public class LocalizedNameFrame extends AbstractLocalizedTextFieldsFrame {
 
-    @Inject
-    protected ScrollBoxLayout localesScrollBox;
+    @Override
+    protected void createColumns(DataGrid<AttributeLocaleData> dataGrid) {
+        MetaClass metaClass = metadata.getClass(AttributeLocaleData.class);
 
-    @Inject
-    protected GlobalConfig globalConfig;
-
-    protected Map<Locale, TextField> textFieldMap = new HashMap<>();
+        dataGrid.addColumn(LANGUAGE_WITH_CODE, metadataTools.resolveMetaPropertyPath(metaClass, LANGUAGE_WITH_CODE))
+                .setCaption(messageTools.getPropertyCaption(metaClass, LANGUAGE_WITH_CODE));
+        dataGrid.addColumn(NAME, metadataTools.resolveMetaPropertyPath(metaClass, NAME))
+                .setCaption(messageTools.getPropertyCaption(metaClass, NAME));
+    }
 
     @Override
-    public void init(Map<String, Object> params) {
-        Map<String, Locale> map = globalConfig.getAvailableLocales();
-        for (Map.Entry<String, Locale> entry : map.entrySet()) {
-            localesScrollBox.add(createTextFieldComponent(entry.getValue(),
-                    entry.getKey() + "|" + LocaleResolver.localeToString(entry.getValue()), textFieldMap));
-        }
+    protected void configureColumns(DataGrid<AttributeLocaleData> dataGrid) {
+        DataGrid.Column<AttributeLocaleData> langColumn = dataGrid.getColumnNN(LANGUAGE_WITH_CODE);
+        DataGrid.Column<AttributeLocaleData> nameColumn = dataGrid.getColumnNN(NAME);
+
+        setColumnDescriptionProvider(langColumn, null);
+        setColumnDescriptionProvider(nameColumn, NAME);
+
+        langColumn.setResizable(false);
+        nameColumn.setResizable(false);
+
+        langColumn.setExpandRatio(1);
+        nameColumn.setExpandRatio(3);
+
+        langColumn.setEditable(false);
     }
 
     public String getValue() {
-        return getValue(textFieldMap);
+        return getValues(NAME);
     }
 
     public void setValue(String localeBundle) {
-        setValue(localeBundle, textFieldMap);
+        setValues(localeBundle, NAME);
     }
 
     public void clearFields() {
-        for (TextField textField : textFieldMap.values()) {
-            textField.setValue("");
+        for (AttributeLocaleData attributeLocaleData : collectionContainer.getItems()) {
+            attributeLocaleData.setName(null);
         }
     }
 
     public void setEditableFields(boolean editable) {
-        for (TextField textField : textFieldMap.values()) {
-            textField.setEditable(editable);
+        for (DataGrid.Column<AttributeLocaleData> column : dataGrid.getColumns()) {
+            column.setEditable(editable);
         }
     }
 }

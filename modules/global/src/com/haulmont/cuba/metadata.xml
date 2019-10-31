@@ -94,6 +94,7 @@
         <class>com.haulmont.cuba.core.config.AppPropertyEntity</class>
         <class>com.haulmont.cuba.core.entity.CategoryAttributeEnumValue</class>
         <class>com.haulmont.cuba.core.entity.CategoryAttributeConfiguration</class>
+        <class>com.haulmont.cuba.core.entity.AttributeLocaleData</class>
     </metadata-model>
 
 </metadata>

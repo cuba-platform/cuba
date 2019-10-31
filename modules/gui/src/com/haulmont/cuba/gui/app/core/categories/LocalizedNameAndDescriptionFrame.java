@@ -16,62 +16,58 @@
 
 package com.haulmont.cuba.gui.app.core.categories;
 
-import com.haulmont.cuba.core.global.GlobalConfig;
-import com.haulmont.cuba.core.global.LocaleResolver;
-import com.haulmont.cuba.core.global.MessageTools;
+import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.cuba.core.entity.AttributeLocaleData;
 import com.haulmont.cuba.gui.components.*;
-
-import javax.inject.Inject;
-import java.util.*;
 
 public class LocalizedNameAndDescriptionFrame extends AbstractLocalizedTextFieldsFrame {
 
-    private static final String MESSAGE_PACK = "msg://com.haulmont.cuba.core.entity/";
+    @Override
+    protected void createColumns(DataGrid<AttributeLocaleData> dataGrid) {
+        MetaClass metaClass = metadata.getClass(AttributeLocaleData.class);
 
-    @Inject
-    protected ScrollBoxLayout localesScrollBox;
-
-    @Inject
-    protected GlobalConfig globalConfig;
-
-    @Inject
-    protected MessageTools messageTools;
-
-
-    protected Map<Locale, TextField> namesTextFieldMap = new HashMap<>();
-    protected Map<Locale, TextArea> descriptionsTextFieldMap = new HashMap<>();
+        dataGrid.addColumn(LANGUAGE_WITH_CODE, metadataTools.resolveMetaPropertyPath(metaClass, LANGUAGE_WITH_CODE))
+                .setCaption(messageTools.getPropertyCaption(metaClass, LANGUAGE_WITH_CODE));
+        dataGrid.addColumn(NAME, metadataTools.resolveMetaPropertyPath(metaClass, NAME))
+                .setCaption(messageTools.getPropertyCaption(metaClass, NAME));
+        dataGrid.addColumn(DESCRIPTION, metadataTools.resolveMetaPropertyPath(metaClass, DESCRIPTION))
+                .setCaption(messageTools.getPropertyCaption(metaClass, DESCRIPTION));
+    }
 
     @Override
-    public void init(Map<String, Object> params) {
-        Map<String, Locale> map = globalConfig.getAvailableLocales();
-        for (Map.Entry<String, Locale> entry : map.entrySet()) {
-            localesScrollBox.add(createLocaleGroupBox(entry.getKey(), entry.getValue()));
-        }
+    protected void configureColumns(DataGrid<AttributeLocaleData> dataGrid) {
+        DataGrid.Column<AttributeLocaleData> langColumn = dataGrid.getColumnNN(LANGUAGE_WITH_CODE);
+        DataGrid.Column<AttributeLocaleData> nameColumn = dataGrid.getColumnNN(NAME);
+        DataGrid.Column<AttributeLocaleData> descriptionColumn = dataGrid.getColumnNN(DESCRIPTION);
+
+        setColumnDescriptionProvider(langColumn, null);
+        setColumnDescriptionProvider(nameColumn, NAME);
+        setColumnDescriptionProvider(descriptionColumn, DESCRIPTION);
+
+        langColumn.setResizable(false);
+        nameColumn.setResizable(false);
+        descriptionColumn.setResizable(false);
+
+        langColumn.setExpandRatio(1);
+        nameColumn.setExpandRatio(3);
+        descriptionColumn.setExpandRatio(4);
+
+        langColumn.setEditable(false);
     }
 
-    protected GroupBoxLayout createLocaleGroupBox(String localeName, Locale locale) {
-        GroupBoxLayout groupBoxLayout = uiComponents.create(GroupBoxLayout.NAME);
-        groupBoxLayout.setCaption(localeName + "|" + LocaleResolver.localeToString(locale));
-        groupBoxLayout.add(createTextFieldComponent(locale,
-                messageTools.loadString(MESSAGE_PACK + "CategoryAttribute.name"), namesTextFieldMap));
-        groupBoxLayout.add(createTextAreaComponent(locale,
-                messageTools.loadString(MESSAGE_PACK + "CategoryAttribute.description"), descriptionsTextFieldMap));
-        return groupBoxLayout;
+    protected String getNamesValue() {
+        return getValues(NAME);
     }
 
-    public String getNamesValue() {
-        return getValue(namesTextFieldMap);
+    protected String getDescriptionsValue() {
+        return getValues(DESCRIPTION);
     }
 
-    public String getDescriptionsValue() {
-        return getValue(descriptionsTextFieldMap);
+    protected void setNamesValue(String localeBundle) {
+        setValues(localeBundle, NAME);
     }
 
-    public void setNamesValue(String localeBundle) {
-        setValue(localeBundle, namesTextFieldMap);
-    }
-
-    public void setDescriptionsValue(String localeBundle) {
-        setValue(localeBundle, descriptionsTextFieldMap);
+    protected void setDescriptionsValue(String localeBundle) {
+        setValues(localeBundle, DESCRIPTION);
     }
 }
