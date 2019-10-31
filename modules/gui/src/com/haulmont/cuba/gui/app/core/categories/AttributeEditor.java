@@ -488,7 +488,14 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
                     MessageType.CONFIRMATION_HTML.modal(false).width(560f)));
             optionsLoaderScript.setMode(SourceCodeEditor.Mode.Groovy);
         } else if (optionsType == SQL) {
+            optionsLoaderScript.setContextHelpIconClickHandler(e -> showMessageDialog(getMessage("optionsLoaderSqlScript"), getMessage("optionsLoaderSqlScriptHelp"),
+                    MessageType.CONFIRMATION_HTML.modal(false).width(560f)));
             optionsLoaderScript.setMode(SourceCodeEditor.Mode.SQL);
+        } else if (optionsType == JPQL) {
+            joinClause.setContextHelpIconClickHandler(e -> showMessageDialog(getMessage("joinClause"), getMessage("joinClauseHelp"),
+                    MessageType.CONFIRMATION_HTML.modal(false).width(560f)));
+            whereClause.setContextHelpIconClickHandler(e -> showMessageDialog(getMessage("whereClause"), getMessage("whereClauseHelp"),
+                    MessageType.CONFIRMATION_HTML.modal(false).width(560f)));
         } else {
             optionsLoaderScript.setContextHelpIconClickHandler(null);
             optionsLoaderScript.setMode(SourceCodeEditor.Mode.Text);
