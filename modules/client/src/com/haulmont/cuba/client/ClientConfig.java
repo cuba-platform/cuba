@@ -227,11 +227,21 @@ public interface ClientConfig extends Config {
     boolean getGenericFilterApplyImmediately();
 
     /**
-     * If true, then table rows tooltips with hit information will be generated in case of full text search in generic filter component
+     * If true, then a context action "Full-Text Search Details" will be added to the table or data grid after full-text search in generic filter
+     * component.
+     */
+    @Property("cuba.gui.genericFilterFtsDetailsActionEnabled")
+    @Source(type = SourceType.DATABASE)
+    @DefaultBoolean(true)
+    boolean getGenericFilterFtsDetailsActionEnabled();
+
+    /**
+     * If true, then table rows tooltips with hit information will be generated in case of full text search in generic filter component. Tooltips
+     * generation may take a lot of time, so be careful when setting the parameter value to "true"
      */
     @Property("cuba.gui.genericFilterFtsTableTooltipsEnabled")
     @Source(type = SourceType.DATABASE)
-    @DefaultBoolean(true)
+    @DefaultBoolean(false)
     boolean getGenericFilterFtsTableTooltipsEnabled();
 
     /**

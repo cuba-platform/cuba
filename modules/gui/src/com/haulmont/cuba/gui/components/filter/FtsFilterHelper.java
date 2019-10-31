@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.gui.components.filter;
 
+import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.filter.condition.CustomCondition;
 
 /**
@@ -31,6 +32,8 @@ public interface FtsFilterHelper {
     String QUERY_KEY_PARAM_NAME = "__queryKey";
 
     String SESSION_ID_PARAM_NAME = "__sessionId";
+
+    String FTS_DETAILS_ACTION_ID = "ftsDetails";
 
     /**
      * Checks whether an entity is indexed by full text search engine
@@ -60,6 +63,11 @@ public interface FtsFilterHelper {
      * Builds a tooltip with hit information for a single entity
      */
     String buildTableTooltip(String entityName, Object entityId, String searchTerm);
+
+    /**
+     * Creates "Full-Text Search Details" action
+     */
+    Action createFtsDetailsAction(String searchTerm);
 
     /**
      * Class for holding search result.

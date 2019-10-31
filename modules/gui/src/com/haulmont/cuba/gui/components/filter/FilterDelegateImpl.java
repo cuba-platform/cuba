@@ -1693,8 +1693,13 @@ public class FilterDelegateImpl implements FilterDelegate {
         Map<String, Object> parameters = prepareDatasourceCustomParams();
         refreshDatasource(parameters);
 
-        if (clientConfig.getGenericFilterFtsTableTooltipsEnabled() && (applyTo != null) && (Table.class.isAssignableFrom(applyTo.getClass()))) {
-            filterHelper.removeTableFtsTooltips((Table) applyTo);
+        if ((applyTo != null) && (ListComponent.class.isAssignableFrom(applyTo.getClass()))) {
+            if (clientConfig.getGenericFilterFtsTableTooltipsEnabled()) {
+                filterHelper.removeTableFtsTooltips((ListComponent) applyTo);
+            }
+            if (clientConfig.getGenericFilterFtsDetailsActionEnabled()) {
+                ((ListComponent) applyTo).removeAction(FtsFilterHelper.FTS_DETAILS_ACTION_ID);
+            }
         }
 
         if (afterFilterAppliedHandler != null) {
@@ -1773,13 +1778,21 @@ public class FilterDelegateImpl implements FilterDelegate {
             CustomCondition ftsCondition = ftsFilterHelper.createFtsCondition(adapter.getMetaClass().getName());
             conditions.getRootNodes().add(new Node<>(ftsCondition));
 
-            if (clientConfig.getGenericFilterFtsTableTooltipsEnabled() && (applyTo != null)
-                    && ListComponent.class.isAssignableFrom(applyTo.getClass())) {
-                filterHelper.initTableFtsTooltips((ListComponent) applyTo, adapter.getMetaClass(), searchTerm);
+            if ((applyTo != null) && ListComponent.class.isAssignableFrom(applyTo.getClass())) {
+                if (clientConfig.getGenericFilterFtsTableTooltipsEnabled()) {
+                    filterHelper.initTableFtsTooltips((ListComponent) applyTo, adapter.getMetaClass(), searchTerm);
+                }
+                if (clientConfig.getGenericFilterFtsDetailsActionEnabled()) {
+                    initFtsDetailsAction((ListComponent) applyTo, searchTerm);
+                }
             }
-        } else if (clientConfig.getGenericFilterFtsTableTooltipsEnabled() && (applyTo != null)
-                && ListComponent.class.isAssignableFrom(applyTo.getClass())) {
-            filterHelper.removeTableFtsTooltips((ListComponent) applyTo);
+        } else if ((applyTo != null) && ListComponent.class.isAssignableFrom(applyTo.getClass())) {
+            if (clientConfig.getGenericFilterFtsTableTooltipsEnabled()) {
+                filterHelper.removeTableFtsTooltips((ListComponent) applyTo);
+            }
+            if (clientConfig.getGenericFilterFtsDetailsActionEnabled()) {
+                ((ListComponent) applyTo).removeAction(FtsFilterHelper.FTS_DETAILS_ACTION_ID);
+            }
         }
 
         applyDatasourceFilter();
@@ -1789,6 +1802,10 @@ public class FilterDelegateImpl implements FilterDelegate {
         if (afterFilterAppliedHandler != null) {
             afterFilterAppliedHandler.afterFilterApplied();
         }
+    }
+
+    protected void initFtsDetailsAction(ListComponent listComponent, String searchTerm) {
+        listComponent.addAction(ftsFilterHelper.createFtsDetailsAction(searchTerm));
     }
 
     /**
