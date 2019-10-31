@@ -223,7 +223,7 @@ public class WebSuggestionField extends WebAbstractField<CubaSuggestionField> im
     }
 
     protected void handleSearchResult(List<?> results) {
-        showSuggestions(results);
+        showSuggestions(results, true);
     }
 
     @Override
@@ -292,7 +292,11 @@ public class WebSuggestionField extends WebAbstractField<CubaSuggestionField> im
 
     @Override
     public void showSuggestions(List<?> suggestions) {
-        component.showSuggestions(suggestions);
+        showSuggestions(suggestions, false);
+    }
+
+    protected void showSuggestions(List<?> suggestions,  boolean userOriginated) {
+        component.showSuggestions(suggestions, userOriginated);
     }
 
     @Override

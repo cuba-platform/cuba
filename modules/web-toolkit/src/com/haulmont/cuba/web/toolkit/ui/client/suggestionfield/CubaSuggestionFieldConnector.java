@@ -21,6 +21,7 @@ import com.vaadin.client.communication.RpcProxy;
 import com.vaadin.client.communication.StateChangeEvent;
 import com.vaadin.client.ui.AbstractFieldConnector;
 import com.vaadin.shared.ui.Connect;
+import elemental.json.JsonArray;
 
 @Connect(CubaSuggestionField.class)
 public class CubaSuggestionFieldConnector extends AbstractFieldConnector {
@@ -28,8 +29,12 @@ public class CubaSuggestionFieldConnector extends AbstractFieldConnector {
     protected CubaSuggestionFieldServerRpc serverRpc = RpcProxy.create(CubaSuggestionFieldServerRpc.class, this);
 
     public CubaSuggestionFieldConnector() {
-        registerRpc(CubaSuggestionFieldClientRpc.class, suggestions ->
-                getWidget().showSuggestions(suggestions));
+        registerRpc(CubaSuggestionFieldClientRpc.class, new CubaSuggestionFieldClientRpc() {
+            @Override
+            public void showSuggestions(JsonArray suggestions, boolean userOriginated) {
+                getWidget().showSuggestions(suggestions, userOriginated);
+            }
+        });
     }
 
     @Override
