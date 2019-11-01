@@ -33,6 +33,10 @@ public class CubaVerticalActionsLayoutWidget extends CubaOrderedActionsLayoutWid
     @Override
     protected int computeWidgetHeight(Widget w) {
         Element el = w.getElement();
-        return (int) new ComputedStyle(el).getHeight();
+
+        int computedHeight = (int) new ComputedStyle(el).getHeight();
+        int measuredHeight = getLayoutManager().getOuterHeight(el);
+
+        return measuredHeight >= 0 ? measuredHeight : computedHeight;
     }
 }
