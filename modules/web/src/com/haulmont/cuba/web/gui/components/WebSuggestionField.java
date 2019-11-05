@@ -20,9 +20,12 @@ import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MetadataTools;
+import com.haulmont.cuba.gui.ComponentsHelper;
+import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.CaptionMode;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.SuggestionField;
+import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.executors.BackgroundTask;
 import com.haulmont.cuba.gui.executors.BackgroundTaskHandler;
 import com.haulmont.cuba.gui.executors.BackgroundWorker;
@@ -34,9 +37,11 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class WebSuggestionField extends WebAbstractField<CubaSuggestionField> implements SuggestionField, Component.Wrapper {
 
@@ -295,8 +300,22 @@ public class WebSuggestionField extends WebAbstractField<CubaSuggestionField> im
         showSuggestions(suggestions, false);
     }
 
-    protected void showSuggestions(List<?> suggestions,  boolean userOriginated) {
-        component.showSuggestions(suggestions, userOriginated);
+    protected void showSuggestions(List<?> suggestions, boolean userOriginated) {
+        Window window = ComponentsHelper.getWindow(this);
+        if (window != null) {
+            Collection<Window> openWindows = window.getWindowManager().getOpenWindows();
+
+            Window lastWindow = null;
+            for (Window openWindow : openWindows) {
+                if (openWindow.getContext().getOpenType() == WindowManager.OpenType.DIALOG) {
+                    lastWindow = openWindow;
+                }
+            }
+
+            if (lastWindow == null || Objects.equals(window.getFrame(), lastWindow)) {
+                component.showSuggestions(suggestions, userOriginated);
+            }
+        }
     }
 
     @Override
