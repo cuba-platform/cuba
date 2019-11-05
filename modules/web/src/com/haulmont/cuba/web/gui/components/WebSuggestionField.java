@@ -24,16 +24,21 @@ import com.haulmont.cuba.gui.executors.BackgroundTask;
 import com.haulmont.cuba.gui.executors.BackgroundTaskHandler;
 import com.haulmont.cuba.gui.executors.BackgroundWorker;
 import com.haulmont.cuba.gui.executors.TaskLifeCycle;
+import com.haulmont.cuba.gui.screen.FrameOwner;
+import com.haulmont.cuba.gui.screen.Screen;
+import com.haulmont.cuba.gui.screen.UiControllerUtils;
 import com.haulmont.cuba.web.widgets.CubaSuggestionField;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 
 import javax.inject.Inject;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 
 import static com.haulmont.cuba.web.gui.components.WebLookupField.NULL_STYLE_GENERATOR;
@@ -292,7 +297,20 @@ public class WebSuggestionField<V> extends WebV8AbstractField<CubaSuggestionFiel
     }
 
     protected void showSuggestions(List<V> suggestions, boolean userOriginated) {
-        component.showSuggestions(suggestions, userOriginated);
+        FrameOwner frameOwner = getFrame().getFrameOwner();
+        Collection<Screen> dialogScreens = UiControllerUtils.getScreenContext(frameOwner)
+                .getScreens()
+                .getOpenedScreens()
+                .getDialogScreens();
+
+        Screen lastDialog = null;
+        for (Screen dialogScreen : dialogScreens) {
+            lastDialog = dialogScreen;
+        }
+
+        if (lastDialog == null || Objects.equals(frameOwner, lastDialog)) {
+            component.showSuggestions(suggestions, userOriginated);
+        }
     }
 
     @Override
