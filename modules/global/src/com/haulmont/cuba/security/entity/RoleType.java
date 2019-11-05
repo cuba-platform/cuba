@@ -80,7 +80,7 @@ public enum RoleType implements EnumClass<Integer> {
             }
         }
     },
-    STRICT_DENYING(40) {
+    STRICTLY_DENYING(40) {
 
         protected final Set<String> systemAttributes = ImmutableSet.of("deleteTs", "version");
 
