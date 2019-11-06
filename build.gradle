@@ -107,6 +107,9 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.'''
     }
+    tomcat {
+        dir = "$project.rootDir/deploy/tomcat"
+    }
 }
 
 def sharedLibModule = project(':cuba-shared-lib')
