@@ -1687,6 +1687,8 @@
                 <xs:attribute name="datasource" type="xs:string"/>
                 <xs:attribute name="dataContainer" type="xs:string"/>
 
+                <xs:attribute name="datatype" type="dateTimeDatatypeEnum"/>
+
                 <xs:attribute name="startDate" type="xs:string"/>
                 <xs:attribute name="endDate" type="xs:string"/>
                 <xs:attribute name="timeFormat" type="calendarTimeFormat"/>

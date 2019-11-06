@@ -35,29 +35,31 @@ import java.util.function.Consumer;
 
 /**
  * Calendar is used for visualizing events in a calendar using week or month view.
+ *
+ * @param <V> type of value
  */
-public interface Calendar extends Component.BelongToFrame, Component.HasCaption, Component.HasIcon,
-        HasContextHelp, HasHtmlCaption, HasHtmlDescription {
+public interface Calendar<V> extends Component.BelongToFrame, Component.HasCaption, Component.HasIcon,
+        HasContextHelp, HasHtmlCaption, HasHtmlDescription, HasDatatype<V> {
 
     String NAME = "calendar";
 
     /**
      * Set start date for the calendar range.
      */
-    void setStartDate(Date date);
+    void setStartDate(V date);
     /**
      * @return the start date for the calendar range.
      */
-    Date getStartDate();
+    V getStartDate();
 
     /**
      * Set end date for the calendar's range.
      */
-    void setEndDate(Date date);
+    void setEndDate(V date);
     /**
      * @return the last date for the calendar range.
      */
-    Date getEndDate();
+    V getEndDate();
 
     /**
      * Set timezone.

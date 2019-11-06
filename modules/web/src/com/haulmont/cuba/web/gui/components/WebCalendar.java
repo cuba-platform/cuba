@@ -18,7 +18,13 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.bali.events.Subscription;
 import com.haulmont.bali.util.Preconditions;
+import com.haulmont.chile.core.datatypes.Datatype;
+import com.haulmont.chile.core.datatypes.DatatypeRegistry;
+import com.haulmont.chile.core.datatypes.impl.AbstractTemporalDatatype;
+import com.haulmont.chile.core.datatypes.impl.DateDatatype;
+import com.haulmont.chile.core.datatypes.impl.DateTimeDatatype;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.DateTimeTransformations;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.Calendar;
@@ -37,20 +43,26 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.InitializingBean;
 
 import javax.annotation.Nullable;
+import javax.inject.Inject;
 import java.time.DayOfWeek;
 import java.time.Month;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-public class WebCalendar extends WebAbstractComponent<CubaCalendar>
-        implements Calendar, InitializingBean {
+public class WebCalendar<V> extends WebAbstractComponent<CubaCalendar>
+        implements Calendar<V>, InitializingBean {
 
     protected final String TIME_FORMAT_12H = "12H";
     protected final String TIME_FORMAT_24H = "24H";
 
     protected CalendarEventProvider calendarEventProvider;
     protected boolean navigationButtonsVisible = false;
+
+    protected DateTimeTransformations dateTimeTransformations;
+    protected DatatypeRegistry datatypeRegistry;
+
+    protected Datatype<V> datatype;
 
     public WebCalendar() {
         component = createComponent();
@@ -117,24 +129,80 @@ public class WebCalendar extends WebAbstractComponent<CubaCalendar>
         component.setEventProvider(new CalendarEventProviderWrapper(calendarEventProvider));
     }
 
-    @Override
-    public void setStartDate(Date date) {
-        component.setStartDate(date);
+    @Inject
+    public void setDateTimeTransformations(DateTimeTransformations dateTimeTransformations) {
+        this.dateTimeTransformations = dateTimeTransformations;
+    }
+
+    @Inject
+    public void setDatatypeRegistry(DatatypeRegistry datatypeRegistry) {
+        this.datatypeRegistry = datatypeRegistry;
     }
 
     @Override
-    public Date getStartDate() {
-        return component.getStartDate();
+    public void setDatatype(Datatype<V> datatype) {
+        if (!(datatype instanceof DateDatatype)
+                && !(datatype instanceof DateTimeDatatype)
+                && !(datatype instanceof AbstractTemporalDatatype)) {
+            throw new IllegalArgumentException("Calendar supports only temporal datatype");
+        }
+        this.datatype = datatype;
     }
 
     @Override
-    public void setEndDate(Date date) {
-        component.setEndDate(date);
+    public Datatype<V> getDatatype() {
+        if (datatype == null) {
+            datatype = getDefaultDatatype();
+        }
+        return datatype;
+    }
+
+    @SuppressWarnings("unchecked")
+    protected Datatype<V> getDefaultDatatype() {
+        return (Datatype<V>) datatypeRegistry.get(Date.class);
     }
 
     @Override
-    public Date getEndDate() {
-        return component.getEndDate();
+    public void setStartDate(V date) {
+        component.setStartDate(convertToPresentation(date));
+    }
+
+    @Override
+    public V getStartDate() {
+        return convertToModel(component.getStartDate());
+    }
+
+    @Override
+    public void setEndDate(V date) {
+        component.setEndDate(convertToPresentation(date));
+    }
+
+    @Override
+    public V getEndDate() {
+        return convertToModel(component.getEndDate());
+    }
+
+    protected Date convertToPresentation(V date) {
+        if (date == null) {
+            return null;
+        }
+
+        Class datatypeClass = getDatatype().getJavaClass();
+
+        return (Date) (Date.class == datatypeClass
+                ? date
+                : dateTimeTransformations.transformToType(date, Date.class, null));
+    }
+
+    @SuppressWarnings("unchecked")
+    protected V convertToModel(Date date) {
+        if (date == null) {
+            return null;
+        }
+
+        Class datatypeClass = getDatatype().getJavaClass();
+
+        return (V) dateTimeTransformations.transformToType(date, datatypeClass, null);
     }
 
     @Override
