@@ -16,7 +16,7 @@
 
 package spec.cuba.web.datacontext
 
-
+import com.haulmont.cuba.gui.model.CollectionContainer
 import com.haulmont.cuba.gui.model.CollectionPropertyContainer
 import com.haulmont.cuba.gui.model.InstanceContainer
 import com.haulmont.cuba.web.testmodel.sales.Order
@@ -162,5 +162,26 @@ class CollectionPropertyContainerTest extends WebSpec {
             assert event.property == 'quantity'
             assert event.value == 33
         }
+    }
+
+    def "items added to nested collection does NOT produce CollectionChangeEvent"() {
+        orderCt.setItem(order)
+        def orderLine3 = new OrderLine(order: this.order, quantity: 3)
+
+        def listener = Mock(Consumer)
+
+        def subscription = linesCt.addCollectionChangeListener(listener)
+
+        when:
+        order.orderLines.add(orderLine3)
+
+        then:
+        0 * listener.accept(_) >> { List arguments ->
+            CollectionContainer.CollectionChangeEvent event = arguments[0]
+            assert event.changes.contains(orderLine3)
+        }
+
+        cleanup:
+        subscription.remove()
     }
 }
