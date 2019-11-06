@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.security.app.role;
+package com.haulmont.cuba.security.app.role.annotation;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-import com.haulmont.cuba.security.app.role.annotation.Role;
-import com.haulmont.cuba.security.entity.*;
-
-/**
- * System role for {@code admin} user.
- */
-@Role(name = "Administrators", type = RoleType.SUPER)
-public class AdministratorsRoleDef extends AbstractRoleDef {
+@Target({ElementType.METHOD})
+@Retention(RetentionPolicy.RUNTIME)
+public @interface SpecificAccessContainer {
+    SpecificAccess[] value();
 }

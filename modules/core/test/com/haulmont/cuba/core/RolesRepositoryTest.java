@@ -70,37 +70,37 @@ public class RolesRepositoryTest {
         UserRole userRole = metadata.create(UserRole.class);
         userRole.setRoleName("Administrators");
 
-        assertNull(userRole.getRoleDef());
+        assertNull(userRole.getRoleDefinition());
 
-        Collection<RoleDef> roleDefs = rolesRepository.getRoleDefs(Collections.singletonList(userRole));
+        Collection<RoleDefinition> roleDefinitions = rolesRepository.getRoleDefinitions(Collections.singletonList(userRole));
 
-        assertNotNull(roleDefs);
-        assertEquals(1, roleDefs.size());
+        assertNotNull(roleDefinitions);
+        assertEquals(1, roleDefinitions.size());
 
-        RoleDef roleDef = roleDefs.iterator().next();
+        RoleDefinition roleDefinition = roleDefinitions.iterator().next();
 
-        assertEquals("Administrators", roleDef.getName());
-        assertNotNull(userRole.getRoleDef());
-        assertEquals(userRole.getRoleDef(), roleDef);
+        assertEquals("Administrators", roleDefinition.getName());
+        assertNotNull(userRole.getRoleDefinition());
+        assertEquals(userRole.getRoleDefinition(), roleDefinition);
     }
 
     @Test
     public void testGetRoleDefByName() {
-        RoleDef roleDef = rolesRepository.getRoleDefByName("NonexistentRole");
+        RoleDefinition roleDefinition = rolesRepository.getRoleDefinitionByName("NonexistentRole");
 
-        assertNull(roleDef);
+        assertNull(roleDefinition);
 
-        roleDef = rolesRepository.getRoleDefByName("Administrators");
+        roleDefinition = rolesRepository.getRoleDefinitionByName("Administrators");
 
-        assertNotNull(roleDef);
+        assertNotNull(roleDefinition);
     }
 
     @Test
     public void testRegisterRoleAndGetDefaultRoles() {
-        RoleDef testRole = new TestRole();
+        RoleDefinition testRole = new TestRole();
         rolesRepository.registerRole(testRole);
 
-        assertNotNull(rolesRepository.getRoleDefByName("TestRole"));
+        assertNotNull(rolesRepository.getRoleDefinitionByName("TestRole"));
 
         Map<String, Role> defaultRoles = rolesRepository.getDefaultRoles();
 
@@ -111,9 +111,9 @@ public class RolesRepositoryTest {
 
     @Test
     public void testGetRoleWithPermissions() {
-        RoleDef roleDef = new TestRole();
+        RoleDefinition roleDefinition = new TestRole();
 
-        Role roleObj = rolesRepository.getRoleWithPermissions(roleDef);
+        Role roleObj = rolesRepository.getRoleWithPermissions(roleDefinition);
 
         assertNotNull(roleObj);
         assertEquals("TestRole", roleObj.getName());
@@ -124,7 +124,7 @@ public class RolesRepositoryTest {
 
     @Test
     public void testGetPermissions() {
-        RoleDef roleDef = new TestRole() {
+        RoleDefinition roleDefinition = new TestRole() {
             @Override
             public String getName() {
                 return "TestRole2";
@@ -144,7 +144,7 @@ public class RolesRepositoryTest {
             }
         };
 
-        rolesRepository.registerRole(roleDef);
+        rolesRepository.registerRole(roleDefinition);
 
         Collection<Permission> permissions = rolesRepository.getPermissions("TestRole2", PermissionType.SPECIFIC);
 
@@ -154,7 +154,7 @@ public class RolesRepositoryTest {
         assertTrue(permissions.stream().anyMatch(p -> "specPermission2".equals(p.getTarget()) && p.getValue() == 0));
     }
 
-    protected class TestRole implements RoleDef {
+    protected class TestRole implements RoleDefinition {
 
         @Override
         public RoleType getRoleType() {
@@ -167,12 +167,12 @@ public class RolesRepositoryTest {
         }
 
         @Override
-        public EntityAccessPermissions entityAccess() {
+        public EntityPermissions entityPermissions() {
             return null;
         }
 
         @Override
-        public EntityAttributeAccessPermissions attributeAccess() {
+        public EntityAttributePermissions entityAttributePermissions() {
             return null;
         }
 
@@ -182,12 +182,12 @@ public class RolesRepositoryTest {
         }
 
         @Override
-        public ScreenPermissions screenAccess() {
+        public ScreenPermissions screenPermissions() {
             return null;
         }
 
         @Override
-        public ScreenElementsPermissions screenElementsAccess() {
+        public ScreenElementsPermissions screenElementsPermissions() {
             return null;
         }
 

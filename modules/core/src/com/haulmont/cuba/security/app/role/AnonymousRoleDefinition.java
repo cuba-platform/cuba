@@ -23,5 +23,5 @@ import com.haulmont.cuba.security.entity.RoleType;
  * System role for {@code anonymous} user
  */
 @Role(name = "Anonymous", type = RoleType.DENYING)
-public class AnonymousRoleDef extends AbstractRoleDef {
+public class AnonymousRoleDefinition extends AbstractRoleDefinition {
 }

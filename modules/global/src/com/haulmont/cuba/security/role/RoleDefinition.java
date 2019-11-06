@@ -25,7 +25,7 @@ import com.haulmont.cuba.security.entity.RoleType;
  * <p>Each {@code UserSession} contains an instance of this interface ({@code effectiveRole} field).
  * This object stores all user permissions.
  */
-public interface RoleDef extends ApplicationRole, GenericUiRole {
+public interface RoleDefinition extends ApplicationRole, GenericUiRole {
 
     RoleType getRoleType();
 

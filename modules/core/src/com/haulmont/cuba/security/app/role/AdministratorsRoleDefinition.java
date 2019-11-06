@@ -14,30 +14,15 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.security.app.role.annotation;
+package com.haulmont.cuba.security.app.role;
 
-import com.haulmont.cuba.security.entity.Access;
 
-import java.lang.annotation.*;
+import com.haulmont.cuba.security.app.role.annotation.Role;
+import com.haulmont.cuba.security.entity.*;
 
 /**
- * Defines specific permissions access.
- *
- * <p>Example:
- *
- * <pre>
- *     &#064;SpecificPermission(target = "my.specific.permission", access = Access.ALLOW)
- * </pre>
- *
- * @see Role
+ * System role for {@code admin} user.
  */
-@Target({ElementType.METHOD})
-@Retention(RetentionPolicy.RUNTIME)
-@Repeatable(SpecificPermissionContainer.class)
-public @interface SpecificPermission {
-
-    String target();
-
-    Access access();
-
+@Role(name = "Administrators", type = RoleType.SUPER)
+public class AdministratorsRoleDefinition extends AbstractRoleDefinition {
 }

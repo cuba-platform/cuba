@@ -26,13 +26,13 @@ import com.haulmont.cuba.core.TypedQuery;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.DefaultPermissionValuesConfig;
 import com.haulmont.cuba.security.app.UserSessionsAPI;
-import com.haulmont.cuba.security.app.role.RoleDefBuilder;
+import com.haulmont.cuba.security.app.role.RoleDefinitionBuilder;
 import com.haulmont.cuba.security.app.role.RolesRepository;
 import com.haulmont.cuba.security.entity.*;
 import com.haulmont.cuba.security.global.NoUserSessionException;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.security.role.PermissionsUtils;
-import com.haulmont.cuba.security.role.RoleDef;
+import com.haulmont.cuba.security.role.RoleDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -101,10 +101,10 @@ public class UserSessionManager {
      * @return          new session instance
      */
     public UserSession createSession(UUID sessionId, User user, Locale locale, boolean system) {
-        List<RoleDef> roles = new ArrayList<>();
-        RoleDef effectiveRole;
+        List<RoleDefinition> roles = new ArrayList<>();
+        RoleDefinition effectiveRole;
 
-        for (RoleDef role : rolesRepository.getRoleDefs(user.getUserRoles())) {
+        for (RoleDefinition role : rolesRepository.getRoleDefinitions(user.getUserRoles())) {
             if (role != null) {
                 roles.add(role);
             }
@@ -126,8 +126,8 @@ public class UserSessionManager {
      * @return      new session with the same ID as existing
      */
     public UserSession createSession(UserSession src, User user) {
-        List<RoleDef> roles = new ArrayList<>();
-        for (RoleDef role : rolesRepository.getRoleDefs(user.getUserRoles())) {
+        List<RoleDefinition> roles = new ArrayList<>();
+        for (RoleDefinition role : rolesRepository.getRoleDefinitions(user.getUserRoles())) {
             if (role != null) {
                 roles.add(role);
             }
@@ -141,19 +141,24 @@ public class UserSessionManager {
         return session;
     }
 
-    protected void compilePermissions(UserSession session, List<RoleDef> roles) {
-        for (RoleDef role : roles) {
+    protected void compilePermissions(UserSession session, List<RoleDefinition> roles) {
+        for (RoleDefinition role : roles) {
             if (RoleType.SUPER.equals(role.getRoleType())) {
                 // Don't waste memory, as the user with SUPER role has all permissions.
                 return;
             }
         }
 
-        RoleDefBuilder roleDefBuilder = RoleDefBuilder.createRole(session.getEffectiveRole());
-        for (RoleDef role : roles) {
-            roleDefBuilder.join(role);
+        RoleDefinition effectiveRole = session.getEffectiveRole();
+        RoleDefinitionBuilder roleBuilder = RoleDefinitionBuilder.create()
+                .withRoleType(effectiveRole.getRoleType())
+                .withName(effectiveRole.getName())
+                .withDescription(effectiveRole.getDescription())
+                .join(effectiveRole);
+        for (RoleDefinition role : roles) {
+            roleBuilder.join(role);
         }
-        session.applyEffectiveRole(roleDefBuilder.build());
+        session.applyEffectiveRole(roleBuilder.build());
 
         defaultPermissionValuesConfig.getDefaultPermissionValues().forEach((target, permission) -> {
             if (session.getPermissionValue(permission.getType(), permission.getTarget()) == null) {
@@ -259,13 +264,13 @@ public class UserSessionManager {
 
     public Integer getPermissionValue(User user, PermissionType permissionType, String target) {
         Integer result;
-        List<RoleDef> roles = new ArrayList<>();
+        List<RoleDefinition> roles = new ArrayList<>();
 
         Transaction tx = persistence.createTransaction();
         try {
             EntityManager em = persistence.getEntityManager();
             user = em.find(User.class, user.getId());
-            for (RoleDef role : rolesRepository.getRoleDefs(user.getUserRoles())) {
+            for (RoleDefinition role : rolesRepository.getRoleDefinitions(user.getUserRoles())) {
                 if (role != null) {
                     roles.add(role);
                 }
@@ -296,13 +301,13 @@ public class UserSessionManager {
                         ur.getRole().setPermissions(null);
                     }
                 }
-                for (RoleDef role : rolesRepository.getRoleDefs(user.getUserRoles())) {
+                for (RoleDefinition role : rolesRepository.getRoleDefinitions(user.getUserRoles())) {
                     if (role != null) {
-                        PermissionsUtils.removePermissions(role.entityAccess());
-                        PermissionsUtils.removePermissions(role.attributeAccess());
+                        PermissionsUtils.removePermissions(role.entityPermissions());
+                        PermissionsUtils.removePermissions(role.entityAttributePermissions());
                         PermissionsUtils.removePermissions(role.specificPermissions());
-                        PermissionsUtils.removePermissions(role.screenAccess());
-                        PermissionsUtils.removePermissions(role.screenElementsAccess());
+                        PermissionsUtils.removePermissions(role.screenPermissions());
+                        PermissionsUtils.removePermissions(role.screenElementsPermissions());
                     }
                 }
             }

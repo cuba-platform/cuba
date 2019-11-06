@@ -56,20 +56,20 @@ public class AnnotationPermissionsBuilderTest {
 
     @Test
     public void testPermissionsBuilding() {
-        EntityAccessPermissions entityAccessPermissions = builder.buildEntityAccessPermissions(role);
+        EntityPermissions entityPermissions = builder.buildEntityAccessPermissions(role);
 
-        assertEquals(4, PermissionsUtils.getPermissions(entityAccessPermissions).size());
-        assertTrue(entityAccessPermissions.isCreateOperationPermitted(metadata.getClassNN(User.class)));
-        assertTrue(entityAccessPermissions.isReadOperationPermitted(metadata.getClassNN(User.class)));
-        assertFalse(entityAccessPermissions.isUpdateOperationPermitted(metadata.getClassNN(User.class)));
-        assertTrue(entityAccessPermissions.isReadOperationPermitted(metadata.getClassNN(com.haulmont.cuba.security.entity.Role.class)));
+        assertEquals(4, PermissionsUtils.getPermissions(entityPermissions).size());
+        assertTrue(entityPermissions.isCreateOperationPermitted(metadata.getClassNN(User.class)));
+        assertTrue(entityPermissions.isReadOperationPermitted(metadata.getClassNN(User.class)));
+        assertFalse(entityPermissions.isUpdateOperationPermitted(metadata.getClassNN(User.class)));
+        assertTrue(entityPermissions.isReadOperationPermitted(metadata.getClassNN(com.haulmont.cuba.security.entity.Role.class)));
 
-        EntityAttributeAccessPermissions entityAttributeAccessPermissions = builder.buildEntityAttributeAccessPermissions(role);
+        EntityAttributePermissions entityAttributePermissions = builder.buildEntityAttributeAccessPermissions(role);
 
-        assertEquals(3, PermissionsUtils.getPermissions(entityAttributeAccessPermissions).size());
-        assertTrue(entityAttributeAccessPermissions.isModifyOperationPermitted(metadata.getClassNN(User.class), "login"));
-        assertTrue(entityAttributeAccessPermissions.isReadOperationPermitted(metadata.getClassNN(com.haulmont.cuba.security.entity.Role.class), "name"));
-        assertFalse(entityAttributeAccessPermissions.isModifyOperationPermitted(metadata.getClassNN(com.haulmont.cuba.security.entity.Role.class), "description"));
+        assertEquals(3, PermissionsUtils.getPermissions(entityAttributePermissions).size());
+        assertTrue(entityAttributePermissions.isModifyOperationPermitted(metadata.getClassNN(User.class), "login"));
+        assertTrue(entityAttributePermissions.isReadOperationPermitted(metadata.getClassNN(com.haulmont.cuba.security.entity.Role.class), "name"));
+        assertFalse(entityAttributePermissions.isModifyOperationPermitted(metadata.getClassNN(com.haulmont.cuba.security.entity.Role.class), "description"));
 
         SpecificPermissions specificPermissions = builder.buildSpecificPermissions(role);
 
@@ -93,7 +93,7 @@ public class AnnotationPermissionsBuilderTest {
 
     @Role(name = "TestPredefinedRole", type = RoleType.STANDARD,
             isDefault = false, description = "Test role")
-    protected class TestPredefinedRole implements RoleDef {
+    protected class TestPredefinedRole implements RoleDefinition {
 
         @Override
         public RoleType getRoleType() {
@@ -110,19 +110,19 @@ public class AnnotationPermissionsBuilderTest {
         @EntityAccess(target = com.haulmont.cuba.security.entity.Role.class,
                 allow = {EntityOp.READ})
         @Override
-        public EntityAccessPermissions entityAccess() {
+        public EntityPermissions entityPermissions() {
             return null;
         }
 
         @EntityAttributeAccess(target = User.class, allow = {"login"})
         @EntityAttributeAccess(target = com.haulmont.cuba.security.entity.Role.class, readOnly = {"name"}, deny = {"description"})
         @Override
-        public EntityAttributeAccessPermissions attributeAccess() {
+        public EntityAttributePermissions entityAttributePermissions() {
             return null;
         }
 
-        @SpecificPermission(target = "specificPermission2", access = Access.ALLOW)
-        @SpecificPermission(target = "specificPermission1", access = Access.DENY)
+        @SpecificAccess(target = "specificPermission2", access = Access.ALLOW)
+        @SpecificAccess(target = "specificPermission1", access = Access.DENY)
         @Override
         public SpecificPermissions specificPermissions() {
             return null;
@@ -130,13 +130,13 @@ public class AnnotationPermissionsBuilderTest {
 
         @ScreenAccess(allow = {"sec$Role.edit", "sec$User.edit"}, deny = {"sec$Role.browse"})
         @Override
-        public ScreenPermissions screenAccess() {
+        public ScreenPermissions screenPermissions() {
             return null;
         }
 
         @ScreenElementAccess(screen = "sec$Role.edit", allow = {"roleGroupBox"})
         @Override
-        public ScreenElementsPermissions screenElementsAccess() {
+        public ScreenElementsPermissions screenElementsPermissions() {
             return null;
         }
     }

@@ -28,14 +28,14 @@ import static com.haulmont.cuba.security.role.PermissionsUtils.*;
 /**
  * Builder class that helps to create custom predefined roles.
  */
-@Component(RoleDefBuilder.NAME)
+@Component(RoleDefinitionBuilder.NAME)
 @Scope("prototype")
-public class RoleDefBuilder {
+public class RoleDefinitionBuilder {
 
-    public static final String NAME = "cuba_RoleDefBuilder";
+    public static final String NAME = "cuba_RoleDefinitionBuilder";
 
-    private EntityAccessPermissions entityAccessPermissions;
-    private EntityAttributeAccessPermissions entityAttributeAccessPermissions;
+    private EntityPermissions entityPermissions;
+    private EntityAttributePermissions entityAttributePermissions;
     private SpecificPermissions specificPermissions;
     private ScreenPermissions screenPermissions;
     private ScreenElementsPermissions screenElementsPermissions;
@@ -47,9 +47,9 @@ public class RoleDefBuilder {
     /**
      * INTERNAL
      */
-    private RoleDefBuilder() {
-        entityAccessPermissions = new EntityAccessPermissions();
-        entityAttributeAccessPermissions = new EntityAttributeAccessPermissions();
+    private RoleDefinitionBuilder() {
+        entityPermissions = new EntityPermissions();
+        entityAttributePermissions = new EntityAttributePermissions();
         specificPermissions = new SpecificPermissions();
         screenPermissions = new ScreenPermissions();
         screenElementsPermissions = new ScreenElementsPermissions();
@@ -58,67 +58,11 @@ public class RoleDefBuilder {
     }
 
     /**
-     * INTERNAL
-     */
-    private RoleDefBuilder(RoleType roleType) {
-        this();
-        this.roleType = roleType;
-    }
-
-    /**
-     * INTERNAL
-     */
-    private RoleDefBuilder(Role role) {
-        this();
-        this.roleType = role.getType();
-        this.roleName = role.getName();
-        this.description = role.getDescription();
-        join(role);
-    }
-
-    /**
-     * INTERNAL
-     */
-    private RoleDefBuilder(RoleDef role) {
-        this();
-        this.roleType = role.getRoleType();
-        this.roleName = role.getName();
-        this.description = role.getDescription();
-        join(role);
-    }
-
-    /**
      * @return new builder with default role parameters: {@code roleType = RoleType.STANDARD},
      * {@code description} and {@code name} are empty.
      */
-    public static RoleDefBuilder createRole() {
+    public static RoleDefinitionBuilder create() {
         return AppBeans.getPrototype(NAME);
-    }
-
-    /**
-     * @param roleType {@link RoleType}, default value is {@code RoleType.STANDARD}
-     * @return new builder with empty role name and description
-     */
-    public static RoleDefBuilder createRole(RoleType roleType) {
-        return AppBeans.getPrototype(NAME, roleType);
-    }
-
-    /**
-     * @param role source {@link Role} object. Following parameters are taken from this role: name,
-     *             description, roleType, permissions
-     * @return new builder
-     */
-    public static RoleDefBuilder createRole(Role role) {
-        return AppBeans.getPrototype(NAME, role);
-    }
-
-    /**
-     * @param role source {@link RoleDef} object. Following parameters are taken from this role: name,
-     *             description, roleType, permissions
-     * @return new builder
-     */
-    public static RoleDefBuilder createRole(RoleDef role) {
-        return AppBeans.getPrototype(NAME, role);
     }
 
     /**
@@ -126,7 +70,7 @@ public class RoleDefBuilder {
      *
      * @return current instance of the builder
      */
-    public RoleDefBuilder withName(String name) {
+    public RoleDefinitionBuilder withName(String name) {
         this.roleName = name;
 
         return this;
@@ -137,7 +81,7 @@ public class RoleDefBuilder {
      *
      * @return current instance of the builder
      */
-    public RoleDefBuilder withDescription(String description) {
+    public RoleDefinitionBuilder withDescription(String description) {
         this.description = description;
 
         return this;
@@ -148,18 +92,18 @@ public class RoleDefBuilder {
      *
      * @return current instance of the builder
      */
-    public RoleDefBuilder withRoleType(RoleType roleType) {
+    public RoleDefinitionBuilder withRoleType(RoleType roleType) {
         this.roleType = roleType;
         return this;
     }
 
-    protected RoleDefBuilder withPermission(Permission permission) {
+    protected RoleDefinitionBuilder withPermission(Permission permission) {
         joinPermission(permission);
 
         return this;
     }
 
-    protected RoleDefBuilder withPermission(PermissionType permissionType, String target, int access) {
+    protected RoleDefinitionBuilder withPermission(PermissionType permissionType, String target, int access) {
         Permission permission = new Permission();
         permission.setType(permissionType);
         permission.setValue(access);
@@ -175,7 +119,7 @@ public class RoleDefBuilder {
      *
      * @return current instance of the builder
      */
-    public RoleDefBuilder withEntityAccessPermission(MetaClass targetClass, EntityOp operation, Access access) {
+    public RoleDefinitionBuilder withEntityAccessPermission(MetaClass targetClass, EntityOp operation, Access access) {
         return withPermission(PermissionType.ENTITY_OP,
                 targetClass.getName() + Permission.TARGET_PATH_DELIMETER + operation.getId(),
                 access.getId());
@@ -186,7 +130,7 @@ public class RoleDefBuilder {
      *
      * @return current instance of the builder
      */
-    public RoleDefBuilder withEntityAttrAccessPermission(MetaClass targetClass, String property, EntityAttrAccess access) {
+    public RoleDefinitionBuilder withEntityAttrAccessPermission(MetaClass targetClass, String property, EntityAttrAccess access) {
         return withPermission(PermissionType.ENTITY_ATTR,
                 targetClass.getName() + Permission.TARGET_PATH_DELIMETER + property,
                 access.getId());
@@ -197,7 +141,7 @@ public class RoleDefBuilder {
      *
      * @return current instance of the builder
      */
-    public RoleDefBuilder withSpecificPermission(String target, Access access) {
+    public RoleDefinitionBuilder withSpecificPermission(String target, Access access) {
         return withPermission(PermissionType.SPECIFIC, target, access.getId());
     }
 
@@ -206,7 +150,7 @@ public class RoleDefBuilder {
      *
      * @return current instance of the builder
      */
-    public RoleDefBuilder withScreenPermission(String windowAlias, Access access) {
+    public RoleDefinitionBuilder withScreenPermission(String windowAlias, Access access) {
         return withPermission(PermissionType.SCREEN, windowAlias, access.getId());
     }
 
@@ -215,7 +159,7 @@ public class RoleDefBuilder {
      *
      * @return current instance of the builder
      */
-    public RoleDefBuilder withScreenElementPermission(String windowAlias, String component, Access access) {
+    public RoleDefinitionBuilder withScreenElementPermission(String windowAlias, String component, Access access) {
         return withPermission(PermissionType.UI,
                 windowAlias + Permission.TARGET_PATH_DELIMETER + component,
                 access.getId());
@@ -226,7 +170,7 @@ public class RoleDefBuilder {
      *
      * @return current instance of the builder
      */
-    public RoleDefBuilder join(RoleDef role) {
+    public RoleDefinitionBuilder join(RoleDefinition role) {
         joinApplicationRole(role);
         joinGenericUiRole(role);
 
@@ -238,7 +182,7 @@ public class RoleDefBuilder {
      *
      * @return current instance of the builder
      */
-    public RoleDefBuilder join(ApplicationRole role) {
+    public RoleDefinitionBuilder join(ApplicationRole role) {
         joinApplicationRole(role);
 
         return this;
@@ -249,7 +193,7 @@ public class RoleDefBuilder {
      *
      * @return current instance of the builder
      */
-    public RoleDefBuilder join(GenericUiRole role) {
+    public RoleDefinitionBuilder join(GenericUiRole role) {
         joinGenericUiRole(role);
 
         return this;
@@ -260,7 +204,7 @@ public class RoleDefBuilder {
      *
      * @return current instance of the builder
      */
-    public RoleDefBuilder join(Role role) {
+    public RoleDefinitionBuilder join(Role role) {
         if (role.getPermissions() != null) {
             for (Permission permission : role.getPermissions()) {
                 joinPermission(permission);
@@ -272,30 +216,30 @@ public class RoleDefBuilder {
     /**
      * Returns the built role
      */
-    public RoleDef build() {
-        return new BasicUserRoleDef(roleName, description, roleType, entityAccessPermissions,
-                entityAttributeAccessPermissions, specificPermissions, screenPermissions, screenElementsPermissions);
+    public RoleDefinition build() {
+        return new BasicRoleDefinition(roleName, description, roleType, entityPermissions,
+                entityAttributePermissions, specificPermissions, screenPermissions, screenElementsPermissions);
     }
 
 
     protected void joinApplicationRole(ApplicationRole role) {
-        addPermissions(entityAccessPermissions, getPermissions(role.entityAccess()));
-        addPermissions(entityAttributeAccessPermissions, getPermissions(role.attributeAccess()));
+        addPermissions(entityPermissions, getPermissions(role.entityPermissions()));
+        addPermissions(entityAttributePermissions, getPermissions(role.entityAttributePermissions()));
         addPermissions(specificPermissions, getPermissions(role.specificPermissions()));
     }
 
     protected void joinGenericUiRole(GenericUiRole role) {
-        addPermissions(screenPermissions, getPermissions(role.screenAccess()));
-        addPermissions(screenElementsPermissions, getPermissions(role.screenElementsAccess()));
+        addPermissions(screenPermissions, getPermissions(role.screenPermissions()));
+        addPermissions(screenElementsPermissions, getPermissions(role.screenElementsPermissions()));
     }
 
     protected void joinPermission(Permission permission) {
         switch (permission.getType()) {
             case ENTITY_OP:
-                addPermission(entityAccessPermissions, permission);
+                addPermission(entityPermissions, permission);
                 break;
             case ENTITY_ATTR:
-                addPermission(entityAttributeAccessPermissions, permission);
+                addPermission(entityAttributePermissions, permission);
                 break;
             case SPECIFIC:
                 addPermission(specificPermissions, permission);
@@ -310,5 +254,4 @@ public class RoleDefBuilder {
                 throw new IllegalArgumentException("Unsupported permission type.");
         }
     }
-
 }

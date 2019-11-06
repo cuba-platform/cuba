@@ -20,7 +20,7 @@ import com.haulmont.cuba.core.entity.StandardEntity;
 import com.haulmont.cuba.core.entity.annotation.OnDeleteInverse;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.global.DeletePolicy;
-import com.haulmont.cuba.security.role.RoleDef;
+import com.haulmont.cuba.security.role.RoleDefinition;
 
 import javax.persistence.*;
 
@@ -49,7 +49,7 @@ public class UserRole extends StandardEntity {
     private String roleName;
 
     @Transient
-    private transient RoleDef roleDef;
+    private transient RoleDefinition roleDefinition;
 
     public User getUser() {
         return user;
@@ -75,11 +75,11 @@ public class UserRole extends StandardEntity {
         this.roleName = roleName;
     }
 
-    public RoleDef getRoleDef() {
-        return roleDef;
+    public RoleDefinition getRoleDefinition() {
+        return roleDefinition;
     }
 
-    public void setRoleDef(RoleDef roleDef) {
-        this.roleDef = roleDef;
+    public void setRoleDefinition(RoleDefinition roleDefinition) {
+        this.roleDefinition = roleDefinition;
     }
 }

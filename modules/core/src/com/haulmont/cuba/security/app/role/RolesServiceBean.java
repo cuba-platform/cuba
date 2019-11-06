@@ -18,7 +18,7 @@ package com.haulmont.cuba.security.app.role;
 
 import com.haulmont.cuba.core.global.DataManager;
 import com.haulmont.cuba.security.role.RolesService;
-import com.haulmont.cuba.security.role.RoleDef;
+import com.haulmont.cuba.security.role.RoleDefinition;
 import com.haulmont.cuba.security.entity.Permission;
 import com.haulmont.cuba.security.entity.PermissionType;
 import com.haulmont.cuba.security.entity.Role;
@@ -41,7 +41,7 @@ public class RolesServiceBean implements RolesService {
         Map<String, Role> rolesForGui = new HashMap<>();
 
         if (isPredefinedRolesModeAvailable()) {
-            for (Map.Entry<String, RoleDef> entry : rolesRepository.getNameToPredefinedRoleMapping().entrySet()) {
+            for (Map.Entry<String, RoleDefinition> entry : rolesRepository.getNameToPredefinedRoleMapping().entrySet()) {
                 rolesForGui.put(entry.getKey(), rolesRepository.getRoleWithoutPermissions(entry.getValue()));
             }
         }
@@ -61,7 +61,7 @@ public class RolesServiceBean implements RolesService {
 
     @Override
     public Role getRoleByName(String predefinedRoleName) {
-        return rolesRepository.getRoleWithoutPermissions(rolesRepository.getRoleDefByName(predefinedRoleName));
+        return rolesRepository.getRoleWithoutPermissions(rolesRepository.getRoleDefinitionByName(predefinedRoleName));
     }
 
     @Override

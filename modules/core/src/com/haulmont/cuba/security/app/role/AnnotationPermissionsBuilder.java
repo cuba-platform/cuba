@@ -38,37 +38,37 @@ import java.util.function.BiFunction;
 public class AnnotationPermissionsBuilder {
     public static final String NAME = "cuba_AnnotationPermissionsBuilder";
 
-    private static final String ENTITY_ACCESS_METHOD_NAME = "entityAccess";
-    private static final String ENTITY_ATTR_ACCESS_METHOD_NAME = "attributeAccess";
+    private static final String ENTITY_ACCESS_METHOD_NAME = "entityPermissions";
+    private static final String ENTITY_ATTR_ACCESS_METHOD_NAME = "entityAttributePermissions";
     private static final String SPECIFIC_ACCESS_METHOD_NAME = "specificPermissions";
-    private static final String SCREEN_ACCESS_METHOD_NAME = "screenAccess";
-    private static final String SCREEN_ELEMENTS_ACCESS_METHOD_NAME = "screenElementsAccess";
+    private static final String SCREEN_ACCESS_METHOD_NAME = "screenPermissions";
+    private static final String SCREEN_ELEMENTS_ACCESS_METHOD_NAME = "screenElementsPermissions";
 
     @Inject
     protected Metadata metadata;
 
-    public EntityAccessPermissions buildEntityAccessPermissions(ApplicationRole role) {
-        return (EntityAccessPermissions) processAnnotationsInternal(role,
+    public EntityPermissions buildEntityAccessPermissions(ApplicationRole role) {
+        return (EntityPermissions) processAnnotationsInternal(role,
                 EntityAccess.class,
                 ENTITY_ACCESS_METHOD_NAME,
                 (annotation, permissions) -> processEntityAccessAnnotation((EntityAccess) annotation,
-                        (EntityAccessPermissions) permissions));
+                        (EntityPermissions) permissions));
     }
 
-    public EntityAttributeAccessPermissions buildEntityAttributeAccessPermissions(ApplicationRole role) {
+    public EntityAttributePermissions buildEntityAttributeAccessPermissions(ApplicationRole role) {
 
-        return (EntityAttributeAccessPermissions) processAnnotationsInternal(role,
+        return (EntityAttributePermissions) processAnnotationsInternal(role,
                 EntityAttributeAccess.class,
                 ENTITY_ATTR_ACCESS_METHOD_NAME,
                 (annotation, permissions) -> processEntityAttributeAccessAnnotation((EntityAttributeAccess) annotation,
-                        (EntityAttributeAccessPermissions) permissions));
+                        (EntityAttributePermissions) permissions));
     }
 
     public SpecificPermissions buildSpecificPermissions(ApplicationRole role) {
         return (SpecificPermissions) processAnnotationsInternal(role,
-                SpecificPermission.class,
+                SpecificAccess.class,
                 SPECIFIC_ACCESS_METHOD_NAME,
-                (annotation, permissions) -> processSpecificPermissionAnnotation((SpecificPermission) annotation,
+                (annotation, permissions) -> processSpecificPermissionAnnotation((SpecificAccess) annotation,
                         (SpecificPermissions) permissions));
     }
 
@@ -88,31 +88,31 @@ public class AnnotationPermissionsBuilder {
                         (ScreenElementsPermissions) permissions));
     }
 
-    public String getNameFromAnnotation(RoleDef role) {
+    public String getNameFromAnnotation(RoleDefinition role) {
         Role annotation = getPredefinedRoleAnnotationNN(role);
 
         return annotation.name();
     }
 
-    public String getDescriptionFromAnnotation(RoleDef role) {
+    public String getDescriptionFromAnnotation(RoleDefinition role) {
         Role annotation = getPredefinedRoleAnnotationNN(role);
 
         return annotation.description();
     }
 
-    public RoleType getTypeFromAnnotation(RoleDef role) {
+    public RoleType getTypeFromAnnotation(RoleDefinition role) {
         Role annotation = getPredefinedRoleAnnotationNN(role);
 
         return annotation.type();
     }
 
-    public boolean getIsDefaultFromAnnotation(RoleDef role) {
+    public boolean getIsDefaultFromAnnotation(RoleDefinition role) {
         Role annotation = getPredefinedRoleAnnotationNN(role);
 
         return annotation.isDefault();
     }
 
-    protected Role getPredefinedRoleAnnotationNN(RoleDef role) {
+    protected Role getPredefinedRoleAnnotationNN(RoleDefinition role) {
         Role annotation = role.getClass().getAnnotation(Role.class);
         if (annotation == null) {
             throw new IllegalArgumentException("The class must have Role annotation.");
@@ -120,8 +120,8 @@ public class AnnotationPermissionsBuilder {
         return annotation;
     }
 
-    protected EntityAttributeAccessPermissions processEntityAttributeAccessAnnotation(EntityAttributeAccess annotation,
-                                                                                      EntityAttributeAccessPermissions permissions) {
+    protected EntityAttributePermissions processEntityAttributeAccessAnnotation(EntityAttributeAccess annotation,
+                                                                                EntityAttributePermissions permissions) {
         Class entityClass = annotation.target();
         MetaClass metaClass = metadata.getClassNN(entityClass);
         String[] deny = annotation.deny();
@@ -146,7 +146,7 @@ public class AnnotationPermissionsBuilder {
         return permissions;
     }
 
-    protected EntityAccessPermissions processEntityAccessAnnotation(EntityAccess annotation, EntityAccessPermissions permissions) {
+    protected EntityPermissions processEntityAccessAnnotation(EntityAccess annotation, EntityPermissions permissions) {
         Class entityClass = annotation.target();
         MetaClass metaClass = metadata.getClassNN(entityClass);
         EntityOp[] deny = annotation.deny();
@@ -165,7 +165,7 @@ public class AnnotationPermissionsBuilder {
         return permissions;
     }
 
-    protected SpecificPermissions processSpecificPermissionAnnotation(SpecificPermission annotation, SpecificPermissions permissions) {
+    protected SpecificPermissions processSpecificPermissionAnnotation(SpecificAccess annotation, SpecificPermissions permissions) {
         String target = annotation.target();
         Access access = annotation.access();
 
@@ -247,9 +247,9 @@ public class AnnotationPermissionsBuilder {
     protected Permissions createPermissionsByMethodName(String methodName) {
         switch (methodName) {
             case ENTITY_ACCESS_METHOD_NAME:
-                return new EntityAccessPermissions();
+                return new EntityPermissions();
             case ENTITY_ATTR_ACCESS_METHOD_NAME:
-                return new EntityAttributeAccessPermissions();
+                return new EntityAttributePermissions();
             case SPECIFIC_ACCESS_METHOD_NAME:
                 return new SpecificPermissions();
             case SCREEN_ACCESS_METHOD_NAME:

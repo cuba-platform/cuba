@@ -16,7 +16,7 @@
 
 package com.haulmont.cuba.security.app.role.annotation;
 
-import com.haulmont.cuba.security.app.role.AbstractRoleDef;
+import com.haulmont.cuba.security.app.role.AbstractRoleDefinition;
 import com.haulmont.cuba.security.entity.RoleType;
 import org.springframework.core.annotation.AliasFor;
 import org.springframework.stereotype.Component;
@@ -32,27 +32,27 @@ import java.lang.annotation.Target;
  * equals {@code SOURCE_CODE} or {@code MIXED}).
  *
  * <p>The easiest way to determine the role in the application source code is to extend
- * your class from {@link AbstractRoleDef AbstractRoleDef}
+ * your class from {@link AbstractRoleDefinition AbstractRoleDefinition}
  * and mark it with this annotation. Usage example:
  *
  * <pre>
  *     &#064;Role(name = "My first role", type = RoleType.STANDARD, isDefault = true)
- * public class MyFirstRole extends AbstractRoleDef {
+ * public class MyFirstRole extends AbstractRoleDefinition {
  *
  *     &#064;EntityAccess(target = SomeEntity.class,
  *             deny = {EntityOp.DELETE, EntityOp.UPDATE})
  *     &#064;Override
- *     public EntityAccessPermissions entityAccess() {
- *         return super.entityAccess();
+ *     public EntityPermissions entityPermissions() {
+ *         return super.entityPermissions();
  *     }
  *
  *     &#064;EntityAttributeAccess(target = SomeEntity.class, allow = {"someAttribute"})
  *     &#064;Override
- *     public EntityAttributeAccessPermissions attributeAccess() {
- *         return super.attributeAccess();
+ *     public EntityAttributePermissions entityAttributePermissions() {
+ *         return super.entityAttributePermissions();
  *     }
  *
- *     &#064;SpecificPermission(target = "my.specific.permission", access = Access.ALLOW)
+ *     &#064;SpecificAccess(target = "my.specific.permission", access = Access.ALLOW)
  *     &#064;Override
  *     public SpecificPermissions specificPermissions() {
  *         return super.specificPermissions();
@@ -60,14 +60,14 @@ import java.lang.annotation.Target;
  *
  *     &#064;ScreenAccess(deny = {"myapp_SomeEntity.edit"})
  *     &#064;Override
- *     public ScreenPermissions screenAccess() {
- *         return super.screenAccess();
+ *     public ScreenPermissions screenPermissions() {
+ *         return super.screenPermissions();
  *     }
  *
  *     &#064;ScreenElementAccess(screen = "myapp_SomeEntity.browse", deny = {"someGroupBox"})
  *     &#064;Override
- *     public ScreenElementsPermissions screenElementsAccess() {
- *         return super.screenElementsAccess();
+ *     public ScreenElementsPermissions screenElementsPermissions() {
+ *         return super.screenElementsPermissions();
  *     }
  * }
  * </pre>
@@ -77,7 +77,7 @@ import java.lang.annotation.Target;
  * @see EntityAttributeAccess
  * @see ScreenAccess
  * @see ScreenElementAccess
- * @see SpecificPermission
+ * @see SpecificAccess
  */
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)

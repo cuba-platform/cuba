@@ -19,7 +19,7 @@ package com.haulmont.cuba.security.role;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 
-public class EntityAttributeAccessPermissions extends Permissions {
+public class EntityAttributePermissions extends Permissions {
 
     private static final long serialVersionUID = -4057315403116500344L;
 

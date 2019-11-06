@@ -20,10 +20,10 @@ import com.haulmont.cuba.security.entity.RoleType;
 
 import java.io.Serializable;
 
-public class BasicUserRoleDef implements RoleDef, Serializable {
+public class BasicRoleDefinition implements RoleDefinition, Serializable {
 
-    private EntityAccessPermissions entityAccessPermissions;
-    private EntityAttributeAccessPermissions entityAttributeAccessPermissions;
+    private EntityPermissions entityPermissions;
+    private EntityAttributePermissions entityAttributePermissions;
     private SpecificPermissions specificPermissions;
     private ScreenPermissions screenPermissions;
     private ScreenElementsPermissions screenElementsPermissions;
@@ -31,33 +31,33 @@ public class BasicUserRoleDef implements RoleDef, Serializable {
     private String name;
     private String description;
 
-    public BasicUserRoleDef(String name,
-                            String description,
-                            RoleType roleType,
-                            EntityAccessPermissions entityAccessPermissions,
-                            EntityAttributeAccessPermissions entityAttributeAccessPermissions,
-                            SpecificPermissions specificPermissions,
-                            ScreenPermissions screenPermissions,
-                            ScreenElementsPermissions screenElementsPermissions) {
+    public BasicRoleDefinition(String name,
+                               String description,
+                               RoleType roleType,
+                               EntityPermissions entityPermissions,
+                               EntityAttributePermissions entityAttributePermissions,
+                               SpecificPermissions specificPermissions,
+                               ScreenPermissions screenPermissions,
+                               ScreenElementsPermissions screenElementsPermissions) {
         this.name = name;
         this.description = description;
-        this.entityAccessPermissions = entityAccessPermissions;
-        this.entityAttributeAccessPermissions = entityAttributeAccessPermissions;
+        this.entityPermissions = entityPermissions;
+        this.entityAttributePermissions = entityAttributePermissions;
         this.specificPermissions = specificPermissions;
         this.screenPermissions = screenPermissions;
         this.screenElementsPermissions = screenElementsPermissions;
         this.roleType = roleType;
     }
 
-    public BasicUserRoleDef() {
+    public BasicRoleDefinition() {
         initApplicationRoleFields();
         initGenericUiRoleFields();
         roleType = RoleType.STANDARD;
     }
 
     private void initApplicationRoleFields() {
-        entityAccessPermissions = new EntityAccessPermissions();
-        entityAttributeAccessPermissions = new EntityAttributeAccessPermissions();
+        entityPermissions = new EntityPermissions();
+        entityAttributePermissions = new EntityAttributePermissions();
         specificPermissions = new SpecificPermissions();
     }
 
@@ -67,13 +67,13 @@ public class BasicUserRoleDef implements RoleDef, Serializable {
     }
 
     @Override
-    public EntityAccessPermissions entityAccess() {
-        return entityAccessPermissions;
+    public EntityPermissions entityPermissions() {
+        return entityPermissions;
     }
 
     @Override
-    public EntityAttributeAccessPermissions attributeAccess() {
-        return entityAttributeAccessPermissions;
+    public EntityAttributePermissions entityAttributePermissions() {
+        return entityAttributePermissions;
     }
 
     @Override
@@ -82,12 +82,12 @@ public class BasicUserRoleDef implements RoleDef, Serializable {
     }
 
     @Override
-    public ScreenPermissions screenAccess() {
+    public ScreenPermissions screenPermissions() {
         return screenPermissions;
     }
 
     @Override
-    public ScreenElementsPermissions screenElementsAccess() {
+    public ScreenElementsPermissions screenElementsPermissions() {
         return screenElementsPermissions;
     }
 

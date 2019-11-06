@@ -18,8 +18,8 @@ package com.haulmont.cuba.security.role;
 
 public interface GenericUiRole {
 
-    ScreenPermissions screenAccess();
+    ScreenPermissions screenPermissions();
 
-    ScreenElementsPermissions screenElementsAccess();
+    ScreenElementsPermissions screenElementsPermissions();
 
 }

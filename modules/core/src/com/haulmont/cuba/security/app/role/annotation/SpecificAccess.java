@@ -16,13 +16,28 @@
 
 package com.haulmont.cuba.security.app.role.annotation;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import com.haulmont.cuba.security.entity.Access;
 
+import java.lang.annotation.*;
+
+/**
+ * Defines specific permissions access.
+ *
+ * <p>Example:
+ *
+ * <pre>
+ *     &#064;SpecificAccess(target = "my.specific.permission", access = Access.ALLOW)
+ * </pre>
+ *
+ * @see Role
+ */
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface SpecificPermissionContainer {
-    SpecificPermission[] value();
+@Repeatable(SpecificAccessContainer.class)
+public @interface SpecificAccess {
+
+    String target();
+
+    Access access();
+
 }

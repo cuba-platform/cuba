@@ -25,7 +25,7 @@ import com.haulmont.cuba.core.app.ServerConfig;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.security.app.role.RolesRepository;
 import com.haulmont.cuba.security.entity.*;
-import com.haulmont.cuba.security.role.RoleDef;
+import com.haulmont.cuba.security.role.RoleDefinition;
 import groovy.text.SimpleTemplateEngine;
 import groovy.text.Template;
 import org.apache.commons.io.FilenameUtils;
@@ -151,7 +151,7 @@ public class UserManagementServiceBean implements UserManagementService {
 
         Role clone;
 
-        RoleDef predefinedRole = rolesRepository.getRoleDefByName(predefinedRoleName);
+        RoleDefinition predefinedRole = rolesRepository.getRoleDefinitionByName(predefinedRoleName);
         if (predefinedRole == null) {
             throw new IllegalStateException("Unable to find specified role with name: " + predefinedRoleName);
         }

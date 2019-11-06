@@ -19,10 +19,10 @@ package com.haulmont.cuba.security.global;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.sys.UserInvocationContext;
 import com.haulmont.cuba.security.entity.*;
-import com.haulmont.cuba.security.role.BasicUserRoleDef;
+import com.haulmont.cuba.security.role.BasicRoleDefinition;
 import com.haulmont.cuba.security.role.Permissions;
 import com.haulmont.cuba.security.role.PermissionsUtils;
-import com.haulmont.cuba.security.role.RoleDef;
+import com.haulmont.cuba.security.role.RoleDefinition;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
@@ -57,7 +57,7 @@ public class UserSession implements Serializable {
     protected String clientInfo;
     protected boolean system;
 
-    protected RoleDef effectiveRole;
+    protected RoleDefinition effectiveRole;
 //    protected Map<String, Integer>[] permissions;
     protected Map<String, List<ConstraintData>> constraints;
 
@@ -76,12 +76,12 @@ public class UserSession implements Serializable {
     /**
      * INTERNAL
      */
-    public UserSession(UUID id, User user, Collection<RoleDef> roles, Locale locale, boolean system) {
+    public UserSession(UUID id, User user, Collection<RoleDefinition> roles, Locale locale, boolean system) {
         this.id = id;
         this.user = user;
         this.system = system;
 
-        for (RoleDef role : roles) {
+        for (RoleDefinition role : roles) {
             this.roles.add(role.getName());
             if (role.getRoleType() != null)
                 roleTypes.add(role.getRoleType());
@@ -91,7 +91,7 @@ public class UserSession implements Serializable {
         if (user.getTimeZone() != null)
             this.timeZone = TimeZone.getTimeZone(user.getTimeZone());
 
-        effectiveRole = new BasicUserRoleDef();
+        effectiveRole = new BasicRoleDefinition();
         roleTypes.add(effectiveRole.getRoleType());
 
         constraints = new HashMap<>();
@@ -102,7 +102,7 @@ public class UserSession implements Serializable {
     /**
      * INTERNAL
      */
-    public UserSession(UserSession src, User user, Collection<RoleDef> roles, Locale locale) {
+    public UserSession(UserSession src, User user, Collection<RoleDefinition> roles, Locale locale) {
         this(src.id, user, roles, locale, src.system);
         this.user = src.user;
         this.substitutedUser = this.user.equals(user) ? null : user;
@@ -262,19 +262,19 @@ public class UserSession implements Serializable {
     private void performPermissionsAction(PermissionType type, Consumer<Permissions> consumer) {
         switch (type) {
             case ENTITY_OP:
-                consumer.accept(effectiveRole.entityAccess());
+                consumer.accept(effectiveRole.entityPermissions());
                 break;
             case ENTITY_ATTR:
-                consumer.accept(effectiveRole.attributeAccess());
+                consumer.accept(effectiveRole.entityAttributePermissions());
                 break;
             case SPECIFIC:
                 consumer.accept(effectiveRole.specificPermissions());
                 break;
             case SCREEN:
-                consumer.accept(effectiveRole.screenAccess());
+                consumer.accept(effectiveRole.screenPermissions());
                 break;
             case UI:
-                consumer.accept(effectiveRole.screenElementsAccess());
+                consumer.accept(effectiveRole.screenElementsPermissions());
                 break;
             default:
                 throw new IllegalArgumentException("Unsupported permission type.");
@@ -284,15 +284,15 @@ public class UserSession implements Serializable {
     private Object performPermissionsFunction(PermissionType type, Function<Permissions, Object> function) {
         switch (type) {
             case ENTITY_OP:
-                return function.apply(effectiveRole.entityAccess());
+                return function.apply(effectiveRole.entityPermissions());
             case ENTITY_ATTR:
-                return function.apply(effectiveRole.attributeAccess());
+                return function.apply(effectiveRole.entityAttributePermissions());
             case SPECIFIC:
                 return function.apply(effectiveRole.specificPermissions());
             case SCREEN:
-                return function.apply(effectiveRole.screenAccess());
+                return function.apply(effectiveRole.screenPermissions());
             case UI:
-                return function.apply(effectiveRole.screenElementsAccess());
+                return function.apply(effectiveRole.screenElementsPermissions());
             default:
                 throw new IllegalArgumentException("Unsupported permission type.");
         }
@@ -587,7 +587,7 @@ public class UserSession implements Serializable {
      * If you need to modify user permissions, use {@code RoleDefBuilder} to construct a suitable role and then
      * apply it using {@link UserSession#applyEffectiveRole} method.
      */
-    public RoleDef getEffectiveRole() {
+    public RoleDefinition getEffectiveRole() {
         return effectiveRole;
     }
 
@@ -597,7 +597,7 @@ public class UserSession implements Serializable {
      * <p>
      * Use {@code RoleDefBuilder} to construct a suitable role.
      */
-    public void applyEffectiveRole(RoleDef effectiveRole) {
+    public void applyEffectiveRole(RoleDefinition effectiveRole) {
         this.effectiveRole = effectiveRole;
     }
 

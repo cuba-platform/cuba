@@ -18,9 +18,9 @@ package com.haulmont.cuba.security.role;
 
 public interface ApplicationRole {
 
-    EntityAccessPermissions entityAccess();
+    EntityPermissions entityPermissions();
 
-    EntityAttributeAccessPermissions attributeAccess();
+    EntityAttributePermissions entityAttributePermissions();
 
     SpecificPermissions specificPermissions();
 

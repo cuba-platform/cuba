@@ -83,27 +83,27 @@ public final class PermissionsUtils {
         permissions.getPermissions().clear();
     }
 
-    public static boolean isReadOperationPermitted(EntityAccessPermissions permissions, MetaClass metaClass) {
+    public static boolean isReadOperationPermitted(EntityPermissions permissions, MetaClass metaClass) {
         return getPermissionValue(permissions, getEntityOperationTarget(metaClass, EntityOp.READ)) > 0;
     }
 
-    public static boolean isCreateOperationPermitted(EntityAccessPermissions permissions, MetaClass metaClass) {
+    public static boolean isCreateOperationPermitted(EntityPermissions permissions, MetaClass metaClass) {
         return getPermissionValue(permissions, getEntityOperationTarget(metaClass, EntityOp.CREATE)) > 0;
     }
 
-    public static boolean isUpdateOperationPermitted(EntityAccessPermissions permissions, MetaClass metaClass) {
+    public static boolean isUpdateOperationPermitted(EntityPermissions permissions, MetaClass metaClass) {
         return getPermissionValue(permissions, getEntityOperationTarget(metaClass, EntityOp.UPDATE)) > 0;
     }
 
-    public static boolean isDeleteOperationPermitted(EntityAccessPermissions permissions, MetaClass metaClass) {
+    public static boolean isDeleteOperationPermitted(EntityPermissions permissions, MetaClass metaClass) {
         return getPermissionValue(permissions, getEntityOperationTarget(metaClass, EntityOp.DELETE)) > 0;
     }
 
-    public static boolean isAttributeReadOperationPermitted(EntityAttributeAccessPermissions permissions, MetaClass metaClass, String property) {
+    public static boolean isAttributeReadOperationPermitted(EntityAttributePermissions permissions, MetaClass metaClass, String property) {
         return getPermissionValue(permissions, getEntityAttributeTarget(metaClass, property)) > 0;
     }
 
-    public static boolean isAttributeModifyOperationPermitted(EntityAttributeAccessPermissions permissions, MetaClass metaClass, String property) {
+    public static boolean isAttributeModifyOperationPermitted(EntityAttributePermissions permissions, MetaClass metaClass, String property) {
         return getPermissionValue(permissions, getEntityAttributeTarget(metaClass, property)) > 1;
     }
 
@@ -137,9 +137,9 @@ public final class PermissionsUtils {
     }
 
     private static PermissionType getPermissionType(Permissions permissions) {
-        if (permissions instanceof EntityAccessPermissions) {
+        if (permissions instanceof EntityPermissions) {
             return PermissionType.ENTITY_OP;
-        } else if (permissions instanceof EntityAttributeAccessPermissions) {
+        } else if (permissions instanceof EntityAttributePermissions) {
             return PermissionType.ENTITY_ATTR;
         } else if (permissions instanceof ScreenPermissions) {
             return PermissionType.SCREEN;

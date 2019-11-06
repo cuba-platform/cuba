@@ -26,7 +26,7 @@ import javax.inject.Inject;
  *
  * @see com.haulmont.cuba.security.app.role.annotation.Role
  */
-public abstract class AbstractRoleDef implements RoleDef {
+public abstract class AbstractRoleDefinition implements RoleDefinition {
 
     @Inject
     protected AnnotationPermissionsBuilder annotationPermissionsBuilder;
@@ -42,12 +42,12 @@ public abstract class AbstractRoleDef implements RoleDef {
     }
 
     @Override
-    public EntityAccessPermissions entityAccess() {
+    public EntityPermissions entityPermissions() {
         return annotationPermissionsBuilder.buildEntityAccessPermissions(this);
     }
 
     @Override
-    public EntityAttributeAccessPermissions attributeAccess() {
+    public EntityAttributePermissions entityAttributePermissions() {
         return annotationPermissionsBuilder.buildEntityAttributeAccessPermissions(this);
     }
 
@@ -57,12 +57,12 @@ public abstract class AbstractRoleDef implements RoleDef {
     }
 
     @Override
-    public ScreenPermissions screenAccess() {
+    public ScreenPermissions screenPermissions() {
         return annotationPermissionsBuilder.buildScreenPermissions(this);
     }
 
     @Override
-    public ScreenElementsPermissions screenElementsAccess() {
+    public ScreenElementsPermissions screenElementsPermissions() {
         return annotationPermissionsBuilder.buildScreenElementsPermissions(this);
     }
 

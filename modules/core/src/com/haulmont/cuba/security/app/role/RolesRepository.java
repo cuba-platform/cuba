@@ -27,7 +27,7 @@ import com.haulmont.cuba.security.entity.Role;
 import com.haulmont.cuba.security.entity.UserRole;
 import com.haulmont.cuba.security.role.Permissions;
 import com.haulmont.cuba.security.role.PermissionsUtils;
-import com.haulmont.cuba.security.role.RoleDef;
+import com.haulmont.cuba.security.role.RoleDefinition;
 import com.haulmont.cuba.security.role.RolesStorageMode;
 import org.springframework.stereotype.Component;
 
@@ -47,7 +47,7 @@ public class RolesRepository {
     public static final String NAME = "cuba_RolesRepository";
 
     @Inject
-    protected List<RoleDef> predefinedRoles;
+    protected List<RoleDefinition> predefinedRoles;
 
     @Inject
     protected Metadata metadata;
@@ -58,36 +58,36 @@ public class RolesRepository {
     @Inject
     protected GlobalConfig config;
 
-    protected Map<String, RoleDef> nameToPredefinedRoleMapping;
+    protected Map<String, RoleDefinition> nameToPredefinedRoleMapping;
 
-    public Collection<RoleDef> getRoleDefs(@Nullable Collection<UserRole> userRoles) {
+    public Collection<RoleDefinition> getRoleDefinitions(@Nullable Collection<UserRole> userRoles) {
         if (userRoles == null) {
             return null;
         }
 
-        Map<String, RoleDef> result = new HashMap<>();
+        Map<String, RoleDefinition> result = new HashMap<>();
 
         List<UserRole> userRolesWithRoleDef = userRoles.stream()
-                .filter(ur -> ur.getRoleDef() != null)
+                .filter(ur -> ur.getRoleDefinition() != null)
                 .collect(Collectors.toList());
 
         List<UserRole> userRolesWithRoleName = userRoles.stream()
-                .filter(ur -> ur.getRoleDef() == null && ur.getRoleName() != null)
+                .filter(ur -> ur.getRoleDefinition() == null && ur.getRoleName() != null)
                 .collect(Collectors.toList());
 
         List<UserRole> userRolesWithRoleObject = userRoles.stream()
-                .filter(ur -> ur.getRoleDef() == null && ur.getRole() != null)
+                .filter(ur -> ur.getRoleDefinition() == null && ur.getRole() != null)
                 .collect(Collectors.toList());
 
         userRolesWithRoleDef.stream()
-                .filter(ur -> ur.getRoleDef() != null)
-                .forEach(ur -> result.put(ur.getRoleDef().getName(), ur.getRoleDef()));
+                .filter(ur -> ur.getRoleDefinition() != null)
+                .forEach(ur -> result.put(ur.getRoleDefinition().getName(), ur.getRoleDefinition()));
 
         if (isPredefinedRolesModeAvailable()) {
             for (UserRole ur : userRolesWithRoleName) {
-                RoleDef role = getRoleDefByName(ur.getRoleName());
+                RoleDefinition role = getRoleDefinitionByName(ur.getRoleName());
                 if (role != null) {
-                    ur.setRoleDef(role);
+                    ur.setRoleDefinition(role);
                     result.put(role.getName(), role);
                 }
             }
@@ -95,16 +95,22 @@ public class RolesRepository {
 
         if (isDatabaseModeAvailable()) {
             for (UserRole ur : userRolesWithRoleObject) {
-                RoleDef role = RoleDefBuilder.createRole(ur.getRole()).build();
-                ur.setRoleDef(role);
-                result.put(role.getName(), role);
+                Role role = ur.getRole();
+                RoleDefinition roleDefinition = RoleDefinitionBuilder.create()
+                        .withRoleType(role.getType())
+                        .withName(role.getName())
+                        .withDescription(role.getDescription())
+                        .join(role)
+                        .build();
+                ur.setRoleDefinition(roleDefinition);
+                result.put(roleDefinition.getName(), roleDefinition);
             }
         }
 
         return result.values();
     }
 
-    public RoleDef getRoleDefByName(String roleName) {
+    public RoleDefinition getRoleDefinitionByName(String roleName) {
         return nameToPredefinedRoleMapping.get(roleName);
     }
 
@@ -117,7 +123,7 @@ public class RolesRepository {
         Map<String, Role> defaultUserRoles = new HashMap<>();
 
         if (isPredefinedRolesModeAvailable()) {
-            for (Map.Entry<String, RoleDef> entry : nameToPredefinedRoleMapping.entrySet()) {
+            for (Map.Entry<String, RoleDefinition> entry : nameToPredefinedRoleMapping.entrySet()) {
                 if (entry.getValue().isDefault()) {
                     defaultUserRoles.put(entry.getKey(), null);
                 }
@@ -144,35 +150,35 @@ public class RolesRepository {
         return defaultUserRoles;
     }
 
-    public Role getRoleWithPermissions(RoleDef roleDef) {
-        if (roleDef == null) {
+    public Role getRoleWithPermissions(RoleDefinition roleDefinition) {
+        if (roleDefinition == null) {
             return null;
         }
 
-        Role role = getRoleWithoutPermissions(roleDef);
+        Role role = getRoleWithoutPermissions(roleDefinition);
 
         Set<Permission> permissions = new HashSet<>(transformPermissions(PermissionType.ENTITY_OP,
-                roleDef.entityAccess(), role));
-        permissions.addAll(transformPermissions(PermissionType.ENTITY_ATTR, roleDef.attributeAccess(), role));
-        permissions.addAll(transformPermissions(PermissionType.SPECIFIC, roleDef.specificPermissions(), role));
-        permissions.addAll(transformPermissions(PermissionType.SCREEN, roleDef.screenAccess(), role));
-        permissions.addAll(transformPermissions(PermissionType.UI, roleDef.screenElementsAccess(), role));
+                roleDefinition.entityPermissions(), role));
+        permissions.addAll(transformPermissions(PermissionType.ENTITY_ATTR, roleDefinition.entityAttributePermissions(), role));
+        permissions.addAll(transformPermissions(PermissionType.SPECIFIC, roleDefinition.specificPermissions(), role));
+        permissions.addAll(transformPermissions(PermissionType.SCREEN, roleDefinition.screenPermissions(), role));
+        permissions.addAll(transformPermissions(PermissionType.UI, roleDefinition.screenElementsPermissions(), role));
 
         role.setPermissions(permissions);
 
         return role;
     }
 
-    public Role getRoleWithoutPermissions(RoleDef roleDef) {
-        if (roleDef == null) {
+    public Role getRoleWithoutPermissions(RoleDefinition roleDefinition) {
+        if (roleDefinition == null) {
             return null;
         }
         Role role = metadata.create(Role.class);
         role.setPredefined(true);
-        role.setName(roleDef.getName());
-        role.setDescription(roleDef.getDescription());
-        role.setType(roleDef.getRoleType());
-        role.setDefaultRole(roleDef.isDefault());
+        role.setName(roleDefinition.getName());
+        role.setDescription(roleDefinition.getDescription());
+        role.setType(roleDefinition.getRoleType());
+        role.setDefaultRole(roleDefinition.isDefault());
 
         return role;
     }
@@ -198,28 +204,28 @@ public class RolesRepository {
 
     public Collection<Permission> getPermissions(String predefinedRoleName, PermissionType permissionType) {
         Permissions permissions;
-        RoleDef roleDef = getRoleDefByName(predefinedRoleName);
+        RoleDefinition roleDefinition = getRoleDefinitionByName(predefinedRoleName);
         switch (permissionType) {
             case ENTITY_OP:
-                permissions = roleDef.entityAccess();
+                permissions = roleDefinition.entityPermissions();
                 break;
             case ENTITY_ATTR:
-                permissions = roleDef.attributeAccess();
+                permissions = roleDefinition.entityAttributePermissions();
                 break;
             case SPECIFIC:
-                permissions = roleDef.specificPermissions();
+                permissions = roleDefinition.specificPermissions();
                 break;
             case SCREEN:
-                permissions = roleDef.screenAccess();
+                permissions = roleDefinition.screenPermissions();
                 break;
             case UI:
-                permissions = roleDef.screenElementsAccess();
+                permissions = roleDefinition.screenElementsPermissions();
                 break;
             default:
                 permissions = null;
         }
 
-        return transformPermissions(permissionType, permissions, getRoleWithoutPermissions(roleDef));
+        return transformPermissions(permissionType, permissions, getRoleWithoutPermissions(roleDefinition));
     }
 
     public boolean isDatabaseModeAvailable() {
@@ -240,7 +246,7 @@ public class RolesRepository {
         return RolesStorageMode.SOURCE_CODE.equals(valueFromConfig) || RolesStorageMode.MIXED.equals(valueFromConfig);
     }
 
-    protected Map<String, RoleDef> getNameToPredefinedRoleMapping() {
+    protected Map<String, RoleDefinition> getNameToPredefinedRoleMapping() {
         return nameToPredefinedRoleMapping;
     }
 
@@ -248,18 +254,18 @@ public class RolesRepository {
     private void initNameToPredefinedRoleMapping() {
         nameToPredefinedRoleMapping = new ConcurrentHashMap<>();
 
-        for (RoleDef role : predefinedRoles) {
+        for (RoleDefinition role : predefinedRoles) {
             nameToPredefinedRoleMapping.put(role.getName(), role);
         }
     }
 
     /**
-     * Allows you to register a role created using the {@link RoleDefBuilder}.
+     * Allows you to register a role created using the {@link RoleDefinitionBuilder}.
      * This method should be invoked during application startup.
      *
-     * @param roleDef role to register
+     * @param roleDefinition role to register
      */
-    public void registerRole(RoleDef roleDef) {
-        nameToPredefinedRoleMapping.put(roleDef.getName(), roleDef);
+    public void registerRole(RoleDefinition roleDefinition) {
+        nameToPredefinedRoleMapping.put(roleDefinition.getName(), roleDefinition);
     }
 }
