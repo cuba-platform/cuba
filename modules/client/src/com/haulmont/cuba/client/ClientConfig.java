@@ -130,6 +130,15 @@ public interface ClientConfig extends Config {
     boolean getGenericFilterChecking();
 
     /**
+     * @return a number of nested properties in the "Add Condition" dialog window. I.e. if the depth is 2, then you'll be
+     * able to select a property "contractor.city.country", if the value is 3, then "contractor.city.country.name", etc.
+     */
+    @Property("cuba.gui.genericFilterPropertiesHierarchyDepth")
+    @Source(type = SourceType.DATABASE)
+    @DefaultInt(2)
+    int getGenericFilterPropertiesHierarchyDepth();
+
+    /**
      * @return If true, all generic text filters will trim value.<br>
      * If false, the text filter will not be trim value.
      */
