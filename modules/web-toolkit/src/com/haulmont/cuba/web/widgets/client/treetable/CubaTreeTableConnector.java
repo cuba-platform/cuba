@@ -270,6 +270,8 @@ public class CubaTreeTableConnector extends TreeTableConnector {
         UIDL arow = uidl.getChildByTagName("arow");
         if (arow != null) {
             getWidget().updateAggregationRow(arow);
+        } else if (getWidget()._delegate.aggregationRow != null) {
+            getWidget().removeAggregationRow();
         }
     }
 
