@@ -311,6 +311,12 @@ public class CubaScrollTableWidget extends VScrollTable implements TableWidget {
         }
         _delegate.aggregationRow.updateFromUIDL(uidl);
         _delegate.aggregationRow.setHorizontalScrollPosition(scrollLeft);
+        triggerLazyColumnAdjustment(true);
+    }
+
+    protected void removeAggregationRow() {
+        remove(_delegate.aggregationRow);
+        _delegate.aggregationRow = null;
     }
 
     protected TableAggregationRow createAggregationRow() {
