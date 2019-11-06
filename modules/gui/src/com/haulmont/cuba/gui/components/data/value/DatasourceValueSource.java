@@ -27,6 +27,7 @@ import com.haulmont.cuba.core.sys.BeanLocatorAware;
 import com.haulmont.cuba.gui.components.data.BindingState;
 import com.haulmont.cuba.gui.components.data.meta.EntityValueSource;
 import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.data.RuntimePropsDatasource;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 
 import java.util.Objects;
@@ -67,7 +68,9 @@ public class DatasourceValueSource<E extends Entity, V> implements EntityValueSo
 
     @Override
     public void setBeanLocator(BeanLocator beanLocator) {
-        MetaClass metaClass = datasource.getMetaClass();
+        MetaClass metaClass = datasource instanceof RuntimePropsDatasource ?
+                ((RuntimePropsDatasource<E>) datasource).resolveCategorizedEntityClass() :
+                datasource.getMetaClass();
 
         MetadataTools metadataTools = beanLocator.get(MetadataTools.NAME);
         MetaPropertyPath metaPropertyPath = metadataTools.resolveMetaPropertyPath(metaClass, property);
