@@ -18,7 +18,9 @@
 package com.haulmont.cuba.gui.components.filter;
 
 import com.haulmont.bali.datastruct.Tree;
+import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.WindowManagerProvider;
 import com.haulmont.cuba.gui.components.Filter;
@@ -48,14 +50,13 @@ import static com.haulmont.cuba.gui.WindowManager.OpenType;
  */
 public class AddConditionHelper {
 
-    public static final int PROPERTIES_HIERARCHY_DEPTH = 2;
-
     protected WindowManager windowManager;
     protected WindowConfig windowConfig;
     protected Filter filter;
     protected Handler handler;
     protected boolean hideDynamicAttributes;
     protected boolean hideCustomConditions;
+    protected ClientConfig clientConfig;
 
     public AddConditionHelper(Filter filter, Handler handler) {
         this(filter, false, false, handler);
@@ -69,6 +70,7 @@ public class AddConditionHelper {
         this.hideCustomConditions = hideCustomConditions;
         windowManager = AppBeans.get(WindowManagerProvider.class).get();
         windowConfig = AppBeans.get(WindowConfig.class);
+        clientConfig = AppBeans.get(Configuration.class).getConfig(ClientConfig.class);
     }
 
     public interface Handler {
@@ -85,7 +87,7 @@ public class AddConditionHelper {
         Map<String, Object> params = new HashMap<>();
         ConditionDescriptorsTreeBuilderAPI descriptorsTreeBuilder = AppBeans.getPrototype(ConditionDescriptorsTreeBuilderAPI.NAME,
                 filter,
-                PROPERTIES_HIERARCHY_DEPTH,
+                clientConfig.getGenericFilterPropertiesHierarchyDepth(),
                 hideDynamicAttributes,
                 hideCustomConditions,
                 conditionsTree);
