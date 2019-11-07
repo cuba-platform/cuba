@@ -108,8 +108,14 @@ public abstract class AbstractWebAppContextLoader extends AbstractAppContextLoad
     protected void checkAppHome() {
         String appHome = System.getProperty(APP_HOME_PROP);
         if (StringUtils.isBlank(appHome)) {
-            File appHomeDir = new File(System.getProperty("user.home"), ".app_home");
-            appHome = appHomeDir.getAbsolutePath();
+            String catalinaBase = System.getProperty("catalina.base");
+            if (StringUtils.isNotBlank(catalinaBase)) {
+                File appHomeDir = new File(catalinaBase, "work/app_home");
+                appHome = appHomeDir.getAbsolutePath();
+            } else {
+                File appHomeDir = new File(System.getProperty("user.home"), ".app_home");
+                appHome = appHomeDir.getAbsolutePath();
+            }
             System.setProperty(APP_HOME_PROP, appHome);
 
             String message = String.format(
