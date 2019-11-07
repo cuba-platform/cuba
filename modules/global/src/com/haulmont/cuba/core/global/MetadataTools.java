@@ -1061,36 +1061,68 @@ public class MetadataTools {
         }
     }
 
+    /**
+     * INTERNAL
+     */
     public interface EntitiesHolder {
         Entity create(Class<? extends Entity> entityClass, Object id);
 
-        Entity find(Object id);
+        Entity find(Class<? extends Entity> entityClass, Object id);
 
         void put(Entity entity);
     }
 
+    /**
+     * INTERNAL
+     */
     public static class CachingEntitiesHolder implements EntitiesHolder {
-        protected Map<Object, Entity> cache = new HashMap<>();
+
+        private static class CacheKey {
+            private Class<? extends Entity> entityClass;
+            private Object id;
+
+            public CacheKey(Class<? extends Entity> entityClass, Object id) {
+                this.entityClass = entityClass;
+                this.id = id;
+            }
+
+            @Override
+            public boolean equals(Object o) {
+                if (this == o) return true;
+                if (o == null || getClass() != o.getClass()) return false;
+                CacheKey cacheKey = (CacheKey) o;
+                return entityClass.equals(cacheKey.entityClass) &&
+                        id.equals(cacheKey.id);
+            }
+
+            @Override
+            public int hashCode() {
+                return Objects.hash(entityClass, id);
+            }
+        }
+
+        protected Map<CacheKey, Entity> cache = new HashMap<>();
 
         @Override
         public Entity create(Class<? extends Entity> entityClass, Object id) {
-            Entity entity = cache.get(id);
+            CacheKey key = new CacheKey(entityClass, id);
+            Entity entity = cache.get(key);
             if (entity == null) {
                 entity = createInstanceWithId(entityClass, id);
-                cache.put(id, entity);
+                cache.put(key, entity);
             }
 
             return entity;
         }
 
         @Override
-        public Entity find(Object id) {
-            return cache.get(id);
+        public Entity find(Class<? extends Entity> entityClass, Object id) {
+            return cache.get(new CacheKey(entityClass, id));
         }
 
         @Override
         public void put(Entity entity) {
-            cache.put(entity.getId(), entity);
+            cache.put(new CacheKey(entity.getClass(), entity.getId()), entity);
         }
     }
 
@@ -1134,7 +1166,7 @@ public class MetadataTools {
                     Collection<Entity> dstCollection = value instanceof List ? new ArrayList<>() : new LinkedHashSet<>();
 
                     for (Entity srcRef : srcCollection) {
-                        Entity reloadedRef = entitiesHolder.find(srcRef.getId());
+                        Entity reloadedRef = entitiesHolder.find(srcRef.getClass(), srcRef.getId());
                         if (reloadedRef == null) {
                             reloadedRef = entitiesHolder.create(srcRef.getClass(), srcRef.getId());
                             deepCopy(srcRef, reloadedRef, entitiesHolder);
@@ -1144,7 +1176,7 @@ public class MetadataTools {
                     destination.setValue(name, dstCollection);
                 } else {
                     Entity srcRef = (Entity) value;
-                    Entity reloadedRef = entitiesHolder.find(srcRef.getId());
+                    Entity reloadedRef = entitiesHolder.find(srcRef.getClass(), srcRef.getId());
                     if (reloadedRef == null) {
                         reloadedRef = entitiesHolder.create(srcRef.getClass(), srcRef.getId());
                         deepCopy(srcRef, reloadedRef, entitiesHolder);

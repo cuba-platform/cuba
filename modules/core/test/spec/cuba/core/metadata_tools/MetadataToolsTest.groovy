@@ -23,6 +23,8 @@ import com.haulmont.cuba.security.entity.UserSessionEntity
 import com.haulmont.cuba.testmodel.not_persistent.CustomerWithNonPersistentRef
 import com.haulmont.cuba.testmodel.not_persistent.NotPersistentStringIdEntity
 import com.haulmont.cuba.testmodel.not_persistent.TestNotPersistentEntity
+import com.haulmont.cuba.testmodel.petclinic.Owner
+import com.haulmont.cuba.testmodel.petclinic.Pet
 import com.haulmont.cuba.testmodel.primary_keys.EntityKey
 import com.haulmont.cuba.testmodel.primary_keys.StringKeyEntity
 import com.haulmont.cuba.testsupport.TestContainer
@@ -106,5 +108,18 @@ class MetadataToolsTest extends Specification {
 
         copy.notPersistentEntity == entity.notPersistentEntity
         !copy.notPersistentEntity.is(entity.notPersistentEntity)
+    }
+
+    def "deepCopy handles entities with same ids correctly #2488"() {
+        def id = new UUID(0, 1)
+        def owner = new Owner(id: id, name: 'Joe')
+        def pet = new Pet(id: id, name: 'Rex', owner: owner)
+
+        when:
+        def petCopy = metadataTools.deepCopy(pet)
+
+        then:
+        petCopy.owner == owner
+        !petCopy.owner.is(owner)
     }
 }
