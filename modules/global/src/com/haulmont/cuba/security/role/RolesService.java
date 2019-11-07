@@ -65,4 +65,10 @@ public interface RolesService {
      */
     Map<String, Role> getDefaultRoles();
 
+    /**
+     *
+     * @return {@code true} if the application has at least one predefined role
+     */
+    boolean applicationHasPredefinedRoles();
+
 }

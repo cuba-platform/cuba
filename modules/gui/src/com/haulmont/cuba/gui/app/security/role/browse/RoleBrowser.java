@@ -33,8 +33,8 @@ import com.haulmont.cuba.gui.export.ExportDisplay;
 import com.haulmont.cuba.gui.export.ExportFormat;
 import com.haulmont.cuba.gui.upload.FileUploadingAPI;
 import com.haulmont.cuba.security.app.UserManagementService;
-import com.haulmont.cuba.security.role.RolesService;
 import com.haulmont.cuba.security.entity.*;
+import com.haulmont.cuba.security.role.RolesService;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,6 +59,9 @@ public class RoleBrowser extends AbstractLookup {
 
     @Inject
     protected UserManagementService userManagementService;
+
+    @Inject
+    protected Filter filter;
 
     @Inject
     protected Security security;
@@ -183,6 +186,11 @@ public class RoleBrowser extends AbstractLookup {
             copyBtn.setVisible(false);
             exportBtn.setVisible(false);
             importRolesUpload.setVisible(false);
+        }
+
+        if (rolesService.isPredefinedRolesModeAvailable()
+                && rolesService.applicationHasPredefinedRoles()) {
+            filter.setVisible(false);
         }
     }
 

@@ -29,6 +29,7 @@ import com.haulmont.cuba.security.role.Permissions;
 import com.haulmont.cuba.security.role.PermissionsUtils;
 import com.haulmont.cuba.security.role.RoleDefinition;
 import com.haulmont.cuba.security.role.RolesStorageMode;
+import org.slf4j.Logger;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Nullable;
@@ -57,6 +58,9 @@ public class RolesRepository {
 
     @Inject
     protected GlobalConfig config;
+
+    @Inject
+    protected Logger log;
 
     protected Map<String, RoleDefinition> nameToPredefinedRoleMapping;
 
@@ -96,6 +100,14 @@ public class RolesRepository {
         if (isDatabaseModeAvailable()) {
             for (UserRole ur : userRolesWithRoleObject) {
                 Role role = ur.getRole();
+                if (isPredefinedRolesModeAvailable()
+                        && nameToPredefinedRoleMapping.containsKey(role.getName())
+                        && !AdministratorsRoleDefinition.ROLE_NAME.equals(role.getName())
+                        && !AnonymousRoleDefinition.ROLE_NAME.equals(role.getName())) {
+                    log.warn("User '{}' has link to the persisted role '{}', but this role name is used for some predefined role. " +
+                            "Persisted role's permissions will not be taken into account.", ur.getUser().getLogin(), role.getName());
+                    continue;
+                }
                 RoleDefinition roleDefinition = RoleDefinitionBuilder.create()
                         .withRoleType(role.getType())
                         .withName(role.getName())

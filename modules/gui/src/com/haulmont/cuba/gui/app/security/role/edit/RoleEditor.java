@@ -22,6 +22,7 @@ import com.haulmont.cuba.gui.app.security.role.edit.tabs.ScreenPermissionsFrame;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.security.entity.Role;
+import com.haulmont.cuba.security.role.RolesService;
 
 import javax.inject.Inject;
 
@@ -55,6 +56,9 @@ public class RoleEditor extends AbstractEditor<Role> {
     @Inject
     protected CheckBox defaultRole;
 
+    @Inject
+    protected RolesService rolesService;
+
     @Override
     protected void postInit() {
         setCaption(entityStates.isNew(getItem()) && !getItem().isPredefined() ?
@@ -65,6 +69,16 @@ public class RoleEditor extends AbstractEditor<Role> {
         if (getItem().isPredefined()) {
             restrictAccessForPredefinedRole();
         }
+    }
+
+    @Override
+    public boolean preCommit() {
+        if (rolesService.isPredefinedRolesModeAvailable()
+                && rolesService.getRoleByName(name.getRawValue()) != null) {
+            showNotification(getMessage("roleNameIsUsed"), NotificationType.WARNING);
+            return false;
+        }
+        return true;
     }
 
     protected void restrictAccessForPredefinedRole() {

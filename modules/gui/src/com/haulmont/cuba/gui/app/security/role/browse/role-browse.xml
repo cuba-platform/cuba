@@ -32,7 +32,7 @@
                 resizable="true"/>
 
     <layout expand="rolesTable">
-        <filter applyTo="rolesTable" datasource="rolesDs" margin="false,false,true,false">
+        <filter id="filter" applyTo="rolesTable" datasource="rolesDs" margin="false,false,true,false">
             <properties include=".*"/>
         </filter>
         <table id="rolesTable" width="100%" editable="true" multiselect="true">
