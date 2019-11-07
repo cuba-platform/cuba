@@ -52,7 +52,7 @@ public class SetupAttributeAccessEvent<T extends Entity>
     }
 
     /**
-     * Entity instance in managed state.
+     * Entity instance in managed or new state.
      */
     @SuppressWarnings("unchecked")
     public T getEntity() {

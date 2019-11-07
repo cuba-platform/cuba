@@ -23,6 +23,7 @@ import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.entity.BaseEntityInternalAccess;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.SecurityState;
+import com.haulmont.cuba.core.global.EntityStates;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.MetadataTools;
 import org.springframework.stereotype.Service;
@@ -43,6 +44,8 @@ public class AttributeAccessServiceBean implements AttributeAccessService {
 
     @Inject
     protected AttributeSecuritySupport support;
+    @Inject
+    private EntityStates entityStates;
 
     @Override
     public SecurityState computeSecurityState(Entity entity) {
@@ -52,10 +55,15 @@ public class AttributeAccessServiceBean implements AttributeAccessService {
         String storeName = metadataTools.getStoreName(metadata.getClassNN(entity.getClass()));
         Transaction tx = persistence.createTransaction(storeName);
         try {
-            EntityManager em = persistence.getEntityManager(storeName);
-            Entity managedEntity = em.merge(entity);
-            support.setupAttributeAccess(managedEntity);
-            state = BaseEntityInternalAccess.getSecurityState(managedEntity);
+            Entity e;
+            if (entityStates.isNew(entity)) {
+                e = entity;
+            } else {
+                EntityManager em = persistence.getEntityManager(storeName);
+                e = em.merge(entity);
+            }
+            support.setupAttributeAccess(e);
+            state = BaseEntityInternalAccess.getSecurityState(e);
             // do not commit the transaction
         } finally {
             tx.end();
