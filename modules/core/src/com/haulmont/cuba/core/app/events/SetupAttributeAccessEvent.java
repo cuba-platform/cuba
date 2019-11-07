@@ -17,6 +17,7 @@
 package com.haulmont.cuba.core.app.events;
 
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.cuba.core.app.SetupAttributeAccessHandler;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.ExtendedEntities;
@@ -29,14 +30,16 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * A Spring application event that is sent by the framework to set up access to attributes of an entity instance.
- * Subscribers should write appropriate attribute names into the event object using {@link #addHidden(String)},
- * {@link #addReadOnly(String)} and {@link #addRequired(String)} methods.
+ * An event that is used by {@link SetupAttributeAccessHandler}s to receive the entity instance and to return
+ * resulting access information.
+ * <p>
+ * Use {@link #addHidden(String)}, {@link #addReadOnly(String)} and {@link #addRequired(String)} methods to write
+ * appropriate attribute names.
 
  * @param <T> type of entity
  */
-public class SetupAttributeAccessEvent<T extends Entity> extends ApplicationEvent
-        implements ResolvableTypeProvider {
+public class SetupAttributeAccessEvent<T extends Entity>
+        extends ApplicationEvent implements ResolvableTypeProvider {
 
     private static final long serialVersionUID = -8775623806210166422L;
 
@@ -95,6 +98,9 @@ public class SetupAttributeAccessEvent<T extends Entity> extends ApplicationEven
         return this;
     }
 
+    /**
+     * Kept for compatibility with the previous implementation based on Spring application events.
+     */
     @Override
     public ResolvableType getResolvableType() {
         ExtendedEntities extendedEntities = AppBeans.get(ExtendedEntities.NAME);
