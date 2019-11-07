@@ -44,6 +44,10 @@ public interface FilterDelegate {
 
     void setAfterFilterAppliedHandler(Filter.AfterFilterAppliedHandler afterFilterAppliedHandler);
 
+    String getControlsLayoutTemplate();
+
+    void setControlsLayoutTemplate(String controlsLayoutTemplate);
+
     enum FilterMode {
         GENERIC_MODE,
         FTS_MODE
@@ -142,6 +146,8 @@ public interface FilterDelegate {
     void setCollapsable(boolean collapsable);
 
     void setModeSwitchVisible(boolean modeSwitchVisible);
+
+    void createLayout();
 
     void switchFilterMode(FilterMode filterMode);
 

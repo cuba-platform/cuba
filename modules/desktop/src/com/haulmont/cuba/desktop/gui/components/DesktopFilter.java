@@ -75,6 +75,11 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
     }
 
     @Override
+    public void createLayout() {
+        delegate.createLayout();
+    }
+
+    @Override
     public CollectionDatasource getDatasource() {
         return delegate.getDatasource();
     }
@@ -339,6 +344,7 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
     @Override
     public void addExpandedStateChangeListener(ExpandedStateChangeListener listener) {
         if (expandedStateChangeListeners == null) {
+
             expandedStateChangeListeners = new ArrayList<>();
         }
         if (!expandedStateChangeListeners.contains(listener)) {
@@ -442,5 +448,15 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
     @Override
     public void setWindowCaptionUpdateEnabled(boolean windowCaptionUpdateEnabled) {
         delegate.setWindowCaptionUpdateEnabled(windowCaptionUpdateEnabled);
+    }
+
+    @Override
+    public String getControlsLayoutTemplate() {
+        return delegate.getControlsLayoutTemplate();
+    }
+
+    @Override
+    public void setControlsLayoutTemplate(String controlsLayoutTemplate) {
+        delegate.setControlsLayoutTemplate(controlsLayoutTemplate);
     }
 }

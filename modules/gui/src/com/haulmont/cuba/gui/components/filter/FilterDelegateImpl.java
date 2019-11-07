@@ -226,6 +226,7 @@ public class FilterDelegateImpl implements FilterDelegate {
     protected Map<AbstractCondition, AbstractCondition.Listener> conditionListeners;
     protected Map<AbstractCondition, ParamEditor> paramEditors;
     protected Boolean applyImmediately;
+    protected String controlsLayoutTemplate;
 
     protected enum ConditionsFocusType {
         NONE,
@@ -252,7 +253,8 @@ public class FilterDelegateImpl implements FilterDelegate {
         createLayout();
     }
 
-    protected void createLayout() {
+    @Override
+    public void createLayout() {
         if (layout == null) {
             groupBoxLayout = uiComponents.create(GroupBoxLayout.class);
             groupBoxLayout.addExpandedStateChangeListener(e -> fireExpandStateChange(e.isUserOriginated()));
@@ -358,7 +360,9 @@ public class FilterDelegateImpl implements FilterDelegate {
             filterHelper.setInternalDebugId(ftsSwitch, "ftsSwitch");
         }
 
-        String layoutDescription = clientConfig.getGenericFilterControlsLayout();
+        String layoutDescription = !Strings.isNullOrEmpty(controlsLayoutTemplate) ?
+                controlsLayoutTemplate :
+                clientConfig.getGenericFilterControlsLayout();
         ControlsLayoutBuilder controlsLayoutBuilder = createControlsLayoutBuilder(layoutDescription);
         controlsLayoutBuilder.build();
         if (isMaxResultsLayoutVisible()) {
@@ -2470,6 +2474,16 @@ public class FilterDelegateImpl implements FilterDelegate {
     @Override
     public boolean isApplyImmediately() {
         return applyImmediately;
+    }
+
+    @Override
+    public String getControlsLayoutTemplate() {
+        return controlsLayoutTemplate;
+    }
+
+    @Override
+    public void setControlsLayoutTemplate(String controlsLayoutTemplate) {
+        this.controlsLayoutTemplate = controlsLayoutTemplate;
     }
 
     protected void clearParamValueChangeSubscriptions() {

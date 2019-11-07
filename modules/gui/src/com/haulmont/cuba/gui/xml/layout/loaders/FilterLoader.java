@@ -148,6 +148,12 @@ public class FilterLoader extends AbstractComponentLoader<Filter> {
             if (FTS_MODE_VALUE.equals(defaultMode)) {
                 resultComponent.switchFilterMode(FilterDelegate.FilterMode.FTS_MODE);
             }
+
+            String controlsLayoutTemplate = element.attributeValue("controlsLayoutTemplate");
+            if (!Strings.isNullOrEmpty(controlsLayoutTemplate)) {
+                resultComponent.setControlsLayoutTemplate(controlsLayoutTemplate);
+                resultComponent.createLayout();
+            }
         });
     }
 

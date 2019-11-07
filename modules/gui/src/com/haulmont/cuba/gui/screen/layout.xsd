@@ -2734,6 +2734,7 @@
                 </xs:attribute>
                 <xs:attribute name="modeSwitchVisible" type="xs:boolean"/>
                 <xs:attribute name="borderVisible" type="xs:boolean"/>
+                <xs:attribute name="controlsLayoutTemplate" type="xs:string"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
