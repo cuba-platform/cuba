@@ -312,4 +312,14 @@ public class WebListEditor<V> extends WebV8AbstractField<WebListEditor.CubaListE
     public Function<? super V, String> getOptionCaptionProvider() {
         return delegate.getOptionCaptionProvider();
     }
+
+    @Override
+    public boolean isDisplayValuesFieldEditable() {
+        return delegate.isDisplayValuesFieldEditable();
+    }
+
+    @Override
+    public void setDisplayValuesFieldEditable(boolean displayValuesFieldEditable) {
+        delegate.setDisplayValuesFieldEditable(displayValuesFieldEditable);
+    }
 }

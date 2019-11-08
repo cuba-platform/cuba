@@ -29,7 +29,7 @@ import java.util.function.Supplier;
 
 /**
  * The component is used for displaying and editing a collection of values.
- *
+ * <p>
  * WARNING: for internal use only!
  */
 public interface ListEditor<V> extends OptionsField<List<V>, V>, Component.Focusable {
@@ -117,12 +117,20 @@ public interface ListEditor<V> extends OptionsField<List<V>, V>, Component.Focus
     Supplier<Map<String, Object>> getEditorParamsSupplier();
 
     /**
-     *
      * @param timeZone - for DateTime fields and date formatting
      */
     void setTimeZone(TimeZone timeZone);
 
     TimeZone getTimeZone();
+
+    boolean isDisplayValuesFieldEditable();
+
+    /**
+     * Makes the field that displays the value editable. This allows to enter values not only using the {@link
+     * com.haulmont.cuba.gui.components.listeditor.ListEditorPopupWindow} where values are added one by one, but directly entering the
+     * comma-separated values list.
+     */
+    void setDisplayValuesFieldEditable(boolean displayValuesFieldEditable);
 
     enum ItemType {
         STRING,
@@ -139,7 +147,6 @@ public interface ListEditor<V> extends OptionsField<List<V>, V>, Component.Focus
     }
 
     /**
-     *
      * @param validator validator for the child component
      */
     void addListItemValidator(Consumer<? super V> validator);

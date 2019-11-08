@@ -17,7 +17,10 @@
 package com.haulmont.cuba.gui.components.listeditor;
 
 import com.haulmont.bali.events.Subscription;
-import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.Field;
+import com.haulmont.cuba.gui.components.HBoxLayout;
+import com.haulmont.cuba.gui.components.ListEditor;
+import com.haulmont.cuba.gui.components.TextField;
 import com.haulmont.cuba.gui.components.data.Options;
 
 import java.util.List;
@@ -95,4 +98,7 @@ public interface ListEditorDelegate<V> {
 
     void addListItemValidator(Consumer<? super V> validator);
     List<Consumer<? super V>> getListItemValidators();
+
+    boolean isDisplayValuesFieldEditable();
+    void setDisplayValuesFieldEditable(boolean displayValuesFieldEditable);
 }

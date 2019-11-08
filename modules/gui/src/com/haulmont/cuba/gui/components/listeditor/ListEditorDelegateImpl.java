@@ -17,8 +17,11 @@
 package com.haulmont.cuba.gui.components.listeditor;
 
 import com.google.common.base.Joiner;
+import com.google.common.base.Splitter;
+import com.google.common.base.Strings;
 import com.haulmont.bali.events.EventHub;
 import com.haulmont.bali.events.Subscription;
+import com.haulmont.chile.core.datatypes.DatatypeRegistry;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.UiComponents;
 import com.haulmont.cuba.gui.components.*;
@@ -26,12 +29,15 @@ import com.haulmont.cuba.gui.components.actions.BaseAction;
 import com.haulmont.cuba.gui.components.data.Options;
 import com.haulmont.cuba.gui.icons.CubaIcon;
 import com.haulmont.cuba.gui.screen.*;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import java.math.BigDecimal;
+import java.text.ParseException;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -78,6 +84,12 @@ public class ListEditorDelegateImpl<V> implements ListEditorDelegate<V> {
     private EventHub eventHub;
 
     @Inject
+    protected DatatypeRegistry datatypeRegistry;
+
+    @Inject
+    protected Logger log;
+
+    @Inject
     public void setUiComponents(UiComponents uiComponents) {
         this.uiComponents = uiComponents;
     }
@@ -91,6 +103,9 @@ public class ListEditorDelegateImpl<V> implements ListEditorDelegate<V> {
         displayValuesField = uiComponents.create(TextField.NAME);
         displayValuesField.setStyleName("c-listeditor-text");
         displayValuesField.setEditable(false);
+
+        initDisplayValuesFieldValueChangeListener();
+
         Button openEditorBtn = uiComponents.create(Button.class);
         openEditorBtn.setIconFromSet(CubaIcon.PICKERFIELD_LOOKUP);
         openEditorBtn.setStyleName("c-listeditor-button");
@@ -100,6 +115,51 @@ public class ListEditorDelegateImpl<V> implements ListEditorDelegate<V> {
         layout.add(displayValuesField);
         layout.add(openEditorBtn);
         layout.expand(displayValuesField);
+    }
+
+    /**
+     * displayValuesField may be editable, e.g. for IN condition in the Filter component. For such cases,
+     * we should parse the string value and transform it to values list
+     */
+    protected void initDisplayValuesFieldValueChangeListener() {
+        displayValuesField.addValueChangeListener(valueChangeEvent -> {
+            //only handle cases when user directly modified the field value
+            if (valueChangeEvent.isUserOriginated()) {
+                String strValue = valueChangeEvent.getValue();
+                List<Object> values = new ArrayList<>();
+                if (!Strings.isNullOrEmpty(strValue)) {
+                    List<String> parts = Splitter.on(",").trimResults().splitToList(strValue);
+                    parts.forEach(value -> {
+                        Object typedValue = null;
+                        try {
+                            switch (itemType) {
+                                case STRING:
+                                    typedValue = value;
+                                    break;
+                                case INTEGER:
+                                    typedValue = datatypeRegistry.getNN(Integer.class).parse(value);
+                                    break;
+                                case BIGDECIMAL:
+                                    typedValue = datatypeRegistry.getNN(BigDecimal.class).parse(value);
+                                    break;
+                                case LONG:
+                                    typedValue = datatypeRegistry.getNN(Long.class).parse(value);
+                                    break;
+                                case DOUBLE:
+                                    typedValue = datatypeRegistry.getNN(Double.class).parse(value);
+                                    break;
+                            }
+                        } catch (ParseException e) {
+                            log.error("Invalid value {}", value);
+                        }
+                        if (typedValue != null) {
+                            values.add(typedValue);
+                        }
+                    });
+                }
+                actualField.setValue(values);
+            }
+        });
     }
 
     protected void openEditor() {
@@ -313,10 +373,10 @@ public class ListEditorDelegateImpl<V> implements ListEditorDelegate<V> {
         clearBtn.setStyleName("c-listeditor-button");
         clearBtn.setCaption("");
         clearBtn.setAction(new BaseAction("clear")
-                        .withCaption("Clear")
-                        .withHandler(event ->
-                                actualField.setValue(null)
-                        ));
+                .withCaption("Clear")
+                .withHandler(event ->
+                        actualField.setValue(null)
+                ));
 
         layout.add(clearBtn);
     }
@@ -392,5 +452,15 @@ public class ListEditorDelegateImpl<V> implements ListEditorDelegate<V> {
     @Override
     public List<Consumer<? super V>> getListItemValidators() {
         return validators;
+    }
+
+    @Override
+    public boolean isDisplayValuesFieldEditable() {
+        return displayValuesField.isEditable();
+    }
+
+    @Override
+    public void setDisplayValuesFieldEditable(boolean displayValuesFieldEditable) {
+        displayValuesField.setEditable(displayValuesFieldEditable);
     }
 }

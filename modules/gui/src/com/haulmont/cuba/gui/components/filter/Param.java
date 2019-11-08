@@ -646,6 +646,7 @@ public class Param {
         if (inExpr) {
             ListEditor listEditor = uiComponents.create(ListEditor.class);
             listEditor.setItemType(ListEditor.ItemType.STRING);
+            listEditor.setDisplayValuesFieldEditable(true);
             initListEditor(listEditor, valueProperty);
             return listEditor;
         }
@@ -748,6 +749,7 @@ public class Param {
         if (inExpr) {
             ListEditor listEditor = uiComponents.create(ListEditor.class);
             listEditor.setItemType(ListEditorHelper.itemTypeFromDatatype(datatype));
+            listEditor.setDisplayValuesFieldEditable(true);
             initListEditor(listEditor, valueProperty);
             return listEditor;
         }

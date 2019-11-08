@@ -257,4 +257,14 @@ public class DesktopListEditor extends DesktopAbstractField<JPanel> implements L
     public TimeZone getTimeZone() {
         return delegate.getTimeZone();
     }
+
+    @Override
+    public boolean isDisplayValuesFieldEditable() {
+        return delegate.isDisplayValuesFieldEditable();
+    }
+
+    @Override
+    public void setDisplayValuesFieldEditable(boolean displayValuesFieldEditable) {
+        delegate.setDisplayValuesFieldEditable(displayValuesFieldEditable);
+    }
 }
