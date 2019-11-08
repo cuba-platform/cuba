@@ -35,7 +35,7 @@ public class CascadePersistExceptionAspect {
         IllegalStateException exception = ex;
         if (!Strings.isNullOrEmpty(ex.getMessage())
                 && ex.getMessage().contains("cascade PERSIST")) {
-            exception = new IllegalStateException("An attempt to save an entity with reference to some non persistent entity. " +
+            exception = new IllegalStateException("An attempt to save an entity with reference to some not persisted entity. " +
                     "All newly created entities must be saved in the same transaction. " +
                     "Put all these objects to the CommitContext before commit.");
             exception.addSuppressed(ex);
