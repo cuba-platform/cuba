@@ -148,6 +148,8 @@ public class ListEditorDelegateImpl<V> implements ListEditorDelegate<V> {
                                 case DOUBLE:
                                     typedValue = datatypeRegistry.getNN(Double.class).parse(value);
                                     break;
+                                default:
+                                    typedValue = null;
                             }
                         } catch (ParseException e) {
                             log.error("Invalid value {}", value);
