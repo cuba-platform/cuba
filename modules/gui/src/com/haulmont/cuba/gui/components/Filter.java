@@ -80,6 +80,11 @@ public interface Filter extends HasMargin, Component.BelongToFrame, HasNamedComp
      */
     void setDataLoader(CollectionLoader loader);
 
+    /**
+     * Recreates filter layout
+     */
+    void createLayout();
+
     CollectionDatasource getDatasource();
 
     void setDatasource(CollectionDatasource datasource);
@@ -247,6 +252,17 @@ public interface Filter extends HasMargin, Component.BelongToFrame, HasNamedComp
      * @return true if filter should be applied immediately after every parameter's value changing
      */
     boolean isApplyImmediately();
+
+    /**
+     * Returns a template for filter controls layout. See {@link ClientConfig#getGenericFilterControlsLayout()}
+     */
+    String getControlsLayoutTemplate();
+
+    /**
+     * Sets a template for filter controls layout. See {@link ClientConfig#getGenericFilterControlsLayout()}
+     */
+    void setControlsLayoutTemplate(String controlsLayoutTemplate);
+
     /**
      * A predicate that tests whether a property with the given path should be available for filtering.
      */
