@@ -140,6 +140,12 @@ public class EntitySerialization implements EntitySerializationAPI {
         return createGsonForDeserialization(null, options).fromJson(json, clazz);
     }
 
+    @Override
+    public <T> T objectFromJson(String json, Type type, EntitySerializationOption... options) {
+        context.remove();
+        return createGsonForDeserialization(null, options).fromJson(json, type);
+    }
+
     protected Gson createGsonForSerialization(@Nullable View view, EntitySerializationOption... options) {
         GsonBuilder gsonBuilder = new GsonBuilder();
         if (ArrayUtils.contains(options, EntitySerializationOption.PRETTY_PRINT)) {
