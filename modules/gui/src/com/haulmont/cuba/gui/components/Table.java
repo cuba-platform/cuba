@@ -98,6 +98,11 @@ public interface Table<E extends Entity>
      */
     void removeColumn(Column<E> column);
 
+    /**
+     * Returns a map with aggregation results, where keys are table column ids and values are aggregation values.
+     *
+     * @return map with aggregation results
+     */
     Map<Object, Object> getAggregationResults();
 
     void setItems(TableItems<E> tableItems);
