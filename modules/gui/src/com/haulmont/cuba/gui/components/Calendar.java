@@ -27,7 +27,6 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import javax.annotation.Nullable;
 import java.time.DayOfWeek;
 import java.time.Month;
-import java.util.Date;
 import java.util.EventObject;
 import java.util.Map;
 import java.util.TimeZone;
@@ -200,96 +199,96 @@ public interface Calendar<V> extends Component.BelongToFrame, Component.HasCapti
      */
     void setMonthNames(Map<Month, String> monthNames);
 
-    Subscription addDateClickListener(Consumer<CalendarDateClickEvent> listener);
+    Subscription addDateClickListener(Consumer<CalendarDateClickEvent<V>> listener);
 
     /**
      * @param listener a listener to remove
      * @deprecated Use {@link Subscription} instead
      */
     @Deprecated
-    void removeDateClickListener(Consumer<CalendarDateClickEvent> listener);
+    void removeDateClickListener(Consumer<CalendarDateClickEvent<V>> listener);
 
-    Subscription addEventClickListener(Consumer<CalendarEventClickEvent> listener);
-
-    /**
-     * @param listener a listener to remove
-     * @deprecated Use {@link Subscription} instead
-     */
-    @Deprecated
-    void removeEventClickListener(Consumer<CalendarEventClickEvent> listener);
-
-    Subscription addEventResizeListener(Consumer<CalendarEventResizeEvent> listener);
+    Subscription addEventClickListener(Consumer<CalendarEventClickEvent<V>> listener);
 
     /**
      * @param listener a listener to remove
      * @deprecated Use {@link Subscription} instead
      */
     @Deprecated
-    void removeEventResizeListener(Consumer<CalendarEventResizeEvent> listener);
+    void removeEventClickListener(Consumer<CalendarEventClickEvent<V>> listener);
 
-    Subscription addEventMoveListener(Consumer<CalendarEventMoveEvent> listener);
-
-    /**
-     * @param listener a listener to remove
-     * @deprecated Use {@link Subscription} instead
-     */
-    @Deprecated
-    void removeEventMoveListener(Consumer<CalendarEventMoveEvent> listener);
-
-    Subscription addWeekClickListener(Consumer<CalendarWeekClickEvent> listener);
+    Subscription addEventResizeListener(Consumer<CalendarEventResizeEvent<V>> listener);
 
     /**
      * @param listener a listener to remove
      * @deprecated Use {@link Subscription} instead
      */
     @Deprecated
-    void removeWeekClickListener(Consumer<CalendarWeekClickEvent> listener);
+    void removeEventResizeListener(Consumer<CalendarEventResizeEvent<V>> listener);
 
-    Subscription addForwardClickListener(Consumer<CalendarForwardClickEvent> listener);
-
-    /**
-     * @param listener a listener to remove
-     * @deprecated Use {@link Subscription} instead
-     */
-    @Deprecated
-    void removeForwardClickListener(Consumer<CalendarForwardClickEvent> listener);
-
-    Subscription addBackwardClickListener(Consumer<CalendarBackwardClickEvent> listener);
+    Subscription addEventMoveListener(Consumer<CalendarEventMoveEvent<V>> listener);
 
     /**
      * @param listener a listener to remove
      * @deprecated Use {@link Subscription} instead
      */
     @Deprecated
-    void removeBackwardClickListener(Consumer<CalendarBackwardClickEvent> listener);
+    void removeEventMoveListener(Consumer<CalendarEventMoveEvent<V>> listener);
 
-    Subscription addRangeSelectListener(Consumer<CalendarRangeSelectEvent> listener);
+    Subscription addWeekClickListener(Consumer<CalendarWeekClickEvent<V>> listener);
 
     /**
      * @param listener a listener to remove
      * @deprecated Use {@link Subscription} instead
      */
     @Deprecated
-    void removeRangeSelectListener(Consumer<CalendarRangeSelectEvent> listener);
+    void removeWeekClickListener(Consumer<CalendarWeekClickEvent<V>> listener);
+
+    Subscription addForwardClickListener(Consumer<CalendarForwardClickEvent<V>> listener);
+
+    /**
+     * @param listener a listener to remove
+     * @deprecated Use {@link Subscription} instead
+     */
+    @Deprecated
+    void removeForwardClickListener(Consumer<CalendarForwardClickEvent<V>> listener);
+
+    Subscription addBackwardClickListener(Consumer<CalendarBackwardClickEvent<V>> listener);
+
+    /**
+     * @param listener a listener to remove
+     * @deprecated Use {@link Subscription} instead
+     */
+    @Deprecated
+    void removeBackwardClickListener(Consumer<CalendarBackwardClickEvent<V>> listener);
+
+    Subscription addRangeSelectListener(Consumer<CalendarRangeSelectEvent<V>> listener);
+
+    /**
+     * @param listener a listener to remove
+     * @deprecated Use {@link Subscription} instead
+     */
+    @Deprecated
+    void removeRangeSelectListener(Consumer<CalendarRangeSelectEvent<V>> listener);
 
     enum TimeFormat {
         FORMAT_12H, FORMAT_24H
     }
 
-    class CalendarEventMoveEvent extends EventObject {
+    class CalendarEventMoveEvent<V> extends EventObject {
         protected CalendarEvent calendarEvent;
-        protected Date newStart;
+        protected V newStart;
         protected Entity entity;
 
         @Deprecated
-        public CalendarEventMoveEvent(Calendar calendar, CalendarEvent calendarEvent, Date newStart) {
+        public CalendarEventMoveEvent(Calendar<V> calendar, CalendarEvent calendarEvent, V newStart) {
             super(calendar);
 
             this.calendarEvent = calendarEvent;
             this.newStart = newStart;
         }
 
-        public CalendarEventMoveEvent(Calendar calendar, CalendarEvent calendarEvent, Date newStart, @Nullable Entity entity) {
+        public CalendarEventMoveEvent(Calendar<V> calendar, CalendarEvent calendarEvent, V newStart, @Nullable Entity entity) {
             super(calendar);
 
             this.calendarEvent = calendarEvent;
@@ -297,9 +296,10 @@ public interface Calendar<V> extends Component.BelongToFrame, Component.HasCapti
             this.entity = entity;
         }
 
+        @SuppressWarnings("unchecked")
         @Override
-        public Calendar getSource() {
-            return (Calendar) super.getSource();
+        public Calendar<V> getSource() {
+            return (Calendar<V>) super.getSource();
         }
 
         /**
@@ -307,7 +307,7 @@ public interface Calendar<V> extends Component.BelongToFrame, Component.HasCapti
          * @deprecated Use {@link #getSource()} instead
          */
         @Deprecated
-        public Calendar getCalendar() {
+        public Calendar<V> getCalendar() {
             return getSource();
         }
 
@@ -315,7 +315,7 @@ public interface Calendar<V> extends Component.BelongToFrame, Component.HasCapti
             return calendarEvent;
         }
 
-        public Date getNewStart() {
+        public V getNewStart() {
             return newStart;
         }
 
@@ -328,15 +328,16 @@ public interface Calendar<V> extends Component.BelongToFrame, Component.HasCapti
         }
     }
 
-    class CalendarBackwardClickEvent extends EventObject {
+    class CalendarBackwardClickEvent<V> extends EventObject {
 
-        public CalendarBackwardClickEvent(Calendar calendar) {
+        public CalendarBackwardClickEvent(Calendar<V> calendar) {
             super(calendar);
         }
 
+        @SuppressWarnings("unchecked")
         @Override
-        public Calendar getSource() {
-            return (Calendar) super.getSource();
+        public Calendar<V> getSource() {
+            return (Calendar<V>) super.getSource();
         }
 
         /**
@@ -344,27 +345,28 @@ public interface Calendar<V> extends Component.BelongToFrame, Component.HasCapti
          * @deprecated Use {@link #getSource()} instead
          */
         @Deprecated
-        public Calendar getCalendar() {
+        public Calendar<V> getCalendar() {
             return getSource();
         }
     }
 
-    class CalendarDateClickEvent extends EventObject {
-        protected Date date;
+    class CalendarDateClickEvent<V> extends EventObject {
+        protected V date;
 
-        public CalendarDateClickEvent(Calendar calendar, Date date) {
+        public CalendarDateClickEvent(Calendar<V> calendar, V date) {
             super(calendar);
 
             this.date = date;
         }
 
-        public Date getDate() {
+        public V getDate() {
             return date;
         }
 
+        @SuppressWarnings("unchecked")
         @Override
-        public Calendar getSource() {
-            return (Calendar) super.getSource();
+        public Calendar<V> getSource() {
+            return (Calendar<V>) super.getSource();
         }
 
         /**
@@ -372,16 +374,16 @@ public interface Calendar<V> extends Component.BelongToFrame, Component.HasCapti
          * @deprecated Use {@link #getSource()} instead
          */
         @Deprecated
-        public Calendar getCalendar() {
+        public Calendar<V> getCalendar() {
             return getSource();
         }
     }
 
-    class CalendarEventClickEvent extends EventObject {
+    class CalendarEventClickEvent<V> extends EventObject {
         protected CalendarEvent calendarEvent;
         protected Entity entity;
 
-        public CalendarEventClickEvent(Calendar calendar, CalendarEvent calendarEvent, @Nullable Entity entity) {
+        public CalendarEventClickEvent(Calendar<V> calendar, CalendarEvent calendarEvent, @Nullable Entity entity) {
             super(calendar);
 
             this.calendarEvent = calendarEvent;
@@ -400,9 +402,10 @@ public interface Calendar<V> extends Component.BelongToFrame, Component.HasCapti
             return calendarEvent;
         }
 
+        @SuppressWarnings("unchecked")
         @Override
-        public Calendar getSource() {
-            return (Calendar) super.getSource();
+        public Calendar<V> getSource() {
+            return (Calendar<V>) super.getSource();
         }
 
         /**
@@ -410,19 +413,20 @@ public interface Calendar<V> extends Component.BelongToFrame, Component.HasCapti
          * @deprecated Use {@link #getSource()} instead
          */
         @Deprecated
-        public Calendar getCalendar() {
+        public Calendar<V> getCalendar() {
             return getSource();
         }
     }
 
-    class CalendarForwardClickEvent extends EventObject {
-        public CalendarForwardClickEvent(Calendar calendar) {
+    class CalendarForwardClickEvent<V> extends EventObject {
+        public CalendarForwardClickEvent(Calendar<V> calendar) {
             super(calendar);
         }
 
+        @SuppressWarnings("unchecked")
         @Override
-        public Calendar getSource() {
-            return (Calendar) super.getSource();
+        public Calendar<V> getSource() {
+            return (Calendar<V>) super.getSource();
         }
 
         /**
@@ -430,19 +434,19 @@ public interface Calendar<V> extends Component.BelongToFrame, Component.HasCapti
          * @deprecated Use {@link #getSource()} instead
          */
         @Deprecated
-        public Calendar getCalendar() {
+        public Calendar<V> getCalendar() {
             return getSource();
         }
     }
 
-    class CalendarEventResizeEvent extends EventObject {
+    class CalendarEventResizeEvent<V> extends EventObject {
         protected CalendarEvent calendarEvent;
-        protected Date newStart;
-        protected Date newEnd;
+        protected V newStart;
+        protected V newEnd;
         protected Entity entity;
 
-        public CalendarEventResizeEvent(Calendar calendar, CalendarEvent calendarEvent, Date newStart,
-                                        Date newEnd, @Nullable Entity entity) {
+        public CalendarEventResizeEvent(Calendar<V> calendar, CalendarEvent calendarEvent, V newStart,
+                                        V newEnd, @Nullable Entity entity) {
             super(calendar);
 
             this.calendarEvent = calendarEvent;
@@ -463,9 +467,10 @@ public interface Calendar<V> extends Component.BelongToFrame, Component.HasCapti
             return calendarEvent;
         }
 
+        @SuppressWarnings("unchecked")
         @Override
-        public Calendar getSource() {
-            return (Calendar) super.getSource();
+        public Calendar<V> getSource() {
+            return (Calendar<V>) super.getSource();
         }
 
         /**
@@ -473,33 +478,34 @@ public interface Calendar<V> extends Component.BelongToFrame, Component.HasCapti
          * @deprecated Use {@link #getSource()} instead
          */
         @Deprecated
-        public Calendar getCalendar() {
+        public Calendar<V> getCalendar() {
             return getSource();
         }
 
-        public Date getNewStart() {
+        public V getNewStart() {
             return newStart;
         }
 
-        public Date getNewEnd() {
+        public V getNewEnd() {
             return newEnd;
         }
     }
 
-    class CalendarWeekClickEvent extends EventObject {
+    class CalendarWeekClickEvent<V> extends EventObject {
         protected int week;
         protected int year;
 
-        public CalendarWeekClickEvent(Calendar calendar, int week, int year) {
+        public CalendarWeekClickEvent(Calendar<V> calendar, int week, int year) {
             super(calendar);
 
             this.week = week;
             this.year = year;
         }
 
+        @SuppressWarnings("unchecked")
         @Override
-        public Calendar getSource() {
-            return (Calendar) super.getSource();
+        public Calendar<V> getSource() {
+            return (Calendar<V>) super.getSource();
         }
 
         /**
@@ -507,7 +513,7 @@ public interface Calendar<V> extends Component.BelongToFrame, Component.HasCapti
          * @deprecated Use {@link #getSource()} instead
          */
         @Deprecated
-        public Calendar getCalendar() {
+        public Calendar<V> getCalendar() {
             return getSource();
         }
 
@@ -520,20 +526,21 @@ public interface Calendar<V> extends Component.BelongToFrame, Component.HasCapti
         }
     }
 
-    class CalendarRangeSelectEvent extends EventObject {
-        protected Date start;
-        protected Date end;
+    class CalendarRangeSelectEvent<V> extends EventObject {
+        protected V start;
+        protected V end;
 
-        public CalendarRangeSelectEvent(Calendar calendar, Date start, Date end) {
+        public CalendarRangeSelectEvent(Calendar<V> calendar, V start, V end) {
             super(calendar);
 
             this.start = start;
             this.end = end;
         }
 
+        @SuppressWarnings("unchecked")
         @Override
-        public Calendar getSource() {
-            return (Calendar) super.getSource();
+        public Calendar<V> getSource() {
+            return (Calendar<V>) super.getSource();
         }
 
         /**
@@ -541,15 +548,15 @@ public interface Calendar<V> extends Component.BelongToFrame, Component.HasCapti
          * @deprecated Use {@link #getSource()} instead
          */
         @Deprecated
-        public Calendar getCalendar() {
+        public Calendar<V> getCalendar() {
             return getSource();
         }
 
-        public Date getStart() {
+        public V getStart() {
             return start;
         }
 
-        public Date getEnd() {
+        public V getEnd() {
             return end;
         }
     }
