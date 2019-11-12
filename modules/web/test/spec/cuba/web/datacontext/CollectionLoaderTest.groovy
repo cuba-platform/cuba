@@ -105,4 +105,31 @@ class CollectionLoaderTest extends Specification {
 
         0 * postLoadListener.accept(_)
     }
+
+    def "simplified queries"() {
+        CollectionLoader<Foo> loader = factory.createCollectionLoader()
+        CollectionContainer<Foo> container = factory.createCollectionContainer(Foo)
+        loader.setContainer(container)
+
+        Consumer<CollectionLoader.PreLoadEvent> preLoadListener = Mock()
+        loader.addPreLoadListener(preLoadListener)
+
+        when:
+
+        loader.setQuery('from test$Foo f')
+        loader.load()
+
+        then:
+
+        1 * preLoadListener.accept({ it.loadContext.query.queryString == 'select f from test$Foo f' })
+
+        when:
+
+        loader.setQuery('e.name = :name')
+        loader.load()
+
+        then:
+
+        1 * preLoadListener.accept({ it.loadContext.query.queryString == 'select e from test$Foo e where e.name = :name' })
+    }
 }

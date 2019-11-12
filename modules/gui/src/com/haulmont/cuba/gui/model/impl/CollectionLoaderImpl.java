@@ -72,6 +72,10 @@ public class CollectionLoaderImpl<E extends Entity> implements CollectionLoader<
         return applicationContext.getBean(SorterFactory.NAME, SorterFactory.class);
     }
 
+    protected QueryStringProcessor getQueryStringProcessor() {
+        return applicationContext.getBean(QueryStringProcessor.NAME, QueryStringProcessor.class);
+    }
+
     @Nullable
     @Override
     public DataContext getDataContext() {
@@ -120,9 +124,12 @@ public class CollectionLoaderImpl<E extends Entity> implements CollectionLoader<
 
     @Override
     public LoadContext<E> createLoadContext() {
-        LoadContext<E> loadContext = LoadContext.create(container.getEntityMetaClass().getJavaClass());
+        Class<E> entityClass = container.getEntityMetaClass().getJavaClass();
 
-        LoadContext.Query query = loadContext.setQueryString(this.query);
+        LoadContext<E> loadContext = LoadContext.create(entityClass);
+
+        String queryString = getQueryStringProcessor().process(this.query, entityClass);
+        LoadContext.Query query = loadContext.setQueryString(queryString);
 
         query.setCondition(condition);
         query.setSort(sort);

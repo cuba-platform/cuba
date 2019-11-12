@@ -19,6 +19,8 @@ package spec.cuba.web.datacontext
 import com.haulmont.cuba.core.app.DataService
 import com.haulmont.cuba.core.global.DataManager
 import com.haulmont.cuba.core.global.Metadata
+import com.haulmont.cuba.gui.model.CollectionContainer
+import com.haulmont.cuba.gui.model.CollectionLoader
 import com.haulmont.cuba.gui.model.DataComponents
 import com.haulmont.cuba.gui.model.InstanceContainer
 import com.haulmont.cuba.gui.model.InstanceLoader
@@ -107,5 +109,37 @@ class InstanceLoaderTest extends Specification {
         container.getItemOrNull() == null
 
         0 * postLoadListener.accept(_)
+    }
+
+    def "simplified queries"() {
+        InstanceLoader<Foo> loader = factory.createInstanceLoader()
+        InstanceContainer<Foo> container = factory.createInstanceContainer(Foo)
+        loader.setContainer(container)
+
+        Consumer<InstanceLoader.PreLoadEvent> preLoadListener = Mock()
+        loader.addPreLoadListener(preLoadListener)
+
+        Foo foo = new Foo()
+        TestServiceProxy.mock(DataService, Mock(DataService) {
+            load(_) >> reserialize(foo)
+        })
+
+        when:
+
+        loader.setQuery('from test$Foo f where f.id = :id')
+        loader.load()
+
+        then:
+
+        1 * preLoadListener.accept({ it.loadContext.query.queryString == 'select f from test$Foo f where f.id = :id' })
+
+        when:
+
+        loader.setQuery('e.name = :name')
+        loader.load()
+
+        then:
+
+        1 * preLoadListener.accept({ it.loadContext.query.queryString == 'select e from test$Foo e where e.name = :name' })
     }
 }
