@@ -21,6 +21,7 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.app.core.bulk.BulkEditorWindow;
+import com.haulmont.cuba.gui.app.core.bulk.ColumnsMode;
 import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.ListComponent;
 import com.haulmont.cuba.gui.components.Window;
@@ -102,7 +103,7 @@ public class BulkEditors {
                 .pair("loadDynamicAttributes", builder.isLoadDynamicAttributes())
                 .pair("useConfirmDialog", builder.isUseConfirmDialog())
                 .pair("fieldSorter", builder.getFieldSorter())
-                .pair("columns", builder.getColumns())
+                .pair("columnsMode", builder.getColumnsMode())
                 .create());
 
         BulkEditorWindow bulkEditorWindow = (BulkEditorWindow) screens.create("bulkEditor", builder.launchMode, options);
@@ -165,7 +166,7 @@ public class BulkEditors {
         protected Boolean loadDynamicAttributes;
         protected Boolean useConfirmDialog;
         protected FieldSorter fieldSorter;
-        protected Integer columns;
+        protected ColumnsMode columnsMode;
 
         public EditorBuilder(EditorBuilder<E> builder) {
             this.metaClass = builder.metaClass;
@@ -183,7 +184,7 @@ public class BulkEditors {
             this.loadDynamicAttributes = builder.loadDynamicAttributes;
             this.useConfirmDialog = builder.useConfirmDialog;
             this.fieldSorter = builder.fieldSorter;
-            this.columns = builder.columns;
+            this.columnsMode = builder.columnsMode;
         }
 
         public EditorBuilder(MetaClass metaClass, Collection<E> entities, FrameOwner origin,
@@ -299,13 +300,15 @@ public class BulkEditors {
         }
 
         /**
-         * Sets the number of editor columns.
+         * Sets the columns mode for editor which defines number of columns.
          *
-         * @param columns the number of editor columns
+         * @param columnsMode columns mode
          * @return this builder
+         * @see ColumnsMode#ONE_COLUMN
+         * @see ColumnsMode#TWO_COLUMNS
          */
-        public EditorBuilder<E> withColumns(Integer columns) {
-            this.columns = columns;
+        public EditorBuilder<E> withColumnsMode(ColumnsMode columnsMode) {
+            this.columnsMode = columnsMode;
             return this;
         }
 
@@ -396,10 +399,12 @@ public class BulkEditors {
         }
 
         /**
-         * @return the number of editor columns
+         * @return columns mode
+         * @see ColumnsMode#ONE_COLUMN
+         * @see ColumnsMode#TWO_COLUMNS
          */
-        public Integer getColumns() {
-            return columns;
+        public ColumnsMode getColumnsMode() {
+            return columnsMode;
         }
 
         /**

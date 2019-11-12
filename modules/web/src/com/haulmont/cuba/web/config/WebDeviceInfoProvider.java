@@ -66,6 +66,7 @@ public class WebDeviceInfoProvider implements DeviceInfoProvider {
         di.setFirefox(webBrowser.isFirefox());
         di.setOpera(webBrowser.isOpera());
         di.setIE(webBrowser.isIE());
+        di.setSafari(webBrowser.isSafari());
 
         if (webBrowser.isWindows()) {
             di.setOperatingSystem(OperatingSystem.WINDOWS);

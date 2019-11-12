@@ -16,7 +16,6 @@
 
 package com.haulmont.cuba.gui.actions.list;
 
-import com.google.gson.internal.$Gson$Types;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.Security;
@@ -24,7 +23,7 @@ import com.haulmont.cuba.gui.BulkEditors;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.Notifications;
 import com.haulmont.cuba.gui.Notifications.NotificationType;
-import com.haulmont.cuba.gui.Screens;
+import com.haulmont.cuba.gui.app.core.bulk.ColumnsMode;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.data.meta.EntityDataUnit;
 import com.haulmont.cuba.gui.icons.CubaIcon;
@@ -39,7 +38,6 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 
 import java.util.List;
-import java.util.Map;
 
 import static com.haulmont.cuba.gui.ComponentsHelper.getScreenContext;
 
@@ -61,7 +59,7 @@ public class BulkEditAction extends SecuredListAction {
 
     protected BulkEditors bulkEditors;
 
-    protected Integer columns;
+    protected ColumnsMode columnsMode;
     protected String exclude;
     protected BulkEditors.FieldSorter fieldSorter;
     protected List<String> includeProperties;
@@ -78,20 +76,23 @@ public class BulkEditAction extends SecuredListAction {
     }
 
     /**
-     * Returns the the number of editor columns if it was set by {@link #setColumns(Integer)} or in the screen XML.
-     * Otherwise returns null.
+     * Returns the columns mode which defines the number of columns either it was set by {@link #setColumnsMode(ColumnsMode)}
+     * or in the screen XML. Otherwise returns null.
      */
     @Nullable
-    public Integer getColumns() {
-        return columns;
+    public ColumnsMode getColumnsMode() {
+        return columnsMode;
     }
 
     /**
-     * Sets the number of editor columns.
+     * Sets the columns mode which defines the number of columns.
+     *
+     * @see ColumnsMode#ONE_COLUMN
+     * @see ColumnsMode#TWO_COLUMNS
      */
     @StudioPropertiesItem
-    public void setColumns(Integer columns) {
-        this.columns = columns;
+    public void setColumnsMode(ColumnsMode columnsMode) {
+        this.columnsMode = columnsMode;
     }
 
     /**
@@ -282,8 +283,8 @@ public class BulkEditAction extends SecuredListAction {
         BulkEditors.EditorBuilder builder = bulkEditors.builder(metaClass, target.getSelected(), window.getFrameOwner())
                 .withListComponent(target);
 
-        if (columns != null) {
-            builder = builder.withColumns(columns);
+        if (columnsMode != null) {
+            builder = builder.withColumnsMode(columnsMode);
         }
 
         if (exclude != null) {

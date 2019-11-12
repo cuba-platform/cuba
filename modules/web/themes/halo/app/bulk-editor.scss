@@ -14,6 +14,42 @@
  * limitations under the License.
  */
 
+/**
+ * Defines min width of field caption.
+ * @group bulkeditor
+ */
+$c-bulk-editor-label-min-width: 270px !default;
+
+/**
+ * Defines max width of field caption.
+ * @group bulkeditor
+ */
+$c-bulk-editor-label-max-width: 270px !default;
+
+/**
+ * Defines width of field caption.
+ * @group bulkeditor
+ */
+$c-bulk-editor-label-width: 100% !default;
+
+/**
+ * Defines min width of field.
+ * @group bulkeditor
+ */
+$c-bulk-editor-field-min-width: 240px !default;
+
+/**
+ * Defines max width of field.
+ * @group bulkeditor
+ */
+$c-bulk-editor-field-max-width: none !default;
+
+/*
+ * Defines field width.
+ * @group bulkeditor
+ */
+$c-bulk-editor-field-width: 100% !default;
+
 @mixin cuba-bulk-editor($primary-stylename: c-bulk-editor) {
   .#{$primary-stylename}-grid .field-label {
     line-height: $v-unit-size;
@@ -21,5 +57,111 @@
 
   .#{$primary-stylename}-grid .v-button {
     padding: 0 9px;
+  }
+
+  .#{$primary-stylename}-fields-layout {
+    $c-bulk-editor-horizontal-spacing: $v-layout-spacing-horizontal;
+    $c-bulk-editor-vertical-spacing: $v-layout-spacing-vertical;
+
+    display: flex;
+    flex-wrap: wrap;
+
+    .#{$primary-stylename}-column {
+      padding-right: $c-bulk-editor-horizontal-spacing;
+
+      .#{$primary-stylename}-row {
+        display: flex;
+        margin-bottom: $c-bulk-editor-vertical-spacing;
+
+        /* wrapper is added for FireFox, Safari, Edge and IE11 */
+        .#{$primary-stylename}-picker-field-wrapper {
+          margin-right: $c-bulk-editor-horizontal-spacing;
+          width: $c-bulk-editor-field-width;
+          display: flex;
+
+          .#{$primary-stylename}-field {
+            margin-right: 0;
+            flex-basis: 100%;
+            width:100%;
+          }
+        }
+
+        .#{$primary-stylename}-field {
+          margin-right: $c-bulk-editor-horizontal-spacing;
+          max-width: $c-bulk-editor-field-max-width;
+          min-width: $c-bulk-editor-field-min-width;
+          width: $c-bulk-editor-field-width;
+
+          .c-listeditor-layout {
+            display: flex;
+            width: 100%;
+
+            .v-slot-c-listeditor-text {
+              /* listeditor width is calculated as: input width + button width
+                 as we wont to configure min-width by one variable we need to remove button width */
+              min-width: $c-bulk-editor-field-min-width - $v-unit-size;
+              width: 100%;
+
+              .c-listeditor-text {
+                width: 100%;
+              }
+            }
+          }
+        }
+
+        .#{$primary-stylename}-field.c-datefield-layout {
+          display: flex;
+
+          .c-datefield {
+            width:100%;
+            flex-basis:100%;
+          }
+        }
+
+
+        .v-ie11 & .#{$primary-stylename}-field.v-filterselect {
+          display: flex;
+
+          .v-filterselect-input {
+            flex-basis: 100%;
+          }
+        }
+
+        .#{$primary-stylename}-label {
+          margin-right: $c-bulk-editor-horizontal-spacing;
+          max-width: $c-bulk-editor-label-max-width;
+          min-width: $c-bulk-editor-label-min-width;
+          width: $c-bulk-editor-label-width;
+          white-space: normal;
+          line-height: $v-unit-size;
+        }
+
+        .#{$primary-stylename}-spacer {
+          visibility: hidden;
+        }
+      }
+    }
+  }
+
+  .c-bulk-editor-columns-1 {
+    .c-bulk-editor-column {
+      flex: 1 0 100%;
+
+      .v-ie11 & {
+        flex: none;
+        flex-grow: 1;
+      }
+    }
+  }
+
+  .c-bulk-editor-columns-2 {
+    .c-bulk-editor-column {
+      flex: 1 0 50%;
+
+      .v-ie11 & {
+        flex: none;
+        flex-grow: 1;
+      }
+    }
   }
 }

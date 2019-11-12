@@ -26,7 +26,7 @@
             <label id="infoLabel" value="msg://bulkEditor.description" width="100%"/>
         </groupBox>
 
-        <scrollBox id="fieldsScrollBox" width="100%" spacing="true" scrollBars="both">
+        <scrollBox id="fieldsScrollBox" width="100%" spacing="true" scrollBars="vertical">
         </scrollBox>
 
         <hbox id="buttonsBox" spacing="true">

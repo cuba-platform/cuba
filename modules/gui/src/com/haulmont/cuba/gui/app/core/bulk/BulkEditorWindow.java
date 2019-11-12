@@ -28,14 +28,13 @@ import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.gui.AppConfig;
-import com.haulmont.cuba.gui.BulkEditors;
-import com.haulmont.cuba.gui.UiComponents;
-import com.haulmont.cuba.gui.WindowParam;
+import com.haulmont.cuba.gui.*;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Action.Status;
 import com.haulmont.cuba.gui.components.DialogAction.Type;
 import com.haulmont.cuba.gui.components.validators.AbstractBeanValidator;
+import com.haulmont.cuba.gui.config.DeviceInfo;
+import com.haulmont.cuba.gui.config.DeviceInfoProvider;
 import com.haulmont.cuba.gui.data.DataSupplier;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.NestedDatasource;
@@ -57,8 +56,12 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
+import static com.haulmont.cuba.gui.app.core.bulk.ColumnsMode.TWO_COLUMNS;
 
 public class BulkEditorWindow extends AbstractWindow {
+
+    public static final String COLUMN_COUNT_STYLENAME = "c-bulk-editor-columns-";
+
     @Inject
     protected ViewRepository viewRepository;
     @Inject
@@ -73,6 +76,8 @@ public class BulkEditorWindow extends AbstractWindow {
     protected UiComponents uiComponents;
     @Inject
     protected Security security;
+    @Inject
+    protected DeviceInfoProvider deviceInfoProvider;
 
     @Inject
     protected BulkEditorDataService bulkEditorDataService;
@@ -109,7 +114,7 @@ public class BulkEditorWindow extends AbstractWindow {
     @WindowParam
     protected BulkEditors.FieldSorter fieldSorter;
     @WindowParam
-    protected int columns = 2;
+    protected ColumnsMode columnsMode = TWO_COLUMNS;
 
     protected Pattern excludeRegex;
 
@@ -135,7 +140,8 @@ public class BulkEditorWindow extends AbstractWindow {
 
         getDialogOptions()
                 .setWidth(width)
-                .setHeight(height);
+                .setHeight(height)
+                .setResizable(true);
 
         if (StringUtils.isNotBlank(exclude)) {
             excludeRegex = Pattern.compile(exclude);
@@ -180,18 +186,6 @@ public class BulkEditorWindow extends AbstractWindow {
             return;
         }
 
-        GridLayout grid = uiComponents.create(GridLayout.class);
-        grid.setSpacing(true);
-        grid.setColumns(columns * 2);
-        int rows = managedFields.size() / columns;
-        if (managedFields.size() % columns != 0) {
-            rows++;
-        }
-        grid.setRows(rows);
-        grid.setStyleName("c-bulk-editor-grid");
-
-        fieldsScrollBox.add(grid);
-
         List<ManagedField> editFields = new ArrayList<>(managedFields.values());
 
         // sort fields
@@ -206,96 +200,137 @@ public class BulkEditorWindow extends AbstractWindow {
         }
         editFields.sort(comparator);
 
-        String fieldWidth = themeConstants.get("cuba.gui.BulkEditorWindow.field.width");
+        CssLayout fieldsLayout = uiComponents.create(CssLayout.NAME);
+        fieldsLayout.setStyleName("c-bulk-editor-fields-layout");
+        fieldsLayout.setWidthFull();
+        fieldsLayout.setHeightFull();
 
-        for (ManagedField field : editFields) {
-            Label<String> label = uiComponents.create(Label.NAME);
-            label.setValue(field.getLocalizedName());
-            label.setAlignment(Alignment.TOP_LEFT);
-            label.setStyleName("field-label");
-            if (AppConfig.getClientType() == ClientType.DESKTOP) {
-                label.setHeight("25px");
-            }
+        int fromField;
+        int toField = 0;
+        int addedColumns = 0;
 
-            grid.add(label);
+        for (int col = 0; col < columnsMode.getColumnsCount(); col++) {
+            fromField = toField;
+            toField += getFieldsCountForColumn(
+                    editFields.size() - toField,
+                    columnsMode.getColumnsCount() - col);
 
-            Datasource<Entity> fieldDs = datasource;
-            // field owner metaclass is embeddable only if field domain embeddable,
-            // so we can check field domain
-            if (metadataTools.isEmbeddable(field.getMetaProperty().getDomain())) {
-                fieldDs = datasources.get(field.getParentFqn());
-            }
+            DeviceInfo deviceInfo = deviceInfoProvider.getDeviceInfo();
 
-            BulkEditorFieldFactory fieldFactory = getFieldFactory();
-            Field<?> editField = fieldFactory.createField(fieldDs, field.getMetaProperty());
-            if (editField != null) {
-                editField.setFrame(getFrame());
-                editField.setWidth(fieldWidth);
+            VBoxLayout column = uiComponents.create(VBoxLayout.NAME);
+            column.setStyleName("c-bulk-editor-column");
+            column.setWidth(Component.AUTO_SIZE);
 
-                boolean required = editField.isRequired();
+            for (int fieldIndex = fromField; fieldIndex < toField; fieldIndex++) {
+                ManagedField field = editFields.get(fieldIndex);
 
-                BoxLayout boxLayout = uiComponents.create(HBoxLayout.class);
-                boxLayout.setSpacing(true);
+                CssLayout row = uiComponents.create(CssLayout.NAME);
+                row.setStyleName("c-bulk-editor-row");
+                row.setWidth("100%");
 
-                boxLayout.add(editField);
+                Label<String> label = uiComponents.create(Label.NAME);
+                label.setValue(field.getLocalizedName());
+                label.setStyleName("c-bulk-editor-label");
+                if (AppConfig.getClientType() == ClientType.DESKTOP) {
+                    label.setHeight("25px");
+                }
+                row.add(label);
 
-                if (!required) {
-                    Button clearButton = uiComponents.create(Button.class);
-                    clearButton.setIconFromSet(CubaIcon.TRASH);
-                    clearButton.setCaption("");
-                    clearButton.setDescription(getMessage("bulk.clearAttribute"));
-
-                    clearButton.addClickListener(e -> {
-                        editField.setEnabled(!editField.isEnabled());
-                        if (!editField.isEnabled()) {
-                            if (editField instanceof ListEditor) {
-                                ((Field) editField).setValue(Collections.EMPTY_LIST);
-                            } else {
-                                editField.setValue(null);
-                            }
-
-                            e.getButton().setIconFromSet(CubaIcon.EDIT);
-                            e.getButton().setDescription(getMessage("bulk.editAttribute"));
-                        } else {
-                            e.getButton().setIconFromSet(CubaIcon.TRASH);
-                            e.getButton().setDescription(getMessage("bulk.clearAttribute"));
-                        }
-                    });
-
-                    boxLayout.add(clearButton);
+                Datasource<Entity> fieldDs = datasource;
+                // field owner metaclass is embeddable only if field domain embeddable,
+                // so we can check field domain
+                if (metadataTools.isEmbeddable(field.getMetaProperty().getDomain())) {
+                    fieldDs = datasources.get(field.getParentFqn());
                 }
 
-                // disable bean validator
+                BulkEditorFieldFactory fieldFactory = getFieldFactory();
+                Field<?> editField = fieldFactory.createField(fieldDs, field.getMetaProperty());
+                if (editField != null) {
+                    editField.setFrame(getFrame());
+                    editField.setStyleName("c-bulk-editor-field");
 
-                //noinspection RedundantCast
-                editField.getValidators().stream()
-                        .filter(v -> v instanceof AbstractBeanValidator)
-                        .findFirst()
-                        .ifPresent(((Field) editField)::removeValidator);
-
-                // disable required
-                editField.setRequired(false);
-
-                if (editField instanceof ListEditor) {
-                    ((Field) editField).setValue(Collections.EMPTY_LIST);
-                } else {
-                    editField.setValue(null);
-                }
-
-                if (fieldValidators != null) {
-                    Consumer validator = fieldValidators.get(field.getFqn());
-                    if (validator != null) {
-                        editField.addValidator(validator);
+                    if (isPickerFieldWrapperNeeded(editField, deviceInfo)) {
+                        CssLayout wrapper = uiComponents.create(CssLayout.NAME);
+                        wrapper.setStyleName("c-bulk-editor-picker-field-wrapper");
+                        wrapper.add(editField);
+                        row.add(wrapper);
+                    } else {
+                        row.add(editField);
                     }
+
+                    boolean required = editField.isRequired();
+                    if (!required) {
+                        Button clearButton = uiComponents.create(Button.class);
+                        clearButton.setIconFromSet(CubaIcon.TRASH);
+                        clearButton.setCaption("");
+                        clearButton.setDescription(getMessage("bulk.clearAttribute"));
+
+                        clearButton.addClickListener(e -> {
+                            editField.setEnabled(!editField.isEnabled());
+                            if (!editField.isEnabled()) {
+                                if (editField instanceof ListEditor) {
+                                    ((Field) editField).setValue(Collections.EMPTY_LIST);
+                                } else {
+                                    editField.setValue(null);
+                                }
+
+                                e.getButton().setIconFromSet(CubaIcon.EDIT);
+                                e.getButton().setDescription(getMessage("bulk.editAttribute"));
+                            } else {
+                                e.getButton().setIconFromSet(CubaIcon.TRASH);
+                                e.getButton().setDescription(getMessage("bulk.clearAttribute"));
+                            }
+                        });
+
+                        row.add(clearButton);
+                    } else {
+                        // hidden component for correctly showing layout
+                        Button spacerButton = uiComponents.create(Button.class);
+                        spacerButton.setIconFromSet(CubaIcon.TRASH);
+                        spacerButton.setStyleName("c-bulk-editor-spacer");
+                        row.add(spacerButton);
+                    }
+
+                    // disable bean validator
+
+                    //noinspection RedundantCast
+                    editField.getValidators().stream()
+                            .filter(v -> v instanceof AbstractBeanValidator)
+                            .findFirst()
+                            .ifPresent(((Field) editField)::removeValidator);
+
+                    // disable required
+                    editField.setRequired(false);
+
+                    if (editField instanceof ListEditor) {
+                        ((Field) editField).setValue(Collections.EMPTY_LIST);
+                    } else {
+                        editField.setValue(null);
+                    }
+
+                    if (fieldValidators != null) {
+                        Consumer validator = fieldValidators.get(field.getFqn());
+                        if (validator != null) {
+                            editField.addValidator(validator);
+                        }
+                    }
+
+                    column.add(row);
+
+                    dataFields.put(field.getFqn(), editField);
+                } else {
+                    column.add(uiComponents.create(Label.class));
                 }
-
-                grid.add(boxLayout);
-
-                dataFields.put(field.getFqn(), editField);
-            } else {
-                grid.add(uiComponents.create(Label.class));
+            }
+            fieldsLayout.add(column);
+            // if there is no fields remain
+            if (editFields.size() - toField == 0) {
+                addedColumns = col + 1;
+                break;
             }
         }
+        fieldsLayout.addStyleName(COLUMN_COUNT_STYLENAME + addedColumns);
+        fieldsScrollBox.add(fieldsLayout);
 
         dataFields.values().stream()
                 .filter(f -> f instanceof Focusable)
@@ -303,6 +338,23 @@ public class BulkEditorWindow extends AbstractWindow {
                 .ifPresent(f ->
                         ((Focusable) f).focus()
                 );
+    }
+
+    protected int getFieldsCountForColumn(int remainFields, int remainColumns) {
+        int fieldsForColumn = remainFields / remainColumns;
+        return remainFields % remainColumns == 0 ? fieldsForColumn : ++fieldsForColumn;
+    }
+
+    protected boolean isPickerFieldWrapperNeeded(Field field, DeviceInfo deviceInfo) {
+        if (deviceInfo == null) {
+            return false;
+        }
+
+        boolean isPickerField = field instanceof PickerField;
+        boolean isAffectedBrowser = deviceInfo.isFirefox() || deviceInfo.isEdge() || deviceInfo.isIE()
+                || deviceInfo.isSafari();
+
+        return isPickerField && isAffectedBrowser;
     }
 
     protected BulkEditorFieldFactory getFieldFactory() {

@@ -22,6 +22,7 @@ import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.app.core.bulk.ColumnsMode;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.screen.compatibility.LegacyFrame;
 import com.haulmont.cuba.security.global.UserSession;
@@ -171,14 +172,10 @@ public class BulkEditorLoader extends AbstractComponentLoader<BulkEditor> {
     }
 
     protected void loadColumns(BulkEditor component, Element element) {
-        String value = element.attributeValue("columns");
+        String value = element.attributeValue("columnsMode");
         if (StringUtils.isNotEmpty(value)) {
-            int columns = Integer.parseInt(value);
-            if (columns <= 0) {
-                throw new GuiDevelopmentException("The number of BulkEditor columns must be greater than zero",
-                        context);
-            }
-            component.setColumns(columns);
+            ColumnsMode columnsMode = ColumnsMode.valueOf(value);
+            component.setColumnsMode(columnsMode);
         }
     }
 

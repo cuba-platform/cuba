@@ -18,6 +18,7 @@
 package com.haulmont.cuba.gui.components;
 
 import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.app.core.bulk.ColumnsMode;
 import com.haulmont.cuba.security.entity.ConstraintOperationType;
 
 import java.util.List;
@@ -65,16 +66,18 @@ public interface BulkEditor extends Component, Component.HasCaption, Component.B
     boolean isLoadDynamicAttributes();
 
     /**
-     * @return the number of editor columns
+     * @return columns mode which defines the number of editor columns
      */
-    int getColumns();
+    ColumnsMode getColumnsMode();
 
     /**
-     * Sets the number of editor columns.
+     * Sets the columns mode which defines the number of editor columns.
      *
-     * @param columns the number of editor columns
+     * @param columnsMode columns mode
+     * @see ColumnsMode#ONE_COLUMN
+     * @see ColumnsMode#TWO_COLUMNS
      */
-    void setColumns(int columns);
+    void setColumnsMode(ColumnsMode columnsMode);
 
     /**
      * Sets the given <code>constraintOperationType</code> to the BulkEditAction.

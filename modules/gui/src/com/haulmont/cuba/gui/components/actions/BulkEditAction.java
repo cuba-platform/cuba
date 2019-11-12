@@ -25,6 +25,7 @@ import com.haulmont.cuba.gui.Notifications;
 import com.haulmont.cuba.gui.Notifications.NotificationType;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.WindowManager.OpenType;
+import com.haulmont.cuba.gui.app.core.bulk.ColumnsMode;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
@@ -63,7 +64,7 @@ public class BulkEditAction extends ItemTrackingAction implements Action.HasBefo
     protected List<Field.Validator> modelValidators;
     protected Boolean loadDynamicAttributes;
     protected Boolean useConfirmDialog;
-    protected int columns;
+    protected ColumnsMode columnsMode;
 
     protected BeforeActionPerformedHandler beforeActionPerformedHandler;
 
@@ -147,12 +148,12 @@ public class BulkEditAction extends ItemTrackingAction implements Action.HasBefo
         return useConfirmDialog;
     }
 
-    public int getColumns() {
-        return columns;
+    public ColumnsMode getColumnsMode() {
+        return columnsMode;
     }
 
-    public void setColumns(int columns) {
-        this.columns = columns;
+    public void setColumnsMode(ColumnsMode columnsMode) {
+        this.columnsMode = columnsMode;
     }
 
     @Override
@@ -205,7 +206,7 @@ public class BulkEditAction extends ItemTrackingAction implements Action.HasBefo
                 .pair("modelValidators", modelValidators)
                 .pair("loadDynamicAttributes", loadDynamicAttributes)
                 .pair("useConfirmDialog", useConfirmDialog)
-                .pair("columns", columns)
+                .pair("columnsMode", columnsMode)
                 .create();
 
         WindowManager wm = ((WindowManager) getScreenContext(target.getFrame()).getScreens());
