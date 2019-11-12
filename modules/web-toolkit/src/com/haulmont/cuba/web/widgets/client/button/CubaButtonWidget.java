@@ -62,6 +62,7 @@ public class CubaButtonWidget extends VButton {
                         return true;
                     } else if (event.getKeyCode() == KeyCodes.KEY_ENTER) {
                         isFocusing = true;
+                        event.preventDefault();
                         event.stopPropagation();
                         return true;
                     }
