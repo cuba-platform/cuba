@@ -88,6 +88,13 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
     public WebRowsCount() {
         component = new CubaRowsCount();
         component.setStyleName(TABLE_ROWS_COUNT_STYLENAME);
+
+        //hide all buttons. They will become visible after data is loaded
+        component.getCountButton().setVisible(false);
+        component.getPrevButton().setVisible(false);
+        component.getNextButton().setVisible(false);
+        component.getFirstButton().setVisible(false);
+        component.getLastButton().setVisible(false);
     }
 
     @Inject
