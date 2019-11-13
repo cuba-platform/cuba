@@ -310,7 +310,7 @@ public class WebFilterHelper implements FilterHelper {
                 } else {
                     return null;
                 }
-            });
+            }, ContentMode.HTML);
         }
     }
 
