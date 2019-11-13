@@ -282,8 +282,8 @@ public class RemoveOperation {
         String title = builder.getConfirmationTitle() != null ?
                 builder.getConfirmationTitle() : messages.getMainMessage("dialogs.Confirmation");
 
-        String message = builder.getConfirmationTitle() != null ?
-                builder.getConfirmationTitle() : messages.getMainMessage("dialogs.Confirmation.Remove");
+        String message = builder.getConfirmationMessage() != null ?
+                builder.getConfirmationMessage() : messages.getMainMessage("dialogs.Confirmation.Remove");
 
         dialogs.createOptionDialog()
                 .withCaption(title)
@@ -352,16 +352,25 @@ public class RemoveOperation {
             return this;
         }
 
+        /**
+         * Sets whether to ask confirmation from the user.
+         */
         public RemoveBuilder<E> withConfirmation(boolean confirmation) {
             this.confirmation = confirmation;
             return this;
         }
 
+        /**
+         * Sets confirmation dialog message.
+         */
         public RemoveBuilder<E> withConfirmationMessage(String confirmationMessage) {
             this.confirmationMessage = confirmationMessage;
             return this;
         }
 
+        /**
+         * Sets confirmation dialog title.
+         */
         public RemoveBuilder<E> withConfirmationTitle(String confirmationTitle) {
             this.confirmationTitle = confirmationTitle;
             return this;
