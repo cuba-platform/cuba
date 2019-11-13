@@ -434,4 +434,9 @@ $cuba-datagrid-highlight-hover-row: false !default;
       }
     }
   }
+
+  .#{$primary-stylename}-sidebar-content .gwt-MenuItemSeparator {
+    border-bottom: valo-border();
+    border-bottom-style: dotted;
+  }
 }

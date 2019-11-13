@@ -65,6 +65,14 @@ public class CubaGridConnector extends GridConnector {
                 getWidget().getEmptyState().setLinkMessage(getState().emptyStateLinkMessage);
             }
         }
+
+        if (event.hasPropertyChanged("selectAllLabel")) {
+            getWidget().setSelectAllLabel(getState().selectAllLabel);
+        }
+
+        if (event.hasPropertyChanged("deselectAllLabel")) {
+            getWidget().setDeselectAllLabel(getState().deselectAllLabel);
+        }
     }
 
     @Override

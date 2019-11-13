@@ -174,4 +174,24 @@ public class CubaTreeGrid<T> extends TreeGrid<T> implements CubaEnhancedGrid<T> 
     public void updateFooterVisibility() {
         getRpcProxy(CubsGridClientRpc.class).updateFooterVisibility();
     }
+
+    @Override
+    public String getSelectAllLabel() {
+        return getState().selectAllLabel;
+    }
+
+    @Override
+    public void setSelectAllLabel(String selectAllLabel) {
+        getState(true).selectAllLabel = selectAllLabel;
+    }
+
+    @Override
+    public String getDeselectAllLabel() {
+        return getState().deselectAllLabel;
+    }
+
+    @Override
+    public void setDeselectAllLabel(String deselectAllLabel) {
+        getState(true).deselectAllLabel = deselectAllLabel;
+    }
 }

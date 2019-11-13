@@ -16,8 +16,12 @@
 
 package com.haulmont.cuba.web.widgets.client.grid;
 
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.shared.GWT;
 import com.google.gwt.dom.client.*;
+import com.google.gwt.safehtml.shared.SafeHtmlUtils;
+import com.google.gwt.user.client.ui.MenuBar;
+import com.google.gwt.user.client.ui.MenuItem;
 import com.google.gwt.user.client.ui.Widget;
 import com.vaadin.client.WidgetUtil;
 import com.vaadin.client.renderers.Renderer;
@@ -41,11 +45,15 @@ public class CubaGridWidget extends Grid<JsonObject> {
     public static final String CUBA_ID_COLUMN_PREFIX = "column_";
     public static final String CUBA_ID_COLUMN_HIDING_TOGGLE_PREFIX = "cc_";
     public static final String SORT_LAST_STYLENAME = "c-sort-last";
+    public static final String COLUMN_HIDING_TOGGLE_STYLENAME = "column-hiding-toggle";
 
     protected Map<Column<?, JsonObject>, String> columnIds = null;
 
     protected CubaGridEmptyState emptyState;
     protected Runnable emptyStateLinkClickHandler;
+
+    protected String selectAllLabel;
+    protected String deselectAllLabel;
 
     public Map<Column<?, JsonObject>, String> getColumnIds() {
         return columnIds;
@@ -67,6 +75,22 @@ public class CubaGridWidget extends Grid<JsonObject> {
         if (columnIds != null) {
             columnIds.remove(column);
         }
+    }
+
+    public String getSelectAllLabel() {
+        return selectAllLabel;
+    }
+
+    public void setSelectAllLabel(String selectAllLabel) {
+        this.selectAllLabel = selectAllLabel;
+    }
+
+    public String getDeselectAllLabel() {
+        return deselectAllLabel;
+    }
+
+    public void setDeselectAllLabel(String deselectAllLabel) {
+        this.deselectAllLabel = deselectAllLabel;
     }
 
     /*
@@ -309,6 +333,9 @@ public class CubaGridWidget extends Grid<JsonObject> {
     }
 
     protected class CubaColumnHider extends ColumnHider {
+
+        protected boolean defaultTogglesInitialized;
+
         @Override
         protected String getCustomHtmlAttributes(Column<?, JsonObject> column) {
             if (columnIds != null) {
@@ -322,6 +349,71 @@ public class CubaGridWidget extends Grid<JsonObject> {
             }
 
             return super.getCustomHtmlAttributes(column);
+        }
+
+        @Override
+        protected int getFirstColumnToggleIndex() {
+            // Column toggles will be displayed after default toggles (selectAll + deselectAll + separator)
+            return 3;
+        }
+
+        @Override
+        protected void updateTogglesOrder() {
+            if (!defaultTogglesInitialized) {
+                defaultTogglesInitialized = true;
+                initDefaultToggles();
+            }
+
+            super.updateTogglesOrder();
+        }
+
+        protected void initDefaultToggles() {
+            MenuBar sidebarMenu = getSidebarMenu();
+
+            sidebarMenu.addItem(createSelectAllToggle());
+            sidebarMenu.addItem(createDeselectAllToggle());
+
+            sidebarMenu.addSeparator();
+        }
+
+        protected MenuItem createSelectAllToggle() {
+            MenuItem selectAllToggle = new MenuItem(getDefaultToggleHTML(getSelectAllLabel()), true, getSelectAllCommand());
+            selectAllToggle.addStyleName(COLUMN_HIDING_TOGGLE_STYLENAME);
+            return selectAllToggle;
+        }
+
+        protected Scheduler.ScheduledCommand getSelectAllCommand() {
+            return () -> {
+                for (Column column : getColumns()) {
+                    if (column.isHidden()) {
+                        column.setHidden(false);
+                    }
+                }
+            };
+        }
+
+        protected MenuItem createDeselectAllToggle() {
+            MenuItem deselectAllToggle = new MenuItem(getDefaultToggleHTML(getDeselectAllLabel()), true, getDeselectAllCommand());
+            deselectAllToggle.addStyleName(COLUMN_HIDING_TOGGLE_STYLENAME);
+            return deselectAllToggle;
+        }
+
+        protected Scheduler.ScheduledCommand getDeselectAllCommand() {
+            return () -> {
+                for (Column column : getColumns()) {
+                    if (!column.isHidden()) {
+                        column.setHidden(true);
+                    }
+                }
+            };
+        }
+
+        protected String getDefaultToggleHTML(String caption) {
+            return "<span class=\"v-off\">" +
+                    "<div>" +
+                    SafeHtmlUtils.htmlEscape(caption) +
+                    "</div>" +
+                    "</span>";
         }
     }
 
