@@ -135,9 +135,13 @@ public class WebSideMenu extends WebAbstractComponent<CubaSideMenu> implements S
         component.setSelectOnClick(selectOnClick);
     }
 
+    @Nullable
     @Override
     public MenuItem getSelectedItem() {
-        return ((MenuItemWrapper) component.getSelectedItem()).getMenuItem();
+        CubaSideMenu.MenuItem selectedItem = component.getSelectedItem();
+        return selectedItem != null
+                ? ((MenuItemWrapper) selectedItem).getMenuItem()
+                : null;
     }
 
     @Override
