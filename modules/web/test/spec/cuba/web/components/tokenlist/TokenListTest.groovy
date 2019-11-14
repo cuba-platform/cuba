@@ -22,7 +22,9 @@ import com.haulmont.cuba.gui.components.data.options.ContainerOptions
 import com.haulmont.cuba.gui.components.data.options.ListEntityOptions
 import com.haulmont.cuba.gui.components.data.options.MapEntityOptions
 import com.haulmont.cuba.gui.screen.OpenMode
+import com.haulmont.cuba.security.app.UserManagementService
 import com.haulmont.cuba.security.entity.Constraint
+import com.haulmont.cuba.web.testsupport.TestServiceProxy
 import spec.cuba.web.UiScreenSpec
 import spec.cuba.web.components.tokenlist.screens.TokenListScreen
 
@@ -31,7 +33,12 @@ class TokenListTest extends UiScreenSpec {
     protected Constraint constraint1
     protected Constraint constraint2
 
+    @SuppressWarnings(['GroovyAssignabilityCheck', 'GroovyAccessibility'])
     void setup() {
+        TestServiceProxy.mock(UserManagementService, Mock(UserManagementService) {
+            getSubstitutedUsers(_) >> Collections.emptyList()
+        })
+
         exportScreensPackages(['spec.cuba.web.components.tokenlist.screens', 'com.haulmont.cuba.web.app.main'])
 
         constraint1 = metadata.create(Constraint.class)
