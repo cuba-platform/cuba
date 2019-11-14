@@ -72,6 +72,7 @@ public class FilterLoader extends AbstractComponentLoader<Filter> {
         loadCollapsible(resultComponent, element, true);
         loadSettingsEnabled(resultComponent, element);
         loadBorderVisible(resultComponent, element);
+        loadWindowCaptionUpdateEnabled(resultComponent, element);
 
         String useMaxResults = element.attributeValue("useMaxResults");
         resultComponent.setUseMaxResults(useMaxResults == null || Boolean.parseBoolean(useMaxResults));
@@ -157,10 +158,17 @@ public class FilterLoader extends AbstractComponentLoader<Filter> {
         });
     }
 
+    protected void loadWindowCaptionUpdateEnabled(Filter resultComponent, Element element) {
+        String windowCaptionUpdateEnabled = element.attributeValue("windowCaptionUpdateEnabled");
+        if (!Strings.isNullOrEmpty(windowCaptionUpdateEnabled)) {
+            resultComponent.setWindowCaptionUpdateEnabled(Boolean.parseBoolean(windowCaptionUpdateEnabled));
+        }
+    }
+
     protected void loadBorderVisible(Filter resultComponent, Element element) {
         String borderVisible = element.attributeValue("borderVisible");
         if (StringUtils.isNotEmpty(borderVisible)) {
-            resultComponent.setBorderVisible(Boolean.valueOf(borderVisible));
+            resultComponent.setBorderVisible(Boolean.parseBoolean(borderVisible));
         }
     }
 }
