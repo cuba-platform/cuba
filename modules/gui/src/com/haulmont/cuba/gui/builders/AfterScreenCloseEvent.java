@@ -18,9 +18,15 @@ package com.haulmont.cuba.gui.builders;
 
 import com.haulmont.cuba.gui.screen.CloseAction;
 import com.haulmont.cuba.gui.screen.Screen;
+import com.haulmont.cuba.gui.screen.StandardOutcome;
 
 import java.util.EventObject;
 
+/**
+ * Event sent to listeners added to the screen using {@code withAfterCloseListener()} method of screen builders.
+ *
+ * @param <S> type of the screen
+ */
 public class AfterScreenCloseEvent<S extends Screen> extends EventObject {
 
     protected final CloseAction closeAction;
@@ -46,5 +52,12 @@ public class AfterScreenCloseEvent<S extends Screen> extends EventObject {
      */
     public CloseAction getCloseAction() {
         return closeAction;
+    }
+
+    /**
+     * Checks that screen was closed with the given {@code outcome}.
+     */
+    public boolean closedWith(StandardOutcome outcome) {
+        return outcome.getCloseAction().equals(closeAction);
     }
 }

@@ -33,6 +33,9 @@ public interface LookupScreen<E extends Entity> {
     String LOOKUP_SELECT_ACTION_ID = "lookupSelectAction";
     String LOOKUP_CANCEL_ACTION_ID = "lookupCancelAction";
 
+    /**
+     * A {@link CloseAction} used when the screen is closed after the user selected an item in the lookup component.
+     */
     CloseAction LOOKUP_SELECT_CLOSE_ACTION = new StandardCloseAction(SELECT_ACTION_ID);
 
     /**

@@ -18,22 +18,40 @@
 package com.haulmont.cuba.gui.screen;
 
 /**
- * Standard close action that supports checkForUnsavedChanges flag.
+ * A close action implementation used in the base screens provided by the framework: {@link Screen},
+ * {@link StandardEditor}, {@link StandardLookup}.
+ * <p>
+ * If its {@link #isCheckForUnsavedChanges()} flag is set to true, the screen checks if it contains unsaved changes and asks the
+ * user whether to commit or discard them.
  */
 public class StandardCloseAction implements CloseAction, ChangeTrackerCloseAction {
 
     private final String actionId;
     private final boolean checkForUnsavedChanges;
 
+    /**
+     * Constructs the close action with the given id and {@link #checkForUnsavedChanges} flag set to true.
+     *
+     * @param actionId an identifier of the close action to distinguish it from other actions of the same type
+     */
     public StandardCloseAction(String actionId) {
         this(actionId, true);
     }
 
+    /**
+     * Constructs the close action with the given id and {@link #isCheckForUnsavedChanges()} flag.
+     *
+     * @param actionId an identifier of the close action to distinguish it from other actions of the same type
+     * @param checkForUnsavedChanges indicates whether the screen using this action should check for unsaved changes
+     */
     public StandardCloseAction(String actionId, boolean checkForUnsavedChanges) {
         this.actionId = actionId;
         this.checkForUnsavedChanges = checkForUnsavedChanges;
     }
 
+    /**
+     * An identifier of the close action to distinguish it from other actions of the same type.
+     */
     public String getActionId() {
         return actionId;
     }

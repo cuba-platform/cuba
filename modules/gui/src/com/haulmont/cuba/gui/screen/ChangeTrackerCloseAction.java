@@ -17,11 +17,11 @@
 package com.haulmont.cuba.gui.screen;
 
 /**
- * Optional interface of {@link CloseAction} for actions related to unsaved changes.
+ * An optional interface of {@link CloseAction}s used in screens that may have unsaved changes on closing.
  */
 public interface ChangeTrackerCloseAction {
     /**
-     * @return true if screen should prevent close if there are unsaved changes
+     * @return true if the screen using this action should prevent close if there are unsaved changes
      */
     boolean isCheckForUnsavedChanges();
 }

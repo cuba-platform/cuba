@@ -26,10 +26,22 @@ import com.haulmont.cuba.gui.components.Window;
  */
 public interface FrameOwner {
 
+    /**
+     * A {@link CloseAction} used when the screen is closed without an explicit commit. However, the screen notifies
+     * the user if there are unsaved changes.
+     */
     CloseAction WINDOW_CLOSE_ACTION = new StandardCloseAction(Window.CLOSE_ACTION_ID);
 
+    /**
+     * A {@link CloseAction} used when the screen is closed after an explicit commit. If the screen still contains
+     * unsaved changes, the user is notified about it.
+     */
     CloseAction WINDOW_COMMIT_AND_CLOSE_ACTION = new StandardCloseAction(Window.COMMIT_ACTION_ID);
 
+    /**
+     * A {@link CloseAction} used when the screen is closed without an explicit commit and it should not notify the user
+     * about unsaved changes.
+     */
     CloseAction WINDOW_DISCARD_AND_CLOSE_ACTION = new StandardCloseAction(Window.CLOSE_ACTION_ID, false);
 
     ScreenOptions NO_OPTIONS = new ScreenOptions() {

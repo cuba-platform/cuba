@@ -355,6 +355,16 @@ public abstract class Screen implements FrameOwner {
     }
 
     /**
+     * Requests closing of the screen with the given {@code outcome}.
+     *
+     * @param outcome {@link StandardOutcome}
+     * @return result of operation
+     */
+    public OperationResult close(StandardOutcome outcome) {
+        return close(outcome.getCloseAction());
+    }
+
+    /**
      * @param action close action
      * @return true if the screen should be registered in UI history
      */
@@ -651,6 +661,13 @@ public abstract class Screen implements FrameOwner {
         public boolean isClosePrevented() {
             return closePrevented;
         }
+
+        /**
+         * Checks that screen was closed with the given {@code outcome}.
+         */
+        public boolean closedWith(StandardOutcome outcome) {
+            return outcome.getCloseAction().equals(closeAction);
+        }
     }
 
     /**
@@ -691,6 +708,13 @@ public abstract class Screen implements FrameOwner {
          */
         public CloseAction getCloseAction() {
             return closeAction;
+        }
+
+        /**
+         * Checks that screen was closed with the given {@code outcome}.
+         */
+        public boolean closedWith(StandardOutcome outcome) {
+            return outcome.getCloseAction().equals(closeAction);
         }
     }
 

@@ -55,22 +55,22 @@ import java.util.function.Function;
 public class InputDialog extends Screen {
 
     /**
-     * Action is sent when user click on "OK" button and fields validation is successful.
+     * A {@link CloseAction} used when the user clicks "OK" button and fields validation is successful.
      */
     public static final CloseAction INPUT_DIALOG_OK_ACTION = new StandardCloseAction("inputDialogOk");
 
     /**
-     * Action is sent when user click on "CANCEL" button.
+     * A {@link CloseAction} used when the user clicks "CANCEL" button.
      */
     public static final CloseAction INPUT_DIALOG_CANCEL_ACTION = new StandardCloseAction("inputDialogCancel");
 
     /**
-     * Action is sent when user click on "YES" button and fields validation is successful.
+     * A {@link CloseAction} used when the user clicks "YES" button and fields validation is successful.
      */
     public static final CloseAction INPUT_DIALOG_YES_ACTION = new StandardCloseAction("inputDialogYes");
 
     /**
-     * Action is sent when user click on "NO" button.
+     * A {@link CloseAction} used when the user clicks "NO" button.
      */
     public static final CloseAction INPUT_DIALOG_NO_ACTION = new StandardCloseAction("inputDialogNo");
 
@@ -539,7 +539,7 @@ public class InputDialog extends Screen {
     }
 
     /**
-     * Describes InputDialog close event.
+     * Event sent to a listener added using {@code withCloseListener()} method of the input dialog builder.
      */
     public static class InputDialogCloseEvent {
         protected CloseAction closeAction;
@@ -558,7 +558,14 @@ public class InputDialog extends Screen {
         }
 
         /**
-         * Returns values from parameters. String - parameter id, Object - parameter value.
+         * Checks that the dialog was closed with the given {@code outcome}.
+         */
+        public boolean closedWith(DialogOutcome outcome) {
+            return outcome.getCloseAction().equals(closeAction);
+        }
+
+        /**
+         * Returns values from parameters. Key - parameter id, Value - parameter value.
          *
          * @return values
          */
