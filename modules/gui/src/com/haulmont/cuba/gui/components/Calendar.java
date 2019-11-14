@@ -278,6 +278,7 @@ public interface Calendar<V> extends Component.BelongToFrame, Component.HasCapti
     class CalendarEventMoveEvent<V> extends EventObject {
         protected CalendarEvent calendarEvent;
         protected V newStart;
+        protected V newEnd;
         protected Entity entity;
 
         @Deprecated
@@ -293,6 +294,16 @@ public interface Calendar<V> extends Component.BelongToFrame, Component.HasCapti
 
             this.calendarEvent = calendarEvent;
             this.newStart = newStart;
+            this.entity = entity;
+        }
+
+        public CalendarEventMoveEvent(Calendar<V> calendar, CalendarEvent calendarEvent, V newStart, V newEnd,
+                                      @Nullable Entity entity) {
+            super(calendar);
+
+            this.calendarEvent = calendarEvent;
+            this.newStart = newStart;
+            this.newEnd = newEnd;
             this.entity = entity;
         }
 
@@ -317,6 +328,10 @@ public interface Calendar<V> extends Component.BelongToFrame, Component.HasCapti
 
         public V getNewStart() {
             return newStart;
+        }
+
+        public V getNewEnd() {
+            return newEnd;
         }
 
         /**

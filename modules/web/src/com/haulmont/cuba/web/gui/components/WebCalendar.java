@@ -461,8 +461,22 @@ public class WebCalendar<V> extends WebAbstractComponent<CubaCalendar>
                 WebCalendar.this,
                 calendarEventWrapper,
                 convertToModel(event.getNewStart()),
+                convertToModel(calculateNewEnd(calendarEvent, event.getNewStart())),
                 entity);
         publish(CalendarEventMoveEvent.class, calendarEventMoveEvent);
+    }
+
+    @Nullable
+    protected Date calculateNewEnd(com.vaadin.v7.ui.components.calendar.event.CalendarEvent calendarEvent, Date newStart) {
+        Date start = calendarEvent.getStart();
+        Date end = calendarEvent.getEnd();
+        if (start != null
+                && end != null
+                && newStart != null) {
+            long duration = calendarEvent.getEnd().getTime() - calendarEvent.getStart().getTime();
+            return new Date(newStart.getTime() + duration);
+        }
+        return null;
     }
 
     @Override
