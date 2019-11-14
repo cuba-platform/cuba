@@ -340,6 +340,9 @@ public class DataContextImpl implements DataContext {
         } else if (dstEntity instanceof AbstractNotPersistentEntity) {
             ((AbstractNotPersistentEntity) dstEntity).setId((UUID) srcEntity.getId());
             BaseEntityInternalAccess.setNew((AbstractNotPersistentEntity) dstEntity, BaseEntityInternalAccess.isNew((AbstractNotPersistentEntity) srcEntity));
+        } else if (dstEntity instanceof EmbeddableEntity) {
+            SecurityState srcSecurityState = BaseEntityInternalAccess.getSecurityState(srcEntity);
+            BaseEntityInternalAccess.setSecurityState(dstEntity, srcSecurityState);
         }
 
         if (dstEntity instanceof Versioned) {
