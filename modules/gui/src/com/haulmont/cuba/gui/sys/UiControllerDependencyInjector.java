@@ -437,6 +437,14 @@ public class UiControllerDependencyInjector implements ControllerDependencyInjec
                     }
                 }
             }
+
+            Facet facet = frame.getFacet(pathPrefix(elements));
+            if (facet instanceof HasSubParts) {
+                Object subPart = ((HasSubParts) facet).getSubPart(id);
+                if (subPart != null) {
+                    return subPart;
+                }
+            }
         }
 
         return null;

@@ -365,4 +365,14 @@
         <Class name="com.haulmont.cuba.gui.components.Window"/>
     </Match>
 
+    <Match>
+        <Bug pattern="RV_RETURN_VALUE_IGNORED_NO_SIDE_EFFECT"/> <!-- false positive -->
+        <Class name="com.haulmont.cuba.web.gui.components.WebEditorScreenFacet"/>
+    </Match>
+
+    <Match>
+        <Bug pattern="RV_RETURN_VALUE_IGNORED_NO_SIDE_EFFECT"/> <!-- false positive -->
+        <Class name="com.haulmont.cuba.web.gui.components.WebLookupScreenFacet"/>
+    </Match>
+
 </FindBugsFilter>

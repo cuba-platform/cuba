@@ -62,6 +62,10 @@ public class SizeWithUnit implements Serializable {
         return unit;
     }
 
+    public String stringValue() {
+        return size + unit.getSymbol();
+    }
+
     /**
      * Returns an object whose numeric value and unit are taken from the string
      * {@code sizeString}. If {@code sizeString} does not specify a unit and {@code defaultUnit} is not null,

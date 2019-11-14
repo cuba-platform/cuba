@@ -257,6 +257,42 @@ public class WebComponentsHelper {
         return new ShortcutTriggeredEvent(source, null);
     }
 
+    /**
+     * Searches for action with the given {@code actionId} inside of {@code frame}.
+     *
+     * @param frame    frame
+     * @param actionId action id
+     *
+     * @return action instance or null if action not found
+     */
+    @Nullable
+    public static Action findAction(Frame frame, String actionId) {
+        Action action = frame.getAction(actionId);
+
+        if (action == null) {
+            String postfixActionId = null;
+            int dotIdx = actionId.indexOf('.');
+            if (dotIdx > 0) {
+                postfixActionId = actionId.substring(dotIdx + 1);
+            }
+
+            for (com.haulmont.cuba.gui.components.Component c : frame.getComponents()) {
+                if (c instanceof ActionsHolder) {
+                    ActionsHolder actionsHolder = (ActionsHolder) c;
+                    action = actionsHolder.getAction(actionId);
+                    if (action == null) {
+                        action = actionsHolder.getAction(postfixActionId);
+                    }
+                    if (action != null) {
+                        break;
+                    }
+                }
+            }
+        }
+
+        return action;
+    }
+
     protected static Component getVaadinSource(com.haulmont.cuba.gui.components.Component source) {
         Component component = source.unwrapComposition(Component.class);
         if (component instanceof AbstractSingleComponentContainer) {

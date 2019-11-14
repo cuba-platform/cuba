@@ -1,0 +1,75 @@
+<!--
+  ~ Copyright (c) 2008-2019 Haulmont.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<window xmlns="http://schemas.haulmont.com/cuba/screen/window.xsd">
+    <actions>
+        <action id="dialogAction"/>
+    </actions>
+    <facets>
+        <inputDialog id="inputDialog"
+                     caption="Test InputDialog"
+                     message="InputDialog Facet test"
+                     onAction="dialogAction"
+                     defaultActions="OK_CANCEL">
+            <parameters>
+                <booleanParameter id="booleanParam"
+                                  caption="Boolean param"
+                                  defaultValue="false"
+                                  required="true"/>
+                <intParameter id="intParam"
+                              caption="Int param"
+                              defaultValue="42"/>
+                <stringParameter id="stringParam"
+                                 caption="String param"
+                                 defaultValue="Hello world!"/>
+                <bigDecimalParameter id="decimalParam"
+                                     caption="BigDecimal param"
+                                     defaultValue="1234567890"/>
+                <enumParameter id="enumParam"
+                               caption="Op Enum param"
+                               enumClass="com.haulmont.cuba.core.global.filter.Op"/>
+                <entityParameter id="entityParam"
+                                 caption="User Entity param"
+                                 entityClass="com.haulmont.cuba.security.entity.User"/>
+            </parameters>
+        </inputDialog>
+
+        <inputDialog id="inputDialogCustomActions"
+                     height="400px"
+                     width="750px"
+                     caption="Test InputDialog"
+                     message="InputDialog Facet custom actions test"
+                     onButton="dialogButton">
+            <actions>
+                <action id="ok"
+                        caption="OK"
+                        description="OK"
+                        icon="CHECK"
+                        primary="true"/>
+                <action id="cancel"
+                        caption="Cancel"
+                        description="Cancel"
+                        icon="BAN"/>
+            </actions>
+            <parameters>
+                <intParameter id="intParam"/>
+            </parameters>
+        </inputDialog>
+    </facets>
+    <layout>
+        <button id="dialogButton"/>
+    </layout>
+</window>

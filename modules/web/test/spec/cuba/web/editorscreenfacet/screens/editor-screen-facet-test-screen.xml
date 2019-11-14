@@ -1,0 +1,68 @@
+<!--
+  ~ Copyright (c) 2008-2019 Haulmont.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<window xmlns="http://schemas.haulmont.com/cuba/screen/window.xsd">
+    <data>
+        <collection id="userDc"
+                    class="com.haulmont.cuba.security.entity.User"
+                    view="user.browse">
+            <loader>
+                <query>
+                    <![CDATA[
+                        select u from sec$User u
+                    ]]>
+                </query>
+            </loader>
+        </collection>
+    </data>
+    <actions>
+        <action id="action"/>
+    </actions>
+    <facets>
+        <editorScreen id="editorScreenFacet"
+                      openMode="DIALOG"
+                      entityClass="com.haulmont.cuba.security.entity.User"
+                      onAction="action"
+                      field="userField"
+                      container="userDc"
+                      listComponent="usersTable"
+                      editMode="EDIT"
+                      addFirst="true"/>
+
+        <editorScreen id="tableScreenFacet"
+                      editMode="CREATE"
+                      listComponent="usersTable"/>
+
+        <editorScreen id="fieldScreenFacet"
+                      field="userField"/>
+
+        <editorScreen id="editorEntityProvider"/>
+    </facets>
+    <layout>
+        <button id="button"/>
+
+        <pickerField id="userField"
+                     metaClass="sec$User"/>
+
+        <table id="usersTable"
+               dataContainer="userDc">
+            <columns>
+                <column id="name"/>
+            </columns>
+            <rows/>
+        </table>
+    </layout>
+</window>

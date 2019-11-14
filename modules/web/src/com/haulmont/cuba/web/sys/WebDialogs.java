@@ -802,6 +802,11 @@ public class WebDialogs implements Dialogs {
         }
 
         @Override
+        public SizeUnit getWidthSizeUnit() {
+            return inputDialog.getDialogWindow().getWidthSizeUnit();
+        }
+
+        @Override
         public InputDialogBuilder withHeight(String height) {
             inputDialog.getDialogWindow().setDialogHeight(height);
             return this;
@@ -809,6 +814,11 @@ public class WebDialogs implements Dialogs {
 
         public float getHeight() {
             return inputDialog.getDialogWindow().getDialogHeight();
+        }
+
+        @Override
+        public SizeUnit getHeightSizeUnit() {
+            return inputDialog.getDialogWindow().getHeightSizeUnit();
         }
 
         @Nullable
