@@ -23,7 +23,7 @@ import java.lang.annotation.*;
  * Annotated methods must be named as {@code addSomeListener} and have ony one parameter with type of the event.
  */
 @Documented
-@Retention(RetentionPolicy.SOURCE)
+@Retention(RetentionPolicy.CLASS)
 @Target(ElementType.METHOD)
 public @interface StudioEvent {
 

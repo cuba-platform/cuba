@@ -22,7 +22,7 @@ import java.lang.annotation.*;
  * Indicates that the annotated method should be shown in Studio Screen Designer as UI component delegate.
  */
 @Documented
-@Retention(RetentionPolicy.SOURCE)
+@Retention(RetentionPolicy.CLASS)
 @Target(ElementType.METHOD)
 public @interface StudioDelegate {
 

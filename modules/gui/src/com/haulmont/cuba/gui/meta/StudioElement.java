@@ -21,7 +21,7 @@ import java.lang.annotation.*;
 /**
  * Specifies name of XML element for parts of UI component, e.g. column, action, field, etc.
  */
-@Retention(RetentionPolicy.SOURCE)
+@Retention(RetentionPolicy.CLASS)
 @Target({ElementType.METHOD, ElementType.TYPE})
 @Inherited
 public @interface StudioElement {

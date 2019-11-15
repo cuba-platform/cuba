@@ -28,7 +28,7 @@ import java.lang.annotation.*;
  * </pre>
  */
 @Documented
-@Retention(RetentionPolicy.SOURCE)
+@Retention(RetentionPolicy.CLASS)
 @Target(ElementType.METHOD)
 public @interface StudioPropertiesItem {
     /**

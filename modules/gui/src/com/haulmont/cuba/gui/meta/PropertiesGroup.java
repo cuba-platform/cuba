@@ -22,7 +22,7 @@ import java.lang.annotation.*;
  * Defines a property group: list of dependent properties that must be used only together or mutually exclusive.
  */
 @Inherited
-@Retention(RetentionPolicy.SOURCE)
+@Retention(RetentionPolicy.CLASS)
 @Target(ElementType.TYPE)
 public @interface PropertiesGroup {
     /**

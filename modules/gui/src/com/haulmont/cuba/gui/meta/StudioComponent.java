@@ -28,7 +28,7 @@ import java.lang.annotation.RetentionPolicy;
  * indirect subclass of {@link Component}.
  */
 @Documented
-@Retention(RetentionPolicy.SOURCE)
+@Retention(RetentionPolicy.CLASS)
 public @interface StudioComponent {
     /**
      * @return caption in Studio Screen Designer Palette
