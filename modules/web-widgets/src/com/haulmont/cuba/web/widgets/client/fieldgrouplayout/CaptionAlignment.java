@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2016 Haulmont.
+ * Copyright (c) 2008-2019 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,22 +12,10 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
 package com.haulmont.cuba.web.widgets.client.fieldgrouplayout;
 
-import com.vaadin.shared.ui.gridlayout.GridLayoutState;
-
-public class CubaFieldGroupLayoutState extends GridLayoutState {
-    {
-        primaryStyleName = "c-fglayout";
-    }
-
-    public boolean useInlineCaption = true;
-    public int[] columnFieldCaptionWidth = null;
-    public int fieldCaptionWidth = -1;
-
-    public CaptionAlignment columnsCaptionAlignment = CaptionAlignment.LEFT;
-    public CaptionAlignment[] columnsCaptionAlignments = null;
+public enum CaptionAlignment {
+    LEFT, RIGHT
 }

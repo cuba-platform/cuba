@@ -351,6 +351,13 @@
         </xs:restriction>
     </xs:simpleType>
 
+    <xs:simpleType name="formChildrenCaptionAlignment">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="LEFT"/>
+            <xs:enumeration value="RIGHT"/>
+        </xs:restriction>
+    </xs:simpleType>
+
     <xs:simpleType name="maskedFieldValueMode">
         <xs:restriction base="xs:string">
             <xs:enumeration value="masked"/>
@@ -2854,6 +2861,7 @@
 
                             <xs:attribute name="id" type="xs:string"/>
                             <xs:attribute name="width" type="xs:string"/>
+                            <xs:attribute name="childrenCaptionAlignment" type="formChildrenCaptionAlignment"/>
                             <xs:attribute name="childrenCaptionWidth" type="xs:string"/>
 
                             <xs:anyAttribute namespace="##other" processContents="lax"/>
@@ -2866,6 +2874,7 @@
 
                 <xs:attribute name="dataContainer" type="xs:string"/>
                 <xs:attribute name="captionPosition" type="formCaptionPosition"/>
+                <xs:attribute name="childrenCaptionAlignment" type="formChildrenCaptionAlignment"/>
                 <xs:attribute name="childrenCaptionWidth" type="xs:string"/>
             </xs:extension>
         </xs:complexContent>

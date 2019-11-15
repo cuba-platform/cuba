@@ -17,6 +17,7 @@
 package com.haulmont.cuba.web.widgets;
 
 import com.haulmont.cuba.web.widgets.client.fieldgrouplayout.CubaFieldGroupLayoutState;
+import com.haulmont.cuba.web.widgets.client.fieldgrouplayout.CaptionAlignment;
 import com.vaadin.ui.GridLayout;
 
 import java.util.HashMap;
@@ -27,6 +28,7 @@ public class CubaFieldGroupLayout extends GridLayout {
     protected static final String INLINE_CAPTION_STYLENAME = "inline-caption";
 
     protected Map<Integer, Integer> columnFieldCaptionWidth = null;
+    protected Map<Integer, CaptionAlignment> columnCaptionAlignments = null;
 
     public CubaFieldGroupLayout() {
         setHideEmptyRowsAndColumns(true);
@@ -58,17 +60,34 @@ public class CubaFieldGroupLayout extends GridLayout {
     public void beforeClientResponse(boolean initial) {
         super.beforeClientResponse(initial);
 
-        if (initial && columnFieldCaptionWidth != null) {
-            int[] newColumnFieldCaptionWidth = new int[getColumns()];
-            for (Map.Entry<Integer, Integer> entry : columnFieldCaptionWidth.entrySet()) {
-                int index = entry.getKey();
-                int width = entry.getValue();
+        if (initial) {
+            if (columnFieldCaptionWidth != null) {
+                int[] newColumnFieldCaptionWidth = new int[getColumns()];
+                for (Map.Entry<Integer, Integer> entry : columnFieldCaptionWidth.entrySet()) {
+                    int index = entry.getKey();
+                    int width = entry.getValue();
 
-                if (index >= 0 && index < getColumns() && width > 0) {
-                    newColumnFieldCaptionWidth[index] = width;
+                    if (index >= 0 && index < getColumns() && width > 0) {
+                        newColumnFieldCaptionWidth[index] = width;
+                    }
                 }
+                getState().columnFieldCaptionWidth = newColumnFieldCaptionWidth;
             }
-            getState().columnFieldCaptionWidth = newColumnFieldCaptionWidth;
+
+            if (columnCaptionAlignments != null) {
+                CaptionAlignment[] newColumnCaptionAlignments = new CaptionAlignment[getColumns()];
+                for (Map.Entry<Integer, CaptionAlignment> entry : columnCaptionAlignments.entrySet()) {
+                    int index = entry.getKey();
+                    CaptionAlignment alignment = entry.getValue();
+
+                    if (index >= 0
+                            && index <= getColumns()
+                            && alignment != null) {
+                        newColumnCaptionAlignments[index] = alignment;
+                    }
+                }
+                getState().columnsCaptionAlignments = newColumnCaptionAlignments;
+            }
         }
     }
 
@@ -106,5 +125,32 @@ public class CubaFieldGroupLayout extends GridLayout {
         } else {
             removeStyleName(INLINE_CAPTION_STYLENAME);
         }
+    }
+
+    public CaptionAlignment getColumnCaptionAlignment() {
+        return getState(false).columnsCaptionAlignment;
+    }
+
+    public void setColumnCaptionAlignment(CaptionAlignment alignment) {
+        if (getState(false).columnsCaptionAlignment != alignment) {
+            getState().columnsCaptionAlignment = alignment;
+        }
+    }
+
+    public CaptionAlignment getColumnCaptionAlignment(int column) {
+        if (columnCaptionAlignments == null) {
+            return getColumnCaptionAlignment();
+        }
+
+        CaptionAlignment alignment = columnCaptionAlignments.get(column);
+        return alignment != null ? alignment : getColumnCaptionAlignment();
+    }
+
+    public void setColumnCaptionAlignment(int column, CaptionAlignment alignment) {
+        if (columnCaptionAlignments == null) {
+            columnCaptionAlignments = new HashMap<>();
+        }
+
+        columnCaptionAlignments.put(column, alignment);
     }
 }

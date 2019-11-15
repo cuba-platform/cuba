@@ -48,7 +48,7 @@ public interface Form extends Component, Component.BelongToFrame, Component.HasC
     }
 
     /**
-     * Adds a component to a columns with a given index.
+     * Adds a component to the column with the given index.
      *
      * @param childComponent a component to add
      * @param column         a columns index
@@ -56,13 +56,34 @@ public interface Form extends Component, Component.BelongToFrame, Component.HasC
     void add(Component childComponent, int column);
 
     /**
-     * Adds a component to a columns with a given index to a given position.
+     * Adds a component to a column with the given index with the given span.
+     *
+     * @param childComponent a component to add
+     * @param column         a columns index
+     * @param colSpan        a number of columns a component should span
+     * @param rowSpan        a number of rows a component should span
+     */
+    void add(Component childComponent, int column, int colSpan, int rowSpan);
+
+    /**
+     * Adds a component to a column with the given index to the given position.
      *
      * @param childComponent a component to add
      * @param column         a columns index
      * @param row            a row index
      */
     void add(Component childComponent, int column, int row);
+
+    /**
+     * Adds a component to a column with the given index to the given position with the given span.
+     *
+     * @param childComponent a component to add
+     * @param column         a columns index
+     * @param row            a row index
+     * @param colSpan        a number of columns a component should span
+     * @param rowSpan        a number of rows a component should span
+     */
+    void add(Component childComponent, int column, int row, int colSpan, int rowSpan);
 
     /**
      * @param column a column index
@@ -78,14 +99,14 @@ public interface Form extends Component, Component.BelongToFrame, Component.HasC
     Component getComponent(int column, int row);
 
     /**
-     * @return alignment of component captions
+     * @return position of component captions
      */
     CaptionPosition getCaptionPosition();
 
     /**
-     * Sets alignment of component captions.
+     * Sets position of component captions.
      *
-     * @param captionAlignment component captions alignment
+     * @param captionAlignment component captions position
      */
     void setCaptionPosition(CaptionPosition captionAlignment);
 
@@ -118,6 +139,36 @@ public interface Form extends Component, Component.BelongToFrame, Component.HasC
     void setChildrenCaptionWidth(int column, int width);
 
     /**
+     * @return alignment of child component captions
+     */
+    CaptionAlignment getChildrenCaptionAlignment();
+
+    /**
+     * Sets alignment of child component captions in all columns.
+     * <p>
+     * Applicable only when captions position is {@link CaptionPosition#LEFT}.
+     *
+     * @param alignment captions alignment
+     */
+    void setChildrenCaptionAlignment(CaptionAlignment alignment);
+
+    /**
+     * Returns alignment of child component captions for a column with the given index.
+     *
+     * @param column a column index to get caption
+     * @return alignment of child component captions for a column with the given index
+     */
+    CaptionAlignment getChildrenCaptionAlignment(int column);
+
+    /**
+     * Sets alignment of child component captions for a column with the given index.
+     *
+     * @param column    a column index to set caption
+     * @param alignment alignment of child component captions for a column with the given index
+     */
+    void setChildrenCaptionAlignment(int column, CaptionAlignment alignment);
+
+    /**
      * @return number of columns in the Form
      */
     int getColumns();
@@ -131,7 +182,7 @@ public interface Form extends Component, Component.BelongToFrame, Component.HasC
     void setColumns(int columns);
 
     /**
-     * Caption alignment.
+     * Caption position of form child components.
      */
     enum CaptionPosition {
         /**
@@ -143,5 +194,20 @@ public interface Form extends Component, Component.BelongToFrame, Component.HasC
          * Component captions will be placed above the components.
          */
         TOP
+    }
+
+    /**
+     * Caption alignment of form child components.
+     */
+    enum CaptionAlignment {
+        /**
+         * Component captions will be aligned to the left.
+         */
+        LEFT,
+
+        /**
+         * Component captions will be aligned to the right.
+         */
+        RIGHT
     }
 }

@@ -37,6 +37,7 @@ import javax.annotation.Nullable;
 public class CubaFieldGroupLayoutConnector extends CubaGridLayoutConnector {
 
     protected static final String CAPTIONTEXT_STYLENAME = "v-captiontext";
+    protected static final String ALIGN_RIGHT_STYLENAME = "v-align-right";
 
     protected boolean initialStateChangePerformed = false;
 
@@ -65,6 +66,7 @@ public class CubaFieldGroupLayoutConnector extends CubaGridLayoutConnector {
 
         if (getState().useInlineCaption && initialStateChangePerformed) {
             updateCaptionSizes();
+            updateCaptionAlignments();
 
             // always relayout after caption changes
             getLayoutManager().setNeedsLayout(this);
@@ -77,6 +79,7 @@ public class CubaFieldGroupLayoutConnector extends CubaGridLayoutConnector {
 
         if (getState().useInlineCaption) {
             updateCaptionSizes();
+            updateCaptionAlignments();
         }
 
         if (stateChangeEvent.isInitialStateChange()) {
@@ -96,6 +99,40 @@ public class CubaFieldGroupLayoutConnector extends CubaGridLayoutConnector {
 
             // always relayout after caption changes
             getLayoutManager().setNeedsLayout(this);
+        }
+    }
+
+    protected void updateCaptionAlignments() {
+        int index = 0;
+        for (VGridLayout.Cell[] column : getWidget().getCellMatrix()) {
+            if (column != null) {
+                updateCaptionAlignments(index, column);
+            }
+            index++;
+        }
+    }
+
+    protected void updateCaptionAlignments(int index, VGridLayout.Cell[] column) {
+        CaptionAlignment alignment = getState().columnsCaptionAlignment;
+        CaptionAlignment[] captionAlignments = getState().columnsCaptionAlignments;
+        if (captionAlignments != null
+                && index < captionAlignments.length
+                && captionAlignments[index] != null) {
+            alignment = captionAlignments[index];
+        }
+
+        for (VGridLayout.Cell cell : column) {
+            if (cell != null) {
+                VCaption caption = cell.slot.getCaption();
+
+                if (caption != null) {
+                    if (alignment == CaptionAlignment.RIGHT) {
+                        caption.addStyleName(ALIGN_RIGHT_STYLENAME);
+                    } else {
+                        caption.removeStyleName(ALIGN_RIGHT_STYLENAME);
+                    }
+                }
+            }
         }
     }
 
