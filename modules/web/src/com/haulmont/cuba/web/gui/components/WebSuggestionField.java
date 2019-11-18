@@ -297,7 +297,9 @@ public class WebSuggestionField extends WebAbstractField<CubaSuggestionField> im
 
     @Override
     public void showSuggestions(List<?> suggestions) {
-        showSuggestions(suggestions, false);
+        if(!suggestions.isEmpty()) {
+            showSuggestions(suggestions, false);
+        }
     }
 
     protected void showSuggestions(List<?> suggestions, boolean userOriginated) {
