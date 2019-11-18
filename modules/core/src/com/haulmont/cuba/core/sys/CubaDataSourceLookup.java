@@ -16,6 +16,7 @@
 
 package com.haulmont.cuba.core.sys;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.haulmont.cuba.core.global.Stores;
 import com.haulmont.cuba.core.sys.jdbc.ProxyDataSource;
@@ -51,7 +52,7 @@ public class CubaDataSourceLookup {
     protected static final String ORACLE_DBMS = "oracle";
     protected static final String MYSQL_DBMS = "mysql";
     protected static final String HSQL_DBMS = "hsql";
-    protected static final String HOST = "hostname";
+    protected static final String HOST = "host";
     protected static final String PORT = "port";
     protected static final String DB_NAME = "dbName";
     protected static final String CONNECTION_PARAMS = "connectionParams";
@@ -153,14 +154,14 @@ public class CubaDataSourceLookup {
         String port = AppContext.getProperty(dataSourcePrefix + PORT);
         String dbName = AppContext.getProperty(dataSourcePrefix + DB_NAME);
         String connectionParams = AppContext.getProperty(dataSourcePrefix + CONNECTION_PARAMS);
-        if (host == null || port == null || dbName == null) {
+        if (host == null || dbName == null) {
             throw new RuntimeException(String.format("jdbcUrl parameter is not specified! Can't form jdbcUrl from parts: " +
                     "provided hostname: %s, port: %s, dbName: %s.", host, port, dbName));
         }
 
-        String jdbcUrl = urlPrefix + host + ":" + port + "/" + dbName;
+        String jdbcUrl = urlPrefix + host + getPortString(port) + "/" + dbName;
         if (MSSQL_DBMS.equals(DbmsType.getType(storeName)) && !MS_SQL_2005.equals(DbmsType.getVersion(storeName))) {
-            jdbcUrl = urlPrefix + host + ":" + port + ";databaseName=" + dbName;
+            jdbcUrl = urlPrefix + host + getPortString(port) + ";databaseName=" + dbName;
         }
 
         if (StringUtils.isBlank(connectionParams) && MYSQL_DBMS.equals(DbmsType.getType(storeName))) {
@@ -171,6 +172,10 @@ public class CubaDataSourceLookup {
         }
 
         return jdbcUrl;
+    }
+
+    protected String getPortString(String port) {
+        return Strings.isNullOrEmpty(port) ? "" : ":" + port;
     }
 
     protected boolean isHikariConfigField(String propertyName) {
