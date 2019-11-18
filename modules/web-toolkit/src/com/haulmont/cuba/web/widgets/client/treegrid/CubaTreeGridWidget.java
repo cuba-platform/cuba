@@ -286,7 +286,7 @@ public class CubaTreeGridWidget extends TreeGrid {
         protected Scheduler.ScheduledCommand getDeselectAllCommand() {
             return () -> {
                 for (Column column : getColumns()) {
-                    if (!column.isHidden()) {
+                    if (column.isHidable() && !column.isHidden()) {
                         column.setHidden(true);
                     }
                 }
