@@ -16,6 +16,7 @@
 
 package com.haulmont.cuba.core.sys.environmentcheck;
 
+import com.haulmont.bali.util.StringHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,8 +70,7 @@ public class EnvironmentChecksRunner {
         }
         if (!results.isEmpty()) {
             StringBuilder resultMessage = new StringBuilder();
-            resultMessage.append("\n=================================================================");
-            resultMessage.append("\nSome of environment checks failed on ");
+            resultMessage.append("Some environment checks failed on ");
             resultMessage.append(moduleName);
             resultMessage.append(" module:");
             for (CheckFailedResult result : results) {
@@ -81,8 +81,7 @@ public class EnvironmentChecksRunner {
                     resultMessage.append(result.getException());
                 }
             }
-            resultMessage.append("\n=================================================================");
-            log.warn(resultMessage.toString());
+            log.warn(StringHelper.wrapLogMessage(resultMessage.toString()));
         } else {
             log.info(String.format("Environment checks on %s module completed successfully", moduleName));
         }

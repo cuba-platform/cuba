@@ -17,8 +17,7 @@
 package com.haulmont.cuba.core.sys.dbupdate;
 
 import com.google.common.base.Joiner;
-import com.google.common.base.Splitter;
-import com.google.common.base.Strings;
+import com.haulmont.bali.util.StringHelper;
 import com.haulmont.cuba.core.app.ClusterManagerAPI;
 import com.haulmont.cuba.core.app.ServerConfig;
 import com.haulmont.cuba.core.global.AppBeans;
@@ -76,7 +75,7 @@ public class DbUpdateManager {
         try {
             dbUpdater.updateDatabase();
         } catch (DbInitializationException e) {
-            throw new RuntimeException(wrapText(
+            throw new RuntimeException(StringHelper.wrapLogMessage(
                     "ERROR: Cannot check and update data store [" + storeNameToString(storeName) + "]. See the stacktrace below for details."), e);
         }
     }
@@ -86,25 +85,33 @@ public class DbUpdateManager {
         try {
             boolean initialized = dbUpdater.dbInitialized();
             if (!initialized) {
-                throw new IllegalStateException(wrapText(
-                        "ERROR: Data store [" + storeNameToString(storeName) + "] is not initialized. " +
-                                "Set 'cuba.automaticDatabaseUpdate' or '" + getAutomaticUpdatePropertyName(storeName) + "'\n" +
-                                "application property to 'true' to initialize and update data store on startup."));
+                throw new IllegalStateException(StringHelper.wrapLogMessage(
+                        "ERROR: Data store " + (Stores.isMain(storeName) ? "" : "[" + storeNameToString(storeName) + "]") +
+                        "is not initialized. " + getLogString(storeName)));
             }
             List<String> scripts = dbUpdater.findUpdateDatabaseScripts();
             if (!scripts.isEmpty()) {
-                log.warn(wrapText(
-                        "WARNING: The application contains unapplied update scripts for data store [" + storeNameToString(storeName) + "]:\n\n" +
+                log.warn(StringHelper.wrapLogMessage(
+                        "WARNING: The application contains unapplied update scripts for data store" +
+                                (Stores.isMain(storeName) ? "" : " [" + storeNameToString(storeName) + "]" + ":\n\n" +
                                 Joiner.on('\n').join(scripts) + "\n\n" +
-                                "Set 'cuba.automaticDatabaseUpdate' or '" + getAutomaticUpdatePropertyName(storeName) + "'\n" +
-                                "application property to 'true' to initialize and update data store on startup."));
+                                getLogString(storeName))));
             }
         } catch (DbInitializationException e) {
-            throw new RuntimeException(wrapText(
+            throw new RuntimeException(StringHelper.wrapLogMessage(
                     "ERROR: Cannot check data store [" + storeNameToString(storeName) + "]. See the stacktrace below for details."), e);
         }
     }
 
+    protected String getLogString(String storeName) {
+        if (Stores.isMain(storeName)) {
+            return "Set 'cuba.automaticDatabaseUpdate' application property to 'true'\n" +
+                    "to initialize and update data store on startup.";
+        } else {
+            return "Set 'cuba.automaticDatabaseUpdate' or '" + getAutomaticUpdatePropertyName(storeName) + "'\n" +
+                    "application property to 'true' to initialize and update all or an individual data store on startup.";
+        }
+    }
 
     protected boolean supportsAutomaticDatabaseUpdate(String storeName) {
         return serverConfig.getAutomaticDatabaseUpdate() ||
@@ -114,14 +121,5 @@ public class DbUpdateManager {
     protected String getAutomaticUpdatePropertyName(String storeName) {
         return String.format("cuba.automaticDatabaseUpdate_%s",
                 Stores.isMain(storeName) ? "MAIN" : storeName);
-    }
-
-    protected String wrapText(String message) {
-        int length = Splitter.on("\n").splitToList(message).stream()
-                .mapToInt(String::length)
-                .max().orElse(0);
-        return "\n" + Strings.repeat("=", length) + '\n'
-                + message + '\n'
-                + Strings.repeat("=", length);
     }
 }

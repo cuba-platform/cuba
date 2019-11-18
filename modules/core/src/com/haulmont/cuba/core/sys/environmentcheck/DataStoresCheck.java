@@ -50,7 +50,7 @@ public class DataStoresCheck implements EnvironmentCheck {
                 result.addAll(checkFailedResults);
             }
         } catch (DataSourceLookupFailureException e) {
-            result.add(new CheckFailedResult("Can not find datasource for Data Store: Main", e));
+            result.add(new CheckFailedResult("Cannot find datasource for main data store", e));
         } finally {
             cubaDataSourceLookup.closeApplicationDataSource(Stores.MAIN, dataSource);
         }
@@ -68,7 +68,7 @@ public class DataStoresCheck implements EnvironmentCheck {
                     String beanName = AppContext.getProperty("cuba.storeImpl_" + storeName);
                     if (beanName == null) {
                         result.add(new CheckFailedResult(
-                                String.format("Can not find datasource for Data Store: %s", storeName),
+                                String.format("Cannot find datasource for '%s' data store", storeName),
                                 null));
                     }
                 } finally {
@@ -102,12 +102,12 @@ public class DataStoresCheck implements EnvironmentCheck {
                     }
                 }
                 if (!found) {
-                    result.add(new CheckFailedResult("Main Data Store checked but SEC_USER table is not found - Data Store does not look like CUBA database", null));
+                    result.add(new CheckFailedResult("SEC_USER table not found in main data store - it doesn't look like a CUBA database", null));
                 }
             }
         } catch (Throwable e) {
             result.add(new CheckFailedResult(
-                    String.format("Exception occurred while connecting to Data Store: %s", storeName), e));
+                    String.format("Exception occurred while connecting to data store %s", storeName), e));
         }
         return result;
     }

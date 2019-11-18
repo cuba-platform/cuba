@@ -19,6 +19,7 @@ package com.haulmont.cuba.core.sys;
 
 import ch.qos.logback.classic.LoggerContext;
 import com.google.common.base.Splitter;
+import com.haulmont.bali.util.StringHelper;
 import com.haulmont.cuba.core.global.Events;
 import com.haulmont.cuba.core.sys.cleanup.CleanupTools;
 import com.haulmont.cuba.core.sys.cleanup.StopThreadsCleanUp;
@@ -124,9 +125,7 @@ public abstract class AbstractWebAppContextLoader extends AbstractAppContextLoad
                     "Consider providing it in '-D' Java command line parameter, \n" +
                     "for example '-Dapp.home=/path_to_app_home'",
                     APP_HOME_PROP, appHome);
-            log.warn("\n=================================================================\n" +
-                    message +
-                    "\n=================================================================");
+            log.warn(StringHelper.wrapLogMessage(message));
         }
     }
 

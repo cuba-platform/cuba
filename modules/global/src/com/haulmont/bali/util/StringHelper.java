@@ -16,6 +16,9 @@
  */
 package com.haulmont.bali.util;
 
+import com.google.common.base.Splitter;
+import com.google.common.base.Strings;
+
 public final class StringHelper {
 
     private StringHelper() {
@@ -52,5 +55,25 @@ public final class StringHelper {
             sb.deleteCharAt(sb.length() - 1);
 
         return sb.toString();
+    }
+
+    /**
+     * Wraps the given string into two lines containing "=" symbols. The length of the lines is calculated to be equal
+     * to maximum length of the enclosed lines.
+     * <p>For example:
+     * <pre>
+     *     ===============
+     *     Some line
+     *     Some other line
+     *     ===============
+     * </pre>
+     */
+    public static String wrapLogMessage(String message) {
+        int length = Splitter.on("\n").splitToList(message).stream()
+                .mapToInt(String::length)
+                .max().orElse(0);
+        return "\n" + Strings.repeat("=", length) + '\n'
+                + message + '\n'
+                + Strings.repeat("=", length);
     }
 }
