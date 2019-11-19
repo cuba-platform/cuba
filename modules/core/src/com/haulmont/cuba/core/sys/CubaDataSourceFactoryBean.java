@@ -44,6 +44,14 @@ public class CubaDataSourceFactoryBean extends CubaJndiObjectFactoryBean {
     }
 
     @Override
+    public void afterPropertiesSet() throws IllegalArgumentException, NamingException {
+        if (cubaDataSourceLookup.isApplicationDataSource(storeName)) {
+            return;
+        }
+        super.afterPropertiesSet();
+    }
+
+    @Override
     public Object getObject() {
         return cubaDataSourceLookup.getDataSource(storeName == null ? Stores.MAIN : storeName);
     }

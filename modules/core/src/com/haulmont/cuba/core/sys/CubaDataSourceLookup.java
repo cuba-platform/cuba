@@ -227,4 +227,8 @@ public class CubaDataSourceLookup {
         }
         return AppContext.getProperty(DATASOURCE_JNDI_NAME_PROPERTY_NAME + "_" + storeName);
     }
+
+    public boolean isApplicationDataSource(String storeName) {
+        return "application".equals(getDataSourceProvider(storeName));
+    }
 }
