@@ -34,7 +34,7 @@ import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.gui.components.WebFrameActionsHolder;
 import com.haulmont.cuba.web.gui.components.WebWrapperUtils;
-import com.haulmont.cuba.web.widgets.CubaVerticalActionsLayout;
+import com.haulmont.cuba.web.widgets.CubaWindowVerticalLayout;
 import com.haulmont.cuba.web.widgets.HtmlAttributesExtension;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.AbstractComponent;
@@ -151,7 +151,7 @@ public abstract class WebWindow implements Window, Component.Wrapper, Component.
     }
 
     protected AbstractOrderedLayout createLayout() {
-        CubaVerticalActionsLayout layout = new CubaVerticalActionsLayout();
+        CubaWindowVerticalLayout layout = new CubaWindowVerticalLayout();
         layout.setStyleName(C_WINDOW_LAYOUT);
         layout.setSizeFull();
 
