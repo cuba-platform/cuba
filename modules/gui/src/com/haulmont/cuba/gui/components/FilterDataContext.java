@@ -125,6 +125,22 @@ public class FilterDataContext {
         }
     }
 
+    public void loadForParam(Param param) {
+        if (collectionLoaderRegistrations != null) {
+            collectionLoaderRegistrations.stream()
+                    .filter(registration -> param.equals(registration.getParam()))
+                    .findAny()
+                    .ifPresent(registration -> {
+                        DataLoader loader = registration.getLoader();
+                        Map<String, Object> parameterValues = getQueryParameterValues(loader, registration.getParameters());
+                        for (Map.Entry<String, Object> entry : parameterValues.entrySet()) {
+                            loader.setParameter(entry.getKey(), entry.getValue());
+                        }
+                        loader.load();
+                    });
+        }
+    }
+
     public void unregisterParam(Param param) {
         if (collectionLoaderRegistrations != null) {
             collectionLoaderRegistrations.removeIf(r -> Objects.equals(r.getParam(), param));
