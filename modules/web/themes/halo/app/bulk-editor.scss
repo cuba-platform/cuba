@@ -76,6 +76,8 @@ $c-bulk-editor-field-width: 100% !default;
         /* wrapper is added for FireFox, Safari, Edge and IE11 */
         .#{$primary-stylename}-picker-field-wrapper {
           margin-right: $c-bulk-editor-horizontal-spacing;
+          max-width: $c-bulk-editor-field-max-width;
+          min-width: $c-bulk-editor-field-min-width;
           width: $c-bulk-editor-field-width;
           display: flex;
 
