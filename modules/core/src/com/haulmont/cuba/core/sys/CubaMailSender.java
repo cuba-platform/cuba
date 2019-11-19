@@ -109,6 +109,7 @@ public class CubaMailSender extends JavaMailSenderImpl {
         properties.setProperty("mail.smtp.connectiontimeout", String.valueOf(connectionTimeoutMillis));
         properties.setProperty("mail.smtp.timeout", String.valueOf(timeoutMillis));
         properties.setProperty("mail.smtp.ssl.enable", String.valueOf(config.getSmtpSslEnabled()));
+        properties.setProperty("mail.mime.allowutf8", String.valueOf(config.getUtf8Enabled()));
 
         Set excludedProperties = new HashSet<>(properties.keySet());
         for (String name : AppContext.getPropertyNames()) {
