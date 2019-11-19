@@ -273,4 +273,18 @@ public class WebOptionsGroup<V, I> extends WebAbstractField<CubaOptionGroup, V> 
     public void setTabIndex(int tabIndex) {
         component.setTabIndex(tabIndex);
     }
+
+    @Override
+    public boolean isEmpty() {
+        return super.isEmpty()
+                || (getValue() instanceof Collection
+                && ((Collection) getValue()).isEmpty());
+    }
+
+    @Override
+    protected boolean isEmpty(Object value) {
+        return super.isEmpty(value)
+                || (value instanceof Collection
+                && ((Collection) value).isEmpty());
+    }
 }
