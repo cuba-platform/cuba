@@ -242,4 +242,10 @@ public class WebCheckBoxGroup<V> extends WebV8AbstractField<CubaCheckBoxGroup<V>
 
         return iconResolver.getIconResource(resourceId);
     }
+
+    @Override
+    public boolean isEmpty() {
+        return super.isEmpty()
+                || CollectionUtils.isEmpty(getValue());
+    }
 }
