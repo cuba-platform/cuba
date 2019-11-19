@@ -22,6 +22,7 @@ import com.haulmont.chile.core.annotations.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.client.sys.PersistenceManagerClient;
+import com.haulmont.cuba.core.app.keyvalue.KeyValueMetaClass;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.global.filter.ConditionType;
@@ -47,6 +48,8 @@ public class PropertyCondition extends AbstractCondition {
     private static Pattern PATTERN_NOT_IN = Pattern.compile("\\s*[(]\\s*[(]\\s*(\\S+)\\s+((:not\\s+)*\\S+)\\s+(\\S+)[\\S\\s]*");
     private static Pattern PATTERN_NULL = Pattern.compile("\\s*(\\S+)\\s+(is\\s+(?:not\\s+)?null)\\s*");
 
+    protected String propertiesPath;
+
     public PropertyCondition(PropertyCondition condition) {
         super(condition);
         this.operator = condition.operator;
@@ -56,6 +59,7 @@ public class PropertyCondition extends AbstractCondition {
         super(element, messagesPack, filterComponentName, metaClass);
 
         String text = element.getText();
+        this.propertiesPath = element.attributeValue("propertiesPath");
         if (operator != Op.DATE_INTERVAL) {
             Matcher matcher = PATTERN_NULL.matcher(text);
             if (!matcher.matches()) {
@@ -73,7 +77,11 @@ public class PropertyCondition extends AbstractCondition {
             }
 
             String prop = matcher.group(1);
-            entityAlias = prop.substring(0, prop.indexOf('.'));
+
+            //if it hasn't been read in a superclass constructor from the XML attribute
+            if (Strings.isNullOrEmpty(entityAlias)) {
+                entityAlias = prop.substring(0, prop.indexOf('.'));
+            }
         } else {
             entityAlias = "{E}";
             param.setDateInterval(true);
@@ -81,8 +89,13 @@ public class PropertyCondition extends AbstractCondition {
     }
 
     public PropertyCondition(AbstractConditionDescriptor descriptor, String entityAlias) {
+        this(descriptor, entityAlias, null);
+    }
+
+    public PropertyCondition(AbstractConditionDescriptor descriptor, String entityAlias, String propertiesPath) {
         super(descriptor);
         this.entityAlias = entityAlias;
+        this.propertiesPath = propertiesPath;
     }
 
     @Override
@@ -90,7 +103,7 @@ public class PropertyCondition extends AbstractCondition {
         Metadata metadata = AppBeans.get(Metadata.class);
         MetadataTools metadataTools = metadata.getTools();
 
-        String nameToUse = name;
+        String nameToUse = !Strings.isNullOrEmpty(propertiesPath) ? propertiesPath : name;
         boolean useCrossDataStoreRefId = false;
         boolean stringType = false;
         String thisStore = metadataTools.getStoreName(metaClass);
@@ -119,7 +132,12 @@ public class PropertyCondition extends AbstractCondition {
         if (operator == Op.NOT_IN) {
             sb.append("((");
         }
-        sb.append(entityAlias).append(".").append(nameToUse);
+
+        String entityAliasWithPropertiesPath = (metaClass instanceof KeyValueMetaClass && Strings.isNullOrEmpty(propertiesPath)) ?
+            entityAlias :
+            entityAlias + "." + nameToUse;
+
+        sb.append(entityAliasWithPropertiesPath);
 
         if (Param.Type.ENTITY == param.getType() && !useCrossDataStoreRefId) {
             com.haulmont.chile.core.model.MetaClass metaClass = metadata.getClassNN(param.getJavaClass());
@@ -150,7 +168,7 @@ public class PropertyCondition extends AbstractCondition {
             }
 
             if (operator == Op.NOT_IN) {
-                sb.append(") or (").append(entityAlias).append(".").append(nameToUse).append(" is null)) ");
+                sb.append(") or (").append(entityAliasWithPropertiesPath).append(" is null)) ");
             }
         }
 
@@ -176,6 +194,11 @@ public class PropertyCondition extends AbstractCondition {
         super.toXml(element, valueProperty);
         element.addAttribute("type", ConditionType.PROPERTY.name());
         element.addAttribute("operatorType", getOperatorType());
+
+        if (metaClass instanceof KeyValueMetaClass){
+            element.addAttribute("entityAlias", entityAlias);
+            element.addAttribute("propertiesPath", propertiesPath);
+        }
     }
 
     @Override

@@ -25,7 +25,7 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.compatibility.ComponentExpandCollapseListenerWrapper;
 import com.haulmont.cuba.gui.components.filter.FilterDelegate;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.gui.model.CollectionLoader;
+import com.haulmont.cuba.gui.model.BaseCollectionLoader;
 import com.haulmont.cuba.security.entity.FilterEntity;
 import net.miginfocom.layout.LC;
 import net.miginfocom.swing.MigLayout;
@@ -400,12 +400,12 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
     }
 
     @Override
-    public CollectionLoader getDataLoader() {
+    public BaseCollectionLoader getDataLoader() {
         return delegate.getDataLoader();
     }
 
     @Override
-    public void setDataLoader(CollectionLoader loader) {
+    public void setDataLoader(BaseCollectionLoader loader) {
         delegate.setDataLoader(loader);
     }
 

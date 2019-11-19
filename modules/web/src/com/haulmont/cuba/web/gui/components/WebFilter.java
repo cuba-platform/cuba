@@ -21,7 +21,7 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.filter.FilterDelegate;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.gui.model.CollectionLoader;
+import com.haulmont.cuba.gui.model.BaseCollectionLoader;
 import com.haulmont.cuba.security.entity.FilterEntity;
 import com.vaadin.server.Sizeable;
 import org.dom4j.Element;
@@ -379,12 +379,12 @@ public class WebFilter extends WebAbstractComponent<com.vaadin.ui.Component> imp
     }
 
     @Override
-    public CollectionLoader getDataLoader() {
+    public BaseCollectionLoader getDataLoader() {
         return delegate.getDataLoader();
     }
 
     @Override
-    public void setDataLoader(CollectionLoader loader) {
+    public void setDataLoader(BaseCollectionLoader loader) {
         delegate.setDataLoader(loader);
     }
 

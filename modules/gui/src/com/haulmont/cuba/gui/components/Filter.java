@@ -20,7 +20,7 @@ import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.gui.components.filter.FilterDelegate;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.gui.model.CollectionLoader;
+import com.haulmont.cuba.gui.model.BaseCollectionLoader;
 import com.haulmont.cuba.gui.model.DataLoader;
 import com.haulmont.cuba.security.entity.FilterEntity;
 
@@ -73,12 +73,12 @@ public interface Filter extends HasMargin, Component.BelongToFrame, HasNamedComp
     /**
      * Returns {@link DataLoader} which the filter is applied to.
      */
-    CollectionLoader getDataLoader();
+    BaseCollectionLoader getDataLoader();
 
     /**
      * Sets {@link DataLoader} which the filter is applied to.
      */
-    void setDataLoader(CollectionLoader loader);
+    void setDataLoader(BaseCollectionLoader loader);
 
     /**
      * Recreates filter layout

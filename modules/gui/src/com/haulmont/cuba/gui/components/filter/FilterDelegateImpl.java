@@ -57,8 +57,8 @@ import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
+import com.haulmont.cuba.gui.model.BaseCollectionLoader;
 import com.haulmont.cuba.gui.model.CollectionContainer;
-import com.haulmont.cuba.gui.model.CollectionLoader;
 import com.haulmont.cuba.gui.model.LoaderSupportsApplyToSelected;
 import com.haulmont.cuba.gui.presentations.Presentations;
 import com.haulmont.cuba.gui.screen.compatibility.LegacyFrame;
@@ -149,7 +149,7 @@ public class FilterDelegateImpl implements FilterDelegate {
     protected FilterEntity filterEntity;
     protected FilterEntity initialFilterEntity;
     protected CollectionDatasource datasource;
-    protected CollectionLoader dataLoader;
+    protected BaseCollectionLoader dataLoader;
     protected Adapter adapter;
     protected QueryFilter dsQueryFilter;
     protected List<FilterEntity> filterEntities = new ArrayList<>();
@@ -1511,12 +1511,12 @@ public class FilterDelegateImpl implements FilterDelegate {
     }
 
     @Override
-    public CollectionLoader getDataLoader() {
+    public BaseCollectionLoader getDataLoader() {
         return dataLoader;
     }
 
     @Override
-    public void setDataLoader(CollectionLoader dataLoader) {
+    public void setDataLoader(BaseCollectionLoader dataLoader) {
         this.dataLoader = dataLoader;
         this.adapter = new LoaderAdapter(dataLoader, filter);
         this.adapter.setDataLoaderCondition(dataLoader.getCondition());
@@ -3243,7 +3243,7 @@ public class FilterDelegateImpl implements FilterDelegate {
 
     protected static class LoaderAdapter implements Adapter {
 
-        protected CollectionLoader loader;
+        protected BaseCollectionLoader loader;
         protected Filter filter;
         protected QueryFilter queryFilter;
         protected boolean preventDataLoading;
@@ -3263,7 +3263,7 @@ public class FilterDelegateImpl implements FilterDelegate {
         protected static final Pattern CUSTOM_PARAM_PATTERN = Pattern.compile("(:)custom\\$([\\w.]+)");
         protected static final Pattern SESSION_PARAM_PATTERN = Pattern.compile("(:)session\\$([\\w.]+)");
 
-        public LoaderAdapter(CollectionLoader loader, Filter filter) {
+        public LoaderAdapter(BaseCollectionLoader loader, Filter filter) {
             this.filter = filter;
             if (loader.getContainer() == null) {
                 throw new IllegalStateException("DataLoader must be connected to a Container");

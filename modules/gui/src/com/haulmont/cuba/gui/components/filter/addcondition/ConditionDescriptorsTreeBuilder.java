@@ -17,12 +17,14 @@
 
 package com.haulmont.cuba.gui.components.filter.addcondition;
 
+import com.google.common.base.Strings;
 import com.haulmont.bali.datastruct.Node;
 import com.haulmont.bali.datastruct.Tree;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributes;
+import com.haulmont.cuba.core.app.keyvalue.KeyValueMetaClass;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Component.HasXmlDescriptor;
@@ -41,12 +43,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Nullable;
 import java.util.*;
 import java.util.regex.Pattern;
 
 /**
- * Builds a {@link com.haulmont.bali.datastruct.Tree} of {@link com.haulmont.cuba.gui.components.filter.descriptor.AbstractConditionDescriptor}.
- * These descriptors are used in a new condition dialog.
+ * Builds a {@link com.haulmont.bali.datastruct.Tree} of {@link com.haulmont.cuba.gui.components.filter.descriptor.AbstractConditionDescriptor}. These
+ * descriptors are used in a new condition dialog.
  */
 @Component(ConditionDescriptorsTreeBuilderAPI.NAME)
 @Scope("prototype")
@@ -56,6 +59,7 @@ public class ConditionDescriptorsTreeBuilder implements ConditionDescriptorsTree
 
     protected static final List<String> defaultExcludedProps = Collections.unmodifiableList(Collections.singletonList("version"));
     protected static final String CUSTOM_CONDITIONS_PERMISSION = "cuba.gui.filter.customConditions";
+    protected static final Pattern AGGREGATE_JPQL_FUNCTION_PATTERN = Pattern.compile("(COUNT|SUM|AVG|MIN|MAX)\\s*\\(.*\\)", Pattern.CASE_INSENSITIVE);
 
     protected Filter filter;
     protected int hierarchyDepth;
@@ -71,6 +75,8 @@ public class ConditionDescriptorsTreeBuilder implements ConditionDescriptorsTree
     protected final boolean hideCustomConditions;
     protected ConditionsTree conditionsTree;
     protected boolean excludePropertiesRecursively;
+    protected final boolean isKeyValueMetaClass;
+    protected QueryTransformerFactory queryTransformerFactory;
 
     /**
      * @param filter                filter
@@ -90,10 +96,12 @@ public class ConditionDescriptorsTreeBuilder implements ConditionDescriptorsTree
         security = AppBeans.get(Security.class);
         metadataTools = AppBeans.get(MetadataTools.NAME);
         dynamicAttributes = AppBeans.get(DynamicAttributes.class);
+        queryTransformerFactory = AppBeans.get(QueryTransformerFactory.class);
         filterComponentName = getFilterComponentName();
         excludedProperties = new ArrayList<>();
         storeName = metadataTools.getStoreName(((FilterImplementation) filter).getEntityMetaClass());
         entityMetaClass = ((FilterImplementation) filter).getEntityMetaClass();
+        isKeyValueMetaClass = entityMetaClass instanceof KeyValueMetaClass;
         entityAlias = ((FilterImplementation) filter).getEntityAlias();
     }
 
@@ -116,9 +124,18 @@ public class ConditionDescriptorsTreeBuilder implements ConditionDescriptorsTree
                     addMultiplePropertyDescriptors(element, propertyDescriptors, filter);
                     propertiesExplicitlyDefined = true;
                 } else if ("property".equals(element.getName())) {
-                    conditionDescriptor = new PropertyConditionDescriptor(element, messagesPack, filterComponentName,
-                            entityMetaClass, entityAlias);
-                    propertyDescriptors.add(conditionDescriptor);
+                    if (isKeyValueMetaClass) {
+                        conditionDescriptor = createConditionDescriptorForKeyValueMetaProperty(messagesPack,
+                                element.attributeValue("name"),
+                                element.attributeValue("caption"));
+                        if (conditionDescriptor != null) {
+                            propertyDescriptors.add(conditionDescriptor);
+                        }
+                    } else {
+                        conditionDescriptor = new PropertyConditionDescriptor(element, messagesPack, filterComponentName,
+                                entityMetaClass, entityAlias);
+                        propertyDescriptors.add(conditionDescriptor);
+                    }
                     propertiesExplicitlyDefined = true;
                 } else if ("custom".equals(element.getName())) {
                     conditionDescriptor = new CustomConditionDescriptor(element, messagesPack, filterComponentName,
@@ -201,6 +218,70 @@ public class ConditionDescriptorsTreeBuilder implements ConditionDescriptorsTree
         return tree;
     }
 
+    /**
+     * Method parses the JPQL from a datasource or a dataLoader associated with a generic filter and creates a PropertyConditionDescriptor for a
+     * KeyValueEntity property with a given name.
+     * <p>
+     * For example, we have the following keyValueCollection:
+     *
+     * <pre>
+     * {@code
+     * <keyValueCollection id="myKeyValueCollectionDc">
+     *    <loader id="myKeyValueCollectionDl">
+     *       <query>select  u.login, ur.role.name from sec$User u join u.userRoles ur</query>
+     *    </loader>
+     *    <properties>
+     *       <property datatype="string" name="myLogin"/>
+     *       <property datatype="string" name="myRoleName"/>
+     *    </properties>
+     * </keyValueCollection>
+     * }
+     * </pre>
+     * <p>
+     * When we need to build a PropertyConditionDescriptor for the "myRoleName" property then we need:
+     *
+     * <ol>
+     *     <li>Find the position of the myRoleName property in the &lt;properties&gt; tag - it is a second property</li>
+     *     <li>Take all path expressions from the JPQL query and take the second one. It is "ur.role.name"</li>
+     *     <li>From the "ur.role.name" we extract entityAlias ("ur") and propertiesPath ("role.name") - these values will be used for building the
+     *     PropertyConditionDescriptor. The "name" used in ConditionDescriptor is "myRoleName"</li>
+     * </ol>
+     *
+     * @return a PropertyConditionDescriptor or null if the KeyValueEntity meta property is associated with the aggregate function
+     */
+    @Nullable
+    protected PropertyConditionDescriptor createConditionDescriptorForKeyValueMetaProperty(String messagesPack, String propertyName, String propertyCaption) {
+        int index = new ArrayList<>(entityMetaClass.getProperties()).indexOf(entityMetaClass.getProperty(propertyName));
+        String jpqlQuery = filter.getDataLoader() != null ?
+                filter.getDataLoader().getQuery() :
+                filter.getDatasource().getQuery();
+        QueryParser queryParser = queryTransformerFactory.parser(jpqlQuery);
+        List<String> selectedExpressions = queryParser.getSelectedExpressionsList();
+        String selectedExpression = selectedExpressions.get(index);
+
+        String entityAliasForCondDescr;
+        String propertiesPathForCondDescr;
+        if (isAggregateFunction(selectedExpression)) {
+            log.debug("Aggregate function {} cannot be used for filter condition", selectedExpression);
+            return null;
+        }
+        if (selectedExpression.contains(".")) {
+            int indexOfDot = selectedExpression.indexOf(".");
+            entityAliasForCondDescr = selectedExpression.substring(0, indexOfDot);
+            propertiesPathForCondDescr = selectedExpression.substring(indexOfDot + 1);
+        } else {
+            //joined entity may be selected, e.g. "a" alias in query "select b.title, a from app_Book b join b.author a"
+            entityAliasForCondDescr = selectedExpression;
+            propertiesPathForCondDescr = "";
+        }
+        return new PropertyConditionDescriptor(propertyName, propertyCaption, messagesPack, filterComponentName,
+                entityMetaClass, entityAliasForCondDescr, propertiesPathForCondDescr);
+    }
+
+    protected boolean isAggregateFunction(String expression) {
+        return AGGREGATE_JPQL_FUNCTION_PATTERN.matcher(expression).matches();
+    }
+
     protected void recursivelyFillPropertyDescriptors(Node<AbstractConditionDescriptor> parentNode, int currentDepth) {
         currentDepth++;
         List<AbstractConditionDescriptor> descriptors = new ArrayList<>();
@@ -227,10 +308,22 @@ public class ConditionDescriptorsTreeBuilder implements ConditionDescriptorsTree
                     Class<? extends FrameOwner> controllerClass = filter.getFrame().getFrameOwner().getClass();
                     String messagesPack = UiControllerUtils.getPackage(controllerClass); // todo rework
 
-                    PropertyConditionDescriptor childPropertyConditionDescriptor =
-                            new PropertyConditionDescriptor(propertyPath, null, messagesPack,
-                                    filterComponentName, entityMetaClass, entityAlias);
-                    descriptors.add(childPropertyConditionDescriptor);
+                    if (isKeyValueMetaClass) {
+                        if (parentNode.data instanceof PropertyConditionDescriptor) {
+                            PropertyConditionDescriptor parentConditionDescriptor = (PropertyConditionDescriptor) parentNode.data;
+                            String parentPropertiesPath = parentConditionDescriptor.getPropertiesPath();
+                            String newPropertiesPath = !Strings.isNullOrEmpty(parentPropertiesPath) ?
+                                    parentPropertiesPath + "." + property.getName() :
+                                    property.getName();
+                            PropertyConditionDescriptor childPropertyConditionDescriptor = new PropertyConditionDescriptor(propertyPath, null,
+                                    messagesPack, filterComponentName, entityMetaClass, parentConditionDescriptor.getEntityAlias(), newPropertiesPath);
+                            descriptors.add(childPropertyConditionDescriptor);
+                        }
+                    } else {
+                        PropertyConditionDescriptor childPropertyConditionDescriptor = new PropertyConditionDescriptor(propertyPath, null,
+                                messagesPack, filterComponentName, entityMetaClass, entityAlias);
+                        descriptors.add(childPropertyConditionDescriptor);
+                    }
                 }
             }
         }
@@ -298,10 +391,17 @@ public class ConditionDescriptorsTreeBuilder implements ConditionDescriptorsTree
                 Class<? extends FrameOwner> controllerClass = filter.getFrame().getFrameOwner().getClass();
                 String messagesPack = UiControllerUtils.getPackage(controllerClass); // todo rework
 
-                AbstractConditionDescriptor conditionDescriptor =
-                        new PropertyConditionDescriptor(prop, null, messagesPack,
-                                filterComponentName, entityMetaClass, entityAlias);
-                descriptors.add(conditionDescriptor);
+                AbstractConditionDescriptor conditionDescriptor;
+                if (isKeyValueMetaClass) {
+                    conditionDescriptor = createConditionDescriptorForKeyValueMetaProperty(messagesPack, prop, null);
+                    if (conditionDescriptor != null) {
+                        descriptors.add(conditionDescriptor);
+                    }
+                } else {
+                    conditionDescriptor = new PropertyConditionDescriptor(prop, null, messagesPack,
+                            filterComponentName, entityMetaClass, entityAlias);
+                    descriptors.add(conditionDescriptor);
+                }
             }
         }
     }
@@ -309,7 +409,7 @@ public class ConditionDescriptorsTreeBuilder implements ConditionDescriptorsTree
     protected boolean isPropertyAllowed(MetaClass metaClass, MetaProperty property) {
         return security.isEntityAttrPermitted(metaClass, property.getName(), EntityAttrAccess.VIEW)
                 && !metadataTools.isSystemLevel(property)           // exclude system level attributes
-                && (metadataTools.isPersistent(property)            // exclude transient properties
+                && ((metadataTools.isPersistent(property) || isKeyValueMetaClass)           // exclude transient properties
                 || (metadataTools.getCrossDataStoreReferenceIdProperty(storeName, property) != null))
                 && !defaultExcludedProps.contains(property.getName())
                 && !(byte[].class.equals(property.getJavaType()))

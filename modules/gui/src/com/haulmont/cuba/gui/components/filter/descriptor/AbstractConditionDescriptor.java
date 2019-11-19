@@ -109,6 +109,10 @@ public abstract class AbstractConditionDescriptor extends BaseUuidEntity {
         return getLocCaption();
     }
 
+    public String getEntityAlias() {
+        return entityAlias;
+    }
+
     @Override
     public String toString() {
         return getClass().getSimpleName() + "{" +

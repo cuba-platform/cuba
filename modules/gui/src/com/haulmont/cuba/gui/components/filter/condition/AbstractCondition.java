@@ -26,7 +26,6 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.core.global.Scripting;
 import com.haulmont.cuba.core.global.filter.Op;
-import com.haulmont.cuba.core.global.filter.ParametersHelper;
 import com.haulmont.cuba.gui.components.filter.ConditionParamBuilder;
 import com.haulmont.cuba.gui.components.filter.Param;
 import com.haulmont.cuba.gui.components.filter.descriptor.AbstractConditionDescriptor;
@@ -132,6 +131,7 @@ public abstract class AbstractCondition extends BaseUuidEntity {
         useUserTimeZone = Boolean.valueOf(element.attributeValue("useUserTimeZone"));
         entityParamWhere = element.attributeValue("paramWhere");
         entityParamView = element.attributeValue("paramView");
+        this.entityAlias = element.attributeValue("entityAlias");
         width = Strings.isNullOrEmpty(element.attributeValue("width")) ? 1 : Integer.parseInt(element.attributeValue("width"));
 
         resolveParam(element);
