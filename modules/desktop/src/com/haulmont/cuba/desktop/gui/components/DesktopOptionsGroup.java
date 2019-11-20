@@ -403,4 +403,11 @@ public class DesktopOptionsGroup extends DesktopAbstractOptionsField<JPanel> imp
                 ? (Collection) value
                 : Collections.singleton(value);
     }
+
+    @Override
+    protected boolean isEmpty(Object value) {
+        return super.isEmpty(value)
+                || (value instanceof Collection
+                && ((Collection) value).isEmpty());
+    }
 }
