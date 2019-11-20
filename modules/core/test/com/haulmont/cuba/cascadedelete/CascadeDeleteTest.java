@@ -18,6 +18,7 @@ package com.haulmont.cuba.cascadedelete;
 
 import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Transaction;
+import com.haulmont.cuba.core.TransactionalDataManager;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.sys.listener.EntityListenerManager;
@@ -83,6 +84,25 @@ public class CascadeDeleteTest {
             CascadeEntity loadedRoot = em.find(CascadeEntity.class, root.getId());
             em.find(CascadeEntity.class, first.getId());
             em.remove(loadedRoot);
+            tx.commit();
+        }
+
+        try (Transaction tx = cont.persistence().createTransaction()) {
+            EntityManager em = cont.persistence().getEntityManager();
+            List r = em.createQuery("select e from test$CascadeEntity e where e.id in ?1")
+                    .setParameter(1, Arrays.asList(root, first, second, third))
+                    .getResultList();
+            assertEquals(0, r.size());
+            tx.commit();
+        }
+    }
+
+    @Test
+    public void testRemoveCascadeByTxDataManager() throws Exception {
+        try (Transaction tx = cont.persistence().createTransaction()) {
+            TransactionalDataManager txDataManager = AppBeans.get(TransactionalDataManager.class);
+            CascadeEntity loadedRoot = txDataManager.load(CascadeEntity.class).id(root.getId()).optional().orElse(null);
+            txDataManager.remove(loadedRoot);
             tx.commit();
         }
 

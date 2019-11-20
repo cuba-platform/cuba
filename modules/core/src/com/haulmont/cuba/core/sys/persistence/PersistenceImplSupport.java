@@ -601,12 +601,6 @@ public class PersistenceImplSupport implements ApplicationContextAware {
                 log.error("Error enqueueing changes for FTS", e);
             }
         }
-
-        protected void processDeletePolicy(Entity entity) {
-            DeletePolicyProcessor processor = AppBeans.get(DeletePolicyProcessor.NAME); // prototype
-            processor.setEntity(entity);
-            processor.process();
-        }
     }
 
     protected class OnFlushEntityVisitor implements EntityVisitor {
@@ -634,6 +628,8 @@ public class PersistenceImplSupport implements ApplicationContextAware {
             if (isDeleted(entity, changeListener)) {
                 entityListenerManager.fireListener(entity, EntityListenerType.BEFORE_DELETE, storeName);
                 entityLog.registerDelete(entity, true);
+                if ((entity instanceof SoftDelete))
+                    processDeletePolicy(entity);
                 return true;
 
             } else if (changeListener.hasChanges()) {
@@ -651,5 +647,11 @@ public class PersistenceImplSupport implements ApplicationContextAware {
 
             return false;
         }
+    }
+
+    protected void processDeletePolicy(Entity entity) {
+        DeletePolicyProcessor processor = AppBeans.getPrototype(DeletePolicyProcessor.NAME); // prototype
+        processor.setEntity(entity);
+        processor.process();
     }
 }
