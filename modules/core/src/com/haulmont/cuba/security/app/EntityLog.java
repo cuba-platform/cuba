@@ -111,6 +111,7 @@ public class EntityLog implements EntityLogAPI {
         if (items == null || items.isEmpty())
             return;
 
+        Set<EntityLogItem> saved = new LinkedHashSet<>();
         for (EntityLogItem item : items) {
             List<EntityLogItem> sameEntityList = items.stream()
                     .filter(entityLogItem -> entityLogItem.getDbGeneratedIdEntity() != null ?
@@ -118,8 +119,11 @@ public class EntityLog implements EntityLogAPI {
                             entityLogItem.getObjectEntityId().equals(item.getObjectEntityId()))
                     .collect(Collectors.toList());
             EntityLogItem itemToSave = sameEntityList.get(0);
-            computeChanges(itemToSave, sameEntityList);
-            saveItem(itemToSave);
+            if (!saved.contains(itemToSave)) {
+                computeChanges(itemToSave, sameEntityList);
+                saved.add(itemToSave);
+                saveItem(itemToSave);
+            }
         }
     }
 
