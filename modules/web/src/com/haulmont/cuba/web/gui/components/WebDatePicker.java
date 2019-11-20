@@ -26,7 +26,7 @@ import com.haulmont.cuba.gui.components.data.ConversionException;
 import com.haulmont.cuba.gui.components.data.DataAwareComponentsTools;
 import com.haulmont.cuba.gui.components.data.meta.EntityValueSource;
 import com.haulmont.cuba.gui.components.data.ValueSource;
-import com.haulmont.cuba.web.widgets.CubaDatePicker;
+import com.haulmont.cuba.web.widgets.CubaInlineDateField;
 import com.vaadin.shared.ui.datefield.DateResolution;
 import com.vaadin.ui.InlineDateField;
 
@@ -44,9 +44,13 @@ public class WebDatePicker<V> extends WebV8AbstractField<InlineDateField, LocalD
     protected V rangeEnd;
 
     public WebDatePicker() {
-        this.component = new CubaDatePicker();
+        this.component = createComponent();
 
         attachValueChangeListener(component);
+    }
+
+    protected InlineDateField createComponent() {
+        return new CubaInlineDateField();
     }
 
     @Inject
