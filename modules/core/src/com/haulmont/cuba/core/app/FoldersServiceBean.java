@@ -327,6 +327,8 @@ public class FoldersServiceBean implements FoldersService {
     }
 
     protected List<Folder> findAllParentFolders(Folder folder, List<Folder> parentFolders) {
+        if (folder == null)
+            return parentFolders;
         parentFolders.add(folder);
         EntityManager em = persistence.getEntityManager();
         Folder reloadedFolder = em.reload(folder);
