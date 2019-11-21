@@ -46,6 +46,7 @@ public class CubaDataSourceLookup {
     protected static final String APPLICATION = "application";
     protected static final String JNDI = "jndi";
     protected static final String JDBC_URL = "jdbcUrl";
+    protected static final String DRIVER_CLASS_NAME = "driverClassName";
     protected static final String MS_SQL_2005 = "2005";
     protected static final String POSTGRES_DBMS = "postgres";
     protected static final String MSSQL_DBMS = "mssql";
@@ -114,7 +115,33 @@ public class CubaDataSourceLookup {
         if (hikariConfigProperties.getProperty(JDBC_URL) == null) {
             hikariConfigProperties.setProperty(JDBC_URL, getJdbcUrlFromParts(cubaConfigDsPrefix, storeName));
         }
+
+        if (hikariConfigProperties.getProperty(DRIVER_CLASS_NAME) == null) {
+            hikariConfigProperties.setProperty(DRIVER_CLASS_NAME, getDefaultDriverClassName(storeName));
+        }
         return hikariConfigProperties;
+    }
+
+    protected String getDefaultDriverClassName(String storeName) {
+        String dbmsType = DbmsType.getType(storeName);
+        String dbmsVersion = DbmsType.getVersion(storeName);
+        if (POSTGRES_DBMS.equals(dbmsType)) {
+            return "org.postgresql.Driver";
+        } else if (MSSQL_DBMS.equals(dbmsType)) {
+            if (MS_SQL_2005.equals(dbmsVersion)) {
+                return "net.sourceforge.jtds.jdbc.Driver";
+            } else {
+                return "com.microsoft.sqlserver.jdbc.SQLServerDriver";
+            }
+        } else if (ORACLE_DBMS.equals(dbmsType)) {
+            return "oracle.jdbc.OracleDriver";
+        } else if (HSQL_DBMS.equals(dbmsType)) {
+            return "org.hsqldb.jdbc.JDBCDriver";
+        } else if (MYSQL_DBMS.equals(dbmsType)) {
+            return "com.mysql.jdbc.Driver";
+        } else
+            throw new UnsupportedOperationException("DBMS " + dbmsType + " is not supported. " +
+                    "You should provide 'driverClassName' property or specify one of supported DBMS in 'dbmsType' property");
     }
 
     protected Properties getHikariConfigProperties(Map<String, String> properties) {
