@@ -76,6 +76,16 @@ public class EclipseLinkSessionEventListener extends SessionEventAdapter {
         List<String> wrongFetchTypes = new ArrayList<>();
         List<Pair<Class, String>> missingEnhancements = new ArrayList<>();
 
+        Map<String, ClassDescriptor> mappedSuperclassDescriptorMap = session.getProject().getMappedSuperclassDescriptors();
+        for (Map.Entry<String, ClassDescriptor> entry : mappedSuperclassDescriptorMap.entrySet()) {
+            try {
+                Class javaClass = getClass().getClassLoader().loadClass(entry.getKey());
+                enhancementCheck(javaClass, missingEnhancements);
+            } catch (ClassNotFoundException e) {
+                log.warn("MappedSuperclass {} was not found by ClassLoader", entry.getKey());
+            }
+        }
+
         Map<Class, ClassDescriptor> descriptorMap = session.getDescriptors();
         boolean hasMultipleTableConstraintDependency = hasMultipleTableConstraintDependency();
         for (Map.Entry<Class, ClassDescriptor> entry : descriptorMap.entrySet()) {
