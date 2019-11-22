@@ -463,6 +463,9 @@ public class DynamicAttributesManager implements DynamicAttributesManagerAPI {
 
             tx.commit();
         }
+        attributeValues = attributeValues.stream()
+                .filter(attr -> attr.getDeleteTs() == null)
+                .collect(Collectors.toList());
         return attributeValues;
     }
 
