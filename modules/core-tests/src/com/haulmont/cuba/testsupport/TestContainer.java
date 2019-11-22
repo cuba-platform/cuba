@@ -19,6 +19,7 @@ package com.haulmont.cuba.testsupport;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.LoggerContext;
+import com.google.common.base.Strings;
 import com.haulmont.bali.db.QueryRunner;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.EntityManager;
@@ -322,7 +323,11 @@ public class TestContainer extends ExternalResource implements BeforeAllCallback
         try {
             Class.forName(dbDriver);
             TestDataSource ds = new TestDataSource(dbUrl, dbUser, dbPassword);
-            TestContext.getInstance().bind(AppContext.getProperty("cuba.dataSourceJndiName"), ds);
+            String jndiName = AppContext.getProperty("cuba.dataSourceJndiName");
+            if (!Strings.isNullOrEmpty(jndiName)) {
+                TestContext.getInstance().bind(AppContext.getProperty("cuba.dataSourceJndiName"), ds);
+            }
+            TestDataSourceProvider.registerDataSource(Stores.MAIN, ds);
         } catch (ClassNotFoundException | NamingException e) {
             throw new RuntimeException("Error initializing datasource", e);
         }

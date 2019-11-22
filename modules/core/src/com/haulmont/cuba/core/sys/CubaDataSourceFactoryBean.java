@@ -17,18 +17,19 @@
 package com.haulmont.cuba.core.sys;
 
 import com.haulmont.cuba.core.global.Stores;
-import com.haulmont.cuba.core.sys.jdbc.ProxyDataSource;
-import com.zaxxer.hikari.HikariDataSource;
-import org.springframework.lang.NonNull;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.*;
 
-import javax.naming.NamingException;
 import javax.sql.DataSource;
 
-public class CubaDataSourceFactoryBean extends CubaJndiObjectFactoryBean {
+public class CubaDataSourceFactoryBean implements FactoryBean<Object>, InitializingBean, BeanFactoryAware, DisposableBean {
 
-    private CubaDataSourceLookup cubaDataSourceLookup = new CubaDataSourceLookup();
+    protected String storeName;
+    protected String jndiNameAppProperty;
 
-    private String storeName;
+    protected DataSource dataSource;
+    protected DataSourceProvider dataSourceProvider;
+    protected BeanFactory beanFactory;
 
     public String getStoreName() {
         return storeName;
@@ -38,35 +39,40 @@ public class CubaDataSourceFactoryBean extends CubaJndiObjectFactoryBean {
         this.storeName = storeName;
     }
 
+    public void setJndiNameAppProperty(String jndiNameAppProperty) {
+        this.jndiNameAppProperty = jndiNameAppProperty;
+    }
+
     @Override
     public Class<DataSource> getObjectType() {
         return DataSource.class;
     }
 
     @Override
-    public void afterPropertiesSet() throws IllegalArgumentException, NamingException {
-        if (cubaDataSourceLookup.isApplicationDataSource(storeName)) {
-            return;
+    public void afterPropertiesSet() throws IllegalArgumentException {
+        try {
+            this.dataSourceProvider = beanFactory.getBean(DataSourceProvider.class);
+        } catch (NoSuchBeanDefinitionException e) {
+            this.dataSourceProvider = new DataSourceProvider();
         }
-        super.afterPropertiesSet();
+        this.storeName = storeName == null ? Stores.MAIN : storeName;
+        this.dataSource = dataSourceProvider.getDataSource(storeName, AppContext.getProperty(jndiNameAppProperty));
     }
 
     @Override
     public Object getObject() {
-        return cubaDataSourceLookup.getDataSource(storeName == null ? Stores.MAIN : storeName);
+        return dataSource;
     }
 
     @Override
-    @NonNull
-    protected Object lookupWithFallback() throws NamingException {
-        String dataSourceProvider = cubaDataSourceLookup.getDataSourceProvider(storeName == null ? Stores.MAIN : storeName);
-        Object object = new HikariDataSource();
-        if (dataSourceProvider == null || "jndi".equals(dataSourceProvider)) {
-            object = super.lookupWithFallback();
-            if (object instanceof DataSource) {
-                return new ProxyDataSource((DataSource) object);
-            }
+    public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
+        this.beanFactory = beanFactory;
+    }
+
+    @Override
+    public void destroy() throws Exception {
+        if (dataSource != null) {
+            dataSourceProvider.closeDataSource(dataSource);
         }
-        return object;
     }
 }

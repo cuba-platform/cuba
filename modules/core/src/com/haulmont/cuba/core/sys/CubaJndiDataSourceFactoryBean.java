@@ -21,4 +21,10 @@ package com.haulmont.cuba.core.sys;
  */
 @Deprecated
 public class CubaJndiDataSourceFactoryBean extends CubaDataSourceFactoryBean {
+    public void setResourceRef(boolean resourceRef) {
+    }
+
+    public boolean isResourceRef() {
+        return false;
+    }
 }
