@@ -25,7 +25,6 @@ import com.haulmont.cuba.core.sys.cleanup.CleanupTools;
 import com.haulmont.cuba.core.sys.cleanup.StopThreadsCleanUp;
 import com.haulmont.cuba.core.sys.servlet.events.ServletContextDestroyedEvent;
 import com.haulmont.cuba.core.sys.servlet.events.ServletContextInitializedEvent;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.BOMInputStream;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringSubstitutor;
@@ -34,7 +33,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.core.env.AbstractEnvironment;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
@@ -207,19 +205,6 @@ public abstract class AbstractWebAppContextLoader extends AbstractAppContextLoad
         final Properties properties = new Properties();
         loadPropertiesFromConfig(sc, properties, propsConfigName);
 
-        String activeProfiles = System.getProperty(AbstractEnvironment.ACTIVE_PROFILES_PROPERTY_NAME);
-        if (activeProfiles == null) {
-            activeProfiles = sc.getInitParameter(AbstractEnvironment.ACTIVE_PROFILES_PROPERTY_NAME);
-        }
-
-        if (activeProfiles != null) {
-            Iterable<String> iterableActiveProfiles = Splitter.on(',').omitEmptyStrings().trimResults().split(activeProfiles);
-            for (String activeProfile : iterableActiveProfiles) {
-                String profilePropsConfigName = propsConfigName.replace("app.properties", "app-" + activeProfile + ".properties");
-                loadPropertiesFromConfig(sc, properties, profilePropsConfigName);
-            }
-        }
-
         for (Object key : properties.keySet()) {
             AppContext.setProperty((String) key, properties.getProperty((String) key).trim());
         }
@@ -234,35 +219,44 @@ public abstract class AbstractWebAppContextLoader extends AbstractAppContextLoad
     }
 
     protected void loadPropertiesFromConfig(ServletContext sc, Properties properties, String propsConfigName) {
+        SpringProfileSpecificNameResolver nameResolver = new SpringProfileSpecificNameResolver(sc);
         DefaultResourceLoader resourceLoader = new DefaultResourceLoader();
         StringTokenizer tokenizer = new StringTokenizer(propsConfigName);
         tokenizer.setQuoteChar('"');
         for (String str : tokenizer.getTokenArray()) {
             log.trace("Processing properties location: {}", str);
-            str = StringSubstitutor.replaceSystemProperties(str);
-            InputStream stream = null;
-            try {
-                if (ResourceUtils.isUrl(str) || str.startsWith(ResourceLoader.CLASSPATH_URL_PREFIX)) {
-                    Resource resource = resourceLoader.getResource(str);
-                    if (resource.exists())
-                        stream = resource.getInputStream();
-                } else {
-                    stream = sc.getResourceAsStream(str);
-                }
-
-                if (stream != null) {
-                    log.info("Loading app properties from {}", str);
-                    BOMInputStream bomInputStream = new BOMInputStream(stream);
-                    try (Reader reader = new InputStreamReader(bomInputStream, StandardCharsets.UTF_8)) {
-                        properties.load(reader);
+            String baseName = StringSubstitutor.replaceSystemProperties(str);
+            for (String name : nameResolver.getDerivedNames(baseName)) {
+                InputStream stream = null;
+                try {
+                    if (ResourceUtils.isUrl(name) || name.startsWith(ResourceLoader.CLASSPATH_URL_PREFIX)) {
+                        Resource resource = resourceLoader.getResource(name);
+                        if (resource.exists())
+                            stream = resource.getInputStream();
+                    } else {
+                        stream = sc.getResourceAsStream(name);
                     }
-                } else {
-                    log.trace("Resource {} not found, ignore it", str);
+
+                    if (stream != null) {
+                        log.info("Loading app properties from {}", name);
+                        BOMInputStream bomInputStream = new BOMInputStream(stream);
+                        try (Reader reader = new InputStreamReader(bomInputStream, StandardCharsets.UTF_8)) {
+                            properties.load(reader);
+                        }
+                    } else {
+                        log.trace("Resource {} not found, ignore it", name);
+                    }
+                } catch (IOException e) {
+                    throw new RuntimeException("Unable to read properties from stream", e);
+                } finally {
+                    try {
+                        if (stream != null) {
+                            stream.close();
+                        }
+                    } catch (final IOException ioe) {
+                        // ignore
+                    }
                 }
-            } catch (IOException e) {
-                throw new RuntimeException("Unable to read properties from stream", e);
-            } finally {
-                IOUtils.closeQuietly(stream);
             }
         }
     }
