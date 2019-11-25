@@ -119,7 +119,7 @@ public class RolesRepository {
             }
         }
 
-        return result.values();
+        return new ArrayList<>(result.values());
     }
 
     public RoleDefinition getRoleDefinitionByName(String roleName) {

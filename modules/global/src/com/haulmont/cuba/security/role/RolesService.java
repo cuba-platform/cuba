@@ -19,7 +19,9 @@ package com.haulmont.cuba.security.role;
 import com.haulmont.cuba.security.entity.Permission;
 import com.haulmont.cuba.security.entity.PermissionType;
 import com.haulmont.cuba.security.entity.Role;
+import com.haulmont.cuba.security.entity.UserRole;
 
+import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.Map;
 
@@ -66,9 +68,20 @@ public interface RolesService {
     Map<String, Role> getDefaultRoles();
 
     /**
-     *
      * @return {@code true} if the application has at least one predefined role
      */
     boolean applicationHasPredefinedRoles();
+
+    /**
+     * @param userRoles collection of {@link UserRole} objects
+     * @return collection of {@link RoleDefinition} objects associated with {@link UserRole} objects from param
+     */
+    Collection<RoleDefinition> getRoleDefinitions(@Nullable Collection<UserRole> userRoles);
+
+    /**
+     * @param predefinedRoleName name of a predefined role
+     * @return {@code RoleDefinition} object that contains all permissions of a predefined role
+     */
+    RoleDefinition getRoleDefinitionByName(String predefinedRoleName);
 
 }

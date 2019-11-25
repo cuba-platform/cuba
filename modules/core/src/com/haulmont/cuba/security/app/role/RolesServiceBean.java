@@ -17,14 +17,16 @@
 package com.haulmont.cuba.security.app.role;
 
 import com.haulmont.cuba.core.global.DataManager;
-import com.haulmont.cuba.security.role.RolesService;
-import com.haulmont.cuba.security.role.RoleDefinition;
 import com.haulmont.cuba.security.entity.Permission;
 import com.haulmont.cuba.security.entity.PermissionType;
 import com.haulmont.cuba.security.entity.Role;
+import com.haulmont.cuba.security.entity.UserRole;
+import com.haulmont.cuba.security.role.RoleDefinition;
+import com.haulmont.cuba.security.role.RolesService;
 import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.*;
 
@@ -100,5 +102,15 @@ public class RolesServiceBean implements RolesService {
     public boolean applicationHasPredefinedRoles() {
         // application always contains 2 predefined system roles
         return rolesRepository.getNameToPredefinedRoleMapping().keySet().size() > 2;
+    }
+
+    @Override
+    public Collection<RoleDefinition> getRoleDefinitions(@Nullable Collection<UserRole> userRoles) {
+        return rolesRepository.getRoleDefinitions(userRoles);
+    }
+
+    @Override
+    public RoleDefinition getRoleDefinitionByName(String predefinedRoleName) {
+        return rolesRepository.getRoleDefinitionByName(predefinedRoleName);
     }
 }
