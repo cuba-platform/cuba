@@ -18,8 +18,10 @@ package com.haulmont.chile.core.model.utils;
 
 import com.google.common.collect.ImmutableMap;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.util.ReflectionUtils;
 
 import java.lang.invoke.*;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
@@ -54,11 +56,23 @@ public class MethodsCache {
                 getters.put(name, getter);
             } else if (name.startsWith("is") && method.getParameterTypes().length == 0) {
                 Function getter = createGetter(clazz, method);
-                name = StringUtils.uncapitalize(name.substring(2));
-                getters.put(name, getter);
+                Field isField = ReflectionUtils.findField(clazz, name);
+                if (isField != null) {
+                    // for Kotlin entity with a property which name starts with "is*" the getter name will be the same as property name,
+                    // e.g "isApproved"
+                    getters.put(name, getter);
+                } else {
+                    name = StringUtils.uncapitalize(name.substring(2));
+                    getters.put(name, getter);
+                }
             } else if (name.startsWith("set") && method.getParameterTypes().length == 1) {
                 BiConsumer setter = createSetter(clazz, method);
-                name = StringUtils.uncapitalize(name.substring(3));
+                Field isField = ReflectionUtils.findField(clazz, "is" + name.substring(3));
+                if (isField != null) {
+                    name = "is" + name.substring(3);
+                } else {
+                    name = StringUtils.uncapitalize(name.substring(3));
+                }
                 setters.put(name, setter);
             }
         }

@@ -741,18 +741,47 @@ public class MetaModelLoader {
     }
 
     protected boolean setterExists(Field field) {
-        String name = "set" + StringUtils.capitalize(field.getName());
+        List<String> setterNames = buildSetterNames(field);
         Method[] methods = field.getDeclaringClass().getDeclaredMethods();
         for (Method method : methods) {
-            if (method.getName().equals(name))
+            if (setterNames.contains(method.getName()))
                 return true;
         }
         return false;
     }
 
+    /**
+     * Builds a list of possible setter names for the field. There may be two options:
+     * <ul>
+     *     <li>In most cases the setter name is "set&lt;FieldName&gt;", e.g. "setPrice" for a field "price"</li>
+     *     <li>There may be a special case for Kotlin entity. If the field name starts with "is" (e.g. "isApproved") then a setter name will be
+     *     "setApproved", not "setIsApproved"</li>
+     * </ul>
+     */
+    protected List<String> buildSetterNames(Field field) {
+        List<String> setterNames = new ArrayList<>();
+        String fieldName = field.getName();
+        if (fieldName.startsWith("is") && fieldName.length() > 2 && Character.isUpperCase(fieldName.charAt(2))) {
+            setterNames.add("set" + fieldName.substring(2));
+        }
+        setterNames.add("set" + StringUtils.capitalize(fieldName));
+        return setterNames;
+    }
+
     protected boolean setterExists(Method getter) {
         if (getter.getName().startsWith("get")) {
-            String setterName = "set" + getter.getName().substring(3);
+            String setterName;
+            setterName = "set" + getter.getName().substring(3);
+            Method[] methods = getter.getDeclaringClass().getDeclaredMethods();
+            for (Method method : methods) {
+                if (setterName.equals(method.getName())) {
+                    return true;
+                }
+            }
+        }
+        if (getter.getName().startsWith("is")) {
+            //handle a special case of Kotlin entity and a property with a name starting with "is*"
+            String setterName = "set" + getter.getName().substring(2);
             Method[] methods = getter.getDeclaringClass().getDeclaredMethods();
             for (Method method : methods) {
                 if (setterName.equals(method.getName())) {
