@@ -25,6 +25,7 @@ import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.DataManager;
 
+import javax.persistence.Id;
 import javax.persistence.Transient;
 import java.math.BigDecimal;
 import java.util.Collection;
@@ -43,6 +44,8 @@ public class CategoryAttributeConfiguration extends BaseGenericIdEntity<String> 
 
     protected transient CategoryAttribute categoryAttribute;
 
+    @Id
+    @MetaProperty
     protected String id;
 
     @MetaProperty
