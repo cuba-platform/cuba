@@ -185,6 +185,7 @@ configure([sharedLibModule, globalModule, coreModule, clientModule, guiModule,
         environment('TEST_ENV_PROP_1', 'envValue1')
         environment('TEST_ENV_PROP_2', 'envValue2')
         environment('TEST_ENV_PROP_3', 'envValue3')
+        environment('TEST_SOMEPROP4', 'envValue4')
         systemProperty('TEST_ENV_PROP_2', 'systemValue2')
     }
 
