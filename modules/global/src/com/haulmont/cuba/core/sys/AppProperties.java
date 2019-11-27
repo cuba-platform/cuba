@@ -179,7 +179,7 @@ public class AppProperties {
         if (StringUtils.isEmpty(value)) {
             value = System.getenv(key);
             if (StringUtils.isEmpty(value)
-                    && !Boolean.parseBoolean(properties.get("cuba.disableUppercaseSystemAndEnvironmentProperties"))) {
+                    && !Boolean.parseBoolean(properties.get("cuba.disableUppercaseEnvironmentProperties"))) {
                 value = System.getenv(key.replace('.', '_').toUpperCase());
             }
         }

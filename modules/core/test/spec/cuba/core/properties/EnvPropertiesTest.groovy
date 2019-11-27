@@ -62,14 +62,14 @@ class EnvPropertiesTest extends Specification {
         AppContext.getProperty('test.someProp4') == 'envValue4'
     }
 
-    def "env property with capitalized name doesn't override app property if cuba.disableUppercaseSystemAndEnvironmentProperties=true"() {
+    def "env property with capitalized name doesn't override app property if cuba.disableUppercaseEnvironmentProperties=true"() {
 
-        AppContext.setProperty('cuba.disableUppercaseSystemAndEnvironmentProperties', 'true')
+        AppContext.setProperty('cuba.disableUppercaseEnvironmentProperties', 'true')
 
         expect:
         AppContext.getProperty('test.someProp4') == 'appValue4'
 
         cleanup:
-        AppContext.setProperty('cuba.disableUppercaseSystemAndEnvironmentProperties', null)
+        AppContext.setProperty('cuba.disableUppercaseEnvironmentProperties', null)
     }
 }
