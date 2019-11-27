@@ -245,14 +245,19 @@ public class WindowConfig {
         for (UiControllersConfiguration provider : configurations) {
             List<UiControllerDefinition> uiControllers = provider.getUiControllers();
 
-            Set<String> projectScreens = new HashSet<>(uiControllers.size());
+            Map<String, String> projectScreens = new HashMap<>(uiControllers.size());
 
             for (UiControllerDefinition definition : uiControllers) {
-                if (projectScreens.contains(definition.getId())) {
+                String existingScreenController = projectScreens.get(definition.getId());
+                if (existingScreenController != null
+                        && !Objects.equals(existingScreenController, definition.getControllerClass())) {
                     throw new RuntimeException(
-                            String.format("Project contains screens with the same id: %s", definition.getId()));
+                            String.format("Project contains screens with the same id: '%s'. See '%s' and '%s'",
+                                    definition.getId(),
+                                    definition.getControllerClass(),
+                                    existingScreenController));
                 } else {
-                    projectScreens.add(definition.getId());
+                    projectScreens.put(definition.getId(), definition.getControllerClass());
                 }
 
                 WindowInfo windowInfo = new WindowInfo(definition.getId(), windowAttributesProvider,
