@@ -15,6 +15,14 @@
   -->
 
 <window xmlns="http://schemas.haulmont.com/cuba/screen/window.xsd">
+    <data>
+        <collection id="tasksDc"
+                    class="com.haulmont.cuba.core.entity.ScheduledTask"
+                    view="_local">
+            <loader/>
+        </collection>
+    </data>
+
     <layout spacing="true">
         <calendar id="calendarDefault"/>
         <calendar id="calendarDate"
@@ -27,5 +35,10 @@
                   datatype="localDateTime"/>
         <calendar id="calendarOffsetDateTime"
                   datatype="offsetDateTime"/>
+        <calendar id="calendarWithContainer"
+                  dataContainer="tasksDc"
+                  captionProperty="id"
+                  startDateProperty="startDate"
+                  endDateProperty="lastStartTime"/>
     </layout>
 </window>

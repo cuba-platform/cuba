@@ -130,7 +130,7 @@ public class WebCalendar<V> extends WebAbstractComponent<CubaCalendar>
     protected void initDefaultEventProvider(CubaCalendar component) {
         calendarEventProvider = new ListCalendarEventProvider();
 
-        component.setEventProvider(new CalendarEventProviderWrapper(calendarEventProvider));
+        component.setEventProvider(new CalendarEventProviderWrapper<>(calendarEventProvider, this::convertToPresentation));
     }
 
     @Inject
@@ -164,12 +164,16 @@ public class WebCalendar<V> extends WebAbstractComponent<CubaCalendar>
     }
 
     protected Datatype<V> getDefaultDatatype() {
-        return (Datatype<V>) datatypeRegistry.get(Date.class);
+        MetaProperty metaProperty = getMetaProperty();
+        Class datatypeClass = metaProperty != null
+                ? metaProperty.getJavaType()
+                : Date.class;
+        return (Datatype<V>) datatypeRegistry.get(datatypeClass);
     }
 
-    protected void checkDatatypeMismatch(Datatype datatype) {
-        if (datatype != null
-                && getEventProvider() instanceof EntityCalendarEventProvider) {
+    @Nullable
+    protected MetaProperty getMetaProperty() {
+        if (getEventProvider() instanceof EntityCalendarEventProvider) {
             EntityCalendarEventProvider eventProvider = (EntityCalendarEventProvider) getEventProvider();
             String property = eventProvider.getStartDateProperty().isEmpty()
                     ? eventProvider.getEndDateProperty()
@@ -181,13 +185,19 @@ public class WebCalendar<V> extends WebAbstractComponent<CubaCalendar>
                         ? datasource.getMetaClass()
                         : ((ContainerCalendarEventProvider) eventProvider).getContainer().getEntityMetaClass();
 
-                MetaProperty metaProperty = metaClass.getProperty(property);
-                if (metaProperty != null
-                        && !metaProperty.getJavaType().equals(datatype.getJavaClass())) {
-                    throw new IllegalArgumentException(String.format("Property '%s' and passed Datatype have different types. " +
-                            "Property: '%s'; Datatype: '%s'", property, metaProperty.getJavaType(), datatype.getJavaClass()));
-                }
+                return metaClass.getProperty(property);
             }
+        }
+        return null;
+    }
+
+    protected void checkDatatypeMismatch(Datatype datatype) {
+        MetaProperty metaProperty = getMetaProperty();
+        if (datatype != null
+                && metaProperty != null
+                && !metaProperty.getJavaType().equals(datatype.getJavaClass())) {
+            throw new IllegalArgumentException(String.format("Property '%s' and passed Datatype have different types. " +
+                    "Property: '%s'; Datatype: '%s'", metaProperty.getName(), metaProperty.getJavaType(), datatype.getJavaClass()));
         }
     }
 
@@ -339,14 +349,14 @@ public class WebCalendar<V> extends WebAbstractComponent<CubaCalendar>
     @Override
     public void setEventProvider(CalendarEventProvider calendarEventProvider) {
         if (this.calendarEventProvider instanceof EntityCalendarEventProvider) {
-            ((EntityCalendarEventProvider ) this.calendarEventProvider).unbind();
+            ((EntityCalendarEventProvider) this.calendarEventProvider).unbind();
         }
 
         this.calendarEventProvider = calendarEventProvider;
         if (calendarEventProvider != null) {
-            component.setEventProvider(new CalendarEventProviderWrapper(calendarEventProvider));
+            component.setEventProvider(new CalendarEventProviderWrapper<>(calendarEventProvider, this::convertToPresentation));
         } else {
-            component.setEventProvider(new CalendarEventProviderWrapper(new ListCalendarEventProvider()));
+            component.setEventProvider(new CalendarEventProviderWrapper<>(new ListCalendarEventProvider(), this::convertToPresentation));
         }
     }
 

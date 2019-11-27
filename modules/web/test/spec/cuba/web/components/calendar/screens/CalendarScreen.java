@@ -16,7 +16,10 @@
 
 package spec.cuba.web.components.calendar.screens;
 
+import com.haulmont.cuba.core.entity.ScheduledTask;
+import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.gui.components.Calendar;
+import com.haulmont.cuba.gui.model.CollectionContainer;
 import com.haulmont.cuba.gui.screen.Screen;
 import com.haulmont.cuba.gui.screen.Subscribe;
 import com.haulmont.cuba.gui.screen.UiController;
@@ -26,6 +29,7 @@ import javax.inject.Inject;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
+import java.util.Collections;
 import java.util.Date;
 
 @UiController
@@ -33,20 +37,38 @@ import java.util.Date;
 public class CalendarScreen extends Screen {
 
     @Inject
-    private Calendar calendarDefault;
+    protected Metadata metadata;
+
     @Inject
-    private Calendar<Date> calendarDate;
+    public CollectionContainer<ScheduledTask> tasksDc;
+
     @Inject
-    private Calendar<Date> calendarDateTime;
+    protected Calendar calendarDefault;
     @Inject
-    private Calendar<LocalDate> calendarLocalDate;
+    protected Calendar<Date> calendarDate;
     @Inject
-    private Calendar<LocalDateTime> calendarLocalDateTime;
+    protected Calendar<Date> calendarDateTime;
     @Inject
-    private Calendar<OffsetDateTime> calendarOffsetDateTime;
+    protected Calendar<LocalDate> calendarLocalDate;
+    @Inject
+    protected Calendar<LocalDateTime> calendarLocalDateTime;
+    @Inject
+    protected Calendar<OffsetDateTime> calendarOffsetDateTime;
+    @Inject
+    protected Calendar calendarWithContainer;
 
     @Subscribe
     protected void onInit(InitEvent event) {
+        initDataContainer();
+        initFields();
+    }
+
+    protected void initDataContainer() {
+        ScheduledTask task = metadata.create(ScheduledTask.class);
+        tasksDc.setItems(Collections.singletonList(task));
+    }
+
+    protected void initFields() {
         calendarDefault.setStartDate(new Date());
         calendarDefault.setEndDate(new Date());
 

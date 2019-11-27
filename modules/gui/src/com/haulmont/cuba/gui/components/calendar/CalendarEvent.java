@@ -19,16 +19,17 @@ package com.haulmont.cuba.gui.components.calendar;
 import com.haulmont.bali.events.Subscription;
 
 import java.io.Serializable;
-import java.util.Date;
 import java.util.EventObject;
 import java.util.function.Consumer;
 
-public interface CalendarEvent extends Serializable {
-    Date getStart();
-    void setStart(Date start);
+public interface CalendarEvent<V> extends Serializable {
+    V getStart();
 
-    Date getEnd();
-    void setEnd(Date end);
+    void setStart(V start);
+
+    V getEnd();
+
+    void setEnd(V end);
 
     String getCaption();
     void setCaption(String caption);
@@ -42,27 +43,27 @@ public interface CalendarEvent extends Serializable {
     boolean isAllDay();
     void setAllDay(boolean isAllDay);
 
-    Subscription addEventChangeListener(Consumer<EventChangeEvent> listener);
+    Subscription addEventChangeListener(Consumer<EventChangeEvent<V>> listener);
 
     /**
      * @param listener a listener to remove
      * @deprecated Use {@link Subscription} object instead
      */
     @Deprecated
-    void removeEventChangeListener(Consumer<EventChangeEvent> listener);
+    void removeEventChangeListener(Consumer<EventChangeEvent<V>> listener);
 
-    class EventChangeEvent extends EventObject {
+    class EventChangeEvent<V> extends EventObject {
 
         public EventChangeEvent(CalendarEvent source) {
             super(source);
         }
 
         @Override
-        public CalendarEvent getSource() {
-            return (CalendarEvent) super.getSource();
+        public CalendarEvent<V> getSource() {
+            return (CalendarEvent<V>) super.getSource();
         }
 
-        public CalendarEvent getCalendarEvent() {
+        public CalendarEvent<V> getCalendarEvent() {
             return getSource();
         }
     }
@@ -71,13 +72,13 @@ public interface CalendarEvent extends Serializable {
      * @deprecated Use {@link Consumer} instead
      */
     @Deprecated
-    interface EventChangeListener extends Consumer<EventChangeEvent> {
+    interface EventChangeListener<V> extends Consumer<EventChangeEvent<V>> {
 
         @Override
-        default void accept(EventChangeEvent eventChangeEvent) {
+        default void accept(EventChangeEvent<V> eventChangeEvent) {
             eventChange(eventChangeEvent);
         }
 
-        void eventChange(EventChangeEvent eventChangeEvent);
+        void eventChange(EventChangeEvent<V> eventChangeEvent);
     }
 }

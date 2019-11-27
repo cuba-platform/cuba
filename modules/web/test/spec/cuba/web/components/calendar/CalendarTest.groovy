@@ -57,4 +57,31 @@ class CalendarTest extends UiScreenSpec {
         "calendarLocalDateTime"  | LocalDateTimeDatatype
         "calendarOffsetDateTime" | OffsetDateTimeDatatype
     }
+
+    def "StartDateProperty and EndDateProperty values are propagated to Calendar from ValueSource"() {
+        showMainWindow()
+
+        def calendarScreen = screens.create(CalendarScreen)
+        calendarScreen.show()
+
+        def item = calendarScreen.tasksDc.getItems().get(0)
+        def calendar = calendarScreen.getWindow().getComponentNN("calendarWithContainer") as Calendar
+
+        when: 'StartDateProperty and EndDateProperty values are set to ValueSource'
+        // StartDateProperty
+        item.setStartDate(new Date())
+        // EndDateProperty
+        item.setLastStartTime(new Date())
+
+        def events = calendar.getEventProvider().getEvents()
+
+        then: 'Calendar contains events'
+        !events.isEmpty()
+
+        and: 'Calendar StartDateProperty is updated'
+        item.getStartDate() == events.get(0).getStart()
+
+        and: 'Calendar EndDateProperty is updated'
+        item.getLastStartTime() == events.get(0).getEnd()
+    }
 }

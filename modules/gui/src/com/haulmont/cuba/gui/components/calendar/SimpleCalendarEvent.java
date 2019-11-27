@@ -19,13 +19,12 @@ package com.haulmont.cuba.gui.components.calendar;
 import com.haulmont.bali.events.EventHub;
 import com.haulmont.bali.events.Subscription;
 
-import java.util.Date;
 import java.util.function.Consumer;
 
-public class SimpleCalendarEvent implements CalendarEvent {
+public class SimpleCalendarEvent<V> implements CalendarEvent<V> {
 
-    protected Date start;
-    protected Date end;
+    protected V start;
+    protected V end;
     protected String caption;
     protected String description;
     protected String styleName;
@@ -34,27 +33,27 @@ public class SimpleCalendarEvent implements CalendarEvent {
     protected EventHub events = new EventHub();
 
     protected void fireDataChanged() {
-        events.publish(EventChangeEvent.class, new EventChangeEvent(this));
+        events.publish(EventChangeEvent.class, new EventChangeEvent<>(this));
     }
 
     @Override
-    public Date getStart() {
+    public V getStart() {
         return start;
     }
 
     @Override
-    public void setStart(Date start) {
+    public void setStart(V start) {
         this.start = start;
         fireDataChanged();
     }
 
     @Override
-    public Date getEnd() {
+    public V getEnd() {
         return end;
     }
 
     @Override
-    public void setEnd(Date end) {
+    public void setEnd(V end) {
         this.end = end;
         fireDataChanged();
     }
@@ -103,13 +102,15 @@ public class SimpleCalendarEvent implements CalendarEvent {
         fireDataChanged();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public Subscription addEventChangeListener(Consumer<EventChangeEvent> listener) {
-        return events.subscribe(EventChangeEvent.class, listener);
+    public Subscription addEventChangeListener(Consumer<EventChangeEvent<V>> listener) {
+        return events.subscribe(EventChangeEvent.class, (Consumer) listener);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public void removeEventChangeListener(Consumer<EventChangeEvent> listener) {
-        events.unsubscribe(EventChangeEvent.class, listener);
+    public void removeEventChangeListener(Consumer<EventChangeEvent<V>> listener) {
+        events.unsubscribe(EventChangeEvent.class, (Consumer) listener);
     }
 }
