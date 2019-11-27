@@ -70,7 +70,6 @@ public class AppProperties {
 
     public synchronized void initSystemProperties() {
         systemProperties.clear();
-        systemProperties.putAll(System.getenv());
         for (String name : System.getProperties().stringPropertyNames()) {
             systemProperties.put(name, System.getProperty(name));
         }
@@ -176,10 +175,15 @@ public class AppProperties {
 
     private String getSystemValue(String key) {
         String value = systemProperties.get(key);
-        if (StringUtils.isEmpty(value)
-                && !Boolean.parseBoolean(properties.get("cuba.disableUppercaseSystemAndEnvironmentProperties"))) {
-            value = systemProperties.get(key.replace('.', '_').toUpperCase());
+
+        if (StringUtils.isEmpty(value)) {
+            value = System.getenv(key);
+            if (StringUtils.isEmpty(value)
+                    && !Boolean.parseBoolean(properties.get("cuba.disableUppercaseSystemAndEnvironmentProperties"))) {
+                value = System.getenv(key.replace('.', '_').toUpperCase());
+            }
         }
+
         return value;
     }
 
