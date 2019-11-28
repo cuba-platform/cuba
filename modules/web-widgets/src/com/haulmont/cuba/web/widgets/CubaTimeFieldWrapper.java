@@ -145,7 +145,8 @@ public class CubaTimeFieldWrapper extends CustomField<LocalTime> {
     protected void componentValueChanged(HasValue.ValueChangeEvent<LocalTime> event) {
         if (event.isUserOriginated()) {
             LocalTime oldValue = this.internalValue;
-            this.internalValue = convertToModel(convertToPresentation(event.getValue()));
+
+            this.internalValue = constructModelValue(event.getValue());
 
             setValueToPresentation(convertToPresentation(this.internalValue));
 
@@ -165,6 +166,19 @@ public class CubaTimeFieldWrapper extends CustomField<LocalTime> {
                     new ValueChangeEvent<>(this, oldValue, true);
             fireEvent(valueChangeEvent);
         }
+    }
+
+    protected LocalTime constructModelValue(LocalTime value) {
+        if (timeMode == TimeMode.H_24) {
+            return value;
+        }
+
+        AmPmLocalTime time = convertTo12hFormat(value);
+        AmPm amPm = time.getTime().getHour() == value.getHour()
+                ? amPmField.getValue()
+                : time.getAmPm();
+
+        return convertFrom12hFormat(new AmPmLocalTime(time.getTime(), amPm));
     }
 
     protected void setValueToPresentation(AmPmLocalTime value) {
