@@ -47,6 +47,9 @@ public class ButtonsPanelLoader extends ContainerLoader<ButtonsPanel> {
         loadStyleName(resultComponent, element);
         loadAlign(resultComponent, element);
 
+        loadSpacing(resultComponent, element);
+        loadMargin(resultComponent, element);
+
         loadWidth(resultComponent, element);
         loadHeight(resultComponent, element);
 
