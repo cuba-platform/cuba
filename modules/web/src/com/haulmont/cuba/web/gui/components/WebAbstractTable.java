@@ -2867,7 +2867,9 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
             }
         }
 
-        if (propertyPath.getRangeJavaClass() == Boolean.class) {
+        if (propertyPath.getRangeJavaClass() == Boolean.class
+                && column != null
+                && column.getFormatter() == null) {
             Entity item = datasource.getItem(itemId);
             if (item != null) {
                 Boolean value = item.getValueEx(propertyId.toString());
