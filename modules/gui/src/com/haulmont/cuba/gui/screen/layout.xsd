@@ -2477,6 +2477,7 @@
                 </xs:sequence>
 
                 <xs:attributeGroup ref="hasContextHelp"/>
+                <xs:attributeGroup ref="hasSpacingMargin"/>
 
                 <xs:attribute name="providerClass" type="xs:string"/>
                 <xs:attribute name="alwaysVisible" type="xs:boolean"/>
