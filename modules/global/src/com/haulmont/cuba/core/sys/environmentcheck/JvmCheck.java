@@ -21,6 +21,7 @@ import org.apache.commons.lang3.SystemUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 public class JvmCheck implements EnvironmentCheck {
 
@@ -32,6 +33,14 @@ public class JvmCheck implements EnvironmentCheck {
             result.add(new CheckFailedResult(
                     String.format("Unsupported Java version detected: %s; Cuba supports Java 8, 9 or 11", javaVersion),
                     null));
+        }
+
+        Properties prop = System.getProperties();
+        String vendor = prop.getProperty("java.vendor");
+        // Since OpenJ9 JVM is unsupported
+        if (vendor != null && vendor.contains("OpenJ9")) {
+            result.add(new CheckFailedResult(
+                    String.format("Possibly unsupported JVM from vendor: %s", vendor), null));
         }
         return result;
     }
