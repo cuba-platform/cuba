@@ -381,7 +381,10 @@ public class EntityImportExport implements EntityImportExportAPI {
             ReferenceInfo referenceInfo = new ReferenceInfo(dstEntity, null, importViewProperty, srcPropertyValue, dstPropertyValue);
             referenceInfoList.add(referenceInfo);
         } else {
-            dstPropertyValue = importEntity(srcPropertyValue, dstPropertyValue, importViewProperty.getView(), regularView, commitContext, referenceInfoList, optimisticLocking);
+            dstPropertyValue = srcPropertyValue != null ?
+                    importEntity(srcPropertyValue, dstPropertyValue, importViewProperty.getView(), regularView, commitContext, referenceInfoList,
+                            optimisticLocking) :
+                    null;
             dstEntity.setValue(importViewProperty.getName(), dstPropertyValue);
         }
     }
