@@ -798,6 +798,12 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
                     getContext());
         }
 
+        if (!column.isSortable()) {
+            throw new GuiDevelopmentException(
+                    String.format("Can't sort column '%s' because it is disabled for sorting by 'sortable' attribute", column.getStringId()),
+                    getContext());
+        }
+
         Table.SortDirection sortDirection = Table.SortDirection.valueOf(sort);
         getComponentContext().addPostInitTask((context, window) ->
                 resultComponent.sort(column.getStringId(), sortDirection));

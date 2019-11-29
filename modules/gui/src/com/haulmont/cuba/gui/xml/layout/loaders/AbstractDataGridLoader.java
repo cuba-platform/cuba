@@ -728,6 +728,12 @@ public abstract class AbstractDataGridLoader<T extends DataGrid> extends Actions
                     getContext());
         }
 
+        if (!column.isSortable()) {
+            throw new GuiDevelopmentException(
+                    String.format("Can't sort column '%s' because it is disabled for sorting by 'sortable' attribute", column.getId()),
+                    getContext());
+        }
+
         DataGrid.SortDirection sortDirection = DataGrid.SortDirection.valueOf(sort);
         getComponentContext().addPostInitTask((context, window) ->
                 component.sort(column.getId(), sortDirection));
