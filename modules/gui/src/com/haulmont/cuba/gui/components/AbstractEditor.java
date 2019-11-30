@@ -120,16 +120,7 @@ public class AbstractEditor<T extends Entity> extends AbstractWindow
 
         Action enableEditingAction = new BaseAction(ENABLE_EDITING)
                 .withCaption(messages.getMainMessage("actions.EnableEditing"))
-                .withHandler(e ->
-                        showOptionDialog(messages.getMainMessage("dialogs.Confirmation"),
-                                messages.getMainMessage("dialogs.Confirmation.EnableEditing"),
-                                MessageType.CONFIRMATION,
-                                new Action[]{
-                                        new DialogAction(DialogAction.Type.YES, true)
-                                                .withHandler(actionPerformedEvent ->
-                                                setReadOnly(false)),
-                                        new DialogAction(DialogAction.Type.NO)
-                                }));
+                .withHandler(e -> setReadOnly(false));
         enableEditingAction.setVisible(false);
         getFrame().addAction(enableEditingAction);
     }

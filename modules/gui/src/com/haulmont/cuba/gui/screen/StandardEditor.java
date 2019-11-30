@@ -114,15 +114,7 @@ public abstract class StandardEditor<T extends Entity> extends Screen
     }
 
     protected void enableEditing(Action.ActionPerformedEvent actionPerformedEvent) {
-        Messages messages = getBeanLocator().get(Messages.NAME);
-        getScreenContext().getDialogs().createOptionDialog(Dialogs.MessageType.CONFIRMATION)
-                .withCaption(messages.getMainMessage("dialogs.Confirmation"))
-                .withMessage(messages.getMainMessage("dialogs.Confirmation.EnableEditing"))
-                .withActions(new DialogAction(DialogAction.Type.YES, true)
-                                .withHandler(event ->
-                                        setReadOnly(false)),
-                        new DialogAction(DialogAction.Type.NO))
-                .show();
+        setReadOnly(false);
     }
 
     private void beforeShow(@SuppressWarnings("unused") BeforeShowEvent beforeShowEvent) {
