@@ -40,6 +40,8 @@ import javax.inject.Inject;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+import static com.haulmont.cuba.gui.screen.FrameOwner.WINDOW_COMMIT_AND_CLOSE_ACTION;
+
 /**
  * Standard action for opening an editor screen in the read-only mode.
  * The editor screen must implement the {@link ReadOnlyAwareScreen} interface.
@@ -51,13 +53,15 @@ import java.util.function.Supplier;
  */
 @StudioAction(category = "List Actions", description = "Opens an editor screen for an entity instance in read-only mode")
 @ActionType(ViewAction.ID)
-public class ViewAction extends SecuredListAction {
+public class ViewAction<E extends Entity> extends SecuredListAction {
 
     public static final String ID = "view";
 
     protected ScreenBuilders screenBuilders;
 
     protected ActionScreenInitializer screenInitializer = new ActionScreenInitializer();
+
+    protected Consumer<E> afterCommitHandler;
 
     public ViewAction() {
         this(ID);
@@ -159,13 +163,30 @@ public class ViewAction extends SecuredListAction {
      * <pre>
      * &#64;Install(to = "petsTable.view", subject = "afterCloseHandler")
      * protected void petsTableViewAfterCloseHandler(AfterCloseEvent event) {
-     *     CloseAction closeAction = event.getCloseAction();
-     *     System.out.println("Closed with " + closeAction);
+     *     if (event.closedWith(StandardOutcome.COMMIT)) {
+     *         System.out.println("Committed");
+     *     }
      * }
      * </pre>
      */
     public void setAfterCloseHandler(Consumer<Screen.AfterCloseEvent> afterCloseHandler) {
         screenInitializer.setAfterCloseHandler(afterCloseHandler);
+    }
+
+    /**
+     * Sets the handler to be invoked when the editor screen commits the entity if "enable editing" action was executed.
+     * <p>
+     * The preferred way to set the handler is using a controller method annotated with {@link Install}, e.g.:
+     * <pre>
+     * &#64;Install(to = "petsTable.view", subject = "afterCommitHandler")
+     * protected void petsTableViewAfterCommitHandler(Pet entity) {
+     *     System.out.println("Committed " + entity);
+     * }
+     * </pre>
+     */
+    @StudioDelegate
+    public void setAfterCommitHandler(Consumer<E> afterCommitHandler) {
+        this.afterCommitHandler = afterCommitHandler;
     }
 
     @Inject
@@ -221,7 +242,7 @@ public class ViewAction extends SecuredListAction {
     /**
      * Executes the action.
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public void execute() {
         if (target == null) {
             throw new IllegalStateException("ViewAction target is not set");
@@ -247,6 +268,16 @@ public class ViewAction extends SecuredListAction {
         builder = screenInitializer.initBuilder(builder);
 
         Screen editor = builder.build();
+
+        if (afterCommitHandler != null) {
+            editor.addAfterCloseListener(afterCloseEvent -> {
+                CloseAction closeAction = afterCloseEvent.getCloseAction();
+                if (closeAction.equals(WINDOW_COMMIT_AND_CLOSE_ACTION)) {
+                    Entity committedEntity = ((EditorScreen) editor).getEditedEntity();
+                    afterCommitHandler.accept((E) committedEntity);
+                }
+            });
+        }
 
         screenInitializer.initScreen(editor);
 
