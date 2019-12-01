@@ -32,9 +32,7 @@ import com.haulmont.cuba.gui.model.CollectionContainer;
 import com.haulmont.cuba.gui.model.InstanceContainer;
 import com.haulmont.cuba.gui.model.Nested;
 import com.haulmont.cuba.gui.model.ScreenData;
-import com.haulmont.cuba.gui.screen.FrameOwner;
-import com.haulmont.cuba.gui.screen.ScreenContext;
-import com.haulmont.cuba.gui.screen.UiControllerUtils;
+import com.haulmont.cuba.gui.screen.*;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
@@ -463,6 +461,9 @@ public class RemoveOperation {
         EXCLUDE
     }
 
+    /**
+     * Event sent before selected entities are removed.
+     */
     public static class BeforeActionPerformedEvent<E> extends EventObject {
         protected final List<E> items;
         protected boolean actionPrevented = false;
@@ -482,19 +483,31 @@ public class RemoveOperation {
             return (FrameOwner) super.getSource();
         }
 
+        /**
+         * @return the list of entities selected for removal
+         */
         public List<E> getItems() {
             return items;
         }
 
+        /**
+         * @return whether the removal was prevented by invoking {@link #preventAction()}
+         */
         public boolean isActionPrevented() {
             return actionPrevented;
         }
 
+        /**
+         * Prevents the removal.
+         */
         public void preventAction() {
             this.actionPrevented = true;
         }
     }
 
+    /**
+     * Event sent after selected entities are removed.
+     */
     public static class AfterActionPerformedEvent<E> extends EventObject {
         protected final List<E> items;
 
@@ -513,11 +526,17 @@ public class RemoveOperation {
             return (FrameOwner) super.getSource();
         }
 
+        /**
+         * @return the list of entities selected for removal
+         */
         public List<E> getItems() {
             return items;
         }
     }
 
+    /**
+     * Event sent when the remove operation is cancelled by user in the confirmation dialog.
+     */
     public static class ActionCancelledEvent<E> extends EventObject {
         protected final List<E> items;
 
@@ -536,6 +555,9 @@ public class RemoveOperation {
             return (FrameOwner) super.getSource();
         }
 
+        /**
+         * @return the list of entities selected for removal
+         */
         public List<E> getItems() {
             return items;
         }

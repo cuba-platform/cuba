@@ -30,7 +30,7 @@ import static com.haulmont.cuba.gui.WindowManager.OpenType;
 
 /**
  * The {@code Action} interface abstracts away a function from a visual component.
- * When an action occurs, {@link #actionPerform(Component)} method is invoked.
+ * <p> The action is executed by invoking its {@link #actionPerform(Component)} method.
  */
 public interface Action {
 
@@ -47,7 +47,7 @@ public interface Action {
     String getId();
 
     /**
-     * @return  action's localized caption
+     * @return  action's caption
      */
     String getCaption();
     @StudioProperty
@@ -62,7 +62,7 @@ public interface Action {
 
     /**
      *
-     * @return action's shortcut
+     * @return action's keyboard shortcut
      */
     KeyCombination getShortcutCombination();
     void setShortcutCombination(KeyCombination shortcut);
@@ -104,8 +104,8 @@ public interface Action {
      * Refresh internal state of the action to initialize enabled, visible, caption, icon, etc. properties depending
      * on programmatically set values and user permissions set at runtime.
      *
-     * <br> For example, this method is called by visual components holding actions when they are connected to
-     * datasources. At this moment the action can find out what entity it is connected to and change its state
+     * <p> For example, this method is called by visual components holding actions when they are bound to
+     * data. At this moment the action can find out what entity it is connected to and change its state
      * according to the user permissions.
      */
     void refreshState();
@@ -128,14 +128,14 @@ public interface Action {
     void addOwner(ActionOwner actionOwner);
 
     /**
-     * Remove an owner component.
+     * Remove the owner component.
      *
      * @param actionOwner owner component
      */
     void removeOwner(ActionOwner actionOwner);
 
     /**
-     * Invoked by owning component when an action occurs.
+     * Invoked by owning component to execute the action.
      *
      * @param component invoking component
      */
@@ -149,7 +149,7 @@ public interface Action {
     void addPropertyChangeListener(Consumer<PropertyChangeEvent> listener);
 
     /**
-     * Removes a listener.
+     * Removes the listener.
      *
      * @param listener a listener object
      * @see #addPropertyChangeListener
@@ -159,6 +159,7 @@ public interface Action {
     /**
      * Indicates that the action can be assigned a {@link OpenType} to open a related screen.
      */
+    @Deprecated
     interface HasOpenType extends Action {
         OpenType getOpenType();
         void setOpenType(OpenType openType);

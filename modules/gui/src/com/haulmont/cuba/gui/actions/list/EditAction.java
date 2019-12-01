@@ -170,8 +170,9 @@ public class EditAction<E extends Entity> extends SecuredListAction implements A
      * <pre>
      * &#64;Install(to = "petsTable.edit", subject = "afterCloseHandler")
      * protected void petsTableEditAfterCloseHandler(AfterCloseEvent event) {
-     *     CloseAction closeAction = event.getCloseAction();
-     *     System.out.println("Closed with " + closeAction);
+     *     if (event.closedWith(StandardOutcome.COMMIT)) {
+     *         System.out.println("Committed");
+     *     }
      * }
      * </pre>
      */
@@ -272,7 +273,7 @@ public class EditAction<E extends Entity> extends SecuredListAction implements A
     /**
      * Executes the action.
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public void execute() {
         if (target == null) {
             throw new IllegalStateException("EditAction target is not set");

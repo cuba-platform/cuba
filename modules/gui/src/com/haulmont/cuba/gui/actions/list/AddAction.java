@@ -171,8 +171,9 @@ public class AddAction<E extends Entity> extends ListAction implements Action.Di
      * <pre>
      * &#64;Install(to = "petsTable.add", subject = "afterCloseHandler")
      * protected void petsTableAddAfterCloseHandler(AfterCloseEvent event) {
-     *     CloseAction closeAction = event.getCloseAction();
-     *     System.out.println("Closed with " + closeAction);
+     *     if (event.closedWith(StandardOutcome.SELECT)) {
+     *         System.out.println("Selected");
+     *     }
      * }
      * </pre>
      */

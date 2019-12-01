@@ -171,8 +171,9 @@ public class CreateAction<E extends Entity> extends ListAction implements Action
      * <pre>
      * &#64;Install(to = "petsTable.create", subject = "afterCloseHandler")
      * protected void petsTableCreateAfterCloseHandler(AfterCloseEvent event) {
-     *     CloseAction closeAction = event.getCloseAction();
-     *     System.out.println("Closed with " + closeAction);
+     *     if (event.closedWith(StandardOutcome.COMMIT)) {
+     *         System.out.println("Committed");
+     *     }
      * }
      * </pre>
      */
