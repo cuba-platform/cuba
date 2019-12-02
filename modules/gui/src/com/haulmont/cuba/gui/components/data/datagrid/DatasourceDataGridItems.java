@@ -21,6 +21,8 @@ import com.haulmont.bali.events.Subscription;
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.gui.components.AggregationInfo;
+import com.haulmont.cuba.gui.components.data.AggregatableDataGridItems;
 import com.haulmont.cuba.gui.components.data.BindingState;
 import com.haulmont.cuba.gui.components.data.meta.EntityDataGridItems;
 import com.haulmont.cuba.gui.components.data.meta.DatasourceDataUnit;
@@ -29,12 +31,15 @@ import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDsHelper;
 
 import javax.annotation.Nullable;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class DatasourceDataGridItems<E extends Entity<K>, K> implements EntityDataGridItems<E>, DatasourceDataUnit {
+public class DatasourceDataGridItems<E extends Entity<K>, K>
+        implements EntityDataGridItems<E>, AggregatableDataGridItems<E>, DatasourceDataUnit {
 
     protected CollectionDatasource.Indexed<E, K> datasource;
     protected EventHub events = new EventHub();
@@ -185,5 +190,17 @@ public class DatasourceDataGridItems<E extends Entity<K>, K> implements EntityDa
     @Override
     public Subscription addSelectedItemChangeListener(Consumer<SelectedItemChangeEvent<E>> listener) {
         return events.subscribe(SelectedItemChangeEvent.class, (Consumer) listener);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public Map<AggregationInfo, String> aggregate(AggregationInfo[] aggregationInfos, Collection<?> itemIds) {
+        return ((CollectionDatasource.Aggregatable) datasource).aggregate(aggregationInfos, itemIds);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public Map<AggregationInfo, Object> aggregateValues(AggregationInfo[] aggregationInfos, Collection<?> itemIds) {
+        return ((CollectionDatasource.Aggregatable) datasource).aggregateValues(aggregationInfos, itemIds);
     }
 }

@@ -29,6 +29,7 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.BaseAction;
+import com.haulmont.cuba.gui.components.data.AggregatableDataGridItems;
 import com.haulmont.cuba.gui.components.data.BindingState;
 import com.haulmont.cuba.gui.components.data.DataGridItems;
 import com.haulmont.cuba.gui.components.data.ValueSourceProvider;
@@ -45,6 +46,8 @@ import com.haulmont.cuba.gui.components.sys.ShowInfoAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsBuilder;
+import com.haulmont.cuba.gui.data.aggregation.Aggregation;
+import com.haulmont.cuba.gui.data.aggregation.Aggregations;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import com.haulmont.cuba.gui.model.*;
 import com.haulmont.cuba.gui.model.impl.KeyValueContainerImpl;
@@ -183,6 +186,9 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
 
     protected final List<HeaderRow> headerRows = new ArrayList<>();
     protected final List<FooterRow> footerRows = new ArrayList<>();
+
+    protected com.vaadin.ui.components.grid.HeaderRow headerAggregationRow;
+    protected com.vaadin.ui.components.grid.FooterRow footerAggregationRow;
 
     protected static final Map<Class<? extends Renderer>, Class<? extends Renderer>> rendererClasses;
 
@@ -811,6 +817,10 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
         columnsOrder.remove(column);
         columnGenerators.remove(column.getId());
 
+        if (column.getAggregation() != null) {
+            component.removeAggregationPropertyId(column.getId());
+        }
+
         ((ColumnImpl<E>) column).setGridColumn(null);
         column.setOwner(null);
     }
@@ -869,6 +879,7 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
             // Bind new datasource
             this.dataBinding = createDataGridDataProvider(dataGridItems);
             this.component.setDataProvider(this.dataBinding);
+            updateAggregationRow();
 
             List<Column<E>> visibleColumnsOrder = getInitialVisibleColumns();
 
@@ -1018,11 +1029,15 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
             }
         }
 
+        updateAggregationRow();
+
         refreshActionsState();
     }
 
     @Override
     public void dataGridSourcePropertyValueChanged(DataGridItems.ValueChangeEvent<E> event) {
+        updateAggregationRow();
+
         refreshActionsState();
     }
 
@@ -2857,6 +2872,7 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
 
     @Override
     public HeaderRow getHeaderRow(int index) {
+        checkHeaderIndexInRange(index, true);
         return getHeaderRowByGridRow(component.getHeaderRow(index));
     }
 
@@ -2872,8 +2888,10 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
 
     @Override
     public HeaderRow appendHeaderRow() {
-        com.vaadin.ui.components.grid.HeaderRow headerRow = component.appendHeaderRow();
-        return addHeaderRowInternal(headerRow);
+        boolean isAggregated = isAggregatable() && headerAggregationRow != null;
+        return addHeaderRowInternal(isAggregated ?
+                component.addHeaderRowAt(headerRows.size() - 1) :
+                component.appendHeaderRow());
     }
 
     @Override
@@ -2884,8 +2902,20 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
 
     @Override
     public HeaderRow addHeaderRowAt(int index) {
+        checkHeaderIndexInRange(index, false);
         com.vaadin.ui.components.grid.HeaderRow headerRow = component.addHeaderRowAt(index);
         return addHeaderRowInternal(headerRow);
+    }
+
+    protected void checkHeaderIndexInRange(int index, boolean includeBounds) {
+        if (isAggregatable() && headerAggregationRow != null) {
+            boolean outOfBounds = includeBounds ?
+                    index >= (headerRows.size() - 1) : // for getting row
+                    index > (headerRows.size() - 1); // for adding row
+            if (outOfBounds) {
+                throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + (headerRows.size() - 1));
+            }
+        }
     }
 
     protected HeaderRow addHeaderRowInternal(com.vaadin.ui.components.grid.HeaderRow headerRow) {
@@ -2922,11 +2952,13 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
 
     @Override
     public int getHeaderRowCount() {
-        return component.getHeaderRowCount();
+        boolean isAggregated = isAggregatable() && headerAggregationRow != null;
+        return isAggregated ? headerRows.size() - 1 : headerRows.size();
     }
 
     @Override
     public FooterRow getFooterRow(int index) {
+        index = calculateFooterIndex(index);
         return getFooterRowByGridRow(component.getFooterRow(index));
     }
 
@@ -2948,14 +2980,28 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
 
     @Override
     public FooterRow prependFooterRow() {
-        com.vaadin.ui.components.grid.FooterRow footerRow = component.prependFooterRow();
-        return addFooterRowInternal(footerRow);
+        boolean isAggregated = isAggregatable() && footerAggregationRow != null;
+        return addFooterRowInternal(isAggregated ?
+                component.addFooterRowAt(1) :
+                component.prependFooterRow());
     }
 
     @Override
     public FooterRow addFooterRowAt(int index) {
+        index = calculateFooterIndex(index);
         com.vaadin.ui.components.grid.FooterRow footerRow = component.addFooterRowAt(index);
         return addFooterRowInternal(footerRow);
+    }
+
+    protected int calculateFooterIndex(int index) {
+        if (isAggregatable() && footerAggregationRow != null) {
+            int calculated = index + 1;
+            if (calculated <= 0 || calculated > footerRows.size()) {
+                throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + (footerRows.size() - 1));
+            }
+            return calculated;
+        }
+        return index;
     }
 
     protected FooterRow addFooterRowInternal(com.vaadin.ui.components.grid.FooterRow footerRow) {
@@ -2982,7 +3028,8 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
 
     @Override
     public int getFooterRowCount() {
-        return component.getFooterRowCount();
+        boolean isAggregated = isAggregatable() && footerAggregationRow != null;
+        return isAggregated ? footerRows.size() - 1 : footerRows.size();
     }
 
     @Nullable
@@ -3023,6 +3070,33 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
     }
 
     @Override
+    public boolean isAggregatable() {
+        return component.isAggregatable();
+    }
+
+    @Override
+    public void setAggregatable(boolean aggregatable) {
+        component.setAggregatable(aggregatable);
+
+        updateAggregationRow();
+    }
+
+    @Override
+    public AggregationPosition getAggregationPosition() {
+        return AggregationPosition.valueOf(component.getAggregationPosition().name());
+    }
+
+    @Override
+    public void setAggregationPosition(AggregationPosition position) {
+        component.setAggregationPosition(CubaEnhancedGrid.AggregationPosition.valueOf(position.name()));
+    }
+
+    @Override
+    public Map<String, Object> getAggregationResults() {
+        return __aggregateValues();
+    }
+
+    @Override
     public void setEmptyStateMessage(String message) {
         component.setEmptyStateMessage(message);
 
@@ -3054,6 +3128,189 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
     @Override
     public Consumer<EmptyStateClickEvent<E>> getEmptyStateLinkClickHandler() {
         return emptyStateClickEventHandler;
+    }
+
+    @SuppressWarnings("unchecked")
+    protected Map<String, String> __aggregate() {
+        if (!(getItems() instanceof AggregatableDataGridItems)) {
+            throw new IllegalStateException("DataGrid items must implement AggregatableDataGridItems in " +
+                    "order to use aggregation");
+        }
+
+        List<AggregationInfo> aggregationInfos = getAggregationInfos();
+        Map<AggregationInfo, String> aggregationInfoMap = ((AggregatableDataGridItems) getItems()).aggregate(
+                aggregationInfos.toArray(new AggregationInfo[0]),
+                getItems().getItems().map(Entity::getId).collect(Collectors.toList())
+        );
+
+        return convertAggregationKeyMapToColumnIdKeyMap(aggregationInfoMap);
+    }
+
+    @SuppressWarnings("unchecked")
+    protected Map<String, Object> __aggregateValues() {
+        if (!(getItems() instanceof AggregatableDataGridItems)) {
+            throw new IllegalStateException("DataGrid items must implement AggregatableDataGridItems in " +
+                    "order to use aggregation");
+        }
+
+        List<AggregationInfo> aggregationInfos = getAggregationInfos();
+        Map<AggregationInfo, Object> aggregationInfoMap = ((AggregatableDataGridItems) getItems()).aggregateValues(
+                aggregationInfos.toArray(new AggregationInfo[0]),
+                getItems().getItems().map(Entity::getId).collect(Collectors.toList())
+        );
+
+        return convertAggregationKeyMapToColumnIdKeyMap(aggregationInfoMap);
+    }
+
+    protected <V> Map<String, V> convertAggregationKeyMapToColumnIdKeyMap(Map<AggregationInfo, V> aggregationInfoMap) {
+        Map<String, V> resultsByColumns = new LinkedHashMap<>();
+        for (String propertyId : component.getAggregationPropertyIds()) {
+            DataGrid.Column column = columns.get(propertyId);
+            if (column.getAggregation() != null) {
+                resultsByColumns.put(column.getId(), aggregationInfoMap.get(column.getAggregation()));
+            }
+        }
+        return resultsByColumns;
+    }
+
+    protected List<AggregationInfo> getAggregationInfos() {
+        List<AggregationInfo> aggregationInfos = new ArrayList<>();
+        for (String propertyId : component.getAggregationPropertyIds()) {
+            DataGrid.Column column = columns.get(propertyId);
+            AggregationInfo aggregation = column.getAggregation();
+            if (aggregation != null) {
+                checkAggregation(aggregation);
+                aggregationInfos.add(aggregation);
+            }
+        }
+        return aggregationInfos;
+    }
+
+    protected void checkAggregation(AggregationInfo aggregationInfo) {
+        AggregationInfo.Type aggregationType = aggregationInfo.getType();
+
+        if (aggregationType == AggregationInfo.Type.CUSTOM) {
+            return;
+        }
+
+        MetaPropertyPath propertyPath = aggregationInfo.getPropertyPath();
+        Class<?> javaType = propertyPath.getMetaProperty().getJavaType();
+        Aggregation<?> aggregation = Aggregations.get(javaType);
+
+        if (aggregation != null && aggregation.getSupportedAggregationTypes().contains(aggregationType)) {
+            return;
+        }
+
+        String msg = String.format("Unable to aggregate column \"%s\" with data type %s with default aggregation strategy: %s",
+                propertyPath, propertyPath.getRange(), aggregationInfo.getType());
+
+        throw new IllegalArgumentException(msg);
+    }
+
+    protected void fillAggregationRow(Map<String, String> values) {
+        if (getAggregationPosition() == AggregationPosition.TOP) {
+            if (headerAggregationRow == null) {
+                initAggregationRow();
+            }
+            for (Map.Entry<String, String> value : values.entrySet()) {
+                com.vaadin.ui.components.grid.HeaderCell headerCell = headerAggregationRow.getCell(value.getKey());
+                headerCell.setText(value.getValue());
+            }
+        } else {
+            if (footerAggregationRow == null) {
+                initAggregationRow();
+            }
+            for (Map.Entry<String, String> value : values.entrySet()) {
+                com.vaadin.ui.components.grid.FooterCell footerCell = footerAggregationRow.getCell(value.getKey());
+                footerCell.setText(value.getValue());
+            }
+        }
+    }
+
+    protected void initAggregationRow() {
+        if (isAggregatable()) {
+            if (getAggregationPosition() == AggregationPosition.TOP) {
+                headerAggregationRow = component.appendHeaderRow();
+                headerAggregationRow.setStyleName("c-aggregation-row");
+
+                for (Column<E> column : columns.values()) {
+                    if (column.getAggregation() != null) {
+                        com.vaadin.ui.components.grid.HeaderCell headerCell = headerAggregationRow.getCell(column.getId());
+                        headerCell.setDescription(getColumnAggregationDescription(column));
+                    }
+                }
+                addHeaderRowInternal(headerAggregationRow);
+            } else if (getAggregationPosition() == AggregationPosition.BOTTOM) {
+                footerAggregationRow = component.prependFooterRow();
+                footerAggregationRow.setStyleName("c-aggregation-row");
+
+                for (Column<E> column : columns.values()) {
+                    if (column.getAggregation() != null) {
+                        com.vaadin.ui.components.grid.FooterCell footerCell = footerAggregationRow.getCell(column.getId());
+                        footerCell.setDescription(getColumnAggregationDescription(column));
+                    }
+                }
+                addFooterRowInternal(footerAggregationRow);
+            }
+        }
+    }
+
+    protected void updateAggregationRow() {
+        boolean isAggregatable = isAggregatable() && getItems() instanceof AggregatableDataGridItems;
+        if (isAggregatable) {
+            Map<String, String> results = __aggregate();
+            fillAggregationRow(results);
+        } else {
+            removeAggregationRow();
+        }
+    }
+
+    protected void removeAggregationRow() {
+        if (getAggregationPosition() == AggregationPosition.TOP) {
+            if (headerAggregationRow != null) {
+                removeHeaderRow(getHeaderRowByGridRow(headerAggregationRow));
+                headerAggregationRow = null;
+            }
+        } else if (getAggregationPosition() == AggregationPosition.BOTTOM) {
+            if (footerAggregationRow != null) {
+                removeFooterRow(getFooterRowByGridRow(footerAggregationRow));
+                footerAggregationRow = null;
+            }
+        }
+    }
+
+    protected String getColumnAggregationDescription(Column<E> column) {
+        String descriptionByType = null;
+        if (column.getAggregation().getType() != AggregationInfo.Type.CUSTOM) {
+            descriptionByType = getColumnAggregationDescriptionByType(column);
+        }
+
+        return column.getValueDescription() != null ? column.getValueDescription() : descriptionByType;
+    }
+
+    protected String getColumnAggregationDescriptionByType(Column<E> column) {
+        String aggregationTypeLabel;
+        switch (column.getAggregation().getType()) {
+            case AVG:
+                aggregationTypeLabel = "aggregation.avg";
+                break;
+            case COUNT:
+                aggregationTypeLabel = "aggregation.count";
+                break;
+            case SUM:
+                aggregationTypeLabel = "aggregation.sum";
+                break;
+            case MIN:
+                aggregationTypeLabel = "aggregation.min";
+                break;
+            case MAX:
+                aggregationTypeLabel = "aggregation.max";
+                break;
+            default:
+                throw new IllegalArgumentException(String.format("AggregationType %s is not supported",
+                                column.getAggregation().getType().toString()));
+        }
+        return messages.getMainMessage(aggregationTypeLabel);
     }
 
     protected void enableCrossFieldValidationHandling(boolean enable) {
@@ -3283,6 +3540,8 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
         protected boolean editable;
         protected boolean generated;
         protected Function<?, String> formatter;
+        protected AggregationInfo aggregation;
+        protected String valueDescription;
 
         protected AbstractRenderer<E, ?> renderer;
         protected Function presentationProvider;
@@ -3856,6 +4115,30 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
         @Override
         public String toString() {
             return id == null ? super.toString() : id;
+        }
+
+        @Override
+        public AggregationInfo getAggregation() {
+            return aggregation;
+        }
+
+        @Override
+        public void setAggregation(AggregationInfo info) {
+            this.aggregation = info;
+
+            if (owner != null && id != null) {
+                owner.getComponent().addAggregationPropertyId(id);
+            }
+        }
+
+        @Override
+        public String getValueDescription() {
+            return valueDescription;
+        }
+
+        @Override
+        public void setValueDescription(String valueDescription) {
+            this.valueDescription = valueDescription;
         }
     }
 

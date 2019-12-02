@@ -20,6 +20,7 @@
     <metadata-model root-package="com.haulmont.cuba">
         <class>com.haulmont.cuba.web.testmodel.sample.SampleNonPersistent</class>
         <class>com.haulmont.cuba.web.testmodel.sample.GoodInfo</class>
+        <class>com.haulmont.cuba.web.testmodel.sample.GoodStatistic</class>
     </metadata-model>
 
 </metadata>

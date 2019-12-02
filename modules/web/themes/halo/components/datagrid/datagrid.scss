@@ -15,6 +15,15 @@
  */
 
 /**
+ * Default color for aggregation row in DataGrid and Table
+ */
+$cuba-aggregation-background-color-default: rgba(255,255,255, 1);
+@if is-dark-color($v-app-background-color) {
+  $cuba-aggregation-background-color-default: scale-color($v-app-background-color, $lightness: 10%, $saturation: 80%);
+} @else {
+  $cuba-aggregation-background-color-default: scale-color($v-app-background-color, $lightness: -10%, $saturation: 80%);
+}
+/**
  * The font weight of datagrid header
  * @group dataGrid
  */
@@ -24,6 +33,12 @@ $cuba-datagrid-header-font-weight: $v-font-weight !default;
  * @group dataGrid
  */
 $cuba-datagrid-highlight-hover-row: false !default;
+
+/**
+ * Defines background color of datagrid total aggregation row.
+ * @group dataGrid
+ */
+$cuba-datagrid-aggregation-background-color: $cuba-aggregation-background-color-default !default;
 
 @mixin halo-datagrid($primary-stylename: v-grid) {
   $background-color: $v-table-background-color or valo-table-background-color();
@@ -173,6 +188,16 @@ $cuba-datagrid-highlight-hover-row: false !default;
         margin-top: -1 * $top-panel-height;
       }
     }
+  }
+
+  .#{$primary-stylename}-footer .#{$primary-stylename}-row.c-aggregation-row > td {
+    @include valo-gradient($cuba-datagrid-aggregation-background-color);
+  }
+
+  .#{$primary-stylename}-header .#{$primary-stylename}-row.c-aggregation-row > th {
+    @include valo-gradient($cuba-datagrid-aggregation-background-color);
+
+    font-weight: inherit;
   }
 
   .#{$primary-stylename}-cell .boolean-value {

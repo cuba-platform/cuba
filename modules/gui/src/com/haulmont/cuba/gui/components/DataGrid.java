@@ -2579,6 +2579,35 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
     }
 
     /**
+     * @return true if DataGrid is aggregatable
+     */
+    boolean isAggregatable();
+
+    /**
+     * Set to true if aggregation should be enabled. Default value is false.
+     *
+     * @param aggregatable aggregatable option
+     */
+    void setAggregatable(boolean aggregatable);
+
+    /**
+     * @return return aggregation row position
+     */
+    AggregationPosition getAggregationPosition();
+
+    /**
+     * Sets aggregation row position. Default value is {@link AggregationPosition#TOP}.
+     *
+     * @param position position: {@link AggregationPosition#TOP} or {@link AggregationPosition#BOTTOM}
+     */
+    void setAggregationPosition(AggregationPosition position);
+
+    /**
+     * @return aggregated values for columns
+     */
+    Map<String, Object> getAggregationResults();
+
+    /**
      * Sets a message to the middle of DataGrid body that should be appeared when DataGrid is empty.
      *
      * @param message message that appears when DataGrid is empty
@@ -3071,6 +3100,34 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
         default void setColumnGenerator(GenericColumnGenerator<E, Object> columnGenerator) {
             getOwner().addGeneratedColumn(getId(), columnGenerator);
         }
+
+        /**
+         * @return aggregation info
+         * @see DataGrid#setAggregatable(boolean)
+         */
+        AggregationInfo getAggregation();
+
+        /**
+         * Sets an aggregation info in order to perform aggregation for this column.
+         *
+         * @param info aggregation info
+         * @see DataGrid#setAggregatable(boolean)
+         */
+        void setAggregation(AggregationInfo info);
+
+        /**
+         * @return value description for aggregation row cells
+         * @see DataGrid#setAggregatable(boolean)
+         */
+        String getValueDescription();
+
+        /**
+         * Sets value description for aggregated row cells.
+         *
+         * @param valueDescription value description
+         * @see DataGrid#setAggregatable(boolean)
+         */
+        void setValueDescription(String valueDescription);
     }
 
     /**
@@ -3091,5 +3148,13 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
         public DataGrid<E> getSource() {
             return (DataGrid<E>) super.getSource();
         }
+    }
+
+    /**
+     * Defines the position of aggregation row.
+     */
+    enum AggregationPosition {
+        TOP,
+        BOTTOM
     }
 }

@@ -30,12 +30,7 @@ $cuba-table-highlight-hover-row: false !default;
  * Defines default background color of table total aggregation row. Calculated automatically.
  * @group table
  */
-$cuba-table-aggregation-background-color-default: rgba(255,255,255, 1);
-@if is-dark-color($v-app-background-color) {
-  $cuba-table-aggregation-background-color-default: scale-color($v-app-background-color, $lightness: 10%, $saturation: 80%);
-} @else {
-  $cuba-table-aggregation-background-color-default: scale-color($v-app-background-color, $lightness: -10%, $saturation: 80%);
-}
+$cuba-table-aggregation-background-color-default: $cuba-aggregation-background-color-default;
 
 /**
  * Defines background color of table total aggregation row.

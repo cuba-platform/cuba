@@ -187,7 +187,7 @@
         </xs:restriction>
     </xs:simpleType>
 
-    <xs:simpleType name="aggregationStyle">
+    <xs:simpleType name="aggregationPosition">
         <xs:restriction base="xs:string">
             <xs:enumeration value="TOP"/>
             <xs:enumeration value="BOTTOM"/>
@@ -1206,7 +1206,7 @@
         <xs:attribute name="textSelectionEnabled" type="xs:boolean"/>
 
         <xs:attribute name="aggregatable" type="xs:boolean"/>
-        <xs:attribute name="aggregationStyle" type="aggregationStyle"/>
+        <xs:attribute name="aggregationStyle" type="aggregationPosition"/>
         <xs:attribute name="showTotalAggregation" type="xs:boolean"/>
         <xs:attribute name="presentations" type="xs:boolean"/>
         <xs:attribute name="contextMenuEnabled" type="xs:boolean"/>
@@ -2615,6 +2615,16 @@
         <xs:sequence>
             <xs:element name="formatter" minOccurs="0" type="formatterType"/>
             <xs:element name="renderer" minOccurs="0" type="rendererType"/>
+            <xs:element name="aggregation" minOccurs="0">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="formatter" minOccurs="0" type="formatterType"/>
+                    </xs:sequence>
+                    <xs:attribute name="type" type="aggregation"/>
+                    <xs:attribute name="strategyClass" type="xs:string"/>
+                    <xs:attribute name="valueDescription" type="resourceString"/>
+                </xs:complexType>
+            </xs:element>
         </xs:sequence>
 
         <xs:attributeGroup ref="hasId"/>
@@ -2676,6 +2686,8 @@
                 <xs:attribute name="editorCancelCaption" type="resourceString"/>
                 <xs:attribute name="emptyStateMessage" type="resourceString"/>
                 <xs:attribute name="emptyStateLinkMessage" type="resourceString"/>
+                <xs:attribute name="aggregatable" type="xs:boolean"/>
+                <xs:attribute name="aggregationPosition" type="aggregationPosition"/>
 
                 <xs:attributeGroup ref="hasSettings"/>
                 <xs:attributeGroup ref="hasTabIndex"/>

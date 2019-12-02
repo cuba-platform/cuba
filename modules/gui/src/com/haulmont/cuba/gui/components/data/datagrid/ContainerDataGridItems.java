@@ -22,10 +22,13 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.Sort;
+import com.haulmont.cuba.gui.components.AggregationInfo;
+import com.haulmont.cuba.gui.components.data.AggregatableDataGridItems;
 import com.haulmont.cuba.gui.components.data.BindingState;
 import com.haulmont.cuba.gui.components.data.DataGridItems;
 import com.haulmont.cuba.gui.components.data.meta.ContainerDataUnit;
 import com.haulmont.cuba.gui.components.data.meta.EntityDataGridItems;
+import com.haulmont.cuba.gui.data.impl.AggregatableDelegate;
 import com.haulmont.cuba.gui.model.CollectionContainer;
 import com.haulmont.cuba.gui.model.CollectionLoader;
 import com.haulmont.cuba.gui.model.HasLoader;
@@ -34,18 +37,22 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 public class ContainerDataGridItems<E extends Entity>
-        implements EntityDataGridItems<E>, DataGridItems.Sortable<E>, ContainerDataUnit<E> {
+        implements EntityDataGridItems<E>, AggregatableDataGridItems<E>, DataGridItems.Sortable<E>, ContainerDataUnit<E> {
 
     private static final Logger log = LoggerFactory.getLogger(ContainerDataGridItems.class);
 
     protected CollectionContainer<E> container;
 
     protected boolean suppressSorting;
+
+    protected AggregatableDelegate aggregatableDelegate;
 
     protected EventHub events = new EventHub();
 
@@ -54,6 +61,8 @@ public class ContainerDataGridItems<E extends Entity>
         this.container.addItemChangeListener(this::containerItemChanged);
         this.container.addCollectionChangeListener(this::containerCollectionChanged);
         this.container.addItemPropertyChangeListener(this::containerItemPropertyChanged);
+
+        this.aggregatableDelegate = createAggregatableDelegate();
     }
 
     @Override
@@ -209,5 +218,31 @@ public class ContainerDataGridItems<E extends Entity>
     @Override
     public void enableSorting() {
         suppressSorting = false;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public Map<AggregationInfo, String> aggregate(AggregationInfo[] aggregationInfos, Collection<?> itemIds) {
+        return aggregatableDelegate.aggregate(aggregationInfos, itemIds);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public Map<AggregationInfo, Object> aggregateValues(AggregationInfo[] aggregationInfos, Collection<?> itemIds) {
+        return aggregatableDelegate.aggregateValues(aggregationInfos, itemIds);
+    }
+
+    protected AggregatableDelegate createAggregatableDelegate() {
+        return new AggregatableDelegate() {
+            @Override
+            public Object getItem(Object itemId) {
+                return container.getItem(itemId);
+            }
+
+            @Override
+            public Object getItemValue(MetaPropertyPath property, Object itemId) {
+                return container.getItem(itemId).getValueEx(property);
+            }
+        };
     }
 }
