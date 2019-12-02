@@ -35,4 +35,20 @@
   .v-scrollable > .#{$primary-stylename} {
     overflow: auto;
   }
+
+  .#{$primary-stylename}-margin-top {
+    padding-top: $v-layout-margin-top;
+  }
+
+  .#{$primary-stylename}-margin-bottom {
+    padding-bottom: $v-layout-margin-bottom;
+  }
+
+  .#{$primary-stylename}-margin-left {
+    padding-left: $v-layout-margin-left;
+  }
+
+  .#{$primary-stylename}-margin-right {
+    padding-right: $v-layout-margin-right;
+  }
 }
