@@ -49,6 +49,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.util.Locale;
+import java.util.Map;
 
 import static com.haulmont.cuba.web.App.*;
 
@@ -326,8 +327,21 @@ public class LoginScreen extends Screen {
             return;
         }
 
+        Locale locale = messages.getTools().getDefaultLocale();
+
+        String lastLocale = app.getCookieValue(COOKIE_LOCALE);
+        if (lastLocale != null
+                && !lastLocale.isEmpty()) {
+            Map<String, Locale> availableLocales = globalConfig.getAvailableLocales();
+            for (Locale availableLocale : availableLocales.values()) {
+                if (availableLocale.toLanguageTag().equals(lastLocale)) {
+                    locale = availableLocale;
+                }
+            }
+        }
+
         if (StringUtils.isNotEmpty(rememberMeToken)) {
-            RememberMeCredentials credentials = new RememberMeCredentials(login, rememberMeToken);
+            RememberMeCredentials credentials = new RememberMeCredentials(login, rememberMeToken, locale);
             credentials.setOverrideLocale(localesSelect.isVisibleRecursive());
             try {
                 connection.login(credentials);
