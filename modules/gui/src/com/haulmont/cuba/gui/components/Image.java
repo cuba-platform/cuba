@@ -107,6 +107,11 @@ public interface Image extends ResourceView, HasValueSource<FileDescriptor> {
          */
         CONTAIN,
         /**
+         * The image will be compressed or stretched with proportions to fill component's sizes. If the image
+         * proportions do not match the component's proportions then the image will be clipped to fit.
+         */
+        COVER,
+        /**
          * The content changes size by comparing the difference between NONE and CONTAIN, in order to find the smallest
          * concrete size of the object.
          */

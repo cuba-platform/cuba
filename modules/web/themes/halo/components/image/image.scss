@@ -29,6 +29,12 @@
       object-position: center;
     }
 
+    &.object-fit-cover {
+      object-fit: cover;
+      font-family: 'object-fit: cover';
+      object-position: center;
+    }
+
     &.object-fit-scale-down {
       object-fit: scale-down;
       font-family: 'object-fit: scale-down;';

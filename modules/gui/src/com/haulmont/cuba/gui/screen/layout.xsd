@@ -2310,6 +2310,7 @@
             <xs:enumeration value="NONE"/>
             <xs:enumeration value="FILL"/>
             <xs:enumeration value="CONTAIN"/>
+            <xs:enumeration value="COVER"/>
             <xs:enumeration value="SCALE_DOWN"/>
         </xs:restriction>
     </xs:simpleType>
