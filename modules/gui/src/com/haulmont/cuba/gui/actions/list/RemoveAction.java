@@ -83,7 +83,7 @@ public class RemoveAction extends SecuredListAction implements Action.DisabledWh
     /**
      * Sets whether to ask confirmation from the user.
      */
-    @StudioPropertiesItem
+    @StudioPropertiesItem(defaultValue = "true")
     public void setConfirmation(Boolean confirmation) {
         this.confirmation = confirmation;
     }

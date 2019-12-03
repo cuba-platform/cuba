@@ -82,7 +82,7 @@ public class ExcludeAction extends SecuredListAction implements Action.DisabledW
     /**
      * Sets whether to ask confirmation from the user.
      */
-    @StudioPropertiesItem
+    @StudioPropertiesItem(defaultValue = "true")
     public void setConfirmation(Boolean confirmation) {
         this.confirmation = confirmation;
     }
