@@ -17,6 +17,7 @@
 $c-timefield-hour-width: 32px;
 $c-timefield-minute-width: 58px;
 $c-timefield-second-width: 84px;
+$c-timefield-ampm-width: 65px !default;
 
 @mixin halo-cuba-timefield($primary-stylename: c-timefield) {
   .#{$primary-stylename}-layout {
@@ -58,7 +59,7 @@ $c-timefield-second-width: 84px;
   }
 
   .#{$primary-stylename}-ampm {
-    width: 70px;
-    margin-left: $v-layout-spacing-horizontal/2;
+    width: 65px;
+    margin-left: round($v-layout-spacing-horizontal/2);
   }
 }
