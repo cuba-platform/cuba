@@ -35,12 +35,12 @@ public interface Filter extends HasMargin, Component.BelongToFrame, HasNamedComp
     String NAME = "filter";
 
     /**
-     * Action registered with parent frame to apply filter.
+     * Action registered with list component and filter layout to apply filter.
      */
     String APPLY_ACTION_ID = "applyFilter";
 
     /**
-     * Action registered with parent frame to open filter select menu.
+     * Action registered with list component and filter layout to open filter select menu.
      */
     String SELECT_ACTION_ID = "selectFilter";
 
