@@ -359,12 +359,16 @@ public class CubaGridWidget extends Grid<JsonObject> {
 
         @Override
         protected void updateTogglesOrder() {
-            if (!defaultTogglesInitialized) {
-                defaultTogglesInitialized = true;
-                initDefaultToggles();
-            }
+            if (getHidableColumnsCount() != 0) {
+                if (!defaultTogglesInitialized) {
+                    defaultTogglesInitialized = true;
+                    initDefaultToggles();
+                }
 
-            super.updateTogglesOrder();
+                super.updateTogglesOrder();
+            } else {
+                getSidebarMenu().removeFromParent();
+            }
         }
 
         protected void initDefaultToggles() {
@@ -414,6 +418,12 @@ public class CubaGridWidget extends Grid<JsonObject> {
                     SafeHtmlUtils.htmlEscape(caption) +
                     "</div>" +
                     "</span>";
+        }
+
+        protected long getHidableColumnsCount() {
+            return getColumns().stream()
+                    .filter(Column::isHidable)
+                    .count();
         }
     }
 
