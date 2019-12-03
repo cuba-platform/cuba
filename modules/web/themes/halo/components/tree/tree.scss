@@ -86,6 +86,11 @@
       .c-tree-top {
         margin-top: -1 * $top-panel-height;
       }
+
+      // The caption of ButtonsPanel inside of Tree will be ignored
+      .v-caption-c-buttons-panel {
+        display: none;
+      }
     }
   }
 }

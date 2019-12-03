@@ -65,6 +65,8 @@ import java.util.stream.Stream;
 
 public abstract class AbstractTableLoader<T extends Table> extends ActionsHolderLoader<T> {
 
+    private static final Logger log = LoggerFactory.getLogger(AbstractTableLoader.class);
+
     protected ComponentLoader buttonsPanelLoader;
     protected Element panelElement;
 
@@ -122,7 +124,6 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
             if (StringUtils.isBlank(rowHeaderMode)) {
                 rowHeaderMode = rowsElement.attributeValue("headerMode");
                 if (StringUtils.isNotBlank(rowHeaderMode)) {
-                    Logger log = LoggerFactory.getLogger(AbstractTableLoader.class);
                     log.warn("Attribute headerMode is deprecated. Use rowHeaderMode.");
                 }
             }
@@ -492,6 +493,11 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
             String alwaysVisible = panelElement.attributeValue("alwaysVisible");
             if (alwaysVisible != null) {
                 panel.setAlwaysVisible(Boolean.parseBoolean(alwaysVisible));
+            }
+
+            if (panel.getCaption() != null) {
+                log.debug("The caption '{}' of ButtonsPanel inside of Table will be ignored",
+                        panel.getCaption());
             }
         }
     }
