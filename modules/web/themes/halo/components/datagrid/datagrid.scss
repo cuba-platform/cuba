@@ -75,6 +75,11 @@ $cuba-datagrid-highlight-hover-row: false !default;
       height: $v-unit-size;
       margin-top: -1 * ($v-unit-size + ceil($v-layout-spacing-vertical));
     }
+
+    // The caption of ButtonsPanel inside of DataGrid will be ignored
+    .v-caption-c-buttons-panel {
+      display: none;
+    }
   }
 
   .#{$primary-stylename}-cell .boolean-value {

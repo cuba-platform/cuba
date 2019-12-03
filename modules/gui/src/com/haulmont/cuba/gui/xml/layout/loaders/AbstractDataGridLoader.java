@@ -39,6 +39,8 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.IterableUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -46,6 +48,8 @@ import java.util.List;
 import java.util.Set;
 
 public abstract class AbstractDataGridLoader<T extends DataGrid> extends ActionsHolderLoader<T> {
+
+    private static final Logger log = LoggerFactory.getLogger(AbstractDataGridLoader.class);
 
     protected ComponentLoader buttonsPanelLoader;
     protected Element panelElement;
@@ -298,6 +302,11 @@ public abstract class AbstractDataGridLoader<T extends DataGrid> extends Actions
             String alwaysVisible = panelElement.attributeValue("alwaysVisible");
             if (alwaysVisible != null) {
                 panel.setAlwaysVisible(Boolean.parseBoolean(alwaysVisible));
+            }
+
+            if (panel.getCaption() != null) {
+                log.debug("The caption '{}' of ButtonsPanel inside of DataGrid will be ignored",
+                        panel.getCaption());
             }
         }
     }

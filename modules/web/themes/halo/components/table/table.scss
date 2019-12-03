@@ -266,6 +266,11 @@ $c-table-drag-indicator-color: $v-focus-color;
       height: $v-unit-size;
       margin-top: -1 * ($v-unit-size + ceil($v-layout-spacing-vertical));
     }
+
+    // The caption of ButtonsPanel inside of Table will be ignored
+    .v-caption-c-buttons-panel {
+      display: none;
+    }
   }
 
   .v-ff & .v-table-header tr > .c-grouptable-group-divider-header:first-child .v-table-caption-container {
