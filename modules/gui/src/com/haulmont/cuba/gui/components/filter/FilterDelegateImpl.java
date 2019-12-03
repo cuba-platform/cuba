@@ -2300,30 +2300,54 @@ public class FilterDelegateImpl implements FilterDelegate {
     }
 
     protected void initShortcutActions() {
-        if (filter.getFrame().getAction(Filter.APPLY_ACTION_ID) == null) {
-            filter.getFrame().addAction(new AbstractAction(Filter.APPLY_ACTION_ID, clientConfig.getFilterApplyShortcut()) {
-                @Override
-                public void actionPerform(Component component) {
-                    if (isVisible() && adapter != null) {
-                        if (filterMode == FilterMode.GENERIC_MODE) {
-                            apply(false);
-                        } else {
-                            applyFts();
-                        }
-                    }
-                }
-            });
+        String filterApplyShortcut = clientConfig.getFilterApplyShortcut();
+        String filterSelectShortcut = clientConfig.getFilterSelectShortcut();
+
+        if (filter.getApplyTo() instanceof ListComponent) {
+            ListComponent listComponent = (ListComponent) filter.getApplyTo();
+            if (listComponent.getAction(Filter.APPLY_ACTION_ID) == null) {
+                Action applyFilterAction = new BaseAction(Filter.APPLY_ACTION_ID)
+                        .withShortcut(filterApplyShortcut)
+                        .withHandler(event -> {
+                            if (event.getSource().isVisible()) {
+                                applyFilter();
+                            }
+                        });
+                listComponent.addAction(applyFilterAction);
+            }
+
+            if (listComponent.getAction(Filter.SELECT_ACTION_ID) == null) {
+                Action selectFilterAction = new BaseAction(Filter.SELECT_ACTION_ID)
+                        .withShortcut(filterSelectShortcut)
+                        .withHandler(event -> {
+                            if (event.getSource().isVisible()) {
+                                openFilterSelectMenu();
+                            }
+                        });
+                listComponent.addAction(selectFilterAction);
+            }
         }
 
-        if (filter.getFrame().getAction(Filter.SELECT_ACTION_ID) == null) {
-            filter.getFrame().addAction(new AbstractAction(Filter.SELECT_ACTION_ID, clientConfig.getFilterSelectShortcut()) {
-                @Override
-                public void actionPerform(Component component) {
-                    if (isVisible() && adapter != null && filtersPopupButton.isEnabled()) {
-                        filtersPopupButton.setPopupVisible(true);
-                    }
-                }
-            });
+        groupBoxLayout.addShortcutAction(new ShortcutAction(filterApplyShortcut,
+                shortcutTriggeredEvent -> applyFilter()));
+
+        groupBoxLayout.addShortcutAction(new ShortcutAction(filterSelectShortcut,
+                shortcutTriggeredEvent -> openFilterSelectMenu()));
+    }
+
+    protected void applyFilter() {
+        if (adapter != null) {
+            if (filterMode == FilterMode.GENERIC_MODE) {
+                apply(false);
+            } else {
+                applyFts();
+            }
+        }
+    }
+
+    protected void openFilterSelectMenu() {
+        if (adapter != null && filtersPopupButton.isEnabled()) {
+            filtersPopupButton.setPopupVisible(true);
         }
     }
 
