@@ -39,6 +39,8 @@ import java.util.List;
 public class WebSourceCodeEditor extends WebV8AbstractField<CubaSourceCodeEditor, String, String>
         implements SourceCodeEditor {
 
+    protected boolean suggestOnDot = false;
+
     protected HighlightMode mode = Mode.Text;
     protected Suggester suggester;
     protected SuggestionExtension suggestionExtension;
@@ -130,6 +132,7 @@ public class WebSourceCodeEditor extends WebV8AbstractField<CubaSourceCodeEditor
             suggestionExtension = new SuggestionExtension(new SourceCodeEditorSuggester());
             suggestionExtension.extend(component);
             suggestionExtension.setShowDescriptions(false);
+            suggestionExtension.setSuggestOnDot(suggestOnDot);
         }
     }
 
@@ -212,6 +215,20 @@ public class WebSourceCodeEditor extends WebV8AbstractField<CubaSourceCodeEditor
     @Override
     public void setTabIndex(int tabIndex) {
         component.setTabIndex(tabIndex);
+    }
+
+    @Override
+    public boolean isSuggestOnDot() {
+        return suggestOnDot;
+    }
+
+    @Override
+    public void setSuggestOnDot(boolean suggest) {
+        this.suggestOnDot = suggest;
+
+        if (suggestionExtension != null) {
+            suggestionExtension.setSuggestOnDot(suggestOnDot);
+        }
     }
 
     protected class SourceCodeEditorSuggester implements com.haulmont.cuba.web.widgets.addons.aceeditor.Suggester {

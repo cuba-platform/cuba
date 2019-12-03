@@ -114,4 +114,16 @@ public interface SourceCodeEditor extends Field<String>, Component.Focusable {
      * Reset the stack of undo/redo redo operations.
      */
     void resetEditHistory();
+
+    /**
+     * @return true if SourceCodeEditor suggests options after typing a dot character
+     */
+    boolean isSuggestOnDot();
+
+    /**
+     * Sets whether SourceCodeEditor should suggest options after typing a dot character. Default value is true.
+     *
+     * @param suggest suggest option
+     */
+    void setSuggestOnDot(boolean suggest);
 }

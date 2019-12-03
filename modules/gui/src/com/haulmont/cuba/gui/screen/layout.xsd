@@ -1823,6 +1823,7 @@
                 <xs:attribute name="showGutter" type="xs:boolean"/>
                 <xs:attribute name="highlightActiveLine" type="xs:boolean"/>
                 <xs:attribute name="handleTabKey" type="xs:boolean"/>
+                <xs:attribute name="suggestOnDot" type="xs:boolean"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>

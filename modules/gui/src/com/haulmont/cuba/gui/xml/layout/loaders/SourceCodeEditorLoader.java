@@ -60,6 +60,11 @@ public class SourceCodeEditorLoader extends AbstractFieldLoader<SourceCodeEditor
         if (StringUtils.isNotEmpty(handleTabKey)) {
             resultComponent.setHandleTabKey(Boolean.parseBoolean(handleTabKey));
         }
+
+        String suggestOnDot = element.attributeValue("suggestOnDot");
+        if (StringUtils.isNotEmpty(suggestOnDot)) {
+            resultComponent.setSuggestOnDot(Boolean.parseBoolean(suggestOnDot));
+        }
     }
 
     protected void loadMode(SourceCodeEditor component, Element element) {
