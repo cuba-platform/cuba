@@ -164,7 +164,7 @@ public class FilterDelegateImpl implements FilterDelegate {
     protected BoxLayout maxResultsLayout;
     protected Field<Integer> maxResultsField;
     protected TextField<Integer> maxResultsTextField;
-    protected LookupField maxResultsLookupField;
+    protected LookupField<Integer> maxResultsLookupField;
     protected BoxLayout controlsLayout;
     protected ComponentContainer appliedFiltersLayout;
     protected PopupButton settingsBtn;
@@ -500,7 +500,7 @@ public class FilterDelegateImpl implements FilterDelegate {
 
         maxResultsLookupField = maxResultsFieldHelper.createMaxResultsLookupField();
         maxResultsLookupField.setStyleName("c-maxresults-select");
-        ((LookupField<Integer>) maxResultsLookupField).addValueChangeListener(this::onMaxResultsChange);
+        maxResultsLookupField.addValueChangeListener(this::onMaxResultsChange);
 
         maxResultsField = textMaxResults ? maxResultsTextField : maxResultsLookupField;
         maxResultsLayout.add(maxResultsField);

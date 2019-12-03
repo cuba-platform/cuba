@@ -18,10 +18,10 @@ package com.haulmont.cuba.gui.components.filter;
 
 import com.google.common.base.Splitter;
 import com.haulmont.cuba.client.ClientConfig;
+import com.haulmont.cuba.gui.UiComponents;
 import com.haulmont.cuba.gui.components.LookupField;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
-import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -32,7 +32,7 @@ public class MaxResultsFieldHelper {
     public static final String NAME = "cuba_MaxResultsFieldHelper";
 
     @Inject
-    protected ComponentsFactory componentsFactory;
+    protected UiComponents uiComponents;
     @Inject
     protected FilterHelper filterHelper;
     @Inject
@@ -40,14 +40,14 @@ public class MaxResultsFieldHelper {
     @Inject
     protected ClientConfig clientConfig;
 
-    public LookupField createMaxResultsLookupField() {
-        LookupField maxResultsLookupField = componentsFactory.createComponent(LookupField.class);
+    public LookupField<Integer> createMaxResultsLookupField() {
+        LookupField<Integer> maxResultsLookupField = uiComponents.create(LookupField.TYPE_INTEGER);
         setUpMaxResultsLookupField(maxResultsLookupField);
 
         return maxResultsLookupField;
     }
 
-    public LookupField setUpMaxResultsLookupField(LookupField maxResultsLookupField) {
+    public LookupField<Integer> setUpMaxResultsLookupField(LookupField<Integer> maxResultsLookupField) {
         ThemeConstants theme = themeConstantsManager.getConstants();
 
         maxResultsLookupField.setWidth(theme.get("cuba.gui.Filter.maxResults.lookup.width"));
