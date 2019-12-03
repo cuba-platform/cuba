@@ -25,6 +25,8 @@ import com.vaadin.ui.CustomField;
 
 import java.time.LocalTime;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
  * Composite component that combines {@link CubaTimeField} and AM / PM combobox.
  */
@@ -192,20 +194,32 @@ public class CubaTimeFieldWrapper extends CustomField<LocalTime> {
     }
 
     protected LocalTime convertToModel(AmPmLocalTime presentationValue) {
+        if (presentationValue == null) {
+            return null;
+        }
+
         if (timeMode == TimeMode.H_24) {
             return presentationValue.getTime();
         }
+
         return convertFrom12hFormat(presentationValue);
     }
 
     protected AmPmLocalTime convertToPresentation(LocalTime modelValue) {
+        if (modelValue == null) {
+            return null;
+        }
+
         if (timeMode == TimeMode.H_24) {
             return new AmPmLocalTime(modelValue, AmPm.AM);
         }
+
         return convertTo12hFormat(modelValue);
     }
 
     protected static LocalTime convertFrom12hFormat(AmPmLocalTime amPmTime) {
+        checkNotNull(amPmTime, "Unable to convert null value from 12h format");
+
         int hour;
         int sourceHour = amPmTime.getTime().getHour();
 
@@ -222,6 +236,8 @@ public class CubaTimeFieldWrapper extends CustomField<LocalTime> {
     }
 
     protected static AmPmLocalTime convertTo12hFormat(LocalTime time) {
+        checkNotNull(time, "Unable to convert null value to 12h format");
+
         int hour = time.getHour() == 0 || time.getHour() == 12
                 ? 12 : time.getHour() % 12;
         AmPm amPm = time.getHour() < 12
