@@ -164,7 +164,7 @@ public class FilterDelegateImpl implements FilterDelegate {
     protected BoxLayout maxResultsLayout;
     protected Field<Integer> maxResultsField;
     protected TextField<Integer> maxResultsTextField;
-    protected LookupField maxResultsLookupField;
+    protected LookupField<Integer> maxResultsLookupField;
     protected BoxLayout controlsLayout;
     protected ComponentContainer appliedFiltersLayout;
     protected PopupButton settingsBtn;
@@ -496,23 +496,26 @@ public class FilterDelegateImpl implements FilterDelegate {
         maxResultsTextField.setStyleName("c-maxresults-input");
         maxResultsTextField.setMaxLength(4);
         maxResultsTextField.setWidth(theme.get("cuba.gui.Filter.maxResults.width"));
+        maxResultsTextField.addValueChangeListener(this::onMaxResultsChange);
 
         maxResultsLookupField = maxResultsFieldHelper.createMaxResultsLookupField();
         maxResultsLookupField.setStyleName("c-maxresults-select");
+        maxResultsLookupField.addValueChangeListener(this::onMaxResultsChange);
 
         maxResultsField = textMaxResults ? maxResultsTextField : maxResultsLookupField;
-        maxResultsField.addValueChangeListener(valueChangeEvent -> {
-            maxResultValueChanged = true;
-            if (valueChangeEvent.isUserOriginated() && isApplyImmediately()) {
-                if (filterMode == FilterMode.FTS_MODE) {
-                    applyFts();
-                }
-                if (filterMode == FilterMode.GENERIC_MODE) {
-                    applyWithImmediateMode();
-                }
-            }
-        });
         maxResultsLayout.add(maxResultsField);
+    }
+
+    protected void onMaxResultsChange(HasValue.ValueChangeEvent<Integer> event) {
+        maxResultValueChanged = true;
+        if (event.isUserOriginated() && isApplyImmediately()) {
+            if (filterMode == FilterMode.FTS_MODE) {
+                applyFts();
+            }
+            if (filterMode == FilterMode.GENERIC_MODE) {
+                applyWithImmediateMode();
+            }
+        }
     }
 
     @Override
