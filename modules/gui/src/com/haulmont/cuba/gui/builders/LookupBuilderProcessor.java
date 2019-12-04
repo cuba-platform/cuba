@@ -17,16 +17,21 @@
 package com.haulmont.cuba.gui.builders;
 
 import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.ExtendedEntities;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.Screens;
 import com.haulmont.cuba.gui.components.HasValue;
 import com.haulmont.cuba.gui.components.ListComponent;
 import com.haulmont.cuba.gui.components.LookupPickerField;
 import com.haulmont.cuba.gui.components.SupportsUserAction;
+import com.haulmont.cuba.gui.components.data.HasValueSource;
 import com.haulmont.cuba.gui.components.data.Options;
+import com.haulmont.cuba.gui.components.data.ValueSource;
 import com.haulmont.cuba.gui.components.data.meta.ContainerDataUnit;
 import com.haulmont.cuba.gui.components.data.meta.EntityOptions;
+import com.haulmont.cuba.gui.components.data.value.ContainerValueSource;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.model.CollectionContainer;
 import com.haulmont.cuba.gui.model.DataContext;
@@ -38,6 +43,7 @@ import com.haulmont.cuba.gui.screen.Screen;
 import com.haulmont.cuba.gui.screen.UiControllerUtils;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -52,7 +58,15 @@ public class LookupBuilderProcessor {
     @Inject
     protected WindowConfig windowConfig;
     @Inject
+    protected ClientConfig clientConfig;
+    @Inject
     protected ExtendedEntities extendedEntities;
+    @Inject
+    protected EntityStates entityStates;
+    @Inject
+    protected DataManager dataManager;
+    @Inject
+    protected MetadataTools metadataTools;
 
     @SuppressWarnings("unchecked")
     public <E extends Entity> Screen buildLookup(LookupBuilder<E> builder) {
@@ -170,6 +184,13 @@ public class LookupBuilderProcessor {
 
         Entity newValue = selectedItems.iterator().next();
 
+        View viewForField = clientConfig.getReloadUnfetchedAttributesFromLookupScreens() && metadataTools.isPersistent(newValue.getClass()) ?
+                getViewForField(field) :
+                null;
+        if (viewForField != null && !entityStates.isLoadedWithView(newValue, viewForField)) {
+            newValue = dataManager.reload(newValue, viewForField);
+        }
+
         if (field instanceof LookupPickerField) {
             LookupPickerField lookupPickerField = (LookupPickerField) field;
             Options options = lookupPickerField.getOptions();
@@ -228,8 +249,15 @@ public class LookupBuilderProcessor {
         DataContext dataContext = UiControllerUtils.getScreenData(builder.getOrigin()).getDataContext();
 
         List<E> mergedItems = new ArrayList<>(selectedItems.size());
+        View viewForCollectionContainer = clientConfig.getReloadUnfetchedAttributesFromLookupScreens() &&
+                collectionDc.getEntityMetaClass() != null && metadataTools.isPersistent(collectionDc.getEntityMetaClass()) ?
+                getViewForCollectionContainer(collectionDc, initializeMasterReference, inverseMetaProperty) :
+                null;
         for (E item : selectedItems) {
             if (!collectionDc.containsItem(item.getId())) {
+                if (viewForCollectionContainer != null && !entityStates.isLoadedWithView(item, viewForCollectionContainer)) {
+                    item = dataManager.reload(item, viewForCollectionContainer);
+                }
                 // track changes in the related instance
                 E mergedItem = dataContext.merge(item);
                 if (initializeMasterReference) {
@@ -248,5 +276,69 @@ public class LookupBuilderProcessor {
             return builder.getTransformation().apply(selectedItems);
         }
         return selectedItems;
+    }
+
+    /**
+     * If the value for a component (e.g. {@link com.haulmont.cuba.gui.components.PickerField}) is selected from lookup screen then there may be cases
+     * when in entities in lookup screen some attributes required in the editor are not loaded.
+     * <p>
+     * The method evaluates the view that is used for the entity in the given {@code field}
+     *
+     * @return a view or null if the view cannot be evaluated
+     */
+    @Nullable
+    protected <E extends Entity> View getViewForField(HasValue<E> field) {
+        if (field instanceof HasValueSource) {
+            ValueSource valueSource = ((HasValueSource) field).getValueSource();
+            if (valueSource instanceof ContainerValueSource) {
+                ContainerValueSource containerValueSource = (ContainerValueSource) valueSource;
+                InstanceContainer<E> container = containerValueSource.getContainer();
+                View view = container.getView();
+                if (view != null) {
+                    MetaPropertyPath metaPropertyPath = containerValueSource.getMetaPropertyPath();
+                    View curView = view;
+                    for (MetaProperty metaProperty : metaPropertyPath.getMetaProperties()) {
+                        ViewProperty viewProperty = curView.getProperty(metaProperty.getName());
+                        if (viewProperty != null) {
+                            curView = viewProperty.getView();
+                        }
+                        if (curView == null) break;
+                    }
+                    if (curView != view) {
+                        return curView;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * See {@link #getViewForField(HasValue)} javadoc.
+     *
+     * @return a view or null if the view cannot be evaluated
+     */
+    @Nullable
+    protected <E extends Entity> View getViewForCollectionContainer(CollectionContainer<E> collectionDc,
+                                                                    boolean initializeMasterReference,
+                                                                    MetaProperty inverseMetaProperty) {
+        View view = null;
+        if (collectionDc instanceof Nested) {
+            InstanceContainer masterDc = ((Nested) collectionDc).getMaster();
+            View masterView = masterDc.getView();
+            if (masterView != null) {
+                String property = ((Nested) collectionDc).getProperty();
+                ViewProperty viewProperty = masterView.getProperty(property);
+                if (viewProperty != null) {
+                    view = viewProperty.getView();
+                    if (view != null && initializeMasterReference && inverseMetaProperty != null) {
+                        view.addProperty(inverseMetaProperty.getName());
+                    }
+                }
+            }
+        } else {
+            view = collectionDc.getView();
+        }
+        return view;
     }
 }

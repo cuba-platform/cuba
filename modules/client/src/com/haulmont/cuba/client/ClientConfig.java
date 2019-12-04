@@ -427,4 +427,13 @@ public interface ClientConfig extends Config {
     @Property("cuba.gui.saveExportedByteArrayDataThresholdBytes")
     @DefaultInt(100 * 1024)
     int getSaveExportedByteArrayDataThresholdBytes();
+
+    /**
+     * If true, then LookupBuilder and TokenList will reload entity after it is selected from lookup window if the selected entity doesn't contain all
+     * required entity attributes
+     */
+    @Property("cuba.gui.reloadUnfetchedAttributesFromLookupScreens")
+    @Source(type = SourceType.DATABASE)
+    @DefaultBoolean(true)
+    boolean getReloadUnfetchedAttributesFromLookupScreens();
 }

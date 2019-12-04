@@ -17,9 +17,11 @@
 
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.Messages;
-import com.haulmont.cuba.core.global.Metadata;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.ScreenBuilders;
 import com.haulmont.cuba.gui.UiComponents;
 import com.haulmont.cuba.gui.WindowParams;
@@ -29,10 +31,12 @@ import com.haulmont.cuba.gui.components.data.Options;
 import com.haulmont.cuba.gui.components.data.ValueSource;
 import com.haulmont.cuba.gui.components.data.meta.EntityOptions;
 import com.haulmont.cuba.gui.components.data.meta.EntityValueSource;
+import com.haulmont.cuba.gui.components.data.value.ContainerValueSource;
 import com.haulmont.cuba.gui.components.data.value.LegacyCollectionDsValueSource;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.icons.CubaIcon;
 import com.haulmont.cuba.gui.icons.Icons;
+import com.haulmont.cuba.gui.model.InstanceContainer;
 import com.haulmont.cuba.gui.screen.*;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -82,8 +86,11 @@ public class WebTokenList<V extends Entity>
     protected Messages messages;
     protected Metadata metadata;
     protected WindowConfig windowConfig;
+    protected ClientConfig clientConfig;
     protected ScreenBuilders screenBuilders;
     protected Icons icons;
+    protected EntityStates entityStates;
+    protected DataManager dataManager;
 
     protected Function<Object, String> tokenStyleGenerator;
 
@@ -126,8 +133,23 @@ public class WebTokenList<V extends Entity>
     }
 
     @Inject
+    public void setWindowConfig(ClientConfig clientConfig) {
+        this.clientConfig = clientConfig;
+    }
+
+    @Inject
     public void setIcons(Icons icons) {
         this.icons = icons;
+    }
+
+    @Inject
+    public void setEntityStates(EntityStates entityStates) {
+        this.entityStates = entityStates;
+    }
+
+    @Inject
+    public void setDataManager(DataManager dataManager) {
+        this.dataManager = dataManager;
     }
 
     @Override
@@ -459,14 +481,30 @@ public class WebTokenList<V extends Entity>
     }
 
     protected void handleSelection(Collection<V> selected) {
+        Collection<V> reloadedSelected = new ArrayList<>();
+        //check that selected items are loaded with the correct view and reload selected items if not all the required fields are loaded
+        View viewForField = clientConfig.getReloadUnfetchedAttributesFromLookupScreens() ?
+                getViewForField() :
+                null;
+        if (viewForField != null) {
+            for (V selectedItem : selected) {
+                if (!entityStates.isLoadedWithView(selectedItem, viewForField)) {
+                    reloadedSelected.add(dataManager.reload(selectedItem, viewForField));
+                } else {
+                    reloadedSelected.add(selectedItem);
+                }
+            }
+        } else {
+            reloadedSelected = selected;
+        }
         if (itemChangeHandler != null) {
-            selected.forEach(itemChangeHandler::addItem);
+            reloadedSelected.forEach(itemChangeHandler::addItem);
         } else {
             ValueSource<Collection<V>> valueSource = getValueSource();
             if (valueSource != null) {
                 Collection<V> modelValue = refreshValueIfNeeded();
 
-                for (V newItem : selected) {
+                for (V newItem : reloadedSelected) {
                     if (!modelValue.contains(newItem)) {
                         modelValue.add(newItem);
                     }
@@ -479,7 +517,7 @@ public class WebTokenList<V extends Entity>
                     value = new ArrayList<>();
                 }
 
-                value.addAll(selected);
+                value.addAll(reloadedSelected);
 
                 setValue(value);
             }
@@ -778,5 +816,44 @@ public class WebTokenList<V extends Entity>
     @Override
     public Supplier<Screen> getLookupProvider() {
         return lookupProvider;
+    }
+
+    /**
+     * If the value for a component is selected from the lookup screen there may be cases when lookup screen contains a list of entities loaded with a
+     * view that doesn't contain all attributes, required by the token list.
+     * <p>
+     * The method evaluates the view that was is for loading entities in the token list
+     *
+     * @return a view or null if the view cannot be evaluated
+     */
+    @Nullable
+    protected View getViewForField() {
+        ValueSource valueSource = getValueSource();
+        if (valueSource instanceof ContainerValueSource) {
+            ContainerValueSource containerValueSource = (ContainerValueSource) valueSource;
+            InstanceContainer container = containerValueSource.getContainer();
+            View view = container.getView();
+            if (view != null) {
+                MetaPropertyPath metaPropertyPath = containerValueSource.getMetaPropertyPath();
+                View curView = view;
+                if (metaPropertyPath != null) {
+                    for (MetaProperty metaProperty : metaPropertyPath.getMetaProperties()) {
+                        ViewProperty viewProperty = curView.getProperty(metaProperty.getName());
+                        if (viewProperty != null) {
+                            curView = viewProperty.getView();
+                            if (curView == null) return null;
+                        }
+                    }
+                    MetaProperty inverseMetaProperty = metaPropertyPath.getMetaProperty().getInverse();
+                    if (inverseMetaProperty != null && !inverseMetaProperty.getRange().getCardinality().isMany()) {
+                        curView.addProperty(inverseMetaProperty.getName());
+                    }
+                }
+                if (curView != view) {
+                    return curView;
+                }
+            }
+        }
+        return null;
     }
 }
