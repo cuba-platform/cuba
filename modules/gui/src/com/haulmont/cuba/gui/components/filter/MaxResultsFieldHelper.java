@@ -41,7 +41,7 @@ public class MaxResultsFieldHelper {
     protected ClientConfig clientConfig;
 
     public LookupField<Integer> createMaxResultsLookupField() {
-        LookupField<Integer> maxResultsLookupField = uiComponents.create(LookupField.TYPE_INTEGER);
+        LookupField<Integer> maxResultsLookupField = uiComponents.create(LookupField.of(Integer.class));
         setUpMaxResultsLookupField(maxResultsLookupField);
 
         return maxResultsLookupField;

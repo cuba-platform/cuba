@@ -33,7 +33,6 @@ public interface LookupField<V> extends OptionsField<V, V>, HasInputPrompt, Buff
     String NAME = "lookupField";
 
     TypeToken<LookupField<String>> TYPE_STRING = new TypeToken<LookupField<String>>(){};
-    TypeToken<LookupField<Integer>> TYPE_INTEGER = new TypeToken<LookupField<Integer>>(){};
 
     static <T> TypeToken<LookupField<T>> of(Class<T> valueClass) {
         return new TypeToken<LookupField<T>>() {};
