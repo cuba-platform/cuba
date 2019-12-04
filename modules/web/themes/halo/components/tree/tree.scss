@@ -54,6 +54,11 @@
       min-height: $v-unit-size;
     }
 
+    // The caption of ButtonsPanel inside of Tree will be ignored
+    .v-caption-c-buttons-panel {
+      display: none;
+    }
+
     .v-ie11 &,
     .v-edge & {
       .c-tree-top {
@@ -85,11 +90,6 @@
 
       .c-tree-top {
         margin-top: -1 * $top-panel-height;
-      }
-
-      // The caption of ButtonsPanel inside of Tree will be ignored
-      .v-caption-c-buttons-panel {
-        display: none;
       }
     }
   }
