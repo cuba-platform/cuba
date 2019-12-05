@@ -17,6 +17,7 @@
 package com.haulmont.cuba.core.sys;
 
 import com.google.common.base.Splitter;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.env.AbstractEnvironment;
 
 import javax.servlet.ServletContext;
@@ -30,11 +31,19 @@ import java.util.List;
 public class SpringProfileSpecificNameResolver {
 
     private String activeProfiles;
+    private static final String UNIX_ENV_ACTIVE_PROFILES_PROPERTY_NAME =
+            AbstractEnvironment.ACTIVE_PROFILES_PROPERTY_NAME.replace(".", "_");
 
     public SpringProfileSpecificNameResolver(ServletContext servletContext) {
-        activeProfiles = System.getProperty(AbstractEnvironment.ACTIVE_PROFILES_PROPERTY_NAME);
-        if (activeProfiles == null) {
-            activeProfiles = servletContext.getInitParameter(AbstractEnvironment.ACTIVE_PROFILES_PROPERTY_NAME);
+        activeProfiles = servletContext.getInitParameter(AbstractEnvironment.ACTIVE_PROFILES_PROPERTY_NAME);
+        if (StringUtils.isEmpty(activeProfiles)) {
+            activeProfiles = System.getProperty(AbstractEnvironment.ACTIVE_PROFILES_PROPERTY_NAME);
+        }
+        if (StringUtils.isEmpty(activeProfiles)) {
+            activeProfiles = System.getenv(AbstractEnvironment.ACTIVE_PROFILES_PROPERTY_NAME);
+        }
+        if (StringUtils.isEmpty(activeProfiles)) {
+            activeProfiles = System.getenv(UNIX_ENV_ACTIVE_PROFILES_PROPERTY_NAME);
         }
     }
 
