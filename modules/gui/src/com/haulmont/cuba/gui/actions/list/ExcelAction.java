@@ -31,6 +31,7 @@ import com.haulmont.cuba.gui.export.ExportDisplay;
 import com.haulmont.cuba.gui.icons.CubaIcon;
 import com.haulmont.cuba.gui.icons.Icons;
 import com.haulmont.cuba.gui.meta.StudioAction;
+import com.haulmont.cuba.gui.meta.StudioPropertiesItem;
 import com.haulmont.cuba.gui.model.CollectionContainer;
 
 import javax.inject.Inject;
@@ -148,6 +149,7 @@ public class ExcelAction extends ListAction {
         return exportAggregation;
     }
 
+    @StudioPropertiesItem(defaultValue = "true")
     public void setExportAggregation(boolean exportAggregation) {
         this.exportAggregation = exportAggregation;
     }
@@ -156,6 +158,7 @@ public class ExcelAction extends ListAction {
         return fileName;
     }
 
+    @StudioPropertiesItem
     public void setFileName(String fileName) {
         this.fileName = fileName;
     }

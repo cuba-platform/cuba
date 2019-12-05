@@ -90,7 +90,7 @@ public class BulkEditAction extends SecuredListAction {
      * @see ColumnsMode#ONE_COLUMN
      * @see ColumnsMode#TWO_COLUMNS
      */
-    @StudioPropertiesItem
+    @StudioPropertiesItem(defaultValue = "TWO_COLUMNS")
     public void setColumnsMode(ColumnsMode columnsMode) {
         this.columnsMode = columnsMode;
     }
@@ -151,7 +151,7 @@ public class BulkEditAction extends SecuredListAction {
     /**
      * Sets the bulk editor screen open mode.
      */
-    @StudioPropertiesItem
+    @StudioPropertiesItem(defaultValue = "DIALOG")
     public void setOpenMode(OpenMode openMode) {
         this.openMode = openMode;
     }
@@ -169,7 +169,7 @@ public class BulkEditAction extends SecuredListAction {
      * Sets whether dynamic attributes of the edited entity should be displayed on
      * the entity's bulk editor screen. The default value is true.
      */
-    @StudioPropertiesItem
+    @StudioPropertiesItem(defaultValue = "true")
     public void setLoadDynamicAttributes(Boolean loadDynamicAttributes) {
         this.loadDynamicAttributes = loadDynamicAttributes;
     }
@@ -187,7 +187,7 @@ public class BulkEditAction extends SecuredListAction {
      * Sets whether or not the confirmation dialog should be displayed to
      * the user before saving the changes. The default value is true.
      */
-    @StudioPropertiesItem
+    @StudioPropertiesItem(defaultValue = "true")
     public void setUseConfirmDialog(Boolean useConfirmDialog) {
         this.useConfirmDialog = useConfirmDialog;
     }
