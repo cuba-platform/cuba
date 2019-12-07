@@ -1550,7 +1550,7 @@ public class FilterDelegateImpl implements FilterDelegate {
             maxResults = adapter.getMaxResults();
         }
 
-        if (maxResults == 0 || maxResults == persistenceManager.getMaxFetchUI(adapter.getMetaClass().getName())) {
+        if (maxResults <= 0 || maxResults == persistenceManager.getMaxFetchUI(adapter.getMetaClass().getName())) {
             maxResults = persistenceManager.getFetchUI(adapter.getMetaClass().getName());
         }
 
