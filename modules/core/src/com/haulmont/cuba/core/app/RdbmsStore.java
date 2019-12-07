@@ -264,7 +264,7 @@ public class RdbmsStore implements DataStore {
             security.applyConstraints((Collection<Entity>) resultList);
         }
 
-        if (context.isAuthorizationRequired()) {
+        if (isAuthorizationRequired(context)) {
             attributeSecurity.afterLoad(resultList);
         }
 
