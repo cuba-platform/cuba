@@ -101,7 +101,7 @@ public class CalendarEventWrapper<V> implements com.vaadin.v7.ui.components.cale
         return calendarEvent.hashCode();
     }
 
-    public CalendarEvent getCalendarEvent() {
+    public CalendarEvent<V> getCalendarEvent() {
         return calendarEvent;
     }
 

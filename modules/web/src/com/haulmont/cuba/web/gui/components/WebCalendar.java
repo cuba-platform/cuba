@@ -393,7 +393,7 @@ public class WebCalendar<V> extends WebAbstractComponent<CubaCalendar>
     protected void onEventClick(CalendarComponentEvents.EventClick event) {
         com.vaadin.v7.ui.components.calendar.event.CalendarEvent calendarEvent = event.getCalendarEvent();
         if (calendarEvent instanceof CalendarEventWrapper) {
-            CalendarEvent calendarEventWrapper = ((CalendarEventWrapper) calendarEvent).getCalendarEvent();
+            CalendarEvent<V> calendarEventWrapper = ((CalendarEventWrapper) calendarEvent).getCalendarEvent();
             Entity entity = null;
             if (calendarEventWrapper instanceof EntityCalendarEvent) {
                 entity = ((EntityCalendarEvent) calendarEventWrapper).getEntity();
@@ -426,7 +426,7 @@ public class WebCalendar<V> extends WebAbstractComponent<CubaCalendar>
     protected void onEventResize(CalendarComponentEvents.EventResize event) {
         com.vaadin.v7.ui.components.calendar.event.CalendarEvent calendarEvent = event.getCalendarEvent();
         if (calendarEvent instanceof CalendarEventWrapper) {
-            CalendarEvent calendarEventWrapper = ((CalendarEventWrapper) calendarEvent).getCalendarEvent();
+            CalendarEvent<V> calendarEventWrapper = ((CalendarEventWrapper) calendarEvent).getCalendarEvent();
             Entity entity = null;
             if (calendarEventWrapper instanceof EntityCalendarEvent) {
                 entity = ((EntityCalendarEvent) calendarEventWrapper).getEntity();
@@ -434,7 +434,7 @@ public class WebCalendar<V> extends WebAbstractComponent<CubaCalendar>
 
             CalendarEventResizeEvent<V> calendarEventResizeEvent = new CalendarEventResizeEvent<>(
                     WebCalendar.this,
-                    ((CalendarEventWrapper) calendarEvent).getCalendarEvent(),
+                    calendarEventWrapper,
                     convertToModel(event.getNewStart()),
                     convertToModel(event.getNewEnd()),
                     entity);
@@ -460,7 +460,7 @@ public class WebCalendar<V> extends WebAbstractComponent<CubaCalendar>
 
     protected void onEventMove(CalendarComponentEvents.MoveEvent event) {
         com.vaadin.v7.ui.components.calendar.event.CalendarEvent calendarEvent = event.getCalendarEvent();
-        CalendarEvent calendarEventWrapper = ((CalendarEventWrapper) calendarEvent).getCalendarEvent();
+        CalendarEvent<V> calendarEventWrapper = ((CalendarEventWrapper) calendarEvent).getCalendarEvent();
 
         Entity entity = null;
         if (calendarEventWrapper instanceof EntityCalendarEvent) {

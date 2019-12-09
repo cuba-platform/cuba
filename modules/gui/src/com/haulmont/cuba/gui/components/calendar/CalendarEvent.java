@@ -54,7 +54,7 @@ public interface CalendarEvent<V> extends Serializable {
 
     class EventChangeEvent<V> extends EventObject {
 
-        public EventChangeEvent(CalendarEvent source) {
+        public EventChangeEvent(CalendarEvent<V> source) {
             super(source);
         }
 

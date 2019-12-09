@@ -276,20 +276,20 @@ public interface Calendar<V> extends Component.BelongToFrame, Component.HasCapti
     }
 
     class CalendarEventMoveEvent<V> extends EventObject {
-        protected CalendarEvent calendarEvent;
+        protected CalendarEvent<V> calendarEvent;
         protected V newStart;
         protected V newEnd;
         protected Entity entity;
 
         @Deprecated
-        public CalendarEventMoveEvent(Calendar<V> calendar, CalendarEvent calendarEvent, V newStart) {
+        public CalendarEventMoveEvent(Calendar<V> calendar, CalendarEvent<V> calendarEvent, V newStart) {
             super(calendar);
 
             this.calendarEvent = calendarEvent;
             this.newStart = newStart;
         }
 
-        public CalendarEventMoveEvent(Calendar<V> calendar, CalendarEvent calendarEvent, V newStart, @Nullable Entity entity) {
+        public CalendarEventMoveEvent(Calendar<V> calendar, CalendarEvent<V> calendarEvent, V newStart, @Nullable Entity entity) {
             super(calendar);
 
             this.calendarEvent = calendarEvent;
@@ -297,7 +297,7 @@ public interface Calendar<V> extends Component.BelongToFrame, Component.HasCapti
             this.entity = entity;
         }
 
-        public CalendarEventMoveEvent(Calendar<V> calendar, CalendarEvent calendarEvent, V newStart, V newEnd,
+        public CalendarEventMoveEvent(Calendar<V> calendar, CalendarEvent<V> calendarEvent, V newStart, V newEnd,
                                       @Nullable Entity entity) {
             super(calendar);
 
@@ -322,7 +322,7 @@ public interface Calendar<V> extends Component.BelongToFrame, Component.HasCapti
             return getSource();
         }
 
-        public CalendarEvent getCalendarEvent() {
+        public CalendarEvent<V> getCalendarEvent() {
             return calendarEvent;
         }
 
@@ -395,10 +395,10 @@ public interface Calendar<V> extends Component.BelongToFrame, Component.HasCapti
     }
 
     class CalendarEventClickEvent<V> extends EventObject {
-        protected CalendarEvent calendarEvent;
+        protected CalendarEvent<V> calendarEvent;
         protected Entity entity;
 
-        public CalendarEventClickEvent(Calendar<V> calendar, CalendarEvent calendarEvent, @Nullable Entity entity) {
+        public CalendarEventClickEvent(Calendar<V> calendar, CalendarEvent<V> calendarEvent, @Nullable Entity entity) {
             super(calendar);
 
             this.calendarEvent = calendarEvent;
@@ -413,7 +413,7 @@ public interface Calendar<V> extends Component.BelongToFrame, Component.HasCapti
             return entity;
         }
 
-        public CalendarEvent getCalendarEvent() {
+        public CalendarEvent<V> getCalendarEvent() {
             return calendarEvent;
         }
 
@@ -455,12 +455,12 @@ public interface Calendar<V> extends Component.BelongToFrame, Component.HasCapti
     }
 
     class CalendarEventResizeEvent<V> extends EventObject {
-        protected CalendarEvent calendarEvent;
+        protected CalendarEvent<V> calendarEvent;
         protected V newStart;
         protected V newEnd;
         protected Entity entity;
 
-        public CalendarEventResizeEvent(Calendar<V> calendar, CalendarEvent calendarEvent, V newStart,
+        public CalendarEventResizeEvent(Calendar<V> calendar, CalendarEvent<V> calendarEvent, V newStart,
                                         V newEnd, @Nullable Entity entity) {
             super(calendar);
 
@@ -478,7 +478,7 @@ public interface Calendar<V> extends Component.BelongToFrame, Component.HasCapti
             return entity;
         }
 
-        public CalendarEvent getCalendarEvent() {
+        public CalendarEvent<V> getCalendarEvent() {
             return calendarEvent;
         }
 
