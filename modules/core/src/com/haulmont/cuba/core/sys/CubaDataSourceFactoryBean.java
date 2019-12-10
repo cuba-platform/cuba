@@ -56,7 +56,8 @@ public class CubaDataSourceFactoryBean implements FactoryBean<Object>, Initializ
             this.dataSourceProvider = new DataSourceProvider();
         }
         this.storeName = storeName == null ? Stores.MAIN : storeName;
-        this.dataSource = dataSourceProvider.getDataSource(storeName, AppContext.getProperty(jndiNameAppProperty));
+        String jndiName = jndiNameAppProperty != null ? AppContext.getProperty(jndiNameAppProperty) : null;
+        this.dataSource = dataSourceProvider.getDataSource(storeName, jndiName);
     }
 
     @Override
