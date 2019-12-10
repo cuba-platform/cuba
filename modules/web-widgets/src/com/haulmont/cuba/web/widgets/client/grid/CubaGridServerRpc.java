@@ -10,4 +10,6 @@ import com.vaadin.shared.communication.ServerRpc;
 public interface CubaGridServerRpc extends ServerRpc {
 
     void onEmptyStateLinkClick();
+
+    void onColumnFilterClick(String columnId, int clintX, int clintY);
 }

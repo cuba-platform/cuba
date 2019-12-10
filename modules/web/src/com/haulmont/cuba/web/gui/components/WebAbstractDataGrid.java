@@ -81,6 +81,7 @@ import com.vaadin.server.Page;
 import com.vaadin.server.WebBrowser;
 import com.vaadin.shared.Registration;
 import com.vaadin.shared.ui.grid.HeightMode;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.DescriptionGenerator;
 import com.vaadin.ui.*;
@@ -330,8 +331,27 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
 
         ((CubaEnhancedGrid<E>) component).setCubaEditorFieldFactory(createEditorFieldFactory());
         ((CubaEnhancedGrid<E>) component).setBeforeRefreshHandler(this::onBeforeRefreshGridData);
+        ((CubaEnhancedGrid<E>) component).setColumnFilterClickHandler(this::onColumnFilterClick);
 
         initEmptyState();
+    }
+
+    protected void onColumnFilterClick(CubaEnhancedGrid.ColumnFilterClickContext<E> context) {
+        ColumnImpl<E> column = getColumnByGridColumn(context.getColumn());
+        component.showColumnFilterPopup(createFilterLayout(column), context.getClientX(), context.getClientY());
+    }
+
+    protected Component createFilterLayout(ColumnImpl<E> column) {
+        // TODO: gg, test code
+        HorizontalLayout layout = new HorizontalLayout();
+        layout.setWidth("300px");
+        layout.setHeight("200px");
+        layout.setStyleName("c-grid-filter-overlay");
+
+        Button button = new Button("Button", event -> Notification.show("Clicked"));
+        layout.addComponent(button);
+
+        return layout;
     }
 
     protected void onBeforeRefreshGridData(E item) {

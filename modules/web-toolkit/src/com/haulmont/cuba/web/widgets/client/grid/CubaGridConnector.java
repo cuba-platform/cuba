@@ -17,9 +17,12 @@
 package com.haulmont.cuba.web.widgets.client.grid;
 
 import com.haulmont.cuba.web.widgets.CubaGrid;
+import com.haulmont.cuba.web.widgets.client.grid.events.ColumnFilterClickEvent;
+import com.vaadin.client.ComponentConnector;
 import com.vaadin.client.communication.StateChangeEvent;
 import com.vaadin.client.connectors.grid.GridConnector;
 import com.vaadin.client.widgets.Grid.Column;
+import com.vaadin.shared.Connector;
 import com.vaadin.shared.ui.Connect;
 import elemental.json.JsonObject;
 
@@ -29,7 +32,17 @@ import java.util.List;
 public class CubaGridConnector extends GridConnector {
 
     public CubaGridConnector() {
-        registerRpc(CubsGridClientRpc.class, () -> getWidget().updateFooterVisibility());
+        registerRpc(CubaGridClientRpc.class, new CubaGridClientRpc() {
+            @Override
+            public void updateFooterVisibility() {
+                getWidget().updateFooterVisibility();
+            }
+
+            @Override
+            public void showColumnFilterPopup(int clientX, int clientY) {
+                getWidget().showColumnFilterPopup(clientX, clientY);
+            }
+        });
     }
 
     @Override
@@ -73,6 +86,15 @@ public class CubaGridConnector extends GridConnector {
         if (event.hasPropertyChanged("deselectAllLabel")) {
             getWidget().setDeselectAllLabel(getState().deselectAllLabel);
         }
+
+        if (event.hasPropertyChanged("columnFilterPopup")) {
+            if (getState().columnFilterPopup != null) {
+                ComponentConnector columnFilterPopup = (ComponentConnector) getState().columnFilterPopup;
+                getWidget().setColumnFilterPopup(columnFilterPopup.getWidget());
+            } else {
+                getWidget().setColumnFilterPopup(null);
+            }
+        }
     }
 
     @Override
@@ -99,6 +121,16 @@ public class CubaGridConnector extends GridConnector {
     protected void init() {
         super.init();
 
-        getWidget().emptyStateLinkClickHandler = () -> getRpcProxy(CubaGridServerRpc.class).onEmptyStateLinkClick();
+        getWidget().emptyStateLinkClickHandler = () ->
+                getRpcProxy(CubaGridServerRpc.class).onEmptyStateLinkClick();
+
+        getWidget().addColumnFilterClickHandler(this::onColumnFilterClick);
+    }
+
+    protected void onColumnFilterClick(ColumnFilterClickEvent<JsonObject> event) {
+        String columnId = getColumnId(event.getCell().getColumn());
+
+        getRpcProxy(CubaGridServerRpc.class)
+                .onColumnFilterClick(columnId, event.getClientX(), event.getClientY());
     }
 }

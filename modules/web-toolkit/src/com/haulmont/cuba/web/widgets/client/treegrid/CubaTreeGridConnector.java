@@ -2,10 +2,11 @@ package com.haulmont.cuba.web.widgets.client.treegrid;
 
 import com.haulmont.cuba.web.widgets.CubaTreeGrid;
 import com.haulmont.cuba.web.widgets.client.grid.CubaGridServerRpc;
-import com.haulmont.cuba.web.widgets.client.grid.CubsGridClientRpc;
+import com.haulmont.cuba.web.widgets.client.grid.CubaGridClientRpc;
 import com.vaadin.client.communication.StateChangeEvent;
 import com.vaadin.client.ui.treegrid.TreeGridConnector;
 import com.vaadin.client.widgets.Grid;
+import com.vaadin.shared.Connector;
 import com.vaadin.shared.ui.Connect;
 import elemental.json.JsonObject;
 
@@ -15,7 +16,17 @@ import java.util.List;
 public class CubaTreeGridConnector extends TreeGridConnector {
 
     public CubaTreeGridConnector() {
-        registerRpc(CubsGridClientRpc.class, () -> getWidget().updateFooterVisibility());
+        registerRpc(CubaGridClientRpc.class, new CubaGridClientRpc() {
+            @Override
+            public void updateFooterVisibility() {
+                getWidget().updateFooterVisibility();
+            }
+
+            @Override
+            public void showColumnFilterPopup(int clientX, int clientY) {
+                // TODO: gg, implement
+            }
+        });
     }
 
     @Override

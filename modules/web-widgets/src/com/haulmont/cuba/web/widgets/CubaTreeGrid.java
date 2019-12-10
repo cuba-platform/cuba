@@ -1,7 +1,7 @@
 package com.haulmont.cuba.web.widgets;
 
 import com.haulmont.cuba.web.widgets.client.grid.CubaGridServerRpc;
-import com.haulmont.cuba.web.widgets.client.grid.CubsGridClientRpc;
+import com.haulmont.cuba.web.widgets.client.grid.CubaGridClientRpc;
 import com.haulmont.cuba.web.widgets.client.treegrid.CubaTreeGridState;
 import com.haulmont.cuba.web.widgets.data.EnhancedHierarchicalDataProvider;
 import com.haulmont.cuba.web.widgets.grid.CubaEditorField;
@@ -9,6 +9,7 @@ import com.haulmont.cuba.web.widgets.grid.CubaEditorImpl;
 import com.haulmont.cuba.web.widgets.grid.CubaGridColumn;
 import com.vaadin.data.ValueProvider;
 import com.vaadin.data.provider.HierarchicalDataProvider;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.TreeGrid;
 import com.vaadin.ui.components.grid.Editor;
 import com.vaadin.ui.components.grid.GridSelectionModel;
@@ -22,13 +23,30 @@ public class CubaTreeGrid<T> extends TreeGrid<T> implements CubaEnhancedGrid<T> 
     protected CubaGridEditorFieldFactory<T> editorFieldFactory;
 
     protected Runnable emptyStateLinkClickHandler;
+    protected Consumer<ColumnFilterClickContext<T>> columnFilterClickHandler;
 
     public CubaTreeGrid() {
-        registerRpc((CubaGridServerRpc) () -> {
-            if (emptyStateLinkClickHandler != null) {
-                emptyStateLinkClickHandler.run();
+        registerRpc(new CubaGridServerRpc() {
+            @Override
+            public void onEmptyStateLinkClick() {
+                if (emptyStateLinkClickHandler != null) {
+                    emptyStateLinkClickHandler.run();
+                }
+            }
+
+            @Override
+            public void onColumnFilterClick(String columnId, int clintX, int clintY) {
+                if (columnFilterClickHandler != null) {
+                    Column<T, ?> column = getColumnByInternalId(columnId);
+                    columnFilterClickHandler.accept(new ColumnFilterClickContext<>(column, clintX, clintY));
+                }
             }
         });
+    }
+
+    @Override
+    public void showColumnFilterPopup(Component content, int clientX, int clientY) {
+        // TODO: gg, implement
     }
 
     @Override
@@ -171,8 +189,18 @@ public class CubaTreeGrid<T> extends TreeGrid<T> implements CubaEnhancedGrid<T> 
     }
 
     @Override
+    public Consumer<ColumnFilterClickContext<T>> getColumnFilterClickHandler() {
+        return columnFilterClickHandler;
+    }
+
+    @Override
+    public void setColumnFilterClickHandler(Consumer<ColumnFilterClickContext<T>> filterClickHandler) {
+        this.columnFilterClickHandler = filterClickHandler;
+    }
+
+    @Override
     public void updateFooterVisibility() {
-        getRpcProxy(CubsGridClientRpc.class).updateFooterVisibility();
+        getRpcProxy(CubaGridClientRpc.class).updateFooterVisibility();
     }
 
     @Override

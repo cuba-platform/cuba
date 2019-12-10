@@ -25,6 +25,12 @@ $cuba-datagrid-header-font-weight: $v-font-weight !default;
  */
 $cuba-datagrid-highlight-hover-row: false !default;
 
+$cuba-datagrid-column-filter-width: round($v-grid-row-height / 2) !default;
+
+// Since Grid's sidebar button has no width,
+// so we can only infer it.
+$cuba-datagrid-sidebar-button-width: $v-font-size * 1.5 !default;
+
 @mixin halo-datagrid($primary-stylename: v-grid) {
   $background-color: $v-table-background-color or valo-table-background-color();
   $border-color: $v-table-border-color or first-color(valo-border($color: $background-color, $strength: 0.8));
@@ -225,14 +231,6 @@ $cuba-datagrid-highlight-hover-row: false !default;
   .#{$primary-stylename}-cell.sort-desc {
     &:after {
       cursor: pointer;
-    }
-
-    &.c-sort-last:after {
-      // We need to shift the sorting indicator
-      // if the Grid's SideBar button is present.
-      // Unfortunately, this button has no width,
-      // so we can only infer it.
-      margin-right: $v-font-size * 1.5;
     }
   }
 
@@ -438,5 +436,59 @@ $cuba-datagrid-highlight-hover-row: false !default;
   .#{$primary-stylename}-sidebar-content .gwt-MenuItemSeparator {
     border-bottom: valo-border();
     border-bottom-style: dotted;
+  }
+
+  .c-grid-column-filter {
+    width: $cuba-datagrid-column-filter-width;
+    line-height: $v-grid-row-height;
+    text-align: center;
+    cursor: pointer;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: $v-grid-cell-padding-horizontal;
+
+    &:after {
+      font-family: FontAwesome;
+      content: "\f0b0";
+    }
+  }
+
+  .#{$primary-stylename}-cell.c-last-column.c-cell-has-filter {
+    .c-grid-column-filter {
+      // We need to shift the filter button
+      // if the Grid's SideBar button is present.
+      right: $cuba-datagrid-sidebar-button-width + $v-grid-cell-padding-horizontal / 2;
+    }
+  }
+
+  // We need to shift the sorting indicator in the following scenario:
+  .#{$primary-stylename}-cell.sort-asc,
+  .#{$primary-stylename}-cell.sort-desc {
+    // if the Grid's SideBar button is present, then
+    // the default sorting indicator padding + the Grid's SideBar button width
+    &.c-last-column:after {
+      right: $v-grid-cell-padding-horizontal + $cuba-datagrid-sidebar-button-width;
+    }
+
+    // if the filter button is present, then
+    // the default sorting indicator padding + the filter button width +
+    // shift to the half of the default sorting indicator padding from the filter button
+    &.c-cell-has-filter:after {
+      right: $v-grid-cell-padding-horizontal * 1.5 + $cuba-datagrid-column-filter-width;
+    }
+
+    // if both the Grid's SideBar button
+    // and the filter button are present, then
+    // the filter button width + the filter button width padding +
+    // the Grid's SideBar button width + shift to the half of the default
+    // sorting indicator padding from the filter button
+    &.c-last-column.c-cell-has-filter:after {
+      right: $v-grid-cell-padding-horizontal + $cuba-datagrid-column-filter-width + $cuba-datagrid-sidebar-button-width;
+    }
+  }
+
+  .c-grid-filter-overlay {
+    @include valo-selection-overlay-style;
   }
 }

@@ -16,8 +16,10 @@
 
 package com.haulmont.cuba.web.widgets.client.grid;
 
+import com.vaadin.shared.Connector;
 import com.vaadin.shared.annotations.NoLayout;
 import com.vaadin.shared.ui.grid.GridState;
+import com.vaadin.ui.Component;
 
 import java.util.Map;
 
@@ -38,4 +40,7 @@ public class CubaGridState extends GridState {
 
     @NoLayout
     public String deselectAllLabel;
+
+    @NoLayout
+    public Connector columnFilterPopup;
 }

@@ -14,15 +14,12 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.web.widgets.client.grid;
+package com.haulmont.cuba.web.widgets.client.grid.events;
 
-import com.vaadin.shared.communication.ClientRpc;
+import com.google.gwt.event.shared.EventHandler;
 
-public interface CubsGridClientRpc extends ClientRpc {
+public interface ColumnFilterClickHandler<T> extends EventHandler {
 
-    /**
-     * CAUTION! Safari hides footer while changing predefined styles at runtime. Given method updates footer visibility
-     * without changing its value.
-     */
-    void updateFooterVisibility();
+    // TODO: gg, JavaDoc
+    void click(ColumnFilterClickEvent<T> event);
 }

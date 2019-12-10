@@ -19,12 +19,20 @@ package com.haulmont.cuba.web.widgets.client.grid;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.shared.GWT;
 import com.google.gwt.dom.client.*;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.MenuBar;
 import com.google.gwt.user.client.ui.MenuItem;
 import com.google.gwt.user.client.ui.Widget;
+import com.haulmont.cuba.web.widgets.client.Tools;
+import com.haulmont.cuba.web.widgets.client.grid.events.ColumnFilterClickEvent;
+import com.haulmont.cuba.web.widgets.client.grid.events.ColumnFilterClickHandler;
+import com.vaadin.client.ComponentConnector;
+import com.vaadin.client.Focusable;
 import com.vaadin.client.WidgetUtil;
 import com.vaadin.client.renderers.Renderer;
+import com.vaadin.client.ui.VOverlay;
 import com.vaadin.client.widget.escalator.EscalatorUpdater;
 import com.vaadin.client.widget.escalator.FlyweightCell;
 import com.vaadin.client.widget.escalator.RowContainer;
@@ -33,6 +41,7 @@ import com.vaadin.client.widget.grid.events.GridClickEvent;
 import com.vaadin.client.widget.grid.selection.SelectionModel;
 import com.vaadin.client.widgets.Escalator;
 import com.vaadin.client.widgets.Grid;
+import com.vaadin.shared.Connector;
 import com.vaadin.shared.ui.grid.HeightMode;
 import elemental.events.Event;
 import elemental.json.JsonObject;
@@ -44,8 +53,10 @@ public class CubaGridWidget extends Grid<JsonObject> {
 
     public static final String CUBA_ID_COLUMN_PREFIX = "column_";
     public static final String CUBA_ID_COLUMN_HIDING_TOGGLE_PREFIX = "cc_";
-    public static final String SORT_LAST_STYLENAME = "c-sort-last";
+    public static final String LAST_COLUMN_STYLENAME = "c-last-column";
     public static final String COLUMN_HIDING_TOGGLE_STYLENAME = "column-hiding-toggle";
+    public static final String GRID_COLUMN_FILTER_STYLENAME = "c-grid-column-filter";
+    public static final String CELL_HAS_FILTER_STYLENAME = "c-cell-has-filter";
 
     protected Map<Column<?, JsonObject>, String> columnIds = null;
 
@@ -54,6 +65,18 @@ public class CubaGridWidget extends Grid<JsonObject> {
 
     protected String selectAllLabel;
     protected String deselectAllLabel;
+
+    protected Widget columnFilterPopup;
+
+    public CubaGridWidget() {
+        super();
+
+        addBrowserEventHandler(0, createCubaColumnFilterEventHandler());
+    }
+
+    protected CubaColumnFilterEventHandler createCubaColumnFilterEventHandler() {
+        return new CubaColumnFilterEventHandler();
+    }
 
     public Map<Column<?, JsonObject>, String> getColumnIds() {
         return columnIds;
@@ -170,7 +193,7 @@ public class CubaGridWidget extends Grid<JsonObject> {
     }
 
     protected boolean isWidgetFocusable(Widget widget) {
-        return widget instanceof com.vaadin.client.Focusable
+        return widget instanceof Focusable
                 || widget instanceof com.google.gwt.user.client.ui.Focusable;
     }
 
@@ -241,13 +264,24 @@ public class CubaGridWidget extends Grid<JsonObject> {
         }
 
         @Override
-        protected void afterSortingIndicatorAdded(FlyweightCell cell) {
+        protected void addAdditionalElementsAndStyles(StaticSection.StaticRow<?> staticRow,
+                                                      FlyweightCell cell) {
             // if the last column, SidebarMenu is visible and no vertical scroll
             if (cell.getColumn() == getVisibleColumns().size() - 1
                     && getSidebar().getParent() != null
                     && isHeaderDecoHidden()) {
                 TableCellElement cellElement = cell.getElement();
-                cellElement.addClassName(SORT_LAST_STYLENAME);
+                cellElement.addClassName(LAST_COLUMN_STYLENAME);
+            }
+
+            if (staticRow instanceof HeaderRow
+                    && ((HeaderRow) staticRow).isDefault()) {
+                Element filterElement = DOM.createDiv();
+                filterElement.addClassName(GRID_COLUMN_FILTER_STYLENAME);
+
+                Element td = cell.getElement();
+                td.appendChild(filterElement);
+                td.addClassName(CELL_HAS_FILTER_STYLENAME);
             }
         }
 
@@ -262,7 +296,85 @@ public class CubaGridWidget extends Grid<JsonObject> {
         @Override
         protected void cleanup(FlyweightCell cell) {
             super.cleanup(cell);
-            cell.getElement().removeClassName("c-sort-last");
+            cell.getElement().removeClassName(CELL_HAS_FILTER_STYLENAME);
+            cell.getElement().removeClassName(LAST_COLUMN_STYLENAME);
+        }
+    }
+
+    public HandlerRegistration addColumnFilterClickHandler(ColumnFilterClickHandler<JsonObject> handler) {
+        return addHandler(handler, ColumnFilterClickEvent.getType());
+    }
+
+    public void setColumnFilterPopup(Widget columnFilterPopup) {
+        this.columnFilterPopup = columnFilterPopup;
+    }
+
+    public Widget getColumnFilterPopup() {
+        return columnFilterPopup;
+    }
+
+    public void showColumnFilterPopup(int clientX, int clientY) {
+        if (columnFilterPopup == null) {
+            return;
+        }
+
+        VOverlay popupOverlay = new VOverlay();
+        popupOverlay.setOwner(this);
+        popupOverlay.setWidget(columnFilterPopup);
+
+        popupOverlay.addCloseHandler(closeEvent -> {
+
+//            popupOverlay = null;
+        });
+
+        Tools.showPopup(popupOverlay, clientX, clientY);
+    }
+
+    protected class CubaColumnFilterEventHandler extends AbstractGridEventHandler {
+        @Override
+        public void onEvent(GridEvent<JsonObject> event) {
+            super.onEvent(event);
+
+            if (event.isHandled()) {
+                return;
+            }
+            if (!event.getCell().isHeader()) {
+                return;
+            }
+            if (!getHeader().getRow(event.getCell().getRowIndex())
+                    .isDefault()) {
+                return;
+            }
+
+            // TODO: gg, check that a column is filterable
+
+            // TODO: gg, handle touch events?
+
+            if (BrowserEvents.CLICK
+                    .equals(event.getDomEvent().getType())) {
+
+                EventTarget eventTarget = event.getDomEvent().getEventTarget();
+                if (isFilterElement(eventTarget)) {
+                    Element target = eventTarget.cast();
+
+                    WidgetUtil.TextRectangle rect = WidgetUtil.getBoundingClientRect(target);
+                    int clientX = (int) Math.ceil(rect.getLeft());
+                    int clientY = (int) Math.ceil(rect.getBottom());
+
+                    fireEvent(new ColumnFilterClickEvent<>(CubaGridWidget.this, event.getCell(),
+                            clientX, clientY, true));
+
+                    event.setHandled(true);
+                }
+            }
+        }
+
+        protected boolean isFilterElement(EventTarget eventTarget) {
+            if (Element.is(eventTarget)) {
+                Element target = eventTarget.cast();
+                return GRID_COLUMN_FILTER_STYLENAME.equals(target.getClassName());
+            }
+            return false;
         }
     }
 

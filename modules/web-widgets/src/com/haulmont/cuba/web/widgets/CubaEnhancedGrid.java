@@ -2,6 +2,7 @@ package com.haulmont.cuba.web.widgets;
 
 import com.haulmont.cuba.web.widgets.grid.CubaEditorField;
 import com.vaadin.data.HasValue;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.components.grid.GridSelectionModel;
 
@@ -40,6 +41,11 @@ public interface CubaEnhancedGrid<T> {
 
     void setEmptyStateLinkClickHandler(Runnable handler);
 
+    Consumer<ColumnFilterClickContext<T>> getColumnFilterClickHandler();
+    void setColumnFilterClickHandler(Consumer<ColumnFilterClickContext<T>> filterClickHandler);
+
+    void showColumnFilterPopup(Component content, int clientX, int clientY);
+
     /**
      * CAUTION! Safari hides footer while changing predefined styles at runtime. Given method updates footer visibility
      * without changing its value.
@@ -51,4 +57,29 @@ public interface CubaEnhancedGrid<T> {
 
     String getDeselectAllLabel();
     void setDeselectAllLabel(String deselectAllLabel);
+
+    // TODO: gg, JavaDoc
+    class ColumnFilterClickContext<T> {
+        protected Grid.Column<T, ?> column;
+        protected int clientX;
+        protected int clientY;
+
+        public ColumnFilterClickContext(Grid.Column<T, ?> column, int clientX, int clientY) {
+            this.column = column;
+            this.clientX = clientX;
+            this.clientY = clientY;
+        }
+
+        public Grid.Column<T, ?> getColumn() {
+            return column;
+        }
+
+        public int getClientX() {
+            return clientX;
+        }
+
+        public int getClientY() {
+            return clientY;
+        }
+    }
 }
