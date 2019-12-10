@@ -14,23 +14,15 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.security.role;
+package com.haulmont.cuba.security.app.group.annotation;
 
-public enum RolesStorageMode {
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-    /**
-     * Only roles from a database (sec$Role) will be used.
-     */
-    DATABASE,
-
-    /**
-     * Only roles defined in the source code will be used.
-     */
-    SOURCE_CODE,
-
-    /**
-     * Mixed mode, both sources will be used. If there are roles with equal names in the database and in
-     * the source code, role from database will be used.
-     */
-    MIXED
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+public @interface JpqlConstraintContainer {
+    JpqlConstraint[] value();
 }

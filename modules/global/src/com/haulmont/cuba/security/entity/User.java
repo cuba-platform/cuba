@@ -93,6 +93,9 @@ public class User extends StandardEntity {
     @OnDeleteInverse(DeletePolicy.DENY)
     protected Group group;
 
+    @Column(name = "GROUP_NAMES")
+    protected String groupNames;
+
     @OneToMany(mappedBy = "user")
     @OrderBy("createTs")
     @Composition
@@ -163,6 +166,14 @@ public class User extends StandardEntity {
 
     public void setGroup(Group group) {
         this.group = group;
+    }
+
+    public String getGroupNames() {
+        return groupNames;
+    }
+
+    public void setGroupNames(String groupNames) {
+        this.groupNames = groupNames;
     }
 
     public List<UserRole> getUserRoles() {

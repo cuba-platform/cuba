@@ -17,6 +17,7 @@
 package com.haulmont.cuba.core.global;
 
 import com.haulmont.cuba.security.entity.ConstraintOperationType;
+import com.haulmont.cuba.security.entity.EntityOp;
 
 /**
  * Exception that is raised on different exceptions related to Row Level Security.
@@ -29,18 +30,18 @@ public class RowLevelSecurityException extends RuntimeException {
     private static final long serialVersionUID = -3097861878301424338L;
 
     private final String entity;
-    private final ConstraintOperationType operationType;
+    private final EntityOp operation;
 
     public RowLevelSecurityException(String message, String entity) {
         super(message);
         this.entity = entity;
-        this.operationType = null;
+        this.operation = null;
     }
 
-    public RowLevelSecurityException(String message, String entity, ConstraintOperationType operationType) {
+    public RowLevelSecurityException(String message, String entity, EntityOp operation) {
         super(message);
         this.entity = entity;
-        this.operationType = operationType;
+        this.operation = operation;
     }
 
     public String getEntity() {
@@ -48,6 +49,6 @@ public class RowLevelSecurityException extends RuntimeException {
     }
 
     public ConstraintOperationType getOperationType() {
-        return operationType;
+        return ConstraintOperationType.fromEntityOp(operation);
     }
 }

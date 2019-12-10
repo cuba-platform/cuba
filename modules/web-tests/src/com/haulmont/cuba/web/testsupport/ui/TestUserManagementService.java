@@ -48,6 +48,11 @@ public class TestUserManagementService implements UserManagementService {
     }
 
     @Override
+    public Integer moveUsersToGroup(List<UUID> userIds, @Nullable String targetAccessGroupName) {
+        return 0;
+    }
+
+    @Override
     public Integer changePasswordsAtLogonAndSendEmails(List<UUID> userIds) {
         return 0;
     }

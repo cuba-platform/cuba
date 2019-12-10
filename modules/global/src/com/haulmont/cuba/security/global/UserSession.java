@@ -19,6 +19,8 @@ package com.haulmont.cuba.security.global;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.sys.UserInvocationContext;
 import com.haulmont.cuba.security.entity.*;
+import com.haulmont.cuba.security.group.BasicSetOfAccessConstraints;
+import com.haulmont.cuba.security.group.SetOfAccessConstraints;
 import com.haulmont.cuba.security.role.BasicRoleDefinition;
 import com.haulmont.cuba.security.role.Permissions;
 import com.haulmont.cuba.security.role.PermissionsUtils;
@@ -32,8 +34,6 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 /**
  * Class that encapsulates an active user session.
@@ -58,8 +58,7 @@ public class UserSession implements Serializable {
     protected boolean system;
 
     protected RoleDefinition effectiveRole;
-//    protected Map<String, Integer>[] permissions;
-    protected Map<String, List<ConstraintData>> constraints;
+    protected SetOfAccessConstraints setOfAccessConstraints;
 
     protected Map<String, Serializable> attributes;
 
@@ -94,7 +93,8 @@ public class UserSession implements Serializable {
         effectiveRole = new BasicRoleDefinition();
         roleTypes.add(effectiveRole.getRoleType());
 
-        constraints = new HashMap<>();
+        setOfAccessConstraints = new BasicSetOfAccessConstraints();
+
         attributes = new ConcurrentHashMap<>();
         localAttributes = new ConcurrentHashMap<>();
     }
@@ -120,7 +120,7 @@ public class UserSession implements Serializable {
         locale = src.locale;
         timeZone = src.timeZone;
         effectiveRole = src.effectiveRole;
-        constraints = src.constraints;
+        setOfAccessConstraints = src.setOfAccessConstraints;
         attributes = src.attributes;
         roleTypes = src.roleTypes;
         localAttributes = src.localAttributes;
@@ -416,58 +416,6 @@ public class UserSession implements Serializable {
     }
 
     /**
-     * INTERNAL
-     */
-    public void addConstraint(Constraint constraint) {
-        String entityName = constraint.getEntityName();
-        List<ConstraintData> list = constraints.computeIfAbsent(entityName, k -> new ArrayList<>());
-        list.add(new ConstraintData(constraint));
-    }
-
-    /**
-     * INTERNAL
-     */
-    public void removeConstraint(Constraint constraintToRemove) {
-        String entityName = constraintToRemove.getEntityName();
-        List<ConstraintData> constraintDataList = this.constraints.get(entityName);
-        if (constraintDataList != null && !constraintDataList.isEmpty()) {
-            for (ConstraintData constraintData : new ArrayList<>(constraintDataList)) {
-                if (constraintToRemove.getId().equals(constraintData.getId()))
-                    constraintDataList.remove(constraintData);
-            }
-        }
-    }
-
-    /**
-     * INTERNAL
-     */
-    public List<ConstraintData> getConstraints(String entityName) {
-        return Collections.unmodifiableList(constraints.getOrDefault(entityName, Collections.emptyList()));
-    }
-
-    /**
-     * INTERNAL
-     */
-    public boolean hasConstraints(String entityName) {
-        return constraints.containsKey(entityName);
-    }
-
-    /**
-     * INTERNAL
-     */
-    public boolean hasConstraints() {
-        return !constraints.isEmpty();
-    }
-
-    /**
-     * INTERNAL
-     */
-    public List<ConstraintData> getConstraints(String entityName, Predicate<ConstraintData> predicate) {
-        List<ConstraintData> list = constraints.getOrDefault(entityName, Collections.emptyList());
-        return Collections.unmodifiableList(list.stream().filter(predicate).collect(Collectors.toList()));
-    }
-
-    /**
      * Get user session attribute. Attribute is a named serializable object bound to session.
      *
      * @param name attribute name. The following names have predefined values:
@@ -555,10 +503,10 @@ public class UserSession implements Serializable {
      * @param name  attribute name
      * @param value attribute value
      * @return the previous value associated with the specified key, or
-     *         {@code null} if there was no mapping for the key.
-     *         (A {@code null} return can also indicate that the map
-     *         previously associated {@code null} with the key,
-     *         if the implementation supports null values.)
+     * {@code null} if there was no mapping for the key.
+     * (A {@code null} return can also indicate that the map
+     * previously associated {@code null} with the key,
+     * if the implementation supports null values.)
      */
     public Object setLocalAttributeIfAbsent(String name, Object value) {
         return localAttributes.putIfAbsent(name, value);
@@ -599,6 +547,24 @@ public class UserSession implements Serializable {
      */
     public void applyEffectiveRole(RoleDefinition effectiveRole) {
         this.effectiveRole = effectiveRole;
+    }
+
+    /**
+     * Returns a set of access constraints.
+     * If you need to modify access constraints, use {@code AccessConstraintsBuilder} to construct a new set of constraints and then
+     * apply it using {@link UserSession#setConstraints(SetOfAccessConstraints)} method.
+     */
+    public SetOfAccessConstraints getConstraints() {
+        return setOfAccessConstraints;
+    }
+
+    /**
+     * Applies access constraints to the UserSession.
+     * <p>
+     * Use {@code AccessConstraintsBuilder} to construct a new set of constraints.
+     */
+    public void setConstraints(SetOfAccessConstraints constraints) {
+        this.setOfAccessConstraints = constraints;
     }
 
     @Override

@@ -245,7 +245,8 @@ create table SEC_USER (
     TIME_ZONE varchar(50),
     TIME_ZONE_AUTO boolean,
     ACTIVE boolean,
-    GROUP_ID varchar(36) not null,
+    GROUP_ID varchar(36),
+    GROUP_NAMES varchar(255),
     IP_MASK varchar(200),
     CHANGE_PASSWORD_AT_LOGON boolean,
     --

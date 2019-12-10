@@ -25,10 +25,8 @@
     <dsContext>
         <hierarchicalDatasource id="groupsDs"
                                 class="com.haulmont.cuba.security.entity.Group"
-                                view="group.browse"
-                                hierarchyProperty="parent">
-            <query><![CDATA[select g from sec$Group g]]></query>
-        </hierarchicalDatasource>
+                                hierarchyProperty="parent"
+                                datasourceClass="com.haulmont.cuba.gui.app.security.group.GroupsDatasource"/>
     </dsContext>
 
     <dialogMode width="theme://cuba.gui.GroupLookup.width"

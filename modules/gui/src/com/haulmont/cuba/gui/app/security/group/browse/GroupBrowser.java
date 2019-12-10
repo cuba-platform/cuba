@@ -72,6 +72,9 @@ public class GroupBrowser extends AbstractWindow {
     protected PopupButton groupCreateButton;
 
     @Inject
+    protected PopupButton exportBtn;
+
+    @Inject
     protected HierarchicalDatasource<Group, UUID> groupsDs;
 
     @Inject
@@ -79,6 +82,9 @@ public class GroupBrowser extends AbstractWindow {
 
     @Inject
     protected CollectionDatasource<SessionAttribute, UUID> attributesDs;
+
+    @Inject
+    protected CollectionDatasource<User, UUID> usersDs;
 
     @Inject
     protected Tree<Group> groupsTree;
@@ -134,6 +140,8 @@ public class GroupBrowser extends AbstractWindow {
     public void init(Map<String, Object> params) {
         super.init(params);
 
+        initListeners();
+
         initUsersTableActions();
 
         initGroupTreeActions();
@@ -143,6 +151,37 @@ public class GroupBrowser extends AbstractWindow {
         initGroupsImport();
 
         initDragAndDrop();
+    }
+
+    protected void initListeners() {
+        groupsDs.addItemChangeListener(e -> {
+            Group group = e.getItem();
+
+            constraintsDs.refresh(ParamsMap.of("group", group));
+            attributesDs.refresh(ParamsMap.of("group", group));
+
+            if (userCreateAction != null) {
+                userCreateAction.setEnabled(group != null);
+            }
+            if (attributeCreateAction != null) {
+                attributeCreateAction.setEnabled(group != null);
+            }
+            if (constraintCreateAction != null) {
+                constraintCreateAction.setEnabled(group != null);
+            }
+
+            boolean hasPermissionsToCreateGroup = security.isEntityOpPermitted(Group.class, EntityOp.CREATE);
+            groupCopyAction.setEnabled(hasPermissionsToCreateGroup && isNotPredefinedGroup());
+            exportBtn.setEnabled(group != null && isNotPredefinedGroup());
+
+            if (usersDs instanceof CollectionDatasource.SupportsPaging) {
+                ((CollectionDatasource.SupportsPaging) usersDs).setFirstResult(0);
+            }
+
+            if (e.getItem() != null && !isNotPredefinedGroup()) {
+                showNotification(getMessage("predefinedGroupIsUnchangeable"));
+            }
+        });
     }
 
     protected void initGroupsImport() {
@@ -200,8 +239,9 @@ public class GroupBrowser extends AbstractWindow {
     protected void initUsersTableActions() {
         userCreateAction = new GroupPropertyCreateAction(usersTable);
         userCreateAction.setAfterCommitHandler(entity ->
-                usersTable.getDatasource().refresh()
+                usersDs.refresh()
         );
+
         usersTable.addAction(userCreateAction);
 
         usersTable.addAction(new UserRemoveAction(usersTable, userManagementService));
@@ -244,13 +284,9 @@ public class GroupBrowser extends AbstractWindow {
         groupsTree.addAction(new RemoveAction(groupsTree) {
             @Override
             protected boolean isApplicable() {
-                if (target != null
-                        && target.getDatasource() != null
-                        && target.getSingleSelected() != null) {
-                    @SuppressWarnings("unchecked")
-                    HierarchicalDatasource<Group, UUID> ds = (HierarchicalDatasource<Group, UUID>) target.getDatasource();
-                    UUID selectedItemId = (UUID) target.getSingleSelected().getId();
-                    return ds.getChildren(selectedItemId).isEmpty();
+                Group group = groupsDs.getItem();
+                if (group != null) {
+                    return groupsDs.getChildren(group.getId()).isEmpty() && isNotPredefinedGroup();
                 }
 
                 return false;
@@ -258,24 +294,6 @@ public class GroupBrowser extends AbstractWindow {
         });
 
         final boolean hasPermissionsToCreateGroup = security.isEntityOpPermitted(Group.class, EntityOp.CREATE);
-
-        // enable actions if group is selected
-        groupsDs.addItemChangeListener(e -> {
-            if (userCreateAction != null) {
-                userCreateAction.setEnabled(e.getItem() != null);
-            }
-            if (attributeCreateAction != null) {
-                attributeCreateAction.setEnabled(e.getItem() != null);
-            }
-            if (constraintCreateAction != null) {
-                constraintCreateAction.setEnabled(e.getItem() != null);
-            }
-            groupCopyAction.setEnabled(hasPermissionsToCreateGroup && e.getItem() != null);
-            CollectionDatasource ds = usersTable.getDatasource();
-            if (ds instanceof CollectionDatasource.SupportsPaging) {
-                ((CollectionDatasource.SupportsPaging) ds).setFirstResult(0);
-            }
-        });
 
         groupsDs.refresh();
         groupsTree.expandTree();
@@ -334,7 +352,12 @@ public class GroupBrowser extends AbstractWindow {
                 for (User user : selected) {
                     usersForModify.add(user.getId());
                 }
-                userManagementService.moveUsersToGroup(usersForModify, group.getId());
+
+                if (group.isPredefined()) {
+                    userManagementService.moveUsersToGroup(usersForModify, group.getName());
+                } else {
+                    userManagementService.moveUsersToGroup(usersForModify, group.getId());
+                }
 
                 if (selected.size() == 1) {
                     User user = selected.iterator().next();
@@ -357,8 +380,16 @@ public class GroupBrowser extends AbstractWindow {
                 .map(BaseUuidEntity::getId)
                 .collect(Collectors.toList());
 
-        if (userManagementService.moveUsersToGroup(userIds, event.getGroup().getId()) != 0) {
-            usersTable.getDatasource().refresh();
+        int count;
+
+        if (event.getGroup().isPredefined()) {
+            count = userManagementService.moveUsersToGroup(userIds, event.getGroup().getName());
+        } else {
+            count = userManagementService.moveUsersToGroup(userIds, event.getGroup().getId());
+        }
+
+        if (count != 0) {
+            usersDs.refresh();
             return true;
         }
         return false;
@@ -391,18 +422,35 @@ public class GroupBrowser extends AbstractWindow {
 
         @SuppressWarnings("unchecked")
         Table<Constraint> constraintsTable = (Table) getComponentNN("constraintsTable");
-        constraintCreateAction = new GroupPropertyCreateAction(constraintsTable);
+        constraintCreateAction = new GroupPropertyCreateAction(constraintsTable) {
+            @Override
+            protected boolean isApplicable() {
+                return super.isApplicable() && isNotPredefinedGroup();
+            }
+        };
         constraintsTable.addAction(constraintCreateAction);
 
-        Action activateAction = new ItemTrackingAction("activate")
-                .withHandler(event -> {
-                    Constraint constraint = constraintsTable.getSingleSelected();
-                    if (constraint != null) {
-                        constraint.setIsActive(!Boolean.TRUE.equals(constraint.getIsActive()));
-                        constraintsDs.commit();
-                        constraintsDs.refresh();
-                    }
-                });
+        constraintsTable.addAction(new RemoveAction(constraintsTable) {
+            @Override
+            protected boolean isApplicable() {
+                return super.isApplicable() && isNotPredefinedGroup();
+            }
+        });
+
+        ItemTrackingAction activateAction = new ItemTrackingAction("activate") {
+            @Override
+            protected boolean isApplicable() {
+                return super.isApplicable() && isNotPredefinedGroup();
+            }
+        };
+        activateAction.withHandler(event -> {
+            Constraint constraint = constraintsTable.getSingleSelected();
+            if (constraint != null) {
+                constraint.setIsActive(!Boolean.TRUE.equals(constraint.getIsActive()));
+                constraintsDs.commit();
+                constraintsDs.refresh();
+            }
+        });
         constraintsTable.addAction(activateAction);
 
         constraintsTable.addAction(new ConstraintLocalizationEditAction(constraintsTable));
@@ -431,8 +479,13 @@ public class GroupBrowser extends AbstractWindow {
 
         constraintsDs.refresh();
 
-        BaseAction moveToGroupAction = new ItemTrackingAction("moveToGroup")
-                .withCaption(getMessage("actions.constraint.moveToGroup"))
+        BaseAction moveToGroupAction = new ItemTrackingAction("moveToGroup") {
+            @Override
+            protected boolean isApplicable() {
+                return super.isApplicable() && isNotPredefinedGroup();
+            }
+        };
+        moveToGroupAction.withCaption(getMessage("actions.constraint.moveToGroup"))
                 .withIcon("icons/move.png")
                 .withHandler(e ->
                         moveConstraintToGroup(constraintsTable.getSingleSelected())
@@ -476,8 +529,20 @@ public class GroupBrowser extends AbstractWindow {
         }
 
         Table attributesTable = (Table) getComponentNN("attributesTable");
-        attributeCreateAction = new GroupPropertyCreateAction(attributesTable);
+        attributeCreateAction = new GroupPropertyCreateAction(attributesTable) {
+            @Override
+            protected boolean isApplicable() {
+                return super.isApplicable() && isNotPredefinedGroup();
+            }
+        };
         attributesTable.addAction(attributeCreateAction);
+
+        attributesTable.addAction(new RemoveAction(attributesTable) {
+            @Override
+            protected boolean isApplicable() {
+                return super.isApplicable() && isNotPredefinedGroup();
+            }
+        });
 
         attributesTabInitialized = true;
         attributesDs.refresh();
@@ -521,7 +586,7 @@ public class GroupBrowser extends AbstractWindow {
 
         @Override
         protected boolean isApplicable() {
-            return super.isApplicable() && target.getSelected().size() == 1;
+            return super.isApplicable() && target.getSelected().size() == 1 && isNotPredefinedGroup();
         }
     }
 
@@ -538,7 +603,15 @@ public class GroupBrowser extends AbstractWindow {
 
         @Override
         public Map<String, Object> getInitialValues() {
-            return ParamsMap.of("group", groupsTree.getSingleSelected());
+            Group group = groupsTree.getSingleSelected();
+            if (group != null) {
+                if (group.isPredefined()) {
+                    return ParamsMap.of("groupNames", group.getName());
+                } else {
+                    return ParamsMap.of("group", group);
+                }
+            }
+            return Collections.emptyMap();
         }
 
         @Override
@@ -584,5 +657,9 @@ public class GroupBrowser extends AbstractWindow {
             showNotification(getMessage("exportFailed"), e.getMessage(), NotificationType.ERROR);
             log.error("Groups export failed", e);
         }
+    }
+
+    protected boolean isNotPredefinedGroup() {
+        return groupsDs.getItem() == null || !groupsDs.getItem().isPredefined();
     }
 }

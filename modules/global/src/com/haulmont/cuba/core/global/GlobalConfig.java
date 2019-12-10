@@ -28,8 +28,8 @@ import com.haulmont.cuba.core.config.defaults.DefaultString;
 import com.haulmont.cuba.core.config.type.*;
 import com.haulmont.cuba.core.sys.AvailableLocalesFactory;
 import com.haulmont.cuba.security.entity.RememberMeToken;
-import com.haulmont.cuba.security.role.RolesStorageMode;
-import com.haulmont.cuba.security.role.RolesStorageModeFactory;
+import com.haulmont.cuba.security.role.SecurityStorageMode;
+import com.haulmont.cuba.security.role.SecurityStorageModeFactory;
 import org.apache.commons.pool2.impl.GenericKeyedObjectPoolConfig;
 
 import java.util.List;
@@ -108,6 +108,7 @@ public interface GlobalConfig extends Config {
 
     /**
      * Automatic testing mode indication.
+     *
      * @return true if in test mode
      */
     @Property("cuba.testMode")
@@ -125,6 +126,7 @@ public interface GlobalConfig extends Config {
 
     /**
      * Supported locales. List of locales is shown on user login.
+     *
      * @return map of labels to locales
      */
     @Property("cuba.availableLocales")
@@ -134,6 +136,7 @@ public interface GlobalConfig extends Config {
 
     /**
      * Show locale select in LoginWindow.
+     *
      * @return true if show
      */
     @Property("cuba.localeSelectVisible")
@@ -196,6 +199,7 @@ public interface GlobalConfig extends Config {
     @Source(type = SourceType.DATABASE)
     @DefaultBoolean(false)
     boolean getUserSessionLogEnabled();
+
     void setUserSessionLogEnabled(boolean enabled);
 
     /**
@@ -279,6 +283,19 @@ public interface GlobalConfig extends Config {
      */
     @Property("cuba.rolesStorageMode")
     @Default("MIXED")
-    @Factory(factory = RolesStorageModeFactory.class)
-    RolesStorageMode getRolesStorageMode();
+    @Factory(factory = SecurityStorageModeFactory.class)
+    SecurityStorageMode getRolesStorageMode();
+
+    /**
+     * Defines the source from which access groups are used in the application. There are 3 possible values:
+     * DATABASE - only access groups from a database (sec$Group) will be used;
+     * SOURCE_CODE - only access groups defined in the source code will be used;
+     * MIXED - mixed mode, both sources will be used. If there are access groups with equal names in the database and in
+     * the source code, access group from database will be used.
+     * Application uses mixed mode by default.
+     */
+    @Property("cuba.accessGroupsStorageMode")
+    @Default("MIXED")
+    @Factory(factory = SecurityStorageModeFactory.class)
+    SecurityStorageMode getAccessGroupsStorageMode();
 }

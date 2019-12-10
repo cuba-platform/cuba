@@ -28,7 +28,7 @@ import com.haulmont.cuba.security.entity.UserRole;
 import com.haulmont.cuba.security.role.Permissions;
 import com.haulmont.cuba.security.role.PermissionsUtils;
 import com.haulmont.cuba.security.role.RoleDefinition;
-import com.haulmont.cuba.security.role.RolesStorageMode;
+import com.haulmont.cuba.security.role.SecurityStorageMode;
 import org.slf4j.Logger;
 import org.springframework.stereotype.Component;
 
@@ -41,7 +41,7 @@ import java.util.stream.Collectors;
 
 /**
  * Bean contains information about all predefined roles.
- * Also has a set of methods needed to support different modes of working with roles (see {@link RolesStorageMode})
+ * Also has a set of methods needed to support different modes of working with roles (see {@link SecurityStorageMode})
  */
 @Component(RolesRepository.NAME)
 public class RolesRepository {
@@ -241,21 +241,21 @@ public class RolesRepository {
     }
 
     public boolean isDatabaseModeAvailable() {
-        RolesStorageMode valueFromConfig = config.getRolesStorageMode();
+        SecurityStorageMode valueFromConfig = config.getRolesStorageMode();
         if (valueFromConfig == null) {
             return true;
         }
 
-        return RolesStorageMode.DATABASE.equals(valueFromConfig) || RolesStorageMode.MIXED.equals(valueFromConfig);
+        return SecurityStorageMode.DATABASE.equals(valueFromConfig) || SecurityStorageMode.MIXED.equals(valueFromConfig);
     }
 
     public boolean isPredefinedRolesModeAvailable() {
-        RolesStorageMode valueFromConfig = config.getRolesStorageMode();
+        SecurityStorageMode valueFromConfig = config.getRolesStorageMode();
         if (valueFromConfig == null) {
             return true;
         }
 
-        return RolesStorageMode.SOURCE_CODE.equals(valueFromConfig) || RolesStorageMode.MIXED.equals(valueFromConfig);
+        return SecurityStorageMode.SOURCE_CODE.equals(valueFromConfig) || SecurityStorageMode.MIXED.equals(valueFromConfig);
     }
 
     protected Map<String, RoleDefinition> getNameToPredefinedRoleMapping() {

@@ -234,7 +234,8 @@ create table SEC_USER (
     TIME_ZONE varchar(50),
     TIME_ZONE_AUTO tinyint,
     ACTIVE tinyint,
-    GROUP_ID uniqueidentifier not null,
+    GROUP_ID uniqueidentifier,
+    GROUP_NAMES varchar(255),
     IP_MASK varchar(200),
     CHANGE_PASSWORD_AT_LOGON tinyint,
     --

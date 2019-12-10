@@ -20,22 +20,31 @@ package com.haulmont.cuba.gui.app.security.group.edit;
 import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.gui.components.AbstractEditor;
+import com.haulmont.cuba.gui.components.Button;
 import com.haulmont.cuba.gui.components.PickerField;
+import com.haulmont.cuba.gui.components.TextField;
 import com.haulmont.cuba.security.entity.Group;
 
+import javax.inject.Inject;
 import javax.inject.Named;
 
-public class GroupEditor extends AbstractEditor {
+public class GroupEditor extends AbstractEditor<Group> {
     @Named("fieldGroup.parent")
     protected PickerField<Group> parentField;
+    @Named("fieldGroup.name")
+    protected TextField<String> nameField;
 
     @Override
     protected void postInit() {
-        if (!PersistenceHelper.isNew(getItem())) {
+        Group group = getItem();
+        if (!PersistenceHelper.isNew(group)) {
             parentField.setVisible(true);
             PickerField.LookupAction lookupAction = new PickerField.LookupAction(parentField);
             lookupAction.setLookupScreenParams(ParamsMap.of("exclude", getItem()));
             parentField.addAction(lookupAction);
+        }
+        if (group.isPredefined()) {
+            setReadOnly(true);
         }
     }
 }

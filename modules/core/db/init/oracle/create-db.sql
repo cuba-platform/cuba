@@ -634,7 +634,8 @@ create table SEC_USER (
     TIME_ZONE varchar2(50 char),
     TIME_ZONE_AUTO char(1),
     ACTIVE char(1),
-    GROUP_ID varchar2(32) not null,
+    GROUP_ID varchar2(32),
+    GROUP_NAMES varchar2(255),
     IP_MASK varchar2(200 char),
     CHANGE_PASSWORD_AT_LOGON char(1),
     primary key(ID)

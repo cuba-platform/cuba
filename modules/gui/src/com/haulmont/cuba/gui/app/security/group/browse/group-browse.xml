@@ -27,35 +27,27 @@
         <hierarchicalDatasource
                 id="groupsDs"
                 class="com.haulmont.cuba.security.entity.Group"
-                view="group.browse"
                 hierarchyProperty="parent"
-                >
-            <query>
-                <![CDATA[select g from sec$Group g order by g.name]]>
-            </query>
-        </hierarchicalDatasource>
+                datasourceClass="com.haulmont.cuba.gui.app.security.group.GroupsDatasource"/>
 
         <collectionDatasource
                 id="usersDs"
                 class="com.haulmont.cuba.security.entity.User"
                 view="group.browse"
                 maxResults="50">
-            <query>select u from sec$User u where u.group.id = :ds$groupsDs.id</query>
+            <query>select u from sec$User u left join u.group g where (g.id = :ds$groupsDs.id or u.groupNames is not null and u.groupNames = :ds$groupsDs.name)</query>
         </collectionDatasource>
 
         <collectionDatasource
                 id="constraintsDs"
                 class="com.haulmont.cuba.security.entity.Constraint"
-                view="group.browse">
-            <query>select c from sec$Constraint c where c.group.id = :ds$groupsDs.id</query>
+                datasourceClass="com.haulmont.cuba.gui.app.security.group.ConstraintsDatasource">
         </collectionDatasource>
 
         <collectionDatasource
                 id="attributesDs"
                 class="com.haulmont.cuba.security.entity.SessionAttribute"
-                view="_local">
-            <query>select a from sec$SessionAttribute a where a.group.id = :ds$groupsDs.id</query>
-        </collectionDatasource>
+                datasourceClass="com.haulmont.cuba.gui.app.security.group.SessionAttributesDatasource"/>
     </dsContext>
 
     <dialogMode height="theme://cuba.gui.dialogSize.height.xlarge"
@@ -141,11 +133,18 @@
                                 <action id="moveToGroup"/>
                             </actions>
                             <columns>
-                                <column id="entityName" caption="msg://com.haulmont.cuba.security.entity/Constraint.entityName"/>
-                                <column id="isActive" caption="msg://com.haulmont.cuba.security.entity/Constraint.isActive"/>
-                                <column id="operationType" caption="msg://com.haulmont.cuba.security.entity/Constraint.operationType"/>
-                                <column id="joinClause" caption="msg://com.haulmont.cuba.security.entity/Constraint.joinClause" width="200px"/>
-                                <column id="whereClause" caption="msg://com.haulmont.cuba.security.entity/Constraint.whereClause" width="200px"/>
+                                <column id="entityName"
+                                        caption="msg://com.haulmont.cuba.security.entity/Constraint.entityName"/>
+                                <column id="isActive"
+                                        caption="msg://com.haulmont.cuba.security.entity/Constraint.isActive"/>
+                                <column id="operationType"
+                                        caption="msg://com.haulmont.cuba.security.entity/Constraint.operationType"/>
+                                <column id="joinClause"
+                                        caption="msg://com.haulmont.cuba.security.entity/Constraint.joinClause"
+                                        width="200px"/>
+                                <column id="whereClause"
+                                        caption="msg://com.haulmont.cuba.security.entity/Constraint.whereClause"
+                                        width="200px"/>
                                 <column id="groovyScript"
                                         caption="msg://com.haulmont.cuba.security.entity/Constraint.groovyScript"
                                         width="200px"

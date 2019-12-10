@@ -16,8 +16,10 @@
 
 package com.haulmont.cuba.security;
 
-import com.haulmont.cuba.core.app.ConstraintScriptValidationService;
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.security.app.group.annotation.Constraint;
+import com.haulmont.cuba.security.group.ConstraintValidationResult;
+import com.haulmont.cuba.security.group.PersistenceSecurityService;
 import com.haulmont.cuba.testsupport.TestContainer;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -28,19 +30,19 @@ public class ConstraintScriptValidationServiceTest {
     @RegisterExtension
     public static TestContainer cont = TestContainer.Common.INSTANCE;
 
-    private ConstraintScriptValidationService constraintScriptValidationServiceBean = AppBeans.get(ConstraintScriptValidationService.class);
+    private PersistenceSecurityService persistenceSecurityService = AppBeans.get(PersistenceSecurityService.class);
 
     @Test
     public void testCompilationFailedException() {
-        ConstraintScriptValidationService.ScriptValidationResult result =
-                constraintScriptValidationServiceBean.evaluateConstraintScript(null, "import com.haulmont.cuba.core.Persistence_UNEXIST");
+        ConstraintValidationResult result =
+                persistenceSecurityService.validateConstraintScript("sec$User", "import com.haulmont.cuba.core.Persistence_UNEXIST");
         Assertions.assertTrue(result.isCompilationFailedException());
     }
 
     @Test
     public void testNotCompilationFailedException() {
-        ConstraintScriptValidationService.ScriptValidationResult result =
-                constraintScriptValidationServiceBean.evaluateConstraintScript(null, "import com.haulmont.cuba.core.Persistence");
+        ConstraintValidationResult result =
+                persistenceSecurityService.validateConstraintScript("sec$User", "import com.haulmont.cuba.core.Persistence");
         Assertions.assertFalse(result.isCompilationFailedException());
     }
 }

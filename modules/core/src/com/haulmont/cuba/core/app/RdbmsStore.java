@@ -346,7 +346,7 @@ public class RdbmsStore implements DataStore {
             context.getQuery().setQueryString("select e from " + metaClass.getName() + " e");
         }
 
-        if (security.hasInMemoryConstraints(metaClass, ConstraintOperationType.READ, ConstraintOperationType.ALL)) {
+        if (security.hasInMemoryReadConstraints(metaClass)) {
             List resultList;
             try (Transaction tx = getLoadTransaction(context.isJoinTransaction())) {
                 EntityManager em = persistence.getEntityManager(storeName);
@@ -426,7 +426,7 @@ public class RdbmsStore implements DataStore {
                     persisted.add(entity);
 
                     if (isAuthorizationRequired(context))
-                        checkOperationPermitted(entity, ConstraintOperationType.CREATE);
+                        checkOperationPermitted(entity, EntityOp.CREATE);
 
                     if (!context.isDiscardCommitted()) {
                         View view = getViewFromContextOrNull(context, entity);
@@ -462,7 +462,7 @@ public class RdbmsStore implements DataStore {
                     attributeSecurity.afterMerge(merged);
 
                     if (isAuthorizationRequired(context))
-                        checkOperationPermitted(merged, ConstraintOperationType.UPDATE);
+                        checkOperationPermitted(merged, EntityOp.UPDATE);
 
                     if (entityHasDynamicAttributes(entity)) {
                         BaseGenericIdEntity originalBaseGenericIdEntity = (BaseGenericIdEntity) entity;
@@ -495,7 +495,7 @@ public class RdbmsStore implements DataStore {
                 }
 
                 if (isAuthorizationRequired(context))
-                    checkOperationPermitted(e, ConstraintOperationType.DELETE);
+                    checkOperationPermitted(e, EntityOp.DELETE);
 
                 em.remove(e);
                 saved.add(e);
@@ -521,7 +521,7 @@ public class RdbmsStore implements DataStore {
                 }
             }
 
-            if (!context.isDiscardCommitted() && isAuthorizationRequired(context) && userSessionSource.getUserSession().hasConstraints()) {
+            if (!context.isDiscardCommitted() && isAuthorizationRequired(context) && userSessionSource.getUserSession().getConstraints().exists()) {
                 security.calculateFilteredData(saved);
             }
 
@@ -560,7 +560,7 @@ public class RdbmsStore implements DataStore {
             }
         }
 
-        if (!context.isDiscardCommitted() && isAuthorizationRequired(context) && userSessionSource.getUserSession().hasConstraints()) {
+        if (!context.isDiscardCommitted() && isAuthorizationRequired(context) && userSessionSource.getUserSession().getConstraints().exists()) {
             security.applyConstraints(resultEntities);
         }
 
@@ -671,12 +671,12 @@ public class RdbmsStore implements DataStore {
         return isAuthorizationRequired(context) ? attributeSecurity.createRestrictedView(view) : view;
     }
 
-    protected void checkOperationPermitted(Entity entity, ConstraintOperationType operationType) {
-        if (userSessionSource.getUserSession().hasConstraints()
+    protected void checkOperationPermitted(Entity entity, EntityOp operation) {
+        if (userSessionSource.getUserSession().getConstraints().exists()
                 && security.hasConstraints(entity.getMetaClass())
-                && !security.isPermitted(entity, operationType)) {
+                && !security.isPermitted(entity, operation)) {
             throw new RowLevelSecurityException(
-                    operationType + " is not permitted for entity " + entity, entity.getMetaClass().getName(), operationType);
+                    operation + " is not permitted for entity " + entity, entity.getMetaClass().getName(), operation);
         }
     }
 
@@ -909,10 +909,10 @@ public class RdbmsStore implements DataStore {
             log.debug("reading of {} not permitted, returning empty list", metaClass);
             return false;
         }
-        if (security.hasInMemoryConstraints(metaClass, ConstraintOperationType.READ, ConstraintOperationType.ALL)) {
+        if (security.hasInMemoryReadConstraints(metaClass)) {
             String msg = String.format("%s is not permitted for %s", ConstraintOperationType.READ, metaClass.getName());
             if (serverConfig.getDisableLoadValuesIfConstraints()) {
-                throw new RowLevelSecurityException(msg, metaClass.getName(), ConstraintOperationType.READ);
+                throw new RowLevelSecurityException(msg, metaClass.getName(), EntityOp.READ);
             } else {
                 log.debug(msg);
             }
@@ -926,9 +926,9 @@ public class RdbmsStore implements DataStore {
                 return false;
             }
             if (security.hasConstraints(entityMetaClass)) {
-                String msg = String.format("%s is not permitted for %s", ConstraintOperationType.READ, entityName);
+                String msg = String.format("%s is not permitted for %s", EntityOp.READ, entityName);
                 if (serverConfig.getDisableLoadValuesIfConstraints()) {
-                    throw new RowLevelSecurityException(msg, entityName, ConstraintOperationType.READ);
+                    throw new RowLevelSecurityException(msg, entityName, EntityOp.READ);
                 } else {
                     log.debug(msg);
                 }
@@ -1031,16 +1031,13 @@ public class RdbmsStore implements DataStore {
     }
 
     protected boolean needToFilterByInMemoryReadConstraints(LoadContext context) {
-        return userSessionSource.getUserSession().hasConstraints()
-                && security.hasInMemoryConstraints(metadata.getClassNN(context.getMetaClass()),
-                ConstraintOperationType.READ, ConstraintOperationType.ALL);
+        return userSessionSource.getUserSession().getConstraints().exists()
+                && security.hasInMemoryReadConstraints(metadata.getClassNN(context.getMetaClass()));
     }
 
     protected boolean needToApplyInMemoryReadConstraints(LoadContext context) {
-        return isAuthorizationRequired(context) && userSessionSource.getUserSession().hasConstraints()
-                && needToApplyByPredicate(context,
-                metaClass -> security.hasInMemoryConstraints(metaClass,
-                        ConstraintOperationType.READ, ConstraintOperationType.ALL));
+        return isAuthorizationRequired(context) && userSessionSource.getUserSession().getConstraints().exists()
+                && needToApplyByPredicate(context, metaClass -> security.hasInMemoryReadConstraints(metaClass));
     }
 
     protected boolean needToApplyAttributeAccess(LoadContext context) {

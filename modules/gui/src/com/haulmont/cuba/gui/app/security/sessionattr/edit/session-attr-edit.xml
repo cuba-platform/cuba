@@ -36,6 +36,9 @@
                 <field id="stringValue"/>
             </column>
         </fieldGroup>
-        <frame id="windowActions" screen="editWindowActions"/>
+        <hbox id="windowActions" spacing="true" stylename="c-edit-window-actions">
+            <button id="windowCommit" action="windowCommit" icon="EDITOR_OK"/>
+            <button id="windowClose" action="windowClose" icon="EDITOR_CANCEL"/>
+        </hbox>
     </layout>
 </window>

@@ -19,7 +19,10 @@ package com.haulmont.cuba.security.entity;
 
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
 
+import java.util.Collections;
+import java.util.EnumSet;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * Area of constraint application.
@@ -44,6 +47,37 @@ public enum ConstraintOperationType implements EnumClass<String> {
     @Override
     public String getId() {
         return id;
+    }
+
+    public Set<EntityOp> toEntityOps() {
+        switch (this) {
+            case CREATE:
+                return EnumSet.of(EntityOp.CREATE);
+            case READ:
+                return EnumSet.of(EntityOp.READ);
+            case UPDATE:
+                return EnumSet.of(EntityOp.UPDATE);
+            case DELETE:
+                return EnumSet.of(EntityOp.DELETE);
+            case ALL:
+                return EnumSet.allOf(EntityOp.class);
+            default:
+                return Collections.emptySet();
+        }
+    }
+
+    public static ConstraintOperationType fromEntityOp(EntityOp entityOp) {
+        switch (entityOp) {
+            case CREATE:
+                return ConstraintOperationType.CREATE;
+            case READ:
+                return ConstraintOperationType.READ;
+            case UPDATE:
+                return ConstraintOperationType.UPDATE;
+            case DELETE:
+                return ConstraintOperationType.DELETE;
+        }
+        return null; // unknown id
     }
 
     public static ConstraintOperationType fromId(String id) {

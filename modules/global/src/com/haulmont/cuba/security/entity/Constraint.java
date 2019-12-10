@@ -64,6 +64,9 @@ public class Constraint extends StandardEntity {
     @JoinColumn(name = "GROUP_ID")
     protected Group group;
 
+    @Transient
+    protected boolean predefined;
+
     public String getCode() {
         return code;
     }
@@ -142,5 +145,14 @@ public class Constraint extends StandardEntity {
 
     public void setIsActive(Boolean isActive) {
         this.isActive = isActive;
+    }
+
+
+    public boolean isPredefined() {
+        return predefined;
+    }
+
+    public void setPredefined(boolean predefined) {
+        this.predefined = predefined;
     }
 }

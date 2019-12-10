@@ -155,8 +155,15 @@ public interface Security {
 
     /**
      * Check if the operation type is permitted for the entity
+     * @deprecated Use {@link #isPermitted(Entity, EntityOp)} instead
      */
+    @Deprecated
     boolean isPermitted(Entity entity, ConstraintOperationType operationType);
+
+    /**
+     * Check if the operation type is permitted for the entity
+     */
+    boolean isPermitted(Entity entity, EntityOp operation);
 
     /**
      * Check the special constraint permission for the entity
@@ -170,7 +177,9 @@ public interface Security {
 
     /**
      * Check if there are registered memory constraints of specified {@code operationTypes} for the metaClass or it's original metaClass
+     * @deprecated unused method
      */
+    @Deprecated
     boolean hasInMemoryConstraints(MetaClass metaClass, ConstraintOperationType... operationTypes);
 
     Object evaluateConstraintScript(Entity entity, String groovyScript);

@@ -16,16 +16,21 @@
 
 package com.haulmont.cuba.security.role;
 
-import com.haulmont.cuba.core.config.type.TypeFactory;
+public enum SecurityStorageMode {
 
-public class RolesStorageModeFactory extends TypeFactory {
-    @Override
-    public Object build(String string) {
-        for (RolesStorageMode mode : RolesStorageMode.values()) {
-            if (mode.name().equalsIgnoreCase(string)) {
-                return mode;
-            }
-        }
-        return null;
-    }
+    /**
+     * Only roles from a database (sec$Role) will be used.
+     */
+    DATABASE,
+
+    /**
+     * Only roles defined in the source code will be used.
+     */
+    SOURCE_CODE,
+
+    /**
+     * Mixed mode, both sources will be used. If there are roles with equal names in the database and in
+     * the source code, role from database will be used.
+     */
+    MIXED
 }

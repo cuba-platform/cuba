@@ -16,21 +16,24 @@
  */
 package com.haulmont.cuba.security.sys;
 
-import com.haulmont.chile.core.datatypes.Datatype;
-import com.haulmont.chile.core.datatypes.Datatypes;
+import com.google.common.base.Strings;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.Transaction;
-import com.haulmont.cuba.core.TypedQuery;
-import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.global.EntityStates;
+import com.haulmont.cuba.core.global.Metadata;
+import com.haulmont.cuba.core.global.UserSessionSource;
+import com.haulmont.cuba.core.global.UuidSource;
 import com.haulmont.cuba.core.sys.DefaultPermissionValuesConfig;
 import com.haulmont.cuba.security.app.UserSessionsAPI;
+import com.haulmont.cuba.security.app.group.AccessGroupDefinitionsComposer;
 import com.haulmont.cuba.security.app.role.RoleDefinitionBuilder;
 import com.haulmont.cuba.security.app.role.RolesRepository;
 import com.haulmont.cuba.security.entity.*;
 import com.haulmont.cuba.security.global.NoUserSessionException;
 import com.haulmont.cuba.security.global.UserSession;
+import com.haulmont.cuba.security.group.AccessGroupDefinition;
 import com.haulmont.cuba.security.role.PermissionsUtils;
 import com.haulmont.cuba.security.role.RoleDefinition;
 import org.slf4j.Logger;
@@ -39,15 +42,11 @@ import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 import java.io.Serializable;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * INTERNAL.
- *
+ * <p>
  * System-level class managing {@link UserSession}s.
  */
 @Component(UserSessionManager.NAME)
@@ -81,12 +80,16 @@ public class UserSessionManager {
     @Inject
     protected RolesRepository rolesRepository;
 
+    @Inject
+    protected AccessGroupDefinitionsComposer groupsComposer;
+
     /**
      * Create a new session and fill it with security data. Must be called inside a transaction.
-     * @param user      user instance
-     * @param locale    user locale
-     * @param system    create system session
-     * @return          new session instance
+     *
+     * @param user   user instance
+     * @param locale user locale
+     * @param system create system session
+     * @return new session instance
      */
     public UserSession createSession(User user, Locale locale, boolean system) {
         return createSession(uuidSource.createUuid(), user, locale, system);
@@ -94,15 +97,15 @@ public class UserSessionManager {
 
     /**
      * Create a new session and fill it with security data. Must be called inside a transaction.
+     *
      * @param sessionId target session id
      * @param user      user instance
      * @param locale    user locale
      * @param system    create system session
-     * @return          new session instance
+     * @return new session instance
      */
     public UserSession createSession(UUID sessionId, User user, Locale locale, boolean system) {
         List<RoleDefinition> roles = new ArrayList<>();
-        RoleDefinition effectiveRole;
 
         for (RoleDefinition role : rolesRepository.getRoleDefinitions(user.getUserRoles())) {
             if (role != null) {
@@ -111,19 +114,24 @@ public class UserSessionManager {
         }
         UserSession session = new UserSession(sessionId, user, roles, locale, system);
         compilePermissions(session, roles);
-        if (user.getGroup() == null)
+
+        if (user.getGroup() == null && Strings.isNullOrEmpty(user.getGroupNames())) {
             throw new IllegalStateException("User is not in a Group");
-        compileConstraints(session, user.getGroup());
-        compileSessionAttributes(session, user.getGroup());
+        }
+        AccessGroupDefinition groupDefinition = compileGroupDefinition(user.getGroup(), user.getGroupNames());
+        compileConstraints(session, groupDefinition);
+        compileSessionAttributes(session, groupDefinition);
+
         return session;
     }
 
     /**
      * Create a new session from existing for another user and fill it with security data for that new user.
      * Must be called inside a transaction.
-     * @param src   existing session
-     * @param user  another user instance
-     * @return      new session with the same ID as existing
+     *
+     * @param src  existing session
+     * @param user another user instance
+     * @return new session with the same ID as existing
      */
     public UserSession createSession(UserSession src, User user) {
         List<RoleDefinition> roles = new ArrayList<>();
@@ -134,10 +142,14 @@ public class UserSessionManager {
         }
         UserSession session = new UserSession(src, user, roles, src.getLocale());
         compilePermissions(session, roles);
-        if (user.getGroup() == null)
+        if (user.getGroup() == null && Strings.isNullOrEmpty(user.getGroupNames())) {
             throw new IllegalStateException("User is not in a Group");
-        compileConstraints(session, user.getGroup());
-        compileSessionAttributes(session, user.getGroup());
+        }
+
+        AccessGroupDefinition groupDefinition = compileGroupDefinition(user.getGroup(), user.getGroupNames());
+        compileConstraints(session, groupDefinition);
+        compileSessionAttributes(session, groupDefinition);
+
         return session;
     }
 
@@ -184,44 +196,28 @@ public class UserSessionManager {
         return null;
     }
 
-    protected void compileConstraints(UserSession session, Group group) {
-        EntityManager em = persistence.getEntityManager();
-        TypedQuery<Constraint> q = em.createQuery("select c from sec$GroupHierarchy h join h.parent.constraints c " +
-                "where h.group.id = ?1", Constraint.class);
-        q.setParameter(1, group.getId());
-        List<Constraint> constraints = q.getResultList();
-        List<Constraint> list = new ArrayList<>(constraints);
-        list.addAll(group.getConstraints());
-        for (Constraint constraint : list) {
-            if (Boolean.TRUE.equals(constraint.getIsActive())) {
-                session.addConstraint(constraint);
-            }
+    protected AccessGroupDefinition compileGroupDefinition(Group group, String groupName) {
+        AccessGroupDefinition groupDefinition;
+        if (group != null) {
+            groupDefinition = groupsComposer.composeGroupDefinitionFromDb(group.getId());
+        } else {
+            groupDefinition = groupsComposer.composeGroupDefinition(groupName);
         }
+        return groupDefinition;
     }
 
-    protected void compileSessionAttributes(UserSession session, Group group) {
-        List<SessionAttribute> list = new ArrayList<>(group.getSessionAttributes());
+    protected void compileConstraints(UserSession session, AccessGroupDefinition groupDefinition) {
+        session.setConstraints(groupDefinition.accessConstraints());
+    }
 
-        EntityManager em = persistence.getEntityManager();
-        TypedQuery<SessionAttribute> q = em.createQuery("select a from sec$GroupHierarchy h join h.parent.sessionAttributes a " +
-                "where h.group.id = ?1 order by h.level desc", SessionAttribute.class);
-        q.setParameter(1, group.getId());
-        List<SessionAttribute> attributes = q.getResultList();
-        list.addAll(attributes);
+    protected void compileSessionAttributes(UserSession session, AccessGroupDefinition groupDefinition) {
+        Map<String, Serializable> sessionAttributes = groupDefinition.sessionAttributes();
 
-        for (SessionAttribute attribute : list) {
-            Datatype datatype = Datatypes.get(attribute.getDatatype());
-            try {
-                if (session.getAttributeNames().contains(attribute.getName())) {
-                    log.warn("Duplicate definition of '{}' session attribute in the group hierarchy", attribute.getName());
-                }
-                Serializable value = (Serializable) datatype.parse(attribute.getStringValue());
-                if (value != null)
-                    session.setAttribute(attribute.getName(), value);
-                else
-                    session.removeAttribute(attribute.getName());
-            } catch (ParseException e) {
-                throw new RuntimeException("Unable to set session attribute " + attribute.getName(), e);
+        for (Map.Entry<String, Serializable> entry : sessionAttributes.entrySet()) {
+            if (entry.getValue() != null) {
+                session.setAttribute(entry.getKey(), entry.getValue());
+            } else {
+                session.removeAttribute(entry.getKey());
             }
         }
     }
@@ -282,7 +278,7 @@ public class UserSessionManager {
         } finally {
             tx.end();
         }
-        return result; 
+        return result;
     }
 
     /**

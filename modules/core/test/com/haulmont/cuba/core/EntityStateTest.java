@@ -266,7 +266,7 @@ public class EntityStateTest {
             assertFalse(BaseEntityInternalAccess.isDetached(user));
 
             userId = user.getId();
-            user.setLogin("testLogin");
+
             cont.persistence().getEntityManager().persist(user);
 
             assertTrue(BaseEntityInternalAccess.isNew(user));
@@ -275,7 +275,7 @@ public class EntityStateTest {
 
             tx.commit();
 
-            fail(); // due to absence of Group
+            fail(); // due to absence login
         } catch (Exception e) {
             // ok
         } finally {

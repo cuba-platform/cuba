@@ -44,6 +44,9 @@ public class SessionAttribute extends StandardEntity {
     @JoinColumn(name = "GROUP_ID")
     private Group group;
 
+    @Transient
+    private boolean predefined;
+
     public String getName() {
         return name;
     }
@@ -74,6 +77,14 @@ public class SessionAttribute extends StandardEntity {
 
     public void setGroup(Group group) {
         this.group = group;
+    }
+
+    public boolean isPredefined() {
+        return predefined;
+    }
+
+    public void setPredefined(boolean predefined) {
+        this.predefined = predefined;
     }
 
     @MetaProperty

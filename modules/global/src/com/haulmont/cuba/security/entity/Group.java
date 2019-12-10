@@ -41,25 +41,28 @@ public class Group extends StandardEntity {
     private static final long serialVersionUID = -4581386806900761785L;
 
     @Column(name = "NAME", nullable = false, unique = true)
-    private String name;
+    protected String name;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "PARENT_ID")
-    private Group parent;
+    protected Group parent;
 
     @OneToMany(mappedBy = "group")
     @OrderBy("level")
-    private List<GroupHierarchy> hierarchyList;
+    protected List<GroupHierarchy> hierarchyList;
 
     @OneToMany(mappedBy = "group")
     @Composition()
     @OnDelete(DeletePolicy.CASCADE)
-    private Set<Constraint> constraints;
+    protected Set<Constraint> constraints;
 
     @OneToMany(mappedBy = "group")
     @Composition()
     @OnDelete(DeletePolicy.CASCADE)
-    private Set<SessionAttribute> sessionAttributes;
+    protected Set<SessionAttribute> sessionAttributes;
+
+    @Transient
+    protected boolean predefined;
 
     public String getName() {
         return name;
@@ -99,5 +102,13 @@ public class Group extends StandardEntity {
 
     public void setSessionAttributes(Set<SessionAttribute> sessionAttributes) {
         this.sessionAttributes = sessionAttributes;
+    }
+
+    public boolean isPredefined() {
+        return predefined;
+    }
+
+    public void setPredefined(boolean predefined) {
+        this.predefined = predefined;
     }
 }

@@ -20,6 +20,7 @@ import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.cuba.gui.UiComponents;
 import com.haulmont.cuba.gui.components.AbstractEditor;
+import com.haulmont.cuba.gui.components.Button;
 import com.haulmont.cuba.gui.components.FieldGroup;
 import com.haulmont.cuba.gui.components.LookupField;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -39,24 +40,36 @@ public class SessionAttributeEditor extends AbstractEditor<SessionAttribute> {
     protected UiComponents uiComponents;
     @Inject
     protected FieldGroup fields;
+    @Inject
+    protected Button windowCommit;
+
+    protected LookupField datatypeLookup;
 
     @Override
     public void init(Map<String, Object> params) {
-        fields.addCustomField("datatype", (datasource, propertyId) -> {
-            LookupField lookup = uiComponents.create(LookupField.NAME);
-            lookup.setDatasource(datasource, propertyId);
-            lookup.setRequiredMessage(getMessage("datatypeMsg"));
-            lookup.setRequired(true);
-            lookup.setPageLength(15);
 
-            Map<String, Object> options = new TreeMap<>();
-            for (String datatypeId : Datatypes.getIds()) {
-                options.put(messages.getMainMessage("Datatype." + datatypeId), datatypeId);
-            }
-            lookup.setOptionsMap(options);
+        datatypeLookup = uiComponents.create(LookupField.NAME);
+        datatypeLookup.setDatasource(datasource, "datatype");
+        datatypeLookup.setRequiredMessage(getMessage("datatypeMsg"));
+        datatypeLookup.setRequired(true);
+        datatypeLookup.setPageLength(15);
 
-            return lookup;
-        });
+        Map<String, Object> options = new TreeMap<>();
+        for (String datatypeId : Datatypes.getIds()) {
+            options.put(messages.getMainMessage("Datatype." + datatypeId), datatypeId);
+        }
+        datatypeLookup.setOptionsMap(options);
+
+        fields.getField("datatype").setComponent(datatypeLookup);
+    }
+
+    @Override
+    protected void postInit() {
+        super.postInit();
+        if (getItem().isPredefined()) {
+            setReadOnly(true);
+            showNotification(getMessage("predefinedGroupIsUnchangeable"));
+        }
     }
 
     @Override

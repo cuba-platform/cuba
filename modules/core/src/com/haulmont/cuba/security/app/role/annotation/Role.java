@@ -18,6 +18,7 @@ package com.haulmont.cuba.security.app.role.annotation;
 
 import com.haulmont.cuba.security.app.role.AnnotatedRoleDefinition;
 import com.haulmont.cuba.security.entity.RoleType;
+import com.haulmont.cuba.security.role.SecurityStorageMode;
 import org.springframework.core.annotation.AliasFor;
 import org.springframework.stereotype.Component;
 
@@ -72,7 +73,7 @@ import java.lang.annotation.Target;
  * }
  * </pre>
  *
- * @see com.haulmont.cuba.security.role.RolesStorageMode
+ * @see SecurityStorageMode
  * @see EntityAccess
  * @see EntityAttributeAccess
  * @see ScreenAccess

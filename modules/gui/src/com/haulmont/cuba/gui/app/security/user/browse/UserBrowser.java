@@ -134,17 +134,25 @@ public class UserBrowser extends AbstractLookup {
         }
 
         initTimeZoneColumn();
+        initGroupColumn();
     }
 
     protected void initTimeZoneColumn() {
         usersTable.addGeneratedColumn("timeZone", entity -> {
-            Label<String> label = uiComponents.create(Label.TYPE_DEFAULT);
+            String timeZone = null;
             if (Boolean.TRUE.equals(entity.getTimeZoneAuto())) {
-                label.setValue(messages.getMainMessage("timeZone.auto"));
+                timeZone = messages.getMainMessage("timeZone.auto");
             } else if (entity.getTimeZone() != null) {
-                label.setValue(entity.getTimeZone());
+                timeZone = entity.getTimeZone();
             }
-            return label;
+            return new Table.PlainTextCell(timeZone);
+        });
+    }
+
+    protected void initGroupColumn() {
+        usersTable.addGeneratedColumn("group", entity -> {
+            String groupName = entity.getGroup() != null ? entity.getGroup().getName() : entity.getGroupNames();
+            return new Table.PlainTextCell(groupName);
         });
     }
 
@@ -268,8 +276,8 @@ public class UserBrowser extends AbstractLookup {
                     MessageType.CONFIRMATION,
                     new Action[]{
                             new BaseAction("actions.ResetAll")
-                                .withCaption(getMessage("actions.ResetAll"))
-                                .withHandler(event -> resetRememberMeAll()),
+                                    .withCaption(getMessage("actions.ResetAll"))
+                                    .withHandler(event -> resetRememberMeAll()),
 
                             new DialogAction(Type.CANCEL, Status.PRIMARY)
                     }
@@ -281,12 +289,12 @@ public class UserBrowser extends AbstractLookup {
                     MessageType.CONFIRMATION,
                     new Action[]{
                             new BaseAction("actions.ResetOptionSelected")
-                                .withCaption(getMessage("actions.ResetOptionSelected"))
-                                .withHandler(event -> resetRememberMe(usersTable.getSelected())),
+                                    .withCaption(getMessage("actions.ResetOptionSelected"))
+                                    .withHandler(event -> resetRememberMe(usersTable.getSelected())),
 
                             new BaseAction("actions.ResetOptionAll")
-                                .withCaption(getMessage("actions.ResetOptionAll"))
-                                .withHandler(event -> resetRememberMeAll()),
+                                    .withCaption(getMessage("actions.ResetOptionAll"))
+                                    .withHandler(event -> resetRememberMeAll()),
 
                             new DialogAction(Type.CANCEL, Status.PRIMARY)
                     }

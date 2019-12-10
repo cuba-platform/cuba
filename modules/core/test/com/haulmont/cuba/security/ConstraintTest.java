@@ -24,9 +24,9 @@ import com.haulmont.cuba.security.auth.AuthenticationManager;
 import com.haulmont.cuba.security.auth.Credentials;
 import com.haulmont.cuba.security.auth.LoginPasswordCredentials;
 import com.haulmont.cuba.security.entity.*;
-import com.haulmont.cuba.security.global.ConstraintData;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
+import com.haulmont.cuba.security.group.AccessConstraint;
 import com.haulmont.cuba.testsupport.TestContainer;
 import com.haulmont.cuba.testsupport.TestUserSessionSource;
 import org.junit.jupiter.api.AfterEach;
@@ -37,6 +37,7 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -164,11 +165,11 @@ public class ConstraintTest {
 
         assertNotNull(userSession);
 
-        List<ConstraintData> constraints = userSession.getConstraints("sys$Server");
-        assertEquals(2, constraints.size());
+        Stream<AccessConstraint> constraints = userSession.getConstraints().findConstraintsByEntity("sys$Server");
+        assertEquals(2, constraints.count());
 
-        List<ConstraintData> roleConstraints = userSession.getConstraints("sec$UserRole");
-        assertEquals(1, roleConstraints.size());
+        Stream<AccessConstraint> roleConstraints = userSession.getConstraints().findConstraintsByEntity("sec$UserRole");
+        assertEquals(1, roleConstraints.count());
 
         UserSessionSource uss = AppBeans.get(UserSessionSource.class);
         UserSession savedUserSession = uss.getUserSession();

@@ -16,6 +16,7 @@
  */
 package com.haulmont.cuba.gui.app.security.user.edit;
 
+import com.google.common.collect.Iterables;
 import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.client.ClientConfig;
@@ -42,11 +43,13 @@ import com.haulmont.cuba.gui.icons.CubaIcon;
 import com.haulmont.cuba.gui.icons.Icons;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.security.app.UserManagementService;
-import com.haulmont.cuba.security.role.RolesService;
 import com.haulmont.cuba.security.entity.*;
 import com.haulmont.cuba.security.global.UserSession;
+import com.haulmont.cuba.security.group.AccessGroupsService;
+import com.haulmont.cuba.security.role.RolesService;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.checkerframework.checker.i18nformatter.qual.I18nFormatBottom;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -91,6 +94,7 @@ public class UserEditor extends AbstractEditor<User> {
 
     protected PasswordField passwField;
     protected PasswordField confirmPasswField;
+    protected PickerField<Entity> groupField;
     protected LookupField<String> languageLookup;
     protected LookupField<String> timeZoneLookup;
 
@@ -123,6 +127,9 @@ public class UserEditor extends AbstractEditor<User> {
 
     @Inject
     protected RolesService rolesService;
+
+    @Inject
+    protected AccessGroupsService groupsService;
 
     @Named("fieldGroupRight.active")
     private CheckBox activeField;
@@ -234,6 +241,8 @@ public class UserEditor extends AbstractEditor<User> {
             initCopy();
         }
 
+        setUserGroupValue();
+
         // if we add default roles, rolesDs becomes modified on setItem
         ((AbstractDatasource) rolesDs).setModified(false);
     }
@@ -280,12 +289,8 @@ public class UserEditor extends AbstractEditor<User> {
     }
 
     protected void initUserGroup(User user) {
-        LoadContext<Group> ctx = new LoadContext<>(Group.class);
-        ctx.setQueryString("select g from sec$Group g");
-        ctx.setView(View.MINIMAL);
-        List<Group> groups = dataSupplier.loadList(ctx);
-        if (groups.size() == 1) {
-            user.setGroup(groups.get(0));
+        if (user.getGroup() == null && user.getGroupNames() == null) {
+            user.setGroup(groupsService.getUserDefaultGroup());
         }
     }
 
@@ -370,13 +375,29 @@ public class UserEditor extends AbstractEditor<User> {
     protected void createGroupField() {
         FieldGroup.FieldConfig groupFc = fieldGroupRight.getFieldNN("group");
 
-        PickerField<?> pickerField = uiComponents.create(PickerField.class);
+        groupField = uiComponents.create(PickerField.class);
 
-        pickerField.setDatasource(groupFc.getTargetDatasource(), groupFc.getProperty());
-        pickerField.setRequired(true);
-        pickerField.setRequiredMessage(getMessage("groupMsg"));
+        groupField.setMetaClass(metadata.getClassNN(Group.class));
 
-        LookupAction action = LookupAction.create(pickerField);
+        groupField.setRequired(true);
+        groupField.setRequiredMessage(getMessage("groupMsg"));
+
+        LookupAction action = LookupAction.create(groupField);
+        action.setAfterLookupSelectionHandler(items -> {
+            User user = getItem();
+            if (items != null && !items.isEmpty()) {
+                Group group = (Group) Iterables.getFirst(items, null);
+                //noinspection ConstantConditions
+                if (group.isPredefined()) {
+                    user.setGroupNames(group.getName());
+                    user.setGroup(null);
+                } else {
+                    user.setGroup(group);
+                    user.setGroupNames(null);
+                }
+                groupField.setValue(group);
+            }
+        });
         action.setLookupScreenOpenType(OpenType.DIALOG);
         action.setLookupScreenParamsSupplier(() -> {
             if (getItem().getGroup() != null) {
@@ -384,9 +405,15 @@ public class UserEditor extends AbstractEditor<User> {
             }
             return Collections.emptyMap();
         });
-        pickerField.addAction(action);
+        groupField.addAction(action);
 
-        groupFc.setComponent(pickerField);
+        groupField.setEditable(security.isEntityAttrUpdatePermitted(metadata.getClassNN(User.class), "group") &&
+                security.isEntityAttrUpdatePermitted(metadata.getClassNN(User.class), "groupNames"));
+
+        groupField.setVisible(security.isEntityAttrReadPermitted(metadata.getClassNN(User.class), "group") &&
+                security.isEntityAttrReadPermitted(metadata.getClassNN(User.class), "groupNames"));
+
+        groupFc.setComponent(groupField);
     }
 
     protected void createPasswordFields(boolean isNew) {
@@ -519,6 +546,15 @@ public class UserEditor extends AbstractEditor<User> {
         DatasourceImplementation<UserRole> rolesDsImpl = (DatasourceImplementation) rolesDs;
         for (UserRole item : rolesDs.getItems()) {
             rolesDsImpl.modified(item);
+        }
+    }
+
+    protected void setUserGroupValue() {
+        User user = getItem();
+        if (user.getGroup() != null) {
+            groupField.setValue(user.getGroup());
+        } else if (user.getGroupNames() != null) {
+            groupField.setValue(groupsService.findPredefinedGroupByName(user.getGroupNames()));
         }
     }
 

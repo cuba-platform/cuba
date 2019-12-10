@@ -204,42 +204,68 @@ public class UserManagementServiceBean implements UserManagementService {
     }
 
     @Override
-    public Integer moveUsersToGroup(List<UUID> userIds, @Nullable UUID targetAccessGroupId) {
+    public Integer moveUsersToGroup(List<UUID> userIds, @Nullable UUID groupId) {
+        return moveUsersToGroup(userIds, groupId, null);
+    }
+
+    @Override
+    public Integer moveUsersToGroup(List<UUID> userIds, @Nullable String groupName) {
+        return moveUsersToGroup(userIds, null, groupName);
+    }
+
+    protected Integer moveUsersToGroup(List<UUID> userIds, @Nullable UUID groupId, @Nullable String groupName) {
         checkNotNullArgument(userIds, "Null users list");
         checkUpdatePermission(User.class);
 
-        if (userIds.isEmpty())
+        if (userIds.isEmpty()) {
             return 0;
+        }
 
-        int modifiedUsers = 0;
-        try (Transaction tx = persistence.createTransaction()) {
-            EntityManager em = persistence.getEntityManager();
-
-            Group targetAccessGroup = null;
-            if (targetAccessGroupId != null) {
-                targetAccessGroup = em.find(Group.class, targetAccessGroupId);
-                if (targetAccessGroup == null)
-                    throw new IllegalStateException("Could not found target access group with id: " + targetAccessGroupId);
-            }
-
-            TypedQuery<User> query = em.createQuery("select u from sec$User u where u.id in :userIds", User.class);
-            query.setParameter("userIds", userIds);
-            query.setViewName(USER_MOVE_TO_GROUP_VIEW);
-
-            List<User> users = query.getResultList();
-            if (users == null || users.size() != userIds.size())
-                throw new IllegalStateException("Not all users found in database");
-
-            for (User user : users) {
-                if (!Objects.equals(user.getGroup(), targetAccessGroup)) {
-                    user.setGroup(targetAccessGroup);
-                    modifiedUsers++;
+        return persistence.callInTransaction(em -> {
+            Group group = null;
+            if (groupId != null) {
+                group = em.find(Group.class, groupId);
+                if (group == null) {
+                    throw new IllegalStateException("Could not found target access group with id: " + groupId);
                 }
             }
 
-            tx.commit();
-        }
-        return modifiedUsers;
+            List<User> users = em.createQuery("select u from sec$User u where u.id in :userIds", User.class)
+                    .setParameter("userIds", userIds)
+                    .setViewName(USER_MOVE_TO_GROUP_VIEW)
+                    .getResultList();
+
+            if (users == null || users.size() != userIds.size()) {
+                throw new IllegalStateException("Not all users found in database");
+            }
+
+            int modifiedUsers = 0;
+
+            for (User user : users) {
+                if (group != null) {
+                    if (!Objects.equals(user.getGroup(), group)) {
+                        user.setGroup(group);
+                        user.setGroupNames(null);
+                        modifiedUsers++;
+                    }
+                } else if (groupName != null) {
+                    if (!Objects.equals(user.getGroupNames(), groupName)) {
+                        user.setGroupNames(groupName);
+                        user.setGroup(null);
+                        modifiedUsers++;
+                    }
+                } else {
+                    if (user.getGroup() != null || user.getGroupNames() != null) {
+                        user.setGroupNames(null);
+                        user.setGroup(null);
+                        modifiedUsers++;
+                    }
+                }
+            }
+
+            return modifiedUsers;
+
+        });
     }
 
     @Override
