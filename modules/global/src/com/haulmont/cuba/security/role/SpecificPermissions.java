@@ -17,10 +17,5 @@
 package com.haulmont.cuba.security.role;
 
 public class SpecificPermissions extends Permissions {
-
     private static final long serialVersionUID = 182848717412671042L;
-
-    public boolean isSpecificAccessPermitted(String specificPermission) {
-        return PermissionsUtils.isSpecificAccessPermitted(this, specificPermission);
-    }
 }

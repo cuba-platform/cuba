@@ -24,6 +24,6 @@ import com.haulmont.cuba.security.entity.*;
  * System role for {@code admin} user.
  */
 @Role(name = AdministratorsRoleDefinition.ROLE_NAME, type = RoleType.SUPER)
-public class AdministratorsRoleDefinition extends AbstractRoleDefinition {
+public class AdministratorsRoleDefinition extends AnnotatedRoleDefinition {
     public static final String ROLE_NAME = "Administrators";
 }

@@ -67,7 +67,7 @@ public class RoleDefinitionBuilderTest {
 
         assertEquals("testRole", role.getName());
         assertEquals(1, PermissionsUtils.getPermissions(role.screenPermissions()).size());
-        assertTrue(role.screenPermissions().isScreenAccessPermitted("sec$Role.browse"));
+        assertTrue(PermissionsUtils.isScreenAccessPermitted(role.screenPermissions(), "sec$Role.browse"));
     }
 
     @Test
@@ -90,8 +90,8 @@ public class RoleDefinitionBuilderTest {
         assertEquals(0, PermissionsUtils.getPermissions(role.screenPermissions()).size());
         assertEquals(0, PermissionsUtils.getPermissions(role.screenElementsPermissions()).size());
         assertEquals(2, PermissionsUtils.getPermissions(role.specificPermissions()).size());
-        assertTrue(role.specificPermissions().isSpecificAccessPermitted("specificPermission1"));
-        assertFalse(role.specificPermissions().isSpecificAccessPermitted("specificPermission2"));
+        assertTrue(PermissionsUtils.isSpecificAccessPermitted(role.specificPermissions(), "specificPermission1"));
+        assertFalse(PermissionsUtils.isSpecificAccessPermitted(role.specificPermissions(), "specificPermission2"));
     }
 
     @Test
@@ -120,10 +120,10 @@ public class RoleDefinitionBuilderTest {
         assertEquals(0, PermissionsUtils.getPermissions(role2.screenElementsPermissions()).size());
         assertEquals(3, PermissionsUtils.getPermissions(role2.specificPermissions()).size());
 
-        assertTrue(role2.specificPermissions().isSpecificAccessPermitted("specificPermission1"));
-        assertFalse(role2.specificPermissions().isSpecificAccessPermitted("specificPermission2"));
-        assertTrue(role2.specificPermissions().isSpecificAccessPermitted("specificPermission3"));
-        assertTrue(role2.screenPermissions().isScreenAccessPermitted("sec$Role.browse"));
+        assertTrue(PermissionsUtils.isSpecificAccessPermitted(role2.specificPermissions(), "specificPermission1"));
+        assertFalse(PermissionsUtils.isSpecificAccessPermitted(role2.specificPermissions(), "specificPermission2"));
+        assertTrue(PermissionsUtils.isSpecificAccessPermitted(role2.specificPermissions(), "specificPermission3"));
+        assertTrue(PermissionsUtils.isScreenAccessPermitted(role2.screenPermissions(), "sec$Role.browse"));
     }
 
     @Test
@@ -148,10 +148,10 @@ public class RoleDefinitionBuilderTest {
         assertEquals(1, PermissionsUtils.getPermissions(role.screenElementsPermissions()).size());
         assertEquals(3, PermissionsUtils.getPermissions(role.specificPermissions()).size());
 
-        assertTrue(role.specificPermissions().isSpecificAccessPermitted("specificPermission1"));
-        assertTrue(role.specificPermissions().isSpecificAccessPermitted("specificPermission2"));
-        assertTrue(role.specificPermissions().isSpecificAccessPermitted("specificPermission3"));
-        assertTrue(role.screenPermissions().isScreenAccessPermitted("sec$Role.browse"));
+        assertTrue(PermissionsUtils.isSpecificAccessPermitted(role.specificPermissions(), "specificPermission1"));
+        assertTrue(PermissionsUtils.isSpecificAccessPermitted(role.specificPermissions(), "specificPermission2"));
+        assertTrue(PermissionsUtils.isSpecificAccessPermitted(role.specificPermissions(), "specificPermission3"));
+        assertTrue(PermissionsUtils.isScreenAccessPermitted(role.screenPermissions(), "sec$Role.browse"));
     }
 
     protected Role createRoleEntityWithPermissions() {

@@ -16,8 +16,13 @@
 
 package com.haulmont.cuba.security.role;
 
+import com.haulmont.cuba.security.entity.Permission;
+
 import java.io.Serializable;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+
+import static com.haulmont.cuba.security.role.PermissionsUtils.addPermission;
 
 public abstract class Permissions implements Serializable {
 
@@ -27,5 +32,11 @@ public abstract class Permissions implements Serializable {
 
     Map<String, Integer> getPermissions() {
         return permissions;
+    }
+
+    static class BaseBuilder {
+        void withPermission(Permissions permissions, Permission permission) {
+            addPermission(permissions, permission);
+        }
     }
 }

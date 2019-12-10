@@ -17,10 +17,5 @@
 package com.haulmont.cuba.security.role;
 
 public class ScreenElementsPermissions extends Permissions {
-
     private static final long serialVersionUID = 3691551628715510163L;
-
-    public boolean isScreenElementPermitted(String screenId, String elementId) {
-        return PermissionsUtils.isScreenElementPermitted(this, screenId, elementId);
-    }
 }

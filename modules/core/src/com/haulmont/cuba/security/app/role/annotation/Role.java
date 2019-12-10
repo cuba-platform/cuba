@@ -16,7 +16,7 @@
 
 package com.haulmont.cuba.security.app.role.annotation;
 
-import com.haulmont.cuba.security.app.role.AbstractRoleDefinition;
+import com.haulmont.cuba.security.app.role.AnnotatedRoleDefinition;
 import com.haulmont.cuba.security.entity.RoleType;
 import org.springframework.core.annotation.AliasFor;
 import org.springframework.stereotype.Component;
@@ -32,12 +32,12 @@ import java.lang.annotation.Target;
  * equals {@code SOURCE_CODE} or {@code MIXED}).
  *
  * <p>The easiest way to determine the role in the application source code is to extend
- * your class from {@link AbstractRoleDefinition AbstractRoleDefinition}
+ * your class from {@link AnnotatedRoleDefinition AbstractRoleDefinition}
  * and mark it with this annotation. Usage example:
  *
  * <pre>
  *     &#064;Role(name = "My first role", type = RoleType.STANDARD, isDefault = true)
- * public class MyFirstRole extends AbstractRoleDefinition {
+ * public class MyFirstRole extends AnnotatedRoleDefinition {
  *
  *     &#064;EntityAccess(target = SomeEntity.class,
  *             deny = {EntityOp.DELETE, EntityOp.UPDATE})

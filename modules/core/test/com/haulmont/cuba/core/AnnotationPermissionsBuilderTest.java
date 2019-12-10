@@ -20,8 +20,10 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.security.app.role.AnnotationPermissionsBuilder;
 import com.haulmont.cuba.security.app.role.annotation.*;
-import com.haulmont.cuba.security.app.role.annotation.Role;
-import com.haulmont.cuba.security.entity.*;
+import com.haulmont.cuba.security.entity.Access;
+import com.haulmont.cuba.security.entity.EntityOp;
+import com.haulmont.cuba.security.entity.RoleType;
+import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.role.*;
 import com.haulmont.cuba.testsupport.TestContainer;
 import org.junit.Before;
@@ -59,35 +61,35 @@ public class AnnotationPermissionsBuilderTest {
         EntityPermissions entityPermissions = builder.buildEntityAccessPermissions(role);
 
         assertEquals(4, PermissionsUtils.getPermissions(entityPermissions).size());
-        assertTrue(entityPermissions.isCreateOperationPermitted(metadata.getClassNN(User.class)));
-        assertTrue(entityPermissions.isReadOperationPermitted(metadata.getClassNN(User.class)));
-        assertFalse(entityPermissions.isUpdateOperationPermitted(metadata.getClassNN(User.class)));
-        assertTrue(entityPermissions.isReadOperationPermitted(metadata.getClassNN(com.haulmont.cuba.security.entity.Role.class)));
+        assertTrue(PermissionsUtils.isCreateOperationPermitted(entityPermissions, metadata.getClassNN(User.class)));
+        assertTrue(PermissionsUtils.isReadOperationPermitted(entityPermissions, metadata.getClassNN(User.class)));
+        assertFalse(PermissionsUtils.isUpdateOperationPermitted(entityPermissions, metadata.getClassNN(User.class)));
+        assertTrue(PermissionsUtils.isReadOperationPermitted(entityPermissions, metadata.getClassNN(com.haulmont.cuba.security.entity.Role.class)));
 
         EntityAttributePermissions entityAttributePermissions = builder.buildEntityAttributeAccessPermissions(role);
 
         assertEquals(3, PermissionsUtils.getPermissions(entityAttributePermissions).size());
-        assertTrue(entityAttributePermissions.isModifyOperationPermitted(metadata.getClassNN(User.class), "login"));
-        assertTrue(entityAttributePermissions.isReadOperationPermitted(metadata.getClassNN(com.haulmont.cuba.security.entity.Role.class), "name"));
-        assertFalse(entityAttributePermissions.isModifyOperationPermitted(metadata.getClassNN(com.haulmont.cuba.security.entity.Role.class), "description"));
+        assertTrue(PermissionsUtils.isAttributeModifyOperationPermitted(entityAttributePermissions, metadata.getClassNN(User.class), "login"));
+        assertTrue(PermissionsUtils.isAttributeReadOperationPermitted(entityAttributePermissions, metadata.getClassNN(com.haulmont.cuba.security.entity.Role.class), "name"));
+        assertFalse(PermissionsUtils.isAttributeModifyOperationPermitted(entityAttributePermissions, metadata.getClassNN(com.haulmont.cuba.security.entity.Role.class), "description"));
 
         SpecificPermissions specificPermissions = builder.buildSpecificPermissions(role);
 
         assertEquals(2, PermissionsUtils.getPermissions(specificPermissions).size());
-        assertTrue(specificPermissions.isSpecificAccessPermitted("specificPermission2"));
-        assertFalse(specificPermissions.isSpecificAccessPermitted("specificPermission1"));
+        assertTrue(PermissionsUtils.isSpecificAccessPermitted(specificPermissions, "specificPermission2"));
+        assertFalse(PermissionsUtils.isSpecificAccessPermitted(specificPermissions, "specificPermission1"));
 
         ScreenPermissions screenPermissions = builder.buildScreenPermissions(role);
 
         assertEquals(3, PermissionsUtils.getPermissions(screenPermissions).size());
-        assertTrue(screenPermissions.isScreenAccessPermitted("sec$Role.edit"));
-        assertTrue(screenPermissions.isScreenAccessPermitted("sec$User.edit"));
-        assertFalse(screenPermissions.isScreenAccessPermitted("sec$Role.browse"));
+        assertTrue(PermissionsUtils.isScreenAccessPermitted(screenPermissions, "sec$Role.edit"));
+        assertTrue(PermissionsUtils.isScreenAccessPermitted(screenPermissions, "sec$User.edit"));
+        assertFalse(PermissionsUtils.isScreenAccessPermitted(screenPermissions, "sec$Role.browse"));
 
         ScreenElementsPermissions screenElementsPermissions = builder.buildScreenElementsPermissions(role);
 
         assertEquals(1, PermissionsUtils.getPermissions(screenElementsPermissions).size());
-        assertTrue(screenElementsPermissions.isScreenElementPermitted("sec$Role.edit", "roleGroupBox"));
+        assertTrue(PermissionsUtils.isScreenElementPermitted(screenElementsPermissions,"sec$Role.edit", "roleGroupBox"));
 
     }
 

@@ -16,26 +16,6 @@
 
 package com.haulmont.cuba.security.role;
 
-import com.haulmont.chile.core.model.MetaClass;
-
 public class EntityPermissions extends Permissions {
-
     private static final long serialVersionUID = 1810208523892912417L;
-
-    public boolean isReadOperationPermitted(MetaClass metaClass) {
-        return  PermissionsUtils.isReadOperationPermitted(this, metaClass);
-    }
-
-    public boolean isCreateOperationPermitted(MetaClass metaClass) {
-        return  PermissionsUtils.isCreateOperationPermitted(this, metaClass);
-    }
-
-    public boolean isUpdateOperationPermitted(MetaClass metaClass) {
-        return  PermissionsUtils.isUpdateOperationPermitted(this, metaClass);
-    }
-
-    public boolean isDeleteOperationPermitted(MetaClass metaClass) {
-        return  PermissionsUtils.isDeleteOperationPermitted(this, metaClass);
-    }
-
 }

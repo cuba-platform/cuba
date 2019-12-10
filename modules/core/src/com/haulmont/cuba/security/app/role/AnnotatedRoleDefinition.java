@@ -26,7 +26,7 @@ import javax.inject.Inject;
  *
  * @see com.haulmont.cuba.security.app.role.annotation.Role
  */
-public abstract class AbstractRoleDefinition implements RoleDefinition {
+public abstract class AnnotatedRoleDefinition implements RoleDefinition {
 
     @Inject
     protected AnnotationPermissionsBuilder annotationPermissionsBuilder;
