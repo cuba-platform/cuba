@@ -836,11 +836,17 @@ public class QueryImpl<T> implements TypedQuery<T> {
             if (value == null || actualParamType == null || actualParamType.isAssignableFrom(value.getClass()))
                 return;
 
-            // Since ConversionManager incorrectly converts Date into LocalDate
-            if (value instanceof java.util.Date && actualParamType == ClassConstants.TIME_LDATE){
-                java.util.Date date = (java.util.Date) value;
-                value = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-                return;
+            // Since ConversionManager incorrectly converts Date into LocalDate or LocalDateTime
+            if (value instanceof java.util.Date) {
+                if (actualParamType == ClassConstants.TIME_LDATE) {
+                    java.util.Date date = (java.util.Date) value;
+                    value = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+                    return;
+                } else if (actualParamType == ClassConstants.TIME_LDATETIME) {
+                    java.util.Date date = (java.util.Date) value;
+                    value = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+                    return;
+                }
             }
 
             ConversionManager conversionManager = ConversionManager.getDefaultManager();
