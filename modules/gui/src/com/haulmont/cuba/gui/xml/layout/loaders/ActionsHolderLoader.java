@@ -23,6 +23,7 @@ import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Actions;
 import com.haulmont.cuba.gui.components.ActionsHolder;
 import com.haulmont.cuba.gui.components.ListComponent;
+import com.haulmont.cuba.gui.components.actions.ListAction;
 import com.haulmont.cuba.gui.components.actions.ListActionType;
 import com.haulmont.cuba.gui.screen.compatibility.LegacyFrame;
 import org.apache.commons.lang3.StringUtils;
@@ -63,6 +64,10 @@ public abstract class ActionsHolderLoader<T extends ActionsHolder> extends Abstr
                 if (StringUtils.isNotEmpty(actionTypeId)) {
                     Actions actions = beanLocator.get(Actions.NAME);
                     Action instance = actions.create(actionTypeId, id);
+
+                    if (instance instanceof ListAction) {
+                        ((ListAction) instance).setTarget((ListComponent) actionsHolder);
+                    }
 
                     loadStandardActionProperties(instance, element);
 
