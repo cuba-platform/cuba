@@ -309,6 +309,8 @@ public class WebDateField<V extends Comparable<V>>
             time.delete(0, timeStartPos);
             date.delete(timeStartPos, dateFormat.length());
             timeField.setTimeFormat(StringUtils.trimToEmpty(time.toString()));
+        } else if (resolution.ordinal() < Resolution.DAY.ordinal()) {
+            setResolution(Resolution.DAY);
         }
         dateField.setDateFormat(StringUtils.trimToEmpty(date.toString()));
     }
