@@ -503,6 +503,20 @@
         </xs:restriction>
     </xs:simpleType>
 
+    <xs:simpleType name="dataGridColumnGeneratedType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="java.lang.Boolean"/>
+            <xs:enumeration value="java.lang.Integer"/>
+            <xs:enumeration value="java.lang.Double"/>
+            <xs:enumeration value="java.lang.String"/>
+            <xs:enumeration value="java.util.Date"/>
+            <xs:enumeration value="java.time.LocalDate"/>
+            <xs:enumeration value="java.time.LocalDateTime"/>
+            <xs:enumeration value="com.haulmont.cuba.gui.icons.Icons.Icon"/>
+            <xs:enumeration value="com.haulmont.cuba.gui.components.Component"/>
+        </xs:restriction>
+    </xs:simpleType>
+
     <!-- Style names -->
 
     <xs:simpleType name="labelStylename">
@@ -2648,7 +2662,7 @@
 
         <xs:attribute name="sort" type="sortDirection"/>
 
-        <xs:attribute name="generatedType" type="xs:string"/>
+        <xs:attribute name="generatedType" type="dataGridColumnGeneratedType"/>
     </xs:complexType>
 
     <!-- DataGrid -->
