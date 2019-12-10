@@ -20,6 +20,7 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.PersistenceSecurity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.ExtendedEntities;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.group.*;
@@ -41,6 +42,8 @@ public class AccessConstraintsBuilder {
 
     @Inject
     protected Metadata metadata;
+    @Inject
+    protected ExtendedEntities extendedEntities;
 
     @Inject
     protected PersistenceSecurity security;
@@ -74,7 +77,7 @@ public class AccessConstraintsBuilder {
      * @return current instance of the builder
      */
     public AccessConstraintsBuilder withJpql(Class<? extends Entity> target, String where, String join) {
-        MetaClass metaClass = metadata.getClassNN(target);
+        MetaClass metaClass = extendedEntities.getOriginalOrThisMetaClass(metadata.getClassNN(target));
 
         BasicJpqlAccessConstraint constraint = new BasicJpqlAccessConstraint();
         constraint.setOperation(EntityOp.READ);
@@ -107,7 +110,7 @@ public class AccessConstraintsBuilder {
      * @return current instance of the builder
      */
     public AccessConstraintsBuilder withInMemory(Class<? extends Entity> target, EntityOp operation, Predicate<? extends Entity> predicate) {
-        MetaClass metaClass = metadata.getClassNN(target);
+        MetaClass metaClass = extendedEntities.getOriginalOrThisMetaClass(metadata.getClassNN(target));
 
         BasicAccessConstraint constraint = new BasicAccessConstraint();
         constraint.setEntityType(metaClass.getName());
@@ -128,7 +131,7 @@ public class AccessConstraintsBuilder {
      * @return current instance of the builder
      */
     public AccessConstraintsBuilder withCustomInMemory(Class<? extends Entity> target, String constraintCode, Predicate<? extends Entity> predicate) {
-        MetaClass metaClass = metadata.getClassNN(target);
+        MetaClass metaClass = extendedEntities.getOriginalOrThisMetaClass(metadata.getClassNN(target));
 
         BasicAccessConstraint constraint = new BasicAccessConstraint();
         constraint.setEntityType(metaClass.getName());
@@ -149,7 +152,7 @@ public class AccessConstraintsBuilder {
      * @return current instance of the builder
      */
     public AccessConstraintsBuilder withGroovy(Class<? extends Entity> target, EntityOp operation, String groovyScript) {
-        MetaClass metaClass = metadata.getClassNN(target);
+        MetaClass metaClass = extendedEntities.getOriginalOrThisMetaClass((metadata.getClassNN(target)));
 
         BasicAccessConstraint constraint = new BasicAccessConstraint();
         constraint.setEntityType(metaClass.getName());
@@ -170,7 +173,7 @@ public class AccessConstraintsBuilder {
      * @return current instance of the builder
      */
     public AccessConstraintsBuilder withCustomGroovy(Class<? extends Entity> target, String constraintCode, String groovyScript) {
-        MetaClass metaClass = metadata.getClassNN(target);
+        MetaClass metaClass = extendedEntities.getOriginalOrThisMetaClass((metadata.getClassNN(target)));
 
         BasicAccessConstraint constraint = new BasicAccessConstraint();
         constraint.setEntityType(metaClass.getName());
@@ -191,9 +194,11 @@ public class AccessConstraintsBuilder {
         Map<String, List<AccessConstraint>> resultConstraints = new HashMap<>();
         for (SetOfAccessConstraints joinSet : joinSets) {
             if (joinSet instanceof BasicSetOfAccessConstraints) {
-                Map<String, List<AccessConstraint>> constraints = ((BasicSetOfAccessConstraints) joinSet).getConstraints();
-                for (Map.Entry<String, List<AccessConstraint>> entry : constraints.entrySet()) {
-                    resultConstraints.computeIfAbsent(entry.getKey(), k -> new ArrayList<>()).addAll(entry.getValue());
+                Map<String, List<AccessConstraint>> constraints = ((BasicSetOfAccessConstraints) joinSet).getConstraintsOrNull();
+                if (constraints != null) {
+                    for (Map.Entry<String, List<AccessConstraint>> entry : constraints.entrySet()) {
+                        resultConstraints.computeIfAbsent(entry.getKey(), k -> new ArrayList<>()).addAll(entry.getValue());
+                    }
                 }
             }
         }

@@ -16,6 +16,7 @@
 
 package com.haulmont.cuba.security.group;
 
+import javax.annotation.Nullable;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
@@ -46,7 +47,7 @@ public class BasicSetOfAccessConstraints implements SetOfAccessConstraints, Seri
         return constraints != null && !constraints.isEmpty();
     }
 
-    public Map<String, List<AccessConstraint>> getConstraints() {
+    public @Nullable Map<String, List<AccessConstraint>> getConstraintsOrNull() {
         return constraints;
     }
 
