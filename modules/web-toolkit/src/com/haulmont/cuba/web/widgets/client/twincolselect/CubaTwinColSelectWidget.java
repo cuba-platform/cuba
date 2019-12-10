@@ -23,6 +23,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.ListBox;
+import com.vaadin.client.StyleConstants;
 import com.vaadin.client.connectors.AbstractMultiSelectConnector.MultiSelectWidget;
 import com.vaadin.client.ui.VButton;
 import com.vaadin.client.ui.VTwinColSelect;
@@ -49,6 +50,18 @@ public class CubaTwinColSelectWidget extends VTwinColSelect {
         addItemsLeftToRightButton.addStyleName("add");
         removeItemsRightToLeftButton.setText("<");
         removeItemsRightToLeftButton.addStyleName("remove");
+    }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        super.setEnabled(enabled);
+        updateAddAllBtnEnabled();
+    }
+
+    @Override
+    public void setReadOnly(boolean readOnly) {
+        super.setReadOnly(readOnly);
+        updateAddAllBtnEnabled();
     }
 
     @Override
@@ -198,6 +211,7 @@ public class CubaTwinColSelectWidget extends VTwinColSelect {
             } else {
                 disableAddAllBtn();
             }
+            updateAddAllBtnEnabled();
         }
     }
 
@@ -259,6 +273,20 @@ public class CubaTwinColSelectWidget extends VTwinColSelect {
         removeAll.removeFromParent();
         removeAllHandlerRegistration.removeHandler();
         removeAll = null;
+    }
+
+    protected void updateAddAllBtnEnabled() {
+        boolean enabled = isEnabled() && !isReadOnly();
+
+        if (removeAll != null) {
+            removeAll.setEnabled(enabled);
+            removeAll.setStyleName(StyleConstants.DISABLED, !enabled);
+        }
+
+        if (addAll != null) {
+            addAll.setEnabled(enabled);
+            addAll.setStyleName(StyleConstants.DISABLED, !enabled);
+        }
     }
 
     public class CubaDoubleClickListBox extends DoubleClickListBox {
