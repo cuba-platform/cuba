@@ -846,6 +846,22 @@
         </xs:union>
     </xs:simpleType>
 
+    <xs:simpleType name="dataGridStylename">
+        <xs:union>
+            <xs:simpleType>
+                <xs:restriction base="xs:string"/>
+            </xs:simpleType>
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:enumeration value="no-stripes"/>
+                    <xs:enumeration value="no-vertical-lines"/>
+                    <xs:enumeration value="no-horizontal-lines"/>
+                    <xs:enumeration value="borderless"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:union>
+    </xs:simpleType>
+
     <xs:simpleType name="currencyFieldStylename">
         <xs:union>
             <xs:simpleType>
@@ -2695,6 +2711,7 @@
                 <xs:attribute name="reorderingAllowed" type="xs:boolean"/>
                 <xs:attribute name="selectionMode" type="dataGridSelectionMode"/>
                 <xs:attribute name="sortable" type="xs:boolean"/>
+                <xs:attribute name="stylename" type="dataGridStylename"/>
                 <xs:attribute name="textSelectionEnabled" type="xs:boolean"/>
                 <xs:attribute name="editorEnabled" type="xs:boolean"/>
                 <xs:attribute name="editorCrossFieldValidate" type="xs:boolean"/>
