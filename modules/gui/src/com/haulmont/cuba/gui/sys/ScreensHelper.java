@@ -553,7 +553,8 @@ public class ScreensHelper {
                 XmlInheritanceProcessor processor =
                         beanLocator.getPrototype(XmlInheritanceProcessor.NAME, document, emptyMap());
                 Element root = processor.getResultRoot();
-                if (root.getName().equals(Window.NAME)) {
+                if (root.getName().equals(Window.NAME)
+                        || root.getName().equals(Fragment.NAME)) {
                     return root;
                 }
             } catch (RuntimeException e) {
