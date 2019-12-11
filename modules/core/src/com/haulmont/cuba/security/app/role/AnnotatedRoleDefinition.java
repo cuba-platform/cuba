@@ -29,50 +29,50 @@ import javax.inject.Inject;
 public abstract class AnnotatedRoleDefinition implements RoleDefinition {
 
     @Inject
-    protected AnnotationPermissionsBuilder annotationPermissionsBuilder;
+    protected AnnotatedPermissionsBuilder annotatedPermissionsBuilder;
 
     @Override
     public RoleType getRoleType() {
-        return annotationPermissionsBuilder.getTypeFromAnnotation(this);
+        return annotatedPermissionsBuilder.getTypeFromAnnotation(this);
     }
 
     @Override
     public String getName() {
-        return annotationPermissionsBuilder.getNameFromAnnotation(this);
+        return annotatedPermissionsBuilder.getNameFromAnnotation(this);
     }
 
     @Override
     public EntityPermissions entityPermissions() {
-        return annotationPermissionsBuilder.buildEntityAccessPermissions(this);
+        return annotatedPermissionsBuilder.buildEntityAccessPermissions(this);
     }
 
     @Override
     public EntityAttributePermissions entityAttributePermissions() {
-        return annotationPermissionsBuilder.buildEntityAttributeAccessPermissions(this);
+        return annotatedPermissionsBuilder.buildEntityAttributeAccessPermissions(this);
     }
 
     @Override
     public SpecificPermissions specificPermissions() {
-        return annotationPermissionsBuilder.buildSpecificPermissions(this);
+        return annotatedPermissionsBuilder.buildSpecificPermissions(this);
     }
 
     @Override
     public ScreenPermissions screenPermissions() {
-        return annotationPermissionsBuilder.buildScreenPermissions(this);
+        return annotatedPermissionsBuilder.buildScreenPermissions(this);
     }
 
     @Override
     public ScreenElementsPermissions screenElementsPermissions() {
-        return annotationPermissionsBuilder.buildScreenElementsPermissions(this);
+        return annotatedPermissionsBuilder.buildScreenElementsPermissions(this);
     }
 
     @Override
     public boolean isDefault() {
-        return annotationPermissionsBuilder.getIsDefaultFromAnnotation(this);
+        return annotatedPermissionsBuilder.getIsDefaultFromAnnotation(this);
     }
 
     @Override
     public String getDescription() {
-        return annotationPermissionsBuilder.getDescriptionFromAnnotation(this);
+        return annotatedPermissionsBuilder.getDescriptionFromAnnotation(this);
     }
 }

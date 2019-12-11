@@ -34,9 +34,9 @@ import java.util.function.BiFunction;
  *
  * Helps construct permissions for roles defined using annotations.
  */
-@Component(AnnotationPermissionsBuilder.NAME)
-public class AnnotationPermissionsBuilder {
-    public static final String NAME = "cuba_AnnotationPermissionsBuilder";
+@Component(AnnotatedPermissionsBuilder.NAME)
+public class AnnotatedPermissionsBuilder {
+    public static final String NAME = "cuba_AnnotatedPermissionsBuilder";
 
     private static final String ENTITY_ACCESS_METHOD_NAME = "entityPermissions";
     private static final String ENTITY_ATTR_ACCESS_METHOD_NAME = "entityAttributePermissions";

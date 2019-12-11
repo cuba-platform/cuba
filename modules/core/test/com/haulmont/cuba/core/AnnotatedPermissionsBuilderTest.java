@@ -18,7 +18,7 @@ package com.haulmont.cuba.core;
 
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Metadata;
-import com.haulmont.cuba.security.app.role.AnnotationPermissionsBuilder;
+import com.haulmont.cuba.security.app.role.AnnotatedPermissionsBuilder;
 import com.haulmont.cuba.security.app.role.annotation.*;
 import com.haulmont.cuba.security.entity.Access;
 import com.haulmont.cuba.security.entity.EntityOp;
@@ -32,9 +32,9 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-public class AnnotationPermissionsBuilderTest {
+public class AnnotatedPermissionsBuilderTest {
 
-    protected AnnotationPermissionsBuilder builder;
+    protected AnnotatedPermissionsBuilder builder;
     protected Metadata metadata;
     protected TestPredefinedRole role;
 
@@ -43,7 +43,7 @@ public class AnnotationPermissionsBuilderTest {
 
     @Before
     public void setUp() throws Exception {
-        builder = AppBeans.get(AnnotationPermissionsBuilder.class);
+        builder = AppBeans.get(AnnotatedPermissionsBuilder.class);
         metadata = cont.metadata();
         role = new TestPredefinedRole();
     }
