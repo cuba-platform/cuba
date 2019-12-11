@@ -123,6 +123,29 @@ public class AccessConstraintsBuilder {
     }
 
     /**
+     * Adds in-memory constraint to the constraints set
+     *
+     * @param target     entity class
+     * @param operations CRUD operations
+     * @param predicate  in-memory predicate, returns true if entity is allowed by access constraint
+     * @return current instance of the builder
+     */
+    public AccessConstraintsBuilder withInMemory(Class<? extends Entity> target, EnumSet<EntityOp> operations, Predicate<? extends Entity> predicate) {
+        MetaClass metaClass = extendedEntities.getOriginalOrThisMetaClass(metadata.getClassNN(target));
+
+        for (EntityOp operation : operations) {
+            BasicAccessConstraint constraint = new BasicAccessConstraint();
+            constraint.setEntityType(metaClass.getName());
+            constraint.setOperation(operation);
+            constraint.setPredicate(predicate);
+
+            addConstraint(metaClass, constraint);
+        }
+
+        return this;
+    }
+
+    /**
      * Adds in-memory custom constraint to the constraints set
      *
      * @param target         entity class
@@ -160,6 +183,29 @@ public class AccessConstraintsBuilder {
         constraint.setPredicate((Predicate<? extends Entity>) o -> (boolean) security.evaluateConstraintScript(o, groovyScript));
 
         addConstraint(metaClass, constraint);
+
+        return this;
+    }
+
+    /**
+     * Adds in-memory groovy constraint to the constraints set
+     *
+     * @param target       entity class
+     * @param operations   CRUD operations
+     * @param groovyScript groovy script
+     * @return current instance of the builder
+     */
+    public AccessConstraintsBuilder withGroovy(Class<? extends Entity> target, EnumSet<EntityOp> operations, String groovyScript) {
+        MetaClass metaClass = extendedEntities.getOriginalOrThisMetaClass((metadata.getClassNN(target)));
+
+        for (EntityOp operation : operations) {
+            BasicAccessConstraint constraint = new BasicAccessConstraint();
+            constraint.setEntityType(metaClass.getName());
+            constraint.setOperation(operation);
+            constraint.setPredicate((Predicate<? extends Entity>) o -> (boolean) security.evaluateConstraintScript(o, groovyScript));
+
+            addConstraint(metaClass, constraint);
+        }
 
         return this;
     }
