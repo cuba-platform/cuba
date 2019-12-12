@@ -443,4 +443,25 @@ public class HaloTheme {
      * Not supported by the DateField component.
      */
     public static final String SIZE_HUGE = "huge";
+
+    /**
+     * Remove the outer border of the DataGrid. Can be combined with any other DataGrid/TreeDataGrid style.
+     */
+    public static final String DATAGRID_BORDERLESS = "borderless";
+
+    /**
+     * Remove the alternating row colors. Can be combined with any other DataGrid/TreeDataGrid style.
+     */
+    public static final String DATAGRID_NO_STRIPES = "no-stripes";
+
+    /**
+     * Remove the vertical divider lines between the DataGrid columns. Can be combined with any other
+     * DataGrid/TreeDataGrid style.
+     */
+    public static final String DATAGRID_NO_VERTICAL_LINES = "no-vertical-lines";
+
+    /**
+     * Remove the horizontal divider lines between the DataGrid rows. Can be combined with any other DataGrid/TreeDataGrid style.
+     */
+    public static final String DATAGRID_NO_HORIZONTAL_LINES = "no-horizontal-lines";
 }
