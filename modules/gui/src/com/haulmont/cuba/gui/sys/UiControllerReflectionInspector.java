@@ -179,7 +179,6 @@ public class UiControllerReflectionInspector {
         try {
             lambdaMethodFactory = lambdaMethodsCache.get(methodHandle, () -> {
                 MethodType type = MethodType.methodType(void.class, eventClass);
-                MethodType consumerType = MethodType.methodType(Consumer.class, ownerClass);
 
                 Class<?> callerClass;
                 if (Modifier.isPrivate(annotatedMethod.getMethod().getModifiers())) {
@@ -187,8 +186,8 @@ public class UiControllerReflectionInspector {
                 } else {
                     callerClass = ownerClass;
                 }
-
                 MethodHandles.Lookup caller = lambdaLookupProvider.apply(callerClass);
+                MethodType consumerType = MethodType.methodType(Consumer.class, callerClass);
                 CallSite site;
                 try {
                     site = LambdaMetafactory.metafactory(
