@@ -30,6 +30,8 @@ import com.vaadin.client.widget.escalator.EscalatorUpdater;
 import com.vaadin.client.widget.escalator.FlyweightCell;
 import com.vaadin.client.widget.escalator.RowContainer;
 import com.vaadin.client.widget.grid.events.*;
+import com.vaadin.client.widget.grid.selection.MultiSelectionRenderer;
+import com.vaadin.client.widget.grid.selection.SelectionModel;
 import com.vaadin.client.widgets.Grid;
 import elemental.json.JsonObject;
 
@@ -40,6 +42,7 @@ public class CubaGridWidget extends Grid<JsonObject> {
 
     public static final String CUBA_ID_COLUMN_PREFIX = "column_";
     public static final String CUBA_ID_COLUMN_HIDING_TOGGLE_PREFIX = "cc_";
+    public static final String MULTI_CHECK_STYLENAME = "multi-check";
 
     protected Map<Column<?, JsonObject>, String> columnIds = null;
 
@@ -63,6 +66,15 @@ public class CubaGridWidget extends Grid<JsonObject> {
         if (columnIds != null) {
             columnIds.remove(column);
         }
+    }
+
+    @Override
+    public void setSelectionModel(SelectionModel<JsonObject> selectionModel) {
+        super.setSelectionModel(selectionModel);
+
+        boolean multiCheck = getSelectionModel() instanceof SelectionModel.Multi<?>
+                && getSelectionModel().getSelectionColumnRenderer() instanceof MultiSelectionRenderer<?>;
+        getEscalator().setStyleName(MULTI_CHECK_STYLENAME, multiCheck);
     }
 
     @Override
