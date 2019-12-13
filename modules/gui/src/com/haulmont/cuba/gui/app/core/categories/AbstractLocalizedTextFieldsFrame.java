@@ -17,6 +17,7 @@
 package com.haulmont.cuba.gui.app.core.categories;
 
 import com.haulmont.cuba.core.entity.LocaleHelper;
+import com.haulmont.cuba.core.global.LocaleResolver;
 import com.haulmont.cuba.gui.UiComponents;
 import com.haulmont.cuba.gui.components.*;
 
@@ -62,7 +63,7 @@ public abstract class AbstractLocalizedTextFieldsFrame extends AbstractFrame {
         Properties properties = new Properties();
         for (Map.Entry<Locale, ? extends TextInputField> entry : textFieldMap.entrySet()) {
             if (!getTextInputFieldRawValue(entry.getValue()).isEmpty()) {
-                properties.setProperty(entry.getKey().toString(), getTextInputFieldRawValue(entry.getValue()));
+                properties.setProperty(LocaleResolver.localeToString(entry.getKey()), getTextInputFieldRawValue(entry.getValue()));
             }
         }
 
@@ -86,7 +87,7 @@ public abstract class AbstractLocalizedTextFieldsFrame extends AbstractFrame {
 
         Map<String, String> localizedNamesMap = LocaleHelper.getLocalizedValuesMap(localeBundle);
         for (Map.Entry<Locale, ? extends TextInputField> textFieldEntry : textFieldMap.entrySet()) {
-            String keyLocale = textFieldEntry.getKey().toString();
+            String keyLocale = LocaleResolver.localeToString(textFieldEntry.getKey());
             textFieldEntry.getValue().setValue(localizedNamesMap.get(keyLocale));
         }
     }

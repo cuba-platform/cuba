@@ -20,6 +20,7 @@ import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.datatypes.FormatStrings;
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.LocaleResolver;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import org.dom4j.Element;
@@ -62,7 +63,8 @@ public class NumberFormatter implements Function<Number, String> {
             }
             FormatStrings formatStrings = Datatypes.getFormatStrings(userSessionSource.getLocale());
             if (formatStrings == null)
-                throw new IllegalStateException("FormatStrings are not defined for " + userSessionSource.getLocale());
+                throw new IllegalStateException("FormatStrings are not defined for " +
+                        LocaleResolver.localeToString(userSessionSource.getLocale()));
             DecimalFormat format = new DecimalFormat(pattern, formatStrings.getFormatSymbols());
             return format.format(value);
         }

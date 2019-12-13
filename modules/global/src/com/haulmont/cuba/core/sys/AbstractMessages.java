@@ -367,7 +367,8 @@ public abstract class AbstractMessages implements Messages {
     }
 
     private Locale truncateLocale(Locale locale) {
-        if (locale == null || StringUtils.isEmpty(locale.getCountry()))
+        if (locale == null
+                || StringUtils.isEmpty(locale.getCountry()) && StringUtils.isEmpty(locale.getScript()))
             return null;
         return Locale.forLanguageTag(locale.getLanguage());
     }
@@ -375,7 +376,7 @@ public abstract class AbstractMessages implements Messages {
     protected boolean enterPack(String pack, Locale locale, Locale truncatedLocale, Set<String> passedPacks) {
         String k = truncatedLocale == null ?
                 pack + "/default" :
-                pack + "/" + (locale == null ? "default" : locale);
+                pack + "/" + (locale == null ? "default" : LocaleResolver.localeToString(locale));
         return passedPacks.add(k);
     }
 
@@ -551,14 +552,14 @@ public abstract class AbstractMessages implements Messages {
     }
 
     protected String getLocaleSuffix(Locale locale) {
-        return (locale != null ? "_" + locale : "");
+        return (locale != null ? "_" +  LocaleResolver.localeToString(locale) : "");
     }
 
     protected String makeCacheKey(String pack, String key, @Nullable Locale locale, @Nullable Locale truncatedLocale) {
         if (truncatedLocale == null)
             return pack + "/default/" + key;
 
-        return pack + "/" + (locale == null ? "default" : locale) + "/" + key;
+        return pack + "/" + (locale == null ? "default" :  LocaleResolver.localeToString(locale)) + "/" + key;
     }
 
     protected String getPackName(Class c) {

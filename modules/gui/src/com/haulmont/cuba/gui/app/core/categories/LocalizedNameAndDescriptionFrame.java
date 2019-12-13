@@ -17,6 +17,7 @@
 package com.haulmont.cuba.gui.app.core.categories;
 
 import com.haulmont.cuba.core.global.GlobalConfig;
+import com.haulmont.cuba.core.global.LocaleResolver;
 import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.gui.components.*;
 
@@ -50,7 +51,7 @@ public class LocalizedNameAndDescriptionFrame extends AbstractLocalizedTextField
 
     protected GroupBoxLayout createLocaleGroupBox(String localeName, Locale locale) {
         GroupBoxLayout groupBoxLayout = uiComponents.create(GroupBoxLayout.NAME);
-        groupBoxLayout.setCaption(localeName + "|" + locale.toString());
+        groupBoxLayout.setCaption(localeName + "|" + LocaleResolver.localeToString(locale));
         groupBoxLayout.add(createTextFieldComponent(locale,
                 messageTools.loadString(MESSAGE_PACK + "CategoryAttribute.name"), namesTextFieldMap));
         groupBoxLayout.add(createTextAreaComponent(locale,

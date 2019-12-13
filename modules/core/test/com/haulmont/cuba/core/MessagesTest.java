@@ -27,8 +27,9 @@ import com.haulmont.cuba.core.mp_test.nested.MpTestNestedEnum;
 import com.haulmont.cuba.core.mp_test.nested.MpTestNestedObj;
 import com.haulmont.cuba.testsupport.TestAppender;
 import com.haulmont.cuba.testsupport.TestContainer;
-import org.junit.jupiter.api.extension.RegisterExtension;
+import org.apache.commons.lang3.LocaleUtils;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
@@ -280,6 +281,43 @@ public class MessagesTest {
 
         msg = messages.getMessage("com.haulmont.cuba.core.mp_test", "countryMsg", Locale.forLanguageTag("fr-CA"));
         assertEquals("Country Message fr CA", msg);
+    }
+
+    @Test
+    public void testScriptAndVariant() throws Exception {
+        Messages messages = AppBeans.get(Messages.class);
+
+        Map<String, Locale> availableLocales = AppBeans.get(Configuration.class).getConfig(GlobalConfig.class).getAvailableLocales();
+        assertTrue(availableLocales.containsValue(LocaleUtils.toLocale("sr")));
+        assertTrue(availableLocales.containsValue(Locale.forLanguageTag("sr-Latn")));
+        assertTrue(availableLocales.containsValue(LocaleUtils.toLocale("ja")));
+        assertTrue(availableLocales.containsValue(LocaleUtils.toLocale("ja_JP_JP")));
+
+        assertEquals(LocaleResolver.resolve("sr-Latn"), Locale.forLanguageTag("sr-Latn"));
+        assertEquals(LocaleResolver.resolve("ja_JP_JP"), LocaleUtils.toLocale("ja_JP_JP"));
+
+        boolean localeLanguageOnly = messages.getTools().useLocaleLanguageOnly();
+        assertFalse(localeLanguageOnly);
+
+        String msg;
+
+        msg = messages.getMessage("com.haulmont.cuba.core.mp_test", "fullMsg", Locale.forLanguageTag("sr-Latn"));
+        assertEquals("Full Message sr-Latn", msg);
+
+        msg = messages.getMessage("com.haulmont.cuba.core.mp_test", "languageMsg", LocaleUtils.toLocale("sr"));
+        assertEquals("Language Message sr", msg);
+
+        msg = messages.getMessage("com.haulmont.cuba.core.mp_test", "languageMsg", Locale.forLanguageTag("sr-Latn"));
+        assertEquals("Language Message sr", msg);
+
+        msg = messages.getMessage("com.haulmont.cuba.core.mp_test", "fullMsg", LocaleUtils.toLocale("ja_JP_JP"));
+        assertEquals("Full Message ja_JP_JP", msg);
+
+        msg = messages.getMessage("com.haulmont.cuba.core.mp_test", "languageMsg", LocaleUtils.toLocale("ja"));
+        assertEquals("Language Message ja", msg);
+
+        msg = messages.getMessage("com.haulmont.cuba.core.mp_test", "languageMsg", LocaleUtils.toLocale("ja_JP_JP"));
+        assertEquals("Language Message ja", msg);
     }
 
     private int getSearchMessagesCount() {

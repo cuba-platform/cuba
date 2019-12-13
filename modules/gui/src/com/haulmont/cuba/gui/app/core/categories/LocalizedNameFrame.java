@@ -17,6 +17,7 @@
 package com.haulmont.cuba.gui.app.core.categories;
 
 import com.haulmont.cuba.core.global.GlobalConfig;
+import com.haulmont.cuba.core.global.LocaleResolver;
 import com.haulmont.cuba.gui.components.*;
 
 import javax.inject.Inject;
@@ -37,7 +38,7 @@ public class LocalizedNameFrame extends AbstractLocalizedTextFieldsFrame {
         Map<String, Locale> map = globalConfig.getAvailableLocales();
         for (Map.Entry<String, Locale> entry : map.entrySet()) {
             localesScrollBox.add(createTextFieldComponent(entry.getValue(),
-                    entry.getKey() + "|" + entry.getValue(), textFieldMap));
+                    entry.getKey() + "|" + LocaleResolver.localeToString(entry.getValue()), textFieldMap));
         }
     }
 

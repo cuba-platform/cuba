@@ -20,6 +20,7 @@ package com.haulmont.cuba.client.sys;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.app.LocalizedMessageService;
 import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.core.global.LocaleResolver;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.core.sys.AbstractMessages;
@@ -72,7 +73,7 @@ public class MessagesClientImpl extends AbstractMessages {
             return null;
 
         if (log.isTraceEnabled())
-            log.trace("searchRemotely: " + pack + "/" + locale + "/" + key);
+            log.trace("searchRemotely: " + pack + "/" +  LocaleResolver.localeToString(locale) + "/" + key);
 
         StopWatch stopWatch = new Slf4JStopWatch("Messages.searchRemotely");
         try {

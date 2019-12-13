@@ -19,6 +19,7 @@ package com.haulmont.cuba.gui.components.formatters;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.datatypes.FormatStrings;
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.LocaleResolver;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.security.global.UserSession;
@@ -65,7 +66,8 @@ public class DateFormatter implements Function<Date, String> {
             if (type != null) {
                 FormatStrings formatStrings = Datatypes.getFormatStrings(userSessionSource.getLocale());
                 if (formatStrings == null)
-                    throw new IllegalStateException("FormatStrings are not defined for " + userSessionSource.getLocale());
+                    throw new IllegalStateException("FormatStrings are not defined for " +
+                            LocaleResolver.localeToString(userSessionSource.getLocale()));
                 switch (type) {
                     case "DATE":
                         format = formatStrings.getDateFormat();

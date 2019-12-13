@@ -53,7 +53,8 @@ public class FormatStringsRegistryImpl implements FormatStringsRegistry {
     @Override
     public void setFormatStrings(Locale locale, FormatStrings formatStrings) {
         formatStringsMap.put(locale, formatStrings);
-        if (!StringUtils.isEmpty(locale.getCountry()) || !StringUtils.isEmpty(locale.getVariant()))
+        if (!StringUtils.isEmpty(locale.getCountry()) || !StringUtils.isEmpty(locale.getVariant())
+                || !StringUtils.isEmpty(locale.getScript()))
             useLocaleLanguageOnly = false;
     }
 }

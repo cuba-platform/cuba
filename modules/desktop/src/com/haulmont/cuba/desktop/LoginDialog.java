@@ -206,7 +206,7 @@ public class LoginDialog extends JDialog {
         Locale appLocale;
         String lastLocale = this.loginProperties.loadLastLocale();
         if (StringUtils.isNotEmpty(lastLocale)) {
-            appLocale = LocaleUtils.toLocale(lastLocale);
+            appLocale = LocaleResolver.resolve(lastLocale);
         } else {
             appLocale = Locale.getDefault();
         }

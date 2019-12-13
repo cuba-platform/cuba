@@ -18,7 +18,7 @@ package com.haulmont.cuba.core.sys;
 
 import com.google.common.base.Splitter;
 import com.haulmont.cuba.core.config.type.TypeFactory;
-import org.apache.commons.lang3.LocaleUtils;
+import com.haulmont.cuba.core.global.LocaleResolver;
 
 import java.util.LinkedHashMap;
 import java.util.Locale;
@@ -34,7 +34,7 @@ public class AvailableLocalesFactory extends TypeFactory {
         Map<String, Locale> result = new LinkedHashMap<>();
         for (String item : Splitter.on(';').trimResults().omitEmptyStrings().split(string)) {
             String[] parts = item.split("\\|");
-            result.put(parts[0], LocaleUtils.toLocale(parts[1]));
+            result.put(parts[0], LocaleResolver.resolve(parts[1]));
         }
         return result;
     }
