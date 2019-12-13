@@ -36,6 +36,7 @@ public class CubaGroupTableWidget extends CubaScrollTableWidget {
 
     public static final String CLASSNAME = "c-grouptable";
     public static final String GROUP_DIVIDER_COLUMN_KEY = "-1";
+    public static final int GROUP_DIVIDER_WIDTH = 16;
 
     protected Set<String> groupColumns;
 
@@ -52,7 +53,7 @@ public class CubaGroupTableWidget extends CubaScrollTableWidget {
     @Override
     public void setColWidth(int colIndex, int w, boolean isDefinedWidth) {
         if (GROUP_DIVIDER_COLUMN_KEY.equals(getVisibleColOrder()[colIndex])) {
-            w = 15;
+            w = GROUP_DIVIDER_WIDTH;
             isDefinedWidth = true;
         }
 
@@ -414,7 +415,14 @@ public class CubaGroupTableWidget extends CubaScrollTableWidget {
                         continue;
                     }
 
-                    Element divWrapper = list.getItem(columnIndex).getFirstChildElement();
+                    // TODO: workaround to avoid NPE
+                    TableCellElement cell = list.getItem(columnIndex);
+                    if (cell == null) {
+                        continue;
+                    }
+
+                    Element divWrapper = cell.getFirstChildElement();
+
                     // check for input in column
                     if (divWrapper.getChildCount() != 0) {
                         if (isAggregationEditable(uidl, columnIndex)) {

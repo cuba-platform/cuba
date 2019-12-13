@@ -197,7 +197,8 @@ public class CubaTreeTableWidget extends VTreeTable implements TableWidget {
     public void setColWidth(int colIndex, int w, boolean isDefinedWidth) {
         super.setColWidth(colIndex, w, isDefinedWidth);
 
-        if (_delegate.aggregationRow != null && _delegate.aggregationRow.isInitialized()) {
+        if (_delegate.isAggregationVisible()
+                && _delegate.aggregationRow.isInitialized()) {
             _delegate.aggregationRow.setCellWidth(colIndex, w);
         }
     }
@@ -214,7 +215,7 @@ public class CubaTreeTableWidget extends VTreeTable implements TableWidget {
 
     @Override
     public int getAdditionalRowsHeight() {
-        if (_delegate.aggregationRow != null) {
+        if (_delegate.isAggregationVisible()) {
             return _delegate.aggregationRow.getOffsetHeight();
         }
         return 0;
@@ -247,14 +248,10 @@ public class CubaTreeTableWidget extends VTreeTable implements TableWidget {
             _delegate.aggregationRow.setTotalAggregationInputHandler(_delegate.totalAggregationInputHandler);
             insert(_delegate.aggregationRow, getWidgetIndex(scrollBodyPanel));
         }
-        _delegate.aggregationRow.updateFromUIDL(uidl);
-        _delegate.aggregationRow.setHorizontalScrollPosition(scrollLeft);
-        triggerLazyColumnAdjustment(true);
-    }
-
-    protected void removeAggregationRow() {
-        remove(_delegate.aggregationRow);
-        _delegate.aggregationRow = null;
+        if (_delegate.isAggregationVisible()) {
+            _delegate.aggregationRow.updateFromUIDL(uidl);
+            _delegate.aggregationRow.setHorizontalScrollPosition(scrollLeft);
+        }
     }
 
     protected void showEmptyState(boolean show) {
@@ -285,7 +282,7 @@ public class CubaTreeTableWidget extends VTreeTable implements TableWidget {
 
         super.onScroll(event);
 
-        if (_delegate.aggregationRow != null) {
+        if (_delegate.isAggregationVisible()) {
             _delegate.aggregationRow.setHorizontalScrollPosition(scrollLeft);
         }
 
