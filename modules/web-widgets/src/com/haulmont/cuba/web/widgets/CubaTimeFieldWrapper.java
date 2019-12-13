@@ -58,6 +58,17 @@ public class CubaTimeFieldWrapper extends CustomField<LocalTime> {
         return internalValue;
     }
 
+    @Override
+    public void setReadOnly(boolean readOnly) {
+        timeField.setReadOnly(readOnly);
+        amPmField.setReadOnly(readOnly);
+    }
+
+    @Override
+    public boolean isReadOnly() {
+        return timeField.isReadOnly();
+    }
+
     public void setTimeFormat(String format) {
         timeField.setTimeFormat(format);
     }
