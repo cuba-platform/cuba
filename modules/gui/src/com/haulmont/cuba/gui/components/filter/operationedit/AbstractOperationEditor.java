@@ -17,8 +17,11 @@
 
 package com.haulmont.cuba.gui.components.filter.operationedit;
 
+import com.haulmont.cuba.core.global.filter.Op;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.filter.condition.AbstractCondition;
+
+import java.util.List;
 
 public abstract class AbstractOperationEditor {
 
@@ -31,6 +34,8 @@ public abstract class AbstractOperationEditor {
     }
 
     protected abstract Component createComponent();
+
+    public abstract void setHideOperations(List<Op> hideOperations);
 
     public Component getComponent() {
         return component;

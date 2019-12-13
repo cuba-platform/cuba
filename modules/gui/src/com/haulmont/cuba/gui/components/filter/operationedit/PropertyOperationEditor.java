@@ -28,6 +28,8 @@ import com.haulmont.cuba.gui.components.PopupButton;
 import com.haulmont.cuba.gui.components.filter.condition.AbstractCondition;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 
+import java.util.List;
+
 
 /**
  * Operation editor for PropertyCondition. Displays popupButton component for selecting an operation.
@@ -65,6 +67,13 @@ public class PropertyOperationEditor extends AbstractOperationEditor {
         popupButton.setStyleName("condition-operation-button");
 
         return popupButton;
+    }
+
+    @Override
+    public void setHideOperations(List<Op> hideOperations) {
+        for (Op op : hideOperations) {
+            popupButton.removeAction(op.getId());
+        }
     }
 
     protected class OperatorChangeAction extends AbstractAction {

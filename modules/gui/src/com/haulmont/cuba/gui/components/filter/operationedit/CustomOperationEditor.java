@@ -17,11 +17,14 @@
 package com.haulmont.cuba.gui.components.filter.operationedit;
 
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.filter.Op;
 import com.haulmont.cuba.gui.components.BoxLayout;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.VBoxLayout;
 import com.haulmont.cuba.gui.components.filter.condition.AbstractCondition;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
+
+import java.util.List;
 
 /**
  * Custom condition operation editor. Does nothing.
@@ -38,4 +41,7 @@ public class CustomOperationEditor extends AbstractOperationEditor {
         BoxLayout layout = componentsFactory.createComponent(VBoxLayout.class);
         return layout;
     }
+
+    @Override
+    public void setHideOperations(List<Op> hideOperations) {}
 }

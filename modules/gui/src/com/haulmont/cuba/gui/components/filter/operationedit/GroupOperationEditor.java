@@ -18,14 +18,16 @@
 package com.haulmont.cuba.gui.components.filter.operationedit;
 
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.filter.Op;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.VBoxLayout;
 import com.haulmont.cuba.gui.components.filter.condition.AbstractCondition;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 
+import java.util.List;
+
 /**
  * Grouping condition operation editor. Actually does nothing.
- *
  */
 public class GroupOperationEditor extends AbstractOperationEditor {
 
@@ -37,4 +39,7 @@ public class GroupOperationEditor extends AbstractOperationEditor {
     protected Component createComponent() {
         return AppBeans.get(ComponentsFactory.class).createComponent(VBoxLayout.NAME);
     }
+
+    @Override
+    public void setHideOperations(List<Op> hideOperations) {}
 }
