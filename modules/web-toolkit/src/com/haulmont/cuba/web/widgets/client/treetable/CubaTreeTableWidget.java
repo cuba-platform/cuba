@@ -157,6 +157,60 @@ public class CubaTreeTableWidget extends VTreeTable implements TableWidget {
         return _delegate.shortcutHandler;
     }
 
+
+
+    /**
+     * Adds right padding for header and aggregation row (if visible) to compensate
+     * table body vertical scroll bar.
+     *
+     * @param willHaveScrollbar defines whether table body will have scroll bar
+     */
+    @SuppressWarnings("ConstantConditions")
+    protected void toggleScrollBarSpacer(boolean willHaveScrollbar) {
+        com.google.gwt.user.client.Element headerWrapper = tHead.getElement();
+        Element header = headerWrapper.getFirstChildElement();
+
+        com.google.gwt.user.client.Element aggregationRowWrapper = null;
+        Element aggregationRow = null;
+
+        if (_delegate.isAggregationVisible()) {
+            aggregationRowWrapper = _delegate.aggregationRow.getElement();
+            aggregationRow = aggregationRowWrapper.getFirstChildElement();
+        }
+
+        if (willHaveScrollbar) {
+            String scrollBarWidth = WidgetUtil.getNativeScrollbarSize() + "px";
+
+            String borderColor = new ComputedStyle(headerWrapper)
+                    .getProperty("borderRightColor");
+            String borderRightStyle = "1px solid " + borderColor;
+
+            headerWrapper.getStyle()
+                    .setProperty("paddingRight", scrollBarWidth);
+            header.getStyle()
+                    .setProperty("borderRight", borderRightStyle);
+
+            if (_delegate.isAggregationVisible()) {
+                aggregationRowWrapper.getStyle()
+                        .setProperty("paddingRight", scrollBarWidth);
+                aggregationRow.getStyle()
+                        .setProperty("borderRight", borderRightStyle);
+            }
+        } else {
+            headerWrapper.getStyle()
+                    .setProperty("paddingRight", "0px");
+            header.getStyle()
+                    .setProperty("borderRight", "0px");
+
+            if (_delegate.isAggregationVisible()) {
+                aggregationRowWrapper.getStyle()
+                        .setProperty("paddingRight", "0px");
+                aggregationRow.getStyle()
+                        .setProperty("borderRight", "0px");
+            }
+        }
+    }
+
     @Override
     protected VScrollTableBody.VScrollTableRow getNextRowToFocus(VScrollTableBody.VScrollTableRow currentRow, int offset) {
         // Support select first N rows by Shift+Click #PL-3267
@@ -254,6 +308,15 @@ public class CubaTreeTableWidget extends VTreeTable implements TableWidget {
         }
     }
 
+    public void setAggregationRowVisible(boolean visible) {
+        if (_delegate.aggregationRow != null
+                && _delegate.aggregationRow.isVisible() != visible) {
+            _delegate.aggregationRow.setVisible(visible);
+
+            forceReassignColumnWidths();
+        }
+    }
+
     protected void showEmptyState(boolean show) {
         if (show) {
             if (_delegate.tableEmptyState == null) {
@@ -331,6 +394,8 @@ public class CubaTreeTableWidget extends VTreeTable implements TableWidget {
 
     @Override
     public void forceReassignColumnWidths() {
+        toggleScrollBarSpacer(willHaveScrollbars());
+
         int visibleCellCount = tHead.getVisibleCellCount();
         for (int i = 0; i < visibleCellCount; i++) {
             HeaderCell hcell = tHead.getHeaderCell(i);

@@ -177,9 +177,7 @@ public class CubaTreeTableConnector extends TreeTableConnector {
             }
         }
         if (stateChangeEvent.hasPropertyChanged("aggregatable")) {
-            if (!getState().aggregatable) {
-                getWidget()._delegate.aggregationRow = null;
-            }
+            getWidget().setAggregationRowVisible(getState().aggregatable);
         }
     }
 
