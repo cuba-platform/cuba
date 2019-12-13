@@ -61,8 +61,6 @@ public class CubaTable extends com.vaadin.v7.ui.Table implements TableSortableCo
 
     protected boolean showTotalAggregation = true;
 
-    protected boolean aggregatable = false;
-
     protected Set<Object> nonSortableProperties; // lazily initialized Set
 
     protected Map<Object, CellClickListener> cellClickListeners; // lazily initialized map
@@ -569,13 +567,13 @@ public class CubaTable extends com.vaadin.v7.ui.Table implements TableSortableCo
 
     @Override
     public boolean isAggregatable() {
-        return this.aggregatable;
+        return getState(false).aggregatable;
     }
 
     @Override
     public void setAggregatable(boolean aggregatable) {
-        if (this.aggregatable != aggregatable) {
-            this.aggregatable = aggregatable;
+        if (isAggregatable() != aggregatable) {
+            getState().aggregatable = aggregatable;
             markAsDirty();
         }
     }

@@ -64,12 +64,57 @@ public class CubaScrollTableWidget extends VScrollTable implements TableWidget {
         super.sizeInit();
 
         tHead.enableBrowserIntelligence();
+    }
 
-        if (tHead instanceof CubaScrollTableHead) {
-            ((CubaScrollTableHead) tHead).toggleScrollbarSpacer(willHaveScrollbars());
+    /**
+     * Adds right padding for header and aggregation row (if visible) to compensate
+     * table body vertical scroll bar.
+     *
+     * @param willHaveScrollbar defines whether table body will have scroll bar
+     */
+    @SuppressWarnings("ConstantConditions")
+    protected void toggleScrollBarSpacer(boolean willHaveScrollbar) {
+        com.google.gwt.user.client.Element headerWrapper = tHead.getElement();
+        Element header = headerWrapper.getFirstChildElement();
+
+        com.google.gwt.user.client.Element aggregationRowWrapper = null;
+        Element aggregationRow = null;
+
+        if (_delegate.isAggregationVisible()) {
+            aggregationRowWrapper = _delegate.aggregationRow.getElement();
+            aggregationRow = aggregationRowWrapper.getFirstChildElement();
         }
-        if (_delegate.aggregationRow != null) {
-            _delegate.aggregationRow.toggleScrollbarSpacer(willHaveScrollbars());
+
+        if (willHaveScrollbar) {
+            String scrollBarWidth = WidgetUtil.getNativeScrollbarSize() + "px";
+
+            String borderColor = new ComputedStyle(headerWrapper)
+                    .getProperty("borderRightColor");
+            String borderRightStyle = "1px solid " + borderColor;
+
+            headerWrapper.getStyle()
+                    .setProperty("paddingRight", scrollBarWidth);
+            header.getStyle()
+                    .setProperty("borderRight", borderRightStyle);
+
+            if (_delegate.isAggregationVisible()) {
+                aggregationRowWrapper.getStyle()
+                        .setProperty("paddingRight", scrollBarWidth);
+                aggregationRow.getStyle()
+                        .setProperty("borderRight", borderRightStyle);
+            }
+        } else {
+            headerWrapper.getStyle()
+                    .setProperty("paddingRight", "0px");
+            header.getStyle()
+                    .setProperty("borderRight", "0px");
+
+            if (_delegate.isAggregationVisible()) {
+                aggregationRowWrapper.getStyle()
+                        .setProperty("paddingRight", "0px");
+                aggregationRow.getStyle()
+                        .setProperty("borderRight", "0px");
+            }
         }
     }
 
@@ -228,7 +273,8 @@ public class CubaScrollTableWidget extends VScrollTable implements TableWidget {
 
     @Override
     public void setColWidth(int colIndex, int w, boolean isDefinedWidth) {
-        if (_delegate.aggregationRow != null && _delegate.aggregationRow.isInitialized()) {
+        if (_delegate.isAggregationVisible()
+                && _delegate.aggregationRow.isInitialized()) {
             _delegate.aggregationRow.setCellWidth(colIndex, w);
         }
 
@@ -247,6 +293,8 @@ public class CubaScrollTableWidget extends VScrollTable implements TableWidget {
 
     @Override
     public void forceReassignColumnWidths() {
+        toggleScrollBarSpacer(willHaveScrollbars());
+
         int visibleCellCount = tHead.getVisibleCellCount();
         for (int i = 0; i < visibleCellCount; i++) {
             HeaderCell hcell = tHead.getHeaderCell(i);
@@ -275,7 +323,7 @@ public class CubaScrollTableWidget extends VScrollTable implements TableWidget {
 
     @Override
     public int getAdditionalRowsHeight() {
-        if (_delegate.aggregationRow != null) {
+        if (_delegate.isAggregationVisible()) {
             return _delegate.aggregationRow.getOffsetHeight();
         }
         return 0;
@@ -309,14 +357,19 @@ public class CubaScrollTableWidget extends VScrollTable implements TableWidget {
             _delegate.aggregationRow.setTotalAggregationInputHandler(_delegate.totalAggregationInputHandler);
             insert(_delegate.aggregationRow, getWidgetIndex(scrollBodyPanel));
         }
-        _delegate.aggregationRow.updateFromUIDL(uidl);
-        _delegate.aggregationRow.setHorizontalScrollPosition(scrollLeft);
-        triggerLazyColumnAdjustment(true);
+        if (_delegate.isAggregationVisible()) {
+            _delegate.aggregationRow.updateFromUIDL(uidl);
+            _delegate.aggregationRow.setHorizontalScrollPosition(scrollLeft);
+        }
     }
 
-    protected void removeAggregationRow() {
-        remove(_delegate.aggregationRow);
-        _delegate.aggregationRow = null;
+    public void setAggregationRowVisible(boolean visible) {
+        if (_delegate.aggregationRow != null
+                && _delegate.aggregationRow.isVisible() != visible) {
+            _delegate.aggregationRow.setVisible(visible);
+
+            forceReassignColumnWidths();
+        }
     }
 
     protected TableAggregationRow createAggregationRow() {
@@ -343,7 +396,7 @@ public class CubaScrollTableWidget extends VScrollTable implements TableWidget {
 
         super.onScroll(event);
 
-        if (_delegate.aggregationRow != null) {
+        if (_delegate.isAggregationVisible()) {
             _delegate.aggregationRow.setHorizontalScrollPosition(scrollLeft);
         }
 
@@ -392,8 +445,6 @@ public class CubaScrollTableWidget extends VScrollTable implements TableWidget {
 
     protected class CubaScrollTableHead extends TableHead {
 
-        protected static final String SCROLLBAR_SPACER_STYLENAME = "scrollbar-spacer";
-
         protected final SimplePanel presentationsEditIcon = GWT.create(SimplePanel.class);
 
         public CubaScrollTableHead() {
@@ -405,38 +456,6 @@ public class CubaScrollTableWidget extends VScrollTable implements TableWidget {
             DOM.insertChild(getElement(), iconElement, DOM.getChildIndex(getElement(), columnSelector));
 
             DOM.sinkEvents(iconElement, Event.ONCLICK);
-        }
-
-        public void toggleScrollbarSpacer(boolean scrollbarEnabled) {
-            if (!initializedAndAttached) {
-                return;
-            }
-
-            if (scrollbarEnabled) {
-                com.google.gwt.user.client.Element lastChild = DOM.getChild(tr, DOM.getChildCount(tr) - 1);
-                if (lastChild.hasClassName(SCROLLBAR_SPACER_STYLENAME)) {
-                    return;
-                }
-
-                com.google.gwt.user.client.Element spacer = DOM.createTD();
-                spacer.addClassName(SCROLLBAR_SPACER_STYLENAME);
-
-                int scrollbarWidth = WidgetUtil.getNativeScrollbarSize();
-
-                spacer.getStyle().setPropertyPx("width", scrollbarWidth);
-                spacer.getStyle().setPropertyPx("minWidth", scrollbarWidth);
-                spacer.getStyle().setPropertyPx("maxWidth", scrollbarWidth);
-
-                tr.appendChild(spacer);
-            } else {
-                int cellsCount = DOM.getChildCount(tr);
-                for (int i = 0; i < cellsCount; i++) {
-                    com.google.gwt.user.client.Element cell = DOM.getChild(tr, i);
-                    if (cell.hasClassName(SCROLLBAR_SPACER_STYLENAME)) {
-                        tr.removeChild(cell);
-                    }
-                }
-            }
         }
 
         @Override
@@ -1018,14 +1037,14 @@ public class CubaScrollTableWidget extends VScrollTable implements TableWidget {
 
     @Override
     protected void reOrderColumn(String columnKey, int newIndex) {
-        if (_delegate.aggregationRow != null) {
+        if (_delegate.isAggregationVisible()) {
             client.updateVariable(paintableId, "updateAggregationRow", true, false);
         }
 
         super.reOrderColumn(columnKey, newIndex);
 
         if (!client.hasEventListeners(this, TableConstants.COLUMN_REORDER_EVENT_ID)
-                && _delegate.aggregationRow != null) {
+                && _delegate.isAggregationVisible()) {
             client.sendPendingVariableChanges();
         }
     }

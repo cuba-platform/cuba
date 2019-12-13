@@ -65,4 +65,7 @@ public class CubaTreeTableState extends TreeTableState {
 
     @NoLayout
     public String[] htmlCaptionColumns;
+
+    @NoLayout
+    public boolean aggregatable = false;
 }

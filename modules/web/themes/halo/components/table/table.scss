@@ -56,13 +56,17 @@ $c-table-drag-indicator-color: $v-focus-color;
     border: 2px solid $c-table-drag-indicator-color;
   }
 
-  .#{$primary-stylename}-arow {
+  .#{$primary-stylename}-arow-wrap {
     @include box-defaults;
-
     @include valo-gradient($cuba-table-aggregation-background-color);
+
     border-top: first-number($v-border) solid $border-color;
     border-left: first-number($v-border) solid $border-color;
     border-right: first-number($v-border) solid $border-color;
+  }
+
+  .#{$primary-stylename}-arow {
+    @include box-defaults;
   }
 
   .#{$primary-stylename}-arow-row {

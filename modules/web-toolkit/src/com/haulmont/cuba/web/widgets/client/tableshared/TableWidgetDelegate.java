@@ -142,7 +142,8 @@ public class TableWidgetDelegate {
         }
 
         for (Widget rowWidget : tableWidget.getRenderedRows()) {
-            if (aggregationRow != null || tableWidget.isGenericRow(rowWidget)) {
+            if (isAggregationVisible()
+                    || tableWidget.isGenericRow(rowWidget)) {
                 VScrollTable.VScrollTableBody.VScrollTableRow row = (VScrollTable.VScrollTableBody.VScrollTableRow) rowWidget;
 
                 double realColWidth = row.getRealCellWidth(colIndex);
@@ -153,8 +154,9 @@ public class TableWidgetDelegate {
             }
         }
 
-        if (tableWidget.getRenderedRows().isEmpty() &&
-                aggregationRow != null && aggregationRow.isInitialized()) {
+        if (tableWidget.getRenderedRows().isEmpty()
+                && isAggregationVisible()
+                && aggregationRow.isInitialized()) {
             double realColWidth = aggregationRow.getRealCellWidth(colIndex);
             if (!Double.isNaN(realColWidth)) {
                 if (realColWidth > 0) {
@@ -379,5 +381,10 @@ public class TableWidgetDelegate {
         for (AfterBodyUpdateListener listener : afterBodyUpdateListeners) {
             listener.onAfterBodyUpdate();
         }
+    }
+
+    public boolean isAggregationVisible() {
+        return aggregationRow != null
+                && aggregationRow.isVisible();
     }
 }

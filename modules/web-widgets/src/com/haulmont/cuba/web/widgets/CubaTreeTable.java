@@ -67,8 +67,6 @@ public class CubaTreeTable extends com.vaadin.v7.ui.TreeTable implements TreeTab
 
     protected boolean showTotalAggregation = true;
 
-    protected boolean aggregatable = false;
-
     protected Set<Object> nonSortableProperties; // lazily initialized Set
 
     protected Map<Object, CellClickListener> cellClickListeners; // lazily initialized map
@@ -584,13 +582,13 @@ public class CubaTreeTable extends com.vaadin.v7.ui.TreeTable implements TreeTab
 
     @Override
     public boolean isAggregatable() {
-        return this.aggregatable;
+        return getState(false).aggregatable;
     }
 
     @Override
     public void setAggregatable(boolean aggregatable) {
-        if (this.aggregatable != aggregatable) {
-            this.aggregatable = aggregatable;
+        if (isAggregatable() != aggregatable) {
+            getState().aggregatable = aggregatable;
             markAsDirty();
         }
     }

@@ -145,6 +145,9 @@ public class CubaScrollTableConnector extends TableConnector {
                 getWidget()._delegate.htmlCaptionColumns = null;
             }
         }
+        if (stateChangeEvent.hasPropertyChanged("aggregatable")) {
+            getWidget().setAggregationRowVisible(getState().aggregatable);
+        }
     }
 
     @Override
@@ -227,8 +230,6 @@ public class CubaScrollTableConnector extends TableConnector {
         UIDL arow = uidl.getChildByTagName("arow");
         if (arow != null) {
             getWidget().updateAggregationRow(arow);
-        } else if (getWidget()._delegate.aggregationRow != null) {
-            getWidget().removeAggregationRow();
         }
     }
 
