@@ -2829,6 +2829,7 @@
                     <xs:element name="validators" minOccurs="0" type="collectionValidatorType"/>
                 </xs:sequence>
 
+                <xs:attributeGroup ref="hasEditable"/>
                 <xs:attributeGroup ref="hasDatasource"/>
                 <xs:attributeGroup ref="hasDataContainer"/>
                 <xs:attributeGroup ref="hasOptions"/>
