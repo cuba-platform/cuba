@@ -47,15 +47,15 @@ public @interface Subscribe {
     Target target() default Target.COMPONENT;
 
     /**
-     * @return id or path to target object
+     * @return value
      */
-    @AliasFor("id")
+    @AliasFor("value")
     String value() default "";
 
     /**
      * @return id or path to target object
      */
-    @AliasFor("value")
+    @AliasFor("id")
     String id() default "";
 
     /**
