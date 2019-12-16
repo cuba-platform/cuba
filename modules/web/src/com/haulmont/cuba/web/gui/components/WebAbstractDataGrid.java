@@ -370,7 +370,9 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
                 return;
             }
 
-            Column<E> column = getColumnById(e.getColumn().getId());
+            Column<E> column = e.getColumn() != null
+                    ? getColumnById(e.getColumn().getId())
+                    : null;
 
             ItemClickEvent<E> event = new ItemClickEvent<>(WebAbstractDataGrid.this,
                     mouseEventDetails, item, item.getId(), column != null ? column.getId() : null);
