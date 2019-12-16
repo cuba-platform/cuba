@@ -95,7 +95,7 @@ public class ButtonLoader extends AbstractComponentLoader<Button> {
     protected void loadShortcut(Button resultComponent, Element element) {
         String shortcut = element.attributeValue("shortcut");
         if (StringUtils.isNotEmpty(shortcut)) {
-            resultComponent.setShortcut(shortcut);
+            resultComponent.setShortcut(loadShortcut(shortcut));
         }
     }
 
