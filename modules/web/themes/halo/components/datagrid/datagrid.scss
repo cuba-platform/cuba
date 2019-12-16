@@ -469,4 +469,13 @@ $cuba-datagrid-aggregation-background-color: $cuba-aggregation-background-color-
     border-bottom: valo-border();
     border-bottom-style: dotted;
   }
+
+  .#{$primary-stylename}.multi-check .#{$primary-stylename}-row > .#{$primary-stylename}-cell:first-child,
+  .#{$primary-stylename}-editor-cells > .not-editable.#{$primary-stylename}-cell:first-child {
+    text-overflow: clip;
+
+    & input[type="checkbox"] {
+      margin: 0;
+    }
+  }
 }

@@ -31,6 +31,7 @@ import com.vaadin.client.widget.escalator.RowContainer;
 import com.vaadin.client.widget.grid.AutoScroller;
 import com.vaadin.client.widget.grid.events.GridClickEvent;
 import com.vaadin.client.widget.grid.selection.SelectionModel;
+import com.vaadin.client.widget.grid.selection.SelectionModelWithSelectionColumn;
 import com.vaadin.client.widgets.Escalator;
 import com.vaadin.client.widgets.Grid;
 import com.vaadin.shared.ui.grid.HeightMode;
@@ -46,6 +47,7 @@ public class CubaGridWidget extends Grid<JsonObject> {
     public static final String CUBA_ID_COLUMN_HIDING_TOGGLE_PREFIX = "cc_";
     public static final String SORT_LAST_STYLENAME = "c-sort-last";
     public static final String COLUMN_HIDING_TOGGLE_STYLENAME = "column-hiding-toggle";
+    public static final String MULTI_CHECK_STYLENAME = "multi-check";
 
     protected Map<Column<?, JsonObject>, String> columnIds = null;
 
@@ -54,6 +56,15 @@ public class CubaGridWidget extends Grid<JsonObject> {
 
     protected String selectAllLabel;
     protected String deselectAllLabel;
+
+    @Override
+    public void setSelectionModel(SelectionModel<JsonObject> selectionModel) {
+        super.setSelectionModel(selectionModel);
+
+        boolean multiCheck = getSelectionModel() instanceof SelectionModelWithSelectionColumn
+                && ((SelectionModelWithSelectionColumn) getSelectionModel()).getRenderer() != null;
+        getEscalator().setStyleName(MULTI_CHECK_STYLENAME, multiCheck);
+    }
 
     public Map<Column<?, JsonObject>, String> getColumnIds() {
         return columnIds;
