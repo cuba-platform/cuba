@@ -51,7 +51,9 @@ public class WebTreeDataGrid<E extends Entity> extends WebAbstractDataGrid<CubaT
         if (getHierarchyColumn() == null
                 && columnOrder.length > 0) {
             String columnId = columnOrder[0];
-            component.setHierarchyColumn(columnId);
+
+            Grid.Column<E, ?> newHierarchyColumn = component.getColumn(columnId);
+            setHierarchyColumnInternal(newHierarchyColumn);
         }
     }
 
@@ -152,10 +154,29 @@ public class WebTreeDataGrid<E extends Entity> extends WebAbstractDataGrid<CubaT
     public void setHierarchyColumn(Column<E> column) {
         checkNotNullArgument(column);
 
-        hierarchyColumn = column;
+        this.hierarchyColumn = column;
 
-        Grid.Column<E, ?> gridColumn = ((ColumnImpl<E>) column).getGridColumn();
-        component.setHierarchyColumn(gridColumn);
+        Grid.Column<E, ?> newHierarchyColumn = ((ColumnImpl<E>) column).getGridColumn();
+        setHierarchyColumnInternal(newHierarchyColumn);
+    }
+
+    protected void setHierarchyColumnInternal(Grid.Column<E, ?> newHierarchyColumn) {
+        Grid.Column<E, ?> prevHierarchyColumn = component.getHierarchyColumn();
+        component.setHierarchyColumn(newHierarchyColumn);
+
+        // Due to Vaadin bug, we need to reset column's
+        // collapsible state after changing the hierarchy column
+        if (prevHierarchyColumn != null
+                && !newHierarchyColumn.equals(prevHierarchyColumn)) {
+            updateColumnCollapsible(prevHierarchyColumn);
+        }
+    }
+
+    protected void updateColumnCollapsible(Grid.Column<E, ?> vColumn) {
+        ColumnImpl<E> column = getColumnByGridColumn(vColumn);
+        if (column != null) {
+            column.updateCollapsible();
+        }
     }
 
     @Override
