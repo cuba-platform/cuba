@@ -1610,7 +1610,17 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
 
     @Override
     public void tableSourcePropertyValueChanged(TableItems.ValueChangeEvent<E> event) {
+        handleAggregation();
         refreshActionsState();
+    }
+
+    protected void handleAggregation() {
+        if (isAggregatable() && aggregationCells != null) {
+            component.aggregate(new AggregationContainer.Context(getItems().getItemIds()));
+
+            // trigger aggregation repaint
+            component.markAsDirty();
+        }
     }
 
     @Override
