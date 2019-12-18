@@ -124,8 +124,13 @@ public class WebButton extends WebAbstractComponent<CubaButton> implements Butto
                 }
 
                 String description = action.getDescription();
-                if (description == null && action.getShortcutCombination() != null) {
-                    description = action.getShortcutCombination().format();
+                KeyCombination shortcutCombination = action.getShortcutCombination();
+                if (shortcutCombination != null) {
+                    setShortcutCombination(shortcutCombination);
+
+                    if (description == null) {
+                        description = shortcutCombination.format();
+                    }
                 }
                 if (description != null && component.getDescription() == null) {
                     component.setDescription(description);
@@ -141,16 +146,19 @@ public class WebButton extends WebAbstractComponent<CubaButton> implements Butto
                 action.addOwner(this);
 
                 actionPropertyChangeListener = evt -> {
-                    if (Action.PROP_ICON.equals(evt.getPropertyName())) {
+                    String propertyName = evt.getPropertyName();
+                    if (Action.PROP_ICON.equals(propertyName)) {
                         setIcon(this.action.getIcon());
-                    } else if (Action.PROP_CAPTION.equals(evt.getPropertyName())) {
+                    } else if (Action.PROP_CAPTION.equals(propertyName)) {
                         setCaption(this.action.getCaption());
-                    } else if (Action.PROP_DESCRIPTION.equals(evt.getPropertyName())) {
+                    } else if (Action.PROP_DESCRIPTION.equals(propertyName)) {
                         setDescription(this.action.getDescription());
-                    } else if (Action.PROP_ENABLED.equals(evt.getPropertyName())) {
+                    } else if (Action.PROP_ENABLED.equals(propertyName)) {
                         setEnabled(this.action.isEnabled());
-                    } else if (Action.PROP_VISIBLE.equals(evt.getPropertyName())) {
+                    } else if (Action.PROP_VISIBLE.equals(propertyName)) {
                         setVisible(this.action.isVisible());
+                    } else if (Action.PROP_SHORTCUT.equals(propertyName)) {
+                        setShortcutCombination(this.action.getShortcutCombination());
                     }
                 };
                 action.addPropertyChangeListener(actionPropertyChangeListener);
