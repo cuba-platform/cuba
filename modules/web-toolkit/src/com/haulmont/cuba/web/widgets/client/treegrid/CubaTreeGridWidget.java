@@ -10,6 +10,8 @@ import com.vaadin.client.renderers.Renderer;
 import com.vaadin.client.widget.escalator.FlyweightCell;
 import com.vaadin.client.widget.escalator.RowContainer;
 import com.vaadin.client.widget.grid.events.GridClickEvent;
+import com.vaadin.client.widget.grid.selection.SelectionModel;
+import com.vaadin.client.widget.grid.selection.SelectionModelWithSelectionColumn;
 import com.vaadin.client.widget.treegrid.TreeGrid;
 import elemental.events.Event;
 import elemental.json.JsonObject;
@@ -21,8 +23,18 @@ public class CubaTreeGridWidget extends TreeGrid {
 
     public static final String CUBA_ID_COLUMN_PREFIX = "column_";
     public static final String CUBA_ID_COLUMN_HIDING_TOGGLE_PREFIX = "cc_";
+    public static final String MULTI_CHECK_STYLENAME = "multi-check";
 
     protected Map<Column<?, JsonObject>, String> columnIds = null;
+
+    @Override
+    public void setSelectionModel(SelectionModel<JsonObject> selectionModel) {
+        super.setSelectionModel(selectionModel);
+
+        boolean multiCheck = getSelectionModel() instanceof SelectionModelWithSelectionColumn
+                && ((SelectionModelWithSelectionColumn) getSelectionModel()).getRenderer() != null;
+        getEscalator().setStyleName(MULTI_CHECK_STYLENAME, multiCheck);
+    }
 
     public Map<Column<?, JsonObject>, String> getColumnIds() {
         return columnIds;
