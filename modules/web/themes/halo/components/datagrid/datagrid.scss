@@ -341,4 +341,13 @@ $cuba-datagrid-highlight-hover-row: false !default;
       }
     }
   }
+
+  .#{$primary-stylename}.multi-check .#{$primary-stylename}-row > .#{$primary-stylename}-cell:first-child,
+  .#{$primary-stylename}-editor-cells > .not-editable.#{$primary-stylename}-cell:first-child {
+    text-overflow: clip;
+
+    & input[type="checkbox"] {
+      margin: 0;
+    }
+  }
 }
