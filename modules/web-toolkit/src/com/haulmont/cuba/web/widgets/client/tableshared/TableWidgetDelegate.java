@@ -149,7 +149,7 @@ public class TableWidgetDelegate {
 
         for (Widget rowWidget : tableWidget.getRenderedRows()) {
             if (isAggregationVisible()
-                    || tableWidget.isGenericRow(rowWidget)) {
+                    && tableWidget.isGenericRow(rowWidget)) {
                 VScrollTable.VScrollTableBody.VScrollTableRow row = (VScrollTable.VScrollTableBody.VScrollTableRow) rowWidget;
 
                 double realColWidth = row.getRealCellWidth(colIndex);

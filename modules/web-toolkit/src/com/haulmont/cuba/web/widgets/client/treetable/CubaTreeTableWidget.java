@@ -305,6 +305,8 @@ public class CubaTreeTableWidget extends VTreeTable implements TableWidget {
         if (_delegate.isAggregationVisible()) {
             _delegate.aggregationRow.updateFromUIDL(uidl);
             _delegate.aggregationRow.setHorizontalScrollPosition(scrollLeft);
+
+            reassignAggregationColumnWidths();
         }
     }
 
@@ -406,6 +408,15 @@ public class CubaTreeTableWidget extends VTreeTable implements TableWidget {
     @Override
     protected void reassignHeaderCellWidth(int colIndex, HeaderCell hcell, int minWidth) {
         _delegate.reassignHeaderCellWidth(colIndex, hcell, minWidth);
+    }
+
+    protected void reassignAggregationColumnWidths() {
+        if (_delegate.isAggregationVisible()) {
+            for (int i = 0; i < visibleColOrder.length; i++) {
+                int colWidth = getColWidth(visibleColOrder[i]);
+                _delegate.aggregationRow.setCellWidth(i, colWidth);
+            }
+        }
     }
 
     @Override
