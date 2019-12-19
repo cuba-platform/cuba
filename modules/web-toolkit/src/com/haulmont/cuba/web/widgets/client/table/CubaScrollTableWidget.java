@@ -311,6 +311,15 @@ public class CubaScrollTableWidget extends VScrollTable implements TableWidget {
         _delegate.reassignHeaderCellWidth(colIndex, hcell, minWidth);
     }
 
+    protected void reassignAggregationColumnWidths() {
+        if (_delegate.isAggregationVisible()) {
+            for (int i = 0; i < visibleColOrder.length; i++) {
+                int colWidth = getColWidth(visibleColOrder[i]);
+                _delegate.aggregationRow.setCellWidth(i, colWidth);
+            }
+        }
+    }
+
     @Override
     public boolean isCustomColumn(int colIndex) {
         return false;
@@ -360,6 +369,8 @@ public class CubaScrollTableWidget extends VScrollTable implements TableWidget {
         if (_delegate.isAggregationVisible()) {
             _delegate.aggregationRow.updateFromUIDL(uidl);
             _delegate.aggregationRow.setHorizontalScrollPosition(scrollLeft);
+
+            reassignAggregationColumnWidths();
         }
     }
 
