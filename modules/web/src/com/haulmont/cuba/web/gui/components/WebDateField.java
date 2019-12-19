@@ -100,6 +100,8 @@ public class WebDateField<V extends Comparable<V>>
 
         dateField.addValueChangeListener(createDateValueChangeListener());
         timeField.addValueChangeListener(createTimeValueChangeListener());
+
+        updateLayout();
     }
 
     protected CubaCssActionsLayout createComponent() {
@@ -143,8 +145,6 @@ public class WebDateField<V extends Comparable<V>>
         dateField.setResolution(DateResolution.DAY);
 
         timeField.setTimeFormat(formatStringsRegistry.getFormatStringsNN(locale).getTimeFormat());
-
-        setResolution(Resolution.MIN);
 
         AppUI ui = AppUI.getCurrent();
         if (ui != null && ui.isTestMode()) {
@@ -311,10 +311,10 @@ public class WebDateField<V extends Comparable<V>>
             time.delete(0, timeStartPos);
             date.delete(timeStartPos, dateFormat.length());
             timeField.setTimeFormat(StringUtils.trimToEmpty(time.toString()));
-        } else if (resolution.ordinal() < Resolution.DAY.ordinal()) {
-            setResolution(Resolution.DAY);
         }
         dateField.setDateFormat(StringUtils.trimToEmpty(date.toString()));
+
+        updateLayout();
     }
 
     @Override
@@ -347,7 +347,15 @@ public class WebDateField<V extends Comparable<V>>
         component.removeAllComponents();
         component.addComponent(dateField);
 
-        if (resolution.ordinal() < Resolution.DAY.ordinal()) {
+        boolean timeFieldAllowedByResolution = resolution != null
+                && resolution.ordinal() < Resolution.DAY.ordinal();
+        boolean timeFieldAllowedByDateFormat = resolution == null
+                && dateTimeFormat != null
+                && findTimeStartPos(dateTimeFormat) >= 0;
+
+        if ((resolution == null && dateTimeFormat == null)
+                || timeFieldAllowedByResolution
+                || timeFieldAllowedByDateFormat) {
             component.addComponent(timeField);
             component.addStyleName("c-datefield-withtime");
         } else {
