@@ -106,6 +106,7 @@
         </xs:sequence>
         <xs:attribute name="id" type="xs:string"/>
         <xs:attribute name="softDeletion" type="xs:boolean"/>
+        <xs:attribute name="store" type="xs:string"/>
         <xs:attribute name="provided" type="xs:boolean"/>
     </xs:complexType>
 
@@ -126,6 +127,7 @@
         <xs:attribute name="softDeletion" type="xs:boolean"/>
         <xs:attribute name="firstResult" type="xs:integer"/>
         <xs:attribute name="maxResults" type="xs:integer"/>
+        <xs:attribute name="store" type="xs:string"/>
         <xs:attribute name="provided" type="xs:boolean"/>
     </xs:complexType>
 
