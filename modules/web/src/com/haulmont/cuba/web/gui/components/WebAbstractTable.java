@@ -334,7 +334,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
                     res.add(item);
                 }
             }
-            return res;
+            return Collections.unmodifiableSet(res);
         } else {
             return Collections.emptySet();
         }
