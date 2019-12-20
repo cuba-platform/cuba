@@ -988,7 +988,7 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
      *
      * @param styleProvider a style provider to add, not null
      */
-    void addRowStyleProvider(Function<? super E, String> styleProvider);
+    void addRowStyleProvider(Function<? super E, @NullableType String> styleProvider);
 
     /**
      * Removes style provider for the DataGrid rows.
