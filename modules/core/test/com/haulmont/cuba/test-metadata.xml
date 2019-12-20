@@ -22,6 +22,7 @@
         <class>com.haulmont.cuba.testmodel.not_persistent.NotPersistentStringIdEntity</class>
         <class>com.haulmont.cuba.testmodel.numberformat.TestNumberValuesEntity</class>
         <class>com.haulmont.cuba.testmodel.setget.SetGetEntity</class>
+        <class>com.haulmont.cuba.testmodel.setget.SettersEntity</class>
     </metadata-model>
 
 </metadata>
