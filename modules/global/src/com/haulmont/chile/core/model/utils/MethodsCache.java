@@ -21,6 +21,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.lang.invoke.*;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiConsumer;
@@ -48,18 +49,32 @@ public class MethodsCache {
         final Method[] methods = clazz.getMethods();
         for (Method method : methods) {
             String name = method.getName();
-            if (name.startsWith("get") && method.getParameterTypes().length == 0) {
+            if (name.startsWith("get") && method.getParameterTypes().length == 0
+                    && !Modifier.isStatic(method.getModifiers())) {
                 Function getter = createGetter(clazz, method);
                 name = StringUtils.uncapitalize(name.substring(3));
                 getters.put(name, getter);
-            } else if (name.startsWith("is") && method.getParameterTypes().length == 0) {
+            } else if (name.startsWith("is") && method.getParameterTypes().length == 0
+                    && !Modifier.isStatic(method.getModifiers())) {
                 Function getter = createGetter(clazz, method);
                 name = StringUtils.uncapitalize(name.substring(2));
                 getters.put(name, getter);
-            } else if (name.startsWith("set") && method.getParameterTypes().length == 1) {
+            } else if (name.startsWith("set") && method.getParameterTypes().length == 1
+                    && !Modifier.isStatic(method.getModifiers())) {
                 BiConsumer setter = createSetter(clazz, method);
                 name = StringUtils.uncapitalize(name.substring(3));
-                setters.put(name, setter);
+                if (setters.containsKey(name)) {
+                    BiConsumer containedSetter = setters.get(name);
+                    Class valueType = method.getParameterTypes()[0];
+                    ((SettersHolder) containedSetter).addSetter(valueType.isPrimitive() ?
+                            primitivesToObjects.get(valueType) : valueType, setter);
+                } else {
+                    Class valueType = method.getParameterTypes()[0];
+                    SettersHolder settersHolder = new SettersHolder(name,
+                            valueType.isPrimitive() ? primitivesToObjects.get(valueType) : valueType,
+                            setter);
+                    setters.put(name, settersHolder);
+                }
             }
         }
         className = clazz.toString();
@@ -140,5 +155,45 @@ public class MethodsCache {
                     String.format("Can't find setter for property '%s' at %s", property, className));
         }
         return setter;
+    }
+
+    protected class SettersHolder implements BiConsumer {
+
+        protected Map<Class, BiConsumer> setters = new HashMap<>();
+        protected BiConsumer defaultSetter;
+        protected String property;
+
+        SettersHolder(String property, Class defaultArgType, BiConsumer defaultSetter) {
+            this.property = property;
+            this.defaultSetter = defaultSetter;
+            this.setters.put(defaultArgType, defaultSetter);
+        }
+
+        public void addSetter(Class argType, BiConsumer setter) {
+            setters.put(argType, setter);
+        }
+
+        @Override
+        public void accept(Object object, Object value) {
+            if (setters.size() == 1 || value == null) {
+                defaultSetter.accept(object, value);
+                return;
+            }
+            boolean setterNotFound = true;
+            for (Map.Entry<Class, BiConsumer> entry : setters.entrySet()) {
+                if (entry.getKey().isInstance(value)) {
+                    setterNotFound = false;
+                    entry.getValue().accept(object, value);
+                }
+            }
+            if (setterNotFound) {
+                throw new IllegalArgumentException(String.format(
+                        "Can't find setter for property '%s' at %s for value class: %s",
+                        property,
+                        className,
+                        value.getClass().getSimpleName()
+                ));
+            }
+        }
     }
 }
