@@ -1499,6 +1499,8 @@ public class FilterDelegateImpl implements FilterDelegate {
         for (String paramName : ftsLastDatasourceRefreshParamsNames) {
             lastRefreshParameters.remove(paramName);
         }
+        lastRefreshParameters.remove(FtsFilterHelper.SESSION_ID_PARAM_NAME);
+        lastRefreshParameters.remove(FtsFilterHelper.QUERY_KEY_PARAM_NAME);
         List<FtsCondition> ftsConditions = conditions.toConditionsList().stream()
                 .filter(abstractCondition -> abstractCondition instanceof FtsCondition)
                 .map(abstractCondition -> (FtsCondition) abstractCondition)
@@ -1534,7 +1536,12 @@ public class FilterDelegateImpl implements FilterDelegate {
             return;
         }
 
-        Map<String, Object> params = new HashMap<>();
+        Map<String, Object> params = new HashMap<>(datasource.getLastRefreshParameters());
+        for (String paramName : ftsLastDatasourceRefreshParamsNames) {
+            params.remove(paramName);
+        }
+        params.remove(FtsFilterHelper.SESSION_ID_PARAM_NAME);
+        params.remove(FtsFilterHelper.QUERY_KEY_PARAM_NAME);
 
         if (!Strings.isNullOrEmpty(searchTerm)) {
             FtsFilterHelper.FtsSearchResult ftsSearchResult = ftsFilterHelper.search(searchTerm, datasource.getMetaClass().getName());
