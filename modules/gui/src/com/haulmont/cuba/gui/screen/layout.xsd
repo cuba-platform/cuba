@@ -2916,6 +2916,7 @@
                             <xs:attribute name="width" type="xs:string"/>
                             <xs:attribute name="childrenCaptionAlignment" type="formChildrenCaptionAlignment"/>
                             <xs:attribute name="childrenCaptionWidth" type="xs:string"/>
+                            <xs:attribute name="flex" type="xs:float"/>
 
                             <xs:anyAttribute namespace="##other" processContents="lax"/>
                         </xs:complexType>

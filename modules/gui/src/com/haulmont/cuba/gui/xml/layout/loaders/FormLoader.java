@@ -108,7 +108,7 @@ public class FormLoader extends AbstractComponentLoader<Form> {
     protected void loadColumns(Form resultComponent, Element element) {
         ValueSourceProvider valueSourceProvider = resultComponent.getValueSourceProvider();
         if (element.elements("column").isEmpty()) {
-            Iterable<ComponentPosition> rootComponents = loadComponents(element, null);
+            Iterable<ComponentPosition> rootComponents = loadComponents(element, null, null);
             Iterable<ComponentPosition> dynamicAttributeComponents =
                     loadDynamicAttributeComponents(valueSourceProvider, null);
             for (ComponentPosition component : Iterables.concat(rootComponents, dynamicAttributeComponents)) {
@@ -131,7 +131,15 @@ public class FormLoader extends AbstractComponentLoader<Form> {
             int colIndex = 0;
             for (Element columnElement : columnElements) {
                 String columnWidth = loadThemeString(columnElement.attributeValue("width"));
-                Iterable<ComponentPosition> columnComponents = loadComponents(columnElement, columnWidth);
+
+                String flexAttr = columnElement.attributeValue("flex");
+                Float flex = null;
+                if (!Strings.isNullOrEmpty(flexAttr)) {
+                    flex = Float.parseFloat(flexAttr);
+                    resultComponent.setColumnFlex(colIndex, flex);
+                }
+
+                Iterable<ComponentPosition> columnComponents = loadComponents(columnElement, columnWidth, flex);
                 if (colIndex == 0) {
                     columnComponents = Iterables.concat(columnComponents,
                             loadDynamicAttributeComponents(valueSourceProvider, columnWidth));
@@ -149,21 +157,21 @@ public class FormLoader extends AbstractComponentLoader<Form> {
         }
     }
 
-    protected List<ComponentPosition> loadComponents(Element element, @Nullable String columnWidth) {
+    protected List<ComponentPosition> loadComponents(Element element, @Nullable String columnWidth, @Nullable Float flex) {
         List<Element> elements = element.elements();
         if (elements.isEmpty()) {
             return Collections.emptyList();
         } else {
             List<ComponentPosition> components = new ArrayList<>(elements.size());
             for (Element componentElement : elements) {
-                ComponentPosition component = loadComponent(componentElement, columnWidth);
+                ComponentPosition component = loadComponent(componentElement, columnWidth, flex);
                 components.add(component);
             }
             return components;
         }
     }
 
-    protected ComponentPosition loadComponent(Element element, @Nullable String columnWidth) {
+    protected ComponentPosition loadComponent(Element element, @Nullable String columnWidth, @Nullable Float flex) {
         Component component;
         if ("field".equals(element.getName())) {
             component = loadField(element);
@@ -178,9 +186,12 @@ public class FormLoader extends AbstractComponentLoader<Form> {
 
         // Set default width
         String componentWidth = element.attributeValue("width");
-        if (Strings.isNullOrEmpty(componentWidth)
-                && columnWidth != null) {
-            component.setWidth(columnWidth);
+        if (Strings.isNullOrEmpty(componentWidth)) {
+            if (columnWidth != null) {
+                component.setWidth(columnWidth);
+            } else if (flex != null) {
+                component.setWidthFull();
+            }
         }
 
         // Set default caption

@@ -601,4 +601,14 @@ public class WebForm extends WebAbstractComponent<CubaFieldGroupLayout> implemen
         getOwnComponentsStream().forEach(component ->
                 ((AttachNotifier) component).detached());
     }
+
+    @Override
+    public void setColumnFlex(int column, float flex) {
+        component.setColumnExpandRatio(column, flex);
+    }
+
+    @Override
+    public float getColumnFlex(int column) {
+        return component.getColumnExpandRatio(column);
+    }
 }
