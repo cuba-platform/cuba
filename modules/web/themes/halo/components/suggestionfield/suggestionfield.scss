@@ -82,7 +82,7 @@ $cuba-suggestionfield-edit-color: scale-color(lighten($v-focus-color, 35%), $sat
     padding-left: $v-selection-item-padding-horizontal;
   }
 
-  .#{$primary-stylename}-item-selected {
+  .#{$primary-stylename}-item.selected {
     @include valo-selection-item-selected-style;
   }
 

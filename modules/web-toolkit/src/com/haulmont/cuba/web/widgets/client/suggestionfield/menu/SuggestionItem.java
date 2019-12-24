@@ -73,9 +73,9 @@ public class SuggestionItem extends Widget implements HasText {
 
     protected void updateSelection(boolean selected) {
         if (selected) {
-            addStyleDependentName(SELECTED_ITEM_STYLENAME);
+            addStyleName(SELECTED_ITEM_STYLENAME);
         } else {
-            removeStyleDependentName(SELECTED_ITEM_STYLENAME);
+            removeStyleName(SELECTED_ITEM_STYLENAME);
         }
     }
 }
