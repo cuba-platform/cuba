@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.gui.app.security.role.edit;
 
+import com.google.common.collect.ImmutableList;
 import com.haulmont.cuba.core.global.EntityStates;
 import com.haulmont.cuba.gui.app.security.role.edit.tabs.ScreenPermissionsFrame;
 import com.haulmont.cuba.gui.components.*;
@@ -61,7 +62,7 @@ public class RoleEditor extends AbstractEditor<Role> {
     @Inject
     protected RolesService rolesService;
 
-    protected static final List<String> SYSTEM_ROLES = Arrays.asList("Administrators", "Anonymous");
+    protected static final List<String> SYSTEM_ROLES = ImmutableList.of("Administrators", "Anonymous");
 
     @Override
     protected void postInit() {
