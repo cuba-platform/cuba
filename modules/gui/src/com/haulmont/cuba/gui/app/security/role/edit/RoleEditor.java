@@ -25,6 +25,8 @@ import com.haulmont.cuba.security.entity.Role;
 import com.haulmont.cuba.security.role.RolesService;
 
 import javax.inject.Inject;
+import java.util.Arrays;
+import java.util.List;
 
 public class RoleEditor extends AbstractEditor<Role> {
     @Inject
@@ -59,6 +61,8 @@ public class RoleEditor extends AbstractEditor<Role> {
     @Inject
     protected RolesService rolesService;
 
+    protected static final List<String> SYSTEM_ROLES = Arrays.asList("Administrators", "Anonymous");
+
     @Override
     protected void postInit() {
         setCaption(entityStates.isNew(getItem()) && !getItem().isPredefined() ?
@@ -73,10 +77,17 @@ public class RoleEditor extends AbstractEditor<Role> {
 
     @Override
     public boolean preCommit() {
-        if (rolesService.isPredefinedRolesModeAvailable()
-                && rolesService.getRoleByName(name.getRawValue()) != null) {
-            showNotification(getMessage("roleNameIsUsed"), NotificationType.WARNING);
-            return false;
+        if (rolesService.isPredefinedRolesModeAvailable()) {
+            String name = getItem().getName();
+            boolean isPredefinedRoleExists = rolesService.getRoleByName(name) != null;
+            if (isPredefinedRoleExists) {
+                if (SYSTEM_ROLES.contains(name) && !getItem().isPredefined()) {
+                    return true;
+                } else {
+                    showNotification(getMessage("roleNameIsUsed"), NotificationType.WARNING);
+                    return false;
+                }
+            }
         }
         return true;
     }
