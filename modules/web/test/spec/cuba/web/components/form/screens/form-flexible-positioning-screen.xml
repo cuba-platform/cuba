@@ -28,5 +28,17 @@
                 <textArea id="component22" caption="[D] TextArea ex:[2, 2] - [2, 3]" rowspan="2" height="100%"/>
             </column>
         </form>
+
+        <form id="form2">
+            <column width="250px">
+                <textField caption="[D] Text Field [0, 0] - [1, 0]" rowspan="2" height="100%"/>
+                <textField caption="[D] Text Field [2, 0] - [2, 1]" colspan="2" width="100%"/>
+            </column>
+            <column width="250px">
+                <textField caption="[D] Text Field [0, 1] - [0, 1]"/>
+                <textField caption="[D] Text Field [1, 1] - [1, 1]"/>
+                <textField caption="[D] Text Field [3, 1] - [3, 1]"/>
+            </column>
+        </form>
     </layout>
 </window>

@@ -35,10 +35,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -115,13 +112,13 @@ public class WebForm extends WebAbstractComponent<CubaFieldGroupLayout> implemen
 
     @Override
     public void add(Component childComponent, int column) {
-        int rowIndex = detectRowsCount(column);
+        int rowIndex = detectStartRowIndex(column);
         add(childComponent, column, rowIndex);
     }
 
     @Override
     public void add(Component childComponent, int column, int colSpan, int rowSpan) {
-        int rowIndex = detectRowsCount(column);
+        int rowIndex = detectStartRowIndex(column);
         add(childComponent, column, rowIndex, colSpan, rowSpan);
     }
 
@@ -249,6 +246,18 @@ public class WebForm extends WebAbstractComponent<CubaFieldGroupLayout> implemen
      * @return rows count for the given column index
      */
     protected int detectRowsCount(int column) {
+        return detectRowsCount(column, false);
+    }
+
+    /**
+     * @param column a column index
+     * @return start row index for the given column index
+     */
+    protected int detectStartRowIndex(int column) {
+        return detectRowsCount(column, column > 0);
+    }
+
+    protected int detectRowsCount(int column, boolean isCheckAreas) {
         List<ComponentPosition> componentPositions = columnComponentMapping.get(column);
 
         // Calculate rows count considering row spans
@@ -257,18 +266,38 @@ public class WebForm extends WebAbstractComponent<CubaFieldGroupLayout> implemen
                 .reduce(Integer::sum)
                 .orElse(0);
 
+        List<ComponentArea> componentAreas = isCheckAreas
+                ? calculateComponentAreas()
+                : Collections.emptyList();
+
         // If a component from a previous column overlaps current column,
         // then increase rows count by its row span value
         for (int i = 0; i < column; i++) {
             List<ComponentPosition> positions = columnComponentMapping.get(i);
             for (ComponentPosition position : positions) {
                 if (i + position.getColSpan() > column) {
-                    rowsCount += position.getRowSpan();
+                    // Even though a component from a previous column overlaps current column
+                    // it still can be above a current component
+                    ComponentArea area = findComponentArea(componentAreas, position);
+                    if (area == null || rowsCount >= area.getStartRow()) {
+                        rowsCount += position.getRowSpan();
+                    }
                 }
             }
         }
 
         return rowsCount;
+    }
+
+    @Nullable
+    protected ComponentArea findComponentArea(List<ComponentArea> componentAreas, ComponentPosition position) {
+        for (ComponentArea componentArea : componentAreas) {
+            if (componentArea.getComponent().equals(position.getComponent())) {
+                return componentArea;
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -337,7 +366,8 @@ public class WebForm extends WebAbstractComponent<CubaFieldGroupLayout> implemen
             for (int j = row; j < (row + rowspan); j++) {
                 if (spanMatrix[i][j]) {
                     throw new IllegalStateException(String.format("Can't insert a component to the given location: " +
-                                    "col - %s, row - %s, colspan - %s, rowspan - %s",
+                                    "col - %s, row - %s, colspan - %s, rowspan - %s, " +
+                                    "because it overlaps another component",
                             col, row, colspan, rowspan));
                 }
 
