@@ -46,6 +46,7 @@ import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 /**
  * Standard implementation of {@link DataContext} which commits data to {@link DataManager}.
  */
+@SuppressWarnings("rawtypes")
 public class DataContextImpl implements DataContext {
 
     private static final Logger log = LoggerFactory.getLogger(DataContextImpl.class);
@@ -334,9 +335,14 @@ public class DataContextImpl implements DataContext {
 
             if (srcEntity instanceof FetchGroupTracker && dstEntity instanceof FetchGroupTracker) {
                 FetchGroup srcFetchGroup = ((FetchGroupTracker) srcEntity)._persistence_getFetchGroup();
+                if (!getEntityStates().isNew(srcEntity) && srcFetchGroup == null) {
+                    // case when merging entity returned from DataManager.commit
+                    srcFetchGroup = FetchGroupUtils.suggestFetchGroup(srcEntity, getMetadata(), getEntityStates());
+                }
                 FetchGroup dstFetchGroup = ((FetchGroupTracker) dstEntity)._persistence_getFetchGroup();
-                if (srcFetchGroup == null || dstFetchGroup == null) {
-                    ((FetchGroupTracker) dstEntity)._persistence_setFetchGroup(null);
+                if (dstFetchGroup == null) {
+                    // dst is a new entity replaced by committed one
+                    ((FetchGroupTracker) dstEntity)._persistence_setFetchGroup(srcFetchGroup);
                 } else {
                     ((FetchGroupTracker) dstEntity)._persistence_setFetchGroup(FetchGroupUtils.mergeFetchGroups(srcFetchGroup, dstFetchGroup));
                 }

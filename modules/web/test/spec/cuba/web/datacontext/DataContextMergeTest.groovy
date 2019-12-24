@@ -335,10 +335,8 @@ class DataContextMergeTest extends Specification {
         when: "(3) src.det -> dst.new : copy all loaded, make detached"
 
         cust1 = new Customer(name: 'c1', email: 'c1@aaa.aa', status: Status.NOT_OK)
-        cust2 = new Customer(name: 'c2', id: cust1.id)
+        cust2 = new Customer(name: 'c2', id: cust1.id, status: Status.NOT_OK)
         makeDetached(cust2)
-        ((FetchGroupTracker) cust2)._persistence_setFetchGroup(
-                new EntityFetchGroup('id', 'version', 'deleteTs', 'name', 'email'))
 
         context.merge(cust1)
         context.merge(cust2)

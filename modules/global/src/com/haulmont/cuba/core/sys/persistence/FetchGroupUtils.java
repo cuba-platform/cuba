@@ -16,6 +16,10 @@
 
 package com.haulmont.cuba.core.sys.persistence;
 
+import com.haulmont.chile.core.model.MetadataObject;
+import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.EntityStates;
+import com.haulmont.cuba.core.global.Metadata;
 import org.eclipse.persistence.internal.queries.EntityFetchGroup;
 import org.eclipse.persistence.queries.FetchGroup;
 
@@ -23,8 +27,19 @@ import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
+@SuppressWarnings("rawtypes")
 public class FetchGroupUtils {
+
+    public static FetchGroup suggestFetchGroup(Entity entity, Metadata metadata, EntityStates entityStates) {
+        Set<String> attributes = metadata.getClassNN(entity.getClass()).getProperties().stream()
+                .filter(metaProperty ->
+                        !metaProperty.getRange().isClass() || entityStates.isLoaded(entity, metaProperty.getName()))
+                .map(MetadataObject::getName)
+                .collect(Collectors.toSet());
+        return new CubaEntityFetchGroup(new EntityFetchGroup(attributes));
+    }
 
     public static FetchGroup mergeFetchGroups(@Nullable FetchGroup first, @Nullable FetchGroup second) {
         Set<String> attributes = new HashSet<>();
