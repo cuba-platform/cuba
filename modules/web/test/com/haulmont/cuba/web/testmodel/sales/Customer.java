@@ -62,11 +62,11 @@ public class Customer extends StandardEntity {
     }
 
     public Status getStatus() {
-        return EnumUtils.fromId(Status.class, status, null);
+        return status == null ? null : Status.fromId(status);
     }
 
     public void setStatus(Status status) {
-        this.status = status.getId();
+        this.status = status == null ? null : status.getId();
     }
 
     public Address getAddress() {
@@ -75,15 +75,5 @@ public class Customer extends StandardEntity {
 
     public void setAddress(Address address) {
         this.address = address;
-    }
-
-    @Override
-    public String toString() {
-        return "Customer{" +
-                "id=" + id +
-                ", version=" + version +
-                ", name='" + name + '\'' +
-                ", status='" + status + '\'' +
-                "}@" + Integer.toHexString(System.identityHashCode(this));
     }
 }
