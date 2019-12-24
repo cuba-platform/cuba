@@ -502,10 +502,6 @@ public class WebGroupTable<E extends Entity> extends WebAbstractTable<CubaGroupT
 
     @Override
     protected String getGeneratedCellStyle(Object itemId, Object propertyId) {
-        if (!component.getGroupProperties().contains(propertyId)) {
-            return super.getGeneratedCellStyle(itemId, propertyId);
-        }
-
         if (itemId instanceof GroupInfo) {
             GroupInfo groupInfo = (GroupInfo) itemId;
 
