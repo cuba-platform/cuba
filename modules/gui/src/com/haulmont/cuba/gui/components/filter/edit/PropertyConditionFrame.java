@@ -29,6 +29,7 @@ import com.haulmont.cuba.gui.components.filter.condition.PropertyCondition;
 import com.haulmont.cuba.gui.components.filter.operationedit.AbstractOperationEditor;
 
 import javax.inject.Inject;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -46,7 +47,7 @@ public class PropertyConditionFrame extends ConditionFrame<PropertyCondition> {
     protected Component operationComponent;
 
     @WindowParam(name = "hideOperations")
-    protected List<Op> hideOperations;
+    protected List<Op> hideOperations = Collections.emptyList();
 
     @Override
     public void init(Map<String, Object> params) {
