@@ -76,6 +76,7 @@ public class DynamicAttributesPanel extends CompositeComponent<VBoxLayout> imple
     protected String fieldCaptionWidth;
 
     protected Form propertiesForm;
+    protected HBoxLayout categoryFieldBox;
     protected LookupField<Category> categoryField;
 
     public DynamicAttributesPanel() {
@@ -88,6 +89,8 @@ public class DynamicAttributesPanel extends CompositeComponent<VBoxLayout> imple
 
         propertiesForm = getInnerComponent("propertiesForm");
         propertiesForm.setHeightAuto();
+
+        categoryFieldBox = getInnerComponent("categoryFieldBox");
     }
 
     protected void initPropertiesForm() {
@@ -340,7 +343,7 @@ public class DynamicAttributesPanel extends CompositeComponent<VBoxLayout> imple
      * @param visible visibility flag
      */
     public void setCategoryFieldVisible(boolean visible) {
-        categoryField.setVisible(visible);
+        categoryFieldBox.setVisible(visible);
     }
 
     @Override
