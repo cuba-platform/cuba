@@ -11,6 +11,7 @@ import com.haulmont.cuba.gui.components.data.options.OptionsBinder;
 import com.haulmont.cuba.web.gui.icons.IconResolver;
 import com.haulmont.cuba.web.widgets.CubaRadioButtonGroup;
 import com.vaadin.server.Resource;
+import com.vaadin.ui.DescriptionGenerator;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -27,12 +28,15 @@ import static com.haulmont.cuba.web.gui.components.WebLookupField.NULL_ITEM_ICON
 public class WebRadioButtonGroup<V> extends WebV8AbstractField<CubaRadioButtonGroup<V>, V, V>
         implements RadioButtonGroup<V>, InitializingBean {
 
+    public static final DescriptionGenerator NULL_ITEM_DESCRIPTION_GENERATOR = item -> null;
+
     /* Beans */
     protected MetadataTools metadataTools;
     protected IconResolver iconResolver;
 
     protected OptionsBinding<V> optionsBinding;
 
+    protected Function<? super V, String> optionDescriptionProvider;
     protected Function<? super V, String> optionIconProvider;
     protected Function<? super V, String> optionCaptionProvider;
 
@@ -155,6 +159,25 @@ public class WebRadioButtonGroup<V> extends WebV8AbstractField<CubaRadioButtonGr
 
     protected void setItemsToPresentation(Stream<V> options) {
         component.setItems(options.collect(Collectors.toList()));
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public void setOptionDescriptionProvider(Function<? super V, String> optionDescriptionProvider) {
+        if (this.optionDescriptionProvider != optionDescriptionProvider) {
+            this.optionDescriptionProvider = optionDescriptionProvider;
+
+            if (optionDescriptionProvider != null) {
+                component.setItemDescriptionGenerator(optionDescriptionProvider::apply);
+            } else {
+                component.setItemDescriptionGenerator(NULL_ITEM_DESCRIPTION_GENERATOR);
+            }
+        }
+    }
+
+    @Override
+    public Function<? super V, String> getOptionDescriptionProvider() {
+        return optionDescriptionProvider;
     }
 
     @Override

@@ -40,4 +40,16 @@ public interface CheckBoxGroup<I> extends OptionsField<Collection<I>, I>, Lookup
      * @return icon provider of the LookupField.
      */
     Function<? super I, String> getOptionIconProvider();
+
+    /**
+     * @return option description provider
+     */
+    Function<? super I, String> getOptionDescriptionProvider();
+
+    /**
+     * Sets the option description provider.
+     *
+     * @param optionDescriptionProvider provider which provides descriptions for options
+     */
+    void setOptionDescriptionProvider(Function<? super I, String> optionDescriptionProvider);
 }

@@ -39,4 +39,16 @@ public interface RadioButtonGroup<I> extends OptionsField<I, I>, LookupComponent
      * @param optionIconProvider provider which provides icons for options
      */
     void setOptionIconProvider(Function<? super I, String> optionIconProvider);
+
+    /**
+     * @return option description provider
+     */
+    Function<? super I, String> getOptionDescriptionProvider();
+
+    /**
+     * Sets the option description provider.
+     *
+     * @param optionDescriptionProvider provider which provides descriptions for options
+     */
+    void setOptionDescriptionProvider(Function<? super I, String> optionDescriptionProvider);
 }

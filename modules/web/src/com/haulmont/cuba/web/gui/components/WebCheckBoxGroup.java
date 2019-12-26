@@ -12,6 +12,7 @@ import com.haulmont.cuba.gui.components.data.options.OptionsBinder;
 import com.haulmont.cuba.web.gui.icons.IconResolver;
 import com.haulmont.cuba.web.widgets.CubaCheckBoxGroup;
 import com.vaadin.server.Resource;
+import com.vaadin.ui.DescriptionGenerator;
 import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -28,12 +29,15 @@ import static com.haulmont.cuba.web.gui.components.WebLookupField.NULL_ITEM_ICON
 public class WebCheckBoxGroup<V> extends WebV8AbstractField<CubaCheckBoxGroup<V>, Set<V>, Collection<V>>
         implements CheckBoxGroup<V>, InitializingBean {
 
+    public static final DescriptionGenerator NULL_ITEM_DESCRIPTION_GENERATOR = item -> null;
+
     /* Beans */
     protected MetadataTools metadataTools;
     protected IconResolver iconResolver;
 
     protected OptionsBinding<V> optionsBinding;
 
+    protected Function<? super V, String> optionDescriptionProvider;
     protected Function<? super V, String> optionCaptionProvider;
     protected Function<? super V, String> optionIconProvider;
 
@@ -194,6 +198,25 @@ public class WebCheckBoxGroup<V> extends WebV8AbstractField<CubaCheckBoxGroup<V>
                 .collect(Collectors.toCollection(LinkedHashSet::new));
 
         component.setValue(newValue);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public void setOptionDescriptionProvider(Function<? super V, String> optionDescriptionProvider) {
+        if (this.optionDescriptionProvider != optionDescriptionProvider) {
+            this.optionDescriptionProvider = optionDescriptionProvider;
+
+            if (optionDescriptionProvider != null) {
+                component.setItemDescriptionGenerator(optionDescriptionProvider::apply);
+            } else {
+                component.setItemDescriptionGenerator(NULL_ITEM_DESCRIPTION_GENERATOR);
+            }
+        }
+    }
+
+    @Override
+    public Function<? super V, String> getOptionDescriptionProvider() {
+        return optionDescriptionProvider;
     }
 
     @Override
