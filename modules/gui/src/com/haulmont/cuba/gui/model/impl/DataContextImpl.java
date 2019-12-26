@@ -514,7 +514,7 @@ public class DataContextImpl implements DataContext {
     }
 
     @Override
-    public void evictAll() {
+    public void evictModified() {
         Set<Entity> tmpModifiedInstances = new HashSet<>(modifiedInstances);
         Set<Entity> tmpRemovedInstances = new HashSet<>(removedInstances);
 
@@ -522,6 +522,13 @@ public class DataContextImpl implements DataContext {
             evict(entity);
         }
         for (Entity entity : tmpRemovedInstances) {
+            evict(entity);
+        }
+    }
+
+    @Override
+    public void clear() {
+        for (Entity entity : getAll()) {
             evict(entity);
         }
     }

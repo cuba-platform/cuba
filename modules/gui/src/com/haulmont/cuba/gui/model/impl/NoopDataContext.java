@@ -33,6 +33,7 @@ import java.util.function.Function;
 /**
  * Dummy implementation of {@link DataContext} used for read-only screens like entity browsers.
  */
+@SuppressWarnings("rawtypes")
 public class NoopDataContext implements DataContext {
 
     @Nullable
@@ -67,6 +68,14 @@ public class NoopDataContext implements DataContext {
 
     @Override
     public void evict(Entity entity) {
+    }
+
+    @Override
+    public void evictModified() {
+    }
+
+    @Override
+    public void clear() {
     }
 
     @Override

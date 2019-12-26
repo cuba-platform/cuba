@@ -477,7 +477,7 @@ public abstract class MasterDetailScreen<T extends Entity> extends StandardLooku
      */
     protected void discardChanges() {
         releaseLock();
-        getScreenData().getDataContext().evictAll();
+        getScreenData().getDataContext().evictModified();
         getEditContainer().setItem(null);
 
         T selectedItem = getBrowseContainer().getItemOrNull();

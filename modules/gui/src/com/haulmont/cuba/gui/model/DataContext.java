@@ -40,6 +40,7 @@ import java.util.function.Function;
  * Within {@code DataContext}, an entity with the given identifier is represented by a single object instance, no matter
  * where and how many times it is used in object graphs.
  */
+@SuppressWarnings("rawtypes")
 @InstallSubject("commitDelegate")
 public interface DataContext {
 
@@ -61,11 +62,6 @@ public interface DataContext {
      * Returns true if the context contains the given entity (distinguished by its class and id).
      */
     boolean contains(Entity entity);
-
-    /**
-     * Cleans lists with information of created/modified/deleted entities for commit.
-     */
-    default void evictAll() {}
 
     /**
      * Merge the given entity into the context. The whole object graph with all references will be merged.
@@ -114,6 +110,18 @@ public interface DataContext {
      * If the given entity is not in the context, nothing happens.
      */
     void evict(Entity entity);
+
+    /**
+     * Clears the lists of created/modified/deleted entities and evicts these entities.
+     */
+    void evictModified();
+
+    /**
+     * Evicts all tracked entities.
+     *
+     * @see #evict(Entity)
+     */
+    void clear();
 
     /**
      * Creates an entity instance and merge it into the context.

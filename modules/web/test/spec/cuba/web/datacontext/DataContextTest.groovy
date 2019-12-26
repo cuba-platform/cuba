@@ -365,6 +365,32 @@ class DataContextTest extends Specification {
         removed.isEmpty()
     }
 
+    def "clear"() {
+        DataContext context = factory.createDataContext()
+
+        User user1 = new User(login: 'u1', name: 'User 1')
+        makeDetached(user1)
+        context.merge(user1)
+
+        when:
+
+        context.clear()
+
+        then:
+
+        context.find(User, user1.id) == null
+
+        when:
+
+        def removed = []
+        context.addPreCommitListener { e -> removed.addAll(e.removedInstances) }
+        context.commit()
+
+        then:
+
+        removed.isEmpty()
+    }
+
     def "commit returns different reference"() {
         DataContext context = factory.createDataContext()
 
