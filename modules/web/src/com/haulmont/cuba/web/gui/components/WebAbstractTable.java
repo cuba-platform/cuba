@@ -109,7 +109,6 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static com.google.common.base.Preconditions.checkArgument;
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
 @SuppressWarnings("deprecation")
@@ -451,8 +450,6 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
 
     protected void addColumnInternal(Column<E> column, int index) {
         checkNotNullArgument(column, "Column must be non null");
-        checkArgument(column.getId() instanceof MetaPropertyPath,
-                "Column id should be an instance of MetaPropertyPath");
 
         Object columnId = column.getId();
         component.addContainerProperty(columnId, column.getType(), null);
