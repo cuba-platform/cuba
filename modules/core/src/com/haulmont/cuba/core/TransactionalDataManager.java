@@ -49,6 +49,7 @@ import java.util.function.Supplier;
  * Transactions can also be created/committed programmatically using the {@link Transactions} interface which is available
  * via {@link #transactions()} method.
  */
+@SuppressWarnings("rawtypes")
 public interface TransactionalDataManager {
 
     String NAME = "cuba_TransactionalDataManager";
@@ -181,6 +182,14 @@ public interface TransactionalDataManager {
     void remove(Entity entity);
 
     /**
+     * Removes the entity instance from the data store by its id.
+     * @param entityId    entity id
+     */
+    default <T extends BaseGenericIdEntity<K>, K> void remove(Id<T, K> entityId) {
+        remove(getReference(entityId));
+    }
+
+    /**
      * Creates a new entity instance. This is a shortcut to {@code Metadata.create()}.
      * @param entityClass   entity class
      */
@@ -209,13 +218,13 @@ public interface TransactionalDataManager {
     /**
      * Returns an entity instance which can be used as a reference to an object which exists in the database.
      *
-     * @param id id of an existing object
+     * @param entityId id of an existing object
      *
      * @see #getReference(Class, Object)
      */
-    default <T extends BaseGenericIdEntity<K>, K> T getReference(Id<T, K> id) {
-        Preconditions.checkNotNullArgument(id, "id is null");
-        return getReference(id.getEntityClass(), id.getValue());
+    default <T extends BaseGenericIdEntity<K>, K> T getReference(Id<T, K> entityId) {
+        Preconditions.checkNotNullArgument(entityId, "id is null");
+        return getReference(entityId.getEntityClass(), entityId.getValue());
     }
 
     /**

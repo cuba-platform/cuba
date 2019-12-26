@@ -408,4 +408,24 @@ class DataManagerTest extends Specification {
 
         users.isEmpty()
     }
+
+    def "remove"() {
+        def product = new Product(name: 'p1', quantity: 100)
+        def product1 = dataManager.commit(product)
+        product1.quantity = 200
+        dataManager.commit(product1)
+
+        when: "cannot remove instance with stale version"
+        dataManager.remove(product)
+
+        then:
+        thrown(Exception)
+        dataManager.load(Id.of(product)).optional().isPresent()
+
+        when: "removing by id always works"
+        dataManager.remove(Id.of(product))
+
+        then:
+        !dataManager.load(Id.of(product)).optional().isPresent()
+    }
 }

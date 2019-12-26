@@ -38,6 +38,7 @@ import java.util.List;
  * security restrictions by default. If you want to apply security, get {@link #secure()} instance or set the
  * {@code cuba.dataManagerChecksSecurityOnMiddleware} application property to use it by default.
  */
+@SuppressWarnings("rawtypes")
 public interface DataManager {
 
     String NAME = "cuba_DataManager";
@@ -158,6 +159,14 @@ public interface DataManager {
      * @param entity    entity instance
      */
     void remove(Entity entity);
+
+    /**
+     * Removes the entity instance from the data store by its id.
+     * @param entityId    entity id
+     */
+    default <T extends BaseGenericIdEntity<K>, K> void remove(Id<T, K> entityId) {
+        remove(getReference(entityId));
+    }
 
     /**
      * Loads list of key-value pairs.
@@ -285,13 +294,13 @@ public interface DataManager {
     /**
      * Returns an entity instance which can be used as a reference to an object which exists in the database.
      *
-     * @param id id of an existing object
+     * @param entityId id of an existing object
      *
      * @see #getReference(Class, Object)
      */
     @CheckReturnValue
-    default <T extends BaseGenericIdEntity<K>, K> T getReference(Id<T, K> id) {
-        Preconditions.checkNotNullArgument(id, "id is null");
-        return getReference(id.getEntityClass(), id.getValue());
+    default <T extends BaseGenericIdEntity<K>, K> T getReference(Id<T, K> entityId) {
+        Preconditions.checkNotNullArgument(entityId, "id is null");
+        return getReference(entityId.getEntityClass(), entityId.getValue());
     }
 }
