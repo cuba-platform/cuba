@@ -239,7 +239,9 @@ public class RunnerBean implements Runner {
 
                     Method method = bean.getClass().getMethod(task.getMethodName(), paramTypes);
                     return method.invoke(bean, paramValues);
-                } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+                } catch (InvocationTargetException e) {
+                    throw new RuntimeException(e.getCause());
+                } catch (NoSuchMethodException | IllegalAccessException e) {
                     throw new RuntimeException(e);
                 }
             }
