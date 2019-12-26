@@ -1483,7 +1483,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
                     }
                 }
 
-                if (column.getAggregation() != null && isAggregatable()) {
+                if (column.getAggregation() != null) {
                     checkAggregation(column.getAggregation());
 
                     component.addContainerPropertyAggregation(column.getId(),
