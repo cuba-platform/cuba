@@ -18,7 +18,7 @@ package com.haulmont.cuba.gui.components;
 
 import com.google.common.base.Preconditions;
 import com.google.common.reflect.TypeToken;
-import com.haulmont.bali.annotations.NullableType;
+import com.haulmont.bali.annotations.NullableApi;
 import com.haulmont.bali.events.Subscription;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
@@ -988,7 +988,7 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
      *
      * @param styleProvider a style provider to add, not null
      */
-    void addRowStyleProvider(Function<? super E, @NullableType String> styleProvider);
+    void addRowStyleProvider(Function<? super E, @NullableApi String> styleProvider);
 
     /**
      * Removes style provider for the DataGrid rows.
@@ -1011,6 +1011,7 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
          * @param columnId id of the DataGrid column
          * @return style name or null to apply the default
          */
+        @Nullable
         String getStyleName(E entity, String columnId);
     }
 
@@ -3041,6 +3042,7 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
         /**
          * @return the style provider that is used for generating styles for cells
          */
+        @Nullable
         Function<E, String> getStyleProvider();
 
         /**
@@ -3048,7 +3050,7 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
          *
          * @param styleProvider a style provider to set
          */
-        void setStyleProvider(Function<? super E, @NullableType String> styleProvider);
+        void setStyleProvider(Function<? super E, @NullableApi String> styleProvider);
 
         /**
          * @return the description provider that is used for generating

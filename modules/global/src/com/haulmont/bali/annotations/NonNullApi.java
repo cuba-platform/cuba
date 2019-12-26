@@ -20,6 +20,15 @@ import javax.annotation.Nonnull;
 import javax.annotation.meta.TypeQualifierDefault;
 import java.lang.annotation.*;
 
+/**
+ * A package-level annotation to declare that parameters and return values
+ * are to be considered as non-nullable by default for a given package.
+ * <p>
+ * It is the same as {@link org.springframework.lang.NonNullApi} but additionally has {@link ElementType#TYPE_USE}
+ * default type qualifier.
+ *
+ * @see NullableApi
+ */
 @Target(ElementType.PACKAGE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
