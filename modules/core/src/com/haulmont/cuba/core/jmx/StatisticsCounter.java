@@ -136,7 +136,7 @@ public class StatisticsCounter implements StatisticsCounterMBean {
         }
 
         if (connectionPoolInfo.getRegisteredMBeanName() == null) {
-            log.warn("Сonnection pool not found for statistics counting!");
+            log.warn("Сonnection pool not found for statistics counting");
             dbConnPoolNotFound = true;
             return null;
         }
