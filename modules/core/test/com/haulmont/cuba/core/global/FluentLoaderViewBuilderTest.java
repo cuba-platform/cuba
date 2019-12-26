@@ -156,6 +156,29 @@ public class FluentLoaderViewBuilderTest {
         checkPetView(view);
     }
 
+    @Test
+    public void testViewWithViewBuilder() {
+        LoadContext<Pet> loadContext = dataManager.load(Pet.class)
+                .view(View.LOCAL)
+                .view(viewBuilder -> viewBuilder.addAll(
+                        "owner.name",
+                        "owner.address.city"))
+                .createLoadContext();
+
+        View view = loadContext.getView();
+        checkPetView(view);
+
+        loadContext = dataManager.load(Pet.class)
+                .view(viewBuilder -> viewBuilder.addAll(
+                        "owner.name",
+                        "owner.address.city"))
+                .view(View.LOCAL)
+                .createLoadContext();
+
+        view = loadContext.getView();
+        checkPetView(view);
+    }
+
     private void checkPetView(View view) {
         assertTrue(view.containsProperty("name"));
 

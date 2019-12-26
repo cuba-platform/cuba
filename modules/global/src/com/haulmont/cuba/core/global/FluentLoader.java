@@ -68,8 +68,14 @@ public class FluentLoader<E extends Entity<K>, K> {
             loadContext.setView(view);
         else if (!Strings.isNullOrEmpty(viewName))
             loadContext.setView(viewName);
-        else if (viewBuilder != null)
+
+        if (viewBuilder != null) {
+            if (view != null)
+                viewBuilder.addView(view);
+            else if (!Strings.isNullOrEmpty(viewName))
+                viewBuilder.addView(viewName);
             loadContext.setView(viewBuilder.build());
+        }
 
         loadContext.setSoftDeletion(softDeletion);
         loadContext.setLoadDynamicAttributes(dynamicAttributes);
