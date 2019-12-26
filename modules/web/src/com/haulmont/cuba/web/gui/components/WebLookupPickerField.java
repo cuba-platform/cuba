@@ -475,4 +475,11 @@ public class WebLookupPickerField<V extends Entity> extends WebPickerField<V>
     protected void checkValueType(V value) {
         // do not check
     }
+
+    @Override
+    protected void componentValueChanged(V prevComponentValue, V newComponentValue, boolean isUserOriginated) {
+        super.componentValueChanged(prevComponentValue, newComponentValue, isUserOriginated);
+
+        refreshActionsState();
+    }
 }

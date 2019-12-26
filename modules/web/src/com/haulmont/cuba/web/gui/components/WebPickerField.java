@@ -26,12 +26,14 @@ import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.gui.components.Action;
+import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.KeyCombination;
 import com.haulmont.cuba.gui.components.PickerField;
 import com.haulmont.cuba.gui.components.SecuredActionsHolder;
 import com.haulmont.cuba.gui.components.data.ValueSource;
 import com.haulmont.cuba.gui.components.data.meta.EntityValueSource;
 import com.haulmont.cuba.gui.components.security.ActionsPermissions;
+import com.haulmont.cuba.gui.screen.UiControllerUtils;
 import com.haulmont.cuba.gui.sys.TestIdManager;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.gui.components.valueproviders.EntityNameValueProvider;
@@ -97,6 +99,8 @@ public class WebPickerField<V extends Entity> extends WebV8AbstractField<CubaPic
         checkValueType(value);
 
         super.setValue(value);
+
+        refreshActionsState();
     }
 
     @Override
@@ -112,6 +116,8 @@ public class WebPickerField<V extends Entity> extends WebV8AbstractField<CubaPic
             ValueChangeEvent<V> event = new ValueChangeEvent<>(this, oldValue, value, true);
             publish(ValueChangeEvent.class, event);
         }
+
+        refreshActionsState();
     }
 
     protected void checkValueType(V value) {
@@ -299,6 +305,12 @@ public class WebPickerField<V extends Entity> extends WebV8AbstractField<CubaPic
         }
 
         actionsPermissions.apply(action);
+
+        refreshActionsState();
+    }
+
+    protected void refreshActionsState() {
+        getActions().forEach(Action::refreshState);
     }
 
     protected void setPickerButtonAction(CubaButton button, Action action) {
@@ -421,6 +433,8 @@ public class WebPickerField<V extends Entity> extends WebV8AbstractField<CubaPic
     protected void onFieldValueChange(CubaPickerField.FieldValueChangeEvent<V> e) {
         FieldValueChangeEvent<V> event = new FieldValueChangeEvent<>(this, e.getText(), e.getPrevValue());
         publish(FieldValueChangeEvent.class, event);
+
+        refreshActionsState();
     }
 
     @Override
@@ -513,6 +527,15 @@ public class WebPickerField<V extends Entity> extends WebV8AbstractField<CubaPic
     @Override
     public boolean isModified() {
         return super.isModified();
+    }
+
+    @Override
+    public void setFrame(Frame frame) {
+        super.setFrame(frame);
+
+        UiControllerUtils.getScreen(frame.getFrameOwner())
+                .addAfterShowListener(afterShowEvent ->
+                        refreshActionsState());
     }
 
     public class WebPickerFieldActionHandler implements com.vaadin.event.Action.Handler {
