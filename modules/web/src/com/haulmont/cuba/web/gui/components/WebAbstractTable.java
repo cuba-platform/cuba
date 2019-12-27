@@ -88,6 +88,7 @@ import com.vaadin.ui.*;
 import com.vaadin.v7.data.Property;
 import com.vaadin.v7.data.util.converter.Converter;
 import com.vaadin.v7.data.util.converter.ConverterUtil;
+import com.vaadin.v7.ui.AbstractSelect;
 import com.vaadin.v7.ui.Table.ColumnHeaderMode;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
@@ -105,6 +106,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.text.ParseException;
 import java.util.*;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -163,6 +165,8 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
     protected Action itemClickAction;
     protected Action enterPressAction;
 
+    @Nullable
+    protected BiFunction<? super E, String, String> itemDescriptionProvider;
     protected Function<? super E, String> iconProvider;
     @Nullable
     protected List<Table.StyleProvider> styleProviders; // lazily initialized List
@@ -1247,6 +1251,24 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
         return Strings.emptyToNull(joinedStyle);
     }
 
+    protected String generateCellDescription(Object itemId, Object propertyId) {
+        if (itemDescriptionProvider == null) {
+            return null;
+        }
+
+        TableItems<E> tableItems = getItems();
+        if (tableItems == null) {
+            return null;
+        }
+
+        E item = tableItems.getItem(itemId);
+        String property = propertyId == null
+                ? null
+                : propertyId.toString();
+
+        return itemDescriptionProvider.apply(item, property);
+    }
+
     @Override
     protected CubaButton createContextMenuButton() {
         return new CubaButton();
@@ -1974,6 +1996,22 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
         }
         String resourceUrl = iconProvider.apply(item);
         return iconResolver.getIconResource(resourceUrl);
+    }
+
+    @Override
+    public void setItemDescriptionProvider(@Nullable BiFunction<? super E, String, String> provider) {
+        if (this.itemDescriptionProvider != provider) {
+            itemDescriptionProvider = provider;
+
+            component.setItemDescriptionGenerator(
+                    new ItemDescriptionGenerator(this::generateCellDescription));
+        }
+    }
+
+    @Nullable
+    @Override
+    public BiFunction<? super E, String, String> getItemDescriptionProvider() {
+        return itemDescriptionProvider;
     }
 
     @Override
@@ -3477,5 +3515,26 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
                 || !Strings.isNullOrEmpty(component.getEmptyStateLinkMessage());
 
         component.setShowEmptyState(emptyItems && notEmptyMessages);
+    }
+
+    protected class ItemDescriptionGenerator implements AbstractSelect.ItemDescriptionGenerator {
+
+        protected final BiFunction<Object, Object, String> itemDescriptionProvider;
+
+        public ItemDescriptionGenerator(BiFunction<Object, Object, String> itemDescriptionProvider) {
+            this.itemDescriptionProvider = itemDescriptionProvider;
+        }
+
+        @Override
+        public String generateDescription(Component source, Object itemId, Object propertyId) {
+
+            try {
+                return itemDescriptionProvider.apply(itemId, propertyId);
+            } catch (Exception e) {
+                LoggerFactory.getLogger(WebAbstractTable.class)
+                        .error("Uncaught exception in Table ItemDescriptionProvider", e);
+                return null;
+            }
+        }
     }
 }

@@ -41,6 +41,7 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -479,6 +480,25 @@ public interface Table<E extends Entity>
      * @see #setRowHeaderWidth(int)
      */
     void setIconProvider(Function<? super E, String> iconProvider);
+
+    /**
+     * Sets the item description provider that is used for generating tooltip descriptions for items.
+     * <p>
+     * All unhandled exceptions from ItemDescriptionProvider in Web components by default are logged with ERROR level
+     * and not shown to users.
+     *
+     * @param provider the item description provider to use or {@code null} to remove a
+     *                 previously set provider if any
+     */
+    void setItemDescriptionProvider(@Nullable BiFunction<? super E, String, String> provider);
+
+    /**
+     * Gets the item description provider.
+     *
+     * @return the item description provider
+     */
+    @Nullable
+    BiFunction<? super E, String, String> getItemDescriptionProvider();
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
