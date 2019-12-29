@@ -23,12 +23,18 @@ import com.vaadin.ui.Tree.TreeContextClickEvent;
 @SuppressWarnings("serial")
 public class TreeContextMenu<T> extends ContextMenu {
 
+    protected boolean enabled = true;
+
     public TreeContextMenu(Tree<T> parentComponent) {
         super(parentComponent, true);
     }
 
     public void addTreeContextMenuListener(final TreeContextMenuOpenListener<T> listener) {
         addContextMenuOpenListener((final ContextMenuOpenEvent event) -> {
+            if (!isEnabled()) {
+                return;
+            }
+
             if (event
                     .getContextClickEvent() instanceof Tree.TreeContextClickEvent) {
                 @SuppressWarnings("unchecked")
@@ -38,6 +44,14 @@ public class TreeContextMenu<T> extends ContextMenu {
                         TreeContextMenu.this, treeEvent ));
             }
         });
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 
     public interface TreeContextMenuOpenListener<T>

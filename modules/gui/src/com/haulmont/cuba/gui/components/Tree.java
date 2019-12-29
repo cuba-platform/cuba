@@ -189,6 +189,18 @@ public interface Tree<E extends Entity> extends ListComponent<E>, HasButtonsPane
     void setSelectionMode(SelectionMode selectionMode);
 
     /**
+     * @return {@code true} if context menu is enabled, {@code false} otherwise
+     */
+    boolean isContextMenuEnabled();
+
+    /**
+     * Sets whether or not context menu is enabled. Default value is {@code true}.
+     *
+     * @param contextMenuEnabled specifies whether context menu is enabled
+     */
+    void setContextMenuEnabled(boolean contextMenuEnabled);
+
+    /**
      * Sets the description generator that is used for generating tooltip
      * descriptions for items.
      *

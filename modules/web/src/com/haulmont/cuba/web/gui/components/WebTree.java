@@ -760,6 +760,7 @@ public class WebTree<E extends Entity>
 
         if (buttonsPanel != null && !buttonsPanel.isAlwaysVisible()) {
             buttonsPanel.setVisible(false);
+            setContextMenuEnabled(false);
         }
     }
 
@@ -897,6 +898,16 @@ public class WebTree<E extends Entity>
     @Override
     public Action getEnterPressAction() {
         return enterPressAction;
+    }
+
+    @Override
+    public boolean isContextMenuEnabled() {
+        return contextMenu.isEnabled();
+    }
+
+    @Override
+    public void setContextMenuEnabled(boolean contextMenuEnabled) {
+        contextMenu.setEnabled(contextMenuEnabled);
     }
 
     @Override

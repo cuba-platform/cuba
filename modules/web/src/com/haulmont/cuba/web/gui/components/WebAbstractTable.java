@@ -1326,6 +1326,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
 
         if (buttonsPanel != null && !buttonsPanel.isAlwaysVisible()) {
             buttonsPanel.setVisible(false);
+            setContextMenuEnabled(false);
         }
     }
 
