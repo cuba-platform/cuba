@@ -18,6 +18,7 @@ package com.haulmont.cuba.security.entity;
 
 import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.cuba.core.entity.AbstractSearchFolder;
+import com.haulmont.cuba.core.entity.TenantEntity;
 import com.haulmont.cuba.core.entity.StandardEntity;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 
@@ -30,7 +31,7 @@ import javax.persistence.*;
 @Table(name = "SEC_FILTER")
 @NamePattern("%s|name")
 @SystemLevel
-public class FilterEntity extends StandardEntity {
+public class FilterEntity extends StandardEntity implements TenantEntity {
 
     @Column(name = "COMPONENT")
     protected String componentId;
@@ -51,6 +52,9 @@ public class FilterEntity extends StandardEntity {
 
     @Column(name = "GLOBAL_DEFAULT")
     protected Boolean globalDefault = false;
+
+    @Column(name = "SYS_TENANT_ID")
+    protected String sysTenantId;
 
     @Transient
     protected Boolean isDefault = false;
@@ -104,12 +108,12 @@ public class FilterEntity extends StandardEntity {
         isDefault = aDefault;
     }
 
-    public Boolean getApplyDefault(){
+    public Boolean getApplyDefault() {
         return applyDefault;
     }
 
-    public void setApplyDefault(Boolean applyDefault){
-        this.applyDefault=applyDefault;
+    public void setApplyDefault(Boolean applyDefault) {
+        this.applyDefault = applyDefault;
     }
 
     public AbstractSearchFolder getFolder() {
@@ -128,12 +132,12 @@ public class FilterEntity extends StandardEntity {
         this.code = code;
     }
 
-    public Boolean getIsSet(){
+    public Boolean getIsSet() {
         return isSet;
     }
 
-    public void setIsSet(Boolean isSet){
-        this.isSet=isSet;
+    public void setIsSet(Boolean isSet) {
+        this.isSet = isSet;
     }
 
     public Boolean getGlobalDefault() {
@@ -142,5 +146,13 @@ public class FilterEntity extends StandardEntity {
 
     public void setGlobalDefault(Boolean globalDefault) {
         this.globalDefault = globalDefault;
+    }
+
+    public String getSysTenantId() {
+        return sysTenantId;
+    }
+
+    public void setSysTenantId(String sysTenantId) {
+        this.sysTenantId = sysTenantId;
     }
 }

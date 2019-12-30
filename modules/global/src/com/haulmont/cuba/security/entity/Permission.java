@@ -34,7 +34,9 @@ public class Permission extends StandardEntity {
 
     public static final String TARGET_PATH_DELIMETER = ":";
 
-    /** @see com.haulmont.cuba.security.entity.PermissionType PermissionType.getId() */
+    /**
+     * @see com.haulmont.cuba.security.entity.PermissionType PermissionType.getId()
+     */
     @Column(name = "PERMISSION_TYPE")
     private Integer type;
 
@@ -75,12 +77,16 @@ public class Permission extends StandardEntity {
         this.type = type == null ? null : type.getId();
     }
 
-    /** See {@link #value} */
+    /**
+     * See {@link #value}
+     */
     public Integer getValue() {
         return value;
     }
 
-    /** See {@link #value} */
+    /**
+     * See {@link #value}
+     */
     public void setValue(Integer value) {
         this.value = value;
     }

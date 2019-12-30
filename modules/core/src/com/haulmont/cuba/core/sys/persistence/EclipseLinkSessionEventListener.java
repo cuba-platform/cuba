@@ -106,8 +106,9 @@ public class EclipseLinkSessionEventListener extends SessionEventAdapter {
                 desc.getEventManager().addListener(descriptorEventListener);
             }
 
+            setAdditionalCriteria(desc);
+
             if (SoftDelete.class.isAssignableFrom(desc.getJavaClass())) {
-                desc.getQueryManager().setAdditionalCriteria("this.deleteTs is null");
                 desc.setDeletePredicate(entity -> entity instanceof SoftDelete &&
                         PersistenceHelper.isLoaded(entity, "deleteTs") &&
                         ((SoftDelete) entity).isDeleted());
@@ -174,6 +175,22 @@ public class EclipseLinkSessionEventListener extends SessionEventAdapter {
             }
         }
         logCheckResult(wrongFetchTypes, missingEnhancements);
+    }
+
+    private void setAdditionalCriteria(ClassDescriptor desc) {
+        Map<String, AdditionalCriteriaProvider> additionalCriteriaProviderMap = AppBeans.getAll(AdditionalCriteriaProvider.class);
+
+        StringBuilder criteriaBuilder = new StringBuilder();
+        additionalCriteriaProviderMap.values().stream()
+                .filter(item -> item.requiresAdditionalCriteria(desc.getJavaClass()))
+                .forEach(additionalCriteriaProvider ->
+                        criteriaBuilder.append(additionalCriteriaProvider.getAdditionalCriteria(desc.getJavaClass())).append(" AND")
+                );
+
+        if (criteriaBuilder.length() != 0) {
+            String additionalCriteriaResult = criteriaBuilder.substring(0, criteriaBuilder.length() - 4);
+            desc.getQueryManager().setAdditionalCriteria(additionalCriteriaResult);
+        }
     }
 
     protected void enhancementCheck(Class entityClass, List<Pair<Class, String>> missingEnhancements) {

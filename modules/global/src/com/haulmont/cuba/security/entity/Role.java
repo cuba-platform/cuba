@@ -18,8 +18,8 @@ package com.haulmont.cuba.security.entity;
 
 import com.haulmont.chile.core.annotations.Composition;
 import com.haulmont.chile.core.annotations.NamePattern;
+import com.haulmont.cuba.core.entity.TenantEntity;
 import com.haulmont.cuba.core.entity.StandardEntity;
-import com.haulmont.cuba.core.entity.annotation.EnableRestore;
 import com.haulmont.cuba.core.entity.annotation.OnDelete;
 import com.haulmont.cuba.core.entity.annotation.TrackEditScreenHistory;
 import com.haulmont.cuba.core.global.DeletePolicy;
@@ -34,7 +34,7 @@ import java.util.Set;
 @Table(name = "SEC_ROLE")
 @NamePattern("%s [%s]|locName,name")
 @TrackEditScreenHistory
-public class Role extends StandardEntity {
+public class Role extends StandardEntity implements TenantEntity {
 
     private static final long serialVersionUID = -4889116218059626402L;
 
@@ -52,6 +52,9 @@ public class Role extends StandardEntity {
 
     @Column(name = "IS_DEFAULT_ROLE")
     private Boolean defaultRole;
+
+    @Column(name = "SYS_TENANT_ID")
+    protected String sysTenantId;
 
     @OneToMany(mappedBy = "role")
     @OnDelete(DeletePolicy.CASCADE)
@@ -115,5 +118,13 @@ public class Role extends StandardEntity {
 
     public void setPredefined(boolean predefined) {
         isPredefined = predefined;
+    }
+
+    public String getSysTenantId() {
+        return sysTenantId;
+    }
+
+    public void setSysTenantId(String sysTenantId) {
+        this.sysTenantId = sysTenantId;
     }
 }

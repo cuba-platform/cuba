@@ -22,6 +22,7 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.BaseDbGeneratedIdEntity;
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.entity.Creatable;
+import com.haulmont.cuba.core.entity.TenantEntity;
 import com.haulmont.cuba.core.entity.ReferenceToEntity;
 import com.haulmont.cuba.core.entity.annotation.EmbeddedParameters;
 import com.haulmont.cuba.core.entity.annotation.Listeners;
@@ -32,6 +33,7 @@ import com.haulmont.cuba.core.global.Metadata;
 
 import javax.annotation.PostConstruct;
 import javax.persistence.*;
+import javax.persistence.Entity;
 import java.util.Date;
 import java.util.Set;
 
@@ -43,7 +45,7 @@ import java.util.Set;
 @Table(name = "SEC_ENTITY_LOG")
 @Listeners("cuba_EntityLogItemDetachListener")
 @SystemLevel
-public class EntityLogItem extends BaseUuidEntity implements Creatable {
+public class EntityLogItem extends BaseUuidEntity implements Creatable, TenantEntity {
 
     private static final long serialVersionUID = 5859030306889056606L;
 
@@ -83,6 +85,9 @@ public class EntityLogItem extends BaseUuidEntity implements Creatable {
 
     @Column(name = "CREATED_BY", length = 50)
     private String createdBy;
+
+    @Column(name = "SYS_TENANT_ID")
+    protected String sysTenantId;
 
     @Column(name = "EVENT_TS")
     private Date eventTs;
@@ -138,6 +143,14 @@ public class EntityLogItem extends BaseUuidEntity implements Creatable {
     @Override
     public void setCreatedBy(String createdBy) {
         this.createdBy = createdBy;
+    }
+
+    public String getSysTenantId() {
+        return sysTenantId;
+    }
+
+    public void setSysTenantId(String sysTenantId) {
+        this.sysTenantId = sysTenantId;
     }
 
     public String getEntity() {

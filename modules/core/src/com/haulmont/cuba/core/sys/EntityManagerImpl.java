@@ -27,6 +27,7 @@ import com.haulmont.cuba.core.entity.*;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.listener.EntityListenerManager;
 import com.haulmont.cuba.core.sys.listener.EntityListenerType;
+import com.haulmont.cuba.core.sys.persistence.AdditionalCriteriaProvider;
 import com.haulmont.cuba.core.sys.persistence.EntityPersistingEventManager;
 import com.haulmont.cuba.core.sys.persistence.PersistenceImplSupport;
 import org.apache.commons.collections4.CollectionUtils;
@@ -40,6 +41,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Nullable;
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.persistence.EntityNotFoundException;
 import java.lang.reflect.Field;
@@ -75,6 +77,19 @@ public class EntityManagerImpl implements EntityManager {
 
     protected EntityManagerImpl(javax.persistence.EntityManager jpaEntityManager) {
         this.delegate = jpaEntityManager;
+    }
+
+    @PostConstruct
+    protected void init() {
+        Map<String, AdditionalCriteriaProvider> additionalCriteriaProviderMap = AppBeans.getAll(AdditionalCriteriaProvider.class);
+
+        for (AdditionalCriteriaProvider acp : additionalCriteriaProviderMap.values()) {
+            if (acp.getCriteriaParameters() != null) {
+                for (Map.Entry<String, Object> entry : acp.getCriteriaParameters().entrySet()) {
+                    this.delegate.setProperty(entry.getKey(), entry.getValue());
+                }
+            }
+        }
     }
 
     @Override
@@ -231,7 +246,7 @@ public class EntityManagerImpl implements EntityManager {
 
     @SuppressWarnings("unchecked")
     protected <T> TypedQuery<T> createQueryInstance(boolean isNative, Class<T> resultClass) {
-        return (TypedQuery<T>) beanLocator.getPrototype(Query.NAME,this, isNative, resultClass);
+        return (TypedQuery<T>) beanLocator.getPrototype(Query.NAME, this, isNative, resultClass);
     }
 
     @Override

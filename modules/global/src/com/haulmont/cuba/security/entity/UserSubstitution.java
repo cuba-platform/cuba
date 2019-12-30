@@ -16,6 +16,7 @@
  */
 package com.haulmont.cuba.security.entity;
 
+import com.haulmont.cuba.core.entity.TenantEntity;
 import com.haulmont.cuba.core.entity.StandardEntity;
 import com.haulmont.cuba.core.entity.annotation.OnDeleteInverse;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
@@ -26,12 +27,11 @@ import java.util.Date;
 
 /**
  * User substitution definition.
- *
  */
 @Entity(name = "sec$UserSubstitution")
 @Table(name = "SEC_USER_SUBSTITUTION")
 @SystemLevel
-public class UserSubstitution extends StandardEntity {
+public class UserSubstitution extends StandardEntity implements TenantEntity {
 
     private static final long serialVersionUID = -1260499554824220311L;
 
@@ -51,6 +51,9 @@ public class UserSubstitution extends StandardEntity {
     @Column(name = "END_DATE")
     @Temporal(TemporalType.DATE)
     protected Date endDate;
+
+    @Column(name = "SYS_TENANT_ID")
+    protected String sysTenantId;
 
     public User getUser() {
         return user;
@@ -82,5 +85,13 @@ public class UserSubstitution extends StandardEntity {
 
     public void setEndDate(Date endDate) {
         this.endDate = endDate;
+    }
+
+    public String getSysTenantId() {
+        return sysTenantId;
+    }
+
+    public void setSysTenantId(String sysTenantId) {
+        this.sysTenantId = sysTenantId;
     }
 }

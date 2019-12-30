@@ -33,7 +33,7 @@ import java.util.List;
 @Entity(name = "sys$SendingMessage")
 @Table(name = "SYS_SENDING_MESSAGE")
 @SystemLevel
-public class SendingMessage extends StandardEntity {
+public class SendingMessage extends StandardEntity implements TenantEntity {
 
     private static final long serialVersionUID = -8156998515878702538L;
 
@@ -89,6 +89,9 @@ public class SendingMessage extends StandardEntity {
 
     @Column(name = "EMAIL_HEADERS")
     protected String headers;
+
+    @Column(name = "SYS_TENANT_ID")
+    protected String sysTenantId;
 
     @Column(name = "BODY_CONTENT_TYPE", length = BODY_CONTENT_TYPE_LENGTH)
     protected String bodyContentType;
@@ -219,5 +222,13 @@ public class SendingMessage extends StandardEntity {
 
     public void setBcc(String bcc) {
         this.bcc = bcc;
+    }
+
+    public String getSysTenantId() {
+        return sysTenantId;
+    }
+
+    public void setSysTenantId(String sysTenantId) {
+        this.sysTenantId = sysTenantId;
     }
 }

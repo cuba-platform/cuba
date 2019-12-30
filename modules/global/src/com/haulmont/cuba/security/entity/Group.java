@@ -17,12 +17,13 @@
 package com.haulmont.cuba.security.entity;
 
 import com.haulmont.chile.core.annotations.Composition;
+import com.haulmont.chile.core.annotations.NamePattern;
+import com.haulmont.cuba.core.entity.TenantEntity;
 import com.haulmont.cuba.core.entity.StandardEntity;
 import com.haulmont.cuba.core.entity.annotation.Listeners;
 import com.haulmont.cuba.core.entity.annotation.OnDelete;
 import com.haulmont.cuba.core.entity.annotation.TrackEditScreenHistory;
 import com.haulmont.cuba.core.global.DeletePolicy;
-import com.haulmont.chile.core.annotations.NamePattern;
 
 import javax.persistence.*;
 import java.util.List;
@@ -36,7 +37,7 @@ import java.util.Set;
 @Listeners("cuba_GroupEntityListener")
 @NamePattern("%s|name")
 @TrackEditScreenHistory
-public class Group extends StandardEntity {
+public class Group extends StandardEntity implements TenantEntity {
 
     private static final long serialVersionUID = -4581386806900761785L;
 
@@ -63,6 +64,9 @@ public class Group extends StandardEntity {
 
     @Transient
     protected boolean predefined;
+
+    @Column(name = "SYS_TENANT_ID")
+    protected String sysTenantId;
 
     public String getName() {
         return name;
@@ -110,5 +114,13 @@ public class Group extends StandardEntity {
 
     public void setPredefined(boolean predefined) {
         this.predefined = predefined;
+    }
+
+    public String getSysTenantId() {
+        return sysTenantId;
+    }
+
+    public void setSysTenantId(String sysTenantId) {
+        this.sysTenantId = sysTenantId;
     }
 }

@@ -350,6 +350,7 @@ public class UserSessions implements UserSessionsAPI {
         use.setSince(new Date(since));
         use.setLastUsedTs(new Date(lastUsedTs));
         use.setSystem(session.isSystem());
+        use.setSysTenantId(session.getUser().getSysTenantId());
         return use;
     }
 

@@ -39,7 +39,6 @@ public class TestMetadataClient extends MetadataImpl {
         extendedEntities = new ExtendedEntities(this);
         tools = new TestMetadataTools(this);
         datatypeRegistry = new DatatypeRegistryImpl();
-
         config = globalConfig;
     }
 

@@ -19,6 +19,7 @@ package com.haulmont.cuba.security.entity;
 import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.entity.Creatable;
+import com.haulmont.cuba.core.entity.TenantEntity;
 import com.haulmont.cuba.core.entity.ReferenceToEntity;
 import com.haulmont.cuba.core.entity.annotation.EmbeddedParameters;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
@@ -38,7 +39,7 @@ import java.util.Date;
 @Entity(name = "sec$ScreenHistory")
 @Table(name = "SEC_SCREEN_HISTORY")
 @SystemLevel
-public class ScreenHistoryEntity extends BaseUuidEntity implements Creatable {
+public class ScreenHistoryEntity extends BaseUuidEntity implements Creatable, TenantEntity {
 
     private static final long serialVersionUID = 1L;
 
@@ -47,6 +48,9 @@ public class ScreenHistoryEntity extends BaseUuidEntity implements Creatable {
 
     @Column(name = "CREATED_BY", length = 50)
     protected String createdBy;
+
+    @Column(name = "SYS_TENANT_ID")
+    protected String sysTenantId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "USER_ID")
@@ -84,6 +88,14 @@ public class ScreenHistoryEntity extends BaseUuidEntity implements Creatable {
     @Override
     public void setCreatedBy(String createdBy) {
         this.createdBy = createdBy;
+    }
+
+    public String getSysTenantId() {
+        return sysTenantId;
+    }
+
+    public void setSysTenantId(String sysTenantId) {
+        this.sysTenantId = sysTenantId;
     }
 
     public User getUser() {

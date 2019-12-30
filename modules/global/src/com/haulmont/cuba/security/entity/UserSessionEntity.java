@@ -20,17 +20,17 @@ package com.haulmont.cuba.security.entity;
 import com.haulmont.chile.core.annotations.MetaClass;
 import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
+import com.haulmont.cuba.core.entity.TenantEntity;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 
 import java.util.Date;
 
 /**
  * Non-persistent entity to show user sessions list in UI.
- *
  */
 @MetaClass(name = "sec$UserSessionEntity")
 @SystemLevel
-public class UserSessionEntity extends BaseUuidEntity {
+public class UserSessionEntity extends BaseUuidEntity implements TenantEntity {
 
     private static final long serialVersionUID = 7730031482721158275L;
 
@@ -48,6 +48,8 @@ public class UserSessionEntity extends BaseUuidEntity {
     private Date lastUsedTs;
     @MetaProperty
     private Boolean system;
+    @MetaProperty
+    private String sysTenantId;
 
     public String getLogin() {
         return login;
@@ -103,6 +105,14 @@ public class UserSessionEntity extends BaseUuidEntity {
 
     public void setSystem(Boolean system) {
         this.system = system;
+    }
+
+    public void setSysTenantId(String sysTenantId) {
+        this.sysTenantId = sysTenantId;
+    }
+
+    public String getSysTenantId() {
+        return sysTenantId;
     }
 
     @Override

@@ -16,8 +16,6 @@
 
 package com.haulmont.cuba.security.auth;
 
-import com.haulmont.cuba.core.global.PasswordEncryption;
-
 import java.util.Collections;
 import java.util.Locale;
 import java.util.Map;

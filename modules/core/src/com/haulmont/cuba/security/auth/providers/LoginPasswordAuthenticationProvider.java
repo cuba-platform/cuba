@@ -31,6 +31,7 @@ import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 @Component("cuba_LoginPasswordAuthenticationProvider")
 public class LoginPasswordAuthenticationProvider extends AbstractAuthenticationProvider implements Ordered {
@@ -53,6 +54,7 @@ public class LoginPasswordAuthenticationProvider extends AbstractAuthenticationP
         LoginPasswordCredentials loginAndPassword = (LoginPasswordCredentials) credentials;
 
         String login = loginAndPassword.getLogin();
+        Map<String, Object> params = loginAndPassword.getParams();
 
         Locale credentialsLocale = loginAndPassword.getLocale() == null ?
                 messages.getTools().getDefaultLocale() : loginAndPassword.getLocale();
@@ -64,7 +66,7 @@ public class LoginPasswordAuthenticationProvider extends AbstractAuthenticationP
 
         checkUserCredentials(credentials);
 
-        User user = loadUser(login);
+        User user = loadUser(login, params);
         if (user == null) {
             throw new LoginException(getInvalidCredentialsMessage(login, credentialsLocale));
         }

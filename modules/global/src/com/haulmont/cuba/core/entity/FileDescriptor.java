@@ -31,7 +31,7 @@ import java.util.Date;
 @Table(name = "SYS_FILE")
 @NamePattern("%s (%s)|name,createDate,extension")
 @SystemLevel
-public class FileDescriptor extends StandardEntity {
+public class FileDescriptor extends StandardEntity implements TenantEntity {
 
     private static final long serialVersionUID = 564683944299730504L;
 
@@ -46,6 +46,9 @@ public class FileDescriptor extends StandardEntity {
 
     @Column(name = "CREATE_DATE")
     private Date createDate;
+
+    @Column(name = "SYS_TENANT_ID")
+    protected String sysTenantId;
 
     /**
      * @return file uploading timestamp
@@ -89,6 +92,14 @@ public class FileDescriptor extends StandardEntity {
 
     public void setSize(Long size) {
         this.size = size;
+    }
+
+    public String getSysTenantId() {
+        return sysTenantId;
+    }
+
+    public void setSysTenantId(String sysTenantId) {
+        this.sysTenantId = sysTenantId;
     }
 
     /**

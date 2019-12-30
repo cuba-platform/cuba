@@ -39,7 +39,7 @@ import java.util.Date;
 @Entity(name = "sys$EntitySnapshot")
 @Table(name = "SYS_ENTITY_SNAPSHOT")
 @SystemLevel
-public class EntitySnapshot extends BaseUuidEntity implements Creatable {
+public class EntitySnapshot extends BaseUuidEntity implements Creatable, TenantEntity {
 
     private static final long serialVersionUID = 4835363127711391591L;
 
@@ -48,6 +48,9 @@ public class EntitySnapshot extends BaseUuidEntity implements Creatable {
 
     @Column(name = "CREATED_BY", length = 50)
     protected String createdBy;
+
+    @Column(name = "SYS_TENANT_ID")
+    protected String sysTenantId;
 
     @Column(name = "VIEW_XML")
     private String viewXml;
@@ -95,6 +98,14 @@ public class EntitySnapshot extends BaseUuidEntity implements Creatable {
         this.createdBy = createdBy;
     }
 
+    public String getSysTenantId() {
+        return sysTenantId;
+    }
+
+    public void setSysTenantId(String sysTenantId) {
+        this.sysTenantId = sysTenantId;
+    }
+
     public String getViewXml() {
         return viewXml;
     }
@@ -131,7 +142,7 @@ public class EntitySnapshot extends BaseUuidEntity implements Creatable {
     public String getLabel() {
         String name = "";
         if (author != null && StringUtils.isNotEmpty(this.author.getCaption())) {
-           name += this.author.getCaption() + " ";
+            name += this.author.getCaption() + " ";
         }
 
         Datatype datatype = Datatypes.getNN(Date.class);

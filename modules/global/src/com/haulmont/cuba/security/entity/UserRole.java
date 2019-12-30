@@ -26,7 +26,6 @@ import javax.persistence.*;
 
 /**
  * Link between users and roles.
- *
  */
 @Entity(name = "sec$UserRole")
 @Table(name = "SEC_USER_ROLE")
