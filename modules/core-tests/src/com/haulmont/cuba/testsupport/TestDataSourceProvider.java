@@ -27,7 +27,8 @@ public class TestDataSourceProvider extends DataSourceProvider {
 
     @Override
     protected DataSource getApplicationDataSource(String storeName) {
-        return applicationDataSources.get(storeName);
+        DataSource dataSource = applicationDataSources.get(storeName);
+        return dataSource != null ? dataSource : super.getApplicationDataSource(storeName);
     }
 
     public static void registerDataSource(String storeName, DataSource dataSource) {
