@@ -324,14 +324,16 @@ public class CollectionLoaderImpl<E extends Entity> implements CollectionLoader<
         this.delegate = delegate;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public Subscription addPreLoadListener(Consumer<PreLoadEvent> listener) {
-        return events.subscribe(PreLoadEvent.class, listener);
+    public Subscription addPreLoadListener(Consumer<PreLoadEvent<E>> listener) {
+        return events.subscribe(PreLoadEvent.class, (Consumer) listener);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public Subscription addPostLoadListener(Consumer<PostLoadEvent> listener) {
-        return events.subscribe(PostLoadEvent.class, listener);
+    public Subscription addPostLoadListener(Consumer<PostLoadEvent<E>> listener) {
+        return events.subscribe(PostLoadEvent.class,  (Consumer) listener);
     }
 
     @Override

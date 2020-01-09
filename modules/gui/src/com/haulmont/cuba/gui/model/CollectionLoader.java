@@ -166,7 +166,7 @@ public interface CollectionLoader<E extends Entity> extends BaseCollectionLoader
      * @param listener listener
      * @return subscription
      */
-    Subscription addPreLoadListener(Consumer<PreLoadEvent> listener);
+    Subscription addPreLoadListener(Consumer<PreLoadEvent<E>> listener);
 
     /**
      * Event sent after successful loading of entities, merging them into {@code DataContext} and setting to
@@ -214,5 +214,5 @@ public interface CollectionLoader<E extends Entity> extends BaseCollectionLoader
      * @param listener listener
      * @return subscription
      */
-    Subscription addPostLoadListener(Consumer<PostLoadEvent> listener);
+    Subscription addPostLoadListener(Consumer<PostLoadEvent<E>> listener);
 }
