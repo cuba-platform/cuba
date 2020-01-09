@@ -63,7 +63,7 @@ import java.util.*;
  *
  * <p>Usage of the common instance (time saving):</p>
  * <pre>
- *    {@literal @}ClassRule
+ *    {@literal @}RegisterExtension
  *     public static TestContainer cont = TestContainer.Common.INSTANCE;
  *
  *    {@literal @}Test
@@ -74,7 +74,7 @@ import java.util.*;
  *
  * <p>Usage of a specific instance:</p>
  * <pre>
- *    {@literal @}ClassRule
+ *    {@literal @}RegisterExtension
  *     public static TestContainer cont = new TestContainer()
  *              .setAppPropertiesFiles(Arrays.asList(
  *                  "com/haulmont/cuba/web-app.properties",

@@ -21,6 +21,7 @@ import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.LoggerContext;
 import com.google.common.base.Strings;
 import com.haulmont.bali.db.QueryRunner;
+import com.haulmont.bali.util.Dom4j;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Persistence;
@@ -33,6 +34,8 @@ import org.apache.commons.io.input.BOMInputStream;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringSubstitutor;
 import org.apache.commons.text.StringTokenizer;
+import org.dom4j.Document;
+import org.dom4j.Element;
 import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -55,7 +58,7 @@ import java.util.*;
  * Container for integration tests.
  * <p>Usage of the common instance (time saving):</p>
  * <pre>
- *    {@literal @}ClassRule
+ *    {@literal @}RegisterExtension
  *     public static TestContainer cont = TestContainer.Common.INSTANCE;
  *
  *    {@literal @}Test
@@ -66,7 +69,7 @@ import java.util.*;
  *
  * <p>Usage of a specific instance:</p>
  * <pre>
- *    {@literal @}ClassRule
+ *    {@literal @}RegisterExtension
  *     public static TestContainer cont = new TestContainer()
  *              .setAppPropertiesFiles(Arrays.asList(
  *                  "com/haulmont/cuba/app.properties",
@@ -115,6 +118,7 @@ public class TestContainer extends ExternalResource implements BeforeAllCallback
     protected String dbUrl;
     protected String dbUser;
     protected String dbPassword;
+    protected boolean isAutoConfigureDataSource;
 
     private ClassPathXmlApplicationContext springAppContext;
     private Map<String, String> appProperties = new HashMap<>();
@@ -265,6 +269,11 @@ public class TestContainer extends ExternalResource implements BeforeAllCallback
         return this;
     }
 
+    public TestContainer autoConfigureDataSource() {
+        this.isAutoConfigureDataSource = true;
+        return this;
+    }
+
     public ClassPathXmlApplicationContext getSpringAppContext() {
         return springAppContext;
     }
@@ -320,16 +329,45 @@ public class TestContainer extends ExternalResource implements BeforeAllCallback
     }
 
     protected void initDataSources() {
+        String dataSourceProviderType = DataSourceProvider.getDataSourceProviderType(Stores.MAIN);
+        if (isAutoConfigureDataSource) {
+            if (DataSourceProvider.isJndiDataSource(dataSourceProviderType)) {
+                File contextXmlFile = new File("modules/core/web/META-INF/context.xml");
+                if (!contextXmlFile.exists()) {
+                    contextXmlFile = new File("web/META-INF/context.xml");
+                }
+                if (!contextXmlFile.exists()) {
+                    throw new RuntimeException("Cannot find 'context.xml' file to read database connection properties. " +
+                            "You can set them explicitly in this method.");
+                }
+                Document contextXmlDoc = Dom4j.readDocument(contextXmlFile);
+                Element resourceElem = contextXmlDoc.getRootElement().element("Resource");
+
+                initDataSource(
+                        resourceElem.attributeValue("driverClassName"),
+                        resourceElem.attributeValue("url"),
+                        resourceElem.attributeValue("username"),
+                        resourceElem.attributeValue("password")
+                );
+            }
+        } else {
+            initDataSource(dbDriver, dbUrl, dbUser, dbPassword);
+        }
+    }
+
+    private void initDataSource(String dbDriver, String dbUrl, String dbUser, String dbPassword) {
         try {
             Class.forName(dbDriver);
             TestDataSource ds = new TestDataSource(dbUrl, dbUser, dbPassword);
+
             String jndiName = AppContext.getProperty("cuba.dataSourceJndiName");
             if (!Strings.isNullOrEmpty(jndiName)) {
-                TestContext.getInstance().bind(AppContext.getProperty("cuba.dataSourceJndiName"), ds);
+                TestContext.getInstance().bind(jndiName, ds);
             }
+
             TestDataSourceProvider.registerDataSource(Stores.MAIN, ds);
         } catch (ClassNotFoundException | NamingException e) {
-            throw new RuntimeException("Error initializing datasource", e);
+            throw new RuntimeException("Error initializing dataSource", e);
         }
     }
 

@@ -47,13 +47,13 @@ public class DataSourceProviderTest {
 
     @Test
     void testGetDataSourceProvider() {
-        String dsProvider = dataSourceProvider.getDataSourceProvider(Stores.MAIN);
+        String dsProvider = dataSourceProvider.getDataSourceProviderType(Stores.MAIN);
         Assertions.assertEquals("application", dsProvider);
     }
 
     @Test
     void testGetNonexistentDataSourceProvider() {
-        String dsProvider = dataSourceProvider.getDataSourceProvider("NONEXISTENT_STORE");
+        String dsProvider = dataSourceProvider.getDataSourceProviderType("NONEXISTENT_STORE");
         Assertions.assertNull(dsProvider);
     }
 

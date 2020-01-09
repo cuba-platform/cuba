@@ -39,7 +39,6 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Properties;
 import java.util.stream.Collectors;
 
 public class DataSourceProvider {
@@ -72,7 +71,7 @@ public class DataSourceProvider {
     private static Logger log = LoggerFactory.getLogger(DataSourceProvider.class);
 
     public DataSource getDataSource(String storeName, @Nullable String jndiName) {
-        String dataSourceProvider = getDataSourceProvider(storeName);
+        String dataSourceProvider = getDataSourceProviderType(storeName);
 
         if (isJndiDataSource(dataSourceProvider)) {
             return getJndiDataSource(jndiName);
@@ -84,7 +83,7 @@ public class DataSourceProvider {
     }
 
     public Connection getConnection(String storeName, @Nullable String jndiName) throws SQLException {
-        String dataSourceProvider = getDataSourceProvider(storeName);
+        String dataSourceProvider = getDataSourceProviderType(storeName);
 
         if (isJndiDataSource(dataSourceProvider)) {
             return getJndiDataSource(jndiName).getConnection();
@@ -261,18 +260,18 @@ public class DataSourceProvider {
         }
     }
 
-    protected String getDataSourceProvider(String storeName) {
+    public static String getDataSourceProviderType(String storeName) {
         if (Stores.isMain(storeName)) {
             return AppContext.getProperty(DATA_SOURCE_PROVIDER_PROPERTY_NAME);
         }
         return AppContext.getProperty(DATA_SOURCE_PROVIDER_PROPERTY_NAME + "_" + storeName);
     }
 
-    protected boolean isApplicationDataSource(String dataSourceProvider) {
+    public static boolean isApplicationDataSource(String dataSourceProvider) {
         return APPLICATION.equals(dataSourceProvider);
     }
 
-    protected boolean isJndiDataSource(String dataSourceProvider) {
+    public static boolean isJndiDataSource(String dataSourceProvider) {
         return dataSourceProvider == null || JNDI.equals(dataSourceProvider);
     }
 }
