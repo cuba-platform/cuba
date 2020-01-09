@@ -17,4 +17,4 @@
 @NonNullApi
 package com.haulmont.cuba.gui.util;
 
-import com.haulmont.bali.annotations.NonNullApi;
+import org.springframework.lang.NonNullApi;

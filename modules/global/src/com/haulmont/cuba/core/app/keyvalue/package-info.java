@@ -17,4 +17,4 @@
 @NonNullApi
 package com.haulmont.cuba.core.app.keyvalue;
 
-import com.haulmont.bali.annotations.NonNullApi;
+import org.springframework.lang.NonNullApi;

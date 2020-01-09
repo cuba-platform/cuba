@@ -14,20 +14,7 @@
  * limitations under the License.
  */
 
-package com.haulmont.bali.annotations;
+@NonNullApi
+package com.haulmont.cuba.web.controllers;
 
-import javax.annotation.Nonnull;
-import javax.annotation.meta.TypeQualifierNickname;
-import javax.annotation.meta.When;
-import java.lang.annotation.*;
-
-/**
- * This annotation is useful mostly for overriding a {@link NonNullApi} package-level annotation in type parameters.
- */
-@Documented
-@TypeQualifierNickname
-@Nonnull(when = When.UNKNOWN)
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE_USE)
-public @interface NullableApi {
-}
+import org.springframework.lang.NonNullApi;

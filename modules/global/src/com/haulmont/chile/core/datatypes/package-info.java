@@ -17,4 +17,4 @@
 @NonNullApi
 package com.haulmont.chile.core.datatypes;
 
-import com.haulmont.bali.annotations.NonNullApi;
+import org.springframework.lang.NonNullApi;
