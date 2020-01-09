@@ -1010,6 +1010,7 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
          * @param columnId id of the DataGrid column
          * @return style name or null to apply the default
          */
+        @Nullable
         String getStyleName(E entity, String columnId);
     }
 
@@ -3040,6 +3041,7 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
         /**
          * @return the style provider that is used for generating styles for cells
          */
+        @Nullable
         Function<E, String> getStyleProvider();
 
         /**
