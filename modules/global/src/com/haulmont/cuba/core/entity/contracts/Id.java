@@ -18,6 +18,7 @@ package com.haulmont.cuba.core.entity.contracts;
 
 import com.haulmont.cuba.core.entity.Entity;
 
+import javax.annotation.Nullable;
 import java.io.Serializable;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
@@ -64,6 +65,17 @@ public final class Id<T extends Entity<K>, K> implements Serializable {
         @SuppressWarnings("unchecked")
         Class<T> entityClass = (Class<T>) entity.getClass();
         return new Id<>(entity.getId(), entityClass);
+    }
+
+    /**
+     * @param entity entity instance, can be null
+     * @param <K>    type of entity key
+     * @param <T>    entity type
+     * @return Id of the passed entity or null
+     */
+    @Nullable
+    public static <T extends Entity<K>,K> Id<T,K> ofNullable(@Nullable T entity) {
+        return entity == null ? null : Id.of(entity);
     }
 
     /**
