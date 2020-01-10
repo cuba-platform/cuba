@@ -281,6 +281,12 @@ public class FetchGroupManager {
                     List<FetchGroupField> selfRefs = refFields.stream()
                             .filter(f -> isTransitiveSelfReference(refField, f, Range.Cardinality.ONE_TO_MANY, refField.metaProperty.getRange().asClass()))
                             .collect(Collectors.toList());
+                    //check if {E} is same as b
+                    if (!selfRefs.isEmpty()) {
+                        selfRefs.addAll(refFields.stream()
+                                .filter(f -> isTransitiveSelfReference(refField, f, Range.Cardinality.MANY_TO_ONE, metaClass))
+                                .collect(Collectors.toList()));
+                    }
                     for (FetchGroupField selfRef : selfRefs) {
                         batchFields.remove(selfRef);
                         batchFields.remove(refField);
