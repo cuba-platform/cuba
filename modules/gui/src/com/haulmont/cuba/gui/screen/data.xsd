@@ -150,7 +150,7 @@
     </xs:complexType>
 
     <xs:complexType name="conditionType">
-        <xs:choice>
+        <xs:choice minOccurs="0">
             <xs:element name="and" type="logicalConditionType"/>
             <xs:element name="or" type="logicalConditionType"/>
             <xs:any namespace="##other" minOccurs="1" maxOccurs="unbounded"/>

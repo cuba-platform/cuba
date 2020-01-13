@@ -2076,7 +2076,7 @@
         <xs:complexContent>
             <xs:extension base="baseComponent">
                 <xs:sequence>
-                    <xs:choice>
+                    <xs:choice minOccurs="0">
                         <xs:element name="actions" nillable="true" minOccurs="0">
                             <xs:complexType>
                                 <xs:sequence>
