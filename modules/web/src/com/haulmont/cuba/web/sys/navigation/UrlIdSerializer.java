@@ -17,6 +17,7 @@
 package com.haulmont.cuba.web.sys.navigation;
 
 import com.haulmont.bali.util.URLEncodeUtils;
+import com.haulmont.cuba.core.entity.IdProxy;
 import com.haulmont.cuba.web.sys.WebUrlRouting;
 
 import javax.annotation.Nonnull;
@@ -63,6 +64,12 @@ public final class UrlIdSerializer {
 
         } else if (UUID.class == idClass) {
             serialized = CrockfordUuidEncoder.encode(((UUID) id));
+        } else if (IdProxy.class == idClass) {
+            Number dbId = ((IdProxy<? extends Number>) id).get();
+            if (dbId == null) {
+                throw new IllegalArgumentException("Id cannot be null");
+            }
+            return serializeId(dbId);
         } else {
             throw new IllegalArgumentException(
                     String.format("Unable to serialize id '%s' of type '%s'", id, idClass));
