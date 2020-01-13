@@ -17,7 +17,9 @@
 
 package com.haulmont.cuba.web.gui.components.mainwindow;
 
-import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.core.global.MetadataTools;
+import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.Dialogs;
 import com.haulmont.cuba.gui.components.mainwindow.UserIndicator;
 import com.haulmont.cuba.security.app.UserManagementService;
@@ -40,15 +42,18 @@ import java.util.function.Function;
 
 import static com.haulmont.cuba.gui.ComponentsHelper.getScreenContext;
 import static com.vaadin.server.Sizeable.Unit;
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
 public class WebUserIndicator extends WebAbstractComponent<com.vaadin.ui.CssLayout> implements UserIndicator {
 
     protected static final String USER_INDICATOR_STYLENAME = "c-userindicator";
 
+    protected final Function<? super User, String> DEFAULT_USER_NAME_FORMATTER = this::getDefaultUserCaption;
+
     protected Label userNameLabel;
     protected CubaComboBox<User> userComboBox;
 
-    protected Function<? super User, String> userNameFormatter;
+    protected Function<? super User, String> userNameFormatter = DEFAULT_USER_NAME_FORMATTER;
 
     protected MetadataTools metadataTools;
 
@@ -168,11 +173,13 @@ public class WebUserIndicator extends WebAbstractComponent<com.vaadin.ui.CssLayo
     }
 
     protected String getSubstitutedUserCaption(User user) {
-        if (userNameFormatter != null) {
-            return userNameFormatter.apply(user);
-        } else {
-            return metadataTools.getInstanceName(user);
-        }
+        return userNameFormatter.apply(user);
+    }
+
+    protected String getDefaultUserCaption(User user) {
+        return isNotEmpty(user.getName())
+                ? user.getName()
+                : metadataTools.getInstanceName(user);
     }
 
     protected List<UserSubstitution> getUserSubstitutions() {

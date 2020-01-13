@@ -16,6 +16,7 @@
 
 package com.haulmont.cuba.web.app.main;
 
+import com.haulmont.cuba.core.global.ClientType;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Events;
 import com.haulmont.cuba.core.global.FtsConfigHelper;
@@ -23,26 +24,28 @@ import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.Route;
 import com.haulmont.cuba.gui.ScreenTools;
 import com.haulmont.cuba.gui.Screens;
-import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.Image;
-import com.haulmont.cuba.gui.components.ThemeResource;
-import com.haulmont.cuba.gui.components.Window;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.dev.LayoutAnalyzerContextMenuProvider;
 import com.haulmont.cuba.gui.components.mainwindow.*;
 import com.haulmont.cuba.gui.events.UserRemovedEvent;
 import com.haulmont.cuba.gui.events.UserSubstitutionsChangedEvent;
+import com.haulmont.cuba.gui.screen.OpenMode;
 import com.haulmont.cuba.gui.screen.Screen;
 import com.haulmont.cuba.gui.screen.Subscribe;
 import com.haulmont.cuba.gui.screen.UiController;
 import com.haulmont.cuba.gui.screen.UiControllerUtils;
 import com.haulmont.cuba.gui.screen.UiDescriptor;
+import com.haulmont.cuba.security.app.UserSettingService;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.WebConfig;
+import com.vaadin.server.WebBrowser;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.annotation.Order;
 
 import javax.annotation.Nullable;
+
+import static com.haulmont.cuba.gui.ComponentsHelper.setStyleName;
 
 /**
  * Base class for a controller of application Main screen.
@@ -51,6 +54,9 @@ import javax.annotation.Nullable;
 @UiDescriptor("main-screen.xml")
 @UiController("main")
 public class MainScreen extends Screen implements Window.HasWorkArea, Window.HasUserIndicator {
+
+    public static final String SIDEMENU_COLLAPSED_STATE = "sidemenuCollapsed";
+    public static final String SIDEMENU_COLLAPSED_STYLENAME = "collapsed";
 
     protected static final String APP_LOGO_IMAGE = "application.logoImage";
 
@@ -112,6 +118,47 @@ public class MainScreen extends Screen implements Window.HasWorkArea, Window.Has
         if (menu != null) {
             ((Component.Focusable) menu).focus();
         }
+
+        initCollapsibleMenu();
+    }
+
+    protected void initCollapsibleMenu() {
+        Component sideMenuContainer = getWindow().getComponent("sideMenuContainer");
+        if (sideMenuContainer instanceof CssLayout) {
+            if (isMobileDevice()) {
+                setSideMenuCollapsed(true);
+            } else {
+                String menuCollapsedSetting = getBeanLocator()
+                        .get(UserSettingService.class)
+                        .loadSetting(ClientType.WEB, SIDEMENU_COLLAPSED_STATE);
+
+                boolean menuCollapsed = Boolean.parseBoolean(menuCollapsedSetting);
+
+                setSideMenuCollapsed(menuCollapsed);
+            }
+
+            initCollapseMenuControls();
+        }
+    }
+
+    protected void initCollapseMenuControls() {
+        Button collapseMenuButton = getCollapseMenuButton();
+        if (collapseMenuButton != null) {
+            collapseMenuButton.addClickListener(event ->
+                    setSideMenuCollapsed(!isMenuCollapsed()));
+        }
+
+        Button settingsButton = getSettingsButton();
+        if (settingsButton != null) {
+            settingsButton.addClickListener(event ->
+                    openSettingsScreen());
+        }
+
+        Button loginButton = getLoginButton();
+        if (loginButton != null) {
+            loginButton.addClickListener(event ->
+                    openLoginScreen());
+        }
     }
 
     protected void initTitleBar() {
@@ -150,6 +197,11 @@ public class MainScreen extends Screen implements Window.HasWorkArea, Window.Has
                 .openDefaultScreen(screens);
     }
 
+    @Subscribe
+    public void onAfterDetach(AfterDetachEvent event) {
+        saveSideMenuState();
+    }
+
     @Nullable
     @Override
     public AppWorkArea getWorkArea() {
@@ -160,6 +212,21 @@ public class MainScreen extends Screen implements Window.HasWorkArea, Window.Has
     @Override
     public UserIndicator getUserIndicator() {
         return (UserIndicator) getWindow().getComponent("userIndicator");
+    }
+
+    @Nullable
+    protected Button getCollapseMenuButton() {
+        return (Button) getWindow().getComponent("collapseMenuButton");
+    }
+
+    @Nullable
+    protected Button getSettingsButton() {
+        return (Button) getWindow().getComponent("settingsButton");
+    }
+
+    @Nullable
+    protected Button getLoginButton() {
+        return (Button) getWindow().getComponent("loginButton");
     }
 
     @Nullable
@@ -187,8 +254,68 @@ public class MainScreen extends Screen implements Window.HasWorkArea, Window.Has
         return getWindow().getComponent("titleBar");
     }
 
-    @Nullable
-    protected UserActionsButton getUserActionsButton() {
-        return (UserActionsButton) getWindow().getComponent("userActionsButton");
+    protected void openLoginScreen() {
+        String loginScreenId = getBeanLocator().get(Configuration.class)
+                .getConfig(WebConfig.class)
+                .getLoginScreenId();
+
+        UiControllerUtils.getScreenContext(this)
+                .getScreens()
+                .create(loginScreenId, OpenMode.ROOT)
+                .show();
+    }
+
+    protected void openSettingsScreen() {
+        UiControllerUtils.getScreenContext(this)
+                .getScreens()
+                .create("settings", OpenMode.NEW_TAB)
+                .show();
+    }
+
+    protected void setSideMenuCollapsed(boolean collapsed) {
+        Component sideMenuContainer = getWindow().getComponent("sideMenuContainer");
+        CssLayout sideMenuPanel = (CssLayout) getWindow().getComponent("sideMenuPanel");
+        Button collapseMenuButton = getCollapseMenuButton();
+
+        setStyleName(sideMenuContainer, SIDEMENU_COLLAPSED_STYLENAME, collapsed);
+        setStyleName(sideMenuPanel, SIDEMENU_COLLAPSED_STYLENAME, collapsed);
+
+        if (collapseMenuButton != null) {
+            Messages messages = getBeanLocator().get(Messages.class);
+            if (collapsed) {
+                collapseMenuButton.setCaption(messages.getMainMessage("menuExpandGlyph"));
+                collapseMenuButton.setDescription(messages.getMainMessage("sideMenuExpand"));
+            } else {
+                collapseMenuButton.setCaption(messages.getMainMessage("menuCollapseGlyph"));
+                collapseMenuButton.setDescription(messages.getMainMessage("sideMenuCollapse"));
+            }
+        }
+    }
+
+    protected boolean isMenuCollapsed() {
+        CssLayout sideMenuPanel = (CssLayout) getWindow().getComponent("sideMenuPanel");
+        return sideMenuPanel != null
+                && sideMenuPanel.getStyleName().contains(SIDEMENU_COLLAPSED_STYLENAME);
+    }
+
+    protected void saveSideMenuState() {
+        CssLayout sideMenuPanel = (CssLayout) getWindow().getComponent("sideMenuPanel");
+        if (sideMenuPanel != null) {
+            boolean collapsed = sideMenuPanel.getStyleName().contains(SIDEMENU_COLLAPSED_STYLENAME);
+
+            UserSettingService userSettings = getBeanLocator()
+                    .get(UserSettingService.class);
+
+            userSettings.saveSetting(ClientType.WEB, SIDEMENU_COLLAPSED_STATE, String.valueOf(collapsed));
+        }
+    }
+
+    protected boolean isMobileDevice() {
+        WebBrowser browser = AppUI.getCurrent()
+                .getPage()
+                .getWebBrowser();
+
+        return browser.getScreenWidth() < 500
+                || browser.getScreenHeight() < 800;
     }
 }

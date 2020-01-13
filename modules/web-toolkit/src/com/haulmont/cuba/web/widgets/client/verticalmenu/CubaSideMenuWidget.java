@@ -459,12 +459,15 @@ public class CubaSideMenuWidget extends FocusableFlowPanel
         protected CubaSideMenuWidget menu;
 
         protected String id;
+        protected Icon icon;
+        protected String caption;
         protected String description;
         protected boolean focused;
         protected boolean selected;
 
         protected SpanElement badgeElement;
         protected SpanElement captionElement;
+        protected Element thumbnailElement;
 
         protected MenuContainerWidget subMenu;
 
@@ -472,6 +475,8 @@ public class CubaSideMenuWidget extends FocusableFlowPanel
                               String caption, boolean captionAsHtml) {
             this.menu = menu;
             this.id = id;
+            this.icon = icon;
+            this.caption = caption;
 
             setElement(Document.get().createDivElement());
 
@@ -493,7 +498,50 @@ public class CubaSideMenuWidget extends FocusableFlowPanel
                 wrapElement.appendChild(icon.getElement());
             }
 
-            captionElement = Document.get().createSpanElement();
+            captionElement = createCaptionElement(caption, captionAsHtml);
+            wrapElement.appendChild(captionElement);
+
+            badgeElement = createBadgeElement();
+
+            getElement().appendChild(wrapElement);
+
+            addDomHandler(this, ClickEvent.getType());
+
+            addAttachHandler(event -> {
+                if (isAttached() && isRootItem()) {
+                    addThumbnail();
+                }
+            });
+        }
+
+        protected void addThumbnail() {
+            thumbnailElement = createThumbnailElement(icon, caption);
+
+            getElement().getFirstChildElement()
+                    .insertFirst(thumbnailElement);
+        }
+
+        protected boolean isRootItem() {
+            Element parentElement = getElement().getParentElement();
+
+            return parentElement != null && parentElement.hasClassName(CLASS_NAME);
+        }
+
+        protected Element createThumbnailElement(Icon icon, String caption) {
+            Element thumbnailElement;
+            if (icon != null) {
+                thumbnailElement = (Element) icon.getElement().cloneNode(true);
+                thumbnailElement.setClassName(getStylePrimaryName() + "-thumbnail-icon");
+            } else {
+                thumbnailElement = Document.get().createSpanElement();
+                thumbnailElement.setClassName(getStylePrimaryName() + "-thumbnail");
+                thumbnailElement.setInnerHTML(caption.substring(0, 1));
+            }
+            return thumbnailElement;
+        }
+
+        protected SpanElement createCaptionElement(String caption, boolean captionAsHtml) {
+            SpanElement captionElement = Document.get().createSpanElement();
             captionElement.setClassName(getStylePrimaryName() + "-caption");
             if (caption != null) {
                 if (captionAsHtml) {
@@ -502,15 +550,13 @@ public class CubaSideMenuWidget extends FocusableFlowPanel
                     captionElement.setInnerText(caption);
                 }
             }
+            return captionElement;
+        }
 
-            badgeElement = Document.get().createSpanElement();
+        protected SpanElement createBadgeElement() {
+            SpanElement badgeElement = Document.get().createSpanElement();
             badgeElement.setClassName(getStylePrimaryName() + "-badge");
-
-            wrapElement.appendChild(captionElement);
-
-            getElement().appendChild(wrapElement);
-
-            addDomHandler(this, ClickEvent.getType());
+            return badgeElement;
         }
 
         public void setFocused(boolean focused) {

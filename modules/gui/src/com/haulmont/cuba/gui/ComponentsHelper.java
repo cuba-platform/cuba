@@ -793,4 +793,27 @@ public abstract class ComponentsHelper {
         }
         return null;
     }
+
+    /**
+     * Null-safe helper analog of {@link Component#addStyleName(String)} and {@link Component#removeStyleName(String)}
+     * <p>
+     * Adds or removes a style name. Multiple styles can be specified as a space-separated list of style names.
+     * <p>
+     * If the {@code add} parameter is true, the style name is added to the component.
+     * If the {@code add} parameter is false, the style name is removed from the component.
+     *
+     * @param component component
+     * @param styleName style name to add or remove
+     * @param add       add style name, or remove
+     */
+    public static void setStyleName(@Nullable Component component, String styleName, boolean add) {
+        if (component == null) {
+            return;
+        }
+        if (add) {
+            component.addStyleName(styleName);
+        } else {
+            component.removeStyleName(styleName);
+        }
+    }
 }

@@ -282,6 +282,7 @@ $cuba-sidemenu-userindicator-font-weight: $v-font-weight !default;
     }
     color: $font-color;
     font-size: $cuba-sidemenu-title-font-size;
+    line-height: $cuba-sidemenu-title-font-size * 1.4;
     font-weight: $cuba-sidemenu-title-font-weight;
 
     text-shadow: valo-text-shadow($font-color: $font-color, $background-color: $v-selection-color);
@@ -294,6 +295,7 @@ $cuba-sidemenu-userindicator-font-weight: $v-font-weight !default;
   }
 
   .#{$primary-stylename} {
+    overflow-x: hidden;
     outline: 0;
 
     color: valo-font-color($bg, 0.7);
@@ -317,9 +319,9 @@ $cuba-sidemenu-userindicator-font-weight: $v-font-weight !default;
   .#{$primary-stylename}-item {
     @include valo-menu-item-style($bg);
 
-    .v-ch & span.v-icon {
+    span.v-icon {
       -webkit-mask-image: none;
-      color: valo-font-color($bg, 0.7);
+      mask-image: none;
     }
 
     .#{$primary-stylename}-item-caption {
@@ -339,6 +341,18 @@ $cuba-sidemenu-userindicator-font-weight: $v-font-weight !default;
     .v-icon {
       font-size: 1.2em;
     }
+  }
+
+  .#{$primary-stylename}-item-thumbnail,
+  .#{$primary-stylename}-item-thumbnail-icon {
+    display: none;
+    vertical-align: middle;
+  }
+
+  .#{$primary-stylename}-item-thumbnail-icon {
+    font-family: FontAwesome;
+    font-size: 1.2em;
+    font-weight: 400;
   }
 
   .#{$primary-stylename}-item-header {
@@ -634,9 +648,9 @@ $cuba-sidemenu-userindicator-font-weight: $v-font-weight !default;
     .#{$primary-stylename}-item {
       @include valo-menu-item-style;
 
-      .v-ch & span.v-icon {
+      span.v-icon {
+        mask-image: none;
         -webkit-mask-image: none;
-        color: valo-font-color($bg, 0.5);
       }
 
       font-weight: $cuba-sidemenu-item-font-weight;

@@ -78,9 +78,31 @@ $cuba-menubar-height: $v-unit-size !default;
  * @group menubar
  */
 $cuba-menubar-lineheight: $cuba-menubar-height - 2px !default;
+/**
+ * Defines whether SideMenu layout is collapsible
+ * @group sidemenu
+ */
+$cuba-sidemenu-layout-collapse-enabled: true !default;
+/**
+ * The width of collapsed SideMenu panel.
+ * @group sidemenu
+ */
+$cuba-sidemenu-layout-collapsed-width: 40px !default;
+/**
+ * The width of expanded SideMenu panel.
+ * @group sidemenu
+ */
+$cuba-sidemenu-layout-expanded-width: 250px !default;
+/**
+ * The time of SideMenu panel animation in seconds.
+ * @group sidemenu
+ */
+$cuba-sidemenu-layout-collapse-animation-time: .3s !default;
 
 // Application Window styles
 @mixin cuba-application-window {
+  @include cuba-sidemenu-layout-collapsible();
+
   .v-tabsheet.c-main-tabsheet {
     & > .v-tabsheet-tabcontainer {
       padding-top: round($v-unit-size/6);
@@ -258,5 +280,291 @@ $cuba-menubar-lineheight: $cuba-menubar-height - 2px !default;
 
   .c-window-layout {
     min-height: 0;
+  }
+}
+
+// SideMenu Layout styles
+@mixin cuba-sidemenu-layout-collapsible {
+
+  .c-sidemenu-layout.v-csslayout {
+    display: flex;
+
+    // Have to override explicit width to make collapsing work correctly
+    .c-main-tabsheet > .v-tabsheet-content,
+    .c-main-tabsheet > .v-tabsheet-content > .v-tabsheet-tabsheetpanel,
+    .c-main-tabsheet > .v-tabsheet-content > .v-tabsheet-tabsheetpanel > .v-scrollable {
+      width: 100% !important;
+    }
+
+    .c-workarea {
+      flex-grow: 1;
+      flex-shrink: 1;
+    }
+
+    .c-sidemenu-container {
+      flex-shrink: 0;
+
+      width: $cuba-sidemenu-layout-expanded-width;
+      @if $v-animations-enabled {
+        transition: width $cuba-sidemenu-layout-collapse-animation-time cubic-bezier(.25, .1, .24, 1);
+      }
+    }
+
+    .c-sidemenu-container.collapsed {
+      width: $cuba-sidemenu-layout-collapsed-width;
+    }
+
+    .c-sidemenu-panel {
+      position: fixed;
+      z-index: 10;
+
+      flex-grow: 1;
+
+      display: flex;
+      flex-direction: column;
+
+      overflow: hidden;
+
+      width: $cuba-sidemenu-layout-expanded-width;
+      @if $v-animations-enabled {
+        transition: width $cuba-sidemenu-layout-collapse-animation-time cubic-bezier(.25, .1, .24, 1);
+      }
+
+      @include cuba-sidemenu-collapsed(false);
+    }
+
+    .c-sidemenu-panel > * {
+      flex-shrink: 0;
+    }
+
+    .c-sidemenu-panel > .c-sidemenu {
+      flex-grow: 1;
+      flex-shrink: 1;
+    }
+
+    .c-sidemenu-panel.collapsed {
+      @if $cuba-sidemenu-layout-collapse-enabled {
+        width: $cuba-sidemenu-layout-collapsed-width !important;
+        @include cuba-sidemenu-collapsed(true);
+      }
+    }
+
+    .c-sidemenu-panel.collapsed:hover {
+      @if $cuba-sidemenu-layout-collapse-enabled {
+        width: $cuba-sidemenu-layout-expanded-width !important;
+        @include cuba-sidemenu-collapsed(false);
+      }
+    }
+
+    .c-sidemenu-title {
+      display: flex;
+      flex-wrap: nowrap;
+      align-items: center;
+
+      height: $cuba-sidemenu-layout-collapsed-width;
+      padding: 0 round($v-unit-size / 3);
+
+      text-align: left;
+    }
+
+    .c-app-title {
+      width: $cuba-sidemenu-layout-expanded-width -
+        3 * $v-layout-spacing-horizontal -
+        round($cuba-sidemenu-layout-collapsed-width / 2);
+
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .c-app-icon {
+      height: round($cuba-sidemenu-layout-collapsed-width / 2);
+      width: round($cuba-sidemenu-layout-collapsed-width / 2);
+
+      margin-right: $v-layout-spacing-horizontal;
+    }
+
+    .c-sidemenu > .c-sidemenu-item-header {
+      width: 100%;
+    }
+
+    .c-sidemenu-controls {
+      display: flex;
+      align-items: center;
+
+      overflow: hidden;
+
+      height: $cuba-sidemenu-layout-collapsed-width;
+      background-color: #3b3b3b;
+
+      & > * {
+        flex-shrink: 0;
+
+        border-radius: 0;
+      }
+    }
+
+    .c-sidemenu-collapse-button {
+      $bg-color: #2b2b2b;
+
+      width: $cuba-sidemenu-layout-collapsed-width;
+      height: $cuba-sidemenu-layout-collapsed-width;
+      margin-right: auto;
+      padding: 0;
+
+      font-size: 2em;
+      color: valo-font-color($bg-color, 0.40);
+
+      border: none;
+      border-radius: 0;
+      background: $bg-color;
+      box-shadow: none;
+
+      &:hover {
+        color: $cuba-menubar-menuitem-text-selected-color;
+      }
+
+      &::before {
+        height: 100%;
+      }
+
+      &::after {
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+      }
+
+      @if $cuba-sidemenu-layout-collapse-enabled == false {
+        display: none;
+      }
+    }
+
+    .c-userindicator {
+      width: $cuba-sidemenu-layout-expanded-width - 3 * $cuba-sidemenu-layout-collapsed-width;
+      padding: 0 $v-layout-spacing-horizontal;
+
+      font-size: 1.1em;
+      text-align: center;
+
+      & > .v-label {
+        width: 100%;
+        overflow: hidden;
+        text-align: center;
+      }
+    }
+
+    .c-settings-button,
+    .c-logout-button,
+    .c-login-button {
+      width: $cuba-sidemenu-layout-collapsed-width;
+      height: $cuba-sidemenu-layout-collapsed-width;
+
+      color: $cuba-menubar-text-color;
+
+      background: none;
+      border: none;
+      box-shadow: none;
+
+      &::after {
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+      }
+
+      &:hover {
+        color: $cuba-menubar-menuitem-text-selected-color;
+      }
+    }
+
+    .c-settings-button,
+    .c-logout-button {
+      display: none;
+    }
+
+    .c-logout-button,
+    .c-login-button {
+      margin-left: auto;
+    }
+
+    // show settings and logout button only when user indicator is visible i.e. when user is authenticated
+    .c-userindicator ~ .c-settings-button,
+    .c-userindicator ~ .c-logout-button {
+      display: block;
+    }
+
+    .c-userindicator ~ .c-login-button {
+      display: none;
+    }
+  }
+}
+
+// Collapsible SideMenu layout style
+@mixin cuba-sidemenu-collapsed($collapsed: false) {
+  @if $collapsed {
+    .c-sidemenu {
+      overflow-y: hidden;
+    }
+
+    .c-sidemenu > .c-sidemenu-item {
+      padding: 0;
+
+      .c-sidemenu-item-wrap {
+        width: $cuba-sidemenu-layout-collapsed-width;
+        text-align: center;
+      }
+
+      .c-sidemenu-item-caption,
+      .v-icon {
+        display: none;
+      }
+
+      .c-sidemenu-item-thumbnail,
+      .c-sidemenu-item-thumbnail-icon {
+        display: inline-block;
+      }
+    }
+
+    .c-sidemenu-submenu.c-sidemenu-submenu-open {
+      max-height: 0;
+      overflow: hidden;
+      opacity: 0;
+
+      @if $v-animations-enabled {
+        @include transition (max-height $cuba-sidemenu-layout-collapse-animation-time ease-in-out);
+      }
+    }
+  } @else {
+    .c-sidemenu {
+      overflow-y: auto;
+    }
+
+    .c-sidemenu > .c-sidemenu-item {
+      padding: 0 $v-unit-size 0 round($v-unit-size / 2);
+
+      .c-sidemenu-item-wrap {
+        width: 100%;
+        text-align: left;
+      }
+
+      .c-sidemenu-item-caption,
+      .v-icon {
+        display: inline-block;
+      }
+
+      .c-sidemenu-item-thumbnail,
+      .c-sidemenu-item-thumbnail-icon {
+        display: none;
+      }
+    }
+
+    .c-sidemenu-submenu.c-sidemenu-submenu-open {
+      max-height: 2000px;
+      opacity: 1;
+
+      @if $v-animations-enabled {
+        @include transition (max-height .9s ease-in-out);
+      }
+    }
   }
 }

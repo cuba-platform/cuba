@@ -18,59 +18,60 @@
         caption="mainMsg://application.caption">
 
     <layout>
-        <hbox id="horizontalWrap"
-              expand="workArea"
-              stylename="c-sidemenu-layout"
-              height="100%"
-              width="100%">
-            <vbox id="sideMenuPanel"
-                  spacing="true"
-                  stylename="c-sidemenu-panel"
-                  expand="sideMenu"
-                  width="250px"
-                  height="100%"
-                  margin="false,false,true,false">
-                <hbox id="appTitleBox"
-                      spacing="true"
-                      stylename="c-sidemenu-title"
-                      width="100%">
-                    <label id="appTitleLabel"
-                           align="MIDDLE_CENTER"
-                           value="mainMsg://application.logoLabel"/>
-                </hbox>
-                <image id="logoImage"
-                       stylename="c-app-icon"
-                       align="MIDDLE_CENTER"
-                       scaleMode="SCALE_DOWN"/>
-                <hbox id="userInfoBox"
-                      align="MIDDLE_CENTER"
-                      spacing="true"
-                      margin="true"
-                      expand="userIndicator"
-                      width="100%">
-                    <userIndicator id="userIndicator"
-                                   align="MIDDLE_CENTER"/>
-                    <hbox id="userInfoButtonsBox"
-                          align="MIDDLE_RIGHT"
-                          spacing="true">
-                        <newWindowButton id="newWindowButton"
-                                         description="mainMsg://newWindowBtnDescription"
-                                         icon="app/images/new-window.png"/>
-                        <userActionsButton id="userActionsButton"/>
-                    </hbox>
-                </hbox>
-                <timeZoneIndicator id="timeZoneIndicator"
-                                   align="MIDDLE_CENTER"/>
-                <sideMenu id="sideMenu"
-                          width="100%"/>
-                <ftsField id="ftsField"
-                          width="100%"/>
-            </vbox>
+        <cssLayout id="horizontalWrap"
+                   stylename="c-sidemenu-layout"
+                   height="100%"
+                   width="100%">
+            <cssLayout id="sideMenuContainer"
+                       height="100%"
+                       stylename="c-sidemenu-container">
+                <cssLayout id="sideMenuPanel"
+                           stylename="c-sidemenu-panel">
+                    <cssLayout id="appTitleBox"
+                               stylename="c-sidemenu-title"
+                               width="100%">
+                        <image id="logoImage"
+                               stylename="c-app-icon"
+                               scaleMode="SCALE_DOWN"/>
+                        <label id="appTitleLabel"
+                               stylename="c-app-title"
+                               value="mainMsg://application.logoLabel"/>
+                    </cssLayout>
+                    <timeZoneIndicator id="timeZoneIndicator"
+                                       align="MIDDLE_CENTER"/>
+                    <sideMenu id="sideMenu"
+                              width="100%"/>
+                    <ftsField id="ftsField"
+                              width="100%"/>
+                    <cssLayout id="controlBox"
+                               stylename="c-sidemenu-controls"
+                               width="100%">
+                        <button id="collapseMenuButton"
+                                caption="mainMsg://menuCollapseGlyph"
+                                description="mainMsg://sideMenuCollapse"
+                                stylename="c-sidemenu-collapse-button"/>
+                        <userIndicator id="userIndicator"
+                                       align="MIDDLE_CENTER"/>
+                        <button id="settingsButton"
+                                icon="GEAR"
+                                description="mainMsg://settings"
+                                stylename="c-settings-button"/>
+                        <logoutButton id="logoutButton"
+                                      icon="SIGN_OUT"
+                                      description="msg://logoutBtnDescription"/>
+                        <button id="loginButton"
+                                icon="SIGN_IN"
+                                description="msg://loginBtnDescription"
+                                stylename="c-login-button"/>
+                    </cssLayout>
+                </cssLayout>
+            </cssLayout>
             <workArea id="workArea"
+                      stylename="c-workarea"
                       height="100%">
                 <initialLayout spacing="true" margin="true">
                 </initialLayout>
             </workArea>
-        </hbox>
+        </cssLayout>
     </layout>
 </window>
