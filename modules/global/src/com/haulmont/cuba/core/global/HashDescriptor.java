@@ -17,6 +17,8 @@
 
 package com.haulmont.cuba.core.global;
 
+import javax.annotation.Nullable;
+
 /**
  * Container for password hash and salt.
  *
@@ -26,7 +28,7 @@ public class HashDescriptor {
 
     private final String salt;
 
-    public HashDescriptor(String hash, String salt) {
+    public HashDescriptor(String hash, @Nullable String salt) {
         this.hash = hash;
         this.salt = salt;
     }
@@ -35,6 +37,7 @@ public class HashDescriptor {
         return hash;
     }
 
+    @Nullable
     public String getSalt() {
         return salt;
     }

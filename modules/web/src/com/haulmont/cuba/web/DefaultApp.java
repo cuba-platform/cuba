@@ -38,6 +38,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Nullable;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
@@ -193,7 +194,7 @@ public class DefaultApp extends App {
         }
     }
 
-    protected void publishAppLoggedOutEvent(UserSession previousSession) {
+    protected void publishAppLoggedOutEvent(@Nullable UserSession previousSession) {
         AppLoggedOutEvent event = new AppLoggedOutEvent(this, previousSession);
         events.publish(event);
 

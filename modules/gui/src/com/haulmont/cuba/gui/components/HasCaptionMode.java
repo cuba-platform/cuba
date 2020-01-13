@@ -19,6 +19,7 @@ package com.haulmont.cuba.gui.components;
 import com.haulmont.cuba.gui.components.compatibility.LegacyCaptionAdapter;
 import org.apache.commons.lang3.StringUtils;
 
+import javax.annotation.Nullable;
 import java.util.function.Function;
 
 /**
@@ -37,6 +38,7 @@ public interface HasCaptionMode {
      * @deprecated use {@link HasOptionCaptionProvider#getOptionCaptionProvider()} instead
      */
     @Deprecated
+    @Nullable
     default CaptionMode getCaptionMode() {
         Function provider = ((HasOptionCaptionProvider) this).getOptionCaptionProvider();
 
@@ -55,7 +57,7 @@ public interface HasCaptionMode {
      * @deprecated use {@link HasOptionCaptionProvider#setOptionCaptionProvider(Function)} instead
      */
     @Deprecated
-    default void setCaptionMode(CaptionMode captionMode) {
+    default void setCaptionMode(@Nullable CaptionMode captionMode) {
         Function provider = ((HasOptionCaptionProvider) this).getOptionCaptionProvider();
 
         String captionProperty = null;
@@ -77,6 +79,7 @@ public interface HasCaptionMode {
      * @deprecated use {@link HasOptionCaptionProvider#getOptionCaptionProvider()} instead
      */
     @Deprecated
+    @Nullable
     default String getCaptionProperty() {
         Function provider = ((HasOptionCaptionProvider) this).getOptionCaptionProvider();
 

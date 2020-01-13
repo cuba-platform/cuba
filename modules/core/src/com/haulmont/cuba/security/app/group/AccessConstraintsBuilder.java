@@ -27,6 +27,7 @@ import com.haulmont.cuba.security.group.*;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.*;
 import java.util.function.Predicate;
@@ -76,7 +77,7 @@ public class AccessConstraintsBuilder {
      * @param join   JPQL join clause
      * @return current instance of the builder
      */
-    public AccessConstraintsBuilder withJpql(Class<? extends Entity> target, String where, String join) {
+    public AccessConstraintsBuilder withJpql(Class<? extends Entity> target, String where, @Nullable String join) {
         MetaClass metaClass = extendedEntities.getOriginalOrThisMetaClass(metadata.getClassNN(target));
 
         BasicJpqlAccessConstraint constraint = new BasicJpqlAccessConstraint();

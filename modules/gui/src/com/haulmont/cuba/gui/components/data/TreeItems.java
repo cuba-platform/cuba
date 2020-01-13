@@ -35,7 +35,8 @@ public interface TreeItems<T> extends DataUnit {
      * @param itemId the item id
      * @return the item by the given id
      */
-    T getItem(@Nullable Object itemId);
+    @Nullable
+    T getItem(Object itemId);
 
     /**
      * @return the stream of all items
@@ -63,7 +64,7 @@ public interface TreeItems<T> extends DataUnit {
      * @param item the item to obtain children or {@code null} to get root items
      * @return children of the given item
      */
-    Stream<T> getChildren(T item);
+    Stream<T> getChildren(@Nullable T item);
 
     /**
      * @param item the item to check
@@ -118,7 +119,7 @@ public interface TreeItems<T> extends DataUnit {
         private final Object prevValue;
         private final Object value;
 
-        public ValueChangeEvent(TreeItems<T> source, T item, String property, Object prevValue, Object value) {
+        public ValueChangeEvent(TreeItems<T> source, T item, String property, @Nullable Object prevValue, @Nullable Object value) {
             super(source);
             this.item = item;
             this.property = property;

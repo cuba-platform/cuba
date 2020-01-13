@@ -124,7 +124,7 @@ public class KeyValueInstanceLoaderImpl implements KeyValueInstanceLoader {
         return !preLoadEvent.isLoadPrevented();
     }
 
-    protected void sendPostLoadEvent(KeyValueEntity entity) {
+    protected void sendPostLoadEvent(@Nullable KeyValueEntity entity) {
         PostLoadEvent postLoadEvent = new PostLoadEvent(this, entity);
         events.publish(PostLoadEvent.class, postLoadEvent);
     }

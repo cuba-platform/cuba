@@ -61,7 +61,7 @@ public class DynamicAttributesEntity implements Entity {
 
     @Override
     public String getInstanceName() {
-        return null;
+        return "";
     }
 
     @Override

@@ -176,6 +176,7 @@ public interface WindowManager extends Screens {
             return instance;
         }
 
+        @Nullable
         public String getHeightString() {
             if (height == null) {
                 return null;
@@ -198,6 +199,7 @@ public interface WindowManager extends Screens {
             return width;
         }
 
+        @Nullable
         public String getWidthString() {
             if (width == null) {
                 return null;

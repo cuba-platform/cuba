@@ -30,6 +30,7 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.io.IOException;
 import java.io.InputStream;
@@ -205,6 +206,8 @@ public class XmlInheritanceProcessor {
 
     protected interface ElementTargetLocator {
         boolean suitableFor(Element extElem);
+
+        @Nullable
         Element locate(Element resultParentElem, Element extElem);
     }
 

@@ -54,7 +54,7 @@ public interface DynamicAttributesManagerAPI {
     CategoryAttribute getAttributeForMetaClass(MetaClass metaClass, String code);
 
     @Nullable
-    DynamicAttributesCache getCacheIfNewer(Date clientCacheDate);
+    DynamicAttributesCache getCacheIfNewer(@Nullable Date clientCacheDate);
 
     /**
      *  Fetch dynamic attributes from database for each entity

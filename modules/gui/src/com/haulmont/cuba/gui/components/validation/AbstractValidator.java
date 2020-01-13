@@ -12,6 +12,7 @@ import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import groovy.text.GStringTemplateEngine;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.Map;
@@ -44,7 +45,7 @@ public abstract class AbstractValidator<T> implements Consumer<T> {
      *
      * @param message error message
      */
-    public void setMessage(String message) {
+    public void setMessage(@Nullable String message) {
         this.message = message;
     }
 

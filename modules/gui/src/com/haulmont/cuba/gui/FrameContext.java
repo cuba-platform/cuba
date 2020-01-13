@@ -20,6 +20,7 @@ import com.haulmont.bali.events.Subscription;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.HasValue;
 
+import javax.annotation.Nullable;
 import java.util.Map;
 import java.util.function.Consumer;
 
@@ -56,6 +57,7 @@ public interface FrameContext {
      * <br>If the value is an {@link com.haulmont.chile.core.datatypes.impl.EnumClass} and remaining
      * property path is "id", return EnumClass.getId() value.
      */
+    @Nullable
     <T> T getValue(String property);
 
     /**

@@ -23,6 +23,7 @@ import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.KeyCombination;
 
+import javax.annotation.Nullable;
 import java.beans.PropertyChangeEvent;
 import java.util.*;
 import java.util.function.Consumer;
@@ -82,6 +83,7 @@ public class WebFrameActionsHolder implements com.vaadin.event.Action.Handler {
         }
     }
 
+    @Nullable
     protected com.vaadin.event.ShortcutAction createShortcutAction(com.haulmont.cuba.gui.components.Action action) {
         KeyCombination keyCombination = action.getShortcutCombination();
         if (keyCombination != null) {
@@ -95,7 +97,7 @@ public class WebFrameActionsHolder implements com.vaadin.event.Action.Handler {
         }
     }
 
-    public void removeAction(Action action) {
+    public void removeAction(@Nullable Action action) {
         if (actionList.remove(action)) {
             actions.inverse().remove(action);
 
@@ -105,7 +107,7 @@ public class WebFrameActionsHolder implements com.vaadin.event.Action.Handler {
         }
     }
 
-    public void removeAction(String id) {
+    public void removeAction(@Nullable String id) {
         Action action = getAction(id);
         if (action != null) {
             removeAction(action);
@@ -121,7 +123,8 @@ public class WebFrameActionsHolder implements com.vaadin.event.Action.Handler {
         return Collections.unmodifiableCollection(actionList);
     }
 
-    public Action getAction(String id) {
+    @Nullable
+    public Action getAction(@Nullable String id) {
         for (Action action : getActions()) {
             if (Objects.equals(action.getId(), id)) {
                 return action;

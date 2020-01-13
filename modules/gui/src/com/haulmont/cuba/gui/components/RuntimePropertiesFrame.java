@@ -29,13 +29,17 @@ import com.haulmont.cuba.core.global.DevelopmentException;
 import com.haulmont.cuba.core.global.Security;
 import com.haulmont.cuba.gui.UiComponents;
 import com.haulmont.cuba.gui.WindowParam;
-import com.haulmont.cuba.gui.components.validators.*;
+import com.haulmont.cuba.gui.components.validators.DateValidator;
+import com.haulmont.cuba.gui.components.validators.DoubleValidator;
+import com.haulmont.cuba.gui.components.validators.IntegerValidator;
+import com.haulmont.cuba.gui.components.validators.LongValidator;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.RuntimePropsDatasource;
 import com.haulmont.cuba.gui.dynamicattributes.DynamicAttributesGuiTools;
 import org.apache.commons.lang3.StringUtils;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -267,6 +271,7 @@ public class RuntimePropertiesFrame extends AbstractFrame {
         }
     }
 
+    @Nullable
     protected Collection<Consumer<?>> getValidator(MetaProperty property) {
         Collection<Consumer<?>> validators = null;
         CategoryAttribute attribute = DynamicAttributesUtils.getCategoryAttribute(property);

@@ -22,6 +22,7 @@ import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.security.entity.User;
 
+import javax.annotation.Nullable;
 import java.util.Date;
 
 /**
@@ -38,7 +39,15 @@ public class LockInfo extends BaseUuidEntity {
     private final Date since;
     private final User user;
 
-    public LockInfo(User user, String entityName, String entityId) {
+    LockInfo() {
+        this.entityName = null;
+        this.entityId = null;
+        TimeSource timeSource = AppBeans.get(TimeSource.NAME);
+        this.since = timeSource.currentTimestamp();
+        this.user = null;
+    }
+
+    public LockInfo(@Nullable User user, String entityName, String entityId) {
         this.entityName = entityName;
         this.entityId = entityId;
         TimeSource timeSource = AppBeans.get(TimeSource.NAME);

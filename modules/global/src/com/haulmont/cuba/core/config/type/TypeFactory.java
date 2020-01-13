@@ -46,6 +46,7 @@ public abstract class TypeFactory {
      * @param string The string value.
      * @return An instance of the type.
      */
+    @Nullable
     public abstract Object build(String string);
 
     /**

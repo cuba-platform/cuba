@@ -17,7 +17,9 @@
 package com.haulmont.cuba.gui.components.data.table;
 
 import com.haulmont.bali.events.Subscription;
+import com.haulmont.bali.events.sys.VoidSubscription;
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.data.BindingState;
 import com.haulmont.cuba.gui.components.data.TableItems;
@@ -76,7 +78,8 @@ public class EmptyTableItems<E extends Entity> implements EntityTableItems<E>, T
 
     @Override
     public Class<?> getType(Object propertyId) {
-        return null;
+        MetaPropertyPath propertyPath = (MetaPropertyPath) propertyId;
+        return propertyPath.getRangeJavaClass();
     }
 
     @Override
@@ -96,17 +99,17 @@ public class EmptyTableItems<E extends Entity> implements EntityTableItems<E>, T
 
     @Override
     public Subscription addValueChangeListener(Consumer<ValueChangeEvent<E>> listener) {
-        return null;
+        return VoidSubscription.INSTANCE;
     }
 
     @Override
     public Subscription addItemSetChangeListener(Consumer<ItemSetChangeEvent<E>> listener) {
-        return null;
+        return VoidSubscription.INSTANCE;
     }
 
     @Override
     public Subscription addSelectedItemChangeListener(Consumer<SelectedItemChangeEvent<E>> listener) {
-        return null;
+        return VoidSubscription.INSTANCE;
     }
 
     @Override
@@ -121,7 +124,7 @@ public class EmptyTableItems<E extends Entity> implements EntityTableItems<E>, T
 
     @Override
     public Subscription addStateChangeListener(Consumer<StateChangeEvent> listener) {
-        return null;
+        return VoidSubscription.INSTANCE;
     }
 
     @Override

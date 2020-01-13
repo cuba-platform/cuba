@@ -120,7 +120,7 @@ public class DatasourceDataGridItems<E extends Entity<K>, K>
 
     @SuppressWarnings("unchecked")
     @Override
-    public E getItem(@Nullable Object itemId) {
+    public E getItem(Object itemId) {
         return datasource.getItem((K) itemId);
     }
 

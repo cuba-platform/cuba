@@ -138,7 +138,7 @@ public abstract class AbstractInstance implements Instance {
     }
 
     @Override
-    public void setValue(String name, Object value) {
+    public void setValue(String name, @Nullable Object value) {
         setValue(name, value, true);
     }
 

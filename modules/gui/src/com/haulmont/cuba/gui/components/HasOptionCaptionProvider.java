@@ -16,6 +16,7 @@
 
 package com.haulmont.cuba.gui.components;
 
+import javax.annotation.Nullable;
 import java.util.function.Function;
 
 /**
@@ -31,10 +32,11 @@ public interface HasOptionCaptionProvider<I> extends Component {
      *
      * @param optionCaptionProvider caption provider for options
      */
-    void setOptionCaptionProvider(Function<? super I, String> optionCaptionProvider);
+    void setOptionCaptionProvider(@Nullable Function<? super I, String> optionCaptionProvider);
 
     /**
      * @return caption provider for options
      */
+    @Nullable
     Function<? super I, String> getOptionCaptionProvider();
 }

@@ -77,5 +77,5 @@ public interface ExportDisplay {
     void setShowNewWindow(boolean showNewWindow);
 
     /** INTERNAL. Don't call from application code. */
-    void setFrame(Frame frame);
+    void setFrame(@Nullable Frame frame);
 }

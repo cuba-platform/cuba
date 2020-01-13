@@ -171,7 +171,7 @@ public interface AppMenu extends Component.BelongToFrame, Component.Focusable {
          *
          * @param icon icon name
          */
-        void setIcon(String icon);
+        void setIcon(@Nullable String icon);
 
         /**
          * @return true if item will be sent to the client side
@@ -207,7 +207,7 @@ public interface AppMenu extends Component.BelongToFrame, Component.Focusable {
          *
          * @param command item command
          */
-        void setCommand(Consumer<AppMenu.MenuItem> command);
+        void setCommand(@Nullable Consumer<AppMenu.MenuItem> command);
 
         /**
          * Add menu item to the end of children list.

@@ -455,6 +455,7 @@ public interface Table<E extends Entity>
          * @param property column identifier if getting a style for a cell, or null if getting the style for a row
          * @return style name or null to apply the default
          */
+        @Nullable
         String getStyleName(E entity, @Nullable String property);
     }
 
@@ -560,6 +561,7 @@ public interface Table<E extends Entity>
          * @param entity an entity instance represented by the current row
          * @return a component to be rendered inside of the cell
          */
+        @Nullable
         Component generateCell(E entity);
     }
 
@@ -1373,7 +1375,7 @@ public interface Table<E extends Entity>
 
         @Override
         public <X> X unwrap(Class<X> internalComponentClass) {
-            return null;
+            throw new UnsupportedOperationException();
         }
 
         @Nullable
@@ -1388,7 +1390,7 @@ public interface Table<E extends Entity>
 
         @Override
         public <X> X unwrapComposition(Class<X> internalCompositionClass) {
-            return null;
+            throw new UnsupportedOperationException();
         }
 
         @Nullable

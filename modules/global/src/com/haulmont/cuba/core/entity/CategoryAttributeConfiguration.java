@@ -25,6 +25,7 @@ import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.DataManager;
 
+import javax.annotation.Nullable;
 import javax.persistence.Id;
 import javax.persistence.Transient;
 import java.math.BigDecimal;
@@ -285,6 +286,7 @@ public class CategoryAttributeConfiguration extends BaseGenericIdEntity<String> 
         return !Strings.isNullOrEmpty(recalculationScript);
     }
 
+    @Nullable
     public CategoryAttributeOptionsLoaderType getOptionsLoaderType() {
         return CategoryAttributeOptionsLoaderType.fromId(optionsLoaderType);
     }

@@ -19,6 +19,8 @@ package com.haulmont.cuba.core.global;
 
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
 
+import javax.annotation.Nullable;
+
 public enum SendingStatus implements EnumClass<Integer> {
     QUEUE(0),
     SENDING(100),
@@ -36,6 +38,7 @@ public enum SendingStatus implements EnumClass<Integer> {
         return id;
     }
 
+    @Nullable
     public static SendingStatus fromId(Integer id) {
         for (SendingStatus ss : SendingStatus.values()) {
             if (id.equals(ss.getId())) {

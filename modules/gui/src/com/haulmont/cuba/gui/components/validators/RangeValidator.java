@@ -70,7 +70,7 @@ public class RangeValidator implements Field.Validator {
         setMaxValue(getValueFromString(maxValueStr));
     }
 
-    public RangeValidator(String message, String messagesPack, Class<? extends Comparable> type, Comparable minValue, Comparable maxValue) {
+    public RangeValidator(@Nullable String message, @Nullable String messagesPack, Class<? extends Comparable> type, Comparable minValue, Comparable maxValue) {
         this.message = message;
         this.messagesPack = messagesPack;
         this.type = type;

@@ -18,6 +18,7 @@ package com.haulmont.cuba.gui.components;
 
 import com.haulmont.cuba.gui.components.compatibility.OptionsStyleProviderAdapter;
 
+import javax.annotation.Nullable;
 import java.util.function.Function;
 
 /**
@@ -44,6 +45,7 @@ public interface HasOptionsStyleProvider<I> extends Component {
      */
     @SuppressWarnings("unchecked")
     @Deprecated
+    @Nullable
     default OptionsStyleProvider getOptionsStyleProvider() {
         Function<? super I, String> optionStyleProvider = getOptionStyleProvider();
 

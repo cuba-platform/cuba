@@ -436,7 +436,7 @@ public class WindowConfig {
         registerPrimaryEditor(windowInfo, primaryEditorAnnotation);
     }
 
-    protected void registerPrimaryEditor(WindowInfo windowInfo, Map<String, Object> primaryEditorAnnotation) {
+    protected void registerPrimaryEditor(WindowInfo windowInfo, @Nullable Map<String, Object> primaryEditorAnnotation) {
         if (primaryEditorAnnotation != null) {
             Class entityClass = (Class) primaryEditorAnnotation.get("value");
             if (entityClass != null) {
@@ -459,7 +459,7 @@ public class WindowConfig {
         registerPrimaryLookup(windowInfo, primaryEditorAnnotation);
     }
 
-    protected void registerPrimaryLookup(WindowInfo windowInfo, Map<String, Object> primaryEditorAnnotation) {
+    protected void registerPrimaryLookup(WindowInfo windowInfo, @Nullable Map<String, Object> primaryEditorAnnotation) {
         if (primaryEditorAnnotation != null) {
             Class entityClass = (Class) primaryEditorAnnotation.get("value");
             if (entityClass != null) {
@@ -691,7 +691,7 @@ public class WindowConfig {
         protected final Type type;
 
         public ResolvedWindowInfo(WindowInfo windowInfo, Type type, Class<? extends FrameOwner> controllerClass,
-                                  String template) {
+                                  @Nullable String template) {
             super(windowInfo.getId(), null, windowInfo.getDescriptor(),
                     windowInfo.getControllerClassName(), windowInfo.getRouteDefinition());
 

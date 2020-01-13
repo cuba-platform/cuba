@@ -28,6 +28,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 
 import static com.haulmont.bali.util.Preconditions.checkNotEmptyString;
@@ -52,6 +53,7 @@ public class FontAwesomeIconProvider implements IconProvider {
     @Inject
     protected ThemeConstantsManager themeConstantsManager;
 
+    @Nullable
     protected static Resource getIconNonCached(String iconName) {
         Resource resource = null;
 

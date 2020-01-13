@@ -27,6 +27,7 @@ import org.springframework.core.ResolvableType;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.NotThreadSafe;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -87,14 +88,14 @@ public class UiEventsMulticasterImpl implements UiEventsMulticaster {
         return ResolvableType.forInstance(event);
     }
 
-    protected Collection<ApplicationListener<?>> retrieveApplicationListeners(ResolvableType eventType, Class<?> sourceType) {
+    protected Collection<ApplicationListener<?>> retrieveApplicationListeners(ResolvableType eventType, @Nullable Class<?> sourceType) {
         return listeners.stream()
                 .filter(listener -> supportsEvent(listener, eventType, sourceType))
                 .sorted(AnnotationAwareOrderComparator.INSTANCE)
                 .collect(Collectors.toList());
     }
 
-    protected boolean supportsEvent(ApplicationListener<?> listener, ResolvableType eventType, Class<?> sourceType) {
+    protected boolean supportsEvent(ApplicationListener<?> listener, ResolvableType eventType, @Nullable Class<?> sourceType) {
         GenericApplicationListener smartListener = (listener instanceof GenericApplicationListener ?
                 (GenericApplicationListener) listener : new GenericApplicationListenerAdapter(listener));
         return (smartListener.supportsEventType(eventType) && smartListener.supportsSourceType(sourceType));

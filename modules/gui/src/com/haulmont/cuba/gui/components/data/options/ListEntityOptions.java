@@ -88,6 +88,8 @@ public class ListEntityOptions<E extends Entity> extends ListOptions<E> implemen
             List<E> itemsCollection = getItemsCollection();
             if (!itemsCollection.isEmpty()) {
                 metaClass = itemsCollection.get(0).getMetaClass();
+            } else {
+                throw new IllegalStateException("Unable to determine metaclass");
             }
         }
         return metaClass;

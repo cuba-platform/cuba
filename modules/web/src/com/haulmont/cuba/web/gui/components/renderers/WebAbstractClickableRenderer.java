@@ -34,7 +34,7 @@ public abstract class WebAbstractClickableRenderer<T extends Entity, V> extends 
     }
 
     public WebAbstractClickableRenderer(Consumer<DataGrid.RendererClickEvent<T>> listener) {
-        super(null);
+        super();
         this.listener = listener;
     }
 

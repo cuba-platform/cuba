@@ -136,6 +136,7 @@ public final class PermissionsUtils {
         }
     }
 
+    @Nullable
     private static PermissionType getPermissionType(Permissions permissions) {
         if (permissions instanceof EntityPermissions) {
             return PermissionType.ENTITY_OP;

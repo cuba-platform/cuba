@@ -22,6 +22,7 @@ import com.haulmont.cuba.core.global.ValueLoadContext;
 import com.haulmont.cuba.gui.screen.InstallSubject;
 import com.haulmont.cuba.gui.screen.Subscribe;
 
+import javax.annotation.Nullable;
 import java.util.EventObject;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -150,7 +151,7 @@ public interface KeyValueInstanceLoader extends DataLoader {
 
         private final KeyValueEntity loadedEntity;
 
-        public PostLoadEvent(KeyValueInstanceLoader loader, KeyValueEntity loadedEntity) {
+        public PostLoadEvent(KeyValueInstanceLoader loader, @Nullable KeyValueEntity loadedEntity) {
             super(loader);
             this.loadedEntity = loadedEntity;
         }
@@ -167,6 +168,7 @@ public interface KeyValueInstanceLoader extends DataLoader {
         /**
          * Returns the loaded entity instance.
          */
+        @Nullable
         public KeyValueEntity getLoadedEntity() {
             return loadedEntity;
         }

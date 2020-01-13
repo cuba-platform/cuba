@@ -386,7 +386,7 @@ public class EntitySerialization implements EntitySerializationAPI {
 
         protected MetaClass metaClass;
 
-        public EntityDeserializer(MetaClass metaClass, EntitySerializationOption... options) {
+        public EntityDeserializer(@Nullable MetaClass metaClass, EntitySerializationOption... options) {
             this.metaClass = metaClass;
         }
 
@@ -578,6 +578,7 @@ public class EntitySerialization implements EntitySerializationAPI {
 
         }
 
+        @Nullable
         protected Object readSimpleProperty(JsonElement valueElement, Datatype propertyType) {
             String value = valueElement.getAsString();
             if (value == null) return null;

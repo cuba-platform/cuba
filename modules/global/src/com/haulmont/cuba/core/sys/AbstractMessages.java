@@ -84,6 +84,7 @@ public abstract class AbstractMessages implements Messages {
 
     protected abstract Locale getUserLocale();
 
+    @Nullable
     protected abstract String searchRemotely(String pack, String key, Locale locale);
 
     @Inject

@@ -24,6 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Nullable;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collections;
@@ -126,7 +127,7 @@ public class UrlTools {
         }
     }
 
-    public NavigationState parseState(String uriFragment) {
+    public NavigationState parseState(@Nullable String uriFragment) {
         if (uriFragment == null || uriFragment.isEmpty()) {
             return NavigationState.EMPTY;
         }
@@ -165,6 +166,7 @@ public class UrlTools {
         return location;
     }
 
+    @Nullable
     protected NavigationState parseRootRoute(String uriFragment) {
         Matcher matcher = ROOT_ROUTE_PATTERN.matcher(uriFragment);
         if (!matcher.matches()) {
@@ -175,6 +177,7 @@ public class UrlTools {
         return new NavigationState(root, "", "", Collections.emptyMap());
     }
 
+    @Nullable
     protected NavigationState parseNestedRoute(String uriFragment) {
         Matcher matcher = NESTED_ROUTE_PATTERN.matcher(uriFragment);
         if (!matcher.matches()) {
@@ -196,6 +199,7 @@ public class UrlTools {
         return new NavigationState(root, stateMark, nestedRoute, Collections.emptyMap());
     }
 
+    @Nullable
     protected NavigationState parseParamsRoute(String uriFragment) {
         Matcher matcher = PARAMS_ROUTE_PATTERN.matcher(uriFragment);
         if (!matcher.matches()) {

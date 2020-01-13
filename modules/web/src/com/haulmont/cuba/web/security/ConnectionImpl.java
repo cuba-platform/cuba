@@ -223,7 +223,7 @@ public class ConnectionImpl implements Connection {
                         + credentialsClass.getName());
     }
 
-    protected void fireStateChangeListeners(UserSession previousSession, UserSession newSession) {
+    protected void fireStateChangeListeners(@Nullable UserSession previousSession, @Nullable UserSession newSession) {
         StateChangeEvent event = new StateChangeEvent(this, previousSession, newSession);
         eventHub.publish(StateChangeEvent.class, event);
     }
@@ -241,7 +241,7 @@ public class ConnectionImpl implements Connection {
         events.publish(new BeforeLoginEvent(credentials));
     }
 
-    protected void publishAfterLoginEvent(Credentials credentials, AuthenticationDetails authenticationDetails) {
+    protected void publishAfterLoginEvent(Credentials credentials, @Nullable AuthenticationDetails authenticationDetails) {
         events.publish(new AfterLoginEvent(credentials, authenticationDetails));
     }
 
@@ -254,11 +254,12 @@ public class ConnectionImpl implements Connection {
         events.publish(new UserSessionStartedEvent(this, credentials, authenticationDetails));
     }
 
+    @Nullable
     protected ClientUserSession getSessionInternal() {
         return (ClientUserSession) VaadinSession.getCurrent().getAttribute(UserSession.class);
     }
 
-    protected void setSessionInternal(ClientUserSession userSession) {
+    protected void setSessionInternal(@Nullable ClientUserSession userSession) {
         VaadinSession.getCurrent().setAttribute(UserSession.class, userSession);
         if (userSession != null) {
             AppContext.setSecurityContext(new SecurityContext(userSession));
@@ -309,7 +310,7 @@ public class ConnectionImpl implements Connection {
         events.publish(new UserSessionSubstitutedEvent(this, previousSession, session));
     }
 
-    protected void publishDisconnectedEvent(UserSession previousSession) {
+    protected void publishDisconnectedEvent(@Nullable UserSession previousSession) {
         events.publish(new UserDisconnectedEvent(this, previousSession));
     }
 

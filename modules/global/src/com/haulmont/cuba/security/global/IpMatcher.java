@@ -21,6 +21,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -85,6 +86,7 @@ public class IpMatcher {
         return true;
     }
 
+    @Nullable
     private static String[] ipv4(String ip) {
         String[] ipp = ip.split("\\.");
         if (ipp.length != 4) {
@@ -93,6 +95,7 @@ public class IpMatcher {
         return ipp;
     }
 
+    @Nullable
     private static String[] ipv6(String ip) {
         String[] ipp = ip.split(":");
         if (ipp.length != 8) {

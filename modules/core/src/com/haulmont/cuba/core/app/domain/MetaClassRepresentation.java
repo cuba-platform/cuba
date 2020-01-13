@@ -73,8 +73,7 @@ public class MetaClassRepresentation {
 
     public String getDescription() {
         MessageTools messageTools = AppBeans.get(MessageTools.NAME);
-        String result = messageTools.getEntityCaption(meta);
-        return result == null ? "" : result;
+        return messageTools.getEntityCaption(meta);
     }
 
     public Collection<MetaClassRepProperty> getProperties() {
@@ -124,8 +123,7 @@ public class MetaClassRepresentation {
 
         public String getDescription() {
             MessageTools messageTools = AppBeans.get(MessageTools.NAME);
-            String result = messageTools.getPropertyCaption(metaClass, property.getName());
-            return result == null ? "" : result;
+            return messageTools.getPropertyCaption(metaClass, property.getName());
         }
 
         public String getEnum() {

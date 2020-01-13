@@ -54,6 +54,7 @@ public interface Image extends ResourceView, HasValueSource<FileDescriptor> {
      * @deprecated Use {@link #getValueSource()} instead.
      */
     @Deprecated
+    @Nullable
     default Datasource getDatasource() {
         ValueSource<FileDescriptor> valueSource = getValueSource();
         return valueSource instanceof DatasourceValueSource ?

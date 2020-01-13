@@ -17,6 +17,7 @@
 package com.haulmont.cuba.gui.components.data.datagrid;
 
 import com.haulmont.bali.events.Subscription;
+import com.haulmont.bali.events.sys.VoidSubscription;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.data.BindingState;
@@ -41,11 +42,11 @@ public class EmptyDataGridItems<E extends Entity>
 
     @Override
     public Object getItemId(E item) {
-        return null;
+        return item.getId();
     }
 
     @Override
-    public E getItem(@Nullable Object itemId) {
+    public E getItem(Object itemId) {
         return null;
     }
 
@@ -93,17 +94,17 @@ public class EmptyDataGridItems<E extends Entity>
 
     @Override
     public Subscription addValueChangeListener(Consumer<ValueChangeEvent<E>> listener) {
-        return null;
+        return VoidSubscription.INSTANCE;
     }
 
     @Override
     public Subscription addItemSetChangeListener(Consumer<ItemSetChangeEvent<E>> listener) {
-        return null;
+        return VoidSubscription.INSTANCE;
     }
 
     @Override
     public Subscription addSelectedItemChangeListener(Consumer<SelectedItemChangeEvent<E>> listener) {
-        return null;
+        return VoidSubscription.INSTANCE;
     }
 
     @Override
@@ -118,7 +119,7 @@ public class EmptyDataGridItems<E extends Entity>
 
     @Override
     public Subscription addStateChangeListener(Consumer<StateChangeEvent> listener) {
-        return null;
+        return VoidSubscription.INSTANCE;
     }
 
     @Override

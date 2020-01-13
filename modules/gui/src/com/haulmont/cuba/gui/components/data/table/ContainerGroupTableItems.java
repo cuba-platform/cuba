@@ -110,7 +110,8 @@ public class ContainerGroupTableItems<E extends Entity<K>, K>
         }
     }
 
-    protected GroupInfo<MetaPropertyPath> groupItems(int propertyIndex, GroupInfo parent, List<GroupInfo> children,
+    @Nullable
+    protected GroupInfo<MetaPropertyPath> groupItems(int propertyIndex, @Nullable GroupInfo parent, List<GroupInfo> children,
                                                      E item, LinkedMap<MetaPropertyPath, Object> groupValues) {
         MetaPropertyPath property = (MetaPropertyPath) groupProperties[propertyIndex++];
         Object itemValue = getValueByProperty(item, property);
@@ -137,6 +138,7 @@ public class ContainerGroupTableItems<E extends Entity<K>, K>
         return groupInfo;
     }
 
+    @Nullable
     protected Object getValueByProperty(E item, MetaPropertyPath property) {
         Preconditions.checkNotNullArgument(item);
 

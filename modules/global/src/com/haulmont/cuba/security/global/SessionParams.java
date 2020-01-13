@@ -16,6 +16,8 @@
 
 package com.haulmont.cuba.security.global;
 
+import javax.annotation.Nullable;
+
 /**
  * List of parameters that could be passed in map when user session is being created
  */
@@ -35,6 +37,7 @@ public enum SessionParams {
         return id;
     }
 
+    @Nullable
     public static SessionParams fromId(String id) {
         for (SessionParams val : SessionParams.values()) {
             if (id.equals(val.getId())) {

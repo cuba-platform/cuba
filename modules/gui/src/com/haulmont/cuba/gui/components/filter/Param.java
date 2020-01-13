@@ -60,6 +60,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.persistence.TemporalType;
 import java.text.ParseException;
@@ -177,12 +178,12 @@ public class Param {
             return this;
         }
 
-        public Builder setEntityWhere(String entityWhere) {
+        public Builder setEntityWhere(@Nullable String entityWhere) {
             this.entityWhere = entityWhere;
             return this;
         }
 
-        public Builder setEntityView(String entityView) {
+        public Builder setEntityView(@Nullable String entityView) {
             this.entityView = entityView;
             return this;
         }
@@ -327,12 +328,12 @@ public class Param {
         return value;
     }
 
-    public void setValue(Object value) {
+    public void setValue(@Nullable Object value) {
         setValue(value, true);
     }
 
     @SuppressWarnings("unchecked")
-    protected void setValue(Object value, boolean updateEditComponent) {
+    protected void setValue(@Nullable Object value, boolean updateEditComponent) {
         if (!Objects.equals(value, this.value)) {
             Object prevValue = this.value;
 
@@ -370,7 +371,7 @@ public class Param {
         }
     }
 
-    public void setDefaultValue(Object defaultValue, boolean updateEditComponent) {
+    public void setDefaultValue(@Nullable Object defaultValue, boolean updateEditComponent) {
         this.defaultValue = defaultValue;
         if (value == null) {
             setValue(defaultValue, updateEditComponent);
@@ -412,6 +413,7 @@ public class Param {
         }
     }
 
+    @Nullable
     protected Object parseSingleValue(String text) {
         Object value;
         switch (type) {
@@ -550,7 +552,7 @@ public class Param {
      * @param valueProperty What value the editor will be connected with: current filter value or default one.
      * @return GUI component for condition parameter.
      */
-    protected Component createEditComponent(FilterDataContext context, ValueProperty valueProperty) {
+    protected Component createEditComponent(@Nullable FilterDataContext context, ValueProperty valueProperty) {
         Component component;
 
         switch (type) {
@@ -618,7 +620,7 @@ public class Param {
         return component;
     }
 
-    protected void _setValue(Object value, ValueProperty valueProperty) {
+    protected void _setValue(@Nullable Object value, ValueProperty valueProperty) {
         switch (valueProperty) {
             case VALUE:
                 setValue(value, false);
@@ -1054,16 +1056,18 @@ public class Param {
         protected final Object prevValue;
         protected final Object value;
 
-        public ParamValueChangedEvent(Param source, Object prevValue, Object value) {
+        public ParamValueChangedEvent(Param source, @Nullable Object prevValue, @Nullable Object value) {
             super(source);
             this.prevValue = prevValue;
             this.value = value;
         }
 
+        @Nullable
         public Object getPrevValue() {
             return prevValue;
         }
 
+        @Nullable
         public Object getValue() {
             return value;
         }

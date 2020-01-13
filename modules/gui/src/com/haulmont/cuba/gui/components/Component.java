@@ -58,6 +58,7 @@ public interface Component {
     String FULL_SIZE = "100%";
 
     /** Component ID as defined in {@code id} attribute */
+    @Nullable
     String getId();
     /** Set component ID */
     void setId(String id);
@@ -65,6 +66,7 @@ public interface Component {
     /**
      * @return parent of component.
      */
+    @Nullable
     Component getParent();
     /**
      * INTERNAL.<br>
@@ -74,7 +76,7 @@ public interface Component {
      *
      * @param parent Parent component
      */
-    void setParent(Component parent);
+    void setParent(@Nullable Component parent);
 
     /**
      * Is the component enabled?
@@ -251,6 +253,7 @@ public interface Component {
      *
      * @return current style name.
      */
+    @Nullable
     String getStyleName();
 
     /**
@@ -262,7 +265,7 @@ public interface Component {
      *
      * @param styleName one or more style names separated by space.
      * */
-    void setStyleName(String styleName);
+    void setStyleName(@Nullable String styleName);
 
     /**
      * Adds one or more style names to this component. Multiple styles can be
@@ -400,6 +403,7 @@ public interface Component {
         /**
          * @return the components description, used in tooltips
          */
+        @Nullable
         String getDescription();
 
         /**
@@ -407,7 +411,7 @@ public interface Component {
          *
          * @param description the new description to set
          */
-        void setDescription(String description);
+        void setDescription(@Nullable String description);
     }
 
     /**
@@ -417,6 +421,7 @@ public interface Component {
         /**
          * @return the caption of the component
          */
+        @Nullable
         String getCaption();
 
         /**
@@ -424,7 +429,7 @@ public interface Component {
          *
          * @param caption the new component's caption
          */
-        void setCaption(String caption);
+        void setCaption(@Nullable String caption);
     }
 
     /**
@@ -504,12 +509,13 @@ public interface Component {
         /**
          * Get icon source: "font-icon:ADD", "icons/myicon.png", "theme://createIcon", etc.
          */
+        @Nullable
         String getIcon();
 
         /**
          * Set an icon by its source: "font-icon:ADD", "icons/myicon.png", "theme://createIcon", etc.
          */
-        void setIcon(String icon);
+        void setIcon(@Nullable String icon);
 
         /**
          * Set an icon from an icon set.

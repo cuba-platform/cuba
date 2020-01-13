@@ -308,7 +308,7 @@ public class DataContextImpl implements DataContext {
         }
     }
 
-    protected void setPropertyValue(Entity entity, MetaProperty property, Object value) {
+    protected void setPropertyValue(Entity entity, MetaProperty property, @Nullable Object value) {
         if (!property.isReadOnly()) {
             entity.setValue(property.getName(), value);
         } else {

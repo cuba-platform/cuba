@@ -19,8 +19,10 @@ package com.haulmont.cuba.gui.model.impl;
 import com.haulmont.bali.events.Subscription;
 import com.haulmont.bali.events.sys.VoidSubscription;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.CommitContext;
 import com.haulmont.cuba.core.global.EntitySet;
+import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.gui.model.DataContext;
 
 import javax.annotation.Nullable;
@@ -80,7 +82,7 @@ public class NoopDataContext implements DataContext {
 
     @Override
     public <T extends Entity> T create(Class<T> entityClass) {
-        return null;
+        return AppBeans.get(Metadata.class).create(entityClass);
     }
 
     @Override
@@ -143,7 +145,7 @@ public class NoopDataContext implements DataContext {
 
     @Override
     public Function<CommitContext, Set<Entity>> getCommitDelegate() {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     @Override

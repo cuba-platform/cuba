@@ -272,7 +272,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
         }
     }
 
-    protected void addDynamicAttributes(Table component, MetaClass metaClass, Datasource ds, CollectionLoader collectionLoader,
+    protected void addDynamicAttributes(Table component, MetaClass metaClass, @Nullable Datasource ds, @Nullable CollectionLoader collectionLoader,
                                         List<Table.Column> availableColumns) {
         if (getMetadataTools().isPersistent(metaClass)) {
             String windowId = getWindowId(context);

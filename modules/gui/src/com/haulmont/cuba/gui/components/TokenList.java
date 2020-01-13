@@ -74,11 +74,12 @@ public interface TokenList<V extends Entity> extends Field<Collection<V>>,
      *
      * @param options field options
      */
-    void setOptions(Options<V> options);
+    void setOptions(@Nullable Options<V> options);
 
     /**
      * @return field options
      */
+    @Nullable
     Options<V> getOptions();
 
     /**
@@ -90,7 +91,7 @@ public interface TokenList<V extends Entity> extends Field<Collection<V>>,
      */
     @SuppressWarnings("unchecked")
     @Deprecated
-    default void setOptionsDatasource(CollectionDatasource datasource) {
+    default void setOptionsDatasource(@Nullable CollectionDatasource datasource) {
         setOptions(datasource == null ? null : new DatasourceOptions(datasource));
     }
 
@@ -100,6 +101,7 @@ public interface TokenList<V extends Entity> extends Field<Collection<V>>,
      * @deprecated use {@link TokenList#getOptions()} instead
      */
     @Deprecated
+    @Nullable
     default CollectionDatasource getOptionsDatasource() {
         Options<V> options = getOptions();
         if (options instanceof DatasourceOptions) {
@@ -184,6 +186,7 @@ public interface TokenList<V extends Entity> extends Field<Collection<V>>,
      * @deprecated use {@link TokenList#getOptions()} instead
      */
     @Deprecated
+    @Nullable
     default List getOptionsList() {
         Options<V> options = getOptions();
         if (options instanceof ListEntityOptions) {
@@ -207,6 +210,7 @@ public interface TokenList<V extends Entity> extends Field<Collection<V>>,
      */
     @SuppressWarnings("unchecked")
     @Deprecated
+    @Nullable
     default Map<String, ?> getOptionsMap() {
         Options options = getOptions();
         if (options instanceof MapEntityOptions) {

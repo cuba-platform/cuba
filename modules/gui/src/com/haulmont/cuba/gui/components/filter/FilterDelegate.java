@@ -123,6 +123,7 @@ public interface FilterDelegate {
 
     boolean isEditable();
 
+    @Nullable
     Object getParamValue(String paramName);
 
     void setParamValue(String paramName, Object value);

@@ -3193,6 +3193,7 @@ public class FilterDelegateImpl implements FilterDelegate {
             return null;
         }
 
+        @Nullable
         protected Button createActionBtn(String actionName, List<String> options) {
             if (!isActionAllowed(actionName)) {
                 return null;

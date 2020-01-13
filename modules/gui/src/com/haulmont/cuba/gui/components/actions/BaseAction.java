@@ -258,7 +258,7 @@ public class BaseAction extends AbstractAction implements Action.SecuredAction {
      * @param icon icon
      * @return current instance of action
      */
-    public BaseAction withIcon(String icon) {
+    public BaseAction withIcon(@Nullable String icon) {
         this.icon = icon;
         return this;
     }
@@ -269,7 +269,7 @@ public class BaseAction extends AbstractAction implements Action.SecuredAction {
      * @param shortcut shortcut
      * @return current instance of action
      */
-    public BaseAction withShortcut(String shortcut) {
+    public BaseAction withShortcut(@Nullable String shortcut) {
         if (shortcut != null) {
             this.shortcut = KeyCombination.create(shortcut);
         }

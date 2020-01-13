@@ -100,6 +100,7 @@ public abstract class AbstractAction implements Action {
         return caption == null ? getDefaultCaption() : caption;
     }
 
+    @Nullable
     protected String getDefaultCaption() {
         if (messages != null) {
             // legacy behaviour
@@ -147,7 +148,7 @@ public abstract class AbstractAction implements Action {
     }
 
     @Override
-    public void setShortcut(String shortcut) {
+    public void setShortcut(@Nullable String shortcut) {
         if (shortcut != null) {
             setShortcutCombination(KeyCombination.create(shortcut));
         } else {

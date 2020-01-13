@@ -16,6 +16,7 @@
  */
 package com.haulmont.bali.db;
 
+import javax.annotation.Nullable;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -37,5 +38,6 @@ public interface ResultSetHandler<T> {
      *
      * @throws SQLException if a database access error occurs
      */
+    @Nullable
     T handle(ResultSet rs) throws SQLException;
 }

@@ -47,7 +47,8 @@ public class ListEditorHelper {
         }
     }
 
-    public static String getValueCaption(Object v, ListEditor.ItemType itemType, TimeZone timeZone) {
+    @Nullable
+    public static String getValueCaption(@Nullable Object v, ListEditor.ItemType itemType, @Nullable TimeZone timeZone) {
         if (v == null)
             return null;
         switch (itemType) {

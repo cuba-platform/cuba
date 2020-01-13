@@ -265,7 +265,7 @@ public abstract class WebAbstractComponent<T extends com.vaadin.ui.Component>
     }
 
     @Override
-    public void setStyleName(String name) {
+    public void setStyleName(@Nullable String name) {
         getComposition().setStyleName(name);
     }
 

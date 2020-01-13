@@ -184,7 +184,7 @@ public class DynamicAttributesConditionFrame extends ConditionFrame<DynamicAttri
                 .setName(paramName)
                 .setJavaClass(paramJavaClass)
                 .setMetaClass(condition.getEntityMetaClass())
-                .setProperty(DynamicAttributesUtils.getMetaPropertyPath(null, attribute).getMetaProperty())
+                .setProperty(DynamicAttributesUtils.getMetaPropertyPath(condition.getEntityMetaClass(), attribute).getMetaProperty())
                 .setInExpr(condition.getInExpr())
                 .setRequired(condition.getRequired())
                 .setCategoryAttrId(attribute.getId())
@@ -194,7 +194,7 @@ public class DynamicAttributesConditionFrame extends ConditionFrame<DynamicAttri
         param.setDefaultValue(defaultValue);
 
         condition.setParam(param);
-        condition.setCategoryId(categoryLookup.getValue().getId());
+        condition.setCategoryId(Objects.requireNonNull(categoryLookup.getValue()).getId());
         condition.setCategoryAttributeId(attributeLookup.getValue().getId());
         condition.setIsCollection(BooleanUtils.isTrue(attributeLookup.getValue().getIsCollection()));
         condition.setLocCaption(attribute.getLocaleName());

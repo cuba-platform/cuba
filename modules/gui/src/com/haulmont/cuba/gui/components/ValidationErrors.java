@@ -30,7 +30,7 @@ public class ValidationErrors {
         public final Component component;
         public final String description;
 
-        public Item(Component component, String description) {
+        public Item(@Nullable Component component, String description) {
             this.component = component;
             this.description = description;
         }

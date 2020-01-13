@@ -289,6 +289,7 @@ public class ValidatorLoadFactory {
         return null;
     }
 
+    @Nullable
     protected String loadMessage(Element element, String messagePack) {
         String message = element.attributeValue("message");
         if (!Strings.isNullOrEmpty(message)) {

@@ -25,6 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.List;
 
@@ -55,6 +56,7 @@ public class IconResolverImpl implements IconResolver {
         return getResource(iconPath);
     }
 
+    @Nullable
     protected Resource getResource(String iconPath) {
         return iconProviders.stream()
                 .filter(p -> p.canProvide(iconPath))

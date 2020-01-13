@@ -223,7 +223,7 @@ public interface SideMenu extends Component.BelongToFrame, Component.Focusable {
          *
          * @param icon icon name
          */
-        void setIcon(String icon);
+        void setIcon(@Nullable String icon);
 
         /**
          * @return true if caption is inserted to DOM as HTML
@@ -308,7 +308,7 @@ public interface SideMenu extends Component.BelongToFrame, Component.Focusable {
          *
          * @param command item command
          */
-        void setCommand(Consumer<MenuItem> command);
+        void setCommand(@Nullable Consumer<MenuItem> command);
 
         /**
          * Add menu item to the end of children list.

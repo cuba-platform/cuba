@@ -84,7 +84,7 @@ public class WebHistory implements History {
 
         return now >= 0
                 ? history.get(now)
-                : null;
+                : NavigationState.EMPTY;
     }
 
     @Override

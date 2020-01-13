@@ -171,6 +171,7 @@ public abstract class BackgroundTask<T, V> {
      *
      * @return parameters map or null if parameters are not needed
      */
+    @Nullable
     public Map<String, Object> getParams() {
         return null;
     }

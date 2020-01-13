@@ -283,6 +283,7 @@ public class AppPropertiesLocator {
         return null;
     }
 
+    @Nullable
     protected String getDefaultValue(Method method) {
         Default defaultAnn = method.getAnnotation(Default.class);
         if (defaultAnn != null) {

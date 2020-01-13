@@ -26,6 +26,7 @@ import com.haulmont.cuba.gui.model.ScreenData;
 import com.haulmont.cuba.gui.screen.ScreenOptions;
 import org.dom4j.Element;
 
+import javax.annotation.Nullable;
 import java.util.Map;
 
 /**
@@ -45,7 +46,9 @@ public interface ComponentLoader<T extends Component> {
 
         ScreenData getScreenData();
 
+        @Nullable
         ComponentContext getParent();
+
         Frame getFrame();
 
         String getFullFrameId();

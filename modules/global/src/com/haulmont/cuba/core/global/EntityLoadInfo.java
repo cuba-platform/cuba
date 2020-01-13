@@ -51,11 +51,11 @@ public class EntityLoadInfo {
     private boolean newEntity;
     private boolean stringKey;
 
-    protected EntityLoadInfo(Object id, MetaClass metaClass, String viewName, boolean stringKey) {
+    protected EntityLoadInfo(Object id, MetaClass metaClass, @Nullable String viewName, boolean stringKey) {
         this(id, metaClass, viewName, stringKey, false);
     }
 
-    protected EntityLoadInfo(Object id, MetaClass metaClass, String viewName, boolean stringKey, boolean newEntity) {
+    protected EntityLoadInfo(Object id, MetaClass metaClass, @Nullable String viewName, boolean stringKey, boolean newEntity) {
         this.id = id;
         this.metaClass = metaClass;
         this.viewName = viewName;

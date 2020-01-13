@@ -15,6 +15,6 @@
  */
 
 @NonNullApi
-package com.haulmont.cuba.core.config;
+package com.haulmont.chile.core.datatypes.impl;
 
 import org.springframework.lang.NonNullApi;

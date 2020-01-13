@@ -25,6 +25,7 @@ import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nullable;
 import java.io.*;
 import java.util.UUID;
 import java.util.function.Supplier;
@@ -71,6 +72,7 @@ public class ByteArrayDataProvider implements ExportDataProvider {
         return file;
     }
 
+    @Nullable
     protected InputStream readFromTempStorage(File file) {
         try {
             return new FileInputStream(file);

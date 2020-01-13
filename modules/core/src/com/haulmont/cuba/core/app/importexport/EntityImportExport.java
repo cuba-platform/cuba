@@ -391,9 +391,9 @@ public class EntityImportExport implements EntityImportExportAPI {
 
     protected void importOneToManyCollectionAttribute(Entity srcEntity,
                                                       Entity dstEntity,
-                                                      SecurityState srcSecurityState,
+                                                      @Nullable SecurityState srcSecurityState,
                                                       EntityImportViewProperty viewProperty,
-                                                      View regularView,
+                                                      @Nullable View regularView,
                                                       CommitContext commitContext,
                                                       Collection<ReferenceInfo> referenceInfoList,
                                                       boolean optimisticLocking) {
@@ -667,7 +667,7 @@ public class EntityImportExport implements EntityImportExportAPI {
         return Collections.emptyList();
     }
 
-    protected Collection getFilteredIds(SecurityState securityState, String propertyName) {
+    protected Collection getFilteredIds(@Nullable SecurityState securityState, String propertyName) {
         if (securityState != null) {
             return Optional.ofNullable(BaseEntityInternalAccess.getFilteredData(securityState))
                     .map(v -> v.get(propertyName))

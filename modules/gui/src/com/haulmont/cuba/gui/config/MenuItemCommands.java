@@ -101,7 +101,7 @@ public class MenuItemCommands {
             return new BeanCommand(origin, item, item.getBean(), item.getBeanMethod(), params);
         }
 
-        return null;
+        throw new IllegalStateException("Unable to create menu command for " + item);
     }
 
     protected Map<String, Object> loadParams(MenuItem item) {

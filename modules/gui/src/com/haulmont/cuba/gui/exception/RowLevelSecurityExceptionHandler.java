@@ -51,7 +51,7 @@ public class RowLevelSecurityExceptionHandler extends AbstractGenericExceptionHa
         try {
             Messages messages = AppBeans.get(Messages.NAME);
             String userCaption = null;
-            String userMessage = null;
+            String userMessage = "";
 
             if (throwable != null) {
                 Throwable rootCause = ExceptionUtils.getRootCause(throwable);

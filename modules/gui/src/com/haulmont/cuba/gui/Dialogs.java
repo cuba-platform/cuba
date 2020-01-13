@@ -28,6 +28,7 @@ import com.haulmont.cuba.gui.components.inputdialog.InputDialogAction;
 import com.haulmont.cuba.gui.components.inputdialog.InputDialogAction.InputDialogActionPerformed;
 import com.haulmont.cuba.gui.screen.FrameOwner;
 
+import javax.annotation.Nullable;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -434,7 +435,7 @@ public interface Dialogs {
          * @param caption caption text
          * @return builder
          */
-        T withCaption(String caption);
+        T withCaption(@Nullable String caption);
         /**
          * @return caption text
          */
@@ -452,7 +453,7 @@ public interface Dialogs {
          * @param message message text
          * @return builder
          */
-        T withMessage(String message);
+        T withMessage(@Nullable String message);
         /**
          * @return message text
          */

@@ -507,6 +507,7 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
         }
     }
 
+    @Nullable
     protected String getIconPath(String icon) {
         if (icon == null || icon.isEmpty()) {
             return null;
@@ -568,6 +569,7 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
     }
 
     @Deprecated
+    @Nullable
     protected Consumer<?> getDefaultValidator(MetaProperty property) {
         Consumer<?> validator = null;
         if (property.getRange().isDatatype()) {
@@ -763,6 +765,7 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
         return shortcut;
     }
 
+    @Nullable
     protected String loadShortcutFromFQNConfig(String shortcut) {
         if (shortcut.contains("#")) {
             String[] splittedShortcut = shortcut.split("#");
@@ -802,6 +805,7 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
         return null;
     }
 
+    @Nullable
     protected String loadShortcutFromAlias(String shortcut) {
         if (shortcut.endsWith("_SHORTCUT}")) {
             String alias = shortcut.substring(2, shortcut.length() - 1);
@@ -817,6 +821,7 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
         return null;
     }
 
+    @Nullable
     protected String loadShortcutFromConfig(String shortcut) {
         if (shortcut.contains(".")) {
             String shortcutPropertyKey = shortcut.substring(2, shortcut.length() - 1);
@@ -892,6 +897,7 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
         return null;
     }
 
+    @Nullable
     protected Function<?, String> loadFormatter(Element element) {
         Element formatterElement = element.element("formatter");
         if (formatterElement != null) {
@@ -1020,6 +1026,7 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
         return Optional.empty();
     }
 
+    @Nullable
     protected String getParentDataContainer(Element element) {
         Element parent = element.getParent();
         while (parent != null) {

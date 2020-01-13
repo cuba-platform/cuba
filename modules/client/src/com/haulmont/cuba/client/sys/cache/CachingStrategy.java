@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.client.sys.cache;
 
+import javax.annotation.Nullable;
 import java.util.concurrent.locks.ReadWriteLock;
 
 /**
@@ -38,6 +39,7 @@ public interface CachingStrategy {
     /**
      * Refresh cached object
      */
+    @Nullable
     Object loadObject();
 
     /**

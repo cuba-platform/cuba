@@ -57,7 +57,7 @@ public interface Instance extends Serializable {
      * @param name  attribute name according to JavaBeans notation
      * @param value attribute value
      */
-    void setValue(String name, Object value);
+    void setValue(String name, @Nullable Object value);
 
     /**
      * Get an attribute value. Locates the attribute by the given path in object graph starting from this instance.
@@ -98,7 +98,7 @@ public interface Instance extends Serializable {
      * @param propertyPath path to an attribute
      * @param value        attribute value
      */
-    void setValueEx(String propertyPath, Object value);
+    void setValueEx(String propertyPath, @Nullable Object value);
 
     /**
      * Set an attribute value. Locates the attribute by the given path in object graph starting from this instance.
@@ -141,7 +141,7 @@ public interface Instance extends Serializable {
         private final Object prevValue;
         private final Object value;
 
-        public PropertyChangeEvent(Instance item, String property, Object prevValue, Object value) {
+        public PropertyChangeEvent(Instance item, String property, @Nullable Object prevValue, @Nullable Object value) {
             this.item = item;
             this.property = property;
             this.prevValue = prevValue;

@@ -37,11 +37,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Consumer;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
@@ -187,9 +183,8 @@ public class LegacyCollectionDsValueSource<V extends Entity> implements ValueSou
 
     @Override
     public Class<Collection<V>> getType() {
-        return metaPropertyPath == null
-                ? null
-                : (Class<Collection<V>>) metaPropertyPath.getMetaProperty().getJavaType();
+        Class<?> result = metaPropertyPath != null ? metaPropertyPath.getMetaProperty().getJavaType() : List.class;
+        return (Class<Collection<V>>) result;
     }
 
     @Override
@@ -291,6 +286,7 @@ public class LegacyCollectionDsValueSource<V extends Entity> implements ValueSou
         }
     }
 
+    @Nullable
     protected MetaProperty getInverseProperty() {
         MetaPropertyPath mpp = getMaster().getMetaClass().getPropertyPath(metaPropertyPath.toPathString());
         if (mpp == null) {

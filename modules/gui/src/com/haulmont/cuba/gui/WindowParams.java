@@ -88,6 +88,7 @@ public enum WindowParams {
      * @param context   window context
      * @return          parameter value
      */
+    @Nullable
     public String getString(@Nullable FrameContext context) {
         if (context == null)
             return null;
@@ -128,6 +129,7 @@ public enum WindowParams {
      * @return          parameter value
      */
     @SuppressWarnings("unchecked")
+    @Nullable
     public <T> T get(@Nullable FrameContext context) {
         if (context == null)
             return null;

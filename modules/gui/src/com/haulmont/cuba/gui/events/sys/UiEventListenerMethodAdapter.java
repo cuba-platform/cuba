@@ -33,6 +33,7 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.util.ReflectionUtils;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -162,6 +163,7 @@ public class UiEventListenerMethodAdapter implements GenericApplicationListener 
      * return {@code null} to indicate that no suitable arguments could be resolved and
      * therefore the method should not be invoked at all for the specified event.
      */
+    @Nullable
     protected Object[] resolveArguments(ApplicationEvent event) {
         ResolvableType declaredEventType = getResolvableType(event);
         if (declaredEventType == null || declaredEventType.getRawClass() == null) {
@@ -245,6 +247,7 @@ public class UiEventListenerMethodAdapter implements GenericApplicationListener 
      * annotation or any matching attribute on a composed annotation that
      * is meta-annotated with {@code @EventListener}.
      */
+    @Nullable
     protected String getCondition() {
         return null;
     }
@@ -298,6 +301,7 @@ public class UiEventListenerMethodAdapter implements GenericApplicationListener 
         return sb.toString();
     }
 
+    @Nullable
     protected ResolvableType getResolvableType(ApplicationEvent event) {
         ResolvableType payloadType = null;
         if (event instanceof PayloadApplicationEvent) {

@@ -34,21 +34,30 @@
 
     <!--  Nullability  -->
 
-    <!-- todo: temporary stub -->
     <Match>
-        <Bug code="NP,RCN"/>
+        <Bug pattern="RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE"/>
     </Match>
 
-<!--
+    <Match>
+        <Bug pattern="RCN_REDUNDANT_NULLCHECK_OF_NULL_VALUE"/>
+    </Match>
+
+    <Match>
+        <Bug pattern="RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE"/>
+    </Match>
+
     <Match>
         <Bug code="NP,RCN"/>
         <Or>
-            &lt;!&ndash;todo check and fix &ndash;&gt;
+            <!--todo check and fix -->
             <Package name="com.haulmont.cuba.core.app"/>
             <Package name="com.haulmont.cuba.security.app"/>
             <Package name="com.haulmont.cuba.security.auth"/>
             <Package name="com.haulmont.cuba.core.app.importexport"/>
-            &lt;!&ndash; ignore &ndash;&gt;
+            <Package name="com.haulmont.cuba.web.gui.components"/>
+            <Package name="com.haulmont.cuba.web.gui.components.valueproviders"/>
+
+            <!--ignore-->
             <Package name="com.haulmont.cuba.core.sys"/>
             <Package name="com.haulmont.cuba.core.sys.persistence"/>
             <Package name="com.haulmont.cuba.core.jmx"/>
@@ -59,9 +68,15 @@
             <Package name="com.haulmont.cuba.core.sys.environmentcheck"/>
             <Package name="com.haulmont.cuba.core.controllers"/>
             <Class name="com.haulmont.cuba.core.app.EntityDiffManager"/>
+            <Package name="com.haulmont.cuba.gui.data.impl"/>
+            <Package name="com.haulmont.cuba.gui.app.core.entitydiff"/>
+            <Package name="com.haulmont.cuba.gui.components.actions"/>
+            <Package name="com.haulmont.cuba.gui.components.filter"/>
+            <Package name="com.haulmont.cuba.gui.presentations"/>
+            <Package name="com.haulmont.cuba.gui.sys"/>
+            <Class name="com.haulmont.cuba.gui.components.HasWindowManager"/>
         </Or>
     </Match>
--->
 
     <!-- Bad practice detected in EclipseLink generated code -->
 

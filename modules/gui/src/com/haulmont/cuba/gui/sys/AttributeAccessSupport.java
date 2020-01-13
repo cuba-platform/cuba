@@ -41,6 +41,7 @@ import com.haulmont.cuba.gui.screen.FrameOwner;
 import com.haulmont.cuba.gui.screen.Screen;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.Arrays;
 import java.util.Collection;
@@ -208,6 +209,7 @@ public class AttributeAccessSupport {
         return String.join(".", embeddedAttrPath);
     }
 
+    @Nullable
     protected SecurityState getSecurityState(Entity entity) {
         return BaseEntityInternalAccess.supportsSecurityState(entity) ? BaseEntityInternalAccess.getSecurityState(entity) : null;
     }

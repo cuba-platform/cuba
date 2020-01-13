@@ -263,7 +263,7 @@ public class MetadataTools {
          */
         public final String[] fields;
 
-        public NamePatternRec(String format, String methodName, String[] fields) {
+        public NamePatternRec(String format, @Nullable String methodName, String[] fields) {
             this.fields = fields;
             this.format = format;
             this.methodName = methodName;

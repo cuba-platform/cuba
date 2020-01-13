@@ -19,6 +19,8 @@ package com.haulmont.cuba.web.gui;
 import com.haulmont.cuba.core.global.FileTypesHelper;
 import org.apache.commons.lang3.StringUtils;
 
+import javax.annotation.Nullable;
+
 public final class FileUploadTypesHelper {
 
     public static final String TYPES_SPLITTER = ",";
@@ -26,14 +28,17 @@ public final class FileUploadTypesHelper {
     private FileUploadTypesHelper() {
     }
 
+    @Nullable
     public static String convertToMIME(String types) {
         return convertToMIME(types, TYPES_SPLITTER);
     }
 
+    @Nullable
     public static String convertToMIME(String types, String separator) {
         return convertToMIME(types, TYPES_SPLITTER, separator);
     }
 
+    @Nullable
     public static String convertToMIME(String types, String originSeparator, String separator) {
         return StringUtils.isNotBlank(types) ? convertToMIME(types.split(originSeparator), separator) : null;
     }
@@ -45,10 +50,12 @@ public final class FileUploadTypesHelper {
         return String.join(separator, types);
     }
 
+    @Nullable
     public static String convertSeparator(String types, String separator) {
         return convertSeparator(types, TYPES_SPLITTER, separator);
     }
 
+    @Nullable
     public static String convertSeparator(String types, String originSeparator, String separator) {
         return StringUtils.isNotBlank(types) ? types.replace(originSeparator, separator) : null;
     }

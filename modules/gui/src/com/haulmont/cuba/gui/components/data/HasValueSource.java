@@ -16,6 +16,8 @@
 
 package com.haulmont.cuba.gui.components.data;
 
+import javax.annotation.Nullable;
+
 /**
  * Data-aware component that supports data binding with {@link ValueSource}.
  *
@@ -27,10 +29,11 @@ public interface HasValueSource<V> {
      *
      * @param valueSource value source
      */
-    void setValueSource(ValueSource<V> valueSource);
+    void setValueSource(@Nullable ValueSource<V> valueSource);
 
     /**
      * @return currently bound value source
      */
+    @Nullable
     ValueSource<V> getValueSource();
 }

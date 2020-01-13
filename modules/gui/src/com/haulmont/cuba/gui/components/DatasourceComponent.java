@@ -24,6 +24,8 @@ import com.haulmont.cuba.gui.components.data.HasValueSource;
 import com.haulmont.cuba.gui.components.data.ValueSource;
 import com.haulmont.cuba.gui.data.Datasource;
 
+import javax.annotation.Nullable;
+
 /**
  * A component that represents data from one property of a datasource.
  */
@@ -36,6 +38,7 @@ public interface DatasourceComponent<V> extends Component, HasValue<V>, HasValue
      * @deprecated Use {@link #getValueSource()} instead
      */
     @Deprecated
+    @Nullable
     default Datasource getDatasource() {
         ValueSource<V> valueSource = getValueSource();
         return valueSource instanceof DatasourceValueSource ?
@@ -47,6 +50,7 @@ public interface DatasourceComponent<V> extends Component, HasValue<V>, HasValue
      * @deprecated Use {@link #getValueSource()} instead
      */
     @Deprecated
+    @Nullable
     default MetaProperty getMetaProperty() {
         ValueSource<V> valueSource = getValueSource();
         if (valueSource instanceof DatasourceValueSource) {
@@ -64,6 +68,7 @@ public interface DatasourceComponent<V> extends Component, HasValue<V>, HasValue
      * @deprecated Use {@link #getValueSource()} instead
      */
     @Deprecated
+    @Nullable
     default MetaPropertyPath getMetaPropertyPath() {
         ValueSource<V> valueSource = getValueSource();
         if (valueSource instanceof DatasourceValueSource) {
@@ -82,12 +87,12 @@ public interface DatasourceComponent<V> extends Component, HasValue<V>, HasValue
      */
     @SuppressWarnings("unchecked")
     @Deprecated
-    default void setDatasource(Datasource datasource, String property) {
+    default void setDatasource(@Nullable Datasource datasource, @Nullable String property) {
         if (datasource == null && property != null) {
             throw new IllegalArgumentException("datasource is null");
         }
 
-        if (datasource != null) {
+        if (datasource != null && property != null) {
             this.setValueSource(new DatasourceValueSource(datasource, property));
         } else {
             this.setValueSource(null);

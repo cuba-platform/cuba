@@ -26,6 +26,7 @@ import com.haulmont.cuba.gui.screen.FrameOwner;
 import org.apache.commons.lang3.reflect.MethodUtils;
 import org.springframework.context.annotation.Scope;
 
+import javax.annotation.Nullable;
 import java.lang.reflect.Method;
 
 import static org.springframework.beans.factory.config.ConfigurableBeanFactory.SCOPE_PROTOTYPE;
@@ -83,6 +84,7 @@ public class DeclarativeColumnGenerator implements Table.ColumnGenerator {
     }
 
     // Find method with one parameter of type extends Entity and result extends Component
+    @Nullable
     protected Method findGeneratorMethod(Class cls, String methodName) {
         Method exactMethod = MethodUtils.getAccessibleMethod(cls, methodName, Entity.class);
         if (exactMethod != null) {

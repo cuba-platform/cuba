@@ -32,6 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.net.SocketException;
 import java.util.List;
@@ -68,6 +69,7 @@ public class MessagesClientImpl extends AbstractMessages {
     }
 
     @Override
+    @Nullable
     protected String searchRemotely(String pack, String key, Locale locale) {
         if (!remoteSearch || !AppContext.isStarted())
             return null;

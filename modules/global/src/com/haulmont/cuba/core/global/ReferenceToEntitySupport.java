@@ -23,6 +23,7 @@ import com.haulmont.cuba.core.entity.HasUuid;
 import com.haulmont.cuba.core.entity.IdProxy;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.UUID;
 
@@ -62,7 +63,8 @@ public class ReferenceToEntitySupport {
             entityId = ((IdProxy) entityId).get();
         }
         if (entityId == null)
-            return null;
+            throw new IllegalArgumentException(
+                    String.format("Id of entity %s is null", entity));
         if (metadata.getTools().hasCompositePrimaryKey(entity.getMetaClass())) {
             if (entity instanceof HasUuid)
                 return ((HasUuid) entity).getUuid();

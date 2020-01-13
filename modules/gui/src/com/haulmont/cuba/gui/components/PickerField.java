@@ -244,6 +244,7 @@ public interface PickerField<V extends Entity> extends Field<V>, ActionsHolder, 
             }
         }
 
+        @Nullable
         protected Datasource getPropertyDatasource() {
             if (pickerField.getDatasource() == null
                     || pickerField.getMetaPropertyPath() == null

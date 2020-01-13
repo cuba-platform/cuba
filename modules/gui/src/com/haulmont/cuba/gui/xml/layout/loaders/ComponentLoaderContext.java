@@ -28,6 +28,7 @@ import com.haulmont.cuba.gui.xml.layout.ComponentLoader.InitTask;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader.InjectTask;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader.PostInitTask;
 
+import javax.annotation.Nullable;
 import java.util.*;
 
 public class ComponentLoaderContext implements ComponentLoader.ComponentContext {
@@ -134,7 +135,7 @@ public class ComponentLoaderContext implements ComponentLoader.ComponentContext 
         return parent;
     }
 
-    public void setParent(ComponentLoader.ComponentContext parent) {
+    public void setParent(@Nullable ComponentLoader.ComponentContext parent) {
         this.parent = parent;
     }
 

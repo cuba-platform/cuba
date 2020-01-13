@@ -18,6 +18,7 @@ package com.haulmont.cuba.gui.components.data;
 
 import com.haulmont.bali.events.Subscription;
 
+import javax.annotation.Nullable;
 import java.util.EventObject;
 import java.util.function.Consumer;
 
@@ -25,8 +26,9 @@ import java.util.function.Consumer;
  * Data component holding a typed value.
  */
 public interface ValueSource<V> extends DataUnit {
+    @Nullable
     V getValue();
-    void setValue(V value);
+    void setValue(@Nullable V value);
 
     boolean isReadOnly();
 
@@ -52,7 +54,7 @@ public interface ValueSource<V> extends DataUnit {
         private final V prevValue;
         private final V value;
 
-        public ValueChangeEvent(ValueSource<V> source, V prevValue, V value) {
+        public ValueChangeEvent(ValueSource<V> source, @Nullable V prevValue, @Nullable V value) {
             super(source);
             this.prevValue = prevValue;
             this.value = value;
@@ -64,10 +66,12 @@ public interface ValueSource<V> extends DataUnit {
             return (ValueSource<V>) super.getSource();
         }
 
+        @Nullable
         public V getPrevValue() {
             return prevValue;
         }
 
+        @Nullable
         public V getValue() {
             return value;
         }

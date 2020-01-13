@@ -41,7 +41,8 @@ public interface DataGridItems<T> extends DataUnit {
      * @param itemId the item id
      * @return the item by the given id
      */
-    T getItem(@Nullable Object itemId);
+    @Nullable
+    T getItem(Object itemId);
 
     /**
      * @param item the item for obtaining the index

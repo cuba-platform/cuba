@@ -19,6 +19,7 @@ package com.haulmont.cuba.security.app;
 import com.haulmont.cuba.core.global.ClientType;
 import com.haulmont.cuba.security.entity.User;
 
+import javax.annotation.Nullable;
 import java.util.Set;
 
 /**
@@ -41,7 +42,7 @@ public interface UserSettingService {
     void saveSetting(String name, String value);
 
     /** Save settings for the current user */
-    void saveSetting(ClientType clientType, String name, String value);
+    void saveSetting(ClientType clientType, String name, @Nullable String value);
 
     /** Delete settings for the current user */
     void deleteSettings(ClientType clientType, String name);

@@ -26,6 +26,7 @@ import com.haulmont.cuba.gui.components.data.options.ListOptions;
 import com.haulmont.cuba.gui.components.data.options.MapOptions;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
 
@@ -45,10 +46,11 @@ public interface OptionsField<V, I> extends Field<V>, HasOptionCaptionProvider<I
      * @param options options
      * @see ListOptions
      */
-    void setOptions(Options<I> options);
+    void setOptions(@Nullable Options<I> options);
     /**
      * @return options object
      */
+    @Nullable
     Options<I> getOptions();
 
     /**
@@ -102,6 +104,7 @@ public interface OptionsField<V, I> extends Field<V>, HasOptionCaptionProvider<I
      * @deprecated Use {@link #getOptions()} instead.
      */
     @Deprecated
+    @Nullable
     default CollectionDatasource getOptionsDatasource() {
         Options<I> options = getOptions();
         if (options instanceof DatasourceOptions) {
@@ -116,7 +119,7 @@ public interface OptionsField<V, I> extends Field<V>, HasOptionCaptionProvider<I
      */
     @SuppressWarnings("unchecked")
     @Deprecated
-    default void setOptionsDatasource(CollectionDatasource datasource) {
+    default void setOptionsDatasource(@Nullable CollectionDatasource datasource) {
         if (datasource == null) {
             setOptions(null);
         } else {
@@ -129,6 +132,7 @@ public interface OptionsField<V, I> extends Field<V>, HasOptionCaptionProvider<I
      * @deprecated Use {@link #getOptions()} instead.
      */
     @Deprecated
+    @Nullable
     default List getOptionsList() {
         Options options = getOptions();
         if (options instanceof ListOptions) {
@@ -143,6 +147,7 @@ public interface OptionsField<V, I> extends Field<V>, HasOptionCaptionProvider<I
      */
     @SuppressWarnings("unchecked")
     @Deprecated
+    @Nullable
     default Map<String, ?> getOptionsMap() {
         Options options = getOptions();
         if (options instanceof MapOptions) {
@@ -157,6 +162,7 @@ public interface OptionsField<V, I> extends Field<V>, HasOptionCaptionProvider<I
      */
     @SuppressWarnings("unchecked")
     @Deprecated
+    @Nullable
     default Class<? extends EnumClass> getOptionsEnum() {
         Options options = getOptions();
         if (options instanceof EnumOptions) {

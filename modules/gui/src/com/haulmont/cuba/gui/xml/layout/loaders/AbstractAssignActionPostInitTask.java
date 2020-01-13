@@ -22,6 +22,7 @@ import com.haulmont.cuba.gui.components.sys.ValuePathHelper;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import org.apache.commons.lang3.ArrayUtils;
 
+import javax.annotation.Nullable;
 import java.util.Arrays;
 
 public abstract class AbstractAssignActionPostInitTask implements ComponentLoader.PostInitTask {
@@ -91,6 +92,7 @@ public abstract class AbstractAssignActionPostInitTask implements ComponentLoade
 
     protected abstract void addAction(Action action);
 
+    @Nullable
     protected Action getActionRecursively(Frame frame, String actionId) {
         Action action = frame.getAction(actionId);
         if (action == null) {

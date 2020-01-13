@@ -16,6 +16,8 @@
 
 package com.haulmont.cuba.security.group;
 
+import javax.annotation.Nullable;
+
 public class BasicJpqlAccessConstraint extends BasicAccessConstraint implements JpqlAccessConstraint {
     private static final long serialVersionUID = -4894897562097123345L;
 
@@ -36,7 +38,7 @@ public class BasicJpqlAccessConstraint extends BasicAccessConstraint implements 
         this.where = where;
     }
 
-    public void setJoin(String join) {
+    public void setJoin(@Nullable String join) {
         this.join = join;
     }
 }

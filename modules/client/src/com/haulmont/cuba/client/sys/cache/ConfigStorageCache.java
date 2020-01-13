@@ -21,6 +21,7 @@ import com.haulmont.cuba.core.config.AppPropertyEntity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.BeanLocator;
 
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
 
@@ -43,7 +44,7 @@ public class ConfigStorageCache implements ConfigStorageService {
     }
 
     @Override
-    public void setDbProperty(String name, String value) {
+    public void setDbProperty(String name, @Nullable String value) {
         getService().setDbProperty(name, value);
 
         getClientCacheManager().refreshCached(ConfigCacheStrategy.NAME);

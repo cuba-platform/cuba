@@ -19,6 +19,8 @@ package com.haulmont.cuba.core.entity;
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import com.haulmont.chile.core.datatypes.impl.EnumUtils;
 
+import javax.annotation.Nullable;
+
 public enum CategoryAttributeOptionsLoaderType implements EnumClass<String> {
     JPQL,
     SQL,
@@ -29,6 +31,7 @@ public enum CategoryAttributeOptionsLoaderType implements EnumClass<String> {
         return name();
     }
 
+    @Nullable
     public static CategoryAttributeOptionsLoaderType fromId(String id) {
         return EnumUtils.fromIdSafe(CategoryAttributeOptionsLoaderType.class, id, null);
     }

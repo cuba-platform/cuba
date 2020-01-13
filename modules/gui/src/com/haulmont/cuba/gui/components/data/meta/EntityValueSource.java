@@ -34,6 +34,7 @@ public interface EntityValueSource<E extends Entity, V> extends ValueSource<V>, 
     /**
      * @return entity
      */
+    @Nullable
     E getItem();
 
     /**
@@ -57,7 +58,7 @@ public interface EntityValueSource<E extends Entity, V> extends ValueSource<V>, 
         private final E prevItem;
         private final E item;
 
-        public InstanceChangeEvent(EntityValueSource<E, ?> source, E prevItem, E item) {
+        public InstanceChangeEvent(EntityValueSource<E, ?> source, @Nullable E prevItem, @Nullable E item) {
             super(source);
             this.prevItem = prevItem;
             this.item = item;

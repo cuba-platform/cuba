@@ -85,7 +85,7 @@ public class WebAppMenu extends WebAbstractComponent<CubaMenuBar> implements App
 
     @Override
     public MenuItem createMenuItem(String id) {
-        return createMenuItem(id, null, null, null);
+        return createMenuItem(id, "", null, null);
     }
 
     @Override

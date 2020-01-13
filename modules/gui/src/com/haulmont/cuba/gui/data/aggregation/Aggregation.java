@@ -19,6 +19,7 @@ package com.haulmont.cuba.gui.data.aggregation;
 
 import com.haulmont.cuba.gui.components.AggregationInfo;
 
+import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.EnumSet;
 
@@ -28,8 +29,10 @@ public interface Aggregation<T> {
 
     T avg(Collection<T> items);
 
+    @Nullable
     T min(Collection<T> items);
 
+    @Nullable
     T max(Collection<T> items);
 
     int count(Collection<T> items);

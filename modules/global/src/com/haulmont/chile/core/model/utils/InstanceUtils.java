@@ -115,6 +115,7 @@ public final class InstanceUtils {
      * @param propertyPath attribute path
      * @return attribute value
      */
+    @Nullable
     public static <T> T getValueEx(Instance instance, String propertyPath) {
         String[] properties = parseValuePath(propertyPath);
         return getValueEx(instance, properties);
@@ -127,6 +128,7 @@ public final class InstanceUtils {
      * @param propertyPath attribute path
      * @return attribute value
      */
+    @Nullable
     public static <T> T getValueEx(Instance instance, Instance.BeanPropertyPath propertyPath) {
         if (propertyPath.isDirectProperty()) {
             return instance.getValue(propertyPath.getFirstPropertyName());
@@ -142,6 +144,7 @@ public final class InstanceUtils {
      * @param properties    path to the attribute
      * @return              attribute value
      */
+    @Nullable
     public static <T> T getValueEx(Instance instance, String[] properties) {
         if (properties == null) {
             return null;
@@ -170,7 +173,7 @@ public final class InstanceUtils {
      * @param propertyPath path to the attribute
      * @param value        attribute value
      */
-    public static void setValueEx(Instance instance, String propertyPath, Object value) {
+    public static void setValueEx(Instance instance, String propertyPath, @Nullable Object value) {
         String[] properties = parseValuePath(propertyPath);
         setValueEx(instance, properties, value);
     }
@@ -182,7 +185,7 @@ public final class InstanceUtils {
      * @param propertyPath path to the attribute
      * @param value        attribute value
      */
-    public static void setValueEx(Instance instance, Instance.BeanPropertyPath propertyPath, Object value) {
+    public static void setValueEx(Instance instance, Instance.BeanPropertyPath propertyPath, @Nullable Object value) {
         if (propertyPath.isDirectProperty()) {
             instance.setValue(propertyPath.getFirstPropertyName(), value);
         } else {
@@ -198,7 +201,7 @@ public final class InstanceUtils {
      * @param properties path to the attribute
      * @param value      attribute value
      */
-    public static void setValueEx(Instance instance, String[] properties, Object value) {
+    public static void setValueEx(Instance instance, String[] properties, @Nullable Object value) {
         if (properties.length > 1) {
 
             if (properties.length == 2) {

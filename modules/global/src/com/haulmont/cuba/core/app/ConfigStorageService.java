@@ -19,6 +19,7 @@ package com.haulmont.cuba.core.app;
 
 import com.haulmont.cuba.core.config.AppPropertyEntity;
 
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
 
@@ -34,7 +35,7 @@ public interface ConfigStorageService {
 
     String getDbProperty(String name);
 
-    void setDbProperty(String name, String value);
+    void setDbProperty(String name, @Nullable String value);
 
     List<AppPropertyEntity> getAppProperties();
 }

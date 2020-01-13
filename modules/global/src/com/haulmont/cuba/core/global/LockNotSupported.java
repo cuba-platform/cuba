@@ -27,6 +27,6 @@ public class LockNotSupported extends LockInfo {
     private static final long serialVersionUID = -5382095361423998544L;
 
     public LockNotSupported() {
-        super(null, null, null);
+        super();
     }
 }

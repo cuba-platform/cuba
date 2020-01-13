@@ -29,14 +29,15 @@ import java.util.function.Consumer;
  * @param <V> value type
  */
 public interface HasValue<V> extends Component {
-    V getValue();
+    @Nullable V getValue();
 
-    void setValue(V value);
+    void setValue(@Nullable V value);
 
     default void clear() {
         setValue(getEmptyValue());
     }
 
+    @Nullable
     default V getEmptyValue() {
         return null;
     }

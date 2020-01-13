@@ -595,7 +595,7 @@ public class AppUI extends CubaUI implements ErrorHandler, EnhancedUI, UiExcepti
      * INTERNAL.
      * Set currently displayed top-level window.
      */
-    public void setTopLevelWindow(RootWindow window) {
+    public void setTopLevelWindow(@Nullable RootWindow window) {
         if (this.topLevelWindow != window) {
             this.topLevelWindow = window;
 

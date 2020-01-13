@@ -27,6 +27,7 @@ public interface SettingsClient {
 
     String NAME = "cuba_SettingsClient";
 
+    @Nullable
     String getSetting(String name);
     void setSetting(String name, @Nullable String value);
 

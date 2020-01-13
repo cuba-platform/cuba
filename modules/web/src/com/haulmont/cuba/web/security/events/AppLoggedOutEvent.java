@@ -20,6 +20,8 @@ import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.App;
 import org.springframework.context.ApplicationEvent;
 
+import javax.annotation.Nullable;
+
 /**
  * Event that is fired after UI initialization of {@link App} when a user is logged out.
  */
@@ -29,7 +31,7 @@ public class AppLoggedOutEvent extends ApplicationEvent {
 
     protected String redirectUrl;
 
-    public AppLoggedOutEvent(App source, UserSession loggedOutSession) {
+    public AppLoggedOutEvent(App source, @Nullable UserSession loggedOutSession) {
         super(source);
         this.loggedOutSession = loggedOutSession;
     }
@@ -43,6 +45,7 @@ public class AppLoggedOutEvent extends ApplicationEvent {
         return (App) super.getSource();
     }
 
+    @Nullable
     public UserSession getLoggedOutSession() {
         return loggedOutSession;
     }
@@ -51,6 +54,7 @@ public class AppLoggedOutEvent extends ApplicationEvent {
         this.redirectUrl = redirectUrl;
     }
 
+    @Nullable
     public String getRedirectUrl() {
         return redirectUrl;
     }

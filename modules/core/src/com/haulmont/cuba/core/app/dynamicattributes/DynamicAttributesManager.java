@@ -161,7 +161,8 @@ public class DynamicAttributesManager implements DynamicAttributesManagerAPI {
     }
 
     @Override
-    public DynamicAttributesCache getCacheIfNewer(Date clientCacheDate) {
+    @Nullable
+    public DynamicAttributesCache getCacheIfNewer(@Nullable Date clientCacheDate) {
         if (clientCacheDate == null
                 || this.dynamicAttributesCache == null
                 || this.dynamicAttributesCache.getCreationDate() == null

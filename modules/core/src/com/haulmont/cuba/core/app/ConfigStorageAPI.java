@@ -53,7 +53,7 @@ public interface ConfigStorageAPI {
      * @param name  property name
      * @param value property value
      */
-    void setDbProperty(String name, String value);
+    void setDbProperty(String name, @Nullable String value);
 
     /**
      * Clear properties cache. Invoke this method if you changed the properties directly in the database.

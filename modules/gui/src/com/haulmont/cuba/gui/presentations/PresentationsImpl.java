@@ -31,6 +31,7 @@ import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
+import javax.annotation.Nullable;
 import java.util.*;
 
 public class PresentationsImpl implements Presentations {
@@ -133,7 +134,7 @@ public class PresentationsImpl implements Presentations {
     }
 
     @Override
-    public void setDefault(Presentation p) {
+    public void setDefault(@Nullable Presentation p) {
         checkLoad();
         if (p == null) {
             Object old = def;

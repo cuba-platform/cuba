@@ -255,6 +255,7 @@ public class FieldGroupLoader extends AbstractComponentLoader<FieldGroup> {
         }
     }
 
+    @Nullable
     protected Datasource loadDatasource(Element element) {
         String datasource = element.attributeValue("datasource");
         if (!StringUtils.isBlank(datasource)) {
@@ -299,6 +300,7 @@ public class FieldGroupLoader extends AbstractComponentLoader<FieldGroup> {
         return fields;
     }
 
+    @Nullable
     protected CollectionDatasource findDatasourceRecursively(DsContext dsContext, String dsName) {
         if (dsContext == null) {
             return null;
@@ -496,6 +498,7 @@ public class FieldGroupLoader extends AbstractComponentLoader<FieldGroup> {
         }
     }
 
+    @Nullable
     protected String getDefaultCaption(FieldGroup.FieldConfig fieldConfig, Datasource fieldDatasource) {
         String caption = fieldConfig.getCaption();
         if (caption == null) {
@@ -612,6 +615,7 @@ public class FieldGroupLoader extends AbstractComponentLoader<FieldGroup> {
         }
     }
 
+    @Nullable
     protected MetaClass getMetaClass(FieldGroup resultComponent, FieldGroup.FieldConfig field) {
         if (field.isCustom()) {
             return null;

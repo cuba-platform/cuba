@@ -24,6 +24,8 @@ import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.ListComponent;
 import com.haulmont.cuba.security.entity.ConstraintOperationType;
 
+import javax.annotation.Nullable;
+
 /**
  * Standard action that changes enabled property depending on selection of a bound {@link ListComponent}.
  * <br>
@@ -49,7 +51,7 @@ public class ItemTrackingAction extends ListAction implements Action.HasSecurity
         this(null, id);
     }
 
-    public ItemTrackingAction(ListComponent target, String id) {
+    public ItemTrackingAction(@Nullable ListComponent target, String id) {
         super(id, null);
 
         this.target = target;

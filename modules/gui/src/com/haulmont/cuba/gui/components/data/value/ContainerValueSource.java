@@ -31,6 +31,7 @@ import com.haulmont.cuba.gui.components.data.meta.EntityValueSource;
 import com.haulmont.cuba.gui.model.*;
 import org.apache.commons.collections4.CollectionUtils;
 
+import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.Consumer;
 
@@ -298,6 +299,7 @@ public class ContainerValueSource<E extends Entity, V> implements EntityValueSou
         container.unmute();
     }
 
+    @Nullable
     protected Collection<? extends V> copyPropertyCollection(Collection<? extends V> propertyValue) {
         if (propertyValue == null) {
             return null;
@@ -314,6 +316,7 @@ public class ContainerValueSource<E extends Entity, V> implements EntityValueSou
         return new LinkedHashSet<>(propertyValue);
     }
 
+    @Nullable
     protected DataContext getDataContext() {
         DataLoader loader = container instanceof HasLoader
                 ? ((HasLoader) container).getLoader()
@@ -324,6 +327,7 @@ public class ContainerValueSource<E extends Entity, V> implements EntityValueSou
                 : null;
     }
 
+    @Nullable
     protected MetaProperty getInverseProperty() {
         MetaPropertyPath mpp = getEntityMetaClass().getPropertyPath(metaPropertyPath.toPathString());
         if (mpp == null) {

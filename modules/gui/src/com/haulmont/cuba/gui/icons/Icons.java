@@ -47,6 +47,7 @@ public interface Icons {
      * @param icon {@link Icons.Icon} instance
      * @return icon source (see {@link Icon#source()})
      */
+    @Nullable
     String get(@Nullable Icon icon);
 
     /**
@@ -60,6 +61,7 @@ public interface Icons {
      * @param iconName icon name that contains only uppercase letters and underscores
      * @return icon source (see {@link Icon#source()})
      */
+    @Nullable
     String get(@Nullable String iconName);
 
     /**

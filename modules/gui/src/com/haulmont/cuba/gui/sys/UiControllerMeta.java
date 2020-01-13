@@ -19,6 +19,7 @@ package com.haulmont.cuba.gui.sys;
 import com.haulmont.cuba.gui.Route;
 import com.haulmont.cuba.gui.config.WindowConfig;
 
+import javax.annotation.Nullable;
 import java.util.Map;
 
 /**
@@ -44,6 +45,7 @@ public interface UiControllerMeta {
     /**
      * @return route definition configured by the {@link Route} annotation
      */
+    @Nullable
     RouteDefinition getRouteDefinition();
 
     /**

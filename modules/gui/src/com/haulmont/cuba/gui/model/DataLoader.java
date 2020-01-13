@@ -49,7 +49,7 @@ public interface DataLoader {
     /**
      * Sets the data context for the loader. If the data context is set, all loaded instance will be merged into it.
      */
-    void setDataContext(DataContext dataContext);
+    void setDataContext(@Nullable DataContext dataContext);
 
     /**
      * Returns the query which is used for loading entities.
@@ -84,12 +84,13 @@ public interface DataLoader {
     /**
      * Returns a query parameter by its name.
      */
+    @Nullable
     Object getParameter(String name);
 
     /**
      * Sets a query parameter.
      */
-    void setParameter(String name, Object value);
+    void setParameter(String name, @Nullable Object value);
 
     /**
      * Removes a query parameter.

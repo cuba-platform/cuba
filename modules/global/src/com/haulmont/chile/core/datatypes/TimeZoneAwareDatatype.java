@@ -26,5 +26,5 @@ import java.util.TimeZone;
  */
 public interface TimeZoneAwareDatatype {
     /** Converts value to String taking into account local formats and timezone. Returns an empty string for null value. */
-    String format(@Nullable Object value, Locale locale, TimeZone timeZone);
+    String format(@Nullable Object value, Locale locale, @Nullable TimeZone timeZone);
 }

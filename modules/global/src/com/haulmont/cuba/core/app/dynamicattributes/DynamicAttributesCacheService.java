@@ -29,5 +29,5 @@ public interface DynamicAttributesCacheService {
     void loadCache();
 
     @Nullable
-    DynamicAttributesCache getCacheIfNewer(Date clientCacheDate);
+    DynamicAttributesCache getCacheIfNewer(@Nullable Date clientCacheDate);
 }

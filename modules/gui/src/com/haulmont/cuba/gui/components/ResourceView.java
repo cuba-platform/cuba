@@ -18,6 +18,7 @@ package com.haulmont.cuba.gui.components;
 
 import com.haulmont.bali.events.Subscription;
 
+import javax.annotation.Nullable;
 import java.util.EventObject;
 import java.util.function.Consumer;
 
@@ -31,6 +32,7 @@ public interface ResourceView extends Component, Component.HasCaption, HasContex
     /**
      * @return {@link Resource} instance
      */
+    @Nullable
     Resource getSource();
 
     /**
@@ -38,7 +40,7 @@ public interface ResourceView extends Component, Component.HasCaption, HasContex
      *
      * @param resource Resource instance
      */
-    void setSource(Resource resource);
+    void setSource(@Nullable Resource resource);
 
     /**
      * Creates the resource with the given <code>type</code> and sets it to the component.

@@ -20,6 +20,8 @@ import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.Connection;
 import org.springframework.context.ApplicationEvent;
 
+import javax.annotation.Nullable;
+
 /**
  * Event that is fired after {@link Connection} is disconnected from middleware right before firing
  * {@link Connection.StateChangeEvent} listeners.
@@ -28,7 +30,7 @@ public class UserDisconnectedEvent extends ApplicationEvent {
 
     protected final UserSession loggedOutSession;
 
-    public UserDisconnectedEvent(Connection source, UserSession loggedOutSession) {
+    public UserDisconnectedEvent(Connection source, @Nullable UserSession loggedOutSession) {
         super(source);
         this.loggedOutSession = loggedOutSession;
     }
@@ -42,6 +44,7 @@ public class UserDisconnectedEvent extends ApplicationEvent {
         return (Connection) super.getSource();
     }
 
+    @Nullable
     public UserSession getLoggedOutSession() {
         return loggedOutSession;
     }

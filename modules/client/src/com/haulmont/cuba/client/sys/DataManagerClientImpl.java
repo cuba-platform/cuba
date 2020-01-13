@@ -110,7 +110,7 @@ public class DataManagerClientImpl implements DataManager {
                 return (E) e;
             }
         }
-        return null;
+        throw new EntityAccessException(entity.getClass(), entity.getId());
     }
 
     @Override

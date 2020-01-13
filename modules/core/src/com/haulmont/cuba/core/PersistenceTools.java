@@ -357,13 +357,13 @@ public class PersistenceTools {
         private final boolean loaded;
         private final Object value;
 
-        private RefId(String name, boolean loaded, Object value) {
+        private RefId(String name, boolean loaded, @Nullable Object value) {
             this.name = name;
             this.loaded = loaded;
             this.value = value;
         }
 
-        public static RefId create(String name, Object value) {
+        public static RefId create(String name, @Nullable Object value) {
             return new RefId(name, true, value);
         }
 

@@ -19,6 +19,7 @@ package com.haulmont.cuba.core.app.dynamicattributes;
 
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.Date;
 
@@ -33,7 +34,8 @@ public class DynamicAttributesCacheServiceBean implements DynamicAttributesCache
     }
 
     @Override
-    public DynamicAttributesCache getCacheIfNewer(Date clientCacheDate) {
+    @Nullable
+    public DynamicAttributesCache getCacheIfNewer(@Nullable Date clientCacheDate) {
         return dynamicAttributesManagerAPI.getCacheIfNewer(clientCacheDate);
     }
 }

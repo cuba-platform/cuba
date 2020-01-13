@@ -405,6 +405,7 @@ public abstract class App {
      * @deprecated Get screens API from {@link AppUI} instead.
      */
     @Deprecated
+    @Nullable
     public WebScreens getWindowManager() {
         AppUI ui = getAppUI();
         if (ui == null) {
@@ -573,7 +574,9 @@ public abstract class App {
      */
     @Deprecated
     public void logout(@Nullable Runnable runWhenLoggedOut) {
-        logout().then(runWhenLoggedOut);
+        OperationResult result = logout();
+        if (runWhenLoggedOut != null)
+            result.then(runWhenLoggedOut);
     }
 
     /**

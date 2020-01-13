@@ -19,6 +19,7 @@ package com.haulmont.cuba.gui.presentations;
 import com.haulmont.cuba.security.entity.Presentation;
 import org.dom4j.Element;
 
+import javax.annotation.Nullable;
 import java.util.Collection;
 
 /**
@@ -81,6 +82,7 @@ public interface Presentations {
      * Returns a presentation by its name with ignored case.
      * It returns <code>null</code> if a presentation with such name doesn't exist
      */
+    @Nullable
     Presentation getPresentationByName(String name);
 
     /** Adds listener */

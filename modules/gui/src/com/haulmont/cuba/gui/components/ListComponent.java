@@ -38,6 +38,7 @@ public interface ListComponent<E extends Entity> extends Component, Component.Be
     void setSelected(Collection<E> items);
 
     @Deprecated
+    @Nullable
     CollectionDatasource getDatasource();
 
     DataUnit getItems();

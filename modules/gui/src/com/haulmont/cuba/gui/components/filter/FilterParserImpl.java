@@ -57,7 +57,7 @@ public class FilterParserImpl implements FilterParser {
         return conditions;
     }
 
-    protected void recursiveFromXml(Element element, Node<AbstractCondition> parentNode, Filter filter, String xml, ConditionsTree conditions) {
+    protected void recursiveFromXml(Element element, @Nullable Node<AbstractCondition> parentNode, Filter filter, String xml, ConditionsTree conditions) {
         for (Element el : element.elements()) {
             AbstractCondition condition;
             if ("c".equals(el.getName())) {

@@ -177,6 +177,7 @@ public class View implements Serializable {
         }
     }
 
+    @Nullable
     public static View copy(@Nullable View view) {
         if (view == null) {
             return null;

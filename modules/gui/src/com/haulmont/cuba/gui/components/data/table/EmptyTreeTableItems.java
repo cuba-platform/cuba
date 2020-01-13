@@ -31,7 +31,7 @@ public class EmptyTreeTableItems<E extends Entity> extends EmptyTableItems<E> im
 
     @Override
     public String getHierarchyPropertyName() {
-        return null;
+        return "";
     }
 
     @Override

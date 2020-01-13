@@ -36,7 +36,7 @@ public interface TreeDataGridItems<T> extends DataGridItems.Sortable<T> {
      * @param item the item to obtain children or {@code null} to get root items
      * @return children of the given item
      */
-    Stream<T> getChildren(T item);
+    Stream<T> getChildren(@Nullable T item);
 
     /**
      * @param item the item to check

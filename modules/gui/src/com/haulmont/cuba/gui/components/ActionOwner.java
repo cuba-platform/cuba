@@ -16,10 +16,14 @@
 
 package com.haulmont.cuba.gui.components;
 
+import javax.annotation.Nullable;
+
 /**
  * Component supporting an action.
  */
 public interface ActionOwner {
+    @Nullable
     Action getAction();
-    void setAction(Action action);
+
+    void setAction(@Nullable Action action);
 }

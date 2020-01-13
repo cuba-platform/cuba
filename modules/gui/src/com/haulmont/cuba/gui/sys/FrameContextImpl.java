@@ -29,6 +29,7 @@ import com.haulmont.cuba.gui.screen.ScreenOptions;
 import com.haulmont.cuba.gui.screen.UiControllerUtils;
 import org.apache.commons.lang3.ArrayUtils;
 
+import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.Consumer;
 
@@ -131,6 +132,7 @@ public class FrameContextImpl implements FrameContext {
     }
 
     @SuppressWarnings("unchecked")
+    @Nullable
     protected <T> T getValue(Component component) {
         if (component instanceof HasValue) {
             return (T) ((HasValue) component).getValue();

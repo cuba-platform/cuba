@@ -202,7 +202,7 @@ public interface JavaScriptComponent extends Component,
             this.path = path;
         }
 
-        public ClientDependency(String path, DependencyType type) {
+        public ClientDependency(String path, @Nullable DependencyType type) {
             this.path = path;
             this.type = type;
         }

@@ -71,7 +71,8 @@ public class EnumUtils {
      * @param defaultValue  the value to return if null is passed as id or if there are no enum values with the given id
      * @return              enum value
      */
-    public static <T extends Enum<T> & EnumClass<V>, V> T fromIdSafe(Class<T> e, V id, T defaultValue) {
+    @Nullable
+    public static <T extends Enum<T> & EnumClass<V>, V> T fromIdSafe(Class<T> e, @Nullable V id, @Nullable T defaultValue) {
         if (id == null)
             return defaultValue;
         for (T enumConstant : e.getEnumConstants()) {

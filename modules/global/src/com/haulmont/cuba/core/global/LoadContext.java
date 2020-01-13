@@ -124,7 +124,7 @@ public class LoadContext<E extends Entity> implements DataLoadContext, Serializa
      * @param query query definition
      * @return this instance for chaining
      */
-    public LoadContext<E> setQuery(Query query) {
+    public LoadContext<E> setQuery(@Nullable Query query) {
         this.query = query;
         return this;
     }
@@ -162,7 +162,7 @@ public class LoadContext<E extends Entity> implements DataLoadContext, Serializa
      */
     public LoadContext<E> setView(String viewName) {
         Metadata metadata = AppBeans.get(Metadata.NAME);
-        this.view = metadata.getViewRepository().getView(metadata.getSession().getClass(metaClass), viewName);
+        this.view = metadata.getViewRepository().getView(metadata.getSession().getClassNN(metaClass), viewName);
         return this;
     }
 

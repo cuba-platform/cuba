@@ -100,11 +100,11 @@ public class ExcelExporter {
         falseStr = messages.getMessage(ExcelExporter.class, "excelExporter.false");
     }
 
-    public void exportTable(Table table, ExportDisplay display) {
+    public void exportTable(Table table, @Nullable ExportDisplay display) {
         exportTable(table, table.getColumns(), display);
     }
 
-    public void exportTable(Table table, List<Table.Column> columns, ExportDisplay display, ExportMode exportMode) {
+    public void exportTable(Table table, List<Table.Column> columns, @Nullable ExportDisplay display, ExportMode exportMode) {
         exportTable(table, columns, false, display, null, null, exportMode);
     }
 
@@ -123,21 +123,21 @@ public class ExcelExporter {
         sizers = new ExcelAutoColumnSizer[count];
     }
 
-    public void exportTable(Table table, List<Table.Column> columns, ExportDisplay display) {
+    public void exportTable(Table table, List<Table.Column> columns, @Nullable ExportDisplay display) {
         exportTable(table, columns, false, display);
     }
 
-    public void exportTable(Table table, List<Table.Column> columns, Boolean exportExpanded, ExportDisplay display) {
+    public void exportTable(Table table, List<Table.Column> columns, Boolean exportExpanded, @Nullable ExportDisplay display) {
         exportTable(table, columns, exportExpanded, display, null);
     }
 
     public void exportTable(Table table, List<Table.Column> columns, Boolean exportExpanded,
-                            ExportDisplay display, List<String> filterDescription) {
+                            @Nullable ExportDisplay display, @Nullable List<String> filterDescription) {
         exportTable(table, columns, exportExpanded, display, filterDescription, null, ExportMode.ALL_ROWS);
     }
 
     public void exportTable(Table<Entity> table, List<Table.Column> columns, Boolean exportExpanded,
-                            ExportDisplay display, List<String> filterDescription, String fileName, ExportMode exportMode) {
+                            @Nullable ExportDisplay display, @Nullable List<String> filterDescription, @Nullable String fileName, ExportMode exportMode) {
 
         if (display == null) {
             throw new IllegalArgumentException("ExportDisplay is null");
@@ -274,27 +274,27 @@ public class ExcelExporter {
         display.show(new ByteArrayDataProvider(out.toByteArray()), fileName + ".xls", ExportFormat.XLS);
     }
 
-    public void exportDataGrid(DataGrid dataGrid, ExportDisplay display) {
+    public void exportDataGrid(DataGrid dataGrid, @Nullable ExportDisplay display) {
         exportDataGrid(dataGrid, dataGrid.getColumns(), display);
     }
 
-    public void exportDataGrid(DataGrid dataGrid, List<DataGrid.Column> columns, ExportDisplay display) {
+    public void exportDataGrid(DataGrid dataGrid, List<DataGrid.Column> columns, @Nullable ExportDisplay display) {
         exportDataGrid(dataGrid, columns, display, null, null, ExportMode.ALL_ROWS);
     }
 
-    public void exportDataGrid(DataGrid dataGrid, List<DataGrid.Column> columns, ExportDisplay display,
+    public void exportDataGrid(DataGrid dataGrid, List<DataGrid.Column> columns, @Nullable ExportDisplay display,
                                ExportMode exportMode) {
         exportDataGrid(dataGrid, columns, display, null, null, exportMode);
     }
 
-    public void exportDataGrid(DataGrid dataGrid, List<DataGrid.Column> columns, ExportDisplay display,
-                               List<String> filterDescription) {
+    public void exportDataGrid(DataGrid dataGrid, List<DataGrid.Column> columns, @Nullable ExportDisplay display,
+                               @Nullable List<String> filterDescription) {
         exportDataGrid(dataGrid, columns, display, filterDescription, null, ExportMode.ALL_ROWS);
     }
 
     public void exportDataGrid(DataGrid<Entity> dataGrid, List<DataGrid.Column> columns,
-                               ExportDisplay display, List<String> filterDescription,
-                               String fileName, ExportMode exportMode) {
+                               @Nullable ExportDisplay display, @Nullable List<String> filterDescription,
+                               @Nullable String fileName, ExportMode exportMode) {
         if (display == null) {
             throw new IllegalArgumentException("ExportDisplay is null");
         }

@@ -19,6 +19,7 @@ package com.haulmont.cuba.core.global;
 import com.google.common.base.Preconditions;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Nullable;
 import java.time.*;
 import java.util.Date;
 
@@ -34,7 +35,7 @@ public class DateTimeTransformations {
      * @param zoneId   the zone ID to use or {@code null} to use default system timezone
      * @return the date object converted to the passed java type, not {@code null}
      */
-    public Object transformToType(Object date, Class javaType, ZoneId zoneId) {
+    public Object transformToType(Object date, Class javaType, @Nullable ZoneId zoneId) {
         Preconditions.checkNotNull(date);
         Preconditions.checkNotNull(javaType);
 
@@ -53,7 +54,7 @@ public class DateTimeTransformations {
         return transformToZDT(date, null);
     }
 
-    protected ZonedDateTime transformToZDT(Object date, ZoneId fromZoneId) {
+    protected ZonedDateTime transformToZDT(Object date, @Nullable ZoneId fromZoneId) {
         Preconditions.checkNotNull(date);
         ZoneId zoneId = fromZoneId != null ? fromZoneId : ZoneId.systemDefault();
         if (date instanceof java.sql.Date) {

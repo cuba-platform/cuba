@@ -487,7 +487,7 @@ public class ScreenDataXmlLoader {
         return id.trim();
     }
 
-    protected boolean checkProvided(Element element, ScreenData hostScreenData) {
+    protected boolean checkProvided(Element element, @Nullable ScreenData hostScreenData) {
         boolean provided = Boolean.parseBoolean(element.attributeValue("provided"));
         if (provided && hostScreenData == null) {
             throw new IllegalStateException("Host ScreenData is null");

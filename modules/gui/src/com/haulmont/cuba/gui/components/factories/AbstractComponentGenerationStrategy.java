@@ -67,6 +67,7 @@ public abstract class AbstractComponentGenerationStrategy implements ComponentGe
         this.dynamicAttributesTools = dynamicAttributesTools;
     }
 
+    @Nullable
     protected Component createComponentInternal(ComponentGenerationContext context) {
         MetaClass metaClass = context.getMetaClass();
         MetaPropertyPath mpp = resolveMetaPropertyPath(metaClass, context.getProperty());
@@ -97,6 +98,7 @@ public abstract class AbstractComponentGenerationStrategy implements ComponentGe
         return resultComponent;
     }
 
+    @Nullable
     protected Component createClassField(ComponentGenerationContext context, MetaPropertyPath mpp) {
         MetaProperty metaProperty = mpp.getMetaProperty();
         Class<?> javaType = metaProperty.getJavaType();
@@ -112,6 +114,7 @@ public abstract class AbstractComponentGenerationStrategy implements ComponentGe
         return null;
     }
 
+    @Nullable
     protected Component createDatatypeField(ComponentGenerationContext context, MetaPropertyPath mpp) {
         Range mppRange = mpp.getRange();
         Element xmlDescriptor = context.getXmlDescriptor();
@@ -474,6 +477,7 @@ public abstract class AbstractComponentGenerationStrategy implements ComponentGe
         }
     }
 
+    @Nullable
     protected MetaPropertyPath resolveMetaPropertyPath(MetaClass metaClass, String property) {
         MetaPropertyPath mpp = metaClass.getPropertyPath(property);
 
@@ -538,9 +542,12 @@ public abstract class AbstractComponentGenerationStrategy implements ComponentGe
         }
     }
 
+    @Nullable
     protected CategoryAttribute getCategoryAttribute(ComponentGenerationContext context) {
         MetaClass metaClass = context.getMetaClass();
         MetaPropertyPath mpp = resolveMetaPropertyPath(metaClass, context.getProperty());
+        if (mpp == null)
+            return null;
         MetaProperty metaProperty = mpp.getMetaProperty();
 
         if (DynamicAttributesUtils.isDynamicAttribute(metaProperty)) {

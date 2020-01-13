@@ -26,6 +26,7 @@ import com.haulmont.cuba.gui.data.aggregation.Aggregation;
 import com.haulmont.cuba.gui.data.aggregation.AggregationStrategy;
 import com.haulmont.cuba.gui.data.aggregation.Aggregations;
 
+import javax.annotation.Nullable;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -151,7 +152,9 @@ public abstract class AggregatableDelegate<K> {
         return values;
     }
 
+    @Nullable
     public abstract Object getItem(K itemId);
 
+    @Nullable
     public abstract Object getItemValue(MetaPropertyPath property, K itemId);
 }

@@ -87,8 +87,8 @@ public class ContainerTreeItems<E extends Entity> implements EntityTreeItems<E>,
     }
 
     @Override
-    public E getItem(@Nullable Object itemId) {
-        return itemId == null ? null : container.getItemOrNull(itemId);
+    public E getItem(Object itemId) {
+        return container.getItemOrNull(itemId);
     }
 
     @Override

@@ -562,6 +562,7 @@ public abstract class AbstractDataGridLoader<T extends DataGrid> extends Actions
         return column;
     }
 
+    @Nullable
     protected DataGrid.Renderer loadRenderer(Element columnElement) {
         Element renderer = columnElement.element("renderer");
         if (renderer == null) {
@@ -576,6 +577,7 @@ public abstract class AbstractDataGridLoader<T extends DataGrid> extends Actions
         return resultComponent.createRenderer(rendererClass);
     }
 
+    @Nullable
     protected Class loadGeneratedType(Element columnElement) {
         String colGenType = columnElement.attributeValue("generatedType");
         if (StringUtils.isNotEmpty(colGenType)) {
@@ -584,6 +586,7 @@ public abstract class AbstractDataGridLoader<T extends DataGrid> extends Actions
         return null;
     }
 
+    @Nullable
     protected String loadCaption(Element element) {
         if (element.attribute("caption") != null) {
             String caption = element.attributeValue("caption");
@@ -620,7 +623,7 @@ public abstract class AbstractDataGridLoader<T extends DataGrid> extends Actions
     }
 
     protected void addDynamicAttributes(DataGrid component, MetaClass metaClass,
-                                        Datasource ds, CollectionLoader collectionLoader,
+                                        @Nullable Datasource ds, @Nullable CollectionLoader collectionLoader,
                                         List<Column> availableColumns) {
         if (getMetadataTools().isPersistent(metaClass)) {
             String windowId = getWindowId(context);

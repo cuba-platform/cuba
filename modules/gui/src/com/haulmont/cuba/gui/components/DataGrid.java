@@ -128,7 +128,7 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
      * @see #addColumn(Column, int)
      * @see #addColumn(String, MetaPropertyPath, int)
      */
-    Column<E> addColumn(String id, MetaPropertyPath propertyPath);
+    Column<E> addColumn(String id, @Nullable MetaPropertyPath propertyPath);
 
     /**
      * Creates new column with given Id and property at the specified index,

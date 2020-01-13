@@ -543,6 +543,7 @@ public abstract class WebWindow implements Window, Component.Wrapper, Component.
         this.context = (WindowContext) ctx;
     }
 
+    @Nullable
     protected Component.Focusable getComponentToFocus(Iterator<Component> componentsIterator) {
         while (componentsIterator.hasNext()) {
             Component child = componentsIterator.next();

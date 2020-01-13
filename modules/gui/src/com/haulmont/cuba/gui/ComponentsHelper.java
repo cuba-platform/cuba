@@ -206,6 +206,7 @@ public abstract class ComponentsHelper {
         return getComponentByIterationInternal(container.getOwnComponents(), id);
     }
 
+    @Nullable
     private static Component getComponentByIterationInternal(Collection<Component> components, String id) {
         for (Component component : components) {
             if (id.equals(component.getId())) {
@@ -648,7 +649,7 @@ public abstract class ComponentsHelper {
         }
     }
 
-    public static int findActionById(List<Action> actionList, String actionId) {
+    public static int findActionById(List<Action> actionList, @Nullable String actionId) {
         int oldIndex = -1;
         for (int i = 0; i < actionList.size(); i++) {
             Action a = actionList.get(i);

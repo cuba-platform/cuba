@@ -18,6 +18,8 @@ package com.haulmont.cuba.core.global;
 
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
 
+import javax.annotation.Nullable;
+
 public enum ClientType implements EnumClass<String> {
     WEB("W", "web"),
     PORTAL("P", "portal"),
@@ -40,6 +42,7 @@ public enum ClientType implements EnumClass<String> {
         return configPath;
     }
 
+    @Nullable
     public static ClientType fromId(String id) {
         if ("W".equals(id)) {
             return WEB;

@@ -42,6 +42,7 @@ public interface TableItems<I> extends DataUnit {
         return item;
     }
 
+    @Nullable
     Object getItemValue(Object itemId, Object propertyId);
 
     int size();
@@ -102,6 +103,7 @@ public interface TableItems<I> extends DataUnit {
          * @param itemId item id
          * @return ID of the next visible Item or <code>null</code>
          */
+        @Nullable
         Object nextItemId(Object itemId);
 
         /**
@@ -110,16 +112,19 @@ public interface TableItems<I> extends DataUnit {
          * @param itemId item id
          * @return ID of the previous visible item or <code>null</code>
          */
+        @Nullable
         Object prevItemId(Object itemId);
 
         /**
          * @return ID of the first visible item
          */
+        @Nullable
         Object firstItemId();
 
         /**
          * @return ID of the last visible item
          */
+        @Nullable
         Object lastItemId();
 
         /**
@@ -176,7 +181,7 @@ public interface TableItems<I> extends DataUnit {
         private final Object prevValue;
         private final Object value;
 
-        public ValueChangeEvent(TableItems<T> source, T item, String property, Object prevValue, Object value) {
+        public ValueChangeEvent(TableItems<T> source, T item, String property, @Nullable Object prevValue, @Nullable Object value) {
             super(source);
             this.item = item;
             this.property = property;
@@ -239,7 +244,7 @@ public interface TableItems<I> extends DataUnit {
     class SelectedItemChangeEvent<T> extends EventObject {
         protected final T selectedItem;
 
-        public SelectedItemChangeEvent(TableItems<T> source, T selectedItem) {
+        public SelectedItemChangeEvent(TableItems<T> source, @Nullable T selectedItem) {
             super(source);
             this.selectedItem = selectedItem;
         }
@@ -250,6 +255,7 @@ public interface TableItems<I> extends DataUnit {
             return (TableItems<T>) super.getSource();
         }
 
+        @Nullable
         public T getSelectedItem() {
             return selectedItem;
         }

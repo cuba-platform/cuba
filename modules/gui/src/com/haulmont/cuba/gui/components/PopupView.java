@@ -18,6 +18,7 @@ package com.haulmont.cuba.gui.components;
 
 import com.haulmont.bali.events.Subscription;
 
+import javax.annotation.Nullable;
 import java.util.EventObject;
 import java.util.function.Consumer;
 
@@ -149,6 +150,7 @@ public interface PopupView extends Component.HasCaption, Component.BelongToFrame
         BOTTOM_CENTER,
         BOTTOM_RIGHT;
 
+        @Nullable
         public static PopupPosition fromId(String position) {
             for (PopupPosition popupPosition : values()) {
                 if (popupPosition.name().equals(position)) {

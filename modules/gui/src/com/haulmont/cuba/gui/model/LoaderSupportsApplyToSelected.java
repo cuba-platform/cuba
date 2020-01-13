@@ -18,6 +18,7 @@ package com.haulmont.cuba.gui.model;
 
 import com.haulmont.cuba.core.global.LoadContext;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 /**
@@ -28,6 +29,7 @@ public interface LoaderSupportsApplyToSelected {
     /**
      * Returns last query executed by loader
      */
+    @Nullable
     LoadContext.Query getLastQuery();
 
     /**
@@ -35,12 +37,13 @@ public interface LoaderSupportsApplyToSelected {
      *
      * @return editable list of previous queries
      */
+    @Nullable
     List<LoadContext.Query> getPrevQueries();
 
     /**
      * Set previous queries which allows to load data on a previous loading result.
      */
-    void setPrevQueries(List<LoadContext.Query> prevQueries);
+    void setPrevQueries(@Nullable List<LoadContext.Query> prevQueries);
 
     /**
      * @return key of the current stack of sequential queries, which is unique for the current user session
@@ -50,5 +53,5 @@ public interface LoaderSupportsApplyToSelected {
     /**
      * @param queryKey key of the current stack of sequential queries, which is unique for the current user session
      */
-    void setQueryKey(Integer queryKey);
+    void setQueryKey(@Nullable Integer queryKey);
 }

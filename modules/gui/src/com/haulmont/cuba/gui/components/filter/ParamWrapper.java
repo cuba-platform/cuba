@@ -273,7 +273,7 @@ public class ParamWrapper implements Component, HasValue<Object> {
 
     @Override
     public <X> X unwrap(Class<X> internalComponentClass) {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     @Nullable
@@ -288,7 +288,7 @@ public class ParamWrapper implements Component, HasValue<Object> {
 
     @Override
     public <X> X unwrapComposition(Class<X> internalCompositionClass) {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     @Nullable

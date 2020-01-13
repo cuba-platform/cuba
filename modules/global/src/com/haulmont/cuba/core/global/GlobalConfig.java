@@ -32,6 +32,7 @@ import com.haulmont.cuba.security.role.SecurityStorageMode;
 import com.haulmont.cuba.security.role.SecurityStorageModeFactory;
 import org.apache.commons.pool2.impl.GenericKeyedObjectPoolConfig;
 
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -147,12 +148,14 @@ public interface GlobalConfig extends Config {
      * @return Overridden AppFolderEditWindow class name
      */
     @Property("cuba.web.appFolderEditWindow")
+    @Nullable
     String getAppFolderEditWindowClassName();
 
     /**
      * @return Overridden FolderEditWindow class name
      */
     @Property("cuba.web.folderEditWindow")
+    @Nullable
     String getFolderEditWindowClassName();
 
     /**
@@ -167,6 +170,7 @@ public interface GlobalConfig extends Config {
      * @return Classpath directories for dynamic class loader. Separated by ;
      */
     @Property("cuba.classpath.directories")
+    @Nullable
     String getCubaClasspathDirectories();
 
     /**
@@ -183,6 +187,7 @@ public interface GlobalConfig extends Config {
 
     @Property("cuba.anonymousSessionId")
     @Factory(factory = UuidTypeFactory.class)
+    @Nullable
     UUID getAnonymousSessionId();
 
     /**

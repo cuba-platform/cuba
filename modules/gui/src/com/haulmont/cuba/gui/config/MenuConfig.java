@@ -33,6 +33,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.io.IOException;
 import java.io.InputStream;
@@ -158,7 +159,7 @@ public class MenuConfig {
         }
     }
 
-    protected void loadMenuItems(Element parentElement, MenuItem parentItem) {
+    protected void loadMenuItems(Element parentElement, @Nullable MenuItem parentItem) {
         for (Element element : parentElement.elements()) {
             MenuItem menuItem = null;
             MenuItem currentParentItem = parentItem;
@@ -199,10 +200,6 @@ public class MenuConfig {
                 loadMenuItems(element, menuItem);
             } else if ("item".equals(element.getName())) {
                 menuItem = createMenuItem(element, currentParentItem);
-
-                if (menuItem == null) {
-                    continue;
-                }
             } else if ("separator".equals(element.getName())) {
                 String id = element.attributeValue("id");
                 if (StringUtils.isBlank(id))
@@ -214,6 +211,7 @@ public class MenuConfig {
                 }
             } else {
                 log.warn(String.format("Unknown tag '%s' in menu-config", element.getName()));
+                continue;
             }
 
             if (currentParentItem != null) {
@@ -224,7 +222,7 @@ public class MenuConfig {
         }
     }
 
-    protected MenuItem createMenuItem(Element element, MenuItem currentParentItem) {
+    protected MenuItem createMenuItem(Element element, @Nullable MenuItem currentParentItem) {
         String id = element.attributeValue("id");
 
         String idFromActions;
@@ -278,7 +276,7 @@ public class MenuConfig {
         return menuItem;
     }
 
-    protected void checkDuplicateAction(String menuItemId, String... actionDefinition) {
+    protected void checkDuplicateAction(@Nullable String menuItemId, String... actionDefinition) {
         boolean actionDefined = true;
         for (String s : actionDefinition) {
             actionDefined &= StringUtils.isNotEmpty(s);
@@ -323,7 +321,8 @@ public class MenuConfig {
         }
     }
 
-    protected String getIconPath(String icon) {
+    @Nullable
+    protected String getIconPath(@Nullable String icon) {
         if (icon == null || icon.isEmpty()) {
             return null;
         }
@@ -355,7 +354,7 @@ public class MenuConfig {
         return value;
     }
 
-    protected void addItem(List<MenuItem> items, MenuItem menuItem, MenuItem beforeItem, boolean before) {
+    protected void addItem(List<MenuItem> items, MenuItem menuItem, @Nullable MenuItem beforeItem, boolean before) {
         if (beforeItem == null) {
             items.add(menuItem);
         } else {
@@ -367,6 +366,7 @@ public class MenuConfig {
         }
     }
 
+    @Nullable
     protected MenuItem findItem(String id, MenuItem item) {
         if (id.equals(item.getId()))
             return item;

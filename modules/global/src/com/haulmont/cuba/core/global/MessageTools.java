@@ -327,6 +327,7 @@ public class MessageTools {
      * @param metaProperty MetaProperty
      * @return localized not null message
      */
+    @Nullable
     protected String getNotNullMessage(MetaProperty metaProperty) {
         String notNullMessage = (String) metaProperty.getAnnotations()
                 .get(NotNull.class.getName() + "_notnull_message");

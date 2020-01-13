@@ -16,6 +16,7 @@
 
 package com.haulmont.cuba.gui.components;
 
+import javax.annotation.Nullable;
 import java.util.EventObject;
 import java.util.function.Consumer;
 
@@ -60,7 +61,7 @@ public interface HasContextHelp {
      *
      * @param handler the handler to set
      */
-    void setContextHelpIconClickHandler(Consumer<ContextHelpIconClickEvent> handler);
+    void setContextHelpIconClickHandler(@Nullable Consumer<ContextHelpIconClickEvent> handler);
 
     /**
      * Describes context help icon click event.

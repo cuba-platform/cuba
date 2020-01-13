@@ -29,6 +29,7 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Nullable;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -214,6 +215,7 @@ public class QueryParserAstBased implements QueryParser {
                 .collect(Collectors.toList());
     }
 
+    @Nullable
     protected EntityNameAndPath getOriginEntityNameAndPath() {
         PathNode pathNode = getAnalyzer().getMainSelectedPathNode();
         IdentificationVariableNode identificationVariable = getAnalyzer().getMainIdentificationVariableNode();

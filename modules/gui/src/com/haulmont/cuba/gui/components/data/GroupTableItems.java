@@ -67,11 +67,13 @@ public interface GroupTableItems<I> extends TableItems.Sortable<I> {
     /**
      * @return a group property
      */
+    @Nullable
     Object getGroupProperty(GroupInfo groupId);
 
     /**
      * @return a group property value
      */
+    @Nullable
     Object getGroupPropertyValue(GroupInfo groupId);
 
     /**

@@ -68,6 +68,7 @@ public interface Datasource<T extends Entity> {
     /**
      * @return enclosing DsContext
      */
+    @Nullable
     DsContext getDsContext();
 
     /**

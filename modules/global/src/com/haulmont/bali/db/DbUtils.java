@@ -16,6 +16,7 @@
  */
 package com.haulmont.bali.db;
 
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.ThreadSafe;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
@@ -53,7 +54,7 @@ public final class DbUtils {
      * @param rs ResultSet to close.
      * @throws SQLException if a database access error occurs
      */
-    public static void close(ResultSet rs) throws SQLException {
+    public static void close(@Nullable ResultSet rs) throws SQLException {
         if (rs != null) {
             rs.close();
         }
@@ -65,7 +66,7 @@ public final class DbUtils {
      * @param stmt Statement to close.
      * @throws SQLException if a database access error occurs
      */
-    public static void close(Statement stmt) throws SQLException {
+    public static void close(@Nullable Statement stmt) throws SQLException {
         if (stmt != null) {
             stmt.close();
         }

@@ -16,6 +16,8 @@
 
 package com.haulmont.cuba.gui.sys;
 
+import javax.annotation.Nullable;
+
 public final class UiControllerDefinition {
 
     protected final UiControllerMeta controllerMeta;
@@ -36,6 +38,7 @@ public final class UiControllerDefinition {
         return controllerMeta.getControllerClass();
     }
 
+    @Nullable
     public RouteDefinition getRouteDefinition() {
         return controllerMeta.getRouteDefinition();
     }

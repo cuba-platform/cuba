@@ -85,6 +85,8 @@ public class MapEntityOptions<E extends Entity> extends MapOptions<E> implements
             List<E> itemsCollection = new ArrayList<>(getItemsCollection().values());
             if (!itemsCollection.isEmpty()) {
                 metaClass = itemsCollection.get(0).getMetaClass();
+            } else {
+                throw new IllegalStateException("Unable to determine metaclass");
             }
         }
         return metaClass;

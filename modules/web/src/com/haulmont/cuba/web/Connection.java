@@ -135,7 +135,7 @@ public interface Connection {
         private final UserSession previousSession;
         private final UserSession newSession;
 
-        public StateChangeEvent(Connection source, UserSession previousSession, UserSession newSession) {
+        public StateChangeEvent(Connection source, @Nullable UserSession previousSession, @Nullable UserSession newSession) {
             super(source);
             this.previousSession = previousSession;
             this.newSession = newSession;
@@ -150,10 +150,12 @@ public interface Connection {
             return (Connection) super.getSource();
         }
 
+        @Nullable
         public UserSession getPreviousSession() {
             return previousSession;
         }
 
+        @Nullable
         public UserSession getNewSession() {
             return newSession;
         }

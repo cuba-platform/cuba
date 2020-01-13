@@ -105,13 +105,15 @@ public class PortalConnection implements Connection {
      * @return created user session
      * @throws LoginException in case of unsuccessful login
      */
-    protected UserSession doLogin(String login, String password, Locale locale, String ipAddress, String clientInfo,
+    protected UserSession doLogin(String login, String password, Locale locale, @Nullable String ipAddress, @Nullable String clientInfo,
                                   Map<String, Object> params) throws LoginException {
         LoginPasswordCredentials credentials = new LoginPasswordCredentials(login, password, locale);
         credentials.setParams(params);
         credentials.setClientType(ClientType.PORTAL);
-        credentials.setIpAddress(ipAddress);
-        credentials.setClientInfo(clientInfo);
+        if (ipAddress != null)
+            credentials.setIpAddress(ipAddress);
+        if (clientInfo != null)
+            credentials.setClientInfo(clientInfo);
 
         if (portalConfig.getCheckPasswordOnClient()) {
             return loginClient(credentials).getSession();
@@ -171,7 +173,7 @@ public class PortalConnection implements Connection {
         return messages.formatMessage(MSG_PACK, "LoginException.InvalidLoginOrPassword", locale, login);
     }
 
-    protected Map<String, Object> getSessionParams(String ipAddress, String clientInfo) {
+    protected Map<String, Object> getSessionParams(@Nullable String ipAddress, @Nullable String clientInfo) {
         GlobalConfig globalConfig = configuration.getConfig(GlobalConfig.class);
         String serverInfo = "Portal (" +
                 globalConfig.getWebHostName() + ":" +
@@ -179,8 +181,8 @@ public class PortalConnection implements Connection {
                 globalConfig.getWebContextName() + ") ";
         return ParamsMap.of(
                 ClientType.class.getName(), AppContext.getProperty("cuba.clientType"),
-                SessionParams.IP_ADDRESS.getId(), ipAddress,
-                SessionParams.CLIENT_INFO.getId(), serverInfo + clientInfo
+                SessionParams.IP_ADDRESS.getId(), ipAddress != null ? ipAddress : "unknown",
+                SessionParams.CLIENT_INFO.getId(), serverInfo + (clientInfo != null ? clientInfo : "")
         );
     }
 

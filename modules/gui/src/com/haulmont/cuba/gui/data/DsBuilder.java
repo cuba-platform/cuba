@@ -112,7 +112,7 @@ public class DsBuilder {
     /**
      * INTERNAL
      */
-    public DsBuilder(DsContext dsContext) {
+    public DsBuilder(@Nullable DsContext dsContext) {
         this.dsContext = dsContext;
         this.id = "ds";
 
@@ -239,7 +239,7 @@ public class DsBuilder {
         return this;
     }
 
-    public DsBuilder setView(View view) {
+    public DsBuilder setView(@Nullable View view) {
         this.view = view;
         if (view != null)
             this.viewName = view.getName();
@@ -359,7 +359,7 @@ public class DsBuilder {
                 boolean isEmbedded = false;
                 if (master != null) {
                     MetaClass metaClass = master.getMetaClass();
-                    MetaProperty metaProperty = metaClass.getProperty(property);
+                    MetaProperty metaProperty = metaClass.getPropertyNN(property);
                     MetadataTools metadataTools = AppBeans.get(MetadataTools.NAME);
                     isEmbedded = metadataTools.isEmbedded(metaProperty);
                 }

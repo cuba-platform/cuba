@@ -21,6 +21,8 @@ import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.UserSessionSource;
 
 import org.springframework.stereotype.Component;
+
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.Locale;
 
@@ -38,6 +40,7 @@ public class MessagesImpl extends AbstractMessages {
     }
 
     @Override
+    @Nullable
     protected String searchRemotely(String pack, String key, Locale locale) {
         return null;
     }

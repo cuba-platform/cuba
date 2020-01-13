@@ -163,7 +163,7 @@ public class WebSideMenu extends WebAbstractComponent<CubaSideMenu> implements S
 
     @Override
     public MenuItem createMenuItem(String id) {
-        return createMenuItem(id, null, null, null);
+        return createMenuItem(id, "", null, null);
     }
 
     @Override

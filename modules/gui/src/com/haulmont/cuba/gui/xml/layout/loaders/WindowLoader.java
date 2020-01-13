@@ -34,6 +34,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
 import org.perf4j.StopWatch;
 
+import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 
@@ -263,6 +264,7 @@ public class WindowLoader extends ContainerLoader<Window> implements ComponentRo
     }
 
     @Deprecated
+    @Nullable
     protected Object initCompanion(Element companionsElem, AbstractWindow window) {
         Element element = companionsElem.element(AppConfig.getClientType().toString().toLowerCase());
         if (element != null) {
