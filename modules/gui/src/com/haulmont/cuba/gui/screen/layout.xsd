@@ -2441,7 +2441,7 @@
         <xs:complexContent>
             <xs:extension base="baseComponent">
                 <xs:sequence>
-                    <xs:choice>
+                    <xs:choice minOccurs="0">
                         <xs:element name="actions" nillable="true" minOccurs="0">
                             <xs:complexType>
                                 <xs:sequence>
@@ -3460,7 +3460,7 @@
 
     <xs:complexType name="dataLoadCoordinatorType">
         <xs:sequence>
-            <xs:choice maxOccurs="unbounded">
+            <xs:choice minOccurs="0" maxOccurs="unbounded">
                 <xs:element name="refresh" type="dataLoadCoordinatorTriggerType" minOccurs="0" maxOccurs="unbounded"/>
             </xs:choice>
         </xs:sequence>
@@ -3608,7 +3608,7 @@
 
     <xs:complexType name="inputDialogParamsType">
         <xs:sequence>
-            <xs:choice maxOccurs="unbounded">
+            <xs:choice minOccurs="0" maxOccurs="unbounded">
                 <xs:element name="stringParameter" type="inputDialogPrimitiveParam"/>
 
                 <xs:element name="booleanParameter" type="inputDialogPrimitiveParam"/>
