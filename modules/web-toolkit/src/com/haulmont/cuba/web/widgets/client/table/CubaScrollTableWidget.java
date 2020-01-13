@@ -518,6 +518,22 @@ public class CubaScrollTableWidget extends VScrollTable implements TableWidget {
         }
 
         @Override
+        public void setWidth(String width) {
+            super.setWidth(width);
+
+            /*
+             * Have to set the same width to aggregation row when width is set in
+             * com.vaadin.v7.client.ui.VScrollTable#setContentWidth
+             */
+            if (_delegate.isAggregationVisible()) {
+                int offsetWidth = getElement().getOffsetWidth();
+                if (offsetWidth > 0) {
+                    _delegate.aggregationRow.setWidth(offsetWidth + "px");
+                }
+            }
+        }
+
+        @Override
         protected HeaderCell createHeaderCell(String cid, String caption) {
             return new CubaScrollTableHeaderCell(cid, caption);
         }
