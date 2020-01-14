@@ -33,4 +33,8 @@
   .#{$primary-stylename}.c-disabled-or-readonly.c-empty-value {
     color: transparent;
   }
+
+  .#{$primary-stylename}.v-readonly:focus {
+    border-color: $v-focus-color;
+  }
 }

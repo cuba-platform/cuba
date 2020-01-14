@@ -93,6 +93,10 @@
     &.v-disabled {
       @include valo-textfield-readonly-style;
     }
+
+    &.v-readonly:focus {
+      border-color: $v-focus-color;
+    }
   }
 
   .#{$primary-stylename}-currency {
