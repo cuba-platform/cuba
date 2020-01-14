@@ -25,6 +25,10 @@
 
   .#{$primary-stylename}.v-readonly {
     @include valo-textfield-readonly-style;
+
+    &:focus {
+      border-color: $v-focus-color;
+    }
   }
 
   .#{$primary-stylename}-error {

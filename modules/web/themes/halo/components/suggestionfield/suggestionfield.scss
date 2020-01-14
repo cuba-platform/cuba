@@ -45,6 +45,10 @@ $cuba-suggestionfield-edit-color: scale-color(lighten($v-focus-color, 35%), $sat
   .#{$primary-stylename}.v-readonly,
   .#{$primary-stylename}-error.v-readonly {
     @include valo-textfield-readonly-style;
+
+    &:focus {
+      border-color: $v-focus-color;
+    }
   }
 
   .#{$primary-stylename}-popup {

@@ -112,4 +112,8 @@ $c-default-datefield-width: 120px;
   .#{$primary-stylename}.v-datefield-popup {
     @include valo-datefield-popup-style;
   }
+
+  .v-datefield.v-readonly [class*="textfield"]:focus {
+    border-color: $v-focus-color;
+  }
 }
