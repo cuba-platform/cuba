@@ -152,6 +152,13 @@ public interface PickerField<V extends Entity> extends Field<V>, ActionsHolder, 
      */
     Subscription addFieldValueChangeListener(Consumer<FieldValueChangeEvent<V>> listener);
 
+    /**
+     * The event is fired when a user inputs value manually.
+     * <p>
+     * Field editing can be enabled via {@link #setFieldEditable(boolean)}.
+     *
+     * @param <V> field value type
+     */
     class FieldValueChangeEvent<V extends Entity> extends EventObject {
 
         protected final String text;
