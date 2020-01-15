@@ -22,6 +22,7 @@ import com.haulmont.cuba.gui.components.AbstractWindow;
 import com.haulmont.cuba.gui.components.Button;
 import com.haulmont.cuba.gui.components.FileMultiUploadField;
 import com.haulmont.cuba.gui.components.UploadField;
+import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.upload.FileUploadingAPI;
@@ -43,6 +44,9 @@ public class MultiUploader extends AbstractWindow {
 
     @Inject
     protected FileMultiUploadField multiUpload;
+
+    @Named("uploadsTable.remove")
+    protected RemoveAction removeFileAction;
 
     @Named("windowActions.windowCommit")
     protected Button okBtn;
@@ -82,6 +86,8 @@ public class MultiUploader extends AbstractWindow {
         });
 
         multiUpload.addFileUploadStartListener(e -> okBtn.setEnabled(false));
+
+        removeFileAction.setAutocommit(false);
     }
 
     @Override
