@@ -23,8 +23,8 @@
         focusComponent="rolesTable">
 
     <dsContext>
-        <collectionDatasource id="rolesDs" class="com.haulmont.cuba.security.entity.Role" view="_local" datasourceClass="com.haulmont.cuba.gui.app.security.ds.RolesCollectionDatasource">
-        </collectionDatasource>
+        <collectionDatasource id="rolesDs" class="com.haulmont.cuba.security.entity.Role" view="_local"
+                              datasourceClass="com.haulmont.cuba.gui.app.security.ds.RolesDatasource"/>
     </dsContext>
 
     <dialogMode height="theme://cuba.gui.dialogSize.height.xlarge"
@@ -32,9 +32,21 @@
                 resizable="true"/>
 
     <layout expand="rolesTable">
-        <filter id="filter" applyTo="rolesTable" datasource="rolesDs" margin="false,false,true,false">
-            <properties include=".*"/>
-        </filter>
+        <groupBox collapsable="false" outerMargin="true,false,true,false">
+            <grid id="grid" spacing="true">
+                <columns count="6"/>
+                <rows>
+                    <row id="gridRowUp">
+                        <label value="msg://role.name" align="MIDDLE_LEFT"/>
+                        <textField id="nameField" width="250px"/>
+                        <label value="msg://role.locName" align="MIDDLE_LEFT"/>
+                        <textField id="locNameField" width="250px"/>
+                        <label value="msg://role.description" align="MIDDLE_LEFT"/>
+                        <textField id="descriptionField" width="250px"/>
+                    </row>
+                </rows>
+            </grid>
+        </groupBox>
         <table id="rolesTable" width="100%" editable="true" multiselect="true">
             <actions>
                 <action id="create"/>
@@ -68,7 +80,6 @@
                 <column id="locName" caption="msg://role.locName"/>
                 <column id="description" caption="msg://role.description"/>
                 <column id="defaultRole" caption="msg://role.defaultRole" editable="true"/>
-                <column id="type" caption="msg://role.type"/>
             </columns>
             <rows datasource="rolesDs"/>
         </table>

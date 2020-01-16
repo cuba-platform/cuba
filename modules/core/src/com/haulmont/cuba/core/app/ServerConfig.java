@@ -21,7 +21,14 @@ import com.haulmont.cuba.core.config.Property;
 import com.haulmont.cuba.core.config.Source;
 import com.haulmont.cuba.core.config.SourceType;
 import com.haulmont.cuba.core.config.defaults.*;
+import com.haulmont.cuba.core.config.type.Factory;
+import com.haulmont.cuba.core.config.type.TokenizedStringListFactory;
 import com.haulmont.cuba.security.app.UserSessionsAPI;
+import com.haulmont.cuba.security.entity.Access;
+import com.haulmont.cuba.security.role.SecurityStorageMode;
+import com.haulmont.cuba.security.role.SecurityStorageModeFactory;
+
+import java.util.List;
 
 /**
  * Configuration parameters interface used by the CORE layer.
@@ -82,6 +89,7 @@ public interface ServerConfig extends Config {
     @Property("cuba.userSessionExpirationTimeoutSec")
     @DefaultInt(1800)
     int getUserSessionExpirationTimeoutSec();
+
     void setUserSessionExpirationTimeoutSec(int timeout);
 
     /**
@@ -92,6 +100,7 @@ public interface ServerConfig extends Config {
     @Property("cuba.userSessionSendTimeoutSec")
     @DefaultInt(10)
     int getUserSessionSendTimeoutSec();
+
     void setUserSessionSendTimeoutSec(int timeout);
 
     /**
@@ -125,7 +134,7 @@ public interface ServerConfig extends Config {
     /**
      * An immutable file storage throws exception on attempt to write an existing file.
      *
-     * @return  whether file storage is immutable.
+     * @return whether file storage is immutable.
      */
     @Property("cuba.immutableFileStorage")
     @DefaultBoolean(true)
@@ -138,6 +147,7 @@ public interface ServerConfig extends Config {
     @Source(type = SourceType.DATABASE)
     @DefaultBoolean(false)
     boolean getSchedulingActive();
+
     void setSchedulingActive(boolean value);
 
     /**
@@ -147,6 +157,7 @@ public interface ServerConfig extends Config {
     @Source(type = SourceType.DATABASE)
     @DefaultLong(1000)
     long getSchedulingInterval();
+
     void setSchedulingInterval(long value);
 
     /**
@@ -155,6 +166,7 @@ public interface ServerConfig extends Config {
     @Property("cuba.schedulingThreadPoolSize")
     @DefaultInt(10)
     int getSchedulingThreadPoolSize();
+
     void setSchedulingThreadPoolSize(int value);
 
     /**
@@ -165,6 +177,7 @@ public interface ServerConfig extends Config {
     @Source(type = SourceType.DATABASE)
     @DefaultBoolean(false)
     boolean getInMemoryDistinct();
+
     void setInMemoryDistinct(boolean value);
 
     /**
@@ -174,6 +187,7 @@ public interface ServerConfig extends Config {
     @Source(type = SourceType.DATABASE)
     @DefaultInt(0)
     int getDefaultQueryTimeoutSec();
+
     void setDefaultQueryTimeoutSec(int timeout);
 
     /**
@@ -315,7 +329,7 @@ public interface ServerConfig extends Config {
      * will be checked for Cuba and EclipseLink enhancing interfaces. If any interfaces are missing,
      * an exception will be thrown.
      * If true, detected problems will be logged instead of throwing {@code EntityNotEnhancedException}.
-     *
+     * <p>
      * List of checked interfaces:
      * {@link com.haulmont.cuba.core.sys.CubaEnhanced}
      * {@link org.eclipse.persistence.internal.descriptors.PersistenceObject}
@@ -324,4 +338,55 @@ public interface ServerConfig extends Config {
      */
     @Property("cuba.disableEntityEnhancementCheck")
     boolean getDisableEntityEnhancementCheck();
+
+    /**
+     * Defines the source from which roles are used in the application. There are 2 possible values:
+     * SOURCE_CODE - only roles defined in the source code will be used;
+     * MIXED - mixed mode, both sources will be used. If there are roles with equal names in the database and in
+     * the source code, role from database will be used.
+     * Application uses mixed mode by default.
+     */
+    @Property("cuba.rolesStorageMode")
+    @Default("MIXED")
+    @Factory(factory = SecurityStorageModeFactory.class)
+    SecurityStorageMode getRolesStorageMode();
+
+    /**
+     * Defines a policy for resolving permission values that are not defined in roles.
+     *
+     * By default, if permission value is not defined (neither explicitly nor using default value) then it is denied.
+     */
+    @Property("cuba.security.undefinedAccessPolicy")
+    @Default("DENY")
+    Access getPermissionUndefinedAccessPolicy();
+
+    /**
+     * Whether the {@link com.haulmont.cuba.core.sys.DefaultPermissionValuesConfig} should be used when permissions are
+     * calculated
+     */
+    @Property("cuba.security.defaultPermissionValuesConfigEnabled")
+    @DefaultBoolean(false)
+    boolean getDefaultPermissionValuesConfigEnabled();
+
+    /**
+     * Defines the source from which access groups are used in the application. There are 2 possible values:
+     * SOURCE_CODE - only access groups defined in the source code will be used;
+     * MIXED - mixed mode, both sources will be used. If there are access groups with equal names in the database and in
+     * the source code, access group from database will be used.
+     * Application uses mixed mode by default.
+     */
+    @Property("cuba.accessGroupsStorageMode")
+    @Default("MIXED")
+    @Factory(factory = SecurityStorageModeFactory.class)
+    SecurityStorageMode getAccessGroupsStorageMode();
+
+    /**
+     * Represents list of all available security scopes for all client types.
+     * Allows to select security scopes from the list in a UI and
+     * associate roles with user and selected security scope
+     */
+    @Property("cuba.securityScopes")
+    @Default("GENERIC_UI")
+    @Factory(factory = TokenizedStringListFactory.class)
+    List<String> getSecurityScopes();
 }

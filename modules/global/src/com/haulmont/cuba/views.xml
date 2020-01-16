@@ -46,6 +46,7 @@
             <property name="name"/>
             <property name="locName"/>
             <property name="defaultRole"/>
+            <property name="securityScope"/>
         </property>
         <property name="roleName"/>
     </view>
@@ -114,7 +115,7 @@
         <property name="type"/>
     </view>
 
-    <view  entity="sec$Role" name="role.export" extends="_local">
+    <view entity="sec$Role" name="role.export" extends="_local">
         <property name="permissions" view="_local"/>
     </view>
 

@@ -30,6 +30,7 @@ public abstract class AbstractClientCredentials extends AbstractCredentials
     private String ipAddress;
     private String hostName;
     private ClientType clientType;
+    private String securityScope;
     private boolean syncNewUserSessionReplication = false;
 
     private boolean checkClientPermissions = true;
@@ -114,5 +115,13 @@ public abstract class AbstractClientCredentials extends AbstractCredentials
 
     public void setTimeZone(TimeZone timeZone) {
         this.timeZone = timeZone;
+    }
+
+    public String getSecurityScope() {
+        return securityScope;
+    }
+
+    public void setSecurityScope(String securityScope) {
+        this.securityScope = securityScope;
     }
 }

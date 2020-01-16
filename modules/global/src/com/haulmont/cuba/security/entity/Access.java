@@ -16,7 +16,9 @@
 
 package com.haulmont.cuba.security.entity;
 
-public enum Access {
+import com.haulmont.chile.core.datatypes.impl.EnumClass;
+
+public enum Access implements EnumClass<Integer>, HasSecurityAccessValue {
     DENY(0),
     ALLOW(1);
 
@@ -26,11 +28,12 @@ public enum Access {
         this.id = id;
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public static Access fromId(int id) {
+    public static Access fromId(Integer id) {
+        if (id == null) return null;
         switch (id) {
             case 0: return DENY;
             case 1: return ALLOW;

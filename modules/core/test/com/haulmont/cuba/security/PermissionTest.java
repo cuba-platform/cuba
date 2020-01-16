@@ -169,7 +169,7 @@ public class PermissionTest {
         assertFalse(permitted);
 
         permitted = userSession.isPermitted(PermissionType.SCREEN, "some action");
-        assertTrue(permitted); // permitted all if not explicitly denied
+        assertFalse(permitted); // not permitted all if not explicitly denied
 
         permitted = userSession.isPermitted(PermissionType.ENTITY_ATTR, PERM_TARGET_ATTR);
         assertTrue(permitted); // READ access permitted

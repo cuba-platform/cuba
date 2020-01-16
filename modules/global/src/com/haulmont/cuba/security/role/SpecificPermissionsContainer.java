@@ -16,12 +16,21 @@
 
 package com.haulmont.cuba.security.role;
 
-public interface ApplicationRole {
+import com.haulmont.cuba.security.entity.Access;
 
-    EntityPermissions entityPermissions();
+import javax.annotation.Nullable;
 
-    EntityAttributePermissions entityAttributePermissions();
+public class SpecificPermissionsContainer extends PermissionsContainer {
 
-    SpecificPermissions specificPermissions();
+    private static final long serialVersionUID = 182848717412671042L;
 
+    private Access defaultSpecificAccess;
+
+    public Access getDefaultSpecificAccess() {
+        return defaultSpecificAccess;
+    }
+
+    public void setDefaultSpecificAccess(@Nullable Access defaultSpecificAccess) {
+        this.defaultSpecificAccess = defaultSpecificAccess;
+    }
 }

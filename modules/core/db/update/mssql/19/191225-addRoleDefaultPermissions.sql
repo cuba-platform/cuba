@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.security.role;
-
-public class ScreenPermissions extends Permissions {
-    private static final long serialVersionUID = -6416873506276217570L;
-}
+alter table SEC_ROLE add DEFAULT_SCREEN_ACCESS integer;
+alter table SEC_ROLE add DEFAULT_ENTITY_CREATE_ACCESS integer;
+alter table SEC_ROLE add DEFAULT_ENTITY_READ_ACCESS integer;
+alter table SEC_ROLE add DEFAULT_ENTITY_UPDATE_ACCESS integer;
+alter table SEC_ROLE add DEFAULT_ENTITY_DELETE_ACCESS integer;
+alter table SEC_ROLE add DEFAULT_ENTITY_ATTRIBUTE_ACCESS integer;
+alter table SEC_ROLE add DEFAULT_SPECIFIC_ACCESS integer;

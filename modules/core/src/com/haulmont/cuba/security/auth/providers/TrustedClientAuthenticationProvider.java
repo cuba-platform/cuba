@@ -100,7 +100,7 @@ public class TrustedClientAuthenticationProvider extends AbstractAuthenticationP
     @SuppressWarnings("RedundantThrows")
     protected UserSession createSession(@SuppressWarnings("unused") TrustedClientCredentials credentials,
                                         User user, Locale userLocale) throws LoginException {
-        return userSessionManager.createSession(user, userLocale, false);
+        return userSessionManager.createSession(user, userLocale, false, credentials.getSecurityScope());
     }
 
     protected void checkUserAccess(Credentials loginAndPassword, AuthenticationDetails authenticationDetails)

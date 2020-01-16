@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.security.role;
+package com.haulmont.cuba.security.entity;
 
-public class EntityPermissions extends Permissions {
-    private static final long serialVersionUID = 1810208523892912417L;
+public interface HasSecurityAccessValue {
+    Integer getId();
 }

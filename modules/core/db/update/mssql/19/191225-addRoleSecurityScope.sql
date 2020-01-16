@@ -14,12 +14,4 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.security.role;
-
-public interface GenericUiRole {
-
-    ScreenPermissions screenPermissions();
-
-    ScreenElementsPermissions screenElementsPermissions();
-
-}
+alter table SEC_ROLE add SECURITY_SCOPE varchar(255);

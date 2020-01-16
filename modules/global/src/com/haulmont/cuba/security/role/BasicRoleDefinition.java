@@ -16,88 +16,61 @@
 
 package com.haulmont.cuba.security.role;
 
-import com.haulmont.cuba.security.entity.RoleType;
-
 import java.io.Serializable;
 
 public class BasicRoleDefinition implements RoleDefinition, Serializable {
 
-    private EntityPermissions entityPermissions;
-    private EntityAttributePermissions entityAttributePermissions;
-    private SpecificPermissions specificPermissions;
-    private ScreenPermissions screenPermissions;
-    private ScreenElementsPermissions screenElementsPermissions;
-    private RoleType roleType;
+    private EntityPermissionsContainer entityPermissions;
+    private EntityAttributePermissionsContainer entityAttributePermissions;
+    private SpecificPermissionsContainer specificPermissions;
+    private ScreenPermissionsContainer screenPermissions;
+    private ScreenElementsPermissionsContainer screenElementsPermissions;
     private String name;
     private String description;
+    private String securityScope;
 
-    public BasicRoleDefinition(String name,
-                               String description,
-                               RoleType roleType,
-                               EntityPermissions entityPermissions,
-                               EntityAttributePermissions entityAttributePermissions,
-                               SpecificPermissions specificPermissions,
-                               ScreenPermissions screenPermissions,
-                               ScreenElementsPermissions screenElementsPermissions) {
-        this.name = name;
-        this.description = description;
-        this.entityPermissions = entityPermissions;
-        this.entityAttributePermissions = entityAttributePermissions;
-        this.specificPermissions = specificPermissions;
-        this.screenPermissions = screenPermissions;
-        this.screenElementsPermissions = screenElementsPermissions;
-        this.roleType = roleType;
+    private BasicRoleDefinition() {
+        entityPermissions = new EntityPermissionsContainer();
+        entityAttributePermissions = new EntityAttributePermissionsContainer();
+        specificPermissions = new SpecificPermissionsContainer();
+        screenPermissions = new ScreenPermissionsContainer();
+        screenElementsPermissions = new ScreenElementsPermissionsContainer();
     }
 
-    public BasicRoleDefinition() {
-        initApplicationRoleFields();
-        initGenericUiRoleFields();
-        roleType = RoleType.STANDARD;
-    }
-
-    private void initApplicationRoleFields() {
-        entityPermissions = new EntityPermissions();
-        entityAttributePermissions = new EntityAttributePermissions();
-        specificPermissions = new SpecificPermissions();
-    }
-
-    private void initGenericUiRoleFields() {
-        screenPermissions = new ScreenPermissions();
-        screenElementsPermissions = new ScreenElementsPermissions();
+    private BasicRoleDefinition(BasicRoleDefinitionBuilder builder) {
+        this.name = builder.name;
+        this.description = builder.description;
+        this.screenPermissions = builder.screenPermissions;
+        this.entityPermissions = builder.entityPermissions;
+        this.entityAttributePermissions = builder.entityAttributePermissions;
+        this.specificPermissions = builder.specificPermissions;
+        this.screenElementsPermissions = builder.screenElementsPermissions;
+        this.securityScope = builder.securityScope;
     }
 
     @Override
-    public EntityPermissions entityPermissions() {
+    public EntityPermissionsContainer entityPermissions() {
         return entityPermissions;
     }
 
     @Override
-    public EntityAttributePermissions entityAttributePermissions() {
+    public EntityAttributePermissionsContainer entityAttributePermissions() {
         return entityAttributePermissions;
     }
 
     @Override
-    public SpecificPermissions specificPermissions() {
+    public SpecificPermissionsContainer specificPermissions() {
         return specificPermissions;
     }
 
     @Override
-    public ScreenPermissions screenPermissions() {
+    public ScreenPermissionsContainer screenPermissions() {
         return screenPermissions;
     }
 
     @Override
-    public ScreenElementsPermissions screenElementsPermissions() {
+    public ScreenElementsPermissionsContainer screenElementsPermissions() {
         return screenElementsPermissions;
-    }
-
-    @Override
-    public RoleType getRoleType() {
-        return roleType;
-    }
-
-    public void setRoleType(RoleType roleType) {
-        this.roleType = roleType;
     }
 
     @Override
@@ -116,5 +89,77 @@ public class BasicRoleDefinition implements RoleDefinition, Serializable {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    @Override
+    public String getSecurityScope() {
+        return securityScope;
+    }
+
+    public void setSecurityScope(String securityScope) {
+        this.securityScope = securityScope;
+    }
+
+    public static BasicRoleDefinitionBuilder builder() {
+        return new BasicRoleDefinitionBuilder();
+    }
+
+    public static class BasicRoleDefinitionBuilder {
+
+        private String name;
+        private String description;
+        private String securityScope;
+        private EntityPermissionsContainer entityPermissions = new EntityPermissionsContainer();
+        private EntityAttributePermissionsContainer entityAttributePermissions = new EntityAttributePermissionsContainer();
+        private SpecificPermissionsContainer specificPermissions = new SpecificPermissionsContainer();
+        private ScreenPermissionsContainer screenPermissions = new ScreenPermissionsContainer();
+        private ScreenElementsPermissionsContainer screenElementsPermissions = new ScreenElementsPermissionsContainer();
+
+        private BasicRoleDefinitionBuilder() {
+        }
+
+        public BasicRoleDefinitionBuilder withName(String name) {
+            this.name = name;
+            return this;
+        }
+
+        public BasicRoleDefinitionBuilder withDescription(String description) {
+            this.description = description;
+            return this;
+        }
+
+        public BasicRoleDefinitionBuilder withSecurityScope(String securityScope) {
+            this.securityScope = securityScope;
+            return this;
+        }
+
+        public BasicRoleDefinitionBuilder withEntityPermissions(EntityPermissionsContainer entityPermissions) {
+            this.entityPermissions = entityPermissions;
+            return this;
+        }
+
+        public BasicRoleDefinitionBuilder withEntityAttributePermissions(EntityAttributePermissionsContainer entityAttributePermissions) {
+            this.entityAttributePermissions = entityAttributePermissions;
+            return this;
+        }
+
+        public BasicRoleDefinitionBuilder withSpecificPermissions(SpecificPermissionsContainer specificPermissions) {
+            this.specificPermissions = specificPermissions;
+            return this;
+        }
+
+        public BasicRoleDefinitionBuilder withScreenPermissions(ScreenPermissionsContainer screenPermissions) {
+            this.screenPermissions = screenPermissions;
+            return this;
+        }
+
+        public BasicRoleDefinitionBuilder withScreenElementsPermissions(ScreenElementsPermissionsContainer screenElementsPermissions) {
+            this.screenElementsPermissions = screenElementsPermissions;
+            return this;
+        }
+
+        public BasicRoleDefinition build() {
+            return new BasicRoleDefinition(this);
+        }
     }
 }

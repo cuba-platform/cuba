@@ -17,7 +17,7 @@
 package com.haulmont.cuba.security.app.role.annotation;
 
 import com.haulmont.cuba.security.app.role.AnnotatedRoleDefinition;
-import com.haulmont.cuba.security.entity.RoleType;
+import com.haulmont.cuba.security.entity.SecurityScope;
 import com.haulmont.cuba.security.role.SecurityStorageMode;
 import org.springframework.core.annotation.AliasFor;
 import org.springframework.stereotype.Component;
@@ -37,11 +37,14 @@ import java.lang.annotation.Target;
  * and mark it with this annotation. Usage example:
  *
  * <pre>
- *     &#064;Role(name = "My first role", type = RoleType.STANDARD, isDefault = true)
+ *     &#064;Role(name = "My first role", isDefault = true)
  * public class MyFirstRole extends AnnotatedRoleDefinition {
  *
  *     &#064;EntityAccess(target = SomeEntity.class,
  *             deny = {EntityOp.DELETE, EntityOp.UPDATE})
+ *     &#064;DefaultEntityAccess(
+ *              allow = {EntityOp.READ},
+ *              deny = {EntityOp.DELETE, EntityOp.UPDATE})
  *     &#064;Override
  *     public EntityPermissions entityPermissions() {
  *         return super.entityPermissions();
@@ -95,11 +98,6 @@ public @interface Role {
      */
     String description() default "";
 
-    /**
-     * Role type. Default value: {@code RoleType.STANDARD}
-     */
-    RoleType type() default RoleType.STANDARD;
-
     @AliasFor(annotation = Component.class)
     String value() default "";
 
@@ -107,4 +105,9 @@ public @interface Role {
      * Determines if the role is default.
      */
     boolean isDefault() default false;
+
+    /**
+     * Determines security scope for the role.
+     */
+    String securityScope() default SecurityScope.DEFAULT_SCOPE_NAME;
 }

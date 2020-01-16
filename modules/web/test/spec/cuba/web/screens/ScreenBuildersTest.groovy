@@ -28,6 +28,7 @@ import com.haulmont.cuba.gui.data.CollectionDatasource
 import com.haulmont.cuba.gui.screen.LookupScreen
 import com.haulmont.cuba.gui.screen.OpenMode
 import com.haulmont.cuba.gui.util.OperationResult
+import com.haulmont.cuba.security.app.SecurityScopesService
 import com.haulmont.cuba.security.entity.Group
 import com.haulmont.cuba.security.entity.User
 import com.haulmont.cuba.web.testsupport.proxy.TestServiceProxy
@@ -56,6 +57,12 @@ class ScreenBuildersTest extends UiScreenSpec {
             }
             commit(_) >> { CommitContext cc ->
                 return cc.getCommitInstances()
+            }
+        })
+
+        TestServiceProxy.mock(SecurityScopesService, Mock(SecurityScopesService) {
+            isOnlyDefaultScope() >> {
+                return true
             }
         })
     }

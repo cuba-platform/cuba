@@ -17,17 +17,19 @@
 
 package com.haulmont.cuba.gui.app.security.role.edit;
 
-import com.google.common.collect.ImmutableList;
 import com.haulmont.cuba.core.global.EntityStates;
 import com.haulmont.cuba.gui.app.security.role.edit.tabs.ScreenPermissionsFrame;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.security.app.SecurityScopesService;
+import com.haulmont.cuba.security.entity.Access;
+import com.haulmont.cuba.security.entity.EntityAttrAccess;
 import com.haulmont.cuba.security.entity.Role;
+import com.haulmont.cuba.security.entity.SecurityScope;
 import com.haulmont.cuba.security.role.RolesService;
 
 import javax.inject.Inject;
-import java.util.Arrays;
-import java.util.List;
+import java.util.stream.Collectors;
 
 public class RoleEditor extends AbstractEditor<Role> {
     @Inject
@@ -48,7 +50,7 @@ public class RoleEditor extends AbstractEditor<Role> {
     protected TextField name;
 
     @Inject
-    protected LookupField typeLookup;
+    protected LookupField securityScopeLookup;
 
     @Inject
     protected TextArea description;
@@ -60,35 +62,51 @@ public class RoleEditor extends AbstractEditor<Role> {
     protected CheckBox defaultRole;
 
     @Inject
+    protected SecurityScopesService securityScopesService;
+
+    @Inject
     protected RolesService rolesService;
 
-    protected static final List<String> SYSTEM_ROLES = ImmutableList.of("Administrators", "Anonymous");
+    @Inject
+    protected GridLayout defaultAccessGrid;
 
     @Override
-    protected void postInit() {
-        setCaption(entityStates.isNew(getItem()) && !getItem().isPredefined() ?
-                getMessage("createCaption") : formatMessage("editCaption", getItem().getName()));
-
-        screensTabFrame.loadPermissions();
-
-        if (getItem().isPredefined()) {
-            restrictAccessForPredefinedRole();
+    protected void initNewItem(Role item) {
+        if (!item.isPredefined()) {
+            item.setDefaultScreenAccess(Access.DENY);
+            item.setDefaultEntityCreateAccess(Access.DENY);
+            item.setDefaultEntityReadAccess(Access.DENY);
+            item.setDefaultEntityUpdateAccess(Access.DENY);
+            item.setDefaultEntityDeleteAccess(Access.DENY);
+            item.setDefaultEntityAttributeAccess(EntityAttrAccess.DENY);
+            item.setDefaultSpecificAccess(Access.DENY);
         }
     }
 
     @Override
+    protected void postInit() {
+        Role role = getItem();
+        if (entityStates.isNew(role) && !role.isPredefined()) {
+            setCaption(getMessage("createCaption"));
+            role.setSecurityScope(SecurityScope.DEFAULT_SCOPE_NAME);
+        } else {
+            setCaption(formatMessage("editCaption", role.getName()));
+        }
+
+        screensTabFrame.loadPermissions();
+
+        if (role.isPredefined()) {
+            restrictAccessForPredefinedRole();
+        }
+        initSecurityScopes();
+    }
+
+    @Override
     public boolean preCommit() {
-        if (rolesService.isPredefinedRolesModeAvailable()) {
-            String name = getItem().getName();
-            boolean isPredefinedRoleExists = rolesService.getRoleByName(name) != null;
-            if (isPredefinedRoleExists) {
-                if (SYSTEM_ROLES.contains(name) && !getItem().isPredefined()) {
-                    return true;
-                } else {
-                    showNotification(getMessage("roleNameIsUsed"), NotificationType.WARNING);
-                    return false;
-                }
-            }
+        String roleName = getItem().getName();
+        if (rolesService.getRoleByName(roleName) != null) {
+            showNotification(getMessage("roleNameIsUsed"), NotificationType.WARNING);
+            return false;
         }
         return true;
     }
@@ -97,11 +115,22 @@ public class RoleEditor extends AbstractEditor<Role> {
         windowCommit.setVisible(false);
         windowCommitAndClose.setVisible(false);
         name.setEditable(false);
-        typeLookup.setEditable(false);
+        securityScopeLookup.setEditable(false);
         description.setEditable(false);
         locName.setEditable(false);
         defaultRole.setEditable(false);
+        defaultAccessGrid.getComponents().stream()
+                .filter(component -> component instanceof LookupField)
+                .forEach(component -> ((LookupField) component).setEditable(false));
+    }
 
-        showNotification(getMessage("predefinedRoleIsUnchangeable"));
+    protected void initSecurityScopes() {
+        //noinspection unchecked
+        securityScopeLookup.setOptionsMap(securityScopesService.getAvailableSecurityScopes()
+                .stream()
+                .collect(Collectors.toMap(SecurityScope::getLocName, SecurityScope::getName)));
+        if (securityScopesService.isOnlyDefaultScope()) {
+            securityScopeLookup.setEditable(false);
+        }
     }
 }

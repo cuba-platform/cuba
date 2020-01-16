@@ -23,7 +23,9 @@ import com.haulmont.cuba.gui.app.security.user.edit.UserEditor
 import com.haulmont.cuba.gui.config.MenuItem
 import com.haulmont.cuba.gui.config.MenuItemCommands
 import com.haulmont.cuba.gui.screen.OpenMode
+import com.haulmont.cuba.security.app.SecurityScopesService
 import com.haulmont.cuba.security.entity.User
+import com.haulmont.cuba.web.testsupport.proxy.TestServiceProxy
 import spec.cuba.web.UiScreenSpec
 import spec.cuba.web.menu.commandtargets.*
 
@@ -40,6 +42,12 @@ class MenuItemCommandsTest extends UiScreenSpec {
 
         TestRunnable.launched.set(false)
         TestRunnable.beanLocatorSet.set(false)
+
+        TestServiceProxy.mock(SecurityScopesService, Mock(SecurityScopesService) {
+            isOnlyDefaultScope() >> {
+                return true
+            }
+        })
     }
 
     @SuppressWarnings(['GroovyAccessibility'])

@@ -18,11 +18,12 @@ package com.haulmont.cuba.security.global;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.sys.UserInvocationContext;
+import com.haulmont.cuba.security.app.RoleDefinitionBuilder;
+import com.haulmont.cuba.security.app.RoleDefinitionsJoiner;
 import com.haulmont.cuba.security.entity.*;
 import com.haulmont.cuba.security.group.BasicSetOfAccessConstraints;
 import com.haulmont.cuba.security.group.SetOfAccessConstraints;
-import com.haulmont.cuba.security.role.BasicRoleDefinition;
-import com.haulmont.cuba.security.role.Permissions;
+import com.haulmont.cuba.security.role.PermissionsContainer;
 import com.haulmont.cuba.security.role.PermissionsUtils;
 import com.haulmont.cuba.security.role.RoleDefinition;
 
@@ -32,8 +33,6 @@ import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Consumer;
-import java.util.function.Function;
 
 /**
  * Class that encapsulates an active user session.
@@ -50,14 +49,14 @@ public class UserSession implements Serializable {
     protected User user;
     protected User substitutedUser;
     protected List<String> roles = new ArrayList<>();
-    protected EnumSet<RoleType> roleTypes = EnumSet.noneOf(RoleType.class);
     protected Locale locale;
     protected TimeZone timeZone;
     protected String address;
     protected String clientInfo;
     protected boolean system;
 
-    protected RoleDefinition effectiveRole;
+    protected RoleDefinition joinedRole;
+    protected Access permissionUndefinedAccessPolicy = Access.DENY;
     protected SetOfAccessConstraints setOfAccessConstraints;
 
     protected Map<String, Serializable> attributes;
@@ -82,16 +81,13 @@ public class UserSession implements Serializable {
 
         for (RoleDefinition role : roles) {
             this.roles.add(role.getName());
-            if (role.getRoleType() != null)
-                roleTypes.add(role.getRoleType());
         }
 
         this.locale = locale;
         if (user.getTimeZone() != null)
             this.timeZone = TimeZone.getTimeZone(user.getTimeZone());
 
-        effectiveRole = new BasicRoleDefinition();
-        roleTypes.add(effectiveRole.getRoleType());
+        joinedRole = RoleDefinitionBuilder.create().build();
 
         setOfAccessConstraints = new BasicSetOfAccessConstraints();
 
@@ -119,13 +115,13 @@ public class UserSession implements Serializable {
         roles = src.roles;
         locale = src.locale;
         timeZone = src.timeZone;
-        effectiveRole = src.effectiveRole;
+        joinedRole = src.joinedRole;
         setOfAccessConstraints = src.setOfAccessConstraints;
         attributes = src.attributes;
-        roleTypes = src.roleTypes;
         localAttributes = src.localAttributes;
         address = src.address;
         clientInfo = src.clientInfo;
+        permissionUndefinedAccessPolicy = src.permissionUndefinedAccessPolicy;
     }
 
     private void readObject(ObjectInputStream stream) throws IOException, ClassNotFoundException {
@@ -259,79 +255,33 @@ public class UserSession implements Serializable {
         this.clientInfo = clientInfo;
     }
 
-    private void performPermissionsAction(PermissionType type, Consumer<Permissions> consumer) {
-        switch (type) {
-            case ENTITY_OP:
-                consumer.accept(effectiveRole.entityPermissions());
-                break;
-            case ENTITY_ATTR:
-                consumer.accept(effectiveRole.entityAttributePermissions());
-                break;
-            case SPECIFIC:
-                consumer.accept(effectiveRole.specificPermissions());
-                break;
-            case SCREEN:
-                consumer.accept(effectiveRole.screenPermissions());
-                break;
-            case UI:
-                consumer.accept(effectiveRole.screenElementsPermissions());
-                break;
-            default:
-                throw new IllegalArgumentException("Unsupported permission type.");
-        }
-    }
-
-    private Object performPermissionsFunction(PermissionType type, Function<Permissions, Object> function) {
-        switch (type) {
-            case ENTITY_OP:
-                return function.apply(effectiveRole.entityPermissions());
-            case ENTITY_ATTR:
-                return function.apply(effectiveRole.entityAttributePermissions());
-            case SPECIFIC:
-                return function.apply(effectiveRole.specificPermissions());
-            case SCREEN:
-                return function.apply(effectiveRole.screenPermissions());
-            case UI:
-                return function.apply(effectiveRole.screenElementsPermissions());
-            default:
-                throw new IllegalArgumentException("Unsupported permission type.");
-        }
-    }
-
     /**
      * INTERNAL
+     * <p>
+     * Adds a permission to the joined role. If the joined role already has a permissions that allows more than
+     * the added permission, then the added permission is ignored.
      */
-    public void addPermission(PermissionType type, String target, @Nullable String extTarget, int value) {
-        performPermissionsAction(type, p -> PermissionsUtils.addPermission(p, target, extTarget, value));
-    }
-
-    /**
-     * INTERNAL
-     */
-    public void removePermission(PermissionType type, String target) {
-        performPermissionsAction(type, p -> PermissionsUtils.removePermission(p, target));
-    }
-
-    /**
-     * INTERNAL
-     */
-    public void removePermissions(PermissionType type) {
-        performPermissionsAction(type, PermissionsUtils::removePermissions);
+    public void addPermission(PermissionType type, String target, int value) {
+        RoleDefinition roleWithNewPermission = RoleDefinitionBuilder.create()
+                .withPermission(type, target, value)
+                .build();
+        joinedRole = RoleDefinitionsJoiner.join(joinedRole, roleWithNewPermission);
     }
 
     /**
      * INTERNAL
      */
     public Integer getPermissionValue(PermissionType type, String target) {
-        return (Integer) performPermissionsFunction(type, p -> PermissionsUtils.getPermissionValue(p, target));
+        return PermissionsUtils.getResultingPermissionValue(joinedRole, type, target,
+                permissionUndefinedAccessPolicy);
     }
 
     /**
      * Get permissions by type
      */
     public Map<String, Integer> getPermissionsByType(PermissionType type) {
-        //noinspection unchecked
-        return (Map<String, Integer>) performPermissionsFunction(type, PermissionsUtils::getPermissions);
+        PermissionsContainer permissionsContainer = PermissionsUtils.getPermissionsByType(joinedRole, type);
+        return Collections.unmodifiableMap(permissionsContainer.getExplicitPermissions());
     }
 
     /**
@@ -345,8 +295,7 @@ public class UserSession implements Serializable {
      * Check user permission for the entity operation
      */
     public boolean isEntityOpPermitted(MetaClass metaClass, EntityOp entityOp) {
-        return isPermitted(PermissionType.ENTITY_OP,
-                metaClass.getName() + Permission.TARGET_PATH_DELIMETER + entityOp.getId());
+        return isPermitted(PermissionType.ENTITY_OP, PermissionsUtils.getEntityOperationTarget(metaClass, entityOp));
     }
 
     /**
@@ -354,7 +303,7 @@ public class UserSession implements Serializable {
      */
     public boolean isEntityAttrPermitted(MetaClass metaClass, String property, EntityAttrAccess access) {
         return isPermitted(PermissionType.ENTITY_ATTR,
-                metaClass.getName() + Permission.TARGET_PATH_DELIMETER + property,
+                PermissionsUtils.getEntityAttributeTarget(metaClass, property),
                 access.getId());
     }
 
@@ -399,20 +348,9 @@ public class UserSession implements Serializable {
      * @return true if permitted, false otherwise
      */
     public boolean isPermitted(PermissionType type, String target, int value) {
-        // If we have super-role no need to check anything
-        if (roleTypes.contains(RoleType.SUPER))
-            return true;
-        // Get permission value assigned by the set of permissions
-        Integer v = getPermissionValue(type, target);
-        // Get permission value assigned by non-standard roles
-        for (RoleType roleType : roleTypes) {
-            Integer v1 = roleType.permissionValue(type, target);
-            if (v1 != null && (v == null || v < v1)) {
-                v = v1;
-            }
-        }
-        // Return true if no value set for this target, or if the value is more than requested
-        return v == null || v >= value;
+        Integer v = PermissionsUtils.getResultingPermissionValue(joinedRole, type, target,
+                permissionUndefinedAccessPolicy);
+        return (v != null && v >= value);
     }
 
     /**
@@ -530,23 +468,22 @@ public class UserSession implements Serializable {
     }
 
     /**
-     * Returns an instance of RoleDef interface. It can be used to retrieve information about user permissions.
+     * Returns an instance of {@link RoleDefinition} interface. It can be used to retrieve information about user permissions.
      * <p>
      * If you need to modify user permissions, use {@code RoleDefBuilder} to construct a suitable role and then
-     * apply it using {@link UserSession#applyEffectiveRole} method.
+     * apply it using {@link UserSession#setJoinedRole} method.
      */
-    public RoleDefinition getEffectiveRole() {
-        return effectiveRole;
+    public RoleDefinition getJoinedRole() {
+        return joinedRole;
     }
 
     /**
-     * Applies {@code effectiveRole} to the UserSession.
-     * After that user will only have permissions defined in the specified role.
+     * Sets {@code joinedRole} to the UserSession. After that user will only have permissions defined in the specified role.
      * <p>
-     * Use {@code RoleDefBuilder} to construct a suitable role.
+     * Use {@code RoleDefinitionBuilder} to construct a suitable role.
      */
-    public void applyEffectiveRole(RoleDefinition effectiveRole) {
-        this.effectiveRole = effectiveRole;
+    public void setJoinedRole(RoleDefinition joinedRole) {
+        this.joinedRole = joinedRole;
     }
 
     /**
@@ -565,6 +502,20 @@ public class UserSession implements Serializable {
      */
     public void setConstraints(SetOfAccessConstraints constraints) {
         this.setOfAccessConstraints = constraints;
+    }
+
+    public Access getPermissionUndefinedAccessPolicy() {
+        return permissionUndefinedAccessPolicy;
+    }
+
+    /**
+     * INTERNAL
+     *
+     * Sets the policy to resolve undefined permission values. Usually the value is taken from the
+     * {@code ServerConfig#getDefaultPermissionValuesConfigEnabled}
+     */
+    public void setPermissionUndefinedAccessPolicy(Access permissionUndefinedAccessPolicy) {
+        this.permissionUndefinedAccessPolicy = permissionUndefinedAccessPolicy;
     }
 
     @Override

@@ -32,6 +32,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -46,8 +49,9 @@ public class DataManagerCommitConstraintTest {
     private Constraint constraintUpdate, constraintDelete, constraintCreate;
     private User constraintUserUpdate, constraintUserCreate;
     private User testUserUpdate1, testUserUpdate2, testUserUpdate3;
-    private Role role;
+    private Role role, fullAccessRole;
     private User testUserDelete1, testUserDelete2;
+    private List<UserRole> userRoles = new ArrayList<>();
     private PasswordEncryption passwordEncryption;
 
     private static final String PASSWORD = "1";
@@ -179,10 +183,36 @@ public class DataManagerCommitConstraintTest {
             role.setName("role1");
             em.persist(role);
 
+            fullAccessRole = new Role();
+            fullAccessRole.setName("full-access");
+            fullAccessRole.setSecurityScope(SecurityScope.DEFAULT_SCOPE_NAME);
+            fullAccessRole.setDefaultEntityAttributeAccess(EntityAttrAccess.VIEW);
+            fullAccessRole.setDefaultEntityCreateAccess(Access.ALLOW);
+            fullAccessRole.setDefaultEntityReadAccess(Access.ALLOW);
+            fullAccessRole.setDefaultEntityUpdateAccess(Access.ALLOW);
+            fullAccessRole.setDefaultEntityDeleteAccess(Access.ALLOW);
+            em.persist(fullAccessRole);
+
+            //assign fullAccess role to each user
+            List<User> users = Arrays.asList(constraintUserUpdate, constraintUserCreate, testUserUpdate1, testUserUpdate2,
+                    testUserUpdate3, testUserDelete1, testUserDelete2);
+            for (User user : users) {
+                UserRole userRole = createUserRole(user, fullAccessRole);
+                userRoles.add(userRole);
+                em.persist(userRole);
+            }
+
             tx.commit();
         } finally {
             tx.end();
         }
+    }
+
+    private UserRole createUserRole(User user, Role role) {
+        UserRole userRole = new UserRole();
+        userRole.setUser(user);
+        userRole.setRole(role);
+        return userRole;
     }
 
     @Test
@@ -350,7 +380,8 @@ public class DataManagerCommitConstraintTest {
 
     @AfterEach
     public void tearDown() throws Exception {
-        cont.deleteRecord("SEC_ROLE", role.getId());
+        cont.deleteRecord("SEC_USER_ROLE", userRoles.stream().map(UserRole::getId).toArray());
+        cont.deleteRecord("SEC_ROLE", role.getId(), fullAccessRole.getId());
         cont.deleteRecord("SEC_USER",
                 constraintUserUpdate.getId(), constraintUserCreate.getId(),
                 testUserUpdate1.getId(), testUserUpdate2.getId(), testUserUpdate3.getId(),

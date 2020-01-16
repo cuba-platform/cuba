@@ -28,7 +28,7 @@
 
     <dsContext>
         <datasource id="userDs" class="com.haulmont.cuba.security.entity.User" view="user.edit">
-            <collectionDatasource id="rolesDs" property="userRoles"/>
+            <groupDatasource id="rolesDs" property="userRoles"/>
             <collectionDatasource id="substitutionsDs" property="substitutions"/>
         </datasource>
     </dsContext>
@@ -82,13 +82,12 @@
                   height="100%" width="100%">
                 <label value="msg://roles" stylename="h2"/>
                 <buttonsPanel>
-                    <button id="rolesTableAddBtn" action="rolesTable.add"/>
+                    <button id="rolesTableAddBtn"/>
                     <button id="rolesTableEditBtn" action="rolesTable.edit"/>
                     <button id="rolesTableRemoveBtn" action="rolesTable.remove"/>
                 </buttonsPanel>
-                <table id="rolesTable" editable="false" multiselect="true" width="100%">
+                <groupTable id="rolesTable" editable="false" multiselect="true" width="100%" fixedGrouping="true">
                     <actions>
-                        <action id="add"/>
                         <action id="edit"/>
                         <action id="remove"/>
                     </actions>
@@ -97,7 +96,7 @@
                         <column id="role.locName" caption="msg://localizedRoleName"/>
                     </columns>
                     <rows datasource="rolesDs"/>
-                </table>
+                </groupTable>
             </vbox>
 
             <vbox id="substPanel" expand="substTable" spacing="true" margin="false,false,false,true"

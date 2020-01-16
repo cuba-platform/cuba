@@ -16,7 +16,7 @@
 
 package com.haulmont.cuba.security.role;
 
-import com.haulmont.cuba.security.entity.RoleType;
+import com.haulmont.cuba.security.entity.SecurityScope;
 
 /**
  * Main interface for working with predefined roles. Regardless of how the role is created
@@ -25,11 +25,19 @@ import com.haulmont.cuba.security.entity.RoleType;
  * <p>Each {@code UserSession} contains an instance of this interface ({@code effectiveRole} field).
  * This object stores all user permissions.
  */
-public interface RoleDefinition extends ApplicationRole, GenericUiRole {
-
-    RoleType getRoleType();
+public interface RoleDefinition {
 
     String getName();
+
+    EntityPermissionsContainer entityPermissions();
+
+    EntityAttributePermissionsContainer entityAttributePermissions();
+
+    SpecificPermissionsContainer specificPermissions();
+
+    ScreenPermissionsContainer screenPermissions();
+
+    ScreenElementsPermissionsContainer screenElementsPermissions();
 
     default String getDescription() {
         return "";
@@ -37,5 +45,13 @@ public interface RoleDefinition extends ApplicationRole, GenericUiRole {
 
     default boolean isDefault() {
         return false;
+    }
+
+    default String getSecurityScope() {
+        return SecurityScope.DEFAULT_SCOPE_NAME;
+    }
+
+    default String getLocName() {
+        return "";
     }
 }

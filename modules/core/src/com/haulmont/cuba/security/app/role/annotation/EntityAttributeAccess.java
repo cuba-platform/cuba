@@ -26,7 +26,7 @@ import java.lang.annotation.*;
  * <p>Example:
  *
  * <pre>
- *     &#064;EntityAttributeAccess(target = SomeEntity.class, allow = {"someAttribute"})
+ *     &#064;EntityAttributeAccess(target = SomeEntity.class, modify = {"someAttribute"})
  * </pre>
  *
  * @see Role
@@ -40,8 +40,7 @@ public @interface EntityAttributeAccess {
 
     String[] deny() default {};
 
-    String[] allow() default {};
+    String[] modify() default {};
 
-    String[] readOnly() default {};
-
+    String[] view() default {};
 }

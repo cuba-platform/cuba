@@ -49,6 +49,8 @@ public class InMemoryConstraintTest {
     private Constraint constraint1, constraint2, constraint3, constraint4;
     private List<User> usersList = new ArrayList<>(USERS_SIZE);
     private User constraintUser1, constraintUser2, constraintUser3, constraintUser4;
+    private Role fullAccessRole;
+    private UserRole userRole1, userRole2, userRole3, userRole4;
 
     private static final int USERS_SIZE = 200;
     private static final String PASSWORD = "1";
@@ -146,6 +148,33 @@ public class InMemoryConstraintTest {
             constraintUser4.setGroup(constraintGroup4);
             constraintUser4.setEmail("email");
             em.persist(constraintUser4);
+
+            fullAccessRole = new Role();
+            fullAccessRole.setName("full-access");
+            fullAccessRole.setSecurityScope(SecurityScope.DEFAULT_SCOPE_NAME);
+            fullAccessRole.setDefaultEntityAttributeAccess(EntityAttrAccess.VIEW);
+            fullAccessRole.setDefaultEntityReadAccess(Access.ALLOW);
+            em.persist(fullAccessRole);
+
+            userRole1 = new UserRole();
+            userRole1.setUser(constraintUser1);
+            userRole1.setRole(fullAccessRole);
+            em.persist(userRole1);
+
+            userRole2 = new UserRole();
+            userRole2.setUser(constraintUser2);
+            userRole2.setRole(fullAccessRole);
+            em.persist(userRole2);
+
+            userRole3 = new UserRole();
+            userRole3.setUser(constraintUser3);
+            userRole3.setRole(fullAccessRole);
+            em.persist(userRole3);
+
+            userRole4 = new UserRole();
+            userRole4.setUser(constraintUser4);
+            userRole4.setRole(fullAccessRole);
+            em.persist(userRole4);
 
             tx.commit();
         } finally {
@@ -364,6 +393,8 @@ public class InMemoryConstraintTest {
         for (User user : usersList) {
             cont.deleteRecord("SEC_USER", user.getId());
         }
+        cont.deleteRecord("SEC_USER_ROLE", userRole1.getId(), userRole2.getId(), userRole3.getId(), userRole4.getId());
+        cont.deleteRecord("SEC_ROLE", fullAccessRole.getId());
         cont.deleteRecord("SEC_USER", constraintUser1.getId(), constraintUser2.getId(), constraintUser3.getId(), constraintUser4.getId());
         cont.deleteRecord("SEC_CONSTRAINT", constraint1.getId(), constraint2.getId(), constraint3.getId(), constraint4.getId());
         cont.deleteRecord("SEC_GROUP", parentGroup.getId(), constraintGroup1.getId(), constraintGroup2.getId(), constraintGroup3.getId(), constraintGroup4.getId());

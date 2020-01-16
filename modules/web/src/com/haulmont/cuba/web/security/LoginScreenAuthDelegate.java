@@ -33,6 +33,7 @@ import com.haulmont.cuba.web.Connection;
 import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.app.login.LoginScreen;
 import com.haulmont.cuba.web.app.loginwindow.AppLoginWindow;
+import com.haulmont.cuba.web.auth.WebAuthConfig;
 import com.haulmont.cuba.web.sys.VaadinSessionScope;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
@@ -63,6 +64,7 @@ public class LoginScreenAuthDelegate {
 
     protected GlobalConfig globalConfig;
     protected WebConfig webConfig;
+    protected WebAuthConfig webAuthConfig;
 
     protected UserManagementService userManagementService;
     protected Messages messages;
@@ -85,6 +87,11 @@ public class LoginScreenAuthDelegate {
     @Inject
     protected void setWebConfig(WebConfig webConfig) {
         this.webConfig = webConfig;
+    }
+
+    @Inject
+    protected void setWebAuthConfig(WebAuthConfig webAuthConfig) {
+        this.webAuthConfig = webAuthConfig;
     }
 
     @Inject
@@ -134,7 +141,9 @@ public class LoginScreenAuthDelegate {
      */
     public void doLogin(Credentials credentials, boolean isLocalesSelectVisible) throws LoginException {
         if (credentials instanceof AbstractClientCredentials) {
-            ((AbstractClientCredentials) credentials).setOverrideLocale(isLocalesSelectVisible);
+            AbstractClientCredentials clientCredentials = (AbstractClientCredentials) credentials;
+            clientCredentials.setOverrideLocale(isLocalesSelectVisible);
+            clientCredentials.setSecurityScope(webAuthConfig.getSecurityScope());
         }
         connection.login(credentials);
     }
@@ -188,6 +197,7 @@ public class LoginScreenAuthDelegate {
         if (StringUtils.isNotEmpty(rememberMeToken)) {
             RememberMeCredentials credentials = new RememberMeCredentials(login, rememberMeToken, locale);
             credentials.setOverrideLocale(isLocalesSelectVisible);
+            credentials.setSecurityScope(webAuthConfig.getSecurityScope());
             try {
                 connection.login(credentials);
             } catch (LoginException e) {

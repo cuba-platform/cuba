@@ -114,6 +114,7 @@ public class PortalConnection implements Connection {
             credentials.setIpAddress(ipAddress);
         if (clientInfo != null)
             credentials.setClientInfo(clientInfo);
+        credentials.setSecurityScope(portalConfig.getSecurityScope());
 
         if (portalConfig.getCheckPasswordOnClient()) {
             return loginClient(credentials).getSession();
@@ -165,6 +166,7 @@ public class PortalConnection implements Connection {
         tcCredentials.setOverrideLocale(credentials.isOverrideLocale());
         tcCredentials.setSyncNewUserSessionReplication(credentials.isSyncNewUserSessionReplication());
         tcCredentials.setSessionAttributes(credentials.getSessionAttributes());
+        tcCredentials.setSecurityScope(credentials.getSecurityScope());
 
         return tcCredentials;
     }

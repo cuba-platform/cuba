@@ -18,8 +18,8 @@ package com.haulmont.cuba.security.app.group;
 
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.DatatypeRegistry;
+import com.haulmont.cuba.core.app.ServerConfig;
 import com.haulmont.cuba.core.global.DataManager;
-import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.security.entity.*;
@@ -33,7 +33,8 @@ import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.haulmont.cuba.security.role.SecurityStorageMode.*;
+import static com.haulmont.cuba.security.role.SecurityStorageMode.MIXED;
+import static com.haulmont.cuba.security.role.SecurityStorageMode.SOURCE_CODE;
 
 @Service(AccessGroupsService.NAME)
 public class AccessGroupServiceBean implements AccessGroupsService {
@@ -44,7 +45,7 @@ public class AccessGroupServiceBean implements AccessGroupsService {
     @Inject
     protected Metadata metadata;
     @Inject
-    protected GlobalConfig globalConfig;
+    protected ServerConfig serverConfig;
     @Inject
     protected DatatypeRegistry datatypes;
 
@@ -52,7 +53,7 @@ public class AccessGroupServiceBean implements AccessGroupsService {
     public Collection<Group> getAllGroups() {
         Map<String, Group> groups = new LinkedHashMap<>();
 
-        SecurityStorageMode storageMode = globalConfig.getAccessGroupsStorageMode();
+        SecurityStorageMode storageMode = serverConfig.getAccessGroupsStorageMode();
 
         if (storageMode == MIXED || storageMode == SOURCE_CODE) {
             Collection<AccessGroupDefinition> groupDefinitions = groupsRepository.getGroupDefinitions();
@@ -69,7 +70,7 @@ public class AccessGroupServiceBean implements AccessGroupsService {
             }
         }
 
-        if (storageMode == MIXED || storageMode == DATABASE) {
+        if (storageMode == MIXED) {
             List<Group> dbGroups = dataManager.load(Group.class)
                     .view("group.browse")
                     .query("select g from sec$Group g order by g.name")
@@ -118,8 +119,8 @@ public class AccessGroupServiceBean implements AccessGroupsService {
     @Override
     public Group getUserDefaultGroup() {
         Group group = null;
-        SecurityStorageMode storageMode = globalConfig.getAccessGroupsStorageMode();
-        if (storageMode == MIXED || storageMode == DATABASE) {
+        SecurityStorageMode storageMode = serverConfig.getAccessGroupsStorageMode();
+        if (storageMode == MIXED) {
             List<Group> groups = dataManager.load(Group.class)
                     .view(View.MINIMAL)
                     .query("select g from sec$Group g")

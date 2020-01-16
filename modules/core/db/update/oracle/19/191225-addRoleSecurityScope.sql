@@ -14,15 +14,4 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.security.app.role;
-
-import com.haulmont.cuba.security.app.role.annotation.Role;
-import com.haulmont.cuba.security.entity.RoleType;
-
-/**
- * System role for {@code anonymous} user
- */
-@Role(name = AnonymousRoleDefinition.ROLE_NAME, type = RoleType.DENYING)
-public class AnonymousRoleDefinition extends AnnotatedRoleDefinition {
-    public static final String ROLE_NAME = "Anonymous";
-}
+alter table SEC_ROLE add SECURITY_SCOPE varchar2(255 char);

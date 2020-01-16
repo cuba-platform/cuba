@@ -71,6 +71,7 @@ public class ExternalUserLoginProvider implements LoginProvider, Ordered {
         tcCredentials.setIpAddress(externalUserCredentials.getIpAddress());
         tcCredentials.setOverrideLocale(externalUserCredentials.isOverrideLocale());
         tcCredentials.setSyncNewUserSessionReplication(externalUserCredentials.isSyncNewUserSessionReplication());
+        tcCredentials.setSecurityScope(webAuthConfig.getSecurityScope());
 
         Map<String, Serializable> sessionAttributes = externalUserCredentials.getSessionAttributes();
         Map<String, Serializable> targetSessionAttributes;

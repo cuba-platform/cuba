@@ -164,6 +164,14 @@ create table SEC_ROLE (
     DESCRIPTION varchar(1000),
     IS_DEFAULT_ROLE boolean, 
     ROLE_TYPE integer,
+    SECURITY_SCOPE varchar(255),
+    DEFAULT_SCREEN_ACCESS integer,
+    DEFAULT_ENTITY_CREATE_ACCESS integer,
+    DEFAULT_ENTITY_READ_ACCESS integer,
+    DEFAULT_ENTITY_UPDATE_ACCESS integer,
+    DEFAULT_ENTITY_DELETE_ACCESS integer,
+    DEFAULT_ENTITY_ATTRIBUTE_ACCESS integer,
+    DEFAULT_SPECIFIC_ACCESS integer,
     --
     primary key (ID)
 )^
@@ -965,23 +973,11 @@ insert into SEC_USER (ID, CREATE_TS, VERSION, LOGIN, LOGIN_LC, PASSWORD, NAME, G
 values ('a405db59-e674-4f63-8afe-269dda788fe8', now(), 0, 'anonymous', 'anonymous', null,
 'Anonymous', '0fa2b1a5-1d68-4d69-9fbd-dff348347f93', true)^
 
-insert into SEC_ROLE (ID, CREATE_TS, VERSION, NAME, ROLE_TYPE)
-values ('0c018061-b26f-4de2-a5be-dff348347f93', now(), 0, 'Administrators', 10)^
-
-insert into SEC_ROLE (ID, CREATE_TS, VERSION, NAME, ROLE_TYPE)
-values ('cd541dd4-eeb7-cd5b-847e-d32236552fa9', now(), 0, 'Anonymous', 30)^
-
-insert into SEC_USER_ROLE (ID, CREATE_TS, VERSION, USER_ID, ROLE_ID)
-values ('c838be0a-96d0-4ef4-a7c0-dff348347f93', now(), 0, '60885987-1b61-4247-94c7-dff348347f93', '0c018061-b26f-4de2-a5be-dff348347f93')^
-
-insert into SEC_USER_ROLE (ID, CREATE_TS, VERSION, USER_ID, ROLE_ID)
-values ('f01fb532-c2f0-dc18-b86c-450cf8a8d8c5', now(), 0, 'a405db59-e674-4f63-8afe-269dda788fe8', 'cd541dd4-eeb7-cd5b-847e-d32236552fa9')^
+insert into SEC_USER_ROLE (ID, CREATE_TS, VERSION, USER_ID, ROLE_NAME)
+values ('6736effb-9dfc-4430-973a-69868606b09c', current_timestamp, 0, '60885987-1b61-4247-94c7-dff348347f93', 'system-full-access')^
 
 insert into SEC_USER_ROLE (ID, CREATE_TS, VERSION, USER_ID, ROLE_NAME)
-values ('cbdddc70-1ee2-0fe4-b63a-2d92ef0b15a2', now(), 0, '60885987-1b61-4247-94c7-dff348347f93', 'Administrators')^
-
-insert into SEC_USER_ROLE (ID, CREATE_TS, VERSION, USER_ID, ROLE_NAME)
-values ('a848101b-7d8a-508a-0e9c-b53af9fad211', now(), 0, 'a405db59-e674-4f63-8afe-269dda788fe8', 'Anonymous')^
+values ('0e5cc7f3-8430-4768-a77b-0962a43072b9', current_timestamp, 0, 'a405db59-e674-4f63-8afe-269dda788fe8', 'system-minimal')^
 
 insert into SEC_FILTER (ID, CREATE_TS, CREATED_BY, VERSION, COMPONENT, NAME, XML, USER_ID, GLOBAL_DEFAULT)
 values ('b61d18cb-e79a-46f3-b16d-eaf4aebb10dd', now(), 'admin', 0, '[sec$User.browse].genericFilter', 'Search by role',

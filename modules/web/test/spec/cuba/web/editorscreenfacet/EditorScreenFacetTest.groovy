@@ -18,7 +18,9 @@ package spec.cuba.web.editorscreenfacet
 
 import com.haulmont.cuba.gui.builders.EditMode
 import com.haulmont.cuba.gui.screen.OpenMode
+import com.haulmont.cuba.security.app.SecurityScopesService
 import com.haulmont.cuba.security.entity.User
+import com.haulmont.cuba.web.testsupport.proxy.TestServiceProxy
 import spec.cuba.web.UiScreenSpec
 import spec.cuba.web.editorscreenfacet.screens.EditorScreenFacetTestScreen
 
@@ -26,6 +28,13 @@ class EditorScreenFacetTest extends UiScreenSpec {
 
     void setup() {
         exportScreensPackages(['spec.cuba.web.editorscreenfacet.screens'])
+
+        TestServiceProxy.mock(SecurityScopesService, Mock(SecurityScopesService) {
+            isOnlyDefaultScope() >> {
+                return true
+            }
+        })
+
     }
 
     def 'EditorScreenFacet is loaded from XML'() {

@@ -16,10 +16,12 @@
  */
 package com.haulmont.cuba.security.entity;
 
+import com.haulmont.chile.core.datatypes.impl.EnumClass;
+
 /**
  * Type of access to an entity attribute.
  */
-public enum EntityAttrAccess {
+public enum EntityAttrAccess implements EnumClass<Integer>, HasSecurityAccessValue {
     DENY(0),
     VIEW(1),
     MODIFY(2);
@@ -30,11 +32,12 @@ public enum EntityAttrAccess {
         this.id = id;
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public static EntityAttrAccess fromId(int id) {
+    public static EntityAttrAccess fromId(Integer id) {
+        if (id == null) return null;
         switch (id) {
             case 0: return DENY;
             case 1: return VIEW;

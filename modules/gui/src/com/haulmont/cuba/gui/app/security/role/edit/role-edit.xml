@@ -33,59 +33,96 @@
                 resizable="true"/>
 
     <layout expand="permissionsTabsheet" spacing="true">
-        <groupBox id="roleGroupBox">
-            <hbox id="rolePropertiesHBox" spacing="true">
-                <grid id="roleNameGrid" spacing="true">
-                    <columns count="6"/>
+        <scrollBox id="rolePropertiesScrollBox" spacing="true" orientation="horizontal" scrollBars="horizontal"
+                   width="100%" height="AUTO">
+            <groupBox id="roleGeneralGroupBox" spacing="true" caption="msg://general" stylename="light" width="AUTO" height="AUTO">
+                <grid id="roleNameGrid" spacing="true" width="AUTO">
+                    <columns count="4"/>
                     <rows>
-                        <row id="gridRowUp">
+                        <row id="gridRow1">
                             <label value="msg://com.haulmont.cuba.security.entity/Role.name" align="MIDDLE_LEFT"/>
                             <textField id="name" datasource="roleDs" property="name" width="${width}" required="true"
                                        requiredMessage="msg://nameMsg"/>
 
-                            <label value="msg://com.haulmont.cuba.security.entity/Role.type" align="MIDDLE_LEFT"/>
-                            <lookupField id="typeLookup" datasource="roleDs" property="type"
-                                         required="true" width="theme://cuba.gui.role-edit.typeLookup.width"/>
-
-                            <label value="msg://com.haulmont.cuba.security.entity/Role.description" align="MIDDLE_LEFT"/>
-                            <textArea id="description" datasource="roleDs" property="description"
-                                      rowspan="2"
-                                      height="100%" width="theme://cuba.gui.role-edit.description.width"/>
+                            <label value="msg://com.haulmont.cuba.security.entity/Role.securityScope" align="MIDDLE_LEFT"/>
+                            <lookupField id="securityScopeLookup" datasource="roleDs" property="securityScope"
+                                         width="theme://cuba.gui.role-edit.securityScope.width" nullOptionVisible="false"/>
                         </row>
-                        <row id="gridRowDown">
+                        <row id="gridRow2">
                             <label value="msg://com.haulmont.cuba.security.entity/Role.locName" align="MIDDLE_LEFT"/>
                             <textField id="locName" datasource="roleDs" property="locName" width="${width}"/>
 
                             <label value="msg://com.haulmont.cuba.security.entity/Role.defaultRole" align="MIDDLE_LEFT"/>
                             <checkBox id="defaultRole" datasource="roleDs" property="defaultRole" align="MIDDLE_LEFT"/>
-
-                            <label value=""/>  <!-- spaceholder for desktop -->
+                        </row>
+                        <row id="gridRow3">
+                            <label value="msg://com.haulmont.cuba.security.entity/Role.description" align="MIDDLE_LEFT"/>
+                            <textArea id="description" datasource="roleDs" property="description"
+                                      colspan="3"
+                                      rows="3"
+                                      width="100%"/>
                         </row>
                     </rows>
                 </grid>
-            </hbox>
-        </groupBox>
+            </groupBox>
+            <groupBox id="defaultAccessBox" caption="msg://defaultPermissions" stylename="light" width="AUTO" height="AUTO">
+                <grid id="defaultAccessGrid" spacing="true" width="AUTO">
+                    <columns count="4"/>
+                    <rows>
+                        <row>
+                            <label value="msg://entityCreateAccess" align="MIDDLE_LEFT"/>
+                            <lookupField id="defaultEntityCreteAccessField" datasource="roleDs" property="defaultEntityCreateAccess"
+                                         width="theme://cuba.gui.role-edit.defaultAccessLookup.width"/>
+                            <label value="msg://screenAccess" align="MIDDLE_LEFT"/>
+                            <lookupField id="defaultScreenAccessField" datasource="roleDs" property="defaultScreenAccess"
+                                         width="theme://cuba.gui.role-edit.defaultAccessLookup.width"/>
+                        </row>
+                        <row>
+                            <label value="msg://entityReadAccess" align="MIDDLE_LEFT"/>
+                            <lookupField id="defaultReadCreteAccessField" datasource="roleDs" property="defaultEntityReadAccess"
+                                         width="theme://cuba.gui.role-edit.defaultAccessLookup.width"/>
+                            <label value="msg://entityAttributeAccess" align="MIDDLE_LEFT"/>
+                            <lookupField id="defaultEntityAttributeAccessField" datasource="roleDs" property="defaultEntityAttributeAccess"
+                                         width="theme://cuba.gui.role-edit.defaultAccessLookup.width"/>
+                        </row>
+                        <row>
+                            <label value="msg://entityUpdateAccess" align="MIDDLE_LEFT"/>
+                            <lookupField id="defaultEntityUpdateAccessField" datasource="roleDs" property="defaultEntityUpdateAccess"
+                                         width="theme://cuba.gui.role-edit.defaultAccessLookup.width"/>
+                            <label value="msg://specificAccess" align="MIDDLE_LEFT"/>
+                            <lookupField id="defaultSpecificAccessField" datasource="roleDs" property="defaultSpecificAccess"
+                                         width="theme://cuba.gui.role-edit.defaultAccessLookup.width"/>
+                        </row>
+                        <row>
+                            <label value="msg://entityDeleteAccess" align="MIDDLE_LEFT"/>
+                            <lookupField id="defaultEntityDeleteAccessField" datasource="roleDs" property="defaultEntityDeleteAccess"
+                                         width="theme://cuba.gui.role-edit.defaultAccessLookup.width"/>
+                        </row>
+                    </rows>
+                </grid>
+            </groupBox>
+        </scrollBox>
 
         <tabSheet id="permissionsTabsheet">
             <tab id="screenPermissionsTab" caption="msg://screen-permissions">
                 <frame src="/com/haulmont/cuba/gui/app/security/role/edit/tabs/screens-permission-tab.xml"
-                        id="screensTabFrame" width="100%" height="100%"/>
+                       id="screensTabFrame" width="100%" height="100%"/>
             </tab>
             <tab id="entityPermissionsTab" caption="msg://entity-permissions" lazy="true">
                 <frame src="/com/haulmont/cuba/gui/app/security/role/edit/tabs/entities-permission-tab.xml"
-                        id="entitiesTabFrame" width="100%" height="100%"/>
+                       id="entitiesTabFrame" width="100%" height="100%"/>
             </tab>
             <tab id="propertyPermissionsTab" caption="msg://property-permissions" lazy="true">
                 <frame src="/com/haulmont/cuba/gui/app/security/role/edit/tabs/attributes-permission-tab.xml"
-                        id="attributesTabFrame" width="100%" height="100%"/>
+                       id="attributesTabFrame" width="100%" height="100%"/>
             </tab>
             <tab id="specificPermissionsTab" caption="msg://specific-permissions" lazy="true">
                 <frame src="/com/haulmont/cuba/gui/app/security/role/edit/tabs/specific-permission-tab.xml"
-                        id="specificTabFrame" width="100%" height="100%"/>
+                       id="specificTabFrame" width="100%" height="100%"/>
             </tab>
             <tab id="uiPermissionsTab" caption="msg://ui-permissions" lazy="true">
                 <frame src="/com/haulmont/cuba/gui/app/security/role/edit/tabs/ui-permission-tab.xml"
-                        id="uiTabFrame" width="100%" height="100%"/>
+                       id="uiTabFrame" width="100%" height="100%"/>
             </tab>
         </tabSheet>
         <frame id="windowActions" screen="extendedEditWindowActions"/>

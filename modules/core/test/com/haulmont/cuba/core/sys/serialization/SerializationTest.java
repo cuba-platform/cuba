@@ -40,6 +40,7 @@ public class SerializationTest {
 
     private UUID userId;
     private UUID userRoleId;
+    private UUID roleId;
 
     @BeforeEach
     public void setUp() throws Exception {
@@ -55,10 +56,15 @@ public class SerializationTest {
             user.setGroup(em.find(Group.class, UUID.fromString("0fa2b1a5-1d68-4d69-9fbd-dff348347f93")));
             em.persist(user);
 
+            Role role = new Role();
+            roleId = role.getId();
+            role.setName("test-role");
+            em.persist(role);
+
             UserRole userRole = new UserRole();
             userRoleId = userRole.getId();
             userRole.setUser(user);
-            userRole.setRole(em.find(Role.class, UUID.fromString("0c018061-b26f-4de2-a5be-dff348347f93")));
+            userRole.setRole(role);
             em.persist(userRole);
 
             tx.commit();
@@ -70,6 +76,7 @@ public class SerializationTest {
     @AfterEach
     public void tearDown() throws Exception {
         cont.deleteRecord("SEC_USER_ROLE", userRoleId);
+        cont.deleteRecord("SEC_ROLE", roleId);
         cont.deleteRecord("SEC_USER", userId);
     }
 

@@ -18,8 +18,11 @@
 package com.haulmont.cuba.client.testsupport;
 
 import com.haulmont.cuba.core.sys.AbstractUserSessionSource;
+import com.haulmont.cuba.security.entity.Access;
+import com.haulmont.cuba.security.entity.EntityAttrAccess;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.UserSession;
+import com.haulmont.cuba.security.role.*;
 import org.apache.commons.codec.digest.DigestUtils;
 
 import java.util.Collections;
@@ -48,7 +51,9 @@ public class TestUserSessionSource extends AbstractUserSessionSource {
     public UserSession createTestSession() {
         User user = createTestUser();
 
-        return new UserSession(UUID.randomUUID(), user, Collections.emptyList(), Locale.ENGLISH, false);
+        UserSession userSession = new UserSession(UUID.randomUUID(), user, Collections.emptyList(), Locale.ENGLISH, false);
+        userSession.setJoinedRole(new TestFullAccessRole());
+        return userSession;
     }
 
     public User createTestUser() {
@@ -66,5 +71,60 @@ public class TestUserSessionSource extends AbstractUserSessionSource {
 
     public void setSession(UserSession session) {
         this.session = session;
+    }
+
+    public static class TestFullAccessRole implements RoleDefinition {
+
+        private EntityPermissionsContainer entityPermissions;
+        private EntityAttributePermissionsContainer entityAttributePermissions;
+        private SpecificPermissionsContainer specificPermissions;
+        private ScreenPermissionsContainer screenPermissions;
+        private ScreenElementsPermissionsContainer screenElementsPermissions;
+
+        private TestFullAccessRole() {
+            entityPermissions = new EntityPermissionsContainer();
+            entityAttributePermissions = new EntityAttributePermissionsContainer();
+            specificPermissions = new SpecificPermissionsContainer();
+            screenPermissions = new ScreenPermissionsContainer();
+            screenElementsPermissions = new ScreenElementsPermissionsContainer();
+
+            entityPermissions.setDefaultEntityCreateAccess(Access.ALLOW);
+            entityPermissions.setDefaultEntityReadAccess(Access.ALLOW);
+            entityPermissions.setDefaultEntityUpdateAccess(Access.ALLOW);
+            entityPermissions.setDefaultEntityDeleteAccess(Access.ALLOW);
+            entityAttributePermissions.setDefaultEntityAttributeAccess(EntityAttrAccess.MODIFY);
+            specificPermissions.setDefaultSpecificAccess(Access.ALLOW);
+            screenPermissions.setDefaultScreenAccess(Access.ALLOW);
+        }
+
+        @Override
+        public String getName() {
+            return "system-test-full-access";
+        }
+
+        @Override
+        public EntityPermissionsContainer entityPermissions() {
+            return entityPermissions;
+        }
+
+        @Override
+        public EntityAttributePermissionsContainer entityAttributePermissions() {
+            return entityAttributePermissions;
+        }
+
+        @Override
+        public SpecificPermissionsContainer specificPermissions() {
+            return specificPermissions;
+        }
+
+        @Override
+        public ScreenPermissionsContainer screenPermissions() {
+            return screenPermissions;
+        }
+
+        @Override
+        public ScreenElementsPermissionsContainer screenElementsPermissions() {
+            return screenElementsPermissions;
+        }
     }
 }

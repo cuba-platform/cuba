@@ -17,12 +17,6 @@
 package com.haulmont.cuba.security.role;
 
 public enum SecurityStorageMode {
-
-    /**
-     * Only roles from a database (sec$Role) will be used.
-     */
-    DATABASE,
-
     /**
      * Only roles defined in the source code will be used.
      */

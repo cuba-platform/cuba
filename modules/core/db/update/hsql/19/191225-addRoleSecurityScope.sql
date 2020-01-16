@@ -1,0 +1,1 @@
+alter table SEC_ROLE add SECURITY_SCOPE varchar(255);

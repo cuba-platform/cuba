@@ -20,18 +20,23 @@ import com.google.common.base.Strings;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.security.app.role.annotation.*;
-import com.haulmont.cuba.security.app.role.annotation.Role;
-import com.haulmont.cuba.security.entity.*;
+import com.haulmont.cuba.security.entity.Access;
+import com.haulmont.cuba.security.entity.EntityAttrAccess;
+import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.role.*;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.lang.annotation.Annotation;
-import java.util.function.BiFunction;
+import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.List;
+import java.util.function.BiConsumer;
 
 /**
  * INTERNAL
- *
+ * <p>
  * Helps construct permissions for roles defined using annotations.
  */
 @Component(AnnotatedPermissionsBuilder.NAME)
@@ -47,46 +52,64 @@ public class AnnotatedPermissionsBuilder {
     @Inject
     protected Metadata metadata;
 
-    public EntityPermissions buildEntityAccessPermissions(ApplicationRole role) {
-        return (EntityPermissions) processAnnotationsInternal(role,
+    public EntityPermissionsContainer buildEntityAccessPermissions(RoleDefinition role) {
+        return (EntityPermissionsContainer) processAnnotationsInternal(role,
                 EntityAccess.class,
+                DefaultEntityAccess.class,
                 ENTITY_ACCESS_METHOD_NAME,
                 (annotation, permissions) -> processEntityAccessAnnotation((EntityAccess) annotation,
-                        (EntityPermissions) permissions));
+                        (EntityPermissionsContainer) permissions),
+                (annotation, permissions) -> processDefaultEntityAccessAnnotation((DefaultEntityAccess) annotation,
+                        (EntityPermissionsContainer) permissions));
     }
 
-    public EntityAttributePermissions buildEntityAttributeAccessPermissions(ApplicationRole role) {
+    public EntityAttributePermissionsContainer buildEntityAttributeAccessPermissions(RoleDefinition role) {
 
-        return (EntityAttributePermissions) processAnnotationsInternal(role,
+        return (EntityAttributePermissionsContainer) processAnnotationsInternal(role,
                 EntityAttributeAccess.class,
+                DefaultEntityAttributeAccess.class,
                 ENTITY_ATTR_ACCESS_METHOD_NAME,
                 (annotation, permissions) -> processEntityAttributeAccessAnnotation((EntityAttributeAccess) annotation,
-                        (EntityAttributePermissions) permissions));
+                        (EntityAttributePermissionsContainer) permissions),
+                (annotation, permissions) -> processDefaultEntityAttributeAccessAnnotation(
+                        (DefaultEntityAttributeAccess) annotation,
+                        (EntityAttributePermissionsContainer) permissions));
     }
 
-    public SpecificPermissions buildSpecificPermissions(ApplicationRole role) {
-        return (SpecificPermissions) processAnnotationsInternal(role,
+    public SpecificPermissionsContainer buildSpecificPermissions(RoleDefinition role) {
+        return (SpecificPermissionsContainer) processAnnotationsInternal(role,
                 SpecificAccess.class,
+                DefaultSpecificAccess.class,
                 SPECIFIC_ACCESS_METHOD_NAME,
-                (annotation, permissions) -> processSpecificPermissionAnnotation((SpecificAccess) annotation,
-                        (SpecificPermissions) permissions));
+                (annotation, permissions) -> processSpecificAccessAnnotation((SpecificAccess) annotation,
+                        (SpecificPermissionsContainer) permissions),
+                (annotation, permissions) -> processDefaultSpecificAccessAnnotation((DefaultSpecificAccess) annotation,
+                        (SpecificPermissionsContainer) permissions)
+        );
     }
 
-    public ScreenPermissions buildScreenPermissions(GenericUiRole role) {
-        return (ScreenPermissions) processAnnotationsInternal(role,
+    public ScreenPermissionsContainer buildScreenPermissions(RoleDefinition role) {
+        return (ScreenPermissionsContainer) processAnnotationsInternal(role,
                 ScreenAccess.class,
+                DefaultScreenAccess.class,
                 SCREEN_ACCESS_METHOD_NAME,
                 (annotation, permissions) -> processScreenAccessAnnotation((ScreenAccess) annotation,
-                        (ScreenPermissions) permissions));
+                        (ScreenPermissionsContainer) permissions),
+                (annotation, permissions) -> processDefaultScreenAccessAnnotation((DefaultScreenAccess) annotation,
+                        (ScreenPermissionsContainer) permissions));
     }
 
-    public ScreenElementsPermissions buildScreenElementsPermissions(GenericUiRole role) {
-        return (ScreenElementsPermissions) processAnnotationsInternal(role,
+    public ScreenElementsPermissionsContainer buildScreenElementsPermissions(RoleDefinition role) {
+        return (ScreenElementsPermissionsContainer) processAnnotationsInternal(role,
                 ScreenElementAccess.class,
+                null,
                 SCREEN_ELEMENTS_ACCESS_METHOD_NAME,
                 (annotation, permissions) -> processScreenElementAccessAnnotation((ScreenElementAccess) annotation,
-                        (ScreenElementsPermissions) permissions));
+                        (ScreenElementsPermissionsContainer) permissions),
+                (annotation, permissions) -> {});
     }
+
+    ;
 
     public String getNameFromAnnotation(RoleDefinition role) {
         Role annotation = getPredefinedRoleAnnotationNN(role);
@@ -94,16 +117,16 @@ public class AnnotatedPermissionsBuilder {
         return annotation.name();
     }
 
+    public String getSecurityScopeFromAnnotation(RoleDefinition role) {
+        Role annotation = getPredefinedRoleAnnotationNN(role);
+
+        return annotation.securityScope();
+    }
+
     public String getDescriptionFromAnnotation(RoleDefinition role) {
         Role annotation = getPredefinedRoleAnnotationNN(role);
 
         return annotation.description();
-    }
-
-    public RoleType getTypeFromAnnotation(RoleDefinition role) {
-        Role annotation = getPredefinedRoleAnnotationNN(role);
-
-        return annotation.type();
     }
 
     public boolean getIsDefaultFromAnnotation(RoleDefinition role) {
@@ -120,33 +143,56 @@ public class AnnotatedPermissionsBuilder {
         return annotation;
     }
 
-    protected EntityAttributePermissions processEntityAttributeAccessAnnotation(EntityAttributeAccess annotation,
-                                                                                EntityAttributePermissions permissions) {
+    protected EntityAttributePermissionsContainer processEntityAttributeAccessAnnotation(
+            EntityAttributeAccess annotation,
+            EntityAttributePermissionsContainer permissions) {
         Class entityClass = annotation.target();
         MetaClass metaClass = metadata.getClassNN(entityClass);
         String[] deny = annotation.deny();
-        String[] allow = annotation.allow();
-        String[] readOnly = annotation.readOnly();
+        String[] allow = annotation.modify();
+        String[] readOnly = annotation.view();
 
         for (String property : deny) {
             String target = PermissionsUtils.getEntityAttributeTarget(metaClass, property);
-            PermissionsUtils.addPermission(permissions, target, null, EntityAttrAccess.DENY.getId());
+            Integer permissionValue = EntityAttrAccess.DENY.getId();
+            permissions.getExplicitPermissions().put(target, permissionValue);
+            String extendedTarget = PermissionsUtils.evaluateExtendedEntityTarget(target);
+            if (!Strings.isNullOrEmpty(extendedTarget)) {
+                permissions.getExplicitPermissions().put(extendedTarget, permissionValue);
+            }
         }
 
         for (String property : allow) {
             String target = PermissionsUtils.getEntityAttributeTarget(metaClass, property);
-            PermissionsUtils.addPermission(permissions, target, null, EntityAttrAccess.MODIFY.getId());
+            Integer permissionValue = EntityAttrAccess.MODIFY.getId();
+            permissions.getExplicitPermissions().put(target, permissionValue);
+            String extendedTarget = PermissionsUtils.evaluateExtendedEntityTarget(target);
+            if (!Strings.isNullOrEmpty(extendedTarget)) {
+                permissions.getExplicitPermissions().put(extendedTarget, permissionValue);
+            }
         }
 
         for (String property : readOnly) {
             String target = PermissionsUtils.getEntityAttributeTarget(metaClass, property);
-            PermissionsUtils.addPermission(permissions, target, null, EntityAttrAccess.VIEW.getId());
+            Integer permissionValue = EntityAttrAccess.VIEW.getId();
+            permissions.getExplicitPermissions().put(target, permissionValue);
+            String extendedTarget = PermissionsUtils.evaluateExtendedEntityTarget(target);
+            if (!Strings.isNullOrEmpty(extendedTarget)) {
+                permissions.getExplicitPermissions().put(extendedTarget, permissionValue);
+            }
         }
-
         return permissions;
     }
 
-    protected EntityPermissions processEntityAccessAnnotation(EntityAccess annotation, EntityPermissions permissions) {
+    protected EntityAttributePermissionsContainer processDefaultEntityAttributeAccessAnnotation(
+            DefaultEntityAttributeAccess annotation,
+            EntityAttributePermissionsContainer permissions) {
+        permissions.setDefaultEntityAttributeAccess(annotation.value());
+        return permissions;
+    }
+
+    protected EntityPermissionsContainer processEntityAccessAnnotation(EntityAccess annotation,
+                                                                       EntityPermissionsContainer permissions) {
         Class entityClass = annotation.target();
         MetaClass metaClass = metadata.getClassNN(entityClass);
         EntityOp[] deny = annotation.deny();
@@ -154,18 +200,70 @@ public class AnnotatedPermissionsBuilder {
 
         for (EntityOp entityOp : deny) {
             String target = PermissionsUtils.getEntityOperationTarget(metaClass, entityOp);
-            PermissionsUtils.addPermission(permissions, target, null, Access.DENY.getId());
+            Integer permissionValue = Access.DENY.getId();
+            permissions.getExplicitPermissions().put(target, permissionValue);
+            String extendedTarget = PermissionsUtils.evaluateExtendedEntityTarget(target);
+            if (!Strings.isNullOrEmpty(extendedTarget)) {
+                permissions.getExplicitPermissions().put(extendedTarget, permissionValue);
+            }
         }
 
         for (EntityOp entityOp : allow) {
             String target = PermissionsUtils.getEntityOperationTarget(metaClass, entityOp);
-            PermissionsUtils.addPermission(permissions, target, null, Access.ALLOW.getId());
+            Integer permissionValue = Access.ALLOW.getId();
+            permissions.getExplicitPermissions().put(target, permissionValue);
+            String extendedTarget = PermissionsUtils.evaluateExtendedEntityTarget(target);
+            if (!Strings.isNullOrEmpty(extendedTarget)) {
+                permissions.getExplicitPermissions().put(extendedTarget, permissionValue);
+            }
         }
 
         return permissions;
     }
 
-    protected SpecificPermissions processSpecificPermissionAnnotation(SpecificAccess annotation, SpecificPermissions permissions) {
+    protected EntityPermissionsContainer processDefaultEntityAccessAnnotation(DefaultEntityAccess annotation,
+                                                                              EntityPermissionsContainer permissions) {
+        List<EntityOp> allow = Arrays.asList(annotation.allow());
+        List<EntityOp> deny = Arrays.asList(annotation.deny());
+
+        Access defaultCreate = null;
+        Access defaultRead = null;
+        Access defaultUpdate = null;
+        Access defaultDelete = null;
+
+        if (deny.contains(EntityOp.CREATE)) {
+            defaultCreate = Access.DENY;
+        } else if (allow.contains(EntityOp.CREATE)) {
+            defaultCreate = Access.ALLOW;
+        }
+
+        if (deny.contains(EntityOp.READ)) {
+            defaultRead = Access.DENY;
+        } else if (allow.contains(EntityOp.READ)) {
+            defaultRead = Access.ALLOW;
+        }
+
+        if (deny.contains(EntityOp.UPDATE)) {
+            defaultUpdate = Access.DENY;
+        } else if (allow.contains(EntityOp.UPDATE)) {
+            defaultUpdate = Access.ALLOW;
+        }
+
+        if (deny.contains(EntityOp.DELETE)) {
+            defaultDelete = Access.DENY;
+        } else if (allow.contains(EntityOp.DELETE)) {
+            defaultDelete = Access.ALLOW;
+        }
+
+        permissions.setDefaultEntityCreateAccess(defaultCreate);
+        permissions.setDefaultEntityReadAccess(defaultRead);
+        permissions.setDefaultEntityUpdateAccess(defaultUpdate);
+        permissions.setDefaultEntityDeleteAccess(defaultDelete);
+        return permissions;
+    }
+
+    protected SpecificPermissionsContainer processSpecificAccessAnnotation(SpecificAccess annotation,
+                                                                           SpecificPermissionsContainer permissions) {
         String target = annotation.target();
         Access access = annotation.access();
 
@@ -173,28 +271,43 @@ public class AnnotatedPermissionsBuilder {
             return permissions;
         }
 
-        PermissionsUtils.addPermission(permissions, target, null, access.getId());
+        permissions.getExplicitPermissions().put(target, access.getId());
 
         return permissions;
     }
 
-    protected ScreenPermissions processScreenAccessAnnotation(ScreenAccess annotation, ScreenPermissions permissions) {
+    protected SpecificPermissionsContainer processDefaultSpecificAccessAnnotation(
+            DefaultSpecificAccess annotation,
+            SpecificPermissionsContainer permissions) {
+        permissions.setDefaultSpecificAccess(annotation.value());
+        return permissions;
+    }
+
+    protected ScreenPermissionsContainer processScreenAccessAnnotation(ScreenAccess annotation,
+                                                                       ScreenPermissionsContainer permissions) {
         String[] deny = annotation.deny();
         String[] allow = annotation.allow();
 
         for (String screen : deny) {
-            PermissionsUtils.addPermission(permissions, screen, null, Access.DENY.getId());
+            permissions.getExplicitPermissions().put(screen, Access.DENY.getId());
         }
 
         for (String screen : allow) {
-            PermissionsUtils.addPermission(permissions, screen, null, Access.ALLOW.getId());
+            permissions.getExplicitPermissions().put(screen, Access.ALLOW.getId());
         }
 
         return permissions;
     }
 
-    protected ScreenElementsPermissions processScreenElementAccessAnnotation(ScreenElementAccess annotation,
-                                                                             ScreenElementsPermissions permissions) {
+    protected ScreenPermissionsContainer processDefaultScreenAccessAnnotation(DefaultScreenAccess annotation,
+                                                                              ScreenPermissionsContainer permissions) {
+        permissions.setDefaultScreenAccess(annotation.value());
+        return permissions;
+    }
+
+    protected ScreenElementsPermissionsContainer processScreenElementAccessAnnotation(
+            ScreenElementAccess annotation,
+            ScreenElementsPermissionsContainer permissions) {
         String screen = annotation.screen();
         String[] deny = annotation.deny();
         String[] allow = annotation.allow();
@@ -205,61 +318,67 @@ public class AnnotatedPermissionsBuilder {
 
         for (String component : deny) {
             String target = PermissionsUtils.getScreenElementTarget(screen, component);
-            PermissionsUtils.addPermission(permissions, target, null, Access.DENY.getId());
+            permissions.getExplicitPermissions().put(target, Access.DENY.getId());
         }
 
         for (String component : allow) {
             String target = PermissionsUtils.getScreenElementTarget(screen, component);
-            PermissionsUtils.addPermission(permissions, target, null, Access.ALLOW.getId());
+            permissions.getExplicitPermissions().put(target, Access.ALLOW.getId());
         }
 
         return permissions;
 
     }
 
-    protected Permissions processAnnotationsInternal(Object role, Class<? extends Annotation> annotationClass,
-                                                     String methodName, BiFunction<Object, Permissions, Permissions> biFunction) {
+    protected PermissionsContainer processAnnotationsInternal(
+            Object role,
+            Class<? extends Annotation> explicitAccessAnnotationClass,
+            @Nullable Class<? extends Annotation> defaultAccessAnnotationClass,
+            String methodName,
+            BiConsumer<Object, PermissionsContainer> explicitAccessBiFunction,
+            BiConsumer<Object, PermissionsContainer> defaultAccessBiFunction) {
         if (role == null) {
             return null;
         }
 
         try {
-            Object[] annotations = role.getClass()
-                    .getMethod(methodName)
-                    .getAnnotationsByType(annotationClass);
-            Permissions permissions = createPermissionsByMethodName(methodName);
+            Method method = role.getClass().getMethod(methodName);
+            Object[] explicitAccessAnnotations = method.getAnnotationsByType(explicitAccessAnnotationClass);
+            PermissionsContainer permissionsContainer = createPermissionsByMethodName(methodName);
 
-            if (annotations.length == 0) {
-                return permissions;
+            for (Object annotation : explicitAccessAnnotations) {
+                explicitAccessBiFunction.accept(annotation, permissionsContainer);
             }
 
-            for (Object annotation : annotations) {
-                permissions = biFunction.apply(annotation, permissions);
+            if (defaultAccessAnnotationClass != null) {
+                Annotation defaultAccessAnnotation = method.getAnnotation(defaultAccessAnnotationClass);
+                if (defaultAccessAnnotation != null) {
+                    defaultAccessBiFunction.accept(defaultAccessAnnotation, permissionsContainer);
+                }
             }
 
-            return permissions;
+            return permissionsContainer;
 
         } catch (NoSuchMethodException e) {
             throw new IllegalArgumentException("No such method: " + methodName);
         }
     }
 
-    protected Permissions createPermissionsByMethodName(String methodName) {
+    protected PermissionsContainer createPermissionsByMethodName(String methodName) {
         switch (methodName) {
             case ENTITY_ACCESS_METHOD_NAME:
-                return new EntityPermissions();
+                return new EntityPermissionsContainer();
             case ENTITY_ATTR_ACCESS_METHOD_NAME:
-                return new EntityAttributePermissions();
+                return new EntityAttributePermissionsContainer();
             case SPECIFIC_ACCESS_METHOD_NAME:
-                return new SpecificPermissions();
+                return new SpecificPermissionsContainer();
             case SCREEN_ACCESS_METHOD_NAME:
-                return new ScreenPermissions();
+                return new ScreenPermissionsContainer();
             case SCREEN_ELEMENTS_ACCESS_METHOD_NAME:
-                return new ScreenElementsPermissions();
+                return new ScreenElementsPermissionsContainer();
             default:
                 throw new IllegalArgumentException("No such method: " + methodName);
 
         }
     }
-
 }

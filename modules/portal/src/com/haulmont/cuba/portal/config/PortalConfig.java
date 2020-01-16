@@ -56,4 +56,13 @@ public interface PortalConfig extends Config {
     @Property("cuba.portal.theme")
     @DefaultString("default")
     String getTheme();
+
+    /**
+     * Active security profile for a PORTAL client.
+     * Security scope specifies which security roles will be loaded for user session.
+     * By default it's a UI security scope
+     */
+    @Property("cuba.portal.securityScope")
+    @DefaultString("GENERIC_UI")
+    String getSecurityScope();
 }

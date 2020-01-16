@@ -52,25 +52,15 @@ public interface RolesService {
     Collection<Permission> getPermissions(String predefinedRoleName, PermissionType permissionType);
 
     /**
-     * @return {@code true} if database roles mode is available, {@code false} otherwise
+     * @return {@code true} if roles are stored in a source code and in a database, {@code false} otherwise
      */
-    boolean isDatabaseModeAvailable();
-
-    /**
-     * @return {@code true} if predefined roles mode is available, {@code false} otherwise
-     */
-    boolean isPredefinedRolesModeAvailable();
+    boolean isRoleStorageMixedMode();
 
     /**
      * @return all available default roles.
      * Key - role name, Value - {@link Role} object or {@code null} for predefined roles
      */
     Map<String, Role> getDefaultRoles();
-
-    /**
-     * @return {@code true} if the application has at least one predefined role
-     */
-    boolean applicationHasPredefinedRoles();
 
     /**
      * @param userRoles collection of {@link UserRole} objects

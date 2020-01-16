@@ -17,23 +17,25 @@
 package com.haulmont.cuba.security.sys;
 
 import com.google.common.base.Strings;
-import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.Transaction;
+import com.haulmont.cuba.core.app.ServerConfig;
 import com.haulmont.cuba.core.global.EntityStates;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.core.global.UuidSource;
 import com.haulmont.cuba.core.sys.DefaultPermissionValuesConfig;
+import com.haulmont.cuba.security.app.RoleDefinitionBuilder;
+import com.haulmont.cuba.security.app.RoleDefinitionsJoiner;
 import com.haulmont.cuba.security.app.UserSessionsAPI;
 import com.haulmont.cuba.security.app.group.AccessGroupDefinitionsComposer;
-import com.haulmont.cuba.security.app.role.RoleDefinitionBuilder;
 import com.haulmont.cuba.security.app.role.RolesRepository;
 import com.haulmont.cuba.security.entity.*;
 import com.haulmont.cuba.security.global.NoUserSessionException;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.security.group.AccessGroupDefinition;
+import com.haulmont.cuba.security.role.PermissionsContainer;
 import com.haulmont.cuba.security.role.PermissionsUtils;
 import com.haulmont.cuba.security.role.RoleDefinition;
 import org.slf4j.Logger;
@@ -43,6 +45,7 @@ import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import java.io.Serializable;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * INTERNAL.
@@ -78,6 +81,9 @@ public class UserSessionManager {
     protected DefaultPermissionValuesConfig defaultPermissionValuesConfig;
 
     @Inject
+    protected ServerConfig serverConfig;
+
+    @Inject
     protected RolesRepository rolesRepository;
 
     @Inject
@@ -92,7 +98,20 @@ public class UserSessionManager {
      * @return new session instance
      */
     public UserSession createSession(User user, Locale locale, boolean system) {
-        return createSession(uuidSource.createUuid(), user, locale, system);
+        return createSession(uuidSource.createUuid(), user, locale, system, null);
+    }
+
+    /**
+     * Create a new session and fill it with security data. Must be called inside a transaction.
+     *
+     * @param user          user instance
+     * @param locale        user locale
+     * @param system        create system session
+     * @param securityScope security scope
+     * @return new session instance
+     */
+    public UserSession createSession(User user, Locale locale, boolean system, String securityScope) {
+        return createSession(uuidSource.createUuid(), user, locale, system, securityScope);
     }
 
     /**
@@ -105,11 +124,29 @@ public class UserSessionManager {
      * @return new session instance
      */
     public UserSession createSession(UUID sessionId, User user, Locale locale, boolean system) {
+        return createSession(sessionId, user, locale, system, null);
+    }
+
+    /**
+     * Create a new session and fill it with security data. Must be called inside a transaction.
+     *
+     * @param sessionId     target session id
+     * @param user          user instance
+     * @param locale        user locale
+     * @param system        create system session
+     * @param securityScope security profile
+     * @return new session instance
+     */
+    public UserSession createSession(UUID sessionId, User user, Locale locale, boolean system, String securityScope) {
         List<RoleDefinition> roles = new ArrayList<>();
 
         for (RoleDefinition role : rolesRepository.getRoleDefinitions(user.getUserRoles())) {
             if (role != null) {
-                roles.add(role);
+                String expectedScope = securityScope == null ? SecurityScope.DEFAULT_SCOPE_NAME : securityScope;
+                String actualScope = role.getSecurityScope() == null ? SecurityScope.DEFAULT_SCOPE_NAME : role.getSecurityScope();
+                if (Objects.equals(expectedScope, actualScope)) {
+                    roles.add(role);
+                }
             }
         }
         UserSession session = new UserSession(sessionId, user, roles, locale, system);
@@ -121,6 +158,7 @@ public class UserSessionManager {
         AccessGroupDefinition groupDefinition = compileGroupDefinition(user.getGroup(), user.getGroupNames());
         compileConstraints(session, groupDefinition);
         compileSessionAttributes(session, groupDefinition);
+        session.setPermissionUndefinedAccessPolicy(serverConfig.getPermissionUndefinedAccessPolicy());
 
         return session;
     }
@@ -149,51 +187,41 @@ public class UserSessionManager {
         AccessGroupDefinition groupDefinition = compileGroupDefinition(user.getGroup(), user.getGroupNames());
         compileConstraints(session, groupDefinition);
         compileSessionAttributes(session, groupDefinition);
+        session.setPermissionUndefinedAccessPolicy(serverConfig.getPermissionUndefinedAccessPolicy());
 
         return session;
     }
 
     protected void compilePermissions(UserSession session, List<RoleDefinition> roles) {
-        for (RoleDefinition role : roles) {
-            if (RoleType.SUPER.equals(role.getRoleType())) {
-                // Don't waste memory, as the user with SUPER role has all permissions.
-                return;
-            }
-        }
-
-        RoleDefinition effectiveRole = session.getEffectiveRole();
-        RoleDefinitionBuilder roleBuilder = RoleDefinitionBuilder.create()
-                .withRoleType(effectiveRole.getRoleType())
-                .withName(effectiveRole.getName())
-                .withDescription(effectiveRole.getDescription())
-                .join(effectiveRole);
-        for (RoleDefinition role : roles) {
-            roleBuilder.join(role);
-        }
-        session.applyEffectiveRole(roleBuilder.build());
-
-        defaultPermissionValuesConfig.getDefaultPermissionValues().forEach((target, permission) -> {
-            if (session.getPermissionValue(permission.getType(), permission.getTarget()) == null) {
-                session.addPermission(permission.getType(), permission.getTarget(),
-                        convertToExtendedEntityTarget(permission), permission.getValue());
-            }
-        });
+        session.setJoinedRole(buildJoinedRoleDefinition(roles));
     }
 
-    protected String convertToExtendedEntityTarget(Permission permission) {
-        if (permission.getType() == PermissionType.ENTITY_OP || permission.getType() == PermissionType.ENTITY_ATTR) {
-            String target = permission.getTarget();
-            int pos = target.indexOf(Permission.TARGET_PATH_DELIMETER);
-            if (pos > -1) {
-                String entityName = target.substring(0, pos);
-                Class extendedClass = metadata.getExtendedEntities().getExtendedClass(metadata.getClassNN(entityName));
-                if (extendedClass != null) {
-                    MetaClass extMetaClass = metadata.getClassNN(extendedClass);
-                    return extMetaClass.getName() + Permission.TARGET_PATH_DELIMETER + target.substring(pos + 1);
+    protected RoleDefinition buildJoinedRoleDefinition(List<RoleDefinition> roles) {
+        RoleDefinition effectiveRole = RoleDefinitionBuilder.create().build();
+        for (RoleDefinition role : roles) {
+            effectiveRole = RoleDefinitionsJoiner.join(effectiveRole, role);
+        }
+
+        if (serverConfig.getDefaultPermissionValuesConfigEnabled()) {
+            for (Map.Entry<String, Permission> entry : defaultPermissionValuesConfig.getDefaultPermissionValues()
+                    .entrySet()) {
+                String target = entry.getKey();
+                Permission permission = entry.getValue();
+                PermissionsContainer permissionsContainer = PermissionsUtils.getPermissionsByType(effectiveRole,
+                        permission.getType());
+                if (permissionsContainer.getExplicitPermissions().get(target) == null) {
+                    permissionsContainer.getExplicitPermissions().put(target, permission.getValue());
+                    if (permission.getType() == PermissionType.ENTITY_OP ||
+                            permission.getType() == PermissionType.ENTITY_ATTR) {
+                        String extendedTarget = PermissionsUtils.evaluateExtendedEntityTarget(target);
+                        if (!Strings.isNullOrEmpty(extendedTarget)) {
+                            permissionsContainer.getExplicitPermissions().put(extendedTarget, permission.getValue());
+                        }
+                    }
                 }
             }
         }
-        return null;
+        return effectiveRole;
     }
 
     protected AccessGroupDefinition compileGroupDefinition(Group group, String groupName) {
@@ -271,9 +299,9 @@ public class UserSessionManager {
                     roles.add(role);
                 }
             }
-            UserSession session = new UserSession(uuidSource.createUuid(), user, roles, userSessionSource.getLocale(), false);
-            compilePermissions(session, roles);
-            result = session.getPermissionValue(permissionType, target);
+            RoleDefinition joinedRole = buildJoinedRoleDefinition(roles);
+            result = PermissionsUtils.getResultingPermissionValue(joinedRole, permissionType, target,
+                    serverConfig.getPermissionUndefinedAccessPolicy());
             tx.commit();
         } finally {
             tx.end();
@@ -292,18 +320,12 @@ public class UserSessionManager {
         }
         for (User user : users) {
             if (entityStates.isDetached(user) && user.getUserRoles() != null) {
-                for (UserRole ur : user.getUserRoles()) {
-                    if (ur.getRole() != null) {
+                List<UserRole> userRoles = user.getUserRoles().stream()
+                        .filter(ur -> entityStates.isLoaded(ur, "role"))
+                        .collect(Collectors.toList());
+                for (UserRole ur : userRoles) {
+                    if (entityStates.isLoaded(ur, "role") && ur.getRole() != null) {
                         ur.getRole().setPermissions(null);
-                    }
-                }
-                for (RoleDefinition role : rolesRepository.getRoleDefinitions(user.getUserRoles())) {
-                    if (role != null) {
-                        PermissionsUtils.removePermissions(role.entityPermissions());
-                        PermissionsUtils.removePermissions(role.entityAttributePermissions());
-                        PermissionsUtils.removePermissions(role.specificPermissions());
-                        PermissionsUtils.removePermissions(role.screenPermissions());
-                        PermissionsUtils.removePermissions(role.screenElementsPermissions());
                     }
                 }
             }

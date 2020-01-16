@@ -52,7 +52,6 @@ public class DataManagerCommitTest {
             EntityManager em = cont.persistence().getEntityManager();
 
             Group group = em.find(Group.class, groupId);
-            Role role = em.find(Role.class, UUID.fromString("0c018061-b26f-4de2-a5be-dff348347f93"));
 
             User user = new User();
             userId = user.getId();
@@ -64,7 +63,7 @@ public class DataManagerCommitTest {
 
             UserRole userRole = new UserRole();
             userRoleId = userRole.getId();
-            userRole.setRole(role);
+            userRole.setRoleName("test-role");
             userRole.setUser(user);
             em.persist(userRole);
 

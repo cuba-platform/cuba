@@ -17,6 +17,7 @@
 package com.haulmont.cuba.security.app.role;
 
 import com.haulmont.cuba.core.global.DataManager;
+import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.security.entity.Permission;
 import com.haulmont.cuba.security.entity.PermissionType;
 import com.haulmont.cuba.security.entity.Role;
@@ -40,28 +41,26 @@ public class RolesServiceBean implements RolesService {
     protected RolesRepository rolesRepository;
 
     @Inject
+    protected GlobalConfig globalConfig;
+
+    @Inject
     protected Logger log;
 
     @Override
     public Collection<Role> getAllRoles() {
         Map<String, Role> rolesForGui = new HashMap<>();
 
-        if (isPredefinedRolesModeAvailable()) {
-            for (Map.Entry<String, RoleDefinition> entry : rolesRepository.getNameToPredefinedRoleMapping().entrySet()) {
-                rolesForGui.put(entry.getKey(), rolesRepository.getRoleWithoutPermissions(entry.getValue()));
-            }
+        for (Map.Entry<String, RoleDefinition> entry : rolesRepository.getNameToPredefinedRoleMapping().entrySet()) {
+            rolesForGui.put(entry.getKey(), rolesRepository.getRoleWithoutPermissions(entry.getValue()));
         }
 
-        if (isDatabaseModeAvailable()) {
+        if (isRoleStorageMixedMode()) {
             List<Role> roles = dataManager.load(Role.class)
                     .query("select r from sec$Role r order by r.name")
                     .list();
 
             for (Role role : roles) {
-                if (isPredefinedRolesModeAvailable()
-                        && rolesForGui.containsKey(role.getName())
-                        && !AdministratorsRoleDefinition.ROLE_NAME.equals(role.getName())
-                        && !AnonymousRoleDefinition.ROLE_NAME.equals(role.getName())) {
+                if (rolesForGui.containsKey(role.getName())) {
                     log.warn("Role name '{}' is used for some predefined role. " +
                             "Also there is the persisted Role object with the same name.", role.getName());
                     continue;
@@ -84,24 +83,13 @@ public class RolesServiceBean implements RolesService {
     }
 
     @Override
-    public boolean isDatabaseModeAvailable() {
-        return rolesRepository.isDatabaseModeAvailable();
-    }
-
-    @Override
-    public boolean isPredefinedRolesModeAvailable() {
-        return rolesRepository.isPredefinedRolesModeAvailable();
+    public boolean isRoleStorageMixedMode() {
+        return true;
     }
 
     @Override
     public Map<String, Role> getDefaultRoles() {
         return rolesRepository.getDefaultRoles();
-    }
-
-    @Override
-    public boolean applicationHasPredefinedRoles() {
-        // application always contains 2 predefined system roles
-        return rolesRepository.getNameToPredefinedRoleMapping().keySet().size() > 2;
     }
 
     @Override

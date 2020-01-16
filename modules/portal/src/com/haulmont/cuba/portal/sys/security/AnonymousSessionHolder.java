@@ -98,6 +98,7 @@ public class AnonymousSessionHolder {
                     ClientType.class.getName(), AppContext.getProperty("cuba.clientType"),
                     SessionParams.CLIENT_INFO.getId(), portalClientInfo
             ));
+            credentials.setSecurityScope(portalConfig.getSecurityScope());
 
             userSession = authenticationService.login(credentials).getSession();
         } catch (LoginException e) {

@@ -17,14 +17,11 @@
 package com.haulmont.cuba.security.role;
 
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.cuba.security.entity.EntityOp;
-import com.haulmont.cuba.security.entity.Permission;
-import com.haulmont.cuba.security.entity.PermissionType;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Metadata;
+import com.haulmont.cuba.security.entity.*;
 
 import javax.annotation.Nullable;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Map;
 
 /**
  * INTERNAL
@@ -32,124 +29,6 @@ import java.util.Map;
 public final class PermissionsUtils {
 
     private PermissionsUtils() {
-    }
-
-    public static Map<String, Integer> getPermissions(Permissions permissions) {
-        return Collections.unmodifiableMap(permissions.getPermissions());
-    }
-
-    public static Integer getPermissionValue(Permissions permissions, String target) {
-        return permissions.getPermissions().get(target);
-    }
-
-    public static void addPermission(Permissions permissions, Permission permission) {
-        checkPermission(permissions, permission);
-
-        addPermissionWithoutCheck(permissions, permission);
-    }
-
-    public static void addPermission(Permissions permissions, String target, @Nullable String extTarget, int value) {
-        Integer currentValue = permissions.getPermissions().get(target);
-        if (currentValue == null || currentValue < value) {
-            permissions.getPermissions().put(target, value);
-            if (extTarget != null)
-                permissions.getPermissions().put(extTarget, value);
-        }
-    }
-
-    public static void addPermissions(Permissions permissionsObj, Collection<Permission> permissions) {
-        if (permissions == null || permissions.isEmpty()) {
-            return;
-        }
-        for (Permission p : permissions) {
-            checkPermission(permissionsObj, p);
-        }
-        for (Permission p : permissions) {
-            addPermissionWithoutCheck(permissionsObj, p);
-        }
-    }
-
-    public static void addPermissions(Permissions permissionsObj, Map<String, Integer> permissions) {
-        for (Map.Entry<String, Integer> entry : permissions.entrySet()) {
-            addPermission(permissionsObj, entry.getKey(), null, entry.getValue());
-        }
-    }
-
-    public static void removePermission(Permissions permissions, String target) {
-        permissions.getPermissions().remove(target);
-    }
-
-    public static void removePermissions(Permissions permissions) {
-        permissions.getPermissions().clear();
-    }
-
-    public static boolean isReadOperationPermitted(EntityPermissions permissions, MetaClass metaClass) {
-        return getPermissionValue(permissions, getEntityOperationTarget(metaClass, EntityOp.READ)) > 0;
-    }
-
-    public static boolean isCreateOperationPermitted(EntityPermissions permissions, MetaClass metaClass) {
-        return getPermissionValue(permissions, getEntityOperationTarget(metaClass, EntityOp.CREATE)) > 0;
-    }
-
-    public static boolean isUpdateOperationPermitted(EntityPermissions permissions, MetaClass metaClass) {
-        return getPermissionValue(permissions, getEntityOperationTarget(metaClass, EntityOp.UPDATE)) > 0;
-    }
-
-    public static boolean isDeleteOperationPermitted(EntityPermissions permissions, MetaClass metaClass) {
-        return getPermissionValue(permissions, getEntityOperationTarget(metaClass, EntityOp.DELETE)) > 0;
-    }
-
-    public static boolean isAttributeReadOperationPermitted(EntityAttributePermissions permissions, MetaClass metaClass, String property) {
-        return getPermissionValue(permissions, getEntityAttributeTarget(metaClass, property)) > 0;
-    }
-
-    public static boolean isAttributeModifyOperationPermitted(EntityAttributePermissions permissions, MetaClass metaClass, String property) {
-        return getPermissionValue(permissions, getEntityAttributeTarget(metaClass, property)) > 1;
-    }
-
-    public static boolean isScreenAccessPermitted(ScreenPermissions permissions, String screenId) {
-        return getPermissionValue(permissions, screenId) > 0;
-    }
-
-    public static boolean isScreenElementPermitted(ScreenElementsPermissions permissions, String screenId, String elementId) {
-        return getPermissionValue(permissions, getScreenElementTarget(screenId, elementId)) > 0;
-    }
-
-    public static boolean isSpecificAccessPermitted(SpecificPermissions permissions, String specificPermission) {
-        return getPermissionValue(permissions, specificPermission) > 0;
-    }
-
-    private static void checkPermission(Permissions p, Permission permission) {
-        PermissionType permissionType = getPermissionType(p);
-        if (permissionType == null) {
-            throw new IllegalArgumentException("Unknown permissionType");
-        }
-        if (permission == null || !permissionType.equals(permission.getType())){
-            throw new IllegalArgumentException("Permission type must be " + permissionType.name());
-        }
-    }
-
-    private static void addPermissionWithoutCheck(Permissions p, Permission permission) {
-        Integer currentValue = p.getPermissions().get(permission.getTarget());
-        if (currentValue == null || currentValue < permission.getValue()) {
-            p.getPermissions().put(permission.getTarget(), permission.getValue());
-        }
-    }
-
-    @Nullable
-    private static PermissionType getPermissionType(Permissions permissions) {
-        if (permissions instanceof EntityPermissions) {
-            return PermissionType.ENTITY_OP;
-        } else if (permissions instanceof EntityAttributePermissions) {
-            return PermissionType.ENTITY_ATTR;
-        } else if (permissions instanceof ScreenPermissions) {
-            return PermissionType.SCREEN;
-        } else if (permissions instanceof ScreenElementsPermissions) {
-            return PermissionType.UI;
-        } else if (permissions instanceof SpecificPermissions) {
-            return PermissionType.SPECIFIC;
-        }
-        return null;
     }
 
     public static String getEntityOperationTarget(MetaClass metaClass, EntityOp entityOp) {
@@ -162,5 +41,104 @@ public final class PermissionsUtils {
 
     public static String getScreenElementTarget(String screenId, String component) {
         return screenId + Permission.TARGET_PATH_DELIMETER + component;
+    }
+
+    public static PermissionsContainer getPermissionsByType(RoleDefinition role, PermissionType permissionType) {
+        switch (permissionType) {
+            case ENTITY_OP:
+                return role.entityPermissions();
+            case ENTITY_ATTR:
+                return role.entityAttributePermissions();
+            case SPECIFIC:
+                return role.specificPermissions();
+            case SCREEN:
+                return role.screenPermissions();
+            case UI:
+                return role.screenElementsPermissions();
+            default:
+                throw new IllegalArgumentException("Unsupported permission type " + permissionType);
+        }
+    }
+
+    @Nullable
+    public static String evaluateExtendedEntityTarget(String target) {
+        Metadata metadata = AppBeans.get(Metadata.class);
+        int pos = target.indexOf(Permission.TARGET_PATH_DELIMETER);
+        if (pos > -1) {
+            String entityName = target.substring(0, pos);
+            Class extendedClass = metadata.getExtendedEntities().getExtendedClass(metadata.getClassNN(entityName));
+            if (extendedClass != null) {
+                MetaClass extMetaClass = metadata.getClassNN(extendedClass);
+                return extMetaClass.getName() + Permission.TARGET_PATH_DELIMETER + target.substring(pos + 1);
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Method returns a resulting permission value, trying to find a value in the following order:
+     * <ul>
+     *     <li>explicit permission value in the role definition</li>
+     *     <li>default permission value in the role definition</li>
+     *     <li>a value used for undefined permissions (system-level config {@code ServerConfig#getPermissionUndefinedAccessPolicy})</li>
+     * </ul>
+     *
+     * @return an integer that represents a permission value
+     */
+    public static Integer getResultingPermissionValue(RoleDefinition roleDefinition,
+                                                      PermissionType type,
+                                                      String target,
+                                                      Access permissionUndefinedAccessPolicy) {
+        PermissionsContainer permissionsContainer = PermissionsUtils.getPermissionsByType(roleDefinition, type);
+        Integer permissionValue = permissionsContainer.getExplicitPermissions().get(target);
+        if (permissionValue == null) {
+            permissionValue = getDefaultPermissionValue(roleDefinition, type, target);
+        }
+        if (permissionValue == null) {
+            permissionValue = getPermissionUndefinedAccessValue(type, permissionUndefinedAccessPolicy);
+        }
+        return permissionValue;
+    }
+
+    @Nullable
+    private static Integer getDefaultPermissionValue(RoleDefinition roleDefinition,
+                                                     PermissionType type,
+                                                     String target) {
+        HasSecurityAccessValue access = null;
+        switch (type) {
+            case SCREEN:
+                access = roleDefinition.screenPermissions().getDefaultScreenAccess();
+                break;
+            case ENTITY_OP:
+                access = roleDefinition.entityPermissions().getDefaultAccessByTarget(target);
+                break;
+            case ENTITY_ATTR:
+                access = roleDefinition.entityAttributePermissions().getDefaultEntityAttributeAccess();
+                break;
+            case SPECIFIC:
+                access = roleDefinition.specificPermissions().getDefaultSpecificAccess();
+                break;
+            case UI:
+                break;
+            default:
+                throw new IllegalArgumentException("Unsupported permission type " + type);
+        }
+        return access != null ? access.getId() : null;
+    }
+
+    private static Integer getPermissionUndefinedAccessValue(PermissionType type,
+                                                             Access permissionUndefinedAccessPolicy) {
+        if (permissionUndefinedAccessPolicy == Access.DENY) return Access.DENY.getId();
+        switch (type) {
+            case ENTITY_OP:
+            case SPECIFIC:
+            case SCREEN:
+            case UI:
+                return Access.ALLOW.getId();
+            case ENTITY_ATTR:
+                return EntityAttrAccess.MODIFY.getId();
+            default:
+                throw new IllegalArgumentException("Unsupported permission type " + type);
+        }
     }
 }

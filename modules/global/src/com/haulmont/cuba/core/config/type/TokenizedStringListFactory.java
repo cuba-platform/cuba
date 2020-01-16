@@ -14,8 +14,16 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.security.role;
+package com.haulmont.cuba.core.config.type;
 
-public class ScreenElementsPermissions extends Permissions {
-    private static final long serialVersionUID = 3691551628715510163L;
+import org.apache.commons.text.StringTokenizer;
+
+public class TokenizedStringListFactory extends TypeFactory {
+    @Override
+    public Object build(String value) {
+        if (value == null) {
+            return null;
+        }
+        return new StringTokenizer(value).getTokenList();
+    }
 }

@@ -10,10 +10,6 @@ values ('40288137-1ef4-11c8-011e-f416e4150005', current_timestamp, 0, 'Users', 1
 insert into SEC_USER_ROLE (ID, CREATE_TS, VERSION, USER_ID, ROLE_ID)
 values ('40288137-1ef4-11c8-011e-f41aaa740006', current_timestamp, 0, '40288137-1ef4-11c8-011e-f41247370001', '40288137-1ef4-11c8-011e-f416e4150005');
 
-insert into SEC_USER_ROLE (ID, CREATE_TS, VERSION, USER_ID, ROLE_ID)
-values ('40288137-1ef4-11c8-011e-f41aaa740007', current_timestamp, 0, '40288137-1ef4-11c8-011e-f41247370001', '0c018061-b26f-4de2-a5be-dff348347f93');
-
-
 -- AppFolders
 
 insert into SYS_FOLDER (ID, CREATE_TS, VERSION, TYPE, PARENT_ID, NAME)

@@ -16,7 +16,6 @@
 
 package com.haulmont.cuba.security.app.role;
 
-import com.haulmont.cuba.security.entity.*;
 import com.haulmont.cuba.security.role.*;
 
 import javax.inject.Inject;
@@ -32,37 +31,37 @@ public abstract class AnnotatedRoleDefinition implements RoleDefinition {
     protected AnnotatedPermissionsBuilder annotatedPermissionsBuilder;
 
     @Override
-    public RoleType getRoleType() {
-        return annotatedPermissionsBuilder.getTypeFromAnnotation(this);
-    }
-
-    @Override
     public String getName() {
         return annotatedPermissionsBuilder.getNameFromAnnotation(this);
     }
 
     @Override
-    public EntityPermissions entityPermissions() {
+    public String getSecurityScope() {
+        return annotatedPermissionsBuilder.getSecurityScopeFromAnnotation(this);
+    }
+
+    @Override
+    public EntityPermissionsContainer entityPermissions() {
         return annotatedPermissionsBuilder.buildEntityAccessPermissions(this);
     }
 
     @Override
-    public EntityAttributePermissions entityAttributePermissions() {
+    public EntityAttributePermissionsContainer entityAttributePermissions() {
         return annotatedPermissionsBuilder.buildEntityAttributeAccessPermissions(this);
     }
 
     @Override
-    public SpecificPermissions specificPermissions() {
+    public SpecificPermissionsContainer specificPermissions() {
         return annotatedPermissionsBuilder.buildSpecificPermissions(this);
     }
 
     @Override
-    public ScreenPermissions screenPermissions() {
+    public ScreenPermissionsContainer screenPermissions() {
         return annotatedPermissionsBuilder.buildScreenPermissions(this);
     }
 
     @Override
-    public ScreenElementsPermissions screenElementsPermissions() {
+    public ScreenElementsPermissionsContainer screenElementsPermissions() {
         return annotatedPermissionsBuilder.buildScreenElementsPermissions(this);
     }
 

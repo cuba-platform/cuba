@@ -28,12 +28,7 @@ import com.haulmont.cuba.web.app.login.LoginScreen;
 import com.haulmont.cuba.web.app.loginwindow.AppLoginWindow;
 import com.haulmont.cuba.web.app.main.MainScreen;
 import com.haulmont.cuba.web.app.mainwindow.AppMainWindow;
-import com.haulmont.cuba.web.gui.MainTabSheetMode;
-import com.haulmont.cuba.web.gui.MainTabSheetModeFactory;
-import com.haulmont.cuba.web.gui.ManagedMainTabSheetMode;
-import com.haulmont.cuba.web.gui.ManagedMainTabSheetModeFactory;
-import com.haulmont.cuba.web.gui.UrlHandlingMode;
-import com.haulmont.cuba.web.gui.UrlHandlingModeFactory;
+import com.haulmont.cuba.web.gui.*;
 
 import java.util.List;
 
@@ -81,7 +76,7 @@ public interface WebConfig extends Config {
     int getHttpSessionExpirationTimeoutSec();
 
     /**
-     *  @return Comma-separated list of URLs for CubaHttpFilter to bypass.
+     * @return Comma-separated list of URLs for CubaHttpFilter to bypass.
      */
     @Property("cuba.web.cubaHttpFilterBypassUrls")
     @Factory(factory = CommaSeparatedStringListTypeFactory.class)
@@ -181,7 +176,6 @@ public interface WebConfig extends Config {
 
     /**
      * @return how URL changes should be handled
-     *
      * @see UrlHandlingMode
      */
     @Property("cuba.web.urlHandlingMode")
@@ -373,7 +367,7 @@ public interface WebConfig extends Config {
 
     /**
      * @return initial scale of HTML page if cuba.web.customDeviceWidthForViewport is set or cuba.web.useDeviceWidthForViewport is true.
-     *         Affects "viewport" meta tag of Vaadin HTML pages.
+     * Affects "viewport" meta tag of Vaadin HTML pages.
      */
     @Property("cuba.web.pageInitialScale")
     @DefaultString("0.8")
@@ -413,6 +407,7 @@ public interface WebConfig extends Config {
     @Property("cuba.web.defaultScreenId")
     @Source(type = SourceType.DATABASE)
     String getDefaultScreenId();
+
     void setDefaultScreenId(String screenId);
 
     /**
@@ -422,6 +417,7 @@ public interface WebConfig extends Config {
     @Source(type = SourceType.DATABASE)
     @DefaultBoolean(true)
     boolean getUserCanChooseDefaultScreen();
+
     void setUserCanChooseDefaultScreen(boolean b);
 
     /**
@@ -431,6 +427,7 @@ public interface WebConfig extends Config {
     @Source(type = SourceType.DATABASE)
     @DefaultBoolean(true)
     boolean getDefaultScreenCanBeClosed();
+
     void setDefaultScreenCanBeClosed(boolean value);
 
     /**

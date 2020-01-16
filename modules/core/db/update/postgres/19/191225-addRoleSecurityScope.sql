@@ -14,8 +14,4 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.security.role;
-
-public class EntityAttributePermissions extends Permissions {
-    private static final long serialVersionUID = -4057315403116500344L;
-}
+alter table SEC_ROLE add SECURITY_SCOPE varchar(255);

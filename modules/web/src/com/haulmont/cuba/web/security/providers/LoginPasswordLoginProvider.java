@@ -108,6 +108,7 @@ public class LoginPasswordLoginProvider implements LoginProvider, Ordered {
         tcCredentials.setOverrideLocale(credentials.isOverrideLocale());
         tcCredentials.setSyncNewUserSessionReplication(credentials.isSyncNewUserSessionReplication());
         tcCredentials.setSessionAttributes(credentials.getSessionAttributes());
+        tcCredentials.setSecurityScope(webAuthConfig.getSecurityScope());
 
         return tcCredentials;
     }

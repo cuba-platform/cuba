@@ -19,10 +19,8 @@ package com.haulmont.cuba.core;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import com.haulmont.cuba.core.sys.AppContext;
-import com.haulmont.cuba.security.entity.Group;
-import com.haulmont.cuba.security.entity.Role;
-import com.haulmont.cuba.security.entity.RoleType;
-import com.haulmont.cuba.security.entity.User;
+import com.haulmont.cuba.security.ConstraintTest;
+import com.haulmont.cuba.security.entity.*;
 import com.haulmont.cuba.testsupport.TestContainer;
 import com.haulmont.cuba.testsupport.TestSupport;
 import org.junit.jupiter.api.AfterEach;
@@ -46,6 +44,7 @@ public class QueryTest {
     private UUID userId;
     private UUID user2Id;
     private UUID groupId;
+    private UUID constraintId;
 
     @BeforeEach
     public void setUp() throws Exception {
@@ -72,6 +71,13 @@ public class QueryTest {
             group.setName("testGroup");
             em.persist(group);
 
+            Constraint constraint = new Constraint();
+            constraintId = constraint.getId();
+            constraint.setEntityName("sec$User");
+            constraint.setCheckType(ConstraintCheckType.MEMORY);
+            constraint.setOperationType(ConstraintOperationType.READ);
+            em.persist(constraint);
+
             tx.commit();
         }
     }
@@ -80,6 +86,7 @@ public class QueryTest {
     public void tearDown() throws Exception {
         cont.deleteRecord("SEC_USER", userId, user2Id);
         cont.deleteRecord("SEC_GROUP", groupId);
+        cont.deleteRecord("SEC_CONSTRAINT", constraintId);
     }
 
     @Test
@@ -543,27 +550,29 @@ public class QueryTest {
     public void testEnumImplicitConversion() throws Exception {
         // explicit enum id value
         cont.persistence().runInTransaction(em -> {
-            TypedQuery<Role> query = em.createQuery("select r from sec$Role r where r.type = :roleType", Role.class);
-            query.setParameter("roleType", 10);
-            List<Role> roles = query.getResultList();
-            assertTrue(roles.stream().anyMatch(role -> role.getName().equals("Administrators")));
+            TypedQuery<Constraint> query = em.createQuery("select c from sec$Constraint c where c.operationType = :operationType", Constraint.class);
+            query.setParameter("operationType", "read");
+            List<Constraint> constraints = query.getResultList();
+            assertTrue(constraints.stream().anyMatch(constraint -> constraintId.equals(constraint.getId())));
         });
 
         // enum as a positional parameter
         cont.persistence().runInTransaction(em -> {
-            TypedQuery<Role> query = em.createQuery("select r from sec$Role r where r.type = ?1", Role.class);
-            query.setParameter(1, RoleType.SUPER);
-            List<Role> roles = query.getResultList();
-            assertTrue(roles.stream().anyMatch(role -> role.getName().equals("Administrators")));
+            TypedQuery<Constraint> query = em.createQuery("select c from sec$Constraint c where c.operationType = ?1", Constraint.class);
+            query.setParameter(1, ConstraintOperationType.READ);
+            List<Constraint> constraints = query.getResultList();
+            assertTrue(constraints.stream().anyMatch(constraint -> constraintId.equals(constraint.getId())));
         });
+
 
         // enum as a named parameter
         cont.persistence().runInTransaction(em -> {
-            TypedQuery<Role> query = em.createQuery("select r from sec$Role r where r.type = :roleType", Role.class);
-            query.setParameter("roleType", RoleType.SUPER);
-            List<Role> roles = query.getResultList();
-            assertTrue(roles.stream().anyMatch(role -> role.getName().equals("Administrators")));
+            TypedQuery<Constraint> query = em.createQuery("select c from sec$Constraint c where c.operationType = :operationType", Constraint.class);
+            query.setParameter("operationType", ConstraintOperationType.READ);
+            List<Constraint> constraints = query.getResultList();
+            assertTrue(constraints.stream().anyMatch(constraint -> constraintId.equals(constraint.getId())));
         });
+
     }
 
 

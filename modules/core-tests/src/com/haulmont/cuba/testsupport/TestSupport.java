@@ -33,8 +33,6 @@ public class TestSupport {
 
     public static final UUID COMPANY_GROUP_ID = UUID.fromString("0fa2b1a5-1d68-4d69-9fbd-dff348347f93");
 
-    public static final UUID ADMIN_ROLE_ID = UUID.fromString("0c018061-b26f-4de2-a5be-dff348347f93");
-
     public static <T> T reserialize(Serializable object) throws Exception {
         if (object == null)
             return null;

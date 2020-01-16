@@ -17,12 +17,14 @@
 package com.haulmont.cuba.gui.app.security.role.browse;
 
 import com.google.common.io.Files;
+import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.cuba.core.app.importexport.CollectionImportPolicy;
 import com.haulmont.cuba.core.app.importexport.EntityImportExportService;
 import com.haulmont.cuba.core.app.importexport.EntityImportView;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.WindowManager.OpenType;
+import com.haulmont.cuba.gui.WindowParam;
 import com.haulmont.cuba.gui.WindowParams;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.ItemTrackingAction;
@@ -54,30 +56,35 @@ public class RoleBrowser extends AbstractLookup {
 
     private final Logger log = LoggerFactory.getLogger(RoleBrowser.class);
 
-    @Inject
-    protected Table<Role> rolesTable;
+    @WindowParam
+    protected String securityScope;
 
     @Inject
     protected UserManagementService userManagementService;
 
     @Inject
-    protected Filter filter;
+    protected Security security;
 
     @Inject
-    protected Security security;
-    @Inject
     protected Metadata metadata;
+
     @Inject
     protected DataManager dataManager;
+
     @Inject
     protected ViewRepository viewRepository;
+
     @Inject
     protected FileUploadingAPI fileUploadingAPI;
+
     @Inject
     protected ExportDisplay exportDisplay;
 
     @Inject
     protected EntityImportExportService entityImportExportService;
+
+    @Inject
+    protected RolesService rolesService;
 
     @Inject
     protected CollectionDatasource<Role, UUID> rolesDs;
@@ -98,7 +105,16 @@ public class RoleBrowser extends AbstractLookup {
     protected Button copyBtn;
 
     @Inject
-    protected RolesService rolesService;
+    protected TextField<String> nameField;
+
+    @Inject
+    protected TextField<String> locNameField;
+
+    @Inject
+    protected TextField<String> descriptionField;
+
+    @Inject
+    protected Table<Role> rolesTable;
 
     @Named("rolesTable.remove")
     protected RemoveAction removeRolesAction;
@@ -130,7 +146,7 @@ public class RoleBrowser extends AbstractLookup {
                 });
 
         boolean hasPermissionsToCreateRole = security.isEntityOpPermitted(Role.class, EntityOp.CREATE);
-        copyRoles.setEnabled(hasPermissionsToCreateRole && rolesService.isDatabaseModeAvailable());
+        copyRoles.setEnabled(hasPermissionsToCreateRole && rolesService.isRoleStorageMixedMode());
 
         rolesTable.addAction(copyRoles);
 
@@ -180,7 +196,7 @@ public class RoleBrowser extends AbstractLookup {
         importRolesUpload.setCaption(null);
         importRolesUpload.setUploadButtonCaption(null);
 
-        if (!rolesService.isDatabaseModeAvailable()) {
+        if (!rolesService.isRoleStorageMixedMode()) {
             createBtn.setVisible(false);
             removeBtn.setVisible(false);
             copyBtn.setVisible(false);
@@ -188,10 +204,18 @@ public class RoleBrowser extends AbstractLookup {
             importRolesUpload.setVisible(false);
         }
 
-        if (rolesService.isPredefinedRolesModeAvailable()
-                && rolesService.applicationHasPredefinedRoles()) {
-            filter.setVisible(false);
-        }
+        nameField.addValueChangeListener(e -> applyFilter());
+        locNameField.addValueChangeListener(e -> applyFilter());
+        descriptionField.addValueChangeListener(e -> applyFilter());
+
+    }
+
+    protected void applyFilter() {
+        rolesDs.refresh(ParamsMap.of(
+                "name", nameField.getValue(),
+                "locName", locNameField.getValue(),
+                "description", descriptionField.getValue()
+        ));
     }
 
     protected void importRoles() {

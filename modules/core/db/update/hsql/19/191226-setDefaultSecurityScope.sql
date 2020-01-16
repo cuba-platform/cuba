@@ -1,0 +1,1 @@
+update SEC_ROLE set SECURITY_SCOPE = 'GENERIC_UI'^

@@ -45,6 +45,7 @@ public class SoftDeleteTest {
     
     private UUID groupId;
     private UUID userId, user1Id, user2Id;
+    private UUID role1Id;
     private UUID role2Id;
     private UUID role3Id;
     private UUID role4Id;
@@ -91,7 +92,11 @@ public class SoftDeleteTest {
             user2.setGroup(group);
             em.persist(user2);
 
-            Role role1 = em.find(Role.class, UUID.fromString("0c018061-b26f-4de2-a5be-dff348347f93"));
+            Role role1 = new Role();
+            role1Id = role1.getId();
+            role1.setName("role1");
+            em.persist(role1);
+
 
             UserRole userRole1 = new UserRole();
             userRole1Id = userRole1.getId();
@@ -217,7 +222,7 @@ public class SoftDeleteTest {
         cont.deleteRecord("SEC_USER_ROLE", userRole1Id, userRole2Id, userRole3Id, userRole4Id);
         cont.deleteRecord("SEC_GROUP_HIERARCHY", groupHierarchyId);
         cont.deleteRecord("SEC_CONSTRAINT", constraint1Id, constraint2Id);
-        cont.deleteRecord("SEC_ROLE", role2Id, role3Id, role4Id);
+        cont.deleteRecord("SEC_ROLE", role1Id, role2Id, role3Id, role4Id);
         cont.deleteRecord("SEC_USER", userId, user1Id, user2Id);
         cont.deleteRecord("SEC_GROUP", groupId);
         cont.deleteRecord("TEST_SOFT_DELETE_OTO_A", oneToOneA1Id, oneToOneA2Id);

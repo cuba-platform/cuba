@@ -102,6 +102,7 @@ public class LdapLoginProvider implements LoginProvider, Ordered {
         tcCredentials.setIpAddress(loginPasswordCredentials.getIpAddress());
         tcCredentials.setOverrideLocale(loginPasswordCredentials.isOverrideLocale());
         tcCredentials.setSyncNewUserSessionReplication(loginPasswordCredentials.isSyncNewUserSessionReplication());
+        tcCredentials.setSecurityScope(webAuthConfig.getSecurityScope());
 
         Map<String, Serializable> sessionAttributes = ((AbstractClientCredentials) credentials).getSessionAttributes();
         Map<String, Serializable> targetSessionAttributes;

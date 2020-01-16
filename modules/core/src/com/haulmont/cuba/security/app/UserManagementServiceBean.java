@@ -42,6 +42,7 @@ import java.io.StringWriter;
 import java.util.*;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
+import static com.haulmont.cuba.security.role.SecurityStorageMode.MIXED;
 
 @Service(UserManagementService.NAME)
 public class UserManagementServiceBean implements UserManagementService {
@@ -145,8 +146,8 @@ public class UserManagementServiceBean implements UserManagementService {
         checkNotNullArgument(predefinedRoleName, "Null access role id");
         checkUpdatePermission(Role.class);
 
-        if (!rolesRepository.isDatabaseModeAvailable()) {
-            throw new IllegalStateException("Unable to copy predefined role. Database mode for roles is unavailable.");
+        if (serverConfig.getRolesStorageMode() != MIXED) {
+            throw new IllegalStateException("Unable to copy predefined role. Mixed mode for roles is unavailable.");
         }
 
         Role clone;

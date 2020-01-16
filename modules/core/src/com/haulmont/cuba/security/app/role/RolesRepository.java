@@ -17,16 +17,17 @@
 package com.haulmont.cuba.security.app.role;
 
 import com.haulmont.cuba.core.EntityManager;
+import com.haulmont.cuba.core.app.ServerConfig;
 import com.haulmont.cuba.core.global.DataManager;
-import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.core.global.Metadata;
+import com.haulmont.cuba.security.app.RoleDefinitionBuilder;
 import com.haulmont.cuba.security.entity.Permission;
 import com.haulmont.cuba.security.entity.PermissionType;
 import com.haulmont.cuba.security.entity.Role;
 import com.haulmont.cuba.security.entity.UserRole;
-import com.haulmont.cuba.security.role.Permissions;
-import com.haulmont.cuba.security.role.PermissionsUtils;
+import com.haulmont.cuba.security.role.EntityPermissionsContainer;
+import com.haulmont.cuba.security.role.PermissionsContainer;
 import com.haulmont.cuba.security.role.RoleDefinition;
 import com.haulmont.cuba.security.role.SecurityStorageMode;
 import org.slf4j.Logger;
@@ -38,6 +39,8 @@ import javax.inject.Inject;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
+
+import static com.haulmont.cuba.security.role.SecurityStorageMode.MIXED;
 
 /**
  * Bean contains information about all predefined roles.
@@ -57,7 +60,7 @@ public class RolesRepository {
     protected DataManager dataManager;
 
     @Inject
-    protected GlobalConfig config;
+    protected ServerConfig serverConfig;
 
     @Inject
     protected Logger log;
@@ -87,32 +90,34 @@ public class RolesRepository {
                 .filter(ur -> ur.getRoleDefinition() != null)
                 .forEach(ur -> result.put(ur.getRoleDefinition().getName(), ur.getRoleDefinition()));
 
-        if (isPredefinedRolesModeAvailable()) {
-            for (UserRole ur : userRolesWithRoleName) {
-                RoleDefinition role = getRoleDefinitionByName(ur.getRoleName());
-                if (role != null) {
-                    ur.setRoleDefinition(role);
-                    result.put(role.getName(), role);
-                }
+        for (UserRole ur : userRolesWithRoleName) {
+            RoleDefinition role = getRoleDefinitionByName(ur.getRoleName());
+            if (role != null) {
+                ur.setRoleDefinition(role);
+                result.put(role.getName(), role);
             }
         }
 
-        if (isDatabaseModeAvailable()) {
+        if (serverConfig.getRolesStorageMode() == MIXED) {
             for (UserRole ur : userRolesWithRoleObject) {
                 Role role = ur.getRole();
-                if (isPredefinedRolesModeAvailable()
-                        && nameToPredefinedRoleMapping.containsKey(role.getName())
-                        && !AdministratorsRoleDefinition.ROLE_NAME.equals(role.getName())
-                        && !AnonymousRoleDefinition.ROLE_NAME.equals(role.getName())) {
+                if (nameToPredefinedRoleMapping.containsKey(role.getName())) {
                     log.warn("User '{}' has link to the persisted role '{}', but this role name is used for some predefined role. " +
                             "Persisted role's permissions will not be taken into account.", ur.getUser().getLogin(), role.getName());
                     continue;
                 }
                 RoleDefinition roleDefinition = RoleDefinitionBuilder.create()
-                        .withRoleType(role.getType())
                         .withName(role.getName())
                         .withDescription(role.getDescription())
-                        .join(role)
+                        .withSecurityScope(role.getSecurityScope())
+                        .withPermissions(role.getPermissions())
+                        .withDefaultScreenAccess(role.getDefaultScreenAccess())
+                        .withDefaultEntityCreateAccess(role.getDefaultEntityCreateAccess())
+                        .withDefaultEntityReadAccess(role.getDefaultEntityReadAccess())
+                        .withDefaultEntityUpdateAccess(role.getDefaultEntityUpdateAccess())
+                        .withDefaultEntityDeleteAccess(role.getDefaultEntityDeleteAccess())
+                        .withDefaultEntityAttributeAccess(role.getDefaultEntityAttributeAccess())
+                        .withDefaultSpecificAccess(role.getDefaultSpecificAccess())
                         .build();
                 ur.setRoleDefinition(roleDefinition);
                 result.put(roleDefinition.getName(), roleDefinition);
@@ -134,15 +139,13 @@ public class RolesRepository {
 
         Map<String, Role> defaultUserRoles = new HashMap<>();
 
-        if (isPredefinedRolesModeAvailable()) {
-            for (Map.Entry<String, RoleDefinition> entry : nameToPredefinedRoleMapping.entrySet()) {
-                if (entry.getValue().isDefault()) {
-                    defaultUserRoles.put(entry.getKey(), null);
-                }
+        for (Map.Entry<String, RoleDefinition> entry : nameToPredefinedRoleMapping.entrySet()) {
+            if (entry.getValue().isDefault()) {
+                defaultUserRoles.put(entry.getKey(), getRoleWithoutPermissions(entry.getValue()));
             }
         }
 
-        if (isDatabaseModeAvailable()) {
+        if (serverConfig.getRolesStorageMode() == MIXED) {
             List<Role> defaultRoles;
             String defaultRolesSql = "select r from sec$Role r where r.defaultRole = true";
             if (em != null) {
@@ -188,20 +191,32 @@ public class RolesRepository {
         Role role = metadata.create(Role.class);
         role.setPredefined(true);
         role.setName(roleDefinition.getName());
+        role.setLocName(roleDefinition.getLocName());
         role.setDescription(roleDefinition.getDescription());
-        role.setType(roleDefinition.getRoleType());
         role.setDefaultRole(roleDefinition.isDefault());
+        role.setSecurityScope(roleDefinition.getSecurityScope());
+
+        EntityPermissionsContainer entityPermissionsContainer = roleDefinition.entityPermissions();
+        role.setDefaultEntityCreateAccess(entityPermissionsContainer.getDefaultEntityCreateAccess());
+        role.setDefaultEntityReadAccess(entityPermissionsContainer.getDefaultEntityReadAccess());
+        role.setDefaultEntityUpdateAccess(entityPermissionsContainer.getDefaultEntityUpdateAccess());
+        role.setDefaultEntityDeleteAccess(entityPermissionsContainer.getDefaultEntityDeleteAccess());
+        role.setDefaultScreenAccess(roleDefinition.screenPermissions().getDefaultScreenAccess());
+        role.setDefaultEntityAttributeAccess(roleDefinition.entityAttributePermissions().getDefaultEntityAttributeAccess());
+        role.setDefaultSpecificAccess(roleDefinition.specificPermissions().getDefaultSpecificAccess());
 
         return role;
     }
 
-    protected Set<Permission> transformPermissions(PermissionType type, Permissions permissions, Role role) {
-        if (permissions == null || role == null || type == null) {
+    protected Set<Permission> transformPermissions(PermissionType type,
+                                                   PermissionsContainer permissionsContainer,
+                                                   Role role) {
+        if (permissionsContainer == null || role == null || type == null) {
             return Collections.emptySet();
         }
         Set<Permission> result = new HashSet<>();
 
-        for (Map.Entry<String, Integer> entry : PermissionsUtils.getPermissions(permissions).entrySet()) {
+        for (Map.Entry<String, Integer> entry : permissionsContainer.getExplicitPermissions().entrySet()) {
             Permission permission = metadata.create(Permission.class);
             permission.setTarget(entry.getKey());
             permission.setValue(entry.getValue());
@@ -215,47 +230,29 @@ public class RolesRepository {
     }
 
     public Collection<Permission> getPermissions(String predefinedRoleName, PermissionType permissionType) {
-        Permissions permissions;
+        PermissionsContainer permissionsContainer;
         RoleDefinition roleDefinition = getRoleDefinitionByName(predefinedRoleName);
         switch (permissionType) {
             case ENTITY_OP:
-                permissions = roleDefinition.entityPermissions();
+                permissionsContainer = roleDefinition.entityPermissions();
                 break;
             case ENTITY_ATTR:
-                permissions = roleDefinition.entityAttributePermissions();
+                permissionsContainer = roleDefinition.entityAttributePermissions();
                 break;
             case SPECIFIC:
-                permissions = roleDefinition.specificPermissions();
+                permissionsContainer = roleDefinition.specificPermissions();
                 break;
             case SCREEN:
-                permissions = roleDefinition.screenPermissions();
+                permissionsContainer = roleDefinition.screenPermissions();
                 break;
             case UI:
-                permissions = roleDefinition.screenElementsPermissions();
+                permissionsContainer = roleDefinition.screenElementsPermissions();
                 break;
             default:
-                permissions = null;
+                permissionsContainer = null;
         }
 
-        return transformPermissions(permissionType, permissions, getRoleWithoutPermissions(roleDefinition));
-    }
-
-    public boolean isDatabaseModeAvailable() {
-        SecurityStorageMode valueFromConfig = config.getRolesStorageMode();
-        if (valueFromConfig == null) {
-            return true;
-        }
-
-        return SecurityStorageMode.DATABASE.equals(valueFromConfig) || SecurityStorageMode.MIXED.equals(valueFromConfig);
-    }
-
-    public boolean isPredefinedRolesModeAvailable() {
-        SecurityStorageMode valueFromConfig = config.getRolesStorageMode();
-        if (valueFromConfig == null) {
-            return true;
-        }
-
-        return SecurityStorageMode.SOURCE_CODE.equals(valueFromConfig) || SecurityStorageMode.MIXED.equals(valueFromConfig);
+        return transformPermissions(permissionType, permissionsContainer, getRoleWithoutPermissions(roleDefinition));
     }
 
     protected Map<String, RoleDefinition> getNameToPredefinedRoleMapping() {

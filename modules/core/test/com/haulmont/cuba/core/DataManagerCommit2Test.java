@@ -59,7 +59,6 @@ public class DataManagerCommit2Test {
             EntityManager em = persistence.getEntityManager();
 
             Group group = em.find(Group.class, groupId);
-            Role role = em.find(Role.class, UUID.fromString("0c018061-b26f-4de2-a5be-dff348347f93"));
 
             group2 = metadata.create(Group.class);
             group2.setName("Group2-" + group2.getId());
@@ -82,7 +81,7 @@ public class DataManagerCommit2Test {
 
             UserRole userRole = new UserRole();
             userRoleId = userRole.getId();
-            userRole.setRole(role);
+            userRole.setRoleName("test-role");
             userRole.setUser(user);
             em.persist(userRole);
 

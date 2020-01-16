@@ -61,7 +61,7 @@ public class EclipseLinkDetachedTest {
             UserRole userRole = new UserRole();
             userRoleId = userRole.getId();
             userRole.setUser(user);
-            userRole.setRole(em.find(Role.class, UUID.fromString("0c018061-b26f-4de2-a5be-dff348347f93")));
+            userRole.setRoleName("test-role");
             em.persist(userRole);
 
             tx.commit();

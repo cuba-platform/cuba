@@ -101,7 +101,7 @@ public class RememberMeAuthenticationProvider extends AbstractAuthenticationProv
     @SuppressWarnings("RedundantThrows")
     protected UserSession createSession(@SuppressWarnings("unused") RememberMeCredentials credentials,
                                         User user, Locale userLocale) throws LoginException {
-        return userSessionManager.createSession(user, userLocale, false);
+        return userSessionManager.createSession(user, userLocale, false, credentials.getSecurityScope());
     }
 
     protected void checkUserCredentials(Credentials credentials) throws LoginException {
