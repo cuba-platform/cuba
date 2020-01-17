@@ -30,6 +30,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service(RolesService.NAME)
 public class RolesServiceBean implements RolesService {
@@ -93,12 +94,10 @@ public class RolesServiceBean implements RolesService {
     }
 
     @Override
-    public Collection<RoleDefinition> getRoleDefinitions(@Nullable Collection<UserRole> userRoles) {
-        return rolesRepository.getRoleDefinitions(userRoles);
-    }
-
-    @Override
-    public RoleDefinition getRoleDefinitionByName(String predefinedRoleName) {
-        return rolesRepository.getRoleDefinitionByName(predefinedRoleName);
+    public Collection<Role> getRoles(@Nullable Collection<UserRole> userRoles) {
+        Collection<RoleDefinition> roleDefinitions = rolesRepository.getRoleDefinitions(userRoles);
+        return roleDefinitions.stream()
+                .map(roleDefinition -> rolesRepository.getRoleWithoutPermissions(roleDefinition))
+                .collect(Collectors.toList());
     }
 }

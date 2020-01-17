@@ -64,14 +64,7 @@ public interface RolesService {
 
     /**
      * @param userRoles collection of {@link UserRole} objects
-     * @return collection of {@link RoleDefinition} objects associated with {@link UserRole} objects from param
+     * @return collection of {@link Role} objects associated with {@link UserRole} objects from param
      */
-    Collection<RoleDefinition> getRoleDefinitions(@Nullable Collection<UserRole> userRoles);
-
-    /**
-     * @param predefinedRoleName name of a predefined role
-     * @return {@code RoleDefinition} object that contains all permissions of a predefined role
-     */
-    RoleDefinition getRoleDefinitionByName(String predefinedRoleName);
-
+    Collection<Role> getRoles(@Nullable Collection<UserRole> userRoles);
 }

@@ -42,7 +42,7 @@ public class EffectivePermissionsServiceBean implements EffectivePermissionsServ
     protected DataManager dataManager;
 
     @Inject
-    protected RolesService rolesService;
+    protected RolesRepository rolesRepository;
 
     @Override
     public EntityPermissionsContainer getEffectiveEntityPermissions(User user) {
@@ -70,7 +70,7 @@ public class EffectivePermissionsServiceBean implements EffectivePermissionsServ
                 .view(userRoleView)
                 .list();
 
-        Collection<RoleDefinition> roleDefinitions = rolesService.getRoleDefinitions(userRoles);
+        Collection<RoleDefinition> roleDefinitions = rolesRepository.getRoleDefinitions(userRoles);
         return RoleDefinitionsJoiner.join(roleDefinitions);
     }
 }
