@@ -239,6 +239,8 @@ public class UiControllerDependencyInjector implements ControllerDependencyInjec
             }
         } else if (annotation.target() == Target.DATA_LOADER) {
             targetInstance = getScreenData(frameOwner).getLoader(target);
+        } else if (annotation.target() == Target.DATA_CONTAINER) {
+            targetInstance = getScreenData(frameOwner).getContainer(target);
         } else {
             targetInstance = findMethodTarget(frame, target);
         }
