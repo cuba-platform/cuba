@@ -75,7 +75,7 @@ public class Role extends StandardEntity implements TenantEntity {
     @Column(name = "DEFAULT_ENTITY_DELETE_ACCESS")
     private Integer defaultEntityDeleteAccess;
 
-    @Column(name = "DEFAULT_ENTITY_ATTRIBUTE_ACCESS")
+    @Column(name = "DEFAULT_ENTITY_ATTR_ACCESS")
     private Integer defaultEntityAttributeAccess;
 
     @Column(name = "DEFAULT_SPECIFIC_ACCESS")
