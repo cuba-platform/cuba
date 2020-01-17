@@ -16,6 +16,7 @@
 
 package com.haulmont.cuba.security.app.role;
 
+import com.haulmont.cuba.core.app.ServerConfig;
 import com.haulmont.cuba.core.entity.KeyValueEntity;
 import com.haulmont.cuba.security.app.role.annotation.EntityAccess;
 import com.haulmont.cuba.security.app.role.annotation.Role;
@@ -26,13 +27,21 @@ import com.haulmont.cuba.security.role.EntityPermissionsContainer;
 import com.haulmont.cuba.security.role.ScreenPermissionsContainer;
 import com.haulmont.cuba.security.role.SpecificPermissionsContainer;
 
+import javax.inject.Inject;
+
 /**
- * System role that grants minimal permissions required for all users of generic UI client
+ * System role that grants minimal permissions required for all users of generic UI client. This role is marked as a
+ * default role. If this role must not be a default, set the value of the {@link ServerConfig#getMinimalRoleIsDefault}
+ * property to false (cuba.security.minimalRoleIsDefault app property).
  */
-@Role(name = MinimalRoleDefinition.ROLE_NAME)
+@Role(name = MinimalRoleDefinition.ROLE_NAME,
+        isDefault = true)
 public class MinimalRoleDefinition extends AnnotatedRoleDefinition {
 
     public static final String ROLE_NAME = "system-minimal";
+
+    @Inject
+    private ServerConfig serverConfig;
 
     @Override
     @ScreenAccess(allow = {
@@ -83,5 +92,10 @@ public class MinimalRoleDefinition extends AnnotatedRoleDefinition {
     @Override
     public String getLocName() {
         return "Minimal";
+    }
+
+    @Override
+    public boolean isDefault() {
+        return serverConfig.getMinimalRoleIsDefault();
     }
 }

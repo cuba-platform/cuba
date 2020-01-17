@@ -369,6 +369,13 @@ public interface ServerConfig extends Config {
     boolean getDefaultPermissionValuesConfigEnabled();
 
     /**
+     * Whether the {@link com.haulmont.cuba.security.app.role.MinimalRoleDefinition} should be default role.
+     */
+    @Property("cuba.security.minimalRoleIsDefault")
+    @DefaultBoolean(true)
+    boolean getMinimalRoleIsDefault();
+
+    /**
      * Defines the source from which access groups are used in the application. There are 2 possible values:
      * SOURCE_CODE - only access groups defined in the source code will be used;
      * MIXED - mixed mode, both sources will be used. If there are access groups with equal names in the database and in
