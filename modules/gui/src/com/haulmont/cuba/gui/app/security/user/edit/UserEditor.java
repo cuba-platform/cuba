@@ -174,13 +174,6 @@ public class UserEditor extends AbstractEditor<User> {
         removeRoleAction.setEnabled(isUserRoleDeletePermitted && isUserUpdatePermitted);
         rolesTable.addAction(removeRoleAction);
 
-        if (!securityScopesService.isOnlyDefaultScope()) {
-            MetaPropertyPath propertyPath = metadata.getClassNN(UserRole.class).getPropertyPath("role.locSecurityScope");
-            //noinspection ConstantConditions
-            rolesTable.addColumn(new Table.Column<>(propertyPath, messageTools.getPropertyCaption(propertyPath.getMetaProperty())));
-            rolesTable.groupByColumns("role.locSecurityScope");
-        }
-
         AddRoleAction addRoleAction = new AddRoleAction();
         addRoleAction.setEnabled(security.isEntityOpPermitted(UserRole.class, EntityOp.CREATE));
         rolesTable.addAction(addRoleAction);

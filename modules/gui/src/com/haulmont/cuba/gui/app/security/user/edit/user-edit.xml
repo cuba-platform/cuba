@@ -94,6 +94,7 @@
                     <columns>
                         <column id="role.name" caption="msg://roleName"/>
                         <column id="role.locName" caption="msg://localizedRoleName"/>
+                        <column id="role.locSecurityScope"/>
                     </columns>
                     <rows datasource="rolesDs"/>
                 </groupTable>
