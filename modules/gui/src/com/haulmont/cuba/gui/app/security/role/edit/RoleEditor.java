@@ -80,6 +80,7 @@ public class RoleEditor extends AbstractEditor<Role> {
             item.setDefaultEntityDeleteAccess(Access.DENY);
             item.setDefaultEntityAttributeAccess(EntityAttrAccess.DENY);
             item.setDefaultSpecificAccess(Access.DENY);
+            item.setSecurityScope(SecurityScope.DEFAULT_SCOPE_NAME);
         }
     }
 
@@ -88,7 +89,6 @@ public class RoleEditor extends AbstractEditor<Role> {
         Role role = getItem();
         if (entityStates.isNew(role) && !role.isPredefined()) {
             setCaption(getMessage("createCaption"));
-            role.setSecurityScope(SecurityScope.DEFAULT_SCOPE_NAME);
         } else {
             setCaption(formatMessage("editCaption", role.getName()));
         }
