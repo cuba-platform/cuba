@@ -24,7 +24,7 @@ public class BasicRoleDefinition implements RoleDefinition, Serializable {
     private EntityAttributePermissionsContainer entityAttributePermissions;
     private SpecificPermissionsContainer specificPermissions;
     private ScreenPermissionsContainer screenPermissions;
-    private ScreenElementsPermissionsContainer screenElementsPermissions;
+    private ScreenComponentPermissionsContainer screenElementsPermissions;
     private String name;
     private String description;
     private String securityScope;
@@ -34,7 +34,7 @@ public class BasicRoleDefinition implements RoleDefinition, Serializable {
         entityAttributePermissions = new EntityAttributePermissionsContainer();
         specificPermissions = new SpecificPermissionsContainer();
         screenPermissions = new ScreenPermissionsContainer();
-        screenElementsPermissions = new ScreenElementsPermissionsContainer();
+        screenElementsPermissions = new ScreenComponentPermissionsContainer();
     }
 
     private BasicRoleDefinition(BasicRoleDefinitionBuilder builder) {
@@ -69,7 +69,7 @@ public class BasicRoleDefinition implements RoleDefinition, Serializable {
     }
 
     @Override
-    public ScreenElementsPermissionsContainer screenElementsPermissions() {
+    public ScreenComponentPermissionsContainer screenComponentPermissions() {
         return screenElementsPermissions;
     }
 
@@ -113,7 +113,7 @@ public class BasicRoleDefinition implements RoleDefinition, Serializable {
         private EntityAttributePermissionsContainer entityAttributePermissions = new EntityAttributePermissionsContainer();
         private SpecificPermissionsContainer specificPermissions = new SpecificPermissionsContainer();
         private ScreenPermissionsContainer screenPermissions = new ScreenPermissionsContainer();
-        private ScreenElementsPermissionsContainer screenElementsPermissions = new ScreenElementsPermissionsContainer();
+        private ScreenComponentPermissionsContainer screenElementsPermissions = new ScreenComponentPermissionsContainer();
 
         private BasicRoleDefinitionBuilder() {
         }
@@ -153,7 +153,7 @@ public class BasicRoleDefinition implements RoleDefinition, Serializable {
             return this;
         }
 
-        public BasicRoleDefinitionBuilder withScreenElementsPermissions(ScreenElementsPermissionsContainer screenElementsPermissions) {
+        public BasicRoleDefinitionBuilder withScreenElementsPermissions(ScreenComponentPermissionsContainer screenElementsPermissions) {
             this.screenElementsPermissions = screenElementsPermissions;
             return this;
         }

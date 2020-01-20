@@ -16,13 +16,28 @@
 
 package com.haulmont.cuba.security.app.role.annotation;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.lang.annotation.*;
 
+/**
+ * Defines permissions to access screen elements.
+ *
+ * <p>Example:
+ *
+ * <pre>
+ *     &#064;ScreenComponentAccess(screen = "myapp_SomeEntity.browse", deny = {"someGroupBox"})
+ * </pre>
+ *
+ * @see Role
+ */
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ScreenElementAccessContainer {
-    ScreenElementAccess[] value();
+@Repeatable(ScreenComponentAccessContainer.class)
+public @interface ScreenComponentAccess {
+
+    String screen();
+
+    String[] deny() default {};
+
+    String[] allow() default {};
+
 }

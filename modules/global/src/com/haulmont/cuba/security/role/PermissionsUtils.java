@@ -54,7 +54,7 @@ public final class PermissionsUtils {
             case SCREEN:
                 return role.screenPermissions();
             case UI:
-                return role.screenElementsPermissions();
+                return role.screenComponentPermissions();
             default:
                 throw new IllegalArgumentException("Unsupported permission type " + permissionType);
         }

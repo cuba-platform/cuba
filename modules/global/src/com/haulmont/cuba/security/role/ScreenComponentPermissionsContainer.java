@@ -16,6 +16,6 @@
 
 package com.haulmont.cuba.security.role;
 
-public class ScreenElementsPermissionsContainer extends PermissionsContainer {
+public class ScreenComponentPermissionsContainer extends PermissionsContainer {
     private static final long serialVersionUID = 3691551628715510163L;
 }

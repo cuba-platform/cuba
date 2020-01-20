@@ -23,7 +23,7 @@ import java.util.Map;
 public class BasicAccessGroupDefinition implements AccessGroupDefinition {
     protected String name;
     protected String parent;
-    protected SetOfAccessConstraints entityConstraints;
+    protected ConstraintsContainer entityConstraints;
     protected Map<String, Serializable> sessionAttributes;
 
     @Override
@@ -45,11 +45,11 @@ public class BasicAccessGroupDefinition implements AccessGroupDefinition {
     }
 
     @Override
-    public SetOfAccessConstraints accessConstraints() {
+    public ConstraintsContainer accessConstraints() {
         return entityConstraints;
     }
 
-    public void setEntityConstraints(SetOfAccessConstraints entityConstraints) {
+    public void setEntityConstraints(ConstraintsContainer entityConstraints) {
         this.entityConstraints = entityConstraints;
     }
 

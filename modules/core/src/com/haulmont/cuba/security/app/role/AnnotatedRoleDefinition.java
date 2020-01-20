@@ -61,7 +61,7 @@ public abstract class AnnotatedRoleDefinition implements RoleDefinition {
     }
 
     @Override
-    public ScreenElementsPermissionsContainer screenElementsPermissions() {
+    public ScreenComponentPermissionsContainer screenComponentPermissions() {
         return annotatedPermissionsBuilder.buildScreenElementsPermissions(this);
     }
 

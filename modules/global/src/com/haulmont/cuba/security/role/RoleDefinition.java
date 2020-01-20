@@ -37,7 +37,7 @@ public interface RoleDefinition {
 
     ScreenPermissionsContainer screenPermissions();
 
-    ScreenElementsPermissionsContainer screenElementsPermissions();
+    ScreenComponentPermissionsContainer screenComponentPermissions();
 
     default String getDescription() {
         return "";

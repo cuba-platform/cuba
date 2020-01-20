@@ -37,7 +37,7 @@ public interface AccessGroupDefinition {
     /**
      * @return set of constraints for the access group
      */
-    SetOfAccessConstraints accessConstraints();
+    ConstraintsContainer accessConstraints();
 
     /**
      * @return session attributes

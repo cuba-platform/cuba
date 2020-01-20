@@ -79,14 +79,14 @@ public class TestUserSessionSource extends AbstractUserSessionSource {
         private EntityAttributePermissionsContainer entityAttributePermissions;
         private SpecificPermissionsContainer specificPermissions;
         private ScreenPermissionsContainer screenPermissions;
-        private ScreenElementsPermissionsContainer screenElementsPermissions;
+        private ScreenComponentPermissionsContainer screenElementsPermissions;
 
         private TestFullAccessRole() {
             entityPermissions = new EntityPermissionsContainer();
             entityAttributePermissions = new EntityAttributePermissionsContainer();
             specificPermissions = new SpecificPermissionsContainer();
             screenPermissions = new ScreenPermissionsContainer();
-            screenElementsPermissions = new ScreenElementsPermissionsContainer();
+            screenElementsPermissions = new ScreenComponentPermissionsContainer();
 
             entityPermissions.setDefaultEntityCreateAccess(Access.ALLOW);
             entityPermissions.setDefaultEntityReadAccess(Access.ALLOW);
@@ -123,7 +123,7 @@ public class TestUserSessionSource extends AbstractUserSessionSource {
         }
 
         @Override
-        public ScreenElementsPermissionsContainer screenElementsPermissions() {
+        public ScreenComponentPermissionsContainer screenComponentPermissions() {
             return screenElementsPermissions;
         }
     }

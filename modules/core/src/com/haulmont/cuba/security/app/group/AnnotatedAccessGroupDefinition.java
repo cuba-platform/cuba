@@ -17,7 +17,7 @@
 package com.haulmont.cuba.security.app.group;
 
 import com.haulmont.cuba.security.group.AccessGroupDefinition;
-import com.haulmont.cuba.security.group.SetOfAccessConstraints;
+import com.haulmont.cuba.security.group.ConstraintsContainer;
 
 import javax.inject.Inject;
 import java.io.Serializable;
@@ -38,7 +38,7 @@ public abstract class AnnotatedAccessGroupDefinition implements AccessGroupDefin
     }
 
     @Override
-    public SetOfAccessConstraints accessConstraints() {
+    public ConstraintsContainer accessConstraints() {
         return annotatedGroupDefinitionBuilder.buildSetOfAccessConstraints(this);
     }
 

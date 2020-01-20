@@ -56,8 +56,8 @@ public class FullAccessRoleDefinition extends AnnotatedRoleDefinition {
     }
 
     @Override
-    public ScreenElementsPermissionsContainer screenElementsPermissions() {
-        return super.screenElementsPermissions();
+    public ScreenComponentPermissionsContainer screenComponentPermissions() {
+        return super.screenComponentPermissions();
     }
 
     @Override

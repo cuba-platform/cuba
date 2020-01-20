@@ -201,12 +201,12 @@ public class RoleDefinitionsJoiner {
         return joinedPermissionsContainer;
     }
 
-    private static ScreenElementsPermissionsContainer joinScreenElementsPermissions(RoleDefinition role1,
-                                                                                    RoleDefinition role2) {
-        ScreenElementsPermissionsContainer joinedPermissions = new ScreenElementsPermissionsContainer();
+    private static ScreenComponentPermissionsContainer joinScreenElementsPermissions(RoleDefinition role1,
+                                                                                     RoleDefinition role2) {
+        ScreenComponentPermissionsContainer joinedPermissions = new ScreenComponentPermissionsContainer();
         joinPermissions(joinedPermissions,
-                role1.screenElementsPermissions().getExplicitPermissions(),
-                role2.screenElementsPermissions().getExplicitPermissions(),
+                role1.screenComponentPermissions().getExplicitPermissions(),
+                role2.screenComponentPermissions().getExplicitPermissions(),
                 null,
                 null);
         return joinedPermissions;

@@ -21,8 +21,8 @@ import com.haulmont.cuba.core.sys.UserInvocationContext;
 import com.haulmont.cuba.security.app.RoleDefinitionBuilder;
 import com.haulmont.cuba.security.app.RoleDefinitionsJoiner;
 import com.haulmont.cuba.security.entity.*;
-import com.haulmont.cuba.security.group.BasicSetOfAccessConstraints;
-import com.haulmont.cuba.security.group.SetOfAccessConstraints;
+import com.haulmont.cuba.security.group.BasicConstraintsContainer;
+import com.haulmont.cuba.security.group.ConstraintsContainer;
 import com.haulmont.cuba.security.role.PermissionsContainer;
 import com.haulmont.cuba.security.role.PermissionsUtils;
 import com.haulmont.cuba.security.role.RoleDefinition;
@@ -57,7 +57,7 @@ public class UserSession implements Serializable {
 
     protected RoleDefinition joinedRole;
     protected Access permissionUndefinedAccessPolicy = Access.DENY;
-    protected SetOfAccessConstraints setOfAccessConstraints;
+    protected ConstraintsContainer accessConstraints;
 
     protected Map<String, Serializable> attributes;
 
@@ -89,7 +89,7 @@ public class UserSession implements Serializable {
 
         joinedRole = RoleDefinitionBuilder.create().build();
 
-        setOfAccessConstraints = new BasicSetOfAccessConstraints();
+        accessConstraints = new BasicConstraintsContainer();
 
         attributes = new ConcurrentHashMap<>();
         localAttributes = new ConcurrentHashMap<>();
@@ -116,7 +116,7 @@ public class UserSession implements Serializable {
         locale = src.locale;
         timeZone = src.timeZone;
         joinedRole = src.joinedRole;
-        setOfAccessConstraints = src.setOfAccessConstraints;
+        accessConstraints = src.accessConstraints;
         attributes = src.attributes;
         localAttributes = src.localAttributes;
         address = src.address;
@@ -489,10 +489,10 @@ public class UserSession implements Serializable {
     /**
      * Returns a set of access constraints.
      * If you need to modify access constraints, use {@code AccessConstraintsBuilder} to construct a new set of constraints and then
-     * apply it using {@link UserSession#setConstraints(SetOfAccessConstraints)} method.
+     * apply it using {@link UserSession#setConstraints(ConstraintsContainer)} method.
      */
-    public SetOfAccessConstraints getConstraints() {
-        return setOfAccessConstraints;
+    public ConstraintsContainer getConstraints() {
+        return accessConstraints;
     }
 
     /**
@@ -500,8 +500,8 @@ public class UserSession implements Serializable {
      * <p>
      * Use {@code AccessConstraintsBuilder} to construct a new set of constraints.
      */
-    public void setConstraints(SetOfAccessConstraints constraints) {
-        this.setOfAccessConstraints = constraints;
+    public void setConstraints(ConstraintsContainer constraints) {
+        this.accessConstraints = constraints;
     }
 
     public Access getPermissionUndefinedAccessPolicy() {

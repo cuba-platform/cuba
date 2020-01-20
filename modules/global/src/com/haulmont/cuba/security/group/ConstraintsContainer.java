@@ -14,30 +14,29 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.security.app.role.annotation;
+package com.haulmont.cuba.security.group;
 
-import java.lang.annotation.*;
+import java.util.Set;
+import java.util.stream.Stream;
 
 /**
- * Defines permissions to access screen elements.
- *
- * <p>Example:
- *
- * <pre>
- *     &#064;ScreenElementAccess(screen = "myapp_SomeEntity.browse", deny = {"someGroupBox"})
- * </pre>
- *
- * @see Role
+ * Represents set of constraints
  */
-@Target({ElementType.METHOD})
-@Retention(RetentionPolicy.RUNTIME)
-@Repeatable(ScreenElementAccessContainer.class)
-public @interface ScreenElementAccess {
+public interface ConstraintsContainer {
 
-    String screen();
+    /**
+     * @return entity names for the corresponding access constraints set
+     */
+    Set<String> getEntityTypes();
 
-    String[] deny() default {};
+    /**
+     * @return all access constraints for the specified entity type from constraints set
+     */
+    Stream<AccessConstraint> findConstraintsByEntity(String entityName);
 
-    String[] allow() default {};
-
+    /**
+     * @return true is set contains access constraints
+     */
+    boolean exists();
 }
+

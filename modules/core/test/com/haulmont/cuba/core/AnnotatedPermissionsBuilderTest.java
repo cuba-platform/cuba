@@ -105,7 +105,7 @@ public class AnnotatedPermissionsBuilderTest {
         assertEquals(Access.DENY.getId(), screenPermissions.getExplicitPermissions().get("sec$Role.browse"));
 
 
-        ScreenElementsPermissionsContainer screenElementsPermissions = builder.buildScreenElementsPermissions(role);
+        ScreenComponentPermissionsContainer screenElementsPermissions = builder.buildScreenElementsPermissions(role);
         assertEquals(1, screenElementsPermissions.getExplicitPermissions().size());
         assertEquals(Access.ALLOW.getId(),
                 screenElementsPermissions.getExplicitPermissions().get(
@@ -171,9 +171,9 @@ public class AnnotatedPermissionsBuilderTest {
             return null;
         }
 
-        @ScreenElementAccess(screen = "sec$Role.edit", allow = {"roleGroupBox"})
+        @ScreenComponentAccess(screen = "sec$Role.edit", allow = {"roleGroupBox"})
         @Override
-        public ScreenElementsPermissionsContainer screenElementsPermissions() {
+        public ScreenComponentPermissionsContainer screenComponentPermissions() {
             return null;
         }
     }
@@ -213,7 +213,7 @@ public class AnnotatedPermissionsBuilderTest {
         }
 
         @Override
-        public ScreenElementsPermissionsContainer screenElementsPermissions() {
+        public ScreenComponentPermissionsContainer screenComponentPermissions() {
             return null;
         }
     }

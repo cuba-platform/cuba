@@ -49,7 +49,7 @@ public class AccessConstraintsBuilder {
     @Inject
     protected PersistenceSecurity security;
 
-    protected List<SetOfAccessConstraints> joinSets = new ArrayList<>();
+    protected List<ConstraintsContainer> joinSets = new ArrayList<>();
     protected Map<String, List<AccessConstraint>> builderConstraints = new HashMap<>();
 
     /**
@@ -64,7 +64,7 @@ public class AccessConstraintsBuilder {
      *
      * @return current instance of the builder
      */
-    public AccessConstraintsBuilder join(SetOfAccessConstraints constraints) {
+    public AccessConstraintsBuilder join(ConstraintsContainer constraints) {
         joinSets.add(constraints);
         return this;
     }
@@ -235,13 +235,13 @@ public class AccessConstraintsBuilder {
     /**
      * Returns the built set of entity constraints
      */
-    public SetOfAccessConstraints build() {
-        BasicSetOfAccessConstraints setOfEntityConstraints = new BasicSetOfAccessConstraints();
+    public ConstraintsContainer build() {
+        BasicConstraintsContainer setOfEntityConstraints = new BasicConstraintsContainer();
 
         Map<String, List<AccessConstraint>> resultConstraints = new HashMap<>();
-        for (SetOfAccessConstraints joinSet : joinSets) {
-            if (joinSet instanceof BasicSetOfAccessConstraints) {
-                Map<String, List<AccessConstraint>> constraints = ((BasicSetOfAccessConstraints) joinSet).getConstraintsOrNull();
+        for (ConstraintsContainer joinSet : joinSets) {
+            if (joinSet instanceof BasicConstraintsContainer) {
+                Map<String, List<AccessConstraint>> constraints = ((BasicConstraintsContainer) joinSet).getConstraintsOrNull();
                 if (constraints != null) {
                     for (Map.Entry<String, List<AccessConstraint>> entry : constraints.entrySet()) {
                         resultConstraints.computeIfAbsent(entry.getKey(), k -> new ArrayList<>()).addAll(entry.getValue());

@@ -42,7 +42,7 @@ import java.lang.annotation.Target;
  *
  *     &#064;JpqlConstraint(target = SomeEntity.class, where = "{E}.attr = true")
  *     &#064;Override
- *     public SetOfAccessConstraints accessConstraints() {
+ *     public ConstraintsContainer accessConstraints() {
  *         return super.accessConstraints();
  *     }
  *

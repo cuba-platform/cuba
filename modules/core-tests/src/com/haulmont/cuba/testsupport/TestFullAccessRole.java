@@ -58,7 +58,7 @@ public class TestFullAccessRole implements RoleDefinition {
     }
 
     @Override
-    public ScreenElementsPermissionsContainer screenElementsPermissions() {
-        return new ScreenElementsPermissionsContainer();
+    public ScreenComponentPermissionsContainer screenComponentPermissions() {
+        return new ScreenComponentPermissionsContainer();
     }
 }

@@ -29,7 +29,6 @@ import org.junit.ClassRule;
 import org.junit.Test;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Map;
 
 import static org.junit.Assert.*;
@@ -177,8 +176,8 @@ public class RolesRepositoryTest {
         }
 
         @Override
-        public ScreenElementsPermissionsContainer screenElementsPermissions() {
-            return new ScreenElementsPermissionsContainer();
+        public ScreenComponentPermissionsContainer screenComponentPermissions() {
+            return new ScreenComponentPermissionsContainer();
         }
 
         @Override

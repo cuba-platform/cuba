@@ -24,7 +24,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
 
-public class BasicSetOfAccessConstraints implements SetOfAccessConstraints, Serializable {
+public class BasicConstraintsContainer implements ConstraintsContainer, Serializable {
     private static final long serialVersionUID = 2265242471010129743L;
 
     protected Map<String, List<AccessConstraint>> constraints;

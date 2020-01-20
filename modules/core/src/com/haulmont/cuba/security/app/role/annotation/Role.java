@@ -46,31 +46,31 @@ import java.lang.annotation.Target;
  *              allow = {EntityOp.READ},
  *              deny = {EntityOp.DELETE, EntityOp.UPDATE})
  *     &#064;Override
- *     public EntityPermissions entityPermissions() {
+ *     public EntityPermissionsContainer entityPermissions() {
  *         return super.entityPermissions();
  *     }
  *
  *     &#064;EntityAttributeAccess(target = SomeEntity.class, allow = {"someAttribute"})
  *     &#064;Override
- *     public EntityAttributePermissions entityAttributePermissions() {
+ *     public EntityAttributePermissionsContainer entityAttributePermissions() {
  *         return super.entityAttributePermissions();
  *     }
  *
  *     &#064;SpecificAccess(target = "my.specific.permission", access = Access.ALLOW)
  *     &#064;Override
- *     public SpecificPermissions specificPermissions() {
+ *     public SpecificPermissionsContainer specificPermissions() {
  *         return super.specificPermissions();
  *     }
  *
  *     &#064;ScreenAccess(deny = {"myapp_SomeEntity.edit"})
  *     &#064;Override
- *     public ScreenPermissions screenPermissions() {
+ *     public ScreenPermissionsContainer screenPermissions() {
  *         return super.screenPermissions();
  *     }
  *
- *     &#064;ScreenElementAccess(screen = "myapp_SomeEntity.browse", deny = {"someGroupBox"})
+ *     &#064;ScreenComponentAccess(screen = "myapp_SomeEntity.browse", deny = {"someGroupBox"})
  *     &#064;Override
- *     public ScreenElementsPermissions screenElementsPermissions() {
+ *     public ScreenComponentPermissionsContainer screenComponentPermissions() {
  *         return super.screenElementsPermissions();
  *     }
  * }
@@ -80,7 +80,7 @@ import java.lang.annotation.Target;
  * @see EntityAccess
  * @see EntityAttributeAccess
  * @see ScreenAccess
- * @see ScreenElementAccess
+ * @see ScreenComponentAccess
  * @see SpecificAccess
  */
 @Target({ElementType.TYPE})

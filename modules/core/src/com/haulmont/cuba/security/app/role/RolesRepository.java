@@ -177,7 +177,7 @@ public class RolesRepository {
         permissions.addAll(transformPermissions(PermissionType.ENTITY_ATTR, roleDefinition.entityAttributePermissions(), role));
         permissions.addAll(transformPermissions(PermissionType.SPECIFIC, roleDefinition.specificPermissions(), role));
         permissions.addAll(transformPermissions(PermissionType.SCREEN, roleDefinition.screenPermissions(), role));
-        permissions.addAll(transformPermissions(PermissionType.UI, roleDefinition.screenElementsPermissions(), role));
+        permissions.addAll(transformPermissions(PermissionType.UI, roleDefinition.screenComponentPermissions(), role));
 
         role.setPermissions(permissions);
 
@@ -246,7 +246,7 @@ public class RolesRepository {
                 permissionsContainer = roleDefinition.screenPermissions();
                 break;
             case UI:
-                permissionsContainer = roleDefinition.screenElementsPermissions();
+                permissionsContainer = roleDefinition.screenComponentPermissions();
                 break;
             default:
                 permissionsContainer = null;

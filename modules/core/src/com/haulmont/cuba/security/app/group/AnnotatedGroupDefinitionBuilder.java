@@ -25,7 +25,7 @@ import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.security.app.group.annotation.*;
 import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.group.AccessGroupDefinition;
-import com.haulmont.cuba.security.group.SetOfAccessConstraints;
+import com.haulmont.cuba.security.group.ConstraintsContainer;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Nullable;
@@ -153,7 +153,7 @@ public class AnnotatedGroupDefinitionBuilder {
         return ann == null ? null : ann.name();
     }
 
-    public SetOfAccessConstraints buildSetOfAccessConstraints(AccessGroupDefinition group) {
+    public ConstraintsContainer buildSetOfAccessConstraints(AccessGroupDefinition group) {
         Class<? extends AccessGroupDefinition> clazz = group.getClass();
 
         AccessConstraintsBuilder constraintsBuilder = AccessConstraintsBuilder.create();

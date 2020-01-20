@@ -14,29 +14,15 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.security.group;
+package com.haulmont.cuba.security.app.role.annotation;
 
-import java.util.Set;
-import java.util.stream.Stream;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-/**
- * Represents set of constraints
- */
-public interface SetOfAccessConstraints {
-
-    /**
-     * @return entity names for the corresponding access constraints set
-     */
-    Set<String> getEntityTypes();
-
-    /**
-     * @return all access constraints for the specified entity type from constraints set
-     */
-    Stream<AccessConstraint> findConstraintsByEntity(String entityName);
-
-    /**
-     * @return true is set contains access constraints
-     */
-    boolean exists();
+@Target({ElementType.METHOD})
+@Retention(RetentionPolicy.RUNTIME)
+public @interface ScreenComponentAccessContainer {
+    ScreenComponentAccess[] value();
 }
-

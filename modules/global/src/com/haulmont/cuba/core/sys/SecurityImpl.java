@@ -29,7 +29,7 @@ import com.haulmont.cuba.security.entity.PermissionType;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.security.group.AccessConstraint;
 import com.haulmont.cuba.security.group.PersistenceSecurityService;
-import com.haulmont.cuba.security.group.SetOfAccessConstraints;
+import com.haulmont.cuba.security.group.ConstraintsContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -193,7 +193,7 @@ public class SecurityImpl implements Security {
         UserSession userSession = userSessionSource.getUserSession();
         MetaClass mainMetaClass = extendedEntities.getOriginalOrThisMetaClass(metaClass);
 
-        SetOfAccessConstraints setOfConstraints = userSession.getConstraints();
+        ConstraintsContainer setOfConstraints = userSession.getConstraints();
 
         Stream<AccessConstraint> constraints = setOfConstraints.findConstraintsByEntity(mainMetaClass.getName());
         for (MetaClass parent : mainMetaClass.getAncestors()) {

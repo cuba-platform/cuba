@@ -33,7 +33,7 @@ public class RoleDefinitionBuilder {
     private EntityAttributePermissionsContainer entityAttributePermissions;
     private SpecificPermissionsContainer specificPermissions;
     private ScreenPermissionsContainer screenPermissions;
-    private ScreenElementsPermissionsContainer screenElementsPermissions;
+    private ScreenComponentPermissionsContainer screenElementsPermissions;
     private String roleName;
     private String description;
     private String securityScope;
@@ -46,7 +46,7 @@ public class RoleDefinitionBuilder {
         entityAttributePermissions = new EntityAttributePermissionsContainer();
         specificPermissions = new SpecificPermissionsContainer();
         screenPermissions = new ScreenPermissionsContainer();
-        screenElementsPermissions = new ScreenElementsPermissionsContainer();
+        screenElementsPermissions = new ScreenComponentPermissionsContainer();
         description = "";
     }
 

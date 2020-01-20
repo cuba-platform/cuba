@@ -99,13 +99,13 @@ public class AnnotatedPermissionsBuilder {
                         (ScreenPermissionsContainer) permissions));
     }
 
-    public ScreenElementsPermissionsContainer buildScreenElementsPermissions(RoleDefinition role) {
-        return (ScreenElementsPermissionsContainer) processAnnotationsInternal(role,
-                ScreenElementAccess.class,
+    public ScreenComponentPermissionsContainer buildScreenElementsPermissions(RoleDefinition role) {
+        return (ScreenComponentPermissionsContainer) processAnnotationsInternal(role,
+                ScreenComponentAccess.class,
                 null,
                 SCREEN_ELEMENTS_ACCESS_METHOD_NAME,
-                (annotation, permissions) -> processScreenElementAccessAnnotation((ScreenElementAccess) annotation,
-                        (ScreenElementsPermissionsContainer) permissions),
+                (annotation, permissions) -> processScreenElementAccessAnnotation((ScreenComponentAccess) annotation,
+                        (ScreenComponentPermissionsContainer) permissions),
                 (annotation, permissions) -> {});
     }
 
@@ -305,9 +305,9 @@ public class AnnotatedPermissionsBuilder {
         return permissions;
     }
 
-    protected ScreenElementsPermissionsContainer processScreenElementAccessAnnotation(
-            ScreenElementAccess annotation,
-            ScreenElementsPermissionsContainer permissions) {
+    protected ScreenComponentPermissionsContainer processScreenElementAccessAnnotation(
+            ScreenComponentAccess annotation,
+            ScreenComponentPermissionsContainer permissions) {
         String screen = annotation.screen();
         String[] deny = annotation.deny();
         String[] allow = annotation.allow();
@@ -375,7 +375,7 @@ public class AnnotatedPermissionsBuilder {
             case SCREEN_ACCESS_METHOD_NAME:
                 return new ScreenPermissionsContainer();
             case SCREEN_ELEMENTS_ACCESS_METHOD_NAME:
-                return new ScreenElementsPermissionsContainer();
+                return new ScreenComponentPermissionsContainer();
             default:
                 throw new IllegalArgumentException("No such method: " + methodName);
 

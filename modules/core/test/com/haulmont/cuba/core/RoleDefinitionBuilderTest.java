@@ -52,7 +52,7 @@ public class RoleDefinitionBuilderTest {
         assertEquals(0, role.entityAttributePermissions().getExplicitPermissions().size());
         assertEquals(0, role.specificPermissions().getExplicitPermissions().size());
         assertEquals(0, role.screenPermissions().getExplicitPermissions().size());
-        assertEquals(0, role.screenElementsPermissions().getExplicitPermissions().size());
+        assertEquals(0, role.screenComponentPermissions().getExplicitPermissions().size());
     }
 
     @Test
@@ -85,7 +85,7 @@ public class RoleDefinitionBuilderTest {
         assertEquals(1, role.entityPermissions().getExplicitPermissions().size());
         assertEquals(1, role.entityAttributePermissions().getExplicitPermissions().size());
         assertEquals(1, role.screenPermissions().getExplicitPermissions().size());
-        assertEquals(1, role.screenElementsPermissions().getExplicitPermissions().size());
+        assertEquals(1, role.screenComponentPermissions().getExplicitPermissions().size());
         assertEquals(3, role.specificPermissions().getExplicitPermissions().size());
 
         assertTrue(isPermitted(role.specificPermissions(), "specificPermission1"));

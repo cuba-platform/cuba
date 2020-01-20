@@ -94,7 +94,7 @@ public class AccessGroupServiceBean implements AccessGroupsService {
             result = Collections.emptyList();
         } else if (group.isPredefined()) {
             AccessGroupDefinition groupDefinition = groupsRepository.getGroupDefinition(group.getName());
-            SetOfAccessConstraints setOfConstraints = groupDefinition.accessConstraints();
+            ConstraintsContainer setOfConstraints = groupDefinition.accessConstraints();
             result = setOfConstraints.getEntityTypes().stream()
                     .flatMap(setOfConstraints::findConstraintsByEntity)
                     .map(c -> mapToConstraint(c, group))
