@@ -47,7 +47,7 @@ public class AnnotatedPermissionsBuilder {
     private static final String ENTITY_ATTR_ACCESS_METHOD_NAME = "entityAttributePermissions";
     private static final String SPECIFIC_ACCESS_METHOD_NAME = "specificPermissions";
     private static final String SCREEN_ACCESS_METHOD_NAME = "screenPermissions";
-    private static final String SCREEN_ELEMENTS_ACCESS_METHOD_NAME = "screenElementsPermissions";
+    private static final String SCREEN_COMPONENT_ACCESS_METHOD_NAME = "screenComponentPermissions";
 
     @Inject
     protected Metadata metadata;
@@ -103,7 +103,7 @@ public class AnnotatedPermissionsBuilder {
         return (ScreenComponentPermissionsContainer) processAnnotationsInternal(role,
                 ScreenComponentAccess.class,
                 null,
-                SCREEN_ELEMENTS_ACCESS_METHOD_NAME,
+                SCREEN_COMPONENT_ACCESS_METHOD_NAME,
                 (annotation, permissions) -> processScreenElementAccessAnnotation((ScreenComponentAccess) annotation,
                         (ScreenComponentPermissionsContainer) permissions),
                 (annotation, permissions) -> {});
@@ -374,7 +374,7 @@ public class AnnotatedPermissionsBuilder {
                 return new SpecificPermissionsContainer();
             case SCREEN_ACCESS_METHOD_NAME:
                 return new ScreenPermissionsContainer();
-            case SCREEN_ELEMENTS_ACCESS_METHOD_NAME:
+            case SCREEN_COMPONENT_ACCESS_METHOD_NAME:
                 return new ScreenComponentPermissionsContainer();
             default:
                 throw new IllegalArgumentException("No such method: " + methodName);
