@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-alter table SEC_ROLE add SECURITY_SCOPE varchar2(255 char);
+alter table SEC_ROLE add SECURITY_SCOPE varchar2(255 char)^
