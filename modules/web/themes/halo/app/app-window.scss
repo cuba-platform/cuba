@@ -443,8 +443,8 @@ $cuba-sidemenu-layout-collapse-animation-time: .3s !default;
     }
 
     .c-userindicator {
-      width: $cuba-sidemenu-layout-expanded-width - 3 * $cuba-sidemenu-layout-collapsed-width;
-      padding: 0 $v-layout-spacing-horizontal;
+      width: $cuba-sidemenu-layout-expanded-width - 3 * $cuba-sidemenu-layout-collapsed-width + 20px;
+      padding: 0 round($v-layout-spacing-horizontal / 2);
 
       font-size: 1.1em;
       text-align: center;
@@ -456,11 +456,17 @@ $cuba-sidemenu-layout-collapse-animation-time: .3s !default;
       }
     }
 
+    .c-sidemenu-controls .c-userindicator .c-user-select-combobox {
+      width: 100%;
+    }
+
     .c-settings-button,
     .c-logout-button,
     .c-login-button {
-      width: $cuba-sidemenu-layout-collapsed-width;
+      width: $cuba-sidemenu-layout-collapsed-width - 10px;
       height: $cuba-sidemenu-layout-collapsed-width;
+
+      padding: 0;
 
       color: $cuba-menubar-text-color;
 
