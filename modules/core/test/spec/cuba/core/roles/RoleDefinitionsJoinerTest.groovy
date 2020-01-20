@@ -149,7 +149,7 @@ class RoleDefinitionsJoinerTest extends Specification {
         joinedRole.entityPermissions().explicitPermissions['sec$User:delete'] == Access.ALLOW.id
         joinedRole.entityAttributePermissions().explicitPermissions['sec$User:login'] == EntityAttrAccess.MODIFY.id
         joinedRole.specificPermissions().explicitPermissions['spec1'] == Access.ALLOW.id
-        joinedRole.screenElementsPermissions().explicitPermissions['alias:component'] == Access.ALLOW.id
+        joinedRole.screenComponentPermissions().explicitPermissions['alias:component'] == Access.ALLOW.id
     }
 
     def "join permissions when one role has permission and the second role has defaults"() {
@@ -190,6 +190,6 @@ class RoleDefinitionsJoinerTest extends Specification {
         joinedRole.entityPermissions().explicitPermissions['sec$User:delete'] == Access.ALLOW.id
         joinedRole.entityAttributePermissions().explicitPermissions['sec$User:login'] == EntityAttrAccess.VIEW.id
         joinedRole.specificPermissions().explicitPermissions['spec1'] == Access.ALLOW.id
-        joinedRole.screenElementsPermissions().explicitPermissions['alias:component'] == Access.ALLOW.id
+        joinedRole.screenComponentPermissions().explicitPermissions['alias:component'] == Access.ALLOW.id
     }
 }
