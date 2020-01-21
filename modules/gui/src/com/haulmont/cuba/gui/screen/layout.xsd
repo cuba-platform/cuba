@@ -648,6 +648,7 @@
             <xs:simpleType>
                 <xs:restriction base="xs:string">
                     <xs:enumeration value="borderless"/>
+                    <xs:enumeration value="light"/>
                     <xs:enumeration value="well"/>
                 </xs:restriction>
             </xs:simpleType>
