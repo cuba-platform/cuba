@@ -78,6 +78,14 @@ public class TrustedClientServiceBean implements TrustedClientService {
         return anonymousSessionHolder.getAnonymousSession();
     }
 
+    @Nonnull
+    @Override
+    public UserSession getAnonymousSession(String trustedClientPassword, String securityScope) throws LoginException {
+        checkTrustedClientCredentials(trustedClientPassword);
+
+        return anonymousSessionHolder.getAnonymousSession(securityScope);
+    }
+
     @Nullable
     @Override
     public UserSession findSession(String trustedClientPassword, UUID sessionId) throws LoginException {
