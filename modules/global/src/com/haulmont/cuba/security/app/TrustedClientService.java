@@ -44,6 +44,8 @@ public interface TrustedClientService {
 
     /**
      * Get anonymous user session from a trusted client.
+     * <p>
+     * Method works like the {@link #getAnonymousSession(String, String)} using the default scope name.
      *
      * @param trustedClientPassword trusted client password
      * @return anonymous user session
@@ -51,6 +53,17 @@ public interface TrustedClientService {
      */
     @Nonnull
     UserSession getAnonymousSession(String trustedClientPassword) throws LoginException;
+
+    /**
+     * Get anonymous user session from a trusted client.
+     *
+     * @param trustedClientPassword trusted client password
+     * @param securityScope security scope name
+     * @return anonymous user session
+     * @throws LoginException if passed invalid trusted client password
+     */
+    @Nonnull
+    UserSession getAnonymousSession(String trustedClientPassword, String securityScope) throws LoginException;
 
     /**
      * Get a UserSession from the cache of currently active sessions.
