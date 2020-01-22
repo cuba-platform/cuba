@@ -202,6 +202,11 @@ $cuba-responsive-sidemenu-toggled-menu-width: $cuba-responsive-sidemenu-small-wi
  */
 $cuba-sidemenu-background-color: $valo-menu-background-color !default;
 /**
+ * Defines first submenu background color.
+ * @group sidemenu
+ */
+$cuba-sidemenu-submenu-background-color: $cuba-sidemenu-background-color !default;
+/**
  * The sidemenu items font weight.
  * @group sidemenu
  */
@@ -231,6 +236,11 @@ $cuba-sidemenu-title-font-weight: $v-font-weight !default;
  * @group sidemenu
  */
 $cuba-sidemenu-title-gradient: true !default;
+/**
+ * Defines sidemenu title background color if $cuba-sidemenu-title-gradient is false
+ * @group sidemenu
+ */
+$cuba-sidemenu-title-background-color: if(is-dark-color($cuba-sidemenu-background-color), lighten($cuba-sidemenu-background-color, 5%), darken($cuba-sidemenu-background-color, 5%)) !default;
 /**
  * The top offset of mobile buttons and show/hide toggle button.
  * @group sidemenu
@@ -279,7 +289,10 @@ $cuba-sidemenu-userindicator-font-weight: $v-font-weight !default;
       @include valo-gradient($color: $v-selection-color);
       border-bottom: valo-border($color: $v-selection-color);
       $font-color: valo-font-color($v-selection-color, 0.9);
+    } @else {
+      background: $cuba-sidemenu-title-background;
     }
+
     color: $font-color;
     font-size: $cuba-sidemenu-title-font-size;
     line-height: $cuba-sidemenu-title-font-size * 1.4;
@@ -314,6 +327,10 @@ $cuba-sidemenu-userindicator-font-weight: $v-font-weight !default;
     .#{$primary-stylename}-item-caption {
       max-width: initial;
     }
+  }
+
+  .#{$primary-stylename} > .c-sidemenu-submenu.c-sidemenu-submenu-open {
+    background: $cuba-sidemenu-submenu-background-color;
   }
 
   .#{$primary-stylename}-item {
@@ -540,7 +557,7 @@ $cuba-sidemenu-userindicator-font-weight: $v-font-weight !default;
         }
 
         @if ($cuba-sidemenu-title-gradient == false) {
-          background: if(is-dark-color($cuba-sidemenu-background-color), lighten($cuba-sidemenu-background-color, 5%), darken($cuba-sidemenu-background-color, 5%));
+          background: $cuba-sidemenu-title-background-color;
         }
       }
 
