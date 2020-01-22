@@ -16,7 +16,6 @@
 
 package com.haulmont.cuba.web.app.main;
 
-import com.haulmont.cuba.core.global.ClientType;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Events;
 import com.haulmont.cuba.core.global.FtsConfigHelper;
@@ -35,7 +34,7 @@ import com.haulmont.cuba.gui.screen.Subscribe;
 import com.haulmont.cuba.gui.screen.UiController;
 import com.haulmont.cuba.gui.screen.UiControllerUtils;
 import com.haulmont.cuba.gui.screen.UiDescriptor;
-import com.haulmont.cuba.security.app.UserSettingService;
+import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.WebConfig;
 import com.vaadin.server.WebBrowser;
@@ -128,11 +127,10 @@ public class MainScreen extends Screen implements Window.HasWorkArea, Window.Has
             if (isMobileDevice()) {
                 setSideMenuCollapsed(true);
             } else {
-                String menuCollapsedSetting = getBeanLocator()
-                        .get(UserSettingService.class)
-                        .loadSetting(ClientType.WEB, SIDEMENU_COLLAPSED_STATE);
+                String menuCollapsedCookie = App.getInstance()
+                        .getCookieValue(SIDEMENU_COLLAPSED_STATE);
 
-                boolean menuCollapsed = Boolean.parseBoolean(menuCollapsedSetting);
+                boolean menuCollapsed = Boolean.parseBoolean(menuCollapsedCookie);
 
                 setSideMenuCollapsed(menuCollapsed);
             }
@@ -195,11 +193,6 @@ public class MainScreen extends Screen implements Window.HasWorkArea, Window.Has
                 .getScreens();
         getBeanLocator().get(ScreenTools.class)
                 .openDefaultScreen(screens);
-    }
-
-    @Subscribe
-    public void onAfterDetach(AfterDetachEvent event) {
-        saveSideMenuState();
     }
 
     @Nullable
@@ -290,24 +283,16 @@ public class MainScreen extends Screen implements Window.HasWorkArea, Window.Has
                 collapseMenuButton.setDescription(messages.getMainMessage("sideMenuCollapse"));
             }
         }
+
+        App.getInstance()
+                .addCookie(SIDEMENU_COLLAPSED_STATE, String.valueOf(collapsed));
     }
 
     protected boolean isMenuCollapsed() {
         CssLayout sideMenuPanel = (CssLayout) getWindow().getComponent("sideMenuPanel");
         return sideMenuPanel != null
+                && sideMenuPanel.getStyleName() != null
                 && sideMenuPanel.getStyleName().contains(SIDEMENU_COLLAPSED_STYLENAME);
-    }
-
-    protected void saveSideMenuState() {
-        CssLayout sideMenuPanel = (CssLayout) getWindow().getComponent("sideMenuPanel");
-        if (sideMenuPanel != null) {
-            boolean collapsed = sideMenuPanel.getStyleName().contains(SIDEMENU_COLLAPSED_STYLENAME);
-
-            UserSettingService userSettings = getBeanLocator()
-                    .get(UserSettingService.class);
-
-            userSettings.saveSetting(ClientType.WEB, SIDEMENU_COLLAPSED_STATE, String.valueOf(collapsed));
-        }
     }
 
     protected boolean isMobileDevice() {
