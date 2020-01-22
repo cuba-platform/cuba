@@ -68,6 +68,8 @@ public class GroupBrowser extends AbstractWindow {
     @Named("groupsTree.copy")
     protected Action groupCopyAction;
 
+    protected CreateAction groupCreateAction;
+
     @Inject
     protected PopupButton groupCreateButton;
 
@@ -160,6 +162,9 @@ public class GroupBrowser extends AbstractWindow {
             constraintsDs.refresh(ParamsMap.of("group", group));
             attributesDs.refresh(ParamsMap.of("group", group));
 
+            if (groupCreateAction != null) {
+                groupCreateAction.setEnabled(isNotPredefinedGroup());
+            }
             if (userCreateAction != null) {
                 userCreateAction.setEnabled(group != null);
             }
@@ -262,14 +267,14 @@ public class GroupBrowser extends AbstractWindow {
     }
 
     protected void initGroupTreeActions() {
-        CreateAction createAction = new CreateAction(groupsTree);
-        createAction.setAfterCommitHandler(entity ->
+        groupCreateAction = new CreateAction(groupsTree);
+        groupCreateAction.setAfterCommitHandler(entity ->
                 groupsTree.expandTree()
         );
-        groupsTree.addAction(createAction);
-        createAction.setCaption(getMessage("action.create"));
+        groupsTree.addAction(groupCreateAction);
+        groupCreateAction.setCaption(getMessage("action.create"));
 
-        createAction.setOpenType(OpenType.DIALOG);
+        groupCreateAction.setOpenType(OpenType.DIALOG);
 
         EditAction groupEditAction = new EditAction(groupsTree);
         groupEditAction.setAfterCommitHandler(entity ->
@@ -278,7 +283,7 @@ public class GroupBrowser extends AbstractWindow {
         groupEditAction.setOpenType(OpenType.DIALOG);
         groupsTree.addAction(groupEditAction);
 
-        groupCreateButton.addAction(createAction);
+        groupCreateButton.addAction(groupCreateAction);
         groupCreateButton.addAction(groupCopyAction);
 
         groupsTree.addAction(new RemoveAction(groupsTree) {
