@@ -71,7 +71,7 @@ import java.lang.annotation.Target;
  *     &#064;ScreenComponentAccess(screen = "myapp_SomeEntity.browse", deny = {"someGroupBox"})
  *     &#064;Override
  *     public ScreenComponentPermissionsContainer screenComponentPermissions() {
- *         return super.screenElementsPermissions();
+ *         return super.screenComponentPermissions();
  *     }
  * }
  * </pre>
