@@ -18,6 +18,7 @@
 package com.haulmont.cuba.security.jmx;
 
 import com.haulmont.cuba.security.app.UserSessionsAPI;
+import com.haulmont.cuba.security.auth.AnonymousSessionHolder;
 import com.haulmont.cuba.security.entity.UserSessionEntity;
 import org.springframework.stereotype.Component;
 
@@ -30,6 +31,9 @@ public class UserSessions implements UserSessionsMBean {
 
     @Inject
     protected UserSessionsAPI userSessions;
+
+    @Inject
+    protected AnonymousSessionHolder anonymousSessionHolder;
 
     @Override
     public int getExpirationTimeoutSec() {
@@ -78,5 +82,11 @@ public class UserSessions implements UserSessionsMBean {
         }
         userSessions.killSession(sessionId);
         return "OK";
+    }
+
+    @Override
+    public String initializeAnonymousSessions() {
+        anonymousSessionHolder.initializeAnonymousSessions();
+        return "Anonymous sessions initialized";
     }
 }

@@ -65,9 +65,8 @@ public class AnonymousAuthenticationProvider extends AbstractAuthenticationProvi
 
         Locale userLocale = getUserLocale(anonymous, user);
 
-        UUID anonymousSessionId = globalConfig.getAnonymousSessionId();
-
-        UserSession session = createSession(anonymous, user, userLocale, anonymousSessionId);
+        UserSession session = createSession(anonymous, user, userLocale,
+                ((AnonymousUserCredentials) credentials).getSecurityScope());
         session.setClientInfo("System anonymous session");
 
         return new SimpleAuthenticationDetails(session);
@@ -75,8 +74,8 @@ public class AnonymousAuthenticationProvider extends AbstractAuthenticationProvi
 
     @SuppressWarnings("RedundantThrows")
     protected UserSession createSession(@SuppressWarnings("unused") AnonymousUserCredentials credentials, User user,
-                                        Locale userLocale, UUID anonymousSessionId) throws LoginException {
-        return userSessionManager.createSession(anonymousSessionId, user, userLocale, true);
+                                        Locale userLocale, String securityScope) throws LoginException {
+        return userSessionManager.createSession(user, userLocale, true, securityScope);
     }
 
     @Override

@@ -22,6 +22,7 @@ import java.util.Map;
 public abstract class AbstractCredentials implements LocalizedCredentials {
     private Locale locale;
     private boolean overrideLocale = true;
+    private String securityScope;
 
     private Map<String, Object> params;
 
@@ -57,5 +58,13 @@ public abstract class AbstractCredentials implements LocalizedCredentials {
 
     public void setOverrideLocale(boolean overrideLocale) {
         this.overrideLocale = overrideLocale;
+    }
+
+    public String getSecurityScope() {
+        return securityScope;
+    }
+
+    public void setSecurityScope(String securityScope) {
+        this.securityScope = securityScope;
     }
 }
