@@ -16,6 +16,7 @@
 
 package com.haulmont.cuba.security.app.role;
 
+import com.haulmont.cuba.core.PersistenceSecurity;
 import com.haulmont.cuba.core.global.DataManager;
 import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.security.entity.Permission;
@@ -45,6 +46,9 @@ public class RolesServiceBean implements RolesService {
     protected GlobalConfig globalConfig;
 
     @Inject
+    protected PersistenceSecurity persistenceSecurity;
+
+    @Inject
     protected Logger log;
 
     @Override
@@ -70,7 +74,13 @@ public class RolesServiceBean implements RolesService {
             }
         }
 
-        return new ArrayList<>(rolesForGui.values());
+        List<Role> result = new ArrayList<>(rolesForGui.size());
+        for (Role role : rolesForGui.values()) {
+            if (!persistenceSecurity.filterByConstraints(role)) {
+                result.add(role);
+            }
+        }
+        return result;
     }
 
     @Override
