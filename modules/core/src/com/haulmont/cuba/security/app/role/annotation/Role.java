@@ -33,7 +33,7 @@ import java.lang.annotation.Target;
  * equals {@code SOURCE_CODE} or {@code MIXED}).
  *
  * <p>The easiest way to determine the role in the application source code is to extend
- * your class from {@link AnnotatedRoleDefinition AbstractRoleDefinition}
+ * your class from {@link AnnotatedRoleDefinition AnnotatedRoleDefinition}
  * and mark it with this annotation. Usage example:
  *
  * <pre>
