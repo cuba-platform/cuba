@@ -63,4 +63,10 @@ public interface UserSessionsMBean {
      * @return Result status
      */
     String killSession(String id);
+
+    /**
+     * Reloads anonymous sessions that are stored in the {@link com.haulmont.cuba.security.auth.AnonymousSessionHolder}
+     * @return Result status
+     */
+    String initializeAnonymousSessions();
 }

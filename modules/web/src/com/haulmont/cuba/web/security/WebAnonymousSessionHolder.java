@@ -71,6 +71,7 @@ public class WebAnonymousSessionHolder {
     }
 
     protected UserSession getAnonymousSessionFromService() throws LoginException {
-        return trustedClientService.getAnonymousSession(webAuthConfig.getTrustedClientPassword());
+        return trustedClientService.getAnonymousSession(webAuthConfig.getTrustedClientPassword(),
+                webAuthConfig.getSecurityScope());
     }
 }
