@@ -543,10 +543,14 @@ public class EntityCacheTestClass {
             tx.commit(); // User should be evicted from cache to update collection of UserRoles - see OrmCacheSupport.evictMasterEntity()
         }
 
+        assertEquals(1, appender.filterMessages(m -> m.contains("> SELECT")).count()); // Default Roles
+
+        appender.clearMessages();
+
         User u = loadUserWithRoles();
         assertEquals(0, u.getUserRoles().size());
 
-        assertEquals(3, appender.filterMessages(m -> m.contains("> SELECT")).count()); // Default Roles, User, UserRoles
+        assertEquals(2, appender.filterMessages(m -> m.contains("> SELECT")).count()); // User, UserRoles
     }
 
     @Test
