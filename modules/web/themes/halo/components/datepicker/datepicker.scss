@@ -19,4 +19,9 @@
   .#{$primary-stylename} .#{$primary-stylename}-calendarpanel-day-focused {
     border-color: $v-focus-color;
   }
+
+  .v-ie11 & .#{$primary-stylename}.v-readonly .#{$primary-stylename}-calendarpanel-day-today:focus {
+    @include valo-datefield-calendarpanel-day-focused-style;
+    border-color: $v-focus-color;
+  }
 }
