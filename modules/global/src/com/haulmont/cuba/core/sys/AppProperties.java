@@ -18,7 +18,8 @@ package com.haulmont.cuba.core.sys;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
-import com.haulmont.bali.datastruct.Pair;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringSubstitutor;
 
@@ -42,26 +43,30 @@ public class AppProperties {
     private Map<String, String> systemProperties = new ConcurrentHashMap<>();
 
     // Temporary support for deprecated properties: the second element has priority
-    private final List<Pair<String, String>> DEPRECATED_PROPERTIES = Arrays.asList(
-            new Pair<>("cuba.connectionUrlList", "cuba.connectionUrl"),
-            new Pair<>("cuba.entityLog.enabled", "cuba.security.EntityLog.enabled"), // 6.1
-            new Pair<>("cuba.cluster.messageSendingThreadPoolSize", "cuba.clusterMessageSendingThreadPoolSize"), // 6.1
-            new Pair<>("reporting.entityTreeModelMaxDepth", "cuba.reporting.entityTreeModelMaxDeep"), // 6.1
-            new Pair<>("reporting.openoffice.docx.useOfficeForDocumentConversion", "reporting.openoffice.docx.useOfficeForPdfConversion"), // 6.7
-            new Pair<>("cuba.maxUploadSizeMb", "cuba.client.maxUploadSizeMb"), // 6.1
-            new Pair<>("cuba.gui.systemInfoScriptsEnabled", "cuba.systemInfoScriptsEnabled"), // 6.1
-            new Pair<>("cuba.gui.manualScreenSettingsSaving", "cuba.manualScreenSettingsSaving"), // 6.1
-            new Pair<>("cuba.gui.showIconsForPopupMenuActions", "cuba.showIconsForPopupMenuActions"), // 6.1
-            new Pair<>("cuba.gui.tableShortcut.insert", "cuba.gui.tableInsertShortcut"), // 6.1
-            new Pair<>("cuba.gui.tableShortcut.add", "cuba.gui.tableAddShortcut"), // 6.1
-            new Pair<>("cuba.gui.tableShortcut.remove", "cuba.gui.tableRemoveShortcut"), // 6.1
-            new Pair<>("cuba.gui.tableShortcut.edit", "cuba.gui.tableEditShortcut"), // 6.1
-            new Pair<>("reporting.parameterPrototypeQueryLimit", "reporting.parameterPrototype.queryLimit"), // 6.1
-            new Pair<>("reporting.*", "cuba.reporting.*"), // 6.1
-            new Pair<>("fts.*", "cuba.fts.*"), // 6.1
-            new Pair<>("charts.*", "cuba.charts.*"), // 6.1
-            new Pair<>("cuba.amazonS3.*", "cuba.amazon.s3.*") // 6.1
-    );
+    private static final Multimap<String, String> DEPRECATED_PROPERTIES = ArrayListMultimap.create();
+
+    static {
+        DEPRECATED_PROPERTIES.put("cuba.connectionUrlList", "cuba.connectionUrl");
+        DEPRECATED_PROPERTIES.put("cuba.entityLog.enabled", "cuba.security.EntityLog.enabled"); // 6.1
+        DEPRECATED_PROPERTIES.put("cuba.cluster.messageSendingThreadPoolSize", "cuba.clusterMessageSendingThreadPoolSize"); // 6.1
+        DEPRECATED_PROPERTIES.put("reporting.entityTreeModelMaxDepth", "cuba.reporting.entityTreeModelMaxDeep"); // 6.1
+        DEPRECATED_PROPERTIES.put("reporting.office.docx.useOfficeForDocumentConversion", "reporting.openoffice.docx.useOfficeForDocumentConversion");
+        DEPRECATED_PROPERTIES.put("reporting.office.docx.useOfficeForDocumentConversion", "reporting.openoffice.docx.useOfficeForPdfConversion"); // 6.7
+        DEPRECATED_PROPERTIES.put("cuba.maxUploadSizeMb", "cuba.client.maxUploadSizeMb"); // 6.1
+        DEPRECATED_PROPERTIES.put("cuba.gui.systemInfoScriptsEnabled", "cuba.systemInfoScriptsEnabled"); // 6.1
+        DEPRECATED_PROPERTIES.put("cuba.gui.manualScreenSettingsSaving", "cuba.manualScreenSettingsSaving"); // 6.1
+        DEPRECATED_PROPERTIES.put("cuba.gui.showIconsForPopupMenuActions", "cuba.showIconsForPopupMenuActions"); // 6.1
+        DEPRECATED_PROPERTIES.put("cuba.gui.tableShortcut.insert", "cuba.gui.tableInsertShortcut"); // 6.1
+        DEPRECATED_PROPERTIES.put("cuba.gui.tableShortcut.add", "cuba.gui.tableAddShortcut"); // 6.1
+        DEPRECATED_PROPERTIES.put("cuba.gui.tableShortcut.remove", "cuba.gui.tableRemoveShortcut"); // 6.1
+        DEPRECATED_PROPERTIES.put("cuba.gui.tableShortcut.edit", "cuba.gui.tableEditShortcut"); // 6.1
+        DEPRECATED_PROPERTIES.put("reporting.parameterPrototypeQueryLimit", "reporting.parameterPrototype.queryLimit"); // 6.1
+        DEPRECATED_PROPERTIES.put("reporting.office.*", "reporting.openoffice.*"); // 6.1
+        DEPRECATED_PROPERTIES.put("reporting.*", "cuba.reporting.*"); // 6.1
+        DEPRECATED_PROPERTIES.put("fts.*", "cuba.fts.*"); // 6.1
+        DEPRECATED_PROPERTIES.put("charts.*", "cuba.charts.*"); // 6.1
+        DEPRECATED_PROPERTIES.put("cuba.amazonS3.*", "cuba.amazon.s3.*"); // 6.1
+    }
 
     public AppProperties(AppComponents appComponents) {
         this.appComponents = appComponents;
@@ -102,30 +107,39 @@ public class AppProperties {
             throw new IllegalArgumentException("Null key passed as parameter");
         }
 
-        for (Pair<String, String> pair : DEPRECATED_PROPERTIES) {
-            if (pair.getFirst().endsWith("*")) {
-                String substring1 = pair.getFirst().substring(0, pair.getFirst().length() - 1);
-                String substring2 = pair.getSecond().substring(0, pair.getSecond().length() - 1);
-                if (key.startsWith(substring1)) {
-                    return getDeprecatedProperty(new Pair<>(key, substring2 + key.substring(substring1.length())));
-                }
-                if (key.startsWith(substring2)) {
-                    return getDeprecatedProperty(new Pair<>(substring1 + key.substring(substring2.length()), key));
+        for (Map.Entry<String, Collection<String>> entry : DEPRECATED_PROPERTIES.asMap().entrySet()) {
+            String newProperty = entry.getKey();
+            Collection<String> deprecatedProperties = entry.getValue();
+
+            if (newProperty.endsWith("*")) {
+                String deprecatedProperty = deprecatedProperties.stream().findFirst().orElse(null);
+                if (deprecatedProperty != null) {
+                    String substring1 = newProperty.substring(0, newProperty.length() - 1);
+                    String substring2 = deprecatedProperty.substring(0, deprecatedProperty.length() - 1);
+                    if (key.startsWith(substring1)) {
+                        return getActualProperty(key, Collections.singletonList(substring2 + key.substring(substring1.length())));
+                    }
+                    if (key.startsWith(substring2)) {
+                        return getActualProperty(substring1 + key.substring(substring2.length()), Collections.singletonList(key));
+                    }
                 }
             }
-            if (pair.getFirst().equals(key) || pair.getSecond().equals(key)) {
-                return getDeprecatedProperty(pair);
+            if (newProperty.equals(key) || deprecatedProperties.contains(key)) {
+                return getActualProperty(newProperty, deprecatedProperties);
             }
         }
         return getSystemOrAppProperty(key);
     }
 
-    private String getDeprecatedProperty(Pair<String, String> pair) {
-        String value = getSystemOrAppProperty(pair.getSecond());
-        if (value != null)
-            return value;
-        else
-            return getSystemOrAppProperty(pair.getFirst());
+    @Nullable
+    private String getActualProperty(String newProperty, Collection<String> deprecatedProperties) {
+        for (String property : deprecatedProperties) {
+            String value = getSystemOrAppProperty(property);
+            if (value != null) {
+                return value;
+            }
+        }
+        return getSystemOrAppProperty(newProperty);
     }
 
     @Nullable
@@ -230,8 +244,9 @@ public class AppProperties {
      * Set property value. The new value will be accessible at the runtime through {@link #getProperty(String)} and
      * {@link #getPropertyNames()}, but will not be saved in any <code>app.properties</code> file and will be lost
      * after the application restart.
-     * @param key       property key
-     * @param value     property value. If null, the property will be removed.
+     *
+     * @param key   property key
+     * @param value property value. If null, the property will be removed.
      */
     public void setProperty(String key, @Nullable String value) {
         if (value == null)
