@@ -17,6 +17,9 @@
 package com.haulmont.cuba.security.app;
 
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.security.entity.*;
 import com.haulmont.cuba.security.role.*;
 
@@ -37,6 +40,7 @@ public class RoleDefinitionBuilder {
     private String roleName;
     private String description;
     private String securityScope;
+    private boolean isDefault;
 
     /**
      * INTERNAL
@@ -48,6 +52,7 @@ public class RoleDefinitionBuilder {
         screenPermissions = new ScreenPermissionsContainer();
         screenElementsPermissions = new ScreenComponentPermissionsContainer();
         description = "";
+
     }
 
     /**
@@ -90,6 +95,11 @@ public class RoleDefinitionBuilder {
         return this;
     }
 
+    public RoleDefinitionBuilder withIsDefault(boolean isDefault) {
+        this.isDefault = isDefault;
+        return this;
+    }
+
     protected RoleDefinitionBuilder withPermission(Permission permission) {
         addPermission(permission.getType(), permission.getTarget(), permission.getValue());
         return this;
@@ -120,6 +130,13 @@ public class RoleDefinitionBuilder {
                 access.getId());
     }
 
+    public RoleDefinitionBuilder withEntityAccessPermission(Class<? extends Entity> targetClass, EntityOp operation, Access access) {
+        MetaClass metaClass = AppBeans.get(Metadata.class).getClassNN(targetClass);
+        return withPermission(PermissionType.ENTITY_OP,
+                PermissionsUtils.getEntityOperationTarget(metaClass, operation),
+                access.getId());
+    }
+
     /**
      * Adds permission to access one of the entity properties.
      *
@@ -128,6 +145,13 @@ public class RoleDefinitionBuilder {
     public RoleDefinitionBuilder withEntityAttrAccessPermission(MetaClass targetClass, String property, EntityAttrAccess access) {
         return withPermission(PermissionType.ENTITY_ATTR,
                 PermissionsUtils.getEntityAttributeTarget(targetClass, property),
+                access.getId());
+    }
+
+    public RoleDefinitionBuilder withEntityAttrAccessPermission(Class<? extends Entity> targetClass, String property, EntityAttrAccess access) {
+        MetaClass metaClass = AppBeans.get(Metadata.class).getClassNN(targetClass);
+        return withPermission(PermissionType.ENTITY_ATTR,
+                PermissionsUtils.getEntityAttributeTarget(metaClass, property),
                 access.getId());
     }
 
@@ -208,6 +232,7 @@ public class RoleDefinitionBuilder {
                 .withSpecificPermissions(specificPermissions)
                 .withScreenPermissions(screenPermissions)
                 .withScreenElementsPermissions(screenElementsPermissions)
+                .withIsDefault(isDefault)
                 .build();
     }
 

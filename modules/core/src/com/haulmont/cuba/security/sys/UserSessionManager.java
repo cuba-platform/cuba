@@ -30,7 +30,7 @@ import com.haulmont.cuba.security.app.RoleDefinitionBuilder;
 import com.haulmont.cuba.security.app.RoleDefinitionsJoiner;
 import com.haulmont.cuba.security.app.UserSessionsAPI;
 import com.haulmont.cuba.security.app.group.AccessGroupDefinitionsComposer;
-import com.haulmont.cuba.security.app.role.RolesRepository;
+import com.haulmont.cuba.security.app.role.RolesHelper;
 import com.haulmont.cuba.security.entity.*;
 import com.haulmont.cuba.security.global.NoUserSessionException;
 import com.haulmont.cuba.security.global.UserSession;
@@ -84,7 +84,7 @@ public class UserSessionManager {
     protected ServerConfig serverConfig;
 
     @Inject
-    protected RolesRepository rolesRepository;
+    protected RolesHelper rolesHelper;
 
     @Inject
     protected AccessGroupDefinitionsComposer groupsComposer;
@@ -140,7 +140,7 @@ public class UserSessionManager {
     public UserSession createSession(UUID sessionId, User user, Locale locale, boolean system, String securityScope) {
         List<RoleDefinition> roles = new ArrayList<>();
 
-        for (RoleDefinition role : rolesRepository.getRoleDefinitions(user.getUserRoles())) {
+        for (RoleDefinition role : rolesHelper.getRoleDefinitionsForUser(user, false)) {
             if (role != null) {
                 String expectedScope = securityScope == null ? SecurityScope.DEFAULT_SCOPE_NAME : securityScope;
                 String actualScope = role.getSecurityScope() == null ? SecurityScope.DEFAULT_SCOPE_NAME : role.getSecurityScope();
@@ -173,7 +173,7 @@ public class UserSessionManager {
      */
     public UserSession createSession(UserSession src, User user) {
         List<RoleDefinition> roles = new ArrayList<>();
-        for (RoleDefinition role : rolesRepository.getRoleDefinitions(user.getUserRoles())) {
+        for (RoleDefinition role : rolesHelper.getRoleDefinitionsForUser(user, false)) {
             if (role != null) {
                 roles.add(role);
             }
@@ -294,7 +294,7 @@ public class UserSessionManager {
         try {
             EntityManager em = persistence.getEntityManager();
             user = em.find(User.class, user.getId());
-            for (RoleDefinition role : rolesRepository.getRoleDefinitions(user.getUserRoles())) {
+            for (RoleDefinition role : rolesHelper.getRoleDefinitionsForUser(user, false)) {
                 if (role != null) {
                     roles.add(role);
                 }

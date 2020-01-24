@@ -21,9 +21,11 @@ import com.haulmont.cuba.security.role.RolesService;
 import com.haulmont.cuba.security.entity.Permission;
 import com.haulmont.cuba.security.entity.PermissionType;
 import com.haulmont.cuba.security.entity.Role;
+import org.apache.commons.lang3.BooleanUtils;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * INTERNAL
@@ -36,9 +38,16 @@ public class PermissionsCollectionDatasource extends RestorablePermissionDatasou
     protected void loadData(Map<String, Object> params) {
         Role role = (Role) params.get("role");
         PermissionType permissionType = (PermissionType) params.get("permissionType");
+        Boolean permissionsLoaded = (Boolean) params.get("permissionsLoaded");
         if (role != null && permissionType != null && role.isPredefined()) {
-            Collection<Permission> permissions = rolesService.getPermissions(role.getName(), permissionType);
-
+            Collection<Permission> permissions;
+            if (BooleanUtils.isTrue(permissionsLoaded)) {
+                permissions = role.getPermissions().stream()
+                        .filter(permission -> permissionType.equals(permission.getType()))
+                        .collect(Collectors.toList());
+            } else {
+                permissions = rolesService.getPermissions(role.getName(), permissionType);
+            }
             data.clear();
             for (Permission entity : permissions) {
                 data.put(entity.getId(), entity);
@@ -47,4 +56,6 @@ public class PermissionsCollectionDatasource extends RestorablePermissionDatasou
             super.loadData(params);
         }
     }
+
+
 }

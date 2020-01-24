@@ -23,7 +23,8 @@ import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.app.EmailerAPI;
 import com.haulmont.cuba.core.app.ServerConfig;
 import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.security.app.role.RolesRepository;
+import com.haulmont.cuba.security.app.role.PredefinedRoleDefinitionRepository;
+import com.haulmont.cuba.security.app.role.RolesHelper;
 import com.haulmont.cuba.security.entity.*;
 import com.haulmont.cuba.security.role.RoleDefinition;
 import groovy.text.SimpleTemplateEngine;
@@ -101,7 +102,10 @@ public class UserManagementServiceBean implements UserManagementService {
     protected GlobalConfig globalConfig;
 
     @Inject
-    protected RolesRepository rolesRepository;
+    protected RolesHelper rolesHelper;
+
+    @Inject
+    protected PredefinedRoleDefinitionRepository predefinedRoleDefinitionRepository;
 
     protected void checkUpdatePermission(Class entityClass) {
         checkPermission(entityClass, EntityOp.UPDATE);
@@ -152,8 +156,8 @@ public class UserManagementServiceBean implements UserManagementService {
 
         Role clone;
 
-        RoleDefinition predefinedRole = rolesRepository.getRoleDefinitionByName(predefinedRoleName);
-        if (predefinedRole == null) {
+        RoleDefinition predefinedRoleDefinition = predefinedRoleDefinitionRepository.getRoleDefinitionByName(predefinedRoleName);
+        if (predefinedRoleDefinition == null) {
             throw new IllegalStateException("Unable to find specified role with name: " + predefinedRoleName);
         }
 
@@ -161,9 +165,9 @@ public class UserManagementServiceBean implements UserManagementService {
         try {
             EntityManager em = persistence.getEntityManager();
 
-            clone = rolesRepository.getRoleWithPermissions(predefinedRole);
+            clone = rolesHelper.transformToRole(predefinedRoleDefinition);
 
-            clone.setName(generateName(em, predefinedRole.getName()));
+            clone.setName(generateName(em, predefinedRoleDefinition.getName()));
             clone.setDefaultRole(false);
             clone.setPredefined(false);
 

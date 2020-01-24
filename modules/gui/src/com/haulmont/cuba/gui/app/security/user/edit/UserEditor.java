@@ -19,7 +19,6 @@ package com.haulmont.cuba.gui.app.security.user.edit;
 import com.google.common.collect.Iterables;
 import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
@@ -277,7 +276,7 @@ public class UserEditor extends AbstractEditor<User> {
                 continue;
             }
             if (userRole.getRoleName() != null) {
-                userRole.setRole(rolesService.getRoleByName(userRole.getRoleName()));
+                userRole.setRole(rolesService.getRoleDefinitionAndTransformToRole(userRole.getRoleName()));
                 rolesDs.modifyItem(userRole);
 
                 ((AbstractDatasource) rolesDs).getItemsToUpdate().remove(userRole);
@@ -310,7 +309,7 @@ public class UserEditor extends AbstractEditor<User> {
     }
 
     protected void addDefaultRoles(User user) {
-        Map<String, Role> defaultRoles = rolesService.getDefaultRoles();
+        Collection<Role> defaultRoles = rolesService.getDefaultRoles();
 
         if (defaultRoles == null || defaultRoles.isEmpty()) {
             return;
@@ -323,16 +322,14 @@ public class UserEditor extends AbstractEditor<User> {
 
         MetaClass metaClass = rolesDs.getMetaClass();
 
-        for (Map.Entry<String, Role> entry : defaultRoles.entrySet()) {
+        for (Role role : defaultRoles) {
             UserRole userRole = dataSupplier.newInstance(metaClass);
             userRole.setUser(user);
-
-            Role role = entry.getValue();
 
             if (!role.isPredefined()) {
                 userRole.setRole(role);
             } else {
-                userRole.setRoleName(entry.getKey());
+                userRole.setRoleName(role.getName());
             }
             newRoles.add(userRole);
         }

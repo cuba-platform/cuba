@@ -99,12 +99,13 @@ public class RoleEditor extends AbstractEditor<Role> {
             restrictAccessForPredefinedRole();
         }
         initSecurityScopes();
+        initDefaultLookupsNullOption();
     }
 
     @Override
     public boolean preCommit() {
         String roleName = getItem().getName();
-        if (rolesService.getRoleByName(roleName) != null) {
+        if (rolesService.getRoleDefinitionAndTransformToRole(roleName) != null) {
             showNotification(getMessage("roleNameIsUsed"), NotificationType.WARNING);
             return false;
         }
@@ -133,4 +134,16 @@ public class RoleEditor extends AbstractEditor<Role> {
             securityScopeLookup.setEditable(false);
         }
     }
+
+    /**
+     * If undefined permission policy is DENY (default behavior since CUBA v7.2) the null options in lookup fields
+     * for default permission values must not be displayed.
+     */
+    protected void initDefaultLookupsNullOption() {
+        boolean nullOptionForDefaultLookupsVisible = rolesService.getPermissionUndefinedAccessPolicy() != Access.DENY;
+        defaultAccessGrid.getComponents().stream()
+                .filter(component -> component instanceof LookupField)
+                .forEach(component -> ((LookupField) component).setNullOptionVisible(nullOptionForDefaultLookupsVisible));
+    }
+
 }

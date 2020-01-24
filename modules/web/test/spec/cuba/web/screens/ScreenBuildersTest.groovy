@@ -64,6 +64,9 @@ class ScreenBuildersTest extends UiScreenSpec {
             isOnlyDefaultScope() >> {
                 return true
             }
+            getAvailableSecurityScopes() >> {
+                return []
+            }
         })
     }
 

@@ -18,10 +18,20 @@ package spec.cuba.web.workarea
 
 import com.haulmont.cuba.gui.screen.FrameOwner
 import com.haulmont.cuba.gui.screen.OpenMode
+import com.haulmont.cuba.security.app.SecurityScopesService
+import com.haulmont.cuba.web.testsupport.proxy.TestServiceProxy
 import spec.cuba.web.UiScreenSpec
 import spec.cuba.web.menu.commandtargets.TestWebBean
 
 class WorkAreaTabChangedEvtTest extends UiScreenSpec {
+
+    def setup() {
+        TestServiceProxy.mock(SecurityScopesService, Mock(SecurityScopesService) {
+            getAvailableSecurityScopes() >> {
+                return []
+            }
+        })
+    }
 
     def 'WorkAreaTabChangedEvent is fired when screen is opened or closed'() {
         showMainWindow()

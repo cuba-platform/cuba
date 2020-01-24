@@ -17,18 +17,16 @@
 package com.haulmont.cuba.security.app.role;
 
 import com.haulmont.cuba.core.PersistenceSecurity;
+import com.haulmont.cuba.core.app.ServerConfig;
 import com.haulmont.cuba.core.global.DataManager;
+import com.haulmont.cuba.core.global.EntityStates;
 import com.haulmont.cuba.core.global.GlobalConfig;
-import com.haulmont.cuba.security.entity.Permission;
-import com.haulmont.cuba.security.entity.PermissionType;
-import com.haulmont.cuba.security.entity.Role;
-import com.haulmont.cuba.security.entity.UserRole;
-import com.haulmont.cuba.security.role.RoleDefinition;
-import com.haulmont.cuba.security.role.RolesService;
+import com.haulmont.cuba.core.global.Metadata;
+import com.haulmont.cuba.security.entity.*;
+import com.haulmont.cuba.security.role.*;
 import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -40,9 +38,6 @@ public class RolesServiceBean implements RolesService {
     protected DataManager dataManager;
 
     @Inject
-    protected RolesRepository rolesRepository;
-
-    @Inject
     protected GlobalConfig globalConfig;
 
     @Inject
@@ -51,12 +46,31 @@ public class RolesServiceBean implements RolesService {
     @Inject
     protected Logger log;
 
+    @Inject
+    protected ServerConfig serverConfig;
+
+    @Inject
+    protected PredefinedRoleDefinitionRepository predefinedRoleDefinitionRepository;
+
+    @Inject
+    protected Metadata metadata;
+
+    @Inject
+    protected RolesHelper rolesHelper;
+
+    @Inject
+    protected EntityStates entityStates;
+
     @Override
     public Collection<Role> getAllRoles() {
-        Map<String, Role> rolesForGui = new HashMap<>();
+        Map<String, Role> allRolesMap = new HashMap<>();
 
-        for (Map.Entry<String, RoleDefinition> entry : rolesRepository.getNameToPredefinedRoleMapping().entrySet()) {
-            rolesForGui.put(entry.getKey(), rolesRepository.getRoleWithoutPermissions(entry.getValue()));
+        Collection<RoleDefinition> predefinedRoleDefinitions = predefinedRoleDefinitionRepository.getRoleDefinitions();
+
+        for (RoleDefinition predefinedRoleDefinition : predefinedRoleDefinitions) {
+            allRolesMap.put(predefinedRoleDefinition.getName(),
+                    rolesHelper.transformToRole(predefinedRoleDefinition,
+                            RoleTransformationOption.DO_NOT_INCLUDE_PERMISSIONS));
         }
 
         if (isRoleStorageMixedMode()) {
@@ -65,17 +79,17 @@ public class RolesServiceBean implements RolesService {
                     .list();
 
             for (Role role : roles) {
-                if (rolesForGui.containsKey(role.getName())) {
+                if (allRolesMap.containsKey(role.getName())) {
                     log.warn("Role name '{}' is used for some predefined role. " +
                             "Also there is the persisted Role object with the same name.", role.getName());
                     continue;
                 }
-                rolesForGui.put(role.getName(), role);
+                allRolesMap.put(role.getName(), role);
             }
         }
 
-        List<Role> result = new ArrayList<>(rolesForGui.size());
-        for (Role role : rolesForGui.values()) {
+        List<Role> result = new ArrayList<>(allRolesMap.size());
+        for (Role role : allRolesMap.values()) {
             if (!persistenceSecurity.filterByConstraints(role)) {
                 result.add(role);
             }
@@ -84,30 +98,71 @@ public class RolesServiceBean implements RolesService {
     }
 
     @Override
-    public Role getRoleByName(String predefinedRoleName) {
-        return rolesRepository.getRoleWithoutPermissions(rolesRepository.getRoleDefinitionByName(predefinedRoleName));
-    }
-
-    @Override
-    public Collection<Permission> getPermissions(String predefinedRoleName, PermissionType permissionType) {
-        return rolesRepository.getPermissions(predefinedRoleName, permissionType);
+    public Role getRoleDefinitionAndTransformToRole(String roleDefinitionName) {
+        RoleDefinition roleDefinition = predefinedRoleDefinitionRepository.getRoleDefinitionByName(roleDefinitionName);
+        return roleDefinition != null ?
+                rolesHelper.transformToRole(roleDefinition, RoleTransformationOption.DO_NOT_INCLUDE_PERMISSIONS) :
+                null;
     }
 
     @Override
     public boolean isRoleStorageMixedMode() {
-        return true;
+        return serverConfig.getRolesStorageMode() == SecurityStorageMode.MIXED;
     }
 
     @Override
-    public Map<String, Role> getDefaultRoles() {
-        return rolesRepository.getDefaultRoles();
+    public Collection<Role> getDefaultRoles() {
+        return rolesHelper.getDefaultRoles();
     }
 
     @Override
-    public Collection<Role> getRoles(@Nullable Collection<UserRole> userRoles) {
-        Collection<RoleDefinition> roleDefinitions = rolesRepository.getRoleDefinitions(userRoles);
-        return roleDefinitions.stream()
-                .map(roleDefinition -> rolesRepository.getRoleWithoutPermissions(roleDefinition))
+    public Role transformToRole(RoleDefinition roleDefinition, RoleTransformationOption... transformationOptions) {
+        return rolesHelper.transformToRole(roleDefinition, transformationOptions);
+    }
+
+    public Collection<Permission> getPermissions(String predefinedRoleName, PermissionType permissionType) {
+        PermissionsContainer permissionsContainer;
+        RoleDefinition roleDefinition = predefinedRoleDefinitionRepository.getRoleDefinitionByName(predefinedRoleName);
+        if (roleDefinition == null) return Collections.emptyList();
+        switch (permissionType) {
+            case ENTITY_OP:
+                permissionsContainer = roleDefinition.entityPermissions();
+                break;
+            case ENTITY_ATTR:
+                permissionsContainer = roleDefinition.entityAttributePermissions();
+                break;
+            case SPECIFIC:
+                permissionsContainer = roleDefinition.specificPermissions();
+                break;
+            case SCREEN:
+                permissionsContainer = roleDefinition.screenPermissions();
+                break;
+            case UI:
+                permissionsContainer = roleDefinition.screenComponentPermissions();
+                break;
+            default:
+                throw new RuntimeException("Unsupported permission type: " + permissionType);
+        }
+
+        Role role = rolesHelper.transformToRole(roleDefinition, RoleTransformationOption.DO_NOT_INCLUDE_PERMISSIONS);
+        return rolesHelper.transformToPermissionsCollection(permissionsContainer, permissionType, role);
+    }
+
+    @Override
+    public Collection<Role> getRolesForUser(User user) {
+        return getRoleDefinitionsForUser(user).stream()
+                .map(rolesHelper::transformToRole)
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public Collection<RoleDefinition> getRoleDefinitionsForUser(User user) {
+        return rolesHelper.getRoleDefinitionsForUser(user, true);
+    }
+
+    @Override
+    public Access getPermissionUndefinedAccessPolicy() {
+        return serverConfig.getPermissionUndefinedAccessPolicy();
+    }
+
 }

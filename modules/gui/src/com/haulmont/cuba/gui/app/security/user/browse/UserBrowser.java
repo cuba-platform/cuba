@@ -19,8 +19,7 @@ package com.haulmont.cuba.gui.app.security.user.browse;
 
 import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
-import com.haulmont.cuba.core.global.Metadata;
-import com.haulmont.cuba.core.global.Security;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.UiComponents;
 import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.WindowParams;
@@ -29,12 +28,17 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Action.Status;
 import com.haulmont.cuba.gui.components.DialogAction.Type;
 import com.haulmont.cuba.gui.components.actions.BaseAction;
+import com.haulmont.cuba.gui.components.actions.ItemTrackingAction;
 import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.DataSupplier;
 import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.security.app.RoleDefinitionsJoiner;
+import com.haulmont.cuba.security.app.SecurityScopesService;
 import com.haulmont.cuba.security.app.UserManagementService;
 import com.haulmont.cuba.security.entity.*;
+import com.haulmont.cuba.security.role.RoleDefinition;
+import com.haulmont.cuba.security.role.RolesService;
 import org.apache.commons.lang3.BooleanUtils;
 
 import javax.inject.Inject;
@@ -78,6 +82,12 @@ public class UserBrowser extends AbstractLookup {
 
     @Inject
     protected UserManagementService userManagementService;
+    @Inject
+    protected DataManager dataManager;
+    @Inject
+    protected RolesService rolesService;
+    @Inject
+    protected SecurityScopesService securityScopesService;
 
     @Override
     public void init(Map<String, Object> params) {
@@ -135,6 +145,7 @@ public class UserBrowser extends AbstractLookup {
 
         initTimeZoneColumn();
         initGroupColumn();
+        initShowEffectiveRoleActions();
     }
 
     protected void initTimeZoneColumn() {
@@ -316,5 +327,69 @@ public class UserBrowser extends AbstractLookup {
         userManagementService.resetRememberMeTokens();
 
         showNotification(getMessage("resetRememberMeCompleted"), NotificationType.HUMANIZED);
+    }
+
+    protected void initShowEffectiveRoleActions() {
+        List<AbstractAction> actions = new ArrayList<>();
+        Collection<SecurityScope> securityScopes = securityScopesService.getAvailableSecurityScopes();
+        if (securityScopes.size() == 1) {
+            String caption = getMessage("showEffectiveRole");
+            actions.add(new ShowEffectiveRoleAction(securityScopes.iterator().next().getName(), caption));
+        } else {
+            for (SecurityScope securityScope : securityScopes) {
+                String caption = formatMessage("showEffectiveRoleForScope", securityScope.getLocName());
+                actions.add(new ShowEffectiveRoleAction(securityScope.getName(), caption));
+            }
+        }
+        for (AbstractAction action : actions) {
+            usersTable.addAction(action);
+            additionalActionsBtn.addAction(action);
+        }
+    }
+
+    protected void showEffectiveRole(String securityScope) {
+        User user = usersTable.getSingleSelected();
+        if (user == null) return;
+        Role role = buildJoinedRole(user, securityScope);
+        Map<String, Object> params = new HashMap<>();
+        //permissionsLoaded = true indicates that permissions tabs in the role editor should not reload permissions,
+        //but should use permissions from the Role instance
+        params.put("permissionsLoaded", true);
+        openEditor(role, OpenType.THIS_TAB, params);
+    }
+
+    protected Role buildJoinedRole(User user, String securityScope) {
+        Collection<RoleDefinition> roleDefinitions = rolesService.getRoleDefinitionsForUser(user);
+        List<RoleDefinition> roleDefinitionsForScope = roleDefinitions.stream()
+                .filter(roleDefinition -> securityScope.equals(roleDefinition.getSecurityScope()))
+                .collect(Collectors.toList());
+        RoleDefinition joinedRoleDefinition = RoleDefinitionsJoiner.join(roleDefinitionsForScope);
+        Role joinedRole = rolesService.transformToRole(joinedRoleDefinition);
+        joinedRole.setSecurityScope(securityScope);
+        joinedRole.setName(getMessage("effectiveRoleName"));
+        joinedRole.setDescription(formatMessage("effectiveRoleDescription", metadata.getTools().getInstanceName(user)));
+        return joinedRole;
+    }
+
+    protected class ShowEffectiveRoleAction extends ItemTrackingAction {
+
+        protected String securityScope;
+        protected String actionCaption;
+
+        public ShowEffectiveRoleAction(String securityScope, String caption) {
+            super("showEffectiveRole_" + securityScope);
+            this.securityScope = securityScope;
+            this.actionCaption = caption;
+        }
+
+        @Override
+        public void actionPerform(Component component) {
+            showEffectiveRole(securityScope);
+        }
+
+        @Override
+        public String getCaption() {
+            return actionCaption;
+        }
     }
 }

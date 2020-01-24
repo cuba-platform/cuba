@@ -17,17 +17,13 @@
 package com.haulmont.cuba.security.app.role;
 
 import com.haulmont.cuba.core.global.DataManager;
-import com.haulmont.cuba.core.global.View;
-import com.haulmont.cuba.core.global.ViewBuilder;
 import com.haulmont.cuba.security.app.RoleDefinitionsJoiner;
 import com.haulmont.cuba.security.entity.User;
-import com.haulmont.cuba.security.entity.UserRole;
 import com.haulmont.cuba.security.role.*;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import java.util.Collection;
-import java.util.List;
 
 @Service(EffectivePermissionsService.NAME)
 public class EffectivePermissionsServiceBean implements EffectivePermissionsService {
@@ -42,7 +38,7 @@ public class EffectivePermissionsServiceBean implements EffectivePermissionsServ
     protected DataManager dataManager;
 
     @Inject
-    protected RolesRepository rolesRepository;
+    protected RolesService rolesService;
 
     @Override
     public EntityPermissionsContainer getEffectiveEntityPermissions(User user) {
@@ -57,20 +53,7 @@ public class EffectivePermissionsServiceBean implements EffectivePermissionsServ
     }
 
     protected RoleDefinition evaluateEffectiveRole(User user) {
-        View userRoleView = ViewBuilder.of(UserRole.class)
-                .addView(View.LOCAL)
-                .add("role", builder ->
-                        builder
-                                .addView(View.LOCAL)
-                                .add("permissions", View.LOCAL))
-                .build();
-        List<UserRole> userRoles = dataManager.load(UserRole.class)
-                .query("select ur from sec$UserRole ur where ur.user.id = :userId")
-                .parameter("userId", user.getId())
-                .view(userRoleView)
-                .list();
-
-        Collection<RoleDefinition> roleDefinitions = rolesRepository.getRoleDefinitions(userRoles);
+        Collection<RoleDefinition> roleDefinitions = rolesService.getRoleDefinitionsForUser(user);
         return RoleDefinitionsJoiner.join(roleDefinitions);
     }
 }
