@@ -82,6 +82,10 @@ import java.lang.annotation.Target;
  * @see ScreenAccess
  * @see ScreenComponentAccess
  * @see SpecificAccess
+ * @see DefaultEntityAccess
+ * @see DefaultEntityAttributeAccess
+ * @see DefaultSpecificAccess
+ * @see DefaultScreenAccess
  */
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)

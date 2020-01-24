@@ -32,6 +32,7 @@ import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.entity.Permission;
 import com.haulmont.cuba.security.entity.PermissionType;
 import com.haulmont.cuba.security.entity.Role;
+import org.apache.commons.lang3.BooleanUtils;
 
 import javax.inject.Inject;
 import java.util.*;
@@ -80,9 +81,13 @@ public class ScreenPermissionsFrame extends AbstractFrame {
 
     protected boolean itemChanging = false;
 
+    protected boolean permissionsLoaded;
+
     @Override
     public void init(Map<String, Object> params) {
         super.init(params);
+
+        permissionsLoaded = BooleanUtils.isTrue((Boolean) params.get("permissionsLoaded"));
 
         screenPermissionsTree.setStyleProvider(new BasicPermissionTreeStyleProvider());
 
@@ -240,6 +245,7 @@ public class ScreenPermissionsFrame extends AbstractFrame {
 
         params.put("role", roleDs.getItem());
         params.put("permissionType", PermissionType.SCREEN);
+        params.put("permissionsLoaded", permissionsLoaded);
 
         return params;
     }

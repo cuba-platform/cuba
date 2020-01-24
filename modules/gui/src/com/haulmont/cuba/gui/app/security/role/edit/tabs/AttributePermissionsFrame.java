@@ -32,6 +32,7 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.security.entity.*;
 import com.haulmont.cuba.security.global.UserSession;
+import org.apache.commons.lang3.BooleanUtils;
 
 import javax.inject.Inject;
 import java.util.*;
@@ -259,9 +260,13 @@ public class AttributePermissionsFrame extends AbstractFrame {
 
     protected final List<AttributePermissionControl> permissionControls = new LinkedList<>();
 
+    protected boolean permissionsLoaded;
+
     @Override
     public void init(Map<String, Object> params) {
         super.init(params);
+
+        permissionsLoaded = BooleanUtils.isTrue((Boolean) params.get("permissionsLoaded"));
 
         if (!PersistenceHelper.isNew(params.get("ITEM"))) {
             assignedOnlyCheckBox.setValue(Boolean.TRUE);
@@ -536,6 +541,7 @@ public class AttributePermissionsFrame extends AbstractFrame {
 
         params.put("role", roleDs.getItem());
         params.put("permissionType", PermissionType.ENTITY_ATTR);
+        params.put("permissionsLoaded", permissionsLoaded);
 
         return params;
     }

@@ -26,8 +26,10 @@ public class BasicRoleDefinition implements RoleDefinition, Serializable {
     private ScreenPermissionsContainer screenPermissions;
     private ScreenComponentPermissionsContainer screenElementsPermissions;
     private String name;
+    private String locName;
     private String description;
     private String securityScope;
+    private boolean isDefault;
 
     private BasicRoleDefinition() {
         entityPermissions = new EntityPermissionsContainer();
@@ -39,7 +41,9 @@ public class BasicRoleDefinition implements RoleDefinition, Serializable {
 
     private BasicRoleDefinition(BasicRoleDefinitionBuilder builder) {
         this.name = builder.name;
+        this.locName = builder.locName;
         this.description = builder.description;
+        this.isDefault = builder.isDefault;
         this.screenPermissions = builder.screenPermissions;
         this.entityPermissions = builder.entityPermissions;
         this.entityAttributePermissions = builder.entityAttributePermissions;
@@ -83,6 +87,15 @@ public class BasicRoleDefinition implements RoleDefinition, Serializable {
     }
 
     @Override
+    public String getLocName() {
+        return locName;
+    }
+
+    public void setLocName(String locName) {
+        this.locName = locName;
+    }
+
+    @Override
     public String getDescription() {
         return description;
     }
@@ -100,6 +113,15 @@ public class BasicRoleDefinition implements RoleDefinition, Serializable {
         this.securityScope = securityScope;
     }
 
+    @Override
+    public boolean isDefault() {
+        return isDefault;
+    }
+
+    public void setDefault(boolean isDefault) {
+        this.isDefault = isDefault;
+    }
+
     public static BasicRoleDefinitionBuilder builder() {
         return new BasicRoleDefinitionBuilder();
     }
@@ -107,8 +129,10 @@ public class BasicRoleDefinition implements RoleDefinition, Serializable {
     public static class BasicRoleDefinitionBuilder {
 
         private String name;
+        private String locName;
         private String description;
         private String securityScope;
+        private boolean isDefault;
         private EntityPermissionsContainer entityPermissions = new EntityPermissionsContainer();
         private EntityAttributePermissionsContainer entityAttributePermissions = new EntityAttributePermissionsContainer();
         private SpecificPermissionsContainer specificPermissions = new SpecificPermissionsContainer();
@@ -123,8 +147,18 @@ public class BasicRoleDefinition implements RoleDefinition, Serializable {
             return this;
         }
 
+        public BasicRoleDefinitionBuilder withLocName(String locName) {
+            this.locName = locName;
+            return this;
+        }
+
         public BasicRoleDefinitionBuilder withDescription(String description) {
             this.description = description;
+            return this;
+        }
+
+        public BasicRoleDefinitionBuilder withIsDefault(boolean isDefault) {
+            this.isDefault = isDefault;
             return this;
         }
 
