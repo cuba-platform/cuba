@@ -257,19 +257,6 @@ public class UserSession implements Serializable {
 
     /**
      * INTERNAL
-     * <p>
-     * Adds a permission to the joined role. If the joined role already has a permissions that allows more than
-     * the added permission, then the added permission is ignored.
-     */
-    public void addPermission(PermissionType type, String target, int value) {
-        RoleDefinition roleWithNewPermission = RoleDefinitionBuilder.create()
-                .withPermission(type, target, value)
-                .build();
-        joinedRole = RoleDefinitionsJoiner.join(joinedRole, roleWithNewPermission);
-    }
-
-    /**
-     * INTERNAL
      */
     public Integer getPermissionValue(PermissionType type, String target) {
         return PermissionsUtils.getResultingPermissionValue(joinedRole, type, target,
