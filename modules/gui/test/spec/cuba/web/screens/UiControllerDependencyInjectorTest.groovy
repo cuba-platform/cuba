@@ -26,13 +26,15 @@ import com.haulmont.cuba.gui.Screens
 import com.haulmont.cuba.gui.components.*
 import com.haulmont.cuba.gui.components.actions.BaseAction
 import com.haulmont.cuba.gui.components.sys.WindowImplementation
+import com.haulmont.cuba.gui.model.CollectionContainer
+import com.haulmont.cuba.gui.model.ScreenData
 import com.haulmont.cuba.gui.screen.FrameOwner
 import com.haulmont.cuba.gui.screen.MessageBundle
 import com.haulmont.cuba.gui.screen.Screen
 import com.haulmont.cuba.gui.screen.ScreenContext
 import com.haulmont.cuba.gui.screen.impl.MessageBundleImpl
-import com.haulmont.cuba.gui.sys.UiControllerDependencyInjector
 import com.haulmont.cuba.gui.sys.ControllerDependencyInjector
+import com.haulmont.cuba.gui.sys.UiControllerDependencyInjector
 import com.haulmont.cuba.gui.sys.UiControllerReflectionInspector
 import com.haulmont.cuba.security.entity.User
 import spec.cuba.web.screens.injection.*
@@ -233,6 +235,11 @@ class UiControllerDependencyInjectorTest extends Specification {
 
         screen.window = window
 
+        def dataContainer = Mock(CollectionContainer)
+        screen.screenData = Stub(ScreenData) {
+            getContainer("entitiesDc") >> dataContainer
+        }
+
         beanLocator.getAll(BeanLocator) >> ImmutableMap.of("beanLocator", beanLocator)
 
         injector.reflectionInspector = inspector
@@ -257,6 +264,7 @@ class UiControllerDependencyInjectorTest extends Specification {
         1 * dataGridNameColumn.setEditFieldGenerator(_)
         1 * dataGridNameColumn.setStyleProvider(_)
         1 * dataGridNameColumn.setDescriptionProvider(_)
+        1 * dataContainer.setSorter(_)
     }
 
     def "Injector supports non-required dependencies"() {
