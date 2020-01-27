@@ -97,7 +97,7 @@ public class CubaSourceCodeEditorWidget extends AceEditorWidget {
     protected void updateTabIndex() {
         if (editor != null) {
             Element textAreaElement = getTextAreaElement();
-            if (enabled && !readOnly) {
+            if (enabled) {
                 textAreaElement.setTabIndex(tabIndex);
             } else {
                 textAreaElement.setTabIndex(-1);

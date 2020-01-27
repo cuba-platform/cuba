@@ -12,6 +12,11 @@ public class CubaRadioButtonGroupConnector extends RadioButtonGroupConnector {
     public static final String HORIZONTAL_ORIENTATION_STYLE = "horizontal";
 
     @Override
+    public CubaRadioButtonGroupWidget getWidget() {
+        return (CubaRadioButtonGroupWidget) super.getWidget();
+    }
+
+    @Override
     public CubaRadioButtonGroupState getState() {
         return (CubaRadioButtonGroupState) super.getState();
     }
@@ -27,5 +32,14 @@ public class CubaRadioButtonGroupConnector extends RadioButtonGroupConnector {
                 getWidget().addStyleDependentName(HORIZONTAL_ORIENTATION_STYLE);
             }
         }
+
+        if (stateChangeEvent.hasPropertyChanged("readOnly")) {
+            getWidget().setReadonly(getState().readOnly);
+        }
+    }
+
+    @Override
+    protected void updateWidgetReadOnlyState() {
+        getWidget().setReadonly(isReadOnly());
     }
 }

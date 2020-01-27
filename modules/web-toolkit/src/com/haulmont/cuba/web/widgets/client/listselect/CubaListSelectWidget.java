@@ -18,6 +18,8 @@ package com.haulmont.cuba.web.widgets.client.listselect;
 
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.OptionElement;
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ClickEvent;
 import com.vaadin.client.WidgetUtil;
 import com.vaadin.v7.client.ui.VListSelect;
 
@@ -29,11 +31,39 @@ public class CubaListSelectWidget extends VListSelect {
 
     public CubaListSelectWidget() {
         getOptionsContainer().addDoubleClickHandler(event -> {
+            if (!isEnabled() || isReadonly()) {
+                return;
+            }
+
             Element element = WidgetUtil.getElementUnderMouse(event.getNativeEvent());
 
             if (OptionElement.is(element)) {
                 doubleClickListener.accept(((OptionElement) element).getIndex());
             }
         });
+    }
+
+    @Override
+    protected void updateEnabledState() {
+        select.setEnabled(isEnabled());
+        select.setStyleName("v-readonly", isReadonly());
+    }
+
+    @Override
+    public void onClick(ClickEvent event) {
+        if (!isEnabled() || isReadonly()) {
+            return;
+        }
+
+        super.onClick(event);
+    }
+
+    @Override
+    public void onChange(ChangeEvent event) {
+        if (!isEnabled() || isReadonly()) {
+            return;
+        }
+
+        super.onChange(event);
     }
 }

@@ -28,6 +28,11 @@ public class CubaOptionGroupConnector extends OptionGroupConnector {
     public static final String HORIZONTAL_ORIENTATION_STYLE = "horizontal";
 
     @Override
+    public CubaOptionGroupWidget getWidget() {
+        return (CubaOptionGroupWidget) super.getWidget();
+    }
+
+    @Override
     public CubaOptionGroupState getState() {
         return (CubaOptionGroupState) super.getState();
     }

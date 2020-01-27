@@ -32,8 +32,8 @@ $cuba-searchselect-edit-color: scale-color(lighten($v-focus-color, 35%), $satura
     display: none;
   }
 
-  .#{$primary-stylename}.v-filterselect-edit-filter.v-filterselect-focus,
-  .#{$primary-stylename}.v-filterselect-edit-filter.v-filterselect-focus .v-filterselect-input:focus {
+  .#{$primary-stylename}.v-filterselect-edit-filter.v-filterselect-focus:not(.v-readonly),
+  .#{$primary-stylename}.v-filterselect-edit-filter.v-filterselect-focus:not(.v-readonly) .v-filterselect-input:focus {
     background-color: $cuba-searchselect-edit-color;
   }
 }
