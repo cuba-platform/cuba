@@ -28,7 +28,6 @@ import com.haulmont.cuba.security.auth.LoginPasswordCredentials;
 import com.haulmont.cuba.security.entity.*;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.testsupport.TestContainer;
-import com.haulmont.cuba.testsupport.TestFullAccessRole;
 import com.haulmont.cuba.testsupport.TestSupport;
 import com.haulmont.cuba.testsupport.TestUserSessionSource;
 import org.junit.jupiter.api.AfterEach;
