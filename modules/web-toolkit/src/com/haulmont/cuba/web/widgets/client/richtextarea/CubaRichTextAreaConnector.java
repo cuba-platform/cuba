@@ -48,5 +48,9 @@ public class CubaRichTextAreaConnector extends RichTextAreaConnector {
         if (stateChangeEvent.hasPropertyChanged("localeMap")) {
             getWidget().setLocaleMap(getState().localeMap);
         }
+
+        if (stateChangeEvent.hasPropertyChanged("tabIndex")) {
+            getWidget().setTabIndex(getState().tabIndex);
+        }
     }
 }

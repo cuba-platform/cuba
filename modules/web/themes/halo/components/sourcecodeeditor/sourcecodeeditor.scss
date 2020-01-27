@@ -94,4 +94,8 @@ $cuba-sourcecodeeditor-gutter-active-line-background-color: if(is-dark-color($v-
   .#{$primary-stylename}-error.#{$primary-stylename}-focus {
     @include valo-error-focus-style;
   }
+
+  .#{$primary-stylename}.v-readonly .ace_content {
+    cursor: default !important;
+  }
 }

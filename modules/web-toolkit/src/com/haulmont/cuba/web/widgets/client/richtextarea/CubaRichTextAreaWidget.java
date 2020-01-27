@@ -30,6 +30,8 @@ public class CubaRichTextAreaWidget extends VRichTextArea {
 
     protected AfterAttachedValueSupplier valueSupplier;
 
+    protected int tabIndex = 0;
+
     public interface AfterAttachedValueSupplier {
         String getValue();
     }
@@ -48,10 +50,18 @@ public class CubaRichTextAreaWidget extends VRichTextArea {
                 }
             }
         });
+
+        getElement().setTabIndex(tabIndex);
     }
 
     public void setValueSupplier(AfterAttachedValueSupplier valueSupplier) {
         this.valueSupplier = valueSupplier;
+    }
+
+    public void setTabIndex(int tabIndex) {
+        this.tabIndex = tabIndex;
+
+        getElement().setTabIndex(tabIndex);
     }
 
     protected void setContentCharset() {
