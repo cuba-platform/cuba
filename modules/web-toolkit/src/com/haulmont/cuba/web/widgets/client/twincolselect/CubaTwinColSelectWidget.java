@@ -21,6 +21,7 @@ import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.OptionElement;
 import com.google.gwt.dom.client.SelectElement;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.DoubleClickEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.ListBox;
@@ -53,6 +54,8 @@ public class CubaTwinColSelectWidget extends VTwinColSelect {
         addItemsLeftToRightButton.addStyleName("add");
         removeItemsRightToLeftButton.setText("<");
         removeItemsRightToLeftButton.addStyleName("remove");
+
+        updateListBoxReadOnly();
     }
 
     @Override
@@ -65,6 +68,7 @@ public class CubaTwinColSelectWidget extends VTwinColSelect {
     public void setReadOnly(boolean readOnly) {
         super.setReadOnly(readOnly);
         updateAddAllBtnEnabled();
+        updateListBoxReadOnly();
     }
 
     @Override
@@ -184,6 +188,10 @@ public class CubaTwinColSelectWidget extends VTwinColSelect {
 
     @Override
     public void onClick(ClickEvent event) {
+        if (!isEnabled() || isReadOnly()) {
+            return;
+        }
+
         super.onClick(event);
         if (addAllBtnEnabled) {
             if (event.getSource() == addAll) {
@@ -192,6 +200,15 @@ public class CubaTwinColSelectWidget extends VTwinColSelect {
                 removeAll();
             }
         }
+    }
+
+    @Override
+    public void onDoubleClick(DoubleClickEvent event) {
+        if (!isEnabled() || isReadOnly()) {
+            return;
+        }
+
+        super.onDoubleClick(event);
     }
 
     private Set<String> moveAllItems(ListBox source, ListBox target) {
@@ -324,6 +341,18 @@ public class CubaTwinColSelectWidget extends VTwinColSelect {
             addAll.setEnabled(enabled);
             addAll.setStyleName(StyleConstants.DISABLED, !enabled);
         }
+    }
+
+    protected void updateListBoxReadOnly() {
+        boolean readOnly = isReadOnly();
+
+        if (isEnabled() && readOnly) {
+            optionsListBox.setEnabled(true);
+            selectionsListBox.setEnabled(true);
+        }
+
+        optionsListBox.setStyleName("v-readonly", readOnly);
+        selectionsListBox.setStyleName("v-readonly", readOnly);
     }
 
     public class CubaDoubleClickListBox extends DoubleClickListBox {

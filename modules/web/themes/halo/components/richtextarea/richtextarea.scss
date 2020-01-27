@@ -20,8 +20,22 @@
     @include box-defaults;
   }
 
+  .#{$primary-stylename}:focus {
+    border-color: $v-focus-color;
+    box-shadow: none;
+    outline: 0;
+    transition: none;
+  }
+
   .#{$primary-stylename}.v-readonly {
+    @include valo-textfield-style;
+    @include valo-textfield-readonly-style;
+
     overflow: auto;
+
+    &:focus {
+      border-color: $v-focus-color;
+    }
   }
 
   .#{$primary-stylename} .gwt-HTML.v-scrollable {

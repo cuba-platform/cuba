@@ -147,13 +147,6 @@ public class CubaComboBoxWidget extends VComboBox
         }
     }
 
-    @Override
-    public void updateReadOnly() {
-        super.updateReadOnly();
-
-        tb.setTabIndex(readonly ? -1 : tabIndex);
-    }
-
     public void setTabIndex(int tabIndex) {
         this.tabIndex = tabIndex;
     }

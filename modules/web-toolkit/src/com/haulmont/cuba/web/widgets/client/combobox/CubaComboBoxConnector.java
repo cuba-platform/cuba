@@ -49,9 +49,6 @@ public class CubaComboBoxConnector extends ComboBoxConnector implements Paintabl
                 }
             }
         }
-
-        // update read only, cause tabIndex on the TextBox sets after updateReadOnly
-        getWidget().updateReadOnly();
     }
 
     @Override

@@ -97,13 +97,6 @@ public class CubaSearchSelectWidget extends CubaComboBoxWidget {
         super.onBrowserEvent(event);
     }
 
-    @Override
-    public void updateReadOnly() {
-        super.updateReadOnly();
-
-        tb.setTabIndex(readonly ? -1 : tabIndex);
-    }
-
     public void updateTabIndex(int tabIndex) {
         this.tabIndex = tabIndex;
     }

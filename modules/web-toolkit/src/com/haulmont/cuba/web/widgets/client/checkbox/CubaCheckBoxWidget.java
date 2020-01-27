@@ -20,20 +20,29 @@ package com.haulmont.cuba.web.widgets.client.checkbox;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.BlurEvent;
 import com.google.gwt.event.dom.client.BlurHandler;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.FocusEvent;
 import com.google.gwt.event.dom.client.FocusHandler;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.i18n.client.HasDirection;
 import com.vaadin.client.BrowserInfo;
 import com.vaadin.client.ui.VCheckBox;
 
-public class CubaCheckBoxWidget extends VCheckBox implements FocusHandler, BlurHandler {
+public class CubaCheckBoxWidget extends VCheckBox implements FocusHandler, BlurHandler, ClickHandler, KeyDownHandler {
 
     protected boolean captionManagedByLayout = false;
+    protected boolean readOnly;
+
     protected Element contextHelpIcon;
 
     public CubaCheckBoxWidget() {
         addBlurHandler(this);
         addFocusHandler(this);
+        addClickHandler(this);
+        addKeyDownHandler(this);
 
         updateCaptionStyle();
     }
@@ -81,6 +90,31 @@ public class CubaCheckBoxWidget extends VCheckBox implements FocusHandler, BlurH
     @Override
     public void onBlur(BlurEvent arg) {
         removeStyleDependentName("focus");
+    }
+
+    @Override
+    public void onClick(ClickEvent event) {
+        if (!isEnabled() || isReadOnly()) {
+            event.preventDefault();
+        }
+    }
+
+    @Override
+    public void onKeyDown(KeyDownEvent event) {
+        if ((!isEnabled() || isReadOnly())
+                && event.getNativeKeyCode() != KeyCodes.KEY_TAB) {
+            event.preventDefault();
+        }
+    }
+
+    public void setReadOnly(boolean readOnly) {
+        if (this.readOnly != readOnly) {
+            this.readOnly = readOnly;
+        }
+    }
+
+    public boolean isReadOnly() {
+        return readOnly;
     }
 
     protected void updateCaptionStyle() {

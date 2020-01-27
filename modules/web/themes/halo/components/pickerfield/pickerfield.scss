@@ -223,6 +223,14 @@
         border-color: $v-focus-color;
       }
     }
+
+    .#{$primary-stylename}-button {
+      cursor: default;
+
+      &:hover {
+        color: mix($v-textfield-background-color, valo-font-color($v-textfield-background-color));
+      }
+    }
   }
 
   .#{$primary-stylename}.v-disabled {

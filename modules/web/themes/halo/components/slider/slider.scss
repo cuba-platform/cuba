@@ -25,12 +25,9 @@
     width: inherit;
   }
 
-  & .v-disabled,
-  & .v-readonly {
-    .#{$primary-stylename}-handle:after {
-      border: 0;
-      box-shadow: none;
-      -webkit-box-shadow: none;
-    }
+  .#{$primary-stylename}.v-disabled .#{$primary-stylename}-handle:after {
+    border: 0;
+    box-shadow: none;
+    -webkit-box-shadow: none;
   }
 }

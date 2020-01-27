@@ -39,8 +39,13 @@
 
   .#{$primary-stylename}.v-readonly {
     input {
+      cursor: default;
       padding-right: ceil($v-unit-size/6) + ceil($v-border-radius/3);
     }
+  }
+
+  .#{$primary-stylename}.v-readonly [class*="input"]:focus {
+    border-color: $v-focus-color;
   }
 
   .#{$primary-stylename}.c-disabled-or-readonly.c-empty-value {

@@ -12,6 +12,11 @@ public class CubaCheckBoxGroupConnector extends CheckBoxGroupConnector {
     public static final String HORIZONTAL_ORIENTATION_STYLE = "horizontal";
 
     @Override
+    public CubaCheckBoxGroupWidget getWidget() {
+        return (CubaCheckBoxGroupWidget) super.getWidget();
+    }
+
+    @Override
     public CubaCheckBoxGroupState getState() {
         return (CubaCheckBoxGroupState) super.getState();
     }
