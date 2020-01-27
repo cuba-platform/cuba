@@ -137,7 +137,7 @@ public abstract class WebAbstractComponent<T extends com.vaadin.ui.Component>
         com.vaadin.ui.Component composition = getComposition();
 
         if (composition instanceof AbstractComponent) {
-            ((AbstractComponent) composition).setResponsive(true);
+            ((AbstractComponent) composition).setResponsive(responsive);
         }
     }
 
