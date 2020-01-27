@@ -17,10 +17,15 @@
 package spec.cuba.web.screens.injection;
 
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.core.global.Sort;
+import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.Field;
+import com.haulmont.cuba.gui.components.Table;
+import com.haulmont.cuba.gui.components.ValidationException;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.screen.Install;
 import com.haulmont.cuba.gui.screen.Screen;
+import com.haulmont.cuba.gui.screen.Target;
 import com.haulmont.cuba.security.entity.User;
 
 import java.util.Date;
@@ -79,4 +84,8 @@ public class ScreenBindInstall extends Screen {
     protected String dataGridColumnCellDescriptionProvider(Entity entity) {
         return "test description";
     }
+
+    @Install(to = "entitiesDc", target = Target.DATA_CONTAINER, subject = "sorter")
+    protected void entitiesDcSorter(Sort sort) {}
+
 }
