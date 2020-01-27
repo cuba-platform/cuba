@@ -53,9 +53,6 @@ public class RolesHelper {
     protected DataManager dataManager;
 
     @Inject
-    protected EntityStates entityStates;
-
-    @Inject
     protected Metadata metadata;
 
     private Logger log = LoggerFactory.getLogger(RolesHelper.class);
@@ -95,12 +92,11 @@ public class RolesHelper {
      * associated with the database role, the database role will be converted to the {@code RoleDefinition}
      *
      * @param user       the user
-     * @param reloadUser if set to true then the method will check if the passed {@code user} is loaded with the proper
-     *                   view (contains roles with permissions) and will reload the user if required. If the parameter
-     *                   value is false then this check won't be performed. Set the parameter to false when the method
-     *                   is invoked from within the opened transaction (i.e. from the {@link
-     *                   com.haulmont.cuba.security.sys.UserSessionManager}) - in this case all non-loaded fields will
-     *                   be fetched when they are accessed within the method.
+     * @param reloadUser if set to true then the passed {@code user} will be reloaded with the proper view (contains
+     *                   roles with permissions). If the parameter value is false then this check won't be performed.
+     *                   Set the parameter to false when the method is invoked from within the opened transaction (i.e.
+     *                   from the {@link com.haulmont.cuba.security.sys.UserSessionManager}) - in this case all
+     *                   non-loaded fields will be fetched when they are accessed within the method.
      * @return collection of {@link RoleDefinition} objects
      */
     public Collection<RoleDefinition> getRoleDefinitionsForUser(User user, boolean reloadUser) {
@@ -116,10 +112,7 @@ public class RolesHelper {
                                 );
                     })
                     .build();
-
-            if (!entityStates.isLoadedWithView(user, userWithRolesView)) {
-                user = dataManager.reload(user, userWithRolesView);
-            }
+            user = dataManager.reload(user, userWithRolesView);
         }
 
         List<UserRole> userRoles = user.getUserRoles();
