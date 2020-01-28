@@ -325,9 +325,9 @@ public class RemoveOperation {
         protected String confirmationMessage;
         protected String confirmationTitle;
 
-        protected Consumer<BeforeActionPerformedEvent> beforeActionPerformedHandler;
-        protected Consumer<AfterActionPerformedEvent> afterActionPerformedHandler;
-        protected Consumer<ActionCancelledEvent> actionCancelledHandler;
+        protected Consumer<BeforeActionPerformedEvent<E>> beforeActionPerformedHandler;
+        protected Consumer<AfterActionPerformedEvent<E>> afterActionPerformedHandler;
+        protected Consumer<ActionCancelledEvent<E>> actionCancelledHandler;
 
         public RemoveBuilder(FrameOwner origin, Class<E> entityClass, Consumer<RemoveBuilder<E>> actionHandler) {
             this.origin = origin;
@@ -374,17 +374,17 @@ public class RemoveOperation {
             return this;
         }
 
-        public RemoveBuilder<E> beforeActionPerformed(Consumer<BeforeActionPerformedEvent> handler) {
+        public RemoveBuilder<E> beforeActionPerformed(Consumer<BeforeActionPerformedEvent<E>> handler) {
             this.beforeActionPerformedHandler = handler;
             return this;
         }
 
-        public RemoveBuilder<E> afterActionPerformed(Consumer<AfterActionPerformedEvent> handler) {
+        public RemoveBuilder<E> afterActionPerformed(Consumer<AfterActionPerformedEvent<E>> handler) {
             this.afterActionPerformedHandler = handler;
             return this;
         }
 
-        public RemoveBuilder<E> onCancel(Consumer<ActionCancelledEvent> handler) {
+        public RemoveBuilder<E> onCancel(Consumer<ActionCancelledEvent<E>> handler) {
             this.actionCancelledHandler = handler;
             return this;
         }
@@ -425,15 +425,15 @@ public class RemoveOperation {
             return operation;
         }
 
-        public Consumer<BeforeActionPerformedEvent> getBeforeActionPerformedHandler() {
+        public Consumer<BeforeActionPerformedEvent<E>> getBeforeActionPerformedHandler() {
             return beforeActionPerformedHandler;
         }
 
-        public Consumer<AfterActionPerformedEvent> getAfterActionPerformedHandler() {
+        public Consumer<AfterActionPerformedEvent<E>> getAfterActionPerformedHandler() {
             return afterActionPerformedHandler;
         }
 
-        public Consumer<ActionCancelledEvent> getActionCancelledHandler() {
+        public Consumer<ActionCancelledEvent<E>> getActionCancelledHandler() {
             return actionCancelledHandler;
         }
 

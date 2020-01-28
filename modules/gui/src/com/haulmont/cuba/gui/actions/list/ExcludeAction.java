@@ -19,6 +19,7 @@ package com.haulmont.cuba.gui.actions.list;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.client.ClientConfig;
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.RemoveOperation;
@@ -49,7 +50,7 @@ import java.util.function.Consumer;
  */
 @StudioAction(category = "List Actions", description = "Excludes entities from the list. The excluded entities are not deleted.")
 @ActionType(ExcludeAction.ID)
-public class ExcludeAction extends SecuredListAction implements Action.DisabledWhenScreenReadOnly {
+public class ExcludeAction<E extends Entity> extends SecuredListAction implements Action.DisabledWhenScreenReadOnly {
 
     public static final String ID = "exclude";
 
@@ -59,8 +60,8 @@ public class ExcludeAction extends SecuredListAction implements Action.DisabledW
     protected Boolean confirmation;
     protected String confirmationMessage;
     protected String confirmationTitle;
-    protected Consumer<RemoveOperation.AfterActionPerformedEvent> afterActionPerformedHandler;
-    protected Consumer<RemoveOperation.ActionCancelledEvent> actionCancelledHandler;
+    protected Consumer<RemoveOperation.AfterActionPerformedEvent<E>> afterActionPerformedHandler;
+    protected Consumer<RemoveOperation.ActionCancelledEvent<E>> actionCancelledHandler;
 
     public ExcludeAction() {
         super(ID);
@@ -133,7 +134,7 @@ public class ExcludeAction extends SecuredListAction implements Action.DisabledW
      * </pre>
      */
     @StudioDelegate
-    public void setAfterActionPerformedHandler(Consumer<RemoveOperation.AfterActionPerformedEvent> afterActionPerformedHandler) {
+    public void setAfterActionPerformedHandler(Consumer<RemoveOperation.AfterActionPerformedEvent<E>> afterActionPerformedHandler) {
         this.afterActionPerformedHandler = afterActionPerformedHandler;
     }
 
@@ -149,7 +150,7 @@ public class ExcludeAction extends SecuredListAction implements Action.DisabledW
      * </pre>
      */
     @StudioDelegate
-    public void setActionCancelledHandler(Consumer<RemoveOperation.ActionCancelledEvent> actionCancelledHandler) {
+    public void setActionCancelledHandler(Consumer<RemoveOperation.ActionCancelledEvent<E>> actionCancelledHandler) {
         this.actionCancelledHandler = actionCancelledHandler;
     }
 
@@ -175,7 +176,7 @@ public class ExcludeAction extends SecuredListAction implements Action.DisabledW
             return false;
         }
 
-        ContainerDataUnit containerDataUnit = (ContainerDataUnit) target.getItems();
+        ContainerDataUnit<E> containerDataUnit = (ContainerDataUnit) target.getItems();
 
         MetaClass metaClass = containerDataUnit.getEntityMetaClass();
         if (metaClass == null) {
@@ -220,13 +221,13 @@ public class ExcludeAction extends SecuredListAction implements Action.DisabledW
             throw new IllegalStateException("ExcludeAction target items is null or does not implement ContainerDataUnit");
         }
 
-        ContainerDataUnit items = (ContainerDataUnit) target.getItems();
-        CollectionContainer container = items.getContainer();
+        ContainerDataUnit<E> items = (ContainerDataUnit) target.getItems();
+        CollectionContainer<E> container = items.getContainer();
         if (container == null) {
             throw new IllegalStateException("ExcludeAction target is not bound to CollectionContainer");
         }
 
-        RemoveOperation.RemoveBuilder builder = removeOperation.builder(target);
+        RemoveOperation.RemoveBuilder<E> builder = removeOperation.builder(target);
 
         if (confirmation != null) {
             builder = builder.withConfirmation(confirmation);
