@@ -37,12 +37,12 @@
                                stylename="c-app-title"
                                value="mainMsg://application.logoLabel"/>
                     </cssLayout>
-                    <timeZoneIndicator id="timeZoneIndicator"
-                                       align="MIDDLE_CENTER"/>
                     <sideMenu id="sideMenu"
                               width="100%"/>
                     <ftsField id="ftsField"
                               width="100%"/>
+                    <timeZoneIndicator id="timeZoneIndicator"
+                                       align="MIDDLE_CENTER"/>
                     <cssLayout id="controlBox"
                                stylename="c-sidemenu-controls"
                                width="100%">
