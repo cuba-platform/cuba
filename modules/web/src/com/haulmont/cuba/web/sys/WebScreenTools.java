@@ -16,16 +16,21 @@
 
 package com.haulmont.cuba.web.sys;
 
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.ClientType;
+import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.gui.ScreenTools;
 import com.haulmont.cuba.gui.Screens;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.config.WindowConfig;
+import com.haulmont.cuba.gui.config.WindowInfo;
+import com.haulmont.cuba.gui.screen.EditorScreen;
 import com.haulmont.cuba.gui.screen.OpenMode;
 import com.haulmont.cuba.gui.screen.Screen;
 import com.haulmont.cuba.security.app.UserSettingService;
 import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.gui.WebWindow;
+import com.haulmont.cuba.web.sys.navigation.EditorTypeExtractor;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,6 +46,8 @@ public class WebScreenTools implements ScreenTools {
     @Inject
     protected WebConfig webConfig;
 
+    @Inject
+    protected Metadata metadata;
     @Inject
     protected WindowConfig windowConfig;
 
@@ -70,6 +77,10 @@ public class WebScreenTools implements ScreenTools {
 
         Screen screen = screens.create(defaultScreenId, OpenMode.NEW_TAB);
 
+        if (screen instanceof EditorScreen) {
+            ((EditorScreen) screen).setEntityToEdit(getEntityToEdit(defaultScreenId));
+        }
+
         screen.show();
 
         Window window = screen.getWindow();
@@ -85,5 +96,18 @@ public class WebScreenTools implements ScreenTools {
         if (!webConfig.getDefaultScreenCanBeClosed()) {
             window.setCloseable(false);
         }
+    }
+
+    protected Entity getEntityToEdit(String screenId) {
+        WindowInfo windowInfo = windowConfig.getWindowInfo(screenId);
+        Class<? extends Entity> entityClass = EditorTypeExtractor.extractEntityClass(windowInfo);
+
+        if (entityClass == null) {
+            throw new UnsupportedOperationException(
+                    String.format("Unable to open default screen '%s'. Failed to determine editor entity type",
+                            screenId));
+        }
+
+        return metadata.create(entityClass);
     }
 }
