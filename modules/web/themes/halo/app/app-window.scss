@@ -390,6 +390,11 @@ $cuba-sidemenu-layout-collapse-animation-time: .3s !default;
       width: 100%;
     }
 
+    .c-user-timezone-label {
+      padding: round($v-layout-spacing-vertical / 2) $v-layout-spacing-vertical;
+      text-align: center;
+    }
+
     .c-sidemenu-controls {
       display: flex;
       align-items: center;
@@ -543,6 +548,14 @@ $cuba-sidemenu-layout-collapse-animation-time: .3s !default;
         @include transition (max-height $cuba-sidemenu-layout-collapse-animation-time ease-in-out);
       }
     }
+
+    .c-ftsfield {
+      visibility: hidden;
+    }
+
+    .c-user-timezone-label {
+      visibility: hidden;
+    }
   } @else {
     .c-sidemenu {
       overflow-y: auto;
@@ -574,6 +587,14 @@ $cuba-sidemenu-layout-collapse-animation-time: .3s !default;
       @if $v-animations-enabled {
         @include transition (max-height .9s ease-in-out);
       }
+    }
+
+    .c-ftsfield {
+      visibility: visible;
+    }
+
+    .c-user-timezone-label {
+      visibility: visible;
     }
   }
 }
