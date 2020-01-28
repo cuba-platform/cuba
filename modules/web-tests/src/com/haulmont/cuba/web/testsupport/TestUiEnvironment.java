@@ -20,6 +20,7 @@ import com.google.common.collect.HashMultimap;
 import com.haulmont.cuba.client.ClientUserSession;
 import com.haulmont.cuba.client.sys.cache.ClientCacheManager;
 import com.haulmont.cuba.client.sys.cache.DynamicAttributesCacheStrategy;
+import com.haulmont.cuba.client.testsupport.TestFullAccessRole;
 import com.haulmont.cuba.client.testsupport.TestUserSessionSource;
 import com.haulmont.cuba.core.app.PersistenceManagerService;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesCache;
@@ -34,6 +35,7 @@ import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.security.app.UserManagementService;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.UserSession;
+import com.haulmont.cuba.security.role.RoleDefinition;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.Connection;
@@ -121,6 +123,7 @@ public class TestUiEnvironment extends ExternalResource implements BeforeEachCal
     protected Locale locale = Locale.ENGLISH;
     protected String userLogin = "test_admin";
     protected String userName = "Test Administrator";
+    protected RoleDefinition roleDefinition;
 
     protected String[] screenPackages;
 
@@ -255,8 +258,9 @@ public class TestUiEnvironment extends ExternalResource implements BeforeEachCal
 
     protected UserSession createSession() {
         User user = createUser();
-
-        return new UserSession(UUID.randomUUID(), user, emptyList(), getLocale(), false);
+        UserSession session = new UserSession(UUID.randomUUID(), user, emptyList(), getLocale(), false);
+        session.setJoinedRole(roleDefinition != null ? roleDefinition : new TestFullAccessRole());
+        return session;
     }
 
     protected Locale getLocale() {
@@ -395,6 +399,17 @@ public class TestUiEnvironment extends ExternalResource implements BeforeEachCal
      */
     public TestUiEnvironment withUserName(String userName) {
         this.userName = userName;
+        return this;
+    }
+
+    /**
+     * Sets the role definition to the mocked user session.
+     *
+     * @param roleDefinition role definition
+     * @return this
+     */
+    public TestUiEnvironment withRoleDefinition(RoleDefinition roleDefinition) {
+        this.roleDefinition = roleDefinition;
         return this;
     }
 
