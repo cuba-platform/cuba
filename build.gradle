@@ -341,12 +341,17 @@ configure(globalModule) {
         compile(bom['javax.inject:javax.inject'])
         compile(bom['javax.annotation:javax.annotation-api'])
         compileOnly(bom['javax.servlet:javax.servlet-api'])
+
+        compile(bom['com.querydsl:querydsl-jpa'])
+        annotationProcessor group: 'com.querydsl', name: 'querydsl-apt', version: '4.1.4', classifier: 'jpa'
+        annotationProcessor configurations.compile
     }
 
     task generateReleaseTimestamp(type: CubaReleaseTimeStamp) {
         releaseTimeStampPath = "$buildDir/release-number/com/haulmont/cuba/core/global/release.timestamp"
         releaseNumberPath = "$buildDir/release-number/com/haulmont/cuba/core/global/release.number"
     }
+
     // do not use classes directory, because it will break Gradle task UP-TO-DATE caching
     jar {
         from new File(project.buildDir, 'release-number')
