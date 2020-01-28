@@ -19,6 +19,7 @@ package com.haulmont.cuba.gui.actions.list;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.client.ClientConfig;
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.RemoveOperation;
@@ -50,7 +51,7 @@ import java.util.function.Consumer;
  */
 @StudioAction(category = "List Actions", description = "Removes an entity instance from the list and from the database")
 @ActionType(RemoveAction.ID)
-public class RemoveAction extends SecuredListAction implements Action.DisabledWhenScreenReadOnly {
+public class RemoveAction<E extends Entity> extends SecuredListAction implements Action.DisabledWhenScreenReadOnly {
 
     public static final String ID = "remove";
 
@@ -60,8 +61,8 @@ public class RemoveAction extends SecuredListAction implements Action.DisabledWh
     protected Boolean confirmation;
     protected String confirmationMessage;
     protected String confirmationTitle;
-    protected Consumer<RemoveOperation.AfterActionPerformedEvent> afterActionPerformedHandler;
-    protected Consumer<RemoveOperation.ActionCancelledEvent> actionCancelledHandler;
+    protected Consumer<RemoveOperation.AfterActionPerformedEvent<E>> afterActionPerformedHandler;
+    protected Consumer<RemoveOperation.ActionCancelledEvent<E>> actionCancelledHandler;
 
     public RemoveAction() {
         super(ID);
@@ -134,7 +135,7 @@ public class RemoveAction extends SecuredListAction implements Action.DisabledWh
      * </pre>
      */
     @StudioDelegate
-    public void setAfterActionPerformedHandler(Consumer<RemoveOperation.AfterActionPerformedEvent> afterActionPerformedHandler) {
+    public void setAfterActionPerformedHandler(Consumer<RemoveOperation.AfterActionPerformedEvent<E>> afterActionPerformedHandler) {
         this.afterActionPerformedHandler = afterActionPerformedHandler;
     }
 
@@ -150,7 +151,7 @@ public class RemoveAction extends SecuredListAction implements Action.DisabledWh
      * </pre>
      */
     @StudioDelegate
-    public void setActionCancelledHandler(Consumer<RemoveOperation.ActionCancelledEvent> actionCancelledHandler) {
+    public void setActionCancelledHandler(Consumer<RemoveOperation.ActionCancelledEvent<E>> actionCancelledHandler) {
         this.actionCancelledHandler = actionCancelledHandler;
     }
 
@@ -184,7 +185,7 @@ public class RemoveAction extends SecuredListAction implements Action.DisabledWh
     }
 
     protected boolean checkRemovePermission() {
-        ContainerDataUnit containerDataUnit = (ContainerDataUnit) target.getItems();
+        ContainerDataUnit<E> containerDataUnit = (ContainerDataUnit) target.getItems();
 
         MetaClass metaClass = containerDataUnit.getEntityMetaClass();
         if (metaClass == null) {
@@ -233,13 +234,13 @@ public class RemoveAction extends SecuredListAction implements Action.DisabledWh
             throw new IllegalStateException("RemoveAction target items is null or does not implement ContainerDataUnit");
         }
 
-        ContainerDataUnit items = (ContainerDataUnit) target.getItems();
-        CollectionContainer container = items.getContainer();
+        ContainerDataUnit<E> items = (ContainerDataUnit) target.getItems();
+        CollectionContainer<E> container = items.getContainer();
         if (container == null) {
             throw new IllegalStateException("RemoveAction target is not bound to CollectionContainer");
         }
 
-        RemoveOperation.RemoveBuilder builder = removeOperation.builder(target);
+        RemoveOperation.RemoveBuilder<E> builder = removeOperation.builder(target);
 
         if (confirmation != null) {
             builder = builder.withConfirmation(confirmation);
