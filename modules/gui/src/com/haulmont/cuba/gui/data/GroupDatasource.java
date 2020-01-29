@@ -28,7 +28,9 @@ import java.util.List;
  *
  * @param <T> type of entity
  * @param <K> type of entity ID
+ * @deprecated Use {@link com.haulmont.cuba.gui.model.CollectionContainer} APIs instead.
  */
+@Deprecated
 public interface GroupDatasource<T extends Entity<K>, K> extends CollectionDatasource<T, K> {
     /**
      * Perform grouping by the list of properties

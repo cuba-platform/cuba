@@ -27,6 +27,7 @@ import java.util.Set;
  * INTERNAL.
  * Common internal methods of datasources.
  */
+@Deprecated
 public interface DatasourceImplementation<T extends Entity> extends Datasource<T> {
 
     /**
