@@ -342,7 +342,7 @@ configure(globalModule) {
         compile(bom['javax.annotation:javax.annotation-api'])
         compileOnly(bom['javax.servlet:javax.servlet-api'])
 
-        compile(bom['com.querydsl:querydsl-jpa'])
+        compileOnly(bom['com.querydsl:querydsl-jpa'])
         annotationProcessor group: 'com.querydsl', name: 'querydsl-apt', version: '4.1.4', classifier: 'jpa'
         annotationProcessor configurations.compile
     }
