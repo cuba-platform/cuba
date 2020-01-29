@@ -17,12 +17,12 @@
 package com.haulmont.cuba.gui.components;
 
 /**
- * A resource that is stored in the directory of your application, e.g.:
- * <code>${catalina.base}/webapps/appName/static/image.png</code>.
+ * A resource that is stored in the directory of deployed application, e.g.:
+ * <code>${catalina.base}/webapps/app/VAADIN/images/image.png</code>.
  */
 public interface RelativePathResource extends Resource, ResourceView.HasMimeType {
     /**
-     * @param path path to the resource, e.g. "static/image.png"
+     * @param path path to the resource, e.g. "VAADIN/images/image.png"
      * @return current RelativePathResource instance
      */
     RelativePathResource setPath(String path);
