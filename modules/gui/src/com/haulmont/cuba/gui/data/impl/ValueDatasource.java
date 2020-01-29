@@ -21,6 +21,8 @@ import com.haulmont.chile.core.model.MetaClass;
 
 /**
  * Base interface of datasources that work with {@link com.haulmont.cuba.core.entity.KeyValueEntity}.
+ *
+ * @deprecated Use {@link com.haulmont.cuba.gui.model.KeyValueContainer} APIs instead.
  */
 public interface ValueDatasource {
 
@@ -36,6 +38,7 @@ public interface ValueDatasource {
 
     /**
      * Adds a string property to the meta-class of this datasource.
+     *
      * @return this instance for chaining
      */
     ValueDatasource addProperty(String name);
@@ -43,12 +46,14 @@ public interface ValueDatasource {
     /**
      * Adds a property of the given Java class to the meta-class of this datasource.
      * The Java class can be an entity or a datatype.
+     *
      * @return this instance for chaining
      */
     ValueDatasource addProperty(String name, Class aClass);
 
     /**
      * Adds a property of the given datatype to the meta-class of this datasource.
+     *
      * @return this instance for chaining
      */
     ValueDatasource addProperty(String name, Datatype datatype);

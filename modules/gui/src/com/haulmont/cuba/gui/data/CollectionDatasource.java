@@ -35,7 +35,9 @@ import java.util.Map;
  * @param <T> type of entity
  * @param <K> type of entity ID
  * @see #setQuery(String)
+ * @deprecated Use {@link com.haulmont.cuba.gui.model.CollectionContainer} APIs instead.
  */
+@Deprecated
 public interface CollectionDatasource<T extends Entity<K>, K> extends Datasource<T> {
 
     /**

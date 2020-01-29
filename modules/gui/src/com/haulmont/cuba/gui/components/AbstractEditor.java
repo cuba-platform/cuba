@@ -27,9 +27,7 @@ import com.haulmont.cuba.core.entity.Categorized;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.global.validation.groups.UiCrossFieldChecks;
-import com.haulmont.cuba.gui.ComponentsHelper;
-import com.haulmont.cuba.gui.GuiDevelopmentException;
-import com.haulmont.cuba.gui.WindowParams;
+import com.haulmont.cuba.gui.*;
 import com.haulmont.cuba.gui.components.actions.BaseAction;
 import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.data.impl.CollectionPropertyDatasourceImpl;
@@ -55,7 +53,9 @@ import java.util.Set;
 
 /**
  * Base class for edit screen controllers.
+ * @deprecated Use {@link com.haulmont.cuba.gui.screen.StandardEditor} APIs instead.
  */
+@Deprecated
 public class AbstractEditor<T extends Entity> extends AbstractWindow
         implements Window.Editor<T>, ReadOnlyAwareScreen {
 

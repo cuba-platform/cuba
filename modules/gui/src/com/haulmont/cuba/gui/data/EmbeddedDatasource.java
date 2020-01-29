@@ -24,6 +24,7 @@ import com.haulmont.cuba.core.entity.EmbeddableEntity;
  * @param <T> type of enclosed embeddable entity
  *
  */
+@Deprecated
 public interface EmbeddedDatasource<T extends EmbeddableEntity>
         extends NestedDatasource<T> {
 }

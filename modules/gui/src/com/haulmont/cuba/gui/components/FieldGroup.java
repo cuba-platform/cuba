@@ -27,7 +27,9 @@ import java.util.function.Consumer;
 
 /**
  * Multi-column form component.
+ * @deprecated Use {@link Form} component instead.
  */
+@Deprecated
 public interface FieldGroup extends Component, Component.BelongToFrame, Component.HasCaption, Component.HasIcon,
                                     HasBorder, HasContextHelp, Component.Editable, Validatable,
                                     EditableChangeNotifier, ChildEditableController,

@@ -33,6 +33,7 @@ import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.HashSet;
 
+@Deprecated
 public abstract class AbstractDatasource<T extends Entity> implements Datasource<T>, DatasourceImplementation<T> {
 
     private static final Logger log = LoggerFactory.getLogger(AbstractDatasource.class);

@@ -32,7 +32,9 @@ import java.util.function.Predicate;
 
 /**
  * Base class for lookup screen controllers.
+ * @deprecated Use {@link com.haulmont.cuba.gui.screen.StandardLookup} APIs instead.
  */
+@Deprecated
 public class AbstractLookup extends AbstractWindow implements Lookup {
 
     private Predicate<ValidationContext> lookupValidator;
