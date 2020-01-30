@@ -21,6 +21,7 @@ import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.user.client.ui.Widget;
+import com.vaadin.client.BrowserInfo;
 import com.vaadin.client.StyleConstants;
 import com.vaadin.client.ui.VCheckBox;
 import com.vaadin.client.ui.VCheckBoxGroup;
@@ -56,6 +57,16 @@ public class CubaCheckBoxGroupWidget extends VCheckBoxGroup implements KeyDownHa
     public void onClick(ClickEvent event) {
         if (!isEnabled() || isReadonly()) {
             event.preventDefault();
+
+            if (isReadonly()
+                    && (BrowserInfo.get().isIE() || BrowserInfo.get().isEdge())) {
+                // IE and Edge do not focus read-only checkbox on click
+                Object checkBox = event.getSource();
+                if (checkBox instanceof VCheckBox) {
+                    ((VCheckBox) checkBox).setFocus(true);
+                }
+            }
+
             return;
         }
 

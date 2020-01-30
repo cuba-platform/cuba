@@ -96,6 +96,12 @@ public class CubaCheckBoxWidget extends VCheckBox implements FocusHandler, BlurH
     public void onClick(ClickEvent event) {
         if (!isEnabled() || isReadOnly()) {
             event.preventDefault();
+
+            if (isReadOnly()
+                    && (BrowserInfo.get().isIE() || BrowserInfo.get().isEdge())) {
+                // IE and Edge do not focus read-only checkbox on click
+                setFocus(true);
+            }
         }
     }
 
