@@ -17,6 +17,10 @@
 package com.haulmont.cuba.web.sys.navigation.navigationhandler;
 
 import com.haulmont.bali.util.ParamsMap;
+import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.gui.Notifications;
+import com.haulmont.cuba.gui.components.RootWindow;
+import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.navigation.NavigationState;
@@ -50,6 +54,9 @@ public class RootNavigationHandler implements NavigationHandler {
     @Inject
     protected WindowConfig windowConfig;
 
+    @Inject
+    protected Messages messages;
+
     @Override
     public boolean doHandle(NavigationState requestedState, AppUI ui) {
         UrlChangeHandler urlChangeHandler = ui.getUrlChangeHandler();
@@ -68,6 +75,7 @@ public class RootNavigationHandler implements NavigationHandler {
 
         if (windowInfo == null) {
             log.info("No registered screen found for route: '{}'", rootRoute);
+
             urlChangeHandler.revertNavigationState();
 
             handle404(rootRoute, ui);
@@ -117,10 +125,21 @@ public class RootNavigationHandler implements NavigationHandler {
     }
 
     protected void handle404(String route, AppUI ui) {
-        MapScreenOptions options = new MapScreenOptions(ParamsMap.of("requestedRoute", route));
+        RootWindow topWindow = ui.getTopLevelWindow();
+        Screen rootScreen = topWindow != null ? topWindow.getFrameOwner() : null;
 
-        ui.getScreens()
-                .create(NotFoundScreen.class, OpenMode.NEW_TAB, options)
-                .show();
+        if (rootScreen instanceof Window.HasWorkArea) {
+            MapScreenOptions options = new MapScreenOptions(
+                    ParamsMap.of("requestedRoute", route));
+
+            ui.getScreens()
+                    .create(NotFoundScreen.class, OpenMode.NEW_TAB, options)
+                    .show();
+        } else {
+            ui.getNotifications()
+                    .create(Notifications.NotificationType.TRAY)
+                    .withCaption(messages.formatMainMessage("navigation.screenNotFound", route))
+                    .show();
+        }
     }
 }
