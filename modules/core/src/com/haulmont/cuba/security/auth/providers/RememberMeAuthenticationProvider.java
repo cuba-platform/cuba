@@ -140,7 +140,7 @@ public class RememberMeAuthenticationProvider extends AbstractAuthenticationProv
 
         long tokenCreated = rememberMeToken.getCreateTs().getTime();
         long now = timeSource.currentTimeMillis();
-        int expirationTimeout = globalConfig.getRememberMeExpirationTimeoutSec();
+        long expirationTimeout = globalConfig.getRememberMeExpirationTimeoutSec();
 
         return tokenCreated + expirationTimeout * 1000 < now;
     }
