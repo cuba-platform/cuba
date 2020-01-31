@@ -129,14 +129,16 @@ $cuba-optiongroup-size: 18px;
 
 $cuba-popupbutton-indicator-font-weight: 700;
 
-$cuba-sidemenu-background-color: rgba(36, 36, 36, 1);
+$cuba-sidemenu-background-color: #4b4b4b;
 $cuba-sidemenu-item-font-weight: 700;
 $cuba-sidemenu-separate-items: false;
 $cuba-sidemenu-timezone-font-weight: 700;
 $cuba-sidemenu-title-font-size: round($v-font-size * 1.45);
 $cuba-sidemenu-title-font-weight: 700;
 $cuba-sidemenu-title-gradient: false;
+$cuba-sidemenu-title-background: #3b3b3d;
 $cuba-sidemenu-userindicator-font-weight: 700;
+$cuba-sidemenu-submenu-background-color: rgba(8, 10, 17, 0.2351);
 
 $cuba-splitpanel-splitter-width: 1px;
 
