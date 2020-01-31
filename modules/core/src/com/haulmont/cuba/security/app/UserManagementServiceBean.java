@@ -403,7 +403,7 @@ public class UserManagementServiceBean implements UserManagementService {
 
         long tokenCreated = token.getCreateTs().getTime();
         long now = timeSource.currentTimeMillis();
-        int expirationTimeout = globalConfig.getRememberMeExpirationTimeoutSec();
+        long expirationTimeout = globalConfig.getRememberMeExpirationTimeoutSec();
 
         return tokenCreated + expirationTimeout * 1000 > now;
     }
