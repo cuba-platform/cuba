@@ -21,6 +21,7 @@ import com.google.gwt.i18n.shared.DateTimeFormat;
 import com.haulmont.cuba.web.widgets.client.textfield.CubaMaskedFieldWidget;
 
 import java.util.Locale;
+import java.util.Objects;
 
 public class CubaTimeFieldWidget extends CubaMaskedFieldWidget {
 
@@ -30,6 +31,11 @@ public class CubaTimeFieldWidget extends CubaMaskedFieldWidget {
 
     protected TimeResolution resolution = TimeResolution.HOUR;
     protected String timeFormat;
+
+    @Override
+    public String getValueConsideringMaskedMode() {
+        return parseValue(super.getValueConsideringMaskedMode());
+    }
 
     @Override
     public void setMask(String mask) {
@@ -46,23 +52,32 @@ public class CubaTimeFieldWidget extends CubaMaskedFieldWidget {
 
     protected void updateValueWithChangeEvent(boolean fireEvent) {
         String newText = getValue();
+        if (!Objects.equals(newText, valueBeforeEdit)) {
+            String parsedValue = parseValue(newText);
+            setValue(parsedValue);
 
+            if (!Objects.equals(parsedValue, valueBeforeEdit)) {
+                valueBeforeEdit = parsedValue;
+
+                if (fireEvent) {
+                    ValueChangeEvent.fire(this, parsedValue);
+                }
+            }
+        }
+    }
+
+    protected String parseValue(String newText) {
         if (!newText.equals(valueBeforeEdit)) {
             newText = (newText.endsWith("__") && !newText.startsWith("__"))
                     ? newText.replaceAll("__", "00")
                     : newText;
 
             if (validateText(newText) && isValueParsable(newText)) {
-                valueBeforeEdit = newText;
-                setValue(newText);
-
-                if (fireEvent) {
-                    ValueChangeEvent.fire(this, newText);
-                }
-            } else {
-                setValue(valueBeforeEdit);
+                return newText;
             }
         }
+
+        return valueBeforeEdit;
     }
 
     protected boolean isValueParsable(String time) {
