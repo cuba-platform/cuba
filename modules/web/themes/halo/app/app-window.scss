@@ -97,7 +97,7 @@ $cuba-sidemenu-layout-expanded-width: 250px !default;
  * The time of SideMenu panel animation in seconds.
  * @group sidemenu
  */
-$cuba-sidemenu-layout-collapse-animation-time: .3s !default;
+$cuba-sidemenu-layout-collapse-animation-time: .4s !default;
 
 // Application Window styles
 @mixin cuba-application-window {
@@ -307,7 +307,7 @@ $cuba-sidemenu-layout-collapse-animation-time: .3s !default;
 
       width: $cuba-sidemenu-layout-expanded-width;
       @if $v-animations-enabled {
-        transition: width $cuba-sidemenu-layout-collapse-animation-time cubic-bezier(.25, .1, .24, 1);
+        @include transition(width $cuba-sidemenu-layout-collapse-animation-time ease-in-out);
       }
 
       z-index: 1;
@@ -330,7 +330,7 @@ $cuba-sidemenu-layout-collapse-animation-time: .3s !default;
 
       width: $cuba-sidemenu-layout-expanded-width;
       @if $v-animations-enabled {
-        transition: width $cuba-sidemenu-layout-collapse-animation-time cubic-bezier(.25, .1, .24, 1);
+        @include transition(width $cuba-sidemenu-layout-collapse-animation-time ease-in-out);
       }
 
       @include cuba-sidemenu-collapsed(false);
@@ -360,30 +360,31 @@ $cuba-sidemenu-layout-collapse-animation-time: .3s !default;
     }
 
     .c-sidemenu-title {
+      $logo-size: 20px;
+
       display: flex;
       flex-wrap: nowrap;
       align-items: center;
 
-      height: $cuba-sidemenu-layout-collapsed-width;
-      padding: 0 round($v-unit-size / 3);
+      height: 40px;
+      padding: 0 round(($cuba-sidemenu-layout-collapsed-width - $logo-size) / 2);
 
       text-align: left;
-    }
 
-    .c-app-title {
-      width: $cuba-sidemenu-layout-expanded-width -
-        3 * $v-layout-spacing-horizontal -
-        round($cuba-sidemenu-layout-collapsed-width / 2);
+      .c-app-icon {
+        height: $logo-size;
+        width: $logo-size;
 
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
+        margin-right: $v-layout-spacing-horizontal;
+      }
 
-    .c-app-icon {
-      height: round($cuba-sidemenu-layout-collapsed-width / 2);
-      width: round($cuba-sidemenu-layout-collapsed-width / 2);
+      .c-app-title {
+        width: $cuba-sidemenu-layout-expanded-width -
+        3 * $v-layout-spacing-horizontal - $logo-size;
 
-      margin-right: $v-layout-spacing-horizontal;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
     }
 
     .c-sidemenu > .c-sidemenu-item-header {
@@ -447,8 +448,12 @@ $cuba-sidemenu-layout-collapse-animation-time: .3s !default;
       }
     }
 
+    $buttons-width: 30px;
+
     .c-userindicator {
-      width: $cuba-sidemenu-layout-expanded-width - 3 * $cuba-sidemenu-layout-collapsed-width + 20px;
+      width: $cuba-sidemenu-layout-expanded-width
+        - $cuba-sidemenu-layout-collapsed-width
+        - 2 * $buttons-width;
       padding: 0 round($v-layout-spacing-horizontal / 2);
 
       font-size: 1.1em;
@@ -459,6 +464,10 @@ $cuba-sidemenu-layout-collapse-animation-time: .3s !default;
         overflow: hidden;
         text-align: center;
       }
+
+      @if $cuba-sidemenu-layout-collapse-enabled == false {
+        width: $cuba-sidemenu-layout-expanded-width - 2 * $buttons-width;
+      }
     }
 
     .c-sidemenu-controls .c-userindicator .c-user-select-combobox {
@@ -468,7 +477,7 @@ $cuba-sidemenu-layout-collapse-animation-time: .3s !default;
     .c-settings-button,
     .c-logout-button,
     .c-login-button {
-      width: $cuba-sidemenu-layout-collapsed-width - 10px;
+      width: $buttons-width;
       height: $cuba-sidemenu-layout-collapsed-width;
 
       padding: 0;
@@ -545,7 +554,7 @@ $cuba-sidemenu-layout-collapse-animation-time: .3s !default;
       opacity: 0;
 
       @if $v-animations-enabled {
-        @include transition (max-height $cuba-sidemenu-layout-collapse-animation-time ease-in-out);
+        @include transition(max-height $cuba-sidemenu-layout-collapse-animation-time ease-in-out);
       }
     }
 
