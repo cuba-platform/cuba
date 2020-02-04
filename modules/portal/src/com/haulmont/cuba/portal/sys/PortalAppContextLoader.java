@@ -50,8 +50,9 @@ public class PortalAppContextLoader extends AbstractWebAppContextLoader {
     }
 
     @Override
-    protected ApplicationContext createApplicationContext(String[] locations) {
+    protected ApplicationContext createApplicationContext(String[] locations, ServletContext servletContext) {
         CubaXmlWebApplicationContext webContext = new CubaXmlWebApplicationContext();
+
         String[] classPathLocations = new String[locations.length];
         for (int i = 0; i < locations.length; i++) {
             classPathLocations[i] = "classpath:" + locations[i];
@@ -60,14 +61,19 @@ public class PortalAppContextLoader extends AbstractWebAppContextLoader {
         webContext.setServletContext(ServletContextHolder.getServletContext());
         webContext.refresh();
 
-        ServletContext servletContext = ServletContextHolder.getServletContext();
         if (servletContext.getAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE) != null) {
             throw new IllegalStateException(
                     "Cannot initialize context because there is already a root application context present - " +
                             "check whether you have multiple ContextLoader* definitions in your web.xml!");
         }
         servletContext.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, webContext);
+
         return webContext;
+    }
+
+    @Override
+    protected ApplicationContext createApplicationContext(String[] locations) {
+        return createApplicationContext(locations, ServletContextHolder.getServletContext());
     }
 
     protected void runEnvironmentSanityChecks() {
