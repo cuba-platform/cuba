@@ -20,15 +20,18 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.Widget;
+import com.vaadin.client.BrowserInfo;
 import com.vaadin.client.StyleConstants;
 import com.vaadin.client.ui.VRadioButtonGroup;
 import elemental.json.JsonObject;
 
 import java.util.List;
 
-public class CubaRadioButtonGroupWidget extends VRadioButtonGroup implements KeyDownHandler {
+public class CubaRadioButtonGroupWidget extends VRadioButtonGroup implements KeyDownHandler, ValueChangeHandler<Boolean> {
 
     @Override
     public void buildOptions(List<JsonObject> items) {
@@ -37,6 +40,7 @@ public class CubaRadioButtonGroupWidget extends VRadioButtonGroup implements Key
         for (Widget widget : getWidget()) {
             if (widget instanceof RadioButton) {
                 ((RadioButton) widget).addKeyDownHandler(this);
+                ((RadioButton) widget).addValueChangeHandler(this);
             }
         }
     }
@@ -66,5 +70,23 @@ public class CubaRadioButtonGroupWidget extends VRadioButtonGroup implements Key
         radioButton.setStyleName(StyleConstants.DISABLED, !enabled);
 
         radioButton.setStyleName("v-readonly", isReadonly());
+    }
+
+    @Override
+    public void onValueChange(ValueChangeEvent<Boolean> event) {
+        if (isReadonly()
+                && (BrowserInfo.get().isIE() || BrowserInfo.get().isEdge())) {
+            // IE and Edge reset radioButton checked when clicking on another radioButton
+            updateItemsSelection();
+        }
+    }
+
+    protected void updateItemsSelection() {
+        for (Widget widget : getWidget()) {
+            if (widget instanceof RadioButton) {
+                boolean checked = widget.getElement().hasClassName(CLASSNAME_OPTION_SELECTED);
+                updateItemSelection((RadioButton) widget, checked);
+            }
+        }
     }
 }

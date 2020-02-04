@@ -50,6 +50,7 @@ public interface HasWindowManager {
      * @param params      parameters to pass to {@code init()} method of the screen's controller
      * @return created window
      */
+    @Deprecated
     default AbstractWindow openWindow(String windowAlias, WindowManager.OpenType openType, Map<String, Object> params) {
         WindowConfig windowConfig = AppBeans.get(WindowConfig.NAME);
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
@@ -63,6 +64,7 @@ public interface HasWindowManager {
      * @param openType    how to open the screen
      * @return created window
      */
+    @Deprecated
     default AbstractWindow openWindow(String windowAlias, WindowManager.OpenType openType) {
         WindowConfig windowConfig = AppBeans.get(WindowConfig.NAME);
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
@@ -76,6 +78,7 @@ public interface HasWindowManager {
      * @param openType    how to open the screen
      * @return created window
      */
+    @Deprecated
     default AbstractEditor openEditor(Entity item, WindowManager.OpenType openType) {
         WindowConfig windowConfig = AppBeans.get(WindowConfig.NAME);
         WindowInfo editorScreen = windowConfig.getEditorScreen(item);
@@ -90,6 +93,7 @@ public interface HasWindowManager {
      * @param params      parameters to pass to {@code init()} method of the screen's controller
      * @return created window
      */
+    @Deprecated
     default AbstractEditor openEditor(Entity item, WindowManager.OpenType openType,
                                       Map<String, Object> params) {
         WindowConfig windowConfig = AppBeans.get(WindowConfig.NAME);
@@ -107,6 +111,7 @@ public interface HasWindowManager {
      *                    datasource instead of directly to database
      * @return created window
      */
+    @Deprecated
     default AbstractEditor openEditor(Entity item, WindowManager.OpenType openType,
                                       Map<String, Object> params, Datasource parentDs) {
         WindowConfig windowConfig = AppBeans.get(WindowConfig.NAME);
@@ -125,6 +130,7 @@ public interface HasWindowManager {
      *                    datasource instead of directly to database
      * @return created window
      */
+    @Deprecated
     default AbstractEditor openEditor(String windowAlias, Entity item, WindowManager.OpenType openType,
                                       Map<String, Object> params, Datasource parentDs) {
         WindowConfig windowConfig = AppBeans.get(WindowConfig.NAME);
@@ -141,6 +147,7 @@ public interface HasWindowManager {
      * @param params      parameters to pass to {@code init()} method of the screen's controller
      * @return created window
      */
+    @Deprecated
     default AbstractEditor openEditor(String windowAlias, Entity item, WindowManager.OpenType openType,
                                       Map<String, Object> params) {
         WindowConfig windowConfig = AppBeans.get(WindowConfig.NAME);
@@ -158,6 +165,7 @@ public interface HasWindowManager {
      *                    datasource instead of directly to database
      * @return created window
      */
+    @Deprecated
     default AbstractEditor openEditor(String windowAlias, Entity item, WindowManager.OpenType openType,
                                       Datasource parentDs) {
         WindowConfig windowConfig = AppBeans.get(WindowConfig.NAME);
@@ -173,6 +181,7 @@ public interface HasWindowManager {
      * @param openType    how to open the screen
      * @return created window
      */
+    @Deprecated
     default AbstractEditor openEditor(String windowAlias, Entity item, WindowManager.OpenType openType) {
         WindowConfig windowConfig = AppBeans.get(WindowConfig.NAME);
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
@@ -187,6 +196,7 @@ public interface HasWindowManager {
      * @param openType    how to open the screen
      * @return created window
      */
+    @Deprecated
     default AbstractLookup openLookup(Class<? extends Entity> entityClass, Window.Lookup.Handler handler,
                                       WindowManager.OpenType openType) {
         WindowConfig windowConfig = AppBeans.get(WindowConfig.NAME);
@@ -203,6 +213,7 @@ public interface HasWindowManager {
      * @param params      parameters to pass to {@code init()} method of the screen's controller
      * @return created window
      */
+    @Deprecated
     default AbstractLookup openLookup(Class<? extends Entity> entityClass, Window.Lookup.Handler handler,
                                       WindowManager.OpenType openType, Map<String, Object> params) {
         WindowConfig windowConfig = AppBeans.get(WindowConfig.NAME);
@@ -219,6 +230,7 @@ public interface HasWindowManager {
      * @param params      parameters to pass to {@code init()} method of the screen's controller
      * @return created window
      */
+    @Deprecated
     default AbstractLookup openLookup(String windowAlias, Window.Lookup.Handler handler,
                                       WindowManager.OpenType openType, Map<String, Object> params) {
         WindowConfig windowConfig = AppBeans.get(WindowConfig.NAME);
@@ -234,6 +246,7 @@ public interface HasWindowManager {
      * @param openType    how to open the screen
      * @return created window
      */
+    @Deprecated
     default AbstractLookup openLookup(String windowAlias, Window.Lookup.Handler handler,
                                       WindowManager.OpenType openType) {
         WindowConfig windowConfig = AppBeans.get(WindowConfig.NAME);
@@ -249,6 +262,7 @@ public interface HasWindowManager {
      * @param windowAlias   frame ID as defined in {@code screens.xml}
      * @return              frame's controller instance
      */
+    @Deprecated
     default Frame openFrame(@Nullable Component parent, String windowAlias) {
         WindowConfig windowConfig = AppBeans.get(WindowConfig.NAME);
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
@@ -272,6 +286,7 @@ public interface HasWindowManager {
      * @param params        parameters to be passed into the frame's controller {@code init} method
      * @return              frame's controller instance
      */
+    @Deprecated
     default Frame openFrame(@Nullable Component parent, String windowAlias, Map<String, Object> params) {
         WindowConfig windowConfig = AppBeans.get(WindowConfig.NAME);
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
@@ -298,6 +313,7 @@ public interface HasWindowManager {
      * @param messageType defines how to display the dialog.
      *                    Don't forget to escape data from the database in case of {@code *_HTML} types!
      */
+    @Deprecated
     default void showMessageDialog(String title, String message, Frame.MessageType messageType) {
         getWindowManager().showMessageDialog(title, message, messageType);
     }
@@ -313,6 +329,7 @@ public interface HasWindowManager {
      * @param actions     array of actions that represent options. For standard options consider use of
      *                    {@link DialogAction} instances.
      */
+    @Deprecated
     default void showOptionDialog(String title, String message, Frame.MessageType messageType, Action[] actions) {
         getWindowManager().showOptionDialog(title, message, messageType, actions);
     }
@@ -329,6 +346,7 @@ public interface HasWindowManager {
      * @param actions     list of actions that represent options. For standard options consider use of
      *                    {@link DialogAction} instances.
      */
+    @Deprecated
     default void showOptionDialog(String title, String message, Frame.MessageType messageType, List<Action> actions) {
         getWindowManager().showOptionDialog(title, message, messageType, actions.toArray(new Action[0]));
     }
@@ -342,6 +360,7 @@ public interface HasWindowManager {
      *
      * @param caption notification text
      */
+    @Deprecated
     default void showNotification(String caption) {
         getWindowManager().showNotification(caption);
     }
@@ -355,6 +374,7 @@ public interface HasWindowManager {
      * @param type    defines how to display the notification.
      *                Don't forget to escape data from the database in case of {@code *_HTML} types!
      */
+    @Deprecated
     default void showNotification(String caption, Frame.NotificationType type) {
         getWindowManager().showNotification(caption, type);
     }
@@ -369,6 +389,7 @@ public interface HasWindowManager {
      * @param type        defines how to display the notification.
      *                    Don't forget to escape data from the database in case of {@code *_HTML} types!
      */
+    @Deprecated
     default void showNotification(String caption, String description, Frame.NotificationType type) {
         getWindowManager().showNotification(caption, description, type);
     }
@@ -391,6 +412,7 @@ public interface HasWindowManager {
      *               <p>
      *               Desktop client doesn't support any parameters and just ignores them.
      */
+    @Deprecated
     default void showWebPage(String url, @Nullable Map<String, Object> params) {
         getWindowManager().showWebPage(url, params);
     }

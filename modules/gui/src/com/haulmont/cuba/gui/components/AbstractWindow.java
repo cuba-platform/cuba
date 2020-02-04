@@ -48,7 +48,9 @@ import java.util.stream.Stream;
 
 /**
  * Base class for simple screen controllers.
+ * @deprecated Use {@link com.haulmont.cuba.gui.screen.Screen} APIs instead.
  */
+@Deprecated
 public class AbstractWindow extends Screen implements Window, LegacyFrame, Component.HasXmlDescriptor, Window.Wrapper,
         SecuredActionsHolder, ChangeTracker {
 

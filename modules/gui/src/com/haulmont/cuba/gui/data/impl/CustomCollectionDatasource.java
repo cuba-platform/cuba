@@ -30,6 +30,7 @@ import java.util.Map;
  * <li>Register your subclass in the {@code datasourceClass} attribute of the datasource XML element.
  * </ul>
  */
+@Deprecated
 public abstract class CustomCollectionDatasource<T extends Entity<K>, K>
         extends CollectionDatasourceImpl<T, K> {
 

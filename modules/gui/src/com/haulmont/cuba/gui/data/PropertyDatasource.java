@@ -21,9 +21,12 @@ import com.haulmont.cuba.core.entity.Entity;
 /**
  * Datasource containing an entity instance which is loaded as a non-embedded property of another entity instance.
  * <p> Usually defined in XML descriptor inside the parent datasource element.
- * @param <T> type of enclosed entity
  *
+ * @param <T> type of enclosed entity
+ * @deprecated Use {@link com.haulmont.cuba.gui.model.InstancePropertyContainer},
+ * {@link com.haulmont.cuba.gui.model.CollectionPropertyContainer} APIs instead.
  */
+@Deprecated
 public interface PropertyDatasource<T extends Entity>
         extends NestedDatasource<T> {
 }

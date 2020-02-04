@@ -24,6 +24,7 @@ import com.haulmont.cuba.core.entity.Entity;
  * <p>Usually defined in XML descriptor inside the parent datasource element.
  * @param <T> type of enclosed entity
  *
+ * @deprecated Use {@link com.haulmont.cuba.gui.model.Nested} APIs instead.
  */
 public interface NestedDatasource<T extends Entity> extends Datasource<T> {
 

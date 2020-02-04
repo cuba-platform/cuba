@@ -31,6 +31,7 @@ import java.util.Map;
  * @see CustomValueGroupDatasource
  * @see CustomValueHierarchicalDatasource
  */
+@Deprecated
 public abstract class CustomValueCollectionDatasource extends ValueCollectionDatasourceImpl {
 
     /**

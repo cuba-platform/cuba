@@ -30,6 +30,7 @@ import java.util.Set;
  * <br>
  * Implementation of this interface serves also for automatic coordination between datasources on load/commit time.
  */
+@Deprecated
 public interface DsContext {
 
     /**
