@@ -23,4 +23,20 @@
   .#{$primary-stylename}-readonly:focus {
     border-color: $v-focus-color;
   }
+
+  .v-slot-inline-icon .v-caption-inline-icon {
+    & > span.v-icon {
+      left: auto;
+      padding-left: first-number($v-textfield-border);
+    }
+
+    & > img.v-icon {
+      height: round($v-unit-size/2);
+      width: round($v-unit-size/2);
+      bottom: round($v-unit-size/4);
+      left: auto;
+
+      padding-left: round($v-unit-size/4);
+    }
+  }
 }
