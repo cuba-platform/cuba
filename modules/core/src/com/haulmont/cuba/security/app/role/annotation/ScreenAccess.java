@@ -24,7 +24,13 @@ import java.lang.annotation.*;
  * <p>Example:
  *
  * <pre>
- *     &#064;ScreenAccess(deny = {"myapp_SomeEntity.edit"})
+ * &#064;ScreenAccess(screenIds = {"myapp_SomeEntity.browse", "myapp_SomeEntity.edit"})
+ * </pre>
+ * <p>
+ * Wildcard may be used for {@code screenIds} if the role must grant access to all screens:
+ *
+ * <pre>
+ * &#064;ScreenAccess(screenIds = "*")
  * </pre>
  *
  * @see Role
@@ -34,8 +40,6 @@ import java.lang.annotation.*;
 @Repeatable(ScreenAccessContainer.class)
 public @interface ScreenAccess {
 
-    String[] deny() default {};
+    String[] screenIds() default {};
 
-    String[] allow() default {};
-    
 }

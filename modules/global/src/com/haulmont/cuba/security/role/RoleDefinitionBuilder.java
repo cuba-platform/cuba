@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2019 Haulmont.
+ * Copyright (c) 2008-2020 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.security.app;
+package com.haulmont.cuba.security.role;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.security.entity.*;
-import com.haulmont.cuba.security.role.*;
 
 import java.util.Collection;
 
@@ -52,7 +51,6 @@ public class RoleDefinitionBuilder {
         screenPermissions = new ScreenPermissionsContainer();
         screenElementsPermissions = new ScreenComponentPermissionsContainer();
         description = "";
-
     }
 
     /**
@@ -180,43 +178,8 @@ public class RoleDefinitionBuilder {
      */
     public RoleDefinitionBuilder withScreenElementPermission(String windowAlias, String component, Access access) {
         return withPermission(PermissionType.UI,
-                PermissionsUtils.getScreenElementTarget(windowAlias, component),
+                PermissionsUtils.getScreenComponentTarget(windowAlias, component),
                 access.getId());
-    }
-
-    public RoleDefinitionBuilder withDefaultScreenAccess(Access defaultAccess) {
-        this.screenPermissions.setDefaultScreenAccess(defaultAccess);
-        return this;
-    }
-
-    public RoleDefinitionBuilder withDefaultEntityCreateAccess(Access defaultAccess) {
-        this.entityPermissions.setDefaultEntityCreateAccess(defaultAccess);
-        return this;
-    }
-
-    public RoleDefinitionBuilder withDefaultEntityReadAccess(Access defaultAccess) {
-        this.entityPermissions.setDefaultEntityReadAccess(defaultAccess);
-        return this;
-    }
-
-    public RoleDefinitionBuilder withDefaultEntityUpdateAccess(Access defaultAccess) {
-        this.entityPermissions.setDefaultEntityUpdateAccess(defaultAccess);
-        return this;
-    }
-
-    public RoleDefinitionBuilder withDefaultEntityDeleteAccess(Access defaultAccess) {
-        this.entityPermissions.setDefaultEntityDeleteAccess(defaultAccess);
-        return this;
-    }
-
-    public RoleDefinitionBuilder withDefaultEntityAttributeAccess(EntityAttrAccess defaultAccess) {
-        this.entityAttributePermissions.setDefaultEntityAttributeAccess(defaultAccess);
-        return this;
-    }
-
-    public RoleDefinitionBuilder withDefaultSpecificAccess(Access defaultAccess) {
-        this.specificPermissions.setDefaultSpecificAccess(defaultAccess);
-        return this;
     }
 
     /**
@@ -227,11 +190,11 @@ public class RoleDefinitionBuilder {
                 .withName(roleName)
                 .withDescription(description)
                 .withSecurityScope(securityScope)
-                .withEntityPermissions(entityPermissions)
-                .withEntityAttributePermissions(entityAttributePermissions)
-                .withSpecificPermissions(specificPermissions)
-                .withScreenPermissions(screenPermissions)
-                .withScreenElementsPermissions(screenElementsPermissions)
+                .withEntityPermissionsContainer(entityPermissions)
+                .withEntityAttributePermissionsContainer(entityAttributePermissions)
+                .withSpecificPermissionsContainer(specificPermissions)
+                .withScreenPermissionsContainer(screenPermissions)
+                .withScreenComponentPermissionsContainer(screenElementsPermissions)
                 .withIsDefault(isDefault)
                 .build();
     }

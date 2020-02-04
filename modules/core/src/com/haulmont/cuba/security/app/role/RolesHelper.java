@@ -19,12 +19,8 @@ package com.haulmont.cuba.security.app.role;
 import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.app.ServerConfig;
 import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.security.app.RoleDefinitionBuilder;
 import com.haulmont.cuba.security.entity.*;
-import com.haulmont.cuba.security.role.EntityPermissionsContainer;
-import com.haulmont.cuba.security.role.PermissionsContainer;
-import com.haulmont.cuba.security.role.RoleDefinition;
-import com.haulmont.cuba.security.role.RoleTransformationOption;
+import com.haulmont.cuba.security.role.*;
 import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,7 +34,7 @@ import java.util.stream.Collectors;
 import static com.haulmont.cuba.security.role.SecurityStorageMode.MIXED;
 
 /**
- * Class contains miscelanounos useful methods for working with predefined roles
+ * Class contains miscellaneous useful methods for working with predefined roles
  */
 @Component("cuba_RolesHelper")
 public class RolesHelper {
@@ -167,15 +163,6 @@ public class RolesHelper {
         role.setDefaultRole(roleDefinition.isDefault());
         role.setSecurityScope(roleDefinition.getSecurityScope());
 
-        EntityPermissionsContainer entityPermissionsContainer = roleDefinition.entityPermissions();
-        role.setDefaultEntityCreateAccess(entityPermissionsContainer.getDefaultEntityCreateAccess());
-        role.setDefaultEntityReadAccess(entityPermissionsContainer.getDefaultEntityReadAccess());
-        role.setDefaultEntityUpdateAccess(entityPermissionsContainer.getDefaultEntityUpdateAccess());
-        role.setDefaultEntityDeleteAccess(entityPermissionsContainer.getDefaultEntityDeleteAccess());
-        role.setDefaultScreenAccess(roleDefinition.screenPermissions().getDefaultScreenAccess());
-        role.setDefaultEntityAttributeAccess(roleDefinition.entityAttributePermissions().getDefaultEntityAttributeAccess());
-        role.setDefaultSpecificAccess(roleDefinition.specificPermissions().getDefaultSpecificAccess());
-
         if (!ArrayUtils.contains(transformationOptions, RoleTransformationOption.DO_NOT_INCLUDE_PERMISSIONS)) {
             Set<Permission> permissions = new HashSet<>(transformToPermissionsCollection(roleDefinition.entityPermissions(), PermissionType.ENTITY_OP,
                     role));
@@ -210,18 +197,80 @@ public class RolesHelper {
     }
 
     public RoleDefinition transformToRoleDefinition(Role role) {
-        return RoleDefinitionBuilder.create()
+        BasicRoleDefinition.BasicRoleDefinitionBuilder roleDefinitionBuilder = BasicRoleDefinition.builder()
                 .withName(role.getName())
                 .withDescription(role.getDescription())
                 .withSecurityScope(role.getSecurityScope())
-                .withPermissions(role.getPermissions())
-                .withDefaultScreenAccess(role.getDefaultScreenAccess())
-                .withDefaultEntityCreateAccess(role.getDefaultEntityCreateAccess())
-                .withDefaultEntityReadAccess(role.getDefaultEntityReadAccess())
-                .withDefaultEntityUpdateAccess(role.getDefaultEntityUpdateAccess())
-                .withDefaultEntityDeleteAccess(role.getDefaultEntityDeleteAccess())
-                .withDefaultEntityAttributeAccess(role.getDefaultEntityAttributeAccess())
-                .withDefaultSpecificAccess(role.getDefaultSpecificAccess())
+                .withPermissions(role.getPermissions());
+
+        if (serverConfig.getRolesPolicyVersion() == 1) {
+            fillWildcardPermissionsByRoleType(roleDefinitionBuilder, role.getType());
+        }
+
+        return roleDefinitionBuilder
                 .build();
+    }
+
+    /**
+     * Defines a policy for resolving permission values that are not defined in roles. For roles policy v1, if a role
+     * doesn't define any explicit permission then this target is allowed.
+     * <p>
+     * For new v2 security mechanism the undefined permission should be resolved as denied.
+     */
+    public Access getPermissionUndefinedAccessPolicy() {
+        return serverConfig.getRolesPolicyVersion() == 1 ? Access.ALLOW : Access.DENY;
+    }
+
+    protected void fillWildcardPermissionsByRoleType(BasicRoleDefinition.BasicRoleDefinitionBuilder builder,
+                                                     @Nullable RoleType roleType) {
+        Integer entityCreate = null;
+        Integer entityRead = null;
+        Integer entityUpdate = null;
+        Integer entityDelete = null;
+        Integer entityAttr = null;
+        Integer specific = null;
+        Integer screen = null;
+        if (roleType != null) {
+            switch (roleType) {
+                case SUPER:
+                    entityCreate = Access.ALLOW.getId();
+                    entityRead = Access.ALLOW.getId();
+                    entityUpdate = Access.ALLOW.getId();
+                    entityDelete = Access.ALLOW.getId();
+                    entityAttr = EntityAttrAccess.MODIFY.getId();
+                    screen = Access.ALLOW.getId();
+                    specific = Access.ALLOW.getId();
+                    break;
+                case DENYING:
+                    entityCreate = Access.DENY.getId();
+                    entityRead = Access.DENY.getId();
+                    entityUpdate = Access.DENY.getId();
+                    entityDelete = Access.DENY.getId();
+                    screen = Access.DENY.getId();
+                    specific = Access.DENY.getId();
+                    break;
+                case READONLY:
+                    entityCreate = Access.DENY.getId();
+                    entityUpdate = Access.DENY.getId();
+                    entityDelete = Access.DENY.getId();
+                    break;
+                case STANDARD:
+                    break;
+            }
+        }
+        if (entityCreate != null)
+            builder.withPermission(PermissionType.ENTITY_OP, "*:create", entityCreate);
+        if (entityRead != null)
+            builder.withPermission(PermissionType.ENTITY_OP, "*:read", entityRead);
+        if (entityUpdate != null)
+            builder.withPermission(PermissionType.ENTITY_OP, "*:update", entityUpdate);
+        if (entityDelete != null)
+            builder.withPermission(PermissionType.ENTITY_OP, "*:delete", entityDelete);
+        if (entityAttr != null)
+            builder.withPermission(PermissionType.ENTITY_ATTR, "*:*", entityAttr);
+        if (screen != null)
+            builder.withPermission(PermissionType.SCREEN, "*", screen);
+        if (specific != null)
+            builder.withPermission(PermissionType.SPECIFIC, "*", specific);
     }
 }

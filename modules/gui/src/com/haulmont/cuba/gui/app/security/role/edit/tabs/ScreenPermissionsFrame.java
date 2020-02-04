@@ -32,6 +32,7 @@ import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.entity.Permission;
 import com.haulmont.cuba.security.entity.PermissionType;
 import com.haulmont.cuba.security.entity.Role;
+import com.haulmont.cuba.security.role.RolesService;
 import org.apache.commons.lang3.BooleanUtils;
 
 import javax.inject.Inject;
@@ -79,15 +80,21 @@ public class ScreenPermissionsFrame extends AbstractFrame {
     @Inject
     protected TextField<String> screenFilter;
 
+    @Inject
+    protected RolesService rolesService;
+
     protected boolean itemChanging = false;
 
     protected boolean permissionsLoaded;
+
+    protected int rolesPolicyVersion = 2;
 
     @Override
     public void init(Map<String, Object> params) {
         super.init(params);
 
         permissionsLoaded = BooleanUtils.isTrue((Boolean) params.get("permissionsLoaded"));
+        rolesPolicyVersion = rolesService.getRolesPolicyVersion();
 
         screenPermissionsTree.setStyleProvider(new BasicPermissionTreeStyleProvider());
 
@@ -174,7 +181,7 @@ public class ScreenPermissionsFrame extends AbstractFrame {
             boolean visible = !item.getId().startsWith("root:");
 
             allowCheckBox.setVisible(visible);
-            disallowCheckBox.setVisible(visible);
+            disallowCheckBox.setVisible(visible && (rolesPolicyVersion == 1));
 
             if (item.getPermissionVariant() == PermissionVariant.ALLOWED) {
                 allowCheckBox.setValue(true);

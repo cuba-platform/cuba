@@ -352,15 +352,6 @@ public interface ServerConfig extends Config {
     SecurityStorageMode getRolesStorageMode();
 
     /**
-     * Defines a policy for resolving permission values that are not defined in roles.
-     *
-     * By default, if permission value is not defined (neither explicitly nor using default value) then it is denied.
-     */
-    @Property("cuba.security.undefinedAccessPolicy")
-    @Default("DENY")
-    Access getPermissionUndefinedAccessPolicy();
-
-    /**
      * Whether the {@link com.haulmont.cuba.core.sys.DefaultPermissionValuesConfig} should be used when permissions are
      * calculated
      */
@@ -396,4 +387,17 @@ public interface ServerConfig extends Config {
     @Default("GENERIC_UI")
     @Factory(factory = TokenizedStringListFactory.class)
     List<String> getSecurityScopes();
+
+    /**
+     * Returns the roles policy version.
+     * <ul>
+     *     <li>1 - Security implementation used before CUBA 7.2: undefined permissions are resolved to allowed, roles
+     *     types are used</li>
+     *     <li>2 - New roles resolving implementation introduced in CUBA 7.2: undefined permissions are resolved to
+     *     denied, the only possible permission is ALLOW (user cannot select DENY), design-time roles can be used</li>
+     * </ul>
+     */
+    @Property("cuba.security.rolesPolicyVersion")
+    @DefaultInt(2)
+    int getRolesPolicyVersion();
 }

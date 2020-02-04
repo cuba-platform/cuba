@@ -129,7 +129,6 @@
                 <entry key="cuba_AccessGroupsService" value="com.haulmont.cuba.security.group.AccessGroupsService"/>
                 <entry key="cuba_AttributeOptionsLoaderService" value="com.haulmont.cuba.core.app.dynamicattributes.AttributeOptionsLoaderService"/>
                 <entry key="cuba_RolesService" value="com.haulmont.cuba.security.role.RolesService"/>
-                <entry key="cuba_EffectivePermissionsService" value="com.haulmont.cuba.security.role.EffectivePermissionsService"/>
                 <entry key="cuba_SecurityScopesService" value="com.haulmont.cuba.security.app.SecurityScopesService"/>
             </map>
         </property>

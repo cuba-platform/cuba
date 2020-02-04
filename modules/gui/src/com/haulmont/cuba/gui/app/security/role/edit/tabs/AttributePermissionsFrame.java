@@ -32,6 +32,7 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.security.entity.*;
 import com.haulmont.cuba.security.global.UserSession;
+import com.haulmont.cuba.security.role.RolesService;
 import org.apache.commons.lang3.BooleanUtils;
 
 import javax.inject.Inject;
@@ -111,6 +112,11 @@ public class AttributePermissionsFrame extends AbstractFrame {
 
     @Inject
     private GroupBoxLayout editPane;
+
+    @Inject
+    protected RolesService rolesService;
+
+    protected int rolesPolicyVersion;
 
     protected class AttributePermissionControl {
 
@@ -267,6 +273,7 @@ public class AttributePermissionsFrame extends AbstractFrame {
         super.init(params);
 
         permissionsLoaded = BooleanUtils.isTrue((Boolean) params.get("permissionsLoaded"));
+        rolesPolicyVersion = rolesService.getRolesPolicyVersion();
 
         if (!PersistenceHelper.isNew(params.get("ITEM"))) {
             assignedOnlyCheckBox.setValue(Boolean.TRUE);
@@ -456,7 +463,9 @@ public class AttributePermissionsFrame extends AbstractFrame {
             editGrid.add(control.getAttributeLabel(), 0, gridRow);
             editGrid.add(control.getModifyCheckBox(), 1, gridRow);
             editGrid.add(control.getReadOnlyCheckBox(), 2, gridRow);
-            editGrid.add(control.getHideCheckBox(), 3, gridRow);
+            if (rolesPolicyVersion == 1) {
+                editGrid.add(control.getHideCheckBox(), 3, gridRow);
+            }
 
             control.getModifyCheckBox().setAlignment(Alignment.MIDDLE_CENTER);
             control.getReadOnlyCheckBox().setAlignment(Alignment.MIDDLE_CENTER);
@@ -495,17 +504,19 @@ public class AttributePermissionsFrame extends AbstractFrame {
 
         editGrid.add(readOnlyBox, 2, 0);
 
-        Label<String> hideLabel = uiComponents.create(Label.NAME);
-        hideLabel.setValue(getMessage("checkbox.hide"));
-        hideLabel.setAlignment(Alignment.MIDDLE_CENTER);
-        hideLabel.setStyleName("centered");
+        if (rolesPolicyVersion == 1) {
+            Label<String> hideLabel = uiComponents.create(Label.NAME);
+            hideLabel.setValue(getMessage("checkbox.hide"));
+            hideLabel.setAlignment(Alignment.MIDDLE_CENTER);
+            hideLabel.setStyleName("centered");
 
-        BoxLayout hideBox = uiComponents.create(HBoxLayout.class);
-        hideBox.setFrame(getFrame());
-        hideBox.setMargin(false, false, false, true);
-        hideBox.add(hideLabel);
+            BoxLayout hideBox = uiComponents.create(HBoxLayout.class);
+            hideBox.setFrame(getFrame());
+            hideBox.setMargin(false, false, false, true);
+            hideBox.add(hideLabel);
 
-        editGrid.add(hideBox, 3, 0);
+            editGrid.add(hideBox, 3, 0);
+        }
 
         allModifyCheck = uiComponents.create(CheckBox.class);
         allReadOnlyCheck = uiComponents.create(CheckBox.class);
@@ -529,7 +540,9 @@ public class AttributePermissionsFrame extends AbstractFrame {
 
         editGrid.add(allModifyCheck, 1, 1);
         editGrid.add(allReadOnlyCheck, 2, 1);
-        editGrid.add(allHideCheck, 3, 1);
+        if (rolesPolicyVersion == 1) {
+            editGrid.add(allHideCheck, 3, 1);
+        }
 
         allModifyCheck.setAlignment(Alignment.MIDDLE_CENTER);
         allReadOnlyCheck.setAlignment(Alignment.MIDDLE_CENTER);

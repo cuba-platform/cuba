@@ -40,35 +40,33 @@ import java.lang.annotation.Target;
  *     &#064;Role(name = "My first role", isDefault = true)
  * public class MyFirstRole extends AnnotatedRoleDefinition {
  *
- *     &#064;EntityAccess(target = SomeEntity.class,
- *             deny = {EntityOp.DELETE, EntityOp.UPDATE})
- *     &#064;DefaultEntityAccess(
- *              allow = {EntityOp.READ},
- *              deny = {EntityOp.DELETE, EntityOp.UPDATE})
+ *     &#064;EntityAccess(entityClass = SomeEntity.class,
+ *             operations = {EntityOp.DELETE, EntityOp.UPDATE})
  *     &#064;Override
  *     public EntityPermissionsContainer entityPermissions() {
  *         return super.entityPermissions();
  *     }
  *
- *     &#064;EntityAttributeAccess(target = SomeEntity.class, allow = {"someAttribute"})
+ *     &#064;EntityAttributeAccess(entityClass = SomeEntity.class, view = {"someAttribute", "attr2"},
+ *             modify = {"attr3", "attr4"})
  *     &#064;Override
  *     public EntityAttributePermissionsContainer entityAttributePermissions() {
  *         return super.entityAttributePermissions();
  *     }
  *
- *     &#064;SpecificAccess(target = "my.specific.permission", access = Access.ALLOW)
+ *     &#064;SpecificAccess(permissions = {"my.specific.permission1", "my.specific.permission2"})
  *     &#064;Override
  *     public SpecificPermissionsContainer specificPermissions() {
  *         return super.specificPermissions();
  *     }
  *
- *     &#064;ScreenAccess(deny = {"myapp_SomeEntity.edit"})
+ *     &#064;ScreenAccess(screenIds = {"myapp_SomeEntity.edit", "myapp_OtherEntity.browse"})
  *     &#064;Override
  *     public ScreenPermissionsContainer screenPermissions() {
  *         return super.screenPermissions();
  *     }
  *
- *     &#064;ScreenComponentAccess(screen = "myapp_SomeEntity.browse", deny = {"someGroupBox"})
+ *     &#064;ScreenComponentAccess(screenId = "myapp_SomeEntity.browse", deny = {"someGroupBox"})
  *     &#064;Override
  *     public ScreenComponentPermissionsContainer screenComponentPermissions() {
  *         return super.screenComponentPermissions();
@@ -82,10 +80,6 @@ import java.lang.annotation.Target;
  * @see ScreenAccess
  * @see ScreenComponentAccess
  * @see SpecificAccess
- * @see DefaultEntityAccess
- * @see DefaultEntityAttributeAccess
- * @see DefaultSpecificAccess
- * @see DefaultScreenAccess
  */
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
@@ -109,6 +103,11 @@ public @interface Role {
      * Determines if the role is default.
      */
     boolean isDefault() default false;
+
+    /**
+     * Determines if the role is super.
+     */
+    boolean isSuper() default false;
 
     /**
      * Determines security scope for the role.

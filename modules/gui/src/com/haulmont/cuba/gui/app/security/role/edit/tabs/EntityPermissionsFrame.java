@@ -33,6 +33,7 @@ import com.haulmont.cuba.security.entity.Permission;
 import com.haulmont.cuba.security.entity.PermissionType;
 import com.haulmont.cuba.security.entity.Role;
 import com.haulmont.cuba.security.global.UserSession;
+import com.haulmont.cuba.security.role.RolesService;
 import org.apache.commons.lang3.BooleanUtils;
 
 import javax.inject.Inject;
@@ -100,11 +101,20 @@ public class EntityPermissionsFrame extends AbstractFrame {
 
     @Inject
     protected CheckBox allAllowCheck;
+
     @Inject
     protected CheckBox allDenyCheck;
 
     @Inject
     private GroupBoxLayout editPane;
+
+    @Inject
+    protected Label<String> denyLabel;
+
+    @Inject
+    protected RolesService rolesService;
+
+    protected int rolesPolicyVersion = 2;
 
     /* Checkbox operations controls */
 
@@ -153,7 +163,7 @@ public class EntityPermissionsFrame extends AbstractFrame {
             operationLabel.setVisible(visible);
             allowChecker.setVisible(visible);
             allowChecker.setDescription(operationLabel.getValue());
-            denyChecker.setVisible(visible);
+            denyChecker.setVisible(visible && (rolesPolicyVersion == 1));
             denyChecker.setDescription(operationLabel.getValue());
         }
 
@@ -185,6 +195,7 @@ public class EntityPermissionsFrame extends AbstractFrame {
     public void init(Map<String, Object> params) {
         super.init(params);
 
+        rolesPolicyVersion = rolesService.getRolesPolicyVersion();
         permissionsLoaded = BooleanUtils.isTrue((Boolean) params.get("permissionsLoaded"));
 
         systemLevelCheckBox.setValue(Boolean.FALSE);
@@ -306,6 +317,8 @@ public class EntityPermissionsFrame extends AbstractFrame {
     }
 
     protected void initCheckBoxesControls() {
+        denyLabel.setVisible(rolesPolicyVersion == 1);
+        allDenyCheck.setVisible(rolesPolicyVersion == 1);
         initOperationControls();
 
         attachAllCheckBoxListener(allAllowCheck, PermissionVariant.ALLOWED);

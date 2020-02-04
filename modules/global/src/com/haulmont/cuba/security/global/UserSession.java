@@ -18,14 +18,10 @@ package com.haulmont.cuba.security.global;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.sys.UserInvocationContext;
-import com.haulmont.cuba.security.app.RoleDefinitionBuilder;
-import com.haulmont.cuba.security.app.RoleDefinitionsJoiner;
+import com.haulmont.cuba.security.role.*;
 import com.haulmont.cuba.security.entity.*;
 import com.haulmont.cuba.security.group.BasicConstraintsContainer;
 import com.haulmont.cuba.security.group.ConstraintsContainer;
-import com.haulmont.cuba.security.role.PermissionsContainer;
-import com.haulmont.cuba.security.role.PermissionsUtils;
-import com.haulmont.cuba.security.role.RoleDefinition;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
@@ -87,7 +83,7 @@ public class UserSession implements Serializable {
         if (user.getTimeZone() != null)
             this.timeZone = TimeZone.getTimeZone(user.getTimeZone());
 
-        joinedRole = RoleDefinitionBuilder.create().build();
+        joinedRole = BasicRoleDefinition.builder().build();
 
         accessConstraints = new BasicConstraintsContainer();
 

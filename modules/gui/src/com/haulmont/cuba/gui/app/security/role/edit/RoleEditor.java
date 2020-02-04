@@ -22,10 +22,10 @@ import com.haulmont.cuba.gui.app.security.role.edit.tabs.ScreenPermissionsFrame;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.security.app.SecurityScopesService;
-import com.haulmont.cuba.security.entity.Access;
-import com.haulmont.cuba.security.entity.EntityAttrAccess;
 import com.haulmont.cuba.security.entity.Role;
+import com.haulmont.cuba.security.entity.RoleType;
 import com.haulmont.cuba.security.entity.SecurityScope;
+import com.haulmont.cuba.security.role.RoleDefinition;
 import com.haulmont.cuba.security.role.RolesService;
 
 import javax.inject.Inject;
@@ -68,18 +68,17 @@ public class RoleEditor extends AbstractEditor<Role> {
     protected RolesService rolesService;
 
     @Inject
-    protected GridLayout defaultAccessGrid;
+    protected LookupField<RoleType> typeLookup;
+
+    @Inject
+    protected Label<String> typeLookupLabel;
+
+    @Inject
+    protected Label<String> superRoleLabel;
 
     @Override
     protected void initNewItem(Role item) {
         if (!item.isPredefined()) {
-            item.setDefaultScreenAccess(Access.DENY);
-            item.setDefaultEntityCreateAccess(Access.DENY);
-            item.setDefaultEntityReadAccess(Access.DENY);
-            item.setDefaultEntityUpdateAccess(Access.DENY);
-            item.setDefaultEntityDeleteAccess(Access.DENY);
-            item.setDefaultEntityAttributeAccess(EntityAttrAccess.DENY);
-            item.setDefaultSpecificAccess(Access.DENY);
             item.setSecurityScope(SecurityScope.DEFAULT_SCOPE_NAME);
         }
     }
@@ -99,7 +98,7 @@ public class RoleEditor extends AbstractEditor<Role> {
             restrictAccessForPredefinedRole();
         }
         initSecurityScopes();
-        initDefaultLookupsNullOption();
+        initUiBySecurityVersion();
     }
 
     @Override
@@ -120,9 +119,6 @@ public class RoleEditor extends AbstractEditor<Role> {
         description.setEditable(false);
         locName.setEditable(false);
         defaultRole.setEditable(false);
-        defaultAccessGrid.getComponents().stream()
-                .filter(component -> component instanceof LookupField)
-                .forEach(component -> ((LookupField) component).setEditable(false));
     }
 
     protected void initSecurityScopes() {
@@ -135,15 +131,16 @@ public class RoleEditor extends AbstractEditor<Role> {
         }
     }
 
-    /**
-     * If undefined permission policy is DENY (default behavior since CUBA v7.2) the null options in lookup fields
-     * for default permission values must not be displayed.
-     */
-    protected void initDefaultLookupsNullOption() {
-        boolean nullOptionForDefaultLookupsVisible = rolesService.getPermissionUndefinedAccessPolicy() != Access.DENY;
-        defaultAccessGrid.getComponents().stream()
-                .filter(component -> component instanceof LookupField)
-                .forEach(component -> ((LookupField) component).setNullOptionVisible(nullOptionForDefaultLookupsVisible));
+    protected void initUiBySecurityVersion() {
+        int rolesPolicyVersion = rolesService.getRolesPolicyVersion();
+        boolean isOldSecurity = rolesPolicyVersion == 1;
+        typeLookup.setVisible(isOldSecurity);
+        typeLookupLabel.setVisible(isOldSecurity);
+        if (getItem().isPredefined()) {
+            RoleDefinition roleDefinition = rolesService.getRoleDefinitionByName(getItem().getName());
+            if (roleDefinition != null) {
+                superRoleLabel.setVisible(roleDefinition.isSuper());
+            }
+        }
     }
-
 }

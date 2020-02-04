@@ -26,8 +26,6 @@ import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.core.global.UuidSource;
 import com.haulmont.cuba.core.sys.DefaultPermissionValuesConfig;
-import com.haulmont.cuba.security.app.RoleDefinitionBuilder;
-import com.haulmont.cuba.security.app.RoleDefinitionsJoiner;
 import com.haulmont.cuba.security.app.UserSessionsAPI;
 import com.haulmont.cuba.security.app.group.AccessGroupDefinitionsComposer;
 import com.haulmont.cuba.security.app.role.RolesHelper;
@@ -35,9 +33,7 @@ import com.haulmont.cuba.security.entity.*;
 import com.haulmont.cuba.security.global.NoUserSessionException;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.security.group.AccessGroupDefinition;
-import com.haulmont.cuba.security.role.PermissionsContainer;
-import com.haulmont.cuba.security.role.PermissionsUtils;
-import com.haulmont.cuba.security.role.RoleDefinition;
+import com.haulmont.cuba.security.role.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -158,7 +154,7 @@ public class UserSessionManager {
         AccessGroupDefinition groupDefinition = compileGroupDefinition(user.getGroup(), user.getGroupNames());
         compileConstraints(session, groupDefinition);
         compileSessionAttributes(session, groupDefinition);
-        session.setPermissionUndefinedAccessPolicy(serverConfig.getPermissionUndefinedAccessPolicy());
+        session.setPermissionUndefinedAccessPolicy(rolesHelper.getPermissionUndefinedAccessPolicy());
 
         return session;
     }
@@ -187,7 +183,7 @@ public class UserSessionManager {
         AccessGroupDefinition groupDefinition = compileGroupDefinition(user.getGroup(), user.getGroupNames());
         compileConstraints(session, groupDefinition);
         compileSessionAttributes(session, groupDefinition);
-        session.setPermissionUndefinedAccessPolicy(serverConfig.getPermissionUndefinedAccessPolicy());
+        session.setPermissionUndefinedAccessPolicy(rolesHelper.getPermissionUndefinedAccessPolicy());
 
         return session;
     }
@@ -197,7 +193,7 @@ public class UserSessionManager {
     }
 
     protected RoleDefinition buildJoinedRoleDefinition(List<RoleDefinition> roles) {
-        RoleDefinition effectiveRole = RoleDefinitionBuilder.create().build();
+        RoleDefinition effectiveRole = BasicRoleDefinition.builder().build();
         for (RoleDefinition role : roles) {
             effectiveRole = RoleDefinitionsJoiner.join(effectiveRole, role);
         }
@@ -301,7 +297,7 @@ public class UserSessionManager {
             }
             RoleDefinition joinedRole = buildJoinedRoleDefinition(roles);
             result = PermissionsUtils.getResultingPermissionValue(joinedRole, permissionType, target,
-                    serverConfig.getPermissionUndefinedAccessPolicy());
+                    rolesHelper.getPermissionUndefinedAccessPolicy());
             tx.commit();
         } finally {
             tx.end();

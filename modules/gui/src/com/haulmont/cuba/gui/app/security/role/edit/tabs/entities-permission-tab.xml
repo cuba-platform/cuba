@@ -90,7 +90,7 @@
                                             <label value="msg://checkbox.allow"/>
                                         </hbox>
                                         <hbox margin="false,false,false,true">
-                                            <label value="msg://checkbox.deny"/>
+                                            <label id="denyLabel" value="msg://checkbox.deny"/>
                                         </hbox>
                                     </row>
 

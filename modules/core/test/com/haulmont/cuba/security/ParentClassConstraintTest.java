@@ -48,8 +48,9 @@ public class ParentClassConstraintTest {
     private Constraint constraint1, constraint2, constraint3, constraint4;
     private User constraintUser1, constraintUser2, constraintUser3;
     private SearchFolder searchFolder1, searchFolder2;
-    private Role fullAccessRole;
+    private Role readFoldersRole;
     private UserRole userRole1, userRole2, userRole3;
+    private Permission permission1;
     private PasswordEncryption passwordEncryption;
 
     private static final String PASSWORD = "1";
@@ -136,26 +137,31 @@ public class ParentClassConstraintTest {
             searchFolder2.setName("folder2");
             em.persist(searchFolder2);
 
-            fullAccessRole = new Role();
-            fullAccessRole.setName("full-access");
-            fullAccessRole.setSecurityScope(SecurityScope.DEFAULT_SCOPE_NAME);
-            fullAccessRole.setDefaultEntityAttributeAccess(EntityAttrAccess.VIEW);
-            fullAccessRole.setDefaultEntityReadAccess(Access.ALLOW);
-            em.persist(fullAccessRole);
+            readFoldersRole = new Role();
+            readFoldersRole.setName("read-folders-role");
+            readFoldersRole.setSecurityScope(SecurityScope.DEFAULT_SCOPE_NAME);
+            em.persist(readFoldersRole);
+
+            permission1 = new Permission();
+            permission1.setType(PermissionType.ENTITY_OP);
+            permission1.setTarget("sec$SearchFolder:read");
+            permission1.setValue(Access.ALLOW.getId());
+            permission1.setRole(readFoldersRole);
+            em.persist(permission1);
 
             userRole1 = new UserRole();
             userRole1.setUser(constraintUser1);
-            userRole1.setRole(fullAccessRole);
+            userRole1.setRole(readFoldersRole);
             em.persist(userRole1);
 
             userRole2 = new UserRole();
             userRole2.setUser(constraintUser2);
-            userRole2.setRole(fullAccessRole);
+            userRole2.setRole(readFoldersRole);
             em.persist(userRole2);
 
             userRole3 = new UserRole();
             userRole3.setUser(constraintUser3);
-            userRole3.setRole(fullAccessRole);
+            userRole3.setRole(readFoldersRole);
             em.persist(userRole3);
 
             tx.commit();
@@ -251,7 +257,8 @@ public class ParentClassConstraintTest {
     @AfterEach
     public void tearDown() throws Exception {
         cont.deleteRecord("SEC_USER_ROLE", userRole1.getId(), userRole2.getId(), userRole3.getId());
-        cont.deleteRecord("SEC_ROLE", fullAccessRole.getId());
+        cont.deleteRecord("SEC_PERMISSION", permission1.getId());
+        cont.deleteRecord("SEC_ROLE", readFoldersRole.getId());
 
         cont.deleteRecord("SEC_USER", constraintUser1.getId(), constraintUser2.getId(), constraintUser3.getId());
         cont.deleteRecord("SEC_CONSTRAINT", constraint1.getId(), constraint2.getId(), constraint3.getId(), constraint4.getId());

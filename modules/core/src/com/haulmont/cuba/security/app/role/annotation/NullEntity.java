@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2019 Haulmont.
+ * Copyright (c) 2008-2020 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-alter table SEC_ROLE add DEFAULT_SCREEN_ACCESS integer^
-alter table SEC_ROLE add DEFAULT_ENTITY_CREATE_ACCESS integer^
-alter table SEC_ROLE add DEFAULT_ENTITY_READ_ACCESS integer^
-alter table SEC_ROLE add DEFAULT_ENTITY_UPDATE_ACCESS integer^
-alter table SEC_ROLE add DEFAULT_ENTITY_DELETE_ACCESS integer^
-alter table SEC_ROLE add DEFAULT_ENTITY_ATTR_ACCESS integer^
-alter table SEC_ROLE add DEFAULT_SPECIFIC_ACCESS integer^
+package com.haulmont.cuba.security.app.role.annotation;
+
+import com.haulmont.cuba.core.entity.Entity;
+
+/**
+ * Class is used as a default value for attribute of {@link EntityAccess} and {@link EntityAttributeAccess} annotations
+ */
+public abstract class NullEntity implements Entity {
+}

@@ -16,6 +16,7 @@
 
 package com.haulmont.cuba.security.app.role;
 
+import com.haulmont.cuba.core.app.ServerConfig;
 import com.haulmont.cuba.security.role.BasicRoleDefinition;
 import com.haulmont.cuba.security.role.RoleDefinition;
 import org.slf4j.Logger;
@@ -37,6 +38,9 @@ public class PredefinedRoleDefinitionRepository {
 
     @Inject
     protected List<RoleDefinition> predefinedRoleDefinitionBeans;
+
+    @Inject
+    protected ServerConfig serverConfig;
 
     protected Map<String, RoleDefinition> predefinedRoleDefinitionsMap = new HashMap<>();
 
@@ -98,6 +102,10 @@ public class PredefinedRoleDefinitionRepository {
     }
 
     protected void init() {
+        if (serverConfig.getRolesPolicyVersion() == 1) {
+            log.info("Security subsystem version is 1. Predefined role definitions will not be loaded.");
+            return;
+        }
         for (RoleDefinition predefinedRoleDefinitionBean : predefinedRoleDefinitionBeans) {
             RoleDefinition roleDefCopy = copyRoleDefinition(predefinedRoleDefinitionBean);
             predefinedRoleDefinitionsMap.put(roleDefCopy.getName(), roleDefCopy);
@@ -106,15 +114,16 @@ public class PredefinedRoleDefinitionRepository {
 
     protected RoleDefinition copyRoleDefinition(RoleDefinition sourceRoleDef) {
         return BasicRoleDefinition.builder()
-                .withEntityPermissions(sourceRoleDef.entityPermissions())
-                .withEntityAttributePermissions(sourceRoleDef.entityAttributePermissions())
-                .withScreenPermissions(sourceRoleDef.screenPermissions())
-                .withSpecificPermissions(sourceRoleDef.specificPermissions())
-                .withScreenElementsPermissions(sourceRoleDef.screenComponentPermissions())
+                .withEntityPermissionsContainer(sourceRoleDef.entityPermissions())
+                .withEntityAttributePermissionsContainer(sourceRoleDef.entityAttributePermissions())
+                .withScreenPermissionsContainer(sourceRoleDef.screenPermissions())
+                .withSpecificPermissionsContainer(sourceRoleDef.specificPermissions())
+                .withScreenComponentPermissionsContainer(sourceRoleDef.screenComponentPermissions())
                 .withName(sourceRoleDef.getName())
                 .withLocName(sourceRoleDef.getLocName())
                 .withDescription(sourceRoleDef.getDescription())
                 .withIsDefault(sourceRoleDef.isDefault())
+                .withIsSuper(sourceRoleDef.isSuper())
                 .withSecurityScope(sourceRoleDef.getSecurityScope())
                 .build();
     }

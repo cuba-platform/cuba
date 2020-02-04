@@ -31,6 +31,7 @@ import com.haulmont.cuba.gui.util.OperationResult
 import com.haulmont.cuba.security.app.SecurityScopesService
 import com.haulmont.cuba.security.entity.Group
 import com.haulmont.cuba.security.entity.User
+import com.haulmont.cuba.security.role.RolesService
 import com.haulmont.cuba.web.testsupport.proxy.TestServiceProxy
 import spec.cuba.web.UiScreenSpec
 
@@ -66,6 +67,12 @@ class ScreenBuildersTest extends UiScreenSpec {
             }
             getAvailableSecurityScopes() >> {
                 return []
+            }
+        })
+
+        TestServiceProxy.mock(RolesService, Mock(RolesService) {
+            getRolesPolicyVersion() >> {
+                return 2
             }
         })
     }

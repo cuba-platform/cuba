@@ -70,6 +70,10 @@ public abstract class AnnotatedRoleDefinition implements RoleDefinition {
         return annotatedPermissionsBuilder.getIsDefaultFromAnnotation(this);
     }
 
+    public boolean isSuper() {
+        return annotatedPermissionsBuilder.getIsSuperFromAnnotation(this);
+    }
+
     @Override
     public String getDescription() {
         return annotatedPermissionsBuilder.getDescriptionFromAnnotation(this);

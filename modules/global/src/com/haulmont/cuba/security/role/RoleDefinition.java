@@ -47,6 +47,10 @@ public interface RoleDefinition {
         return false;
     }
 
+    default boolean isSuper() {
+        return false;
+    }
+
     default String getSecurityScope() {
         return SecurityScope.DEFAULT_SCOPE_NAME;
     }

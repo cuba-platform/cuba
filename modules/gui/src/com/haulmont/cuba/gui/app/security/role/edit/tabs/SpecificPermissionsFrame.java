@@ -31,6 +31,7 @@ import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.entity.Permission;
 import com.haulmont.cuba.security.entity.PermissionType;
 import com.haulmont.cuba.security.entity.Role;
+import com.haulmont.cuba.security.role.RolesService;
 import org.apache.commons.lang3.BooleanUtils;
 
 import javax.inject.Inject;
@@ -80,6 +81,11 @@ public class SpecificPermissionsFrame extends AbstractFrame {
     @Inject
     protected GroupBoxLayout specificEditPane;
 
+    @Inject
+    protected RolesService rolesService;
+
+    protected int rolesPolicyVersion;
+
     protected boolean itemChanging = false;
 
     protected boolean permissionsLoaded;
@@ -89,6 +95,7 @@ public class SpecificPermissionsFrame extends AbstractFrame {
         super.init(params);
 
         permissionsLoaded = BooleanUtils.isTrue((Boolean) params.get("permissionsLoaded"));
+        rolesPolicyVersion = rolesService.getRolesPolicyVersion();
 
         specificPermissionsTree.setStyleProvider(new BasicPermissionTreeStyleProvider());
 
@@ -144,6 +151,8 @@ public class SpecificPermissionsFrame extends AbstractFrame {
         applyPermissions(hasPermissionsToModifyPermission);
 
         specificEditPane.setEnabled(security.isEntityOpPermitted(metadata.getClass(Role.class), EntityOp.UPDATE));
+
+        disallowCheckBox.setVisible(rolesPolicyVersion == 1);
     }
 
     protected void updateCheckBoxes(BasicPermissionTarget item) {

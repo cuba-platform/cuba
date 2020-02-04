@@ -40,6 +40,9 @@ public interface RolesService {
      */
     Collection<Role> getAllRoles();
 
+    @Nullable
+    RoleDefinition getRoleDefinitionByName(String name);
+
     /**
      * Finds the predefined role definition by the name and converts it to the {@link Role} object.
      *
@@ -68,8 +71,8 @@ public interface RolesService {
     Collection<Permission> getPermissions(String predefinedRoleName, PermissionType permissionType);
 
     /**
-     * @return {@code true} if roles are stored in a source code and in a database, {@code false} otherwise. See
-     * {@link SecurityStorageMode}
+     * @return {@code true} if roles are stored in a source code and in a database, {@code false} otherwise. See {@link
+     * SecurityStorageMode}
      */
     boolean isRoleStorageMixedMode();
 
@@ -94,5 +97,21 @@ public interface RolesService {
      */
     Collection<RoleDefinition> getRoleDefinitionsForUser(User user);
 
+    /**
+     * Returns a policy for resolving permission values that are not explicitly defined in roles. For roles policy v1
+     * {@link #getRolesPolicyVersion()} if a role doesn't define any explicit permission then this target is allowed,
+     * for policy v2 the undefined permission is denied.
+     */
     Access getPermissionUndefinedAccessPolicy();
+
+    /**
+     * Returns the roles policy version.
+     * <ul>
+     *     <li>1 - Security implementation used before CUBA 7.2: undefined permissions are resolved to allowed, roles
+     *     types are used</li>
+     *     <li>2 - New roles resolving implementation introduced in CUBA 7.2: undefined permissions are resolved to
+     *     denied, the only possible permission is ALLOW (user cannot select DENY), design-time roles can be used</li>
+     * </ul>
+     */
+    int getRolesPolicyVersion();
 }
