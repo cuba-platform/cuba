@@ -49,6 +49,7 @@ public class Folder extends StandardEntity implements TenantEntity {
     @Column(name = "TAB_NAME")
     protected String tabName;
 
+    @SystemLevel
     @Column(name = "SYS_TENANT_ID")
     protected String sysTenantId;
 

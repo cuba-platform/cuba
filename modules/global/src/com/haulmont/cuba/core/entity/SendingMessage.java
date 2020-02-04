@@ -90,6 +90,7 @@ public class SendingMessage extends StandardEntity implements TenantEntity {
     @Column(name = "EMAIL_HEADERS")
     protected String headers;
 
+    @SystemLevel
     @Column(name = "SYS_TENANT_ID")
     protected String sysTenantId;
 

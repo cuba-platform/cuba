@@ -113,6 +113,7 @@ public class User extends StandardEntity implements TenantEntity {
     @Column(name = "IP_MASK", length = 200)
     protected String ipMask;
 
+    @SystemLevel
     @Column(name = "SYS_TENANT_ID")
     protected String sysTenantId;
 

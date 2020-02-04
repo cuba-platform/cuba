@@ -48,6 +48,7 @@ public class SessionAttribute extends StandardEntity implements TenantEntity {
     @Transient
     private boolean predefined;
 
+    @SystemLevel
     @Column(name = "SYS_TENANT_ID")
     protected String sysTenantId;
 

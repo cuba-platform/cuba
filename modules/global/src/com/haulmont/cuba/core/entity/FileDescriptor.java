@@ -47,6 +47,7 @@ public class FileDescriptor extends StandardEntity implements TenantEntity {
     @Column(name = "CREATE_DATE")
     private Date createDate;
 
+    @SystemLevel
     @Column(name = "SYS_TENANT_ID")
     protected String sysTenantId;
 

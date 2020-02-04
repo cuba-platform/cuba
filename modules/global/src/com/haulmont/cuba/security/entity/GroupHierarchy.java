@@ -40,6 +40,7 @@ public class GroupHierarchy extends BaseUuidEntity implements Creatable, TenantE
     @Column(name = "CREATED_BY", length = 50)
     private String createdBy;
 
+    @SystemLevel
     @Column(name = "SYS_TENANT_ID")
     protected String sysTenantId;
 
