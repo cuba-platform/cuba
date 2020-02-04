@@ -49,6 +49,7 @@ public class EntitySnapshot extends BaseUuidEntity implements Creatable, TenantE
     @Column(name = "CREATED_BY", length = 50)
     protected String createdBy;
 
+    @SystemLevel
     @Column(name = "SYS_TENANT_ID")
     protected String sysTenantId;
 

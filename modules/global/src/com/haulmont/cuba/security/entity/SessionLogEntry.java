@@ -18,6 +18,7 @@ package com.haulmont.cuba.security.entity;
 
 import com.haulmont.cuba.core.entity.TenantEntity;
 import com.haulmont.cuba.core.entity.StandardEntity;
+import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.global.ClientType;
 
 import javax.persistence.*;
@@ -69,6 +70,7 @@ public class SessionLogEntry extends StandardEntity implements TenantEntity {
     @Column(name = "SERVER_ID")
     protected String server;
 
+    @SystemLevel
     @Column(name = "SYS_TENANT_ID")
     protected String sysTenantId;
 

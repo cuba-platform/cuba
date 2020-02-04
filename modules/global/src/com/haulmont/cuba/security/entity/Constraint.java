@@ -68,6 +68,7 @@ public class Constraint extends StandardEntity implements TenantEntity {
     @Transient
     protected boolean predefined;
 
+    @SystemLevel
     @Column(name = "SYS_TENANT_ID")
     protected String sysTenantId;
 

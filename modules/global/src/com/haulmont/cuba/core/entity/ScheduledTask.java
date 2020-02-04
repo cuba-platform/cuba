@@ -75,6 +75,7 @@ public class ScheduledTask extends BaseUuidEntity implements Creatable, Updatabl
     @Column(name = "DEFINED_BY")
     protected String definedBy;
 
+    @SystemLevel
     @Column(name = "SYS_TENANT_ID")
     protected String sysTenantId;
 

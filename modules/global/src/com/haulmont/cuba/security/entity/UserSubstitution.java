@@ -52,6 +52,7 @@ public class UserSubstitution extends StandardEntity implements TenantEntity {
     @Temporal(TemporalType.DATE)
     protected Date endDate;
 
+    @SystemLevel
     @Column(name = "SYS_TENANT_ID")
     protected String sysTenantId;
 

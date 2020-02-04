@@ -53,6 +53,7 @@ public class FilterEntity extends StandardEntity implements TenantEntity {
     @Column(name = "GLOBAL_DEFAULT")
     protected Boolean globalDefault = false;
 
+    @SystemLevel
     @Column(name = "SYS_TENANT_ID")
     protected String sysTenantId;
 

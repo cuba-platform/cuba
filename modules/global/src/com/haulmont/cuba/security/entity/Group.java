@@ -22,6 +22,7 @@ import com.haulmont.cuba.core.entity.TenantEntity;
 import com.haulmont.cuba.core.entity.StandardEntity;
 import com.haulmont.cuba.core.entity.annotation.Listeners;
 import com.haulmont.cuba.core.entity.annotation.OnDelete;
+import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.entity.annotation.TrackEditScreenHistory;
 import com.haulmont.cuba.core.global.DeletePolicy;
 
@@ -65,6 +66,7 @@ public class Group extends StandardEntity implements TenantEntity {
     @Transient
     protected boolean predefined;
 
+    @SystemLevel
     @Column(name = "SYS_TENANT_ID")
     protected String sysTenantId;
 

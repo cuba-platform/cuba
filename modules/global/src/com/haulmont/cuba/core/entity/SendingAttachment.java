@@ -54,6 +54,7 @@ public class SendingAttachment extends StandardEntity implements TenantEntity {
     @Column(name = "TEXT_ENCODING", length = 50)
     protected String encoding;
 
+    @SystemLevel
     @Column(name = "SYS_TENANT_ID")
     protected String sysTenantId;
 
