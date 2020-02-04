@@ -18,6 +18,7 @@
 package com.haulmont.cuba.core.entity;
 
 import com.haulmont.chile.core.datatypes.Enumeration;
+import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.impl.AbstractInstance;
@@ -100,11 +101,16 @@ public class KeyValueEntity
                 Enumeration enumeration = metaProperty.getRange().asEnumeration();
                 Object enumValue = properties.get(name);
                 if (enumValue != null) {
-                    try {
+                    if (enumValue instanceof EnumClass) {
                         //noinspection unchecked
-                        return (T) enumeration.parse(enumValue.toString());
-                    } catch (ParseException e) {
-                        throw new RuntimeException("Can't parse enum value stored in the database", e);
+                        return (T) enumValue;
+                    } else {
+                        try {
+                            //noinspection unchecked
+                            return (T) enumeration.parse(enumValue.toString());
+                        } catch (ParseException e) {
+                            throw new RuntimeException("Can't parse enum value stored in the database", e);
+                        }
                     }
                 }
             }
