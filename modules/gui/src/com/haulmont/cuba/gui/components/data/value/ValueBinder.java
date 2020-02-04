@@ -36,6 +36,8 @@ import com.haulmont.cuba.gui.components.data.ValueSource;
 import com.haulmont.cuba.gui.components.data.meta.EntityValueSource;
 import com.haulmont.cuba.gui.components.data.meta.ValueBinding;
 import com.haulmont.cuba.gui.components.validators.BeanPropertyValidator;
+import com.haulmont.cuba.gui.model.InstanceContainer;
+import com.haulmont.cuba.gui.model.Nested;
 import org.apache.commons.lang3.ArrayUtils;
 
 import javax.inject.Inject;
@@ -89,7 +91,26 @@ public class ValueBinder {
 
             if (entityValueSource.isDataModelSecurityEnabled()) {
                 if (component instanceof Component.Editable) {
-                    if (!security.isEntityAttrUpdatePermitted(metaPropertyPath)) {
+                    MetaClass metaClass = entityValueSource.getEntityMetaClass();
+                    boolean permittedIfEmbedded = true;
+                    if (entityValueSource instanceof ContainerValueSource) {
+                        InstanceContainer container = ((ContainerValueSource) entityValueSource).getContainer();
+                        if (container instanceof Nested && metadataTools.isEmbeddable(metaClass)) {
+                            String embeddedProperty = ((Nested) container).getProperty();
+                            MetaClass masterMetaClass = ((Nested) container).getMaster().getEntityMetaClass();
+                            permittedIfEmbedded = security.isEntityAttrUpdatePermitted(masterMetaClass, embeddedProperty);
+                            if (permittedIfEmbedded && metaPropertyPath.length() > 1) {
+                                for (MetaProperty property : metaPropertyPath.getMetaProperties()) {
+                                    if (security.isEntityAttrUpdatePermitted(property.getDomain(), property.getName())) {
+                                        permittedIfEmbedded = false;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    if (!security.isEntityAttrUpdatePermitted(metaPropertyPath) || !permittedIfEmbedded) {
                         ((Component.Editable) component).setEditable(false);
                     }
                 }

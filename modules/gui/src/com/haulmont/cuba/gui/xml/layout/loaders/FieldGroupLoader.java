@@ -33,11 +33,13 @@ import com.haulmont.cuba.gui.components.FieldGroupFieldFactory;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
+import com.haulmont.cuba.gui.data.EmbeddedDatasource;
 import com.haulmont.cuba.gui.dynamicattributes.DynamicAttributesGuiTools;
 import com.haulmont.cuba.gui.screen.compatibility.LegacyFrame;
 import com.haulmont.cuba.gui.xml.DeclarativeFieldGenerator;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoader;
+import com.haulmont.cuba.security.entity.EntityAttrAccess;
 import com.haulmont.cuba.security.entity.EntityOp;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -647,9 +649,22 @@ public class FieldGroupLoader extends AbstractComponentLoader<FieldGroup> {
 
             checkNotNullArgument(propertyPath, "Could not resolve property path '%s' in '%s'", field.getId(), metaClass);
 
-            if (!getSecurity().isEntityAttrUpdatePermitted(metaClass, propertyPath.toString()) ||
-                    (getMetadataTools().isEmbeddable(metaClass) &&
-                            !getSecurity().isEntityOpPermitted(getParentEntityMetaClass(resultComponent), EntityOp.UPDATE))) {
+            boolean permittedIfEmbedded = true;
+            if (getMetadataTools().isEmbeddable(metaClass)) {
+                MetaClass parentMetaClass = getParentEntityMetaClass(resultComponent);
+                MetaProperty embeddedProperty = ((EmbeddedDatasource) field.getTargetDatasource()).getProperty();
+                permittedIfEmbedded = getSecurity().isEntityOpPermitted(parentMetaClass, EntityOp.UPDATE)
+                        && getSecurity().isEntityAttrPermitted(parentMetaClass, embeddedProperty.getName(), EntityAttrAccess.MODIFY);
+                if (permittedIfEmbedded && propertyPath.length() > 1) {
+                    for (MetaProperty property : propertyPath.getMetaProperties()) {
+                        if (getSecurity().isEntityAttrUpdatePermitted(property.getDomain(), property.getName())) {
+                            permittedIfEmbedded = false;
+                            break;
+                        }
+                    }
+                }
+            }
+            if (!getSecurity().isEntityAttrUpdatePermitted(metaClass, propertyPath.toString()) || !permittedIfEmbedded) {
                 field.setEditable(false);
             }
         }
