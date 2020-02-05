@@ -21,6 +21,7 @@ import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.app.MiddlewareStatisticsAccumulator;
 import com.haulmont.cuba.core.global.BeanLocator;
 import com.haulmont.cuba.core.global.Stores;
+import com.haulmont.cuba.core.sys.PersistenceImpl.EntityManagerContextSynchronization;
 import com.haulmont.cuba.core.sys.persistence.DbTypeConverter;
 import com.haulmont.cuba.core.sys.persistence.DbmsSpecificFactory;
 import com.haulmont.cuba.core.sys.persistence.PersistenceImplSupport;
@@ -45,6 +46,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 @Component(Persistence.NAME)
@@ -81,7 +83,8 @@ public class PersistenceImpl implements Persistence {
     @Inject
     protected MiddlewareStatisticsAccumulator statisticsAccumulator;
 
-    @Inject @Named("entityManagerFactory")
+    @Inject
+    @Named("entityManagerFactory")
     public void setFactory(LocalContainerEntityManagerFactoryBean factoryBean) {
         this.jpaEmf = factoryBean.getObject();
     }
@@ -259,11 +262,33 @@ public class PersistenceImpl implements Persistence {
      */
     public void registerSynchronizations(String store) {
         log.trace("registerSynchronizations for store '{}'", store);
+
         TransactionSynchronizationManager.registerSynchronization(createSynchronization(store));
         support.getInstanceContainerResourceHolder(store);
 
         statisticsAccumulator.incStartedTransactionsCount();
         TransactionSynchronizationManager.registerSynchronization(new StatisticsTransactionSynchronization());
+    }
+
+    /**
+     * INTERNAL.
+     * Register synchronizations with a just started transaction.
+     */
+    public void registerSynchronizationsIfAbsent(String store) {
+        log.trace("registerSynchronizations for store '{}'", store);
+
+        List<TransactionSynchronization> synchronizations = TransactionSynchronizationManager.getSynchronizations();
+
+        boolean absent = synchronizations.stream()
+                .noneMatch(s -> s instanceof EntityManagerContextSynchronization
+                        && Objects.equals(store, ((EntityManagerContextSynchronization)s).getStore()));
+        if (absent) {
+            TransactionSynchronizationManager.registerSynchronization(createSynchronization(store));
+            support.getInstanceContainerResourceHolder(store);
+
+            statisticsAccumulator.incStartedTransactionsCount();
+            TransactionSynchronizationManager.registerSynchronization(new StatisticsTransactionSynchronization());
+        }
     }
 
     protected TransactionSynchronization createSynchronization(String store) {
@@ -361,6 +386,10 @@ public class PersistenceImpl implements Persistence {
         @Override
         public int getOrder() {
             return 200;
+        }
+
+        public String getStore() {
+            return store;
         }
     }
 
