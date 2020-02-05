@@ -39,9 +39,6 @@ import java.lang.annotation.*;
  *
  * <pre>
  * &#064;EntityAttributeAccess(entityName = "app_SomeEntity", view = "*")
- * </pre>
- *
- * <pre>
  * &#064;EntityAttributeAccess(entityName = "*", modify = "*")
  * </pre>
  *

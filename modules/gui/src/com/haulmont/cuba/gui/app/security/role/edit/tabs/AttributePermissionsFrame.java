@@ -35,6 +35,7 @@ import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.security.role.RolesService;
 import org.apache.commons.lang3.BooleanUtils;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.*;
 
@@ -117,6 +118,15 @@ public class AttributePermissionsFrame extends AbstractFrame {
     protected RolesService rolesService;
 
     protected int rolesPolicyVersion;
+
+    @Inject
+    protected CheckBox wildcardViewCheckBox;
+
+    @Inject
+    protected CheckBox wildcardModifyCheckBox;
+
+    @Inject
+    protected GroupBoxLayout attributeWildcardGroupBox;
 
     protected class AttributePermissionControl {
 
@@ -224,6 +234,10 @@ public class AttributePermissionsFrame extends AbstractFrame {
                 // todo enforce property change instead of item
                 attributeTargetsDs.updateItem(item);
 
+                if ("*".equals(attributeName)) {
+                    updateCheckboxesEnabledByWildcards();
+                }
+
                 itemChanging = false;
             });
         }
@@ -321,6 +335,8 @@ public class AttributePermissionsFrame extends AbstractFrame {
             if (itemExists) {
                 compileEditPane(item);
             }
+
+            updateCheckboxesEnabledByWildcards();
         });
 
         attributeTargetsDs.refresh();
@@ -330,6 +346,8 @@ public class AttributePermissionsFrame extends AbstractFrame {
         hasPermissionsToModifyPermission = isCreatePermitted && isDeletePermitted;
 
         editPane.setEnabled(security.isEntityOpPermitted(metadata.getClass(Role.class), EntityOp.UPDATE));
+
+        initWildcardCheckboxes();
     }
 
     public void applyFilter() {
@@ -361,6 +379,8 @@ public class AttributePermissionsFrame extends AbstractFrame {
             if (item != null) {
 
                 for (AttributePermissionControl control : permissionControls) {
+                    //skip controls for wildcard permissions
+                    if ("*".equals(control.getAttributeName())) continue;
                     AttributePermissionVariant permissionVariant = PermissionUiHelper.getCheckBoxVariant(e.getValue(), activeVariant);
                     control.markTargetPermission(permissionVariant);
                     control.updateCheckers(permissionVariant);
@@ -379,11 +399,13 @@ public class AttributePermissionsFrame extends AbstractFrame {
     }
 
     private boolean isAllModified() {
-        return permissionControls.stream().allMatch(c -> c.modifyCheckBox.getValue() || !c.modifyCheckBox.isEditable());
+        return permissionControls.stream().allMatch(c -> c.modifyCheckBox.getValue() ||
+                !c.modifyCheckBox.isEditable() || "*".equals(c.getAttributeName()));
     }
 
     private boolean isAllReadOnly() {
-        return permissionControls.stream().allMatch(c -> c.readOnlyCheckBox.getValue() || !c.readOnlyCheckBox.isEditable());
+        return permissionControls.stream().allMatch(c -> c.readOnlyCheckBox.getValue() ||
+                !c.readOnlyCheckBox.isEditable() || "*".equals(c.getAttributeName()));
     }
 
     private boolean isAllHide() {
@@ -416,6 +438,9 @@ public class AttributePermissionsFrame extends AbstractFrame {
                 attributePermissionControl.getModifyCheckBox().setEnabled(false);
             }
         }
+
+        wildcardViewCheckBox.setEditable(editable);
+        wildcardModifyCheckBox.setEditable(editable);
     }
 
     protected void clearEditGrid() {
@@ -557,5 +582,116 @@ public class AttributePermissionsFrame extends AbstractFrame {
         params.put("permissionsLoaded", permissionsLoaded);
 
         return params;
+    }
+
+    protected void initWildcardCheckboxes() {
+        if (rolesPolicyVersion == 1) {
+            attributeWildcardGroupBox.setVisible(false);
+            return;
+        }
+
+        Permission wildcardPermission = getWildcardPermission();
+
+        wildcardModifyCheckBox.setValue(wildcardPermission != null
+                && EntityAttrAccess.MODIFY.getId().equals(wildcardPermission.getValue()));
+        wildcardViewCheckBox.setValue(wildcardPermission != null
+                && EntityAttrAccess.VIEW.getId().equals(wildcardPermission.getValue()));
+
+        initWildcardCheckboxListener(wildcardModifyCheckBox, AttributePermissionVariant.MODIFY);
+        initWildcardCheckboxListener(wildcardViewCheckBox, AttributePermissionVariant.READ_ONLY);
+    }
+
+    @Nullable
+    protected Permission getWildcardPermission() {
+        return propertyPermissionsDs.getItems().stream()
+                .filter(permission -> "*:*".equals(permission.getTarget()))
+                .findAny()
+                .orElse(null);
+    }
+
+    @Nullable
+    protected Permission getWildcardPermission(String entityName) {
+        String target = entityName + ":*";
+        return propertyPermissionsDs.getItems().stream()
+                .filter(permission -> target.equals(permission.getTarget()))
+                .findAny()
+                .orElse(null);
+    }
+
+    protected void initWildcardCheckboxListener(CheckBox checkBox, AttributePermissionVariant activeVariant) {
+        checkBox.addValueChangeListener(e -> {
+            if (itemChanging) {
+                return;
+            }
+
+            itemChanging = true;
+
+            AttributePermissionVariant permissionVariant = PermissionUiHelper.getCheckBoxVariant(e.getValue(), activeVariant);
+            String permissionTarget = "*:*";
+            if (permissionVariant != AttributePermissionVariant.NOTSET) {
+                // Create permission
+                int value = PermissionUiHelper.getPermissionValue(permissionVariant);
+                PermissionUiHelper.createPermissionItem(propertyPermissionsDs, roleDs,
+                        permissionTarget, PermissionType.ENTITY_ATTR, value);
+            } else {
+                // Remove permission
+                Permission permission = null;
+                for (Permission p : propertyPermissionsDs.getItems()) {
+                    if (Objects.equals(p.getTarget(), permissionTarget)) {
+                        permission = p;
+                        break;
+                    }
+                }
+
+                if (permission != null) {
+                    propertyPermissionsDs.removeItem(permission);
+                }
+            }
+
+            if (activeVariant != AttributePermissionVariant.MODIFY)
+                wildcardModifyCheckBox.setValue(false);
+
+            if (activeVariant != AttributePermissionVariant.READ_ONLY)
+                wildcardViewCheckBox.setValue(false);
+
+            updateCheckboxesEnabledByWildcards();
+
+            itemChanging = false;
+        });
+    }
+
+    /**
+     * There may two wildcards set: global and entity-level. The method disables entity attribute checkboxes if any
+     * wildcard set for a given permission value (MODIFY or VIEW).
+     */
+    protected void updateCheckboxesEnabledByWildcards() {
+        if (rolesPolicyVersion == 1) return;
+        Permission globalWildcardPermission = getWildcardPermission();
+        boolean globalWildcardModify = globalWildcardPermission != null &&
+                EntityAttrAccess.MODIFY.getId().equals(globalWildcardPermission.getValue());
+        boolean globalWildcardView = globalWildcardPermission != null &&
+                EntityAttrAccess.VIEW.getId().equals(globalWildcardPermission.getValue());
+
+        MultiplePermissionTarget item = propertyPermissionsTable.getSingleSelected();
+        if (item != null) {
+            Permission entityWildcardPermission = getWildcardPermission(item.getEntityMetaClassName());
+            boolean entityWildcardModify = entityWildcardPermission != null
+                    && EntityAttrAccess.MODIFY.getId().equals(entityWildcardPermission.getValue());
+            boolean entityWildcardView = entityWildcardPermission != null
+                    && EntityAttrAccess.VIEW.getId().equals(entityWildcardPermission.getValue());
+
+            for (AttributePermissionControl control : permissionControls) {
+                boolean modifyEnabled = "*".equals(control.getAttributeName()) ?
+                        !globalWildcardModify :
+                        !globalWildcardModify && !entityWildcardModify;
+                boolean viewEnabled = "*".equals(control.getAttributeName()) ?
+                        !globalWildcardView :
+                        !globalWildcardView && !entityWildcardView;
+                control.getModifyCheckBox().setEnabled(modifyEnabled);
+                control.getReadOnlyCheckBox().setEnabled(viewEnabled);
+            }
+            allModifyCheck.setEnabled(!globalWildcardModify && !entityWildcardModify);
+            allReadOnlyCheck.setEnabled(!globalWildcardView && !entityWildcardView);
+        }
     }
 }

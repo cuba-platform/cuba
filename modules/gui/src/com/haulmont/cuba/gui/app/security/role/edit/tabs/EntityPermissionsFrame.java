@@ -37,10 +37,7 @@ import com.haulmont.cuba.security.role.RolesService;
 import org.apache.commons.lang3.BooleanUtils;
 
 import javax.inject.Inject;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 public class EntityPermissionsFrame extends AbstractFrame {
 
@@ -113,6 +110,21 @@ public class EntityPermissionsFrame extends AbstractFrame {
 
     @Inject
     protected RolesService rolesService;
+
+    @Inject
+    protected CheckBox createWildcardCheckBox;
+
+    @Inject
+    protected CheckBox readWildcardCheckBox;
+
+    @Inject
+    protected CheckBox updateWildcardCheckBox;
+
+    @Inject
+    protected CheckBox deleteWildcardCheckBox;
+
+    @Inject
+    protected GroupBoxLayout entityWildcardGroupBox;
 
     protected int rolesPolicyVersion = 2;
 
@@ -236,6 +248,8 @@ public class EntityPermissionsFrame extends AbstractFrame {
             updateEditPane(e.getItem(), selected);
 
             updateCheckBoxes(e.getItem());
+
+            updateCheckboxesEnabledByWildcard();
         });
 
         entityTargetsDs.addItemPropertyChangeListener(e -> {
@@ -257,6 +271,8 @@ public class EntityPermissionsFrame extends AbstractFrame {
         editPane.setEnabled(security.isEntityOpPermitted(metadata.getClass(Role.class), EntityOp.UPDATE));
 
         applyPermissions(hasPermissionsToModifyePermission);
+
+        initWildcardCheckboxes();
     }
 
     @SuppressWarnings("unused")
@@ -314,6 +330,10 @@ public class EntityPermissionsFrame extends AbstractFrame {
             entityOperationControl.getAllowChecker().setEditable(editable);
             entityOperationControl.getDenyChecker().setEditable(editable);
         }
+        createWildcardCheckBox.setEditable(editable);
+        readWildcardCheckBox.setEditable(editable);
+        updateWildcardCheckBox.setEditable(editable);
+        deleteWildcardCheckBox.setEditable(editable);
     }
 
     protected void initCheckBoxesControls() {
@@ -586,5 +606,86 @@ public class EntityPermissionsFrame extends AbstractFrame {
         params.put("permissionsLoaded", permissionsLoaded);
 
         return params;
+    }
+
+    protected void initWildcardCheckboxes() {
+        if (rolesPolicyVersion == 1) {
+            entityWildcardGroupBox.setVisible(false);
+            return;
+        }
+
+        Permission createWildcardPermission = getWildcardPermission(EntityOp.CREATE);
+        Permission readWildcardPermission = getWildcardPermission(EntityOp.READ);
+        Permission updateWildcardPermission = getWildcardPermission(EntityOp.UPDATE);
+        Permission deleteWildcardPermission = getWildcardPermission(EntityOp.DELETE);
+
+        //set initial values
+        createWildcardCheckBox.setValue(createWildcardPermission != null);
+        readWildcardCheckBox.setValue(readWildcardPermission != null);
+        updateWildcardCheckBox.setValue(updateWildcardPermission != null);
+        deleteWildcardCheckBox.setValue(deleteWildcardPermission != null);
+
+        //init checkbox value change listeners
+        initWildcardCheckboxListener(createWildcardCheckBox, EntityOp.CREATE);
+        initWildcardCheckboxListener(readWildcardCheckBox, EntityOp.READ);
+        initWildcardCheckboxListener(updateWildcardCheckBox, EntityOp.UPDATE);
+        initWildcardCheckboxListener(deleteWildcardCheckBox, EntityOp.DELETE);
+    }
+
+    protected Permission getWildcardPermission(EntityOp entityOp) {
+        String target = "*:" + entityOp.getId();
+        return entityPermissionsDs.getItems().stream()
+                .filter(permission -> target.equals(permission.getTarget()))
+                .findAny()
+                .orElse(null);
+    }
+
+    protected void initWildcardCheckboxListener(CheckBox checkBox, EntityOp entityOp) {
+        String permissionTarget = "*:" + entityOp.getId();
+        checkBox.addValueChangeListener(e -> {
+            PermissionVariant permissionVariant = PermissionUiHelper.getCheckBoxVariant(e.getValue(), PermissionVariant.ALLOWED);
+            if (permissionVariant != PermissionVariant.NOTSET) {
+                // Create permission
+                int value = PermissionUiHelper.getPermissionValue(permissionVariant);
+                PermissionUiHelper.createPermissionItem(entityPermissionsDs, roleDs,
+                        permissionTarget, PermissionType.ENTITY_OP, value);
+            } else {
+                // Remove permission
+                Permission permission = null;
+                for (Permission p : entityPermissionsDs.getItems()) {
+                    if (Objects.equals(p.getTarget(), permissionTarget)) {
+                        permission = p;
+                        break;
+                    }
+                }
+
+                if (permission != null)
+                    entityPermissionsDs.removeItem(permission);
+            }
+
+            updateCheckboxesEnabledForEntityOpByWildcard(Boolean.TRUE.equals(e.getValue()), entityOp);
+        });
+    }
+
+    protected void updateCheckboxesEnabledByWildcard() {
+        if (rolesPolicyVersion == 1) return;
+
+        Permission createWildcardPermission = getWildcardPermission(EntityOp.CREATE);
+        Permission readWildcardPermission = getWildcardPermission(EntityOp.READ);
+        Permission updateWildcardPermission = getWildcardPermission(EntityOp.UPDATE);
+        Permission deleteWildcardPermission = getWildcardPermission(EntityOp.DELETE);
+
+        updateCheckboxesEnabledForEntityOpByWildcard(createWildcardPermission != null, EntityOp.CREATE);
+        updateCheckboxesEnabledForEntityOpByWildcard(readWildcardPermission != null, EntityOp.READ);
+        updateCheckboxesEnabledForEntityOpByWildcard(updateWildcardPermission != null, EntityOp.UPDATE);
+        updateCheckboxesEnabledForEntityOpByWildcard(deleteWildcardPermission != null, EntityOp.DELETE);
+    }
+
+    protected void updateCheckboxesEnabledForEntityOpByWildcard(boolean wildcardPermissionIsSet, EntityOp entityOp) {
+        Arrays.stream(operationControls)
+                .filter(operationControl -> operationControl.getOperation() == entityOp)
+                .findAny()
+                .ifPresent(entityOperationControl ->
+                        entityOperationControl.getAllowChecker().setEnabled(!wildcardPermissionIsSet));
     }
 }
