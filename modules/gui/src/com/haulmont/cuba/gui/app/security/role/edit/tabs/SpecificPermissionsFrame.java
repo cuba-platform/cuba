@@ -29,9 +29,9 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.security.entity.*;
 import com.haulmont.cuba.security.role.RolesService;
-import jdk.internal.jline.internal.Nullable;
 import org.apache.commons.lang3.BooleanUtils;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.HashMap;
 import java.util.Map;
