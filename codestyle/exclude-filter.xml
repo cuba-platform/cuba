@@ -361,6 +361,11 @@
     </Match>
 
     <Match>
+        <Bug pattern="RV_RETURN_VALUE_IGNORED"/>
+        <Class name="com.haulmont.cuba.core.app.TestingTransactionsServiceBean"/>
+    </Match>
+
+    <Match>
         <Bug pattern="RV_RETURN_VALUE_IGNORED_NO_SIDE_EFFECT"/> <!-- false positive -->
         <Class name="com.haulmont.cuba.gui.components.Window"/>
     </Match>
