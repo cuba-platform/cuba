@@ -41,8 +41,11 @@ public class TransactionalInterceptor {
 
     private Object aroundInvoke(ProceedingJoinPoint ctx) throws Throwable {
         Method method = ((MethodSignature) ctx.getSignature()).getMethod();
-        Method specificMethod = ClassUtils.getMostSpecificMethod(method, ctx.getTarget().getClass());
+        Class targetClass = ctx.getTarget().getClass();
+        Method specificMethod = ClassUtils.getMostSpecificMethod(method, targetClass);
         Transactional transactional = specificMethod.getAnnotation(Transactional.class);
+        if (transactional == null)
+            transactional = (Transactional) targetClass.getAnnotation(Transactional.class);
         if (transactional == null)
             throw new IllegalStateException("Cannot determine data store of the current transaction");
 
@@ -50,7 +53,7 @@ public class TransactionalInterceptor {
 
         log.trace("Entering transactional method, store='{}'", storeName);
 
-        ((PersistenceImpl) persistence).registerSynchronizations(storeName);
+        ((PersistenceImpl) persistence).registerSynchronizationsIfAbsent(storeName);
 
         return ctx.proceed();
     }

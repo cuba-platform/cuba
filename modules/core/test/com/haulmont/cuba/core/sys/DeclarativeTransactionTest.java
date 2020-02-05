@@ -18,10 +18,11 @@
 package com.haulmont.cuba.core.sys;
 
 import com.haulmont.cuba.core.app.TestingService;
+import com.haulmont.cuba.core.app.TestingTransactionsService;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.testsupport.TestContainer;
-import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import static org.junit.jupiter.api.Assertions.assertNull;
 
@@ -31,11 +32,30 @@ public class DeclarativeTransactionTest {
     public static TestContainer cont = TestContainer.Common.INSTANCE;
 
     @Test
-    public void test() throws Exception {
+    public void test_Method_TxAnnotation() throws Exception {
         TestingService service = AppBeans.get(TestingService.class);
 
         service.declarativeTransaction();
 
         assertNull(cont.persistence().getEntityManagerContext().getAttribute("test"));
+    }
+
+    @Test
+    public void test_Class_TxAnnotation() throws Exception {
+
+        TestingTransactionsService txService = AppBeans.get(TestingTransactionsService.class);
+
+        txService.declarativeTransaction_withoutMethodTxAnnotation();
+
+        assertNull(cont.persistence().getEntityManagerContext().getAttribute("test1"));
+    }
+
+    @Test
+    public void test_MethodAndClass_TxAnnotation() throws Exception {
+        TestingTransactionsService txService = AppBeans.get(TestingTransactionsService.class);
+
+        txService.declarativeTransaction_withMethodTxAnnotation();
+
+        assertNull(cont.persistence().getEntityManagerContext().getAttribute("test2"));
     }
 }

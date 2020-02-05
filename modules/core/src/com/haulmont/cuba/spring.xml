@@ -124,7 +124,11 @@
                         pointcut="execution(@com.haulmont.cuba.security.app.Authenticated * *(..))"/>
         </aop:aspect>
 
-        <aop:aspect id="transactionalAspect" ref="transactionalInterceptor" order="100">
+        <aop:aspect id="transactionalTypeAspect" ref="transactionalInterceptor" order="100">
+            <aop:around method="aroundInvoke" pointcut="@within(org.springframework.transaction.annotation.Transactional)"/>
+        </aop:aspect>
+
+        <aop:aspect id="transactionalMethodAspect" ref="transactionalInterceptor" order="101">
             <aop:around method="aroundInvoke"
                         pointcut="execution(@org.springframework.transaction.annotation.Transactional * *(..))"/>
         </aop:aspect>
