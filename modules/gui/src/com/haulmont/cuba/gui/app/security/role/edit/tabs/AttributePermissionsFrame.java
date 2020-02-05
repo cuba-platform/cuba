@@ -343,7 +343,10 @@ public class AttributePermissionsFrame extends AbstractFrame {
 
         boolean isCreatePermitted = security.isEntityOpPermitted(Permission.class, EntityOp.CREATE);
         boolean isDeletePermitted = security.isEntityOpPermitted(Permission.class, EntityOp.DELETE);
-        hasPermissionsToModifyPermission = isCreatePermitted && isDeletePermitted;
+        hasPermissionsToModifyPermission = isCreatePermitted && isDeletePermitted && !roleDs.getItem().isPredefined();
+
+        wildcardViewCheckBox.setEditable(hasPermissionsToModifyPermission);
+        wildcardModifyCheckBox.setEditable(hasPermissionsToModifyPermission);
 
         editPane.setEnabled(security.isEntityOpPermitted(metadata.getClass(Role.class), EntityOp.UPDATE));
 
@@ -414,7 +417,6 @@ public class AttributePermissionsFrame extends AbstractFrame {
 
     protected void applyPermissions(boolean editable) {
         boolean enabled = editable;
-        editable = editable && !roleDs.getItem().isPredefined();
 
         allHideCheck.setEditable(editable);
         allModifyCheck.setEditable(editable);
@@ -438,9 +440,6 @@ public class AttributePermissionsFrame extends AbstractFrame {
                 attributePermissionControl.getModifyCheckBox().setEnabled(false);
             }
         }
-
-        wildcardViewCheckBox.setEditable(editable);
-        wildcardModifyCheckBox.setEditable(editable);
     }
 
     protected void clearEditGrid() {

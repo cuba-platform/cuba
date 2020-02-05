@@ -213,6 +213,7 @@ public class ScreenPermissionsFrame extends AbstractFrame {
         screenPermissionsTree.collapse("root:others");
 
         initScreenWildcardCheckBox();
+        screenWildcardCheckBox.setEditable(!roleDs.getItem().isPredefined());
     }
 
     public void setEditable(boolean editable) {
@@ -220,7 +221,6 @@ public class ScreenPermissionsFrame extends AbstractFrame {
 
         allowCheckBox.setEditable(editable);
         disallowCheckBox.setEditable(editable);
-        screenWildcardCheckBox.setEditable(editable);
     }
 
     protected void markItemPermission(PermissionVariant permissionVariant) {
