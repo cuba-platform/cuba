@@ -20,6 +20,7 @@ package com.haulmont.cuba.web.widgets.client.treetable;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.NativeEvent;
+import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.TableCellElement;
 import com.google.gwt.event.dom.client.*;
@@ -777,37 +778,34 @@ public class CubaTreeTableWidget extends VTreeTable implements TableWidget {
 
             @Override
             public void onBrowserEvent(Event event) {
+                boolean isClickableCell = isCubaTableClickableCell(event);
+                boolean isClickableCellText = isCubaTableClickableCellText(event);
                 if (event.getTypeInt() == Event.ONMOUSEDOWN
                         && event.getButton() == NativeEvent.BUTTON_LEFT
-                        && !isAnyModifierKeyPressed(event)) {
+                        && !isAnyModifierKeyPressed(event)
+                        && (isClickableCell || isClickableCellText)) {
 
                     Element eventTarget = event.getEventTarget().cast();
                     Element elementTdOrTr = getElementTdOrTr(eventTarget);
 
-                    if (elementTdOrTr != null
-                            && "td".equalsIgnoreCase(elementTdOrTr.getTagName())
-                            && !elementTdOrTr.hasClassName(CUBA_TABLE_CLICKABLE_TEXT_STYLE)) {
-                        // found <td>
+                    int childIndex = DOM.getChildIndex(getElement(), elementTdOrTr);
+                    String columnKey = tHead.getHeaderCell(childIndex).getColKey();
+                    if (columnKey != null) {
+                        WidgetUtil.TextRectangle rect = WidgetUtil.getBoundingClientRect(eventTarget);
+                        _delegate.lastClickClientX = (int) Math.ceil(rect.getLeft());
+                        _delegate.lastClickClientY = (int) Math.ceil(rect.getBottom());
 
-                        if ("span".equalsIgnoreCase(eventTarget.getTagName())
-                                && eventTarget.hasClassName(CUBA_TABLE_CLICKABLE_CELL_STYLE)) {
-                            // found <span class="c-table-clickable-cell">
+                        if (_delegate.cellClickListener != null) {
+                            _delegate.cellClickListener.onClick(columnKey, rowKey, isClickableCellText);
 
-                            int childIndex = DOM.getChildIndex(getElement(), elementTdOrTr);
-                            String columnKey = tHead.getHeaderCell(childIndex).getColKey();
-                            if (columnKey != null) {
-                                WidgetUtil.TextRectangle rect = WidgetUtil.getBoundingClientRect(eventTarget);
-                                _delegate.lastClickClientX = (int) Math.ceil(rect.getLeft());
-                                _delegate.lastClickClientY = (int) Math.ceil(rect.getBottom());
+                            if (isClickableCellText
+                                    && _delegate.clickableColumns != null
+                                    && _delegate.clickableColumns.contains(columnKey)) {
+                                // stop the event propagation if the user clicked on cell text to avoid highlighting the table row
+                                event.preventDefault();
+                                event.stopPropagation();
 
-                                if (_delegate.cellClickListener != null) {
-                                    _delegate.cellClickListener.onClick(columnKey, rowKey);
-
-                                    event.preventDefault();
-                                    event.stopPropagation();
-
-                                    return;
-                                }
+                                return;
                             }
                         }
                     }
@@ -827,6 +825,34 @@ public class CubaTreeTableWidget extends VTreeTable implements TableWidget {
 
                     handleFocusForWidget();
                 }
+            }
+
+            protected boolean isCubaTableClickableCell(Event event) {
+                Element eventTarget = event.getEventTarget().cast();
+                Element elementTdOrTr = getElementTdOrTr(eventTarget);
+
+                return elementTdOrTr != null
+                        && TableCellElement.TAG_TD.equalsIgnoreCase(elementTdOrTr.getTagName())
+                        && elementTdOrTr.hasClassName(CUBA_TABLE_CLICKABLE_CELL_CONTENT)
+                        && !eventTarget.hasClassName(TREE_TABLE_SPACER);
+            }
+
+            protected boolean isCubaTableClickableCellText(Event event) {
+                Element eventTarget = event.getEventTarget().cast();
+                Element elementTdOrTr = getElementTdOrTr(eventTarget);
+
+                if (elementTdOrTr != null
+                        && TableCellElement.TAG_TD.equalsIgnoreCase(elementTdOrTr.getTagName())
+                        && !elementTdOrTr.hasClassName(CUBA_TABLE_CLICKABLE_TEXT_STYLE)) {
+                    // found <td>
+
+                    if (SpanElement.TAG.equalsIgnoreCase(eventTarget.getTagName())
+                            && eventTarget.hasClassName(CUBA_TABLE_CLICKABLE_CELL_STYLE)) {
+                        // found <span class="c-table-clickable-cell">
+                        return true;
+                    }
+                }
+                return false;
             }
 
             @Override
@@ -877,7 +903,9 @@ public class CubaTreeTableWidget extends VTreeTable implements TableWidget {
                 Element tdElement = td.cast();
                 Tools.textSelectionEnable(tdElement, _delegate.textSelectionEnabled);
 
-                if (_delegate.clickableColumns != null && _delegate.clickableColumns.contains(currentColumnKey)) {
+                if ((_delegate.clickableColumns != null && _delegate.clickableColumns.contains(currentColumnKey))
+                        || (_delegate.clickableTableColumns != null && _delegate.clickableTableColumns.contains(currentColumnKey))) {
+                    tdElement.addClassName(CUBA_TABLE_CLICKABLE_CELL_CONTENT);
                     Element wrapperElement = tdElement.getFirstChildElement();
                     final Element clickableSpan = DOM.createSpan().cast();
                     clickableSpan.setClassName(CUBA_TABLE_CLICKABLE_CELL_STYLE);

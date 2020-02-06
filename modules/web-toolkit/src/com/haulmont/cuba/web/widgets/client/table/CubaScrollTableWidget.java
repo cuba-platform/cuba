@@ -851,10 +851,12 @@ public class CubaScrollTableWidget extends VScrollTable implements TableWidget {
 
             @Override
             public void onBrowserEvent(Event event) {
+                boolean isClickableCell = isCubaTableClickableCell(event);
+                boolean isClickableCellText = isCubaTableClickableCellText(event);
                 if (event.getTypeInt() == Event.ONMOUSEDOWN
                         && event.getButton() == NativeEvent.BUTTON_LEFT
                         && !isAnyModifierKeyPressed(event)
-                        && isCubaTableClickableCell(event)) {
+                        && (isClickableCell || isClickableCellText)) {
 
                     Element eventTarget = event.getEventTarget().cast();
                     Element elementTdOrTr = getElementTdOrTr(eventTarget);
@@ -867,17 +869,21 @@ public class CubaScrollTableWidget extends VScrollTable implements TableWidget {
                         _delegate.lastClickClientY = (int) Math.ceil(rect.getBottom());
 
                         if (_delegate.cellClickListener != null) {
-                            _delegate.cellClickListener.onClick(columnKey, rowKey);
+                            _delegate.cellClickListener.onClick(columnKey, rowKey, isClickableCellText);
 
-                            event.preventDefault();
-                            event.stopPropagation();
-
-                            return;
+                            if (isClickableCellText
+                                    && _delegate.clickableColumns != null
+                                    && _delegate.clickableColumns.contains(columnKey)) {
+                                // stop the event propagation if the user clicked on cell text to avoid highlighting the table row
+                                event.preventDefault();
+                                event.stopPropagation();
+                                return;
+                            }
                         }
                     }
                 }
 
-                if (event.getTypeInt() == Event.ONDBLCLICK && isCubaTableClickableCell(event)) {
+                if (event.getTypeInt() == Event.ONDBLCLICK && isCubaTableClickableCellText(event)) {
                     return;
                 }
 
@@ -901,12 +907,21 @@ public class CubaScrollTableWidget extends VScrollTable implements TableWidget {
                 Element eventTarget = event.getEventTarget().cast();
                 Element elementTdOrTr = getElementTdOrTr(eventTarget);
 
+                return elementTdOrTr != null
+                        && TableCellElement.TAG_TD.equalsIgnoreCase(elementTdOrTr.getTagName())
+                        && elementTdOrTr.hasClassName(CUBA_TABLE_CLICKABLE_CELL_CONTENT);
+            }
+
+            protected boolean isCubaTableClickableCellText(Event event) {
+                Element eventTarget = event.getEventTarget().cast();
+                Element elementTdOrTr = getElementTdOrTr(eventTarget);
+
                 if (elementTdOrTr != null
-                        && "td".equalsIgnoreCase(elementTdOrTr.getTagName())
+                        && TableCellElement.TAG_TD.equalsIgnoreCase(elementTdOrTr.getTagName())
                         && !elementTdOrTr.hasClassName(CUBA_TABLE_CLICKABLE_TEXT_STYLE)) {
                     // found <td>
 
-                    if ("span".equalsIgnoreCase(eventTarget.getTagName())
+                    if (SpanElement.TAG.equalsIgnoreCase(eventTarget.getTagName())
                             && eventTarget.hasClassName(CUBA_TABLE_CLICKABLE_CELL_STYLE)) {
                         // found <span class="c-table-clickable-cell">
                         return true;
@@ -964,7 +979,9 @@ public class CubaScrollTableWidget extends VScrollTable implements TableWidget {
                 final Element tdElement = td.cast();
                 Tools.textSelectionEnable(tdElement, _delegate.textSelectionEnabled);
 
-                if (_delegate.clickableColumns != null && _delegate.clickableColumns.contains(currentColumnKey)) {
+                if ((_delegate.clickableColumns != null && _delegate.clickableColumns.contains(currentColumnKey))
+                        || (_delegate.clickableTableColumns != null && _delegate.clickableTableColumns.contains(currentColumnKey))) {
+                    tdElement.addClassName(CUBA_TABLE_CLICKABLE_CELL_CONTENT);
                     Element wrapperElement = tdElement.getFirstChildElement();
                     final Element clickableSpan = DOM.createSpan().cast();
                     clickableSpan.setClassName(CUBA_TABLE_CLICKABLE_CELL_STYLE);

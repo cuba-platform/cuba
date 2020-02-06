@@ -71,6 +71,10 @@ public class CubaTable extends com.vaadin.v7.ui.Table implements TableSortableCo
 
     protected Set<Object> htmlCaptionColumns; // lazily initialized set
 
+    protected List<Object> clickableTableColumnIds; // lazily initialized list
+
+    protected Registration tableCellClickListenerRegistration;
+
     protected AggregationStyle aggregationStyle = AggregationStyle.TOP;
     protected Object focusColumn;
     protected Object focusItem;
@@ -92,16 +96,20 @@ public class CubaTable extends com.vaadin.v7.ui.Table implements TableSortableCo
     public CubaTable() {
         registerRpc(new CubaTableServerRpc() {
             @Override
-            public void onClick(String columnKey, String rowKey) {
+            public void onClick(String columnKey, String rowKey, boolean isText) {
                 Object columnId = _columnIdMap().get(columnKey);
                 Object itemId = itemIdMapper.get(rowKey);
                 // itemId could be null if rendering in process
                 // If itemId is null it causes NPE
-                if (itemId != null && cellClickListeners != null) {
-                    CellClickListener cellClickListener = cellClickListeners.get(columnId);
-                    if (cellClickListener != null) {
-                        cellClickListener.onClick(itemId, columnId);
+                if (itemId != null) {
+                    if (cellClickListeners != null && isText) {
+                        CellClickListener cellClickListener = cellClickListeners.get(columnId);
+                        if (cellClickListener != null) {
+                            cellClickListener.onClick(itemId, columnId);
+                        }
                     }
+
+                    fireEvent(new TableCellClickEvent(CubaTable.this, itemId, columnId, isText));
                 }
             }
 
@@ -779,6 +787,34 @@ public class CubaTable extends com.vaadin.v7.ui.Table implements TableSortableCo
     }
 
     @Override
+    public void addTableCellClickListener(Object propertyId, TableCellClickListener listener) {
+        if (clickableTableColumnIds == null) {
+            clickableTableColumnIds = new ArrayList<>();
+        }
+        clickableTableColumnIds.add(propertyId);
+
+        // Register only one TableCellClickListener for all clickable table columns
+        if (tableCellClickListenerRegistration == null) {
+            tableCellClickListenerRegistration = addListener(TableCellClickEvent.class, listener, TableCellClickListener.clickMethod);
+        }
+    }
+
+    @Override
+    public void removeTableCellClickListener(Object propertyId) {
+        if (clickableTableColumnIds != null) {
+            clickableTableColumnIds.remove(propertyId);
+
+            if (tableCellClickListenerRegistration != null
+                    && clickableTableColumnIds.isEmpty()) {
+                tableCellClickListenerRegistration.remove();
+                tableCellClickListenerRegistration = null;
+
+                clickableTableColumnIds = null;
+            }
+        }
+    }
+
+    @Override
     public boolean getColumnSortable(Object columnId) {
         return nonSortableProperties == null || !nonSortableProperties.contains(columnId);
     }
@@ -829,6 +865,7 @@ public class CubaTable extends com.vaadin.v7.ui.Table implements TableSortableCo
         super.beforeClientResponse(initial);
 
         updateClickableColumnKeys();
+        updateClickableTableColumnKeys();
         updateColumnDescriptions();
         updateAggregatableTooltips();
         updateHtmlCaptionColumns();
@@ -871,15 +908,24 @@ public class CubaTable extends com.vaadin.v7.ui.Table implements TableSortableCo
 
     protected void updateClickableColumnKeys() {
         if (cellClickListeners != null) {
-            String[] clickableColumnKeys = new String[cellClickListeners.size()];
-            int i = 0;
-            for (Object columnId : cellClickListeners.keySet()) {
-                clickableColumnKeys[i] = _columnIdMap().key(columnId);
-                i++;
-            }
-
-            getState().clickableColumnKeys = clickableColumnKeys;
+            getState().clickableColumnKeys = getClickableColumnKeys(cellClickListeners.keySet());
         }
+    }
+
+    protected void updateClickableTableColumnKeys() {
+        if (clickableTableColumnIds != null) {
+            getState().clickableTableColumnKeys = getClickableColumnKeys(clickableTableColumnIds);
+        }
+    }
+
+    protected String[] getClickableColumnKeys(Collection<Object> columnIds) {
+        String[] clickableColumnKeys = new String[columnIds.size()];
+        int i = 0;
+        for (Object columnId : columnIds) {
+            clickableColumnKeys[i] = _columnIdMap().key(columnId);
+            i++;
+        }
+        return clickableColumnKeys;
     }
 
     @Override

@@ -118,6 +118,13 @@ public class CubaScrollTableConnector extends TableConnector {
                 getWidget()._delegate.clickableColumns = null;
             }
         }
+        if (stateChangeEvent.hasPropertyChanged("clickableTableColumnKeys")) {
+            if (getState().clickableTableColumnKeys != null) {
+                getWidget()._delegate.clickableTableColumns = new HashSet<>(Arrays.asList(getState().clickableTableColumnKeys));
+            } else {
+                getWidget()._delegate.clickableTableColumns = null;
+            }
+        }
         if (stateChangeEvent.hasPropertyChanged("customPopup")) {
             if (getState().customPopup != null) {
                 ComponentConnector customPopup = (ComponentConnector) getState().customPopup;
@@ -201,7 +208,7 @@ public class CubaScrollTableConnector extends TableConnector {
             Element targetAggregatedElement = findCurrentOrParentTd(element);
             if (targetAggregatedElement != null
                     && (targetAggregatedElement.hasClassName("v-table-aggregation-cell")
-                        || targetAggregatedElement.getFirstChildElement().hasClassName("v-table-footer-container"))) {
+                    || targetAggregatedElement.getFirstChildElement().hasClassName("v-table-footer-container"))) {
                 int childIndex = DOM.getChildIndex(targetAggregatedElement.getParentElement(), targetAggregatedElement);
 
                 String columnKey = getWidget().tHead.getHeaderCell(childIndex).getColKey();
@@ -266,8 +273,8 @@ public class CubaScrollTableConnector extends TableConnector {
 
         getWidget()._delegate.cellClickListener = new TableCellClickListener() {
             @Override
-            public void onClick(String columnKey, int rowKey) {
-                getRpcProxy(CubaTableServerRpc.class).onClick(columnKey, String.valueOf(rowKey));
+            public void onClick(String columnKey, int rowKey, boolean isText) {
+                getRpcProxy(CubaTableServerRpc.class).onClick(columnKey, String.valueOf(rowKey), isText);
             }
         };
 

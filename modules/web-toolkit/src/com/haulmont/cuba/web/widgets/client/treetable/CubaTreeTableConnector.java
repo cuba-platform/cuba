@@ -122,6 +122,13 @@ public class CubaTreeTableConnector extends TreeTableConnector {
                 getWidget()._delegate.clickableColumns = null;
             }
         }
+        if (stateChangeEvent.hasPropertyChanged("clickableTableColumnKeys")) {
+            if (getState().clickableTableColumnKeys != null) {
+                getWidget()._delegate.clickableTableColumns = new HashSet<>(Arrays.asList(getState().clickableTableColumnKeys));
+            } else {
+                getWidget()._delegate.clickableTableColumns = null;
+            }
+        }
         if (stateChangeEvent.hasPropertyChanged("customPopup")) {
             if (getState().customPopup != null) {
                 ComponentConnector customPopup = (ComponentConnector) getState().customPopup;
@@ -282,10 +289,11 @@ public class CubaTreeTableConnector extends TreeTableConnector {
 
         getWidget()._delegate.cellClickListener = new TableCellClickListener() {
             @Override
-            public void onClick(String columnKey, int rowKey) {
-                getRpcProxy(CubaTableServerRpc.class).onClick(columnKey, String.valueOf(rowKey));
+            public void onClick(String columnKey, int rowKey, boolean isText) {
+                getRpcProxy(CubaTableServerRpc.class).onClick(columnKey, String.valueOf(rowKey), isText);
             }
         };
+
         tooltipHandlerRegistration = Event.addNativePreviewHandler(new Event.NativePreviewHandler() {
             @Override
             public void onPreviewNativeEvent(Event.NativePreviewEvent event) {
