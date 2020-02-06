@@ -21,7 +21,7 @@ import com.vaadin.shared.communication.ServerRpc;
 
 public interface CubaTableServerRpc extends ServerRpc {
 
-    void onClick(String columnKey, String rowKey);
+    void onClick(String columnKey, String rowKey, boolean isText);
 
     void onAggregationTotalInputChange(String columnKey, String value, boolean isFocused);
 

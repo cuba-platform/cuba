@@ -39,10 +39,12 @@ import java.util.List;
 import java.util.Set;
 
 public class TableWidgetDelegate {
+    public static final String CUBA_TABLE_CLICKABLE_CELL_CONTENT = "c-table-clickable-cell-content";
     public static final String CUBA_TABLE_CLICKABLE_CELL_STYLE = "c-table-clickable-cell";
     public static final String CUBA_TABLE_CLICKABLE_TEXT_STYLE = "c-table-clickable-text";
     public static final String WIDGET_CELL_CLASSNAME = "widget-container";
     public static final String TABLE_SORT_CONTEXTMENU_ITEM = "c-table-contextmenu-item";
+    public static final String TREE_TABLE_SPACER = "v-treetable-treespacer";
 
     public VScrollTable table;
     public TableWidget tableWidget;
@@ -71,6 +73,7 @@ public class TableWidgetDelegate {
     public Runnable emptyStateLinkClickHandler;
 
     public Set<String> clickableColumns;
+    public Set<String> clickableTableColumns;
     public Set<String> htmlCaptionColumns;
     public TableCellClickListener cellClickListener;
 

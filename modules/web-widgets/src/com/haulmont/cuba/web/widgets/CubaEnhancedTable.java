@@ -20,8 +20,11 @@ import com.haulmont.cuba.web.widgets.data.AggregationContainer;
 import com.vaadin.server.Resource;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Layout;
+import com.vaadin.util.ReflectTools;
 import com.vaadin.v7.data.Property;
 
+import java.lang.reflect.Method;
+import java.util.EventObject;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -86,6 +89,10 @@ public interface CubaEnhancedTable extends AggregationContainer {
     void setClickListener(Object propertyId, CellClickListener clickListener);
     void removeClickListener(Object propertyId);
 
+    void addTableCellClickListener(Object propertyId, TableCellClickListener listener);
+
+    void removeTableCellClickListener(Object propertyId);
+
     void showCustomPopup(Component popupComponent);
 
     boolean getCustomPopupAutoClose();
@@ -131,8 +138,79 @@ public interface CubaEnhancedTable extends AggregationContainer {
      */
     void setSortOptions(Object propertyId, boolean sortAscending);
 
+    /**
+     * Receives the events if the user clicks on text in a cell or the 'maxTextLength' is set for column cell.
+     */
     interface CellClickListener {
+        /**
+         * Invoked when user clicked on text in a cell.
+         *
+         * @param itemId   id of item
+         * @param columnId id of column
+         */
         void onClick(Object itemId, Object columnId);
+    }
+
+    /**
+     * Receives the events when the user clicks on a cell.
+     */
+    @FunctionalInterface
+    interface TableCellClickListener {
+
+        Method clickMethod = ReflectTools.findMethod(
+                TableCellClickListener.class, "onClick", TableCellClickEvent.class);
+
+        /**
+         * Invoked when user clicked on a cell
+         *
+         * @param tableCellClickEvent a table cell click event
+         */
+        void onClick(TableCellClickEvent tableCellClickEvent);
+    }
+
+    /**
+     * An event is fired when the user clicks inside the table cell.
+     */
+    class TableCellClickEvent extends EventObject {
+        protected final Object itemId;
+        protected final Object columnId;
+        protected final boolean isText;
+
+        /**
+         * Constructor for a table cell click event.
+         *
+         * @param table    the Table from which this event originates
+         * @param itemId   id of the entity instance represented by the clicked row
+         * @param columnId id of the clicked Table column
+         * @param isText   {@code true} if the user clicks on text inside the table cell, {@code false} otherwise
+         */
+        public TableCellClickEvent(CubaEnhancedTable table, Object itemId, Object columnId, boolean isText) {
+            super(table);
+            this.itemId = itemId;
+            this.columnId = columnId;
+            this.isText = isText;
+        }
+
+        /**
+         * @return id of the entity instance represented by the clicked row
+         */
+        public Object getItemId() {
+            return itemId;
+        }
+
+        /**
+         * @return id of the clicked Table column
+         */
+        public Object getColumnId() {
+            return columnId;
+        }
+
+        /**
+         * @return {@code true} if the user clicks on text inside the table cell, {@code false} otherwise
+         */
+        public boolean isText() {
+            return isText;
+        }
     }
 
     void setBeforePaintListener(Runnable beforePaintListener);

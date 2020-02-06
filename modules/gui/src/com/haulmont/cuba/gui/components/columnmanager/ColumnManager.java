@@ -17,8 +17,8 @@
 package com.haulmont.cuba.gui.components.columnmanager;
 
 import com.haulmont.cuba.gui.components.AggregationInfo;
-import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.components.GroupTable;
+import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.components.TreeTable;
 
 /**
@@ -178,4 +178,18 @@ public interface ColumnManager {
      * @return ratio for the column
      */
     float getColumnExpandRatio(Table.Column column);
+
+    /**
+     * Registers a new cell click listener for given column.
+     *
+     * @param columnId id of column
+     */
+    void addCellClickListener(String columnId);
+
+    /**
+     * Removes a previously registered cell click listener for given column.
+     *
+     * @param columnId id of column
+     */
+    void removeCellClickListener(String columnId);
 }
