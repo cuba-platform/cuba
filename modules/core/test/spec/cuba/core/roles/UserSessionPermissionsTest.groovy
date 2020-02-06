@@ -20,7 +20,7 @@ import com.haulmont.chile.core.model.MetaClass
 import com.haulmont.cuba.core.global.AppBeans
 import com.haulmont.cuba.core.global.Metadata
 import com.haulmont.cuba.core.global.UserSessionSource
-import com.haulmont.cuba.security.role.RoleDefinitionBuilder
+import com.haulmont.cuba.security.role.BasicRoleDefinition
 import com.haulmont.cuba.security.entity.EntityAttrAccess
 import com.haulmont.cuba.security.entity.User
 import com.haulmont.cuba.security.global.UserSession
@@ -45,9 +45,9 @@ class UserSessionPermissionsTest extends Specification {
     }
 
     def "wildcard attribute permissions"() {
-        RoleDefinition roleDefinition = RoleDefinitionBuilder.create()
-                .withEntityAttrAccessPermission(User, '*', EntityAttrAccess.VIEW)
-                .withEntityAttrAccessPermission(User, 'firstName', EntityAttrAccess.MODIFY)
+        RoleDefinition roleDefinition = BasicRoleDefinition.builder()
+                .withEntityAttributePermission(User, '*', EntityAttrAccess.VIEW)
+                .withEntityAttributePermission(User, 'firstName', EntityAttrAccess.MODIFY)
                 .build()
 
         MetaClass userMetaClass = metadata.getClassNN(User.class)

@@ -16,9 +16,6 @@
 
 package spec.cuba.core.roles
 
-import com.haulmont.cuba.core.global.AppBeans
-import com.haulmont.cuba.core.global.Metadata
-import com.haulmont.cuba.security.role.RoleDefinitionBuilder
 import com.haulmont.cuba.security.role.RoleDefinitionsJoiner
 import com.haulmont.cuba.security.entity.*
 import com.haulmont.cuba.security.role.BasicRoleDefinition
