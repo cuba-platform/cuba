@@ -83,7 +83,14 @@ public class DbUpdateManager {
     protected void checkDatabase(String storeName) {
         DbUpdater dbUpdater = AppBeans.getPrototype(DbUpdater.NAME, storeName);
         try {
-            boolean initialized = dbUpdater.dbInitialized();
+            boolean initialized = false;
+            try {
+                initialized = dbUpdater.dbInitialized();
+            } catch (DbInitializationException e) {
+                if (!Stores.isMain(storeName)) {
+                    return;
+                }
+            }
             if (!initialized) {
                 throw new IllegalStateException(StringHelper.wrapLogMessage(
                         "ERROR: Data store " + (Stores.isMain(storeName) ? "" : "[" + storeNameToString(storeName) + "]") +
