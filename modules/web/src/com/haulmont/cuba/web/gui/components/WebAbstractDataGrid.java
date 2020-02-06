@@ -849,6 +849,7 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
         return dataGridItems;
     }
 
+    @Nullable
     protected EntityDataGridItems<E> getEntityDataGridItems() {
         return getItems() != null ? (EntityDataGridItems<E>) getItems() : null;
     }
@@ -1963,7 +1964,7 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
     }
 
     protected List<Column<E>> getInitialVisibleColumns() {
-        MetaClass metaClass = getEntityDataGridItems().getEntityMetaClass();
+        MetaClass metaClass = getEntityDataGridItemsNN().getEntityMetaClass();
         return columnsOrder.stream()
                 .filter(column -> {
                     MetaPropertyPath propertyPath = column.getPropertyPath();

@@ -41,6 +41,7 @@ public interface ListComponent<E extends Entity> extends Component, Component.Be
     @Nullable
     CollectionDatasource getDatasource();
 
+    @Nullable
     DataUnit getItems();
 
     /**

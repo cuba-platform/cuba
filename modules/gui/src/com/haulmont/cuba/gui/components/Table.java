@@ -111,6 +111,8 @@ public interface Table<E extends Entity>
     Map<Object, Object> getAggregationResults();
 
     void setItems(TableItems<E> tableItems);
+
+    @Nullable
     @Override
     TableItems<E> getItems();
 

@@ -1382,6 +1382,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
         }
     }
 
+    @Nullable
     @Override
     public TableItems<E> getItems() {
         return this.dataBinding != null ? this.dataBinding.getTableItems() : null;
