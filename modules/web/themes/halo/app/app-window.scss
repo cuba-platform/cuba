@@ -367,13 +367,15 @@ $cuba-sidemenu-layout-collapse-animation-time: .4s !default;
       align-items: center;
 
       height: 40px;
-      padding: 0 round(($cuba-sidemenu-layout-collapsed-width - $logo-size) / 2);
+      // consider 1px right border
+      padding: 0 floor(($cuba-sidemenu-layout-collapsed-width - $logo-size - 1px) / 2);
 
       text-align: left;
 
       .c-app-icon {
         height: $logo-size;
         width: $logo-size;
+        flex-shrink: 0;
 
         margin-right: $v-layout-spacing-horizontal;
       }
