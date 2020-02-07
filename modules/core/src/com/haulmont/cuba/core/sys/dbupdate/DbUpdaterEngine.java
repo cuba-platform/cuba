@@ -99,7 +99,9 @@ public class DbUpdaterEngine implements DbUpdater {
     public void updateDatabase() throws DbInitializationException {
         if (getDataSource() != null) {
             if (dbInitialized()) {
-                doUpdate();
+                if (scriptsExists) {
+                    doUpdate();
+                }
             } else {
                 doInit();
             }
@@ -176,15 +178,15 @@ public class DbUpdaterEngine implements DbUpdater {
             return true;
         }
 
-        try (Connection connection = dataSource.getConnection()) {
-            List<ScriptResource> initScripts = getInitScripts();
-            List<ScriptResource> updateScripts = getUpdateScripts();
-            if (initScripts.isEmpty() && updateScripts.isEmpty()) {
-                log.trace("Init/Update scripts folder is empty for data store [{}], so data store is initialized", storeNameToString(storeName));
-                return true;
-            }
+        List<ScriptResource> initScripts = getInitScripts();
+        List<ScriptResource> updateScripts = getUpdateScripts();
+        if (initScripts.isEmpty() && updateScripts.isEmpty()) {
+            log.trace("Init/Update scripts folder is empty for data store [{}], so data store is initialized", storeNameToString(storeName));
+            return true;
+        }
+        scriptsExists = true;
 
-            scriptsExists = true;
+        try (Connection connection = dataSource.getConnection()) {
             DatabaseMetaData dbMetaData = connection.getMetaData();
             DbProperties dbProperties = new DbProperties(getConnectionUrl(connection));
             boolean isSchemaByUser = DbmsSpecificFactory.getDbmsFeatures().isSchemaByUser();
@@ -231,6 +233,7 @@ public class DbUpdaterEngine implements DbUpdater {
     }
 
     protected void doUpdate() {
+
         log.info("Updating data store [{}] ...", storeNameToString(storeName));
 
         if (!changelogTableExists) {
