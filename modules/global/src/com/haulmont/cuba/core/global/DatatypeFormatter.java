@@ -19,7 +19,6 @@ package com.haulmont.cuba.core.global;
 
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.DatatypeRegistry;
-import com.haulmont.chile.core.datatypes.TimeZoneAwareDatatype;
 import com.haulmont.chile.core.datatypes.impl.DateTimeDatatype;
 import org.springframework.stereotype.Component;
 
@@ -28,6 +27,7 @@ import javax.inject.Inject;
 import java.math.BigDecimal;
 import java.sql.Time;
 import java.text.ParseException;
+import java.time.*;
 import java.util.Date;
 import java.util.TimeZone;
 
@@ -74,6 +74,56 @@ public class DatatypeFormatter {
             return ((DateTimeDatatype) datatype).format(value, uss.getLocale(), timeZone);
         }
         return datatype.format(value, uss.getLocale());
+    }
+
+    /**
+     * Format LocalDate (date without time and without a time-zone) using {@code dateFormat} string specified in the
+     * main message pack.
+     *
+     * @return string representation or empty string if the value is null
+     */
+    public String formatLocalDate(@Nullable LocalDate value) {
+        return datatypeRegistry.getNN(LocalDate.class).format(value, uss.getLocale());
+    }
+
+    /**
+     * Format LocalDateTime (date and time without a time-zone) using {@code dateTimeFormat} string specified in the
+     * main message pack.
+     *
+     * @return string representation or empty string if the value is null
+     */
+    public String formatLocalDateTime(@Nullable LocalDateTime value) {
+        return datatypeRegistry.getNN(LocalDateTime.class).format(value, uss.getLocale());
+    }
+
+    /**
+     * Format LocalTime (time without date and without a time-zone) using {@code timeFormat} string specified in the
+     * main message pack.
+     *
+     * @return string representation or empty string if the value is null
+     */
+    public String formatLocalTime(@Nullable LocalTime value) {
+        return datatypeRegistry.getNN(LocalTime.class).format(value, uss.getLocale());
+    }
+
+    /**
+     * Format OffsetDateTime (date and time with an offset from UTC/Greenwich) using {@code offsetDateTimeFormat} string
+     * specified in the main message pack.
+     *
+     * @return string representation or empty string if the value is null
+     */
+    public String formatOffsetDateTime(@Nullable OffsetDateTime value) {
+        return datatypeRegistry.getNN(OffsetDateTime.class).format(value, uss.getLocale());
+    }
+
+    /**
+     * Format OffsetTime (time with an offset from UTC/Greenwich) using {@code offsetTimeFormat} string specified in the
+     * main message pack.
+     *
+     * @return string representation or empty string if the value is null
+     */
+    public String formatOffsetTime(@Nullable OffsetTime value) {
+        return datatypeRegistry.getNN(OffsetTime.class).format(value, uss.getLocale());
     }
 
     /**
@@ -147,6 +197,61 @@ public class DatatypeFormatter {
             return ((DateTimeDatatype) datatype).parse(str, uss.getLocale(), timeZone);
         }
         return datatype.parse(str, uss.getLocale());
+    }
+
+    /**
+     * Parse LocalDate (date without time and without a time-zone) using {@code dateFormat} string specified in the main
+     * message pack.
+     *
+     * @return LocalDate value or null if a blank string is provided
+     */
+    @Nullable
+    public LocalDate parseLocalDate(String str) throws ParseException {
+        return datatypeRegistry.getNN(LocalDate.class).parse(str, uss.getLocale());
+    }
+
+    /**
+     * Parse LocalTime (time without date and without a time-zone) using {@code timeFormat} string specified in the main
+     * message pack.
+     *
+     * @return LocalTime value or null if a blank string is provided
+     */
+    @Nullable
+    public LocalTime parseLocalTime(String str) throws ParseException {
+        return datatypeRegistry.getNN(LocalTime.class).parse(str, uss.getLocale());
+    }
+
+    /**
+     * Parse LocalDateTime (date and time without a time-zone) using {@code dateTimeFormat} string specified in the main
+     * message pack.
+     *
+     * @return LocalDateTime value or null if a blank string is provided
+     */
+    @Nullable
+    public LocalDateTime parseLocalDateTime(String str) throws ParseException {
+        return datatypeRegistry.getNN(LocalDateTime.class).parse(str, uss.getLocale());
+    }
+
+    /**
+     * Parse OffsetDateTime (date and time with an offset from UTC/Greenwich) using {@code offsetDateTimeFormat} string
+     * specified in the main message pack.
+     *
+     * @return OffsetDateTime value or null if a blank string is provided
+     */
+    @Nullable
+    public OffsetDateTime parseOffsetDateTime(String str) throws ParseException {
+        return datatypeRegistry.getNN(OffsetDateTime.class).parse(str, uss.getLocale());
+    }
+
+    /**
+     * Parse OffsetTime (time without date and with an offset from UTC/Greenwich) using {@code offsetTimeFormat} string
+     * specified in the main message pack.
+     *
+     * @return OffsetTime value or null if a blank string is provided
+     */
+    @Nullable
+    public OffsetTime parseOffsetTime(String str) throws ParseException {
+        return datatypeRegistry.getNN(OffsetTime.class).parse(str, uss.getLocale());
     }
 
     /**
