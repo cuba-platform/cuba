@@ -22,15 +22,15 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Class is used to build a new {@link RoleDefinition} from two other role definitions. Roles are joined using the
+ * Class is used to build a new {@link RoleDefinition} from multiple other role definitions. Roles are joined using the
  * following rules:
  * <ul>
+ *     <li>if only one role defines a permission on some target then this permission value is set to the resulting role</li>
  *     <li>if both roles have explicit permissions on some target then a permission that allows more is selected</li>
- *     <li>if one role has an explicit target and the second role doesn't, but the second role has a default, then the
- *     value that allows more (explicit from the first role or default from the second role) is set as an explicit
- *     permission for the result role</li>
- *     <li>after all explicit permissions are checked, the default values are merged - default with the value that
- *     allows more is set as a default for the resulting role</li>
+ *     <li>if one role has an explicit target, the second role doesn't, but the second role defines a wildcard
+ *     permission, then the value that allows more (explicit from the first role or wildcard from the second role) is
+ *     set as an explicit permission for the resulting role</li>
+ *     <li>if both roles define wildcard permissions then the wildcard permission that allows more is selected</li>
  * </ul>
  */
 public class RoleDefinitionsJoiner {
