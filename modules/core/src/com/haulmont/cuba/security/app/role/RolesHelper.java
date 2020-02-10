@@ -205,6 +205,9 @@ public class RolesHelper {
 
         if (serverConfig.getRolesPolicyVersion() == 1) {
             fillWildcardPermissionsByRoleType(roleDefinitionBuilder, role.getType());
+            if (RoleType.SUPER == role.getType()) {
+                roleDefinitionBuilder.withIsSuper(true);
+            }
         }
 
         return roleDefinitionBuilder
