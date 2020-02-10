@@ -21,7 +21,7 @@ import com.haulmont.chile.core.datatypes.impl.EnumClass;
 /**
  * Type of access to an entity attribute.
  */
-public enum EntityAttrAccess implements EnumClass<Integer>, HasSecurityAccessValue {
+public enum EntityAttrAccess implements EnumClass<Integer> {
     DENY(0),
     VIEW(1),
     MODIFY(2);

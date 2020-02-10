@@ -27,12 +27,11 @@ import com.haulmont.cuba.gui.app.security.role.edit.PermissionUiHelper;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.security.entity.EntityOp;
-import com.haulmont.cuba.security.entity.Permission;
-import com.haulmont.cuba.security.entity.PermissionType;
-import com.haulmont.cuba.security.entity.Role;
+import com.haulmont.cuba.security.entity.*;
+import com.haulmont.cuba.security.role.RolesService;
 import org.apache.commons.lang3.BooleanUtils;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.HashMap;
 import java.util.Map;
@@ -80,15 +79,24 @@ public class SpecificPermissionsFrame extends AbstractFrame {
     @Inject
     protected GroupBoxLayout specificEditPane;
 
+    @Inject
+    protected RolesService rolesService;
+
+    protected int rolesPolicyVersion;
+
     protected boolean itemChanging = false;
 
     protected boolean permissionsLoaded;
+
+    @Inject
+    protected CheckBox specificWildcardCheckBox;
 
     @Override
     public void init(Map<String, Object> params) {
         super.init(params);
 
         permissionsLoaded = BooleanUtils.isTrue((Boolean) params.get("permissionsLoaded"));
+        rolesPolicyVersion = rolesService.getRolesPolicyVersion();
 
         specificPermissionsTree.setStyleProvider(new BasicPermissionTreeStyleProvider());
 
@@ -144,6 +152,10 @@ public class SpecificPermissionsFrame extends AbstractFrame {
         applyPermissions(hasPermissionsToModifyPermission);
 
         specificEditPane.setEnabled(security.isEntityOpPermitted(metadata.getClass(Role.class), EntityOp.UPDATE));
+
+        disallowCheckBox.setVisible(rolesPolicyVersion == 1);
+
+        initWildcardCheckBox();
     }
 
     protected void updateCheckBoxes(BasicPermissionTarget item) {
@@ -172,6 +184,7 @@ public class SpecificPermissionsFrame extends AbstractFrame {
 
         allowCheckBox.setEditable(editable);
         disallowCheckBox.setEditable(editable);
+        specificWildcardCheckBox.setEditable(editable);
     }
 
     protected void markItemPermission(PermissionVariant permissionVariant) {
@@ -210,5 +223,58 @@ public class SpecificPermissionsFrame extends AbstractFrame {
         params.put("permissionsLoaded", permissionsLoaded);
 
         return params;
+    }
+
+    protected void initWildcardCheckBox() {
+        if (rolesPolicyVersion == 1) {
+            specificWildcardCheckBox.setVisible(false);
+            return;
+        }
+        Permission wildcardPermission = getWildcardPermission();
+        if (wildcardPermission != null) {
+            specificWildcardCheckBox.setValue(true);
+        }
+
+        specificWildcardCheckBox.addValueChangeListener(e -> {
+            PermissionVariant permissionVariant = PermissionUiHelper.getCheckBoxVariant(e.getValue(),
+                    PermissionVariant.ALLOWED);
+            String permissionTarget = "*";
+            if (permissionVariant != PermissionVariant.NOTSET) {
+                // Create permission
+                int value = PermissionUiHelper.getPermissionValue(permissionVariant);
+                PermissionUiHelper.createPermissionItem(specificPermissionsDs, roleDs,
+                        permissionTarget, PermissionType.SPECIFIC, value);
+            } else {
+                // Remove permission
+                Permission permission = null;
+                for (Permission p : specificPermissionsDs.getItems()) {
+                    if (Objects.equals(p.getTarget(), permissionTarget)) {
+                        permission = p;
+                        break;
+                    }
+                }
+                if (permission != null) {
+                    specificPermissionsDs.removeItem(permission);
+                }
+            }
+            updateCheckboxesEnabledByWildcard();
+        });
+
+        updateCheckboxesEnabledByWildcard();
+    }
+
+    @Nullable
+    protected Permission getWildcardPermission() {
+        for (Permission p : specificPermissionsDs.getItems()) {
+            if (Objects.equals(p.getTarget(), "*")) {
+                return p;
+            }
+        }
+        return null;
+    }
+
+    protected void updateCheckboxesEnabledByWildcard() {
+        Permission wildcardPermission = getWildcardPermission();
+        allowCheckBox.setEnabled(wildcardPermission == null);
     }
 }

@@ -30,6 +30,7 @@ import com.haulmont.cuba.gui.app.security.entity.AttributeTarget;
 import com.haulmont.cuba.gui.app.security.entity.BasicPermissionTarget;
 import com.haulmont.cuba.gui.app.security.entity.MultiplePermissionTarget;
 import com.haulmont.cuba.gui.app.security.entity.OperationPermissionTarget;
+import com.haulmont.cuba.security.role.RolesService;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
@@ -65,6 +66,9 @@ public class PermissionConfig {
 
     @Inject
     protected Dom4jTools dom4JTools;
+
+    @Inject
+    protected RolesService rolesService;
 
     public static final String PERMISSION_CONFIG_XML_PROP = "cuba.permissionConfig";
 
@@ -199,6 +203,9 @@ public class PermissionConfig {
                         for (MetaProperty metaProperty : propertyList) {
                             String metaPropertyName = metaProperty.getName();
                             attrs.getPermissions().add(new AttributeTarget(metaPropertyName));
+                        }
+                        if (rolesService.getRolesPolicyVersion() == 2) {
+                            attrs.getPermissions().add(new AttributeTarget("*"));
                         }
                         entityAttributes.add(attrs);
                     }

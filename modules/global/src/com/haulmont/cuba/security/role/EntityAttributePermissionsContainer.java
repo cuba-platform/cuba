@@ -16,20 +16,7 @@
 
 package com.haulmont.cuba.security.role;
 
-import com.haulmont.cuba.security.entity.EntityAttrAccess;
-
-import javax.annotation.Nullable;
-
 public class EntityAttributePermissionsContainer extends PermissionsContainer {
+
     private static final long serialVersionUID = -4057315403116500344L;
-
-    private EntityAttrAccess defaultEntityAttributeAccess;
-
-    public EntityAttrAccess getDefaultEntityAttributeAccess() {
-        return defaultEntityAttributeAccess;
-    }
-
-    public void setDefaultEntityAttributeAccess(@Nullable EntityAttrAccess defaultEntityAttributeAccess) {
-        this.defaultEntityAttributeAccess = defaultEntityAttributeAccess;
-    }
 }

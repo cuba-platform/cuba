@@ -20,7 +20,14 @@ import com.haulmont.cuba.security.entity.Access;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
 import com.haulmont.cuba.security.role.*;
 
+import java.util.Map;
+
+/**
+ * Role definition used in integration tests. The role grants full access (wildcard permissions on everything).
+ */
 public class TestFullAccessRole implements RoleDefinition {
+
+    public static final String NAME = "test-full-access";
 
     private EntityPermissionsContainer entityPermissions;
     private EntityAttributePermissionsContainer entityAttributePermissions;
@@ -35,18 +42,19 @@ public class TestFullAccessRole implements RoleDefinition {
         screenPermissions = new ScreenPermissionsContainer();
         screenElementsPermissions = new ScreenComponentPermissionsContainer();
 
-        entityPermissions.setDefaultEntityCreateAccess(Access.ALLOW);
-        entityPermissions.setDefaultEntityReadAccess(Access.ALLOW);
-        entityPermissions.setDefaultEntityUpdateAccess(Access.ALLOW);
-        entityPermissions.setDefaultEntityDeleteAccess(Access.ALLOW);
-        entityAttributePermissions.setDefaultEntityAttributeAccess(EntityAttrAccess.MODIFY);
-        specificPermissions.setDefaultSpecificAccess(Access.ALLOW);
-        screenPermissions.setDefaultScreenAccess(Access.ALLOW);
+        Map<String, Integer> explicitEntityPermissions = entityPermissions.getExplicitPermissions();
+        explicitEntityPermissions.put("*:create", Access.ALLOW.getId());
+        explicitEntityPermissions.put("*:read", Access.ALLOW.getId());
+        explicitEntityPermissions.put("*:update", Access.ALLOW.getId());
+        explicitEntityPermissions.put("*:delete", Access.ALLOW.getId());
+        entityAttributePermissions.getExplicitPermissions().put("*:*", EntityAttrAccess.MODIFY.getId());
+        specificPermissions.getExplicitPermissions().put("*", Access.ALLOW.getId());
+        screenPermissions.getExplicitPermissions().put("*", Access.ALLOW.getId());
     }
 
     @Override
     public String getName() {
-        return "system-test-full-access";
+        return NAME;
     }
 
     @Override

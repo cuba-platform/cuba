@@ -44,7 +44,7 @@ public class MinimalRoleDefinition extends AnnotatedRoleDefinition {
     private ServerConfig serverConfig;
 
     @Override
-    @ScreenAccess(allow = {
+    @ScreenAccess(screenIds = {
             "addCondition",
             "backgroundWorkProgressWindow",
             "backgroundWorkWindow",
@@ -77,14 +77,14 @@ public class MinimalRoleDefinition extends AnnotatedRoleDefinition {
     }
 
     @Override
-    @EntityAccess(target = FilterEntity.class, allow = {EntityOp.READ})
-    @EntityAccess(target = KeyValueEntity.class, allow = {EntityOp.READ})
+    @EntityAccess(entityClass = FilterEntity.class, operations = {EntityOp.READ})
+    @EntityAccess(entityClass = KeyValueEntity.class, operations = {EntityOp.READ})
     public EntityPermissionsContainer entityPermissions() {
         return super.entityPermissions();
     }
 
     @Override
-    @SpecificAccess(target = "cuba.gui.loginToClient", access = Access.ALLOW)
+    @SpecificAccess(permissions = "cuba.gui.loginToClient")
     public SpecificPermissionsContainer specificPermissions() {
         return super.specificPermissions();
     }

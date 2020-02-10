@@ -16,22 +16,8 @@
 
 package com.haulmont.cuba.security.role;
 
-import com.haulmont.cuba.security.entity.Access;
-
-import javax.annotation.Nullable;
-
 public class ScreenPermissionsContainer extends PermissionsContainer {
 
     private static final long serialVersionUID = -6416873506276217570L;
-
-    private Access defaultScreenAccess;
-
-    public Access getDefaultScreenAccess() {
-        return defaultScreenAccess;
-    }
-
-    public void setDefaultScreenAccess(@Nullable Access defaultScreenAccess) {
-        this.defaultScreenAccess = defaultScreenAccess;
-    }
 
 }

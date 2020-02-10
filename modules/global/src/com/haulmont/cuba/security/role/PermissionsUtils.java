@@ -22,6 +22,7 @@ import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.security.entity.*;
 
 import javax.annotation.Nullable;
+import java.util.Map;
 
 /**
  * INTERNAL
@@ -32,14 +33,22 @@ public final class PermissionsUtils {
     }
 
     public static String getEntityOperationTarget(MetaClass metaClass, EntityOp entityOp) {
-        return metaClass.getName() + Permission.TARGET_PATH_DELIMETER + entityOp.getId();
+        return getEntityOperationTarget(metaClass.getName(), entityOp);
+    }
+
+    public static String getEntityOperationTarget(String entityName, EntityOp entityOp) {
+        return entityName + Permission.TARGET_PATH_DELIMETER + entityOp.getId();
     }
 
     public static String getEntityAttributeTarget(MetaClass metaClass, String property) {
-        return metaClass.getName() + Permission.TARGET_PATH_DELIMETER + property;
+        return getEntityAttributeTarget(metaClass.getName(), property);
     }
 
-    public static String getScreenElementTarget(String screenId, String component) {
+    public static String getEntityAttributeTarget(String entityName, String property) {
+        return entityName + Permission.TARGET_PATH_DELIMETER + property;
+    }
+
+    public static String getScreenComponentTarget(String screenId, String component) {
         return screenId + Permission.TARGET_PATH_DELIMETER + component;
     }
 
@@ -66,10 +75,13 @@ public final class PermissionsUtils {
         int pos = target.indexOf(Permission.TARGET_PATH_DELIMETER);
         if (pos > -1) {
             String entityName = target.substring(0, pos);
-            Class extendedClass = metadata.getExtendedEntities().getExtendedClass(metadata.getClassNN(entityName));
-            if (extendedClass != null) {
-                MetaClass extMetaClass = metadata.getClassNN(extendedClass);
-                return extMetaClass.getName() + Permission.TARGET_PATH_DELIMETER + target.substring(pos + 1);
+            MetaClass metaClass = metadata.getClass(entityName);
+            if (metaClass != null) {
+                Class extendedClass = metadata.getExtendedEntities().getExtendedClass(metaClass);
+                if (extendedClass != null) {
+                    MetaClass extMetaClass = metadata.getClassNN(extendedClass);
+                    return extMetaClass.getName() + Permission.TARGET_PATH_DELIMETER + target.substring(pos + 1);
+                }
             }
         }
         return null;
@@ -79,8 +91,8 @@ public final class PermissionsUtils {
      * Method returns a resulting permission value, trying to find a value in the following order:
      * <ul>
      *     <li>explicit permission value in the role definition</li>
-     *     <li>default permission value in the role definition</li>
-     *     <li>a value used for undefined permissions (system-level config {@code ServerConfig#getPermissionUndefinedAccessPolicy})</li>
+     *     <li>wildcard permission value in the role definition</li>
+     *     <li>a value used for undefined permissions (based on cuba.security.rolesPolicyVersion application property)</li>
      * </ul>
      *
      * @return an integer that represents a permission value
@@ -92,7 +104,7 @@ public final class PermissionsUtils {
         PermissionsContainer permissionsContainer = PermissionsUtils.getPermissionsByType(roleDefinition, type);
         Integer permissionValue = permissionsContainer.getExplicitPermissions().get(target);
         if (permissionValue == null) {
-            permissionValue = getDefaultPermissionValue(roleDefinition, type, target);
+            permissionValue = getWildcardPermissionValue(permissionsContainer, target);
         }
         if (permissionValue == null) {
             permissionValue = getPermissionUndefinedAccessValue(type, permissionUndefinedAccessPolicy);
@@ -101,29 +113,33 @@ public final class PermissionsUtils {
     }
 
     @Nullable
-    private static Integer getDefaultPermissionValue(RoleDefinition roleDefinition,
-                                                     PermissionType type,
+    public static Integer getWildcardPermissionValue(PermissionsContainer permissionsContainer,
                                                      String target) {
-        HasSecurityAccessValue access = null;
-        switch (type) {
-            case SCREEN:
-                access = roleDefinition.screenPermissions().getDefaultScreenAccess();
-                break;
-            case ENTITY_OP:
-                access = roleDefinition.entityPermissions().getDefaultAccessByTarget(target);
-                break;
-            case ENTITY_ATTR:
-                access = roleDefinition.entityAttributePermissions().getDefaultEntityAttributeAccess();
-                break;
-            case SPECIFIC:
-                access = roleDefinition.specificPermissions().getDefaultSpecificAccess();
-                break;
-            case UI:
-                break;
-            default:
-                throw new IllegalArgumentException("Unsupported permission type " + type);
+        Integer permissionValue = null;
+        Map<String, Integer> explicitPermissions = permissionsContainer.getExplicitPermissions();
+        if (permissionsContainer instanceof EntityPermissionsContainer) {
+            String[] split = target.split(":");
+            if (split.length == 2) {
+                //e.g. *:create
+                String wildcardTarget = target.replace(split[0], "*");
+                permissionValue = explicitPermissions.get(wildcardTarget);
+            }
+        } else if (permissionsContainer instanceof EntityAttributePermissionsContainer) {
+            String[] split = target.split(":");
+            if (split.length == 2) {
+                //e.g. sec$User:*
+                String wildcardTarget = target.replace(split[1], "*");
+                permissionValue = explicitPermissions.get(wildcardTarget);
+                if (permissionValue == null) {
+                    permissionValue = explicitPermissions.get("*:*");
+                }
+            }
+        } else if (permissionsContainer instanceof ScreenPermissionsContainer) {
+            permissionValue = explicitPermissions.get("*");
+        } else if (permissionsContainer instanceof SpecificPermissionsContainer) {
+            permissionValue = explicitPermissions.get("*");
         }
-        return access != null ? access.getId() : null;
+        return permissionValue;
     }
 
     private static Integer getPermissionUndefinedAccessValue(PermissionType type,

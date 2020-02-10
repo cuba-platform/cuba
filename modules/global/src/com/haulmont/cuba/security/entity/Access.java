@@ -18,7 +18,7 @@ package com.haulmont.cuba.security.entity;
 
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
 
-public enum Access implements EnumClass<Integer>, HasSecurityAccessValue {
+public enum Access implements EnumClass<Integer> {
     DENY(0),
     ALLOW(1);
 

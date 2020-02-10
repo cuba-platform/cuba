@@ -32,8 +32,10 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.security.entity.*;
 import com.haulmont.cuba.security.global.UserSession;
+import com.haulmont.cuba.security.role.RolesService;
 import org.apache.commons.lang3.BooleanUtils;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.*;
 
@@ -111,6 +113,20 @@ public class AttributePermissionsFrame extends AbstractFrame {
 
     @Inject
     private GroupBoxLayout editPane;
+
+    @Inject
+    protected RolesService rolesService;
+
+    protected int rolesPolicyVersion;
+
+    @Inject
+    protected CheckBox wildcardViewCheckBox;
+
+    @Inject
+    protected CheckBox wildcardModifyCheckBox;
+
+    @Inject
+    protected GroupBoxLayout attributeWildcardGroupBox;
 
     protected class AttributePermissionControl {
 
@@ -218,6 +234,10 @@ public class AttributePermissionsFrame extends AbstractFrame {
                 // todo enforce property change instead of item
                 attributeTargetsDs.updateItem(item);
 
+                if ("*".equals(attributeName)) {
+                    updateCheckboxesEnabledByWildcards();
+                }
+
                 itemChanging = false;
             });
         }
@@ -267,6 +287,7 @@ public class AttributePermissionsFrame extends AbstractFrame {
         super.init(params);
 
         permissionsLoaded = BooleanUtils.isTrue((Boolean) params.get("permissionsLoaded"));
+        rolesPolicyVersion = rolesService.getRolesPolicyVersion();
 
         if (!PersistenceHelper.isNew(params.get("ITEM"))) {
             assignedOnlyCheckBox.setValue(Boolean.TRUE);
@@ -314,15 +335,22 @@ public class AttributePermissionsFrame extends AbstractFrame {
             if (itemExists) {
                 compileEditPane(item);
             }
+
+            updateCheckboxesEnabledByWildcards();
         });
 
         attributeTargetsDs.refresh();
 
         boolean isCreatePermitted = security.isEntityOpPermitted(Permission.class, EntityOp.CREATE);
         boolean isDeletePermitted = security.isEntityOpPermitted(Permission.class, EntityOp.DELETE);
-        hasPermissionsToModifyPermission = isCreatePermitted && isDeletePermitted;
+        hasPermissionsToModifyPermission = isCreatePermitted && isDeletePermitted && !roleDs.getItem().isPredefined();
+
+        wildcardViewCheckBox.setEditable(hasPermissionsToModifyPermission);
+        wildcardModifyCheckBox.setEditable(hasPermissionsToModifyPermission);
 
         editPane.setEnabled(security.isEntityOpPermitted(metadata.getClass(Role.class), EntityOp.UPDATE));
+
+        initWildcardCheckboxes();
     }
 
     public void applyFilter() {
@@ -354,6 +382,8 @@ public class AttributePermissionsFrame extends AbstractFrame {
             if (item != null) {
 
                 for (AttributePermissionControl control : permissionControls) {
+                    //skip controls for wildcard permissions
+                    if ("*".equals(control.getAttributeName())) continue;
                     AttributePermissionVariant permissionVariant = PermissionUiHelper.getCheckBoxVariant(e.getValue(), activeVariant);
                     control.markTargetPermission(permissionVariant);
                     control.updateCheckers(permissionVariant);
@@ -372,11 +402,13 @@ public class AttributePermissionsFrame extends AbstractFrame {
     }
 
     private boolean isAllModified() {
-        return permissionControls.stream().allMatch(c -> c.modifyCheckBox.getValue() || !c.modifyCheckBox.isEditable());
+        return permissionControls.stream().allMatch(c -> c.modifyCheckBox.getValue() ||
+                !c.modifyCheckBox.isEditable() || "*".equals(c.getAttributeName()));
     }
 
     private boolean isAllReadOnly() {
-        return permissionControls.stream().allMatch(c -> c.readOnlyCheckBox.getValue() || !c.readOnlyCheckBox.isEditable());
+        return permissionControls.stream().allMatch(c -> c.readOnlyCheckBox.getValue() ||
+                !c.readOnlyCheckBox.isEditable() || "*".equals(c.getAttributeName()));
     }
 
     private boolean isAllHide() {
@@ -385,7 +417,6 @@ public class AttributePermissionsFrame extends AbstractFrame {
 
     protected void applyPermissions(boolean editable) {
         boolean enabled = editable;
-        editable = editable && !roleDs.getItem().isPredefined();
 
         allHideCheck.setEditable(editable);
         allModifyCheck.setEditable(editable);
@@ -456,7 +487,9 @@ public class AttributePermissionsFrame extends AbstractFrame {
             editGrid.add(control.getAttributeLabel(), 0, gridRow);
             editGrid.add(control.getModifyCheckBox(), 1, gridRow);
             editGrid.add(control.getReadOnlyCheckBox(), 2, gridRow);
-            editGrid.add(control.getHideCheckBox(), 3, gridRow);
+            if (rolesPolicyVersion == 1) {
+                editGrid.add(control.getHideCheckBox(), 3, gridRow);
+            }
 
             control.getModifyCheckBox().setAlignment(Alignment.MIDDLE_CENTER);
             control.getReadOnlyCheckBox().setAlignment(Alignment.MIDDLE_CENTER);
@@ -495,17 +528,19 @@ public class AttributePermissionsFrame extends AbstractFrame {
 
         editGrid.add(readOnlyBox, 2, 0);
 
-        Label<String> hideLabel = uiComponents.create(Label.NAME);
-        hideLabel.setValue(getMessage("checkbox.hide"));
-        hideLabel.setAlignment(Alignment.MIDDLE_CENTER);
-        hideLabel.setStyleName("centered");
+        if (rolesPolicyVersion == 1) {
+            Label<String> hideLabel = uiComponents.create(Label.NAME);
+            hideLabel.setValue(getMessage("checkbox.hide"));
+            hideLabel.setAlignment(Alignment.MIDDLE_CENTER);
+            hideLabel.setStyleName("centered");
 
-        BoxLayout hideBox = uiComponents.create(HBoxLayout.class);
-        hideBox.setFrame(getFrame());
-        hideBox.setMargin(false, false, false, true);
-        hideBox.add(hideLabel);
+            BoxLayout hideBox = uiComponents.create(HBoxLayout.class);
+            hideBox.setFrame(getFrame());
+            hideBox.setMargin(false, false, false, true);
+            hideBox.add(hideLabel);
 
-        editGrid.add(hideBox, 3, 0);
+            editGrid.add(hideBox, 3, 0);
+        }
 
         allModifyCheck = uiComponents.create(CheckBox.class);
         allReadOnlyCheck = uiComponents.create(CheckBox.class);
@@ -529,7 +564,9 @@ public class AttributePermissionsFrame extends AbstractFrame {
 
         editGrid.add(allModifyCheck, 1, 1);
         editGrid.add(allReadOnlyCheck, 2, 1);
-        editGrid.add(allHideCheck, 3, 1);
+        if (rolesPolicyVersion == 1) {
+            editGrid.add(allHideCheck, 3, 1);
+        }
 
         allModifyCheck.setAlignment(Alignment.MIDDLE_CENTER);
         allReadOnlyCheck.setAlignment(Alignment.MIDDLE_CENTER);
@@ -544,5 +581,116 @@ public class AttributePermissionsFrame extends AbstractFrame {
         params.put("permissionsLoaded", permissionsLoaded);
 
         return params;
+    }
+
+    protected void initWildcardCheckboxes() {
+        if (rolesPolicyVersion == 1) {
+            attributeWildcardGroupBox.setVisible(false);
+            return;
+        }
+
+        Permission wildcardPermission = getWildcardPermission();
+
+        wildcardModifyCheckBox.setValue(wildcardPermission != null
+                && EntityAttrAccess.MODIFY.getId().equals(wildcardPermission.getValue()));
+        wildcardViewCheckBox.setValue(wildcardPermission != null
+                && EntityAttrAccess.VIEW.getId().equals(wildcardPermission.getValue()));
+
+        initWildcardCheckboxListener(wildcardModifyCheckBox, AttributePermissionVariant.MODIFY);
+        initWildcardCheckboxListener(wildcardViewCheckBox, AttributePermissionVariant.READ_ONLY);
+    }
+
+    @Nullable
+    protected Permission getWildcardPermission() {
+        return propertyPermissionsDs.getItems().stream()
+                .filter(permission -> "*:*".equals(permission.getTarget()))
+                .findAny()
+                .orElse(null);
+    }
+
+    @Nullable
+    protected Permission getWildcardPermission(String entityName) {
+        String target = entityName + ":*";
+        return propertyPermissionsDs.getItems().stream()
+                .filter(permission -> target.equals(permission.getTarget()))
+                .findAny()
+                .orElse(null);
+    }
+
+    protected void initWildcardCheckboxListener(CheckBox checkBox, AttributePermissionVariant activeVariant) {
+        checkBox.addValueChangeListener(e -> {
+            if (itemChanging) {
+                return;
+            }
+
+            itemChanging = true;
+
+            AttributePermissionVariant permissionVariant = PermissionUiHelper.getCheckBoxVariant(e.getValue(), activeVariant);
+            String permissionTarget = "*:*";
+            if (permissionVariant != AttributePermissionVariant.NOTSET) {
+                // Create permission
+                int value = PermissionUiHelper.getPermissionValue(permissionVariant);
+                PermissionUiHelper.createPermissionItem(propertyPermissionsDs, roleDs,
+                        permissionTarget, PermissionType.ENTITY_ATTR, value);
+            } else {
+                // Remove permission
+                Permission permission = null;
+                for (Permission p : propertyPermissionsDs.getItems()) {
+                    if (Objects.equals(p.getTarget(), permissionTarget)) {
+                        permission = p;
+                        break;
+                    }
+                }
+
+                if (permission != null) {
+                    propertyPermissionsDs.removeItem(permission);
+                }
+            }
+
+            if (activeVariant != AttributePermissionVariant.MODIFY)
+                wildcardModifyCheckBox.setValue(false);
+
+            if (activeVariant != AttributePermissionVariant.READ_ONLY)
+                wildcardViewCheckBox.setValue(false);
+
+            updateCheckboxesEnabledByWildcards();
+
+            itemChanging = false;
+        });
+    }
+
+    /**
+     * There may two wildcards set: global and entity-level. The method disables entity attribute checkboxes if any
+     * wildcard set for a given permission value (MODIFY or VIEW).
+     */
+    protected void updateCheckboxesEnabledByWildcards() {
+        if (rolesPolicyVersion == 1) return;
+        Permission globalWildcardPermission = getWildcardPermission();
+        boolean globalWildcardModify = globalWildcardPermission != null &&
+                EntityAttrAccess.MODIFY.getId().equals(globalWildcardPermission.getValue());
+        boolean globalWildcardView = globalWildcardPermission != null &&
+                EntityAttrAccess.VIEW.getId().equals(globalWildcardPermission.getValue());
+
+        MultiplePermissionTarget item = propertyPermissionsTable.getSingleSelected();
+        if (item != null) {
+            Permission entityWildcardPermission = getWildcardPermission(item.getEntityMetaClassName());
+            boolean entityWildcardModify = entityWildcardPermission != null
+                    && EntityAttrAccess.MODIFY.getId().equals(entityWildcardPermission.getValue());
+            boolean entityWildcardView = entityWildcardPermission != null
+                    && EntityAttrAccess.VIEW.getId().equals(entityWildcardPermission.getValue());
+
+            for (AttributePermissionControl control : permissionControls) {
+                boolean modifyEnabled = "*".equals(control.getAttributeName()) ?
+                        !globalWildcardModify :
+                        !globalWildcardModify && !entityWildcardModify;
+                boolean viewEnabled = "*".equals(control.getAttributeName()) ?
+                        !globalWildcardView :
+                        !globalWildcardView && !entityWildcardView;
+                control.getModifyCheckBox().setEnabled(modifyEnabled);
+                control.getReadOnlyCheckBox().setEnabled(viewEnabled);
+            }
+            allModifyCheck.setEnabled(!globalWildcardModify && !entityWildcardModify);
+            allReadOnlyCheck.setEnabled(!globalWildcardView && !entityWildcardView);
+        }
     }
 }

@@ -26,6 +26,7 @@ import com.haulmont.cuba.security.entity.*;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.testsupport.TestContainer;
+import com.haulmont.cuba.testsupport.TestFullAccessRole;
 import com.haulmont.cuba.testsupport.TestUserSessionSource;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -49,9 +50,8 @@ public class DataManagerCommitConstraintTest {
     private Constraint constraintUpdate, constraintDelete, constraintCreate;
     private User constraintUserUpdate, constraintUserCreate;
     private User testUserUpdate1, testUserUpdate2, testUserUpdate3;
-    private Role role, fullAccessRole;
+    private Role role;
     private User testUserDelete1, testUserDelete2;
-    private List<UserRole> userRoles = new ArrayList<>();
     private PasswordEncryption passwordEncryption;
 
     private static final String PASSWORD = "1";
@@ -183,25 +183,6 @@ public class DataManagerCommitConstraintTest {
             role.setName("role1");
             em.persist(role);
 
-            fullAccessRole = new Role();
-            fullAccessRole.setName("full-access");
-            fullAccessRole.setSecurityScope(SecurityScope.DEFAULT_SCOPE_NAME);
-            fullAccessRole.setDefaultEntityAttributeAccess(EntityAttrAccess.VIEW);
-            fullAccessRole.setDefaultEntityCreateAccess(Access.ALLOW);
-            fullAccessRole.setDefaultEntityReadAccess(Access.ALLOW);
-            fullAccessRole.setDefaultEntityUpdateAccess(Access.ALLOW);
-            fullAccessRole.setDefaultEntityDeleteAccess(Access.ALLOW);
-            em.persist(fullAccessRole);
-
-            //assign fullAccess role to each user
-            List<User> users = Arrays.asList(constraintUserUpdate, constraintUserCreate, testUserUpdate1, testUserUpdate2,
-                    testUserUpdate3, testUserDelete1, testUserDelete2);
-            for (User user : users) {
-                UserRole userRole = createUserRole(user, fullAccessRole);
-                userRoles.add(userRole);
-                em.persist(userRole);
-            }
-
             tx.commit();
         } finally {
             tx.end();
@@ -227,6 +208,7 @@ public class DataManagerCommitConstraintTest {
 
         UserSessionSource uss = AppBeans.get(UserSessionSource.class);
         UserSession savedUserSession = uss.getUserSession();
+        userSession.setJoinedRole(new TestFullAccessRole());
         ((TestUserSessionSource) uss).setUserSession(userSession);
         try {
             dataManager = dataManager.secure();
@@ -258,6 +240,7 @@ public class DataManagerCommitConstraintTest {
 
         UserSessionSource uss = AppBeans.get(UserSessionSource.class);
         UserSession savedUserSession = uss.getUserSession();
+        userSession.setJoinedRole(new TestFullAccessRole());
         ((TestUserSessionSource) uss).setUserSession(userSession);
         try {
             dataManager = dataManager.secure();
@@ -298,6 +281,7 @@ public class DataManagerCommitConstraintTest {
 
         UserSessionSource uss = AppBeans.get(UserSessionSource.class);
         UserSession savedUserSession = uss.getUserSession();
+        userSession.setJoinedRole(new TestFullAccessRole());
         ((TestUserSessionSource) uss).setUserSession(userSession);
         try {
             dataManager = dataManager.secure();
@@ -327,6 +311,7 @@ public class DataManagerCommitConstraintTest {
 
         UserSessionSource uss = AppBeans.get(UserSessionSource.class);
         UserSession savedUserSession = uss.getUserSession();
+        userSession.setJoinedRole(new TestFullAccessRole());
         ((TestUserSessionSource) uss).setUserSession(userSession);
         try {
             dataManager = dataManager.secure();
@@ -355,6 +340,7 @@ public class DataManagerCommitConstraintTest {
 
         UserSessionSource uss = AppBeans.get(UserSessionSource.class);
         UserSession savedUserSession = uss.getUserSession();
+        userSession.setJoinedRole(new TestFullAccessRole());
         ((TestUserSessionSource) uss).setUserSession(userSession);
         try {
             dataManager = dataManager.secure();
@@ -380,8 +366,7 @@ public class DataManagerCommitConstraintTest {
 
     @AfterEach
     public void tearDown() throws Exception {
-        cont.deleteRecord("SEC_USER_ROLE", userRoles.stream().map(UserRole::getId).toArray());
-        cont.deleteRecord("SEC_ROLE", role.getId(), fullAccessRole.getId());
+        cont.deleteRecord("SEC_ROLE", role.getId());
         cont.deleteRecord("SEC_USER",
                 constraintUserUpdate.getId(), constraintUserCreate.getId(),
                 testUserUpdate1.getId(), testUserUpdate2.getId(), testUserUpdate3.getId(),

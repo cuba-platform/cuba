@@ -22,13 +22,27 @@ import com.haulmont.cuba.security.entity.EntityOp;
 import java.lang.annotation.*;
 
 /**
- * Defines permissions to access operations on an entity (read, create, update, delete).
+ * Defines permissions to allow operations on an entity (read, create, update, delete).
  *
  * <p>Example:
  *
  * <pre>
- *     &#064;EntityAccess(target = SomeEntity.class,
- *  *             deny = {EntityOp.DELETE, EntityOp.UPDATE})
+ * &#064;EntityAccess(entityClass = SomeEntity.class,
+ *           operations = {EntityOp.DELETE, EntityOp.UPDATE})
+ * </pre>
+ * <p>
+ * Instead of {@code entityClass} attribute an {@code entityName} can be used:
+ *
+ * <pre>
+ * &#064;EntityAccess(entityName = "app_SomeEntity",
+ *           operations = {EntityOp.DELETE, EntityOp.UPDATE})
+ * </pre>
+ * <p>
+ * You may use wildcard for entity name if you want to allow operations for all entities:
+ *
+ * <pre>
+ * &#064;EntityAccess(entityName = "*",
+ *           operations = {EntityOp.CREATE, EntityOp.READ})
  * </pre>
  *
  * @see Role
@@ -38,10 +52,10 @@ import java.lang.annotation.*;
 @Repeatable(EntityAccessContainer.class)
 public @interface EntityAccess {
 
-    Class<? extends Entity> target();
+    Class<? extends Entity> entityClass() default NullEntity.class;
 
-    EntityOp[] deny() default {};
+    String entityName() default "";
 
-    EntityOp[] allow() default {};
+    EntityOp[] operations() default {};
 
 }

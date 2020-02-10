@@ -46,13 +46,19 @@
                   height="100%"
                   margin="false;true;false;false">
                 <hbox margin="false;false,true;false"
-                      spacing="true">
+                      width="100%"
+                      spacing="true"
+                      expand="spring">
                     <label align="MIDDLE_LEFT"
                            value="msg://screenFilter"/>
                     <textField id="screenFilter"
-                               width="theme://cuba.gui.screens-permission-tab.screenFilter.width"/>
+                               width="theme://cuba.gui.screens-permission-tab.screenFilter.width"
+                               align="MIDDLE_LEFT"/>
                     <button caption="msg://actions.Apply"
+                            align="MIDDLE_LEFT"
                             invoke="applyFilter"/>
+                    <label id="spring"/>
+                    <checkBox id="screenWildcardCheckBox" caption="msg://allowAllScreens" align="MIDDLE_RIGHT"/>
                 </hbox>
                 <treeTable id="screenPermissionsTree" width="100%" multiselect="true">
                     <columns>

@@ -28,6 +28,7 @@ import com.haulmont.cuba.security.auth.LoginPasswordCredentials;
 import com.haulmont.cuba.security.entity.*;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.testsupport.TestContainer;
+import com.haulmont.cuba.testsupport.TestFullAccessRole;
 import com.haulmont.cuba.testsupport.TestSupport;
 import com.haulmont.cuba.testsupport.TestUserSessionSource;
 import org.junit.jupiter.api.AfterEach;
@@ -55,7 +56,7 @@ public class NonEntityQueryTest {
     private PasswordEncryption passwordEncryption;
 
     private UUID serverId, role1Id, role2Id,
-            permission1Id, permission2Id,
+            permission1Id, permission2Id, permission3Id,
             user1Id, user2Id,
             group1Id, group2Id,
             constraint1Id, constraint2Id,
@@ -92,8 +93,8 @@ public class NonEntityQueryTest {
             role1Id = role1.getId();
             role1.setName("testRole1");
             role1.setSecurityScope(SecurityScope.DEFAULT_SCOPE_NAME);
-            role1.setDefaultEntityAttributeAccess(EntityAttrAccess.VIEW);
-            role1.setDefaultEntityReadAccess(Access.ALLOW);
+//            role1.setDefaultEntityAttributeAccess(EntityAttrAccess.VIEW);
+//            role1.setDefaultEntityReadAccess(Access.ALLOW);
             em.persist(role1);
 
             Permission permission1 = new Permission();
@@ -111,6 +112,14 @@ public class NonEntityQueryTest {
             permission2.setTarget("sys$EntitySnapshot:read");
             permission2.setValue(0);
             em.persist(permission2);
+
+            Permission permission3 = new Permission();
+            permission3Id = permission3.getId();
+            permission3.setRole(role1);
+            permission3.setType(PermissionType.ENTITY_OP);
+            permission3.setTarget("sys$Server:read");
+            permission3.setValue(1);
+            em.persist(permission3);
 
             Group group1 = new Group();
             group1Id = group1.getId();
@@ -163,8 +172,8 @@ public class NonEntityQueryTest {
             role2Id = role2.getId();
             role2.setName("testRole2");
             role2.setSecurityScope(SecurityScope.DEFAULT_SCOPE_NAME);
-            role2.setDefaultEntityAttributeAccess(EntityAttrAccess.VIEW);
-            role2.setDefaultEntityReadAccess(Access.ALLOW);
+//            role2.setDefaultEntityAttributeAccess(EntityAttrAccess.VIEW);
+//            role2.setDefaultEntityReadAccess(Access.ALLOW);
             em.persist(role2);
 
             UserRole userRole2 = new UserRole();
@@ -183,7 +192,7 @@ public class NonEntityQueryTest {
     public void tearDown() throws Exception {
         cont.deleteRecord("SYS_SERVER", serverId);
         cont.deleteRecord("SEC_USER_ROLE", userRole1Id, userRole2Id);
-        cont.deleteRecord("SEC_PERMISSION", permission1Id, permission2Id);
+        cont.deleteRecord("SEC_PERMISSION", permission1Id, permission2Id, permission3Id);
         cont.deleteRecord("SEC_ROLE", role1Id, role2Id);
         cont.deleteRecord("SEC_USER", user1Id, user2Id);
         cont.deleteRecord("SEC_CONSTRAINT", constraint1Id, constraint2Id);
@@ -354,6 +363,7 @@ public class NonEntityQueryTest {
         LoginPasswordCredentials credentials = new LoginPasswordCredentials(USER_NAME_2, USER_PASSWORD, Locale.getDefault());
         credentials.setSecurityScope(SecurityScope.DEFAULT_SCOPE_NAME);
         UserSession userSession = lw.login(credentials).getSession();
+        userSession.setJoinedRole(new TestFullAccessRole());
 
         assertNotNull(userSession);
 
@@ -393,6 +403,7 @@ public class NonEntityQueryTest {
 
         UserSessionSource uss = AppBeans.get(UserSessionSource.class);
         UserSession savedUserSession = uss.getUserSession();
+        userSession.setJoinedRole(new TestFullAccessRole());
         ((TestUserSessionSource) uss).setUserSession(userSession);
         try {
             ValueLoadContext context = ValueLoadContext.create();

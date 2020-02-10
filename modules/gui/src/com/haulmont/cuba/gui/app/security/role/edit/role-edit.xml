@@ -35,9 +35,8 @@
     <layout expand="permissionsTabsheet" spacing="true">
         <scrollBox id="rolePropertiesScrollBox" spacing="true" orientation="horizontal" scrollBars="horizontal"
                    width="100%" height="AUTO">
-            <groupBox id="roleGeneralGroupBox" spacing="true" caption="msg://general" stylename="light" width="AUTO" height="AUTO">
                 <grid id="roleNameGrid" spacing="true" width="AUTO">
-                    <columns count="4"/>
+                    <columns count="6"/>
                     <rows>
                         <row id="gridRow1">
                             <label value="msg://com.haulmont.cuba.security.entity/Role.name" align="MIDDLE_LEFT"/>
@@ -47,6 +46,12 @@
                             <label value="msg://com.haulmont.cuba.security.entity/Role.securityScope" align="MIDDLE_LEFT"/>
                             <lookupField id="securityScopeLookup" datasource="roleDs" property="securityScope"
                                          width="theme://cuba.gui.role-edit.securityScope.width" nullOptionVisible="false"/>
+
+                            <label value="msg://com.haulmont.cuba.security.entity/Role.description" align="MIDDLE_LEFT"/>
+                            <textArea id="description" datasource="roleDs" property="description"
+                                      rowspan="2"
+                                      height="100%" width="theme://cuba.gui.role-edit.description.width"/>
+
                         </row>
                         <row id="gridRow2">
                             <label value="msg://com.haulmont.cuba.security.entity/Role.locName" align="MIDDLE_LEFT"/>
@@ -56,52 +61,18 @@
                             <checkBox id="defaultRole" datasource="roleDs" property="defaultRole" align="MIDDLE_LEFT"/>
                         </row>
                         <row id="gridRow3">
-                            <label value="msg://com.haulmont.cuba.security.entity/Role.description" align="MIDDLE_LEFT"/>
-                            <textArea id="description" datasource="roleDs" property="description"
-                                      colspan="3"
-                                      rows="3"
-                                      width="100%"/>
+                            <label id="typeLookupLabel" value="msg://com.haulmont.cuba.security.entity/Role.type" align="MIDDLE_LEFT"/>
+                            <lookupField id="typeLookup" datasource="roleDs" property="type"
+                                         required="true" width="${width}"/>
+                        </row>
+                        <row id="gridRo4">
+                            <label id="superRoleLabel" value="msg://superRoleDescription" align="MIDDLE_LEFT"
+                                   colspan="6" visible="false" stylename="bold"/>
                         </row>
                     </rows>
                 </grid>
-            </groupBox>
-            <groupBox id="defaultAccessBox" caption="msg://defaultPermissions" stylename="light" width="AUTO" height="AUTO">
-                <grid id="defaultAccessGrid" spacing="true" width="AUTO">
-                    <columns count="4"/>
-                    <rows>
-                        <row>
-                            <label value="msg://entityCreateAccess" align="MIDDLE_LEFT"/>
-                            <lookupField id="defaultEntityCreteAccessField" datasource="roleDs" property="defaultEntityCreateAccess"
-                                         width="theme://cuba.gui.role-edit.defaultAccessLookup.width"/>
-                            <label value="msg://screenAccess" align="MIDDLE_LEFT"/>
-                            <lookupField id="defaultScreenAccessField" datasource="roleDs" property="defaultScreenAccess"
-                                         width="theme://cuba.gui.role-edit.defaultAccessLookup.width"/>
-                        </row>
-                        <row>
-                            <label value="msg://entityReadAccess" align="MIDDLE_LEFT"/>
-                            <lookupField id="defaultReadCreteAccessField" datasource="roleDs" property="defaultEntityReadAccess"
-                                         width="theme://cuba.gui.role-edit.defaultAccessLookup.width"/>
-                            <label value="msg://entityAttributeAccess" align="MIDDLE_LEFT"/>
-                            <lookupField id="defaultEntityAttributeAccessField" datasource="roleDs" property="defaultEntityAttributeAccess"
-                                         width="theme://cuba.gui.role-edit.defaultAccessLookup.width"/>
-                        </row>
-                        <row>
-                            <label value="msg://entityUpdateAccess" align="MIDDLE_LEFT"/>
-                            <lookupField id="defaultEntityUpdateAccessField" datasource="roleDs" property="defaultEntityUpdateAccess"
-                                         width="theme://cuba.gui.role-edit.defaultAccessLookup.width"/>
-                            <label value="msg://specificAccess" align="MIDDLE_LEFT"/>
-                            <lookupField id="defaultSpecificAccessField" datasource="roleDs" property="defaultSpecificAccess"
-                                         width="theme://cuba.gui.role-edit.defaultAccessLookup.width"/>
-                        </row>
-                        <row>
-                            <label value="msg://entityDeleteAccess" align="MIDDLE_LEFT"/>
-                            <lookupField id="defaultEntityDeleteAccessField" datasource="roleDs" property="defaultEntityDeleteAccess"
-                                         width="theme://cuba.gui.role-edit.defaultAccessLookup.width"/>
-                        </row>
-                    </rows>
-                </grid>
-            </groupBox>
         </scrollBox>
+
 
         <tabSheet id="permissionsTabsheet">
             <tab id="screenPermissionsTab" caption="msg://screen-permissions">
