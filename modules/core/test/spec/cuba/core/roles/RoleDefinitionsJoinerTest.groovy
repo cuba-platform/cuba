@@ -16,14 +16,9 @@
 
 package spec.cuba.core.roles
 
-import com.haulmont.cuba.core.global.AppBeans
-import com.haulmont.cuba.core.global.Metadata
-import com.haulmont.cuba.security.app.RoleDefinitionBuilder
-import com.haulmont.cuba.security.app.RoleDefinitionsJoiner
-import com.haulmont.cuba.security.entity.Access
-import com.haulmont.cuba.security.entity.EntityAttrAccess
-import com.haulmont.cuba.security.entity.EntityOp
-import com.haulmont.cuba.security.entity.User
+import com.haulmont.cuba.security.role.RoleDefinitionsJoiner
+import com.haulmont.cuba.security.entity.*
+import com.haulmont.cuba.security.role.BasicRoleDefinition
 import com.haulmont.cuba.testsupport.TestContainer
 import org.junit.ClassRule
 import spock.lang.Shared
@@ -35,27 +30,27 @@ class RoleDefinitionsJoinerTest extends Specification {
     @ClassRule
     public TestContainer cont = TestContainer.Common.INSTANCE
 
-    def "join default access when both roles have defaults"() {
+    def "join wildcard access when both roles have wildcards"() {
 
-        def role1 = RoleDefinitionBuilder.create()
-            .withDefaultScreenAccess(Access.ALLOW)
-            .withDefaultEntityCreateAccess(Access.ALLOW)
-            .withDefaultEntityReadAccess(Access.ALLOW)
-            .withDefaultEntityUpdateAccess(Access.ALLOW)
-            .withDefaultEntityDeleteAccess(Access.ALLOW)
-            .withDefaultEntityAttributeAccess(EntityAttrAccess.MODIFY)
-            .withDefaultSpecificAccess(Access.ALLOW)
-            .build()
+        def role1 = BasicRoleDefinition.builder()
+                .withPermission(PermissionType.SCREEN, "*", Access.ALLOW.id)
+                .withPermission(PermissionType.ENTITY_OP, "*:create", Access.ALLOW.id)
+                .withPermission(PermissionType.ENTITY_OP, "*:read", Access.ALLOW.id)
+                .withPermission(PermissionType.ENTITY_OP, "*:update", Access.ALLOW.id)
+                .withPermission(PermissionType.ENTITY_OP, "*:delete", Access.ALLOW.id)
+                .withPermission(PermissionType.ENTITY_ATTR, "*:*", EntityAttrAccess.MODIFY.id)
+                .withPermission(PermissionType.SPECIFIC, "*", Access.ALLOW.id)
+                .build()
 
-        def role2 = RoleDefinitionBuilder.create()
-            .withDefaultScreenAccess(Access.DENY)
-            .withDefaultEntityCreateAccess(Access.DENY)
-            .withDefaultEntityReadAccess(Access.DENY)
-            .withDefaultEntityUpdateAccess(Access.DENY)
-            .withDefaultEntityDeleteAccess(Access.DENY)
-            .withDefaultEntityAttributeAccess(EntityAttrAccess.DENY)
-            .withDefaultSpecificAccess(Access.DENY)
-            .build()
+        def role2 = BasicRoleDefinition.builder()
+                .withPermission(PermissionType.SCREEN, "*", Access.DENY.id)
+                .withPermission(PermissionType.ENTITY_OP, "*:create", Access.DENY.id)
+                .withPermission(PermissionType.ENTITY_OP, "*:read", Access.DENY.id)
+                .withPermission(PermissionType.ENTITY_OP, "*:update", Access.DENY.id)
+                .withPermission(PermissionType.ENTITY_OP, "*:delete", Access.DENY.id)
+                .withPermission(PermissionType.ENTITY_ATTR, "*:*", Access.DENY.id)
+                .withPermission(PermissionType.SPECIFIC, "*", Access.DENY.id)
+                .build()
 
         when:
 
@@ -63,35 +58,28 @@ class RoleDefinitionsJoinerTest extends Specification {
 
         then:
 
-        joinedRole.screenPermissions().defaultScreenAccess == Access.ALLOW
-        joinedRole.entityPermissions().defaultEntityCreateAccess == Access.ALLOW
-        joinedRole.entityPermissions().defaultEntityReadAccess == Access.ALLOW
-        joinedRole.entityPermissions().defaultEntityUpdateAccess == Access.ALLOW
-        joinedRole.entityPermissions().defaultEntityDeleteAccess == Access.ALLOW
-        joinedRole.entityAttributePermissions().defaultEntityAttributeAccess == EntityAttrAccess.MODIFY
-        joinedRole.specificPermissions().defaultSpecificAccess == Access.ALLOW
+        joinedRole.screenPermissions().explicitPermissions["*"] == Access.ALLOW.id
+        joinedRole.entityPermissions().explicitPermissions["*:create"] == Access.ALLOW.id
+        joinedRole.entityPermissions().explicitPermissions["*:read"] == Access.ALLOW.id
+        joinedRole.entityPermissions().explicitPermissions["*:update"] == Access.ALLOW.id
+        joinedRole.entityPermissions().explicitPermissions["*:delete"] == Access.ALLOW.id
+        joinedRole.entityAttributePermissions().explicitPermissions["*:*"] == EntityAttrAccess.MODIFY.id
+        joinedRole.specificPermissions().explicitPermissions["*"] == Access.ALLOW.id
     }
 
-    def "join default access when one role doesn't have defaults"() {
+    def "join wildcard access when one role doesn't have wildcards"() {
 
-        def role1 = RoleDefinitionBuilder.create()
-                .withDefaultScreenAccess(null)
-                .withDefaultEntityCreateAccess(null)
-                .withDefaultEntityReadAccess(null)
-                .withDefaultEntityUpdateAccess(null)
-                .withDefaultEntityDeleteAccess(null)
-                .withDefaultEntityAttributeAccess(null)
-                .withDefaultSpecificAccess(null)
+        def role1 = BasicRoleDefinition.builder()
                 .build()
 
-        def role2 = RoleDefinitionBuilder.create()
-                .withDefaultScreenAccess(Access.DENY)
-                .withDefaultEntityCreateAccess(Access.DENY)
-                .withDefaultEntityReadAccess(Access.DENY)
-                .withDefaultEntityUpdateAccess(Access.DENY)
-                .withDefaultEntityDeleteAccess(Access.DENY)
-                .withDefaultEntityAttributeAccess(EntityAttrAccess.DENY)
-                .withDefaultSpecificAccess(Access.DENY)
+        def role2 = BasicRoleDefinition.builder()
+                .withPermission(PermissionType.SCREEN, "*", Access.DENY.id)
+                .withPermission(PermissionType.ENTITY_OP, "*:create", Access.DENY.id)
+                .withPermission(PermissionType.ENTITY_OP, "*:read", Access.DENY.id)
+                .withPermission(PermissionType.ENTITY_OP, "*:update", Access.DENY.id)
+                .withPermission(PermissionType.ENTITY_OP, "*:delete", Access.DENY.id)
+                .withPermission(PermissionType.ENTITY_ATTR, "*:*", Access.DENY.id)
+                .withPermission(PermissionType.SPECIFIC, "*", Access.DENY.id)
                 .build()
 
         when:
@@ -100,40 +88,38 @@ class RoleDefinitionsJoinerTest extends Specification {
 
         then:
 
-        joinedRole.screenPermissions().defaultScreenAccess == Access.DENY
-        joinedRole.entityPermissions().defaultEntityCreateAccess == Access.DENY
-        joinedRole.entityPermissions().defaultEntityReadAccess == Access.DENY
-        joinedRole.entityPermissions().defaultEntityUpdateAccess == Access.DENY
-        joinedRole.entityPermissions().defaultEntityDeleteAccess == Access.DENY
-        joinedRole.entityAttributePermissions().defaultEntityAttributeAccess == EntityAttrAccess.DENY
-        joinedRole.specificPermissions().defaultSpecificAccess == Access.DENY
+        joinedRole.screenPermissions().explicitPermissions["*"] == Access.DENY.id
+        joinedRole.entityPermissions().explicitPermissions["*:create"] == Access.DENY.id
+        joinedRole.entityPermissions().explicitPermissions["*:read"] == Access.DENY.id
+        joinedRole.entityPermissions().explicitPermissions["*:update"] == Access.DENY.id
+        joinedRole.entityPermissions().explicitPermissions["*:delete"] == Access.DENY.id
+        joinedRole.entityAttributePermissions().explicitPermissions["*:*"] == EntityAttrAccess.DENY.id
+        joinedRole.specificPermissions().explicitPermissions["*"] == Access.DENY.id
     }
 
 
     def "join permissions when both roles define target"() {
-        Metadata metadata = AppBeans.get(Metadata)
-        def metaClass = metadata.getClass(User.class)
 
-        def role1 = RoleDefinitionBuilder.create()
+        def role1 = BasicRoleDefinition.builder()
                 .withScreenPermission('screen1', Access.DENY)
-                .withEntityAccessPermission(metaClass, EntityOp.CREATE, Access.DENY)
-                .withEntityAccessPermission(metaClass, EntityOp.READ, Access.DENY)
-                .withEntityAccessPermission(metaClass, EntityOp.UPDATE, Access.DENY)
-                .withEntityAccessPermission(metaClass, EntityOp.DELETE, Access.DENY)
-                .withEntityAttrAccessPermission(metaClass, "login", EntityAttrAccess.DENY)
+                .withEntityPermission('sec$User', EntityOp.CREATE, Access.DENY)
+                .withEntityPermission('sec$User', EntityOp.READ, Access.DENY)
+                .withEntityPermission('sec$User', EntityOp.UPDATE, Access.DENY)
+                .withEntityPermission('sec$User', EntityOp.DELETE, Access.DENY)
+                .withEntityAttributePermission('sec$User', "login", EntityAttrAccess.DENY)
                 .withSpecificPermission('spec1', Access.DENY)
-                .withScreenElementPermission('alias', 'component', Access.DENY)
+                .withScreenComponentPermission('alias', 'component', Access.DENY)
                 .build()
 
-        def role2 = RoleDefinitionBuilder.create()
+        def role2 = BasicRoleDefinition.builder()
                 .withScreenPermission('screen1', Access.ALLOW)
-                .withEntityAccessPermission(metaClass, EntityOp.CREATE, Access.ALLOW)
-                .withEntityAccessPermission(metaClass, EntityOp.READ, Access.ALLOW)
-                .withEntityAccessPermission(metaClass, EntityOp.UPDATE, Access.ALLOW)
-                .withEntityAccessPermission(metaClass, EntityOp.DELETE, Access.ALLOW)
-                .withEntityAttrAccessPermission(metaClass, "login", EntityAttrAccess.MODIFY)
+                .withEntityPermission('sec$User', EntityOp.CREATE, Access.ALLOW)
+                .withEntityPermission('sec$User', EntityOp.READ, Access.ALLOW)
+                .withEntityPermission('sec$User', EntityOp.UPDATE, Access.ALLOW)
+                .withEntityPermission('sec$User', EntityOp.DELETE, Access.ALLOW)
+                .withEntityAttributePermission('sec$User', "login", EntityAttrAccess.MODIFY)
                 .withSpecificPermission('spec1', Access.ALLOW)
-                .withScreenElementPermission('alias', 'component', Access.ALLOW)
+                .withScreenComponentPermission('alias', 'component', Access.ALLOW)
                 .build()
 
         when:
@@ -152,29 +138,24 @@ class RoleDefinitionsJoinerTest extends Specification {
         joinedRole.screenComponentPermissions().explicitPermissions['alias:component'] == Access.ALLOW.id
     }
 
-    def "join permissions when one role has permission and the second role has defaults"() {
-        Metadata metadata = AppBeans.get(Metadata)
-        def metaClass = metadata.getClass(User.class)
-
-        def role1 = RoleDefinitionBuilder.create()
-                .withDefaultScreenAccess(Access.DENY)
-                .withDefaultEntityCreateAccess(Access.DENY)
-                .withDefaultEntityReadAccess(Access.DENY)
-                .withDefaultEntityUpdateAccess(Access.DENY)
-                .withDefaultEntityDeleteAccess(Access.DENY)
-                .withDefaultEntityAttributeAccess(EntityAttrAccess.DENY)
-                .withDefaultSpecificAccess(Access.DENY)
+    def "join permissions when one role has permission and the second role has wildcards"() {
+        def role1 = BasicRoleDefinition.builder()
+                .withPermission(PermissionType.SCREEN, "*", Access.ALLOW.id)
+                .withPermission(PermissionType.ENTITY_OP, "*:create", Access.ALLOW.id)
+                .withPermission(PermissionType.ENTITY_OP, "*:read", Access.ALLOW.id)
+                .withPermission(PermissionType.ENTITY_OP, "*:update", Access.ALLOW.id)
+                .withPermission(PermissionType.ENTITY_OP, "*:delete", Access.ALLOW.id)
+                .withPermission(PermissionType.ENTITY_ATTR, "*:*", EntityAttrAccess.MODIFY.id)
+                .withPermission(PermissionType.SPECIFIC, "*", Access.ALLOW.id)
                 .build()
 
-        def role2 = RoleDefinitionBuilder.create()
-                .withScreenPermission('screen1', Access.ALLOW)
-                .withEntityAccessPermission(metaClass, EntityOp.CREATE, Access.ALLOW)
-                .withEntityAccessPermission(metaClass, EntityOp.READ, Access.DENY)
-                .withEntityAccessPermission(metaClass, EntityOp.UPDATE, Access.ALLOW)
-                .withEntityAccessPermission(metaClass, EntityOp.DELETE, Access.ALLOW)
-                .withEntityAttrAccessPermission(metaClass, "login", EntityAttrAccess. VIEW)
-                .withSpecificPermission('spec1', Access.ALLOW)
-                .withScreenElementPermission('alias', 'component', Access.ALLOW)
+        def role2 = BasicRoleDefinition.builder()
+                .withPermission(PermissionType.SCREEN, 'screen1', Access.DENY.getId())
+                .withPermission(PermissionType.ENTITY_OP, 'sec$User:create', Access.DENY.getId())
+                .withPermission(PermissionType.ENTITY_OP, 'sec$User:update', Access.DENY.getId())
+                .withPermission(PermissionType.ENTITY_OP, 'sec$User:delete', Access.DENY.getId())
+                .withPermission(PermissionType.ENTITY_ATTR, 'sec$User:login', EntityAttrAccess.DENY.getId())
+                .withPermission(PermissionType.SPECIFIC, 'spec1', Access.DENY.getId())
                 .build()
 
         when:
@@ -185,11 +166,31 @@ class RoleDefinitionsJoinerTest extends Specification {
 
         joinedRole.screenPermissions().explicitPermissions['screen1'] == Access.ALLOW.id
         joinedRole.entityPermissions().explicitPermissions['sec$User:create'] == Access.ALLOW.id
-        joinedRole.entityPermissions().explicitPermissions['sec$User:read'] == Access.DENY.id
         joinedRole.entityPermissions().explicitPermissions['sec$User:update'] == Access.ALLOW.id
         joinedRole.entityPermissions().explicitPermissions['sec$User:delete'] == Access.ALLOW.id
-        joinedRole.entityAttributePermissions().explicitPermissions['sec$User:login'] == EntityAttrAccess.VIEW.id
+        joinedRole.entityAttributePermissions().explicitPermissions['sec$User:login'] == EntityAttrAccess.MODIFY.id
+        joinedRole.entityAttributePermissions().explicitPermissions['*:*'] == EntityAttrAccess.MODIFY.id
         joinedRole.specificPermissions().explicitPermissions['spec1'] == Access.ALLOW.id
-        joinedRole.screenComponentPermissions().explicitPermissions['alias:component'] == Access.ALLOW.id
+    }
+
+    def "join attribute wildcard for entity and global attribute wildcard"() {
+        def role1 = BasicRoleDefinition.builder()
+                .withPermission(PermissionType.ENTITY_ATTR, "my_Entity1:*", EntityAttrAccess.MODIFY.id)
+                .withPermission(PermissionType.ENTITY_ATTR, "my_Entity2:*", EntityAttrAccess.DENY.id)
+                .build()
+
+        def role2 = BasicRoleDefinition.builder()
+                .withPermission(PermissionType.ENTITY_ATTR, '*:*', EntityAttrAccess.VIEW.getId())
+                .build()
+
+        when:
+
+        def joinedRole = RoleDefinitionsJoiner.join(role1, role2)
+
+        then:
+
+        joinedRole.entityAttributePermissions().explicitPermissions['my_Entity1:*'] == EntityAttrAccess.MODIFY.id
+        joinedRole.entityAttributePermissions().explicitPermissions['my_Entity2:*'] == EntityAttrAccess.VIEW.id
+        joinedRole.entityAttributePermissions().explicitPermissions['*:*'] == EntityAttrAccess.VIEW.id
     }
 }

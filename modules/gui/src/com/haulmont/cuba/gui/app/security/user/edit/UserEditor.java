@@ -50,6 +50,7 @@ import com.haulmont.cuba.security.group.AccessGroupsService;
 import com.haulmont.cuba.security.role.RolesService;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -97,6 +98,9 @@ public class UserEditor extends AbstractEditor<User> {
 
     @Inject
     protected GlobalConfig globalConfig;
+
+    @Inject
+    protected Logger log;
 
     protected PasswordField passwField;
     protected PasswordField confirmPasswField;
@@ -276,7 +280,13 @@ public class UserEditor extends AbstractEditor<User> {
                 continue;
             }
             if (userRole.getRoleName() != null) {
-                userRole.setRole(rolesService.getRoleDefinitionAndTransformToRole(userRole.getRoleName()));
+                Role role = rolesService.getRoleDefinitionAndTransformToRole(userRole.getRoleName());
+                if (role == null) {
+                    log.warn("Role definition {} not found", userRole.getRoleName());
+                    rolesDs.excludeItem(userRole);
+                    continue;
+                }
+                userRole.setRole(role);
                 rolesDs.modifyItem(userRole);
 
                 ((AbstractDatasource) rolesDs).getItemsToUpdate().remove(userRole);

@@ -26,7 +26,20 @@ import java.lang.annotation.*;
  * <p>Example:
  *
  * <pre>
- *     &#064;EntityAttributeAccess(target = SomeEntity.class, modify = {"someAttribute"})
+ * &#064;EntityAttributeAccess(entityClass = SomeEntity.class, view = {"attr1", "attr2"}, modify = {"someAttribute"})
+ * </pre>
+ *
+ * Instead of {@code entityClass} attribute an {@code entityName} can be used:
+ *
+ * <pre>
+ * &#064;EntityAttributeAccess(entityName = "app_SomeEntity", view = {"attr1", "attr2"}, modify = {"someAttribute"})
+ * </pre>
+ *
+ * You may use wildcard for attribute names or entity name:
+ *
+ * <pre>
+ * &#064;EntityAttributeAccess(entityName = "app_SomeEntity", view = "*")
+ * &#064;EntityAttributeAccess(entityName = "*", modify = "*")
  * </pre>
  *
  * @see Role
@@ -36,11 +49,11 @@ import java.lang.annotation.*;
 @Repeatable(EntityAttributeAccessContainer.class)
 public @interface EntityAttributeAccess {
 
-    Class<? extends Entity> target();
+    Class<? extends Entity> entityClass() default NullEntity.class;
 
-    String[] deny() default {};
-
-    String[] modify() default {};
+    String entityName() default "";
 
     String[] view() default {};
+
+    String[] modify() default {};
 }

@@ -20,14 +20,18 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.security.app.role.AnnotatedPermissionsBuilder;
-import com.haulmont.cuba.security.app.role.annotation.Role;
 import com.haulmont.cuba.security.app.role.annotation.*;
-import com.haulmont.cuba.security.entity.*;
+import com.haulmont.cuba.security.entity.Access;
+import com.haulmont.cuba.security.entity.EntityAttrAccess;
+import com.haulmont.cuba.security.entity.EntityOp;
+import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.role.*;
 import com.haulmont.cuba.testsupport.TestContainer;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
+
+import java.util.Map;
 
 import static org.junit.Assert.*;
 
@@ -36,7 +40,6 @@ public class AnnotatedPermissionsBuilderTest {
     protected AnnotatedPermissionsBuilder builder;
     protected Metadata metadata;
     protected TestPredefinedRole role;
-    protected TestDefaultsRole defaultsRole;
 
     @ClassRule
     public static TestContainer cont = TestContainer.Common.INSTANCE;
@@ -46,7 +49,6 @@ public class AnnotatedPermissionsBuilderTest {
         builder = AppBeans.get(AnnotatedPermissionsBuilder.class);
         metadata = cont.metadata();
         role = new TestPredefinedRole();
-        defaultsRole = new TestDefaultsRole();
     }
 
     @Test
@@ -63,71 +65,65 @@ public class AnnotatedPermissionsBuilderTest {
         MetaClass userMetaClass = metadata.getClassNN(User.class);
         MetaClass roleMetaClass = metadata.getClassNN(com.haulmont.cuba.security.entity.Role.class);
 
-        assertEquals(4, entityPermissions.getExplicitPermissions().size());
+        assertEquals(3, entityPermissions.getExplicitPermissions().size());
         assertEquals(Access.ALLOW.getId(),
                 entityPermissions.getExplicitPermissions().get(
                         PermissionsUtils.getEntityOperationTarget(userMetaClass, EntityOp.CREATE)));
         assertEquals(Access.ALLOW.getId(),
                 entityPermissions.getExplicitPermissions().get(
                         PermissionsUtils.getEntityOperationTarget(userMetaClass, EntityOp.READ)));
-        assertEquals(Access.DENY.getId(),
-                entityPermissions.getExplicitPermissions().get(
-                        PermissionsUtils.getEntityOperationTarget(userMetaClass, EntityOp.UPDATE)));
         assertEquals(Access.ALLOW.getId(),
                 entityPermissions.getExplicitPermissions().get(
                         PermissionsUtils.getEntityOperationTarget(roleMetaClass, EntityOp.READ)));
 
         EntityAttributePermissionsContainer entityAttributePermissions =
                 builder.buildEntityAttributeAccessPermissions(role);
-        assertEquals(3, entityAttributePermissions.getExplicitPermissions().size());
+        assertEquals(2, entityAttributePermissions.getExplicitPermissions().size());
         assertEquals(EntityAttrAccess.MODIFY.getId(),
                 entityAttributePermissions.getExplicitPermissions().get(
                         PermissionsUtils.getEntityAttributeTarget(userMetaClass, "login")));
         assertEquals(EntityAttrAccess.VIEW.getId(),
                 entityAttributePermissions.getExplicitPermissions().get(
                         PermissionsUtils.getEntityAttributeTarget(roleMetaClass, "name")));
-        assertEquals(EntityAttrAccess.DENY.getId(),
-                entityAttributePermissions.getExplicitPermissions().get(
-                        PermissionsUtils.getEntityAttributeTarget(roleMetaClass, "description")));
-
 
 
         SpecificPermissionsContainer specificPermissions = builder.buildSpecificPermissions(role);
         assertEquals(2, specificPermissions.getExplicitPermissions().size());
         assertEquals(Access.ALLOW.getId(), specificPermissions.getExplicitPermissions().get("specificPermission2"));
-        assertEquals(Access.DENY.getId(), specificPermissions.getExplicitPermissions().get("specificPermission1"));
+        assertEquals(Access.ALLOW.getId(), specificPermissions.getExplicitPermissions().get("specificPermission1"));
 
 
         ScreenPermissionsContainer screenPermissions = builder.buildScreenPermissions(role);
-        assertEquals(3, screenPermissions.getExplicitPermissions().size());
+        assertEquals(2, screenPermissions.getExplicitPermissions().size());
         assertEquals(Access.ALLOW.getId(), screenPermissions.getExplicitPermissions().get("sec$Role.edit"));
         assertEquals(Access.ALLOW.getId(), screenPermissions.getExplicitPermissions().get("sec$User.edit"));
-        assertEquals(Access.DENY.getId(), screenPermissions.getExplicitPermissions().get("sec$Role.browse"));
 
 
         ScreenComponentPermissionsContainer screenElementsPermissions = builder.buildScreenElementsPermissions(role);
         assertEquals(1, screenElementsPermissions.getExplicitPermissions().size());
         assertEquals(Access.ALLOW.getId(),
                 screenElementsPermissions.getExplicitPermissions().get(
-                        PermissionsUtils.getScreenElementTarget("sec$Role.edit", "roleGroupBox")));
+                        PermissionsUtils.getScreenComponentTarget("sec$Role.edit", "roleGroupBox")));
     }
 
     @Test
-    public void testDefaultPermissionsBuilding() {
-        EntityPermissionsContainer entityPermissions = builder.buildEntityAccessPermissions(defaultsRole);
-        assertEquals(Access.ALLOW, entityPermissions.getDefaultEntityCreateAccess());
-        assertEquals(Access.ALLOW, entityPermissions.getDefaultEntityReadAccess());
-        assertEquals(Access.DENY, entityPermissions.getDefaultEntityUpdateAccess());
-        assertNull(entityPermissions.getDefaultEntityDeleteAccess());
+    public void testAttributeWildcards() {
+        TestWildcardRole testRole = new TestWildcardRole();
+        EntityAttributePermissionsContainer permissionsContainer = builder.buildEntityAttributeAccessPermissions(testRole);
 
-        ScreenPermissionsContainer screenPermissions = builder.buildScreenPermissions(defaultsRole);
-        assertEquals(Access.ALLOW, screenPermissions.getDefaultScreenAccess());
+        Map<String, Integer> explicitPermissions = permissionsContainer.getExplicitPermissions();
+        assertEquals(EntityAttrAccess.VIEW.getId(), explicitPermissions.get("sec$User:*"));
+        assertEquals(EntityAttrAccess.MODIFY.getId(), explicitPermissions.get("sec$Role:*"));
+    }
 
-        EntityAttributePermissionsContainer entityAttributeAccessPermissions = builder.buildEntityAttributeAccessPermissions(defaultsRole);
-        assertEquals(EntityAttrAccess.VIEW, entityAttributeAccessPermissions.getDefaultEntityAttributeAccess());
+    @Test
+    public void testEntityWildcards() {
+        TestWildcardRole testRole = new TestWildcardRole();
+        EntityPermissionsContainer permissionsContainer = builder.buildEntityAccessPermissions(testRole);
 
-        SpecificPermissionsContainer specificPermissions = builder.buildSpecificPermissions(defaultsRole);
-        assertEquals(Access.ALLOW, specificPermissions.getDefaultSpecificAccess());
+        Map<String, Integer> explicitPermissions = permissionsContainer.getExplicitPermissions();
+        assertEquals(Access.ALLOW.getId(), explicitPermissions.get("*:read"));
+        assertNull(explicitPermissions.get("*:create"));
     }
 
     @Role(name = "TestPredefinedRole",
@@ -140,48 +136,45 @@ public class AnnotatedPermissionsBuilderTest {
             return null;
         }
 
-        @EntityAccess(target = User.class,
-                allow = {EntityOp.CREATE, EntityOp.READ}, deny = {EntityOp.UPDATE})
-        @EntityAccess(target = com.haulmont.cuba.security.entity.Role.class,
-                allow = {EntityOp.READ})
+        @EntityAccess(entityClass = User.class,
+                operations = {EntityOp.CREATE, EntityOp.READ})
+        @EntityAccess(entityClass = com.haulmont.cuba.security.entity.Role.class,
+                operations = {EntityOp.READ})
         @Override
         public EntityPermissionsContainer entityPermissions() {
             return null;
         }
 
-        @EntityAttributeAccess(target = User.class, modify = {"login"})
-        @EntityAttributeAccess(target = com.haulmont.cuba.security.entity.Role.class,
-                view = {"name"},
-                deny = {"description"})
+        @EntityAttributeAccess(entityClass = User.class, modify = {"login"})
+        @EntityAttributeAccess(entityClass = com.haulmont.cuba.security.entity.Role.class,
+                view = {"name"})
         @Override
         public EntityAttributePermissionsContainer entityAttributePermissions() {
             return null;
         }
 
-        @SpecificAccess(target = "specificPermission2", access = Access.ALLOW)
-        @SpecificAccess(target = "specificPermission1", access = Access.DENY)
+        @SpecificAccess(permissions = "specificPermission2")
+        @SpecificAccess(permissions = "specificPermission1")
         @Override
         public SpecificPermissionsContainer specificPermissions() {
             return null;
         }
 
-        @ScreenAccess(allow = {"sec$Role.edit", "sec$User.edit"}, deny = {"sec$Role.browse"})
+        @ScreenAccess(screenIds = {"sec$Role.edit", "sec$User.edit"})
         @Override
         public ScreenPermissionsContainer screenPermissions() {
             return null;
         }
 
-        @ScreenComponentAccess(screen = "sec$Role.edit", allow = {"roleGroupBox"})
+        @ScreenComponentAccess(screenId = "sec$Role.edit", allow = {"roleGroupBox"})
         @Override
         public ScreenComponentPermissionsContainer screenComponentPermissions() {
             return null;
         }
     }
 
-    @Role(name = "TestDefaultsRole",
-            isDefault = false,
-            description = "Test defaults role")
-    protected class TestDefaultsRole implements RoleDefinition {
+    @Role(name = "TestWildcardRole")
+    protected class TestWildcardRole implements RoleDefinition {
 
         @Override
         public String getName() {
@@ -189,25 +182,24 @@ public class AnnotatedPermissionsBuilderTest {
         }
 
         @Override
-        @DefaultEntityAccess(allow = {EntityOp.CREATE, EntityOp.READ}, deny = {EntityOp.UPDATE})
+        @EntityAccess(entityName = "*", operations = {EntityOp.READ})
         public EntityPermissionsContainer entityPermissions() {
             return null;
         }
 
         @Override
-        @DefaultEntityAttributeAccess(EntityAttrAccess.VIEW)
+        @EntityAttributeAccess(entityClass = User.class, view = {"*"})
+        @EntityAttributeAccess(entityName = "sec$Role", modify = {"*"})
         public EntityAttributePermissionsContainer entityAttributePermissions() {
             return null;
         }
 
         @Override
-        @DefaultSpecificAccess(Access.ALLOW)
         public SpecificPermissionsContainer specificPermissions() {
             return null;
         }
 
         @Override
-        @DefaultScreenAccess(Access.ALLOW)
         public ScreenPermissionsContainer screenPermissions() {
             return null;
         }

@@ -19,8 +19,8 @@ package com.haulmont.cuba.security.entity;
 import com.haulmont.chile.core.annotations.Composition;
 import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.chile.core.annotations.NamePattern;
-import com.haulmont.cuba.core.entity.TenantEntity;
 import com.haulmont.cuba.core.entity.StandardEntity;
+import com.haulmont.cuba.core.entity.TenantEntity;
 import com.haulmont.cuba.core.entity.annotation.OnDelete;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.entity.annotation.TrackEditScreenHistory;
@@ -62,27 +62,6 @@ public class Role extends StandardEntity implements TenantEntity {
     @Column(name = "SECURITY_SCOPE")
     private String securityScope;
 
-    @Column(name = "DEFAULT_SCREEN_ACCESS")
-    private Integer defaultScreenAccess;
-
-    @Column(name = "DEFAULT_ENTITY_CREATE_ACCESS")
-    private Integer defaultEntityCreateAccess;
-
-    @Column(name = "DEFAULT_ENTITY_READ_ACCESS")
-    private Integer defaultEntityReadAccess;
-
-    @Column(name = "DEFAULT_ENTITY_UPDATE_ACCESS")
-    private Integer defaultEntityUpdateAccess;
-
-    @Column(name = "DEFAULT_ENTITY_DELETE_ACCESS")
-    private Integer defaultEntityDeleteAccess;
-
-    @Column(name = "DEFAULT_ENTITY_ATTR_ACCESS")
-    private Integer defaultEntityAttributeAccess;
-
-    @Column(name = "DEFAULT_SPECIFIC_ACCESS")
-    private Integer defaultSpecificAccess;
-
     @OneToMany(mappedBy = "role")
     @OnDelete(DeletePolicy.CASCADE)
     @Composition
@@ -122,62 +101,6 @@ public class Role extends StandardEntity implements TenantEntity {
             return scope.getLocName();
         }
         return null;
-    }
-
-    public Access getDefaultScreenAccess() {
-        return Access.fromId(defaultScreenAccess);
-    }
-
-    public void setDefaultScreenAccess(Access defaultScreenAccess) {
-        this.defaultScreenAccess = defaultScreenAccess == null ? null : defaultScreenAccess.getId();
-    }
-
-    public Access getDefaultEntityCreateAccess() {
-        return Access.fromId(defaultEntityCreateAccess);
-    }
-
-    public void setDefaultEntityCreateAccess(Access defaultEntityCreateAccess) {
-        this.defaultEntityCreateAccess = defaultEntityCreateAccess == null ? null : defaultEntityCreateAccess.getId();
-    }
-
-    public Access getDefaultEntityReadAccess() {
-        return Access.fromId(defaultEntityReadAccess);
-    }
-
-    public void setDefaultEntityReadAccess(Access defaultEntityReadAccess) {
-        this.defaultEntityReadAccess = defaultEntityReadAccess == null ? null : defaultEntityReadAccess.getId();
-    }
-
-    public Access getDefaultEntityUpdateAccess() {
-        return Access.fromId(defaultEntityUpdateAccess);
-    }
-
-    public void setDefaultEntityUpdateAccess(Access defaultEntityUpdateAccess) {
-        this.defaultEntityUpdateAccess = defaultEntityUpdateAccess == null ? null : defaultEntityUpdateAccess.getId();
-    }
-
-    public Access getDefaultEntityDeleteAccess() {
-        return Access.fromId(defaultEntityDeleteAccess);
-    }
-
-    public void setDefaultEntityDeleteAccess(Access defaultEntityDeleteAccess) {
-        this.defaultEntityDeleteAccess = defaultEntityDeleteAccess == null ? null : defaultEntityDeleteAccess.getId();
-    }
-
-    public EntityAttrAccess getDefaultEntityAttributeAccess() {
-        return EntityAttrAccess.fromId(defaultEntityAttributeAccess);
-    }
-
-    public void setDefaultEntityAttributeAccess(EntityAttrAccess defaultEntityAttributeAccess) {
-        this.defaultEntityAttributeAccess = defaultEntityAttributeAccess == null ? null : defaultEntityAttributeAccess.getId();
-    }
-
-    public Access getDefaultSpecificAccess() {
-        return Access.fromId(defaultSpecificAccess);
-    }
-
-    public void setDefaultSpecificAccess(Access defaultSpecificAccess) {
-        this.defaultSpecificAccess = defaultSpecificAccess == null ? null : defaultSpecificAccess.getId();
     }
 
     public Set<Permission> getPermissions() {

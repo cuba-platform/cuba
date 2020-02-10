@@ -23,6 +23,7 @@ import com.haulmont.cuba.gui.screen.OpenMode
 import com.haulmont.cuba.security.app.SecurityScopesService
 import com.haulmont.cuba.security.entity.Group
 import com.haulmont.cuba.security.entity.User
+import com.haulmont.cuba.security.role.RolesService
 import com.haulmont.cuba.web.testsupport.proxy.TestServiceProxy
 import spec.cuba.web.UiScreenSpec
 
@@ -51,6 +52,12 @@ class UserBrowseTest extends UiScreenSpec {
         TestServiceProxy.mock(SecurityScopesService, Mock(SecurityScopesService) {
             getAvailableSecurityScopes() >> {
                 return []
+            }
+        })
+
+        TestServiceProxy.mock(RolesService, Mock(RolesService) {
+            getRolesPolicyVersion() >> {
+                return 2
             }
         })
     }

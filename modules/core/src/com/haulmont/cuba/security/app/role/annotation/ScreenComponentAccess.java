@@ -24,7 +24,7 @@ import java.lang.annotation.*;
  * <p>Example:
  *
  * <pre>
- *     &#064;ScreenComponentAccess(screen = "myapp_SomeEntity.browse", deny = {"someGroupBox"})
+ * &#064;ScreenComponentAccess(screenId = "myapp_SomeEntity.browse", deny = {"someGroupBox"})
  * </pre>
  *
  * @see Role
@@ -34,7 +34,7 @@ import java.lang.annotation.*;
 @Repeatable(ScreenComponentAccessContainer.class)
 public @interface ScreenComponentAccess {
 
-    String screen();
+    String screenId();
 
     String[] deny() default {};
 

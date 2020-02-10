@@ -22,7 +22,7 @@ import com.haulmont.cuba.core.global.AppBeans
 import com.haulmont.cuba.core.global.DataManager
 import com.haulmont.cuba.core.global.Metadata
 import com.haulmont.cuba.core.global.View
-import com.haulmont.cuba.security.app.RoleDefinitionBuilder
+import com.haulmont.cuba.security.role.BasicRoleDefinition
 import com.haulmont.cuba.security.app.role.PredefinedRoleDefinitionRepository
 import com.haulmont.cuba.security.entity.Access
 import com.haulmont.cuba.security.entity.EntityAttrAccess
@@ -68,11 +68,11 @@ class RolesServiceTest extends Specification {
     def "getDefaultRoles"() {
         given:
 
-        RoleDefinition defaultPredefinedRole = RoleDefinitionBuilder.create()
+        RoleDefinition defaultPredefinedRole = BasicRoleDefinition.builder()
                 .withName('defaultPredefinedRole')
                 .withIsDefault(true)
                 .build()
-        RoleDefinition nonDefaultPredefinedRole = RoleDefinitionBuilder.create()
+        RoleDefinition nonDefaultPredefinedRole = BasicRoleDefinition.builder()
                 .withName('nonDefaultPredefinedRole')
                 .withIsDefault(false)
                 .build()
@@ -109,11 +109,11 @@ class RolesServiceTest extends Specification {
         given:
 
         def predefinedRoleName = 'predefinedRole'
-        RoleDefinition predefinedRole = RoleDefinitionBuilder.create()
+        RoleDefinition predefinedRole = BasicRoleDefinition.builder()
                 .withName(predefinedRoleName)
-                .withEntityAccessPermission(User.class, EntityOp.CREATE, Access.ALLOW)
-                .withEntityAccessPermission(User.class, EntityOp.READ, Access.DENY)
-                .withEntityAttrAccessPermission(User.class, 'password', EntityAttrAccess.DENY)
+                .withEntityPermission(User.class, EntityOp.CREATE, Access.ALLOW)
+                .withEntityPermission(User.class, EntityOp.READ, Access.DENY)
+                .withEntityAttributePermission(User.class, 'password', EntityAttrAccess.DENY)
                 .withIsDefault(true)
                 .build()
 
@@ -143,11 +143,11 @@ class RolesServiceTest extends Specification {
         given:
 
         def predefinedRoleName = 'predefinedRole'
-        RoleDefinition predefinedRole = RoleDefinitionBuilder.create()
+        RoleDefinition predefinedRole = BasicRoleDefinition.builder()
                 .withName(predefinedRoleName)
-                .withEntityAccessPermission(User.class, EntityOp.CREATE, Access.ALLOW)
-                .withEntityAccessPermission(User.class, EntityOp.READ, Access.DENY)
-                .withEntityAttrAccessPermission(User.class, 'password', EntityAttrAccess.DENY)
+                .withEntityPermission(User.class, EntityOp.CREATE, Access.ALLOW)
+                .withEntityPermission(User.class, EntityOp.READ, Access.DENY)
+                .withEntityAttributePermission(User.class, 'password', EntityAttrAccess.DENY)
                 .withIsDefault(false)
                 .build()
 
@@ -204,11 +204,10 @@ class RolesServiceTest extends Specification {
     }
 
     def "transformToRole"() {
-        RoleDefinition predefinedRole = RoleDefinitionBuilder.create()
+        RoleDefinition predefinedRole = BasicRoleDefinition.builder()
                 .withName("role1")
-                .withEntityAccessPermission(User.class, EntityOp.CREATE, Access.ALLOW)
-                .withEntityAttrAccessPermission(User.class, 'password', EntityAttrAccess.DENY)
-                .withDefaultEntityAttributeAccess(EntityAttrAccess.VIEW)
+                .withEntityPermission(User.class, EntityOp.CREATE, Access.ALLOW)
+                .withEntityAttributePermission(User.class, 'password', EntityAttrAccess.DENY)
                 .withIsDefault(true)
                 .build()
 
@@ -219,7 +218,6 @@ class RolesServiceTest extends Specification {
         then:
 
         role.name == 'role1'
-        role.defaultEntityAttributeAccess == EntityAttrAccess.VIEW
         role.defaultRole
         role.permissions.size() == 2
 
@@ -239,7 +237,6 @@ class RolesServiceTest extends Specification {
         then:
 
         role.name == 'role1'
-        role.defaultEntityAttributeAccess == EntityAttrAccess.VIEW
         role.defaultRole
         role.permissions == null
 

@@ -17,40 +17,33 @@
 package com.haulmont.cuba.security.app.role;
 
 
-import com.haulmont.cuba.security.app.role.annotation.*;
-import com.haulmont.cuba.security.entity.Access;
-import com.haulmont.cuba.security.entity.EntityAttrAccess;
-import com.haulmont.cuba.security.entity.EntityOp;
+import com.haulmont.cuba.security.app.role.annotation.Role;
 import com.haulmont.cuba.security.role.*;
 
 /**
  * System role that grants permissions on everything.
  */
-@Role(name = FullAccessRoleDefinition.ROLE_NAME)
+@Role(name = FullAccessRoleDefinition.ROLE_NAME, isSuper = true)
 public class FullAccessRoleDefinition extends AnnotatedRoleDefinition {
 
     public static final String ROLE_NAME = "system-full-access";
 
     @Override
-    @DefaultEntityAccess(allow = {EntityOp.CREATE, EntityOp.READ, EntityOp.UPDATE, EntityOp.DELETE})
     public EntityPermissionsContainer entityPermissions() {
         return super.entityPermissions();
     }
 
     @Override
-    @DefaultEntityAttributeAccess(EntityAttrAccess.MODIFY)
     public EntityAttributePermissionsContainer entityAttributePermissions() {
         return super.entityAttributePermissions();
     }
 
     @Override
-    @DefaultSpecificAccess(Access.ALLOW)
     public SpecificPermissionsContainer specificPermissions() {
         return super.specificPermissions();
     }
 
     @Override
-    @DefaultScreenAccess(Access.ALLOW)
     public ScreenPermissionsContainer screenPermissions() {
         return super.screenPermissions();
     }

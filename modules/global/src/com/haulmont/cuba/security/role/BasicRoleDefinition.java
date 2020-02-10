@@ -16,8 +16,26 @@
 
 package com.haulmont.cuba.security.role;
 
-import java.io.Serializable;
+import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Metadata;
+import com.haulmont.cuba.security.entity.*;
 
+import java.io.Serializable;
+import java.util.Collection;
+
+/**
+ * {@link RoleDefinition} implementation. To create an instance of the {@code BasicRoleDefinition} use the
+ * {@link BasicRoleDefinitionBuilder}:
+ *
+ * <pre>
+ * BasicRoleDefinition role = BasicRoleDefinition.builder()
+ *     .withName("name")
+ *     .withDescription("description")
+ *     ...
+ *     .build();
+ * </pre>
+ */
 public class BasicRoleDefinition implements RoleDefinition, Serializable {
 
     private EntityPermissionsContainer entityPermissions;
@@ -30,6 +48,7 @@ public class BasicRoleDefinition implements RoleDefinition, Serializable {
     private String description;
     private String securityScope;
     private boolean isDefault;
+    private boolean isSuper;
 
     private BasicRoleDefinition() {
         entityPermissions = new EntityPermissionsContainer();
@@ -44,12 +63,23 @@ public class BasicRoleDefinition implements RoleDefinition, Serializable {
         this.locName = builder.locName;
         this.description = builder.description;
         this.isDefault = builder.isDefault;
+        this.isSuper = builder.isSuper;
         this.screenPermissions = builder.screenPermissions;
         this.entityPermissions = builder.entityPermissions;
         this.entityAttributePermissions = builder.entityAttributePermissions;
         this.specificPermissions = builder.specificPermissions;
-        this.screenElementsPermissions = builder.screenElementsPermissions;
+        this.screenElementsPermissions = builder.screenComponentPermissions;
         this.securityScope = builder.securityScope;
+
+        if (this.isSuper) {
+            this.entityPermissions.getExplicitPermissions().put("*:create", Access.ALLOW.getId());
+            this.entityPermissions.getExplicitPermissions().put("*:read", Access.ALLOW.getId());
+            this.entityPermissions.getExplicitPermissions().put("*:update", Access.ALLOW.getId());
+            this.entityPermissions.getExplicitPermissions().put("*:delete", Access.ALLOW.getId());
+            this.entityAttributePermissions.getExplicitPermissions().put("*:*", EntityAttrAccess.MODIFY.getId());
+            this.specificPermissions.getExplicitPermissions().put("*", Access.ALLOW.getId());
+            this.screenPermissions.getExplicitPermissions().put("*", Access.ALLOW.getId());
+        }
     }
 
     @Override
@@ -122,6 +152,15 @@ public class BasicRoleDefinition implements RoleDefinition, Serializable {
         this.isDefault = isDefault;
     }
 
+    @Override
+    public boolean isSuper() {
+        return isSuper;
+    }
+
+    public void setSuper(boolean aSuper) {
+        isSuper = aSuper;
+    }
+
     public static BasicRoleDefinitionBuilder builder() {
         return new BasicRoleDefinitionBuilder();
     }
@@ -133,11 +172,12 @@ public class BasicRoleDefinition implements RoleDefinition, Serializable {
         private String description;
         private String securityScope;
         private boolean isDefault;
+        private boolean isSuper;
         private EntityPermissionsContainer entityPermissions = new EntityPermissionsContainer();
         private EntityAttributePermissionsContainer entityAttributePermissions = new EntityAttributePermissionsContainer();
         private SpecificPermissionsContainer specificPermissions = new SpecificPermissionsContainer();
         private ScreenPermissionsContainer screenPermissions = new ScreenPermissionsContainer();
-        private ScreenComponentPermissionsContainer screenElementsPermissions = new ScreenComponentPermissionsContainer();
+        private ScreenComponentPermissionsContainer screenComponentPermissions = new ScreenComponentPermissionsContainer();
 
         private BasicRoleDefinitionBuilder() {
         }
@@ -162,34 +202,124 @@ public class BasicRoleDefinition implements RoleDefinition, Serializable {
             return this;
         }
 
+        public BasicRoleDefinitionBuilder withIsSuper(boolean isSuper) {
+            this.isSuper = isSuper;
+            return this;
+        }
+
         public BasicRoleDefinitionBuilder withSecurityScope(String securityScope) {
             this.securityScope = securityScope;
             return this;
         }
 
-        public BasicRoleDefinitionBuilder withEntityPermissions(EntityPermissionsContainer entityPermissions) {
+        public BasicRoleDefinitionBuilder withEntityPermissionsContainer(EntityPermissionsContainer entityPermissions) {
             this.entityPermissions = entityPermissions;
             return this;
         }
 
-        public BasicRoleDefinitionBuilder withEntityAttributePermissions(EntityAttributePermissionsContainer entityAttributePermissions) {
+        public BasicRoleDefinitionBuilder withEntityAttributePermissionsContainer(EntityAttributePermissionsContainer entityAttributePermissions) {
             this.entityAttributePermissions = entityAttributePermissions;
             return this;
         }
 
-        public BasicRoleDefinitionBuilder withSpecificPermissions(SpecificPermissionsContainer specificPermissions) {
+        public BasicRoleDefinitionBuilder withSpecificPermissionsContainer(SpecificPermissionsContainer specificPermissions) {
             this.specificPermissions = specificPermissions;
             return this;
         }
 
-        public BasicRoleDefinitionBuilder withScreenPermissions(ScreenPermissionsContainer screenPermissions) {
+        public BasicRoleDefinitionBuilder withScreenPermissionsContainer(ScreenPermissionsContainer screenPermissions) {
             this.screenPermissions = screenPermissions;
             return this;
         }
 
-        public BasicRoleDefinitionBuilder withScreenElementsPermissions(ScreenComponentPermissionsContainer screenElementsPermissions) {
-            this.screenElementsPermissions = screenElementsPermissions;
+        public BasicRoleDefinitionBuilder withScreenComponentPermissionsContainer(ScreenComponentPermissionsContainer screenElementsPermissions) {
+            this.screenComponentPermissions = screenElementsPermissions;
             return this;
+        }
+
+        public BasicRoleDefinitionBuilder withScreenPermission(String screenId, Access access) {
+            addPermission(PermissionType.SCREEN, screenId, access.getId());
+            return this;
+        }
+
+        public BasicRoleDefinitionBuilder withEntityPermission(String entityName, EntityOp entityOp, Access access) {
+            addPermission(PermissionType.ENTITY_OP,
+                    PermissionsUtils.getEntityOperationTarget(entityName, entityOp),
+                    access.getId());
+            return this;
+        }
+
+        public BasicRoleDefinitionBuilder withEntityPermission(Class<? extends Entity> entityClass, EntityOp entityOp, Access access) {
+            String entityName = AppBeans.get(Metadata.class).getClassNN(entityClass).getName();
+            return withEntityPermission(entityName, entityOp, access);
+        }
+
+        public BasicRoleDefinitionBuilder withEntityAttributePermission(String entityName, String attributeName,
+                                                                        EntityAttrAccess entityAttrAccess) {
+            addPermission(PermissionType.ENTITY_ATTR,
+                    PermissionsUtils.getEntityAttributeTarget(entityName, attributeName),
+                    entityAttrAccess.getId());
+            return this;
+        }
+
+        public BasicRoleDefinitionBuilder withEntityAttributePermission(Class<? extends Entity> entityClass, String attributeName,
+                                                                        EntityAttrAccess entityAttrAccess) {
+            String entityName = AppBeans.get(Metadata.class).getClassNN(entityClass).getName();
+            return withEntityAttributePermission(entityName, attributeName, entityAttrAccess);
+        }
+
+        public BasicRoleDefinitionBuilder withSpecificPermission(String target, Access access) {
+            addPermission(PermissionType.SPECIFIC,
+                    target,
+                    access.getId());
+            return this;
+        }
+
+        public BasicRoleDefinitionBuilder withScreenComponentPermission(String screenId, String componentId,
+                                                                        Access access) {
+            addPermission(PermissionType.UI,
+                    PermissionsUtils.getScreenComponentTarget(screenId, componentId),
+                    access.getId());
+            return this;
+        }
+
+        protected BasicRoleDefinitionBuilder withPermission(Permission permission) {
+            addPermission(permission.getType(), permission.getTarget(), permission.getValue());
+            return this;
+        }
+
+        public BasicRoleDefinitionBuilder withPermissions(Collection<Permission> permissions) {
+            for (Permission permission : permissions) {
+                addPermission(permission.getType(), permission.getTarget(), permission.getValue());
+            }
+            return this;
+        }
+
+        public BasicRoleDefinitionBuilder withPermission(PermissionType permissionType, String target, int access) {
+            addPermission(permissionType, target, access);
+            return this;
+        }
+
+        protected void addPermission(PermissionType permissionType, String target, int access) {
+            switch (permissionType) {
+                case ENTITY_OP:
+                    entityPermissions.getExplicitPermissions().put(target, access);
+                    break;
+                case ENTITY_ATTR:
+                    entityAttributePermissions.getExplicitPermissions().put(target, access);
+                    break;
+                case SPECIFIC:
+                    specificPermissions.getExplicitPermissions().put(target, access);
+                    break;
+                case SCREEN:
+                    screenPermissions.getExplicitPermissions().put(target, access);
+                    break;
+                case UI:
+                    screenComponentPermissions.getExplicitPermissions().put(target, access);
+                    break;
+                default:
+                    throw new IllegalArgumentException("Unsupported permission type.");
+            }
         }
 
         public BasicRoleDefinition build() {

@@ -27,6 +27,7 @@ import com.haulmont.cuba.security.role.*;
 import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -98,6 +99,12 @@ public class RolesServiceBean implements RolesService {
     }
 
     @Override
+    @Nullable
+    public RoleDefinition getRoleDefinitionByName(String name) {
+        return predefinedRoleDefinitionRepository.getRoleDefinitionByName(name);
+    }
+
+    @Override
     public Role getRoleDefinitionAndTransformToRole(String roleDefinitionName) {
         RoleDefinition roleDefinition = predefinedRoleDefinitionRepository.getRoleDefinitionByName(roleDefinitionName);
         return roleDefinition != null ?
@@ -162,7 +169,12 @@ public class RolesServiceBean implements RolesService {
 
     @Override
     public Access getPermissionUndefinedAccessPolicy() {
-        return serverConfig.getPermissionUndefinedAccessPolicy();
+        return rolesHelper.getPermissionUndefinedAccessPolicy();
+    }
+
+    @Override
+    public int getRolesPolicyVersion() {
+        return serverConfig.getRolesPolicyVersion();
     }
 
 }

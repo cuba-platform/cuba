@@ -33,7 +33,7 @@ import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.DataSupplier;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.security.app.RoleDefinitionsJoiner;
+import com.haulmont.cuba.security.role.RoleDefinitionsJoiner;
 import com.haulmont.cuba.security.app.SecurityScopesService;
 import com.haulmont.cuba.security.app.UserManagementService;
 import com.haulmont.cuba.security.entity.*;
@@ -145,7 +145,9 @@ public class UserBrowser extends AbstractLookup {
 
         initTimeZoneColumn();
         initGroupColumn();
-        initShowEffectiveRoleActions();
+        if (rolesService.getRolesPolicyVersion() == 2) {
+            initShowEffectiveRoleActions();
+        }
     }
 
     protected void initTimeZoneColumn() {

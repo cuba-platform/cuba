@@ -32,6 +32,7 @@ import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.entity.Permission;
 import com.haulmont.cuba.security.entity.PermissionType;
 import com.haulmont.cuba.security.entity.Role;
+import com.haulmont.cuba.security.role.RolesService;
 import org.apache.commons.lang3.BooleanUtils;
 
 import javax.inject.Inject;
@@ -79,15 +80,24 @@ public class ScreenPermissionsFrame extends AbstractFrame {
     @Inject
     protected TextField<String> screenFilter;
 
+    @Inject
+    protected RolesService rolesService;
+
+    @Inject
+    protected CheckBox screenWildcardCheckBox;
+
     protected boolean itemChanging = false;
 
     protected boolean permissionsLoaded;
+
+    protected int rolesPolicyVersion = 2;
 
     @Override
     public void init(Map<String, Object> params) {
         super.init(params);
 
         permissionsLoaded = BooleanUtils.isTrue((Boolean) params.get("permissionsLoaded"));
+        rolesPolicyVersion = rolesService.getRolesPolicyVersion();
 
         screenPermissionsTree.setStyleProvider(new BasicPermissionTreeStyleProvider());
 
@@ -174,7 +184,7 @@ public class ScreenPermissionsFrame extends AbstractFrame {
             boolean visible = !item.getId().startsWith("root:");
 
             allowCheckBox.setVisible(visible);
-            disallowCheckBox.setVisible(visible);
+            disallowCheckBox.setVisible(visible && (rolesPolicyVersion == 1));
 
             if (item.getPermissionVariant() == PermissionVariant.ALLOWED) {
                 allowCheckBox.setValue(true);
@@ -201,6 +211,9 @@ public class ScreenPermissionsFrame extends AbstractFrame {
 
         screenPermissionsTree.expandAll();
         screenPermissionsTree.collapse("root:others");
+
+        initScreenWildcardCheckBox();
+        screenWildcardCheckBox.setEditable(!roleDs.getItem().isPredefined());
     }
 
     public void setEditable(boolean editable) {
@@ -248,5 +261,58 @@ public class ScreenPermissionsFrame extends AbstractFrame {
         params.put("permissionsLoaded", permissionsLoaded);
 
         return params;
+    }
+
+    protected void initScreenWildcardCheckBox() {
+        if (rolesPolicyVersion == 1) {
+            screenWildcardCheckBox.setVisible(false);
+            return;
+        }
+        Permission wildcardPermission = getWildcardPermission();
+        if (wildcardPermission != null) {
+            screenWildcardCheckBox.setValue(true);
+        }
+
+        updateCheckboxesEnabledByWildcard(wildcardPermission != null);
+
+        screenWildcardCheckBox.addValueChangeListener(e -> {
+            PermissionVariant permissionVariant = PermissionUiHelper.getCheckBoxVariant(e.getValue(), PermissionVariant.ALLOWED);
+            String permissionTarget = "*";
+            if (permissionVariant != PermissionVariant.NOTSET) {
+                // Create permission
+                int value = PermissionUiHelper.getPermissionValue(permissionVariant);
+                PermissionUiHelper.createPermissionItem(screenPermissionsDs, roleDs,
+                        permissionTarget, PermissionType.SCREEN, value);
+            } else {
+                // Remove permission
+                Permission permission = null;
+                for (Permission p : screenPermissionsDs.getItems()) {
+                    if (Objects.equals(p.getTarget(), permissionTarget)) {
+                        permission = p;
+                        break;
+                    }
+                }
+                if (permission != null) {
+                    screenPermissionsDs.removeItem(permission);
+                }
+            }
+            updateCheckboxesEnabledByWildcard(Boolean.TRUE.equals(e.getValue()));
+        });
+    }
+
+    protected Permission getWildcardPermission() {
+        Permission wildcardPermission = null;
+        for (Permission p : screenPermissionsDs.getItems()) {
+            if (Objects.equals(p.getTarget(), "*")) {
+                wildcardPermission = p;
+                break;
+            }
+        }
+        return wildcardPermission;
+    }
+
+    protected void updateCheckboxesEnabledByWildcard(boolean wildcardIsSet) {
+        //if there is a wildcard permission set then allow checkboxes should be disabled
+        allowCheckBox.setEnabled(!wildcardIsSet);
     }
 }
