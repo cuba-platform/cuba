@@ -42,7 +42,7 @@
                 resizable="true"/>
 
     <layout expand="split" spacing="true">
-        <filter id="categoriesFilter" datasource="categoriesDs" margin="false,false,true,false" applyTo="categoryTable">
+        <filter id="categoriesFilter" datasource="categoriesDs" applyTo="categoryTable">
             <properties include=".*"/>
         </filter>
         <split id="split" orientation="horizontal" width="100%">

@@ -76,7 +76,7 @@
     <layout spacing="true">
         <tabSheet id="tabsheet" width="100%" height="100%">
             <tab id="view" caption="msg://view" expand="split1" spacing="true">
-                <grid id="grid" spacing="true" margin="true,false,false,true">
+                <grid id="grid" spacing="true" margin="true,false,false,false">
                     <columns count="7"/>
                     <rows>
                         <row id="gridRowUp">
@@ -103,7 +103,7 @@
                 <split id="split1" orientation="horizontal" pos="70" width="100%">
                     <vbox id="entityLogTableBox"
                           expand="entityLogTable"
-                          margin="false,true,true,true"
+                          margin="false,true,false,false"
                           spacing="true"
                           height="100%"
                           width="100%">
@@ -128,7 +128,7 @@
                             <rowsCount/>
                         </table>
                     </vbox>
-                    <vbox id="entityLogAttrTableBox" width="100%" height="100%" margin="true" spacing="true">
+                    <vbox id="entityLogAttrTableBox" width="100%" height="100%" margin="false,false,false,true" spacing="true">
                         <table id="entityLogAttrTable" width="100%" height="100%">
                             <columns>
                                 <column id="displayName" caption="msg://attribute"/>
@@ -142,7 +142,7 @@
                     </vbox>
                 </split>
             </tab>
-            <tab id="setup" spacing="true"  expand="split2" margin="true"  caption="msg://setup">
+            <tab id="setup" spacing="true"  expand="split2" margin="true,false,false,false"  caption="msg://setup">
                 <split id="split2" orientation="horizontal" pos="70" width="100%">
                     <vbox id="loggedEntityTableBox" width="100%" height="100%" margin="false,true,false,false" spacing="true">
                         <groupTable id="loggedEntityTable" width="100%" height="100%">
