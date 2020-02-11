@@ -89,11 +89,6 @@ public class BulkEditAction extends SecuredListAction {
             return true;
         }
 
-        boolean permitted = security.isScreenPermitted(BulkEditor.PERMISSION);
-        if (!permitted) {
-            return false;
-        }
-
         return super.isPermitted();
     }
 
