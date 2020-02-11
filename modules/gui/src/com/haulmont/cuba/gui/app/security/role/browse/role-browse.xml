@@ -31,8 +31,8 @@
                 width="theme://cuba.gui.dialogSize.width.xlarge"
                 resizable="true"/>
 
-    <layout expand="rolesTable">
-        <groupBox collapsable="false" outerMargin="true,false,true,false">
+    <layout expand="rolesTable" spacing="true">
+        <groupBox collapsable="false">
             <grid id="grid" spacing="true">
                 <columns count="6"/>
                 <rows>

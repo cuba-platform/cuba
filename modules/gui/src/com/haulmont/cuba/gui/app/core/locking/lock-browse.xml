@@ -37,7 +37,7 @@
 
     <layout spacing="true">
         <tabSheet id="tabSheet" width="100%" height="100%">
-            <tab margin="true" id="viewTab" caption="msg://view">
+            <tab margin="true,false,false,false" id="viewTab" caption="msg://view">
                 <table id="locks" editable="false" width="100%" height="100%">
                     <actions>
                         <action id="refresh" invoke="refresh" caption="msg://refresh"/>
@@ -59,7 +59,7 @@
                     <rows datasource="locksDs"/>
                 </table>
             </tab>
-            <tab margin="true" id="setupTab" caption="msg://setup">
+            <tab margin="true,false,false,false" id="setupTab" caption="msg://setup">
                 <table id="setupTable" height="100%" width="100%">
                     <actions>
                         <action id="create"/>

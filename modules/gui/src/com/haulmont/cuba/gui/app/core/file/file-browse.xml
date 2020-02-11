@@ -34,7 +34,7 @@
                 resizable="true"/>
 
     <layout expand="filesTable" spacing="true">
-        <filter id="genericFilter" datasource="filesDs" margin="false,false,true,false" applyTo="filesTable">
+        <filter id="genericFilter" datasource="filesDs" applyTo="filesTable">
             <properties include=".*"
                         excludeProperties="createDate"/>
         </filter>
