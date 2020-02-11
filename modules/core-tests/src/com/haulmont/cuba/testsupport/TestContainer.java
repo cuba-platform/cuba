@@ -111,7 +111,7 @@ public class TestContainer extends ExternalResource implements BeforeAllCallback
 
     private Logger log;
 
-    protected String springConfig;
+    protected String springConfig; //deprecated
     protected List<String> appComponents;
     protected List<String> appPropertiesFiles;
     protected String dbDriver;
@@ -130,6 +130,7 @@ public class TestContainer extends ExternalResource implements BeforeAllCallback
         }
         log = LoggerFactory.getLogger(TestContainer.class);
 
+        springConfig = "com/haulmont/cuba/testsupport/test-spring.xml";
         appComponents = Collections.emptyList();
         appPropertiesFiles = Arrays.asList(
                 "com/haulmont/cuba/app.properties",
@@ -206,6 +207,10 @@ public class TestContainer extends ExternalResource implements BeforeAllCallback
         return appPropertiesFiles;
     }
 
+    /**
+     * @deprecated define the spring configuration file in the {@code cuba.springContextConfig} application property
+     * of the test-app.properties file. This method will be removed in one of future releases.
+     */
     @Deprecated
     public String getSpringConfig() {
         return springConfig;
@@ -221,11 +226,6 @@ public class TestContainer extends ExternalResource implements BeforeAllCallback
         return this;
     }
 
-    /**
-     * @deprecated define the spring configuration file in the {@code cuba.springContextConfig} application property
-     * of the test-app.properties file. This method will be removed in one of future releases.
-     */
-    @Deprecated
     public TestContainer setAppComponents(List<String> appComponents) {
         this.appComponents = appComponents;
         return this;
@@ -437,6 +437,10 @@ public class TestContainer extends ExternalResource implements BeforeAllCallback
 
         StringTokenizer tokenizer = new StringTokenizer(configProperty);
         List<String> locations = tokenizer.getTokenList();
+        String springConfig = getSpringConfig();
+        if (!Strings.isNullOrEmpty(springConfig) && !locations.contains(springConfig)) {
+            locations.add(springConfig);
+        }
 
         springAppContext = new CubaCoreApplicationContext(locations.toArray(new String[0]));
         AppContext.Internals.setApplicationContext(springAppContext);
