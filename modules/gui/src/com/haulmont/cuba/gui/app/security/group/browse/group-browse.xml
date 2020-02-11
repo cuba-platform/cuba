@@ -93,8 +93,8 @@
             </vbox>
             <vbox id="tabSheetBox" margin="false,false,false,true" height="100%">
                 <tabSheet id="tabsheet" height="100%" width="100%">
-                    <tab id="usersTab" caption="msg://tabsheet.users" margin="true" expand="usersTable">
-                        <filter datasource="usersDs" margin="false,false,true,false" applyTo="usersTable"
+                    <tab id="usersTab" caption="msg://tabsheet.users" margin="true,false,false,false" expand="usersTable" spacing="true">
+                        <filter datasource="usersDs" applyTo="usersTable"
                                 collapsed="true">
                             <properties include=".*"/>
                         </filter>
@@ -121,7 +121,7 @@
                         </table>
                     </tab>
                     <tab id="constraintsTab" caption="msg://tabsheet.constraints"
-                         lazy="true" expand="constraintsTable" margin="true">
+                         lazy="true" expand="constraintsTable" margin="true,false,false,false">
                         <table id="constraintsTable" width="100%">
                             <buttonsPanel>
                                 <button action="constraintsTable.create"/>
@@ -155,7 +155,7 @@
                         </table>
                     </tab>
                     <tab id="attributesTab" caption="msg://tabsheet.attributes"
-                         lazy="true" expand="attributesTable" margin="true">
+                         lazy="true" expand="attributesTable" margin="true,false,false,false">
                         <table id="attributesTable" width="100%">
                             <buttonsPanel>
                                 <button action="attributesTable.create"/>

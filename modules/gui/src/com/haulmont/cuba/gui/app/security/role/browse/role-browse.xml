@@ -34,8 +34,8 @@
                 width="theme://cuba.gui.dialogSize.width.xlarge"
                 resizable="true"/>
 
-    <layout expand="rolesTable">
-        <filter applyTo="rolesTable" datasource="rolesDs" margin="false,false,true,false">
+    <layout expand="rolesTable" spacing="true">
+        <filter applyTo="rolesTable" datasource="rolesDs">
             <properties include=".*"/>
         </filter>
         <table id="rolesTable" width="100%" editable="true" multiselect="true">
