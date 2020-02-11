@@ -946,6 +946,11 @@ public class WebTree<E extends Entity>
     }
 
     @Override
+    public void setRowHeight(double rowHeight) {
+        component.setRowHeight(rowHeight);
+    }
+
+    @Override
     public void setDescriptionProvider(Function<? super E, String> provider) {
         this.setDescriptionProvider(provider, ContentMode.PREFORMATTED);
     }
