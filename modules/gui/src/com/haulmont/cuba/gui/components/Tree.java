@@ -291,6 +291,14 @@ public interface Tree<E extends Entity> extends ListComponent<E>, HasButtonsPane
      */
     Subscription addCollapseListener(Consumer<CollapseEvent<E>> listener);
 
+    /**
+     * Sets the height of a row. If -1 (default), the row height is calculated based on the theme for an empty row
+     * before the Tree is displayed.
+     *
+     * @param rowHeight The height of a row in pixels or -1 for automatic calculation
+     */
+    void setRowHeight(double rowHeight);
+
     enum SelectionMode {
         /**
          * A SelectionMode that supports for only single rows to be selected at a time.
