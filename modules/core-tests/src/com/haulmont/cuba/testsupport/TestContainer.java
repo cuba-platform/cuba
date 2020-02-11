@@ -130,7 +130,6 @@ public class TestContainer extends ExternalResource implements BeforeAllCallback
         }
         log = LoggerFactory.getLogger(TestContainer.class);
 
-        springConfig = "com/haulmont/cuba/testsupport/test-spring.xml";
         appComponents = Collections.emptyList();
         appPropertiesFiles = Arrays.asList(
                 "com/haulmont/cuba/app.properties",
@@ -207,15 +206,26 @@ public class TestContainer extends ExternalResource implements BeforeAllCallback
         return appPropertiesFiles;
     }
 
+    @Deprecated
     public String getSpringConfig() {
         return springConfig;
     }
 
+    /**
+     * @deprecated define the spring configuration file in the {@code cuba.springContextConfig} application property
+     * of the test-app.properties file. This method will be removed in one of future releases.
+     */
+    @Deprecated
     public TestContainer setSpringConfig(String springConfig) {
         this.springConfig = springConfig;
         return this;
     }
 
+    /**
+     * @deprecated define the spring configuration file in the {@code cuba.springContextConfig} application property
+     * of the test-app.properties file. This method will be removed in one of future releases.
+     */
+    @Deprecated
     public TestContainer setAppComponents(List<String> appComponents) {
         this.appComponents = appComponents;
         return this;
@@ -427,7 +437,6 @@ public class TestContainer extends ExternalResource implements BeforeAllCallback
 
         StringTokenizer tokenizer = new StringTokenizer(configProperty);
         List<String> locations = tokenizer.getTokenList();
-        locations.add(getSpringConfig());
 
         springAppContext = new CubaCoreApplicationContext(locations.toArray(new String[0]));
         AppContext.Internals.setApplicationContext(springAppContext);
