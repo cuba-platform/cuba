@@ -80,6 +80,8 @@ public class TreeLoader extends ActionsHolderLoader<Tree> {
         loadContextHelp(resultComponent, element);
 
         loadSelectionMode(resultComponent, element);
+
+        loadRowHeight(resultComponent, element);
     }
 
     @SuppressWarnings("unchecked")
@@ -156,6 +158,13 @@ public class TreeLoader extends ActionsHolderLoader<Tree> {
         String selectionMode = element.attributeValue("selectionMode");
         if (StringUtils.isNotEmpty(selectionMode)) {
             component.setSelectionMode(Tree.SelectionMode.valueOf(selectionMode));
+        }
+    }
+
+    protected void loadRowHeight(Tree component, Element element) {
+        String rowHeight = element.attributeValue("rowHeight");
+        if (!Strings.isNullOrEmpty(rowHeight)) {
+            component.setRowHeight(Double.parseDouble(rowHeight));
         }
     }
 }
