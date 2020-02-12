@@ -20,6 +20,7 @@ import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.Dialogs;
 import com.haulmont.cuba.gui.Notifications;
 import com.haulmont.cuba.gui.Screens;
+import com.haulmont.cuba.gui.WebBrowserTools;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Button;
 import com.haulmont.cuba.gui.components.TextField;
@@ -56,6 +57,8 @@ public class ScreenInjectToFields extends Screen {
     private Screens screens;
     @Inject
     private Dialogs dialogs;
+    @Inject
+    private WebBrowserTools webBrowserTools;
 
     @Inject
     private MessageBundle messageBundle;

@@ -21,6 +21,7 @@ import com.haulmont.cuba.gui.Fragments;
 import com.haulmont.cuba.gui.Notifications;
 import com.haulmont.cuba.gui.Screens;
 import com.haulmont.cuba.gui.UrlRouting;
+import com.haulmont.cuba.gui.WebBrowserTools;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.screen.ScreenContext;
 import com.haulmont.cuba.gui.screen.ScreenOptions;
@@ -35,6 +36,7 @@ public class ScreenContextImpl implements ScreenContext {
     protected final Notifications notifications;
     protected final Fragments fragments;
     protected final UrlRouting urlRouting;
+    protected final WebBrowserTools webBrowserTools;
 
     public ScreenContextImpl(WindowInfo windowInfo, ScreenOptions options, ScreenContext hostScreenContext) {
         this.windowInfo = windowInfo;
@@ -45,6 +47,7 @@ public class ScreenContextImpl implements ScreenContext {
         this.notifications = hostScreenContext.getNotifications();
         this.urlRouting = hostScreenContext.getUrlRouting();
         this.screens = hostScreenContext.getScreens();
+        this.webBrowserTools = hostScreenContext.getWebBrowserTools();
     }
 
     public ScreenContextImpl(WindowInfo windowInfo, ScreenOptions options,
@@ -52,7 +55,8 @@ public class ScreenContextImpl implements ScreenContext {
                              Dialogs dialogs,
                              Notifications notifications,
                              Fragments fragments,
-                             UrlRouting urlRouting) {
+                             UrlRouting urlRouting,
+                             WebBrowserTools webBrowserTools) {
         this.windowInfo = windowInfo;
         this.options = options;
 
@@ -61,6 +65,7 @@ public class ScreenContextImpl implements ScreenContext {
         this.notifications = notifications;
         this.fragments = fragments;
         this.urlRouting = urlRouting;
+        this.webBrowserTools = webBrowserTools;
     }
 
     @Override
@@ -96,5 +101,10 @@ public class ScreenContextImpl implements ScreenContext {
     @Override
     public UrlRouting getUrlRouting() {
         return urlRouting;
+    }
+
+    @Override
+    public WebBrowserTools getWebBrowserTools() {
+        return webBrowserTools;
     }
 }

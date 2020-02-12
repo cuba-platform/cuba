@@ -23,6 +23,7 @@ import com.haulmont.cuba.core.global.Messages
 import com.haulmont.cuba.gui.Dialogs
 import com.haulmont.cuba.gui.Notifications
 import com.haulmont.cuba.gui.Screens
+import com.haulmont.cuba.gui.WebBrowserTools
 import com.haulmont.cuba.gui.components.*
 import com.haulmont.cuba.gui.components.actions.BaseAction
 import com.haulmont.cuba.gui.components.sys.WindowImplementation
@@ -63,10 +64,12 @@ class UiControllerDependencyInjectorTest extends Specification {
         def screens = Mock(Screens)
         def dialogs = Mock(Dialogs)
         def messages = Mock(Messages)
+        def webBrowserTools = Mock(WebBrowserTools)
 
         screenContext.getDialogs() >> dialogs
         screenContext.getNotifications() >> notifications
         screenContext.getScreens() >> screens
+        screenContext.getWebBrowserTools() >> webBrowserTools
 
         window.getComponent("usersTable") >> usersTable
         window.getComponent("fieldGroup.name") >> textField
@@ -102,6 +105,7 @@ class UiControllerDependencyInjectorTest extends Specification {
         screen.notifications == notifications
         screen.screens == screens
         screen.dialogs == dialogs
+        screen.webBrowserTools == webBrowserTools
 
         screen.logger != null
         screen.messageBundle != null

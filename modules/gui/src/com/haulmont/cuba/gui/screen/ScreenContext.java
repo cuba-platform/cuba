@@ -21,6 +21,7 @@ import com.haulmont.cuba.gui.Fragments;
 import com.haulmont.cuba.gui.Notifications;
 import com.haulmont.cuba.gui.Screens;
 import com.haulmont.cuba.gui.UrlRouting;
+import com.haulmont.cuba.gui.WebBrowserTools;
 import com.haulmont.cuba.gui.config.WindowInfo;
 
 public interface ScreenContext {
@@ -37,4 +38,6 @@ public interface ScreenContext {
     Fragments getFragments();
 
     UrlRouting getUrlRouting();
+
+    WebBrowserTools getWebBrowserTools();
 }
