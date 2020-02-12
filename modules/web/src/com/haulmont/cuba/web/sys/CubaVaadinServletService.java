@@ -28,6 +28,7 @@ import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.auth.WebAuthConfig;
 import com.haulmont.cuba.web.sys.events.WebSessionDestroyedEvent;
 import com.haulmont.cuba.web.sys.events.WebSessionInitializedEvent;
+import com.haulmont.cuba.web.theme.ThemeVariantsProvider;
 import com.haulmont.cuba.web.widgets.CubaFileUpload;
 import com.vaadin.server.*;
 import com.vaadin.server.communication.*;
@@ -48,10 +49,7 @@ import java.io.InputStream;
 import java.io.PrintWriter;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -259,6 +257,31 @@ public class CubaVaadinServletService extends VaadinServletService
         }
     }
 
+    protected String getThemeVariants() {
+        List<String> themeVariants = findAndEscapeThemeVariants();
+        return StringUtils.join(themeVariants, " ");
+    }
+
+    public List<String> findAndEscapeThemeVariants() {
+        if (AppBeans.containsBean(ThemeVariantsProvider.NAME)) {
+            ThemeVariantsProvider themeVariantsProvider = AppBeans.get(ThemeVariantsProvider.NAME);
+            List<String> themeVariants = themeVariantsProvider.getThemeVariants();
+            if (!themeVariants.isEmpty()) {
+                List<String> strippedVariants = new ArrayList<>(themeVariants.size());
+                for (String variant : themeVariants) {
+                    // XSS preventation, theme variants shouldn't contain special chars anyway.
+                    // The servlet denies them via url parameter.
+                    String themeVariant = VaadinServlet.stripSpecialChars(variant);
+                    strippedVariants.add(themeVariant);
+                }
+
+                return strippedVariants;
+            }
+        }
+
+        return Collections.emptyList();
+    }
+
     /**
      * Add ability to redirect to base application URL if we have unparsable path tail
      */
@@ -277,6 +300,17 @@ public class CubaVaadinServletService extends VaadinServletService
             }
 
             return super.handleRequest(session, request, response);
+        }
+
+        @Override
+        protected String getMainDivAdditionalClassName(BootstrapContext context) {
+            VaadinRequest request = context.getRequest();
+            VaadinService service = request.getService();
+            if (service instanceof CubaVaadinServletService) {
+                return ((CubaVaadinServletService) service).getThemeVariants();
+            }
+
+            return null;
         }
     }
 
