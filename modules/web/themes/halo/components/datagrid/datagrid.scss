@@ -42,7 +42,6 @@ $cuba-datagrid-aggregation-background-color: $cuba-aggregation-background-color-
 
 @mixin halo-datagrid($primary-stylename: v-grid) {
   $background-color: $v-table-background-color or valo-table-background-color();
-  $border-color: $v-table-border-color or first-color(valo-border($color: $background-color, $strength: 0.8));
 
   .#{$primary-stylename} {
     @include user-select(none);
@@ -58,7 +57,7 @@ $cuba-datagrid-aggregation-background-color: $cuba-aggregation-background-color-
 
   .#{$primary-stylename}-row  > .#{$primary-stylename}-cell:last-child,
   .#{$primary-stylename}-editor-cells > div:last-child {
-    border-right: $v-grid-border-size solid $border-color;
+    border-right: $v-grid-border;
   }
 
   .#{$primary-stylename}-row-selected  > .#{$primary-stylename}-cell {
