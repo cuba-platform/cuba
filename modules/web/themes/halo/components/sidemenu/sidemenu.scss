@@ -641,7 +641,7 @@ $cuba-sidemenu-userindicator-font-weight: $v-font-weight !default;
 
       font-weight: $cuba-sidemenu-item-font-weight;
 
-      :hover {
+      &:hover {
         color: valo-font-color($bg, 1);
       }
     }
