@@ -26,6 +26,11 @@ $cuba-window-modal-header-background: null !default;
  */
 $cuba-window-modal-header-font-weight: $v-font-weight !default;
 /**
+ * The modal window header font size.
+ * @group window
+ */
+$cuba-window-modal-header-font-size: $v-font-size !default;
+/**
  * The modal window header height.
  * @group window
  */
@@ -99,6 +104,7 @@ $v-window-nonmodal-shadow: 0 0 20px rgba(0, 0, 0, 0.5) !default;
 
     .#{$primary-stylename}-header {
       font-weight: $cuba-window-modal-header-font-weight;
+      font-size: $cuba-window-modal-header-font-size;
       line-height: $cuba-window-modal-header-line-height;
     }
 
