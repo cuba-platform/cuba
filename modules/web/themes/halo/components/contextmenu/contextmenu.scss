@@ -21,14 +21,14 @@
   }
 }
 
-@mixin halo-vaadin-contextmenu-addon($primary-stylename: c-cm-item) {
+@mixin halo-vaadin-contextmenu-addon($primary-stylename: v-menubar) {
 
-  .v-menubar-submenu .#{$primary-stylename}.v-menubar-menuitem {
+  .#{$primary-stylename}-popup .#{$primary-stylename}-menuitem {
     padding-right: $v-selection-item-padding-horizontal * 2;
     padding-left: $v-selection-item-padding-horizontal;
   }
 
-  .#{$primary-stylename}.v-menubar-menuitem-selected:active {
+  .#{$primary-stylename}-menuitem-selected:active {
     @include opacity(.7);
   }
 }
