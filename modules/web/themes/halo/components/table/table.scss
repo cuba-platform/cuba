@@ -77,7 +77,7 @@ $c-table-drag-indicator-color: $v-focus-color;
     border-bottom: 0;
   }
 
-  .#{$primary-stylename}-footer {
+  .#{$primary-stylename}-footer-wrap {
     @include valo-gradient($cuba-table-aggregation-background-color);
   }
 

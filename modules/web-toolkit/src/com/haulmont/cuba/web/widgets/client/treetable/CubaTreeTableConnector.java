@@ -42,6 +42,8 @@ import static com.haulmont.cuba.web.widgets.client.Tools.findCurrentOrParentTd;
 @Connect(CubaTreeTable.class)
 public class CubaTreeTableConnector extends TreeTableConnector {
 
+    protected static final String HAS_FOOTER_STYLENAME = "has-footer";
+
     protected HandlerRegistration tooltipHandlerRegistration;
 
     public CubaTreeTableConnector() {
@@ -256,6 +258,15 @@ public class CubaTreeTableConnector extends TreeTableConnector {
             getWidget().addStyleName("collapsing-allowed");
         } else {
             getWidget().removeStyleName("collapsing-allowed");
+        }
+
+        if (uidl.hasAttribute("colfooters")) {
+            boolean hasFooter = uidl.getBooleanAttribute("colfooters");
+            if (hasFooter) {
+                getWidget().addStyleName(HAS_FOOTER_STYLENAME);
+            } else {
+                getWidget().removeStyleName(HAS_FOOTER_STYLENAME);
+            }
         }
 
         // We may have actions attached to this table
