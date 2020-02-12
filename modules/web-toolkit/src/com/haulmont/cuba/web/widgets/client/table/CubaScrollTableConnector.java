@@ -38,6 +38,8 @@ import static com.haulmont.cuba.web.widgets.client.Tools.findCurrentOrParentTd;
 @Connect(value = CubaTable.class, loadStyle = Connect.LoadStyle.EAGER)
 public class CubaScrollTableConnector extends TableConnector {
 
+    protected static final String HAS_FOOTER_STYLENAME = "has-footer";
+
     protected HandlerRegistration tooltipHandlerRegistration;
 
     public CubaScrollTableConnector() {
@@ -208,6 +210,15 @@ public class CubaScrollTableConnector extends TableConnector {
             getWidget().addStyleName("collapsing-allowed");
         } else {
             getWidget().removeStyleName("collapsing-allowed");
+        }
+
+        if (uidl.hasAttribute("colfooters")) {
+            boolean hasFooter = uidl.getBooleanAttribute("colfooters");
+            if (hasFooter) {
+                getWidget().addStyleName(HAS_FOOTER_STYLENAME);
+            } else {
+                getWidget().removeStyleName(HAS_FOOTER_STYLENAME);
+            }
         }
 
         // We may have actions attached to this table
