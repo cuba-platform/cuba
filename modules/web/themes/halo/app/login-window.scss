@@ -91,6 +91,12 @@ $cuba-login-password-border-radius: $v-border-radius !default;
  */
 $cuba-login-password-height: $v-unit-size !default;
 
+/**
+ * Login form width.
+ * @group loginWindow
+ */
+$cuba-login-form-width: 385px !default;
+
 @mixin cuba-login-window {
 
   .c-login-main-layout {
@@ -124,7 +130,7 @@ $cuba-login-password-height: $v-unit-size !default;
   }
 
   .c-login-form {
-    width: 385px;
+    width: $cuba-login-form-width;
 
     .v-spacing:nth-child(2):nth-last-child(2) {
       height: 20px;
