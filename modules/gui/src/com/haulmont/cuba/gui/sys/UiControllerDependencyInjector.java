@@ -692,6 +692,10 @@ public class UiControllerDependencyInjector implements ControllerDependencyInjec
             ThemeConstantsManager themeManager = beanLocator.get(ThemeConstantsManager.NAME);
             return themeManager.getConstants();
 
+        } else if (WebBrowserTools.class.isAssignableFrom(type)) {
+            // Injecting WebBrowserTools
+            return getScreenContext(frameOwner).getWebBrowserTools();
+
         } else {
             Object instance;
             // Try to find a Spring bean
