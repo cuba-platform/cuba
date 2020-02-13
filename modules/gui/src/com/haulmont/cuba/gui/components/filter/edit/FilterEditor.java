@@ -216,6 +216,10 @@ public class FilterEditor extends AbstractWindow {
         }
 
         if (filterEntity.getFolder() != null) {
+            availableForAllCb.setVisible(false);
+            availableForAllLabel.setVisible(false);
+            globalDefaultCb.setVisible(false);
+            globalDefaultLabel.setVisible(false);
             defaultCb.setVisible(false);
             defaultLabel.setVisible(false);
         }
