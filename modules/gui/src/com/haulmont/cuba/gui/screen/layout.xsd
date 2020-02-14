@@ -512,7 +512,7 @@
             <xs:enumeration value="java.util.Date"/>
             <xs:enumeration value="java.time.LocalDate"/>
             <xs:enumeration value="java.time.LocalDateTime"/>
-            <xs:enumeration value="com.haulmont.cuba.gui.icons.Icons.Icon"/>
+            <xs:enumeration value="com.haulmont.cuba.gui.icons.Icons$Icon"/>
             <xs:enumeration value="com.haulmont.cuba.gui.components.Component"/>
         </xs:restriction>
     </xs:simpleType>
