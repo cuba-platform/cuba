@@ -2,6 +2,7 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.google.common.base.Strings;
 import com.haulmont.bali.events.Subscription;
+import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.TreeDataGrid;
 import com.haulmont.cuba.gui.components.data.BindingState;
@@ -281,5 +282,18 @@ public class WebTreeDataGrid<E extends Entity> extends WebAbstractDataGrid<CubaT
         }
 
         return settingsChanged;
+    }
+
+    @Override
+    public void scrollTo(E item, ScrollDestination destination) {
+        Preconditions.checkNotNullArgument(item);
+        Preconditions.checkNotNullArgument(destination);
+
+        int rowIndex = getVisibleItemsConsideringHierarchy().indexOf(item);
+        if (rowIndex == -1) {
+            return;
+        }
+
+        component.scrollTo(rowIndex, WebWrapperUtils.convertToGridScrollDestination(destination));
     }
 }
