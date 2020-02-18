@@ -256,7 +256,7 @@ public class WebSourceCodeEditor extends WebV8AbstractField<CubaSourceCodeEditor
             if (suggestion.getStartPosition() > 0)
                 return StringUtils.substring(text, 0, suggestion.getStartPosition()) + suggestionText
                         + StringUtils.substring(text, cursor);
-            return StringUtils.substring(text, 0, cursor) + suggestionText + StringUtils.substring(text, cursor);
+            return suggestionText + StringUtils.substring(text, cursor);
         }
     }
 }
