@@ -20,11 +20,11 @@ package com.haulmont.cuba.gui.sys;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.app.security.role.edit.UiPermissionDescriptor;
-import com.haulmont.cuba.gui.app.security.role.edit.UiPermissionValue;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.security.ActionsPermissions;
 import com.haulmont.cuba.security.entity.Permission;
 import com.haulmont.cuba.security.entity.PermissionType;
+import com.haulmont.cuba.security.entity.ScreenComponentPermission;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -106,9 +106,9 @@ public class WindowCreationHelper {
         Component component = window.getComponent(targetComponentId);
 
         if (component != null) {
-            if (permissionValue == UiPermissionValue.HIDE.getValue()) {
+            if (ScreenComponentPermission.DENY.getId().equals(permissionValue)) {
                 component.setVisible(false);
-            } else if (permissionValue == UiPermissionValue.READ_ONLY.getValue()) {
+            } else if (ScreenComponentPermission.VIEW.getId().equals(permissionValue)) {
                 if (component instanceof Component.Editable) {
                     ((Component.Editable) component).setEditable(false);
                 } else {
@@ -131,7 +131,7 @@ public class WindowCreationHelper {
             if (compositeComponent != null) {
                 if (compositeComponent instanceof UiPermissionAware) {
                     UiPermissionAware uiPermissionAwareComponent = (UiPermissionAware) compositeComponent;
-                    UiPermissionValue uiPermissionValue = UiPermissionValue.fromId(permissionValue);
+                    ScreenComponentPermission uiPermissionValue = ScreenComponentPermission.fromId(permissionValue);
 
                     UiPermissionDescriptor permissionDescriptor;
                     if (subComponentId.contains("<")) {
@@ -177,9 +177,9 @@ public class WindowCreationHelper {
                 if (actionHolderComponent instanceof SecuredActionsHolder) {
                     ActionsPermissions permissions =
                             ((SecuredActionsHolder) actionHolderComponent).getActionsPermissions();
-                    if (permissionValue == UiPermissionValue.HIDE.getValue()) {
+                    if (permissionValue == ScreenComponentPermission.DENY.getId()) {
                         permissions.addHiddenActionPermission(actionId);
-                    } else if (permissionValue == UiPermissionValue.READ_ONLY.getValue()) {
+                    } else if (permissionValue == ScreenComponentPermission.VIEW.getId()) {
                         permissions.addDisabledActionPermission(actionId);
                     }
                 } else {

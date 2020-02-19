@@ -28,6 +28,7 @@ import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.security.entity.Permission;
 import com.haulmont.cuba.security.entity.PermissionType;
 import com.haulmont.cuba.security.entity.Role;
+import com.haulmont.cuba.security.entity.ScreenComponentPermission;
 
 import java.util.Objects;
 import java.util.UUID;
@@ -162,15 +163,15 @@ public final class PermissionUiHelper {
             // Create permission
             switch (permissionVariant) {
                 case HIDE:
-                    value = UiPermissionValue.HIDE.getValue();
+                    value = ScreenComponentPermission.DENY.getId();
                     break;
 
                 case READ_ONLY:
-                    value = UiPermissionValue.READ_ONLY.getValue();
+                    value = ScreenComponentPermission.VIEW.getId();
                     break;
 
                 case SHOW:
-                    value = UiPermissionValue.SHOW.getValue();
+                    value = ScreenComponentPermission.MODIFY.getId();
                     break;
 
                 default:

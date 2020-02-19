@@ -22,7 +22,6 @@ import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.app.security.role.edit.UiPermissionDescriptor;
-import com.haulmont.cuba.gui.app.security.role.edit.UiPermissionValue;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.sys.FrameImplementation;
 import com.haulmont.cuba.gui.data.DsContext;
@@ -34,6 +33,7 @@ import com.haulmont.cuba.gui.settings.Settings;
 import com.haulmont.cuba.gui.sys.TestIdManager;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
+import com.haulmont.cuba.security.entity.ScreenComponentPermission;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.gui.icons.IconResolver;
 import com.haulmont.cuba.web.widgets.CubaTabSheet;
@@ -138,10 +138,10 @@ public class WebTabSheet extends WebAbstractComponent<CubaTabSheet>
         final String subComponentId = permissionDescriptor.getSubComponentId();
         final TabSheet.Tab tab = getTab(subComponentId);
         if (tab != null) {
-            UiPermissionValue permissionValue = permissionDescriptor.getPermissionValue();
-            if (permissionValue == UiPermissionValue.HIDE) {
+            ScreenComponentPermission permissionValue = permissionDescriptor.getPermissionValue();
+            if (permissionValue == ScreenComponentPermission.DENY) {
                 tab.setVisible(false);
-            } else if (permissionValue == UiPermissionValue.READ_ONLY) {
+            } else if (permissionValue == ScreenComponentPermission.VIEW) {
                 tab.setEnabled(false);
             }
         } else {

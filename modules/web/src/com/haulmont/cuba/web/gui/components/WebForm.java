@@ -21,13 +21,13 @@ import com.haulmont.bali.events.Subscription;
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.app.security.role.edit.UiPermissionDescriptor;
-import com.haulmont.cuba.gui.app.security.role.edit.UiPermissionValue;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.data.ValueSourceProvider;
 import com.haulmont.cuba.gui.components.form.ComponentArea;
 import com.haulmont.cuba.gui.components.form.ComponentPosition;
 import com.haulmont.cuba.gui.components.security.ActionsPermissions;
 import com.haulmont.cuba.gui.sys.TestIdManager;
+import com.haulmont.cuba.security.entity.ScreenComponentPermission;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.widgets.CubaFieldGroupLayout;
 import com.vaadin.ui.GridLayout;
@@ -581,15 +581,15 @@ public class WebForm extends WebAbstractComponent<CubaFieldGroupLayout> implemen
         checkNotNullArgument(permissionDescriptor);
 
         String subComponentId = permissionDescriptor.getSubComponentId();
-        UiPermissionValue permissionValue = permissionDescriptor.getPermissionValue();
+        ScreenComponentPermission permissionValue = permissionDescriptor.getPermissionValue();
         String screenId = permissionDescriptor.getScreenId();
 
         if (subComponentId != null) {
             Component component = getComponent(subComponentId);
             if (component != null) {
-                if (permissionValue == UiPermissionValue.HIDE) {
+                if (permissionValue == ScreenComponentPermission.DENY) {
                     component.setVisible(false);
-                } else if (permissionValue == UiPermissionValue.READ_ONLY
+                } else if (permissionValue == ScreenComponentPermission.VIEW
                         && this.component instanceof Editable) {
                     ((Editable) component).setEditable(false);
                 }
@@ -608,9 +608,9 @@ public class WebForm extends WebAbstractComponent<CubaFieldGroupLayout> implemen
 
             String actionId = permissionDescriptor.getActionId();
             ActionsPermissions permissions = ((SecuredActionsHolder) component).getActionsPermissions();
-            if (permissionValue == UiPermissionValue.HIDE) {
+            if (permissionValue == ScreenComponentPermission.DENY) {
                 permissions.addHiddenActionPermission(actionId);
-            } else if (permissionValue == UiPermissionValue.READ_ONLY) {
+            } else if (permissionValue == ScreenComponentPermission.VIEW) {
                 permissions.addDisabledActionPermission(actionId);
             }
         }

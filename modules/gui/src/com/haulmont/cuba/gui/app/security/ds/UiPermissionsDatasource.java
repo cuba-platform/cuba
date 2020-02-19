@@ -17,12 +17,12 @@
 
 package com.haulmont.cuba.gui.app.security.ds;
 
-import com.haulmont.cuba.gui.app.security.role.edit.UiPermissionValue;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.impl.GroupDatasourceImpl;
 import com.haulmont.cuba.gui.app.security.entity.UiPermissionTarget;
 import com.haulmont.cuba.gui.app.security.entity.UiPermissionVariant;
 import com.haulmont.cuba.security.entity.Permission;
+import com.haulmont.cuba.security.entity.ScreenComponentPermission;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Map;
@@ -70,11 +70,11 @@ public class UiPermissionsDatasource extends GroupDatasourceImpl<UiPermissionTar
     }
 
     private UiPermissionVariant getPermissionVariant(Permission permission) {
-        if (permission.getValue() == UiPermissionValue.READ_ONLY.getValue())
+        if (ScreenComponentPermission.VIEW.getId().equals(permission.getValue()))
             return UiPermissionVariant.READ_ONLY;
-        else if (permission.getValue() == UiPermissionValue.HIDE.getValue())
+        else if (ScreenComponentPermission.DENY.getId().equals(permission.getValue()))
             return UiPermissionVariant.HIDE;
-        else if (permission.getValue() == UiPermissionValue.SHOW.getValue())
+        else if (ScreenComponentPermission.MODIFY.getId().equals(permission.getValue()))
             return UiPermissionVariant.SHOW;
         else
             return UiPermissionVariant.NOTSET;

@@ -25,7 +25,6 @@ import com.haulmont.cuba.desktop.sys.ButtonTabComponent;
 import com.haulmont.cuba.desktop.sys.vcl.JTabbedPaneExt;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.app.security.role.edit.UiPermissionDescriptor;
-import com.haulmont.cuba.gui.app.security.role.edit.UiPermissionValue;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.TabSheet;
@@ -35,6 +34,7 @@ import com.haulmont.cuba.gui.data.impl.compatibility.CompatibleTabSheetSelectedT
 import com.haulmont.cuba.gui.icons.Icons;
 import com.haulmont.cuba.gui.settings.Settings;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
+import com.haulmont.cuba.security.entity.ScreenComponentPermission;
 import org.dom4j.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -399,10 +399,10 @@ public class DesktopTabSheet extends DesktopAbstractComponent<JTabbedPane>
         final String subComponentId = permissionDescriptor.getSubComponentId();
         final TabSheet.Tab tab = getTab(subComponentId);
         if (tab != null) {
-            UiPermissionValue permissionValue = permissionDescriptor.getPermissionValue();
-            if (permissionValue == UiPermissionValue.HIDE) {
+            ScreenComponentPermission permissionValue = permissionDescriptor.getPermissionValue();
+            if (permissionValue == ScreenComponentPermission.DENY) {
                 tab.setVisible(false);
-            } else if (permissionValue == UiPermissionValue.READ_ONLY) {
+            } else if (permissionValue == ScreenComponentPermission.VIEW) {
                 tab.setEnabled(false);
             }
         } else {

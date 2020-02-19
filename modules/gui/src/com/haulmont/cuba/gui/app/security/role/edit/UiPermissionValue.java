@@ -20,7 +20,9 @@ package com.haulmont.cuba.gui.app.security.role.edit;
 /**
  * Possible values of UI permission
  *
+ * @deprecated replaced by {@link com.haulmont.cuba.security.entity.ScreenComponentPermission}
  */
+@Deprecated
 public enum UiPermissionValue {
 
     SHOW(2),
