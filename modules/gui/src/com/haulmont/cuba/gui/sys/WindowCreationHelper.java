@@ -177,9 +177,9 @@ public class WindowCreationHelper {
                 if (actionHolderComponent instanceof SecuredActionsHolder) {
                     ActionsPermissions permissions =
                             ((SecuredActionsHolder) actionHolderComponent).getActionsPermissions();
-                    if (permissionValue == ScreenComponentPermission.DENY.getId()) {
+                    if (ScreenComponentPermission.DENY.getId().equals(permissionValue)) {
                         permissions.addHiddenActionPermission(actionId);
-                    } else if (permissionValue == ScreenComponentPermission.VIEW.getId()) {
+                    } else if (ScreenComponentPermission.VIEW.getId().equals(permissionValue)) {
                         permissions.addDisabledActionPermission(actionId);
                     }
                 } else {
