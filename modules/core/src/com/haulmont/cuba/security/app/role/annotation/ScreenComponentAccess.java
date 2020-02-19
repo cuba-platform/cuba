@@ -38,6 +38,7 @@ public @interface ScreenComponentAccess {
 
     String[] deny() default {};
 
-    String[] allow() default {};
+    String[] view() default {};
 
+    String[] modify() default {};
 }

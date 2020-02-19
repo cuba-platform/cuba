@@ -16,26 +16,28 @@
 
 package com.haulmont.cuba.gui.app.security.role.edit;
 
+import com.haulmont.cuba.security.entity.ScreenComponentPermission;
+
 /**
  * Stores id of subcomponent and UI permission value which will be applied to this subcomponent
  * or ids of subcomponent and its action and UI permission value which will be applied to subcomponent's action.
  */
 public class UiPermissionDescriptor {
 
-    private UiPermissionValue permissionValue;
+    private ScreenComponentPermission permissionValue;
     private String screenId;
     private String subComponentId;
 
     private String actionHolderComponentId;
     private String actionId;
 
-    public UiPermissionDescriptor(UiPermissionValue permissionValue, String screenId, String subComponentId) {
+    public UiPermissionDescriptor(ScreenComponentPermission permissionValue, String screenId, String subComponentId) {
         this.permissionValue = permissionValue;
         this.screenId = screenId;
         this.subComponentId = subComponentId;
     }
 
-    public UiPermissionDescriptor(UiPermissionValue permissionValue, String screenId, String actionHolderComponentId,
+    public UiPermissionDescriptor(ScreenComponentPermission permissionValue, String screenId, String actionHolderComponentId,
                                   String actionId) {
         this.permissionValue = permissionValue;
         this.screenId = screenId;
@@ -44,7 +46,7 @@ public class UiPermissionDescriptor {
         this.actionId = actionId;
     }
 
-    public UiPermissionValue getPermissionValue() {
+    public ScreenComponentPermission getPermissionValue() {
         return permissionValue;
     }
 

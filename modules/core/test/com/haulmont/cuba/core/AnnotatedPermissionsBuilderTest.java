@@ -21,10 +21,8 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.security.app.role.AnnotatedPermissionsBuilder;
 import com.haulmont.cuba.security.app.role.annotation.*;
-import com.haulmont.cuba.security.entity.Access;
-import com.haulmont.cuba.security.entity.EntityAttrAccess;
-import com.haulmont.cuba.security.entity.EntityOp;
-import com.haulmont.cuba.security.entity.User;
+import com.haulmont.cuba.security.app.role.annotation.Role;
+import com.haulmont.cuba.security.entity.*;
 import com.haulmont.cuba.security.role.*;
 import com.haulmont.cuba.testsupport.TestContainer;
 import org.junit.Before;
@@ -100,10 +98,14 @@ public class AnnotatedPermissionsBuilderTest {
 
 
         ScreenComponentPermissionsContainer screenElementsPermissions = builder.buildScreenElementsPermissions(role);
-        assertEquals(1, screenElementsPermissions.getExplicitPermissions().size());
-        assertEquals(Access.ALLOW.getId(),
+        assertEquals(2, screenElementsPermissions.getExplicitPermissions().size());
+        assertEquals(ScreenComponentPermission.MODIFY.getId(),
                 screenElementsPermissions.getExplicitPermissions().get(
                         PermissionsUtils.getScreenComponentTarget("sec$Role.edit", "roleGroupBox")));
+
+        assertEquals(ScreenComponentPermission.VIEW.getId(),
+                screenElementsPermissions.getExplicitPermissions().get(
+                        PermissionsUtils.getScreenComponentTarget("sec$Role.edit", "roleGroupBox_1")));
     }
 
     @Test
@@ -166,7 +168,7 @@ public class AnnotatedPermissionsBuilderTest {
             return null;
         }
 
-        @ScreenComponentAccess(screenId = "sec$Role.edit", allow = {"roleGroupBox"})
+        @ScreenComponentAccess(screenId = "sec$Role.edit",  modify = {"roleGroupBox"}, view = {"roleGroupBox_1"})
         @Override
         public ScreenComponentPermissionsContainer screenComponentPermissions() {
             return null;

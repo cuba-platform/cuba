@@ -27,13 +27,13 @@ import com.haulmont.cuba.desktop.sys.vcl.CollapsiblePanel;
 import com.haulmont.cuba.desktop.sys.vcl.ToolTipButton;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.app.security.role.edit.UiPermissionDescriptor;
-import com.haulmont.cuba.gui.app.security.role.edit.UiPermissionValue;
-import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Formatter;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.security.ActionsPermissions;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.security.entity.ScreenComponentPermission;
 import net.miginfocom.layout.CC;
 import net.miginfocom.layout.LC;
 import net.miginfocom.swing.MigLayout;
@@ -47,8 +47,8 @@ import javax.annotation.Nullable;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -79,6 +79,7 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel>
 
     protected Map<String, FieldConfig> fields = new HashMap<>();
     protected List<List<FieldConfig>> columnFieldMapping = new ArrayList<>();
+
     {
         columnFieldMapping.add(new ArrayList<>());
     }
@@ -629,7 +630,7 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel>
     @Override
     public void setCaptionAlignment(FieldCaptionAlignment captionAlignment) {
         this.captionAlignment = captionAlignment;
-        
+
         log.warn("setCaptionAlignment not implemented for desktop");
     }
 
@@ -1029,15 +1030,15 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel>
         checkNotNullArgument(permissionDescriptor);
 
         final String subComponentId = permissionDescriptor.getSubComponentId();
-        final UiPermissionValue permissionValue = permissionDescriptor.getPermissionValue();
+        final ScreenComponentPermission permissionValue = permissionDescriptor.getPermissionValue();
         final String screenId = permissionDescriptor.getScreenId();
 
         if (subComponentId != null) {
             final FieldGroup.FieldConfig field = getField(subComponentId);
             if (field != null) {
-                if (permissionValue == UiPermissionValue.HIDE) {
+                if (permissionValue == ScreenComponentPermission.DENY) {
                     field.setVisible(false);
-                } else if (permissionValue == UiPermissionValue.READ_ONLY) {
+                } else if (permissionValue == ScreenComponentPermission.VIEW) {
                     field.setEditable(false);
                 }
             } else {
@@ -1056,9 +1057,9 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel>
             Component fieldComponent = fieldConfig.getComponent();
             String actionId = permissionDescriptor.getActionId();
             ActionsPermissions permissions = ((SecuredActionsHolder) fieldComponent).getActionsPermissions();
-            if (permissionValue == UiPermissionValue.HIDE) {
+            if (permissionValue == ScreenComponentPermission.DENY) {
                 permissions.addHiddenActionPermission(actionId);
-            } else if (permissionValue == UiPermissionValue.READ_ONLY) {
+            } else if (permissionValue == ScreenComponentPermission.VIEW) {
                 permissions.addDisabledActionPermission(actionId);
             }
         }

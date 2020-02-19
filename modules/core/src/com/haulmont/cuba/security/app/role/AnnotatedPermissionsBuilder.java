@@ -24,6 +24,7 @@ import com.haulmont.cuba.security.app.role.annotation.*;
 import com.haulmont.cuba.security.entity.Access;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
 import com.haulmont.cuba.security.entity.EntityOp;
+import com.haulmont.cuba.security.entity.ScreenComponentPermission;
 import com.haulmont.cuba.security.role.*;
 import org.slf4j.Logger;
 import org.springframework.stereotype.Component;
@@ -236,7 +237,8 @@ public class AnnotatedPermissionsBuilder {
                                                         ScreenComponentPermissionsContainer permissions) {
         String screen = annotation.screenId();
         String[] deny = annotation.deny();
-        String[] allow = annotation.allow();
+        String[] view = annotation.view();
+        String[] modify = annotation.modify();
 
         if (Strings.isNullOrEmpty(screen)) {
             return;
@@ -244,12 +246,17 @@ public class AnnotatedPermissionsBuilder {
 
         for (String component : deny) {
             String target = PermissionsUtils.getScreenComponentTarget(screen, component);
-            permissions.getExplicitPermissions().put(target, Access.DENY.getId());
+            permissions.getExplicitPermissions().put(target, ScreenComponentPermission.DENY.getId());
         }
 
-        for (String component : allow) {
+        for (String component : view) {
             String target = PermissionsUtils.getScreenComponentTarget(screen, component);
-            permissions.getExplicitPermissions().put(target, Access.ALLOW.getId());
+            permissions.getExplicitPermissions().put(target, ScreenComponentPermission.VIEW.getId());
+        }
+
+        for (String component : modify) {
+            String target = PermissionsUtils.getScreenComponentTarget(screen, component);
+            permissions.getExplicitPermissions().put(target, ScreenComponentPermission.MODIFY.getId());
         }
     }
 
