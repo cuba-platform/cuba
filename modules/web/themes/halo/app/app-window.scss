@@ -99,6 +99,12 @@ $cuba-sidemenu-layout-expanded-width: 250px !default;
  */
 $cuba-sidemenu-layout-collapse-animation-time: .4s !default;
 
+/**
+ * Defines first submenu background color when SideMenu is placed into a side menu panel.
+ * @group sidemenu
+ */
+$cuba-sidemenu-submenu-background-color: $cuba-sidemenu-background-color !default;
+
 // Application Window styles
 @mixin cuba-application-window {
   @include cuba-sidemenu-layout-collapsible();
@@ -589,6 +595,10 @@ $cuba-sidemenu-layout-collapse-animation-time: .4s !default;
       .c-sidemenu-item-thumbnail-icon {
         display: none;
       }
+    }
+
+    .c-sidemenu .c-sidemenu-submenu.c-sidemenu-submenu-open {
+      background: $cuba-sidemenu-submenu-background-color;
     }
 
     .c-sidemenu-submenu.c-sidemenu-submenu-open {

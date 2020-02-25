@@ -202,11 +202,6 @@ $cuba-responsive-sidemenu-toggled-menu-width: $cuba-responsive-sidemenu-small-wi
  */
 $cuba-sidemenu-background-color: $valo-menu-background-color !default;
 /**
- * Defines first submenu background color.
- * @group sidemenu
- */
-$cuba-sidemenu-submenu-background-color: $cuba-sidemenu-background-color !default;
-/**
  * The sidemenu items font weight.
  * @group sidemenu
  */
@@ -284,7 +279,7 @@ $cuba-sidemenu-userindicator-font-weight: $v-font-weight !default;
   }
 
   .#{$primary-stylename}-title {
-    $font-color: valo-font-color($cuba-sidemenu-background-color, 0.9);
+    $font-color: valo-font-color($cuba-sidemenu-title-background, 0.9);
     @if $cuba-sidemenu-title-gradient {
       @include valo-gradient($color: $v-selection-color);
       border-bottom: valo-border($color: $v-selection-color);
@@ -327,10 +322,6 @@ $cuba-sidemenu-userindicator-font-weight: $v-font-weight !default;
     .#{$primary-stylename}-item-caption {
       max-width: initial;
     }
-  }
-
-  .#{$primary-stylename} > .c-sidemenu-submenu.c-sidemenu-submenu-open {
-    background: $cuba-sidemenu-submenu-background-color;
   }
 
   .#{$primary-stylename}-item {
@@ -603,7 +594,7 @@ $cuba-sidemenu-userindicator-font-weight: $v-font-weight !default;
         width: $cuba-responsive-sidemenu-width;
 
         .#{$primary-stylename}-item [class*="caption"] {
-            max-width: initial;
+          max-width: initial;
         }
       }
     }
