@@ -268,6 +268,9 @@ public class CubaScrollTableConnector extends TableConnector {
                 }
             }
         }
+
+        getWidget().setScrollToLastItemEnabled(
+                uidl.getBooleanAttribute("scrolltolast"));
     }
 
     @Override
