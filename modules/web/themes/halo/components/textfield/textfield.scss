@@ -24,18 +24,30 @@
     border-color: $v-focus-color;
   }
 
+  .v-caption-icon > img.v-icon {
+    height: round($v-unit-size/2);
+    width: round($v-unit-size/2);
+  }
+
   .v-slot-inline-icon .v-caption-inline-icon {
-    & > span.v-icon {
+    & > .v-icon {
+      bottom: auto;
       left: auto;
+
+      // Move the icon if TextField has a caption
+      &:not(:only-child) {
+        $caption-padding-bottom: $v-font-size * 0.3;
+        $caption-font-height: $v-font-size * $v-line-height;
+        margin-top: $caption-padding-bottom + $caption-font-height;
+      }
+    }
+
+    & > span.v-icon {
       padding-left: first-number($v-textfield-border);
     }
 
     & > img.v-icon {
-      height: round($v-unit-size/2);
-      width: round($v-unit-size/2);
-      bottom: round($v-unit-size/4);
-      left: auto;
-
+      padding-top: round($v-unit-size/4);
       padding-left: round($v-unit-size/4);
     }
   }
