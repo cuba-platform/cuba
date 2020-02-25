@@ -249,6 +249,9 @@ public class CubaTreeTableConnector extends TreeTableConnector {
             }
         }
 
+        getWidget().setScrollToLastItemEnabled(
+                uidl.getBooleanAttribute("scrolltolast"));
+
         getWidget().updateTableBodyScroll();
     }
 

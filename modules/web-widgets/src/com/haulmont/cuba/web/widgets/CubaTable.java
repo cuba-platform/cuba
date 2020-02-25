@@ -87,6 +87,8 @@ public class CubaTable extends com.vaadin.v7.ui.Table implements TableSortableCo
     protected Consumer<Component> afterUnregisterComponentHandler;
     protected Runnable beforeRefreshRowCacheHandler;
 
+    protected Object scrollToItemId = null;
+
     public CubaTable() {
         registerRpc(new CubaTableServerRpc() {
             @Override
@@ -667,6 +669,10 @@ public class CubaTable extends com.vaadin.v7.ui.Table implements TableSortableCo
             }
             target.addAttribute("colcubaids", visibleColOrder.toArray());
         }
+
+        if (scrollToItemId != null && isLastId(scrollToItemId)) {
+            target.addAttribute("scrolltolast", true);
+        }
     }
 
     protected Collection<?> getAggregationItemIds() {
@@ -1013,5 +1019,12 @@ public class CubaTable extends com.vaadin.v7.ui.Table implements TableSortableCo
         }
 
         super.refreshRowCache();
+    }
+
+    @Override
+    public void setCurrentPageFirstItemId(Object currentPageFirstItemId) {
+        super.setCurrentPageFirstItemId(currentPageFirstItemId);
+
+        scrollToItemId = currentPageFirstItemId;
     }
 }
