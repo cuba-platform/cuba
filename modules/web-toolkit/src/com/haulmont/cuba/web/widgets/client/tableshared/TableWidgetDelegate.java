@@ -95,6 +95,13 @@ public class TableWidgetDelegate {
 
     public List<AfterBodyUpdateListener> afterBodyUpdateListeners;
 
+    /*
+     * Table page can contain partially visible rows and when we try to scroll to the last row (which in the current page
+     * is partially visible) it will not be fully shown. Given property should be used only when scrollTo is invoked for
+     * last item.
+     */
+    public boolean scrollToLastItemEnabled = false;
+
     public void requestFocus(final String itemKey, final String columnKey) {
         Scheduler.get().scheduleDeferred(() -> {
             try {
@@ -395,5 +402,13 @@ public class TableWidgetDelegate {
     public boolean isAggregationVisible() {
         return aggregationRow != null
                 && aggregationRow.isVisible();
+    }
+
+    public boolean isScrollToLastItemEnabled() {
+        return scrollToLastItemEnabled;
+    }
+
+    public void setScrollToLastItemEnabled(boolean scrollToLastItemEnabled) {
+        this.scrollToLastItemEnabled = scrollToLastItemEnabled;
     }
 }

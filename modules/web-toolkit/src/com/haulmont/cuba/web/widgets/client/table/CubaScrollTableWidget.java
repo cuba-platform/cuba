@@ -1198,4 +1198,17 @@ public class CubaScrollTableWidget extends VScrollTable implements TableWidget {
         return scrollBody != null && scrollBodyPanel != null &&
                 scrollBody.getOffsetHeight() > scrollBodyPanel.getOffsetHeight();
     }
+
+    @Override
+    protected boolean isScrollToLastItem() {
+        return isScrollToLastItemEnabled();
+    }
+
+    public boolean isScrollToLastItemEnabled() {
+        return _delegate.isScrollToLastItemEnabled();
+    }
+
+    public void setScrollToLastItemEnabled(boolean scrollToLastItemEnabled) {
+        _delegate.setScrollToLastItemEnabled(scrollToLastItemEnabled);
+    }
 }
