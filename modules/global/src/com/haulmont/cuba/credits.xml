@@ -18,7 +18,35 @@
 
 <credits>
     <items>
-        <item name="AceEditor Vaadin Addon" web="http://vaadin.com/addon/aceeditor" license="apache-2.0"/>
+        <item name="Ace Code Editor" web="https://ace.c9.io">
+            <license><![CDATA[
+                Copyright (c) 2010, Ajax.org B.V.
+                All rights reserved.
+
+                Redistribution and use in source and binary forms, with or without
+                modification, are permitted provided that the following conditions are met:
+                * Redistributions of source code must retain the above copyright
+                notice, this list of conditions and the following disclaimer.
+                * Redistributions in binary form must reproduce the above copyright
+                notice, this list of conditions and the following disclaimer in the
+                documentation and/or other materials provided with the distribution.
+                * Neither the name of Ajax.org B.V. nor the
+                names of its contributors may be used to endorse or promote products
+                derived from this software without specific prior written permission.
+
+                THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+                ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+                WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+                DISCLAIMED. IN NO EVENT SHALL AJAX.ORG B.V. BE LIABLE FOR ANY
+                DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+                (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+                LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+                ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+                (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+                SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+                ]]>
+            </license>
+        </item>
         <item name="ANTLR 2" web="http://www.antlr2.org">
             <license><![CDATA[
                 ANTLR 2 License
@@ -35,180 +63,61 @@
                 ]]>
             </license>
         </item>
-        <item name="AOP Alliance" web="http://aopalliance.sourceforge.net">
-            <license><![CDATA[
-            The AOP Alliance project is a joint open-source project between several software engineering people who
-            are interested in AOP and Java.
-
-            LICENCE: all the source code provided by AOP Alliance is Public Domain.
-            ]]>
-            </license>
-        </item>
         <item name="Apache Commons" web="http://commons.apache.org/" license="apache-2.0"/>
+        <item name="Apache FreeMarker" web="https://freemarker.apache.org" license="apache-2.0"/>
         <item name="Apache HttpComponents" web="https://hc.apache.org/" license="apache-2.0"/>
-        <item name="Apache POI" web="http://poi.apache.org/" license="apache-2.0" fork="true"/>
+        <item name="Apache POI" web="http://poi.apache.org/" license="apache-2.0"/>
         <item name="Apache Tomcat" web="http://tomcat.apache.org/" license="apache-2.0"/>
-        <item name="AppletIntegration Vaadin Addon" web="https://vaadin.com/addon/appletintegration"
-              license="apache-2.0" fork="true"/>
 
-        <item name="ASM" web="http://asm.ow2.org/">
-            <license><![CDATA[
-                Copyright (c) 2000-2011 INRIA, France Telecom
-                All rights reserved.
+        <item name="DOM4J" web="https://dom4j.github.io/">
+            <license><![CDATA[Copyright 2001-2016 (C) MetaStuff, Ltd. and DOM4J contributors. All Rights Reserved.
 
-                Redistribution and use in source and binary forms, with or without
-                modification, are permitted provided that the following conditions
-                are met:
+Redistribution and use of this software and associated documentation
+("Software"), with or without modification, are permitted provided
+that the following conditions are met:
 
-                1. Redistributions of source code must retain the above copyright
-                notice, this list of conditions and the following disclaimer.
+1. Redistributions of source code must retain copyright
+   statements and notices.  Redistributions must also contain a
+   copy of this document.
 
-                2. Redistributions in binary form must reproduce the above copyright
-                notice, this list of conditions and the following disclaimer in the
-                documentation and/or other materials provided with the distribution.
+2. Redistributions in binary form must reproduce the
+   above copyright notice, this list of conditions and the
+   following disclaimer in the documentation and/or other
+   materials provided with the distribution.
 
-                3. Neither the name of the copyright holders nor the names of its
-                contributors may be used to endorse or promote products derived from
-                this software without specific prior written permission.
+3. The name "DOM4J" must not be used to endorse or promote
+   products derived from this Software without prior written
+   permission of MetaStuff, Ltd.  For written permission,
+   please contact dom4j-info@metastuff.com.
 
-                THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-                AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-                IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-                ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
-                LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
-                CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
-                SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
-                INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
-                CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
-                ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
-                THE POSSIBILITY OF SUCH DAMAGE.
-                ]]>
-            </license>
+4. Products derived from this Software may not be called "DOM4J"
+   nor may "DOM4J" appear in their names without prior written
+   permission of MetaStuff, Ltd. DOM4J is a registered
+   trademark of MetaStuff, Ltd.
+
+5. Due credit should be given to the DOM4J Project - https://dom4j.github.io/
+
+THIS SOFTWARE IS PROVIDED BY METASTUFF, LTD. AND CONTRIBUTORS
+``AS IS'' AND ANY EXPRESSED OR IMPLIED WARRANTIES, INCLUDING, BUT
+NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
+FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL
+METASTUFF, LTD. OR ITS CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
+OF THE POSSIBILITY OF SUCH DAMAGE.]]></license>
         </item>
         <item name="AspectJ" web="http://www.eclipse.org/aspectj/" license="epl-1.0"/>
-        <item name="Atmosphere" web="https://github.com/Atmosphere/atmosphere" license="apache-2.0"/>
-        <item name="Bean validation" web="http://beanvalidation.org/1.1/" license="apache-2.0"/>
-        <item name="Classmate" web="https://github.com/FasterXML/java-classmate" license="apache-2.0"/>
-        <item name="ContextMenu Vaadin Addon" web="https://vaadin.com/directory#!addon/contextmenu"
-              license="apache-2.0"/>
-        <item name="DOM4J" web="http://www.dom4j.org/dom4j-1.6.1/">
-            <license><![CDATA[
-                Redistribution and use of this software and associated documentation ("Software"), with or without modification, are permitted provided that the following conditions are met:
-
-                Redistributions of source code must retain copyright statements and notices. Redistributions must also contain a copy of this document.
-                Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
-                The name "DOM4J" must not be used to endorse or promote products derived from this Software without prior written permission of MetaStuff, Ltd. For written permission, please contact dom4j-info@metastuff.com.
-                Products derived from this Software may not be called "DOM4J" nor may "DOM4J" appear in their names without prior written permission of MetaStuff, Ltd. DOM4J is a registered trademark of MetaStuff, Ltd.
-                Due credit should be given to the DOM4J Project - http://dom4j.sourceforge.net
-                THIS SOFTWARE IS PROVIDED BY METASTUFF, LTD. AND CONTRIBUTORS ``AS IS'' AND ANY EXPRESSED OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL METASTUFF, LTD. OR ITS CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-    Copyright 2001-2005 (C) MetaStuff, Ltd. All Rights Reserved.
-    ]]></license>
-        </item>
-        <item name="DragDropLayouts Vaadin Addon" web="http://vaadin.com/addon/dragdroplayouts" license="apache-2.0"/>
         <item name="EclipseLink" web="http://www.eclipse.org/eclipselink" license="epl-1.0" fork="true"/>
         <item name="FindBugs" web="http://findbugs.sourceforge.net/" license="lgpl-3"/>
-        <item name="FreeMarker" web="http://freemarker.sourceforge.net/">
-            <acknowledgment><![CDATA[
-                This product includes software (Freemarker) developed by the Visigoth Software Society (http://www.visigoths.org/).
-                ]]>
-            </acknowledgment>
-            <license><![CDATA[
-                FreeMarker 1.x was released under the LGPL license. Later, by community
-                consensus, we have switched over to a BSD-style license. As of FreeMarker
-                2.2pre1, the original author, Benjamin Geer, has relinquished the copyright in
-                behalf of Visigoth Software Society. The current copyright holder is the
-                Visigoth Software Society.
-
-                ------------------------------------------------------------------------------
-                Copyright (c) 2003 The Visigoth Software Society. All rights reserved.
-
-                Redistribution and use in source and binary forms, with or without
-                modification, are permitted provided that the following conditions are met:
-
-                1.  Redistributions of source code must retain the above copyright notice,
-                this list of conditions and the following disclaimer.
-
-                2.  The end-user documentation included with the redistribution, if any, must
-                include the following acknowlegement:
-                "This product includes software developed by the
-                Visigoth Software Society (http://www.visigoths.org/)."
-                Alternately, this acknowlegement may appear in the software itself, if and
-                wherever such third-party acknowlegements normally appear.
-
-                3.  Neither the name "FreeMarker", "Visigoth", nor any of the names of the
-                project contributors may be used to endorse or promote products derived
-                from this software without prior written permission. For written
-                permission, please contact visigoths@visigoths.org.
-
-                4.  Products derived from this software may not be called "FreeMarker" or
-                "Visigoth" nor may "FreeMarker" or "Visigoth" appear in their names
-                without prior written permission of the Visigoth Software Society.
-
-                THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESSED OR IMPLIED WARRANTIES,
-                INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
-                FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
-                VISIGOTH SOFTWARE SOCIETY OR ITS CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
-                INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
-                BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-                DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY
-                OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
-                NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
-                EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-                ------------------------------------------------------------------------------
-
-                This software consists of voluntary contributions made by many individuals on
-                behalf of the Visigoth Software Society. For more information on the Visigoth
-                Software Society, please see http://www.visigoths.org/
-
-                ------------------------------------------------------------------------------
-
-                FREEMARKER SUBCOMPONENTS UNDER DIFFERENT LICENSE:
-
-                FreeMarker includes a number of subcomponents that are licensed by the Apache
-                Software Foundation under the Apache License, Version 2.0. Your use of these
-                subcomponents is subject to the terms and conditions of the Apache License,
-                Version 2.0. You may obtain a copy of the License at
-
-                http://www.apache.org/licenses/LICENSE-2.0
-
-                The subcomponents under this licence are the following files, which are
-                included both in freemarker.jar and in the source code:
-
-                freemarker/ext/jsp/web-app_2_2.dtd
-                freemarker/ext/jsp/web-app_2_3.dtd
-                freemarker/ext/jsp/web-app_2_4.xsd
-                freemarker/ext/jsp/web-app_2_5.xsd
-                freemarker/ext/jsp/web-jsptaglibrary_1_1.dtd
-                freemarker/ext/jsp/web-jsptaglibrary_1_2.dtd
-                freemarker/ext/jsp/web-jsptaglibrary_2_0.xsd
-                freemarker/ext/jsp/web-jsptaglibrary_2_1.xsd
-                ]]>
-            </license>
-        </item>
-        <item name="Glazed Lists" web="http://www.glazedlists.com">
-            <jar>glazedlists-.*</jar>
-            <license><![CDATA[
-                        Glazed Lists
-                        Copyright (c) 2003-2006, publicobject.com, O'Dell Engineering Ltd.
-
-                        Glazed Lists is free software and business friendly. It allows you to
-                          * distribute Glazed Lists free of charge
-                          * use Glazed Lists in a commercial or closed source application
-                        It does not allow you to
-                          * create a fork of Glazed Lists that is closed-source
-
-                        It is made available under two licenses:
-                          LGPL, http://creativecommons.org/licenses/LGPL/2.1/
-                          MPL, http://www.mozilla.org/MPL/
-                        ]]>
-            </license>
-        </item>
-        <item name="Google Web Toolkit" web="http://www.gwtproject.org/" license="apache-2.0"/>
         <item name="Groovy" web="http://www.groovy-lang.org" license="apache-2.0"/>
         <item name="Gson" web="https://github.com/google/gson" license="apache-2.0"/>
         <item name="Guava Libraries" web="https://github.com/google/guava" license="apache-2.0"/>
         <item name="Hibernate Validator" web="http://hibernate.org/validator" license="apache-2.0"/>
+        <item name="HikariCP" web="https://github.com/brettwooldridge/HikariCP" license="apache-2.0"/>
         <item name="HSQLDB" web="http://hsqldb.org/">
             <license><![CDATA[
                 For work developed by the HSQL Development Group:
@@ -278,12 +187,82 @@
                 ]]>
             </license>
         </item>
-        <item name="Jackson" web="https://github.com/FasterXML/jackson" license="apache-2.0"/>
         <item name="JavaBeans Activation Framework" web="http://www.oracle.com/technetwork/java/javase/jaf-135115.html"
               license="cddl-1.0"/>
         <item name="JavaMail" web="https://javaee.github.io/javamail/" license="cddl-1.0"/>
-        <item name="JCIP Annotations" web="https://github.com/stephenc/jcip-annotations" license="apache-2.0"/>
-        <item name="JCommander" web="http://jcommander.org" license="apache-2.0"/>
+        <item name="jBCrypt" web="https://www.mindrot.org/projects/jBCrypt">
+            <license><![CDATA[
+                jBCrypt is subject to the following license:
+                /*
+                 * Copyright (c) 2006 Damien Miller <djm@mindrot.org>
+                 *
+                 * Permission to use, copy, modify, and distribute this software for any
+                 * purpose with or without fee is hereby granted, provided that the above
+                 * copyright notice and this permission notice appear in all copies.
+                 *
+                 * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+                 * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+                 * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+                 * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+                 * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+                 * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+                 * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+                 */
+                ]]>
+            </license>
+        </item>
+        <item name="jQuery" web="https://jquery.com" license="mit"/>
+        <item name="jQuery File Upload" web="https://github.com/blueimp/jQuery-File-Upload" license="mit"/>
+        <item name="jQuery UI" web="https://jqueryui.com">
+            <license>
+                <![CDATA[
+                Copyright jQuery Foundation and other contributors, https://jquery.org/
+
+                This software consists of voluntary contributions made by many
+                individuals. For exact contribution history, see the revision history
+                available at https://github.com/jquery/jquery-ui
+
+                The following license applies to all parts of this software except as
+                documented below:
+
+                ====
+
+                Permission is hereby granted, free of charge, to any person obtaining
+                a copy of this software and associated documentation files (the
+                "Software"), to deal in the Software without restriction, including
+                without limitation the rights to use, copy, modify, merge, publish,
+                distribute, sublicense, and/or sell copies of the Software, and to
+                permit persons to whom the Software is furnished to do so, subject to
+                the following conditions:
+
+                The above copyright notice and this permission notice shall be
+                included in all copies or substantial portions of the Software.
+
+                THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+                EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+                MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+                NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+                LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+                OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+                WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+                ====
+
+                Copyright and related rights for sample code are waived via CC0. Sample
+                code is defined as all source code contained within the demos directory.
+
+                CC0: http://creativecommons.org/publicdomain/zero/1.0/
+
+                ====
+
+                All files located in the node_modules and external directories are
+                externally maintained libraries used by this software which have their
+                own licenses; we recommend you read them, as their terms may differ from
+                the terms above.
+                ]]>
+            </license>
+        </item>
+        <item name="Jetty" web="https://www.eclipse.org/jetty" license="apache-2.0"/>
         <item name="JGroups" web="http://www.jgroups.org/" license="lgpl-2.1"/>
         <item name="JMockit" web="http://jmockit.org/">
             <license><![CDATA[
@@ -358,74 +337,8 @@
         as published by the Free Software Foundation.]]></license>
         </item>
         <item name="Merlin Hughes Config Framework" web="http://www.ibm.com/developerworks/java/library/j-configint/index.html" license="apache-2.0"/>
-        <item name="jTDS" web="http://jtds.sourceforge.net/" license="lgpl-3"/>
-        <item name="Microsoft JDBC Driver for SQL Server" web="https://github.com/Microsoft/mssql-jdbc">
-            <license><![CDATA[
-                ﻿Copyright(c) 2017 Microsoft Corporation
-                All rights reserved.
-
-                MIT License
-                Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files(the "Software"),
-                to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
-                and / or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions :
-
-                The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-                THE SOFTWARE IS PROVIDED *AS IS*, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-                FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-                LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
-                IN THE SOFTWARE.
-                            ]]></license>
-        </item>
-        <item name="MiG Layout" web="http://www.miglayout.com">
-            <jar>miglayout-.*</jar>
-            <license>
-                Copyright (c) 2004, Mikael Grev, MiG InfoCom AB. (miglayout (at) miginfocom (dot) com)
-                All rights reserved.
-
-                Redistribution and use in source and binary forms, with or without modification,
-                are permitted provided that the following conditions are met:
-                Redistributions of source code must retain the above copyright notice, this list
-                of conditions and the following disclaimer.
-                Redistributions in binary form must reproduce the above copyright notice, this
-                list of conditions and the following disclaimer in the documentation and/or other
-                materials provided with the distribution.
-                Neither the name of the MiG InfoCom AB nor the names of its contributors may be
-                used to endorse or promote products derived from this software without specific
-                prior written permission.
-
-                THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-                ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-                WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
-                IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
-                INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
-                BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA,
-                OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
-                WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
-                ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
-                OF SUCH DAMAGE.
-            </license>
-        </item>
-        <item name="Minlog" web="https://github.com/EsotericSoftware/minlog">
-            <license><![CDATA[
-                Copyright (c) 2008, Nathan Sweet
-                All rights reserved.
-
-                Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
-
-                * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-                * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
-                * Neither the name of Esoteric Software nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
-
-                THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-                ]]>
-            </license>
-        </item>
-        <item name="MyBatis" web="http://www.mybatis.org/" license="apache-2.0"/>
-        <item name="Objenesis" web="http://objenesis.org/" license="apache-2.0"/>
+        <item name="object-fit-images" web="https://github.com/fregante/object-fit-images" license="mit"/>
         <item name="Perf4J" web="http://perf4j.codehaus.org/" license="apache-2.0"/>
-        <item name="PopupButton Vaadin Addon" web="http://vaadin.com/addon/popupbutton" license="apache-2.0"
-              fork="true"/>
         <item name="PostgreSQL" web="http://www.postgresql.org/">
             <license><![CDATA[
                 PostgreSQL Database Management System
@@ -443,181 +356,11 @@
                 ]]>
             </license>
         </item>
-        <item name="Protocol Buffers" web="https://github.com/google/protobuf">
-            <license><![CDATA[
-                This license applies to all parts of Protocol Buffers except the following:
-
-                - Atomicops support for generic gcc, located in
-                src/google/protobuf/stubs/atomicops_internals_generic_gcc.h.
-                This file is copyrighted by Red Hat Inc.
-
-                - Atomicops support for AIX/POWER, located in
-                src/google/protobuf/stubs/atomicops_internals_power.h.
-                This file is copyrighted by Bloomberg Finance LP.
-
-                Copyright 2014, Google Inc.  All rights reserved.
-
-                Redistribution and use in source and binary forms, with or without
-                modification, are permitted provided that the following conditions are
-                met:
-
-                * Redistributions of source code must retain the above copyright
-                notice, this list of conditions and the following disclaimer.
-                * Redistributions in binary form must reproduce the above
-                copyright notice, this list of conditions and the following disclaimer
-                in the documentation and/or other materials provided with the
-                distribution.
-                * Neither the name of Google Inc. nor the names of its
-                contributors may be used to endorse or promote products derived from
-                this software without specific prior written permission.
-
-                THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-                "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-                LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-                A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-                OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-                SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-                LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-                DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-                THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-                (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-                OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-                Code generated by the Protocol Buffer compiler is owned by the owner
-                of the input file used when generating it.  This code is not
-                standalone and requires a support library to be linked with it.  This
-                support library is itself covered by the above license.
-                ]]>
-            </license>
-        </item>
         <item name="SLF4J" web="http://www.slf4j.org/" license="mit" />
-        <item name="SnakeYAML" web="https://bitbucket.org/asomov/snakeyaml" license="apache-2.0"/>
+        <item name="Spock" web="http://spockframework.org/" license="apache-2.0"/>
         <item name="Spring Framework" web="https://spring.io/" license="apache-2.0"/>
-        <item name="SwingLabs SwingX" web="https://swingx.java.net" license="lgpl-3" fork="true">
-            <jar>swingx-.*</jar>
-        </item>
+        <item name="Thymeleaf" web="https://www.thymeleaf.org" license="apache-2.0"/>
         <item name="Vaadin" web="http://vaadin.com" license="apache-2.0" fork="true"/>
-        <item name="Xml Pull Parser 3rd Edition" web="http://www.extreme.indiana.edu/xgws/xsoap/xpp/mxp1">
-            <acknowledgment><![CDATA[
-                This product includes software (Xml Pull Parser 3rd Edition) developed by the Indiana University Extreme! Lab. For further information please visit http://www.extreme.indiana.edu/
-                ]]>
-            </acknowledgment>
-            <jar>xpp3_min-.*</jar>
-            <license><![CDATA[
-               Indiana University Extreme! Lab Software License, Version 1.2
-
-               Copyright (C) 2003 The Trustees of Indiana University.
-               All rights reserved.
-
-               Redistribution and use in source and binary forms, with or without
-               modification, are permitted provided that the following conditions are
-               met:
-
-               1) All redistributions of source code must retain the above
-               copyright notice, the list of authors in the original source
-               code, this list of conditions and the disclaimer listed in this
-               license;
-
-               2) All redistributions in binary form must reproduce the above
-               copyright notice, this list of conditions and the disclaimer
-               listed in this license in the documentation and/or other
-               materials provided with the distribution;
-
-               3) Any documentation included with all redistributions must include
-               the following acknowledgement:
-
-               "This product includes software developed by the Indiana
-               University Extreme! Lab.  For further information please visit
-               http://www.extreme.indiana.edu/"
-
-               Alternatively, this acknowledgment may appear in the software
-               itself, and wherever such third-party acknowledgments normally
-               appear.
-
-               4) The name "Indiana University" or "Indiana University
-               Extreme! Lab" shall not be used to endorse or promote
-               products derived from this software without prior written
-               permission from Indiana University.  For written permission,
-               please contact http://www.extreme.indiana.edu/.
-
-               5) Products derived from this software may not use "Indiana
-               University" name nor may "Indiana University" appear in their name,
-               without prior written permission of the Indiana University.
-
-               Indiana University provides no reassurances that the source code
-               provided does not infringe the patent or any other intellectual
-               property rights of any other entity.  Indiana University disclaims any
-               liability to any recipient for claims brought by any other entity
-               based on infringement of intellectual property rights or otherwise.
-
-               LICENSEE UNDERSTANDS THAT SOFTWARE IS PROVIDED "AS IS" FOR WHICH
-               NO WARRANTIES AS TO CAPABILITIES OR ACCURACY ARE MADE. INDIANA
-               UNIVERSITY GIVES NO WARRANTIES AND MAKES NO REPRESENTATION THAT
-               SOFTWARE IS FREE OF INFRINGEMENT OF THIRD PARTY PATENT, COPYRIGHT, OR
-               OTHER PROPRIETARY RIGHTS.  INDIANA UNIVERSITY MAKES NO WARRANTIES THAT
-               SOFTWARE IS FREE FROM "BUGS", "VIRUSES", "TROJAN HORSES", "TRAP
-               DOORS", "WORMS", OR OTHER HARMFUL CODE.  LICENSEE ASSUMES THE ENTIRE
-               RISK AS TO THE PERFORMANCE OF SOFTWARE AND/OR ASSOCIATED MATERIALS,
-               AND TO THE PERFORMANCE AND VALIDITY OF INFORMATION GENERATED USING
-               SOFTWARE.
-               ]]>
-            </license>
-        </item>
-        <item name="XML Pull Parsing" web="http://www.xmlpull.org">
-            <jar>xmlpull-.*</jar>
-            <license><![CDATA[
-                XMLPULL API IS FREE
-                -------------------
-
-                All of the XMLPULL API source code, compiled code, and documentation
-                contained in this distribution *except* for tests (see separate LICENSE_TESTS.txt)
-                are in the Public Domain.
-
-                XMLPULL API comes with NO WARRANTY or guarantee of fitness for any purpose.
-
-                Initial authors:
-
-                Stefan Haustein
-                Aleksander Slominski
-
-                2001-12-12
-                ]]>
-            </license>
-        </item>
-        <item name="XStream" web="http://x-stream.github.io/" fork="true">
-            <license><![CDATA[
-                Copyright (c) 2003-2006, Joe Walnes
-                Copyright (c) 2006-2015 XStream Committers
-                All rights reserved.
-
-                Redistribution and use in source and binary forms, with or without
-                modification, are permitted provided that the following conditions are met:
-
-                1. Redistributions of source code must retain the above copyright notice, this list of
-                conditions and the following disclaimer.
-
-                2. Redistributions in binary form must reproduce the above copyright notice, this list of
-                conditions and the following disclaimer in the documentation and/or other materials provided
-                with the distribution.
-
-                3. Neither the name of XStream nor the names of its contributors may be used to endorse
-                or promote products derived from this software without specific prior written
-                permission.
-
-                THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY
-                EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
-                OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT
-                SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
-                INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED
-                TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
-                BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
-                CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY
-                WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
-                DAMAGE.
-                ]]>
-            </license>
-        </item>
-        <item name="Yusuke Kamiyamane icons" web="http://p.yusukekamiyamane.com" license="ccpl-3.0" />
     </items>
 
     <licenses>
