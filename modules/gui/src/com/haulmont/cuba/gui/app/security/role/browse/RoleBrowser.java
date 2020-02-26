@@ -23,6 +23,7 @@ import com.haulmont.cuba.core.app.importexport.EntityImportExportService;
 import com.haulmont.cuba.core.app.importexport.EntityImportView;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.gui.UiComponents;
 import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.WindowParam;
 import com.haulmont.cuba.gui.WindowParams;
@@ -61,6 +62,9 @@ public class RoleBrowser extends AbstractLookup {
 
     @Inject
     protected UserManagementService userManagementService;
+
+    @Inject
+    protected UiComponents uiComponents;
 
     @Inject
     protected Security security;
@@ -180,13 +184,24 @@ public class RoleBrowser extends AbstractLookup {
             rolesTable.setMultiSelect(true);
         }
 
+        rolesTable.addGeneratedColumn("defaultRole", entity -> {
+            CheckBox checkBox = uiComponents.create(CheckBox.NAME);
+            checkBox.setValue(Boolean.TRUE.equals(entity.getDefaultRole()));
+            checkBox.setEditable(!entity.isPredefined());
+            checkBox.addValueChangeListener(e -> entity.setDefaultRole(e.getValue()));
+            return checkBox;
+        });
+
         rolesDs.addItemPropertyChangeListener(e -> {
             if (DEFAULT_ROLE_PROPERTY.equals(e.getProperty())) {
-                Role reloadedRole = dataManager.reload(e.getItem(), View.LOCAL);
-                reloadedRole.setDefaultRole(e.getItem().getDefaultRole());
-                rolesDs.updateItem(reloadedRole);
-                rolesDs.modifyItem(reloadedRole);
-                rolesDs.commit();
+                Role role = e.getItem();
+                if (!role.isPredefined()) {
+                    Role reloadedRole = dataManager.reload(e.getItem(), View.LOCAL);
+                    reloadedRole.setDefaultRole(e.getItem().getDefaultRole());
+                    rolesDs.updateItem(reloadedRole);
+                    rolesDs.modifyItem(reloadedRole);
+                    rolesDs.commit();
+                }
             }
         });
 
