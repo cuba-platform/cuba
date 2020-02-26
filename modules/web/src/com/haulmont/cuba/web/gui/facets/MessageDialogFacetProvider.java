@@ -23,6 +23,7 @@ import com.haulmont.cuba.gui.components.ContentMode;
 import com.haulmont.cuba.gui.components.MessageDialogFacet;
 import com.haulmont.cuba.gui.xml.FacetProvider;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
+import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.gui.components.WebMessageDialogFacet;
 import org.dom4j.Element;
 import org.springframework.stereotype.Component;
@@ -39,6 +40,8 @@ public class MessageDialogFacetProvider implements FacetProvider<MessageDialogFa
 
     @Inject
     protected MessageTools messageTools;
+    @Inject
+    protected WebConfig webConfig;
 
     @Override
     public Class<MessageDialogFacet> getFacetClass() {
@@ -70,6 +73,8 @@ public class MessageDialogFacetProvider implements FacetProvider<MessageDialogFa
         loadModal(facet, element);
         loadStyleName(facet, element);
         loadCloseOnClickOutside(facet, element);
+
+        loadHtmlSanitizerEnabled(facet, element);
 
         loadTarget(facet, element, context);
     }
@@ -169,6 +174,15 @@ public class MessageDialogFacetProvider implements FacetProvider<MessageDialogFa
         if (isNotEmpty(closeOnClickOutside)) {
             facet.setCloseOnClickOutside(Boolean.parseBoolean(closeOnClickOutside));
         }
+    }
+
+    protected void loadHtmlSanitizerEnabled(MessageDialogFacet facet, Element element) {
+        String htmlSanitizerEnabledString = element.attributeValue("htmlSanitizerEnabled");
+        boolean htmlSanitizerEnabled = isNotEmpty(htmlSanitizerEnabledString)
+                ? Boolean.parseBoolean(htmlSanitizerEnabledString)
+                : webConfig.getHtmlSanitizerEnabled();
+
+        facet.setHtmlSanitizerEnabled(htmlSanitizerEnabled);
     }
 
     protected String loadResourceString(ComponentLoader.ComponentContext context, String caption) {

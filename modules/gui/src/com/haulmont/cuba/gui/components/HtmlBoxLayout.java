@@ -22,7 +22,8 @@ package com.haulmont.cuba.gui.components;
  * are responsible for rendering the layout with a given style by placing the items in the defined locations.
  */
 public interface HtmlBoxLayout extends ComponentContainer, Component.BelongToFrame, Component.HasIcon,
-        Component.HasCaption, HasContextHelp, HasHtmlCaption, HasHtmlDescription, HasRequiredIndicator {
+        Component.HasCaption, HasContextHelp, HasHtmlCaption, HasHtmlDescription, HasRequiredIndicator,
+        HasHtmlSanitizer {
 
     String NAME = "htmlBox";
 

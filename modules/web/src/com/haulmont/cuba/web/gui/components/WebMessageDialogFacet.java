@@ -49,6 +49,8 @@ public class WebMessageDialogFacet extends WebAbstractFacet
 
     protected boolean closeOnClickOutside;
 
+    protected boolean htmlSanitizerEnabled;
+
     @Override
     public void setCaption(String caption) {
         this.caption = caption;
@@ -188,6 +190,16 @@ public class WebMessageDialogFacet extends WebAbstractFacet
     }
 
     @Override
+    public void setHtmlSanitizerEnabled(boolean htmlSanitizerEnabled) {
+        this.htmlSanitizerEnabled = htmlSanitizerEnabled;
+    }
+
+    @Override
+    public boolean isHtmlSanitizerEnabled() {
+        return htmlSanitizerEnabled;
+    }
+
+    @Override
     public void setOwner(@Nullable Frame owner) {
         super.setOwner(owner);
 
@@ -216,6 +228,7 @@ public class WebMessageDialogFacet extends WebAbstractFacet
         builder.withCaption(caption)
                 .withMessage(message)
                 .withContentMode(contentMode)
+                .withHtmlSanitizer(htmlSanitizerEnabled)
                 .withMaximized(maximized)
                 .withModal(modal)
                 .withStyleName(styleName)

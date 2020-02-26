@@ -61,6 +61,8 @@ public class HtmlBoxLayoutLoader extends ContainerLoader<HtmlBoxLayout> {
         loadContextHelp(resultComponent, element);
         loadRequiredIndicatorVisible(resultComponent, element);
 
+        loadHtmlSanitizerEnabled(resultComponent, element);
+
         loadSubComponents();
     }
 

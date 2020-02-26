@@ -60,6 +60,8 @@ public class ButtonsPanelLoader extends ContainerLoader<ButtonsPanel> {
         loadResponsive(resultComponent, element);
         loadCss(resultComponent, element);
 
+        loadHtmlSanitizerEnabled(resultComponent, element);
+
         if (!element.elements().isEmpty()) {
             loadSubComponents();
         } else {

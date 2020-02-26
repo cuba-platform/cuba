@@ -30,7 +30,7 @@ import java.util.Map;
  * @see com.haulmont.cuba.gui.BulkEditors
  */
 public interface BulkEditor extends Component, Component.HasCaption, Component.BelongToFrame, Component.HasIcon,
-                                    Component.Focusable, HasHtmlCaption, HasHtmlDescription {
+                                    Component.Focusable, HasHtmlCaption, HasHtmlDescription, HasHtmlSanitizer {
 
     String NAME = "bulkEditor";
     String PERMISSION = "cuba.gui.bulkEdit";

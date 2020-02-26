@@ -53,18 +53,21 @@ public class WebLabel<V> extends WebAbstractViewComponent<com.vaadin.ui.Label, S
     }
 
     protected String convertToPresentation(V modelValue) {
+        String presentationValue;
         if (formatter != null) {
-            return formatter.apply(modelValue);
-        }
-
-        if (valueBinding != null
+            presentationValue = formatter.apply(modelValue);
+        } else if (valueBinding != null
                 && valueBinding.getSource() instanceof EntityValueSource) {
             EntityValueSource entityValueSource = (EntityValueSource) valueBinding.getSource();
             MetaProperty metaProperty = entityValueSource.getMetaPropertyPath().getMetaProperty();
-            return metadataTools.format(modelValue, metaProperty);
+            presentationValue = metadataTools.format(modelValue, metaProperty);
+        } else {
+            presentationValue = metadataTools.format(modelValue);
         }
 
-        return metadataTools.format(modelValue);
+        return isHtmlEnabled()
+                ? sanitize(presentationValue)
+                : presentationValue;
     }
 
     @SuppressWarnings("unchecked")

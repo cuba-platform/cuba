@@ -24,6 +24,7 @@ import com.haulmont.cuba.gui.components.ContentMode;
 import com.haulmont.cuba.gui.components.NotificationFacet;
 import com.haulmont.cuba.gui.xml.FacetProvider;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
+import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.gui.components.WebNotificationFacet;
 import org.dom4j.Element;
 import org.springframework.stereotype.Component;
@@ -40,6 +41,8 @@ public class NotificationFacetProvider implements FacetProvider<NotificationFace
 
     @Inject
     protected MessageTools messageTools;
+    @Inject
+    protected WebConfig webConfig;
 
     @Override
     public Class<NotificationFacet> getFacetClass() {
@@ -67,6 +70,7 @@ public class NotificationFacetProvider implements FacetProvider<NotificationFace
         loadContentMode(facet, element);
         loadStyleName(facet, element);
         loadPosition(facet, element);
+        loadHtmlSanitizerEnabled(facet, element);
         loadTarget(facet, element, context);
     }
 
@@ -144,6 +148,15 @@ public class NotificationFacetProvider implements FacetProvider<NotificationFace
         } else if (isNotEmpty(buttonTarget)) {
             facet.setButtonTarget(buttonTarget);
         }
+    }
+
+    protected void loadHtmlSanitizerEnabled(NotificationFacet facet, Element element) {
+        String htmlSanitizerEnabledString = element.attributeValue("htmlSanitizerEnabled");
+        boolean htmlSanitizerEnabled = isNotEmpty(htmlSanitizerEnabledString)
+                ? Boolean.parseBoolean(htmlSanitizerEnabledString)
+                : webConfig.getHtmlSanitizerEnabled();
+
+        facet.setHtmlSanitizerEnabled(htmlSanitizerEnabled);
     }
 
     protected String loadResourceString(ComponentLoader.ComponentContext context, String caption) {

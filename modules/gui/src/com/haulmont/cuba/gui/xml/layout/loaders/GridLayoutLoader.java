@@ -145,6 +145,8 @@ public class GridLayoutLoader extends ContainerLoader<GridLayout> {
         loadContextHelp(resultComponent, element);
         loadRequiredIndicatorVisible(resultComponent, element);
 
+        loadHtmlSanitizerEnabled(resultComponent, element);
+
         loadSubComponents();
     }
 

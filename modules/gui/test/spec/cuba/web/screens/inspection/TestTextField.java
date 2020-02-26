@@ -546,4 +546,14 @@ public class TestTextField implements TextField<String> {
     public String getConversionErrorMessage() {
         return null;
     }
+
+    @Override
+    public boolean isHtmlSanitizerEnabled() {
+        return false;
+    }
+
+    @Override
+    public void setHtmlSanitizerEnabled(boolean htmlSanitizerEnabled) {
+
+    }
 }

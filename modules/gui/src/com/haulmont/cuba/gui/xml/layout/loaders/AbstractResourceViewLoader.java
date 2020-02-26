@@ -40,6 +40,8 @@ public abstract class AbstractResourceViewLoader<T extends ResourceView> extends
         loadDescription(resultComponent, element);
         loadContextHelp(resultComponent, element);
 
+        loadHtmlSanitizerEnabled(resultComponent, element);
+
         loadWidth(resultComponent, element);
         loadHeight(resultComponent, element);
         loadAlign(resultComponent, element);

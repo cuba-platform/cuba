@@ -1220,6 +1220,10 @@
         <xs:attribute name="referrerpolicy" type="referrerpolicy"/>
     </xs:attributeGroup>
 
+    <xs:attributeGroup name="hasHtmlSanitizer">
+        <xs:attribute name="htmlSanitizerEnabled" type="xs:boolean"/>
+    </xs:attributeGroup>
+
     <xs:attributeGroup name="isTableComponent">
         <xs:attribute name="dataContainer" type="xs:string"/>
         <xs:attribute name="rowHeaderMode" type="rowHeaderMode"/>
@@ -1605,6 +1609,8 @@
         <xs:attributeGroup ref="hasContextHelp"/>
         <xs:attributeGroup ref="hasHtmlDescription"/>
 
+        <xs:attributeGroup ref="hasHtmlSanitizer"/>
+
         <xs:attributeGroup ref="hasCss"/>
 
         <xs:attribute name="stylename" type="labelStylename"/>
@@ -1695,6 +1701,7 @@
         <xs:attributeGroup ref="hasResponsiveProp"/>
 
         <xs:attributeGroup ref="hasCss"/>
+        <xs:attributeGroup ref="hasHtmlSanitizer"/>
     </xs:complexType>
 
     <!-- BaseField -->
@@ -2829,6 +2836,7 @@
         <xs:attributeGroup ref="hasVisibility"/>
         <xs:attributeGroup ref="hasTabIndex"/>
         <xs:attributeGroup ref="hasContextHelp"/>
+        <xs:attributeGroup ref="hasHtmlSanitizer"/>
 
         <xs:attribute name="width" type="componentSize"/>
 
@@ -3522,6 +3530,8 @@
         <xs:attribute name="position" type="align"/>
 
         <xs:attributeGroup ref="facetTriggerType"/>
+
+        <xs:attributeGroup ref="hasHtmlSanitizer"/>
     </xs:complexType>
 
     <xs:simpleType name="notificationTypeEnum">
@@ -3556,6 +3566,7 @@
         <xs:complexContent>
             <xs:extension base="dialogType">
                 <xs:attribute name="closeOnClickOutside" type="xs:boolean"/>
+                <xs:attributeGroup ref="hasHtmlSanitizer"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -3567,6 +3578,7 @@
                 <xs:sequence>
                     <xs:element name="actions" type="dialogActionsType" minOccurs="0"/>
                 </xs:sequence>
+                <xs:attributeGroup ref="hasHtmlSanitizer"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>

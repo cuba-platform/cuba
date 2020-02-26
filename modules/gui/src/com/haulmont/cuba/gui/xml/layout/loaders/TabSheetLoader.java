@@ -81,6 +81,8 @@ public class TabSheetLoader extends ContainerLoader<TabSheet> {
         loadDescription(resultComponent, element);
         loadContextHelp(resultComponent, element);
 
+        loadHtmlSanitizerEnabled(resultComponent, element);
+
         loadTabIndex(resultComponent, element);
 
         loadTabsVisible(resultComponent, element);

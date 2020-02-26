@@ -1,6 +1,7 @@
 package com.haulmont.cuba.web.widgets;
 
 import com.haulmont.cuba.web.widgets.grid.CubaEditorField;
+import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.components.grid.GridSelectionModel;
 
@@ -65,6 +66,8 @@ public interface CubaEnhancedGrid<T> {
     void removeAggregationPropertyId(String propertyId);
 
     Collection<String> getAggregationPropertyIds();
+
+    ContentMode getRowDescriptionContentMode();
 
     /**
      * Defines the position of aggregation row.

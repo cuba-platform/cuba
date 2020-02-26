@@ -163,6 +163,19 @@ public interface NotificationFacet extends Facet {
     void setButtonTarget(String buttonId);
 
     /**
+     * Sets whether html sanitizer is enabled or not for notification content.
+     *
+     * @param htmlSanitizerEnabled specifies whether html sanitizer is enabled
+     */
+    @StudioProperty(type = PropertyType.BOOLEAN)
+    void setHtmlSanitizerEnabled(boolean htmlSanitizerEnabled);
+
+    /**
+     * @return html sanitizer is enabled for notification content
+     */
+    boolean isHtmlSanitizerEnabled();
+
+    /**
      * Shows notification.
      */
     void show();

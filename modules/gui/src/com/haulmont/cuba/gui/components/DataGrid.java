@@ -49,8 +49,7 @@ import static com.haulmont.cuba.gui.components.MouseEventDetails.MouseButton;
  */
 public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtonsPanel, Component.HasCaption,
         Component.HasIcon, HasContextHelp, HasRowsCount, HasSettings, HasDataLoadingSettings, HasHtmlCaption, HasHtmlDescription,
-        LookupComponent<E>, Component.Focusable,
-        RowsCount.RowsCountTarget, HasSubParts {
+        LookupComponent<E>, Component.Focusable, RowsCount.RowsCountTarget, HasSubParts, HasHtmlSanitizer {
 
     String NAME = "dataGrid";
 

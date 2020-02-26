@@ -30,7 +30,7 @@ import java.util.List;
  * Generic filter component.
  */
 public interface Filter extends HasMargin, Component.BelongToFrame, HasNamedComponents, HasSettings, HasDataLoadingSettings, Component.HasCaption, HasContextHelp,
-        Component.HasIcon, Collapsable, Component.Focusable, HasHtmlCaption, HasHtmlDescription {
+        Component.HasIcon, Collapsable, Component.Focusable, HasHtmlCaption, HasHtmlDescription, HasHtmlSanitizer {
 
     String NAME = "filter";
 

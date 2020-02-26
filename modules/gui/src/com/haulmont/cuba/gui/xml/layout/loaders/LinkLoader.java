@@ -38,6 +38,8 @@ public class LinkLoader extends AbstractComponentLoader<Link> {
         loadDescription(resultComponent, element);
         loadCaption(resultComponent, element);
 
+        loadHtmlSanitizerEnabled(resultComponent, element);
+
         loadResponsive(resultComponent, element);
         loadCss(resultComponent, element);
 

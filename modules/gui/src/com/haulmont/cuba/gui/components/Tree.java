@@ -33,7 +33,7 @@ import java.util.function.Function;
 public interface Tree<E extends Entity> extends ListComponent<E>, HasButtonsPanel,
                                                 Component.HasCaption, Component.HasIcon, LookupComponent<E>,
                                                 Component.Focusable, HasContextHelp, HasItemCaptionProvider<E>,
-                                                HasHtmlCaption, HasHtmlDescription {
+                                                HasHtmlCaption, HasHtmlDescription, HasHtmlSanitizer {
 
     String NAME = "tree";
 

@@ -54,7 +54,7 @@ public class WebHtmlBoxLayout extends WebAbstractComponent<CubaCustomLayout> imp
 
     @Override
     public void setTemplateContents(String templateContents) {
-        component.setTemplateContents(templateContents);
+        component.setTemplateContents(sanitize(templateContents));
     }
 
     @Override

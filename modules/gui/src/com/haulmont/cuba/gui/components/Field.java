@@ -27,7 +27,7 @@ import java.util.function.Consumer;
  */
 public interface Field<V> extends DatasourceComponent<V>, HasValueSource<V>, Component.HasCaption,
         HasValue<V>, Component.Editable, Component.BelongToFrame, Validatable, Component.HasIcon,
-        HasContextHelp, HasHtmlCaption, HasHtmlDescription {
+        HasContextHelp, HasHtmlCaption, HasHtmlDescription, HasHtmlSanitizer {
 
     /**
      * @return whether the field must contain a non-null value

@@ -30,7 +30,7 @@ import java.time.OffsetTime;
  * @param <V> type of value
  */
 public interface Label<V> extends HasValueSource<V>, DatasourceComponent<V>, HasFormatter<V>,
-        Component.HasDescription, Component.HasIcon, HasContextHelp, HasHtmlDescription {
+        Component.HasDescription, Component.HasIcon, HasContextHelp, HasHtmlDescription, HasHtmlSanitizer {
 
     String NAME = "label";
 

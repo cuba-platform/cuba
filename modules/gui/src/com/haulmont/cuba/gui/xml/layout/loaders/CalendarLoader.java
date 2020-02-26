@@ -60,6 +60,8 @@ public class CalendarLoader extends AbstractComponentLoader<Calendar> {
         loadDescription(resultComponent, element);
         loadContextHelp(resultComponent, element);
 
+        loadHtmlSanitizerEnabled(resultComponent, element);
+
         loadHeight(resultComponent, element);
         loadWidth(resultComponent, element);
         loadAlign(resultComponent, element);

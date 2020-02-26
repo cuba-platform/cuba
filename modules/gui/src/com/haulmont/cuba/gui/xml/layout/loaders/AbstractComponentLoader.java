@@ -1063,4 +1063,11 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
             component.setRequiredIndicatorVisible(Boolean.parseBoolean(requiredIndicatorVisible));
         }
     }
+
+    protected void loadHtmlSanitizerEnabled(HasHtmlSanitizer component, Element element) {
+        String htmlSanitizerEnabled = element.attributeValue("htmlSanitizerEnabled");
+        if (StringUtils.isNotEmpty(htmlSanitizerEnabled)) {
+            component.setHtmlSanitizerEnabled(Boolean.parseBoolean(htmlSanitizerEnabled));
+        }
+    }
 }

@@ -79,6 +79,8 @@ public class TreeLoader extends ActionsHolderLoader<Tree> {
         loadDescription(resultComponent, element);
         loadContextHelp(resultComponent, element);
 
+        loadHtmlSanitizerEnabled(resultComponent, element);
+
         loadSelectionMode(resultComponent, element);
 
         loadRowHeight(resultComponent, element);

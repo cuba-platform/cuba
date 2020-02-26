@@ -141,6 +141,19 @@ public interface Notifications {
         Position getPosition();
 
         /**
+         * Sets whether html sanitizer is enabled or not for notification content.
+         *
+         * @param htmlSanitizerEnabled specifies whether html sanitizer is enabled
+         * @return builder
+         */
+        NotificationBuilder withHtmlSanitizer(boolean htmlSanitizerEnabled);
+
+        /**
+         * @return html sanitizer is enabled for notification content
+         */
+        boolean isHtmlSanitizerEnabled();
+
+        /**
          * Sets the delay before the notification disappears.
          *
          * @param hideDelayMs the desired delay in milliseconds, {@value #DELAY_FOREVER} to

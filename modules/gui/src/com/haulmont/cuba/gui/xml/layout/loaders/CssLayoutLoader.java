@@ -45,6 +45,8 @@ public class CssLayoutLoader extends ContainerLoader<CssLayout> {
         loadContextHelp(resultComponent, element);
         loadRequiredIndicatorVisible(resultComponent, element);
 
+        loadHtmlSanitizerEnabled(resultComponent, element);
+
         loadStyleName(resultComponent, element);
         loadResponsive(resultComponent, element);
         loadCss(resultComponent, element);

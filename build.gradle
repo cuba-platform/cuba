@@ -710,6 +710,8 @@ configure(webModule) {
 
         compile(bom['com.haulmont.cuba-resources:cuba-png-icons'])
 
+        compile(bom['com.googlecode.owasp-java-html-sanitizer:owasp-java-html-sanitizer'])
+
         compileOnly(bom['javax.servlet:javax.servlet-api'])
 
         themes(bom['com.vaadin:vaadin-themes'])
