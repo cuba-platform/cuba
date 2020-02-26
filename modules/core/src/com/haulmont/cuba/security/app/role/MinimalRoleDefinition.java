@@ -18,11 +18,10 @@ package com.haulmont.cuba.security.app.role;
 
 import com.haulmont.cuba.core.app.ServerConfig;
 import com.haulmont.cuba.core.entity.KeyValueEntity;
-import com.haulmont.cuba.security.app.role.annotation.EntityAccess;
+import com.haulmont.cuba.security.app.role.annotation.*;
 import com.haulmont.cuba.security.app.role.annotation.Role;
-import com.haulmont.cuba.security.app.role.annotation.ScreenAccess;
-import com.haulmont.cuba.security.app.role.annotation.SpecificAccess;
 import com.haulmont.cuba.security.entity.*;
+import com.haulmont.cuba.security.role.EntityAttributePermissionsContainer;
 import com.haulmont.cuba.security.role.EntityPermissionsContainer;
 import com.haulmont.cuba.security.role.ScreenPermissionsContainer;
 import com.haulmont.cuba.security.role.SpecificPermissionsContainer;
@@ -81,6 +80,12 @@ public class MinimalRoleDefinition extends AnnotatedRoleDefinition {
     @EntityAccess(entityClass = KeyValueEntity.class, operations = {EntityOp.READ})
     public EntityPermissionsContainer entityPermissions() {
         return super.entityPermissions();
+    }
+
+    @Override
+    @EntityAttributeAccess(entityClass = KeyValueEntity.class, view = "*")
+    public EntityAttributePermissionsContainer entityAttributePermissions() {
+        return super.entityAttributePermissions();
     }
 
     @Override
