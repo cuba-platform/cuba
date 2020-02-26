@@ -32,7 +32,9 @@ import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.Connection;
 import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.auth.WebAuthConfig;
+import com.haulmont.cuba.web.exception.ExceptionHandlers;
 import com.haulmont.cuba.web.security.LoginScreenAuthDelegate;
+import com.vaadin.server.ErrorEvent;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -258,9 +260,14 @@ public class LoginScreen extends Screen {
             String message = StringUtils.abbreviate(e.getMessage(), 1000);
             showLoginException(message);
         } catch (Exception e) {
-            log.warn("Unable to login", e);
+            if (connection.isAuthenticated()) {
+                ExceptionHandlers handlers = app.getExceptionHandlers();
+                handlers.handle(new ErrorEvent(e));
+            } else {
+                log.warn("Unable to login", e);
 
-            showUnhandledExceptionOnLogin(e);
+                showUnhandledExceptionOnLogin(e);
+            }
         }
     }
 
