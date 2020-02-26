@@ -79,7 +79,7 @@
                 <column id="name" caption="msg://role.name"/>
                 <column id="locName" caption="msg://role.locName"/>
                 <column id="description" caption="msg://role.description"/>
-                <column id="defaultRole" caption="msg://role.defaultRole" editable="true"/>
+                <column id="defaultRole" caption="msg://role.defaultRole"/>
             </columns>
             <rows datasource="rolesDs"/>
         </table>
