@@ -22,7 +22,7 @@ package com.haulmont.cuba.gui.components;
 public interface ScrollBoxLayout
         extends OrderedContainer, Component.BelongToFrame, HasMargin, HasSpacing, HasOrientation,
                 Component.HasIcon, Component.HasCaption, ShortcutNotifier, HasContextHelp,
-                HasHtmlCaption, HasHtmlDescription, HasRequiredIndicator, LayoutClickNotifier {
+                HasHtmlCaption, HasHtmlDescription, HasRequiredIndicator, LayoutClickNotifier, HasHtmlSanitizer {
 
     String NAME = "scrollBox";
 

@@ -9,6 +9,7 @@ import com.haulmont.cuba.web.widgets.grid.CubaEditorImpl;
 import com.haulmont.cuba.web.widgets.grid.CubaGridColumn;
 import com.vaadin.data.ValueProvider;
 import com.vaadin.data.provider.HierarchicalDataProvider;
+import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.TreeGrid;
 import com.vaadin.ui.components.grid.Editor;
 import com.vaadin.ui.components.grid.GridSelectionModel;
@@ -246,5 +247,10 @@ public class CubaTreeGrid<T> extends TreeGrid<T> implements CubaEnhancedGrid<T> 
                 aggregationPropertyIds = null;
             }
         }
+    }
+
+    @Override
+    public ContentMode getRowDescriptionContentMode() {
+        return getState(false).rowDescriptionContentMode;
     }
 }

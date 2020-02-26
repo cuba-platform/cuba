@@ -21,6 +21,8 @@ import com.haulmont.cuba.gui.Notifications;
 import com.haulmont.cuba.gui.components.ContentMode;
 import com.haulmont.cuba.gui.executors.BackgroundWorker;
 import com.haulmont.cuba.web.AppUI;
+import com.haulmont.cuba.web.WebConfig;
+import com.haulmont.cuba.web.sys.sanitizer.HtmlSanitizer;
 import com.vaadin.ui.Notification;
 
 import javax.inject.Inject;
@@ -34,6 +36,11 @@ public class WebNotifications implements Notifications {
     protected AppUI ui;
 
     protected BackgroundWorker backgroundWorker;
+
+    @Inject
+    protected WebConfig webConfig;
+    @Inject
+    protected HtmlSanitizer htmlSanitizer;
 
     public WebNotifications(AppUI ui) {
         this.ui = ui;
@@ -64,6 +71,8 @@ public class WebNotifications implements Notifications {
         protected String caption;
         protected String description;
         protected String styleName;
+
+        protected boolean htmlSanitizerEnabled = webConfig.getHtmlSanitizerEnabled();
 
         protected Position position = Position.DEFAULT;
         protected int hideDelayMs = Integer.MIN_VALUE;
@@ -147,6 +156,17 @@ public class WebNotifications implements Notifications {
         }
 
         @Override
+        public NotificationBuilder withHtmlSanitizer(boolean htmlSanitizerEnabled) {
+            this.htmlSanitizerEnabled = htmlSanitizerEnabled;
+            return this;
+        }
+
+        @Override
+        public boolean isHtmlSanitizerEnabled() {
+            return htmlSanitizerEnabled;
+        }
+
+        @Override
         public NotificationBuilder withHideDelayMs(int hideDelayMs) {
             this.hideDelayMs = hideDelayMs;
             return this;
@@ -218,6 +238,13 @@ public class WebNotifications implements Notifications {
                 }
 
                 vNotification.setHtmlContentAllowed(contentMode == ContentMode.HTML);
+
+                if (contentMode == ContentMode.HTML
+                        && isHtmlSanitizerEnabled()) {
+                    vNotification.setCaption(htmlSanitizer.sanitize(getCaption()));
+                    vNotification.setDescription(htmlSanitizer.sanitize(getDescription()));
+                }
+
                 if (styleName != null) {
                     vNotification.setStyleName(styleName);
                 }

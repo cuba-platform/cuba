@@ -958,12 +958,20 @@ public class WebTree<E extends Entity>
     @Override
     public void setDescriptionProvider(Function<? super E, String> provider, ContentMode contentMode) {
         descriptionProvider = provider;
+
         if (provider != null) {
-            component.setItemDescriptionGenerator(descriptionProvider::apply,
+            component.setItemDescriptionGenerator(this::getRowDescription,
                     WebWrapperUtils.toVaadinContentMode(contentMode));
         } else {
             component.setItemDescriptionGenerator(null);
         }
+    }
+
+    protected String getRowDescription(E item) {
+        String rowDescription = descriptionProvider.apply(item);
+        return WebWrapperUtils.toContentMode(component.getContentMode()) == ContentMode.HTML
+                ? sanitize(rowDescription)
+                : rowDescription;
     }
 
     @SuppressWarnings("unchecked")

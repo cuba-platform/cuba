@@ -24,7 +24,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 public interface UploadField extends Component, Component.HasCaption, Component.BelongToFrame, Component.HasIcon,
-                                     Component.Focusable, HasHtmlCaption, HasHtmlDescription {
+                                     Component.Focusable, HasHtmlCaption, HasHtmlDescription, HasHtmlSanitizer {
 
     /**
      * Base class for UploadField events.

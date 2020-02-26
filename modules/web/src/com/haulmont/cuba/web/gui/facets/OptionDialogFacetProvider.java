@@ -27,6 +27,7 @@ import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
 import com.haulmont.cuba.gui.xml.FacetProvider;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
+import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.gui.components.WebOptionDialogFacet;
 import org.dom4j.Element;
 import org.springframework.stereotype.Component;
@@ -51,6 +52,8 @@ public class OptionDialogFacetProvider
     protected Icons icons;
     @Inject
     protected ThemeConstantsManager themeConstantsManager;
+    @Inject
+    protected WebConfig webConfig;
 
     @Override
     public Class<OptionDialogFacet> getFacetClass() {
@@ -81,6 +84,8 @@ public class OptionDialogFacetProvider
         loadContentMode(facet, element);
         loadMaximized(facet, element);
         loadStyleName(facet, element);
+
+        loadHtmlSanitizerEnabled(facet, element);
 
         loadTarget(facet, element, context);
 
@@ -196,6 +201,15 @@ public class OptionDialogFacetProvider
         boolean primary = Boolean.parseBoolean(element.attributeValue("primary"));
 
         return new ActionsAwareDialogFacet.DialogAction(id, caption, description, icon, primary);
+    }
+
+    protected void loadHtmlSanitizerEnabled(OptionDialogFacet facet, Element element) {
+        String htmlSanitizerEnabledString = element.attributeValue("htmlSanitizerEnabled");
+        boolean htmlSanitizerEnabled = isNotEmpty(htmlSanitizerEnabledString)
+                ? Boolean.parseBoolean(htmlSanitizerEnabledString)
+                : webConfig.getHtmlSanitizerEnabled();
+
+        facet.setHtmlSanitizerEnabled(htmlSanitizerEnabled);
     }
 
     protected String loadResourceString(ComponentLoader.ComponentContext context, String caption) {

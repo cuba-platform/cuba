@@ -38,7 +38,7 @@ import java.util.function.Consumer;
  * @param <V> type of value
  */
 public interface Calendar<V> extends Component.BelongToFrame, Component.HasCaption, Component.HasIcon,
-        HasContextHelp, HasHtmlCaption, HasHtmlDescription, HasDatatype<V> {
+        HasContextHelp, HasHtmlCaption, HasHtmlDescription, HasDatatype<V>, HasHtmlSanitizer {
 
     String NAME = "calendar";
 

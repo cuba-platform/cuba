@@ -27,7 +27,7 @@ import java.util.function.Consumer;
  * {@link UrlResource}, {@link FileResource}, etc.
  */
 public interface ResourceView extends Component, Component.HasCaption, HasContextHelp,
-        HasHtmlCaption, HasHtmlDescription {
+        HasHtmlCaption, HasHtmlDescription, HasHtmlSanitizer {
 
     /**
      * @return {@link Resource} instance

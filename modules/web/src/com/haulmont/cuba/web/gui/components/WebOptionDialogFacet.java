@@ -50,6 +50,8 @@ public class WebOptionDialogFacet extends WebAbstractFacet
 
     protected Collection<DialogAction<OptionDialogFacet>> actions;
 
+    protected boolean htmlSanitizerEnabled;
+
     @Override
     public void setActions(Collection<DialogAction<OptionDialogFacet>> actions) {
         this.actions = actions;
@@ -171,6 +173,16 @@ public class WebOptionDialogFacet extends WebAbstractFacet
     }
 
     @Override
+    public void setHtmlSanitizerEnabled(boolean htmlSanitizerEnabled) {
+        this.htmlSanitizerEnabled = htmlSanitizerEnabled;
+    }
+
+    @Override
+    public boolean isHtmlSanitizerEnabled() {
+        return htmlSanitizerEnabled;
+    }
+
+    @Override
     public void show() {
         Frame owner = getOwner();
         if (owner == null) {
@@ -191,6 +203,7 @@ public class WebOptionDialogFacet extends WebAbstractFacet
         builder.withCaption(caption)
                 .withMessage(message)
                 .withContentMode(contentMode)
+                .withHtmlSanitizer(htmlSanitizerEnabled)
                 .withMaximized(maximized)
                 .withStyleName(styleName)
                 .withActions(createActions())

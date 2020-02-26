@@ -66,6 +66,7 @@ public class FilterLoader extends AbstractComponentLoader<Filter> {
         loadCaption(resultComponent, element);
         loadDescription(resultComponent, element);
         loadContextHelp(resultComponent, element);
+        loadHtmlSanitizerEnabled(resultComponent, element);
         loadWidth(resultComponent, element, "100%");
         loadCollapsible(resultComponent, element, true);
         loadSettingsEnabled(resultComponent, element);

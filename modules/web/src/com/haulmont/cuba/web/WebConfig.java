@@ -29,6 +29,7 @@ import com.haulmont.cuba.web.app.loginwindow.AppLoginWindow;
 import com.haulmont.cuba.web.app.main.MainScreen;
 import com.haulmont.cuba.web.app.mainwindow.AppMainWindow;
 import com.haulmont.cuba.web.gui.*;
+import com.haulmont.cuba.web.sys.sanitizer.HtmlSanitizer;
 
 import java.util.List;
 
@@ -545,4 +546,12 @@ public interface WebConfig extends Config {
     @Property("cuba.web.allowAnonymousAccess")
     @DefaultBoolean(false)
     boolean getAllowAnonymousAccess();
+
+    /**
+     * Defines whether to sanitize the value of components using {@link HtmlSanitizer}
+     * to prevent Cross-site Scripting (XSS) in HTML context.
+     */
+    @DefaultBoolean(true)
+    @Property("cuba.web.htmlSanitizerEnabled")
+    boolean getHtmlSanitizerEnabled();
 }

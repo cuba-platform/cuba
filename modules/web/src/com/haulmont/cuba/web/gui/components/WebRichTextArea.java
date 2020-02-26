@@ -105,13 +105,16 @@ public class WebRichTextArea extends WebV8AbstractField<CubaRichTextArea, String
 
     @Override
     protected String convertToPresentation(String modelValue) throws ConversionException {
-        return nullToEmpty(super.convertToPresentation(modelValue));
+        String presentationValue = nullToEmpty(super.convertToPresentation(modelValue));
+        presentationValue = sanitize(presentationValue);
+        return presentationValue;
     }
 
     @Override
     protected String convertToModel(String componentRawValue) throws ConversionException {
-        String value = emptyToNull(componentRawValue);
-        return super.convertToModel(value);
+        String modelValue = sanitize(componentRawValue);
+        modelValue = emptyToNull(modelValue);
+        return super.convertToModel(modelValue);
     }
 
     @Override

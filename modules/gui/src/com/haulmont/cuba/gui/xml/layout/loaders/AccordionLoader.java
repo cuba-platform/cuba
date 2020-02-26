@@ -82,6 +82,8 @@ public class AccordionLoader extends ContainerLoader<Accordion> {
         loadResponsive(resultComponent, element);
         loadCss(resultComponent, element);
 
+        loadHtmlSanitizerEnabled(resultComponent, element);
+
         loadTabCaptionsAsHtml(resultComponent, element);
 
         List<Element> tabElements = element.elements("tab");

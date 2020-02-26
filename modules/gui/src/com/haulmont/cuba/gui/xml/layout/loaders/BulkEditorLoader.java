@@ -101,6 +101,8 @@ public class BulkEditorLoader extends AbstractComponentLoader<BulkEditor> {
         loadDescription(resultComponent, element);
         loadIcon(resultComponent, element);
 
+        loadHtmlSanitizerEnabled(resultComponent, element);
+
         loadWidth(resultComponent, element);
         loadAlign(resultComponent, element);
         loadResponsive(resultComponent, element);

@@ -52,6 +52,8 @@ public class WebNotificationFacet extends WebAbstractFacet implements Notificati
     protected String actionId;
     protected String buttonId;
 
+    protected boolean htmlSanitizerEnabled;
+
     @Override
     public void setCaption(String caption) {
         this.caption = caption;
@@ -168,6 +170,16 @@ public class WebNotificationFacet extends WebAbstractFacet implements Notificati
     }
 
     @Override
+    public void setHtmlSanitizerEnabled(boolean htmlSanitizerEnabled) {
+        this.htmlSanitizerEnabled = htmlSanitizerEnabled;
+    }
+
+    @Override
+    public boolean isHtmlSanitizerEnabled() {
+        return htmlSanitizerEnabled;
+    }
+
+    @Override
     public void setOwner(@Nullable Frame owner) {
         super.setOwner(owner);
 
@@ -199,6 +211,7 @@ public class WebNotificationFacet extends WebAbstractFacet implements Notificati
                 .withDescription(description)
                 .withHideDelayMs(delayMs)
                 .withContentMode(contentMode)
+                .withHtmlSanitizer(htmlSanitizerEnabled)
                 .withStyleName(styleName)
                 .withPosition(position)
                 .withCloseListener(e -> publish(CloseEvent.class, new CloseEvent(this)))

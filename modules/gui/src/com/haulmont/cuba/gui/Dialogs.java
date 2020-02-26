@@ -169,7 +169,8 @@ public interface Dialogs {
                     HasMessage<OptionDialogBuilder>,
                     HasContentMode<OptionDialogBuilder>,
                     HasMaximized<OptionDialogBuilder>,
-                    HasStyleName<OptionDialogBuilder> {
+                    HasStyleName<OptionDialogBuilder>,
+                    HasHtmlSanitizer<OptionDialogBuilder> {
         /**
          * Sets dialog actions.
          *
@@ -197,7 +198,8 @@ public interface Dialogs {
                     HasContentMode<MessageDialogBuilder>,
                     HasModal<MessageDialogBuilder>,
                     HasMaximized<MessageDialogBuilder>,
-                    HasStyleName<MessageDialogBuilder> {
+                    HasStyleName<MessageDialogBuilder>,
+                    HasHtmlSanitizer<MessageDialogBuilder> {
 
         /**
          * @return true if window can be closed by click outside of window content (by modality curtain)
@@ -584,6 +586,26 @@ public interface Dialogs {
          * @return true if dialog will be maximized
          */
         boolean isMaximized();
+    }
+
+    /**
+     * Marker interface for Dialog Builders that have html sanitizer for dialog content.
+     *
+     * @param <T> return type of fluent API methods
+     */
+    interface HasHtmlSanitizer<T> {
+        /**
+         * Sets whether html sanitizer is enabled or not for dialog content.
+         *
+         * @param htmlSanitizerEnabled specifies whether html sanitizer is enabled
+         * @return builder
+         */
+        T withHtmlSanitizer(boolean htmlSanitizerEnabled);
+
+        /**
+         * @return html sanitizer is enabled for dialog content
+         */
+        boolean isHtmlSanitizerEnabled();
     }
 
     /**

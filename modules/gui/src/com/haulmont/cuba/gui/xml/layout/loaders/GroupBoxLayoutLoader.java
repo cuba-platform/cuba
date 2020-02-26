@@ -44,6 +44,8 @@ public class GroupBoxLayoutLoader extends ContainerLoader<GroupBoxLayout> {
         loadContextHelp(resultComponent, element);
         loadRequiredIndicatorVisible(resultComponent, element);
 
+        loadHtmlSanitizerEnabled(resultComponent, element);
+
         loadAlign(resultComponent, element);
         loadVisible(resultComponent, element);
         loadEnable(resultComponent, element);

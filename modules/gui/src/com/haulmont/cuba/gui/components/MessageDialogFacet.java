@@ -197,6 +197,19 @@ public interface MessageDialogFacet extends Facet {
     boolean isCloseOnClickOutside();
 
     /**
+     * Sets whether html sanitizer is enabled or not for dialog content.
+     *
+     * @param htmlSanitizerEnabled specifies whether html sanitizer is enabled
+     */
+    @StudioProperty(type = PropertyType.BOOLEAN)
+    void setHtmlSanitizerEnabled(boolean htmlSanitizerEnabled);
+
+    /**
+     * @return html sanitizer is enabled for dialog content
+     */
+    boolean isHtmlSanitizerEnabled();
+
+    /**
      * Shows dialog.
      */
     void show();

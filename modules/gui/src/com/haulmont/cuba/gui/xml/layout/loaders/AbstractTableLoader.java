@@ -94,6 +94,8 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
         loadDescription(resultComponent, element);
         loadContextHelp(resultComponent, element);
 
+        loadHtmlSanitizerEnabled(resultComponent, element);
+
         loadTabIndex(resultComponent, element);
 
         loadSortable(resultComponent, element);

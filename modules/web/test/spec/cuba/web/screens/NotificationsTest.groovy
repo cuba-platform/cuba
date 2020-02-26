@@ -19,6 +19,7 @@ package spec.cuba.web.screens
 import com.haulmont.cuba.gui.components.ContentMode
 import com.haulmont.cuba.gui.executors.BackgroundWorker
 import com.haulmont.cuba.web.AppUI
+import com.haulmont.cuba.web.WebConfig
 import com.haulmont.cuba.web.sys.WebNotifications
 import com.vaadin.shared.Position
 import com.vaadin.ui.Notification
@@ -34,6 +35,9 @@ class NotificationsTest extends Specification {
         def ui = new AppUI()
         def notifications = new WebNotifications(ui)
         notifications.backgroundWorker = Mock(BackgroundWorker)
+        notifications.webConfig = Mock(WebConfig) {
+            getHtmlSanitizerEnabled() >> Boolean.FALSE
+        }
 
         when:
 
@@ -81,6 +85,9 @@ class NotificationsTest extends Specification {
     def "Notification does not support ContentMode.PREFORMATTED"() {
         def notifications = new WebNotifications(new AppUI())
         notifications.backgroundWorker = Mock(BackgroundWorker)
+        notifications.webConfig = Mock(WebConfig) {
+            getHtmlSanitizerEnabled() >> Boolean.FALSE
+        }
 
         when:
 

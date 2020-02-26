@@ -21,7 +21,7 @@ package com.haulmont.cuba.gui.components;
  * HTML link component.
  */
 public interface Link extends Component, Component.HasCaption, Component.BelongToFrame, Component.HasIcon,
-        HasHtmlCaption, HasHtmlDescription {
+        HasHtmlCaption, HasHtmlDescription, HasHtmlSanitizer {
 
     String NAME = "link";
 

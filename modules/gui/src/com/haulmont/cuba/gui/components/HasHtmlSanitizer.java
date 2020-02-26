@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2016 Haulmont.
+ * Copyright (c) 2008-2020 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,17 +12,21 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
 package com.haulmont.cuba.gui.components;
 
-/**
- * A flow layout arranges components in a directional flow, much like lines of text in a paragraph.
- */
-public interface FlowBoxLayout extends OrderedContainer, Component.BelongToFrame, HasMargin,
-        HasSpacing, Component.HasCaption, Component.HasIcon, HasContextHelp, HasHtmlSanitizer,
-        LayoutClickNotifier, ShortcutNotifier, HasHtmlCaption, HasHtmlDescription, HasRequiredIndicator {
+public interface HasHtmlSanitizer {
 
-    String NAME = "flowBox";
+    /**
+     * @return html sanitizer is enabled
+     */
+    boolean isHtmlSanitizerEnabled();
+
+    /**
+     * Sets whether html sanitizer is enabled or not.
+     *
+     * @param htmlSanitizerEnabled specifies whether html sanitizer is enabled
+     */
+    void setHtmlSanitizerEnabled(boolean htmlSanitizerEnabled);
 }

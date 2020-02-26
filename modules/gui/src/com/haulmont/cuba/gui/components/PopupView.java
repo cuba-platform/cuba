@@ -27,7 +27,7 @@ import java.util.function.Consumer;
  * and when it is clicked the full view is displayed on a popup.
  */
 public interface PopupView extends Component.HasCaption, Component.BelongToFrame,
-        Component.HasIcon, HasContextHelp, HasHtmlCaption, HasHtmlDescription {
+        Component.HasIcon, HasContextHelp, HasHtmlCaption, HasHtmlDescription, HasHtmlSanitizer {
     String NAME = "popupView";
 
     /**

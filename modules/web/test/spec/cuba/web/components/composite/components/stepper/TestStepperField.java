@@ -167,4 +167,14 @@ public class TestStepperField extends CompositeComponent<CssLayout> implements F
     public ValueSource<Integer> getValueSource() {
         return valueField.getValueSource();
     }
+
+    @Override
+    public boolean isHtmlSanitizerEnabled() {
+        return getComposition().isHtmlSanitizerEnabled();
+    }
+
+    @Override
+    public void setHtmlSanitizerEnabled(boolean htmlSanitizerEnabled) {
+        getComposition().setHtmlSanitizerEnabled(htmlSanitizerEnabled);
+    }
 }

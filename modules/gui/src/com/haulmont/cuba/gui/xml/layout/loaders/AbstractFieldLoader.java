@@ -52,6 +52,8 @@ public abstract class AbstractFieldLoader<T extends Field> extends AbstractDatas
         loadDescription(resultComponent, element);
         loadContextHelp(resultComponent, element);
 
+        loadHtmlSanitizerEnabled(resultComponent, element);
+
         loadValidators(resultComponent, element);
         loadValidation(resultComponent, element);
 
