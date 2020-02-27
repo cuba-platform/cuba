@@ -59,6 +59,20 @@ class CollectionPropertyContainerTest extends WebSpec {
         !order.orderLines.contains(orderLine2)
     }
 
+    def "property reflects changes when using replaceItem"() {
+
+        orderCt.setItem(order)
+        def line1 = new OrderLine(id: orderLine1.id, order: this.order, quantity: 11)
+
+        when:
+        linesCt.replaceItem(line1)
+
+        then:
+        def replacedLine = order.orderLines.find { it.id == orderLine1.id }
+        replacedLine.is(line1)
+        replacedLine.quantity == 11
+    }
+
     def "property does not reflect changes when using getDisconnectedItems"() {
 
         orderCt.setItem(order)
