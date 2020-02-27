@@ -24,10 +24,7 @@ import com.haulmont.cuba.gui.model.CollectionPropertyContainer;
 import com.haulmont.cuba.gui.model.InstanceContainer;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedHashSet;
-import java.util.List;
+import java.util.*;
 
 public class CollectionPropertyContainerImpl<E extends Entity>
         extends CollectionContainerImpl<E> implements CollectionPropertyContainer<E> {
@@ -107,12 +104,7 @@ public class CollectionPropertyContainerImpl<E extends Entity>
             master.getItem().setValue(metaProperty.getName(), null);
         } else {
             if (masterCollection == null) {
-                if (List.class.isAssignableFrom(metaProperty.getJavaType())) {
-                    masterCollection = new ArrayList(newCollection);
-                } else {
-                    masterCollection = new LinkedHashSet(newCollection);
-                }
-                master.getItem().setValue(metaProperty.getName(), masterCollection);
+                initMasterCollection(metaProperty, newCollection);
             } else {
                 masterCollection.clear();
                 masterCollection.addAll(newCollection);
@@ -127,5 +119,45 @@ public class CollectionPropertyContainerImpl<E extends Entity>
                 }
             }
         }
+    }
+
+    protected Collection<E> initMasterCollection(MetaProperty metaProperty, Collection<E> newCollection) {
+        Collection<E> masterCollection;
+        if (List.class.isAssignableFrom(metaProperty.getJavaType())) {
+            masterCollection = new ArrayList<>(newCollection);
+        } else {
+            masterCollection = new LinkedHashSet<>(newCollection);
+        }
+        master.getItem().setValue(metaProperty.getName(), masterCollection);
+        return masterCollection;
+    }
+
+    @Override
+    protected void replaceInCollection(int idx, E entity) {
+        super.replaceInCollection(idx, entity);
+        MetaProperty masterProperty = getMasterProperty();
+        Collection<E> masterCollection = master.getItem().getValue(masterProperty.getName());
+        if (masterCollection == null) {
+            masterCollection = initMasterCollection(masterProperty, Collections.emptyList());
+            masterCollection.add(entity);
+        } else {
+            if (masterCollection instanceof List) {
+                ((List<E>) masterCollection).set(idx, entity);
+            } else {
+                masterCollection.remove(entity);
+                masterCollection.add(entity);
+            }
+        }
+    }
+
+    @Override
+    protected void addToCollection(E entity) {
+        super.addToCollection(entity);
+        MetaProperty masterProperty = getMasterProperty();
+        Collection<E> masterCollection = master.getItem().getValue(masterProperty.getName());
+        if (masterCollection == null) {
+            masterCollection = initMasterCollection(masterProperty, Collections.emptyList());
+        }
+        masterCollection.add(entity);
     }
 }

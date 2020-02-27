@@ -145,15 +145,23 @@ public class CollectionContainerImpl<E extends Entity>
                 this.item = entity;
                 fireItemChanged(prev);
             }
-            collection.set(idx, entity);
+            replaceInCollection(idx, entity);
             changeType = CollectionChangeType.SET_ITEM;
         } else {
-            collection.add(entity);
+            addToCollection(entity);
             changeType = CollectionChangeType.ADD_ITEMS;
         }
         attachListener(entity);
         buildIdMap();
         fireCollectionChanged(changeType, Collections.singletonList(entity));
+    }
+
+    protected void replaceInCollection(int idx, E entity) {
+        collection.set(idx, entity);
+    }
+
+    protected void addToCollection(E entity) {
+        collection.add(entity);
     }
 
     @SuppressWarnings("unchecked")
