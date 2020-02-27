@@ -70,13 +70,11 @@ public class EditorBuilderProcessor {
 
         ListComponent<E> listComponent = builder.getListComponent();
 
-        CollectionContainer<E> container = null;
+        CollectionContainer<E> container = builder.getContainer();
 
-        if (listComponent != null) {
+        if (container == null && listComponent != null) {
             DataUnit items = listComponent.getItems();
-            CollectionContainer<E> listComponentContainer = items instanceof ContainerDataUnit ?
-                    ((ContainerDataUnit) items).getContainer() : null;
-            container = builder.getContainer() != null ? builder.getContainer() : listComponentContainer;
+            container = items instanceof ContainerDataUnit ? ((ContainerDataUnit) items).getContainer() : null;
         }
 
         E entity = initEntity(builder, container);
