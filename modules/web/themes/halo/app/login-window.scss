@@ -217,6 +217,13 @@ $cuba-login-form-width: 385px !default;
     width: $cuba-login-btn-width;
   }
 
+  .v-ie &,
+  .v-edge & {
+    .c-powered-by {
+      line-height: round($v-unit-size/2);
+    }
+  }
+
   .c-powered-by {
     font-size: 11px;
     padding-bottom: $v-unit-size;
