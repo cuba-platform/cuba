@@ -16,6 +16,7 @@
 
 package com.haulmont.cuba.gui.actions.list;
 
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.components.ActionType;
 import com.haulmont.cuba.gui.components.Component;
@@ -26,6 +27,7 @@ import com.haulmont.cuba.gui.icons.CubaIcon;
 import com.haulmont.cuba.gui.icons.Icons;
 import com.haulmont.cuba.gui.meta.StudioAction;
 import com.haulmont.cuba.gui.model.CollectionContainer;
+import com.haulmont.cuba.gui.model.DataContext;
 import com.haulmont.cuba.gui.model.DataLoader;
 import com.haulmont.cuba.gui.model.HasLoader;
 import org.slf4j.Logger;
@@ -102,6 +104,12 @@ public class RefreshAction extends ListAction {
             loader = ((HasLoader) container).getLoader();
         }
         if (loader != null) {
+            DataContext dataContext = loader.getDataContext();
+            if (dataContext != null) {
+                for (Object entity : container.getItems()) {
+                    dataContext.evict((Entity) entity);
+                }
+            }
             loader.load();
         } else {
             log.warn("RefreshAction '{}' target container has no loader, refresh is impossible", getId());
