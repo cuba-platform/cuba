@@ -179,14 +179,15 @@ public abstract class StandardEditor<T extends Entity> extends Screen implements
         if (getEntityStates().isNew(entityToEdit) || doNotReloadEditedEntity()) {
             T mergedEntity = getScreenData().getDataContext().merge(entityToEdit);
 
-            if (instanceLoader != null
-                    && instanceLoader.isLoadDynamicAttributes()
-                    && getEntityStates().isNew(entityToEdit)
-                    && mergedEntity instanceof BaseGenericIdEntity) {
-                tools.initDefaultAttributeValues((BaseGenericIdEntity) mergedEntity, mergedEntity.getMetaClass());
+            DataContext parentDc = getScreenData().getDataContext().getParent();
+            if (parentDc == null || !parentDc.contains(mergedEntity)) {
+                if (instanceLoader != null
+                        && instanceLoader.isLoadDynamicAttributes()
+                        && mergedEntity instanceof BaseGenericIdEntity) {
+                    tools.initDefaultAttributeValues((BaseGenericIdEntity) mergedEntity, mergedEntity.getMetaClass());
+                }
+                fireEvent(InitEntityEvent.class, new InitEntityEvent<>(this, mergedEntity));
             }
-
-            fireEvent(InitEntityEvent.class, new InitEntityEvent<>(this, mergedEntity));
 
             InstanceContainer<T> container = getEditedEntityContainer();
             container.setItem(mergedEntity);
