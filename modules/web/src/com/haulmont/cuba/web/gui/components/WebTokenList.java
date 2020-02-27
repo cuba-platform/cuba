@@ -223,7 +223,7 @@ public class WebTokenList<V extends Entity>
 
     @Override
     public void setLookupFieldOptionsCaptionProvider(Function<? super V, String> optionsCaptionProvider) {
-        lookupPickerField.setOptionCaptionProvider(optionCaptionProvider);
+        lookupPickerField.setOptionCaptionProvider(optionsCaptionProvider);
     }
 
     @Override
