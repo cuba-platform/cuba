@@ -105,10 +105,14 @@ public class AccessGroupDefinitionsComposerImpl implements AccessGroupDefinition
                 processConstraints(constraint, groupDefinitionBuilder);
             }
 
-            List<SessionAttribute> attributes = em.createQuery("select a from sec$GroupHierarchy h join h.parent.sessionAttributes a " +
+            List<SessionAttribute> attributes = new ArrayList<>(group.getSessionAttributes());
+
+            List<SessionAttribute> parentAttributes = em.createQuery("select a from sec$GroupHierarchy h join h.parent.sessionAttributes a " +
                     "where h.group.id = ?1 order by h.level desc", SessionAttribute.class)
                     .setParameter(1, groupId)
                     .getResultList();
+
+            attributes.addAll(parentAttributes);
 
             Set<String> attributeKeys = new HashSet<>();
             for (SessionAttribute attribute : attributes) {
