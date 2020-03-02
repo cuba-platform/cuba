@@ -279,13 +279,13 @@ $cuba-sidemenu-userindicator-font-weight: $v-font-weight !default;
   }
 
   .#{$primary-stylename}-title {
-    $font-color: valo-font-color($cuba-sidemenu-title-background, 0.9);
+    $font-color: valo-font-color($cuba-sidemenu-title-background-color, 0.9);
     @if $cuba-sidemenu-title-gradient {
       @include valo-gradient($color: $v-selection-color);
       border-bottom: valo-border($color: $v-selection-color);
       $font-color: valo-font-color($v-selection-color, 0.9);
     } @else {
-      background: $cuba-sidemenu-title-background;
+      background: $cuba-sidemenu-title-background-color;
     }
 
     color: $font-color;
