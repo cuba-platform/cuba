@@ -1377,6 +1377,8 @@
                     <xs:element name="digits" minOccurs="0" type="digitsValidatorType"/>
                     <xs:element name="decimalMin" minOccurs="0" type="decimalMaxMinValidatorType"/>
                     <xs:element name="decimalMax" minOccurs="0" type="decimalMaxMinValidatorType"/>
+                    <xs:element name="doubleMin" minOccurs="0" type="decimalMaxMinValidatorType"/>
+                    <xs:element name="doubleMax" minOccurs="0" type="decimalMaxMinValidatorType"/>
                     <xs:element name="negativeOrZero" minOccurs="0" type="messageValidatorType"/>
                     <xs:element name="negative" minOccurs="0" type="messageValidatorType"/>
                     <xs:element name="positiveOrZero" minOccurs="0" type="messageValidatorType"/>
