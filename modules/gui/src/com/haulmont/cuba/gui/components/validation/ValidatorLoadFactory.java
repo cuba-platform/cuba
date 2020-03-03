@@ -44,6 +44,8 @@ public class ValidatorLoadFactory {
             = ImmutableMap.<String, BiFunction<Element, String, AbstractValidator>>builder()
             .put("decimalMin", this::loadDecimalMinValidator)
             .put("decimalMax", this::loadDecimalMaxValidator)
+            .put("doubleMin", this::loadDoubleMinValidator)
+            .put("doubleMax", this::loadDoubleMaxValidator)
             .put("digits", this::loadDigitsValidator)
             .put("future", this::loadFutureValidator)
             .put("futureOrPresent", this::loadFutureOrPresentValidator)
@@ -112,6 +114,40 @@ public class ValidatorLoadFactory {
         }
         BigDecimal decimalValue = new BigDecimal(value);
         DecimalMaxValidator validator = beanLocator.getPrototype(DecimalMaxValidator.NAME, decimalValue);
+
+        Boolean inclusive = loadInclusive(element);
+        if (inclusive != null) {
+            validator.setInclusive(inclusive);
+        }
+        validator.setMessage(loadMessage(element, messagePack));
+
+        return validator;
+    }
+
+    protected AbstractValidator loadDoubleMinValidator(Element element, String messagePack) {
+        String value = element.attributeValue("value");
+        if (Strings.isNullOrEmpty(value)) {
+            throw new IllegalArgumentException("Min value is not defined");
+        }
+        Double doubleValue = Double.valueOf(value);
+        DoubleMinValidator validator = beanLocator.getPrototype(DoubleMinValidator.NAME, doubleValue);
+
+        Boolean inclusive = loadInclusive(element);
+        if (inclusive != null) {
+            validator.setInclusive(inclusive);
+        }
+        validator.setMessage(loadMessage(element, messagePack));
+
+        return validator;
+    }
+
+    protected AbstractValidator loadDoubleMaxValidator(Element element, String messagePack) {
+        String value = element.attributeValue("value");
+        if (Strings.isNullOrEmpty(value)) {
+            throw new IllegalArgumentException("Max value is not defined");
+        }
+        Double doubleValue = Double.valueOf(value);
+        DoubleMaxValidator validator = beanLocator.getPrototype(DoubleMaxValidator.NAME, doubleValue);
 
         Boolean inclusive = loadInclusive(element);
         if (inclusive != null) {
