@@ -306,6 +306,7 @@ $cuba-sidemenu-submenu-background-color: $cuba-sidemenu-background-color !defaul
       flex-grow: 1;
       flex-shrink: 1;
       z-index: 0;
+      min-width: 100px;
     }
 
     .c-sidemenu-container {
