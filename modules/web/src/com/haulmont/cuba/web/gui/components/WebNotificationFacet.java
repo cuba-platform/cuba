@@ -40,7 +40,7 @@ public class WebNotificationFacet extends WebAbstractFacet implements Notificati
 
     protected String caption;
     protected String description;
-    protected int delayMs = 3000;
+    protected int delayMs = Notifications.DELAY_DEFAULT;
     protected String styleName;
     protected NotificationType type = NotificationType.HUMANIZED;
     protected ContentMode contentMode = ContentMode.TEXT;
