@@ -1009,6 +1009,7 @@ public abstract class WebWindow implements Window, Component.Wrapper, Component.
         return this.component.getExpandRatio(vComponent);
     }
 
+    @Nullable
     public NavigationState getResolvedState() {
         return resolvedState;
     }

@@ -301,7 +301,10 @@ public class UrlChangeHandler implements InitializingBean {
 
     protected String getStateMark(Screen screen) {
         WebWindow webWindow = (WebWindow) screen.getWindow();
-        return String.valueOf(webWindow.getResolvedState().getStateMark());
+        NavigationState resolvedState = webWindow.getResolvedState();
+        return resolvedState != null
+                ? resolvedState.getStateMark()
+                : NavigationState.EMPTY.getStateMark();
     }
 
     @Nullable
