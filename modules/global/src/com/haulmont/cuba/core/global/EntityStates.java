@@ -29,6 +29,7 @@ import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import java.lang.annotation.Annotation;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
@@ -322,6 +323,49 @@ public class EntityStates {
         checkNotNullArgument(viewName);
 
         return isLoadedWithView(entity, viewRepository.getView(entity.getMetaClass(), viewName));
+    }
+
+    /**
+     * Returns a view that corresponds to the loaded attributes of the given entity instance.
+     * @param entity entity instance
+     * @return view
+     */
+    public View getCurrentView(Entity entity) {
+        checkNotNullArgument(entity);
+
+        View view = new View(entity.getClass(), false);
+        recursivelyGetCurrentView(entity, view, new HashSet<>());
+        return view;
+    }
+
+    protected void recursivelyGetCurrentView(Entity entity, View view, HashSet<Object> visited) {
+        if (visited.contains(entity))
+            return;
+        visited.add(entity);
+
+        for (MetaProperty property : entity.getMetaClass().getProperties()) {
+            if (!isLoaded(entity, property.getName()))
+                continue;
+
+            if (property.getRange().isClass()) {
+                View propertyView = new View(property.getRange().asClass().getJavaClass());
+                view.addProperty(property.getName(), propertyView);
+                if (isLoaded(entity, property.getName())) {
+                    Object value = entity.getValue(property.getName());
+                    if (value != null) {
+                        if (value instanceof Collection) {
+                            for (Object item : ((Collection) value)) {
+                                recursivelyGetCurrentView((Entity) item, propertyView, visited);
+                            }
+                        } else {
+                            recursivelyGetCurrentView((Entity) value, propertyView, visited);
+                        }
+                    }
+                }
+            } else {
+                view.addProperty(property.getName());
+            }
+        }
     }
 
     /**
