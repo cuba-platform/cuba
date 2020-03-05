@@ -240,6 +240,24 @@ public class CheckLoadedStateTest {
         }
     }
 
+    @Test
+    public void testGetCurrentView() {
+        DataManager dataManager = AppBeans.get(DataManager.class);
+        EntityStates entityStates = AppBeans.get(EntityStates.class);
+
+        User user = dataManager.load(LoadContext.create(User.class)
+                .setId(UUID.fromString("60885987-1b61-4247-94c7-dff348347f93"))
+                .setView("user.edit"));
+
+        View view = entityStates.getCurrentView(user);
+
+        User user1 = dataManager.load(LoadContext.create(User.class)
+                .setId(UUID.fromString("60885987-1b61-4247-94c7-dff348347f93"))
+                .setView(view));
+
+        entityStates.checkLoadedWithView(user1, "user.edit");
+    }
+
     @After
     public void tearDown() {
         if (userRelatedNewsId != null) {

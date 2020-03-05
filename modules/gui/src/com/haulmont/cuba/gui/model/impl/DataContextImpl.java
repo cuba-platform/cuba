@@ -619,6 +619,11 @@ public class DataContextImpl implements DataContext {
         CommitContext commitContext = new CommitContext(
                 filterCommittedInstances(modifiedInstances),
                 filterCommittedInstances(removedInstances));
+
+        for (Entity entity : commitContext.getCommitInstances()) {
+            commitContext.getViews().put(entity, getEntityStates().getCurrentView(entity));
+        }
+
         if (validationMode != null)
             commitContext.setValidationMode(validationMode);
         if (validationGroups != null)
