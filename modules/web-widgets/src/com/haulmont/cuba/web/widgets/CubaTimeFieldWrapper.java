@@ -20,10 +20,12 @@ import com.haulmont.cuba.web.widgets.client.timefield.AmPm;
 import com.haulmont.cuba.web.widgets.client.timefield.TimeMode;
 import com.haulmont.cuba.web.widgets.client.timefield.TimeResolution;
 import com.vaadin.data.HasValue;
+import com.vaadin.server.ErrorMessage;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomField;
 
 import java.time.LocalTime;
+import java.util.function.Supplier;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -67,6 +69,20 @@ public class CubaTimeFieldWrapper extends CustomField<LocalTime> {
     @Override
     public boolean isReadOnly() {
         return timeField.isReadOnly();
+    }
+
+    @Override
+    public void setComponentErrorProvider(Supplier<ErrorMessage> componentErrorProvider) {
+        timeField.setComponentErrorProvider(() -> {
+            ErrorMessage errorMessage = componentErrorProvider.get();
+            amPmField.setComponentError(errorMessage);
+            return errorMessage;
+        });
+    }
+
+    @Override
+    public Supplier<ErrorMessage> getComponentErrorProvider() {
+        return timeField.getComponentErrorProvider();
     }
 
     public void setTimeFormat(String format) {
@@ -159,7 +175,8 @@ public class CubaTimeFieldWrapper extends CustomField<LocalTime> {
         if (event.isUserOriginated()) {
             LocalTime oldValue = this.internalValue;
 
-            this.internalValue = constructModelValue(event.getValue());
+            LocalTime newValue = event.getValue();
+            this.internalValue = newValue == null ? null : constructModelValue(newValue);
 
             setValueToPresentation(convertToPresentation(this.internalValue));
 
