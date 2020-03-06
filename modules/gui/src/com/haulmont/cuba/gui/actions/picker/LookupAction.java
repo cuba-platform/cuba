@@ -31,7 +31,6 @@ import com.haulmont.cuba.gui.components.actions.BaseAction;
 import com.haulmont.cuba.gui.icons.CubaIcon;
 import com.haulmont.cuba.gui.icons.Icons;
 import com.haulmont.cuba.gui.meta.StudioAction;
-import com.haulmont.cuba.gui.meta.StudioDelegate;
 import com.haulmont.cuba.gui.meta.StudioPropertiesItem;
 import com.haulmont.cuba.gui.screen.*;
 import com.haulmont.cuba.gui.sys.ActionScreenInitializer;
@@ -147,7 +146,6 @@ public class LookupAction<E extends Entity> extends BaseAction implements Picker
      * }
      * </pre>
      */
-    @StudioDelegate
     public void setScreenOptionsSupplier(Supplier<ScreenOptions> screenOptionsSupplier) {
         screenInitializer.setScreenOptionsSupplier(screenOptionsSupplier);
     }
@@ -164,7 +162,6 @@ public class LookupAction<E extends Entity> extends BaseAction implements Picker
      * }
      * </pre>
      */
-    @StudioDelegate
     public void setScreenConfigurer(Consumer<Screen> screenConfigurer) {
         screenInitializer.setScreenConfigurer(screenConfigurer);
     }
@@ -181,7 +178,6 @@ public class LookupAction<E extends Entity> extends BaseAction implements Picker
      * }
      * </pre>
      */
-    @StudioDelegate
     public void setAfterCloseHandler(Consumer<Screen.AfterCloseEvent> afterCloseHandler) {
         screenInitializer.setAfterCloseHandler(afterCloseHandler);
     }
@@ -197,7 +193,6 @@ public class LookupAction<E extends Entity> extends BaseAction implements Picker
      * }
      * </pre>
      */
-    @StudioDelegate
     public void setSelectValidator(Predicate<LookupScreen.ValidationContext<E>> selectValidator) {
         this.selectValidator = selectValidator;
     }
@@ -213,7 +208,6 @@ public class LookupAction<E extends Entity> extends BaseAction implements Picker
      * }
      * </pre>
      */
-    @StudioDelegate
     public void setTransformation(Function<Collection<E>, Collection<E>> transformation) {
         this.transformation = transformation;
     }

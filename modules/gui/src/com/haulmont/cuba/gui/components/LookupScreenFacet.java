@@ -17,7 +17,7 @@
 package com.haulmont.cuba.gui.components;
 
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.gui.meta.StudioDelegate;
+import com.haulmont.cuba.gui.meta.PropertyType;
 import com.haulmont.cuba.gui.meta.StudioFacet;
 import com.haulmont.cuba.gui.meta.StudioProperties;
 import com.haulmont.cuba.gui.meta.StudioProperty;
@@ -33,12 +33,15 @@ import java.util.function.Predicate;
  * Prepares and shows lookup screens.
  */
 @StudioFacet(
+        xmlElement = "lookupScreen",
         caption = "Lookup Screen",
-        description = "Prepares and shows lookup screens"
+        description = "Prepares and shows lookup screens",
+        category = "Non-visual",
+        icon = "icon/screen.svg"
 )
 @StudioProperties(
         properties = {
-                @StudioProperty(name = "id", required = true)
+                @StudioProperty(name = "id", type = PropertyType.COMPONENT_ID, required = true)
         }
 )
 public interface LookupScreenFacet<E extends Entity, S extends Screen>
@@ -47,7 +50,6 @@ public interface LookupScreenFacet<E extends Entity, S extends Screen>
     /**
      * Sets select handler for the lookup screen.
      */
-    @StudioDelegate
     void setSelectHandler(Consumer<Collection<E>> selectHandler);
 
     /**
@@ -58,7 +60,6 @@ public interface LookupScreenFacet<E extends Entity, S extends Screen>
     /**
      * Sets select validator for the lookup screen.
      */
-    @StudioDelegate
     void setSelectValidator(Predicate<LookupScreen.ValidationContext<E>> selectValidator);
 
     /**
@@ -71,7 +72,6 @@ public interface LookupScreenFacet<E extends Entity, S extends Screen>
      * <p>
      * Applied only if either field or container or listComponent is assigned.
      */
-    @StudioDelegate
     void setTransformation(Function<Collection<E>, Collection<E>> transformation);
 
     /**

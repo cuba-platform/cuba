@@ -30,7 +30,6 @@ import com.haulmont.cuba.gui.icons.CubaIcon;
 import com.haulmont.cuba.gui.icons.Icons;
 import com.haulmont.cuba.gui.meta.PropertyType;
 import com.haulmont.cuba.gui.meta.StudioAction;
-import com.haulmont.cuba.gui.meta.StudioDelegate;
 import com.haulmont.cuba.gui.meta.StudioPropertiesItem;
 import com.haulmont.cuba.gui.screen.OpenMode;
 
@@ -116,7 +115,6 @@ public class BulkEditAction extends SecuredListAction {
     /**
      * Sets field sorter that allows you to sort fields by custom logic.
      */
-    @StudioDelegate
     public void setFieldSorter(BulkEditors.FieldSorter fieldSorter) {
         this.fieldSorter = fieldSorter;
     }
