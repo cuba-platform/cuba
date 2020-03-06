@@ -18,6 +18,8 @@ package com.haulmont.cuba.gui.components;
 
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.icons.Icons;
+import com.haulmont.cuba.gui.meta.PropertyType;
+import com.haulmont.cuba.gui.meta.StudioProperty;
 import org.dom4j.Element;
 
 import java.util.function.Function;
@@ -56,6 +58,7 @@ public interface Component {
     String FULL_SIZE = "100%";
 
     /** Component ID as defined in {@code id} attribute */
+    @StudioProperty(type = PropertyType.COMPONENT_ID)
     String getId();
     /** Set component ID */
     void setId(String id);
@@ -91,6 +94,7 @@ public interface Component {
      *
      * @param enabled enabled flag
      */
+    @StudioProperty(name = "enable", defaultValue = "true")
     void setEnabled(boolean enabled);
 
     /**
@@ -107,6 +111,7 @@ public interface Component {
      *
      * @param responsive responsive flag
      */
+    @StudioProperty(defaultValue = "false")
     void setResponsive(boolean responsive);
 
     /**
@@ -127,6 +132,7 @@ public interface Component {
      *
      * @param visible visible flag
      */
+    @StudioProperty(defaultValue = "true")
     void setVisible(boolean visible);
 
     /**
@@ -176,6 +182,7 @@ public interface Component {
     SizeUnit getHeightSizeUnit();
 
     /** Set component height in {@link #getHeightUnits()} */
+    @StudioProperty(type = PropertyType.SIZE, defaultValue = "-1px")
     void setHeight(String height);
 
     /** Set component height to {@link #AUTO_SIZE} */
@@ -217,6 +224,7 @@ public interface Component {
     SizeUnit getWidthSizeUnit();
 
     /** Set component width in {@link #getWidthSizeUnit()}} */
+    @StudioProperty(type = PropertyType.SIZE, defaultValue = "-1px")
     void setWidth(String width);
 
     /** Set component width to {@link #AUTO_SIZE} */
@@ -242,6 +250,7 @@ public interface Component {
     }
 
     Alignment getAlignment();
+    @StudioProperty(name = "align", type = PropertyType.ENUMERATION, defaultValue = "TOP_LEFT", required = true)
     void setAlignment(Alignment alignment);
 
     /**
@@ -260,6 +269,7 @@ public interface Component {
      *
      * @param styleName one or more style names separated by space.
      * */
+    @StudioProperty(name = "stylename", type = PropertyType.CSS_CLASSNAME_LIST)
     void setStyleName(String styleName);
 
     /**
@@ -337,6 +347,7 @@ public interface Component {
          *
          * @param description the new description to set
          */
+        @StudioProperty(type = PropertyType.LOCALIZED_STRING)
         void setDescription(String description);
     }
 
@@ -354,6 +365,7 @@ public interface Component {
          *
          * @param caption the new component's caption
          */
+        @StudioProperty(type = PropertyType.LOCALIZED_STRING)
         void setCaption(String caption);
     }
 
@@ -372,6 +384,7 @@ public interface Component {
      */
     interface Editable extends Component {
         boolean isEditable();
+        @StudioProperty(defaultValue = "true")
         void setEditable(boolean editable);
 
         default boolean isEditableWithParent() {
@@ -419,6 +432,7 @@ public interface Component {
          *
          * @param tabIndex tab index
          */
+        @StudioProperty
         void setTabIndex(int tabIndex);
     }
 
@@ -439,6 +453,7 @@ public interface Component {
         /**
          * Set an icon by its source: "font-icon:ADD", "icons/myicon.png", "theme://createIcon", etc.
          */
+        @StudioProperty(type = PropertyType.ICON_ID)
         void setIcon(String icon);
 
         /**
