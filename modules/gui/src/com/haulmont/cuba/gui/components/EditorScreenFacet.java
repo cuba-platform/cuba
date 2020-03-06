@@ -31,12 +31,15 @@ import java.util.function.Supplier;
  * Prepares and shows editor screens.
  */
 @StudioFacet(
+        xmlElement = "editorScreen",
         caption = "Editor Screen",
-        description = "Prepares and shows editor screens"
+        description = "Prepares and shows editor screens",
+        category = "Non-visual",
+        icon = "icon/screen.svg"
 )
 @StudioProperties(
         properties = {
-                @StudioProperty(name = "id", required = true)
+                @StudioProperty(name = "id", type = PropertyType.COMPONENT_ID, required = true)
         }
 )
 public interface EditorScreenFacet<E extends Entity, S extends Screen & EditorScreen<E>>
@@ -74,7 +77,6 @@ public interface EditorScreenFacet<E extends Entity, S extends Screen & EditorSc
      *
      * @param entityProvider entity provider
      */
-    @StudioDelegate
     void setEntityProvider(Supplier<E> entityProvider);
 
     /**
@@ -87,7 +89,6 @@ public interface EditorScreenFacet<E extends Entity, S extends Screen & EditorSc
      * <p>
      * The initializer is invoked only when {@link EditMode} is {@code CREATE}.
      */
-    @StudioDelegate
     void setInitializer(Consumer<E> initializer);
 
     /**
@@ -100,7 +101,6 @@ public interface EditorScreenFacet<E extends Entity, S extends Screen & EditorSc
      * <p>
      * The screen will commit data to the parent context instead of directly to {@code DataManager}.
      */
-    @StudioDelegate
     void setParentDataContextProvider(Supplier<DataContext> parentDataContextProvider);
 
     /**
@@ -115,6 +115,5 @@ public interface EditorScreenFacet<E extends Entity, S extends Screen & EditorSc
      *
      * @param transformation transformation
      */
-    @StudioDelegate
     void setTransformation(Function<E, E> transformation);
 }

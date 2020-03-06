@@ -30,7 +30,6 @@ import com.haulmont.cuba.gui.components.data.meta.ContainerDataUnit;
 import com.haulmont.cuba.gui.icons.CubaIcon;
 import com.haulmont.cuba.gui.icons.Icons;
 import com.haulmont.cuba.gui.meta.StudioAction;
-import com.haulmont.cuba.gui.meta.StudioDelegate;
 import com.haulmont.cuba.gui.meta.StudioPropertiesItem;
 import com.haulmont.cuba.gui.model.CollectionContainer;
 import com.haulmont.cuba.gui.model.Nested;
@@ -134,7 +133,6 @@ public class RemoveAction<E extends Entity> extends SecuredListAction implements
      * }
      * </pre>
      */
-    @StudioDelegate
     public void setAfterActionPerformedHandler(Consumer<RemoveOperation.AfterActionPerformedEvent<E>> afterActionPerformedHandler) {
         this.afterActionPerformedHandler = afterActionPerformedHandler;
     }
@@ -150,7 +148,6 @@ public class RemoveAction<E extends Entity> extends SecuredListAction implements
      * }
      * </pre>
      */
-    @StudioDelegate
     public void setActionCancelledHandler(Consumer<RemoveOperation.ActionCancelledEvent<E>> actionCancelledHandler) {
         this.actionCancelledHandler = actionCancelledHandler;
     }

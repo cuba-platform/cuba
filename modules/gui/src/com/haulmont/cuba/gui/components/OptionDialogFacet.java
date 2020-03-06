@@ -26,13 +26,16 @@ import com.haulmont.cuba.gui.meta.StudioProperty;
  * Prepares and shows option dialogs.
  */
 @StudioFacet(
+        xmlElement = "optionDialog",
         caption = "Option Dialog",
         description = "Prepares and shows option dialogs",
-        defaultProperty = "message"
+        defaultProperty = "message",
+        category = "Non-visual",
+        icon = "icon/dialog.svg"
 )
 @StudioProperties(
         properties = {
-                @StudioProperty(name = "id", required = true)
+                @StudioProperty(name = "id", type = PropertyType.COMPONENT_ID, required = true)
         }
 )
 public interface OptionDialogFacet extends Facet, ActionsAwareDialogFacet<OptionDialogFacet>, HasSubParts {
@@ -154,7 +157,7 @@ public interface OptionDialogFacet extends Facet, ActionsAwareDialogFacet<Option
      *
      * @param actionId action id
      */
-    @StudioProperty(type = PropertyType.COMPONENT_ID)
+    @StudioProperty(type = PropertyType.COMPONENT_REF)
     void setActionTarget(String actionId);
 
     /**
@@ -168,7 +171,7 @@ public interface OptionDialogFacet extends Facet, ActionsAwareDialogFacet<Option
      *
      * @param buttonId button id
      */
-    @StudioProperty(type = PropertyType.COMPONENT_ID)
+    @StudioProperty(type = PropertyType.COMPONENT_REF)
     void setButtonTarget(String buttonId);
 
     /**

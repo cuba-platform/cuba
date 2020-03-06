@@ -23,7 +23,6 @@ import com.haulmont.cuba.gui.components.AbstractAction;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.KeyCombination;
-import com.haulmont.cuba.gui.meta.StudioDelegate;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -184,7 +183,6 @@ public class BaseAction extends AbstractAction implements Action.SecuredAction {
      *
      * @param enabledRule boolean rule for the action enabled state
      */
-    @StudioDelegate
     public void addEnabledRule(EnabledRule enabledRule) {
         Preconditions.checkNotNullArgument(enabledRule);
 

@@ -26,13 +26,16 @@ import com.haulmont.cuba.gui.meta.StudioProperty;
  * Prepares and shows message dialogs.
  */
 @StudioFacet(
+        xmlElement = "messageDialog",
         caption = "Message Dialog",
         description = "Prepares and shows message dialogs",
-        defaultProperty = "message"
+        defaultProperty = "message",
+        category = "Non-visual",
+        icon = "icon/dialog.svg"
 )
 @StudioProperties(
         properties = {
-                @StudioProperty(name = "id", required = true)
+                @StudioProperty(name = "id", type = PropertyType.COMPONENT_ID, required = true)
         }
 )
 public interface MessageDialogFacet extends Facet {
@@ -161,7 +164,7 @@ public interface MessageDialogFacet extends Facet {
      *
      * @param actionId action id
      */
-    @StudioProperty(type = PropertyType.COMPONENT_ID)
+    @StudioProperty(type = PropertyType.COMPONENT_REF)
     void setActionTarget(String actionId);
 
     /**
@@ -175,7 +178,7 @@ public interface MessageDialogFacet extends Facet {
      *
      * @param buttonId button id
      */
-    @StudioProperty(type = PropertyType.COMPONENT_ID)
+    @StudioProperty(type = PropertyType.COMPONENT_REF)
     void setButtonTarget(String buttonId);
 
     /**
