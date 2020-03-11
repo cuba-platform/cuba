@@ -3556,7 +3556,6 @@
 
         <xs:attribute name="contentMode" type="contentMode"/>
         <xs:attribute name="maximized" type="xs:boolean"/>
-        <xs:attribute name="modal" type="xs:boolean"/>
         <xs:attribute name="styleName" type="xs:string"/>
 
         <xs:attributeGroup ref="hasSize"/>
@@ -3568,6 +3567,7 @@
         <xs:complexContent>
             <xs:extension base="dialogType">
                 <xs:attribute name="closeOnClickOutside" type="xs:boolean"/>
+                <xs:attribute name="modal" type="xs:boolean"/>
                 <xs:attributeGroup ref="hasHtmlSanitizer"/>
             </xs:extension>
         </xs:complexContent>
