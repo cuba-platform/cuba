@@ -23,7 +23,7 @@ public class ContainersMetaBlueprint {
             category = "Containers",
             xmlElement = "cards",
             canvasBehaviour = CanvasBehaviour.CONTAINER,
-            containerType = ContainerType.CSS
+            containerType = ContainerType.FLOW
     )
     private static class BCardLayout {
     }

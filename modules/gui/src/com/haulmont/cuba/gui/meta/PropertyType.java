@@ -152,12 +152,7 @@ public enum PropertyType {
     DATATYPE_ID,
 
     /**
-     * Nested group of elements of UI component, e.g. columns, actions, fields.
+     * Keyboard shortcut.
      */
-    ELEMENTS_GROUP,
-
-    /**
-     * Nested element of UI component, e.g. validator, formatter.
-     */
-    ELEMENT
+    SHORTCUT
 }

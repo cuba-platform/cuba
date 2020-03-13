@@ -74,7 +74,7 @@ public @interface StudioFacet {
     String defaultProperty() default "";
 
     /**
-     * @return name of the default event, it will be used for scaffolding of the event handler on double click
+     * @return names of unsupported properties that should be hidden from Properties panel
      */
-    String defaultEvent() default "";
+    String[] unsupportedProperties() default {};
 }

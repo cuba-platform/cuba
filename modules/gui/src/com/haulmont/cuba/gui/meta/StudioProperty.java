@@ -22,7 +22,6 @@ import java.lang.annotation.*;
  * Indicates that the annotated method should be shown in Studio Screen Designer as UI component property.
  */
 @Documented
-@Retention(RetentionPolicy.SOURCE)
 @Target(ElementType.METHOD)
 public @interface StudioProperty {
     /**
@@ -61,7 +60,9 @@ public @interface StudioProperty {
     String defaultValue() default "";
 
     /**
-     * @return enumeration options
+     * Enumeration options for {@link PropertyType#ENUMERATION} property, or
+     * list of Spring bean base classes for {@link PropertyType#BEAN_REF} property
+     * @return options
      */
     String[] options() default {};
 
