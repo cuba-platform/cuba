@@ -7,7 +7,6 @@ package com.haulmont.cuba.gui.components;
 
 import com.haulmont.bali.events.Subscription;
 import com.haulmont.cuba.gui.meta.PropertyType;
-import com.haulmont.cuba.gui.meta.StudioEvent;
 import com.haulmont.cuba.gui.meta.StudioFacet;
 import com.haulmont.cuba.gui.meta.StudioProperty;
 
@@ -19,8 +18,10 @@ import java.util.function.Consumer;
  * Copies the text content to the clipboard on button click.
  */
 @StudioFacet(
+        xmlElement = "clipboardTrigger",
         caption = "ClipboardTrigger",
-        description = "Copies the text content of the input to the clipboard on button click."
+        description = "Copies the text content of the input to the clipboard on button click.",
+        category = "Non-visual"
 )
 public interface ClipboardTrigger extends Facet {
 
@@ -59,7 +60,6 @@ public interface ClipboardTrigger extends Facet {
      * @param listener listener
      * @return subscription
      */
-    @StudioEvent
     Subscription addCopyListener(Consumer<CopyEvent> listener);
 
     /**
