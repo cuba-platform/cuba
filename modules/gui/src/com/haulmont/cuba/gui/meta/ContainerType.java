@@ -37,23 +37,9 @@ public enum ContainerType {
     HORIZONTAL,
 
     /**
-     * CSS layout.
-     *
-     * @see CssLayout
-     */
-    CSS,
-
-    /**
      * Directional flow layout.
      *
      * @see FlowBoxLayout
      */
     FLOW,
-
-    /**
-     * Grid layout.
-     *
-     * @see GridLayout
-     */
-    GRID
 }

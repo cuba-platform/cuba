@@ -19,8 +19,6 @@ package com.haulmont.cuba.gui.meta;
 import com.haulmont.cuba.gui.components.Component;
 
 import java.lang.annotation.Documented;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 
 /**
  * Indicates that the annotated UI component interface should be available in Studio Screen Designer. Provides metadata
@@ -28,7 +26,6 @@ import java.lang.annotation.RetentionPolicy;
  * indirect subclass of {@link Component}.
  */
 @Documented
-@Retention(RetentionPolicy.CLASS)
 public @interface StudioComponent {
     /**
      * @return caption in Studio Screen Designer Palette
@@ -73,11 +70,6 @@ public @interface StudioComponent {
      * @return name of the default property, it will be automatically selected in Properties panel
      */
     String defaultProperty() default "";
-
-    /**
-     * @return name of the default event, it will be used for scaffolding of the event handler on double click
-     */
-    String defaultEvent() default "";
 
     /**
      * @return names of unsupported properties that should be hidden from Properties panel

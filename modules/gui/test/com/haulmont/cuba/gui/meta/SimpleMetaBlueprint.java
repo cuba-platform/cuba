@@ -52,21 +52,15 @@ public class SimpleMetaBlueprint {
         void setTabIndex(int tabIndex);
     }
 
-    @StudioComponent(defaultProperty = "value")
-    private interface BLabel {
-    }
-
     @StudioComponent(
             caption = "TextField",
             category = "Fields",
-            defaultEvent = "valueChange",
             canvasBehaviour = CanvasBehaviour.INPUT_FIELD)
     @StudioProperties(groups = {
             @PropertiesGroup(constraint = PropertiesConstraint.ONE_OF, properties = {"container", "datasource"}),
             @PropertiesGroup(constraint = PropertiesConstraint.ALL_OR_NOTHING, properties = {"container", "property"})
     })
     private interface BTextField {
-        @StudioDelegate(caption = "Formatter", description = "Formats value of the field", category = "Data")
         void setFormatter(Consumer<String> formatter);
 
         @StudioProperties(properties = {
@@ -84,11 +78,10 @@ public class SimpleMetaBlueprint {
     }
 
     private interface BLayout extends BComponent {
-        @StudioEvent
         Subscription addLayoutClickListener(LayoutClickNotifier.LayoutClickEvent event);
     }
 
-    @StudioComponent(defaultEvent = "layoutClick")
+    @StudioComponent
     @StudioProperties(properties = {
             @StudioProperty(name = "width", defaultValue = "100%")
     })
