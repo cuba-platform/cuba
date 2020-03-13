@@ -448,6 +448,21 @@ $cuba-datagrid-aggregation-background-color: $cuba-aggregation-background-color-
     content: "\f013";
   }
 
+  .v-ie11 & .#{$primary-stylename}-sidebar.v-contextmenu.open .#{$primary-stylename}-sidebar-content {
+    overflow-x: hidden;
+    overflow-y: hidden;
+
+    .gwt-MenuBar-vertical {
+      overflow-x: hidden;
+      overflow-y: auto;
+      height: 100%;
+    }
+  }
+
+  .v-ie11 & .v-contextmenu .gwt-MenuItem {
+    padding-right: $v-selection-item-padding-horizontal * 2 + 8; // padding-right + width of scrollbar
+  }
+
   .#{$primary-stylename}-cell > div.component-wrap {
     display: flex;
     box-sizing: border-box;
