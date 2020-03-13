@@ -31,7 +31,6 @@ import com.haulmont.cuba.gui.components.data.meta.ContainerDataUnit;
 import com.haulmont.cuba.gui.icons.CubaIcon;
 import com.haulmont.cuba.gui.icons.Icons;
 import com.haulmont.cuba.gui.meta.StudioAction;
-import com.haulmont.cuba.gui.meta.StudioDelegate;
 import com.haulmont.cuba.gui.meta.StudioPropertiesItem;
 import com.haulmont.cuba.gui.model.Nested;
 import com.haulmont.cuba.gui.screen.*;
@@ -142,7 +141,6 @@ public class AddAction<E extends Entity> extends ListAction implements Action.Di
      * }
      * </pre>
      */
-    @StudioDelegate
     public void setScreenOptionsSupplier(Supplier<ScreenOptions> screenOptionsSupplier) {
         screenInitializer.setScreenOptionsSupplier(screenOptionsSupplier);
     }
@@ -159,7 +157,6 @@ public class AddAction<E extends Entity> extends ListAction implements Action.Di
      * }
      * </pre>
      */
-    @StudioDelegate
     public void setScreenConfigurer(Consumer<Screen> screenConfigurer) {
         screenInitializer.setScreenConfigurer(screenConfigurer);
     }
@@ -177,7 +174,6 @@ public class AddAction<E extends Entity> extends ListAction implements Action.Di
      * }
      * </pre>
      */
-    @StudioDelegate
     public void setAfterCloseHandler(Consumer<Screen.AfterCloseEvent> afterCloseHandler) {
         screenInitializer.setAfterCloseHandler(afterCloseHandler);
     }
@@ -193,7 +189,6 @@ public class AddAction<E extends Entity> extends ListAction implements Action.Di
      * }
      * </pre>
      */
-    @StudioDelegate
     public void setSelectValidator(Predicate<LookupScreen.ValidationContext<E>> selectValidator) {
         this.selectValidator = selectValidator;
     }
@@ -209,7 +204,6 @@ public class AddAction<E extends Entity> extends ListAction implements Action.Di
      * }
      * </pre>
      */
-    @StudioDelegate
     public void setTransformation(Function<Collection<E>, Collection<E>> transformation) {
         this.transformation = transformation;
     }
