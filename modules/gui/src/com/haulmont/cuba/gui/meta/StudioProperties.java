@@ -22,7 +22,6 @@ import java.lang.annotation.*;
  * Defines additional XML properties and property groups of a UI component.
  */
 @Target({ElementType.TYPE, ElementType.METHOD})
-@Retention(RetentionPolicy.CLASS)
 @Inherited
 public @interface StudioProperties {
 

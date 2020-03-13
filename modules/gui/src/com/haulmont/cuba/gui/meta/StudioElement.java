@@ -19,15 +19,57 @@ package com.haulmont.cuba.gui.meta;
 import java.lang.annotation.*;
 
 /**
- * Specifies name of XML element for parts of UI component, e.g. column, action, field, etc.
+ * Indicates that the annotated interface should be available in Studio Screen Designer as a part of UI Component,
+ * e.g. column, action, field, etc. Provides metadata for Properties Panel of Screen Designer.
+ *
+ * When used on the getter or setter method, indicates that the annotated method should be shown in
+ * Studio Screen Designer as a nested element of UI component, e.g. validator, formatter.
+ * Method return type or parameter type will be used to determine element type.
  */
-@Retention(RetentionPolicy.CLASS)
 @Target({ElementType.METHOD, ElementType.TYPE})
 @Inherited
 public @interface StudioElement {
+    /**
+     * @return caption of the element in Studio Screen Designer
+     */
+    String caption() default "";
 
     /**
-     * @return name of the corresponding XML element
+     * @return description of the element in Studio Screen Designer
      */
-    String value();
+    String description() default "";
+
+    /**
+     * @return UI Components Hierarchy icon, SVG or PNG
+     */
+    String icon() default "";
+
+    /**
+     * @return XML tag of the element
+     */
+    String xmlElement() default "";
+
+    /**
+     * Specifies xml namespace required for the element.
+     *
+     * @return xml namespace
+     */
+    String xmlns() default "";
+
+    /**
+     * Specifies xml namespace alias required for the element.
+     *
+     * @return xml namespace alias
+     */
+    String xmlnsAlias() default "";
+
+    /**
+     * @return name of the default property, it will be automatically selected in Properties panel
+     */
+    String defaultProperty() default "";
+
+    /**
+     * @return names of unsupported properties that should be hidden from Properties panel
+     */
+    String[] unsupportedProperties() default {};
 }

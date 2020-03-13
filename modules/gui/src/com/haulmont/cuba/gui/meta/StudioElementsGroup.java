@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2019 Haulmont.
+ * Copyright (c) 2008-2020 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,28 +16,22 @@
 
 package com.haulmont.cuba.gui.meta;
 
-import java.lang.annotation.*;
+import java.lang.annotation.Documented;
 
 /**
- * Indicates that the annotated method should be shown in Studio Screen Designer as UI component delegate.
+ * Indicates that the annotated method should be shown in Studio Screen Designer
+ * as a nested group of elements of UI component, e.g. columns, actions, fields.
  */
 @Documented
-@Retention(RetentionPolicy.CLASS)
-@Target(ElementType.METHOD)
-public @interface StudioDelegate {
+public @interface StudioElementsGroup {
 
     /**
-     * @return caption of the delegate property in Screen Designer Properties
+     * @return target XML element name
      */
-    String caption() default "";
+    String xmlElement() default "";
 
     /**
-     * @return description of the delegate property in Screen Designer Properties
+     * @return Component Hierarchy icon, SVG or PNG
      */
-    String description() default "";
-
-    /**
-     * @return category of the property in Properties Panel, e.g. General, Size, Data
-     */
-    String category() default "";
+    String icon() default "";
 }
