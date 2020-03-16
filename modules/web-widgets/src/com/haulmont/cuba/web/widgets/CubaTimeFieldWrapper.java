@@ -73,11 +73,15 @@ public class CubaTimeFieldWrapper extends CustomField<LocalTime> {
 
     @Override
     public void setComponentErrorProvider(Supplier<ErrorMessage> componentErrorProvider) {
-        timeField.setComponentErrorProvider(() -> {
-            ErrorMessage errorMessage = componentErrorProvider.get();
-            amPmField.setComponentError(errorMessage);
-            return errorMessage;
-        });
+        if (componentErrorProvider != null) {
+            timeField.setComponentErrorProvider(() -> {
+                ErrorMessage errorMessage = componentErrorProvider.get();
+                amPmField.setComponentError(errorMessage);
+                return errorMessage;
+            });
+        } else {
+            timeField.setComponentErrorProvider(null);
+        }
     }
 
     @Override
