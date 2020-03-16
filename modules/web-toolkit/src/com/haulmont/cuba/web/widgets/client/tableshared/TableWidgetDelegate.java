@@ -153,13 +153,8 @@ public class TableWidgetDelegate {
     }
 
     public void reassignHeaderCellWidth(int colIndex, VScrollTable.HeaderCell hCell, int minWidth) {
-        if (tableWidget.isCustomColumn(colIndex)) {
-            return;
-        }
-
         for (Widget rowWidget : tableWidget.getRenderedRows()) {
-            if (isAggregationVisible()
-                    && tableWidget.isGenericRow(rowWidget)) {
+            if (tableWidget.isGenericRow(rowWidget)) {
                 VScrollTable.VScrollTableBody.VScrollTableRow row = (VScrollTable.VScrollTableBody.VScrollTableRow) rowWidget;
 
                 double realColWidth = row.getRealCellWidth(colIndex);
