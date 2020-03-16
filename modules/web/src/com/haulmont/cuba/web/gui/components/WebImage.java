@@ -44,8 +44,6 @@ public class WebImage extends WebAbstractResourceView<CubaImage> implements Imag
     protected Subscription valueChangeSubscription;
     protected Subscription instanceChangeSubscription;
 
-    protected MetaPropertyPath metaPropertyPath;
-
     protected ScaleMode scaleMode = ScaleMode.NONE;
 
     protected MouseEvents.ClickListener vClickListener;
@@ -65,11 +63,6 @@ public class WebImage extends WebAbstractResourceView<CubaImage> implements Imag
 
     protected void initComponent(CubaImage component) {
         component.setPrimaryStyleName(IMAGE_STYLENAME);
-    }
-
-    @Override
-    public MetaPropertyPath getMetaPropertyPath() {
-        return metaPropertyPath;
     }
 
     @Override
