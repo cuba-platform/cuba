@@ -80,10 +80,30 @@ public class SortJpqlGenerator {
     }
 
     protected List<String> getUniqueSortExpression(List<String> sortExpressions, MetaClass metaClass, boolean asc) {
-        MetaPropertyPath idProperty = metaClass.getPropertyPath(metadataTools.getPrimaryKeyName(metaClass));
-        List<String> uniqueSortExpressions = getPropertySortExpressions(Objects.requireNonNull(idProperty), asc);
-        if (uniqueSortExpressions.stream().noneMatch(sortExpressions::contains)) {
-            return uniqueSortExpressions;
+        String pkName = metadataTools.getPrimaryKeyName(metaClass);
+
+        if (pkName != null) {
+            MetaProperty idProperty = metaClass.getProperty(pkName);
+            if (metadataTools.hasCompositePrimaryKey(metaClass)) {
+                List<String> uniqueSortExpressions = new ArrayList<>();
+                MetaClass pkMetaClass = idProperty.getRange().asClass();
+                for (MetaProperty metaProperty : pkMetaClass.getProperties()) {
+                    if (metadataTools.isPersistent(metaProperty)) {
+                        MetaPropertyPath idPropertyPath = metaClass.getPropertyPath(String.format("%s.%s",pkName, metaProperty.getName()));
+                        List<String> currentSortExpressions = getPropertySortExpressions(Objects.requireNonNull(idPropertyPath), asc);
+                        if (currentSortExpressions.stream().noneMatch(sortExpressions::contains)) {
+                            uniqueSortExpressions.addAll(currentSortExpressions);
+                        }
+                    }
+                }
+                return uniqueSortExpressions;
+            } else {
+                MetaPropertyPath idPropertyPath = metaClass.getPropertyPath(pkName);
+                List<String> uniqueSortExpressions = getPropertySortExpressions(Objects.requireNonNull(idPropertyPath), asc);
+                if (uniqueSortExpressions.stream().noneMatch(sortExpressions::contains)) {
+                    return uniqueSortExpressions;
+                }
+            }
         }
         return Collections.emptyList();
     }
