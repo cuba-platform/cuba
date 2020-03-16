@@ -495,6 +495,36 @@ public class UserEditor extends AbstractEditor<User> {
 
     @Override
     protected boolean preCommit() {
+        User user = getItem();
+
+        if (PersistenceHelper.isNew(user)) {
+            String password = passwField.getValue();
+            String passwordConfirmation = confirmPasswField.getValue();
+
+            if (passwField.isRequired() && (StringUtils.isBlank(password) || StringUtils.isBlank(passwordConfirmation))) {
+                showNotification(getMessage("emptyPassword"), NotificationType.WARNING);
+                return false;
+            } else {
+                if (Objects.equals(password, passwordConfirmation)) {
+                    if (StringUtils.isNotEmpty(password)) {
+                        ClientConfig passwordPolicyConfig = configuration.getConfig(ClientConfig.class);
+                        if (passwordPolicyConfig.getPasswordPolicyEnabled()) {
+                            String regExp = passwordPolicyConfig.getPasswordPolicyRegExp();
+                            if (!password.matches(regExp)) {
+                                showNotification(getMessage("simplePassword"), NotificationType.WARNING);
+                                return false;
+                            }
+                        }
+
+                        String passwordHash = passwordEncryption.getPasswordHash(user.getId(), password);
+                        user.setPassword(passwordHash);
+                    }
+                } else {
+                    showNotification(getMessage("passwordsDoNotMatch"), NotificationType.WARNING);
+                    return false;
+                }
+            }
+        }
 
         boolean isDsModified = rolesDs.isModified();
         Collection<UserRole> userRoles = new ArrayList<>(rolesDs.getItems());
@@ -528,41 +558,7 @@ public class UserEditor extends AbstractEditor<User> {
                 rolesDsImpl.modified(userRole);
             }
         }
-
-        User user = getItem();
-
-        if (PersistenceHelper.isNew(user)) {
-            String password = passwField.getValue();
-            String passwordConfirmation = confirmPasswField.getValue();
-
-            if (passwField.isRequired() && (StringUtils.isBlank(password) || StringUtils.isBlank(passwordConfirmation))) {
-                showNotification(getMessage("emptyPassword"), NotificationType.WARNING);
-                return false;
-            } else {
-                if (Objects.equals(password, passwordConfirmation)) {
-                    if (StringUtils.isNotEmpty(password)) {
-                        ClientConfig passwordPolicyConfig = configuration.getConfig(ClientConfig.class);
-                        if (passwordPolicyConfig.getPasswordPolicyEnabled()) {
-                            String regExp = passwordPolicyConfig.getPasswordPolicyRegExp();
-                            if (!password.matches(regExp)) {
-                                showNotification(getMessage("simplePassword"), NotificationType.WARNING);
-                                return false;
-                            }
-                        }
-
-                        String passwordHash = passwordEncryption.getPasswordHash(user.getId(), password);
-                        user.setPassword(passwordHash);
-                    }
-
-                    return true;
-                } else {
-                    showNotification(getMessage("passwordsDoNotMatch"), NotificationType.WARNING);
-                    return false;
-                }
-            }
-        } else {
-            return true;
-        }
+        return true;
     }
 
     public void initCopy() {
