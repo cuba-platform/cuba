@@ -202,9 +202,10 @@ public class WebTimeField<V> extends WebV8AbstractField<CubaTimeFieldWrapper, Lo
 
     @SuppressWarnings("unchecked")
     protected V constructModelValue() {
-        LocalTime timeValue = component.getValue() != null
-                ? component.getValue()
-                : LocalTime.MIDNIGHT;
+        LocalTime timeValue = component.getValue();
+        if (timeValue == null) {
+            return null;
+        }
 
         ValueSource<V> valueSource = getValueSource();
         if (valueSource instanceof EntityValueSource) {
