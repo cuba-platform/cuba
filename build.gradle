@@ -161,6 +161,7 @@ configure([sharedLibModule, globalModule, coreModule, clientModule, guiModule,
 
     task sourceJar(type: Jar) {
         from file('src')
+        from sourceSets.main.output.generatedSourcesDirs
         classifier = 'sources'
     }
 
