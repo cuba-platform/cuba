@@ -19,12 +19,18 @@ package com.haulmont.cuba.web.gui.components.renderers;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.DataGrid;
 import com.haulmont.cuba.web.gui.components.WebAbstractDataGrid.AbstractRenderer;
+import com.haulmont.cuba.web.sys.sanitizer.HtmlSanitizer;
+import com.vaadin.data.ValueProvider;
 import com.vaadin.ui.renderers.HtmlRenderer;
+
+import javax.inject.Inject;
 
 /**
  * A renderer for presenting HTML content.
  */
 public class WebHtmlRenderer extends AbstractRenderer<Entity, String> implements DataGrid.HtmlRenderer {
+
+    protected HtmlSanitizer htmlSanitizer;
 
     public WebHtmlRenderer() {
         this("");
@@ -32,6 +38,11 @@ public class WebHtmlRenderer extends AbstractRenderer<Entity, String> implements
 
     public WebHtmlRenderer(String nullRepresentation) {
         super(nullRepresentation);
+    }
+
+    @Inject
+    public void setHtmlSanitizer(HtmlSanitizer htmlSanitizer) {
+        this.htmlSanitizer = htmlSanitizer;
     }
 
     @Override
@@ -52,5 +63,13 @@ public class WebHtmlRenderer extends AbstractRenderer<Entity, String> implements
     @Override
     public void setNullRepresentation(String nullRepresentation) {
         super.setNullRepresentation(nullRepresentation);
+    }
+
+    @Override
+    public ValueProvider<String, String> getPresentationValueProvider() {
+        return (ValueProvider<String, String>) html ->
+                getDataGrid().isHtmlSanitizerEnabled()
+                        ? htmlSanitizer.sanitize(html)
+                        : html;
     }
 }

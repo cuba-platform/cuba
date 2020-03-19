@@ -18,6 +18,8 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
@@ -59,6 +61,33 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public abstract class AbstractDataGridLoader<T extends DataGrid> extends ActionsHolderLoader<T> {
+
+    protected static final List<Class<?>> UNSUPPORTED_DECLARATIVE_RENDERERS = ImmutableList.of(
+            DataGrid.ButtonRenderer.class,
+            DataGrid.ClickableTextRenderer.class,
+            DataGrid.ImageRenderer.class
+    );
+
+    protected static final List<Class<?>> UNSUPPORTED_PARAMETERIZED_RENDERERS = ImmutableList.of(
+            DataGrid.DateRenderer.class,
+            DataGrid.LocalDateRenderer.class,
+            DataGrid.LocalDateTimeRenderer.class,
+            DataGrid.NumberRenderer.class
+    );
+
+    protected static final Map<String, Class<?>> RENDERERS_MAP =
+            ImmutableMap.<String, Class<?>>builder()
+                    .put("checkBoxRenderer", DataGrid.CheckBoxRenderer.class)
+                    .put("componentRenderer", DataGrid.ComponentRenderer.class)
+                    .put("dateRenderer", DataGrid.DateRenderer.class)
+                    .put("iconRenderer", DataGrid.IconRenderer.class)
+                    .put("htmlRenderer", DataGrid.HtmlRenderer.class)
+                    .put("localDateRenderer", DataGrid.LocalDateRenderer.class)
+                    .put("localDateTimeRenderer", DataGrid.LocalDateTimeRenderer.class)
+                    .put("numberRenderer", DataGrid.NumberRenderer.class)
+                    .put("progressBarRenderer", DataGrid.ProgressBarRenderer.class)
+                    .put("textRenderer", DataGrid.TextRenderer.class)
+                    .build();
 
     private static final Logger log = LoggerFactory.getLogger(AbstractDataGridLoader.class);
 
@@ -566,17 +595,87 @@ public abstract class AbstractDataGridLoader<T extends DataGrid> extends Actions
 
     @Nullable
     protected DataGrid.Renderer loadRenderer(Element columnElement) {
-        Element renderer = columnElement.element("renderer");
-        if (renderer == null) {
-            return null;
+        Element rendererElement;
+
+        for (Map.Entry<String, Class<?>> entry : RENDERERS_MAP.entrySet()) {
+            rendererElement = columnElement.element(entry.getKey());
+            if (rendererElement != null) {
+                return loadRendererByClass(rendererElement, entry.getValue());
+            }
         }
+
+        rendererElement = columnElement.element("renderer");
+        if (rendererElement != null) {
+            return loadLegacyRenderer(rendererElement);
+        }
+
+        return null;
+    }
+
+    @SuppressWarnings("rawtypes")
+    protected DataGrid.Renderer loadRendererByClass(Element rendererElement, Class rendererClass) {
+        DataGrid.Renderer renderer = resultComponent.createRenderer(rendererClass);
+
+        if (renderer instanceof DataGrid.HasNullRepresentation) {
+            loadNullRepresentation(rendererElement, (DataGrid.HasNullRepresentation) renderer);
+        }
+
+        if (renderer instanceof DataGrid.HasDateTimeFormatter) {
+            loadFormatPattern(rendererElement, (DataGrid.HasDateTimeFormatter) renderer);
+        }
+
+        if (renderer instanceof DataGrid.HasFormatString) {
+            loadFormatString(rendererElement, (DataGrid.HasFormatString) renderer);
+        }
+
+        return renderer;
+    }
+
+    @Nullable
+    protected DataGrid.Renderer loadLegacyRenderer(Element renderer) {
         String rendererType = renderer.attributeValue("type");
         if (StringUtils.isEmpty(rendererType)) {
             return null;
         }
+
         Class<?> rendererClass = getScripting().loadClassNN(rendererType);
 
+        if (UNSUPPORTED_PARAMETERIZED_RENDERERS.contains(rendererClass)) {
+            throw new GuiDevelopmentException(String.format(
+                    "DataGrid doesn't support renderer of type '%s' without required parameters. " +
+                            "Use special XML elements for parameterized renderers.",
+                    rendererType), context);
+        }
+
+        if (UNSUPPORTED_DECLARATIVE_RENDERERS.contains(rendererClass)) {
+            throw new GuiDevelopmentException(String.format(
+                    "DataGrid doesn't support declarative configuration of renderer of type '%s'. " +
+                            "Define it in screen controller.",
+                    rendererType), context);
+        }
+
         return resultComponent.createRenderer(rendererClass);
+    }
+
+    protected void loadNullRepresentation(Element rendererElement, DataGrid.HasNullRepresentation renderer) {
+        String nullRepresentation = rendererElement.attributeValue("nullRepresentation");
+        if (StringUtils.isNotEmpty(nullRepresentation)) {
+            renderer.setNullRepresentation(nullRepresentation);
+        }
+    }
+
+    protected void loadFormatPattern(Element rendererElement, DataGrid.HasDateTimeFormatter renderer) {
+        String formatPattern = rendererElement.attributeValue("format");
+        if (StringUtils.isNotEmpty(formatPattern)) {
+            renderer.setFormatPattern(formatPattern);
+        }
+    }
+
+    protected void loadFormatString(Element rendererElement, DataGrid.HasFormatString renderer) {
+        String formatString = rendererElement.attributeValue("format");
+        if (StringUtils.isNotEmpty(formatString)) {
+            renderer.setFormatString(formatString);
+        }
     }
 
     @Nullable
