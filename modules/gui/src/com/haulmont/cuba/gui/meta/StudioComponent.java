@@ -79,8 +79,14 @@ public @interface StudioComponent {
     /**
      * @return UI component icon shown on canvas as a placeholder, if {@link #canvasBehaviour()} is
      * {@link CanvasBehaviour#COMPONENT}. File should be in SVG or PNG format.
+     * {@link #icon} property used if value is blank.
      */
     String canvasIcon() default "";
+
+    /**
+     * @return size of the icon shown on canvas as a placeholder.
+     */
+    CanvasIconSize canvasIconSize() default CanvasIconSize.SMALL;
 
     /**
      * @return behaviour of UI component on Screen designer canvas
