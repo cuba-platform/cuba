@@ -299,9 +299,11 @@ public class WebFilterHelper implements FilterHelper {
         }
 
         if (listComponent instanceof Table) {
+            Map<Object, String> tooltipsCache = new HashMap<>();
             listComponent.withUnwrapped(com.vaadin.v7.ui.Table.class, vTable ->
                     vTable.setItemDescriptionGenerator((source, itemId, propertyId) -> {
-                        return ftsFilterHelper.buildTableTooltip(metaClass.getName(), itemId, searchTerm);
+                        return tooltipsCache.computeIfAbsent(itemId,
+                                k -> ftsFilterHelper.buildTableTooltip(metaClass.getName(), k, searchTerm));
                     }));
         } else if (listComponent instanceof DataGrid) {
             ((DataGrid) listComponent).setRowDescriptionProvider(o -> {
