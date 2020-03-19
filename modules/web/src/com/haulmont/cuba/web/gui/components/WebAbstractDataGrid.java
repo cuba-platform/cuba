@@ -762,13 +762,41 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
             addColumnId(gridColumn, column);
         }
 
-        //noinspection unchecked
-        gridColumn.setRenderer(getDefaultPresentationValueProvider(column), getDefaultRenderer(column));
+        com.vaadin.ui.renderers.Renderer columnRenderer = getColumnRendererImplementation(column);
+        if (!Objects.equals(gridColumn.getRenderer(), columnRenderer)) {
+            gridColumn.setRenderer(getColumnPresentationValueProvider(column), columnRenderer);
+        }
+
         gridColumn.setStyleGenerator(new CellStyleGeneratorAdapter<>(column));
         gridColumn.setDescriptionGenerator(new CellDescriptionGeneratorAdapter<>(column),
                 WebWrapperUtils.toVaadinContentMode(((ColumnImpl) column).getDescriptionContentMode()));
 
         ((ColumnImpl<E>) column).setGridColumn(gridColumn);
+    }
+
+    protected ValueProvider getColumnPresentationValueProvider(Column<E> column) {
+        Function presentationProvider = column.getPresentationProvider();
+        Converter converter = column.getConverter();
+        Function<?, String> formatter = column.getFormatter();
+        Renderer renderer = column.getRenderer();
+        // The following priority is used to determine a value provider:
+        // a presentation provider > a converter > a formatter > a renderer's presentation provider >
+        // a value provider that always returns its input argument > a default presentation provider
+        //noinspection RedundantCast
+        return presentationProvider != null
+                ? (ValueProvider) presentationProvider::apply
+                : converter != null
+                ? new DataGridConverterBasedValueProvider(converter)
+                : formatter != null
+                ? new FormatterBasedValueProvider(formatter)
+                : renderer != null && ((AbstractRenderer) renderer).getPresentationValueProvider() != null
+                ? ((AbstractRenderer) renderer).getPresentationValueProvider()
+                : renderer != null
+                // In case renderer != null and there are no other user specified value providers
+                // We use a value provider that always returns its input argument instead of a default
+                // value provider as we want to keep the original value type.
+                ? ValueProvider.identity()
+                : getDefaultPresentationValueProvider(column);
     }
 
     protected ValueProvider getDefaultPresentationValueProvider(Column<E> column) {
@@ -789,6 +817,13 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
         }
 
         return new StringPresentationValueProvider(metaProperty, metadataTools);
+    }
+
+    protected com.vaadin.ui.renderers.Renderer getColumnRendererImplementation(Column<E> column) {
+        Renderer renderer = column.getRenderer();
+        return renderer != null
+                ? ((AbstractRenderer) renderer).getImplementation()
+                : getDefaultRenderer(column);
     }
 
     protected com.vaadin.ui.renderers.Renderer getDefaultRenderer(Column<E> column) {
@@ -2604,10 +2639,7 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
         Column<E> generatedColumn = addGeneratedColumn(columnId, new ColumnGenerator<E, Object>() {
             @Override
             public Object getValue(ColumnGeneratorEvent<E> event) {
-                Object generatedValue = generator.getValue(event);
-                return column.getRenderer() instanceof HtmlRenderer
-                        ? sanitize((String) generatedValue)
-                        : generatedValue;
+                return generator.getValue(event);
             }
 
             @Override
@@ -3915,37 +3947,11 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
             updateRendererInternal();
         }
 
-        @SuppressWarnings({"unchecked"})
-        protected ValueProvider createPresentationProviderWrapper(Function presentationProvider) {
-            return (ValueProvider) presentationProvider::apply;
-        }
-
         @SuppressWarnings("unchecked")
         protected void updateRendererInternal() {
             if (gridColumn != null) {
-                com.vaadin.ui.renderers.Renderer vRenderer = renderer != null
-                        ? renderer.getImplementation()
-                        : owner.getDefaultRenderer(this);
-
-                // The following priority is used to determine a value provider:
-                // a presentation provider > a converter > a formatter > a renderer's presentation provider >
-                // a value provider that always returns its input argument > a default presentation provider
-                //noinspection RedundantCast
-                ValueProvider vPresentationProvider = presentationProvider != null
-                        ? createPresentationProviderWrapper(presentationProvider)
-                        : converter != null
-                        ? new DataGridConverterBasedValueProvider(converter)
-                        : formatter != null
-                        ? new FormatterBasedValueProvider(formatter)
-                        : renderer != null && renderer.getPresentationValueProvider() != null
-                        ? (ValueProvider) renderer.getPresentationValueProvider()
-                        : renderer != null
-                        // In case renderer != null and there are no other user specified value providers
-                        // We use a value provider that always returns its input argument instead of a default
-                        // value provider as we want to keep the original value type.
-                        ? ValueProvider.identity()
-                        : owner.getDefaultPresentationValueProvider(this);
-
+                com.vaadin.ui.renderers.Renderer vRenderer = owner.getColumnRendererImplementation(this);
+                ValueProvider vPresentationProvider = owner.getColumnPresentationValueProvider(this);
                 gridColumn.setRenderer(vPresentationProvider, vRenderer);
                 owner.repaint();
             }

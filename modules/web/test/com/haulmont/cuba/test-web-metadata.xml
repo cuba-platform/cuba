@@ -21,6 +21,7 @@
         <class>com.haulmont.cuba.web.testmodel.sample.SampleNonPersistent</class>
         <class>com.haulmont.cuba.web.testmodel.sample.GoodInfo</class>
         <class>com.haulmont.cuba.web.testmodel.sample.GoodStatistic</class>
+        <class>com.haulmont.cuba.web.testmodel.sample.RendererEntity</class>
     </metadata-model>
 
 </metadata>

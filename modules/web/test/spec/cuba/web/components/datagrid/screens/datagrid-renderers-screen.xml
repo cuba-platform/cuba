@@ -1,0 +1,63 @@
+<!--
+  ~ Copyright (c) 2008-2019 Haulmont.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<window xmlns="http://schemas.haulmont.com/cuba/screen/window.xsd">
+    <data>
+        <collection id="rendererEntitiesDc"
+                    class="com.haulmont.cuba.web.testmodel.sample.RendererEntity">
+        </collection>
+    </data>
+
+    <layout spacing="true">
+        <dataGrid id="renderersDataGrid" width="100%" height="100%" dataContainer="rendererEntitiesDc">
+            <columns>
+                <column property="button"/>
+                <column property="component">
+                    <componentRenderer/>
+                </column>
+                <column property="checkBox">
+                    <checkBoxRenderer/>
+                </column>
+                <column property="clickableText"/>
+                <column property="date">
+                    <dateRenderer nullRepresentation="dateRenderer" format="yyyy-MM-dd HH:mm:ss"/>
+                </column>
+                <column property="icon">
+                    <iconRenderer/>
+                </column>
+                <column property="image"/>
+                <column property="html">
+                    <htmlRenderer nullRepresentation="htmlRenderer"/>
+                </column>
+                <column property="localDate">
+                    <localDateRenderer nullRepresentation="localDateRenderer" format="dd/MM/YYYY"/>
+                </column>
+                <column property="localDateTime">
+                    <localDateTimeRenderer nullRepresentation="localDateTimeRenderer" format="dd/MM/YYYY HH:mm:ss"/>
+                </column>
+                <column property="number">
+                    <numberRenderer nullRepresentation="numberRenderer" format="%f"/>
+                </column>
+                <column property="progressBar">
+                    <progressBarRenderer/>
+                </column>
+                <column property="text">
+                    <textRenderer nullRepresentation="textRenderer"/>
+                </column>
+            </columns>
+        </dataGrid>
+    </layout>
+</window>

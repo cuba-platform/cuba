@@ -1296,26 +1296,49 @@
     </xs:complexType>
 
     <xs:complexType name="rendererType">
-        <xs:attribute name="type" type="rendererTypes" use="required"/>
+        <xs:attribute name="nullRepresentation" type="xs:string"/>
     </xs:complexType>
 
-    <xs:simpleType name="rendererTypes">
+    <xs:complexType name="formattableRendererType">
+        <xs:complexContent>
+            <xs:extension base="rendererType">
+                <xs:attribute name="format" type="xs:string" use="required"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="rendererListType">
+        <xs:attribute name="type" type="rendererList" use="required"/>
+    </xs:complexType>
+
+    <xs:simpleType name="rendererList">
         <xs:restriction base="xs:string">
-            <xs:enumeration value="com.haulmont.cuba.gui.components.DataGrid$ButtonRenderer"/>
             <xs:enumeration value="com.haulmont.cuba.gui.components.DataGrid$CheckBoxRenderer"/>
             <xs:enumeration value="com.haulmont.cuba.gui.components.DataGrid$ComponentRenderer"/>
             <xs:enumeration value="com.haulmont.cuba.gui.components.DataGrid$IconRenderer"/>
-            <xs:enumeration value="com.haulmont.cuba.gui.components.DataGrid$ImageRenderer"/>
-            <xs:enumeration value="com.haulmont.cuba.gui.components.DataGrid$DateRenderer"/>
             <xs:enumeration value="com.haulmont.cuba.gui.components.DataGrid$HtmlRenderer"/>
             <xs:enumeration value="com.haulmont.cuba.gui.components.DataGrid$TextRenderer"/>
-            <xs:enumeration value="com.haulmont.cuba.gui.components.DataGrid$ClickableTextRenderer"/>
-            <xs:enumeration value="com.haulmont.cuba.gui.components.DataGrid$LocalDateRenderer"/>
-            <xs:enumeration value="com.haulmont.cuba.gui.components.DataGrid$LocalDateTimeRenderer"/>
-            <xs:enumeration value="com.haulmont.cuba.gui.components.DataGrid$NumberRenderer"/>
             <xs:enumeration value="com.haulmont.cuba.gui.components.DataGrid$ProgressBarRenderer"/>
         </xs:restriction>
     </xs:simpleType>
+
+    <xs:group name="renderers">
+        <xs:sequence>
+            <xs:choice maxOccurs="1">
+                <xs:element name="checkBoxRenderer" minOccurs="0"/>
+                <xs:element name="componentRenderer" minOccurs="0"/>
+                <xs:element name="iconRenderer" minOccurs="0"/>
+                <xs:element name="progressBarRenderer" minOccurs="0"/>
+                <xs:element name="htmlRenderer" minOccurs="0" type="rendererType"/>
+                <xs:element name="textRenderer" minOccurs="0" type="rendererType"/>
+                <xs:element name="dateRenderer" minOccurs="0" type="formattableRendererType"/>
+                <xs:element name="localDateRenderer" minOccurs="0" type="formattableRendererType"/>
+                <xs:element name="localDateTimeRenderer" minOccurs="0" type="formattableRendererType"/>
+                <xs:element name="numberRenderer" minOccurs="0" type="formattableRendererType"/>
+                <xs:element name="renderer" minOccurs="0" type="rendererListType"/>
+            </xs:choice>
+        </xs:sequence>
+    </xs:group>
 
     <xs:complexType name="baseValidatorType">
         <xs:all>
@@ -2640,7 +2663,6 @@
     <xs:complexType name="dataGridColumnComponent">
         <xs:sequence>
             <xs:element name="formatter" minOccurs="0" type="formatterType"/>
-            <xs:element name="renderer" minOccurs="0" type="rendererType"/>
             <xs:element name="aggregation" minOccurs="0">
                 <xs:complexType>
                     <xs:sequence>
@@ -2651,6 +2673,7 @@
                     <xs:attribute name="valueDescription" type="resourceString"/>
                 </xs:complexType>
             </xs:element>
+            <xs:group ref="renderers" minOccurs="0"/>
         </xs:sequence>
 
         <xs:attributeGroup ref="hasId"/>
