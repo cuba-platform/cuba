@@ -16,9 +16,16 @@
 
 package com.haulmont.cuba.gui.components;
 
+import com.haulmont.cuba.gui.meta.PropertyType;
+import com.haulmont.cuba.gui.meta.StudioComponent;
+import com.haulmont.cuba.gui.meta.StudioProperty;
+
 /**
  * Component shows if CapsLock key is enabled when user inputs password.
  */
+@StudioComponent(icon = "icon/capsLockIndicator.svg",
+        unsupportedProperties = {"enable", "responsive"},
+        category = "Components")
 public interface CapsLockIndicator extends Component {
     String NAME = "capsLockIndicator";
 
@@ -27,6 +34,7 @@ public interface CapsLockIndicator extends Component {
      *
      * @param capsLockOnMessage text message
      */
+    @StudioProperty(type = PropertyType.LOCALIZED_STRING)
     void setCapsLockOnMessage(String capsLockOnMessage);
 
     /**
@@ -39,6 +47,7 @@ public interface CapsLockIndicator extends Component {
      *
      * @param capsLockOffMessage text message
      */
+    @StudioProperty(type = PropertyType.LOCALIZED_STRING)
     void setCapsLockOffMessage(String capsLockOffMessage);
 
     /**
