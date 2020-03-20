@@ -70,6 +70,8 @@ public abstract class AbstractWebAppContextLoader extends AbstractAppContextLoad
 
     @Override
     public void contextInitialized(ServletContextEvent servletContextEvent) {
+        log.info("Initializing '" + getBlock() + "' block, servlet context path: "
+                + servletContextEvent.getServletContext().getContextPath());
         checkAppHome();
         try {
             ServletContext sc = servletContextEvent.getServletContext();
@@ -77,6 +79,7 @@ public abstract class AbstractWebAppContextLoader extends AbstractAppContextLoad
 
             initAppComponents(sc);
             initAppProperties(sc);
+            log.info("cuba.webContextName: " + AppContext.getProperty("cuba.webContextName"));
             afterInitAppProperties();
 
             beforeInitAppContext();

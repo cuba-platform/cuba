@@ -28,6 +28,7 @@ import com.haulmont.cuba.gui.exception.UiExceptionHandler;
 import com.haulmont.cuba.gui.screen.Screen;
 import com.haulmont.cuba.gui.sys.TestIdManager;
 import com.haulmont.cuba.gui.theme.ThemeConstantsRepository;
+import com.haulmont.cuba.security.app.TrustedClientService;
 import com.haulmont.cuba.security.app.UserSessionService;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.NoUserSessionException;
@@ -112,6 +113,8 @@ public class AppUI extends CubaUI implements ErrorHandler, EnhancedUI, UiExcepti
     protected UserSessionSource userSessionSource;
     @Inject
     protected UserSessionService userSessionService;
+    @Inject
+    protected TrustedClientService trustedClientService;
 
     @Inject
     protected UiEventsMulticaster uiEventsMulticaster;
@@ -323,6 +326,9 @@ public class AppUI extends CubaUI implements ErrorHandler, EnhancedUI, UiExcepti
                 this.app = App.getInstance();
             }
 
+            // check that middleware is accessible before calling other services
+            trustedClientService.healthCheck();
+
             Connection connection = app.getConnection();
             if (connection != null && !isUserSessionAlive(connection)) {
                 connection.logout();
@@ -461,11 +467,21 @@ public class AppUI extends CubaUI implements ErrorHandler, EnhancedUI, UiExcepti
                     "\n\nYou can turn off this information using 'cuba.web.productionMode' application property.");
             errorTextArea.setReadOnly(true);
             errorTextArea.setWidth("600px");
-            errorTextArea.setHeight("200px");
+            errorTextArea.setHeight("150px");
             errorTextArea.setStyleName("c-init-error-area");
 
             errorPanel.addComponent(errorTextArea);
             errorPanel.setComponentAlignment(errorTextArea, Alignment.MIDDLE_CENTER);
+
+            TextArea exceptionDetailsArea = new TextArea(messages.getMainMessage("app.initErrorExceptionInfoTitle"));
+            exceptionDetailsArea.setValue(ExceptionUtils.getStackTrace(exception));
+            exceptionDetailsArea.setReadOnly(true);
+            exceptionDetailsArea.setWidth("600px");
+            exceptionDetailsArea.setHeight("250px");
+            exceptionDetailsArea.setStyleName("c-init-error-area");
+
+            errorPanel.addComponent(exceptionDetailsArea);
+            errorPanel.setComponentAlignment(exceptionDetailsArea, Alignment.MIDDLE_CENTER);
         }
 
         Button retryButton = new Button(messages.getMainMessage("app.initRetry"));
@@ -495,11 +511,7 @@ public class AppUI extends CubaUI implements ErrorHandler, EnhancedUI, UiExcepti
                         "contains the valid address of the 'core' server and ends with the web context name of the 'core' block, " +
                         "e.g. 'cuba.connectionUrlList = http://somehost:8080/app-core'";
             } else if (throwable instanceof LocalServiceAccessException) {
-                return throwable.toString() +
-                        "\n\nDue to this error, 'web' block cannot connect to the co-located 'core' block.\n" +
-                        "Most probably the 'core' block didn't start properly, so check the server log for exceptions.\n" +
-                        "If there are no prior exceptions in the log, check that 'cuba.connectionUrlList' property value ends with the web context name of the 'core' block, " +
-                        "e.g. 'cuba.connectionUrlList = http://localhost:8080/app-core'";
+                return throwable.getMessage();
             }
         }
         return ExceptionUtils.getRootCauseMessage(exception);

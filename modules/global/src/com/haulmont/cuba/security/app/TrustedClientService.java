@@ -75,4 +75,10 @@ public interface TrustedClientService {
      */
     @Nullable
     UserSession findSession(String trustedClientPassword, UUID sessionId) throws LoginException;
+
+    /**
+     * Do nothing.
+     * Can be used as a lightweight health check, to test accessibility of the middleware.
+     */
+    void healthCheck();
 }

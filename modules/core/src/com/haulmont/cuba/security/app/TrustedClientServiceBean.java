@@ -114,4 +114,7 @@ public class TrustedClientServiceBean implements TrustedClientService {
                     messages.getTools().getDefaultLocale()));
         }
     }
+
+    @Override
+    public void healthCheck() {}
 }
