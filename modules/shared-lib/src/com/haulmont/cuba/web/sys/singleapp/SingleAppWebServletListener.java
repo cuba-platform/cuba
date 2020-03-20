@@ -49,6 +49,7 @@ public class SingleAppWebServletListener implements ServletContextListener {
 
     @Override
     public void contextInitialized(ServletContextEvent sce) {
+        log.info("Single WAR web initializing, servlet context path: " + sce.getServletContext().getContextPath());
         try {
             ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
             //need to put the following class to WebAppClassLoader, to share it between for web and core

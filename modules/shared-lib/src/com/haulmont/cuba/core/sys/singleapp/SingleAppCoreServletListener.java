@@ -49,6 +49,7 @@ public class SingleAppCoreServletListener implements ServletContextListener {
 
     @Override
     public void contextInitialized(ServletContextEvent sce) {
+        log.info("Single WAR core initializing, servlet context path: " + sce.getServletContext().getContextPath());
         try {
             ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
             //need to put the following class to WebAppClassLoader, to share it between for web and core
@@ -68,14 +69,16 @@ public class SingleAppCoreServletListener implements ServletContextListener {
             coreClassLoader = new URLClassLoader(urls, contextClassLoader);
 
             Thread.currentThread().setContextClassLoader(coreClassLoader);
-            Class<?> appContextLoaderClass = coreClassLoader.loadClass(getAppContextLoaderClassName());
-            appContextLoader = appContextLoaderClass.newInstance();
+            try {
+                Class<?> appContextLoaderClass = coreClassLoader.loadClass(getAppContextLoaderClassName());
+                appContextLoader = appContextLoaderClass.newInstance();
 
-            Method contextInitializedMethod = appContextLoaderClass.getMethod("contextInitialized", ServletContextEvent.class);
+                Method contextInitializedMethod = appContextLoaderClass.getMethod("contextInitialized", ServletContextEvent.class);
 
-            contextInitializedMethod.invoke(appContextLoader, sce);
-
-            Thread.currentThread().setContextClassLoader(contextClassLoader);
+                contextInitializedMethod.invoke(appContextLoader, sce);
+            } finally {
+                Thread.currentThread().setContextClassLoader(contextClassLoader);
+            }
         } catch (Exception e) {
             log.error("An error occurred while starting single WAR - core application", e);
 

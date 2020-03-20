@@ -24,4 +24,8 @@ public class LocalServiceAccessException extends RuntimeException {
     public LocalServiceAccessException(String message) {
         super(message);
     }
+
+    public LocalServiceAccessException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }
