@@ -82,6 +82,8 @@ public class CubaEditorImpl<T> extends EditorImpl<T> {
 
         edited = bean;
 
+        getParent().select(edited); // ItemPropertyChangedEvent is sent only if a row is selected
+
         getParent().getColumns().stream().filter(Grid.Column::isEditable)
                 .forEach(c -> {
                     CubaEditorField<?> editorField = getEnhancedGrid().getColumnEditorField(bean, c);
