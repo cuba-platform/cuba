@@ -877,6 +877,8 @@ public class FilterDelegateImpl implements FilterDelegate {
 
         clearParamValueChangeSubscriptions();
 
+        clearParamEditors();
+
         recursivelyCreateConditionsLayout(conditionsFocusType, false, conditions.getRootNodes(), conditionsLayout, 0);
 
         if (isApplyImmediately()) {
@@ -1044,6 +1046,15 @@ public class FilterDelegateImpl implements FilterDelegate {
         }
 
         paramEditors.put(condition, paramEditor);
+    }
+
+    protected void clearParamEditors() {
+        if (paramEditors != null) {
+            for (Map.Entry<AbstractCondition, ParamEditor> item : paramEditors.entrySet()) {
+                item.getKey().removeListener(item.getValue());
+            }
+            paramEditors.clear();
+        }
     }
 
     protected List<Node<AbstractCondition>> fetchVisibleNodes(List<Node<AbstractCondition>> nodes) {
@@ -2493,13 +2504,6 @@ public class FilterDelegateImpl implements FilterDelegate {
                 item.getKey().removeListener(item.getValue());
             }
             conditionListeners.clear();
-        }
-
-        if (paramEditors != null) {
-            for (Map.Entry<AbstractCondition, ParamEditor> item : paramEditors.entrySet()) {
-                item.getKey().removeListener(item.getValue());
-            }
-            paramEditors.clear();
         }
     }
 
