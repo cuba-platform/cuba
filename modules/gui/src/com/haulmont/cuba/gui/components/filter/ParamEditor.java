@@ -121,7 +121,7 @@ public class ParamEditor implements AbstractCondition.Listener {
             }
         }
         if (filterDataContext != null) {
-            filterDataContext.loadAll();
+            filterDataContext.loadForParam(newParam);
         }
     }
 
