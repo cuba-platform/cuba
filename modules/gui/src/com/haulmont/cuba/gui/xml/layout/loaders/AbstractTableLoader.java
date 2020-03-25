@@ -18,6 +18,7 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
+import com.haulmont.bali.events.Subscription;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.DatatypeRegistry;
 import com.haulmont.chile.core.model.MetaClass;
@@ -71,6 +72,8 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
     protected Element panelElement;
 
     protected String sortedColumnId;
+    protected Table.SortDirection sortDirection;
+    protected Subscription masterDataLoaderPostLoadListener; // used for CollectionPropertyContainer
 
     @Override
     public void loadComponent() {
@@ -239,6 +242,24 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
         String multiselect = element.attributeValue("multiselect");
         if (StringUtils.isNotEmpty(multiselect)) {
             resultComponent.setMultiSelect(Boolean.parseBoolean(multiselect));
+        }
+
+        if (collectionContainer instanceof CollectionPropertyContainer) {
+            DataLoader masterDataLoader = DataLoadersHelper.getMasterDataLoader((Nested) collectionContainer);
+
+            masterDataLoaderPostLoadListener = masterDataLoader instanceof InstanceLoader
+                    ? ((InstanceLoader) masterDataLoader).addPostLoadListener(this::onMasterDataLoaderPostLoad)
+                    : masterDataLoader instanceof CollectionLoader
+                    ? ((CollectionLoader) masterDataLoader).addPostLoadListener(this::onMasterDataLoaderPostLoad)
+                    : null;
+        }
+    }
+
+    protected void onMasterDataLoaderPostLoad(Object o) {
+        setColumnSort();
+
+        if (masterDataLoaderPostLoadListener != null) {
+            masterDataLoaderPostLoadListener.remove();
         }
     }
 
@@ -812,11 +833,15 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
                     getContext());
         }
 
-        Table.SortDirection sortDirection = Table.SortDirection.valueOf(sort);
-        getComponentContext().addPostInitTask((context, window) ->
-                resultComponent.sort(column.getStringId(), sortDirection));
-
+        sortDirection = Table.SortDirection.valueOf(sort);
         sortedColumnId = column.getStringId();
+        getComponentContext().addPostInitTask((context, window) -> setColumnSort());
+    }
+
+    protected void setColumnSort() {
+        if (sortedColumnId != null && sortDirection != null) {
+            resultComponent.sort(sortedColumnId, sortDirection);
+        }
     }
 
     protected void loadEmptyStateMessage(Table table, Element element) {

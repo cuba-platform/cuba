@@ -20,6 +20,7 @@ import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.haulmont.bali.events.Subscription;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
@@ -95,6 +96,8 @@ public abstract class AbstractDataGridLoader<T extends DataGrid> extends Actions
     protected Element panelElement;
 
     protected String sortedColumnId;
+    protected DataGrid.SortDirection sortDirection;
+    protected Subscription masterDataLoaderPostLoadListener; // used for CollectionPropertyContainer
 
     @Override
     public void createComponent() {
@@ -241,6 +244,24 @@ public abstract class AbstractDataGridLoader<T extends DataGrid> extends Actions
         loadSelectionMode(resultComponent, element);
         loadFrozenColumnCount(resultComponent, element);
         loadTabIndex(resultComponent, element);
+
+        if (collectionContainer instanceof CollectionPropertyContainer) {
+            DataLoader masterDataLoader = DataLoadersHelper.getMasterDataLoader((Nested) collectionContainer);
+
+            masterDataLoaderPostLoadListener = masterDataLoader instanceof InstanceLoader
+                    ? ((InstanceLoader) masterDataLoader).addPostLoadListener(this::onMasterDataLoaderPostLoad)
+                    : masterDataLoader instanceof CollectionLoader
+                    ? ((CollectionLoader) masterDataLoader).addPostLoadListener(this::onMasterDataLoaderPostLoad)
+                    : null;
+        }
+    }
+
+    protected void onMasterDataLoaderPostLoad(Object o) {
+        setColumnSort();
+
+        if (masterDataLoaderPostLoadListener != null) {
+            masterDataLoaderPostLoadListener.remove();
+        }
     }
 
     protected Scripting getScripting() {
@@ -854,11 +875,15 @@ public abstract class AbstractDataGridLoader<T extends DataGrid> extends Actions
                     getContext());
         }
 
-        DataGrid.SortDirection sortDirection = DataGrid.SortDirection.valueOf(sort);
-        getComponentContext().addPostInitTask((context, window) ->
-                component.sort(column.getId(), sortDirection));
-
+        sortDirection = DataGrid.SortDirection.valueOf(sort);
         sortedColumnId = column.getId();
+        getComponentContext().addPostInitTask((context, window) -> setColumnSort());
+    }
+
+    protected void setColumnSort() {
+        if (sortedColumnId != null && sortDirection != null) {
+            resultComponent.sort(sortedColumnId, sortDirection);
+        }
     }
 
     protected void loadEmptyStateMessage(DataGrid dataGrid, Element element) {
