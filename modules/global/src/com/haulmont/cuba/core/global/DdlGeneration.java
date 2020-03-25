@@ -23,14 +23,45 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Indicates whether a development tool should generate DDL for this entity.
+ * Settings used by development tools to generate DDL scripts for this entity.
  */
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.CLASS)
 public @interface DdlGeneration {
 
     /**
-     * Whether a development tool should generate DDL.
+     * Script generation mode to create and update database schema.
      */
-    boolean enabled();
+    DbScriptGenerationMode value() default DbScriptGenerationMode.CREATE_AND_DROP;
+
+    /**
+     * Columns that exist in the database but should not be mapped to the entity.
+     * Drop scripts for this columns will not be generated.
+     */
+    String[] unmappedColumns() default {};
+
+    /**
+     * Constraints and indexes that exist in the database but should not be mapped to the entity.
+     * Drop scripts for this columns will not be generated.
+     */
+    String[] unmappedConstraints() default {};
+
+    enum DbScriptGenerationMode {
+        /**
+         * Full generation of initialization and update scripts.
+         */
+        CREATE_AND_DROP,
+
+        /**
+         * Full generation of initialization scripts.
+         * Update scripts are generated without statements to drop columns and tables.
+         * Renaming statements are generated for columns and tables.
+         */
+        CREATE_ONLY,
+
+        /**
+         * Initialization and update scripts are not generated.
+         */
+        DISABLED
+    }
 }
