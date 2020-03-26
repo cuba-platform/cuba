@@ -18,8 +18,9 @@ package com.haulmont.cuba.web.widgets;
 
 import com.haulmont.cuba.web.widgets.client.cubascrollboxlayout.CubaScrollBoxLayoutServerRpc;
 import com.haulmont.cuba.web.widgets.client.cubascrollboxlayout.CubaScrollBoxLayoutState;
+import com.vaadin.server.Scrollable;
 
-public class CubaScrollBoxLayout extends CubaCssActionsLayout {
+public class CubaScrollBoxLayout extends CubaCssActionsLayout implements Scrollable {
 
     protected CubaScrollBoxLayoutServerRpc serverRpc;
 
@@ -55,15 +56,27 @@ public class CubaScrollBoxLayout extends CubaCssActionsLayout {
                 CubaScrollBoxLayoutState.DELAYED_MODE : CubaScrollBoxLayoutState.DEFERRED_MODE;
     }
 
+    @Override
     public void setScrollTop(int scrollTop) {
         if (getState(false).scrollTop != scrollTop) {
             getState().scrollTop = scrollTop;
         }
     }
 
+    @Override
     public void setScrollLeft(int scrollLeft) {
         if (getState(false).scrollLeft != scrollLeft) {
             getState().scrollLeft = scrollLeft;
         }
+    }
+
+    @Override
+    public int getScrollLeft() {
+        return getState(false).scrollLeft;
+    }
+
+    @Override
+    public int getScrollTop() {
+        return getState(false).scrollTop;
     }
 }
