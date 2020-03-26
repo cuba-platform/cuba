@@ -460,6 +460,26 @@ public class WebScrollBoxLayout extends WebAbstractComponent<CubaScrollBoxLayout
     }
 
     @Override
+    public int getScrollLeft() {
+        return component.getScrollLeft();
+    }
+
+    @Override
+    public void setScrollLeft(int scrollLeft) {
+        component.setScrollLeft(scrollLeft);
+    }
+
+    @Override
+    public int getScrollTop() {
+        return component.getScrollTop();
+    }
+
+    @Override
+    public void setScrollTop(int scrollTop) {
+        component.setScrollTop(scrollTop);
+    }
+
+    @Override
     public void attached() {
         super.attached();
 

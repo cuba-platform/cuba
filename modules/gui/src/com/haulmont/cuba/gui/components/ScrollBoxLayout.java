@@ -103,6 +103,46 @@ public interface ScrollBoxLayout
      */
     String getContentMaxHeight();
 
+    /**
+     * Gets scroll left offset.
+     * <p>
+     * Scrolling offset is the number of pixels this scrollable has been
+     * scrolled right.
+     *
+     * @return horizontal scrolling position in pixels
+     */
+    public int getScrollLeft();
+
+    /**
+     * Sets scroll left offset.
+     * <p>
+     * Scrolling offset is the number of pixels this scrollable has been
+     * scrolled right.
+     *
+     * @param scrollLeft the xOffset
+     */
+    public void setScrollLeft(int scrollLeft);
+
+    /**
+     * Gets scroll top offset.
+     * <p>
+     * Scrolling offset is the number of pixels this scrollable has been
+     * scrolled down.
+     *
+     * @return vertical scrolling position in pixels
+     */
+    public int getScrollTop();
+
+    /**
+     * Sets scroll top offset.
+     * <p>
+     * Scrolling offset is the number of pixels this scrollable has been
+     * scrolled down.
+     *
+     * @param scrollTop the yOffset
+     */
+    public void setScrollTop(int scrollTop);
+
     enum ScrollBarPolicy {
         VERTICAL,
         HORIZONTAL,
