@@ -25,6 +25,7 @@ import com.haulmont.cuba.web.widgets.client.richtextarea.CubaRichTextAreaState;
 import com.vaadin.shared.ui.ValueChangeMode;
 import org.springframework.beans.factory.InitializingBean;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.Arrays;
 import java.util.Collection;
@@ -36,6 +37,9 @@ import static com.google.common.base.Strings.nullToEmpty;
 
 public class WebRichTextArea extends WebV8AbstractField<CubaRichTextArea, String, String>
         implements RichTextArea, InitializingBean {
+
+    protected static final String LINE_BREAK_TAG = "<br>";
+    protected static final String CLOSED_LINE_BREAK_TAG = "<br />";
 
     public WebRichTextArea() {
         component = createComponent();
@@ -160,5 +164,26 @@ public class WebRichTextArea extends WebV8AbstractField<CubaRichTextArea, String
     @Override
     public boolean isModified() {
         return super.isModified();
+    }
+
+    @Nullable
+    @Override
+    protected String sanitize(@Nullable String html) {
+        String sanitizedValue = super.sanitize(html);
+        return postSanitize(sanitizedValue);
+    }
+
+    /**
+     * Hook to replace the {@code <br />} with {@code <br>} in the sanitized string of HTML, since the RichTextArea
+     * component does not support {@code <br />}.
+     *
+     * @param html the sanitized string of HTML
+     * @return a post-processed sanitized string of HTML
+     */
+    @Nullable
+    protected String postSanitize(@Nullable String html) {
+        return html != null
+                ? html.replaceAll(CLOSED_LINE_BREAK_TAG, LINE_BREAK_TAG)
+                : html;
     }
 }
