@@ -54,8 +54,7 @@ public @interface DdlGeneration {
 
         /**
          * Full generation of initialization scripts.
-         * Update scripts are generated without statements to drop columns and tables.
-         * Renaming statements are generated for columns and tables.
+         * Update scripts are generated without statements to drop columns.
          */
         CREATE_ONLY,
 
