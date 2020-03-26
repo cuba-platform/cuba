@@ -38,7 +38,9 @@ public interface SplitPanel extends ComponentContainer, Component.BelongToFrame,
      */
     enum DockMode {
         LEFT,
-        RIGHT
+        RIGHT,
+        UP,
+        DOWN
     }
 
     int getOrientation();
@@ -182,8 +184,6 @@ public interface SplitPanel extends ComponentContainer, Component.BelongToFrame,
 
     /**
      * Enables or disables SplitPanel dock button.
-     * <p>
-     * Notice that docking is available only for horizontally oriented SplitPanel.
      *
      * @param dockable dockable
      */
@@ -196,15 +196,13 @@ public interface SplitPanel extends ComponentContainer, Component.BelongToFrame,
 
     /**
      * Sets docking direction.
-     * <p>
-     * Notice that docking is available only for horizontally oriented SplitPanel.
      *
      * @param dockMode one of {@link DockMode} options
      */
     void setDockMode(DockMode dockMode);
 
     /**
-     * @return docking direction or null in case of vertically oriented SplitPanel
+     * @return docking direction
      */
     @Nullable
     DockMode getDockMode();
