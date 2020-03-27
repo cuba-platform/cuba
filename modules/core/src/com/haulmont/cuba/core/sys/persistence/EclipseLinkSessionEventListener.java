@@ -24,6 +24,7 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.impl.AbstractInstance;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.SoftDelete;
+import com.haulmont.cuba.core.entity.TenantEntity;
 import com.haulmont.cuba.core.entity.annotation.EmbeddedParameters;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Metadata;
@@ -34,27 +35,41 @@ import com.haulmont.cuba.core.sys.CubaEnhancingDisabled;
 import com.haulmont.cuba.core.sys.UuidConverter;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.reflect.FieldUtils;
 import org.eclipse.persistence.annotations.CacheCoordinationType;
 import org.eclipse.persistence.config.CacheIsolationType;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.DescriptorEventListener;
 import org.eclipse.persistence.descriptors.InheritancePolicy;
+import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.internal.descriptors.PersistenceObject;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.weaving.PersistenceWeaved;
 import org.eclipse.persistence.internal.weaving.PersistenceWeavedFetchGroups;
-import org.eclipse.persistence.mappings.*;
-import org.eclipse.persistence.platform.database.*;
+import org.eclipse.persistence.mappings.AggregateObjectMapping;
+import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.mappings.DirectToFieldMapping;
+import org.eclipse.persistence.mappings.ManyToOneMapping;
+import org.eclipse.persistence.mappings.OneToManyMapping;
+import org.eclipse.persistence.mappings.OneToOneMapping;
+import org.eclipse.persistence.platform.database.HSQLPlatform;
+import org.eclipse.persistence.platform.database.MySQLPlatform;
+import org.eclipse.persistence.platform.database.OraclePlatform;
+import org.eclipse.persistence.platform.database.PostgreSQLPlatform;
+import org.eclipse.persistence.platform.database.SQLServerPlatform;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.SessionEvent;
 import org.eclipse.persistence.sessions.SessionEventAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.persistence.Column;
 import javax.persistence.OneToOne;
+import java.lang.reflect.Field;
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -158,6 +173,23 @@ public class EclipseLinkSessionEventListener extends SessionEventAdapter {
                         if (mapping.isManyToOneMapping()) {
                             oneToOneMapping.setSoftDeletionForBatch(false);
                             oneToOneMapping.setSoftDeletionForValueHolder(false);
+                            ManyToOneMapping manyToOneMapping = (ManyToOneMapping) mapping;
+                            Class referenceClass = manyToOneMapping.getReferenceClass();
+                            if (isMultiTenant(referenceClass) && isMultiTenant(desc.getJavaClass())) {
+                                Field tenantIdField = getTenantField(referenceClass);
+                                Field parentTenantId = getTenantField(desc.getJavaClass());
+                                if (tenantIdField != null && parentTenantId != null) {
+                                    log.info("Tenant field for class " + referenceClass.getName() + " is " + tenantIdField.getName());
+                                    String columnName = tenantIdField.getName();
+                                    ExpressionBuilder builder = new ExpressionBuilder();
+                                    Expression tenantColumExpression = builder.get(columnName);
+                                    manyToOneMapping.setAdditionalJoinCriteria(
+                                            tenantColumExpression.equal(
+                                                    builder.getParameter(
+                                                            parentTenantId.getAnnotation(Column.class).name())));
+
+                                }
+                            }
                         } else {
                             OneToOne oneToOne = metaProperty.getAnnotatedElement().getAnnotation(OneToOne.class);
                             if (oneToOne != null) {
@@ -175,6 +207,20 @@ public class EclipseLinkSessionEventListener extends SessionEventAdapter {
             }
         }
         logCheckResult(wrongFetchTypes, missingEnhancements);
+    }
+
+    private boolean isMultiTenant(Class referenceClass) {
+        return (TenantEntity.class.isAssignableFrom(referenceClass)) && (referenceClass.getAnnotation(Deprecated.class) == null);
+    }
+
+    private Field getTenantField(Class referenceClass) {
+        return Arrays.stream(FieldUtils.getAllFields(referenceClass))
+                .filter(f -> f.isAnnotationPresent(Column.class))
+                .filter(f -> {
+                    String name = f.getAnnotation(Column.class).name();
+                    return name.equals("SYS_TENANT_ID") || name.equals("TENANT_ID");
+                })
+                .findFirst().orElse(null);
     }
 
     private void setAdditionalCriteria(ClassDescriptor desc) {
