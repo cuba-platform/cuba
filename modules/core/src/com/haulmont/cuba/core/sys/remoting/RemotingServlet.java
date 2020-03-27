@@ -92,6 +92,10 @@ public class RemotingServlet extends DispatcherServlet {
         WebApplicationContext wac = findWebApplicationContext();
         if (wac == null) {
             ApplicationContext parent = AppContext.getApplicationContext();
+            if (parent == null) {
+                log.error("Parent Spring context is null, middleware failed to start? Abort initialization.");
+                return null;
+            }
             wac = createWebApplicationContext(parent);
         }
 

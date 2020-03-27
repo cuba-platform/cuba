@@ -26,6 +26,7 @@ import com.haulmont.cuba.core.sys.environmentcheck.JvmCheck;
 import com.haulmont.cuba.core.sys.persistence.DbmsType;
 import com.haulmont.cuba.core.sys.persistence.PersistenceConfigProcessor;
 import com.haulmont.cuba.core.sys.remoting.LocalServiceDirectory;
+import com.haulmont.cuba.core.sys.remoting.CoreBlockStatusDirectory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -49,10 +50,22 @@ public class AppContextLoader extends AbstractWebAppContextLoader {
     public void contextInitialized(ServletContextEvent servletContextEvent) {
         try {
             super.contextInitialized(servletContextEvent);
+            CoreBlockStatusDirectory.registerStartSuccess(getWebContextNameSafe());
         } catch (Throwable e) {
+            CoreBlockStatusDirectory.registerStartFail(getWebContextNameSafe(), e);
             // unlock to avoid freeze in case of core startup error
             LocalServiceDirectory.start();
         }
+    }
+
+    private String getWebContextNameSafe() {
+        String webContextName = null;
+        try {
+            webContextName = AppContext.getProperty("cuba.webContextName");
+        } catch (Exception ex) {
+            // ignore
+        }
+        return webContextName != null ? webContextName : "unknown";
     }
 
     public static void createPersistenceXml(String storeName) {

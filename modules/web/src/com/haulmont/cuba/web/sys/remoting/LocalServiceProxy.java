@@ -32,7 +32,9 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.Proxy;
+import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * INTERNAL.
@@ -99,11 +101,13 @@ public class LocalServiceProxy extends RemoteAccessor implements FactoryBean<Obj
             if (connectionUrlList == null)
                 throw new IllegalStateException("Property cuba.connectionUrlList not defined");
 
-            String entryName = connectionUrlList.substring(connectionUrlList.lastIndexOf('/') + 1) + serviceName;
+            String middlewareContextName = connectionUrlList.substring(connectionUrlList.lastIndexOf('/') + 1);
+            String entryName = middlewareContextName + serviceName;
             LocalServiceInvoker invoker = LocalServiceDirectory.getInvoker(entryName);
-            if (invoker == null)
-                throw new LocalServiceAccessException(String.format(
-                        "Unable to connect to middleware. Service %s is not registered in LocalServiceDirectory", entryName));
+            if (invoker == null) {
+                LocalServiceAccessException exception = createServiceAccessException(middlewareContextName, entryName);
+                throw exception;
+            }
 
             Parameter[] parameters = method.getParameters();
             Class<?>[] parameterTypes = method.getParameterTypes();
@@ -172,6 +176,40 @@ public class LocalServiceProxy extends RemoteAccessor implements FactoryBean<Obj
                     data = result.getNotSerializableData();
                 }
                 return data;
+            }
+        }
+
+        private LocalServiceAccessException createServiceAccessException(String middlewareContextName, String entryName) {
+            Map<String, CoreBlockStatusDirectory.StatusInfo> registeredBlocks = CoreBlockStatusDirectory.getBlocks();
+            CoreBlockStatusDirectory.StatusInfo mwStatus = registeredBlocks.get(middlewareContextName);
+            if (mwStatus != null) {
+                if (mwStatus.isSuccess()) {
+                    return new LocalServiceAccessException(String.format(
+                            "Unable to connect to middleware. Service %s is not registered in LocalServiceDirectory." +
+                                    " Please check that service implementation class is annotated as @Service", entryName));
+
+                } else {
+                    Throwable cause = mwStatus.getException();
+                    return new LocalServiceAccessException("Unable to connect to middleware. Middleware block '"
+                            + middlewareContextName + "' failed to start. See exception cause for details.", cause);
+                }
+            } else if (registeredBlocks.size() > 0) {
+                String appNames = registeredBlocks.values().stream()
+                        .map(statusInfo -> "'" + statusInfo.getWebContextName() + "'")
+                        .collect(Collectors.joining(", "));
+                String exampleCoreName = registeredBlocks.values().iterator().next().getWebContextName();
+                String message = String.format(
+                        "Unable to connect to middleware block '%s'. Registered middleware blocks are: %s. Possible causes: \n"
+                                + "'cuba.connectionUrlList' property value not ending with the actual web context name "
+                                + "of the 'core' block, e.g. 'cuba.connectionUrlList = http://localhost:8080/%s',\n"
+                                + "or incorrect value of the 'cuba.webContextName' property in the 'core' block.",
+                        middlewareContextName, appNames, exampleCoreName);
+                return new LocalServiceAccessException(message);
+            } else {
+                return new LocalServiceAccessException("Unable to connect to middleware block '" + middlewareContextName + "'. "
+                        + "No middleware blocks are registered in the application server. Possible causes:\n"
+                        + "'cuba.useLocalServiceInvocation' property enabled by mistake for unsupported deployment methods,\n"
+                        + "or 'core' application missing from 'webapps' folder (in case of fast deployment).");
             }
         }
 
