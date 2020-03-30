@@ -52,6 +52,11 @@ public class TestReadOnlyPropertyEntity extends BaseUuidEntity {
         return roList;
     }
 
+    @MetaProperty
+    public Foo getRoFoo() {
+        return roList.isEmpty() ? null : roList.get(0);
+    }
+
     public void initReadOnlyProperties() {
         roName = "roValue";
         roList = Collections.singletonList(new Foo());
