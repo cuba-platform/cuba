@@ -288,7 +288,7 @@ public class DataContextImpl implements DataContext {
                     Entity srcRef = (Entity) value;
                     if (!mergedSet.contains(srcRef)) {
                         Entity managedRef = internalMerge(srcRef, mergedSet, false);
-                        ((AbstractInstance) dstEntity).setValue(propertyName, managedRef, false);
+                        setPropertyValue(dstEntity, property, managedRef, false);
                         if (getMetadataTools().isEmbedded(property)) {
                             EmbeddedPropertyChangeListener listener = new EmbeddedPropertyChangeListener(dstEntity);
                             managedRef.addPropertyChangeListener(listener);
@@ -297,7 +297,7 @@ public class DataContextImpl implements DataContext {
                     } else {
                         Entity managedRef = find(srcRef.getClass(), srcRef.getId());
                         if (managedRef != null) {
-                            ((AbstractInstance) dstEntity).setValue(propertyName, managedRef, false);
+                            setPropertyValue(dstEntity, property, managedRef, false);
                         } else {
                             // should never happen
                             log.debug("Instance was merged but managed instance is null: {}", srcRef);
@@ -309,8 +309,12 @@ public class DataContextImpl implements DataContext {
     }
 
     protected void setPropertyValue(Entity entity, MetaProperty property, @Nullable Object value) {
+        setPropertyValue(entity, property, value, true);
+    }
+
+    protected void setPropertyValue(Entity entity, MetaProperty property, @Nullable Object value, boolean checkEquals) {
         if (!property.isReadOnly()) {
-            entity.setValue(property.getName(), value);
+            ((AbstractInstance) entity).setValue(property.getName(), value, checkEquals);
         } else {
             AnnotatedElement annotatedElement = property.getAnnotatedElement();
             if (annotatedElement instanceof Field) {

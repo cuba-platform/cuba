@@ -661,6 +661,7 @@ class DataContextMergeTest extends Specification {
         then:
         mergedEntity.getRoName() == 'roValue'
         mergedEntity.getRoList().size() == 1
+        mergedEntity.getRoFoo() != null
     }
 
     private UUID uuid(int val) {
