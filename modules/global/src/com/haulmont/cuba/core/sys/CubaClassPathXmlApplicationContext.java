@@ -17,10 +17,13 @@
 
 package com.haulmont.cuba.core.sys;
 
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.web.context.ServletContextAware;
+import org.springframework.web.context.support.ServletContextAwareProcessor;
 import org.springframework.web.context.support.StandardServletEnvironment;
 
 import javax.servlet.ServletContext;
@@ -55,5 +58,13 @@ public class CubaClassPathXmlApplicationContext extends ClassPathXmlApplicationC
         StandardServletEnvironment standardServletEnvironment = new StandardServletEnvironment();
         standardServletEnvironment.initPropertySources(servletContext, null);
         return standardServletEnvironment;
+    }
+
+    @Override
+    protected void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) {
+        if (this.servletContext != null) {
+            beanFactory.addBeanPostProcessor(new ServletContextAwareProcessor(this.servletContext));
+            beanFactory.ignoreDependencyInterface(ServletContextAware.class);
+        }
     }
 }
