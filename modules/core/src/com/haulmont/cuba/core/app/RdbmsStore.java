@@ -592,8 +592,8 @@ public class RdbmsStore implements DataStore {
                 .collect(Collectors.toList());
 
         if (!entitiesToReload.isEmpty()) {
-            try (Transaction tx = getSaveTransaction(Stores.MAIN, context.isJoinTransaction())) {
-                EntityManager em = persistence.getEntityManager();
+            try (Transaction tx = getSaveTransaction(storeName, context.isJoinTransaction())) {
+                EntityManager em = persistence.getEntityManager(storeName);
 
                 for (Entity entity : entitiesToReload) {
                     View view = context.getViews().get(entity);
