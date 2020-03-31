@@ -33,6 +33,7 @@ import java.util.Set;
 @Entity(name = "test$Order")
 @Table(name = "TEST_ORDER")
 @NamePattern("No %s for %s|number,customer")
+@PublishEntityChangedEvents
 public class Order extends StandardEntity {
 
     @Column(name = "NUM")

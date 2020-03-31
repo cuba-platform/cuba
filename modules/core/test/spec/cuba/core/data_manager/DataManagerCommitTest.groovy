@@ -23,8 +23,11 @@ import com.haulmont.cuba.core.global.CommitContext
 import com.haulmont.cuba.core.global.DataManager
 import com.haulmont.cuba.core.global.EntitySet
 import com.haulmont.cuba.core.global.EntityStates
+import com.haulmont.cuba.core.global.ViewBuilder
+import com.haulmont.cuba.core.global.View
 import com.haulmont.cuba.testmodel.sales.Customer
 import com.haulmont.cuba.testmodel.sales.Order
+import com.haulmont.cuba.testmodel.sales.TestOrderChangedEventListener
 import com.haulmont.cuba.testsupport.TestContainer
 import org.junit.ClassRule
 import spock.lang.Shared
@@ -169,6 +172,25 @@ class DataManagerCommitTest extends Specification {
         committedKvEntity.getValue('bar') == 'val2'
     }
 
+    def "commit returns object fetched according to passed view even if it was reloaded in EntityChangedEvent listener"() {
+        given:
+        def customer = dataManager.commit(this.customer)
+        def order = new Order(number: '1', customer: customer)
+
+        def orderChangedEventListener = AppBeans.get(TestOrderChangedEventListener)
+        orderChangedEventListener.enabled = true
+
+        when:
+        def committedOrder = dataManager.commit(order, ViewBuilder.of(Order).addView(View.LOCAL).add('customer.name').build())
+
+        then:
+        entityStates.isLoaded(committedOrder, 'customer')
+        committedOrder.customer.name == this.customer.name
+
+        cleanup:
+        orderChangedEventListener.enabled = false
+        cont.deleteRecord(order, customer)
+    }
 
     protected CommitContext commitContextFor(Customer customer, Order order) {
         new CommitContext()
