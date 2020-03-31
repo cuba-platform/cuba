@@ -43,7 +43,10 @@ import org.springframework.beans.factory.InitializingBean;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
+
+import static com.haulmont.cuba.gui.screen.FrameOwner.WINDOW_COMMIT_AND_CLOSE_ACTION;
 
 /**
  * Standard picker field action for opening an entity instance in its editor screen.
@@ -55,7 +58,7 @@ import java.util.function.Supplier;
  */
 @StudioAction(category = "Picker Actions", description = "Opens an entity using the entity edit screen")
 @ActionType(OpenAction.ID)
-public class OpenAction extends BaseAction implements PickerField.PickerFieldAction, InitializingBean {
+public class OpenAction<E extends Entity> extends BaseAction implements PickerField.PickerFieldAction, InitializingBean {
 
     public static final String ID = "picker_open";
 
@@ -71,6 +74,9 @@ public class OpenAction extends BaseAction implements PickerField.PickerFieldAct
     protected boolean editable = true;
 
     protected ActionScreenInitializer screenInitializer = new ActionScreenInitializer();
+
+    private Consumer<E> afterCommitHandler;
+    private Function<E, E> transformation;
 
     public OpenAction() {
         super(ID);
@@ -179,6 +185,36 @@ public class OpenAction extends BaseAction implements PickerField.PickerFieldAct
         screenInitializer.setAfterCloseHandler(afterCloseHandler);
     }
 
+    /**
+     * Sets the handler to be invoked when the editor screen commits the entity.
+     * <p>
+     * The preferred way to set the handler is using a controller method annotated with {@link Install}, e.g.:
+     * <pre>
+     * &#64;Install(to = "petField.open", subject = "afterCommitHandler")
+     * protected void petFieldOpenAfterCommitHandler(Pet entity) {
+     *     System.out.println("Committed " + entity);
+     * }
+     * </pre>
+     */
+    public void setAfterCommitHandler(Consumer<E> afterCommitHandler) {
+        this.afterCommitHandler = afterCommitHandler;
+    }
+
+    /**
+     * Sets the function to transform the committed in the editor screen entity before setting it to the target data container.
+     * <p>
+     * The preferred way to set the function is using a controller method annotated with {@link Install}, e.g.:
+     * <pre>
+     * &#64;Install(to = "petField.open", subject = "transformation")
+     * protected Pet petFieldOpenTransformation(Pet entity) {
+     *     return doTransform(entity);
+     * }
+     * </pre>
+     */
+    public void setTransformation(Function<E, E> transformation) {
+        this.transformation = transformation;
+    }
+
     @Inject
     protected void setConfiguration(Configuration configuration) {
         this.configuration = configuration;
@@ -246,6 +282,7 @@ public class OpenAction extends BaseAction implements PickerField.PickerFieldAct
     /**
      * Executes the action.
      */
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public void execute() {
         if (!checkFieldValue())
             return;
@@ -273,11 +310,25 @@ public class OpenAction extends BaseAction implements PickerField.PickerFieldAct
 
         builder = screenInitializer.initBuilder(builder);
 
-        Screen editorScreen = builder.build();
+        if (transformation != null) {
+            builder.withTransformation(transformation);
+        }
 
-        screenInitializer.initScreen(editorScreen);
+        Screen editor = builder.build();
 
-        editorScreen.show();
+        if (afterCommitHandler != null) {
+            editor.addAfterCloseListener(afterCloseEvent -> {
+                CloseAction closeAction = afterCloseEvent.getCloseAction();
+                if (closeAction.equals(WINDOW_COMMIT_AND_CLOSE_ACTION)) {
+                    Entity committedEntity = ((EditorScreen) editor).getEditedEntity();
+                    afterCommitHandler.accept((E) committedEntity);
+                }
+            });
+        }
+
+        screenInitializer.initScreen(editor);
+
+        editor.show();
     }
 
     protected boolean checkFieldValue() {
