@@ -127,7 +127,9 @@ public class EntityPermissionTargetsDatasource extends CollectionDatasourceImpl<
     }
 
     private PermissionVariant getPermissionVariant(Permission permission) {
-        if (permission.getValue() == PermissionValue.ALLOW.getValue())
+        if (permission.getValue() == null)
+            return PermissionVariant.NOTSET;
+        else if (permission.getValue() == PermissionValue.ALLOW.getValue())
             return PermissionVariant.ALLOWED;
         else if (permission.getValue() == PermissionValue.DENY.getValue())
             return PermissionVariant.DISALLOWED;

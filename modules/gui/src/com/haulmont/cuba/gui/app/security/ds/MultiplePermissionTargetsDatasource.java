@@ -116,7 +116,9 @@ public class MultiplePermissionTargetsDatasource extends CollectionDatasourceImp
     }
 
     private AttributePermissionVariant getPermissionVariant(Permission permission) {
-        if (permission.getValue() == PropertyPermissionValue.MODIFY.getValue())
+        if (permission.getValue() == null)
+            return AttributePermissionVariant.NOTSET;
+        else if (permission.getValue() == PropertyPermissionValue.MODIFY.getValue())
             return AttributePermissionVariant.MODIFY;
         else if (permission.getValue() == PropertyPermissionValue.VIEW.getValue())
             return AttributePermissionVariant.READ_ONLY;

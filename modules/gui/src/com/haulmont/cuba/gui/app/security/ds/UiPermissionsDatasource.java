@@ -70,7 +70,9 @@ public class UiPermissionsDatasource extends GroupDatasourceImpl<UiPermissionTar
     }
 
     private UiPermissionVariant getPermissionVariant(Permission permission) {
-        if (permission.getValue() == UiPermissionValue.READ_ONLY.getValue())
+        if (permission.getValue() == null)
+            return UiPermissionVariant.NOTSET;
+        else if (permission.getValue() == UiPermissionValue.READ_ONLY.getValue())
             return UiPermissionVariant.READ_ONLY;
         else if (permission.getValue() == UiPermissionValue.HIDE.getValue())
             return UiPermissionVariant.HIDE;

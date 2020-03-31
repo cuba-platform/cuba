@@ -94,7 +94,7 @@ public abstract class BasicPermissionTreeDatasource extends AbstractTreeDatasour
                 break;
             }
         }
-        if (permission != null) {
+        if (permission != null && permission.getValue() != null) {
             if (permission.getValue() == PermissionValue.ALLOW.getValue())
                 target.setPermissionVariant(PermissionVariant.ALLOWED);
             else if (permission.getValue() == PermissionValue.DENY.getValue())
