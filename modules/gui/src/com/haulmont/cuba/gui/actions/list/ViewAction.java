@@ -37,6 +37,7 @@ import com.haulmont.cuba.security.entity.EntityOp;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 import static com.haulmont.cuba.gui.screen.FrameOwner.WINDOW_COMMIT_AND_CLOSE_ACTION;
@@ -61,6 +62,8 @@ public class ViewAction<E extends Entity> extends SecuredListAction {
     protected ActionScreenInitializer screenInitializer = new ActionScreenInitializer();
 
     protected Consumer<E> afterCommitHandler;
+
+    protected Function<E, E> transformation;
 
     public ViewAction() {
         this(ID);
@@ -185,6 +188,22 @@ public class ViewAction<E extends Entity> extends SecuredListAction {
         this.afterCommitHandler = afterCommitHandler;
     }
 
+    /**
+     * Sets the function to transform the committed in the editor screen entity (if "enable editing" action was executed)
+     * before setting it to the target data container.
+     * <p>
+     * The preferred way to set the function is using a controller method annotated with {@link Install}, e.g.:
+     * <pre>
+     * &#64;Install(to = "petsTable.view", subject = "transformation")
+     * protected Pet petsTableViewTransformation(Pet entity) {
+     *     return doTransform(entity);
+     * }
+     * </pre>
+     */
+    public void setTransformation(Function<E, E> transformation) {
+        this.transformation = transformation;
+    }
+
     @Inject
     protected void setScreenBuilders(ScreenBuilders screenBuilders) {
         this.screenBuilders = screenBuilders;
@@ -262,6 +281,10 @@ public class ViewAction<E extends Entity> extends SecuredListAction {
                 .editEntity(editedEntity);
 
         builder = screenInitializer.initBuilder(builder);
+
+        if (transformation != null) {
+            builder.withTransformation(transformation);
+        }
 
         Screen editor = builder.build();
 
