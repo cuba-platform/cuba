@@ -539,8 +539,6 @@ public class RdbmsStore implements DataStore {
             tx.commit();
         }
 
-        Set<Entity> resultEntities = savedEntitiesHolder.getEntities(saved);
-
         if (!attributeValuesToRemove.isEmpty()) {
             try (Transaction tx = getSaveTransaction(Stores.MAIN, context.isJoinTransaction())) {
                 EntityManager em = persistence.getEntityManager();
@@ -560,6 +558,10 @@ public class RdbmsStore implements DataStore {
             }
         }
 
+        Set<Entity> resultEntities = savedEntitiesHolder.getEntities(saved);
+
+        reloadIfUnfetched(resultEntities, context);
+
         if (!context.isDiscardCommitted() && isAuthorizationRequired(context) && userSessionSource.getUserSession().getConstraints().exists()) {
             security.applyConstraints(resultEntities);
         }
@@ -576,6 +578,37 @@ public class RdbmsStore implements DataStore {
         }
 
         return context.isDiscardCommitted() ? Collections.emptySet() : resultEntities;
+    }
+
+    protected void reloadIfUnfetched(Set<Entity> resultEntities, CommitContext context) {
+        if (context.getViews().isEmpty())
+            return;
+
+        List<Entity> entitiesToReload = resultEntities.stream()
+                .filter(entity -> {
+                    View view = context.getViews().get(entity);
+                    return view != null && !entityStates.isLoadedWithView(entity, view);
+                })
+                .collect(Collectors.toList());
+
+        if (!entitiesToReload.isEmpty()) {
+            try (Transaction tx = getSaveTransaction(Stores.MAIN, context.isJoinTransaction())) {
+                EntityManager em = persistence.getEntityManager();
+
+                for (Entity entity : entitiesToReload) {
+                    View view = context.getViews().get(entity);
+                    log.debug("Reloading {} according to the requested view", entity);
+                    @SuppressWarnings("unchecked")
+                    Entity reloadedEntity = em.find(entity.getClass(), entity.getId(), view);
+                    resultEntities.remove(entity);
+                    if (reloadedEntity != null) {
+                        resultEntities.add(reloadedEntity);
+                    }
+                }
+
+                tx.commit();
+            }
+        }
     }
 
     @Override
