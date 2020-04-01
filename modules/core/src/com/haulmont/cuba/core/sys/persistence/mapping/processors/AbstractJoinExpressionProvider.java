@@ -41,7 +41,7 @@ public abstract class AbstractJoinExpressionProvider implements JoinExpressionPr
         } else if (mapping.isManyToManyMapping()) {
             return processManyToManyMapping((ManyToManyMapping) mapping);
         }
-        throw new IllegalArgumentException("This mapping type is not supported by the provider");
+        return null;
     }
 
     protected abstract Expression processOneToManyMapping(OneToManyMapping mapping);
