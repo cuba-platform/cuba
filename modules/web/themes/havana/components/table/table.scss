@@ -15,6 +15,12 @@
  *
  */
 
+ /**
+  * The table row height.
+  * @group table
+  */
+ $cuba-table-row-height: 24px !default;
+
 @mixin havana-table($primary-stylename: v-table) {
   .#{$primary-stylename} {
     text-align: left;
@@ -31,7 +37,7 @@
     .#{$primary-stylename}-arow-row {
       @include box-defaults;
 
-      height: 24px;
+      height: $cuba-table-row-height;
       border-right: 1px solid $cuba-field-border-color;
     }
 
@@ -135,6 +141,7 @@
       line-height: 15px;
       color: $cuba-table-text-color;
       border-bottom: 1px solid $cuba-table-cell-separator-color;
+      height: $cuba-table-row-height;
 
       .v-button-caption,
       .v-button-link .v-button-caption {
@@ -168,7 +175,7 @@
     .#{$primary-stylename}-row,
     .#{$primary-stylename}-row-odd {
       background-color: $cuba-table-row-background-color;
-      height: 24px;
+      height: $cuba-table-row-height;
       cursor: default;
     }
 
