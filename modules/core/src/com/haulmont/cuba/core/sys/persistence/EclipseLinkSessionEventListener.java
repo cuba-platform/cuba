@@ -17,15 +17,12 @@
 
 package com.haulmont.cuba.core.sys.persistence;
 
-import com.google.common.base.Strings;
 import com.haulmont.bali.datastruct.Pair;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.impl.AbstractInstance;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.SoftDelete;
-import com.haulmont.cuba.core.entity.TenantEntity;
-import com.haulmont.cuba.core.entity.annotation.EmbeddedParameters;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.PersistenceHelper;
@@ -33,24 +30,22 @@ import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.CubaEnhanced;
 import com.haulmont.cuba.core.sys.CubaEnhancingDisabled;
 import com.haulmont.cuba.core.sys.UuidConverter;
+import com.haulmont.cuba.core.sys.persistence.mapping.processors.JoinExpressionProvider;
+import com.haulmont.cuba.core.sys.persistence.mapping.processors.MappingProcessor;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.BooleanUtils;
-import org.apache.commons.lang3.reflect.FieldUtils;
 import org.eclipse.persistence.annotations.CacheCoordinationType;
 import org.eclipse.persistence.config.CacheIsolationType;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.DescriptorEventListener;
 import org.eclipse.persistence.descriptors.InheritancePolicy;
 import org.eclipse.persistence.expressions.Expression;
-import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.internal.descriptors.PersistenceObject;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.weaving.PersistenceWeaved;
 import org.eclipse.persistence.internal.weaving.PersistenceWeavedFetchGroups;
-import org.eclipse.persistence.mappings.AggregateObjectMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.DirectToFieldMapping;
-import org.eclipse.persistence.mappings.ManyToOneMapping;
 import org.eclipse.persistence.mappings.OneToManyMapping;
 import org.eclipse.persistence.mappings.OneToOneMapping;
 import org.eclipse.persistence.platform.database.HSQLPlatform;
@@ -64,14 +59,11 @@ import org.eclipse.persistence.sessions.SessionEventAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.persistence.Column;
-import javax.persistence.OneToOne;
-import java.lang.reflect.Field;
 import java.sql.Types;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 public class EclipseLinkSessionEventListener extends SessionEventAdapter {
@@ -129,98 +121,60 @@ public class EclipseLinkSessionEventListener extends SessionEventAdapter {
                         ((SoftDelete) entity).isDeleted());
             }
 
-            List<DatabaseMapping> mappings = desc.getMappings();
-            for (DatabaseMapping mapping : mappings) {
+            for (DatabaseMapping mapping : desc.getMappings()) {
 
                 //Fetch type check
                 fetchTypeCheck(mapping, entry.getKey(), wrongFetchTypes);
 
-                // support UUID
-                String attributeName = mapping.getAttributeName();
-                MetaProperty metaProperty = metaClass.getPropertyNN(attributeName);
-                if (metaProperty.getRange().isDatatype()) {
-                    if (metaProperty.getJavaType().equals(UUID.class)) {
-                        ((DirectToFieldMapping) mapping).setConverter(UuidConverter.getInstance());
-                        setDatabaseFieldParameters(session, mapping.getField());
-                    }
-                } else if (metaProperty.getRange().isClass() && !metaProperty.getRange().getCardinality().isMany()) {
-                    MetaClass refMetaClass = metaProperty.getRange().asClass();
-                    MetaProperty refPkProperty = metadata.getTools().getPrimaryKeyProperty(refMetaClass);
-                    if (refPkProperty != null && refPkProperty.getJavaType().equals(UUID.class)) {
-                        for (DatabaseField field : ((OneToOneMapping) mapping).getForeignKeyFields()) {
-                            setDatabaseFieldParameters(session, field);
-                        }
-                    }
-                }
-                // embedded attributes
-                if (mapping instanceof AggregateObjectMapping) {
-                    EmbeddedParameters embeddedParameters =
-                            metaProperty.getAnnotatedElement().getAnnotation(EmbeddedParameters.class);
-                    if (embeddedParameters != null && !embeddedParameters.nullAllowed())
-                        ((AggregateObjectMapping) mapping).setIsNullAllowed(false);
-                }
+                //TODO support UUID in DatabasePlatform definition, see @setDatabaseFieldParameters method.
+                addUuidSupport(session, metaClass, mapping);
 
-                if (mapping.isOneToManyMapping()) {
-                    OneToManyMapping oneToManyMapping = (OneToManyMapping) mapping;
-                    if (SoftDelete.class.isAssignableFrom(oneToManyMapping.getReferenceClass())) {
-                        oneToManyMapping.setAdditionalJoinCriteria(new ExpressionBuilder().get("deleteTs").isNull());
+                //Applying additional join criteria, e.g. for soft delete or multitenancy
+                if (mapping.isOneToManyMapping() || mapping.isOneToOneMapping()) {
+
+                    //Collect all join expressions from all providers
+                    Expression expression = AppBeans.getAll(JoinExpressionProvider.class)
+                            .values().stream()
+                            .map(provider -> provider.getJoinCriteriaExpression(mapping))
+                            .filter(Objects::nonNull)
+                            .reduce(Expression::and).orElse(null);
+
+                    //Apply expression to mappings
+                    //TODO Generalize this - extract @setAdditionalJoinCriteria method to a common interface, joinCriteria should be collection
+                    if (mapping.isOneToManyMapping()) {
+                        ((OneToManyMapping) mapping).setAdditionalJoinCriteria(expression);
+                    } else if (mapping.isOneToOneMapping()) {
+                        ((OneToOneMapping) mapping).setAdditionalJoinCriteria(expression);
                     }
                 }
 
-                if (mapping.isOneToOneMapping()) {
-                    OneToOneMapping oneToOneMapping = (OneToOneMapping) mapping;
-                    if (SoftDelete.class.isAssignableFrom(oneToOneMapping.getReferenceClass())) {
-                        if (mapping.isManyToOneMapping()) {
-                            oneToOneMapping.setSoftDeletionForBatch(false);
-                            oneToOneMapping.setSoftDeletionForValueHolder(false);
-                            ManyToOneMapping manyToOneMapping = (ManyToOneMapping) mapping;
-                            Class referenceClass = manyToOneMapping.getReferenceClass();
-                            if (isMultiTenant(referenceClass) && isMultiTenant(desc.getJavaClass())) {
-                                Field tenantIdField = getTenantField(referenceClass);
-                                Field parentTenantId = getTenantField(desc.getJavaClass());
-                                if (tenantIdField != null && parentTenantId != null) {
-                                    log.info("Tenant field for class " + referenceClass.getName() + " is " + tenantIdField.getName());
-                                    String columnName = tenantIdField.getName();
-                                    ExpressionBuilder builder = new ExpressionBuilder();
-                                    Expression tenantColumExpression = builder.get(columnName);
-                                    manyToOneMapping.setAdditionalJoinCriteria(
-                                            tenantColumExpression.equal(
-                                                    builder.getParameter(
-                                                            parentTenantId.getAnnotation(Column.class).name())));
-
-                                }
-                            }
-                        } else {
-                            OneToOne oneToOne = metaProperty.getAnnotatedElement().getAnnotation(OneToOne.class);
-                            if (oneToOne != null) {
-                                if (Strings.isNullOrEmpty(oneToOne.mappedBy())) {
-                                    oneToOneMapping.setSoftDeletionForBatch(false);
-                                    oneToOneMapping.setSoftDeletionForValueHolder(false);
-                                } else {
-                                    oneToOneMapping.setAdditionalJoinCriteria(
-                                            new ExpressionBuilder().get("deleteTs").isNull());
-                                }
-                            }
-                        }
-                    }
+                //Adding all nessesary updates for mappings. Used for SoftDelete, add-ons can append their modifications.
+                Map<String, MappingProcessor> mappingProcessors = AppBeans.getAll(MappingProcessor.class);
+                for (MappingProcessor processor : mappingProcessors.values()) {
+                    processor.process(mapping);
                 }
             }
         }
         logCheckResult(wrongFetchTypes, missingEnhancements);
     }
 
-    private boolean isMultiTenant(Class referenceClass) {
-        return (TenantEntity.class.isAssignableFrom(referenceClass)) && (referenceClass.getAnnotation(Deprecated.class) == null);
-    }
-
-    private Field getTenantField(Class referenceClass) {
-        return Arrays.stream(FieldUtils.getAllFields(referenceClass))
-                .filter(f -> f.isAnnotationPresent(Column.class))
-                .filter(f -> {
-                    String name = f.getAnnotation(Column.class).name();
-                    return name.equals("SYS_TENANT_ID") || name.equals("TENANT_ID");
-                })
-                .findFirst().orElse(null);
+    private void addUuidSupport(Session session, MetaClass metaClass, DatabaseMapping mapping) {
+        String attributeName = mapping.getAttributeName();
+        MetaProperty metaProperty = metaClass.getPropertyNN(attributeName);
+        if (metaProperty.getRange().isDatatype()) {
+            if (metaProperty.getJavaType().equals(UUID.class)) {
+                ((DirectToFieldMapping) mapping).setConverter(UuidConverter.getInstance());
+                setDatabaseFieldParameters(session, mapping.getField());
+            }
+        } else if (metaProperty.getRange().isClass() && !metaProperty.getRange().getCardinality().isMany()) {
+            MetaClass refMetaClass = metaProperty.getRange().asClass();
+            MetaProperty refPkProperty = metadata.getTools().getPrimaryKeyProperty(refMetaClass);
+            if (refPkProperty != null && refPkProperty.getJavaType().equals(UUID.class)) {
+                for (DatabaseField field : ((OneToOneMapping) mapping).getForeignKeyFields()) {
+                    setDatabaseFieldParameters(session, field);
+                }
+            }
+        }
     }
 
     private void setAdditionalCriteria(ClassDescriptor desc) {
@@ -331,6 +285,7 @@ public class EclipseLinkSessionEventListener extends SessionEventAdapter {
         return value == null || BooleanUtils.toBoolean(value);
     }
 
+    //TODO create ticket for this - move to DatabasePlatform definition
     private void setDatabaseFieldParameters(Session session, DatabaseField field) {
         if (session.getPlatform() instanceof PostgreSQLPlatform) {
             field.setSqlType(Types.OTHER);
