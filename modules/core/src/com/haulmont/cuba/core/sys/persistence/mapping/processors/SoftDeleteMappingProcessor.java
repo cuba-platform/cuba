@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.core.sys.persistence.mapping.processors.softdelete;
+package com.haulmont.cuba.core.sys.persistence.mapping.processors;
 
 import com.google.common.base.Strings;
 import com.haulmont.cuba.core.entity.SoftDelete;
-import com.haulmont.cuba.core.sys.persistence.mapping.processors.MappingProcessor;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.mappings.DatabaseMapping;
@@ -32,8 +31,8 @@ import java.lang.reflect.Field;
 public class SoftDeleteMappingProcessor implements MappingProcessor {
 
     @Override
-    public void process(DatabaseMapping mapping) {
-
+    public void process(MappingProcessorContext context) {
+        DatabaseMapping mapping = context.getMapping();
         ClassDescriptor descriptor = mapping.getDescriptor();
         Field referenceField =  FieldUtils.getAllFieldsList(descriptor.getJavaClass())
                 .stream().filter(f -> f.getName().equals(mapping.getAttributeName())).findFirst().orElse(null);
@@ -55,5 +54,6 @@ public class SoftDeleteMappingProcessor implements MappingProcessor {
                 }
             }
         }
+
     }
 }

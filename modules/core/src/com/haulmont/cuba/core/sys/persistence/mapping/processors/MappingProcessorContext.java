@@ -16,12 +16,27 @@
 
 package com.haulmont.cuba.core.sys.persistence.mapping.processors;
 
+import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.sessions.Session;
+
 /**
- * Updates mapping properties according to requirements. All mapping processors will in the last turn. Application
- * order is not guaranteed.
+ * Created by Aleksey Stukalov on 01.04.2020.
  */
-public interface MappingProcessor {
+public class MappingProcessorContext {
 
-    void process(MappingProcessorContext context);
+    private final DatabaseMapping mapping;
+    private final Session session;
 
+    public MappingProcessorContext(DatabaseMapping mapping, Session session) {
+        this.mapping = mapping;
+        this.session = session;
+    }
+
+    public DatabaseMapping getMapping() {
+        return mapping;
+    }
+
+    public Session getSession() {
+        return session;
+    }
 }

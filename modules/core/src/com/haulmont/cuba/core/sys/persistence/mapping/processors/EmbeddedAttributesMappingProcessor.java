@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.core.sys.persistence.mapping.processors.embedded.attributes;
+package com.haulmont.cuba.core.sys.persistence.mapping.processors;
 
 import com.haulmont.cuba.core.entity.annotation.EmbeddedParameters;
-import com.haulmont.cuba.core.sys.persistence.mapping.processors.MappingProcessor;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.mappings.AggregateObjectMapping;
@@ -30,8 +29,8 @@ import java.lang.reflect.Field;
 public class EmbeddedAttributesMappingProcessor implements MappingProcessor {
 
     @Override
-    public void process(DatabaseMapping mapping) {
-
+    public void process(MappingProcessorContext context) {
+        DatabaseMapping mapping = context.getMapping();
         if (mapping instanceof AggregateObjectMapping) {
             ClassDescriptor descriptor = mapping.getDescriptor();
             Field referenceField =
@@ -44,6 +43,5 @@ public class EmbeddedAttributesMappingProcessor implements MappingProcessor {
                     ((AggregateObjectMapping) mapping).setIsNullAllowed(false);
             }
         }
-
     }
 }
