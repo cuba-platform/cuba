@@ -65,7 +65,6 @@ public class EclipseLinkSessionEventListener extends SessionEventAdapter {
         Session session = event.getSession();
         setPrintInnerJoinOnClause(session);
 
-        List<String> wrongFetchTypes = new ArrayList<>();
         List<Pair<Class, String>> missingEnhancements = new ArrayList<>();
 
         Map<String, ClassDescriptor> mappedSuperclassDescriptorMap = session.getProject().getMappedSuperclassDescriptors();

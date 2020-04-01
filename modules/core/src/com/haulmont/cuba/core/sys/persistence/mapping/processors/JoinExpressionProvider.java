@@ -22,7 +22,7 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
 import javax.annotation.Nullable;
 
 /**
- * Generates additional join expression for entity mappings.
+ * Generates additional join expression for entity mappings. Used in {@link JoinCriteriaMappingProcessor}.
  */
 public interface JoinExpressionProvider {
 

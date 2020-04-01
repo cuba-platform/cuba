@@ -20,7 +20,7 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.sessions.Session;
 
 /**
- * Created by Aleksey Stukalov on 01.04.2020.
+ * POJO to store all information needed to process entity mappings.
  */
 public class MappingProcessorContext {
 

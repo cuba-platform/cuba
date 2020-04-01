@@ -23,6 +23,9 @@ import org.eclipse.persistence.mappings.ManyToOneMapping;
 import org.eclipse.persistence.mappings.OneToManyMapping;
 import org.eclipse.persistence.mappings.OneToOneMapping;
 
+/**
+ * Simplifies join expression generation depending on mapping type.
+ */
 public abstract class AbstractJoinExpressionProvider implements JoinExpressionProvider {
 
     @Override

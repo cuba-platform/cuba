@@ -26,7 +26,7 @@ import org.springframework.stereotype.Component;
 import java.util.Objects;
 
 /**
- * Created by Aleksey Stukalov on 01.04.2020.
+ * Uses all instances of {@link JoinExpressionProvider} beans to create and apply additional join criteria to the mapping.
  */
 @Component("cuba_JoinCriteriaMappingProcessor")
 public class JoinCriteriaMappingProcessor implements MappingProcessor {

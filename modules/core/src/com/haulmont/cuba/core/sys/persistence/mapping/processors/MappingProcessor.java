@@ -17,7 +17,7 @@
 package com.haulmont.cuba.core.sys.persistence.mapping.processors;
 
 /**
- * Updates mapping properties according to requirements. All mapping processors will in the last turn. Application
+ * Updates mapping properties according to requirements. Processors application
  * order is not guaranteed.
  */
 public interface MappingProcessor {

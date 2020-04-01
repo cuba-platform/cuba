@@ -22,9 +22,6 @@ import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 
-/**
- * Created by Aleksey Stukalov on 01.04.2020.
- */
 @Component("cuba_FetchTypeMappingProcessor")
 public class FetchTypeMappingProcessor implements MappingProcessor {
 

@@ -32,17 +32,11 @@ import javax.inject.Inject;
 import java.sql.Types;
 import java.util.UUID;
 
-/**
- * Created by Aleksey Stukalov on 01.04.2020.
- */
-
 @Component("cuba_UuidMappingProcessor")
 public class UuidMappingProcessor implements MappingProcessor {
 
     @Inject
     private Metadata metadata;
-
-
 
     @Override
     public void process(MappingProcessorContext context) {
