@@ -20,7 +20,9 @@ import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.testmodel.checkview.UserRelatedNews;
 import com.haulmont.cuba.testsupport.TestContainer;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.util.ArrayList;
@@ -28,7 +30,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
-import static org.hamcrest.core.StringContains.containsString;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -239,24 +240,6 @@ public class CheckLoadedStateTest {
         } catch (IllegalArgumentException e) {
             Assertions.assertTrue(e.getMessage().contains("parent is not loaded"));
         }
-    }
-
-    @Test
-    public void testGetCurrentView() {
-        DataManager dataManager = AppBeans.get(DataManager.class);
-        EntityStates entityStates = AppBeans.get(EntityStates.class);
-
-        User user = dataManager.load(LoadContext.create(User.class)
-                .setId(UUID.fromString("60885987-1b61-4247-94c7-dff348347f93"))
-                .setView("user.edit"));
-
-        View view = entityStates.getCurrentView(user);
-
-        User user1 = dataManager.load(LoadContext.create(User.class)
-                .setId(UUID.fromString("60885987-1b61-4247-94c7-dff348347f93"))
-                .setView(view));
-
-        entityStates.checkLoadedWithView(user1, "user.edit");
     }
 
     @AfterEach
