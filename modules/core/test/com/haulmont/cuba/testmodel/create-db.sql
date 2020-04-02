@@ -410,10 +410,14 @@ create table SALES1_ORDER_LINE (
     UPDATED_BY varchar(50),
     DELETE_TS timestamp,
     DELETED_BY varchar(50),
+    DTYPE varchar(100),
     --
     PRODUCT_ID varchar(36),
     QUANTITY integer,
     ORDER_ID varchar(36),
+    --
+    PARAM1 varchar(255),
+    PARAM2 varchar(255),
     --
     primary key (ID),
     constraint FK_SALES1_ORDER_LINE_PRODUCT foreign key (PRODUCT_ID) references SALES1_PRODUCT(ID),

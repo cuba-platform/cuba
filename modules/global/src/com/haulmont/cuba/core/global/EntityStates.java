@@ -50,6 +50,9 @@ public class EntityStates {
     @Inject
     protected MetadataTools metadataTools;
 
+    @Inject
+    protected Metadata metadata;
+
     private static final Logger log = LoggerFactory.getLogger(EntityStates.class);
 
     /**
@@ -136,7 +139,7 @@ public class EntityStates {
     }
 
     /**
-     * DEPRECATED. Use {@link MetadataTools#isSoftDeleted(java.lang.Class)} instead.
+     * DEPRECATED. Use {@link MetadataTools#isSoftDeleted(Class)} instead.
      */
     @Deprecated
     public boolean isSoftDeleted(Class entityClass) {
@@ -343,7 +346,12 @@ public class EntityStates {
             return;
         visited.add(entity);
 
-        for (MetaProperty property : entity.getMetaClass().getProperties()) {
+        // Using MetaClass of the view helps in the case when the entity is an item of a collection, and the collection
+        // can contain instances of different subclasses. So we don't want to add specific properties of subclasses
+        // to the resulting view.
+        MetaClass metaClass = metadata.getClassNN(view.getEntityClass());
+
+        for (MetaProperty property : metaClass.getProperties()) {
             if (!isLoaded(entity, property.getName()))
                 continue;
 
