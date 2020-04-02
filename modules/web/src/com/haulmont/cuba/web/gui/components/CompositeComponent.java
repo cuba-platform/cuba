@@ -34,7 +34,7 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 public class CompositeComponent<T extends Component>
-        implements Component, Component.BelongToFrame, AttachNotifier, HasDebugId {
+        implements Component, Component.BelongToFrame, AttachNotifier, HasDebugId, HasHtmlSanitizer {
 
     protected String id;
     protected T root;
@@ -408,6 +408,16 @@ public class CompositeComponent<T extends Component>
         if (getDebugId() == null) {
             assignDebugId();
         }
+    }
+
+    @Override
+    public boolean isHtmlSanitizerEnabled() {
+        return ((HasHtmlSanitizer) getComposition()).isHtmlSanitizerEnabled();
+    }
+
+    @Override
+    public void setHtmlSanitizerEnabled(boolean htmlSanitizerEnabled) {
+        ((HasHtmlSanitizer) getComposition()).setHtmlSanitizerEnabled(htmlSanitizerEnabled);
     }
 
     /**
