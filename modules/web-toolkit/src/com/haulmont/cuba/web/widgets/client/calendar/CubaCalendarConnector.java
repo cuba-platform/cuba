@@ -22,8 +22,20 @@ import com.vaadin.shared.ui.Connect;
 
 @Connect(value = CubaCalendar.class, loadStyle = Connect.LoadStyle.LAZY)
 public class CubaCalendarConnector extends CalendarConnector {
+
     @Override
     public CubaCalendarWidget getWidget() {
         return (CubaCalendarWidget) super.getWidget();
+    }
+
+    @Override
+    protected void registerListeners() {
+        super.registerListeners();
+
+        getWidget().setDayClickListener(date -> {
+            if (!getWidget().isDisabled() && hasEventListener(CubaCalendarEventId.DAYCLICK)) {
+                getRpcProxy(CubaCalendarServerRpc.class).dayClick(date);
+            }
+        });
     }
 }

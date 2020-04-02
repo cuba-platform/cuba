@@ -590,6 +590,20 @@ public class WebCalendar<V> extends WebAbstractComponent<CubaCalendar>
     }
 
     @Override
+    public Subscription addDayClickListener(Consumer<CalendarDayClickEvent<V>> listener) {
+        component.setDayClickHandler(this::onDayClick);
+
+        return getEventHub().subscribe(CalendarDayClickEvent.class, (Consumer) listener);
+    }
+
+    protected void onDayClick(CubaCalendar.CubaCalendarDayClickEvent event) {
+        CalendarDayClickEvent<V> dayClickEvent =
+                new CalendarDayClickEvent<>(this, convertToModel(event.getDate()));
+
+        getEventHub().publish(CalendarDayClickEvent.class, dayClickEvent);
+    }
+
+    @Override
     public CalendarEventProvider getEventProvider() {
         return ((CalendarEventProviderWrapper) component.getEventProvider()).getCalendarEventProvider();
     }
