@@ -271,6 +271,14 @@ public interface Calendar<V> extends Component.BelongToFrame, Component.HasCapti
     @Deprecated
     void removeRangeSelectListener(Consumer<CalendarRangeSelectEvent<V>> listener);
 
+    /**
+     * Adds day click listener. It is invoked when the user clicks on empty space in the day.
+     *
+     * @param listener listener to add
+     * @return a registration object for removing an event listener.
+     */
+    Subscription addDayClickListener(Consumer<CalendarDayClickEvent<V>> listener);
+
     enum TimeFormat {
         FORMAT_12H, FORMAT_24H
     }
@@ -573,6 +581,39 @@ public interface Calendar<V> extends Component.BelongToFrame, Component.HasCapti
 
         public V getEnd() {
             return end;
+        }
+    }
+
+    /**
+     * Describes day click event.
+     *
+     * @param <V> type of value
+     * @see #addDayClickListener(Consumer)
+     */
+    class CalendarDayClickEvent<V> extends EventObject {
+
+        protected V date;
+
+        public CalendarDayClickEvent(Calendar<V> source, V date) {
+            super(source);
+
+            this.date = date;
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public Calendar<V> getSource() {
+            return (Calendar<V>) super.getSource();
+        }
+
+        /**
+         * If calendar value type supports time (e.g. {@link java.util.Date}) date will contain time value for day and
+         * week calendar view. Calendar with month view does not provide time value.
+         *
+         * @return date which user clicked on
+         */
+        public V getDate() {
+            return date;
         }
     }
 }

@@ -16,11 +16,30 @@
 
 package com.haulmont.cuba.web.widgets;
 
+import com.haulmont.cuba.web.widgets.client.calendar.CubaCalendarEventId;
+import com.haulmont.cuba.web.widgets.client.calendar.CubaCalendarServerRpc;
+import com.vaadin.util.ReflectTools;
 import com.vaadin.v7.ui.Calendar;
+
+import java.lang.reflect.Method;
+import java.util.Date;
+import java.util.EventListener;
+import java.util.EventObject;
 
 public class CubaCalendar extends Calendar {
     protected String[] dayNamesShort;
     protected String[] monthNamesShort;
+
+    public CubaCalendar() {
+        super();
+
+        registerRpc(new CubaCalendarServerRpc() {
+            @Override
+            public void dayClick(Date date) {
+                fireDayClickEvent(date);
+            }
+        });
+    }
 
     @Override
     public String[] getDayNamesShort() {
@@ -50,5 +69,39 @@ public class CubaCalendar extends Calendar {
 
     public int getFirstDayOfWeek() {
         return currentCalendar.getFirstDayOfWeek();
+    }
+
+    public void setDayClickHandler(DayClickHandler dayClickHandler) {
+        setHandler(CubaCalendarEventId.DAYCLICK,
+                CubaCalendarDayClickEvent.class,
+                dayClickHandler,
+                DayClickHandler.method);
+    }
+
+    protected void fireDayClickEvent(Date date) {
+        fireEvent(new CubaCalendarDayClickEvent(this, date));
+    }
+
+    public interface DayClickHandler extends EventListener {
+
+        Method method = ReflectTools.findMethod(
+                DayClickHandler.class, "onDayClick", CubaCalendarDayClickEvent.class);
+
+        void onDayClick(CubaCalendarDayClickEvent event);
+    }
+
+    public static class CubaCalendarDayClickEvent extends EventObject {
+
+        protected Date date;
+
+        public CubaCalendarDayClickEvent(Calendar calendar, Date date) {
+            super(calendar);
+
+            this.date = date;
+        }
+
+        public Date getDate() {
+            return date;
+        }
     }
 }
