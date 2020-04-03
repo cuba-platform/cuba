@@ -28,7 +28,7 @@ create unique index IDX_SEC_ROLE_UNIQ_NAME on SEC_ROLE (NAME) where DELETE_TS is
 create unique index IDX_SEC_ROLE_UNIQ_NAME_SYS_TENANT_ID_NN on SEC_ROLE (NAME, SYS_TENANT_ID)
     where DELETE_TS is null and SYS_TENANT_ID is not null^
 
-drop index IDX_SEC_GROUP_UNIQ_NAME^
+drop index IF EXISTS IDX_SEC_GROUP_UNIQ_NAME^
 create unique index IDX_SEC_GROUP_UNIQ_NAME on SEC_GROUP (NAME) where DELETE_TS is null and SYS_TENANT_ID is null^
 create unique index IDX_SEC_GROUP_UNIQ_NAME_SYS_TENANT_ID_NN on SEC_GROUP (NAME, SYS_TENANT_ID)
     where DELETE_TS is null and SYS_TENANT_ID is not null^
