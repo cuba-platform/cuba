@@ -23,9 +23,15 @@ import javax.annotation.Nullable;
 
 /**
  * Generates additional join expression for entity mappings. Used in {@link JoinCriteriaMappingProcessor}.
+ * Every provider should be a Spring @{@link org.springframework.stereotype.Component}.
  */
 public interface JoinExpressionProvider {
 
+    /**
+     * Returns join expression that can be applied to certain types of mappings.
+     * @param mapping mapping to be processed.
+     * @return EclipseLink's expression object, similar to criteria API expression.
+     */
     @Nullable
     Expression getJoinCriteriaExpression(DatabaseMapping mapping);
 

@@ -32,6 +32,9 @@ import javax.inject.Inject;
 import java.sql.Types;
 import java.util.UUID;
 
+/**
+ * Updates entity mappings to add UUID support even for databases that do not support UUID datatype directly.
+ */
 @Component("cuba_UuidMappingProcessor")
 public class UuidMappingProcessor implements MappingProcessor {
 

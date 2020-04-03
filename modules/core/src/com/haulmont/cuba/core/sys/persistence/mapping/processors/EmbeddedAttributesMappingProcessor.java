@@ -25,6 +25,9 @@ import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Field;
 
+/**
+ * Updates database mapping to support embedded parameters.
+ */
 @Component("cuba_EmbeddedAttributesMappingProcessor")
 public class EmbeddedAttributesMappingProcessor implements MappingProcessor {
 

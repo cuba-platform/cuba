@@ -31,6 +31,9 @@ import org.springframework.stereotype.Component;
 import javax.persistence.OneToOne;
 import java.lang.reflect.Field;
 
+/**
+ * Generates expression to support soft delete feature in CUBA.
+ */
 @Component("cuba_SoftDeleteJoinExpressionProvider")
 public class SoftDeleteJoinExpressionProvider extends AbstractJoinExpressionProvider {
 

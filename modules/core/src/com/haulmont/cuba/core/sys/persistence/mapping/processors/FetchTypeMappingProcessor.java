@@ -22,6 +22,11 @@ import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 
+/**
+ * Updates mapping by setting a correct fetch type - lazy or eager.
+ * Relational mappings: 1:1, 1:m, m:1, m:m are set to lazy. Other types like {@link org.eclipse.persistence.mappings.AggregateObjectMapping}
+ * are set to eager.
+ */
 @Component("cuba_FetchTypeMappingProcessor")
 public class FetchTypeMappingProcessor implements MappingProcessor {
 

@@ -27,6 +27,11 @@ import org.springframework.stereotype.Component;
 import javax.persistence.OneToOne;
 import java.lang.reflect.Field;
 
+/**
+ * Modifies mapping to support soft delete feature. Updates softDeletionForBatch and
+ * softDeletionForValueHolder properties using corresponding setters.
+ *
+ */
 @Component("cuba_SoftDeleteMappingProcessor")
 public class SoftDeleteMappingProcessor implements MappingProcessor {
 

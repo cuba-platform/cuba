@@ -18,10 +18,15 @@ package com.haulmont.cuba.core.sys.persistence.mapping.processors;
 
 /**
  * Updates mapping properties according to requirements. Processors application
- * order is not guaranteed.
+ * order is not guaranteed. Every mapping processor should be a Spring @{@link org.springframework.stereotype.Component},
+ * so you can inject other beans to it.
  */
 public interface MappingProcessor {
 
+    /**
+     * Updates mapping according to the processor's aim. Can be used to enable lazy fetch, add join expression, etc.
+     * @param context Context data contains objects that cannot be injected.
+     */
     void process(MappingProcessorContext context);
 
 }
