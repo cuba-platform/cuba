@@ -49,6 +49,8 @@ public class HtmlBoxLayoutLoader extends ContainerLoader<HtmlBoxLayout> {
 
         loadAlign(resultComponent, element);
 
+        loadHtmlSanitizerEnabled(resultComponent, element);
+
         loadTemplate(resultComponent, element);
         loadTemplateContents(resultComponent, element);
 
@@ -60,8 +62,6 @@ public class HtmlBoxLayoutLoader extends ContainerLoader<HtmlBoxLayout> {
         loadDescription(resultComponent, element);
         loadContextHelp(resultComponent, element);
         loadRequiredIndicatorVisible(resultComponent, element);
-
-        loadHtmlSanitizerEnabled(resultComponent, element);
 
         loadSubComponents();
     }
