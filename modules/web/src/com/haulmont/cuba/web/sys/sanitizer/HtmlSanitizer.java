@@ -117,6 +117,29 @@ public class HtmlSanitizer {
     protected static final String FONT_COLOR_ATTRIBUTE_NAME = "color";
 
     /**
+     * Html class regexp. Intended to match class attribute value.
+     * <p>
+     * Regexp explanation:
+     * <ul>
+     *     <li>{@code a-zA-Z} - matches a single character in the range: a-z, A-Z</li>
+     *     <li>{@code 0-9} - matches a single character in the range: 0-9</li>
+     *     <li>{@code ,} - matches a comma character</li>
+     *     <li>{@code \\s} - matches any whitespace character</li>
+     *     <li>{@code \\-} - matches a dash character</li>
+     *     <li>{@code _} - matches an underscore character </li>
+     *     <li>{@code []+} - matches between one and unlimited times</li>
+     * </ul>
+     * <p>
+     * Example:
+     * <pre>{@code
+     *      &lt;div class="v-app"/&gt;
+     * }</pre>
+     */
+    protected static final String CLASS_REGEXP = "[a-zA-Z0-9\\s,\\-_]+";
+    protected static final Pattern CLASS_PATTERN = Pattern.compile(CLASS_REGEXP);
+    protected static final String CLASS_ATTRIBUTE_NAME = "class";
+
+    /**
      * The additional css schema whitelist that was not included in the default whitelist in {@code Sanitizers.STYLES}. .
      */
     protected static final ImmutableSet<String> DEFAULT_WHITELIST = ImmutableSet.of(
@@ -176,6 +199,7 @@ public class HtmlSanitizer {
                 .allowAttributes(FONT_COLOR_ATTRIBUTE_NAME).matching(FONT_COLOR_PATTERN).onElements(FONT)
                 .allowAttributes(FONT_FACE_ATTRIBUTE_NAME).matching(FONT_FACE_PATTERN).onElements(FONT)
                 .allowAttributes(FONT_SIZE_ATTRIBUTE_NAME).matching(FONT_SIZE_PATTERN).onElements(FONT)
+                .allowAttributes(CLASS_ATTRIBUTE_NAME).matching(CLASS_PATTERN).globally()
                 .allowStyling(CssSchema.withProperties(DEFAULT_WHITELIST))
                 .allowStyling(CssSchema.withProperties(getAdditionalStylePolicies()))
                 .toFactory()
