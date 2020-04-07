@@ -30,6 +30,16 @@ $c-timefield-ampm-width: 62px !default;
     height: $v-unit-size;
   }
 
+  .#{$primary-stylename}-wrapper.v-has-width {
+    .#{$primary-stylename}-layout {
+      display: inline-flex;
+    }
+
+    .#{$primary-stylename} {
+      width: 100%;
+    }
+  }
+
   .#{$primary-stylename}.v-readonly {
     @include valo-textfield-readonly-style;
 
@@ -64,6 +74,7 @@ $c-timefield-ampm-width: 62px !default;
 
   .#{$primary-stylename}-ampm {
     width: $c-timefield-ampm-width;
+    min-width: $c-timefield-ampm-width;
     margin-left: round($v-layout-spacing-horizontal/2);
   }
 }
