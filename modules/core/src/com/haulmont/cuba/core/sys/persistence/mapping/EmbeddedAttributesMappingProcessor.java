@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.core.sys.persistence.mapping.processors;
+package com.haulmont.cuba.core.sys.persistence.mapping;
 
 import com.haulmont.cuba.core.entity.annotation.EmbeddedParameters;
 import org.apache.commons.lang3.reflect.FieldUtils;

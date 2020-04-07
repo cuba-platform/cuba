@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.core.sys.persistence.mapping.processors;
+package com.haulmont.cuba.core.sys.persistence.mapping;
 
 /**
  * Updates mapping properties according to requirements. Processors application
