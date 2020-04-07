@@ -34,7 +34,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class CubaTimeFieldWrapper extends CustomField<LocalTime> {
 
-    public static final String TIME_FIELD_STYLENAME = "c-timefield-layout";
+    public static final String TIME_FIELD_STYLENAME = "c-timefield-wrapper";
+    public static final String TIME_FIELD_LAYOUT_STYLENAME = "c-timefield-layout";
     public static final String AM_PM_FIELD_STYLE_NAME = "c-timefield-ampm";
 
     protected CubaCssActionsLayout container;
@@ -149,10 +150,8 @@ public class CubaTimeFieldWrapper extends CustomField<LocalTime> {
     }
 
     protected void init() {
-        container = new CubaCssActionsLayout();
-        container.setPrimaryStyleName(TIME_FIELD_STYLENAME);
-
-        setWidthUndefined();
+        setPrimaryStyleName(TIME_FIELD_STYLENAME);
+        setSizeUndefined();
     }
 
     protected void initTimeField() {
@@ -172,6 +171,10 @@ public class CubaTimeFieldWrapper extends CustomField<LocalTime> {
     }
 
     protected void initLayout() {
+        container = new CubaCssActionsLayout();
+        container.setSizeFull();
+        container.setPrimaryStyleName(TIME_FIELD_LAYOUT_STYLENAME);
+
         container.addComponent(timeField);
     }
 
