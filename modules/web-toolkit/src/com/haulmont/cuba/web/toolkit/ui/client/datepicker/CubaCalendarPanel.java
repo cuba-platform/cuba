@@ -1,5 +1,6 @@
 package com.haulmont.cuba.web.toolkit.ui.client.datepicker;
 
+import com.vaadin.client.DateTimeService;
 import com.vaadin.client.ui.VCalendarPanel;
 
 import java.util.Date;
@@ -57,5 +58,11 @@ public class CubaCalendarPanel extends VCalendarPanel {
 
     public void setTextualRangeEnd(String rangeEnd) {
         this.rangeEnd = rangeEnd;
+    }
+
+    @Override
+    protected boolean isSameDay(Date currdayDate, Date date) {
+        return currdayDate != null && date != null
+                && DateTimeService.isSameDay(currdayDate, date);
     }
 }
