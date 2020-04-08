@@ -23,6 +23,10 @@
         <when-type-is class="com.vaadin.client.VTooltip"/>
     </replace-with>
 
+    <replace-with class="com.haulmont.cuba.web.widgets.client.datefield.CubaDateCalendarPanel">
+        <when-type-is class="com.vaadin.client.ui.VDateCalendarPanel"/>
+    </replace-with>
+
     <replace-with class="com.haulmont.cuba.web.widgets.client.appui.CubaUIConnector">
         <when-type-is class="com.vaadin.client.ui.ui.UIConnector"/>
     </replace-with>
