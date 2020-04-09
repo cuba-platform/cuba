@@ -33,6 +33,10 @@ import com.haulmont.cuba.gui.components.data.ValueSource;
 import com.haulmont.cuba.gui.components.data.value.ContainerValueSource;
 import com.haulmont.cuba.gui.components.data.value.ContainerValueSourceProvider;
 import com.haulmont.cuba.gui.dynamicattributes.DynamicAttributeComponentsGenerator;
+import com.haulmont.cuba.gui.meta.CanvasIconSize;
+import com.haulmont.cuba.gui.meta.PropertyType;
+import com.haulmont.cuba.gui.meta.StudioComponent;
+import com.haulmont.cuba.gui.meta.StudioProperty;
 import com.haulmont.cuba.gui.model.InstanceContainer;
 import com.haulmont.cuba.web.gui.components.CompositeComponent;
 import com.haulmont.cuba.web.gui.components.CompositeDescriptor;
@@ -40,9 +44,14 @@ import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
+import javax.validation.constraints.Positive;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@StudioComponent(category = "Components",
+        unsupportedProperties = {"enable", "responsive"},
+        icon = "icon/dynamicAttributesPanel.svg",
+        canvasIconSize = CanvasIconSize.LARGE)
 @CompositeDescriptor("dynamic-attributes-panel.xml")
 public class DynamicAttributesPanel extends CompositeComponent<VBoxLayout> implements Validatable {
 
@@ -284,6 +293,7 @@ public class DynamicAttributesPanel extends CompositeComponent<VBoxLayout> imple
      *
      * @param instanceContainer {@link InstanceContainer} object with editing entity
      */
+    @StudioProperty(name = "dataContainer", type = PropertyType.DATACONTAINER_REF, required = true)
     public void setInstanceContainer(InstanceContainer<BaseGenericIdEntity> instanceContainer) {
         this.instanceContainer = instanceContainer;
         propertiesForm.setValueSourceProvider(new ContainerValueSourceProvider<>(instanceContainer));
@@ -298,6 +308,8 @@ public class DynamicAttributesPanel extends CompositeComponent<VBoxLayout> imple
      *
      * @param cols positive integer or {@code null}
      */
+    @StudioProperty(name = "cols")
+    @Positive
     public void setColumnsCount(Integer cols) {
         if (cols != null && cols <= 0) {
             throw new GuiDevelopmentException(
@@ -311,6 +323,8 @@ public class DynamicAttributesPanel extends CompositeComponent<VBoxLayout> imple
      *
      * @param rows positive integer or {@code null}
      */
+    @StudioProperty(name = "rows")
+    @Positive
     public void setRowsCount(Integer rows) {
         if (rows != null && rows <= 0) {
             throw new GuiDevelopmentException(
@@ -324,6 +338,7 @@ public class DynamicAttributesPanel extends CompositeComponent<VBoxLayout> imple
      *
      * @param fieldWidth width of the fields
      */
+    @StudioProperty(type = PropertyType.SIZE)
     public void setFieldWidth(String fieldWidth) {
         this.fieldWidth = fieldWidth;
     }
@@ -333,6 +348,7 @@ public class DynamicAttributesPanel extends CompositeComponent<VBoxLayout> imple
      *
      * @param fieldCaptionWidth width of the fields caption
      */
+    @StudioProperty(type = PropertyType.SIZE)
     public void setFieldCaptionWidth(String fieldCaptionWidth) {
         this.fieldCaptionWidth = fieldCaptionWidth;
     }
