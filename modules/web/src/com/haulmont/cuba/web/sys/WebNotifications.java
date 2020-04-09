@@ -241,8 +241,13 @@ public class WebNotifications implements Notifications {
 
                 if (contentMode == ContentMode.HTML
                         && isHtmlSanitizerEnabled()) {
-                    vNotification.setCaption(htmlSanitizer.sanitize(getCaption()));
-                    vNotification.setDescription(htmlSanitizer.sanitize(getDescription()));
+                    if (caption != null) {
+                        vNotification.setCaption(htmlSanitizer.sanitize(getCaption()));
+                    }
+
+                    if (description != null) {
+                        vNotification.setDescription(htmlSanitizer.sanitize(getDescription()));
+                    }
                 }
 
                 if (styleName != null) {
