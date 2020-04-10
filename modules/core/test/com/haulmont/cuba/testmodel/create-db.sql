@@ -3,6 +3,21 @@
 
 ------------------------------------------------------------------------------------------------------------
 
+create table TEST_MANY2MANY_REF (
+    ID varchar(36) not null,
+    CREATE_TS timestamp,
+    CREATED_BY varchar(50),
+    VERSION integer,
+    UPDATE_TS timestamp,
+    UPDATED_BY varchar(50),
+    DELETE_TS timestamp,
+    DELETED_BY varchar(50),
+    NAME varchar(255),
+    primary key (ID)
+)^
+
+------------------------------------------------------------------------------------------------------------
+
 create table TEST_MANY2MANY_A (
     ID varchar(36) not null,
     CREATE_TS timestamp,
@@ -12,7 +27,9 @@ create table TEST_MANY2MANY_A (
     UPDATED_BY varchar(50),
     DELETE_TS timestamp,
     DELETED_BY varchar(50),
-    primary key (ID)
+    REF_ID varchar(255),
+    primary key (ID),
+    constraint TEST_MANY2MANY_A_REF foreign key (REF_ID) references TEST_MANY2MANY_REF(ID)
 )^
 
 ------------------------------------------------------------------------------------------------------------
