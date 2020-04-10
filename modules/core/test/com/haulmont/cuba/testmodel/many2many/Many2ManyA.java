@@ -40,6 +40,9 @@ public class Many2ManyA extends StandardEntity {
             inverseJoinColumns = @JoinColumn(name = "B_ID"))
     protected Set<Many2ManyB> collectionOfB2;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "REF_ID")
+    protected Many2ManyRef ref;
 
     public Set<Many2ManyB> getCollectionOfB() {
         return collectionOfB;
@@ -55,5 +58,13 @@ public class Many2ManyA extends StandardEntity {
 
     public void setCollectionOfB2(Set<Many2ManyB> collectionOfB2) {
         this.collectionOfB2 = collectionOfB2;
+    }
+
+    public Many2ManyRef getRef() {
+        return ref;
+    }
+
+    public void setRef(Many2ManyRef ref) {
+        this.ref = ref;
     }
 }

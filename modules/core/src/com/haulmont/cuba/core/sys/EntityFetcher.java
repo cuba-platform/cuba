@@ -30,10 +30,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
-import javax.persistence.Basic;
-import javax.persistence.FetchType;
-import java.lang.reflect.AnnotatedElement;
 import java.util.*;
+import java.util.function.Consumer;
 
 /**
  * Fetches entities by views by accessing reference attributes.
@@ -103,6 +101,7 @@ public class EntityFetcher {
         fetch(instance, view, new HashMap<>(), optimizeForDetached);
     }
 
+    @SuppressWarnings("unchecked")
     protected void fetch(Entity entity, View view, Map<Instance, Set<View>> visited, boolean optimizeForDetached) {
         Set<View> views = visited.get(entity);
         if (views == null) {
@@ -127,34 +126,56 @@ public class EntityFetcher {
             View propertyView = property.getView();
             if (value != null && propertyView != null) {
                 if (value instanceof Collection) {
-                    for (Object item : ((Collection) value)) {
-                        if (item instanceof Entity)
-                            fetch((Entity) item, propertyView, visited, optimizeForDetached);
+                    for (Object item : new ArrayList(((Collection) value))) {
+                        if (item instanceof Entity) {
+                            Entity e = (Entity) item;
+                            if (entityStates.isDetached(e)) {
+                                fetchReloaded(e, propertyView, visited, optimizeForDetached, managed -> {
+                                    if (value instanceof List) {
+                                        List list = (List) value;
+                                        list.set(list.indexOf(e), managed);
+                                    } else {
+                                        Collection collection = (Collection) value;
+                                        collection.remove(e);
+                                        collection.add(managed);
+                                    }
+                                });
+                            } else {
+                                fetch((Entity) item, propertyView, visited, optimizeForDetached);
+                            }
+                        }
                     }
                 } else if (value instanceof Entity) {
                     Entity e = (Entity) value;
-                    if (!metaProperty.isReadOnly() && PersistenceHelper.isDetached(value) && !(value instanceof EmbeddableEntity)) {
-                        if (!optimizeForDetached || needReloading(e, propertyView)) {
-                            if (log.isTraceEnabled()) {
-                                log.trace("Object " + value + " is detached, loading it");
-                            }
-                            String storeName = metadata.getTools().getStoreName(e.getMetaClass());
-                            if (storeName != null) {
-                                try (Transaction tx = persistence.getTransaction(storeName)) {
-                                    EntityManager em = persistence.getEntityManager(storeName);
-                                    //noinspection unchecked
-                                    Entity managed = em.find(e.getClass(), e.getId());
-                                    if (managed != null) { // the instance here can be null if it has been deleted
-                                        entity.setValue(property.getName(), managed);
-                                        fetch(managed, propertyView, visited, optimizeForDetached);
-                                    }
-                                    tx.commit();
-                                }
-                            }
-                        }
+                    if (!metaProperty.isReadOnly() && entityStates.isDetached(e) && !(e instanceof EmbeddableEntity)) {
+                        fetchReloaded(e, propertyView, visited, optimizeForDetached, managed -> {
+                                    entity.setValue(property.getName(), managed);
+                        });
                     } else {
                         fetch(e, propertyView, visited, optimizeForDetached);
                     }
+                }
+            }
+        }
+    }
+
+    protected void fetchReloaded(Entity entity, View view, Map<Instance, Set<View>> visited, boolean optimizeForDetached,
+                                 Consumer<Entity> managedEntityConsumer) {
+        if (!optimizeForDetached || needReloading(entity, view)) {
+            if (log.isTraceEnabled()) {
+                log.trace("Object " + entity + " is detached, loading it");
+            }
+            String storeName = metadata.getTools().getStoreName(entity.getMetaClass());
+            if (storeName != null) {
+                try (Transaction tx = persistence.getTransaction(storeName)) {
+                    EntityManager em = persistence.getEntityManager(storeName);
+                    //noinspection unchecked
+                    Entity managed = em.find(entity.getClass(), entity.getId());
+                    if (managed != null) { // the instance here can be null if it has been deleted
+                        managedEntityConsumer.accept(managed);
+                        fetch(managed, view, visited, optimizeForDetached);
+                    }
+                    tx.commit();
                 }
             }
         }
