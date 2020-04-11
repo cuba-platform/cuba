@@ -16,18 +16,18 @@
 
 package com.haulmont.cuba.web.widgets;
 
-import com.haulmont.cuba.web.widgets.client.split.CubaHorizontalSplitPanelServerRpc;
+import com.haulmont.cuba.web.widgets.client.split.CubaDockableSplitPanelServerRpc;
 import com.haulmont.cuba.web.widgets.client.split.CubaVerticalSplitPanelState;
 import com.haulmont.cuba.web.widgets.client.split.SplitPanelDockMode;
 import com.vaadin.ui.VerticalSplitPanel;
 
-public class CubaVerticalSplitPanel extends VerticalSplitPanel {
+public class CubaVerticalSplitPanel extends VerticalSplitPanel implements CubaDockableSplitPanel {
 
     public CubaVerticalSplitPanel() {
         super();
 
-        CubaHorizontalSplitPanelServerRpc serverRpc =
-                (CubaHorizontalSplitPanelServerRpc) position -> getState().beforeDockPosition = position;
+        CubaDockableSplitPanelServerRpc serverRpc =
+                (CubaDockableSplitPanelServerRpc) position -> getState().beforeDockPosition = position;
 
         registerRpc(serverRpc);
     }
@@ -42,24 +42,32 @@ public class CubaVerticalSplitPanel extends VerticalSplitPanel {
         return (CubaVerticalSplitPanelState) super.getState(markAsDirty);
     }
 
+    @Override
     public boolean isDockable() {
         return getState(false).dockable;
     }
 
+    @Override
     public void setDockable(boolean usePinButton) {
         if (isDockable() != usePinButton) {
             getState().dockable = usePinButton;
         }
     }
 
+    @Override
     public void setDockMode(SplitPanelDockMode dockMode) {
+        if (dockMode == SplitPanelDockMode.LEFT || dockMode == SplitPanelDockMode.RIGHT) {
+            throw new IllegalStateException("Dock mode " + dockMode.name() + " is not available for the vertically oriented SplitPanel.");
+        }
         getState().dockMode = dockMode;
     }
 
+    @Override
     public SplitPanelDockMode getDockMode() {
         return getState(false).dockMode;
     }
 
+    @Override
     public String getDefaultPosition() {
         return getState(false).defaultPosition;
     }
@@ -69,6 +77,7 @@ public class CubaVerticalSplitPanel extends VerticalSplitPanel {
      *
      * @param defaultPosition default position
      */
+    @Override
     public void setDefaultPosition(String defaultPosition) {
         getState().defaultPosition = defaultPosition;
     }

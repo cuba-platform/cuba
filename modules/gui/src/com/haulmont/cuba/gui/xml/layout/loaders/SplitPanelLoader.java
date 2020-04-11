@@ -102,7 +102,7 @@ public class SplitPanelLoader extends ContainerLoader<SplitPanel> {
             && (mode == SplitPanel.DockMode.LEFT || mode == SplitPanel.DockMode.RIGHT)) {
             throw new GuiDevelopmentException("Dock mode " + mode.name() + " cannot be enabled for vertically oriented SplitPanel", context);
         } else if (resultComponent.getOrientation() == SplitPanel.ORIENTATION_HORIZONTAL
-                && (mode == SplitPanel.DockMode.UP || mode == SplitPanel.DockMode.DOWN)) {
+                && (mode == SplitPanel.DockMode.TOP || mode == SplitPanel.DockMode.BOTTOM)) {
             throw new GuiDevelopmentException("Dock mode " + mode.name() + " cannot be enabled for horizontally oriented SplitPanel", context);
         }
 

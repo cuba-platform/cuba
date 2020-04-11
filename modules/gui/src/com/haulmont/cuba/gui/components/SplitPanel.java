@@ -39,8 +39,8 @@ public interface SplitPanel extends ComponentContainer, Component.BelongToFrame,
     enum DockMode {
         LEFT,
         RIGHT,
-        UP,
-        DOWN
+        TOP,
+        BOTTOM
     }
 
     int getOrientation();

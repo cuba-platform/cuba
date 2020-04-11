@@ -19,7 +19,7 @@ package com.haulmont.cuba.web.widgets.client.split;
 import com.vaadin.shared.annotations.Delayed;
 import com.vaadin.shared.communication.ServerRpc;
 
-public interface CubaHorizontalSplitPanelServerRpc extends ServerRpc {
+public interface CubaDockableSplitPanelServerRpc extends ServerRpc {
 
     @Delayed
     void setBeforeDockPosition(String position);

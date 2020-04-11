@@ -52,7 +52,7 @@ public class CubaVerticalSplitPanelWidget extends VSplitPanelVertical {
 
     protected DockButtonState dockButtonState = DockButtonState.UP;
 
-    protected SplitPanelDockMode dockMode = SplitPanelDockMode.UP;
+    protected SplitPanelDockMode dockMode = SplitPanelDockMode.TOP;
 
     protected Consumer<String> beforeDockPositionHandler = null;
 
@@ -92,7 +92,7 @@ public class CubaVerticalSplitPanelWidget extends VSplitPanelVertical {
     protected CubaPlaceHolderWidget createDockButton() {
         CubaPlaceHolderWidget dockBtn = new CubaPlaceHolderWidget();
         dockBtn.setStyleName(SP_DOCK_BUTTON);
-        if (dockMode == SplitPanelDockMode.UP) {
+        if (dockMode == SplitPanelDockMode.TOP) {
             dockBtn.addStyleName(SP_DOCK_BUTTON_UP);
         } else {
             dockBtn.addStyleName(SP_DOCK_BUTTON_DOWN);
@@ -108,9 +108,9 @@ public class CubaVerticalSplitPanelWidget extends VSplitPanelVertical {
         dockBtnContainer.getStyle().setZIndex(101);
         dockBtnContainer.getStyle().setPosition(Style.Position.ABSOLUTE);
 
-        if (dockMode == SplitPanelDockMode.UP) {
+        if (dockMode == SplitPanelDockMode.TOP) {
             dockBtnContainer.addClassName(SP_DOCK_UP);
-        } else if (dockMode == SplitPanelDockMode.DOWN) {
+        } else if (dockMode == SplitPanelDockMode.BOTTOM) {
             dockBtnContainer.addClassName(SP_DOCK_DOWN);
         }
         return dockBtnContainer;
@@ -120,7 +120,7 @@ public class CubaVerticalSplitPanelWidget extends VSplitPanelVertical {
         String newPosition = position;
         boolean isDocked = false;
 
-        if (dockMode == SplitPanelDockMode.UP) {
+        if (dockMode == SplitPanelDockMode.TOP) {
             if (dockButtonState == DockButtonState.UP) {
                 defaultPosition = position;
                 newPosition = "0px";
@@ -138,7 +138,7 @@ public class CubaVerticalSplitPanelWidget extends VSplitPanelVertical {
                 newPosition = reversed ? "0px" : getAbsoluteBottom() + "px";
                 isDocked = true;
             }
-        } else if (dockMode == SplitPanelDockMode.DOWN) {
+        } else if (dockMode == SplitPanelDockMode.BOTTOM) {
             if (dockButtonState == DockButtonState.DOWN) {
                 defaultPosition = position;
                 newPosition = reversed ? "0px" : getAbsoluteBottom() + "px";
@@ -175,7 +175,7 @@ public class CubaVerticalSplitPanelWidget extends VSplitPanelVertical {
         if (isDockable()) {
 
             Style dockButtonStyle = dockButtonContainer.getStyle();
-            if (dockMode == SplitPanelDockMode.UP) {
+            if (dockMode == SplitPanelDockMode.TOP) {
                 int top = splitter.getOffsetTop();
                 if (top > BUTTON_HEIGHT_SPACE) {
                     dockButtonStyle.setTop(top - (dockButton.getOffsetHeight() - getSplitterSize()), Style.Unit.PX);
@@ -198,7 +198,7 @@ public class CubaVerticalSplitPanelWidget extends VSplitPanelVertical {
 
                     updateSplitPanelStyle(SP_DOCKABLE_DOWN, SP_DOCKABLE_UP);
                 }
-            } else if (dockMode == SplitPanelDockMode.DOWN) {
+            } else if (dockMode == SplitPanelDockMode.BOTTOM) {
                 int down = splitter.getOffsetTop() + splitter.getOffsetHeight();
                 int splitBottomPosition = getAbsoluteBottom();
 
@@ -288,21 +288,21 @@ public class CubaVerticalSplitPanelWidget extends VSplitPanelVertical {
     }
 
     protected boolean isMinPositionSet() {
-        return dockMode == SplitPanelDockMode.UP
+        return dockMode == SplitPanelDockMode.TOP
                 && !minimumPosition.equals("0%")
                 && !minimumPosition.equals("0px");
     }
 
     protected boolean isMaxPositionSet() {
-        return dockMode == SplitPanelDockMode.DOWN
+        return dockMode == SplitPanelDockMode.BOTTOM
                 && !maximumPosition.equals("100%")
                 && !maximumPosition.equals(getAbsoluteBottom() + "px");
     }
 
     protected boolean isExtremePosition(String pos) {
-        boolean dockedToLeft = dockMode == SplitPanelDockMode.UP
+        boolean dockedToLeft = dockMode == SplitPanelDockMode.TOP
                 && (pos.equals("0%") || pos.equals("0px"));
-        boolean dockedToRight = dockMode == SplitPanelDockMode.DOWN
+        boolean dockedToRight = dockMode == SplitPanelDockMode.BOTTOM
                 && (pos.equals("100%") || pos.equals(getAbsoluteBottom() + "px"));
         return dockedToLeft || dockedToRight;
     }

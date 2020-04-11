@@ -34,7 +34,7 @@ public class CubaVerticalSplitPanelConnector extends VerticalSplitPanelConnector
         super.init();
 
         getWidget().beforeDockPositionHandler =
-                position -> getRpcProxy(CubaHorizontalSplitPanelServerRpc.class).setBeforeDockPosition(position);
+                position -> getRpcProxy(CubaDockableSplitPanelServerRpc.class).setBeforeDockPosition(position);
     }
 
     @Override

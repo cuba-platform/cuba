@@ -20,8 +20,8 @@ package com.haulmont.cuba.web.widgets.client.split;
 public enum SplitPanelDockMode {
     LEFT,
     RIGHT,
-    UP,
-    DOWN;
+    TOP,
+    BOTTOM;
 
     SplitPanelDockMode() {
     }

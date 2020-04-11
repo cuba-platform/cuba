@@ -62,7 +62,7 @@ $cuba-splitpanel-dock-button-width: round($v-unit-size / 3) !default;
   .c-splitpanel-dock-button-vertical {
       cursor: pointer;
       height: round($v-unit-size/3);
-      line-height: 7px;
+      line-height: round($v-unit-size/3);
       background: $v-panel-background-color;
       border: $border-width solid $border-color;
       font-family: FontAwesome;

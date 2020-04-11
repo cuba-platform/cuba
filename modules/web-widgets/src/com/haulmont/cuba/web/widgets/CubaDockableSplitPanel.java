@@ -14,22 +14,27 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.web.widgets.client.split;
+package com.haulmont.cuba.web.widgets;
 
-import com.vaadin.shared.annotations.NoLayout;
-import com.vaadin.shared.ui.splitpanel.VerticalSplitPanelState;
+import com.haulmont.cuba.web.widgets.client.split.SplitPanelDockMode;
 
-public class CubaVerticalSplitPanelState extends VerticalSplitPanelState {
+public interface CubaDockableSplitPanel {
 
-    @NoLayout
-    public boolean dockable = false;
+    public boolean isDockable();
 
-    @NoLayout
-    public SplitPanelDockMode dockMode = SplitPanelDockMode.TOP;
+    public void setDockable(boolean usePinButton);
 
-    @NoLayout
-    public String defaultPosition = null;
+    public void setDockMode(SplitPanelDockMode dockMode);
 
-    @NoLayout
-    public String beforeDockPosition = null;
+    public SplitPanelDockMode getDockMode();
+
+    public String getDefaultPosition();
+
+    /**
+     * Set default position for dock mode
+     *
+     * @param defaultPosition default position
+     */
+    public void setDefaultPosition(String defaultPosition);
+
 }
