@@ -17,21 +17,19 @@
 
 package com.haulmont.cuba.core.sys.persistence;
 
-import com.google.common.base.Strings;
 import com.haulmont.bali.datastruct.Pair;
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.impl.AbstractInstance;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.SoftDelete;
-import com.haulmont.cuba.core.entity.annotation.EmbeddedParameters;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.CubaEnhanced;
 import com.haulmont.cuba.core.sys.CubaEnhancingDisabled;
-import com.haulmont.cuba.core.sys.UuidConverter;
+import com.haulmont.cuba.core.sys.persistence.mapping.MappingProcessor;
+import com.haulmont.cuba.core.sys.persistence.mapping.MappingProcessorContext;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.eclipse.persistence.annotations.CacheCoordinationType;
@@ -39,25 +37,19 @@ import org.eclipse.persistence.config.CacheIsolationType;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.DescriptorEventListener;
 import org.eclipse.persistence.descriptors.InheritancePolicy;
-import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.internal.descriptors.PersistenceObject;
-import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.weaving.PersistenceWeaved;
 import org.eclipse.persistence.internal.weaving.PersistenceWeavedFetchGroups;
-import org.eclipse.persistence.mappings.*;
-import org.eclipse.persistence.platform.database.*;
+import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.SessionEvent;
 import org.eclipse.persistence.sessions.SessionEventAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.persistence.OneToOne;
-import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 public class EclipseLinkSessionEventListener extends SessionEventAdapter {
 
@@ -73,7 +65,6 @@ public class EclipseLinkSessionEventListener extends SessionEventAdapter {
         Session session = event.getSession();
         setPrintInnerJoinOnClause(session);
 
-        List<String> wrongFetchTypes = new ArrayList<>();
         List<Pair<Class, String>> missingEnhancements = new ArrayList<>();
 
         Map<String, ClassDescriptor> mappedSuperclassDescriptorMap = session.getProject().getMappedSuperclassDescriptors();
@@ -114,67 +105,18 @@ public class EclipseLinkSessionEventListener extends SessionEventAdapter {
                         ((SoftDelete) entity).isDeleted());
             }
 
-            List<DatabaseMapping> mappings = desc.getMappings();
-            for (DatabaseMapping mapping : mappings) {
+            Map<String, MappingProcessor> mappingProcessors = AppBeans.getAll(MappingProcessor.class);
 
-                //Fetch type check
-                fetchTypeCheck(mapping, entry.getKey(), wrongFetchTypes);
-
-                // support UUID
-                String attributeName = mapping.getAttributeName();
-                MetaProperty metaProperty = metaClass.getPropertyNN(attributeName);
-                if (metaProperty.getRange().isDatatype()) {
-                    if (metaProperty.getJavaType().equals(UUID.class)) {
-                        ((DirectToFieldMapping) mapping).setConverter(UuidConverter.getInstance());
-                        setDatabaseFieldParameters(session, mapping.getField());
-                    }
-                } else if (metaProperty.getRange().isClass() && !metaProperty.getRange().getCardinality().isMany()) {
-                    MetaClass refMetaClass = metaProperty.getRange().asClass();
-                    MetaProperty refPkProperty = metadata.getTools().getPrimaryKeyProperty(refMetaClass);
-                    if (refPkProperty != null && refPkProperty.getJavaType().equals(UUID.class)) {
-                        for (DatabaseField field : ((OneToOneMapping) mapping).getForeignKeyFields()) {
-                            setDatabaseFieldParameters(session, field);
-                        }
-                    }
-                }
-                // embedded attributes
-                if (mapping instanceof AggregateObjectMapping) {
-                    EmbeddedParameters embeddedParameters =
-                            metaProperty.getAnnotatedElement().getAnnotation(EmbeddedParameters.class);
-                    if (embeddedParameters != null && !embeddedParameters.nullAllowed())
-                        ((AggregateObjectMapping) mapping).setIsNullAllowed(false);
-                }
-
-                if (mapping.isOneToManyMapping()) {
-                    OneToManyMapping oneToManyMapping = (OneToManyMapping) mapping;
-                    if (SoftDelete.class.isAssignableFrom(oneToManyMapping.getReferenceClass())) {
-                        oneToManyMapping.setAdditionalJoinCriteria(new ExpressionBuilder().get("deleteTs").isNull());
-                    }
-                }
-
-                if (mapping.isOneToOneMapping()) {
-                    OneToOneMapping oneToOneMapping = (OneToOneMapping) mapping;
-                    if (SoftDelete.class.isAssignableFrom(oneToOneMapping.getReferenceClass())) {
-                        if (mapping.isManyToOneMapping()) {
-                            oneToOneMapping.setSoftDeletionForBatch(false);
-                            oneToOneMapping.setSoftDeletionForValueHolder(false);
-                        } else {
-                            OneToOne oneToOne = metaProperty.getAnnotatedElement().getAnnotation(OneToOne.class);
-                            if (oneToOne != null) {
-                                if (Strings.isNullOrEmpty(oneToOne.mappedBy())) {
-                                    oneToOneMapping.setSoftDeletionForBatch(false);
-                                    oneToOneMapping.setSoftDeletionForValueHolder(false);
-                                } else {
-                                    oneToOneMapping.setAdditionalJoinCriteria(
-                                            new ExpressionBuilder().get("deleteTs").isNull());
-                                }
-                            }
-                        }
-                    }
+            for (DatabaseMapping mapping : desc.getMappings()) {
+                MappingProcessorContext mappingProcessorCtx = new MappingProcessorContext(mapping, session);
+                for (MappingProcessor mp : mappingProcessors.values()) {
+                    log.debug("{} mapping processor is started", mp.getClass());
+                    mp.process(mappingProcessorCtx);
+                    log.debug("{} mapping processor is finished", mp.getClass());
                 }
             }
         }
-        logCheckResult(wrongFetchTypes, missingEnhancements);
+        logCheckResult(missingEnhancements);
     }
 
     private void setAdditionalCriteria(ClassDescriptor desc) {
@@ -211,35 +153,7 @@ public class EclipseLinkSessionEventListener extends SessionEventAdapter {
         }
     }
 
-    protected void fetchTypeCheck(DatabaseMapping mapping, Class entityClass, List<String> wrongFetchTypes) {
-        if ((mapping.isOneToOneMapping() || mapping.isOneToManyMapping()
-                || mapping.isManyToOneMapping() || mapping.isManyToManyMapping())) {
-            if (!mapping.isLazy()) {
-                mapping.setIsLazy(true);
-                wrongFetchTypes.add(String.format("EAGER fetch type detected for reference field %s of entity %s; Set to LAZY",
-                        mapping.getAttributeName(), entityClass.getSimpleName()));
-            }
-        } else {
-            if (mapping.isLazy()) {
-                mapping.setIsLazy(false);
-                wrongFetchTypes.add(String.format("LAZY fetch type detected for basic field %s of entity %s; Set to EAGER",
-                        mapping.getAttributeName(), entityClass.getSimpleName()));
-            }
-        }
-    }
-
-    protected void logCheckResult(List<String> wrongFetchTypes, List<Pair<Class, String>> missingEnhancements) {
-        if (!wrongFetchTypes.isEmpty()) {
-            StringBuilder message = new StringBuilder();
-            message.append("\n=================================================================");
-            message.append("\nIncorrectly defined fetch types detected:");
-            for (String wft : wrongFetchTypes) {
-                message.append("\n");
-                message.append(wft);
-            }
-            message.append("\n=================================================================");
-            log.warn(message.toString());
-        }
+    protected void logCheckResult(List<Pair<Class, String>> missingEnhancements) {
         if (!missingEnhancements.isEmpty()) {
             StringBuilder message = new StringBuilder();
             message.append("\n=================================================================");
@@ -283,33 +197,6 @@ public class EclipseLinkSessionEventListener extends SessionEventAdapter {
     private boolean hasMultipleTableConstraintDependency() {
         String value = AppContext.getProperty("cuba.hasMultipleTableConstraintDependency");
         return value == null || BooleanUtils.toBoolean(value);
-    }
-
-    private void setDatabaseFieldParameters(Session session, DatabaseField field) {
-        if (session.getPlatform() instanceof PostgreSQLPlatform) {
-            field.setSqlType(Types.OTHER);
-            field.setType(UUID.class);
-            field.setColumnDefinition("UUID");
-        } else if (session.getPlatform() instanceof MySQLPlatform) {
-            field.setSqlType(Types.VARCHAR);
-            field.setType(String.class);
-            field.setColumnDefinition("varchar(32)");
-        } else if (session.getPlatform() instanceof HSQLPlatform) {
-            field.setSqlType(Types.VARCHAR);
-            field.setType(String.class);
-            field.setColumnDefinition("varchar(36)");
-        } else if (session.getPlatform() instanceof SQLServerPlatform) {
-            field.setSqlType(Types.VARCHAR);
-            field.setType(String.class);
-            field.setColumnDefinition("uniqueidentifier");
-        } else if (session.getPlatform() instanceof OraclePlatform) {
-            field.setSqlType(Types.VARCHAR);
-            field.setType(String.class);
-            field.setColumnDefinition("varchar2(32)");
-        } else {
-            field.setSqlType(Types.VARCHAR);
-            field.setType(String.class);
-        }
     }
 
     private void setPrintInnerJoinOnClause(Session session) {
