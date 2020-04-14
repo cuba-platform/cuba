@@ -165,10 +165,13 @@ public class UserSessionManager {
             int pos = target.indexOf(Permission.TARGET_PATH_DELIMETER);
             if (pos > -1) {
                 String entityName = target.substring(0, pos);
-                Class extendedClass = metadata.getExtendedEntities().getExtendedClass(metadata.getClassNN(entityName));
-                if (extendedClass != null) {
-                    MetaClass extMetaClass = metadata.getClassNN(extendedClass);
-                    return extMetaClass.getName() + Permission.TARGET_PATH_DELIMETER + target.substring(pos + 1);
+                MetaClass originalClass = metadata.getClass(entityName);
+                if (originalClass != null) {
+                    Class extendedClass = metadata.getExtendedEntities().getExtendedClass(originalClass);
+                    if (extendedClass != null) {
+                        MetaClass extMetaClass = metadata.getClassNN(extendedClass);
+                        return extMetaClass.getName() + Permission.TARGET_PATH_DELIMETER + target.substring(pos + 1);
+                    }
                 }
             }
         }
