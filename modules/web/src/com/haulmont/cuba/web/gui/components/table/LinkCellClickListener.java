@@ -29,6 +29,7 @@ import com.haulmont.cuba.gui.components.AbstractEditor;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.components.Window;
+import com.haulmont.cuba.gui.components.compatibility.LegacyFragmentAdapter;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.data.DataSupplier;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
@@ -167,6 +168,10 @@ public class LinkCellClickListener implements Table.CellClickListener {
 
     protected void callControllerInvoke(Entity rowItem, String columnId, String invokeMethodName) {
         FrameOwner controller = table.getFrame().getFrameOwner();
+        if (controller instanceof LegacyFragmentAdapter) {
+            controller = ((LegacyFragmentAdapter) controller).getRealScreen();
+        }
+
         Method method;
         method = findLinkInvokeMethod(controller.getClass(), invokeMethodName);
         if (method != null) {
