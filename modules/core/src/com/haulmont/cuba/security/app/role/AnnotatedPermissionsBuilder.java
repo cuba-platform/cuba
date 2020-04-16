@@ -175,18 +175,14 @@ public class AnnotatedPermissionsBuilder {
         String[] modify = annotation.modify();
         String[] view = annotation.view();
 
-        //we'll store permissions for original meta class
-        MetaClass originalMetaClass = extendedEntities.getOriginalMetaClass(entityName);
-        if (originalMetaClass != null) {
-            entityName = originalMetaClass.getName();
-        }
+        String originalEntityName = evaluateOriginalEntityName(entityName);
 
         for (String property : modify) {
-            addEntityAttributeTarget(permissions, entityName, property, EntityAttrAccess.MODIFY);
+            addEntityAttributeTarget(permissions, originalEntityName, property, EntityAttrAccess.MODIFY);
         }
 
         for (String property : view) {
-            addEntityAttributeTarget(permissions, entityName, property, EntityAttrAccess.VIEW);
+            addEntityAttributeTarget(permissions, originalEntityName, property, EntityAttrAccess.VIEW);
         }
         return permissions;
     }
@@ -215,15 +211,11 @@ public class AnnotatedPermissionsBuilder {
             return;
         }
 
-        //we'll store permissions for original meta class
-        MetaClass originalMetaClass = extendedEntities.getOriginalMetaClass(entityName);
-        if (originalMetaClass != null) {
-            entityName = originalMetaClass.getName();
-        }
+        String originalEntityName = evaluateOriginalEntityName(entityName);
 
         EntityOp[] operations = annotation.operations();
         for (EntityOp entityOp : operations) {
-            String target = PermissionsUtils.getEntityOperationTarget(entityName, entityOp);
+            String target = PermissionsUtils.getEntityOperationTarget(originalEntityName, entityOp);
             Integer permissionValue = Access.ALLOW.getId();
             permissions.getExplicitPermissions().put(target, permissionValue);
             String extendedTarget = PermissionsUtils.evaluateExtendedEntityTarget(target);
@@ -231,6 +223,23 @@ public class AnnotatedPermissionsBuilder {
                 permissions.getExplicitPermissions().put(extendedTarget, permissionValue);
             }
         }
+    }
+
+    /**
+     * @param entityName there may be an entity name of wildcard here
+     * @return an original entity name if the passed {@code entityName} extends other entity, or the {@code entityName}
+     * itself otherwise
+     */
+    protected String evaluateOriginalEntityName(String entityName) {
+        //we'll store permissions for original meta class
+        MetaClass metaClass = metadata.getClass(entityName);
+        if (metaClass != null) {
+            MetaClass originalMetaClass = extendedEntities.getOriginalMetaClass(metaClass);
+            if (originalMetaClass != null) {
+                entityName = originalMetaClass.getName();
+            }
+        }
+        return entityName;
     }
 
     protected void processSpecificAccessAnnotation(SpecificAccess annotation,

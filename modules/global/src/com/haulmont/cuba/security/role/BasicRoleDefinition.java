@@ -245,12 +245,9 @@ public class BasicRoleDefinition implements RoleDefinition, Serializable {
         }
 
         public BasicRoleDefinitionBuilder withEntityPermission(String entityName, EntityOp entityOp, Access access) {
-            MetaClass originalMetaClass = AppBeans.get(ExtendedEntities.class).getOriginalMetaClass(entityName);
-            if (originalMetaClass != null) {
-                entityName = originalMetaClass.getName();
-            }
+            String originalEntityName = evaluateOriginalEntityName(entityName);
             addPermission(PermissionType.ENTITY_OP,
-                    PermissionsUtils.getEntityOperationTarget(entityName, entityOp),
+                    PermissionsUtils.getEntityOperationTarget(originalEntityName, entityOp),
                     access.getId());
             return this;
         }
@@ -262,12 +259,9 @@ public class BasicRoleDefinition implements RoleDefinition, Serializable {
 
         public BasicRoleDefinitionBuilder withEntityAttributePermission(String entityName, String attributeName,
                                                                         EntityAttrAccess entityAttrAccess) {
-            MetaClass originalMetaClass = AppBeans.get(ExtendedEntities.class).getOriginalMetaClass(entityName);
-            if (originalMetaClass != null) {
-                entityName = originalMetaClass.getName();
-            }
+            String originalEntityName = evaluateOriginalEntityName(entityName);
             addPermission(PermissionType.ENTITY_ATTR,
-                    PermissionsUtils.getEntityAttributeTarget(entityName, attributeName),
+                    PermissionsUtils.getEntityAttributeTarget(originalEntityName, attributeName),
                     entityAttrAccess.getId());
             return this;
         }
@@ -308,6 +302,23 @@ public class BasicRoleDefinition implements RoleDefinition, Serializable {
         public BasicRoleDefinitionBuilder withPermission(PermissionType permissionType, String target, int access) {
             addPermission(permissionType, target, access);
             return this;
+        }
+
+        /**
+         * @param entityName there may be an entity name of wildcard here
+         * @return an original entity name if the passed {@code entityName} extends other entity, or the {@code entityName}
+         * itself otherwise
+         */
+        protected String evaluateOriginalEntityName(String entityName) {
+            //we'll store permissions for original meta class
+            MetaClass metaClass = AppBeans.get(Metadata.class).getClass(entityName);
+            if (metaClass != null) {
+                MetaClass originalMetaClass = AppBeans.get(ExtendedEntities.class).getOriginalMetaClass(metaClass);
+                if (originalMetaClass != null) {
+                    entityName = originalMetaClass.getName();
+                }
+            }
+            return entityName;
         }
 
         protected void addPermission(PermissionType permissionType, String target, int access) {
