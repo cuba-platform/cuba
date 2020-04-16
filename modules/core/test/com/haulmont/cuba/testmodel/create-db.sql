@@ -1360,3 +1360,12 @@ create table TEST_PC_PET (
     primary key (ID),
     constraint FK_TEST_PC_PET_OWNER foreign key (OWNER_ID) references TEST_PC_OWNER
 )^
+
+------------------------------------------------------------------------------------------------------------------------
+
+create table TEST_ROLE_TEST_ENTITY (
+    ID varchar(36) not null,
+    NAME varchar(255),
+    NEW_ATTR varchar(36),
+    primary key (ID)
+)^
