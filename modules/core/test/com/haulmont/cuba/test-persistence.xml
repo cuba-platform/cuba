@@ -143,5 +143,8 @@
         <class>com.haulmont.cuba.testmodel.petclinic.Owner</class>
 
         <class>com.haulmont.cuba.testmodel.related_properties.EntityWithRelatedProperties</class>
+
+        <class>com.haulmont.cuba.testmodel.roles.RoleTestEntity</class>
+        <class>com.haulmont.cuba.testmodel.roles.ExtRoleTestEntity</class>
     </persistence-unit>
 </persistence>

@@ -19,6 +19,7 @@ package com.haulmont.cuba.security.app.role;
 import com.google.common.base.Strings;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.ExtendedEntities;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.security.app.role.annotation.*;
 import com.haulmont.cuba.security.entity.Access;
@@ -54,6 +55,9 @@ public class AnnotatedPermissionsBuilder {
 
     @Inject
     protected Metadata metadata;
+
+    @Inject
+    protected ExtendedEntities extendedEntities;
 
     public EntityPermissionsContainer buildEntityAccessPermissions(RoleDefinition role) {
         boolean isSuper = getIsSuperFromAnnotation(role);
@@ -171,6 +175,12 @@ public class AnnotatedPermissionsBuilder {
         String[] modify = annotation.modify();
         String[] view = annotation.view();
 
+        //we'll store permissions for original meta class
+        MetaClass originalMetaClass = extendedEntities.getOriginalMetaClass(entityName);
+        if (originalMetaClass != null) {
+            entityName = originalMetaClass.getName();
+        }
+
         for (String property : modify) {
             addEntityAttributeTarget(permissions, entityName, property, EntityAttrAccess.MODIFY);
         }
@@ -204,8 +214,14 @@ public class AnnotatedPermissionsBuilder {
             log.warn("Neither entityClass, not entityName is defined for the EntityAccess annotation.");
             return;
         }
-        EntityOp[] operations = annotation.operations();
 
+        //we'll store permissions for original meta class
+        MetaClass originalMetaClass = extendedEntities.getOriginalMetaClass(entityName);
+        if (originalMetaClass != null) {
+            entityName = originalMetaClass.getName();
+        }
+
+        EntityOp[] operations = annotation.operations();
         for (EntityOp entityOp : operations) {
             String target = PermissionsUtils.getEntityOperationTarget(entityName, entityOp);
             Integer permissionValue = Access.ALLOW.getId();

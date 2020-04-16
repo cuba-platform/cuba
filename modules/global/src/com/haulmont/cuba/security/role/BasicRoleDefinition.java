@@ -16,8 +16,10 @@
 
 package com.haulmont.cuba.security.role;
 
+import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.ExtendedEntities;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.security.entity.*;
 
@@ -243,6 +245,10 @@ public class BasicRoleDefinition implements RoleDefinition, Serializable {
         }
 
         public BasicRoleDefinitionBuilder withEntityPermission(String entityName, EntityOp entityOp, Access access) {
+            MetaClass originalMetaClass = AppBeans.get(ExtendedEntities.class).getOriginalMetaClass(entityName);
+            if (originalMetaClass != null) {
+                entityName = originalMetaClass.getName();
+            }
             addPermission(PermissionType.ENTITY_OP,
                     PermissionsUtils.getEntityOperationTarget(entityName, entityOp),
                     access.getId());
@@ -256,6 +262,10 @@ public class BasicRoleDefinition implements RoleDefinition, Serializable {
 
         public BasicRoleDefinitionBuilder withEntityAttributePermission(String entityName, String attributeName,
                                                                         EntityAttrAccess entityAttrAccess) {
+            MetaClass originalMetaClass = AppBeans.get(ExtendedEntities.class).getOriginalMetaClass(entityName);
+            if (originalMetaClass != null) {
+                entityName = originalMetaClass.getName();
+            }
             addPermission(PermissionType.ENTITY_ATTR,
                     PermissionsUtils.getEntityAttributeTarget(entityName, attributeName),
                     entityAttrAccess.getId());
