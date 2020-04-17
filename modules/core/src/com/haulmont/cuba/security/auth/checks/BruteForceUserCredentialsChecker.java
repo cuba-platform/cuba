@@ -77,17 +77,12 @@ public class BruteForceUserCredentialsChecker implements UserCredentialsChecker,
                     int loginAttemptsLeft = bruteForceProtectionAPI.registerUnsuccessfulLogin(
                             clientCredentials.getUserIdentifier(), clientCredentials.getIpAddress());
                     String message;
-                    if (loginAttemptsLeft > 0) {
-                        message = messages.formatMessage(MSG_PACK,
-                                "LoginException.loginFailedAttemptsLeft",
-                                loginAttemptsLeft);
-                    } else {
+                    if (loginAttemptsLeft <= 0) {
                         message = messages.formatMessage(MSG_PACK,
                                 "LoginException.loginAttemptsNumberExceeded",
                                 bruteForceProtectionAPI.getBruteForceBlockIntervalSec());
+                        throw new LoginException(message);
                     }
-
-                    throw new LoginException(message);
                 }
             }
         }
