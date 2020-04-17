@@ -317,7 +317,8 @@ public class DbUpdaterEngine implements DbUpdater {
     }
 
     protected String distinguishingSubstring(String scriptName) {
-        return scriptName.length() > 3 ? scriptName.substring(3) : scriptName;
+        int substringStart = scriptName.indexOf("-") + 1;
+        return scriptName.length() > substringStart ? scriptName.substring(substringStart) : scriptName;
     }
 
     /**
