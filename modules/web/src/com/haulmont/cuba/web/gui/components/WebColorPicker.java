@@ -338,4 +338,29 @@ public class WebColorPicker extends WebV8AbstractField<CubaColorPickerWrapper, C
     public void setTabIndex(int tabIndex) {
         component.setTabIndex(tabIndex);
     }
+
+    @Override
+    public void commit() {
+        super.commit();
+    }
+
+    @Override
+    public void discard() {
+        super.discard();
+    }
+
+    @Override
+    public boolean isBuffered() {
+        return super.isBuffered();
+    }
+
+    @Override
+    public void setBuffered(boolean buffered) {
+        super.setBuffered(buffered);
+    }
+
+    @Override
+    public boolean isModified() {
+        return super.isModified();
+    }
 }
