@@ -176,19 +176,6 @@ public class WebCurrencyField extends WebAbstractField<CubaCurrencyField> implem
     }
 
     @Override
-    public void validate() throws ValidationException {
-        if (hasValidationError()) {
-            setValidationError(null);
-        }
-
-        if (!isVisible() || !isEditableWithParent() || !isEnabled()) {
-            return;
-        }
-
-        textField.validate();
-    }
-
-    @Override
     public void setRequired(boolean required) {
         super.setRequired(required);
 
