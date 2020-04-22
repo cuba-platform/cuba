@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2018 Haulmont.
+ * Copyright (c) 2008-2020 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,20 @@
 
 package com.haulmont.cuba.web.widgets.client.split;
 
-import com.vaadin.shared.annotations.Delayed;
-import com.vaadin.shared.communication.ServerRpc;
+import com.vaadin.shared.annotations.NoLayout;
+import com.vaadin.shared.ui.splitpanel.VerticalSplitPanelState;
 
-public interface CubaHorizontalSplitPanelServerRpc extends ServerRpc {
+public class CubaVerticalSplitPanelState extends VerticalSplitPanelState {
 
-    @Delayed
-    void setBeforeDockPosition(String position);
+    @NoLayout
+    public boolean dockable = false;
+
+    @NoLayout
+    public SplitPanelDockMode dockMode = SplitPanelDockMode.TOP;
+
+    @NoLayout
+    public String defaultPosition = null;
+
+    @NoLayout
+    public String beforeDockPosition = null;
 }
