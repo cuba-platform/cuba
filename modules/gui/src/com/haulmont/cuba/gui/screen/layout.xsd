@@ -26,6 +26,8 @@
         <xs:restriction base="xs:string">
             <xs:enumeration value="LEFT"/>
             <xs:enumeration value="RIGHT"/>
+            <xs:enumeration value="TOP"/>
+            <xs:enumeration value="BOTTOM"/>
         </xs:restriction>
     </xs:simpleType>
 

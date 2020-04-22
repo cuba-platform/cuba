@@ -86,10 +86,6 @@ public class SplitPanelLoader extends ContainerLoader<SplitPanel> {
         }
 
         boolean bDockable = Boolean.parseBoolean(dockable);
-        if (bDockable && resultComponent.getOrientation() == SplitPanel.ORIENTATION_VERTICAL) {
-            throw new GuiDevelopmentException("Docking cannot be enabled for vertically oriented SplitPanel", context);
-        }
-
         resultComponent.setDockable(bDockable);
     }
 
@@ -100,11 +96,16 @@ public class SplitPanelLoader extends ContainerLoader<SplitPanel> {
             return;
         }
 
-        if (resultComponent.getOrientation() == SplitPanel.ORIENTATION_VERTICAL) {
-            throw new GuiDevelopmentException("Docking cannot be enabled for vertically oriented SplitPanel", context);
+        SplitPanel.DockMode mode = SplitPanel.DockMode.valueOf(dockMode);
+
+        if (resultComponent.getOrientation() == SplitPanel.ORIENTATION_VERTICAL
+            && (mode == SplitPanel.DockMode.LEFT || mode == SplitPanel.DockMode.RIGHT)) {
+            throw new GuiDevelopmentException("Dock mode " + mode.name() + " cannot be enabled for vertically oriented SplitPanel", context);
+        } else if (resultComponent.getOrientation() == SplitPanel.ORIENTATION_HORIZONTAL
+                && (mode == SplitPanel.DockMode.TOP || mode == SplitPanel.DockMode.BOTTOM)) {
+            throw new GuiDevelopmentException("Dock mode " + mode.name() + " cannot be enabled for horizontally oriented SplitPanel", context);
         }
 
-        SplitPanel.DockMode mode = SplitPanel.DockMode.valueOf(dockMode);
         resultComponent.setDockMode(mode);
     }
 

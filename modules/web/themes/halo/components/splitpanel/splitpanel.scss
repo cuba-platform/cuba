@@ -20,6 +20,7 @@
  * @group splitpanel
  */
 $cuba-splitpanel-splitter-width: 3px !default;
+
 /**
  * The width of split panel dock button.
  * @group splitpanel
@@ -58,6 +59,21 @@ $cuba-splitpanel-dock-button-width: round($v-unit-size / 3) !default;
     display: inline-block;
   }
 
+  .c-splitpanel-dock-button-vertical {
+      cursor: pointer;
+      height: round($v-unit-size/3);
+      line-height: round($v-unit-size/3);
+      background: $v-panel-background-color;
+      border: $border-width solid $border-color;
+      font-family: FontAwesome;
+      color: $button-color;
+      font-size: 12px;
+      text-align: center;
+      padding-left: round($v-unit-size/2);
+      padding-right: round($v-unit-size/2);
+      display: block;
+    }
+
   .c-splitpanel-dock-button-left {
     border-right-color: $v-panel-background-color;
     margin-left: -($cuba-splitpanel-splitter-width - $border-width);
@@ -70,11 +86,31 @@ $cuba-splitpanel-dock-button-width: round($v-unit-size / 3) !default;
     border-radius: 0 $border-radius $border-radius 0;
   }
 
+  .c-splitpanel-dock-button-up {
+    border-bottom-color: $v-panel-background-color;
+    margin-top: 0;
+    border-radius: $border-radius $border-radius 0 0;
+  }
+
+  .c-splitpanel-dock-button-down {
+    border-top-color: $v-panel-background-color;
+    margin-top: 0;
+    border-radius: 0 0 $border-radius $border-radius;
+  }
+
   .c-splitpanel-dock-button-left:after {
     content: "\f053";
   }
 
   .c-splitpanel-dock-button-right:after {
     content: "\f054";
+  }
+
+  .c-splitpanel-dock-button-up:after {
+    content: "\f077";
+  }
+
+  .c-splitpanel-dock-button-down:after {
+    content: "\f078";
   }
 }

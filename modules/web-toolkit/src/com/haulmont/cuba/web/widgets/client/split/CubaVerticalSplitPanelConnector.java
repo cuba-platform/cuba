@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2016 Haulmont.
+ * Copyright (c) 2008-2020 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,20 +12,19 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
 package com.haulmont.cuba.web.widgets.client.split;
 
 import com.google.gwt.core.client.Scheduler;
-import com.haulmont.cuba.web.widgets.CubaHorizontalSplitPanel;
+import com.haulmont.cuba.web.widgets.CubaVerticalSplitPanel;
 import com.vaadin.client.communication.StateChangeEvent;
 import com.vaadin.client.ui.PostLayoutListener;
-import com.vaadin.client.ui.splitpanel.HorizontalSplitPanelConnector;
+import com.vaadin.client.ui.splitpanel.VerticalSplitPanelConnector;
 import com.vaadin.shared.ui.Connect;
 
-@Connect(value = CubaHorizontalSplitPanel.class, loadStyle = Connect.LoadStyle.EAGER)
-public class CubaHorizontalSplitPanelConnector extends HorizontalSplitPanelConnector
+@Connect(value = CubaVerticalSplitPanel.class, loadStyle = Connect.LoadStyle.EAGER)
+public class CubaVerticalSplitPanelConnector extends VerticalSplitPanelConnector
         implements PostLayoutListener {
 
     protected boolean updateLayout = false;
@@ -39,13 +38,13 @@ public class CubaHorizontalSplitPanelConnector extends HorizontalSplitPanelConne
     }
 
     @Override
-    public CubaHorizontalSplitPanelState getState() {
-        return (CubaHorizontalSplitPanelState) super.getState();
+    public CubaVerticalSplitPanelState getState() {
+        return (CubaVerticalSplitPanelState) super.getState();
     }
 
     @Override
-    public CubaHorizontalSplitPanelWidget getWidget() {
-        return (CubaHorizontalSplitPanelWidget) super.getWidget();
+    public CubaVerticalSplitPanelWidget getWidget() {
+        return (CubaVerticalSplitPanelWidget) super.getWidget();
     }
 
     @Override
