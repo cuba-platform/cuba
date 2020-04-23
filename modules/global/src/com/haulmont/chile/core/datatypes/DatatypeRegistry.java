@@ -60,7 +60,8 @@ public interface DatatypeRegistry {
     String getIdOrNull(Datatype datatype);
 
     /**
-     * Returns an ID of a first datatype handling the given Java class.
+     * Returns an ID of a default datatype handling the given Java class. If there is no default, returns the first
+     * appropriate datatype.
      * @throws IllegalArgumentException if no datatypes handle the given Java class
      */
     String getIdByJavaClass(Class<?> javaClass);
