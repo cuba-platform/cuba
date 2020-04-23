@@ -96,9 +96,18 @@ public class DatatypeRegistryImpl implements DatatypeRegistry {
 
     @Override
     public String getIdByJavaClass(Class<?> javaClass) {
-        for (Map.Entry<String, Datatype> entry : datatypeById.entrySet()) {
-            if (entry.getValue().getJavaClass().equals(javaClass))
-                return entry.getKey();
+        final Datatype datatype = datatypeByClass.get(javaClass); // default datatypes
+        if (datatype != null) {
+            for (Map.Entry<String, Datatype> entry : datatypeById.entrySet()) {
+                if (entry.getValue() == datatype) {
+                    return entry.getKey();
+                }
+            }
+        } else {
+            for (Map.Entry<String, Datatype> entry : datatypeById.entrySet()) {
+                if (entry.getValue().getJavaClass().equals(javaClass))
+                    return entry.getKey();
+            }
         }
         throw new IllegalArgumentException("No datatype registered for " + javaClass);
     }
