@@ -21,8 +21,8 @@ import com.haulmont.bali.datastruct.Node;
 import com.haulmont.bali.datastruct.Tree;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.UserSessionSource;
-import com.haulmont.cuba.gui.config.PermissionConfig;
 import com.haulmont.cuba.gui.app.security.entity.BasicPermissionTarget;
+import com.haulmont.cuba.gui.config.PermissionConfig;
 import com.haulmont.cuba.security.global.UserSession;
 
 import java.util.LinkedList;
@@ -55,7 +55,7 @@ public class SpecificPermissionTreeDatasource extends BasicPermissionTreeDatasou
     private Node<BasicPermissionTarget> filterNode(UserSession session, Node<BasicPermissionTarget> rootNode) {
         Node<BasicPermissionTarget> filteredRootNode = new Node<>(rootNode.getData());
         rootNode.getChildren().stream()
-                .filter(child -> session.isSpecificPermitted(child.getData().getPermissionValue()))
+                .filter(child -> session.isSpecificPermitted(child.getData().getPermissionValue()) || isCategory(child.getData()))
                 .map(child -> filterNode(session, child))
                 .filter(child -> child.getNumberOfChildren() > 0 || !isCategory(child.getData())) //filtering out empty categories
                 .forEach(filteredRootNode::addChild);
