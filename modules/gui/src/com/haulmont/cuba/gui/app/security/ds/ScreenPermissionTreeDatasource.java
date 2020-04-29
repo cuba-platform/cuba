@@ -34,6 +34,8 @@ public class ScreenPermissionTreeDatasource extends BasicPermissionTreeDatasourc
     protected UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.NAME);
     protected Predicate<BasicPermissionTarget> screenFilter;
 
+    protected static final String ROOT_PREFIX = "root:";
+
     @Override
     public Tree<BasicPermissionTarget> getPermissions() {
         Tree<BasicPermissionTarget> allPermissions = permissionConfig.getScreens(userSessionSource.getLocale());
@@ -48,7 +50,7 @@ public class ScreenPermissionTreeDatasource extends BasicPermissionTreeDatasourc
                 suitableNodes.add(node);
             } else {
                 List<Node<BasicPermissionTarget>> suitableChildren = collectSuitableNodes(node.getChildren());
-                if (permittedNode(node) && !suitableChildren.isEmpty()) {
+                if ((permittedNode(node) || isRoot(node.getData())) && !suitableChildren.isEmpty()) {
                     Node<BasicPermissionTarget> filteredNode = new Node<>(node.getData());
                     filteredNode.setChildren(suitableChildren);
                     suitableNodes.add(filteredNode);
@@ -70,5 +72,9 @@ public class ScreenPermissionTreeDatasource extends BasicPermissionTreeDatasourc
 
     public void setFilter(Predicate<BasicPermissionTarget> filter) {
         this.screenFilter = filter;
+    }
+
+    private boolean isRoot(BasicPermissionTarget target) {
+        return target.getId().startsWith(ROOT_PREFIX);
     }
 }
