@@ -45,7 +45,7 @@
 
     <logger name="eclipselink" level="WARN"/>
 
-    <logger name="eclipselink.sql" level="ALL"/>
+    <logger name="eclipselink.sql" level="INFO"/>
 
     <logger name="org.springframework" level="WARN"/>
 
