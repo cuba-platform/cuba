@@ -29,6 +29,7 @@ import com.haulmont.cuba.core.entity.annotation.OnDelete;
 import com.haulmont.cuba.core.entity.annotation.OnDeleteInverse;
 import com.haulmont.cuba.core.global.DeletePolicy;
 import com.haulmont.cuba.core.global.Metadata;
+import com.haulmont.cuba.core.global.MetadataTools;
 import org.apache.commons.lang3.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,6 +48,9 @@ public class EntityRestoreServiceBean implements EntityRestoreService {
 
     @Inject
     protected Metadata metadata;
+
+    @Inject
+    protected MetadataTools metadataTools;
 
     @Override
     public void restoreEntities(Collection<Entity> entities) {
@@ -102,22 +106,33 @@ public class EntityRestoreServiceBean implements EntityRestoreService {
                     log.debug("Cannot restore " + property.getRange().asClass() + " because it is hard deleted");
                     continue;
                 }
-                MetaProperty inverseProp = property.getInverse();
-                if (inverseProp == null) {
-                    log.debug("Cannot restore " + property.getRange().asClass() + " because it has no inverse property for " + metaClass);
-                    continue;
-                }
-                String jpql = "select e from " + detailMetaClass + " e where e." + inverseProp.getName() + ".id = ?1 " +
-                        "and e.deleteTs >= ?2 and e.deleteTs <= ?3";
-                Query query = em.createQuery(jpql);
-                query.setParameter(1, entity.getId());
-                query.setParameter(2, DateUtils.addMilliseconds(deleteTs, -100));
-                query.setParameter(3, DateUtils.addMilliseconds(deleteTs, 1000));
-                //noinspection unchecked
-                List<Entity> list = query.getResultList();
-                for (Entity detailEntity : list) {
-                    if (entity instanceof SoftDelete) {
-                        restoreEntity(detailEntity, storeName);
+                if (metadataTools.isOwningSide(property)) {
+                    Object value = entity.getValue(property.getName());
+                    if (value instanceof Entity) {
+                        restoreEntity((Entity) value, storeName);
+                    } else if (value instanceof Collection) {
+                        for (Object detailEntity : (Collection) value) {
+                            restoreEntity((Entity) detailEntity, storeName);
+                        }
+                    }
+                } else {
+                    MetaProperty inverseProp = property.getInverse();
+                    if (inverseProp == null) {
+                        log.debug("Cannot restore " + property.getRange().asClass() + " because it has no inverse property for " + metaClass);
+                        continue;
+                    }
+                    String jpql = "select e from " + detailMetaClass + " e where e." + inverseProp.getName() + ".id = ?1 " +
+                            "and e.deleteTs >= ?2 and e.deleteTs <= ?3";
+                    Query query = em.createQuery(jpql);
+                    query.setParameter(1, entity.getId());
+                    query.setParameter(2, DateUtils.addMilliseconds(deleteTs, -100));
+                    query.setParameter(3, DateUtils.addMilliseconds(deleteTs, 1000));
+                    //noinspection unchecked
+                    List<Entity> list = query.getResultList();
+                    for (Entity detailEntity : list) {
+                        if (entity instanceof SoftDelete) {
+                            restoreEntity(detailEntity, storeName);
+                        }
                     }
                 }
             }
