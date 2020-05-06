@@ -20,6 +20,7 @@ import com.haulmont.cuba.core.app.DataService
 import com.haulmont.cuba.core.entity.KeyValueEntity
 import com.haulmont.cuba.core.global.DataManager
 import com.haulmont.cuba.core.global.Metadata
+import com.haulmont.cuba.core.global.ValueLoadContext
 import com.haulmont.cuba.gui.model.DataComponents
 import com.haulmont.cuba.gui.model.KeyValueContainer
 import com.haulmont.cuba.gui.model.KeyValueInstanceLoader
@@ -31,6 +32,7 @@ import spock.lang.Shared
 import spock.lang.Specification
 
 import java.util.function.Consumer
+import java.util.function.Function
 
 @SuppressWarnings("GroovyAssignabilityCheck")
 class KeyValueInstanceLoaderTest extends Specification {
@@ -80,6 +82,38 @@ class KeyValueInstanceLoaderTest extends Specification {
 
         1 * preLoadListener.accept(_)
         1 * postLoadListener.accept(_)
+    }
+
+    def "fail if query is null and loader is null"() {
+        KeyValueInstanceLoader loader = factory.createKeyValueInstanceLoader()
+        KeyValueContainer container = factory.createKeyValueContainer()
+
+        when:
+        loader.setContainer(container)
+        loader.load()
+
+        then:
+        IllegalStateException exception = thrown()
+    }
+
+    def "proceed if query is null and loader is not null"() {
+        KeyValueInstanceLoader loader = factory.createKeyValueInstanceLoader()
+        KeyValueContainer container = factory.createKeyValueContainer()
+
+        def kv = new KeyValueEntity()
+
+        when:
+        loader.setContainer(container)
+        loader.setLoadDelegate(new Function<ValueLoadContext, KeyValueEntity>() {
+            @Override
+            KeyValueEntity apply(ValueLoadContext valueLoadContext) {
+                return kv
+            }
+        })
+        loader.load()
+
+        then:
+        container.getItem() == kv
     }
 
     def "prevent load by PreLoadEvent"() {
