@@ -20,9 +20,12 @@ import com.haulmont.cuba.core.app.DataService
 import com.haulmont.cuba.core.entity.KeyValueEntity
 import com.haulmont.cuba.core.global.DataManager
 import com.haulmont.cuba.core.global.Metadata
+import com.haulmont.cuba.core.global.ValueLoadContext
 import com.haulmont.cuba.gui.model.DataComponents
 import com.haulmont.cuba.gui.model.KeyValueCollectionContainer
 import com.haulmont.cuba.gui.model.KeyValueCollectionLoader
+import com.haulmont.cuba.gui.model.KeyValueContainer
+import com.haulmont.cuba.gui.model.KeyValueInstanceLoader
 import com.haulmont.cuba.web.container.CubaTestContainer
 import com.haulmont.cuba.web.testsupport.TestContainer
 import com.haulmont.cuba.web.testsupport.proxy.TestServiceProxy
@@ -31,6 +34,7 @@ import spock.lang.Shared
 import spock.lang.Specification
 
 import java.util.function.Consumer
+import java.util.function.Function
 
 @SuppressWarnings("GroovyAssignabilityCheck")
 class KeyValueCollectionLoaderTest extends Specification {
@@ -80,6 +84,41 @@ class KeyValueCollectionLoaderTest extends Specification {
 
         1 * preLoadListener.accept(_)
         1 * postLoadListener.accept(_)
+    }
+
+    def "fail if query is null and loader is null"() {
+        KeyValueCollectionLoader loader = factory.createKeyValueCollectionLoader()
+        KeyValueCollectionContainer container = factory.createKeyValueCollectionContainer()
+
+        when:
+        loader.setContainer(container)
+        loader.load()
+
+        then:
+        IllegalStateException exception = thrown()
+    }
+
+    def "proceed if query is null and loader is not null"() {
+        KeyValueCollectionLoader loader = factory.createKeyValueCollectionLoader()
+        KeyValueCollectionContainer container = factory.createKeyValueCollectionContainer()
+
+        def kv = new KeyValueEntity()
+
+        when:
+
+        loader.setContainer(container)
+        loader.setLoadDelegate(new Function<ValueLoadContext, List<KeyValueEntity>>() {
+            @Override
+            List<KeyValueEntity> apply(ValueLoadContext valueLoadContext) {
+                return [kv].asList()
+            }
+        })
+        loader.load()
+
+        then:
+
+        container.getItems().size() == 1
+        container.getItems().contains(kv)
     }
 
     def "prevent load by PreLoadEvent"() {

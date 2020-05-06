@@ -76,8 +76,8 @@ public class KeyValueInstanceLoaderImpl implements KeyValueInstanceLoader {
     public void load() {
         if (container == null)
             throw new IllegalStateException("container is null");
-        if (query == null)
-            throw new IllegalStateException("query is null");
+        if (query == null && delegate == null)
+            throw new IllegalStateException("both query and delegate are null");
 
         ValueLoadContext loadContext = createLoadContext();
 
