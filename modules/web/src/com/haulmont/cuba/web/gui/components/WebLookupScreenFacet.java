@@ -120,7 +120,7 @@ public class WebLookupScreenFacet<E extends Entity, S extends Screen & LookupScr
             builder = screenBuilders.lookup(pickerField);
         } else {
             throw new IllegalStateException(
-                    "Unable to create EditorScreen Facet. At least one of entityClass, listComponent or field must be specified");
+                    "Unable to create LookupScreen Facet. At least one of entityClass, listComponent or field must be specified");
         }
 
         if (screenClass != null) {
