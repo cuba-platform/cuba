@@ -99,7 +99,10 @@ public abstract class ConditionFrame<T extends AbstractCondition> extends Abstra
                 defaultValueLayout.remove(defaultValueComponent);
             }
             if (condition.getParam() != null) {
-                defaultValueComponent = condition.getParam().createEditComponentForDefaultValue();
+                FilterDataContext filterDataContext = new FilterDataContext(this);
+                defaultValueComponent = condition.getParam().createEditComponentForDefaultValue(filterDataContext);
+                //load options for lookup fields
+                filterDataContext.loadAll();
                 defaultValueLayout.add(defaultValueComponent);
                 defaultValueComponent.setAlignment(Alignment.MIDDLE_LEFT);
                 if (defaultValueComponent instanceof TextField) {

@@ -531,8 +531,8 @@ public class Param {
      *
      * @return GUI component for condition parameter.
      */
-    public Component createEditComponentForDefaultValue() {
-        return createEditComponent(null, Param.ValueProperty.DEFAULT_VALUE);
+    public Component createEditComponentForDefaultValue(FilterDataContext filterDataContext) {
+        return createEditComponent(filterDataContext, Param.ValueProperty.DEFAULT_VALUE);
     }
 
     /**
