@@ -38,13 +38,13 @@ public class GroupBoxLayoutLoader extends ContainerLoader<GroupBoxLayout> {
 
         loadSettingsEnabled(resultComponent, element);
 
+        loadHtmlSanitizerEnabled(resultComponent, element);
+
         loadIcon(resultComponent, element);
         loadCaption(resultComponent, element);
         loadDescription(resultComponent, element);
         loadContextHelp(resultComponent, element);
         loadRequiredIndicatorVisible(resultComponent, element);
-
-        loadHtmlSanitizerEnabled(resultComponent, element);
 
         loadAlign(resultComponent, element);
         loadVisible(resultComponent, element);

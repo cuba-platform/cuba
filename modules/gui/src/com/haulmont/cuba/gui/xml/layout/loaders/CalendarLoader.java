@@ -56,11 +56,11 @@ public class CalendarLoader extends AbstractComponentLoader<Calendar> {
 
     @Override
     public void loadComponent() {
+        loadHtmlSanitizerEnabled(resultComponent, element);
+
         loadCaption(resultComponent, element);
         loadDescription(resultComponent, element);
         loadContextHelp(resultComponent, element);
-
-        loadHtmlSanitizerEnabled(resultComponent, element);
 
         loadHeight(resultComponent, element);
         loadWidth(resultComponent, element);

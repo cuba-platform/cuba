@@ -37,12 +37,12 @@ public class ProgressBarLoader extends AbstractComponentLoader<ProgressBar> {
         loadEditable(resultComponent, element);
         loadEnable(resultComponent, element);
 
+        loadHtmlSanitizerEnabled(resultComponent, element);
+
         loadIcon(resultComponent, element);
         loadCaption(resultComponent, element);
         loadDescription(resultComponent, element);
         loadContextHelp(resultComponent, element);
-
-        loadHtmlSanitizerEnabled(resultComponent, element);
 
         loadStyleName(resultComponent, element);
         loadResponsive(resultComponent, element);

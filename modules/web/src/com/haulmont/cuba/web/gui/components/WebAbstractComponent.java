@@ -612,7 +612,13 @@ public abstract class WebAbstractComponent<T extends com.vaadin.ui.Component>
 
     @Override
     public void setHtmlSanitizerEnabled(boolean htmlSanitizerEnabled) {
-        this.htmlSanitizerEnabled = htmlSanitizerEnabled;
+        if (!Objects.equals(this.htmlSanitizerEnabled, htmlSanitizerEnabled)) {
+            this.htmlSanitizerEnabled = htmlSanitizerEnabled;
+
+            setCaption(getCaption());
+            setDescription(getDescription());
+            setContextHelpText(getContextHelpText());
+        }
     }
 
     @Nullable

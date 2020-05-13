@@ -40,6 +40,8 @@ public class LabelLoader extends AbstractDatasourceComponentLoader<Label> {
         loadAlign(resultComponent, element);
         loadStyleName(resultComponent, element);
 
+        loadHtmlSanitizerEnabled(resultComponent, element);
+
         String htmlEnabled = element.attributeValue("htmlEnabled");
         if (StringUtils.isNotEmpty(htmlEnabled)) {
             resultComponent.setHtmlEnabled(Boolean.parseBoolean(htmlEnabled));
@@ -61,8 +63,6 @@ public class LabelLoader extends AbstractDatasourceComponentLoader<Label> {
 
         loadResponsive(resultComponent, element);
         loadCss(resultComponent, element);
-
-        loadHtmlSanitizerEnabled(resultComponent, element);
 
         resultComponent.setFormatter(loadFormatter(element));
     }

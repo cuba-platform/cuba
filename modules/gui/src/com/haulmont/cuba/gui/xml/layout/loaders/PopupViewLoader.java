@@ -50,11 +50,11 @@ public class PopupViewLoader extends AbstractComponentLoader<PopupView> {
 
         loadPopupPosition(resultComponent, element);
 
+        loadHtmlSanitizerEnabled(resultComponent, element);
+
         loadCaption(resultComponent, element);
         loadDescription(resultComponent, element);
         loadContextHelp(resultComponent, element);
-
-        loadHtmlSanitizerEnabled(resultComponent, element);
 
         loadVisible(resultComponent, element);
         loadEnable(resultComponent, element);

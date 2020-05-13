@@ -63,6 +63,8 @@ public class TreeLoader extends ActionsHolderLoader<Tree> {
         loadResponsive(resultComponent, element);
         loadCss(resultComponent, element);
 
+        loadHtmlSanitizerEnabled(resultComponent, element);
+
         loadActions(resultComponent, element);
 
         loadButtonsPanel(resultComponent);
@@ -78,8 +80,6 @@ public class TreeLoader extends ActionsHolderLoader<Tree> {
         loadCaption(resultComponent, element);
         loadDescription(resultComponent, element);
         loadContextHelp(resultComponent, element);
-
-        loadHtmlSanitizerEnabled(resultComponent, element);
 
         loadSelectionMode(resultComponent, element);
 
