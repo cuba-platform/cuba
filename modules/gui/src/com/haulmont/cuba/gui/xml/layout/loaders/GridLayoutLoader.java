@@ -139,13 +139,13 @@ public class GridLayoutLoader extends ContainerLoader<GridLayout> {
 
         loadAlign(resultComponent, element);
 
+        loadHtmlSanitizerEnabled(resultComponent, element);
+
         loadIcon(resultComponent, element);
         loadCaption(resultComponent, element);
         loadDescription(resultComponent, element);
         loadContextHelp(resultComponent, element);
         loadRequiredIndicatorVisible(resultComponent, element);
-
-        loadHtmlSanitizerEnabled(resultComponent, element);
 
         loadSubComponents();
     }

@@ -138,12 +138,12 @@ public abstract class AbstractDataGridLoader<T extends DataGrid> extends Actions
         loadHeight(resultComponent, element);
         loadWidth(resultComponent, element);
 
+        loadHtmlSanitizerEnabled(resultComponent, element);
+
         loadIcon(resultComponent, element);
         loadCaption(resultComponent, element);
         loadDescription(resultComponent, element);
         loadContextHelp(resultComponent, element);
-
-        loadHtmlSanitizerEnabled(resultComponent, element);
 
         loadEditorEnabled(resultComponent, element);
         loadEditorBuffered(resultComponent, element);

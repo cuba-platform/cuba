@@ -363,4 +363,29 @@ class SanitizerTest extends UiScreenSpec {
 
         screen.richTextArea.value == TEST_FONT_ELEMENT
     }
+
+    def "Sanitize component html caption depending on the value of the cuba.web.htmlSanitizerEnabled property"() {
+        showMainWindow()
+
+        def screen = screens.create(SanitizerScreen)
+        screen.show()
+
+        when: 'Html sanitizer is enabled globally and caption as html is enabled'
+
+        screen.textField.caption = UNSAFE_HTML
+        screen.textField.captionAsHtml = true
+
+        then: 'TextField has a safe html as its caption'
+
+        screen.textField.caption == SAFE_HTML
+
+        when: 'Html sanitizer is disabled for component'
+
+        screen.textField.htmlSanitizerEnabled = false
+        screen.textField.caption = UNSAFE_HTML
+
+        then: 'TextField has an unsafe html as its caption'
+
+        screen.textField.caption == UNSAFE_HTML
+    }
 }

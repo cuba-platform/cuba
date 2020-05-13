@@ -52,13 +52,13 @@ public class ScrollBoxLayoutLoader extends ContainerLoader<ScrollBoxLayout> {
         loadHeight(resultComponent, element);
         loadWidth(resultComponent, element);
 
+        loadHtmlSanitizerEnabled(resultComponent, element);
+
         loadIcon(resultComponent, element);
         loadCaption(resultComponent, element);
         loadDescription(resultComponent, element);
         loadContextHelp(resultComponent, element);
         loadRequiredIndicatorVisible(resultComponent, element);
-
-        loadHtmlSanitizerEnabled(resultComponent, element);
 
         loadSubComponents();
 

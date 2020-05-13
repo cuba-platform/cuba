@@ -53,12 +53,12 @@ public class SplitPanelLoader extends ContainerLoader<SplitPanel> {
         loadVisible(resultComponent, element);
         loadStyleName(resultComponent, element);
 
+        loadHtmlSanitizerEnabled(resultComponent, element);
+
         loadIcon(resultComponent, element);
         loadCaption(resultComponent, element);
         loadDescription(resultComponent, element);
         loadContextHelp(resultComponent, element);
-
-        loadHtmlSanitizerEnabled(resultComponent, element);
 
         loadSettingsEnabled(resultComponent, element);
 

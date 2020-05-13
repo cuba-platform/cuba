@@ -97,11 +97,11 @@ public class BulkEditorLoader extends AbstractComponentLoader<BulkEditor> {
 
         loadStyleName(resultComponent, element);
 
+        loadHtmlSanitizerEnabled(resultComponent, element);
+
         loadCaption(resultComponent, element);
         loadDescription(resultComponent, element);
         loadIcon(resultComponent, element);
-
-        loadHtmlSanitizerEnabled(resultComponent, element);
 
         loadWidth(resultComponent, element);
         loadAlign(resultComponent, element);

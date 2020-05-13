@@ -63,13 +63,13 @@ public class ButtonLoader extends AbstractComponentLoader<Button> {
 
         loadStyleName(resultComponent, element);
 
+        loadHtmlSanitizerEnabled(resultComponent, element);
+
         loadCaption(resultComponent, element);
         loadCaptionAsHtml(resultComponent, element);
         loadDescription(resultComponent, element);
         loadAction(resultComponent, element);
         loadIcon(resultComponent, element);
-
-        loadHtmlSanitizerEnabled(resultComponent, element);
 
         loadWidth(resultComponent, element);
         loadHeight(resultComponent, element);
