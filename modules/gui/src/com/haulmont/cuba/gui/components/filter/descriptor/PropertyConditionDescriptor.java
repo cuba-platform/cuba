@@ -156,7 +156,16 @@ public class PropertyConditionDescriptor extends AbstractConditionDescriptor {
         } else {
             MessageTools messageTools = AppBeans.get(MessageTools.class);
             MetaPropertyPath mpp = datasourceMetaClass.getPropertyPath(name);
-            return mpp != null ? messageTools.getPropertyCaption(datasourceMetaClass, name) : name;
+            String propertyCaption = name;
+            
+            if (mpp != null) {
+                MetadataTools metadataTools = AppBeans.get(MetadataTools.class);
+                MetaClass propertyMetaClass = metadataTools.getPropertyEnclosingMetaClass(mpp);
+                String propertyName = mpp.getMetaProperty().getName();
+                propertyCaption = messageTools.getPropertyCaption(propertyMetaClass, propertyName);
+            }
+            
+            return propertyCaption;
         }
     }
 
