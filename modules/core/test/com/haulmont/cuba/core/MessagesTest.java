@@ -25,6 +25,7 @@ import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.mp_test.MpTestObj;
 import com.haulmont.cuba.core.mp_test.nested.MpTestNestedEnum;
 import com.haulmont.cuba.core.mp_test.nested.MpTestNestedObj;
+import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.testsupport.TestAppender;
 import com.haulmont.cuba.testsupport.TestContainer;
 import org.apache.commons.lang3.LocaleUtils;
@@ -112,6 +113,26 @@ public class MessagesTest {
     }
 
     @Test
+    public void testIncludeDefaultLocale() {
+        Messages messages = AppBeans.get(Messages.class);
+        UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.NAME);
+        UserSession userSession = userSessionSource.getUserSession();
+        Locale defaultLocale = userSession.getLocale();
+        try {
+            String msg = messages.getMessage("com.haulmont.cuba.core.mp_test", "includedMsg");
+            assertEquals("Included Message", msg);
+
+            userSession.setLocale(Locale.forLanguageTag("ru"));
+            messages.clearCache();
+            msg = messages.getMessage("com.haulmont.cuba.core.mp_test", "includedMsg");
+            assertEquals("Included Message RU", msg);
+        } finally {
+            userSession.setLocale(defaultLocale);
+            messages.clearCache();
+        }
+    }
+
+    @Test
     public void testCachingDefaultLoc() {
         Messages messages = prepareCachingTest();
 
@@ -178,7 +199,7 @@ public class MessagesTest {
 
         String msg = messages.getMessage("com.haulmont.cuba.core.mp_test.nested com.haulmont.cuba.core.mp_test", "key0");
         assertEquals("Message0", msg);
-        assertEquals(14, getSearchMessagesCount());
+        assertEquals(18, getSearchMessagesCount());
 
         appender.getMessages().clear();
 
