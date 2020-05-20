@@ -37,7 +37,7 @@ public @interface StudioCollection {
 
     /**
      * Specifies URL pointing to the documentation page for the annotated element.
-     * Used in <i>CUBA Documentation</i> action in the Studio Screen Designer.<br/>
+     * Used in <i>CUBA Documentation</i> action in the Studio Screen Designer.<br>
      * If the documentation is version dependent, use %VERSION% as a placeholder.
      * It will be replaced with the minor version (e.g. 1.2) of the artifact containing UI component.
      *
