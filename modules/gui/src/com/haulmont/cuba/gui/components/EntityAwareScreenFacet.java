@@ -37,7 +37,7 @@ public interface EntityAwareScreenFacet<E extends Entity> {
      *
      * @param entityClass entity class
      */
-    @StudioProperty(type = PropertyType.JAVA_CLASS_NAME)
+    @StudioProperty(type = PropertyType.ENTITY_CLASS, typeParameter = "E")
     void setEntityClass(Class<E> entityClass);
 
     /**
@@ -53,7 +53,8 @@ public interface EntityAwareScreenFacet<E extends Entity> {
      * <p>
      * Usually, the list component is a {@code Table} or {@code DataGrid} displaying the list of entities.
      */
-    @StudioProperty(type = PropertyType.COMPONENT_REF)
+    @StudioProperty(type = PropertyType.COMPONENT_REF, typeParameter = "E",
+            options = "com.haulmont.cuba.gui.components.ListComponent")
     void setListComponent(ListComponent<E> listComponent);
 
     /**
@@ -66,7 +67,8 @@ public interface EntityAwareScreenFacet<E extends Entity> {
      * <p>
      * If the field is set, the framework sets the committed entity to the field after successful editor commit.
      */
-    @StudioProperty(type = PropertyType.COMPONENT_REF)
+    @StudioProperty(name = "field", type = PropertyType.COMPONENT_REF, typeParameter = "E",
+            options = "com.haulmont.cuba.gui.components.PickerField")
     void setPickerField(PickerField<E> pickerField);
 
     /**
@@ -81,7 +83,7 @@ public interface EntityAwareScreenFacet<E extends Entity> {
      * the framework automatically initializes the reference to the parent entity and sets up data contexts
      * for editing compositions.
      */
-    @StudioProperty(type = PropertyType.DATACONTAINER_REF)
+    @StudioProperty(type = PropertyType.COLLECTION_DATACONTAINER_REF, typeParameter = "E")
     void setContainer(CollectionContainer<E> container);
 
     /**

@@ -18,6 +18,7 @@ package com.haulmont.cuba.gui.meta;
 
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.cuba.gui.icons.CubaIcon;
+import com.haulmont.cuba.gui.screen.Screen;
 
 /**
  * Type of UI component property.
@@ -36,6 +37,10 @@ public enum PropertyType {
      * Long type.
      */
     LONG,
+    /**
+     * Float type.
+     */
+    FLOAT,
     /**
      * Double type.
      */
@@ -98,6 +103,11 @@ public enum PropertyType {
      */
     ENTITY_NAME,
     /**
+     * FQN of Entity class.
+     */
+    ENTITY_CLASS,
+
+    /**
      * FQN of Java class.
      */
     JAVA_CLASS_NAME,
@@ -124,6 +134,10 @@ public enum PropertyType {
      * ID of a datasource.
      */
     DATASOURCE_REF,
+    /**
+     * ID of a collection datasource.
+     */
+    COLLECTION_DATASOURCE_REF,
     /**
      * ID of a data loader.
      */
@@ -154,5 +168,20 @@ public enum PropertyType {
     /**
      * Keyboard shortcut.
      */
-    SHORTCUT
+    SHORTCUT,
+
+    /**
+     * FQN of screen class.
+     */
+    SCREEN_CLASS_NAME,
+
+    /**
+     * Screen ID
+     */
+    SCREEN_ID,
+
+    /**
+     * Standard launch modes of {@link Screen}s.
+     */
+    SCREEN_OPEN_MODE
 }

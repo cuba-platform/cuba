@@ -19,10 +19,7 @@ package com.haulmont.cuba.gui.components;
 import com.haulmont.bali.events.Subscription;
 import com.haulmont.cuba.core.sys.BeanLocatorAware;
 import com.haulmont.cuba.gui.Screens.LaunchMode;
-import com.haulmont.cuba.gui.meta.PropertyType;
-import com.haulmont.cuba.gui.meta.StudioFacet;
-import com.haulmont.cuba.gui.meta.StudioProperties;
-import com.haulmont.cuba.gui.meta.StudioProperty;
+import com.haulmont.cuba.gui.meta.*;
 import com.haulmont.cuba.gui.screen.Screen;
 import com.haulmont.cuba.gui.screen.ScreenOptions;
 import com.haulmont.cuba.gui.sys.UiControllerProperty;
@@ -40,8 +37,9 @@ import java.util.function.Supplier;
         caption = "Screen",
         description = "Prepares and shows screens",
         defaultProperty = "screenId",
-        category = "Non-visual",
-        icon = "icon/screen.svg"
+        category = "Facets",
+        icon = "icon/screen.svg",
+        documentationURL = "https://doc.cuba-platform.com/manual-%VERSION%/gui_ScreenFacet.html"
 )
 @StudioProperties(
         properties = {
@@ -68,7 +66,7 @@ public interface ScreenFacet<S extends Screen> extends Facet, BeanLocatorAware {
      *
      * @param screenClass screen class
      */
-    @StudioProperty(type = PropertyType.JAVA_CLASS_NAME)
+    @StudioProperty(type = PropertyType.SCREEN_CLASS_NAME, typeParameter = "S")
     void setScreenClass(Class<S> screenClass);
 
     /**
@@ -81,6 +79,7 @@ public interface ScreenFacet<S extends Screen> extends Facet, BeanLocatorAware {
      *
      * @param launchMode launch mode
      */
+    @StudioProperty(name = "openMode", type = PropertyType.SCREEN_OPEN_MODE, defaultValue = "NEW_TAB")
     void setLaunchMode(LaunchMode launchMode);
 
     /**
@@ -105,6 +104,7 @@ public interface ScreenFacet<S extends Screen> extends Facet, BeanLocatorAware {
      *
      * @param properties screen properties
      */
+    @StudioElementsGroup(xmlElement = "properties")
     void setProperties(Collection<UiControllerProperty> properties);
 
     /**
@@ -122,7 +122,8 @@ public interface ScreenFacet<S extends Screen> extends Facet, BeanLocatorAware {
      *
      * @param actionId action id
      */
-    @StudioProperty(type = PropertyType.COMPONENT_REF)
+    @StudioProperty(name = "onAction", type = PropertyType.COMPONENT_REF,
+            options = "com.haulmont.cuba.gui.components.Action")
     void setActionTarget(String actionId);
 
     /**
@@ -135,7 +136,8 @@ public interface ScreenFacet<S extends Screen> extends Facet, BeanLocatorAware {
      *
      * @param buttonId button id
      */
-    @StudioProperty(type = PropertyType.COMPONENT_REF)
+    @StudioProperty(name = "onButton", type = PropertyType.COMPONENT_REF,
+            options = "com.haulmont.cuba.gui.components.Button")
     void setButtonTarget(String buttonId);
 
     /**

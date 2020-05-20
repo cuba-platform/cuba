@@ -149,7 +149,7 @@ public class BulkEditAction extends SecuredListAction {
     /**
      * Sets the bulk editor screen open mode.
      */
-    @StudioPropertiesItem(defaultValue = "DIALOG")
+    @StudioPropertiesItem(type = PropertyType.SCREEN_OPEN_MODE, defaultValue = "DIALOG")
     public void setOpenMode(OpenMode openMode) {
         this.openMode = openMode;
     }

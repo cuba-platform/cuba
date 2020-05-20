@@ -34,8 +34,9 @@ import java.util.function.Supplier;
         caption = "Notification",
         description = "Prepares and shows notifications",
         defaultProperty = "caption",
-        category = "Non-visual",
-        icon = "icon/notification.svg"
+        category = "Facets",
+        icon = "icon/notification.svg",
+        documentationURL = "https://doc.cuba-platform.com/manual-%VERSION%/gui_NotificationFacet.html"
 )
 @StudioProperties(
         properties = {
@@ -89,7 +90,7 @@ public interface NotificationFacet extends Facet {
      *
      * @param type type
      */
-    @StudioProperty
+    @StudioProperty(type = PropertyType.ENUMERATION, defaultValue = "HUMANIZED")
     void setType(NotificationType type);
 
     /**
@@ -102,7 +103,7 @@ public interface NotificationFacet extends Facet {
      *
      * @param contentMode content mode
      */
-    @StudioProperty
+    @StudioProperty(type = PropertyType.ENUMERATION, defaultValue = "TEXT")
     void setContentMode(ContentMode contentMode);
 
     /**
@@ -147,7 +148,8 @@ public interface NotificationFacet extends Facet {
      *
      * @param actionId action id
      */
-    @StudioProperty(type = PropertyType.COMPONENT_REF)
+    @StudioProperty(name = "onAction", type = PropertyType.COMPONENT_REF,
+            options = "com.haulmont.cuba.gui.components.Action")
     void setActionTarget(String actionId);
 
     /**
@@ -161,7 +163,8 @@ public interface NotificationFacet extends Facet {
      *
      * @param buttonId button id
      */
-    @StudioProperty(type = PropertyType.COMPONENT_REF)
+    @StudioProperty(name = "onButton", type = PropertyType.COMPONENT_REF,
+            options = "com.haulmont.cuba.gui.components.Button")
     void setButtonTarget(String buttonId);
 
     /**

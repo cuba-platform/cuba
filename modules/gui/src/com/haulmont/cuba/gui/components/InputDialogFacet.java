@@ -36,8 +36,9 @@ import java.util.function.Function;
         caption = "Input Dialog",
         description = "Prepares and shows input dialogs",
         defaultProperty = "caption",
-        category = "Non-visual",
-        icon = "icon/dialog.svg"
+        category = "Facets",
+        icon = "icon/dialog.svg",
+        documentationURL = "https://doc.cuba-platform.com/manual-%VERSION%/gui_InputDialogFacet.html"
 )
 @StudioProperties(
         properties = {
@@ -98,7 +99,8 @@ public interface InputDialogFacet extends Facet, ActionsAwareDialogFacet<InputDi
      *
      * @param actionId action id
      */
-    @StudioProperty(type = PropertyType.COMPONENT_REF)
+    @StudioProperty(name = "onAction", type = PropertyType.COMPONENT_REF,
+            options = "com.haulmont.cuba.gui.components.Action")
     void setActionTarget(String actionId);
 
     /**
@@ -112,7 +114,8 @@ public interface InputDialogFacet extends Facet, ActionsAwareDialogFacet<InputDi
      *
      * @param buttonId button id
      */
-    @StudioProperty(type = PropertyType.COMPONENT_REF)
+    @StudioProperty(name = "onButton", type = PropertyType.COMPONENT_REF,
+            options = "com.haulmont.cuba.gui.components.Button")
     void setButtonTarget(String buttonId);
 
     /**

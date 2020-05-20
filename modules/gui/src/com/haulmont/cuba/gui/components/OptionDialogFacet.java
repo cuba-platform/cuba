@@ -30,8 +30,9 @@ import com.haulmont.cuba.gui.meta.StudioProperty;
         caption = "Option Dialog",
         description = "Prepares and shows option dialogs",
         defaultProperty = "message",
-        category = "Non-visual",
-        icon = "icon/dialog.svg"
+        category = "Facets",
+        icon = "icon/dialog.svg",
+        documentationURL = "https://doc.cuba-platform.com/manual-%VERSION%/gui_OptionDialogFacet.html"
 )
 @StudioProperties(
         properties = {
@@ -80,7 +81,7 @@ public interface OptionDialogFacet extends Facet, ActionsAwareDialogFacet<Option
      * Sets dialog message content mode.
      * @param contentMode content mode
      */
-    @StudioProperty
+    @StudioProperty(type = PropertyType.ENUMERATION, defaultValue = "TEXT")
     void setContentMode(ContentMode contentMode);
 
     /**
@@ -157,7 +158,8 @@ public interface OptionDialogFacet extends Facet, ActionsAwareDialogFacet<Option
      *
      * @param actionId action id
      */
-    @StudioProperty(type = PropertyType.COMPONENT_REF)
+    @StudioProperty(name = "onAction", type = PropertyType.COMPONENT_REF,
+            options = "com.haulmont.cuba.gui.components.Action")
     void setActionTarget(String actionId);
 
     /**
@@ -171,7 +173,8 @@ public interface OptionDialogFacet extends Facet, ActionsAwareDialogFacet<Option
      *
      * @param buttonId button id
      */
-    @StudioProperty(type = PropertyType.COMPONENT_REF)
+    @StudioProperty(name = "onButton", type = PropertyType.COMPONENT_REF,
+            options = "com.haulmont.cuba.gui.components.Button")
     void setButtonTarget(String buttonId);
 
     /**

@@ -28,6 +28,7 @@ import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.data.meta.EntityDataUnit;
 import com.haulmont.cuba.gui.icons.CubaIcon;
 import com.haulmont.cuba.gui.icons.Icons;
+import com.haulmont.cuba.gui.meta.PropertyType;
 import com.haulmont.cuba.gui.meta.StudioAction;
 import com.haulmont.cuba.gui.meta.StudioPropertiesItem;
 import com.haulmont.cuba.gui.screen.*;
@@ -85,7 +86,7 @@ public class ViewAction<E extends Entity> extends SecuredListAction {
     /**
      * Sets the editor screen open mode.
      */
-    @StudioPropertiesItem
+    @StudioPropertiesItem(type = PropertyType.SCREEN_OPEN_MODE)
     public void setOpenMode(OpenMode openMode) {
         screenInitializer.setOpenMode(openMode);
     }
