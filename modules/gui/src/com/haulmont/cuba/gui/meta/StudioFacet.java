@@ -22,7 +22,7 @@ import java.lang.annotation.*;
 
 /**
  * Indicates that the annotated interface should be available in Studio Screen Designer as a non-visual component.
- * Provides metadata for components Palette and Properties Panel of Screen Designer. The annotated interface must be a
+ * Provides metadata for components Palette and Component Inspector of Screen Designer. The annotated interface must be a
  * direct or indirect subclass of {@link Facet}.
  */
 @Documented
@@ -30,12 +30,12 @@ import java.lang.annotation.*;
 @Target(ElementType.TYPE)
 public @interface StudioFacet {
     /**
-     * @return caption of the event in Screen Designer Events
+     * @return caption in Studio Screen Designer Palette
      */
     String caption() default "";
 
     /**
-     * @return description of the event in Screen Designer Events
+     * @return description of the facet in Studio Screen Designer Palette
      */
     String description() default "";
 
@@ -45,7 +45,7 @@ public @interface StudioFacet {
     String category() default "";
 
     /**
-     * @return UI components Palette icon, SVG or PNG
+     * @return Component Palette icon, SVG or PNG
      */
     String icon() default "";
 
@@ -77,4 +77,14 @@ public @interface StudioFacet {
      * @return names of unsupported properties that should be hidden from Properties panel
      */
     String[] unsupportedProperties() default {};
+
+    /**
+     * Specifies URL pointing to the documentation page for the annotated Facet.
+     * Used in <i>CUBA Documentation</i> action in the Studio Screen Designer.<br/>
+     * If the documentation is version dependent, use %VERSION% as a placeholder.
+     * It will be replaced with the minor version (e.g. 1.2) of the artifact containing Facet.
+     *
+     * @return URL of the documentation page
+     */
+    String documentationURL() default "";
 }

@@ -21,7 +21,9 @@ import java.util.function.Consumer;
         xmlElement = "clipboardTrigger",
         caption = "ClipboardTrigger",
         description = "Copies the text content of the input to the clipboard on button click.",
-        category = "Non-visual"
+        category = "Facets",
+        icon = "icon/clipboardTrigger.svg",
+        documentationURL = "https://doc.cuba-platform.com/manual-%VERSION%/gui_ClipboardTrigger.html"
 )
 public interface ClipboardTrigger extends Facet {
 
@@ -30,7 +32,8 @@ public interface ClipboardTrigger extends Facet {
      *
      * @param input input field
      */
-    @StudioProperty(type = PropertyType.COMPONENT_REF)
+    @StudioProperty(type = PropertyType.COMPONENT_REF,
+            options = "com.haulmont.cuba.gui.components.TextInputField")
     void setInput(TextInputField<?> input);
     /**
      * @return input field
@@ -42,7 +45,8 @@ public interface ClipboardTrigger extends Facet {
      *
      * @param button button
      */
-    @StudioProperty(type = PropertyType.COMPONENT_REF)
+    @StudioProperty(type = PropertyType.COMPONENT_REF,
+            options = "com.haulmont.cuba.gui.components.Button")
     void setButton(Button button);
     /**
      * @return button

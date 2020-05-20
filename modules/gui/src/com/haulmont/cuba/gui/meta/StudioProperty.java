@@ -45,7 +45,7 @@ public @interface StudioProperty {
     String description() default "";
 
     /**
-     * @return category of the property in Properties Panel, e.g. General, Size, Data
+     * @return category of the property in Component Inspector, e.g. General, Size, Data
      */
     String category() default "";
 
@@ -60,8 +60,14 @@ public @interface StudioProperty {
     String defaultValue() default "";
 
     /**
-     * Enumeration options for {@link PropertyType#ENUMERATION} property, or
-     * list of Spring bean base classes for {@link PropertyType#BEAN_REF} property
+     * Context dependent list of options for the component property.<p/>
+     * {@link PropertyType#ENUMERATION}: enumeration options
+     * {@link PropertyType#BEAN_REF}: list of the allowed Spring bean base classes
+     * {@link PropertyType#COMPONENT_REF}: list of the allowed component base classes
+     * {@link PropertyType#PROPERTY_PATH_REF}: list of the allowed types for the property.
+     * Use registered {@link com.haulmont.chile.core.datatypes.Datatype} names for the datatype properties
+     * or <i>"to_one"</i> and <i>"to_many"</i> for the association properties.
+     *
      * @return options
      */
     String[] options() default {};
@@ -75,4 +81,15 @@ public @interface StudioProperty {
      * @return target XML element name
      */
     String xmlElement() default "";
+
+    /**
+     * Specifies name of the type parameter for the generic UI component or Facet that is provided by the property.<br/>
+     * The actual class for the type parameter can be resolved for the following property types:
+     * {@link PropertyType#JAVA_CLASS_NAME}, {@link PropertyType#ENTITY_CLASS}, {@link PropertyType#SCREEN_CLASS_NAME},
+     * {@link PropertyType#DATACONTAINER_REF}, {@link PropertyType#COLLECTION_DATACONTAINER_REF}, {@link PropertyType#DATASOURCE_REF},
+     * {@link PropertyType#COLLECTION_DATASOURCE_REF}, {@link PropertyType#COMPONENT_REF}
+     *
+     * @return name of the type parameter
+     */
+    String typeParameter() default "";
 }

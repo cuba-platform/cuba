@@ -22,7 +22,7 @@ import java.lang.annotation.Documented;
 
 /**
  * Indicates that the annotated UI component interface should be available in Studio Screen Designer. Provides metadata
- * for UI components Palette and Properties Panel of Screen Designer. The annotated interface must be a direct or
+ * for Component Palette and Component Inspector of Screen Designer. The annotated interface must be a direct or
  * indirect subclass of {@link Component}.
  */
 @Documented
@@ -43,7 +43,7 @@ public @interface StudioComponent {
     String category() default "";
 
     /**
-     * @return UI components Palette icon, SVG or PNG
+     * @return Component Palette icon, SVG or PNG
      */
     String icon() default "";
 
@@ -97,4 +97,14 @@ public @interface StudioComponent {
      * @return type of container layout if {@link #canvasBehaviour()} is {@link CanvasBehaviour#CONTAINER}
      */
     ContainerType containerType() default ContainerType.VERTICAL;
+
+    /**
+     * Specifies URL pointing to the documentation page for the annotated UI component.
+     * Used in <i>CUBA Documentation</i> action in the Studio Screen Designer.<br/>
+     * If the documentation is version dependent, use %VERSION% as a placeholder.
+     * It will be replaced with the minor version (e.g. 1.2) of the artifact containing UI component.
+     *
+     * @return URL of the documentation page
+     */
+    String documentationURL() default "";
 }
