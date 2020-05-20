@@ -60,7 +60,7 @@ public @interface StudioProperty {
     String defaultValue() default "";
 
     /**
-     * Context dependent list of options for the component property.<p/>
+     * Context dependent list of options for the component property.<p>
      * {@link PropertyType#ENUMERATION}: enumeration options
      * {@link PropertyType#BEAN_REF}: list of the allowed Spring bean base classes
      * {@link PropertyType#COMPONENT_REF}: list of the allowed component base classes
@@ -83,7 +83,7 @@ public @interface StudioProperty {
     String xmlElement() default "";
 
     /**
-     * Specifies name of the type parameter for the generic UI component or Facet that is provided by the property.<br/>
+     * Specifies name of the type parameter for the generic UI component or Facet that is provided by the property.<br>
      * The actual class for the type parameter can be resolved for the following property types:
      * {@link PropertyType#JAVA_CLASS_NAME}, {@link PropertyType#ENTITY_CLASS}, {@link PropertyType#SCREEN_CLASS_NAME},
      * {@link PropertyType#DATACONTAINER_REF}, {@link PropertyType#COLLECTION_DATACONTAINER_REF}, {@link PropertyType#DATASOURCE_REF},
