@@ -51,7 +51,7 @@ public @interface StudioPropertiesItem {
     String description() default "";
 
     /**
-     * @return category of the property in Properties Panel, e.g. General, Size, Data
+     * @return category of the property in Component Inspector, e.g. General, Size, Data
      */
     String category() default "";
 

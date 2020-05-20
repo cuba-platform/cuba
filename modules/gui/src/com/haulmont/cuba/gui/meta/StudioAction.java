@@ -20,7 +20,7 @@ import java.lang.annotation.*;
 
 /**
  * Indicates that the annotated interface should be available in Studio Screen Designer as an action.
- * Provides metadata for components Palette and Properties Panel of Screen Designer. The annotated interface must be a
+ * Provides metadata for Component Palette and Component Inspector of Screen Designer. The annotated interface must be a
  * direct or indirect subclass of {@link com.haulmont.cuba.gui.components.Action}.
  */
 @Documented
@@ -42,7 +42,7 @@ public @interface StudioAction {
     String category() default "";
 
     /**
-     * UI components Palette icon, SVG or PNG.
+     * Component Palette icon, SVG or PNG.
      */
     String icon() default "";
 }

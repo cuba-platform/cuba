@@ -16,6 +16,8 @@
 
 package com.haulmont.cuba.gui.sys;
 
+import com.haulmont.cuba.gui.meta.*;
+
 import static com.haulmont.bali.util.Preconditions.checkNotEmptyString;
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
@@ -25,6 +27,9 @@ import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
  *
  * @see UiControllerPropertyInjector
  */
+@StudioElement(caption = "UI Controller Property", xmlElement = "property")
+@StudioProperties(properties = @StudioProperty(name = "ref", type = PropertyType.STRING),
+        groups = @PropertiesGroup(properties = {"value", "ref"}, constraint = PropertiesConstraint.ONE_OF))
 public class UiControllerProperty {
 
     protected final String name;
@@ -41,10 +46,12 @@ public class UiControllerProperty {
         this.type = type;
     }
 
+    @StudioProperty(required = true)
     public String getName() {
         return name;
     }
 
+    @StudioProperty(type = PropertyType.STRING)
     public Object getValue() {
         return value;
     }

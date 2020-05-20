@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2019 Haulmont.
+ * Copyright (c) 2008-2020 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,30 +16,13 @@
 
 package com.haulmont.cuba.gui.meta;
 
-import com.haulmont.cuba.gui.components.*;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Target;
 
 /**
- * Specifies standard container type for emulation in Studio Screen Designer.
+ * Indicates that the annotated method parameter class provides metadata for Component Inspector of Screen Designer
+ * for the UI component or Facet containing annotated method.
  */
-public enum ContainerType {
-    /**
-     * Vertical layout.
-     *
-     * @see VBoxLayout
-     */
-    VERTICAL,
-
-    /**
-     * Horizontal layout.
-     *
-     * @see HBoxLayout
-     */
-    HORIZONTAL,
-
-    /**
-     * Directional flow layout.
-     *
-     * @see FlowBoxLayout
-     */
-    FLOW,
+@Target({ElementType.METHOD})
+public @interface StudioEmbedded {
 }

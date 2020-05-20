@@ -34,8 +34,9 @@ import java.util.function.Supplier;
         xmlElement = "editorScreen",
         caption = "Editor Screen",
         description = "Prepares and shows editor screens",
-        category = "Non-visual",
-        icon = "icon/screen.svg"
+        category = "Facets",
+        icon = "icon/screen.svg",
+        documentationURL = "https://doc.cuba-platform.com/manual-%VERSION%/gui_EditorScreenFacet.html"
 )
 @StudioProperties(
         properties = {

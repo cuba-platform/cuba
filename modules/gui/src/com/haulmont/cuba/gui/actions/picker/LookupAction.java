@@ -30,6 +30,7 @@ import com.haulmont.cuba.gui.components.PickerField;
 import com.haulmont.cuba.gui.components.actions.BaseAction;
 import com.haulmont.cuba.gui.icons.CubaIcon;
 import com.haulmont.cuba.gui.icons.Icons;
+import com.haulmont.cuba.gui.meta.PropertyType;
 import com.haulmont.cuba.gui.meta.StudioAction;
 import com.haulmont.cuba.gui.meta.StudioPropertiesItem;
 import com.haulmont.cuba.gui.screen.*;
@@ -95,7 +96,7 @@ public class LookupAction<E extends Entity> extends BaseAction implements Picker
     /**
      * Sets the lookup screen open mode.
      */
-    @StudioPropertiesItem
+    @StudioPropertiesItem(type = PropertyType.SCREEN_OPEN_MODE)
     public void setOpenMode(OpenMode openMode) {
         screenInitializer.setOpenMode(openMode);
     }

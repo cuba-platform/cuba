@@ -36,8 +36,9 @@ import java.util.function.Predicate;
         xmlElement = "lookupScreen",
         caption = "Lookup Screen",
         description = "Prepares and shows lookup screens",
-        category = "Non-visual",
-        icon = "icon/screen.svg"
+        category = "Facets",
+        icon = "icon/screen.svg",
+        documentationURL = "https://doc.cuba-platform.com/manual-%VERSION%/gui_LookupScreenFacet.html"
 )
 @StudioProperties(
         properties = {

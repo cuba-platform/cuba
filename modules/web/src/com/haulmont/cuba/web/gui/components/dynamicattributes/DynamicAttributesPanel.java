@@ -51,7 +51,9 @@ import java.util.stream.Collectors;
 @StudioComponent(category = "Components",
         unsupportedProperties = {"enable", "responsive"},
         icon = "icon/dynamicAttributesPanel.svg",
-        canvasIconSize = CanvasIconSize.LARGE)
+        canvasIcon = "icon/dynamicAttributesPanel_canvas.svg",
+        canvasIconSize = CanvasIconSize.LARGE,
+        documentationURL = "https://doc.cuba-platform.com/manual-%VERSION%/categorized_entity.html")
 @CompositeDescriptor("dynamic-attributes-panel.xml")
 public class DynamicAttributesPanel extends CompositeComponent<VBoxLayout> implements Validatable {
 

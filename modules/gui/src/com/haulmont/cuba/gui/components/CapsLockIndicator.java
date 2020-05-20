@@ -25,7 +25,8 @@ import com.haulmont.cuba.gui.meta.StudioProperty;
  */
 @StudioComponent(icon = "icon/capsLockIndicator.svg",
         unsupportedProperties = {"enable", "responsive"},
-        category = "Components")
+        category = "Components",
+        documentationURL = "https://doc.cuba-platform.com/manual-%VERSION%/gui_CapsLockIndicator.html")
 public interface CapsLockIndicator extends Component {
     String NAME = "capsLockIndicator";
 
