@@ -814,10 +814,9 @@ public class ExcelExporter {
             if (sizers[sizersIndex].isNotificationRequired(notificationRequired)) {
                 sizers[sizersIndex].notifyCellValue(str, stdFont);
             }
-        } else if (cellValue instanceof EnumClass) {
-            String nameKey = cellValue.getClass().getSimpleName() + "." + cellValue.toString();
-            String message = sizersIndex == 0 ? createSpaceString(level) + messages.getMessage(cellValue.getClass(), nameKey)
-                    : messages.getMessage(cellValue.getClass(), nameKey);
+        } else if (cellValue instanceof Enum) {
+            String message = (sizersIndex == 0 ? createSpaceString(level) : "") +
+                    messages.getMessage((Enum) cellValue);
 
             cell.setCellValue(message + childCountValue);
             if (sizers[sizersIndex].isNotificationRequired(notificationRequired)) {
