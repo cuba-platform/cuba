@@ -122,6 +122,10 @@ public class MessagesTest {
             String msg = messages.getMessage("com.haulmont.cuba.core.mp_test", "includedMsg");
             assertEquals("Included Message", msg);
 
+            messages.clearCache();
+            msg = messages.getMessage("com.haulmont.cuba.core.mp_test", "includedMsg", Locale.forLanguageTag("ru"));
+            assertEquals("Included Message RU", msg);
+
             userSession.setLocale(Locale.forLanguageTag("ru"));
             messages.clearCache();
             msg = messages.getMessage("com.haulmont.cuba.core.mp_test", "includedMsg");
