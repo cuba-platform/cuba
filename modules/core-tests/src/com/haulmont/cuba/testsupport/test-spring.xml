@@ -28,4 +28,5 @@
     <bean id="mailSendTaskExecutor" class="org.springframework.core.task.SyncTaskExecutor"/>
     <bean id="cuba_JpqlSortExpressionProvider" class="com.haulmont.cuba.testsupport.TestJpqlSortExpressionProvider"/>
     <bean id="cuba_DataSourceProvider" class="com.haulmont.cuba.testsupport.TestDataSourceProvider"/>
+    <bean id="cuba_MessageTools" class="com.haulmont.cuba.testsupport.TestMessageTools"/>
 </beans>

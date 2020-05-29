@@ -500,8 +500,10 @@ public abstract class AbstractMessages implements Messages {
                 for (String includePath : includes) {
                     includePath = StringUtils.trimToNull(includePath);
                     if (includePath != null) {
-                        String message = searchMessage(includePath, key, locale, locale, passedPacks);
-                        if (message == null) {
+                        String message;
+                        if (truncatedLocale == null) {
+                            message = searchMessage(includePath, key, locale, messageTools.getDefaultLocale(), passedPacks);
+                        } else {
                             message = searchMessage(includePath, key, locale, truncatedLocale, passedPacks);
                         }
                         if (message != null) {

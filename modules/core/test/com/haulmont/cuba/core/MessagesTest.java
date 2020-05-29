@@ -25,9 +25,9 @@ import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.mp_test.MpTestObj;
 import com.haulmont.cuba.core.mp_test.nested.MpTestNestedEnum;
 import com.haulmont.cuba.core.mp_test.nested.MpTestNestedObj;
-import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.testsupport.TestAppender;
 import com.haulmont.cuba.testsupport.TestContainer;
+import com.haulmont.cuba.testsupport.TestMessageTools;
 import org.apache.commons.lang3.LocaleUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -113,25 +113,20 @@ public class MessagesTest {
     }
 
     @Test
-    public void testIncludeDefaultLocale() {
+    public void testIncludeDefaultLoc() {
         Messages messages = AppBeans.get(Messages.class);
-        UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.NAME);
-        UserSession userSession = userSessionSource.getUserSession();
-        Locale defaultLocale = userSession.getLocale();
+        TestMessageTools messageTools = (TestMessageTools) AppBeans.get(MessageTools.class);
         try {
-            String msg = messages.getMessage("com.haulmont.cuba.core.mp_test", "includedMsg");
+            Locale localeRu = Locale.forLanguageTag("ru");
+            String msg = messages.getMessage("com.haulmont.cuba.core.mp_test", "includedMsg", localeRu);
             assertEquals("Included Message", msg);
 
+            messageTools.setDefaultLocale(localeRu);
             messages.clearCache();
-            msg = messages.getMessage("com.haulmont.cuba.core.mp_test", "includedMsg", Locale.forLanguageTag("ru"));
-            assertEquals("Included Message RU", msg);
-
-            userSession.setLocale(Locale.forLanguageTag("ru"));
-            messages.clearCache();
-            msg = messages.getMessage("com.haulmont.cuba.core.mp_test", "includedMsg");
+            msg = messages.getMessage("com.haulmont.cuba.core.mp_test", "includedMsg", localeRu);
             assertEquals("Included Message RU", msg);
         } finally {
-            userSession.setLocale(defaultLocale);
+            messageTools.setDefaultLocale(null);
             messages.clearCache();
         }
     }
@@ -203,7 +198,7 @@ public class MessagesTest {
 
         String msg = messages.getMessage("com.haulmont.cuba.core.mp_test.nested com.haulmont.cuba.core.mp_test", "key0");
         assertEquals("Message0", msg);
-        assertEquals(18, getSearchMessagesCount());
+        assertEquals(16, getSearchMessagesCount());
 
         appender.getMessages().clear();
 
@@ -221,7 +216,7 @@ public class MessagesTest {
         String msg = messages.getMessage("com.haulmont.cuba.core.mp_test.nested com.haulmont.cuba.core.mp_test", "key0",
                 Locale.forLanguageTag("fr"));
         assertEquals("Message0 in French", msg);
-        assertEquals(16, getSearchMessagesCount());
+        assertEquals(14, getSearchMessagesCount());
 
         appender.getMessages().clear();
 
