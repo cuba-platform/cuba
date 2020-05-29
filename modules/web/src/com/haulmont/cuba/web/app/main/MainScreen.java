@@ -37,6 +37,8 @@ import com.haulmont.cuba.gui.screen.UiDescriptor;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.WebConfig;
+import com.haulmont.cuba.web.widgets.CubaCollapsibleMenuLayoutExtension;
+import com.haulmont.cuba.web.widgets.CubaCssActionsLayout;
 import com.vaadin.server.WebBrowser;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.event.EventListener;
@@ -124,6 +126,11 @@ public class MainScreen extends Screen implements Window.HasWorkArea, Window.Has
     protected void initCollapsibleMenu() {
         Component sideMenuContainer = getWindow().getComponent("sideMenuContainer");
         if (sideMenuContainer instanceof CssLayout) {
+            Component sideMenuLayout = getWindow().getComponent("horizontalWrap");
+            if (sideMenuLayout instanceof CssLayout) {
+                sideMenuLayout.withUnwrapped(CubaCssActionsLayout.class, CubaCollapsibleMenuLayoutExtension::new);
+            }
+
             if (isMobileDevice()) {
                 setSideMenuCollapsed(true);
             } else {
