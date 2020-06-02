@@ -29,6 +29,7 @@ import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.Notifications;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.TimeField.TimeMode;
+import com.haulmont.cuba.gui.components.data.BindingState;
 import com.haulmont.cuba.gui.components.data.ConversionException;
 import com.haulmont.cuba.gui.components.data.DataAwareComponentsTools;
 import com.haulmont.cuba.gui.components.data.ValueSource;
@@ -88,6 +89,7 @@ public class WebDateField<V extends Comparable<V>>
     protected ThemeConstants theme;
 
     protected Subscription parentEditableChangeSubscription;
+    protected Subscription valueSourceStateChangeSubscription;
 
     protected DataAwareComponentsTools dataAwareComponentsTools;
 
@@ -507,9 +509,20 @@ public class WebDateField<V extends Comparable<V>>
         if (valueSource instanceof EntityValueSource) {
             EntityValueSource entityValueSource = (EntityValueSource) valueSource;
             DataAwareComponentsTools dataAwareComponentsTools = beanLocator.get(DataAwareComponentsTools.class);
-            dataAwareComponentsTools.setupDateRange(this, entityValueSource);
             dataAwareComponentsTools.setupDateFormat(this, entityValueSource);
             dataAwareComponentsTools.setupZoneId(this, entityValueSource);
+
+            if (valueSourceStateChangeSubscription != null) {
+                valueSourceStateChangeSubscription.remove();
+            }
+
+            // setup dateRange after valueSource is activated and value is set because
+            // Vaadin dateField rejects value if it is not in range
+            valueSourceStateChangeSubscription = valueSource.addStateChangeListener(event -> {
+                if (event.getState() == BindingState.ACTIVE) {
+                    dataAwareComponentsTools.setupDateRange(this, entityValueSource);
+                }
+            });
         }
     }
 
