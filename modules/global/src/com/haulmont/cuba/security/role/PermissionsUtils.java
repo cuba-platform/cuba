@@ -121,14 +121,14 @@ public final class PermissionsUtils {
             String[] split = target.split(":");
             if (split.length == 2) {
                 //e.g. *:create
-                String wildcardTarget = target.replace(split[0], "*");
+                String wildcardTarget = "*:" + split[1];
                 permissionValue = explicitPermissions.get(wildcardTarget);
             }
         } else if (permissionsContainer instanceof EntityAttributePermissionsContainer) {
             String[] split = target.split(":");
             if (split.length == 2) {
                 //e.g. sec$User:*
-                String wildcardTarget = target.replace(split[1], "*");
+                String wildcardTarget = split[0] + ":*";
                 permissionValue = explicitPermissions.get(wildcardTarget);
                 if (permissionValue == null) {
                     permissionValue = explicitPermissions.get("*:*");
