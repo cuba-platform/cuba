@@ -199,6 +199,12 @@ public interface Calendar<V> extends Component.BelongToFrame, Component.HasCapti
      */
     void setMonthNames(Map<Month, String> monthNames);
 
+    /**
+     * Adds a listener that is invoked when the user clicks on a day number of the month.
+     *
+     * @param listener a listener to add
+     * @return a registration object for removing an event listener
+     */
     Subscription addDateClickListener(Consumer<CalendarDateClickEvent<V>> listener);
 
     /**
@@ -208,6 +214,12 @@ public interface Calendar<V> extends Component.BelongToFrame, Component.HasCapti
     @Deprecated
     void removeDateClickListener(Consumer<CalendarDateClickEvent<V>> listener);
 
+    /**
+     * Adds a listener that is invoked when the user clicks on an event.
+     *
+     * @param listener a listener to add
+     * @return a registration object for removing an event listener
+     */
     Subscription addEventClickListener(Consumer<CalendarEventClickEvent<V>> listener);
 
     /**
@@ -217,6 +229,12 @@ public interface Calendar<V> extends Component.BelongToFrame, Component.HasCapti
     @Deprecated
     void removeEventClickListener(Consumer<CalendarEventClickEvent<V>> listener);
 
+    /**
+     * Adds a listener that is invoked when the user changes an event duration.
+     *
+     * @param listener a listener to add
+     * @return a registration object for removing an event listener
+     */
     Subscription addEventResizeListener(Consumer<CalendarEventResizeEvent<V>> listener);
 
     /**
@@ -226,6 +244,12 @@ public interface Calendar<V> extends Component.BelongToFrame, Component.HasCapti
     @Deprecated
     void removeEventResizeListener(Consumer<CalendarEventResizeEvent<V>> listener);
 
+    /**
+     * Adds a listener that is invoked when the user changes an event position.
+     *
+     * @param listener a listener to add
+     * @return a registration object for removing an event listener
+     */
     Subscription addEventMoveListener(Consumer<CalendarEventMoveEvent<V>> listener);
 
     /**
@@ -235,6 +259,12 @@ public interface Calendar<V> extends Component.BelongToFrame, Component.HasCapti
     @Deprecated
     void removeEventMoveListener(Consumer<CalendarEventMoveEvent<V>> listener);
 
+    /**
+     * Adds a listener that is invoked when the user clicks on a week number.
+     *
+     * @param listener a listener to add
+     * @return a registration object for removing an event listener
+     */
     Subscription addWeekClickListener(Consumer<CalendarWeekClickEvent<V>> listener);
 
     /**
@@ -244,6 +274,12 @@ public interface Calendar<V> extends Component.BelongToFrame, Component.HasCapti
     @Deprecated
     void removeWeekClickListener(Consumer<CalendarWeekClickEvent<V>> listener);
 
+    /**
+     * Adds a listener that is invoked when the user clicks forward navigation button.
+     *
+     * @param listener a listener to add
+     * @return a registration object for removing an event listener
+     */
     Subscription addForwardClickListener(Consumer<CalendarForwardClickEvent<V>> listener);
 
     /**
@@ -253,6 +289,12 @@ public interface Calendar<V> extends Component.BelongToFrame, Component.HasCapti
     @Deprecated
     void removeForwardClickListener(Consumer<CalendarForwardClickEvent<V>> listener);
 
+    /**
+     * Adds a listener that is invoked when the user clicks backward navigation button.
+     *
+     * @param listener a listener to add
+     * @return a registration object for removing an event listener
+     */
     Subscription addBackwardClickListener(Consumer<CalendarBackwardClickEvent<V>> listener);
 
     /**
@@ -262,6 +304,12 @@ public interface Calendar<V> extends Component.BelongToFrame, Component.HasCapti
     @Deprecated
     void removeBackwardClickListener(Consumer<CalendarBackwardClickEvent<V>> listener);
 
+    /**
+     * Adds a listener that is invoked when the user drag-marks day or time cells using mouse.
+     *
+     * @param listener a listener to add
+     * @return a registration object for removing an event listener
+     */
     Subscription addRangeSelectListener(Consumer<CalendarRangeSelectEvent<V>> listener);
 
     /**
@@ -272,10 +320,10 @@ public interface Calendar<V> extends Component.BelongToFrame, Component.HasCapti
     void removeRangeSelectListener(Consumer<CalendarRangeSelectEvent<V>> listener);
 
     /**
-     * Adds day click listener. It is invoked when the user clicks on empty space in the day.
+     * Adds a listener that is invoked when the user clicks on an empty space in the day.
      *
-     * @param listener listener to add
-     * @return a registration object for removing an event listener.
+     * @param listener a listener to add
+     * @return a registration object for removing an event listener
      */
     Subscription addDayClickListener(Consumer<CalendarDayClickEvent<V>> listener);
 
@@ -283,6 +331,12 @@ public interface Calendar<V> extends Component.BelongToFrame, Component.HasCapti
         FORMAT_12H, FORMAT_24H
     }
 
+    /**
+     * An event object that is fired when the user changes an event position.
+     *
+     * @param <V> type of value
+     * @see #addEventMoveListener(Consumer)
+     */
     class CalendarEventMoveEvent<V> extends EventObject {
         protected CalendarEvent<V> calendarEvent;
         protected V newStart;
@@ -334,10 +388,16 @@ public interface Calendar<V> extends Component.BelongToFrame, Component.HasCapti
             return calendarEvent;
         }
 
+        /**
+         * @return the event start date
+         */
         public V getNewStart() {
             return newStart;
         }
 
+        /**
+         * @return the event end date
+         */
         public V getNewEnd() {
             return newEnd;
         }
@@ -351,6 +411,12 @@ public interface Calendar<V> extends Component.BelongToFrame, Component.HasCapti
         }
     }
 
+    /**
+     * An event object that is fired when the user clicks backward navigation button.
+     *
+     * @param <V> type of value
+     * @see #addBackwardClickListener(Consumer)
+     */
     class CalendarBackwardClickEvent<V> extends EventObject {
 
         public CalendarBackwardClickEvent(Calendar<V> calendar) {
@@ -373,6 +439,12 @@ public interface Calendar<V> extends Component.BelongToFrame, Component.HasCapti
         }
     }
 
+    /**
+     * An event object that is fired when the user clicks on a day number of the month.
+     *
+     * @param <V> type of value
+     * @see #addDateClickListener(Consumer)
+     */
     class CalendarDateClickEvent<V> extends EventObject {
         protected V date;
 
@@ -382,6 +454,9 @@ public interface Calendar<V> extends Component.BelongToFrame, Component.HasCapti
             this.date = date;
         }
 
+        /**
+         * @return clicked date
+         */
         public V getDate() {
             return date;
         }
@@ -402,6 +477,12 @@ public interface Calendar<V> extends Component.BelongToFrame, Component.HasCapti
         }
     }
 
+    /**
+     * An event object that is fired when the user clicks on an event.
+     *
+     * @param <V> type of value
+     * @see #addEventClickListener(Consumer)
+     */
     class CalendarEventClickEvent<V> extends EventObject {
         protected CalendarEvent<V> calendarEvent;
         protected Entity entity;
@@ -441,6 +522,12 @@ public interface Calendar<V> extends Component.BelongToFrame, Component.HasCapti
         }
     }
 
+    /**
+     * An event object that is fired when the user clicks forward navigation button.
+     *
+     * @param <V> type of value
+     * @see #addForwardClickListener(Consumer)
+     */
     class CalendarForwardClickEvent<V> extends EventObject {
         public CalendarForwardClickEvent(Calendar<V> calendar) {
             super(calendar);
@@ -462,6 +549,12 @@ public interface Calendar<V> extends Component.BelongToFrame, Component.HasCapti
         }
     }
 
+    /**
+     * An event object that is fired when the user changes an event duration.
+     *
+     * @param <V> type of value
+     * @see #addEventResizeListener(Consumer)
+     */
     class CalendarEventResizeEvent<V> extends EventObject {
         protected CalendarEvent<V> calendarEvent;
         protected V newStart;
@@ -505,15 +598,27 @@ public interface Calendar<V> extends Component.BelongToFrame, Component.HasCapti
             return getSource();
         }
 
+        /**
+         * @return the event start date
+         */
         public V getNewStart() {
             return newStart;
         }
 
+        /**
+         * @return the event end date
+         */
         public V getNewEnd() {
             return newEnd;
         }
     }
 
+    /**
+     * An event object that is fired when the user clicks on a week number.
+     *
+     * @param <V> type of value
+     * @see #addWeekClickListener(Consumer)
+     */
     class CalendarWeekClickEvent<V> extends EventObject {
         protected int week;
         protected int year;
@@ -540,15 +645,27 @@ public interface Calendar<V> extends Component.BelongToFrame, Component.HasCapti
             return getSource();
         }
 
+        /**
+         * @return a week number
+         */
         public int getWeek() {
             return week;
         }
 
+        /**
+         * @return a year
+         */
         public int getYear() {
             return year;
         }
     }
 
+    /**
+     * An event object that is fired when the user drag-marks day or time cells using mouse.
+     *
+     * @param <V> type of value
+     * @see #addRangeSelectListener(Consumer)
+     */
     class CalendarRangeSelectEvent<V> extends EventObject {
         protected V start;
         protected V end;
@@ -585,7 +702,7 @@ public interface Calendar<V> extends Component.BelongToFrame, Component.HasCapti
     }
 
     /**
-     * Describes day click event.
+     * An event object that is fired when the user clicks on an empty space in the day.
      *
      * @param <V> type of value
      * @see #addDayClickListener(Consumer)
