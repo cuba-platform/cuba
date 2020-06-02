@@ -19,7 +19,10 @@ package com.haulmont.cuba.gui.sys;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.model.CollectionLoader;
+import com.haulmont.cuba.gui.model.DataLoader;
 import com.haulmont.cuba.gui.model.InstanceContainer;
+import com.haulmont.cuba.gui.model.InstanceLoader;
 import com.haulmont.cuba.gui.screen.FrameOwner;
 import com.haulmont.cuba.gui.screen.Screen;
 import com.haulmont.cuba.gui.screen.ScreenFragment;
@@ -196,6 +199,10 @@ public class UiControllerPropertyInjector {
                         property.getValue(), property.getName(), frameOwner),
                         UiControllerUtils.getScreen(frameOwner).getId());
             }
+
+        } else if (CollectionLoader.class.isAssignableFrom(propType)
+                || InstanceLoader.class.isAssignableFrom(propType)) {
+            value = findLoader(stringProp);
         }
 
         return value;
@@ -247,4 +254,13 @@ public class UiControllerPropertyInjector {
         return datasource;
     }
 
+    @Nullable
+    protected DataLoader findLoader(String loaderId) {
+        FrameOwner host = frameOwner instanceof ScreenFragment
+                ? ((ScreenFragment) frameOwner).getHostController()
+                : frameOwner;
+
+        return UiControllerUtils.getScreenData(host)
+                .getLoader(loaderId);
+    }
 }
