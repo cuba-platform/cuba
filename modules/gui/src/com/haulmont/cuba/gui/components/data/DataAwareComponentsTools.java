@@ -109,18 +109,20 @@ public class DataAwareComponentsTools {
         }
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "ConstantConditions"})
     public void setupDateRange(HasRange component, EntityValueSource valueSource) {
         MetaProperty metaProperty = valueSource.getMetaPropertyPath().getMetaProperty();
         Class javaType = metaProperty.getRange().asDatatype().getJavaClass();
         TemporalType temporalType = getTemporalType(metaProperty, javaType);
 
-        if (metaProperty.getAnnotations().get(Past.class.getName()) != null
-                || metaProperty.getAnnotations().get(PastOrPresent.class.getName()) != null) {
+        if (component.getRangeEnd() == null
+                && (metaProperty.getAnnotations().get(Past.class.getName()) != null
+                || metaProperty.getAnnotations().get(PastOrPresent.class.getName()) != null)) {
             LocalDateTime dateTime = LocalDateTime.of(LocalDate.now(), LocalTime.MAX);
             ZonedDateTime zonedDateTime = ZonedDateTime.of(dateTime, ZoneId.systemDefault());
             component.setRangeEnd(dateTimeTransformations.transformFromZDT(zonedDateTime, javaType));
-        } else if (metaProperty.getAnnotations().get(Future.class.getName()) != null) {
+        } else if (component.getRangeStart() == null
+                && metaProperty.getAnnotations().get(Future.class.getName()) != null) {
             LocalDateTime dateTime = LocalDateTime.of(LocalDate.now(), LocalTime.MIN);
             // In case of date and time we can select the current date with future time,
             // so we start from the next day only if the time isn't displayed
@@ -129,7 +131,8 @@ public class DataAwareComponentsTools {
             }
             ZonedDateTime zonedDateTime = ZonedDateTime.of(dateTime, ZoneId.systemDefault());
             component.setRangeStart(dateTimeTransformations.transformFromZDT(zonedDateTime, javaType));
-        } else if (metaProperty.getAnnotations().get(FutureOrPresent.class.getName()) != null) {
+        } else if (component.getRangeStart() == null
+                && metaProperty.getAnnotations().get(FutureOrPresent.class.getName()) != null) {
             LocalDateTime dateTime = LocalDateTime.of(LocalDate.now(), LocalTime.MIN);
             ZonedDateTime zonedDateTime = ZonedDateTime.of(dateTime, ZoneId.systemDefault());
             component.setRangeStart(dateTimeTransformations.transformFromZDT(zonedDateTime, javaType));

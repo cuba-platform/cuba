@@ -21,7 +21,7 @@
         <instance id="dateValidationEntityDs"
                   class="com.haulmont.cuba.web.testmodel.beanvalidation.DateValidationEntity"
                   view="_local">
-            <loader/>
+            <loader id="dateValidationLd"/>
         </instance>
     </data>
     <layout>

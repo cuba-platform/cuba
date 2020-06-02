@@ -16,11 +16,18 @@
 
 package spec.cuba.gui.components.beanvalidation.screens;
 
-import com.haulmont.cuba.gui.screen.Screen;
-import com.haulmont.cuba.gui.screen.UiController;
-import com.haulmont.cuba.gui.screen.UiDescriptor;
+import com.haulmont.cuba.core.global.LoadContext;
+import com.haulmont.cuba.core.global.Metadata;
+import com.haulmont.cuba.gui.screen.*;
+import com.haulmont.cuba.web.testmodel.beanvalidation.DateValidationEntity;
 
 @UiDescriptor("date-validation-screen.xml")
 @UiController
+@LoadDataBeforeShow
 public class DateValidationScreen extends Screen {
+
+    @Install(to = "dateValidationLd", target = Target.DATA_LOADER)
+    private DateValidationEntity dateValidationLdLoadDelegate(LoadContext<DateValidationEntity> loadContext) {
+        return getBeanLocator().get(Metadata.class).create(DateValidationEntity.class);
+    }
 }
