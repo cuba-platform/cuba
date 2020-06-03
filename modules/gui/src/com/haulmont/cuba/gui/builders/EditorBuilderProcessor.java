@@ -20,10 +20,9 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.client.ClientConfig;
+import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.DevelopmentException;
-import com.haulmont.cuba.core.global.ExtendedEntities;
-import com.haulmont.cuba.core.global.Metadata;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.Screens;
 import com.haulmont.cuba.gui.WindowParams;
 import com.haulmont.cuba.gui.components.*;
@@ -36,10 +35,8 @@ import com.haulmont.cuba.gui.components.data.meta.EntityOptions;
 import com.haulmont.cuba.gui.components.data.meta.EntityValueSource;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
-import com.haulmont.cuba.gui.model.CollectionContainer;
-import com.haulmont.cuba.gui.model.DataContext;
-import com.haulmont.cuba.gui.model.InstanceContainer;
-import com.haulmont.cuba.gui.model.Nested;
+import com.haulmont.cuba.gui.dynamicattributes.DynamicAttributesGuiTools;
+import com.haulmont.cuba.gui.model.*;
 import com.haulmont.cuba.gui.screen.*;
 import com.haulmont.cuba.gui.screen.compatibility.LegacyFrame;
 import org.springframework.stereotype.Component;
@@ -62,6 +59,14 @@ public class EditorBuilderProcessor {
     protected WindowConfig windowConfig;
     @Inject
     protected ClientConfig clientConfig;
+    @Inject
+    protected ViewRepository viewRepository;
+    @Inject
+    protected EntityStates entityStates;
+    @Inject
+    protected DataManager dataManager;
+    @Inject
+    protected DynamicAttributesGuiTools dynamicAttributesGuiTools;
 
     @SuppressWarnings("unchecked")
     public  <E extends Entity, S extends Screen> S buildEditor(EditorBuilder<E> builder) {
@@ -98,7 +103,8 @@ public class EditorBuilderProcessor {
                 CloseAction closeAction = event.getCloseAction();
                 if (isCommitCloseAction(closeAction)) {
                     E entityFromEditor = getCommittedEntity(editorScreen, parentDataContext);
-                    E committedEntity = transform(entityFromEditor, builder);
+                    E reloadedEntity = reloadIfNeeded(entityFromEditor, ct, builder);
+                    E committedEntity = transform(reloadedEntity, builder);
 
                     if (builder.getMode() == EditMode.CREATE) {
                         boolean addsFirst;
@@ -184,6 +190,38 @@ public class EditorBuilderProcessor {
     protected  <E extends Entity> E transform(E entity, EditorBuilder<E> builder) {
         if (builder.getTransformation() != null) {
             return builder.getTransformation().apply(entity);
+        }
+        return entity;
+    }
+
+    protected <E extends Entity> E reloadIfNeeded(E entity, CollectionContainer<E> container, EditorBuilder<E> builder) {
+        if (container == null || builder.getTransformation() != null) {
+            return entity;
+        }
+
+        boolean needDynamicAttributes = false;
+        boolean dynamicAttributesAreLoaded = true;
+        if (entity instanceof BaseGenericIdEntity) {
+            BaseGenericIdEntity e = (BaseGenericIdEntity) entity;
+            dynamicAttributesAreLoaded = e.getDynamicAttributes() != null;
+
+            if (container instanceof HasLoader) {
+                DataLoader loader = ((HasLoader) container).getLoader();
+                if (loader instanceof CollectionLoader) {
+                    needDynamicAttributes = ((CollectionLoader) loader).isLoadDynamicAttributes();
+                }
+            }
+        }
+
+        View view = container.getView();
+        if (view == null) {
+            view = viewRepository.getView(entity.getClass(), View.LOCAL);
+        }
+
+        if (!entityStates.isLoadedWithView(entity, view)) {
+            entity = dataManager.reload(entity, view, null, needDynamicAttributes);
+        } else if (needDynamicAttributes && !dynamicAttributesAreLoaded) {
+            dynamicAttributesGuiTools.reloadDynamicAttributes((BaseGenericIdEntity) entity);
         }
         return entity;
     }
