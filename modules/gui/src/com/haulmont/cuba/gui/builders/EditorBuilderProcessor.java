@@ -194,7 +194,7 @@ public class EditorBuilderProcessor {
         return entity;
     }
 
-    protected <E extends Entity> E reloadIfNeeded(E entity, CollectionContainer<E> container, EditorBuilder<E> builder) {
+    private <E extends Entity> E reloadIfNeeded(E entity, CollectionContainer<E> container, EditorBuilder<E> builder) {
         if (container == null || builder.getTransformation() != null) {
             return entity;
         }
