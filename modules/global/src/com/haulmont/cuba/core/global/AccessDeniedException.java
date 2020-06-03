@@ -19,6 +19,8 @@ package com.haulmont.cuba.core.global;
 import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.entity.PermissionType;
 
+import javax.annotation.Nullable;
+
 /**
  * Exception that is raised on attempt to violate a security constraint.
  * <p>
@@ -73,6 +75,7 @@ public class AccessDeniedException extends RuntimeException
         return target;
     }
 
+    @Nullable
     public EntityOp getEntityOp() {
         return entityOp;
     }

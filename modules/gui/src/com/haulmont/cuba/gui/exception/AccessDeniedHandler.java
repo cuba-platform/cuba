@@ -19,11 +19,12 @@ package com.haulmont.cuba.gui.exception;
 
 import com.haulmont.cuba.core.global.AccessDeniedException;
 import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.Frame;
 import org.springframework.core.Ordered;
-
 import org.springframework.stereotype.Component;
+
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 
@@ -39,7 +40,15 @@ public class AccessDeniedHandler extends AbstractGenericExceptionHandler impleme
 
     @Override
     protected void doHandle(String className, String message, @Nullable Throwable throwable, WindowManager windowManager) {
-        String msg = messages.getMessage(getClass(), "accessDenied.message");
+        String msg;
+        if (throwable != null && !Boolean.parseBoolean(AppContext.getProperty("cuba.web.productionMode"))) {
+            AccessDeniedException e = (AccessDeniedException) throwable;
+            msg = messages.formatMessage(getClass(), "accessDenied.developerMessage",
+                    messages.getMessage(e.getType()) + (e.getEntityOp() != null ? " (" + messages.getMessage(e.getEntityOp()) + ")" : ""),
+                    e.getTarget());
+        } else {
+            msg = messages.getMessage(getClass(), "accessDenied.message");
+        }
         windowManager.showNotification(msg, Frame.NotificationType.ERROR);
     }
 
