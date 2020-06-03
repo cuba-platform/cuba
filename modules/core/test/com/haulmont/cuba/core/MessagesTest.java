@@ -27,6 +27,7 @@ import com.haulmont.cuba.core.mp_test.nested.MpTestNestedEnum;
 import com.haulmont.cuba.core.mp_test.nested.MpTestNestedObj;
 import com.haulmont.cuba.testsupport.TestAppender;
 import com.haulmont.cuba.testsupport.TestContainer;
+import com.haulmont.cuba.testsupport.TestMessageTools;
 import org.apache.commons.lang3.LocaleUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -112,6 +113,25 @@ public class MessagesTest {
     }
 
     @Test
+    public void testIncludeDefaultLoc() {
+        Messages messages = AppBeans.get(Messages.class);
+        TestMessageTools messageTools = (TestMessageTools) AppBeans.get(MessageTools.class);
+        try {
+            Locale localeRu = Locale.forLanguageTag("ru");
+            String msg = messages.getMessage("com.haulmont.cuba.core.mp_test", "includedMsg", localeRu);
+            assertEquals("Included Message", msg);
+
+            messageTools.setDefaultLocale(localeRu);
+            messages.clearCache();
+            msg = messages.getMessage("com.haulmont.cuba.core.mp_test", "includedMsg", localeRu);
+            assertEquals("Included Message RU", msg);
+        } finally {
+            messageTools.setDefaultLocale(null);
+            messages.clearCache();
+        }
+    }
+
+    @Test
     public void testCachingDefaultLoc() {
         Messages messages = prepareCachingTest();
 
@@ -178,7 +198,7 @@ public class MessagesTest {
 
         String msg = messages.getMessage("com.haulmont.cuba.core.mp_test.nested com.haulmont.cuba.core.mp_test", "key0");
         assertEquals("Message0", msg);
-        assertEquals(14, getSearchMessagesCount());
+        assertEquals(16, getSearchMessagesCount());
 
         appender.getMessages().clear();
 
@@ -196,7 +216,7 @@ public class MessagesTest {
         String msg = messages.getMessage("com.haulmont.cuba.core.mp_test.nested com.haulmont.cuba.core.mp_test", "key0",
                 Locale.forLanguageTag("fr"));
         assertEquals("Message0 in French", msg);
-        assertEquals(16, getSearchMessagesCount());
+        assertEquals(14, getSearchMessagesCount());
 
         appender.getMessages().clear();
 
