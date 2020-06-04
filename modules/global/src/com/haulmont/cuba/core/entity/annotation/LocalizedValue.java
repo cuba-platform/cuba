@@ -22,9 +22,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Explains how to get localized value of an attribute
- *
+ * DEPRECATED! Will be removed without replacement in the next major release.
  */
+@Deprecated
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.FIELD})
 @MetaAnnotation
