@@ -43,9 +43,8 @@ public class AccessDeniedHandler extends AbstractGenericExceptionHandler impleme
         String msg;
         if (throwable != null && !Boolean.parseBoolean(AppContext.getProperty("cuba.web.productionMode"))) {
             AccessDeniedException e = (AccessDeniedException) throwable;
-            msg = messages.formatMessage(getClass(), "accessDenied.developerMessage",
-                    messages.getMessage(e.getType()) + (e.getEntityOp() != null ? " (" + messages.getMessage(e.getEntityOp()) + ")" : ""),
-                    e.getTarget());
+            msg = messages.formatMessage(getClass(), "accessDenied.detailedMessage", e.getTarget(),
+                    messages.getMessage(e.getType()) + (e.getEntityOp() != null ? " (" + messages.getMessage(e.getEntityOp()) + ")" : ""));
         } else {
             msg = messages.getMessage(getClass(), "accessDenied.message");
         }
