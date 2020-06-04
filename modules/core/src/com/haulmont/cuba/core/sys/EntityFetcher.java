@@ -117,7 +117,8 @@ public class EntityFetcher {
         MetaClass metaClass = metadata.getClassNN(entity.getClass());
         for (ViewProperty property : view.getProperties()) {
             MetaProperty metaProperty = metaClass.getPropertyNN(property.getName());
-            if (!metaProperty.getRange().isClass() && !metadata.getTools().isLazyFetchedLocalAttribute(metaProperty))
+            if (!metaProperty.getRange().isClass() && !metadata.getTools().isLazyFetchedLocalAttribute(metaProperty)
+                    || metadata.getTools().isNotPersistent(metaClass, metaProperty))
                 continue;
 
             if (log.isTraceEnabled()) log.trace("Fetching property " + property.getName());

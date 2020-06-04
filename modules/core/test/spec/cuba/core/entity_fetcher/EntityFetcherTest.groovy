@@ -21,12 +21,18 @@ import com.haulmont.cuba.core.Persistence
 import com.haulmont.cuba.core.entity.contracts.Id
 import com.haulmont.cuba.core.global.AppBeans
 import com.haulmont.cuba.core.global.DataManager
+import com.haulmont.cuba.core.global.EntityStates
 import com.haulmont.cuba.core.global.ViewBuilder
 import com.haulmont.cuba.core.sys.EntityFetcher
+import com.haulmont.cuba.core.sys.persistence.CubaEntityFetchGroup
 import com.haulmont.cuba.testmodel.many2many.Many2ManyA
 import com.haulmont.cuba.testmodel.many2many.Many2ManyB
 import com.haulmont.cuba.testmodel.many2many.Many2ManyRef
+import com.haulmont.cuba.testmodel.not_persistent.CustomerWithNonPersistentRef
+import com.haulmont.cuba.testmodel.sales.Customer
+import com.haulmont.cuba.testmodel.sales.Status
 import com.haulmont.cuba.testsupport.TestContainer
+import org.eclipse.persistence.queries.FetchGroupTracker
 import org.junit.ClassRule
 import spock.lang.Shared
 import spock.lang.Specification
@@ -39,10 +45,12 @@ class EntityFetcherTest extends Specification {
     private DataManager dataManager
     private EntityFetcher entityFetcher
     private Persistence persistence
+    private EntityStates entityStates
 
     void setup() {
         dataManager = AppBeans.get(DataManager)
         entityFetcher = AppBeans.get(EntityFetcher)
+        entityStates = AppBeans.get(EntityStates)
         persistence = cont.persistence()
     }
 
@@ -74,5 +82,28 @@ class EntityFetcherTest extends Specification {
         runner.update('delete from TEST_MANY2MANY_AB_LINK where A_ID = ?', a2.id)
 
         cont.deleteRecord(a1, a2, b1, ref)
+    }
+
+    def "fetching entity with non-persistent reference"() {
+        // setup the entity like it is stored in a custom datastore and linked as transient property
+        def npCustomer = new Customer(status: Status.OK)
+        entityStates.makeDetached(npCustomer)
+        ((FetchGroupTracker) npCustomer)._persistence_setFetchGroup(new CubaEntityFetchGroup(['status']))
+
+        def entity = new CustomerWithNonPersistentRef(
+                name: 'c',
+                customer: npCustomer
+        )
+        def view = ViewBuilder.of(CustomerWithNonPersistentRef).addAll('name', 'customer.name').build()
+
+        when:
+        def committed = dataManager.commit(entity, view)
+
+        then:
+        noExceptionThrown()
+        committed == entity
+
+        cleanup:
+        cont.deleteRecord(entity)
     }
 }
