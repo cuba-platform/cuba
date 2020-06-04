@@ -68,6 +68,7 @@ import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
 import com.haulmont.cuba.security.entity.FilterEntity;
 import com.haulmont.cuba.security.entity.SearchFolder;
 import com.haulmont.cuba.security.global.UserSession;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Attribute;
@@ -1568,18 +1569,28 @@ public class FilterDelegateImpl implements FilterDelegate {
             maxResults = adapter.getMaxResults();
         }
 
-        if (maxResults <= 0 || maxResults == persistenceManager.getMaxFetchUI(adapter.getMetaClass().getName())) {
+        int maxFetchUI = persistenceManager.getMaxFetchUI(adapter.getMetaClass().getName());
+
+        if (maxResults <= 0 || maxResults == maxFetchUI) {
             maxResults = persistenceManager.getFetchUI(adapter.getMetaClass().getName());
         }
 
         if (maxResultsAddedToLayout) {
             if (!textMaxResults) {
                 List<Integer> optionsList = ((LookupField) maxResultsField).getOptionsList();
-                if (!optionsList.contains(maxResults)) {
-                    maxResults = findClosestValue(maxResults, optionsList);
+                if (CollectionUtils.isNotEmpty(optionsList)) {
+                    boolean removed = optionsList.removeIf(option-> option > maxFetchUI);
+                    if (removed || optionsList.isEmpty()) {
+                        if (optionsList.isEmpty()) {
+                            optionsList.add(maxFetchUI);
+                        }
+                        Collections.sort(optionsList);
+                        ((LookupField) maxResultsField).setOptionsList(optionsList);
+                    }
 
-                    Collections.sort(optionsList);
-                    ((LookupField) maxResultsField).setOptionsList(optionsList);
+                    if (!optionsList.contains(maxResults)) {
+                        maxResults = findClosestValue(maxResults, optionsList);
+                    }
                 }
             }
             maxResultsField.setValue(maxResults);
