@@ -55,6 +55,7 @@ public class Md5EncryptionModule implements EncryptionModule {
 
     @Override
     public boolean checkPassword(User user, String password) {
-        return Objects.equals(user.getPassword(), password);
+        String hashedPassword = getHash(getPlainHash(password), user.getId().toString());
+        return Objects.equals(user.getPassword(), hashedPassword);
     }
 }
