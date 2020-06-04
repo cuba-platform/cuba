@@ -384,12 +384,9 @@ public class MessageTools {
     }
 
     /**
-     * Get localized value of an attribute based on {@link com.haulmont.cuba.core.entity.annotation.LocalizedValue} annotation.
-     *
-     * @param attribute attribute name
-     * @param instance  entity instance
-     * @return localized value or the value itself, if the value is null or the message pack can not be inferred
+     * DEPRECATED! Will be removed without replacement in the next major release.
      */
+    @Deprecated
     @Nullable
     public String getLocValue(String attribute, Instance instance) {
         String value = instance.getValue(attribute);
