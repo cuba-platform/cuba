@@ -339,7 +339,7 @@ public class EditorBuilderProcessor {
         MetaProperty metaProperty = masterMetaClass.getPropertyNN(property);
 
         MetaProperty inverseProp = metaProperty.getInverse();
-        if (inverseProp != null) {
+        if (inverseProp != null && !inverseProp.getRange().getCardinality().isMany()) {
             Class<?> inversePropClass = extendedEntities.getEffectiveClass(inverseProp.getDomain());
             Class<?> containerEntityClass = extendedEntities.getEffectiveClass(((CollectionContainer) container).getEntityMetaClass());
             if (inversePropClass.isAssignableFrom(containerEntityClass)) {
