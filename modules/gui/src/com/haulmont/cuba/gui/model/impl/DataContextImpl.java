@@ -25,6 +25,7 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.impl.AbstractInstance;
 import com.haulmont.cuba.core.entity.*;
 import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.sys.EntityReferencesNormalizer;
 import com.haulmont.cuba.core.sys.persistence.FetchGroupUtils;
 import com.haulmont.cuba.gui.model.DataContext;
 import org.apache.commons.lang3.StringUtils;
@@ -91,6 +92,10 @@ public class DataContextImpl implements DataContext {
 
     protected DataManager getDataManager() {
         return applicationContext.getBean(DataManager.NAME, DataManager.class);
+    }
+
+    protected EntityReferencesNormalizer getEntityReferencesNormalizer() {
+        return applicationContext.getBean(EntityReferencesNormalizer.NAME, EntityReferencesNormalizer.class);
     }
 
     @Nullable
@@ -653,6 +658,8 @@ public class DataContextImpl implements DataContext {
         CommitContext commitContext = new CommitContext(
                 filterCommittedInstances(modifiedInstances),
                 filterCommittedInstances(removedInstances));
+
+        getEntityReferencesNormalizer().updateReferences(commitContext.getCommitInstances());
 
         for (Entity entity : commitContext.getCommitInstances()) {
             commitContext.getViews().put(entity, getEntityStates().getCurrentView(entity));
