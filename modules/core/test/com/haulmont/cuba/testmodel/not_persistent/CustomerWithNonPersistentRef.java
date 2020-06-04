@@ -19,6 +19,7 @@ package com.haulmont.cuba.testmodel.not_persistent;
 import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.cuba.testmodel.primary_keys.EntityKey;
+import com.haulmont.cuba.testmodel.sales.Customer;
 
 import javax.persistence.*;
 
@@ -36,6 +37,10 @@ public class CustomerWithNonPersistentRef extends BaseEntityWithNonPersistentPro
     @MetaProperty
     @Transient
     private TestNotPersistentEntity notPersistentEntity;
+
+    @MetaProperty
+    @Transient
+    private Customer customer;
 
     public String getName() {
         return name;
@@ -60,4 +65,13 @@ public class CustomerWithNonPersistentRef extends BaseEntityWithNonPersistentPro
     public void setNotPersistentEntity(TestNotPersistentEntity notPersistentEntity) {
         this.notPersistentEntity = notPersistentEntity;
     }
+
+    public Customer getCustomer() {
+        return customer;
+    }
+
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
+    }
+
 }
