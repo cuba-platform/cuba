@@ -22,7 +22,6 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.Session;
-import com.haulmont.chile.core.model.impl.AbstractInstance;
 import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesManagerAPI;
 import com.haulmont.cuba.core.app.events.EntityChangedEvent;
@@ -30,6 +29,7 @@ import com.haulmont.cuba.core.app.queryresults.QueryResultsManagerAPI;
 import com.haulmont.cuba.core.entity.*;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.EntityFetcher;
+import com.haulmont.cuba.core.sys.EntityReferencesNormalizer;
 import com.haulmont.cuba.core.sys.persistence.DbmsSpecificFactory;
 import com.haulmont.cuba.core.sys.persistence.EntityChangedEventManager;
 import com.haulmont.cuba.security.entity.ConstraintOperationType;
@@ -103,6 +103,9 @@ public class RdbmsStore implements DataStore {
 
     @Inject
     protected EntityChangedEventManager entityChangedEventManager;
+
+    @Inject
+    protected EntityReferencesNormalizer entityReferencesNormalizer;
 
     protected String storeName;
 
@@ -574,7 +577,9 @@ public class RdbmsStore implements DataStore {
                     }
                 }
             }
-            updateReferences(persisted, resultEntities);
+            // Update references from newly persisted entities to merged detached entities. Otherwise a new entity can
+            // contain a stale instance of a merged one.
+            entityReferencesNormalizer.updateReferences(persisted, resultEntities);
         }
 
         return context.isDiscardCommitted() ? Collections.emptySet() : resultEntities;
@@ -1008,59 +1013,6 @@ public class RdbmsStore implements DataStore {
             }
         }
         return indexes;
-    }
-
-    /**
-     * Update references from newly persisted entities to merged detached entities. Otherwise a new entity can
-     * contain a stale instance of merged entity.
-     *
-     * @param persisted persisted entities
-     * @param committed all committed entities
-     */
-    protected void updateReferences(Collection<Entity> persisted, Collection<Entity> committed) {
-        for (Entity persistedEntity : persisted) {
-            for (Entity entity : committed) {
-                if (entity != persistedEntity) {
-                    updateReferences(persistedEntity, entity, new HashSet<>());
-                }
-            }
-        }
-    }
-
-    protected void updateReferences(Entity entity, Entity refEntity, Set<Entity> visited) {
-        if (entity == null || refEntity == null || visited.contains(entity))
-            return;
-        visited.add(entity);
-
-        MetaClass refEntityMetaClass = refEntity.getMetaClass();
-        for (MetaProperty property : entity.getMetaClass().getProperties()) {
-            if (!property.getRange().isClass() || !property.getRange().asClass().equals(refEntityMetaClass))
-                continue;
-            if (entityStates.isLoaded(entity, property.getName())) {
-                if (property.getRange().getCardinality().isMany()) {
-                    Collection collection = entity.getValue(property.getName());
-                    if (collection != null) {
-                        for (Object obj : collection) {
-                            updateReferences((Entity) obj, refEntity, visited);
-                        }
-                    }
-                } else {
-                    Entity value = entity.getValue(property.getName());
-                    if (value != null) {
-                        if (value.getId().equals(refEntity.getId())) {
-                            if (entity instanceof AbstractInstance) {
-                                if (property.isReadOnly() && metadataTools.isNotPersistent(property)) {
-                                    continue;
-                                }
-                                ((AbstractInstance) entity).setValue(property.getName(), refEntity, false);
-                            }
-                        } else {
-                            updateReferences(value, refEntity, visited);
-                        }
-                    }
-                }
-            }
-        }
     }
 
     protected boolean needToFilterByInMemoryReadConstraints(LoadContext context) {
