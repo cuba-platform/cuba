@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2016 Haulmont.
+ * Copyright (c) 2008-2020 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,47 +12,56 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
-package com.haulmont.cuba.gui.exception;
+package com.haulmont.cuba.web.exception;
 
 import com.haulmont.cuba.core.global.AccessDeniedException;
+import com.haulmont.cuba.core.global.BeanLocator;
+import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Messages;
-import com.haulmont.cuba.core.sys.AppContext;
-import com.haulmont.cuba.gui.WindowManager;
-import com.haulmont.cuba.gui.components.Frame;
-import org.springframework.core.Ordered;
-import org.springframework.stereotype.Component;
+import com.haulmont.cuba.core.sys.BeanLocatorAware;
+import com.haulmont.cuba.gui.Notifications;
+import com.haulmont.cuba.web.App;
+import com.haulmont.cuba.web.AppUI;
+import com.haulmont.cuba.web.WebConfig;
 
 import javax.annotation.Nullable;
-import javax.inject.Inject;
 
-@Component("cuba_AccessDeniedHandler")
-public class AccessDeniedHandler extends AbstractGenericExceptionHandler implements Ordered {
+/**
+ * Handles {@link AccessDeniedException}
+ */
+public class AccessDeniedHandler extends AbstractExceptionHandler implements BeanLocatorAware {
 
-    @Inject
-    protected Messages messages;
+    protected BeanLocator beanLocator;
 
     public AccessDeniedHandler() {
         super(AccessDeniedException.class.getName());
     }
 
     @Override
-    protected void doHandle(String className, String message, @Nullable Throwable throwable, WindowManager windowManager) {
+    protected void doHandle(App app, String className, String message, @Nullable Throwable throwable) {
+        Messages messages = beanLocator.get(Messages.class);
+        WebConfig config = beanLocator.get(Configuration.class).getConfig(WebConfig.class);
+
         String msg;
-        if (throwable != null && !Boolean.parseBoolean(AppContext.getProperty("cuba.web.productionMode"))) {
+        if (throwable != null && !config.getProductionMode()) {
             AccessDeniedException e = (AccessDeniedException) throwable;
             msg = messages.formatMessage(getClass(), "accessDenied.detailedMessage", e.getTarget(),
                     messages.getMessage(e.getType()) + (e.getEntityOp() != null ? " (" + messages.getMessage(e.getEntityOp()) + ")" : ""));
         } else {
             msg = messages.getMessage(getClass(), "accessDenied.message");
         }
-        windowManager.showNotification(msg, Frame.NotificationType.ERROR);
+
+        AppUI.getCurrent().getNotifications()
+                .create(Notifications.NotificationType.ERROR)
+                .withCaption(msg)
+                .show();
     }
 
     @Override
-    public int getOrder() {
-        return HIGHEST_PLATFORM_PRECEDENCE + 20;
+    public void setBeanLocator(BeanLocator beanLocator) {
+        this.beanLocator = beanLocator;
     }
+
 }
