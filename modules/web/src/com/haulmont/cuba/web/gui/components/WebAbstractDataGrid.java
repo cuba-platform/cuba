@@ -450,7 +450,11 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
 
             E newItem = selected.iterator().next();
             E dsItem = dataGridItems.getSelectedItem();
-            dataGridItems.setSelectedItem(newItem);
+            // In some cases, the container may not contain
+            // an item that we want to set as the selected
+            if (dataGridItems.containsItem(newItem)) {
+                dataGridItems.setSelectedItem(newItem);
+            }
 
             if (Objects.equals(dsItem, newItem)) {
                 // in this case item change event will not be generated
