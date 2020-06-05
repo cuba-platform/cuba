@@ -142,7 +142,6 @@
                 <value>com.haulmont.cuba.web.exception.NoUserSessionHandler</value>
                 <value>com.haulmont.cuba.web.exception.InvalidValueExceptionHandler</value>
                 <value>com.haulmont.cuba.web.exception.MismatchedUserSessionHandler</value>
-                <value>com.haulmont.cuba.web.exception.AccessDeniedHandler</value>
             </list>
         </property>
     </bean>
