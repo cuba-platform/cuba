@@ -3,7 +3,6 @@ package com.haulmont.cuba.web.sys.linkhandling;
 import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.core.sys.events.AppContextInitializedEvent;
 import com.haulmont.cuba.gui.NoSuchScreenException;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
@@ -11,11 +10,9 @@ import com.haulmont.cuba.gui.exception.EntityAccessExceptionHandler;
 import com.haulmont.cuba.gui.exception.NoSuchScreenHandler;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.exception.AccessDeniedHandler;
-import com.vaadin.server.ErrorEvent;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
-import org.springframework.context.event.EventListener;
 import org.springframework.core.Ordered;
 import org.springframework.stereotype.Component;
 
@@ -54,15 +51,7 @@ public class ScreensLinkHandlerProcessor implements LinkHandlerProcessor, Ordere
     protected ReferenceToEntitySupport referenceToEntitySupport;
 
     @Inject
-    protected BeanLocator beanLocator;
-
     protected AccessDeniedHandler accessDeniedHandler;
-
-    @EventListener(AppContextInitializedEvent.class)
-    protected void appInitialized() {
-        accessDeniedHandler = new AccessDeniedHandler();
-        accessDeniedHandler.setBeanLocator(beanLocator);
-    }
 
     @Override
     public boolean canHandle(ExternalLinkContext linkContext) {
@@ -85,7 +74,7 @@ public class ScreensLinkHandlerProcessor implements LinkHandlerProcessor, Ordere
         } catch (EntityAccessException e) {
             entityAccessExceptionHandler.handle(e, app.getWindowManager());
         } catch (AccessDeniedException e) {
-            accessDeniedHandler.handle(new ErrorEvent(e), app);
+            accessDeniedHandler.handle(e, app.getWindowManager());
         } catch (NoSuchScreenException e) {
             noSuchScreenHandler.handle(e, app.getWindowManager());
         }
