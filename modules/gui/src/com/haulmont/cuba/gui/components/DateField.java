@@ -18,7 +18,6 @@ package com.haulmont.cuba.gui.components;
 
 import com.google.common.reflect.TypeToken;
 
-import java.sql.Date;
 import java.time.*;
 import java.util.TimeZone;
 
@@ -30,9 +29,9 @@ import java.util.TimeZone;
 public interface DateField<V> extends Field<V>, HasDatatype<V>, Buffered, Component.Focusable, HasRange<V> {
     String NAME = "dateField";
 
-    TypeToken<DateField<Date>> TYPE_DEFAULT = new TypeToken<DateField<Date>>(){};
+    TypeToken<DateField<java.util.Date>> TYPE_DEFAULT = new TypeToken<DateField<java.util.Date>>(){};
 
-    TypeToken<DateField<Date>> TYPE_DATE = new TypeToken<DateField<java.sql.Date>>(){};
+    TypeToken<DateField<java.sql.Date>> TYPE_DATE = new TypeToken<DateField<java.sql.Date>>(){};
     TypeToken<DateField<java.util.Date>> TYPE_DATETIME = new TypeToken<DateField<java.util.Date>>(){};
     TypeToken<DateField<LocalDate>> TYPE_LOCALDATE = new TypeToken<DateField<LocalDate>>(){};
     TypeToken<DateField<LocalDateTime>> TYPE_LOCALDATETIME = new TypeToken<DateField<LocalDateTime>>(){};
