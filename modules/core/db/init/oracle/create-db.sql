@@ -296,7 +296,7 @@ create table SYS_SCHEDULED_TASK (
     SCRIPT_NAME varchar2(500 char),
     BEAN_NAME varchar2(50 char),
     METHOD_NAME varchar2(50 char),
-    METHOD_PARAMS varchar2(1000 char),
+    METHOD_PARAMS varchar2(4000 char),
     USER_NAME varchar2(50 char),
     IS_SINGLETON char(1),
     IS_ACTIVE char(1),
