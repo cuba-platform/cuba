@@ -145,8 +145,11 @@ public class WebSideMenu extends WebAbstractComponent<CubaSideMenu> implements S
     }
 
     @Override
-    public void setSelectedItem(MenuItem selectedItem) {
-        component.setSelectedItem(((MenuItemImpl) selectedItem).getDelegateItem());
+    public void setSelectedItem(@Nullable MenuItem selectedItem) {
+        CubaSideMenu.MenuItem delegateItem = selectedItem != null
+                ? ((MenuItemImpl) selectedItem).getDelegateItem()
+                : null;
+        component.setSelectedItem(delegateItem);
     }
 
     protected void checkItemIdDuplicate(String id) {
