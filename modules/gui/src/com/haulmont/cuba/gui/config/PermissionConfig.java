@@ -182,7 +182,7 @@ public class PermissionConfig {
                 do {
                     if (count == (packages.length - 1)) {
                         childNode = new Node<>(new BasicPermissionTarget(
-                                "item:" + getNodeId(packages, count),
+                                "item:" + String.join(".",getNodeId(packages, count), windowInfo.getId()),
                                 packages[count] + " (" + windowInfo.getId() + ")",
                                 windowInfo.getId()));
                     } else {
