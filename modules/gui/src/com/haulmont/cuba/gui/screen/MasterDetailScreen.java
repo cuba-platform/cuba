@@ -486,7 +486,7 @@ public abstract class MasterDetailScreen<T extends Entity> extends StandardLooku
             boolean loadDynamicAttributes = getEditLoader().isLoadDynamicAttributes();
             T reloadedItem = getBeanLocator().get(DataManager.class)
                     .reload(selectedItem, view, null, loadDynamicAttributes);
-            getBrowseContainer().setItem(reloadedItem);
+            getBrowseContainer().replaceItem(reloadedItem);
         }
 
         disableEditControls();
