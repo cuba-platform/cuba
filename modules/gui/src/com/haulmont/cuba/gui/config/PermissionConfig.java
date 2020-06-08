@@ -32,6 +32,7 @@ import com.haulmont.cuba.gui.app.security.entity.MultiplePermissionTarget;
 import com.haulmont.cuba.gui.app.security.entity.OperationPermissionTarget;
 import com.haulmont.cuba.security.role.RolesService;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
 import org.apache.commons.text.StringTokenizer;
@@ -42,6 +43,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.persistence.MappedSuperclass;
 import java.io.IOException;
@@ -99,12 +101,12 @@ public class PermissionConfig {
             );
             walkMenu(menuRoot);
 
-            Node<BasicPermissionTarget> othersRoot = new Node<>(
-                    new BasicPermissionTarget("root:others", getMessage("permissionConfig.otherScreens"), null)
+            Node<BasicPermissionTarget> allRoot = new Node<>(
+                    new BasicPermissionTarget("root:all", getMessage("permissionConfig.allScreens"), null)
             );
-            walkOtherScreens(othersRoot, menuRoot);
+            walkAllScreens(allRoot);
 
-            screens = new Tree<>(Arrays.asList(menuRoot, othersRoot));
+            screens = new Tree<>(Arrays.asList(menuRoot, allRoot));
         }
 
         private void walkMenu(Node<BasicPermissionTarget> node) {
@@ -128,28 +130,105 @@ public class PermissionConfig {
                 }
             } else {
                 if (!info.isSeparator()) {
-                    Node<BasicPermissionTarget> n = new Node<>(new BasicPermissionTarget("item:" + id, caption, id));
+                    Node<BasicPermissionTarget> n = new Node<>(new BasicPermissionTarget(
+                            "item:" + id,
+                            caption + " (" + id + ")",
+                            id));
                     node.addChild(n);
                 }
             }
         }
 
-        private void walkOtherScreens(Node<BasicPermissionTarget> othersRoot, Node<BasicPermissionTarget> menuRoot) {
-            Set<String> menuItems = new HashSet<>();
-            for (Node<BasicPermissionTarget> node : new Tree<>(menuRoot).toList()) {
-                menuItems.add(node.getData().getId());
-            }
-
+        private void walkAllScreens(Node<BasicPermissionTarget> allRoot) {
             // filter non-unique windows with specified agent
             windowConfig.getWindows().stream()
-                    .map(WindowInfo::getId)
-                    .filter(id -> !menuItems.contains("item:" + id))
                     .distinct()
-                    .sorted()
-                    .forEach(id -> {
-                        Node<BasicPermissionTarget> n = new Node<>(new BasicPermissionTarget("item:" + id, id, id));
-                        othersRoot.addChild(n);
-                    });
+                    .sorted((w1, w2) -> {
+                        String template1 = w1.getTemplate();
+                        String template2 = w2.getTemplate();
+                        if (template1 != null && template2 != null) {
+                            if (template1.startsWith("/")) {
+                                template1 = template1.substring(1);
+                            }
+                            if (template2.startsWith("/")) {
+                                template2 = template2.substring(1);
+                            }
+
+                            return template1.compareTo(template2);
+                        } else {
+                            return w1.getId().compareTo(w2.getId());
+                        }
+                    })
+                    .forEach(windowInfo -> walkScreen(windowInfo, allRoot));
+            compactScreens(allRoot);
+        }
+
+        private void walkScreen(WindowInfo windowInfo, Node<BasicPermissionTarget> allRoot) {
+            String template = windowInfo.getTemplate();
+            if (template != null) {
+                String[] packages = template.split("/");
+                if (packages[0].isEmpty()) {
+                    packages = ArrayUtils.remove(packages, 0);
+                }
+
+                int count = 0;
+                Node<BasicPermissionTarget> parentNode = allRoot;
+                Node<BasicPermissionTarget> childNode;
+                while ((childNode = findCategoryChildNode(getNodeId(packages, count), parentNode)) != null) {
+                    count++;
+                    parentNode = childNode;
+                }
+
+                do {
+                    if (count == (packages.length - 1)) {
+                        childNode = new Node<>(new BasicPermissionTarget(
+                                "item:" + getNodeId(packages, count),
+                                packages[count] + " (" + windowInfo.getId() + ")",
+                                windowInfo.getId()));
+                    } else {
+                        childNode = new Node<>(new BasicPermissionTarget(
+                                "category:all:" + getNodeId(packages, count),
+                                packages[count],
+                                null));
+                    }
+
+                    parentNode.addChild(childNode);
+                    parentNode = childNode;
+                } while (++count < packages.length);
+            }
+        }
+
+        @Nullable
+        private Node<BasicPermissionTarget> findCategoryChildNode(String id, Node<BasicPermissionTarget> parentNode) {
+            return parentNode.getChildren().stream()
+                    .filter(node -> node.getData().getId().equals("category:all:" + id))
+                    .findFirst()
+                    .orElse(null);
+        }
+
+        private String getNodeId(String[] packages, int endIndex) {
+            return String.join(".", ArrayUtils.subarray(packages, 0, endIndex + 1));
+        }
+
+        private void compactScreens(Node<BasicPermissionTarget> node) {
+            if (node.getNumberOfChildren() > 0) {
+                for (Node<BasicPermissionTarget> childNode : node.getChildren()) {
+                    compactScreens(childNode);
+                }
+            }
+
+            Node<BasicPermissionTarget> parentNode = node.getParent();
+            if (parentNode != null
+                    && parentNode.getNumberOfChildren() == 1
+                    && !parentNode.getData().getId().startsWith("root:")
+                    && !node.getData().getId().startsWith("item:")) {
+                BasicPermissionTarget target = new BasicPermissionTarget(
+                        node.getData().getId(),
+                        String.join(".", parentNode.getData().getCaption(), node.getData().getCaption()),
+                        null);
+                parentNode.setData(target);
+                parentNode.setChildren(node.getChildren());
+            }
         }
 
         private void compileEntitiesAndAttributes() {

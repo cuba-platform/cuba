@@ -34,6 +34,7 @@ import com.haulmont.cuba.security.entity.PermissionType;
 import com.haulmont.cuba.security.entity.Role;
 import com.haulmont.cuba.security.role.RolesService;
 import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.inject.Inject;
 import java.util.*;
@@ -136,6 +137,7 @@ public class ScreenPermissionsFrame extends AbstractFrame {
         screenPermissionsTreeDs.addItemPropertyChangeListener(e -> {
             if ("permissionVariant".equals(e.getProperty())) {
                 updateCheckBoxes(e.getItem());
+                updateNodes(e.getItem());
             }
         });
 
@@ -181,7 +183,8 @@ public class ScreenPermissionsFrame extends AbstractFrame {
     protected void updateCheckBoxes(BasicPermissionTarget item) {
         itemChanging = true;
         if (item != null) {
-            boolean visible = !item.getId().startsWith("root:");
+            boolean visible = !item.getId().startsWith("root:")
+                    && !item.getId().startsWith("category:all:");
 
             allowCheckBox.setVisible(visible);
             disallowCheckBox.setVisible(visible && (rolesPolicyVersion == 1));
@@ -203,14 +206,24 @@ public class ScreenPermissionsFrame extends AbstractFrame {
         itemChanging = false;
     }
 
+    protected void updateNodes(BasicPermissionTarget target) {
+        if (target != null && target.getId().startsWith("item:")) {
+            screenPermissionsTreeDs.getItems().stream()
+                    .filter(permissionTarget ->
+                            !Objects.equals(target, permissionTarget)
+                                    && Objects.equals(target.getPermissionValue(), permissionTarget.getPermissionValue()))
+                    .findFirst()
+                    .ifPresent(permissionTarget -> permissionTarget.setPermissionVariant(target.getPermissionVariant()));
+        }
+    }
+
     public void loadPermissions() {
         screenPermissionsDs.refresh(getParamsForDatasource());
 
         screenPermissionsTreeDs.setPermissionDs(screenPermissionsDs);
         screenPermissionsTreeDs.refresh();
 
-        screenPermissionsTree.expandAll();
-        screenPermissionsTree.collapse("root:others");
+        screenPermissionsTree.collapseAll();
 
         initScreenWildcardCheckBox();
         screenWildcardCheckBox.setEditable(!roleDs.getItem().isPredefined());
@@ -251,6 +264,10 @@ public class ScreenPermissionsFrame extends AbstractFrame {
 
     public void applyFilter() {
         screenPermissionsTreeDs.refresh(ParamsMap.of("filtering", true));
+
+        if (!StringUtils.isEmpty(screenFilter.getValue())) {
+            screenPermissionsTree.expandAll();
+        }
     }
 
     protected Map<String, Object> getParamsForDatasource() {
