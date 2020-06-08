@@ -224,6 +224,9 @@ public class PropertyCondition extends AbstractCondition {
         }
 
         if (!Strings.isNullOrEmpty(join)) {
+            if (element.attribute("entityAlias") == null) {
+                element.addAttribute("entityAlias", entityAlias);
+            }
             Element joinElement = element.addElement("join");
             joinElement.addCDATA(join);
         }
