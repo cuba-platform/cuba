@@ -78,7 +78,7 @@ public interface SideMenu extends Component.BelongToFrame, Component.Focusable {
      *
      * @param selectedItem new selected item
      */
-    void setSelectedItem(MenuItem selectedItem);
+    void setSelectedItem(@Nullable MenuItem selectedItem);
 
     /**
      * Create new menu item. Does not add item to menu. Id must be unique for whole menu.
