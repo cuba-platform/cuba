@@ -23,6 +23,7 @@ import com.vaadin.data.HasValue;
 import com.vaadin.data.PropertySet;
 import com.vaadin.data.ValidationResult;
 import com.vaadin.shared.Registration;
+import com.vaadin.shared.ui.grid.editor.EditorClientRpc;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.components.grid.EditorImpl;
@@ -70,6 +71,17 @@ public class CubaEditorImpl<T> extends EditorImpl<T> {
 
     public T getBean() {
         return edited;
+    }
+
+    @Override
+    protected void doConfirmBind(EditorClientRpc rpc, String key) {
+        T data = getData(key);
+        if (data != null) {
+            rpc.confirmBind(true);
+            doEdit(data);
+        } else {
+            rpc.confirmBind(false);
+        }
     }
 
     @Override
