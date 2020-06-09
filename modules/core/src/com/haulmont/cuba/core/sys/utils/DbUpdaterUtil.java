@@ -125,6 +125,7 @@ public class DbUpdaterUtil extends DbUpdaterEngine {
         cliOptions.addOption(dbPasswordOption);
         cliOptions.addOption(dbDirOption);
         cliOptions.addOption(dbTypeOption);
+        cliOptions.addOption(dbDriverClassOption);
         cliOptions.addOption(dbVersionOption);
         cliOptions.addOption(dbExecuteGroovyOption);
         cliOptions.addOption(showUpdatesOption);
@@ -137,6 +138,7 @@ public class DbUpdaterUtil extends DbUpdaterEngine {
         try {
             cmd = parser.parse(cliOptions, args);
         } catch (ParseException exp) {
+            log.error("Incorrect arguments: " + exp.getMessage());
             formatter.printHelp("dbupdate", cliOptions);
             return;
         }
@@ -177,6 +179,9 @@ public class DbUpdaterUtil extends DbUpdaterEngine {
                         break;
                     case "oracle":
                         dbDriver = "oracle.jdbc.OracleDriver";
+                        break;
+                    case "mysql":
+                        dbDriver = "com.mysql.jdbc.Driver";
                         break;
                     default:
                         log.error("Unable to determine driver class name by DBMS type. Please provide driverClassName option");
