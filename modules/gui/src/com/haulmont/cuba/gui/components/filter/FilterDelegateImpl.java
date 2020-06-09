@@ -65,6 +65,7 @@ import com.haulmont.cuba.gui.screen.compatibility.LegacyFrame;
 import com.haulmont.cuba.gui.settings.SettingsImpl;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
+import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.entity.FilterEntity;
 import com.haulmont.cuba.security.entity.SearchFolder;
 import com.haulmont.cuba.security.global.UserSession;
@@ -714,6 +715,9 @@ public class FilterDelegateImpl implements FilterDelegate {
         boolean userCanEditFilters = userCanEditFilers();
         boolean filterEditable = isEditable();
         boolean userCanEditGlobalAppFolder = userSessionSource.getUserSession().isSpecificPermitted(GLOBAL_APP_FOLDERS_PERMISSION);
+        MetaClass searchFolderMetaClass = metadata.getClass(SearchFolder.class);
+        boolean userCanEditSearchFolder = userSessionSource.getUserSession().isEntityOpPermitted(searchFolderMetaClass, EntityOp.CREATE)
+                || userSessionSource.getUserSession().isEntityOpPermitted(searchFolderMetaClass, EntityOp.UPDATE);
         boolean createdByCurrentUser = userSessionSource.getUserSession().getCurrentOrSubstitutedUser().equals(filterEntity.getUser());
         boolean hasCode = !Strings.isNullOrEmpty(filterEntity.getCode());
         boolean isFolder = filterEntity.getFolder() != null;
@@ -737,7 +741,7 @@ public class FilterDelegateImpl implements FilterDelegate {
         boolean pinAppliedActionEnabled = lastAppliedFilter != null
                 && !(lastAppliedFilter.getFilterEntity() == adHocFilter && lastAppliedFilter.getConditions().getRoots().size() == 0)
                 && (adapter == null || Stores.isMain(metadata.getTools().getStoreName(adapter.getMetaClass())));
-        boolean saveAsSearchFolderActionEnabled = folderActionsEnabled && !isFolder && !hasCode;
+        boolean saveAsSearchFolderActionEnabled = folderActionsEnabled && !isFolder && !hasCode && userCanEditSearchFolder;
         boolean saveAsAppFolderActionEnabled = folderActionsEnabled && !isFolder && !hasCode && userCanEditGlobalAppFolder;
 
         saveAction.setEnabled(saveActionEnabled);
