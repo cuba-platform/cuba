@@ -19,6 +19,7 @@ package com.haulmont.cuba.web.sys.navigation.navigationhandler;
 import com.haulmont.bali.datastruct.Pair;
 import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.WindowParams;
@@ -74,6 +75,8 @@ public class ScreenNavigationHandler implements NavigationHandler {
     protected DataManager dataManager;
     @Inject
     protected Metadata metadata;
+    @Inject
+    protected MetadataTools metadataTools;
 
     @Override
     public boolean doHandle(NavigationState requestedState, AppUI ui) {
@@ -345,8 +348,12 @@ public class ScreenNavigationHandler implements NavigationHandler {
             return ParamsMap.of(WindowParams.ITEM.name(), metadata.create(entityClass));
         }
 
-        Class<?> idType = metaClass.getPropertyNN("id")
-                .getJavaType();
+        MetaProperty primaryKeyProperty = metadataTools.getPrimaryKeyProperty(metaClass);
+        if (primaryKeyProperty == null) {
+            throw new IllegalStateException(String.format("Entity %s has no primary key", metaClass.getName()));
+        }
+
+        Class<?> idType = primaryKeyProperty.getJavaType();
         Object id = UrlIdSerializer.deserializeId(idType, idParam);
 
         LoadContext<?> ctx = new LoadContext(metaClass);
