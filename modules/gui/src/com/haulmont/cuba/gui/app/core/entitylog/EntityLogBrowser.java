@@ -34,7 +34,7 @@ import com.haulmont.cuba.core.global.ReferenceToEntitySupport;
 import com.haulmont.cuba.core.global.TimeSource;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.WindowParams;
-import com.haulmont.cuba.gui.app.core.entityinspector.EntityInspectorBrowse;
+import com.haulmont.cuba.gui.commonlookup.CommonLookupController;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -209,10 +209,10 @@ public class EntityLogBrowser extends AbstractWindow {
                                 lookupScreenParams != null ? lookupScreenParams : Collections.emptyMap()
                         );
                     } else {
-                        lookupWindow.openLookup(EntityInspectorBrowse.SCREEN_NAME,
+                        lookupWindow.openLookup(CommonLookupController.SCREEN_ID,
                                 lookupWindowHandler,
                                 WindowManager.OpenType.THIS_TAB,
-                                ParamsMap.of("entity", metaClass.getName())
+                                ParamsMap.of(CommonLookupController.CLASS_PARAMETER, metaClass)
                         );
                     }
 
