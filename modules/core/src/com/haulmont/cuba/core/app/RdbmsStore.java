@@ -27,10 +27,12 @@ import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesManagerAPI;
 import com.haulmont.cuba.core.app.events.EntityChangedEvent;
 import com.haulmont.cuba.core.app.queryresults.QueryResultsManagerAPI;
 import com.haulmont.cuba.core.entity.*;
+import com.haulmont.cuba.core.entity.contracts.Id;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.EntityFetcher;
 import com.haulmont.cuba.core.sys.EntityReferencesNormalizer;
 import com.haulmont.cuba.core.sys.persistence.DbmsSpecificFactory;
+import com.haulmont.cuba.core.sys.persistence.EntityChangedEventInfo;
 import com.haulmont.cuba.core.sys.persistence.EntityChangedEventManager;
 import com.haulmont.cuba.security.entity.ConstraintOperationType;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
@@ -531,11 +533,19 @@ public class RdbmsStore implements DataStore {
             savedEntitiesHolder = SavedEntitiesHolder.setEntities(saved);
 
             if (context.isJoinTransaction()) {
-                List<EntityChangedEvent> events = entityChangedEventManager.collect(saved);
+                List<EntityChangedEventInfo> eventsInfo = entityChangedEventManager.collect(saved);
                 em.flush();
+
+                List<EntityChangedEvent> events = new ArrayList<>(eventsInfo.size());
+                for (EntityChangedEventInfo info : eventsInfo) {
+                    events.add(new EntityChangedEvent(info.getSource(),
+                            Id.of(info.getEntity()), info.getType(), info.getChanges()));
+                }
+
                 for (Entity entity : saved) {
                     em.detach(entity);
                 }
+
                 entityChangedEventManager.publish(events);
             }
 
