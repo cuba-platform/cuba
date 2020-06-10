@@ -27,6 +27,7 @@ import com.haulmont.cuba.core.entity.ReferenceToEntity
 import com.haulmont.cuba.core.entity.contracts.Id
 import com.haulmont.cuba.core.global.*
 import com.haulmont.cuba.security.app.EntityLog
+import com.haulmont.cuba.testmodel.primary_keys.IntIdentityEntity
 import com.haulmont.cuba.testmodel.sales_1.*
 import com.haulmont.cuba.testsupport.TestContainer
 import org.junit.ClassRule
@@ -161,6 +162,24 @@ class EntityChangedEventTest extends Specification {
         cleanup:
 
         cont.deleteRecord(order)
+    }
+
+    def "entity change event for DB generated id entity"() {
+
+        IntIdentityEntity entity = metadata.create(IntIdentityEntity)
+        entity.setName('intIdentity')
+
+        when:
+
+        IntIdentityEntity entity1 = dataManager.commit(entity)
+
+        then:
+
+        listener.entityChangedEvents.size() == 1
+
+        cleanup:
+
+        cont.deleteRecord(entity1)
     }
 
     def "old value of collection attribute"() {

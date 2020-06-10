@@ -26,6 +26,7 @@ import com.haulmont.cuba.core.app.FtsSender;
 import com.haulmont.cuba.core.app.MiddlewareStatisticsAccumulator;
 import com.haulmont.cuba.core.app.events.EntityChangedEvent;
 import com.haulmont.cuba.core.entity.*;
+import com.haulmont.cuba.core.entity.contracts.Id;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.listener.AfterCompleteTransactionListener;
 import com.haulmont.cuba.core.listener.BeforeCommitTransactionListener;
@@ -445,8 +446,15 @@ public class PersistenceImplSupport implements ApplicationContextAware {
                     transactionListener.beforeCommit(persistence.getEntityManager(container.getStoreName()), allInstances);
                 }
                 queryCacheManager.invalidate(typeNames, true);
-                List<EntityChangedEvent> collectedEvents = entityChangedEventManager.collect(container.getAllInstances());
+                List<EntityChangedEventInfo> eventsInfo = entityChangedEventManager.collect(container.getAllInstances());
                 detachAll();
+
+                List<EntityChangedEvent> collectedEvents = new ArrayList<>(eventsInfo.size());
+                for (EntityChangedEventInfo info : eventsInfo) {
+                    collectedEvents.add(new EntityChangedEvent(info.getSource(),
+                            Id.of(info.getEntity()), info.getType(), info.getChanges()));
+                }
+
                 publishEntityChangedEvents(collectedEvents);
             } else {
                 detachAll();

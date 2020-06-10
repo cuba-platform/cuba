@@ -18,7 +18,9 @@ package com.haulmont.cuba.core.app.events;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.cuba.core.entity.BaseDbGeneratedIdEntity;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.entity.IdProxy;
 import com.haulmont.cuba.core.entity.contracts.Id;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.ExtendedEntities;
@@ -48,8 +50,8 @@ import org.springframework.core.ResolvableTypeProvider;
  * }
  * </pre>
  *
- * @param <E>   entity type
- * @param <K>   entity identifier type
+ * @param <E> entity type
+ * @param <K> entity identifier type
  */
 public class EntityChangedEvent<E extends Entity<K>, K> extends ApplicationEvent implements ResolvableTypeProvider {
 
@@ -116,9 +118,15 @@ public class EntityChangedEvent<E extends Entity<K>, K> extends ApplicationEvent
         if (pkProperty == null) {
             throw new IllegalStateException("Unable to send EntityChangedEvent for " + metaClass + " because it has no primary key");
         }
-        return ResolvableType.forClassWithGenerics(getClass(),
-                ResolvableType.forClass(metaClass.getJavaClass()),
-                ResolvableType.forClass(pkProperty.getJavaType()));
+        if (BaseDbGeneratedIdEntity.class.isAssignableFrom(metaClass.getJavaClass())) {
+            return ResolvableType.forClassWithGenerics(getClass(),
+                    ResolvableType.forClass(metaClass.getJavaClass()),
+                    ResolvableType.forClassWithGenerics(IdProxy.class, ResolvableType.forClass(pkProperty.getJavaType())));
+        } else {
+            return ResolvableType.forClassWithGenerics(getClass(),
+                    ResolvableType.forClass(metaClass.getJavaClass()),
+                    ResolvableType.forClass(pkProperty.getJavaType()));
+        }
     }
 
     @Override

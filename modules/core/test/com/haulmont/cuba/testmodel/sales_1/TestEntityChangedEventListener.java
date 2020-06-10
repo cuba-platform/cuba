@@ -23,8 +23,10 @@ import com.haulmont.cuba.core.app.events.EntityChangedEvent;
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.app.events.EntityPersistingEvent;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.entity.IdProxy;
 import com.haulmont.cuba.core.entity.contracts.Id;
 import com.haulmont.cuba.core.listener.*;
+import com.haulmont.cuba.testmodel.primary_keys.IntIdentityEntity;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionalEventListener;
@@ -108,6 +110,12 @@ public class TestEntityChangedEventListener implements
         entityChangedEvents.add(new Info(event, isCommitted(event.getEntityId())));
     }
 
+    @TransactionalEventListener
+    void afterCommitIdentity(EntityChangedEvent<IntIdentityEntity, IdProxy<Integer>> event) {
+        allEvents.add(new EventInfo("EntityChangedEvent: afterCommit, "  + event.getType(), event));
+        entityChangedEvents.add(new Info(event, isCommittedIdentity(event.getEntityId())));
+    }
+
     @Override
     public void beforeCommit(EntityManager entityManager, Collection<Entity> managedEntities) {
         allEvents.add(new EventInfo("BeforeCommitTransactionListener", managedEntities));
@@ -165,6 +173,28 @@ public class TestEntityChangedEventListener implements
             try {
                 Object[] row = runner.query("select id from SALES1_ORDER where id = ?",
                         entityId.getValue().toString(),
+                        new ArrayHandler());
+                return row != null;
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        });
+        try {
+            return future.get(200L, TimeUnit.MILLISECONDS);
+        } catch (InterruptedException | ExecutionException e) {
+            throw new RuntimeException(e);
+        } catch (TimeoutException e) {
+            return false;
+        }
+    }
+
+    private boolean isCommittedIdentity(Id<IntIdentityEntity, IdProxy<Integer>> entityId) {
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Future<Boolean> future = executor.submit(() -> {
+            QueryRunner runner = new QueryRunner(persistence.getDataSource());
+            try {
+                Object[] row = runner.query("select id from TEST_INT_IDENTITY where id = ?",
+                        entityId.getValue().getNN(),
                         new ArrayHandler());
                 return row != null;
             } catch (SQLException e) {
