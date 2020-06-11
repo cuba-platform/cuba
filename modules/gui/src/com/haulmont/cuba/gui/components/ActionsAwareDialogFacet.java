@@ -1,5 +1,10 @@
 package com.haulmont.cuba.gui.components;
 
+import com.haulmont.cuba.gui.meta.PropertyType;
+import com.haulmont.cuba.gui.meta.StudioElement;
+import com.haulmont.cuba.gui.meta.StudioElementsGroup;
+import com.haulmont.cuba.gui.meta.StudioProperty;
+
 import java.util.Collection;
 import java.util.function.Consumer;
 
@@ -18,6 +23,8 @@ public interface ActionsAwareDialogFacet<T> {
      *
      * @param actions actions
      */
+    @StudioElementsGroup(xmlElement = "actions", icon = "icon/actions.svg",
+            documentationURL = "https://doc.cuba-platform.com/manual-%VERSION%/gui_dialogs.html#gui_option_dialog_actions")
     void setActions(Collection<DialogAction<T>> actions);
 
     /**
@@ -50,6 +57,8 @@ public interface ActionsAwareDialogFacet<T> {
     /**
      * Immutable POJO that stores dialog action settings.
      */
+    @StudioElement(xmlElement = "action", icon = "icon/action.svg",
+            documentationURL = "https://doc.cuba-platform.com/manual-%VERSION%/gui_OptionDialogFacet.html#gui_OptionDialogFacet_actions")
     class DialogAction<T> {
 
         protected final String id;
@@ -68,22 +77,27 @@ public interface ActionsAwareDialogFacet<T> {
             this.primary = primary;
         }
 
+        @StudioProperty(type = PropertyType.COMPONENT_ID, required = true)
         public String getId() {
             return id;
         }
 
+        @StudioProperty(type = PropertyType.LOCALIZED_STRING)
         public String getCaption() {
             return caption;
         }
 
+        @StudioProperty(type = PropertyType.LOCALIZED_STRING)
         public String getDescription() {
             return description;
         }
 
+        @StudioProperty(type = PropertyType.ICON_ID)
         public String getIcon() {
             return icon;
         }
 
+        @StudioProperty(name = "primary", defaultValue = "false")
         public boolean isPrimary() {
             return primary;
         }
