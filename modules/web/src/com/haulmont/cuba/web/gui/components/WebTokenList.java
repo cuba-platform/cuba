@@ -749,6 +749,11 @@ public class WebTokenList<V extends Entity>
         this.lookupPickerField.setInputPrompt(inputPrompt);
     }
 
+    @Override
+    public void setNewOptionHandler(Consumer<String> newOptionHandler) {
+        this.lookupPickerField.setNewOptionHandler(newOptionHandler);
+    }
+
     protected String getInstanceCaption(V instance) {
         if (instance == null) {
             return "";
