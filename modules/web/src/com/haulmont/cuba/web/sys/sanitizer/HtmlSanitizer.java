@@ -139,6 +139,18 @@ public class HtmlSanitizer {
     protected static final Pattern CLASS_PATTERN = Pattern.compile(CLASS_REGEXP);
     protected static final String CLASS_ATTRIBUTE_NAME = "class";
 
+    protected static final String A_ELEMENT_NAME = "a";
+    protected static final String HREF_ATTRIBUTE_NAME = "href";
+    protected static final String TARGET_ATTRIBUTE_NAME = "target";
+    protected static final ImmutableSet<String> TARGET_ATTRIBUTE_VALUES = ImmutableSet.of(
+            "_blank",
+            "_self",
+            "_parent",
+            "_top"
+    );
+    protected static final String NOOPENNER_REL_VALUE = "noopener";
+    protected static final String NOREFERRER_REL_VALUE = "noreferrer";
+
     /**
      * The additional css schema whitelist that was not included in the default whitelist in {@code Sanitizers.STYLES}. .
      */
@@ -200,11 +212,14 @@ public class HtmlSanitizer {
                 .allowAttributes(FONT_FACE_ATTRIBUTE_NAME).matching(FONT_FACE_PATTERN).onElements(FONT)
                 .allowAttributes(FONT_SIZE_ATTRIBUTE_NAME).matching(FONT_SIZE_PATTERN).onElements(FONT)
                 .allowAttributes(CLASS_ATTRIBUTE_NAME).matching(CLASS_PATTERN).globally()
+                .allowStandardUrlProtocols().allowElements(A_ELEMENT_NAME)
+                .allowAttributes(HREF_ATTRIBUTE_NAME).onElements(A_ELEMENT_NAME).requireRelNofollowOnLinks()
+                .allowAttributes(TARGET_ATTRIBUTE_NAME).matching(true, TARGET_ATTRIBUTE_VALUES)
+                    .onElements(A_ELEMENT_NAME).requireRelsOnLinks(NOOPENNER_REL_VALUE, NOREFERRER_REL_VALUE)
                 .allowStyling(CssSchema.withProperties(DEFAULT_WHITELIST))
                 .allowStyling(CssSchema.withProperties(getAdditionalStylePolicies()))
                 .toFactory()
                 .and(Sanitizers.FORMATTING)
-                .and(Sanitizers.LINKS)
                 .and(Sanitizers.BLOCKS)
                 .and(Sanitizers.IMAGES)
                 .and(Sanitizers.STYLES)
