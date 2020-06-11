@@ -34,6 +34,7 @@ import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -493,6 +494,13 @@ public interface TokenList<V extends Entity> extends Field<Collection<V>>,
      * @param inputPrompt input prompt
      */
     void setLookupInputPrompt(String inputPrompt);
+
+    /**
+     * Sets the handler that is called when user types a new item.
+     *
+     * @param newOptionHandler a handler to set, {@code null} to remove.
+     */
+    void setNewOptionHandler(Consumer<String> newOptionHandler);
 
     /**
      * Enables to generate stylenames for tokens.
