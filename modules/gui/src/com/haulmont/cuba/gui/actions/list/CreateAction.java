@@ -93,7 +93,7 @@ public class CreateAction<E extends Entity> extends ListAction implements Action
     /**
      * Sets the editor screen open mode.
      */
-    @StudioPropertiesItem(type = PropertyType.SCREEN_OPEN_MODE)
+    @StudioPropertiesItem
     public void setOpenMode(OpenMode openMode) {
         screenInitializer.setOpenMode(openMode);
     }
