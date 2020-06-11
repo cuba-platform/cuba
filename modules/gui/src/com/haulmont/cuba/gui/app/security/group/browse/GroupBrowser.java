@@ -277,8 +277,10 @@ public class GroupBrowser extends AbstractWindow {
         groupCreateAction.setOpenType(OpenType.DIALOG);
 
         EditAction groupEditAction = new EditAction(groupsTree);
-        groupEditAction.setAfterCommitHandler(entity ->
-                groupsTree.expandTree()
+        groupEditAction.setEditorCloseListener(actionId -> {
+                    groupsDs.refresh();
+                    groupsTree.expandTree();
+                }
         );
         groupEditAction.setOpenType(OpenType.DIALOG);
         groupsTree.addAction(groupEditAction);
