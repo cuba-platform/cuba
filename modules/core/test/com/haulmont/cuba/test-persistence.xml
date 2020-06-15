@@ -146,5 +146,9 @@
 
         <class>com.haulmont.cuba.testmodel.roles.RoleTestEntity</class>
         <class>com.haulmont.cuba.testmodel.roles.ExtRoleTestEntity</class>
+
+        <class>com.haulmont.cuba.testmodel.embeddedwithinheritance.Person</class>
+        <class>com.haulmont.cuba.testmodel.embeddedwithinheritance.JuridicalPerson</class>
+        <class>com.haulmont.cuba.testmodel.embeddedwithinheritance.VerificationInfo</class>
     </persistence-unit>
 </persistence>
