@@ -1369,3 +1369,31 @@ create table TEST_ROLE_TEST_ENTITY (
     NEW_ATTR varchar(36),
     primary key (ID)
 )^
+
+------------------------------------------------------------------------------------------------------------------------
+create table TEST_EMBEDDED_PERSON (
+    ID varchar(36) not null,
+    VERSION integer not null,
+    CREATE_TS timestamp,
+    CREATED_BY varchar(50),
+    UPDATE_TS timestamp,
+    UPDATED_BY varchar(50),
+    DELETE_TS timestamp,
+    DELETED_BY varchar(50),
+    DTYPE varchar(31),
+    --
+    DATE_ timestamp,
+    USER_ID varchar(36),
+    --
+    NAME varchar(255),
+    --
+    primary key (ID)
+)^
+
+create table TEST_EMBEDDED_JURIDICAL_PERSON (
+    ID varchar(36) not null,
+    --
+    LEGAL_NAME varchar(255),
+    --
+    primary key (ID)
+)^
