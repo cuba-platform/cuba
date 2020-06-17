@@ -288,16 +288,16 @@ date_macro_expression
     | date_today_macro_expression;
 
 date_between_macro_expression
-    : '@BETWEEN' '(' path_expression ',' 'NOW' (('+' | '-') numeric_literal)? ',' 'NOW' (('+' | '-') numeric_literal)? ',' ('YEAR' | 'MONTH' | 'DAY' | 'HOUR' |'MINUTE' | 'SECOND') (',' 'USER_TIMEZONE')? ')';
+    : '@BETWEEN' '(' path_expression ',' now_expression ',' now_expression ',' ('YEAR' | 'MONTH' | 'DAY' | 'HOUR' |'MINUTE' | 'SECOND') (',' 'USER_TIMEZONE')? ')';
 
 date_before_macro_expression
-    : '@DATEBEFORE' '(' path_expression ',' (path_expression | input_parameter | 'NOW' (('+' | '-') numeric_literal)? ) (',' 'USER_TIMEZONE')? ')';
+    : '@DATEBEFORE' '(' path_expression ',' (path_expression | input_parameter | now_expression ) (',' 'USER_TIMEZONE')? ')';
 
 date_after_macro_expression
-    : '@DATEAFTER' '(' path_expression ',' (path_expression | input_parameter | 'NOW' (('+' | '-') numeric_literal)? ) (',' 'USER_TIMEZONE')? ')';
+    : '@DATEAFTER' '(' path_expression ',' (path_expression | input_parameter | now_expression ) (',' 'USER_TIMEZONE')? ')';
 
 date_equals_macro_expression
-    : '@DATEEQUALS' '(' path_expression ',' (path_expression | input_parameter | 'NOW' (('+' | '-') numeric_literal)? ) (',' 'USER_TIMEZONE')? ')';
+    : '@DATEEQUALS' '(' path_expression ',' (path_expression | input_parameter | now_expression ) (',' 'USER_TIMEZONE')? ')';
 
 date_today_macro_expression
     : '@TODAY' '(' path_expression (',' 'USER_TIMEZONE')? ')';
@@ -483,6 +483,9 @@ enum_function
 
 fragment date_part
     : 'EPOCH' | 'YEAR' | 'QUARTER' | 'MONTH' | 'WEEK' |'DAY' | 'HOUR' |'MINUTE' | 'SECOND';
+
+now_expression
+    : 'NOW' (('+' | '-') ('-')? ( numeric_literal | input_parameter ))*;
 
 //Start : Here we insert tail from old grammar
 input_parameter

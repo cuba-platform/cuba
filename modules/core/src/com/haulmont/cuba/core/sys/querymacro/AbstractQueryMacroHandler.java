@@ -16,11 +16,16 @@
 
 package com.haulmont.cuba.core.sys.querymacro;
 
+import com.google.common.base.Strings;
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Scripting;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.core.sys.QueryMacroHandler;
 import com.haulmont.cuba.security.global.UserSession;
+import groovy.lang.Binding;
 
+import javax.annotation.Nullable;
+import javax.inject.Inject;
 import java.util.Map;
 import java.util.TimeZone;
 import java.util.regex.Matcher;
@@ -28,9 +33,13 @@ import java.util.regex.Pattern;
 
 public abstract class AbstractQueryMacroHandler implements QueryMacroHandler {
 
+    protected static final Pattern QUERY_PARAM_PATTERN = Pattern.compile(":(\\w+)");
     protected int count;
     protected final Pattern macroPattern;
     protected Map<String, Class> expandedParamTypes;
+
+    @Inject
+    protected Scripting scripting;
 
     protected AbstractQueryMacroHandler(Pattern macroPattern) {
         this.macroPattern = macroPattern;
@@ -46,6 +55,49 @@ public abstract class AbstractQueryMacroHandler implements QueryMacroHandler {
         }
         matcher.appendTail(sb);
         return sb.toString();
+    }
+
+    protected String replaceParamsInMacros(String macros, Map<String, Object> params) {
+        Matcher matcher = QUERY_PARAM_PATTERN.matcher(macros);
+        StringBuffer sb = new StringBuffer();
+        while (matcher.find()) {
+            String paramName = matcher.group(1);
+            if (params.get(paramName) instanceof Number) {
+                matcher.appendReplacement(sb, params.get(paramName).toString());
+                params.remove(paramName);
+            }
+        }
+        matcher.appendTail(sb);
+        return sb.toString();
+    }
+
+    @Override
+    public String replaceQueryParams(String queryString, Map<String, Object> params) {
+        Matcher matcher = macroPattern.matcher(queryString);
+        StringBuffer sb = new StringBuffer();
+        while (matcher.find()) {
+            String macros = matcher.group(0);
+            macros = replaceParamsInMacros(macros, params);
+            matcher.appendReplacement(sb, macros);
+        }
+        matcher.appendTail(sb);
+        return sb.toString();
+    }
+
+    /**
+     * Calculates value of expression.
+     *
+     * @return value of expression or 0 if expression is null or empty.
+     * @throws NumberFormatException in case of malformed expression
+     */
+    protected int evaluateExpression(@Nullable String expression) throws NumberFormatException {
+        int val = 0;
+        if (!Strings.isNullOrEmpty(expression)) {
+            if (expression.startsWith("+") || expression.startsWith("-"))
+                expression = '0' + expression; //workaround for expression == "+-1" (where "+" is operation from query, "-1" - parameter value)
+            val = scripting.evaluateGroovy(expression, new Binding());
+        }
+        return val;
     }
 
     protected abstract String doExpand(String macro);
