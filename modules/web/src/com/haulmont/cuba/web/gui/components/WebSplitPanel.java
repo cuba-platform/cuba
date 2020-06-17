@@ -24,6 +24,7 @@ import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.SizeUnit;
 import com.haulmont.cuba.gui.components.SplitPanel;
 import com.haulmont.cuba.gui.components.sys.FrameImplementation;
+import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.widgets.CubaDockableSplitPanel;
 import com.haulmont.cuba.web.widgets.CubaHorizontalSplitPanel;
 import com.haulmont.cuba.web.widgets.CubaVerticalSplitPanel;
@@ -60,6 +61,11 @@ public class WebSplitPanel extends WebAbstractComponent<AbstractSplitPanel> impl
 
         if (component == null) {
             createComponentImpl();
+        }
+
+        AppUI ui = AppUI.getCurrent();
+        if (ui.isTestMode()) {
+            component.setCubaId(getId());
         }
 
         com.vaadin.ui.Component vComponent = childComponent.unwrapComposition(com.vaadin.ui.Component.class);
