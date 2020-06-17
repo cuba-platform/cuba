@@ -16,13 +16,10 @@
  */
 package com.haulmont.cuba.core.sys.querymacro;
 
-import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 import com.haulmont.cuba.core.global.DateTimeTransformations;
-import com.haulmont.cuba.core.global.Scripting;
 import com.haulmont.cuba.core.global.TimeSource;
 import com.haulmont.cuba.core.sys.querymacro.macroargs.MacroArgsTimeBetween;
-import groovy.lang.Binding;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -40,7 +37,6 @@ public class TimeBetweenQueryMacroHandler extends AbstractQueryMacroHandler {
 
     protected static final Pattern MACRO_PATTERN = Pattern.compile("@between\\s*\\(([^)]+)\\)");
     protected static final Pattern PARAM_PATTERN = Pattern.compile("(now)\\s*([\\d\\s+-]*)");
-    protected static final Pattern QUERY_PARAM_PATTERN = Pattern.compile(":(\\w+)");
 
     protected static final Map<String, BiFunction<ZonedDateTime, Integer, ZonedDateTime>> UNITS =
             new ImmutableMap.Builder<String, BiFunction<ZonedDateTime, Integer, ZonedDateTime>>()
@@ -67,8 +63,6 @@ public class TimeBetweenQueryMacroHandler extends AbstractQueryMacroHandler {
     @Inject
     protected DateTimeTransformations transformations;
     @Inject
-    protected Scripting scripting;
-    @Inject
     protected TimeSource timeSource;
 
     protected List<MacroArgsTimeBetween> macroArgs = new ArrayList<>();
@@ -79,33 +73,6 @@ public class TimeBetweenQueryMacroHandler extends AbstractQueryMacroHandler {
 
     @Override
     public void setQueryParams(Map<String, Object> namedParameters) {
-    }
-
-    @Override
-    public String replaceQueryParams(String queryString, Map<String, Object> params) {
-        Matcher matcher = MACRO_PATTERN.matcher(queryString);
-        StringBuffer sb = new StringBuffer();
-        while (matcher.find()) {
-            String macros = matcher.group(0);
-            macros = replaceParamsInMacros(macros, params);
-            matcher.appendReplacement(sb, macros);
-        }
-        matcher.appendTail(sb);
-        return sb.toString();
-    }
-
-    protected String replaceParamsInMacros(String macros, Map<String, Object> params) {
-        Matcher matcher = QUERY_PARAM_PATTERN.matcher(macros);
-        StringBuffer sb = new StringBuffer();
-        while (matcher.find()) {
-            String paramName = matcher.group(1);
-            if (params.containsKey(paramName)) {
-                matcher.appendReplacement(sb, params.get(paramName).toString());
-                params.remove(paramName);
-            }
-        }
-        matcher.appendTail(sb);
-        return sb.toString();
     }
 
     @Override
@@ -159,12 +126,10 @@ public class TimeBetweenQueryMacroHandler extends AbstractQueryMacroHandler {
         if (!matcher.find())
             throw new RuntimeException("Invalid macro argument: " + arg);
 
-        int num = 0;
+        int num;
         try {
             String expr = matcher.group(2);
-            if (!Strings.isNullOrEmpty(expr)) {
-                num = scripting.evaluateGroovy(expr, new Binding());
-            }
+            num = evaluateExpression(expr);
         } catch (NumberFormatException e) {
             throw new RuntimeException("Invalid macro argument: " + arg, e);
         }

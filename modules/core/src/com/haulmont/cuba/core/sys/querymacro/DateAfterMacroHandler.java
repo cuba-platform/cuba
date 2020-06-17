@@ -16,12 +16,9 @@
  */
 package com.haulmont.cuba.core.sys.querymacro;
 
-import com.google.common.base.Strings;
 import com.haulmont.cuba.core.global.DateTimeTransformations;
-import com.haulmont.cuba.core.global.Scripting;
 import com.haulmont.cuba.core.global.TimeSource;
 import com.haulmont.cuba.core.sys.querymacro.macroargs.MacroArgs;
-import groovy.lang.Binding;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -41,8 +38,6 @@ public class DateAfterMacroHandler extends AbstractQueryMacroHandler {
 
     @Inject
     protected DateTimeTransformations transformations;
-    @Inject
-    protected Scripting scripting;
     @Inject
     protected TimeSource timeSource;
 
@@ -67,12 +62,10 @@ public class DateAfterMacroHandler extends AbstractQueryMacroHandler {
 
         Matcher matcher = NOW_PARAM_PATTERN.matcher(param);
         if (matcher.find()) {
-            int offset = 0;
+            int offset;
             try {
                 String expr = matcher.group(2);
-                if (!Strings.isNullOrEmpty(expr)) {
-                    offset = scripting.evaluateGroovy(expr, new Binding());
-                }
+                offset = evaluateExpression(expr);
             } catch (NumberFormatException e) {
                 throw new RuntimeException("Invalid macro argument: " + param, e);
             }
@@ -123,8 +116,4 @@ public class DateAfterMacroHandler extends AbstractQueryMacroHandler {
         return params;
     }
 
-    @Override
-    public String replaceQueryParams(String queryString, Map<String, Object> params) {
-        return queryString;
-    }
 }

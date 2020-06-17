@@ -53,10 +53,10 @@ public class Jpa2GrammarTest {
     @Test
     public void testGroupBy() throws Exception {
         testQuery("select u.login " +
-                        "from sec$User u " +
-                        "where u.login = 'admin' " +
-                        "group by u.login having u.version > 0" +
-                        "order by u.login");
+                "from sec$User u " +
+                "where u.login = 'admin' " +
+                "group by u.login having u.version > 0" +
+                "order by u.login");
     }
 
     @Test
@@ -72,8 +72,8 @@ public class Jpa2GrammarTest {
 
         testQuery("select instance.bookPublication.publisher.name, instance.bookPublication.year, count(instance) " +
                 "from library$BookInstance instance " +
-                        "group by instance.bookPublication.year, instance.bookPublication.publisher.name " +
-                        "order by instance.bookPublication.year, instance.bookPublication.publisher.name");
+                "group by instance.bookPublication.year, instance.bookPublication.publisher.name " +
+                "order by instance.bookPublication.year, instance.bookPublication.publisher.name");
     }
 
     @Test
@@ -400,5 +400,17 @@ public class Jpa2GrammarTest {
     public void testSubQueries() throws RecognitionException {
         testQuery("SELECT goodCustomer FROM app$Customer goodCustomer WHERE goodCustomer.balanceOwed < (SELECT AVG(c.balanceOwed)/2.0 FROM app$Customer c)");
         testQuery("SELECT c FROM app$Customer c WHERE (SELECT AVG(o.price) FROM c.orders o) > 100");
+    }
+
+    @Test
+    public void testMacrosesWithParams() throws RecognitionException {
+        testQuery("SELECT u from sec$User where @between(u.createTs, now - :param -1, now + 5 +:param, day)");
+        testQuery("SELECT u from sec$User where @between(u.createTs, now - :param, now, year)");
+        testQuery("SELECT u from sec$User where @between(u.createTs, now - -2 + 3, now + 1, month)");
+
+        testQuery("SELECT u from sec$User where (@dateEquals(u.createTs, :p) or (@dateAfter(u.updateTs, :p) and @dateBefore(u.createTs, :p)))");
+        testQuery("SELECT u from sec$User where @dateBefore(u.createTs, now + -4 + 100)");
+        testQuery("SELECT u from sec$User where @dateAfter(u.createTs, now + -4 + 2)");
+        testQuery("SELECT u from sec$User where @dateEquals(u.createTs, now +:param -1)");
     }
 }

@@ -18,15 +18,19 @@ package com.haulmont.cuba.core.sys.querymacro;
 
 import com.google.common.collect.ImmutableMap;
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.TimeSource;
 import com.haulmont.cuba.testsupport.TestContainer;
-import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class TimeBetweenQueryMacroHandlerTest {
 
@@ -53,6 +57,12 @@ public class TimeBetweenQueryMacroHandlerTest {
         handler = AppBeans.get(TimeBetweenQueryMacroHandler.class);
         res = handler.expandMacro("select u from sec$User where @between(u.createTs, now-5+2, now, day) and u.deleteTs is null");
         handler.setExpandedParamTypes(ImmutableMap.of("u_createTs_1_1", LocalDateTime.class, "u_createTs_1_2", LocalDateTime.class));
+
+        LocalDateTime today = AppBeans.get(TimeSource.class).now().toLocalDateTime().truncatedTo(ChronoUnit.DAYS);
+        LocalDateTime threeDaysAgo = today.plusDays(-3);
+        assertEquals(handler.getParams().get("u_createTs_1_1"), threeDaysAgo);
+        assertEquals(handler.getParams().get("u_createTs_1_2"), today);
+
         System.out.println(res);
         System.out.println(handler.getParams());
     }
@@ -61,8 +71,11 @@ public class TimeBetweenQueryMacroHandlerTest {
     public void testReplaceQueryParams() {
         Map<String, Object> params = new HashMap<>();
         params.put("param1", 5);
+        params.put("param2", "admin");
         TimeBetweenQueryMacroHandler handler = AppBeans.get(TimeBetweenQueryMacroHandler.class);
-        String res = handler.replaceQueryParams("select u from sec$User where @between(u.createTs, now, now+:param1, day) and u.deleteTs is null", params);
+        String res = handler.replaceQueryParams("select u from sec$User where @between(u.createTs, now, now+:param1-1, day) " +
+                "and u.deleteTs is null and u.login not like :param2", params);
+        assertEquals("select u from sec$User where @between(u.createTs, now, now+5-1, day) and u.deleteTs is null and u.login not like :param2", res);
         System.out.println(res);
     }
 }
