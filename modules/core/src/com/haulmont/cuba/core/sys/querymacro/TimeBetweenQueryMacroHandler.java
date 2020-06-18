@@ -18,6 +18,7 @@ package com.haulmont.cuba.core.sys.querymacro;
 
 import com.google.common.collect.ImmutableMap;
 import com.haulmont.cuba.core.global.DateTimeTransformations;
+import com.haulmont.cuba.core.global.Scripting;
 import com.haulmont.cuba.core.global.TimeSource;
 import com.haulmont.cuba.core.sys.querymacro.macroargs.MacroArgsTimeBetween;
 import org.springframework.context.annotation.Scope;
@@ -64,6 +65,8 @@ public class TimeBetweenQueryMacroHandler extends AbstractQueryMacroHandler {
     protected DateTimeTransformations transformations;
     @Inject
     protected TimeSource timeSource;
+    @Inject
+    protected Scripting scripting;
 
     protected List<MacroArgsTimeBetween> macroArgs = new ArrayList<>();
 
@@ -129,7 +132,7 @@ public class TimeBetweenQueryMacroHandler extends AbstractQueryMacroHandler {
         int num;
         try {
             String expr = matcher.group(2);
-            num = evaluateExpression(expr);
+            num = evaluateExpression(expr, scripting);
         } catch (NumberFormatException e) {
             throw new RuntimeException("Invalid macro argument: " + arg, e);
         }
