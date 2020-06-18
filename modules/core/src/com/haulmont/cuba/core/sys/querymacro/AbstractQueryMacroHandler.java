@@ -25,7 +25,6 @@ import com.haulmont.cuba.security.global.UserSession;
 import groovy.lang.Binding;
 
 import javax.annotation.Nullable;
-import javax.inject.Inject;
 import java.util.Map;
 import java.util.TimeZone;
 import java.util.regex.Matcher;
@@ -34,12 +33,11 @@ import java.util.regex.Pattern;
 public abstract class AbstractQueryMacroHandler implements QueryMacroHandler {
 
     protected static final Pattern QUERY_PARAM_PATTERN = Pattern.compile(":(\\w+)");
+    protected static final Pattern NEGATIVE_PARAM_EXPR_PATTERN = Pattern.compile("[+-]\\s*[-]\\s*\\d+.*");
+
     protected int count;
     protected final Pattern macroPattern;
     protected Map<String, Class> expandedParamTypes;
-
-    @Inject
-    protected Scripting scripting;
 
     protected AbstractQueryMacroHandler(Pattern macroPattern) {
         this.macroPattern = macroPattern;
@@ -90,11 +88,11 @@ public abstract class AbstractQueryMacroHandler implements QueryMacroHandler {
      * @return value of expression or 0 if expression is null or empty.
      * @throws NumberFormatException in case of malformed expression
      */
-    protected int evaluateExpression(@Nullable String expression) throws NumberFormatException {
+    protected int evaluateExpression(@Nullable String expression, Scripting scripting) throws NumberFormatException {
         int val = 0;
         if (!Strings.isNullOrEmpty(expression)) {
-            if (expression.startsWith("+") || expression.startsWith("-"))
-                expression = '0' + expression; //workaround for expression == "+-1" (where "+" is operation from query, "-1" - parameter value)
+            if (NEGATIVE_PARAM_EXPR_PATTERN.matcher(expression).matches())
+                expression = '0' + expression; //workaround for expression == "+ -1 " (where "+" is operation from query, "-1" - parameter value)
             val = scripting.evaluateGroovy(expression, new Binding());
         }
         return val;
