@@ -51,6 +51,7 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.stream.Collectors;
 
 /**
  * GenericUI class holding information about all permission targets.
@@ -140,62 +141,58 @@ public class PermissionConfig {
         }
 
         private void walkAllScreens(Node<BasicPermissionTarget> allRoot) {
-            // filter non-unique windows with specified agent
-            windowConfig.getWindows().stream()
+            Map<String, String> windows = windowConfig.getWindows().stream()
                     .distinct()
-                    .sorted((w1, w2) -> {
-                        String template1 = w1.getTemplate();
-                        String template2 = w2.getTemplate();
-                        if (template1 != null && template2 != null) {
-                            if (template1.startsWith("/")) {
-                                template1 = template1.substring(1);
-                            }
-                            if (template2.startsWith("/")) {
-                                template2 = template2.substring(1);
-                            }
+                    .collect(Collectors.toMap(
+                            WindowInfo::getId,
+                            windowInfo -> {
+                                String template = windowInfo.getTemplate();
+                                if (template == null && windowInfo.getControllerClassName() != null) {
+                                    template = windowInfo.getControllerClassName().replace(".", "/");
+                                }
 
-                            return template1.compareTo(template2);
-                        } else {
-                            return w1.getId().compareTo(w2.getId());
-                        }
-                    })
-                    .forEach(windowInfo -> walkScreen(windowInfo, allRoot));
+                                if (template != null && template.startsWith("/")) {
+                                    template = template.substring(1);
+                                }
+
+                                return template != null
+                                        ? template
+                                        : windowInfo.getId();
+                            }
+                    ));
+
+            windows.entrySet().stream()
+                    .sorted(Map.Entry.comparingByValue())
+                    .forEach(entry -> walkScreen(entry.getKey(), entry.getValue(), allRoot));
             compactScreens(allRoot);
         }
 
-        private void walkScreen(WindowInfo windowInfo, Node<BasicPermissionTarget> allRoot) {
-            String template = windowInfo.getTemplate();
-            if (template != null) {
-                String[] packages = template.split("/");
-                if (packages[0].isEmpty()) {
-                    packages = ArrayUtils.remove(packages, 0);
-                }
-
-                int count = 0;
-                Node<BasicPermissionTarget> parentNode = allRoot;
-                Node<BasicPermissionTarget> childNode;
-                while ((childNode = findCategoryChildNode(getNodeId(packages, count), parentNode)) != null) {
-                    count++;
-                    parentNode = childNode;
-                }
-
-                do {
-                    if (count == (packages.length - 1)) {
-                        childNode = new Node<>(new BasicPermissionTarget(
-                                "item:" + String.join(".",getNodeId(packages, count), windowInfo.getId()),
-                                packages[count] + " (" + windowInfo.getId() + ")",
-                                windowInfo.getId()));
-                    } else {
-                        childNode = new Node<>(new BasicPermissionTarget(
-                                "category:all:" + getNodeId(packages, count),
-                                packages[count],
-                                null));
-                    }
-
-                    parentNode.addChild(childNode);
-                    parentNode = childNode;
-                } while (++count < packages.length);
+        private void walkScreen(String id, String template, Node<BasicPermissionTarget> allRoot) {
+            String[] packages = template.split("/");
+            int count = 0;
+            Node<BasicPermissionTarget> parentNode = allRoot;
+            Node<BasicPermissionTarget> childNode;
+            while ((childNode = findCategoryChildNode(getNodeId(packages, count), parentNode)) != null) {
+                count++;
+                parentNode = childNode;
             }
+
+            do {
+                if (count == (packages.length - 1)) {
+                    childNode = new Node<>(new BasicPermissionTarget(
+                            "item:" + String.join(".", getNodeId(packages, count), id),
+                            packages[count] + " (" + id + ")",
+                            id));
+                } else {
+                    childNode = new Node<>(new BasicPermissionTarget(
+                            "category:all:" + getNodeId(packages, count),
+                            packages[count],
+                            null));
+                }
+
+                parentNode.addChild(childNode);
+                parentNode = childNode;
+            } while (++count < packages.length);
         }
 
         @Nullable
