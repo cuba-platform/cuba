@@ -511,6 +511,40 @@ public class CubaScrollTableWidget extends VScrollTable implements TableWidget {
         }
 
         @Override
+        protected int getOffsetForCaptionContainer(HeaderCell cell, int diff, int columnSelectorOffset) {
+            int captionOffset;
+            if (diff < columnSelectorOffset) {
+                captionOffset = diff > 0 ?
+                        columnSelectorOffset - diff :
+                        columnSelectorOffset + diff;
+            } else {
+                captionOffset = columnSelectorOffset;
+            }
+
+            int cellWidth = cell.getOffsetWidth();
+            int sortIndicatorWidth = cell.getSortIndicator().getOffsetWidth();
+            int colResizeWidth = cell.getColResize().getOffsetWidth();
+
+            // completed cell width that will be applied after setting offset
+            int calculatedCellWidth = sortIndicatorWidth + colResizeWidth + captionOffset;
+
+            // if caption and cell widths are not equal it means table fully loaded
+            // after page refreshing and we should consider the caption width
+            int captionWidth = cell.getCaptionContainer().getOffsetWidth();
+            if (cellWidth != captionWidth) {
+                calculatedCellWidth += captionWidth;
+            }
+
+            // if calculated width greater than exists, header cell will be broken
+            // in this case we should reduce offset width;
+            if (cellWidth < calculatedCellWidth) {
+                captionOffset = captionOffset - (calculatedCellWidth - cellWidth);
+            }
+
+            return captionOffset;
+        }
+
+        @Override
         public void onBrowserEvent(Event event) {
             super.onBrowserEvent(event);
 
