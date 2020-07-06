@@ -203,6 +203,9 @@ public class PropertyCondition extends AbstractCondition {
         element.addAttribute("type", ConditionType.PROPERTY.name());
         element.addAttribute("operatorType", getOperatorType());
         if (!Strings.isNullOrEmpty(join)) {
+            if (element.attribute("entityAlias") == null) {
+                element.addAttribute("entityAlias", entityAlias);
+            }
             Element joinElement = element.addElement("join");
             joinElement.addCDATA(join);
         }
