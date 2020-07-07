@@ -45,7 +45,9 @@ public @interface StudioFacet {
     String category() default "";
 
     /**
-     * @return Component Palette icon, SVG or PNG
+     * Specifies path to the component icon, SVG or PNG. Relative to the component module root.
+     * The icon used in the Component Palette and Component Hierarchy.
+     * @return relative path to the SVG or PNG icon file.
      */
     String icon() default "";
 

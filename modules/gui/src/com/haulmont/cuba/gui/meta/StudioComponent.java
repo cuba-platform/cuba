@@ -43,7 +43,9 @@ public @interface StudioComponent {
     String category() default "";
 
     /**
-     * @return Component Palette icon, SVG or PNG
+     * Specifies path to the component icon, SVG or PNG. Relative to the component module root.
+     * The icon used in the Component Palette and Component Hierarchy.
+     * @return relative path to the SVG or PNG icon file.
      */
     String icon() default "";
 
@@ -77,9 +79,9 @@ public @interface StudioComponent {
     String[] unsupportedProperties() default {};
 
     /**
-     * @return UI component icon shown on canvas as a placeholder, if {@link #canvasBehaviour()} is
-     * {@link CanvasBehaviour#COMPONENT}. File should be in SVG or PNG format.
-     * {@link #icon} property used if value is blank.
+     * Specifies path to the UI component icon shown on canvas as a placeholder, SVG or PNG.
+     * Relative to the component module root. Used if {@link #canvasBehaviour()} is {@link CanvasBehaviour#COMPONENT}.
+     * @return relative path to the SVG or PNG icon file.
      */
     String canvasIcon() default "";
 
