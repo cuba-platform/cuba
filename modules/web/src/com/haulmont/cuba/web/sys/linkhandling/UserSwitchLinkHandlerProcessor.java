@@ -152,7 +152,7 @@ public class UserSwitchLinkHandlerProcessor implements LinkHandlerProcessor, Ord
     protected User loadUser(UUID userId, User user) {
         if (user.getId().equals(userId))
             return user;
-        LoadContext loadContext = new LoadContext(UserSubstitution.class);
+        LoadContext<User> loadContext = new LoadContext<>(User.class);
         LoadContext.Query query = new LoadContext.Query("select su from sec$UserSubstitution us join us.user u " +
                 "join us.substitutedUser su where u.id = :id and su.id = :userId and " +
                 "(us.endDate is null or us.endDate >= :currentDate) and (us.startDate is null or us.startDate <= :currentDate)");
