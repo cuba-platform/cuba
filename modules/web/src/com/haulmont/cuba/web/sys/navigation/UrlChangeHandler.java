@@ -56,6 +56,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 
+import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
@@ -171,7 +172,11 @@ public class UrlChangeHandler implements InitializingBean {
             if (topLevelWindow instanceof WebWindow) {
                 NavigationState topScreenState = ((WebWindow) topLevelWindow).getResolvedState();
 
-                urlTools.replaceState(topScreenState.asRoute(), ui);
+                if (topScreenState != null) {
+                    urlTools.replaceState(topScreenState.asRoute(), ui);
+                } else {
+                    urlTools.replaceState(EMPTY, ui);
+                }
             }
         }
     }
