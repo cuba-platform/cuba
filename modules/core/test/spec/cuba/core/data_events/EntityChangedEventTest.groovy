@@ -16,6 +16,8 @@
 package spec.cuba.core.data_events
 
 import com.haulmont.bali.db.QueryRunner
+import com.haulmont.cuba.core.EntityManager
+import com.haulmont.cuba.core.Persistence
 import com.haulmont.cuba.core.Transaction
 import com.haulmont.cuba.core.TransactionalDataManager
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesManagerAPI
@@ -39,7 +41,8 @@ import java.time.LocalDate
 
 class EntityChangedEventTest extends Specification {
 
-    @Shared @ClassRule
+    @Shared
+    @ClassRule
     public TestContainer cont = TestContainer.Common.INSTANCE
 
     private TestEntityChangedEventListener listener
@@ -48,6 +51,7 @@ class EntityChangedEventTest extends Specification {
     private TransactionalDataManager txDataManager
     private Metadata metadata
     private EntityStates entityStates
+    private Persistence persistence
 
     void setup() {
         listener = AppBeans.get(TestEntityChangedEventListener)
@@ -58,6 +62,7 @@ class EntityChangedEventTest extends Specification {
         dataManager = AppBeans.get(DataManager)
         txDataManager = AppBeans.get(TransactionalDataManager)
         entityStates = AppBeans.get(EntityStates)
+        persistence = cont.persistence()
 
         AppBeans.get(EntityLog)
 
@@ -159,6 +164,246 @@ class EntityChangedEventTest extends Specification {
         beforeCommit().event.changes.getOldValue('date') == null
         beforeCommit().event.changes.getOldValue('customer') == null
 
+        cleanup:
+
+        cont.deleteRecord(order)
+    }
+
+    def "flush between updates"() {
+        Order order = metadata.create(Order)
+        order.setNumber('235')
+
+        dataManager.commit(order)
+
+        listener.clear()
+
+        when:
+
+        def tx = txDataManager.transactions().create()
+        try {
+            def em = persistence.entityManager
+
+            Order reloadedOrder = em.find(Order, order.id)
+            reloadedOrder.setNumber('222')
+
+            em.flush()
+
+            reloadedOrder.setDate(new Date())
+            tx.commit()
+        } finally {
+            tx.end()
+        }
+
+        then:
+
+        listener.entityChangedEvents.size() == 2
+
+        beforeCommit().event.getEntityId().value == order.id
+        beforeCommit().event.changes.isChanged('number')
+        beforeCommit().event.changes.isChanged('date')
+
+        cleanup:
+
+        listener.clear()
+        cont.deleteRecord(order)
+    }
+
+    def "flush between create and update"() {
+        Order order = metadata.create(Order)
+        order.setNumber('235')
+        order.setAmount(BigDecimal.TEN)
+
+        listener.clear()
+
+        when:
+
+        def tx = txDataManager.transactions().create()
+        try {
+            EntityManager em = persistence.entityManager
+
+            em.persist(order)
+
+            em.flush()
+
+            Order reloadedOrder = em.find(Order, order.id)
+            reloadedOrder.setNumber('222')
+            reloadedOrder.setDate(new Date())
+
+            tx.commit()
+        } finally {
+            tx.end()
+        }
+
+        then:
+
+        listener.entityChangedEvents.size() == 2
+
+        beforeCommit().event.getEntityId().value == order.id
+        beforeCommit().event.type == EntityChangedEvent.Type.CREATED
+        beforeCommit().event.changes.isChanged('number')
+        beforeCommit().event.changes.isChanged('amount')
+        beforeCommit().event.changes.isChanged('date')
+
+        cleanup:
+
+        listener.clear()
+        cont.deleteRecord(order)
+    }
+
+    def "flush between update and remove"() {
+        Order order = metadata.create(Order)
+        order.setNumber('235')
+        order.setAmount(BigDecimal.TEN)
+
+        dataManager.commit(order)
+
+        listener.clear()
+
+        when:
+
+        def tx = txDataManager.transactions().create()
+        try {
+            EntityManager em = persistence.entityManager
+
+            Order reloadedOrder = em.find(Order, order.id)
+            reloadedOrder.setNumber('222')
+            reloadedOrder.setDate(new Date())
+
+            em.flush()
+
+            Order reloadedOrder2 = em.find(Order, order.id)
+            em.remove(reloadedOrder2)
+
+            tx.commit()
+        } finally {
+            tx.end()
+        }
+
+        then:
+
+        listener.entityChangedEvents.size() == 2
+
+        beforeCommit().event.getEntityId().value == order.id
+        beforeCommit().event.type == EntityChangedEvent.Type.DELETED
+        beforeCommit().event.changes.isChanged('number')
+        beforeCommit().event.changes.isChanged('date')
+
+        cleanup:
+
+        listener.clear()
+        cont.deleteRecord(order)
+    }
+
+    def "implicit flush between updates"() {
+        Order order = metadata.create(Order)
+        order.setNumber('235')
+
+        dataManager.commit(order)
+
+        listener.clear()
+
+        when:
+
+        def tx = txDataManager.transactions().create()
+        try {
+            def em = persistence.entityManager
+
+            Order reloadedOrder = em.find(Order, order.id)
+            reloadedOrder.setNumber('222')
+
+            // trigger flush
+            reloadedOrder = em.find(Order, order.id, View.MINIMAL)
+
+            reloadedOrder.setDate(new Date())
+            tx.commit()
+        } finally {
+            tx.end()
+        }
+
+        then:
+
+        listener.entityChangedEvents.size() == 2
+
+        beforeCommit().event.getEntityId().value == order.id
+        beforeCommit().event.changes.isChanged('number')
+        beforeCommit().event.changes.isChanged('date')
+
+        cleanup:
+
+        listener.clear()
+        cont.deleteRecord(order)
+    }
+
+    def "flush right before commit"() {
+        Order order = metadata.create(Order)
+        order.setNumber('235')
+
+        dataManager.commit(order)
+
+        listener.clear()
+
+        when:
+
+        def tx = txDataManager.transactions().create()
+        try {
+            def em = persistence.entityManager
+
+            Order reloadedOrder = em.find(Order, order.id)
+            reloadedOrder.setNumber('222')
+
+            em.flush()
+
+            tx.commit()
+        } finally {
+            tx.end()
+        }
+
+        then:
+
+        listener.entityChangedEvents.size() == 2
+
+        beforeCommit().event.getEntityId().value == order.id
+        beforeCommit().event.changes.isChanged('number')
+
+        listener.clear()
+        cleanup:
+
+        cont.deleteRecord(order)
+    }
+
+    def "implicit flush right before commit"() {
+        Order order = metadata.create(Order)
+        order.setNumber('235')
+
+        dataManager.commit(order)
+
+        listener.clear()
+
+        when:
+
+        def tx = txDataManager.transactions().create()
+        try {
+            def em = persistence.entityManager
+
+            Order reloadedOrder = em.find(Order, order.id)
+            reloadedOrder.setNumber('222')
+
+            // trigger flush
+            reloadedOrder = em.find(Order, order.id, View.MINIMAL)
+
+            tx.commit()
+        } finally {
+            tx.end()
+        }
+
+        then:
+
+        listener.entityChangedEvents.size() == 2
+
+        beforeCommit().event.getEntityId().value == order.id
+        beforeCommit().event.changes.isChanged('number')
+
+        listener.clear()
         cleanup:
 
         cont.deleteRecord(order)

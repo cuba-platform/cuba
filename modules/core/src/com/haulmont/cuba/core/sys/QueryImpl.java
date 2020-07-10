@@ -34,6 +34,7 @@ import com.haulmont.cuba.core.sys.entitycache.QueryCacheManager;
 import com.haulmont.cuba.core.sys.entitycache.QueryKey;
 import com.haulmont.cuba.core.sys.persistence.DbmsFeatures;
 import com.haulmont.cuba.core.sys.persistence.DbmsSpecificFactory;
+import com.haulmont.cuba.core.sys.persistence.EntityChangedEventManager;
 import com.haulmont.cuba.core.sys.persistence.PersistenceImplSupport;
 import org.eclipse.persistence.config.CascadePolicy;
 import org.eclipse.persistence.config.HintValues;
@@ -72,6 +73,8 @@ public class QueryImpl<T> implements TypedQuery<T> {
     protected Metadata metadata;
     @Inject
     protected PersistenceImplSupport support;
+    @Inject
+    protected EntityChangedEventManager entityChangedEventManager;
     @Inject
     protected FetchGroupManager fetchGroupMgr;
     @Inject
@@ -725,6 +728,7 @@ public class QueryImpl<T> implements TypedQuery<T> {
         if (jpaQuery.getFlushMode() == FlushModeType.AUTO
                 && (!isObjectLevelReadQuery || !((ObjectLevelReadQuery) elDbQuery).isReadOnly())) {
             // flush is expected
+            entityChangedEventManager.beforeFlush(support.getInstances(entityManager));
             support.processFlush(entityManager, true);
         }
     }

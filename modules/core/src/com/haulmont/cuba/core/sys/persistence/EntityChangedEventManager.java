@@ -34,6 +34,9 @@ import org.eclipse.persistence.sessions.changesets.ObjectChangeSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.support.ResourceHolderSupport;
+import org.springframework.transaction.support.ResourceHolderSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -47,11 +50,15 @@ public class EntityChangedEventManager {
 
     private static final Logger log = LoggerFactory.getLogger(EntityChangedEventManager.class);
 
+    private static final String RESOURCE_KEY = AccumulatedInfoHolder.class.getName();
+
     @Inject
     private Metadata metadata;
 
     @Inject
     private Events eventPublisher;
+
+    private Map<Class, PublishingInfo> infoCache = new ConcurrentHashMap<>();
 
     private static class PublishingInfo {
         final boolean publish;
@@ -74,9 +81,61 @@ public class EntityChangedEventManager {
         }
     }
 
-    private Map<Class, PublishingInfo> infoCache = new ConcurrentHashMap<>();
+    private static class AccumulatedInfoHolder extends ResourceHolderSupport {
+
+        List<EntityChangedEventInfo> accumulatedList;
+    }
+
+    private static class AccumulatedInfoSynchronization extends ResourceHolderSynchronization<AccumulatedInfoHolder, String> {
+
+        AccumulatedInfoSynchronization(AccumulatedInfoHolder resourceHolder) {
+            super(resourceHolder, RESOURCE_KEY);
+        }
+    }
+
+    private AccumulatedInfoHolder getAccumulatedInfoHolder() {
+        AccumulatedInfoHolder holder = (AccumulatedInfoHolder) TransactionSynchronizationManager.getResource(RESOURCE_KEY);
+        if (holder == null) {
+            holder = new AccumulatedInfoHolder();
+            TransactionSynchronizationManager.bindResource(RESOURCE_KEY, holder);
+        }
+        if (TransactionSynchronizationManager.isSynchronizationActive() && !holder.isSynchronizedWithTransaction()) {
+            holder.setSynchronizedWithTransaction(true);
+            TransactionSynchronizationManager.registerSynchronization(new AccumulatedInfoSynchronization(holder));
+        }
+        return holder;
+    }
+
+    public void beforeFlush(Collection<Entity> instances) {
+        List<EntityChangedEventInfo> infoList = internalCollect(instances);
+        AccumulatedInfoHolder holder = getAccumulatedInfoHolder();
+        holder.accumulatedList = merge(holder.accumulatedList, infoList);
+    }
+
+    private List<EntityChangedEventInfo> merge(Collection<EntityChangedEventInfo> collection1, Collection<EntityChangedEventInfo> collection2) {
+        List<EntityChangedEventInfo> list1 = collection1 != null ? new ArrayList<>(collection1) : new ArrayList<>();
+        Collection<EntityChangedEventInfo> list2 = collection2 != null ? collection2 : Collections.emptyList();
+
+        for (EntityChangedEventInfo info2 : list2) {
+            Optional<EntityChangedEventInfo> opt = list1.stream()
+                    .filter(info1 -> info1.getEntity() == info2.getEntity())
+                    .findAny();
+            if (opt.isPresent()) {
+                opt.get().mergeWith(info2);
+            } else {
+                list1.add(info2);
+            }
+        }
+        return list1;
+    }
 
     public List<EntityChangedEventInfo> collect(Collection<Entity> entities) {
+        AccumulatedInfoHolder holder = getAccumulatedInfoHolder();
+        List<EntityChangedEventInfo> infoList = internalCollect(entities);
+        return merge(holder.accumulatedList, infoList);
+    }
+
+    public List<EntityChangedEventInfo> internalCollect(Collection<Entity> entities) {
         List<EntityChangedEventInfo> list = new ArrayList<>();
         for (Entity entity : entities) {
 
