@@ -28,6 +28,7 @@ import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.listener.EntityListenerManager;
 import com.haulmont.cuba.core.sys.listener.EntityListenerType;
 import com.haulmont.cuba.core.sys.persistence.AdditionalCriteriaProvider;
+import com.haulmont.cuba.core.sys.persistence.EntityChangedEventManager;
 import com.haulmont.cuba.core.sys.persistence.EntityPersistingEventManager;
 import com.haulmont.cuba.core.sys.persistence.PersistenceImplSupport;
 import org.apache.commons.collections4.CollectionUtils;
@@ -74,6 +75,8 @@ public class EntityManagerImpl implements EntityManager {
     protected boolean softDeletion = true;
 
     private static final Logger log = LoggerFactory.getLogger(EntityManagerImpl.class);
+    @Inject
+    private EntityChangedEventManager entityChangedEventManager;
 
     protected EntityManagerImpl(javax.persistence.EntityManager jpaEntityManager) {
         this.delegate = jpaEntityManager;
@@ -331,6 +334,7 @@ public class EntityManagerImpl implements EntityManager {
     @Override
     public void flush() {
         log.debug("flush");
+        entityChangedEventManager.beforeFlush(support.getInstances(this));
         support.processFlush(this, false);
         delegate.flush();
     }

@@ -20,10 +20,12 @@ import com.haulmont.cuba.core.app.events.AttributeChanges;
 import com.haulmont.cuba.core.app.events.EntityChangedEvent;
 import com.haulmont.cuba.core.entity.Entity;
 
+import static com.haulmont.cuba.core.app.events.EntityChangedEvent.Type.*;
+
 public class EntityChangedEventInfo {
     private final Object source;
     private final Entity entity;
-    private final EntityChangedEvent.Type type;
+    private EntityChangedEvent.Type type;
     private final AttributeChanges changes;
 
     public EntityChangedEventInfo(Object source,
@@ -50,5 +52,14 @@ public class EntityChangedEventInfo {
 
     public AttributeChanges getChanges() {
         return changes;
+    }
+
+    public void mergeWith(EntityChangedEventInfo otherInfo) {
+        if (otherInfo.type == DELETED)
+            type = DELETED;
+        else if (otherInfo.type == CREATED)
+            type = CREATED;
+
+        changes.mergeWith(otherInfo.getChanges());
     }
 }

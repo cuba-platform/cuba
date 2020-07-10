@@ -144,6 +144,11 @@ public class AttributeChanges {
         return getOldValue(attributeName);
     }
 
+    public void mergeWith(AttributeChanges other) {
+        changes.addAll(other.changes);
+        embeddedChanges.putAll(other.embeddedChanges);
+    }
+
     @Override
     public String toString() {
         return "AttributeChanges{"

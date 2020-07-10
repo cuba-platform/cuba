@@ -34,6 +34,7 @@ import com.haulmont.cuba.core.sys.EntityReferencesNormalizer;
 import com.haulmont.cuba.core.sys.persistence.DbmsSpecificFactory;
 import com.haulmont.cuba.core.sys.persistence.EntityChangedEventInfo;
 import com.haulmont.cuba.core.sys.persistence.EntityChangedEventManager;
+import com.haulmont.cuba.core.sys.persistence.PersistenceImplSupport;
 import com.haulmont.cuba.security.entity.ConstraintOperationType;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
 import com.haulmont.cuba.security.entity.EntityOp;
@@ -84,6 +85,9 @@ public class RdbmsStore implements DataStore {
 
     @Inject
     protected Persistence persistence;
+
+    @Inject
+    protected PersistenceImplSupport persistenceSupport;
 
     @Inject
     protected UserSessionSource userSessionSource;
@@ -534,7 +538,9 @@ public class RdbmsStore implements DataStore {
 
             if (context.isJoinTransaction()) {
                 List<EntityChangedEventInfo> eventsInfo = entityChangedEventManager.collect(saved);
-                em.flush();
+
+                persistenceSupport.processFlush(em, false);
+                em.getDelegate().flush();
 
                 List<EntityChangedEvent> events = new ArrayList<>(eventsInfo.size());
                 for (EntityChangedEventInfo info : eventsInfo) {
