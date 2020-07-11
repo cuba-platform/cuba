@@ -223,7 +223,10 @@ public class TablePresentations extends VerticalLayout {
         addComponent(multiLineCellsCheckBox);
 
         multiLineCellsCheckBox.setValue(tableImpl.isMultiLineCells());
-        multiLineCellsCheckBox.addValueChangeListener(e -> tableImpl.setMultiLineCells(e.getValue()));
+        multiLineCellsCheckBox.addValueChangeListener(e -> {
+            tableImpl.setMultiLineCells(e.getValue());
+            tableImpl.refreshCellStyles();
+        });
     }
 
     public void build() {
