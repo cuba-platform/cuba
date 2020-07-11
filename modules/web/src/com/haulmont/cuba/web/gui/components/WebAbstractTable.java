@@ -2050,6 +2050,15 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
             }
         }
 
+        String multiLineCells = element.attributeValue("multiLineCells");
+        if (StringUtils.isNotEmpty(multiLineCells)) {
+            component.setMultiLineCells(Boolean.parseBoolean(multiLineCells));
+
+            if (component.getPresentations() != null) {
+                ((TablePresentations) component.getPresentations()).updateMultiLineCells();
+            }
+        }
+
         Element columnsElem = element.element("columns");
         if (columnsElem != null) {
             boolean refreshWasEnabled = component.disableContentBufferRefreshing();
@@ -2195,6 +2204,13 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
             boolean textSelection = component.isTextSelectionEnabled();
             if (textSelection != Boolean.valueOf(element.attributeValue("textSelection"))) {
                 element.addAttribute("textSelection", String.valueOf(textSelection));
+
+                settingsChanged = true;
+            }
+
+            boolean multiLineCells = component.isMultiLineCells();
+            if (multiLineCells != Boolean.valueOf(element.attributeValue("multiLineCells"))) {
+                element.addAttribute("multiLineCells", String.valueOf(multiLineCells));
 
                 settingsChanged = true;
             }

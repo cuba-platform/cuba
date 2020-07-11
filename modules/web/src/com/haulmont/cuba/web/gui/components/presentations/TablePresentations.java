@@ -56,6 +56,7 @@ public class TablePresentations extends VerticalLayout {
     protected CubaMenuBar menuBar;
     protected CubaPopupButton button;
     protected CheckBox textSelectionCheckBox;
+    protected CheckBox multiLineCellsCheckBox;
 
     protected Table table;
     protected CubaEnhancedTable tableImpl;
@@ -216,6 +217,13 @@ public class TablePresentations extends VerticalLayout {
 
         textSelectionCheckBox.setValue(tableImpl.isTextSelectionEnabled());
         textSelectionCheckBox.addValueChangeListener(e -> tableImpl.setTextSelectionEnabled(e.getValue()));
+
+        multiLineCellsCheckBox = new CheckBox();
+        multiLineCellsCheckBox.setCaption(messages.getMainMessage("PresentationsPopup.multiLineCells"));
+        addComponent(multiLineCellsCheckBox);
+
+        multiLineCellsCheckBox.setValue(tableImpl.isMultiLineCells());
+        multiLineCellsCheckBox.addValueChangeListener(e -> tableImpl.setMultiLineCells(e.getValue()));
     }
 
     public void build() {
@@ -226,6 +234,10 @@ public class TablePresentations extends VerticalLayout {
 
     public void updateTextSelection() {
         textSelectionCheckBox.setValue(tableImpl.isTextSelectionEnabled());
+    }
+
+    public void updateMultiLineCells() {
+        multiLineCellsCheckBox.setValue(tableImpl.isMultiLineCells());
     }
 
     protected void buildPresentationsList() {
