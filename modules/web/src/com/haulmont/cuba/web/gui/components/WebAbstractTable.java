@@ -2201,16 +2201,16 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
         boolean settingsChanged = false;
 
         if (isUsePresentations()) {
-            boolean textSelection = component.isTextSelectionEnabled();
-            if (textSelection != Boolean.valueOf(element.attributeValue("textSelection"))) {
-                element.addAttribute("textSelection", String.valueOf(textSelection));
+            String textSelection = String.valueOf(component.isTextSelectionEnabled());
+            if (!textSelection.equalsIgnoreCase(element.attributeValue("textSelection"))) {
+                element.addAttribute("textSelection", textSelection);
 
                 settingsChanged = true;
             }
 
-            boolean multiLineCells = component.isMultiLineCells();
-            if (multiLineCells != Boolean.valueOf(element.attributeValue("multiLineCells"))) {
-                element.addAttribute("multiLineCells", String.valueOf(multiLineCells));
+            String multiLineCells = String.valueOf(component.isMultiLineCells());
+            if (!multiLineCells.equalsIgnoreCase(element.attributeValue("multiLineCells"))) {
+                element.addAttribute("multiLineCells", multiLineCells);
 
                 settingsChanged = true;
             }
