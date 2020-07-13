@@ -168,6 +168,29 @@ public class CubaMainTabSheetWidget extends VDDTabSheet {
             }
             return navigateTab;
         }
+
+        // CAUTION copied from VTabsheet.TabBar to override getPreviousVisibleTab() method
+        @Override
+        public int scrollLeft(int currentFirstVisible) {
+            int prevVisible = getPreviousVisibleTab(currentFirstVisible);
+            if (prevVisible == -1) {
+                return -1;
+            }
+
+            Tab newFirst = getTab(prevVisible);
+            newFirst.setVisible(true);
+            newFirst.recalculateCaptionWidth();
+
+            return prevVisible;
+        }
+
+        protected int getPreviousVisibleTab(int i) {
+            do {
+                i--;
+            } while (i >= 0 && (getTab(i) == null || getTab(i).isHiddenOnServer()));
+
+            return i;
+        }
     }
 
     @Override
