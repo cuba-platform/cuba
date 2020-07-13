@@ -79,7 +79,7 @@ public class BeanLocatorImpl implements BeanLocator, ApplicationContextAware {
         String name = findName(beanType);
         // If the name is found, look up the bean by name
         if (name == null)
-            return applicationContext.getBean(beanType);
+            return applicationContext.getBean(beanType, args);
         else
             return (T) applicationContext.getBean(name, args);
     }
