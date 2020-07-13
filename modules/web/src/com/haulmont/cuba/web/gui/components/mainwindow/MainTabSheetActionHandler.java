@@ -28,11 +28,13 @@ import com.haulmont.cuba.gui.Notifications.NotificationType;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.app.core.dev.LayoutAnalyzer;
 import com.haulmont.cuba.gui.app.core.dev.LayoutTip;
-import com.haulmont.cuba.gui.components.AbstractEditor;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.sys.ShowInfoAction;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
+import com.haulmont.cuba.gui.screen.EditorScreen;
+import com.haulmont.cuba.gui.screen.Screen;
+import com.haulmont.cuba.gui.screen.compatibility.ScreenEditorWrapper;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.sys.WindowBreadCrumbs;
 import com.haulmont.cuba.web.widgets.HasTabSheetBehaviour;
@@ -131,7 +133,7 @@ public class MainTabSheetActionHandler implements Action.Handler {
     }
 
     protected void showInfo(Object target) {
-        AbstractEditor editor = (AbstractEditor) findEditor((Layout) target);
+        Window.Editor editor = findEditor((Layout) target);
         Entity entity = editor.getItem();
 
         Metadata metadata = AppBeans.get(Metadata.NAME);
@@ -194,8 +196,16 @@ public class MainTabSheetActionHandler implements Action.Handler {
         for (Object component : layout) {
             if (component instanceof WindowBreadCrumbs) {
                 WindowBreadCrumbs breadCrumbs = (WindowBreadCrumbs) component;
-                if (breadCrumbs.getCurrentWindow() instanceof Window.Editor)
-                    return (Window.Editor) breadCrumbs.getCurrentWindow();
+                if (breadCrumbs.getCurrentWindow() != null) {
+                    Screen frameOwner = breadCrumbs.getCurrentWindow().getFrameOwner();
+                    if (frameOwner instanceof Window.Editor) {
+                        return (Window.Editor) frameOwner;
+                    }
+
+                    if (frameOwner instanceof EditorScreen) {
+                        return new ScreenEditorWrapper(frameOwner);
+                    }
+                }
             }
         }
         return null;
