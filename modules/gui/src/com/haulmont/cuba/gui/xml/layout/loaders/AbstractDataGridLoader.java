@@ -889,14 +889,14 @@ public abstract class AbstractDataGridLoader<T extends DataGrid> extends Actions
     protected void loadEmptyStateMessage(DataGrid dataGrid, Element element) {
         String emptyStateMessage = element.attributeValue("emptyStateMessage");
         if (StringUtils.isNotBlank(emptyStateMessage)) {
-            dataGrid.setEmptyStateMessage(emptyStateMessage);
+            dataGrid.setEmptyStateMessage(loadResourceString(emptyStateMessage));
         }
     }
 
     protected void loadEmptyStateLinkMessage(DataGrid dataGrid, Element element) {
         String emptyStateLinkMessage = element.attributeValue("emptyStateLinkMessage");
         if (StringUtils.isNotBlank(emptyStateLinkMessage)) {
-            dataGrid.setEmptyStateLinkMessage(emptyStateLinkMessage);
+            dataGrid.setEmptyStateLinkMessage(loadResourceString(emptyStateLinkMessage));
         }
     }
 
