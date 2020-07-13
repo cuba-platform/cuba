@@ -374,6 +374,11 @@ public class FormLoader extends AbstractComponentLoader<Form> {
             if (childCaptionWidth.startsWith(MessageTools.MARK)) {
                 childCaptionWidth = loadResourceString(childCaptionWidth);
             }
+
+            if ("auto".equalsIgnoreCase(childCaptionWidth)) {
+                childCaptionWidth = Component.AUTO_SIZE;
+            }
+
             if (childCaptionWidth.endsWith("px")) {
                 childCaptionWidth = childCaptionWidth.substring(0, childCaptionWidth.indexOf("px"));
             }
