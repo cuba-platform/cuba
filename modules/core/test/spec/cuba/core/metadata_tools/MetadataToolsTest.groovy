@@ -27,6 +27,7 @@ import com.haulmont.cuba.testmodel.petclinic.Owner
 import com.haulmont.cuba.testmodel.petclinic.Pet
 import com.haulmont.cuba.testmodel.primary_keys.EntityKey
 import com.haulmont.cuba.testmodel.primary_keys.StringKeyEntity
+import com.haulmont.cuba.testmodel.related_properties.EntityWithRelatedProperties
 import com.haulmont.cuba.testsupport.TestContainer
 import org.junit.ClassRule
 import spock.lang.Shared
@@ -121,5 +122,23 @@ class MetadataToolsTest extends Specification {
         then:
         petCopy.owner == owner
         !petCopy.owner.is(owner)
+    }
+
+    def "related properties"() {
+        List<String> properties
+
+        when:
+        properties = metadataTools.getRelatedProperties(EntityWithRelatedProperties, 'someAttr')
+
+        then:
+        properties[0] == 'name'
+        properties[1] == 'surname'
+
+        when:
+        properties = metadataTools.getRelatedProperties(EntityWithRelatedProperties, 'nickName')
+
+        then:
+        properties[0] == 'name'
+        properties[1] == 'surname'
     }
 }
