@@ -25,6 +25,7 @@ import com.haulmont.cuba.gui.model.Nested;
 import com.haulmont.cuba.gui.screen.*;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -115,7 +116,7 @@ public class LookupBuilder<E extends Entity> {
     /**
      * Sets selection handler for the lookup screen and returns the builder for chaining.
      */
-    public LookupBuilder<E> withSelectHandler(Consumer<Collection<E>> selectHandler) {
+    public LookupBuilder<E> withSelectHandler(@Nullable Consumer<Collection<E>> selectHandler) {
         this.selectHandler = selectHandler;
         return this;
     }
@@ -225,6 +226,7 @@ public class LookupBuilder<E extends Entity> {
     /**
      * Returns selection handler set by {@link #withSelectHandler(Consumer)}.
      */
+    @Nullable
     public Consumer<Collection<E>> getSelectHandler() {
         return selectHandler;
     }

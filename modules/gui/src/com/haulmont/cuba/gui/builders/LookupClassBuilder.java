@@ -26,6 +26,7 @@ import com.haulmont.cuba.gui.screen.OpenMode;
 import com.haulmont.cuba.gui.screen.Screen;
 import com.haulmont.cuba.gui.screen.ScreenOptions;
 
+import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -70,7 +71,7 @@ public class LookupClassBuilder<E extends Entity, S extends Screen & LookupScree
     }
 
     @Override
-    public LookupClassBuilder<E, S> withSelectHandler(Consumer<Collection<E>> selectHandler) {
+    public LookupClassBuilder<E, S> withSelectHandler(@Nullable Consumer<Collection<E>> selectHandler) {
         super.withSelectHandler(selectHandler);
         return this;
     }

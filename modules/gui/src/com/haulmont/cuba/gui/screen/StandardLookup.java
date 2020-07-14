@@ -95,13 +95,14 @@ public class StandardLookup<T extends Entity> extends Screen implements LookupSc
         }
     }
 
+    @Nullable
     @Override
     public Consumer<Collection<T>> getSelectHandler() {
         return selectHandler;
     }
 
     @Override
-    public void setSelectHandler(Consumer<Collection<T>> selectHandler) {
+    public void setSelectHandler(@Nullable Consumer<Collection<T>> selectHandler) {
         this.selectHandler = selectHandler;
 
         Component lookupActionsLayout = getLookupActionsLayout();
