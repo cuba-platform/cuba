@@ -341,6 +341,8 @@ public class AppPropertiesLocator {
                 entity.setDataTypeName(datatypes.getIdByJavaClass(Long.class));
             if (returnType == double.class || returnType == float.class)
                 entity.setDataTypeName(datatypes.getIdByJavaClass(Double.class));
+            if (returnType == char.class)
+                entity.setDataTypeName(datatypes.getIdByJavaClass(Character.class));
         } else if (returnType.isEnum()) {
             entity.setDataTypeName("enum");
             EnumStore enumStoreAnn = method.getAnnotation(EnumStore.class);
