@@ -78,6 +78,8 @@
 
         <datatype id="byteArray" class="com.haulmont.chile.core.datatypes.impl.ByteArrayDatatype"
                   default="true"/>
+        <datatype id="char" class="com.haulmont.chile.core.datatypes.impl.CharacterDatatype"
+                  default="true"/>
     </datatypes>
 
     <metadata-model root-package="com.haulmont.cuba">
