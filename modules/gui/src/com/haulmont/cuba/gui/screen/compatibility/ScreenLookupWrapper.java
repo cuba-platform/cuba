@@ -61,7 +61,7 @@ public class ScreenLookupWrapper extends AbstractLookup {
     }
 
     @Override
-    public void setSelectHandler(Consumer lookupHandler) {
+    public void setSelectHandler(@Nullable Consumer lookupHandler) {
         ((LookupScreen) screen).setSelectHandler(lookupHandler);
     }
 

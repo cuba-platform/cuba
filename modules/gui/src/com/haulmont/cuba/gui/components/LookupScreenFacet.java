@@ -24,6 +24,7 @@ import com.haulmont.cuba.gui.meta.StudioProperty;
 import com.haulmont.cuba.gui.screen.LookupScreen;
 import com.haulmont.cuba.gui.screen.Screen;
 
+import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -51,11 +52,12 @@ public interface LookupScreenFacet<E extends Entity, S extends Screen>
     /**
      * Sets select handler for the lookup screen.
      */
-    void setSelectHandler(Consumer<Collection<E>> selectHandler);
+    void setSelectHandler(@Nullable Consumer<Collection<E>> selectHandler);
 
     /**
      * @return lookup screen select handler
      */
+    @Nullable
     Consumer<Collection<E>> getSelectHandler();
 
     /**
