@@ -237,7 +237,9 @@ class EntityLogTest extends AbstractEntityLogTest {
         then: 'those attribute changes result in Entity log items'
 
         getEntityLogItems('test_EntityLogA', aId).size() == 1
-        //getLatestEntityLogItem('test_EntityLogA', aId).entityInstanceName == 'edited_nameA nameB'
+        def item = getLatestEntityLogItem('test_EntityLogA', aId)
+
+        loggedValueMatches(item, 'entityLogB', "")
     }
 
     protected def createAndSaveUser(EntityManager em, Map params) {
