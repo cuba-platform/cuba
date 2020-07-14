@@ -103,6 +103,29 @@ public class AccessConstraintsBuilder {
     }
 
     /**
+     * Adds JPQL custom constraint to the constraints set
+     *
+     * @param target         entity class
+     * @param constraintCode custom constraint code
+     * @param where          JPQL where clause
+     * @param join           JPQL join clause
+     * @return current instance of the builder
+     */
+    public AccessConstraintsBuilder withCustomJpql(Class<? extends Entity> target, String constraintCode, String where, @Nullable String join) {
+        MetaClass metaClass = extendedEntities.getOriginalOrThisMetaClass(metadata.getClassNN(target));
+
+        BasicJpqlAccessConstraint constraint = new BasicJpqlAccessConstraint();
+        constraint.setCode(constraintCode);
+        constraint.setEntityType(metaClass.getName());
+        constraint.setWhere(where);
+        constraint.setJoin(join);
+
+        addConstraint(metaClass, constraint);
+
+        return this;
+    }
+
+    /**
      * Adds in-memory constraint to the constraints set
      *
      * @param target    entity class
