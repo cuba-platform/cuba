@@ -36,9 +36,7 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class DataSourceProvider {
@@ -67,6 +65,8 @@ public class DataSourceProvider {
     protected static final String DRIVER_CLASS_NAME = "driverClassName";
 
     protected static final ImmutableList<String> DS_CONNECTION_PARAMS = ImmutableList.of(HOST, PORT, DB_NAME, CONNECTION_PARAMS);
+    protected static final ImmutableList<String> PREDEFINED_PARAMS = ImmutableList.of(JDBC_URL, HOST, PORT, DB_NAME, CONNECTION_PARAMS,
+            USER_NAME, PASSWORD, DRIVER_CLASS_NAME);
 
     private static Logger log = LoggerFactory.getLogger(DataSourceProvider.class);
 
@@ -151,11 +151,28 @@ public class DataSourceProvider {
 
     protected Map<String, String> getDataSourceParameters(String storeName) {
         String parameterPrefix = getParameterPrefix(storeName);
-        //noinspection ConstantConditions
-        Map<String, String> parameters = Arrays.stream(AppContext.getPropertyNames())
+        String envParamPrefix = parameterPrefix.replace('.', '_').toLowerCase(Locale.ROOT);
+
+        List<String> parameterNames = System.getProperties().stringPropertyNames().stream()
                 .filter(p -> p.startsWith(parameterPrefix))
-                .filter(p -> Objects.nonNull(AppContext.getProperty(p)))
-                .collect(Collectors.toMap(p -> p.substring(parameterPrefix.length()), AppContext::getProperty));
+                .collect(Collectors.toList());
+
+        parameterNames.addAll(Arrays.stream(AppContext.getPropertyNames())
+                .filter(p -> p.startsWith(parameterPrefix))
+                .collect(Collectors.toList()));
+
+        parameterNames.addAll(System.getenv().keySet().stream()
+                .filter(p -> p.toLowerCase(Locale.ROOT).startsWith(envParamPrefix))
+                .map(p -> extractParamNameFromEnv(parameterPrefix, p))
+                .collect(Collectors.toList()));
+
+        Map<String, String> parameters = new HashMap<>();
+        for (String parameterName : parameterNames) {
+            String value = AppContext.getProperty(parameterName);
+            if (value != null) {
+                parameters.put(parameterName.substring(parameterPrefix.length()), value);
+            }
+        }
 
         if (parameters.get(JDBC_URL) == null) {
             parameters.put(JDBC_URL, constructJdbcUrl(storeName, parameters));
@@ -166,6 +183,32 @@ public class DataSourceProvider {
         }
 
         return parameters;
+    }
+
+    protected String extractParamNameFromEnv(String paramPrefix, String envVariable) {
+        String filteredName = envVariable.substring(paramPrefix.length());
+
+        String result = PREDEFINED_PARAMS.stream()
+                .filter(predefinedParam -> predefinedParam.equalsIgnoreCase(filteredName))
+                .findFirst()
+                .orElse(null);
+
+        if (result != null) {
+            return paramPrefix + result;
+        }
+
+        result = Arrays.stream(HikariConfig.class.getMethods())
+                .filter(method -> method.getName().startsWith("set") && method.getParameterCount() == 1)
+                .map(method -> method.getName().substring(3))
+                .filter(methodName -> methodName.equalsIgnoreCase(filteredName))
+                .findFirst()
+                .orElse(null);
+
+        if (result != null) {
+            return paramPrefix + result;
+        }
+
+        return paramPrefix + filteredName.toLowerCase(Locale.ROOT).replace('_', '.');
     }
 
     protected String constructJdbcUrl(String storeName, Map<String, String> parameters) {
