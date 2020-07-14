@@ -88,6 +88,19 @@ public class AccessGroupDefinitionBuilder {
     }
 
     /**
+     * Adds JPQL custom constraint to the group definition
+     *
+     * @param target         entity class
+     * @param constraintCode custom constraint code
+     * @param where          JPQL where clause
+     * @param join           JPQL join clause
+     * @return current instance of the builder
+     */
+    public AccessGroupDefinitionBuilder withCustomJpqlConstraint(Class<? extends Entity> target, String constraintCode, String where, String join) {
+        return withConstraints(builder -> builder.withCustomJpql(target, constraintCode, where, join));
+    }
+
+    /**
      * Adds in-memory constraint to the group definition
      *
      * @param target    entity class
