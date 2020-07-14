@@ -680,6 +680,7 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
 
         if (shouldTrackSelection) {
             targetAction = new ItemTrackingAction(id);
+            loadActionConstraint(targetAction, element);
         } else {
             targetAction = new BaseAction(id);
         }
