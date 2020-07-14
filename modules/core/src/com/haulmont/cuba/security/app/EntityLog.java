@@ -16,6 +16,7 @@
  */
 package com.haulmont.cuba.security.app;
 
+import com.google.common.base.Strings;
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
@@ -168,7 +169,7 @@ public class EntityLog implements EntityLogAPI {
         Properties properties = new Properties();
 
         for (EntityLogAttr attr : itemToSave.getAttributes()) {
-            properties.setProperty(attr.getName(), attr.getValue());
+            properties.setProperty(attr.getName(), Strings.nullToEmpty(attr.getValue()));
             if (attr.getValueId() != null) {
                 properties.setProperty(attr.getName() + EntityLogAttr.VALUE_ID_SUFFIX, attr.getValueId());
             }
