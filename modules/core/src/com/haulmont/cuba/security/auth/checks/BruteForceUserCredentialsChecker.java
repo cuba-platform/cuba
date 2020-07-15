@@ -24,6 +24,7 @@ import com.haulmont.cuba.security.auth.Credentials;
 import com.haulmont.cuba.security.auth.UserCredentialsChecker;
 import com.haulmont.cuba.security.auth.events.AuthenticationFailureEvent;
 import com.haulmont.cuba.security.global.AccountLockedException;
+import com.haulmont.cuba.security.global.BadCredentialsException;
 import com.haulmont.cuba.security.global.LoginException;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.Ordered;
@@ -68,21 +69,15 @@ public class BruteForceUserCredentialsChecker implements UserCredentialsChecker,
     @Order(Events.HIGHEST_PLATFORM_PRECEDENCE + 10)
     @EventListener
     protected void onAuthenticationFailure(AuthenticationFailureEvent event) throws LoginException {
-        if (bruteForceProtectionAPI.isBruteForceProtectionEnabled()) {
+        if (bruteForceProtectionAPI.isBruteForceProtectionEnabled() &&
+                event.getException() instanceof BadCredentialsException) {
             Credentials credentials = event.getCredentials();
             if (credentials instanceof AbstractClientCredentials) {
                 AbstractClientCredentials clientCredentials = (AbstractClientCredentials) credentials;
 
                 if (clientCredentials.isCheckClientPermissions()) {
-                    int loginAttemptsLeft = bruteForceProtectionAPI.registerUnsuccessfulLogin(
+                    bruteForceProtectionAPI.registerUnsuccessfulLogin(
                             clientCredentials.getUserIdentifier(), clientCredentials.getIpAddress());
-                    String message;
-                    if (loginAttemptsLeft <= 0) {
-                        message = messages.formatMessage(MSG_PACK,
-                                "LoginException.loginAttemptsNumberExceeded",
-                                bruteForceProtectionAPI.getBruteForceBlockIntervalSec());
-                        throw new LoginException(message);
-                    }
                 }
             }
         }
