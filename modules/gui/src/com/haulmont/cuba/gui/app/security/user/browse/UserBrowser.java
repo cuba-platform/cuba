@@ -179,19 +179,31 @@ public class UserBrowser extends AbstractLookup {
             User newUser = metadata.create(User.class);
             if (selectedUser.getUserRoles() != null) {
                 List<UserRole> userRoles = new ArrayList<>();
+                Role role = null;
+                String roleName = null;
                 for (UserRole oldUserRole : selectedUser.getUserRoles()) {
-                    Role oldRole = dataSupplier.reload(oldUserRole.getRole(), "_local");
-                    if (BooleanUtils.isTrue(oldRole.getDefaultRole())) {
-                        continue;
+                    if (oldUserRole.getRole() != null) {
+                        role = dataSupplier.reload(oldUserRole.getRole(), "_local");
+                        if (BooleanUtils.isTrue(role.getDefaultRole())) {
+                            continue;
+                        }
+                    } else if (oldUserRole.getRoleName() != null) {
+                        RoleDefinition roleDefinition = rolesService.getRoleDefinitionByName(oldUserRole.getRoleName());
+                        if (roleDefinition.isDefault()) {
+                            continue;
+                        }
+                        roleName = oldUserRole.getRoleName();
                     }
-                    UserRole role = metadata.create(UserRole.class);
-                    role.setUser(newUser);
-                    role.setRole(oldRole);
-                    userRoles.add(role);
+                    UserRole newUserRole = metadata.create(UserRole.class);
+                    newUserRole.setUser(newUser);
+                    newUserRole.setRole(role);
+                    newUserRole.setRoleName(roleName);
+                    userRoles.add(newUserRole);
                 }
                 newUser.setUserRoles(userRoles);
             }
             newUser.setGroup(selectedUser.getGroup());
+            newUser.setGroupNames(selectedUser.getGroupNames());
             AbstractEditor editor = openEditor("sec$User.edit", newUser, OpenType.THIS_TAB,
                     ParamsMap.of("initCopy", true));
             editor.addCloseListener(actionId -> {
