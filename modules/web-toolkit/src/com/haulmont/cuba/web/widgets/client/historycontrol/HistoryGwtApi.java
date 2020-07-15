@@ -43,14 +43,14 @@ public abstract class HistoryGwtApi {
 
     protected void initStartState() {
         // we need to add new history tokens BEFORE ValueChangeHandler will added
-        if (urlHasToken(TOP_HISTORY_TOKEN)) {
-            History.newItem(PREVIOUS_HISTORY_TOKEN);
-            // if init url has TOP_HISTORY_TOKEN, we inform what PREVIOUS_HISTORY_TOKEN should be fired,
-            // otherwise not all state variables will have proper values
-            isFireHistoryState = true;
-        } else {
+        if (!urlHasToken(TOP_HISTORY_TOKEN)) {
             History.newItem(TOP_HISTORY_TOKEN);
         }
+
+        History.newItem(PREVIOUS_HISTORY_TOKEN);
+        // if init url has TOP_HISTORY_TOKEN, we inform what PREVIOUS_HISTORY_TOKEN should be fired,
+        // otherwise not all state variables will have proper values
+        isFireHistoryState = true;
     }
 
     protected void initHandler() {
