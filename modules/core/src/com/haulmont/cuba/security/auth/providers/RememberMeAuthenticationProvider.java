@@ -26,6 +26,7 @@ import com.haulmont.cuba.core.global.TimeSource;
 import com.haulmont.cuba.security.auth.*;
 import com.haulmont.cuba.security.entity.RememberMeToken;
 import com.haulmont.cuba.security.entity.User;
+import com.haulmont.cuba.security.global.BadCredentialsException;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.security.sys.UserSessionManager;
@@ -66,19 +67,19 @@ public class RememberMeAuthenticationProvider extends AbstractAuthenticationProv
 
         if (Strings.isNullOrEmpty(login)) {
             // empty login is not valid
-            throw new LoginException(getInvalidCredentialsMessage(login, credentialsLocale));
+            throw new BadCredentialsException(getInvalidCredentialsMessage(login, credentialsLocale));
         }
 
         checkUserCredentials(credentials);
 
         User user = loadUser(login);
         if (user == null) {
-            throw new LoginException(getInvalidCredentialsMessage(login, credentialsLocale));
+            throw new BadCredentialsException(getInvalidCredentialsMessage(login, credentialsLocale));
         }
 
         RememberMeToken loginToken = loadRememberMeToken(user, rememberMe.getRememberMeToken());
         if (loginToken == null) {
-            throw new LoginException(getInvalidCredentialsMessage(login, credentialsLocale));
+            throw new BadCredentialsException(getInvalidCredentialsMessage(login, credentialsLocale));
         }
 
         if (isTokenExpired(loginToken)) {
