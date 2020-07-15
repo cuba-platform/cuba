@@ -16,6 +16,7 @@
  */
 package com.haulmont.cuba.gui.app.security.user.edit;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Iterables;
 import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.chile.core.model.MetaClass;
@@ -559,6 +560,23 @@ public class UserEditor extends AbstractEditor<User> {
             }
         }
         return true;
+    }
+
+    @Override
+    public void commitAndClose() {
+        try {
+            super.commitAndClose();
+        } catch (RuntimeException e) {
+            //rollback user roles
+            Collection<UserRole> userRoles = new ArrayList<>(rolesDs.getItems());
+            for (UserRole userRole : userRoles) {
+                if (userRole.getRole() == null && !Strings.isNullOrEmpty(userRole.getRoleName())) {
+                    userRole.setRole(rolesService.getRoleDefinitionAndTransformToRole(userRole.getRoleName()));
+                    rolesDs.modifyItem(userRole);
+                }
+            }
+            throw e;
+        }
     }
 
     public void initCopy() {
