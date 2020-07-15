@@ -163,6 +163,11 @@ public class UrlChangeHandler implements InitializingBean {
     }
 
     public void restoreState() {
+        if (notSuitableMode()) {
+            log.debug("UrlChangeHandler is disabled for '{}' URL handling mode", webConfig.getUrlHandlingMode());
+            return;
+        }
+
         NavigationState currentState = urlTools.parseState(ui.getPage().getUriFragment());
 
         if (currentState == null
