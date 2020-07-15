@@ -23,7 +23,6 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.QueryUtils;
-import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.Frame;
 import com.haulmont.cuba.gui.components.SearchPickerField;
 import com.haulmont.cuba.gui.components.SecuredActionsHolder;
@@ -45,7 +44,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.util.Collections;
-import java.util.Locale;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -81,19 +79,12 @@ public class WebSearchPickerField<V extends Entity> extends WebPickerField<V>
 
     protected SearchNotifications searchNotifications = createSearchNotifications();
 
-    protected Locale locale;
-
     public WebSearchPickerField() {
     }
 
     @Override
     protected CubaPickerField<V> createComponent() {
         return new CubaSearchSelectPickerField<>();
-    }
-
-    @Inject
-    public void setUserSessionSource(UserSessionSource userSessionSource) {
-        this.locale = userSessionSource.getLocale();
     }
 
     @Inject
@@ -541,14 +532,10 @@ public class WebSearchPickerField<V extends Entity> extends WebPickerField<V>
         }
 
         if (filterMode == FilterMode.STARTS_WITH) {
-            return itemCaption
-                    .toLowerCase(locale)
-                    .startsWith(filterText.toLowerCase(locale));
+            return StringUtils.startsWithIgnoreCase(itemCaption, filterText);
         }
 
-        return itemCaption
-                .toLowerCase(locale)
-                .contains(filterText.toLowerCase(locale));
+        return StringUtils.containsIgnoreCase(itemCaption, filterText);
     }
 
     @Override

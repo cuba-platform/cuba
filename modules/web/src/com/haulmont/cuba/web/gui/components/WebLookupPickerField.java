@@ -21,7 +21,6 @@ import com.haulmont.bali.events.Subscription;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.Configuration;
-import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.LookupPickerField;
 import com.haulmont.cuba.gui.components.SecuredActionsHolder;
 import com.haulmont.cuba.gui.components.data.Options;
@@ -39,7 +38,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
-import java.util.Locale;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -69,8 +67,6 @@ public class WebLookupPickerField<V extends Entity> extends WebPickerField<V>
 
     protected boolean refreshOptionsOnLookupClose = false;
 
-    protected Locale locale;
-
     public WebLookupPickerField() {
     }
 
@@ -82,11 +78,6 @@ public class WebLookupPickerField<V extends Entity> extends WebPickerField<V>
     @Override
     public CubaComboBoxPickerField<V> getComponent() {
         return (CubaComboBoxPickerField<V>) super.getComponent();
-    }
-
-    @Inject
-    public void setUserSessionSource(UserSessionSource userSessionSource) {
-        this.locale = userSessionSource.getLocale();
     }
 
     @Inject
@@ -422,14 +413,10 @@ public class WebLookupPickerField<V extends Entity> extends WebPickerField<V>
         }
 
         if (filterMode == FilterMode.STARTS_WITH) {
-            return itemCaption
-                    .toLowerCase(locale)
-                    .startsWith(filterText.toLowerCase(locale));
+            return StringUtils.startsWithIgnoreCase(itemCaption, filterText);
         }
 
-        return itemCaption
-                .toLowerCase(locale)
-                .contains(filterText.toLowerCase(locale));
+        return StringUtils.containsIgnoreCase(itemCaption, filterText);
     }
 
     @Override
