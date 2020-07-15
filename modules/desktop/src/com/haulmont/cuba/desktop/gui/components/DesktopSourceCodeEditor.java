@@ -40,7 +40,6 @@ public class DesktopSourceCodeEditor extends DesktopAbstractTextField<RSyntaxTex
 
     protected boolean showGutter = true;
     protected boolean showPrintMargin = true;
-    protected boolean highlightActiveLine = true;
     protected boolean handleTabKey = false;
     protected int printMarginColumn = 80;
 
@@ -195,12 +194,12 @@ public class DesktopSourceCodeEditor extends DesktopAbstractTextField<RSyntaxTex
 
     @Override
     public void setHighlightActiveLine(boolean highlightActiveLine) {
-        this.highlightActiveLine = highlightActiveLine;
+        impl.setHighlightCurrentLine(highlightActiveLine);
     }
 
     @Override
     public boolean isHighlightActiveLine() {
-        return highlightActiveLine;
+        return impl.getHighlightCurrentLine();
     }
 
     @Override
