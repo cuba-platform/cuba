@@ -18,6 +18,8 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.core.global.UserSessionSource;
+import com.haulmont.cuba.gui.ComponentsHelper;
+import com.haulmont.cuba.gui.components.ComponentContainer;
 import com.haulmont.cuba.gui.components.SuggestionField;
 import com.haulmont.cuba.gui.components.data.meta.EntityValueSource;
 import com.haulmont.cuba.gui.executors.BackgroundTask;
@@ -308,7 +310,13 @@ public class WebSuggestionField<V> extends WebV8AbstractField<CubaSuggestionFiel
             lastDialog = dialogScreen;
         }
 
-        if (lastDialog == null || Objects.equals(frameOwner, lastDialog)) {
+        boolean frameInsideDialog = false;
+        if(lastDialog instanceof ComponentContainer) {
+            frameInsideDialog = ComponentsHelper.walkComponents((ComponentContainer) lastDialog,
+                    c -> Objects.equals(c, getFrame()));
+        }
+
+        if (lastDialog == null || Objects.equals(frameOwner, lastDialog) || frameInsideDialog) {
             component.showSuggestions(suggestions, userOriginated);
         }
     }

@@ -19,6 +19,8 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.bali.events.Subscription;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.UserSessionSource;
+import com.haulmont.cuba.gui.ComponentsHelper;
+import com.haulmont.cuba.gui.components.ComponentContainer;
 import com.haulmont.cuba.gui.components.SecuredActionsHolder;
 import com.haulmont.cuba.gui.components.SuggestionPickerField;
 import com.haulmont.cuba.gui.executors.BackgroundTask;
@@ -294,7 +296,13 @@ public class WebSuggestionPickerField<V extends Entity> extends WebPickerField<V
             lastDialog = dialogScreen;
         }
 
-        if (lastDialog == null || Objects.equals(frameOwner, lastDialog)) {
+        boolean frameInsideDialog = false;
+        if(lastDialog instanceof ComponentContainer) {
+            frameInsideDialog = ComponentsHelper.walkComponents((ComponentContainer) lastDialog,
+                    c -> Objects.equals(c, getFrame()));
+        }
+
+        if (lastDialog == null || Objects.equals(frameOwner, lastDialog) || frameInsideDialog) {
             getComponent().showSuggestions(suggestions, userOriginated);
         }
     }
