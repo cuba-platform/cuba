@@ -119,7 +119,7 @@ public class MessagesTest {
         try {
             Locale localeRu = Locale.forLanguageTag("ru");
             String msg = messages.getMessage("com.haulmont.cuba.core.mp_test", "includedMsg", localeRu);
-            assertEquals("Included Message", msg);
+            assertEquals("Included Message RU", msg);
 
             messageTools.setDefaultLocale(localeRu);
             messages.clearCache();

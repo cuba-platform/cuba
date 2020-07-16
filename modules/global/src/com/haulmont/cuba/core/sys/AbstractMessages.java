@@ -489,7 +489,7 @@ public abstract class AbstractMessages implements Messages {
     }
 
     @Nullable
-    protected String searchIncludes(Properties properties, String key, Locale locale, Locale truncatedLocale,
+    protected String searchIncludes(Properties properties, String key, Locale locale, @Nullable Locale truncatedLocale,
                                     Set<String> passedPacks) {
         String includesProperty = properties.getProperty("@include");
         if (includesProperty != null) {
@@ -502,7 +502,7 @@ public abstract class AbstractMessages implements Messages {
                     if (includePath != null) {
                         String message;
                         if (truncatedLocale == null) {
-                            message = searchMessage(includePath, key, locale, messageTools.getDefaultLocale(), passedPacks);
+                            message = searchMessage(includePath, key, locale, locale, passedPacks);
                         } else {
                             message = searchMessage(includePath, key, locale, truncatedLocale, passedPacks);
                         }
