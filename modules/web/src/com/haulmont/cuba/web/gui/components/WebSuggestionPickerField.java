@@ -20,7 +20,6 @@ import com.haulmont.bali.events.Subscription;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.ComponentsHelper;
-import com.haulmont.cuba.gui.components.ComponentContainer;
 import com.haulmont.cuba.gui.components.SecuredActionsHolder;
 import com.haulmont.cuba.gui.components.SuggestionPickerField;
 import com.haulmont.cuba.gui.executors.BackgroundTask;
@@ -29,6 +28,7 @@ import com.haulmont.cuba.gui.executors.BackgroundWorker;
 import com.haulmont.cuba.gui.executors.TaskLifeCycle;
 import com.haulmont.cuba.gui.screen.FrameOwner;
 import com.haulmont.cuba.gui.screen.Screen;
+import com.haulmont.cuba.gui.screen.ScreenFragment;
 import com.haulmont.cuba.gui.screen.UiControllerUtils;
 import com.haulmont.cuba.web.widgets.CubaPickerField;
 import com.haulmont.cuba.web.widgets.CubaSuggestionPickerField;
@@ -36,12 +36,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -296,13 +291,11 @@ public class WebSuggestionPickerField<V extends Entity> extends WebPickerField<V
             lastDialog = dialogScreen;
         }
 
-        boolean frameInsideDialog = false;
-        if(lastDialog instanceof ComponentContainer) {
-            frameInsideDialog = ComponentsHelper.walkComponents((ComponentContainer) lastDialog,
-                    c -> Objects.equals(c, getFrame()));
+        if(frameOwner instanceof ScreenFragment) {
+            frameOwner = ComponentsHelper.getScreen((ScreenFragment) frameOwner);
         }
 
-        if (lastDialog == null || Objects.equals(frameOwner, lastDialog) || frameInsideDialog) {
+        if (lastDialog == null || Objects.equals(frameOwner, lastDialog)) {
             getComponent().showSuggestions(suggestions, userOriginated);
         }
     }
