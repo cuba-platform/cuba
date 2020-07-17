@@ -18,6 +18,7 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.core.global.UserSessionSource;
+import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.SuggestionField;
 import com.haulmont.cuba.gui.components.data.meta.EntityValueSource;
 import com.haulmont.cuba.gui.executors.BackgroundTask;
@@ -26,6 +27,7 @@ import com.haulmont.cuba.gui.executors.BackgroundWorker;
 import com.haulmont.cuba.gui.executors.TaskLifeCycle;
 import com.haulmont.cuba.gui.screen.FrameOwner;
 import com.haulmont.cuba.gui.screen.Screen;
+import com.haulmont.cuba.gui.screen.ScreenFragment;
 import com.haulmont.cuba.gui.screen.UiControllerUtils;
 import com.haulmont.cuba.web.widgets.CubaSuggestionField;
 import org.slf4j.Logger;
@@ -33,12 +35,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 
 import javax.inject.Inject;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Function;
 
 import static com.haulmont.cuba.web.gui.components.WebLookupField.NULL_STYLE_GENERATOR;
@@ -306,6 +303,10 @@ public class WebSuggestionField<V> extends WebV8AbstractField<CubaSuggestionFiel
         Screen lastDialog = null;
         for (Screen dialogScreen : dialogScreens) {
             lastDialog = dialogScreen;
+        }
+
+        if(frameOwner instanceof ScreenFragment) {
+            frameOwner = ComponentsHelper.getScreen((ScreenFragment) frameOwner);
         }
 
         if (lastDialog == null || Objects.equals(frameOwner, lastDialog)) {
