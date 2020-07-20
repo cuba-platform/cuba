@@ -70,20 +70,29 @@ public class BaseJoinNode extends BaseCustomNode {
         QueryVariableContext variableContext = stack.peekLast();
 
         if (child0 instanceof PathNode) {
-            PathNode pathNode = (PathNode) child0;
-            Pointer pointer = pathNode.resolvePointer(model, variableContext);
-            if (pointer instanceof NoPointer) {
-                invalidNodes.add(new ErrorRec(this, "Cannot resolve joined entity"));
-            } else if (pointer instanceof SimpleAttributePointer) {
-                invalidNodes.add(new ErrorRec(this, "Joined entity resolved to a non-entity attribute"));
-            } else if (pointer instanceof EntityPointer) {
-                variableContext.addEntityVariable(variableName, ((EntityPointer) pointer).getEntity());
-            } else if (pointer instanceof CollectionPointer) {
-                variableContext.addEntityVariable(variableName, ((CollectionPointer) pointer).getEntity());
+            if (child0 instanceof TreatPathNode) {
+                TreatPathNode treatNode = (TreatPathNode) child0;
+                try {
+                    variableContext.addEntityVariable(variableName, model.getEntityByName(treatNode.getSubtype()));
+                } catch (UnknownEntityNameException e) {
+                    invalidNodes.add(new ErrorRec(this, "Cannot find entity for name " + treatNode.getSubtype()));
+                }
             } else {
-                invalidNodes.add(new ErrorRec(this,
-                                "Unexpected pointer variable type: " + pointer.getClass())
-                );
+                PathNode pathNode = (PathNode) child0;
+                Pointer pointer = pathNode.resolvePointer(model, variableContext);
+                if (pointer instanceof NoPointer) {
+                    invalidNodes.add(new ErrorRec(this, "Cannot resolve joined entity"));
+                } else if (pointer instanceof SimpleAttributePointer) {
+                    invalidNodes.add(new ErrorRec(this, "Joined entity resolved to a non-entity attribute"));
+                } else if (pointer instanceof EntityPointer) {
+                    variableContext.addEntityVariable(variableName, ((EntityPointer) pointer).getEntity());
+                } else if (pointer instanceof CollectionPointer) {
+                    variableContext.addEntityVariable(variableName, ((CollectionPointer) pointer).getEntity());
+                } else {
+                    invalidNodes.add(new ErrorRec(this,
+                            "Unexpected pointer variable type: " + pointer.getClass())
+                    );
+                }
             }
         } else {//this special case is for "join X on X.a = Y.b" query. Entity name would be just text in the child node
             try {
