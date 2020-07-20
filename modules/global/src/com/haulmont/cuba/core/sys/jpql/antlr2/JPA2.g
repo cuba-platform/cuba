@@ -62,6 +62,7 @@ package com.haulmont.cuba.core.sys.jpql.antlr2;
 import com.haulmont.cuba.core.sys.jpql.tree.QueryNode;
 import com.haulmont.cuba.core.sys.jpql.tree.SelectedItemNode;
 import com.haulmont.cuba.core.sys.jpql.tree.PathNode;
+import com.haulmont.cuba.core.sys.jpql.tree.TreatPathNode;
 import com.haulmont.cuba.core.sys.jpql.tree.FromNode;
 import com.haulmont.cuba.core.sys.jpql.tree.SelectionSourceNode;
 import com.haulmont.cuba.core.sys.jpql.tree.IdentificationVariableNode;
@@ -127,7 +128,7 @@ join_association_path_expression
      : identification_variable '.' (field'.')* field?
          -> ^(T_SELECTED_FIELD<PathNode>[$identification_variable.text] (field)*)
      |  'TREAT(' identification_variable '.' (field'.')* field? AS subtype ')'
-         -> ^(T_SELECTED_FIELD<PathNode>[$identification_variable.text] (field)*)
+         -> ^(T_SELECTED_FIELD<TreatPathNode>[$identification_variable.text, $subtype.text] (field)*)
      | entity_name;
 //End : here we have simplified joins
 

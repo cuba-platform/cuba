@@ -18,7 +18,6 @@
 package com.haulmont.cuba.core.sys.jpql.tree;
 
 import com.haulmont.cuba.core.sys.jpql.*;
-import com.haulmont.cuba.core.sys.jpql.antlr2.JPA2Lexer;
 import com.haulmont.cuba.core.sys.jpql.pointer.Pointer;
 import org.antlr.runtime.CommonToken;
 import org.antlr.runtime.Token;
@@ -30,7 +29,7 @@ import java.util.List;
 import static com.haulmont.cuba.core.sys.jpql.JPATreeNodes.createWord;
 
 public class PathNode extends BaseCustomNode {
-    private String entityVariableName;
+    protected String entityVariableName;
 
     public PathNode(Token token, String entityVariableName) {
         super(token);
@@ -47,9 +46,14 @@ public class PathNode extends BaseCustomNode {
 
     @Override
     public PathNode dupNode() {
-        PathNode result = new PathNode(token, entityVariableName);
+        PathNode result = createDuplicate();
         dupChildren(result);
         return result;
+    }
+
+
+    protected PathNode createDuplicate() {
+        return new PathNode(token, entityVariableName);
     }
 
     public Pointer resolvePointer(DomainModel model, QueryVariableContext queryVC) {

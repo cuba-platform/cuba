@@ -28,6 +28,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -1406,5 +1407,42 @@ public class QueryTransformerAstBasedTest {
                 "select c from sec$GroupHierarchy h join h.parent.constraints c where 2 = 2",
                 res);
 
+    }
+
+    @Test
+    public void testTreatSupport() {
+        EntityBuilder builder = new EntityBuilder();
+        builder.startNewEntity("test$Parent");
+        builder.addReferenceAttribute("child", "test$Child");
+        JpqlEntityModel parent = builder.produce();
+
+        JpqlEntityModel child = new EntityBuilder().produceImmediately("test$Child", "name");
+
+        builder = new EntityBuilder();
+        builder.startNewEntity("test$ExtChild");
+        builder.addStringAttribute("extName");
+        builder.addReferenceAttribute("subChild", "test$SubExtChild");
+        JpqlEntityModel extChild = builder.produce();
+
+        JpqlEntityModel subExtChild = new EntityBuilder().produceImmediately("test$SubExtChild", "title");
+
+        DomainModel model = new DomainModel(parent, child, extChild, subExtChild);
+
+
+        QueryTransformer transformer = new QueryTransformerAstBased(model,
+                "select p from test$Parent p join treat(p.child as test$ExtChild) e");
+        transformer.addWhere("e.extName is null");
+        String result = transformer.getResult();
+
+        assertEquals("select p from test$Parent p join treat(p.child as test$ExtChild) e where e.extName is null", result);
+
+        String complicatedQuery = "select p,e,s from test$Parent p join treat(p.child as test$ExtChild) e join e.subChild s " +
+                "where(e.extName is null and s.title like :someParam)";
+        QueryParser parser = new QueryParserAstBased(model, complicatedQuery);
+        List<QueryParser.QueryPath> paths = parser.getQueryPaths();
+
+        assertEquals(paths.get(0).entityName, parent.getName());
+        assertEquals(paths.get(1).entityName, extChild.getName());
+        assertEquals(paths.get(2).entityName, subExtChild.getName());
     }
 }
