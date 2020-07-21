@@ -721,6 +721,13 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
             targetAction.setShortcut(loadShortcut(shortcut));
         }
 
+        if (targetAction instanceof Action.HasPrimaryState) {
+            String primary = element.attributeValue("primary");
+            if (!Strings.isNullOrEmpty(primary)) {
+                ((Action.HasPrimaryState) targetAction).setPrimary(Boolean.parseBoolean(primary));
+            }
+        }
+
         Element propertiesEl = element.element("properties");
         if (propertiesEl != null) {
             ActionCustomPropertyLoader propertyLoader = beanLocator.get(ActionCustomPropertyLoader.class);
