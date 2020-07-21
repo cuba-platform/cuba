@@ -43,7 +43,7 @@ public class CharacterDatatype implements Datatype<Character> {
             return null;
 
         if (value.length() > 1)
-            throw new ParseException(String.format("String \"%s\" too long", value), 0);
+            throw new ParseException(String.format("String '%s' is too long", value), 0);
 
         return value.charAt(0);
     }
