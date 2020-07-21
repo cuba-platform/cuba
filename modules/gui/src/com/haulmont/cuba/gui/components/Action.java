@@ -247,6 +247,14 @@ public interface Action {
     }
 
     /**
+     * Interface to be implemented by actions which may adjust
+     * their 'enabled' state according to the screen read-only mode.
+     */
+    interface AdjustWhenScreenReadOnly {
+        boolean isDisabledWhenScreenReadOnly();
+    }
+
+    /**
      * Used in dialogs to assign a special visual style for a button representing the action.
      */
     enum Status {
