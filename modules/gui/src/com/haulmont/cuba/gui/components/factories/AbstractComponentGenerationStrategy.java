@@ -30,12 +30,11 @@ import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.UiComponents;
 import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.actions.GuiActionSupport;
 import com.haulmont.cuba.gui.components.data.Options;
 import com.haulmont.cuba.gui.components.data.ValueSource;
-import com.haulmont.cuba.gui.components.data.options.DatasourceOptions;
 import com.haulmont.cuba.gui.components.data.options.ListOptions;
 import com.haulmont.cuba.gui.components.data.value.ContainerValueSource;
-import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.dynamicattributes.DynamicAttributesGuiTools;
 import com.haulmont.cuba.gui.model.InstanceContainer;
 import com.haulmont.cuba.gui.screen.FrameOwner;
@@ -60,6 +59,7 @@ public abstract class AbstractComponentGenerationStrategy implements ComponentGe
 
     protected Messages messages;
     protected UiComponents uiComponents;
+    protected GuiActionSupport guiActionSupport;
     protected DynamicAttributesTools dynamicAttributesTools;
 
     public AbstractComponentGenerationStrategy(Messages messages, DynamicAttributesTools dynamicAttributesTools) {
@@ -400,20 +400,20 @@ public abstract class AbstractComponentGenerationStrategy implements ComponentGe
                 setValueSource(pickerField, context);
 
                 if (mpp.getMetaProperty().getType() == MetaProperty.Type.ASSOCIATION) {
-                    pickerField.addLookupAction();
+                    guiActionSupport.createActionById(pickerField, PickerField.ActionType.LOOKUP.getId());
                     if (DynamicAttributesUtils.isDynamicAttribute(mpp.getMetaProperty())) {
                         DynamicAttributesMetaProperty dynamicAttributesMetaProperty =
                                 (DynamicAttributesMetaProperty) mpp.getMetaProperty();
                         getDynamicAttributesGuiTools().initEntityPickerField(pickerField,
                                 dynamicAttributesMetaProperty.getAttribute());
                     }
-                    boolean actionsByMetaAnnotations = ComponentsHelper.createActionsByMetaAnnotations(pickerField);
+                    boolean actionsByMetaAnnotations = guiActionSupport.createActionsByMetaAnnotations(pickerField);
                     if (!actionsByMetaAnnotations) {
-                        pickerField.addClearAction();
+                        guiActionSupport.createActionById(pickerField, PickerField.ActionType.CLEAR.getId());
                     }
                 } else {
-                    pickerField.addOpenAction();
-                    pickerField.addClearAction();
+                    guiActionSupport.createActionById(pickerField, PickerField.ActionType.OPEN.getId());
+                    guiActionSupport.createActionById(pickerField, PickerField.ActionType.CLEAR.getId());
                 }
             } else {
                 LookupPickerField lookupPickerField = uiComponents.create(LookupPickerField.class);
@@ -433,7 +433,7 @@ public abstract class AbstractComponentGenerationStrategy implements ComponentGe
 
                 pickerField = lookupPickerField;
 
-                ComponentsHelper.createActionsByMetaAnnotations(pickerField);
+                guiActionSupport.createActionsByMetaAnnotations(pickerField);
             }
 
             if (xmlDescriptor != null) {
