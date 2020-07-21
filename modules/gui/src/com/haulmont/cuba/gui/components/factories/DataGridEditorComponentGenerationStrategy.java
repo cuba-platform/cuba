@@ -29,10 +29,11 @@ import com.haulmont.cuba.core.entity.annotation.LookupType;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.View;
-import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.UiComponents;
 import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.actions.picker.LookupAction;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.actions.GuiActionSupport;
 import com.haulmont.cuba.gui.components.data.Options;
 import com.haulmont.cuba.gui.components.data.options.ContainerOptions;
 import com.haulmont.cuba.gui.components.data.options.DatasourceOptions;
@@ -41,10 +42,13 @@ import com.haulmont.cuba.gui.dynamicattributes.DynamicAttributesGuiTools;
 import com.haulmont.cuba.gui.model.CollectionContainer;
 import com.haulmont.cuba.gui.model.CollectionLoader;
 import com.haulmont.cuba.gui.model.DataComponents;
+import com.haulmont.cuba.gui.screen.MapScreenOptions;
+import com.haulmont.cuba.gui.screen.OpenMode;
 import org.springframework.core.Ordered;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
+import java.util.Map;
 
 @org.springframework.stereotype.Component(DataGridEditorComponentGenerationStrategy.NAME)
 public class DataGridEditorComponentGenerationStrategy extends AbstractComponentGenerationStrategy implements Ordered {
@@ -65,6 +69,11 @@ public class DataGridEditorComponentGenerationStrategy extends AbstractComponent
     @Inject
     public void setUiComponents(UiComponents uiComponents) {
         this.uiComponents = uiComponents;
+    }
+
+    @Inject
+    public void setGuiActionSupport(GuiActionSupport guiActionSupport) {
+        this.guiActionSupport = guiActionSupport;
     }
 
     @Nullable
@@ -115,11 +124,11 @@ public class DataGridEditorComponentGenerationStrategy extends AbstractComponent
             }
         }
 
-        PickerField pickerField;
+        PickerField<?> pickerField;
         if (options == null) {
             pickerField = uiComponents.create(PickerField.class);
             setValueSource(pickerField, context);
-            pickerField.addLookupAction();
+            guiActionSupport.createActionById(pickerField, PickerField.ActionType.LOOKUP.getId());
             if (DynamicAttributesUtils.isDynamicAttribute(mpp.getMetaProperty())) {
                 DynamicAttributesGuiTools dynamicAttributesGuiTools = AppBeans.get(DynamicAttributesGuiTools.class);
                 DynamicAttributesMetaProperty dynamicAttributesMetaProperty =
@@ -127,27 +136,44 @@ public class DataGridEditorComponentGenerationStrategy extends AbstractComponent
                 dynamicAttributesGuiTools.initEntityPickerField(pickerField,
                         dynamicAttributesMetaProperty.getAttribute());
             }
-            PickerField.LookupAction lookupAction =
-                    (PickerField.LookupAction) pickerField.getActionNN(PickerField.LookupAction.NAME);
-            // Opening lookup screen in another mode will close editor
-            lookupAction.setLookupScreenOpenType(WindowManager.OpenType.DIALOG);
-            // In case of adding special logic for lookup screen opened from DataGrid editor
-            lookupAction.setLookupScreenParams(ParamsMap.of("dataGridEditor", true));
-            boolean actionsByMetaAnnotations = ComponentsHelper.createActionsByMetaAnnotations(pickerField);
+            boolean actionsByMetaAnnotations = guiActionSupport.createActionsByMetaAnnotations(pickerField);
             if (!actionsByMetaAnnotations) {
-                pickerField.addClearAction();
+                guiActionSupport.createActionById(pickerField, PickerField.ActionType.CLEAR.getId());
             }
         } else {
-            LookupPickerField lookupPickerField = uiComponents.create(LookupPickerField.class);
+            LookupPickerField<?> lookupPickerField = uiComponents.create(LookupPickerField.class);
             setValueSource(lookupPickerField, context);
             lookupPickerField.setOptions(options);
 
             pickerField = lookupPickerField;
 
-            ComponentsHelper.createActionsByMetaAnnotations(pickerField);
+            guiActionSupport.createActionsByMetaAnnotations(pickerField);
         }
+        setupPickerFieldActions(pickerField);
 
         return pickerField;
+    }
+
+    protected void setupPickerFieldActions(PickerField<?> pickerField) {
+        Map<String, Object> lookupScreenParams = ParamsMap.of("dataGridEditor", true);
+
+        PickerField.LookupAction legacyLookupAction =
+                (PickerField.LookupAction) pickerField.getAction(PickerField.LookupAction.NAME);
+        if (legacyLookupAction != null) {
+            // Opening lookup screen in another mode will close editor
+            legacyLookupAction.setLookupScreenOpenType(WindowManager.OpenType.DIALOG);
+            // In case of adding special logic for lookup screen opened from DataGrid editor
+            legacyLookupAction.setLookupScreenParams(lookupScreenParams);
+        }
+
+        LookupAction<?> lookupAction = (LookupAction<?>) pickerField.getAction(LookupAction.ID);
+        if (lookupAction != null) {
+            // Opening lookup screen in another mode will close editor
+            lookupAction.setOpenMode(OpenMode.DIALOG);
+            // In case of adding special logic for lookup screen opened from DataGrid editor
+            lookupAction.setScreenOptionsSupplier(() ->
+                    new MapScreenOptions(lookupScreenParams));
+        }
     }
 
     @Override
