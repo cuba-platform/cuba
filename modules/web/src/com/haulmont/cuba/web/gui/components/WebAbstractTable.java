@@ -2194,7 +2194,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
         if (isUsePresentations()) {
             boolean textSelection = component.isTextSelectionEnabled();
             String settingsTextSelection = element.attributeValue("textSelection");
-            if (textSelection != Boolean.parseBoolean(settingsTextSelection) || settingsTextSelection == null) {
+            if (settingsTextSelection == null || textSelection != Boolean.parseBoolean(settingsTextSelection)) {
                 element.addAttribute("textSelection", String.valueOf(textSelection));
 
                 settingsChanged = true;
