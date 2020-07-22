@@ -100,9 +100,9 @@ public class DbUpdateManager {
             if (!scripts.isEmpty()) {
                 log.warn(StringHelper.wrapLogMessage(
                         "WARNING: The application contains unapplied update scripts for data store" +
-                                (Stores.isMain(storeName) ? "" : " [" + storeNameToString(storeName) + "]" + ":\n\n" +
+                                (Stores.isMain(storeName) ? "" : " [" + storeNameToString(storeName) + "]") + ":\n\n" +
                                 Joiner.on('\n').join(scripts) + "\n\n" +
-                                getLogString(storeName))));
+                                getLogString(storeName)));
             }
         } catch (DbInitializationException e) {
             throw new RuntimeException(StringHelper.wrapLogMessage(

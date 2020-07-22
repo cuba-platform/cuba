@@ -671,7 +671,7 @@ create table SEC_USER_ROLE (
     ROLE_NAME varchar2(50),
     primary key(ID)
 )^
-create unique index IDX_SEC_USER_ROLE_UNIQ_ROLE on SEC_USER_ROLE(USER_ID, ROLE_ID, DELETE_TS)^
+create unique index IDX_SEC_USER_ROLE_UNIQ_ROLE on SEC_USER_ROLE(USER_ID, ROLE_ID, ROLE_NAME, DELETE_TS)^
 
 create table SEC_USER_SETTING (
     ID varchar2(32) not null,

@@ -345,39 +345,50 @@ public class CubaFoldersPane extends VerticalLayout {
         });
     }
 
-    protected String addIdInStr(String inputStr, UUID uuid) {
-        if (inputStr == null)
-            inputStr = "";
-        String str = uuid != null ? uuid.toString() : "";
-        if (!inputStr.contains(str)) {
-            if (inputStr.length() == 0)
-                return str;
-            else
-                return inputStr + ":" + str;
-        } else
+    @Nullable
+    protected String addIdInStr(@Nullable String inputStr, @Nullable UUID uuid) {
+        if (uuid == null) {
             return inputStr;
+        }
+
+        String str = uuid.toString();
+        if (inputStr == null) {
+            return str;
+        } else if (!inputStr.contains(str)) {
+            return inputStr + ":" + str;
+        } else {
+            return inputStr;
+        }
     }
 
-    protected String removeIdInStr(String inputStr, UUID uuid) {
-        if (inputStr == null) inputStr = "";
-        List<UUID> uuids = strToIds(inputStr);
-        if (uuid != null)
+    @Nullable
+    protected String removeIdInStr(@Nullable String inputStr, @Nullable UUID uuid) {
+        if (inputStr != null && uuid != null) {
+            List<UUID> uuids = strToIds(inputStr);
             uuids.remove(uuid);
-        return idsToStr(uuids);
+            inputStr = idsToStr(uuids);
+        }
+
+        return inputStr;
     }
 
-    protected List<UUID> strToIds(String inputStr) {
-        if (inputStr == null) inputStr = "";
-        String[] args = StringUtils.split(inputStr, ':');
+    protected List<UUID> strToIds(@Nullable String inputStr) {
         ArrayList<UUID> uuids = new ArrayList<>();
-        for (String str : args) {
-            uuids.add(UUID.fromString(str));
+        if (inputStr != null) {
+            String[] args = StringUtils.split(inputStr, ':');
+            for (String str : args) {
+                uuids.add(UUID.fromString(str));
+            }
         }
         return uuids;
     }
 
+    @Nullable
     protected String idsToStr(List<UUID> uuids) {
-        if (uuids == null) return "";
+        if (uuids.isEmpty()) {
+            return null;
+        }
+
         StringBuilder sb = new StringBuilder();
         for (UUID uuid : uuids) {
             sb.append(":").append(uuid.toString());

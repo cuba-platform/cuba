@@ -25,6 +25,7 @@ import com.google.gwt.user.client.EventListener;
 import com.haulmont.cuba.web.widgets.client.caption.CaptionHolder;
 import com.haulmont.cuba.web.widgets.client.caption.CubaCaptionWidget;
 import com.haulmont.cuba.web.widgets.client.gridlayout.CubaGridLayoutSlot;
+import com.vaadin.client.BrowserInfo;
 import com.vaadin.client.ComponentConnector;
 import com.vaadin.client.Util;
 import com.vaadin.client.VCaption;
@@ -407,6 +408,12 @@ public class CubaFieldGroupLayoutComponentSlot extends CubaGridLayoutSlot
         rightCaption.addClassName(INDICATORS_CLASSNAME);
         rightCaption.getStyle().setDisplay(Style.Display.INLINE_BLOCK);
         rightCaption.getStyle().setPosition(Style.Position.ABSOLUTE);
+
+        // Fix Safari not aligning the context help icon correctly
+        if (BrowserInfo.get().isSafari()) {
+            rightCaption.getStyle().setTop(0, Style.Unit.PX);
+            rightCaption.getStyle().setRight(0, Style.Unit.PX);
+        }
 
         return rightCaption;
     }

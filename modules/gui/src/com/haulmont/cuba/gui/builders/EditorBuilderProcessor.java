@@ -23,6 +23,7 @@ import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.Screens;
 import com.haulmont.cuba.gui.WindowParams;
 import com.haulmont.cuba.gui.components.*;
@@ -105,6 +106,7 @@ public class EditorBuilderProcessor {
                     E entityFromEditor = getCommittedEntity(editorScreen, parentDataContext);
                     E reloadedEntity = reloadIfNeeded(entityFromEditor, ct, builder);
                     E committedEntity = transform(reloadedEntity, builder);
+                    E mergedEntity = merge(committedEntity, origin, parentDataContext);
 
                     if (builder.getMode() == EditMode.CREATE) {
                         boolean addsFirst;
@@ -119,12 +121,12 @@ public class EditorBuilderProcessor {
                         }
 
                         if (ct instanceof Nested || !addsFirst) {
-                            ct.getMutableItems().add(committedEntity);
+                            ct.getMutableItems().add(mergedEntity);
                         } else {
-                            ct.getMutableItems().add(0, committedEntity);
+                            ct.getMutableItems().add(0, mergedEntity);
                         }
                     } else {
-                        ct.replaceItem(committedEntity);
+                        ct.replaceItem(mergedEntity);
                     }
                 }
                 if (listComponent instanceof com.haulmont.cuba.gui.components.Component.Focusable) {
@@ -185,6 +187,19 @@ public class EditorBuilderProcessor {
         }
 
         return (S) screen;
+    }
+
+    protected <E extends Entity> E merge(E entity, FrameOwner screen, @Nullable DataContext parentDataContext) {
+        if (Boolean.parseBoolean(AppContext.getProperty("cuba.doNotMergeEditedEntityIntoBrowserDataContext")))
+            return entity;
+
+        if (parentDataContext == null) {
+            DataContext thisDataContext = UiControllerUtils.getScreenData(screen).getDataContext();
+            if (thisDataContext != null) {
+                return thisDataContext.merge(entity);
+            }
+        }
+        return entity;
     }
 
     protected  <E extends Entity> E transform(E entity, EditorBuilder<E> builder) {

@@ -23,7 +23,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
-@NamePattern("%s|name")
+@NamePattern("#getCaption|name")
 @Table(name = "TEST_ENTITY_LOG_B")
 @Entity(name = "test_EntityLogB")
 public class EntityLogB extends StandardEntity {
@@ -36,5 +36,9 @@ public class EntityLogB extends StandardEntity {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getCaption() {
+        return name;
     }
 }

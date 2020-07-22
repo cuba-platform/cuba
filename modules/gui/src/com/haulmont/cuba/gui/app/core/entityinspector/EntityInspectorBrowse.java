@@ -51,6 +51,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.io.File;
 import java.io.FileInputStream;
@@ -151,7 +152,7 @@ public class EntityInspectorBrowse extends AbstractLookup {
     }
 
     @Override
-    public void setSelectHandler(Consumer lookupHandler) {
+    public void setSelectHandler(@Nullable Consumer lookupHandler) {
         super.setSelectHandler(lookupHandler);
 
         setLookupComponent(entitiesTable);

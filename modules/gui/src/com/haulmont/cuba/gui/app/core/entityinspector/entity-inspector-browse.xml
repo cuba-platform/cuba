@@ -31,7 +31,8 @@
     <layout expand="tableBox" spacing="true">
         <hbox id="lookupBox" spacing="true">
             <label value="msg://entityType" align="MIDDLE_LEFT"/>
-            <lookupField id="entitiesLookup" width="theme://cuba.gui.EntityInspectorBrowse.entitiesSelect.width"/>
+            <lookupField id="entitiesLookup" width="theme://cuba.gui.EntityInspectorBrowse.entitiesSelect.width"
+                         nullOptionVisible="false"/>
             <checkBox id="removedRecords" caption="msg://showRemovedRecords" align="MIDDLE_LEFT"/>
             <checkBox id="textSelection" caption="msg://textSelection" align="MIDDLE_LEFT" visible="false"/>
         </hbox>

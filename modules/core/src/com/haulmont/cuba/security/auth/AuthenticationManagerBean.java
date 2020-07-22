@@ -273,7 +273,7 @@ public class AuthenticationManagerBean implements AuthenticationManager {
                     log.error("Exception is thrown by authentication provider", re);
 
                     InternalAuthenticationException ie =
-                            new InternalAuthenticationException("Exception is thrown by authentication provider");
+                            new InternalAuthenticationException("Exception is thrown by authentication provider", re);
 
                     // publish auth fail
                     publishAuthenticationFailed(credentials, provider, ie);

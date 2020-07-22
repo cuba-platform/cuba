@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.core.global;
 
+import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableList;
 import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.chile.core.datatypes.Datatype;
@@ -893,7 +894,7 @@ public class MetadataTools {
         String relatedProperties = (String) metaProperty.getAnnotations().get("relatedProperties");
         List<String> result = Collections.emptyList();
         if (relatedProperties != null) {
-            result = Arrays.asList(relatedProperties.split(","));
+            result = Splitter.on(',').omitEmptyStrings().trimResults().splitToList(relatedProperties);
         }
         return result;
     }

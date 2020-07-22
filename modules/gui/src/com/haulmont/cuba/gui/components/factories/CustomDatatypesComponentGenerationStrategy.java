@@ -23,6 +23,7 @@ import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.UiComponents;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.ComponentGenerationContext;
+import com.haulmont.cuba.gui.components.actions.GuiActionSupport;
 import org.springframework.core.Ordered;
 
 import javax.annotation.Nullable;
@@ -46,6 +47,11 @@ public class CustomDatatypesComponentGenerationStrategy extends AbstractComponen
     @Inject
     public void setUiComponents(UiComponents uiComponents) {
         this.uiComponents = uiComponents;
+    }
+
+    @Inject
+    public void setGuiActionSupport(GuiActionSupport guiActionSupport) {
+        this.guiActionSupport = guiActionSupport;
     }
 
     @Nullable

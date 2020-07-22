@@ -33,7 +33,7 @@ import java.util.function.Consumer;
 /**
  * Abstract class for GUI actions.
  */
-public abstract class AbstractAction implements Action {
+public abstract class AbstractAction implements Action, Action.HasPrimaryState {
 
     protected String id;
 
@@ -278,18 +278,12 @@ public abstract class AbstractAction implements Action {
     public void refreshState() {
     }
 
-    /**
-     * @return true if action is primary or false otherwise
-     */
+    @Override
     public boolean isPrimary() {
         return primary;
     }
 
-    /**
-     * Sets whether action is primary or not.
-     *
-     * @param primary primary
-     */
+    @Override
     public void setPrimary(boolean primary) {
         this.primary = primary;
     }

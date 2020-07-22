@@ -138,7 +138,12 @@ public class AccessGroupDefinitionsComposerImpl implements AccessGroupDefinition
         if (Boolean.TRUE.equals(constraint.getIsActive())) {
             Class<? extends Entity> targetClass = metadata.getClassNN(constraint.getEntityName()).getJavaClass();
             if (constraint.getOperationType() == ConstraintOperationType.CUSTOM) {
-                groupDefinitionBuilder.withCustomGroovyConstraint(targetClass, constraint.getCode(), constraint.getJoinClause());
+                if (!Strings.isNullOrEmpty(constraint.getGroovyScript())) {
+                    groupDefinitionBuilder.withCustomGroovyConstraint(targetClass, constraint.getCode(), constraint.getGroovyScript());
+                }
+                if (!Strings.isNullOrEmpty(constraint.getWhereClause())) {
+                    groupDefinitionBuilder.withCustomJpqlConstraint(targetClass, constraint.getCode(), constraint.getWhereClause(), constraint.getJoinClause());
+                }
             } else {
                 for (EntityOp operation : constraint.getOperationType().toEntityOps()) {
 

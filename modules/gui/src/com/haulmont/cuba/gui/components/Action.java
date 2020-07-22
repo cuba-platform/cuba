@@ -222,10 +222,36 @@ public interface Action {
     }
 
     /**
+     * Interface to be implemented by actions that have primary state.
+     */
+    interface HasPrimaryState {
+
+        /**
+         * @return true if action is primary or false otherwise
+         */
+        boolean isPrimary();
+
+        /**
+         * Sets whether action is primary or not.
+         *
+         * @param primary primary
+         */
+        void setPrimary(boolean primary);
+    }
+
+    /**
      * Marker interface that indicates that the implementing action will
      * change its 'enabled' state according to the screen read-only mode.
      */
     interface DisabledWhenScreenReadOnly {
+    }
+
+    /**
+     * Interface to be implemented by actions which may adjust
+     * their 'enabled' state according to the screen read-only mode.
+     */
+    interface AdjustWhenScreenReadOnly {
+        boolean isDisabledWhenScreenReadOnly();
     }
 
     /**

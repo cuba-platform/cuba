@@ -19,7 +19,9 @@ package com.haulmont.cuba.gui.app.security.user.browse;
 
 import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
-import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.global.DataManager;
+import com.haulmont.cuba.core.global.Metadata;
+import com.haulmont.cuba.core.global.Security;
 import com.haulmont.cuba.gui.UiComponents;
 import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.WindowParams;
@@ -33,11 +35,11 @@ import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.DataSupplier;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.security.role.RoleDefinitionsJoiner;
 import com.haulmont.cuba.security.app.SecurityScopesService;
 import com.haulmont.cuba.security.app.UserManagementService;
 import com.haulmont.cuba.security.entity.*;
 import com.haulmont.cuba.security.role.RoleDefinition;
+import com.haulmont.cuba.security.role.RoleDefinitionsJoiner;
 import com.haulmont.cuba.security.role.RolesService;
 import org.apache.commons.lang3.BooleanUtils;
 
@@ -177,19 +179,31 @@ public class UserBrowser extends AbstractLookup {
             User newUser = metadata.create(User.class);
             if (selectedUser.getUserRoles() != null) {
                 List<UserRole> userRoles = new ArrayList<>();
+                Role role = null;
+                String roleName = null;
                 for (UserRole oldUserRole : selectedUser.getUserRoles()) {
-                    Role oldRole = dataSupplier.reload(oldUserRole.getRole(), "_local");
-                    if (BooleanUtils.isTrue(oldRole.getDefaultRole())) {
-                        continue;
+                    if (oldUserRole.getRole() != null) {
+                        role = dataSupplier.reload(oldUserRole.getRole(), "_local");
+                        if (BooleanUtils.isTrue(role.getDefaultRole())) {
+                            continue;
+                        }
+                    } else if (oldUserRole.getRoleName() != null) {
+                        RoleDefinition roleDefinition = rolesService.getRoleDefinitionByName(oldUserRole.getRoleName());
+                        if (roleDefinition.isDefault()) {
+                            continue;
+                        }
+                        roleName = oldUserRole.getRoleName();
                     }
-                    UserRole role = metadata.create(UserRole.class);
-                    role.setUser(newUser);
-                    role.setRole(oldRole);
-                    userRoles.add(role);
+                    UserRole newUserRole = metadata.create(UserRole.class);
+                    newUserRole.setUser(newUser);
+                    newUserRole.setRole(role);
+                    newUserRole.setRoleName(roleName);
+                    userRoles.add(newUserRole);
                 }
                 newUser.setUserRoles(userRoles);
             }
             newUser.setGroup(selectedUser.getGroup());
+            newUser.setGroupNames(selectedUser.getGroupNames());
             AbstractEditor editor = openEditor("sec$User.edit", newUser, OpenType.THIS_TAB,
                     ParamsMap.of("initCopy", true));
             editor.addCloseListener(actionId -> {
@@ -332,7 +346,11 @@ public class UserBrowser extends AbstractLookup {
     }
 
     protected void initShowEffectiveRoleActions() {
-        List<AbstractAction> actions = new ArrayList<>();
+        final boolean hasPermissionToOpenRoleEditor =
+                security.isScreenPermitted("sec$Role.edit")
+                        && security.isEntityOpPermitted(Role.class, EntityOp.READ);
+
+        List<BaseAction> actions = new ArrayList<>();
         Collection<SecurityScope> securityScopes = securityScopesService.getAvailableSecurityScopes();
         if (securityScopes.size() == 1) {
             String caption = getMessage("showEffectiveRole");
@@ -343,9 +361,10 @@ public class UserBrowser extends AbstractLookup {
                 actions.add(new ShowEffectiveRoleAction(securityScope.getName(), caption));
             }
         }
-        for (AbstractAction action : actions) {
+        for (BaseAction action : actions) {
             usersTable.addAction(action);
             additionalActionsBtn.addAction(action);
+            action.addEnabledRule(() -> hasPermissionToOpenRoleEditor);
         }
     }
 

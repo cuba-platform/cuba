@@ -38,12 +38,12 @@ public class EntityWithRelatedProperties extends StandardEntity {
     @Column(name = "NOT_RELATED_ATTR")
     private String notRelatedAttr;
 
-    @MetaProperty(related = "name,surname")
+    @MetaProperty(related = "name, surname")
     public String getNickName() {
         return name + " MegaCool " + surname;
     }
 
-    @MetaProperty(related = "name,surname")
+    @MetaProperty(related = {"name", "surname"})
     public String getSomeAttr() {
         return getNickName() + " additional string";
     }

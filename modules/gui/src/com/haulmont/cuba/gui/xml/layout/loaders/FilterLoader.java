@@ -143,16 +143,17 @@ public class FilterLoader extends AbstractComponentLoader<Filter> {
         }
 
         getComponentContext().addPostInitTask((context1, window) -> {
-            ((FilterImplementation) resultComponent).loadFiltersAndApplyDefault();
-            String defaultMode = element.attributeValue("defaultMode");
-            if (FTS_MODE_VALUE.equals(defaultMode)) {
-                resultComponent.switchFilterMode(FilterDelegate.FilterMode.FTS_MODE);
-            }
-
             String controlsLayoutTemplate = element.attributeValue("controlsLayoutTemplate");
             if (!Strings.isNullOrEmpty(controlsLayoutTemplate)) {
                 resultComponent.setControlsLayoutTemplate(controlsLayoutTemplate);
                 resultComponent.createLayout();
+            }
+
+            ((FilterImplementation) resultComponent).loadFiltersAndApplyDefault();
+
+            String defaultMode = element.attributeValue("defaultMode");
+            if (FTS_MODE_VALUE.equals(defaultMode)) {
+                resultComponent.switchFilterMode(FilterDelegate.FilterMode.FTS_MODE);
             }
         });
     }

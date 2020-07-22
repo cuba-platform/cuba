@@ -20,6 +20,7 @@ package spec.cuba.core.entity_log
 import com.haulmont.cuba.core.EntityManager
 import com.haulmont.cuba.core.PersistenceTools
 import com.haulmont.cuba.core.global.AppBeans
+import com.haulmont.cuba.core.global.DataManager
 import com.haulmont.cuba.core.global.MetadataTools
 import com.haulmont.cuba.core.global.View
 import com.haulmont.cuba.security.entity.Group
@@ -58,7 +59,7 @@ class EntityLogTest extends AbstractEntityLogTest {
 
         saveEntityLogAutoConfFor(em, 'sec$Role', 'type')
 
-        saveEntityLogAutoConfFor(em, 'test_EntityLogA', 'name')
+        saveEntityLogAutoConfFor(em, 'test_EntityLogA', 'name', 'entityLogB')
     }
 
 
@@ -204,6 +205,41 @@ class EntityLogTest extends AbstractEntityLogTest {
 
         getEntityLogItems('test_EntityLogA', aId).size() == 2
         getLatestEntityLogItem('test_EntityLogA', aId).entityInstanceName == 'edited_nameA nameB'
+    }
+
+    def "field value with empty instance name set up via dataManager.getReference() in entity log"() {
+        when:
+
+        EntityLogB entityLogB
+
+        DataManager dataManager = AppBeans.get(DataManager)
+
+        withTransaction { EntityManager em ->
+            entityLogB = cont.metadata().create(EntityLogB)
+
+            em.persist(entityLogB)
+        }
+
+        UUID aId = null
+        EntityLogA entityLogA
+
+        withTransaction { EntityManager em ->
+            em = cont.persistence().getEntityManager()
+            entityLogA = cont.metadata().create(EntityLogA)
+            entityLogA.setName('nameA')
+
+            entityLogA.setEntityLogB(dataManager.getReference(EntityLogB, entityLogB.id))
+
+            em.persist(entityLogA)
+            aId = entityLogA.getId()
+        }
+
+        then: 'those attribute changes result in Entity log items'
+
+        getEntityLogItems('test_EntityLogA', aId).size() == 1
+        def item = getLatestEntityLogItem('test_EntityLogA', aId)
+
+        loggedValueMatches(item, 'entityLogB', "")
     }
 
     protected def createAndSaveUser(EntityManager em, Map params) {

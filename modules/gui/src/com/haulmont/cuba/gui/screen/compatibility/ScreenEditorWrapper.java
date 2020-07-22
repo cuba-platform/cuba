@@ -68,4 +68,9 @@ public class ScreenEditorWrapper extends AbstractEditor {
     public Component getComponent(String id) {
         return screen.getWindow().getComponent(id);
     }
+
+    @Override
+    public Frame getFrame() {
+        return screen.getWindow().getFrame();
+    }
 }

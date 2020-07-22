@@ -115,6 +115,7 @@ public class AddConditionHelper {
             Map<String, Object> params = new HashMap<>();
             params.put("condition", condition);
             params.put("conditionsTree", conditionsTree);
+            params.put("filter", filter);
             final CustomConditionEditor window = (CustomConditionEditor) windowManager.openWindow(windowInfo, OpenType.DIALOG, params);
             window.addCloseListener(actionId -> {
                 if (Window.COMMIT_ACTION_ID.equals(actionId)) {
