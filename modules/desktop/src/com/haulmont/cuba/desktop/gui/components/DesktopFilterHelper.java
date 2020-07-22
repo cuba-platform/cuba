@@ -33,7 +33,6 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.Map;
 import java.util.Objects;
-import java.util.function.BiFunction;
 
 @org.springframework.stereotype.Component(FilterHelper.NAME)
 public class DesktopFilterHelper implements FilterHelper {
@@ -88,7 +87,7 @@ public class DesktopFilterHelper implements FilterHelper {
     }
 
     @Override
-    public void initTableFtsTooltips(ListComponent listComponent, BiFunction<ListComponent, Object, MetaClass> metaClassProvider, String searchTerm) {
+    public void initTableFtsTooltips(ListComponent listComponent,  MetaClass metaClass, String searchTerm) {
     }
 
     @Override

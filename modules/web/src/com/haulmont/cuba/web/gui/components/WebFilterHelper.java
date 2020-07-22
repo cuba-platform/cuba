@@ -26,6 +26,9 @@ import com.haulmont.cuba.core.global.BeanLocator;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.gui.UiComponents;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.data.DataUnit;
+import com.haulmont.cuba.gui.components.data.meta.ContainerDataUnit;
+import com.haulmont.cuba.gui.components.data.meta.DatasourceDataUnit;
 import com.haulmont.cuba.gui.components.filter.ConditionsTree;
 import com.haulmont.cuba.gui.components.filter.FilterHelper;
 import com.haulmont.cuba.gui.components.filter.FtsFilterHelper;
@@ -53,7 +56,6 @@ import com.vaadin.ui.components.grid.TreeGridDropTarget;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.*;
-import java.util.function.BiFunction;
 
 import static com.haulmont.cuba.gui.screen.UiControllerUtils.getHostScreen;
 
@@ -291,7 +293,7 @@ public class WebFilterHelper implements FilterHelper {
     }
 
     @Override
-    public void initTableFtsTooltips(ListComponent listComponent, BiFunction<ListComponent, Object, MetaClass> metaClassProvider, String searchTerm) {
+    public void initTableFtsTooltips(ListComponent listComponent, MetaClass metaClass, String searchTerm) {
         FtsFilterHelper ftsFilterHelper;
         if (beanLocator.containsBean(FtsFilterHelper.NAME)) {
             ftsFilterHelper = beanLocator.get(FtsFilterHelper.class);
@@ -309,7 +311,18 @@ public class WebFilterHelper implements FilterHelper {
                                 k -> ftsFilterHelper.buildTableTooltip(
                                         metaClassesCache.computeIfAbsent(
                                                 itemId,
-                                                id -> metaClassProvider.apply(listComponent, id).getName()),
+                                                id -> {
+                                                    DataUnit dataUnit = listComponent.getItems();
+                                                    Entity<?> entity = null;
+                                                    if (dataUnit instanceof DatasourceDataUnit) { //legacy GUI
+                                                        entity = ((DatasourceDataUnit) dataUnit).getDatasource().getItem(id);
+                                                    } else if (dataUnit instanceof ContainerDataUnit) {
+                                                        entity = ((ContainerDataUnit) dataUnit).getContainer().getItem(id);
+                                                    }
+                                                    if (entity != null)
+                                                        return entity.getMetaClass().getName();
+                                                    return metaClass.getName();
+                                                }),
                                         k,
                                         searchTerm)
                         );

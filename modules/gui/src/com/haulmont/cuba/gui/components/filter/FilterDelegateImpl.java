@@ -1822,24 +1822,7 @@ public class FilterDelegateImpl implements FilterDelegate {
 
             if ((applyTo != null) && ListComponent.class.isAssignableFrom(applyTo.getClass())) {
                 if (clientConfig.getGenericFilterFtsTableTooltipsEnabled()) {
-                    filterHelper.initTableFtsTooltips(
-                            (ListComponent) applyTo,
-                            (listComponent, entityId) -> {
-                                if (listComponent instanceof Table) {
-                                    CollectionDatasource<Entity<Object>, Object> ds = listComponent.getDatasource();
-                                    TableItems tableItems = ((Table)listComponent).getItems();
-                                    Entity<?> entity = null;
-                                    if (ds != null) { //legacy GUI
-                                        entity = ds.getItem(entityId);
-                                    } else if (tableItems != null) {
-                                        entity = (Entity) tableItems.getItem(entityId);
-                                    }
-                                    if (entity != null)
-                                        return entity.getMetaClass();
-                                }
-                                return adapter.getMetaClass();
-                            },
-                            searchTerm);
+                    filterHelper.initTableFtsTooltips((ListComponent) applyTo, adapter.getMetaClass(), searchTerm);
                 }
                 if (clientConfig.getGenericFilterFtsDetailsActionEnabled()) {
                     initFtsDetailsAction((ListComponent) applyTo, searchTerm);

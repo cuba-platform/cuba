@@ -24,7 +24,6 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.presentations.Presentations;
 
 import java.util.Map;
-import java.util.function.BiFunction;
 
 /**
  * Interface to be implemented by classes with client-specific behaviour that cannot be placed into
@@ -83,7 +82,7 @@ public interface FilterHelper {
 
     boolean isTableActionsEnabled();
 
-    void initTableFtsTooltips(ListComponent listComponent, BiFunction<ListComponent, Object, MetaClass> metaClassProvider, String searchTerm);
+    void initTableFtsTooltips(ListComponent listComponent, MetaClass metaClass, String searchTerm);
 
     void removeTableFtsTooltips(ListComponent listComponent);
 
