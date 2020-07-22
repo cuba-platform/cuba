@@ -17,10 +17,9 @@
 package com.haulmont.cuba.web.widgets.client.richtextarea;
 
 import com.google.gwt.dev.util.HttpHeaders;
-import com.google.gwt.dom.client.Document;
-import com.google.gwt.dom.client.HeadElement;
-import com.google.gwt.dom.client.IFrameElement;
-import com.google.gwt.dom.client.MetaElement;
+import com.google.gwt.dom.client.*;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.user.client.ui.RichTextArea;
 import com.vaadin.client.ui.VRichTextArea;
 
@@ -75,6 +74,18 @@ public class CubaRichTextAreaWidget extends VRichTextArea {
 
             headElement.appendChild(charsetMetaElement);
         });
+    }
+
+    @Override
+    protected boolean canHandleShortcut(KeyDownEvent event) {
+        NativeEvent nativeEvent = event.getNativeEvent();
+
+        boolean isEnter = nativeEvent.getKeyCode() == KeyCodes.KEY_ENTER
+                && !nativeEvent.getAltKey()
+                && !nativeEvent.getShiftKey()
+                && !nativeEvent.getCtrlKey();
+
+        return !isEnter;
     }
 
     @Override
