@@ -333,15 +333,19 @@ public class CubaFoldersPane extends VerticalLayout {
         tree.collapse(foldersToCollapse);
 
         tree.addExpandListener(event -> {
-            UUID uuid = event.getExpandedItem().getId();
-            String str = userSettingService.loadSetting(foldersCollapse);
-            userSettingService.saveSetting(foldersCollapse, removeIdInStr(str, uuid));
+            if (event.getExpandedItem() != null) {
+                UUID uuid = event.getExpandedItem().getId();
+                String str = userSettingService.loadSetting(foldersCollapse);
+                userSettingService.saveSetting(foldersCollapse, removeIdInStr(str, uuid));
+            }
         });
 
         tree.addCollapseListener(event -> {
-            UUID uuid = event.getCollapsedItem().getId();
-            String str = userSettingService.loadSetting(foldersCollapse);
-            userSettingService.saveSetting(foldersCollapse, addIdInStr(str, uuid));
+            if (event.getCollapsedItem() != null) {
+                UUID uuid = event.getCollapsedItem().getId();
+                String str = userSettingService.loadSetting(foldersCollapse);
+                userSettingService.saveSetting(foldersCollapse, addIdInStr(str, uuid));
+            }
         });
     }
 
