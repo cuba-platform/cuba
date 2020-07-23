@@ -46,6 +46,7 @@ import com.haulmont.cuba.gui.components.DialogAction.Type;
 import com.haulmont.cuba.gui.components.KeyCombination.Key;
 import com.haulmont.cuba.gui.components.actions.BaseAction;
 import com.haulmont.cuba.gui.components.actions.ItemTrackingAction;
+import com.haulmont.cuba.gui.components.data.TableItems;
 import com.haulmont.cuba.gui.components.data.meta.ContainerDataUnit;
 import com.haulmont.cuba.gui.components.data.meta.DatasourceDataUnit;
 import com.haulmont.cuba.gui.components.data.meta.EntityDataUnit;

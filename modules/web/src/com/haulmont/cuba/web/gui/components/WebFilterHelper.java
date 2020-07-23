@@ -26,6 +26,9 @@ import com.haulmont.cuba.core.global.BeanLocator;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.gui.UiComponents;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.data.DataUnit;
+import com.haulmont.cuba.gui.components.data.meta.ContainerDataUnit;
+import com.haulmont.cuba.gui.components.data.meta.DatasourceDataUnit;
 import com.haulmont.cuba.gui.components.filter.ConditionsTree;
 import com.haulmont.cuba.gui.components.filter.FilterHelper;
 import com.haulmont.cuba.gui.components.filter.FtsFilterHelper;
@@ -300,15 +303,35 @@ public class WebFilterHelper implements FilterHelper {
 
         if (listComponent instanceof Table) {
             Map<Object, String> tooltipsCache = new HashMap<>();
+            Map<Object, String> metaClassesCache = new HashMap<>();
             listComponent.withUnwrapped(com.vaadin.v7.ui.Table.class, vTable ->
                     vTable.setItemDescriptionGenerator((source, itemId, propertyId) -> {
-                        return tooltipsCache.computeIfAbsent(itemId,
-                                k -> ftsFilterHelper.buildTableTooltip(metaClass.getName(), k, searchTerm));
+                        return tooltipsCache.computeIfAbsent(
+                                itemId,
+                                k -> ftsFilterHelper.buildTableTooltip(
+                                        metaClassesCache.computeIfAbsent(
+                                                itemId,
+                                                id -> {
+                                                    DataUnit dataUnit = listComponent.getItems();
+                                                    Entity<?> entity = null;
+                                                    if (dataUnit instanceof DatasourceDataUnit) { //legacy GUI
+                                                        entity = ((DatasourceDataUnit) dataUnit).getDatasource().getItem(id);
+                                                    } else if (dataUnit instanceof ContainerDataUnit) {
+                                                        entity = ((ContainerDataUnit) dataUnit).getContainer().getItem(id);
+                                                    }
+                                                    if (entity != null)
+                                                        return entity.getMetaClass().getName();
+                                                    return metaClass.getName();
+                                                }),
+                                        k,
+                                        searchTerm)
+                        );
                     }));
         } else if (listComponent instanceof DataGrid) {
             ((DataGrid) listComponent).setRowDescriptionProvider(o -> {
                 if (o instanceof Entity) {
-                    return ftsFilterHelper.buildTableTooltip(metaClass.getName(), ((Entity) o).getId(), searchTerm);
+                    Entity entity = (Entity) o;
+                    return ftsFilterHelper.buildTableTooltip(entity.getMetaClass().getName(), entity.getId(), searchTerm);
                 } else {
                     return null;
                 }
