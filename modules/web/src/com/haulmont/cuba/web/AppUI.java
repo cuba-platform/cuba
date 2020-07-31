@@ -125,6 +125,9 @@ public class AppUI extends CubaUI implements ErrorHandler, EnhancedUI, UiExcepti
     protected WebJarResourceResolver webJarResourceResolver;
 
     @Inject
+    protected ScreenProfilerConfig screenProfilerConfig;
+
+    @Inject
     protected BeanLocator beanLocator;
 
     protected TestIdManager testIdManager = new TestIdManager();
@@ -133,6 +136,8 @@ public class AppUI extends CubaUI implements ErrorHandler, EnhancedUI, UiExcepti
     protected boolean performanceTestMode = false;
 
     protected CubaFileDownloader fileDownloader;
+
+    protected ScreenClientProfilerAgent clientProfiler;
 
     protected RootWindow topLevelWindow;
 
@@ -145,6 +150,9 @@ public class AppUI extends CubaUI implements ErrorHandler, EnhancedUI, UiExcepti
     protected UrlChangeHandler urlChangeHandler;
     protected UrlRouting urlRouting;
     protected History history;
+
+    protected String profilerMarker;
+    protected Map<String, String> profiledScreens;
 
     protected UserSession userSession;
 
@@ -195,6 +203,10 @@ public class AppUI extends CubaUI implements ErrorHandler, EnhancedUI, UiExcepti
     protected void initInternalComponents() {
         fileDownloader = new CubaFileDownloader();
         fileDownloader.extend(this);
+
+        ScreenProfiler screenProfiler = beanLocator.get(ScreenProfilerImpl.NAME);
+        clientProfiler = new ScreenClientProfilerAgent(screenProfiler);
+        clientProfiler.extend(this);
 
         initHistoryBackControl();
     }
@@ -775,11 +787,18 @@ public class AppUI extends CubaUI implements ErrorHandler, EnhancedUI, UiExcepti
     public void beforeTopLevelWindowInit() {
         updateUiTheme();
 
+        setProfilerParameters();
+
         // todo move to login handling
         updateClientSystemMessages(app.getLocale());
 
         // todo move test id manager into RootWindow ?
         getTestIdManager().reset();
+    }
+
+    protected void setProfilerParameters() {
+        clientProfiler.setFlushEventsCount(screenProfilerConfig.getFlushEventsCount());
+        clientProfiler.setFlushTimeout(screenProfilerConfig.getFlushTimeout());
     }
 
     protected void updateUiTheme() {
@@ -829,5 +848,33 @@ public class AppUI extends CubaUI implements ErrorHandler, EnhancedUI, UiExcepti
 
         String lastHistoryOp = ((WebUrlRouting) getUrlRouting()).getLastHistoryOperation();
         target.addAttribute(CubaUIConstants.LAST_HISTORY_OP, lastHistoryOp);
+    }
+
+    public String getProfilerMarker() {
+        return profilerMarker;
+    }
+
+    @Override
+    public void setProfilerMarker(String profilerMarker) {
+        this.profilerMarker = profilerMarker;
+    }
+
+    public void setProfiledScreen(String profilerMarker, String screen) {
+        if (profiledScreens == null) {
+            profiledScreens = new HashMap<>();
+        }
+        profiledScreens.put(profilerMarker, screen);
+    }
+
+    public String getProfiledScreen(String profilerMarker) {
+        return profiledScreens.get(profilerMarker);
+    }
+
+    public void clearProfiledScreens(List<String> profilerMarkers) {
+        if (profiledScreens != null) {
+            for (String profilerMarker : profilerMarkers) {
+                profiledScreens.remove(profilerMarker);
+            }
+        }
     }
 }

@@ -34,11 +34,13 @@ import com.vaadin.shared.Registration;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Layout;
+import com.vaadin.ui.UI;
 import com.vaadin.v7.data.Container;
 import com.vaadin.v7.data.Property;
 import com.vaadin.v7.data.util.ContainerOrderedWrapper;
 import com.vaadin.v7.ui.Field;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -373,6 +375,14 @@ public class CubaTable extends com.vaadin.v7.ui.Table implements TableSortableCo
             Boolean updateAggregationRow = (Boolean) variables.get("updateAggregationRow");
             if (updateAggregationRow) {
                 markAsDirty();
+            }
+        }
+
+        String profilerMarker = (String) variables.get("profilerMarker");
+        if (StringUtils.isNotEmpty(profilerMarker)) {
+            UI ui = UI.getCurrent();
+            if (ui instanceof EnhancedUI) {
+                ((EnhancedUI) ui).setProfilerMarker(profilerMarker);
             }
         }
     }

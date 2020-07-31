@@ -79,4 +79,8 @@
             template="/com/haulmont/cuba/web/app/loginwindow/loginwindow.xml"
             route="login" rootRoute="true"/>
 
+    <screen id="screenProfiler"
+            template="com/haulmont/cuba/web/app/core/screenprofiler/screen-profiler-window.xml"
+            route="screen-profiler"/>
+
 </screen-config>

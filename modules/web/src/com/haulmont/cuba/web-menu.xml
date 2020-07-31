@@ -36,6 +36,7 @@
         <item id="sec$SessionLogEntry.browse"/>
         <item id="sys$SendingMessage.browse"/>
         <item id="serverLog"/>
+        <item id="screenProfiler"/>
         <item id="performanceStatistics"/>
     </menu>
 

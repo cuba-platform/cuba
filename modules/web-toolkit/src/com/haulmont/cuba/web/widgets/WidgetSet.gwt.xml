@@ -31,6 +31,14 @@
         <when-type-is class="com.vaadin.client.ui.ui.UIConnector"/>
     </replace-with>
 
+    <replace-with class="com.haulmont.cuba.web.widgets.client.communication.CubaMessageHandler">
+        <when-type-is class="com.vaadin.client.communication.MessageHandler"/>
+    </replace-with>
+
+    <replace-with class="com.haulmont.cuba.web.widgets.client.communication.CubaXhrConnection">
+        <when-type-is class="com.vaadin.client.communication.XhrConnection"/>
+    </replace-with>
+
     <replace-with class="com.haulmont.cuba.web.widgets.client.notification.CubaNotification">
         <when-type-is class="com.vaadin.client.ui.VNotification"/>
     </replace-with>
