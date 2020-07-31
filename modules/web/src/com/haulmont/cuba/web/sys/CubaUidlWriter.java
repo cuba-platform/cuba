@@ -18,18 +18,22 @@ package com.haulmont.cuba.web.sys;
 
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.web.ScreenProfilerImpl;
 import com.haulmont.cuba.web.widgets.WebJarResource;
 import com.vaadin.server.ClientConnector;
 import com.vaadin.server.LegacyCommunicationManager;
 import com.vaadin.server.communication.UidlWriter;
 import com.vaadin.ui.Dependency;
 import com.vaadin.ui.HasDependencies;
+import com.vaadin.ui.UI;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import javax.servlet.ServletContext;
+import java.io.IOException;
+import java.io.Writer;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
@@ -86,6 +90,20 @@ public class CubaUidlWriter extends UidlWriter {
                     }
                 }
             }
+        }
+    }
+
+    @Override
+    protected void writePerformanceData(UI ui, Writer writer) throws IOException {
+        super.writePerformanceData(ui, writer);
+
+        ScreenProfilerImpl profiler = AppBeans.get(ScreenProfilerImpl.NAME);
+        String profilerMarker = profiler.getCurrentProfilerMarker(ui);
+        if (profilerMarker != null) {
+            profiler.setCurrentProfilerMarker(ui, null);
+            long lastRequestTimestamp = ui.getSession().getLastRequestTimestamp();
+            writer.write(String.format(", \"profilerMarker\": \"%s\", \"profilerEventTs\": \"%s\", \"profilerServerTime\": %s",
+                    profilerMarker, lastRequestTimestamp, System.currentTimeMillis() - lastRequestTimestamp));
         }
     }
 

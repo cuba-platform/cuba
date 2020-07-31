@@ -36,6 +36,7 @@ import com.vaadin.shared.Registration;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Layout;
+import com.vaadin.ui.UI;
 import com.vaadin.v7.data.Container;
 import com.vaadin.v7.data.Property;
 import com.vaadin.v7.data.util.ContainerOrderedWrapper;
@@ -43,6 +44,7 @@ import com.vaadin.v7.data.util.HierarchicalContainer;
 import com.vaadin.v7.data.util.IndexedContainer;
 import com.vaadin.v7.ui.Field;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Nonnull;
 import java.util.*;
@@ -327,6 +329,14 @@ public class CubaTreeTable extends com.vaadin.v7.ui.TreeTable implements TreeTab
 
         if (shortcutActionManager != null) {
             shortcutActionManager.handleActions(variables, this);
+        }
+
+        String profilerMarker = (String) variables.get("profilerMarker");
+        if (StringUtils.isNotEmpty(profilerMarker)) {
+            UI ui = UI.getCurrent();
+            if (ui instanceof EnhancedUI) {
+                ((EnhancedUI) ui).setProfilerMarker(profilerMarker);
+            }
         }
     }
 

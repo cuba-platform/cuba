@@ -130,6 +130,7 @@
                 <entry key="cuba_AttributeOptionsLoaderService" value="com.haulmont.cuba.core.app.dynamicattributes.AttributeOptionsLoaderService"/>
                 <entry key="cuba_RolesService" value="com.haulmont.cuba.security.role.RolesService"/>
                 <entry key="cuba_SecurityScopesService" value="com.haulmont.cuba.security.app.SecurityScopesService"/>
+                <entry key="cuba_ScreenProfilerService" value="com.haulmont.cuba.core.app.ScreenProfilerService"/>
             </map>
         </property>
     </bean>

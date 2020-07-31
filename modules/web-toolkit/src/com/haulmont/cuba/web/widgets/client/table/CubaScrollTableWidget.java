@@ -27,6 +27,7 @@ import com.google.gwt.user.client.ui.*;
 import com.haulmont.cuba.web.widgets.client.Tools;
 import com.haulmont.cuba.web.widgets.client.aggregation.TableAggregationRow;
 import com.haulmont.cuba.web.widgets.client.image.CubaImageWidget;
+import com.haulmont.cuba.web.widgets.client.profiler.ScreenClientProfiler;
 import com.haulmont.cuba.web.widgets.client.tableshared.TableEmptyState;
 import com.haulmont.cuba.web.widgets.client.tableshared.TableWidget;
 import com.haulmont.cuba.web.widgets.client.tableshared.TableWidgetDelegate;
@@ -59,6 +60,13 @@ public class CubaScrollTableWidget extends VScrollTable implements TableWidget {
         DOM.sinkEvents(getElement(), Event.ONKEYDOWN);
 
         hideColumnControlAfterClick = false;
+        rowRequestHandler = new RowRequestHandler() {
+            @Override
+            protected void updateVariables() {
+                client.updateVariable(paintableId, "profilerMarker", _delegate.profilerMarker, false);
+                _delegate.profilerMarker = null;
+            }
+        };
     }
 
     @Override
@@ -1124,6 +1132,12 @@ public class CubaScrollTableWidget extends VScrollTable implements TableWidget {
 
                 return super.hasContextMenuActions();
             }
+        }
+
+        @Override
+        public void renderInitialRows(UIDL rowData, int firstIndex, int rows) {
+            _delegate.profilerMarker = ScreenClientProfiler.getInstance().getProfilerMarker();
+            super.renderInitialRows(rowData, firstIndex, rows);
         }
 
         public LinkedList<Widget> getRenderedRows() {

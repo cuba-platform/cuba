@@ -24,6 +24,7 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import com.haulmont.cuba.web.widgets.CubaTreeTable;
 import com.haulmont.cuba.web.widgets.client.aggregation.TableAggregationRow;
+import com.haulmont.cuba.web.widgets.client.profiler.ScreenClientProfiler;
 import com.haulmont.cuba.web.widgets.client.table.CubaTableClientRpc;
 import com.haulmont.cuba.web.widgets.client.table.CubaTableServerRpc;
 import com.haulmont.cuba.web.widgets.client.tableshared.CubaTableShortcutActionHandler;
@@ -32,6 +33,7 @@ import com.vaadin.client.*;
 import com.vaadin.client.communication.StateChangeEvent;
 import com.vaadin.client.ui.FocusableScrollPanel;
 import com.vaadin.shared.ui.Connect;
+import com.vaadin.v7.client.ui.VScrollTable;
 import com.vaadin.v7.client.ui.treetable.TreeTableConnector;
 
 import java.util.Arrays;
@@ -45,6 +47,8 @@ public class CubaTreeTableConnector extends TreeTableConnector {
     protected static final String HAS_FOOTER_STYLENAME = "has-footer";
 
     protected HandlerRegistration tooltipHandlerRegistration;
+    protected String profilerMarker;
+    protected double layoutStartTime;
 
     public CubaTreeTableConnector() {
         registerRpc(CubaTableClientRpc.class, new CubaTableClientRpc() {
@@ -340,5 +344,31 @@ public class CubaTreeTableConnector extends TreeTableConnector {
             tooltipHandlerRegistration = null;
         }
         super.onUnregister();
+    }
+
+    @Override
+    public void postLayout() {
+        VScrollTable table = getWidget();
+        if (table.sizeNeedsInit && profilerMarker == null) {
+            profilerMarker = ScreenClientProfiler.getInstance().getProfilerMarker();
+        }
+        super.postLayout();
+    }
+
+    @Override
+    protected void beforeLayout() {
+        if (profilerMarker != null && layoutStartTime == 0) {
+            layoutStartTime = System.currentTimeMillis();
+        }
+    }
+
+    @Override
+    protected void afterLayout() {
+        if (profilerMarker != null) {
+            ScreenClientProfiler.getInstance().registerClientTime(profilerMarker,
+                    (int) (System.currentTimeMillis() - layoutStartTime));
+            profilerMarker = null;
+            layoutStartTime = 0;
+        }
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2018 Haulmont.
+ * Copyright (c) 2008-2016 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,16 +14,10 @@
  * limitations under the License.
  */
 
-package com.haulmont.cuba.web.widgets;
+package com.haulmont.cuba.web.widgets.client.profiler;
 
-import com.vaadin.server.Resource;
+import com.vaadin.shared.communication.ServerRpc;
 
-public interface EnhancedUI {
-    Resource createVersionedResource(String value);
-
-    String getWebJarPath(String webjar, String partialPath);
-
-    String translateToWebPath(String fullWebJarPath);
-
-    void setProfilerMarker(String profilerMarker);
+public interface ScreenClientProfilerServerRpc extends ServerRpc {
+    void flushEvents(ScreenProfilerClientEvent[] clientEvents);
 }

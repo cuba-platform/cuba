@@ -67,6 +67,7 @@ import com.haulmont.cuba.gui.xml.layout.loaders.ComponentLoaderContext;
 import com.haulmont.cuba.security.entity.PermissionType;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.AppUI;
+import com.haulmont.cuba.web.ScreenProfilerImpl;
 import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.gui.WebWindow;
 import com.haulmont.cuba.web.gui.components.WebDialogWindow.GuiDialogWindow;
@@ -140,6 +141,8 @@ public class WebScreens implements Screens, WindowManager {
     protected WebConfig webConfig;
     @Inject
     protected ClientConfig clientConfig;
+    @Inject
+    protected ScreenProfilerImpl screenProfiler;
 
     @Inject
     protected List<ControllerDependencyInjector> dependencyInjectors;
@@ -476,6 +479,8 @@ public class WebScreens implements Screens, WindowManager {
         afterShowWatch.stop();
 
         events.publish(new ScreenOpenedEvent(screen));
+
+        screenProfiler.initProfilerMarkerForWindow(screen.getId());
     }
 
     @Override

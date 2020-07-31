@@ -86,6 +86,8 @@ public class TableWidgetDelegate {
     public int lastClickClientX;
     public int lastClickClientY;
 
+    public String profilerMarker;
+
     public String tableSortResetLabel;
     public String tableSortAscendingLabel;
     public String tableSortDescendingLabel;
