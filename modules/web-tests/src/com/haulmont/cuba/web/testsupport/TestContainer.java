@@ -20,6 +20,7 @@ import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.LoggerContext;
 import com.haulmont.cuba.core.app.ConfigStorageService;
 import com.haulmont.cuba.core.app.DataService;
+import com.haulmont.cuba.core.app.ScreenProfilerService;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.ClientType;
 import com.haulmont.cuba.core.global.Events;
@@ -35,6 +36,7 @@ import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.web.sys.remoting.WebRemoteProxyBeanCreator;
 import com.haulmont.cuba.web.testsupport.proxy.ConfigStorageServiceProxy;
 import com.haulmont.cuba.web.testsupport.proxy.DataServiceProxy;
+import com.haulmont.cuba.web.testsupport.proxy.ScreenProfilerServiceProxy;
 import com.haulmont.cuba.web.testsupport.proxy.TestServiceProxy;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringSubstitutor;
@@ -234,6 +236,7 @@ public class TestContainer extends ExternalResource implements BeforeAllCallback
 
         TestServiceProxy.setDefault(ConfigStorageService.class, new ConfigStorageServiceProxy());
         TestServiceProxy.setDefault(DataService.class, new DataServiceProxy(this));
+        TestServiceProxy.setDefault(ScreenProfilerService.class, new ScreenProfilerServiceProxy(this));
     }
 
     @Override
