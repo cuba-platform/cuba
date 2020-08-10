@@ -54,6 +54,26 @@ class QueryStringProcessorTest extends  Specification {
         thrown(RuntimeException)
     }
 
+    def "test upper case"() {
+        def query
+
+        when:
+        query = processor.process('FROM test$Order o LEFT JOIN o.orderLines l WHERE l.product = :product', Order)
+        then:
+        query == 'select o FROM test$Order o LEFT JOIN o.orderLines l WHERE l.product = :product'
+
+        when:
+        query = processor.process('FROM test$Customer c, test$Order o WHERE o.customer = c', Order)
+        then:
+        query == 'select o FROM test$Customer c, test$Order o WHERE o.customer = c'
+
+        when:
+        processor.process('FROM test$OrderLine l JOIN l.order o', Order)
+        then: "not supported, use full query syntax"
+        thrown(RuntimeException)
+    }
+
+
     def "test where"() {
         def query
 
