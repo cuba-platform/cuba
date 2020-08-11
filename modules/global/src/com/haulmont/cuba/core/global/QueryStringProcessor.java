@@ -58,10 +58,10 @@ public class QueryStringProcessor {
         if (startMatcher.find()) {
             String startToken = startMatcher.group(1);
             // select, from, where, order by
-            if ("select".equals(startToken)) {
+            if ("select".equalsIgnoreCase(startToken)) {
                 return query;
             }
-            if ("from".equals(startToken)) {
+            if ("from".equalsIgnoreCase(startToken)) {
                 Pattern entityPattern = Pattern.compile(entityName.replace("$", "\\$") + "\\s+(\\w+)");
                 Matcher entityMatcher = entityPattern.matcher(query);
                 if (entityMatcher.find()) {
@@ -72,7 +72,7 @@ public class QueryStringProcessor {
                             "Cannot find alias for entity %s in query '%s'", entityName, query));
                 }
             }
-            if ("where".equals(startToken) || "order".equals(startToken)) {
+            if ("where".equalsIgnoreCase(startToken) || "order".equalsIgnoreCase(startToken)) {
                 return "select e from " + entityName + " e " + query;
             }
         } else {
