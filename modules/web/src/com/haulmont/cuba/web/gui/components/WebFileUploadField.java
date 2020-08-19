@@ -326,14 +326,7 @@ public class WebFileUploadField extends WebAbstractUploadField<CubaFileUploadWra
         return strings[strings.length - 1];
     }
 
-    /**
-     * Get content bytes for uploaded file
-     *
-     * @return Bytes for uploaded file
-     * @deprecated Please use {@link WebFileUploadField#getFileId()} method and {@link FileUploadingAPI}
-     */
     @Override
-    @Deprecated
     public byte[] getBytes() {
         byte[] bytes = null;
         try {
