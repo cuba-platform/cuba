@@ -18,6 +18,7 @@ package com.haulmont.cuba.gui.components;
 
 import com.haulmont.bali.events.Subscription;
 import com.haulmont.cuba.core.entity.FileDescriptor;
+import com.haulmont.cuba.gui.upload.FileUploadingAPI;
 
 import javax.annotation.Nullable;
 import java.io.InputStream;
@@ -27,13 +28,13 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 /**
- * Component for uploading files from client to server.
+ * Component for uploading files from user's browser to the web block.
  */
 public interface FileUploadField extends UploadField, Field<FileDescriptor>, Component.Focusable, Buffered {
     String NAME = "upload";
 
     /**
-     * Defines when FileDescriptor will be committed.
+     * Defines when FileDescriptor is committed.
      */
     enum FileStoragePutMode {
         /**
@@ -47,7 +48,7 @@ public interface FileUploadField extends UploadField, Field<FileDescriptor>, Com
     }
 
     /**
-     * Get id for uploaded file in {@link com.haulmont.cuba.gui.upload.FileUploading}.
+     * Get id of the uploaded file in {@link com.haulmont.cuba.gui.upload.FileUploading}.
      * @return File Id.
      */
     UUID getFileId();
@@ -62,11 +63,12 @@ public interface FileUploadField extends UploadField, Field<FileDescriptor>, Com
     FileDescriptor getFileDescriptor();
 
     /**
-     * Get content bytes for uploaded file.
-     * @return Bytes for uploaded file.
-     * @deprecated Please use {@link FileUploadField#getFileId()} method and {@link com.haulmont.cuba.gui.upload.FileUploading}.
+     * Get content of the uploaded file.
+     * <p>
+     * Consider using {@link FileUploadingAPI#getFile(UUID)} and passing {@link FileUploadField#getFileId()} to it.
+     *
+     * @return array of bytes of the uploaded file
      */
-    @Deprecated
     byte[] getBytes();
 
     /**
@@ -178,7 +180,7 @@ public interface FileUploadField extends UploadField, Field<FileDescriptor>, Com
     String getClearButtonDescription();
 
     /**
-     * Describes before value clear event. Event is invoked before value clearing when user use clear button.
+     * Event sent before value clearing when the user clicks the clear button.
      */
     class BeforeValueClearEvent extends EventObject {
         private FileUploadField target;
@@ -213,7 +215,7 @@ public interface FileUploadField extends UploadField, Field<FileDescriptor>, Com
 
     /**
      * Sets a callback interface which is invoked by the {@link FileUploadField} before value
-     * clearing when user use clear button.
+     * clearing when the user clicks the clear button.
      * <p>
      * Listener can prevent value clearing using {@link BeforeValueClearEvent#preventClearAction()}.
      *
@@ -230,7 +232,7 @@ public interface FileUploadField extends UploadField, Field<FileDescriptor>, Com
     void removeBeforeValueClearListener(Consumer<BeforeValueClearEvent> listener);
 
     /**
-     * Describes after value clear event.
+     * Event sent after value is cleared.
      */
     class AfterValueClearEvent extends EventObject {
         private FileUploadField target;
