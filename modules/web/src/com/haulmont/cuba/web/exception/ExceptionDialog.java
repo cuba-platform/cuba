@@ -363,29 +363,7 @@ public class ExceptionDialog extends CubaWindow {
     }
 
     public void sendSupportEmail(String message, String stackTrace) {
-        try {
-            User user = userSessionSource.getUserSession().getUser();
-            String date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(timeSource.currentTimestamp());
-
-            Map<String, Object> binding = new HashMap<>();
-            binding.put("timestamp", date);
-            binding.put("errorMessage", message);
-            binding.put("stacktrace", stackTrace);
-            binding.put("systemId", clientConfig.getSystemID());
-            binding.put("userLogin", user.getLogin());
-            binding.put("userMessage", "");
-
-            if (MapUtils.isNotEmpty(additionalExceptionReportBinding)) {
-                binding.putAll(additionalExceptionReportBinding);
-            }
-
-            reportService.sendExceptionReport(clientConfig.getSupportEmail(), Collections.unmodifiableMap(binding));
-
-            Notification.show(messages.getMainMessage("exceptionDialog.emailSent"));
-        } catch (Throwable e) {
-            log.error("Error sending exception report", e);
-            Notification.show(messages.getMainMessage("exceptionDialog.emailSendingErr"));
-        }
+        sendSupportEmail(message, stackTrace, "");
     }
 
     public void sendSupportEmail(String message, String stackTrace, String userMessage) {
