@@ -62,6 +62,8 @@ public class ExceptionDialog extends CubaWindow {
 
     protected TextArea stackTraceTextArea;
 
+    protected TextArea userMessageTextArea;
+
     protected Button copyButton;
 
     protected Button showStackTraceButton;
@@ -183,14 +185,25 @@ public class ExceptionDialog extends CubaWindow {
 
         if (userSessionSource.getUserSession() != null) {
             if (!StringUtils.isBlank(clientConfig.getSupportEmail())) {
+                userMessageTextArea = new TextArea();
+                userMessageTextArea.setSizeFull();
+                userMessageTextArea.setWordWrap(true);
+                userMessageTextArea.setWidth(100, Unit.PERCENTAGE);
+                userMessageTextArea.setHeight(theme.get("cuba.web.ExceptionDialog.textArea.height"));
+                userMessageTextArea.setMaxLength(500);
+                userMessageTextArea.setCaption(messages.getMainMessage("exceptionDialog.userMessageTextArea.caption"));
+
+                mainLayout.addComponent(userMessageTextArea, 1);
+
                 Button reportButton = new CubaButton(messages.getMainMessage("exceptionDialog.reportBtn"));
                 reportButton.addClickListener(event -> {
-                    sendSupportEmail(text, stackTrace);
+                    sendSupportEmail(text, stackTrace, userMessageTextArea.getValue());
                     reportButton.setEnabled(false);
                 });
                 buttonsLayout.addComponent(reportButton);
 
                 if (ui.isTestMode()) {
+                    userMessageTextArea.setCubaId("userMessageTextArea");
                     reportButton.setCubaId("errorReportButton");
                 }
             }
@@ -350,6 +363,10 @@ public class ExceptionDialog extends CubaWindow {
     }
 
     public void sendSupportEmail(String message, String stackTrace) {
+        sendSupportEmail(message, stackTrace, "");
+    }
+
+    public void sendSupportEmail(String message, String stackTrace, String userMessage) {
         try {
             User user = userSessionSource.getUserSession().getUser();
             String date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(timeSource.currentTimestamp());
@@ -360,6 +377,7 @@ public class ExceptionDialog extends CubaWindow {
             binding.put("stacktrace", stackTrace);
             binding.put("systemId", clientConfig.getSystemID());
             binding.put("userLogin", user.getLogin());
+            binding.put("userMessage", userMessage);
 
             if (MapUtils.isNotEmpty(additionalExceptionReportBinding)) {
                 binding.putAll(additionalExceptionReportBinding);
@@ -409,11 +427,11 @@ public class ExceptionDialog extends CubaWindow {
         }
     }
 
-    public void setAdditionalExceptionReportBinding(Map<String, Object> binding) {
-        additionalExceptionReportBinding = binding;
-    }
-
     public Map<String, Object> getAdditionalExceptionReportBinding() {
         return additionalExceptionReportBinding;
+    }
+
+    public void setAdditionalExceptionReportBinding(Map<String, Object> binding) {
+        additionalExceptionReportBinding = binding;
     }
 }
