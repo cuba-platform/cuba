@@ -549,7 +549,7 @@ public class RdbmsStore implements DataStore {
                 }
 
                 for (Entity entity : saved) {
-                    em.detach(entity);
+                    detachEntity(em, entity, getViewFromContext(context, entity));
                 }
 
                 entityChangedEventManager.publish(events);
