@@ -531,7 +531,7 @@ public class RdbmsStore implements DataStore {
                 List<EntityChangedEvent> events = entityChangedEventManager.collect(saved);
                 em.flush();
                 for (Entity entity : saved) {
-                    em.detach(entity);
+                    detachEntity(em, entity, getViewFromContext(context, entity));
                 }
                 entityChangedEventManager.publish(events);
             }
