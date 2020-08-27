@@ -31,6 +31,7 @@ import org.hibernate.validator.internal.constraintvalidators.bv.time.pastorprese
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Nullable;
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.validation.Validation;
 import javax.validation.Validator;
@@ -42,6 +43,7 @@ import javax.validation.constraints.PastOrPresent;
 import java.time.Instant;
 import java.util.Date;
 import java.util.Locale;
+import java.util.function.Supplier;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
@@ -61,11 +63,17 @@ public class BeanValidationImpl implements BeanValidation {
     @Inject
     protected EntityStates entityStates;
 
+    protected ValidatorFactory defaultValidatorFactory;
+
+    @PostConstruct
+    public void init() {
+        HibernateValidatorConfiguration configuration = getValidatorFactoryConfiguration(this::getCurrentLocale);
+        defaultValidatorFactory = configuration.buildValidatorFactory();
+    }
+
     @Override
     public Validator getValidator() {
-        Locale locale = getCurrentLocale();
-
-        return getValidatorWithDefaultFactory(locale);
+        return defaultValidatorFactory.getValidator();
     }
 
     @Override
@@ -82,7 +90,8 @@ public class BeanValidationImpl implements BeanValidation {
         if (constraintMapping == null
                 && options.getFailFast() == null
                 && options.getLocale() != null) {
-            return getValidatorWithDefaultFactory(options.getLocale());
+
+            return defaultValidatorFactory.getValidator();
         }
 
         Locale locale;
@@ -92,7 +101,7 @@ public class BeanValidationImpl implements BeanValidation {
             locale = getCurrentLocale();
         }
 
-        HibernateValidatorConfiguration configuration = getValidatorFactoryConfiguration(locale);
+        HibernateValidatorConfiguration configuration = getValidatorFactoryConfiguration(() -> locale);
         if (options.getFailFast() != null) {
             configuration.failFast(options.getFailFast());
         }
@@ -104,18 +113,12 @@ public class BeanValidationImpl implements BeanValidation {
         return factory.getValidator();
     }
 
-    protected Validator getValidatorWithDefaultFactory(Locale locale) {
-        HibernateValidatorConfiguration configuration = getValidatorFactoryConfiguration(locale);
-        ValidatorFactory factory = configuration.buildValidatorFactory();
-        return factory.getValidator();
-    }
-
-    protected HibernateValidatorConfiguration getValidatorFactoryConfiguration(Locale locale) {
+    protected HibernateValidatorConfiguration getValidatorFactoryConfiguration(Supplier<Locale> localeSupplier) {
         HibernateValidatorConfiguration configuration = Validation.byProvider(HibernateValidator.class)
                 .configure()
                 .clockProvider(new CubaValidationTimeProvider(timeSource))
                 .traversableResolver(new CubaValidationTraversableResolver(metadata, entityStates))
-                .messageInterpolator(new CubaValidationMessagesInterpolator(messages, locale));
+                .messageInterpolator(new CubaValidationMessagesInterpolator(messages, localeSupplier));
 
         ConstraintMapping constraintMapping = configuration.createConstraintMapping();
 

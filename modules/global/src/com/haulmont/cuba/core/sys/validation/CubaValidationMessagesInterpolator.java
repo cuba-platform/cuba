@@ -31,6 +31,7 @@ import javax.validation.MessageInterpolator;
 import javax.validation.ValidationException;
 import java.util.List;
 import java.util.Locale;
+import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -41,23 +42,22 @@ public class CubaValidationMessagesInterpolator implements MessageInterpolator {
 
     protected Messages messages;
     protected ExpressionFactory expressionFactory;
-    protected Locale locale;
+    protected Supplier<Locale> localeSupplier;
 
     protected static final Pattern LEFT_BRACE = Pattern.compile("\\{", Pattern.LITERAL);
     protected static final Pattern RIGHT_BRACE = Pattern.compile("\\}", Pattern.LITERAL);
     protected static final Pattern SLASH = Pattern.compile("\\\\", Pattern.LITERAL);
     protected static final Pattern DOLLAR = Pattern.compile("\\$", Pattern.LITERAL);
 
-    public CubaValidationMessagesInterpolator(Messages messages, Locale locale) {
+    public CubaValidationMessagesInterpolator(Messages messages, Supplier<Locale> localeSupplier) {
         this.messages = messages;
-        this.locale = locale;
+        this.localeSupplier = localeSupplier;
         this.expressionFactory = ExpressionFactory.newInstance();
     }
 
     @Override
     public String interpolate(String messageTemplate, Context context) {
-        Locale defaultLocale = locale;
-        return interpolate(messageTemplate, context, defaultLocale);
+        return interpolate(messageTemplate, context, localeSupplier.get());
     }
 
     @Override
