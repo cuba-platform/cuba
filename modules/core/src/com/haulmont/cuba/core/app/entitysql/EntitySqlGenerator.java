@@ -303,20 +303,21 @@ public class EntitySqlGenerator {
             List<String> valuesStr = new ArrayList<>();
             List<String> whereStr = new ArrayList<>();
             for (Map.Entry<String, FieldEntry> entry : fieldToColumnMapping.entrySet()) {
-                Pair<List<String>, List<String>> insertStrings = getUpdateStrings(entry.getValue(), entity);
+                Pair<List<String>, List<String>> insertStrings = getUpdateStrings(entry, entity);
                 valuesStr.addAll(insertStrings.getFirst());
                 whereStr.addAll(insertStrings.getSecond());
             }
             return format(updateTemplate, name, convertList(valuesStr), "", convertList(whereStr).replaceAll(",", " and "));
         }
 
-        protected Pair<List<String>, List<String>> getUpdateStrings(FieldEntry fieldEntry, Entity entity) {
+        protected Pair<List<String>, List<String>> getUpdateStrings(Map.Entry<String, FieldEntry> mapEntry, Entity entity) {
             List<String> valuesStr = new ArrayList<>();
             List<String> whereStr = new ArrayList<>();
+            FieldEntry fieldEntry = mapEntry.getValue();
             String fieldName = fieldEntry.getFieldName();
-            if (!fieldName.equalsIgnoreCase(ID)) {
+            if (!ID.equals(mapEntry.getKey())) {
                 if (fieldEntry.isEmbedded) {
-                    for (FieldEntry entry : fieldEntry.fieldsMapping.values()) {
+                    for (Map.Entry<String, FieldEntry> entry : fieldEntry.fieldsMapping.entrySet()) {
                         Pair<List<String>, List<String>> updateStrings = getUpdateStrings(entry, entity);
                         valuesStr.addAll(updateStrings.getSecond());
                     }
@@ -326,7 +327,7 @@ public class EntitySqlGenerator {
                 }
             } else {
                 if (fieldEntry.isEmbedded) {
-                    for (FieldEntry entry : fieldEntry.fieldsMapping.values()) {
+                    for (Map.Entry<String, FieldEntry> entry : fieldEntry.fieldsMapping.entrySet()) {
                         Pair<List<String>, List<String>> updateStrings = getUpdateStrings(entry, entity);
                         whereStr.addAll(updateStrings.getFirst());
                     }
@@ -415,6 +416,7 @@ public class EntitySqlGenerator {
                 Column columnAnnotation = field.getAnnotation(Column.class);
                 JoinColumn joinColumnAnnotation = field.getAnnotation(JoinColumn.class);
                 EmbeddedId embeddedIdAnnotation = field.getAnnotation(EmbeddedId.class);
+                Id idAnnotation = field.getAnnotation(Id.class);
 
                 if (embedded != null || embeddedIdAnnotation != null) {
                     Class<?> embeddedObjectType = field.getType();
@@ -431,7 +433,13 @@ public class EntitySqlGenerator {
                     result.put(field.getName(), new FieldEntry(field.getName(), embeddedFields));
 
                 } else if (columnAnnotation != null) {
-                    result.put(field.getName(), new FieldEntry(field.getName(), columnAnnotation.name()));
+                    FieldEntry entry = new FieldEntry(field.getName(), columnAnnotation.name());
+                    if (idAnnotation != null) {
+                        idColumn = columnAnnotation.name();
+                        result.put(ID, entry);
+                    } else {
+                        result.put(field.getName(), entry);
+                    }
                 } else if (joinColumnAnnotation != null) {
                     result.put(field.getName(), new FieldEntry(field.getName(), joinColumnAnnotation.name()));
                 }
