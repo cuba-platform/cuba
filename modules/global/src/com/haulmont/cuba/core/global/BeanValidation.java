@@ -57,7 +57,7 @@ public interface BeanValidation {
         protected Boolean failFast;
         protected Locale locale;
 
-        public Boolean getFailFast() {
+        public @Nullable Boolean getFailFast() {
             return failFast;
         }
 
@@ -65,7 +65,7 @@ public interface BeanValidation {
             this.failFast = failFast;
         }
 
-        public Locale getLocale() {
+        public @Nullable Locale getLocale() {
             return locale;
         }
 
