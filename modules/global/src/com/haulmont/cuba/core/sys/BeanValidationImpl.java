@@ -91,7 +91,7 @@ public class BeanValidationImpl implements BeanValidation {
                 && options.getFailFast() == null
                 && options.getLocale() != null) {
 
-            HibernateValidatorConfiguration configuration = getValidatorFactoryConfiguration(() -> options.getLocale())
+            HibernateValidatorConfiguration configuration = getValidatorFactoryConfiguration(options::getLocale);
             ValidatorFactory factory = configuration.buildValidatorFactory();
             return factory.getValidator();
         }
