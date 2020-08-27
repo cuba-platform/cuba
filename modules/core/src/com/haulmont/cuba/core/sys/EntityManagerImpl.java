@@ -133,7 +133,7 @@ public class EntityManagerImpl implements EntityManager {
             Entity destEntity = findOrCreate(entity.getClass(), entity.getId());
             deepCopyIgnoringNulls(entity, destEntity, Sets.newIdentityHashSet());
             if (entityStates.isNew(destEntity)) {
-                entityPersistingEventMgr.publishEvent(entity);
+                entityPersistingEventMgr.publishEvent(destEntity);
             }
             //noinspection unchecked
             return (T) destEntity;

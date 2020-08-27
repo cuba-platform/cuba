@@ -19,14 +19,15 @@ package com.haulmont.cuba.testmodel.sales_1;
 import com.haulmont.bali.db.ArrayHandler;
 import com.haulmont.bali.db.QueryRunner;
 import com.haulmont.cuba.core.EntityManager;
-import com.haulmont.cuba.core.app.events.EntityChangedEvent;
 import com.haulmont.cuba.core.Persistence;
+import com.haulmont.cuba.core.app.events.EntityChangedEvent;
 import com.haulmont.cuba.core.app.events.EntityPersistingEvent;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.IdProxy;
 import com.haulmont.cuba.core.entity.contracts.Id;
 import com.haulmont.cuba.core.listener.*;
 import com.haulmont.cuba.testmodel.primary_keys.IntIdentityEntity;
+import com.haulmont.cuba.testmodel.sales.Status;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionalEventListener;
@@ -48,8 +49,7 @@ public class TestEntityChangedEventListener implements
         AfterUpdateEntityListener<Order>,
         AfterDeleteEntityListener<Order>,
         BeforeDetachEntityListener<Order>,
-        BeforeAttachEntityListener<Order>
-{
+        BeforeAttachEntityListener<Order> {
 
     public static class EventInfo {
         public final String message;
@@ -57,7 +57,7 @@ public class TestEntityChangedEventListener implements
 
         public EventInfo(String message, Object payload) {
             this.message = message;
-            this.payload = new Object[] { payload };
+            this.payload = new Object[]{payload};
         }
 
         public EventInfo(String message, Object[] payload) {
@@ -99,6 +99,13 @@ public class TestEntityChangedEventListener implements
     }
 
     @EventListener
+    void beforePersistCustomer(EntityPersistingEvent<Customer> event) {
+        if (event.getEntity().getStatus() == null) {
+            event.getEntity().setStatus(Status.OK);
+        }
+    }
+
+    @EventListener
     void beforeCommit(EntityChangedEvent<Order, UUID> event) {
         allEvents.add(new EventInfo("EntityChangedEvent: beforeCommit, " + event.getType(), event));
         entityChangedEvents.add(new Info(event, isCommitted(event.getEntityId())));
@@ -106,13 +113,13 @@ public class TestEntityChangedEventListener implements
 
     @TransactionalEventListener
     void afterCommit(EntityChangedEvent<Order, UUID> event) {
-        allEvents.add(new EventInfo("EntityChangedEvent: afterCommit, "  + event.getType(), event));
+        allEvents.add(new EventInfo("EntityChangedEvent: afterCommit, " + event.getType(), event));
         entityChangedEvents.add(new Info(event, isCommitted(event.getEntityId())));
     }
 
     @TransactionalEventListener
     void afterCommitIdentity(EntityChangedEvent<IntIdentityEntity, IdProxy<Integer>> event) {
-        allEvents.add(new EventInfo("EntityChangedEvent: afterCommit, "  + event.getType(), event));
+        allEvents.add(new EventInfo("EntityChangedEvent: afterCommit, " + event.getType(), event));
         entityChangedEvents.add(new Info(event, isCommittedIdentity(event.getEntityId())));
     }
 
@@ -123,7 +130,7 @@ public class TestEntityChangedEventListener implements
 
     @Override
     public void afterComplete(boolean committed, Collection<Entity> detachedEntities) {
-        allEvents.add(new EventInfo("AfterCompleteTransactionListener", new Object[] {committed, detachedEntities}));
+        allEvents.add(new EventInfo("AfterCompleteTransactionListener", new Object[]{committed, detachedEntities}));
     }
 
     @Override
