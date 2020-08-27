@@ -91,7 +91,7 @@ public class BeanValidationImpl implements BeanValidation {
                 && options.getFailFast() == null
                 && options.getLocale() != null) {
 
-            return defaultValidatorFactory.getValidator();
+            return defaultValidatorFactory.getValidator(() -> options.getLocale());
         }
 
         Locale locale;
