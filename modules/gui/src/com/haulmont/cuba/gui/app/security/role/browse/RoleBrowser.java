@@ -184,13 +184,15 @@ public class RoleBrowser extends AbstractLookup {
             rolesTable.setMultiSelect(true);
         }
 
-        rolesTable.addGeneratedColumn("defaultRole", entity -> {
-            CheckBox checkBox = uiComponents.create(CheckBox.NAME);
-            checkBox.setValue(Boolean.TRUE.equals(entity.getDefaultRole()));
-            checkBox.setEditable(!entity.isPredefined());
-            checkBox.addValueChangeListener(e -> entity.setDefaultRole(e.getValue()));
-            return checkBox;
-        });
+        if (security.isEntityAttrReadPermitted(rolesDs.getMetaClass(), "defaultRole")) {
+            rolesTable.addGeneratedColumn("defaultRole", entity -> {
+                CheckBox checkBox = uiComponents.create(CheckBox.NAME);
+                checkBox.setValue(Boolean.TRUE.equals(entity.getDefaultRole()));
+                checkBox.setEditable(!entity.isPredefined());
+                checkBox.addValueChangeListener(e -> entity.setDefaultRole(e.getValue()));
+                return checkBox;
+            });
+        }
 
         rolesDs.addItemPropertyChangeListener(e -> {
             if (DEFAULT_ROLE_PROPERTY.equals(e.getProperty())) {
