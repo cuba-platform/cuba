@@ -315,7 +315,7 @@ public abstract class MasterDetailScreen<T extends Entity> extends StandardLooku
                     CollectionContainer container = ((ContainerOptions) options).getContainer();
                     if (container instanceof HasLoader) {
                         DataLoader optionsLoader = ((HasLoader) container).getLoader();
-                        if (optionsLoader != null) {
+                        if (optionsLoader != null && DataLoadersHelper.areAllParametersSet(optionsLoader)) {
                             optionsLoader.load();
                         }
                     }
