@@ -27,6 +27,7 @@ import com.haulmont.cuba.core.global.TimeSource;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.security.app.Authenticated;
 import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.stereotype.Component;
@@ -96,12 +97,15 @@ public class Scheduling implements SchedulingMBean {
     @Authenticated
     @Override
     public String removeExecutionHistory(String age, String maxPeriod) {
+        if (StringUtils.isEmpty(age)) {
+            throw new IllegalArgumentException("Age cannot be empty");
+        }
         List<UUID> list;
         Transaction tx = persistence.createTransaction();
         try {
             EntityManager em = persistence.getEntityManager();
             String jpql = "select e.id from sys$ScheduledExecution e where e.startTime < ?1";
-            if (maxPeriod != null) {
+            if (StringUtils.isNotEmpty(maxPeriod)) {
                 jpql += " and e.task.period <= ?2";
             }
             jpql += " order by e.startTime";
@@ -110,7 +114,7 @@ public class Scheduling implements SchedulingMBean {
 
             Date startDate = DateUtils.addHours(timeSource.currentTimestamp(), -Integer.parseInt(age));
             query.setParameter(1, startDate);
-            if (maxPeriod != null) {
+            if (StringUtils.isNotEmpty(maxPeriod)) {
                 query.setParameter(2, Integer.parseInt(maxPeriod) * 3600);
             }
             list = query.getResultList();
