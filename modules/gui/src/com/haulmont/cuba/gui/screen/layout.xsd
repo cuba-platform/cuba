@@ -2427,6 +2427,8 @@
                 <xs:attribute name="multiselect" type="xs:boolean"/>
                 <xs:attribute name="selectionMode" type="treeSelectionMode"/>
 
+                <xs:attribute name="contentMode" type="contentMode"/>
+
                 <xs:attribute name="rowHeight" type="xs:double"/>
 
                 <xs:attributeGroup ref="hasTabIndex"/>
