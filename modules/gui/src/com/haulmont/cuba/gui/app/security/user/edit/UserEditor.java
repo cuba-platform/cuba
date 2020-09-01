@@ -293,15 +293,16 @@ public class UserEditor extends AbstractEditor<User> {
                 ((AbstractDatasource) rolesDs).getItemsToUpdate().remove(userRole);
                 ((AbstractDatasource) userDs).setModified(false);
             }
-            if (notExcludedUserRoles.containsKey(userRole.getRole().getName())) {
+            String roleName = userRole.getRoleName() != null ? userRole.getRoleName() : userRole.getRole().getName();
+            if (notExcludedUserRoles.containsKey(roleName)) {
                 if (userRole.getRoleName() != null) {
                     rolesDs.excludeItem(userRole);
                     continue;
                 } else {
-                    rolesDs.excludeItem(notExcludedUserRoles.get(userRole.getRole().getName()));
+                    rolesDs.excludeItem(notExcludedUserRoles.get(roleName));
                 }
             }
-            notExcludedUserRoles.put(userRole.getRole().getName(), userRole);
+            notExcludedUserRoles.put(roleName, userRole);
         }
     }
 
