@@ -56,9 +56,18 @@ public class BruteForceUserCredentialsChecker implements UserCredentialsChecker,
                         && clientCredentials.getIpAddress() != null
                         && bruteForceProtectionAPI.loginAttemptsLeft(clientCredentials.getUserIdentifier(),
                         clientCredentials.getIpAddress()) <= 0) {
-                    String message = messages.formatMessage(MSG_PACK,
-                            "LoginException.loginAttemptsNumberExceeded",
-                            bruteForceProtectionAPI.getBruteForceBlockIntervalSec());
+
+                    String message;
+                    if (clientCredentials.isOverrideLocale()) {
+                        message = messages.formatMessage(MSG_PACK,
+                                "LoginException.loginAttemptsNumberExceeded",
+                                clientCredentials.getLocale(),
+                                bruteForceProtectionAPI.getBruteForceBlockIntervalSec());
+                    } else {
+                        message = messages.formatMessage(MSG_PACK,
+                                "LoginException.loginAttemptsNumberExceeded",
+                                bruteForceProtectionAPI.getBruteForceBlockIntervalSec());
+                    }
 
                     throw new AccountLockedException(message);
                 }
