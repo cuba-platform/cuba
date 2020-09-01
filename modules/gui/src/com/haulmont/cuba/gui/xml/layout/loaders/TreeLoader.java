@@ -20,6 +20,7 @@ import com.google.common.base.Strings;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.ButtonsPanel;
 import com.haulmont.cuba.gui.components.CaptionMode;
+import com.haulmont.cuba.gui.components.ContentMode;
 import com.haulmont.cuba.gui.components.Tree;
 import com.haulmont.cuba.gui.components.data.tree.ContainerTreeItems;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
@@ -82,6 +83,7 @@ public class TreeLoader extends ActionsHolderLoader<Tree> {
         loadContextHelp(resultComponent, element);
 
         loadSelectionMode(resultComponent, element);
+        loadContentMode(resultComponent, element);
 
         loadRowHeight(resultComponent, element);
     }
@@ -167,6 +169,13 @@ public class TreeLoader extends ActionsHolderLoader<Tree> {
         String rowHeight = element.attributeValue("rowHeight");
         if (!Strings.isNullOrEmpty(rowHeight)) {
             component.setRowHeight(Double.parseDouble(rowHeight));
+        }
+    }
+
+    protected void loadContentMode(Tree component, Element element) {
+        String contentMode = element.attributeValue("contentMode");
+        if (!Strings.isNullOrEmpty(contentMode)) {
+            component.setContentMode(ContentMode.valueOf(contentMode));
         }
     }
 }
