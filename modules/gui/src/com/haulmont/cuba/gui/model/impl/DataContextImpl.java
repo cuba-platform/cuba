@@ -28,6 +28,7 @@ import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.EntityReferencesNormalizer;
 import com.haulmont.cuba.core.sys.persistence.FetchGroupUtils;
 import com.haulmont.cuba.gui.model.DataContext;
+import com.haulmont.cuba.gui.model.MergeOptions;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.persistence.queries.FetchGroup;
 import org.eclipse.persistence.queries.FetchGroupTracker;
@@ -150,14 +151,15 @@ public class DataContextImpl implements DataContext {
 
     @SuppressWarnings("unchecked")
     @Override
-    public <T extends Entity> T merge(T entity) {
+    public <T extends Entity> T merge(T entity, MergeOptions options) {
         checkNotNullArgument(entity, "entity is null");
+        checkNotNullArgument(entity, "options object is null");
 
         disableListeners = true;
         T result;
         try {
             Set<Entity> merged = Sets.newIdentityHashSet();
-            result = (T) internalMerge(entity, merged, true);
+            result = (T) internalMerge(entity, merged, true, options);
         } finally {
             disableListeners = false;
         }
@@ -165,8 +167,14 @@ public class DataContextImpl implements DataContext {
     }
 
     @Override
-    public EntitySet merge(Collection<? extends Entity> entities) {
+    public <T extends Entity> T merge(T entity) {
+        return merge(entity, new MergeOptions());
+    }
+
+    @Override
+    public EntitySet merge(Collection<? extends Entity> entities, MergeOptions options) {
         checkNotNullArgument(entities, "entity collection is null");
+        checkNotNullArgument(entities, "options object is null");
 
         List<Entity> managedList = new ArrayList<>(entities.size());
         disableListeners = true;
@@ -174,7 +182,7 @@ public class DataContextImpl implements DataContext {
             Set<Entity> merged = Sets.newIdentityHashSet();
 
             for (Entity entity : entities) {
-                Entity managed = internalMerge(entity, merged, true);
+                Entity managed = internalMerge(entity, merged, true, options);
                 managedList.add(managed);
             }
         } finally {
@@ -183,7 +191,12 @@ public class DataContextImpl implements DataContext {
         return EntitySet.of(managedList);
     }
 
-    protected Entity internalMerge(Entity entity, Set<Entity> mergedSet, boolean isRoot) {
+    @Override
+    public EntitySet merge(Collection<? extends Entity> entities) {
+        return merge(entities, new MergeOptions());
+    }
+
+    protected Entity internalMerge(Entity entity, Set<Entity> mergedSet, boolean isRoot, MergeOptions options) {
         Map<Object, Entity> entityMap = content.computeIfAbsent(entity.getClass(), aClass -> new HashMap<>());
         Entity managed = entityMap.get(entity.getId());
 
@@ -201,7 +214,7 @@ public class DataContextImpl implements DataContext {
             managed = copyEntity(entity);
             entityMap.put(managed.getId(), managed);
 
-            mergeState(entity, managed, mergedSet, isRoot);
+            mergeState(entity, managed, mergedSet, isRoot, options);
 
             managed.addPropertyChangeListener(propertyChangeListener);
 
@@ -216,7 +229,7 @@ public class DataContextImpl implements DataContext {
             }
 
             if (managed != entity) {
-                mergeState(entity, managed, mergedSet, isRoot);
+                mergeState(entity, managed, mergedSet, isRoot, options);
             }
             return managed;
         }
@@ -233,13 +246,13 @@ public class DataContextImpl implements DataContext {
         return dstEntity;
     }
 
-    protected void mergeState(Entity srcEntity, Entity dstEntity, Set<Entity> mergedSet, boolean isRoot) {
+    protected void mergeState(Entity srcEntity, Entity dstEntity, Set<Entity> mergedSet, boolean isRoot, MergeOptions options) {
         EntityStates entityStates = getEntityStates();
 
         boolean srcNew = entityStates.isNew(srcEntity);
         boolean dstNew = entityStates.isNew(dstEntity);
 
-        mergeSystemState(srcEntity, dstEntity, isRoot);
+        mergeSystemState(srcEntity, dstEntity, isRoot, options);
 
         MetaClass metaClass = getMetadata().getClassNN(srcEntity.getClass());
         MetaProperty primaryKeyProperty = getMetadataTools().getPrimaryKeyProperty(metaClass);
@@ -254,7 +267,7 @@ public class DataContextImpl implements DataContext {
                 Object value = srcEntity.getValue(propertyName);
 
                 // ignore null values in non-root source entities
-                if (!isRoot && value == null) {
+                if (!isRoot && !options.isFresh() && value == null) {
                     continue;
                 }
 
@@ -272,7 +285,7 @@ public class DataContextImpl implements DataContext {
                 Object value = srcEntity.getValue(propertyName);
 
                 // ignore null values in non-root source entities
-                if (!isRoot && value == null) {
+                if (!isRoot && !options.isFresh() && value == null) {
                     continue;
                 }
 
@@ -283,16 +296,16 @@ public class DataContextImpl implements DataContext {
 
                 if (value instanceof Collection) {
                     if (value instanceof List) {
-                        mergeList((List) value, dstEntity, property, isRoot, mergedSet);
+                        mergeList((List) value, dstEntity, property, isRoot, options, mergedSet);
                     } else if (value instanceof Set) {
-                        mergeSet((Set) value, dstEntity, property, isRoot, mergedSet);
+                        mergeSet((Set) value, dstEntity, property, isRoot, options, mergedSet);
                     } else {
                         throw new UnsupportedOperationException("Unsupported collection type: " + value.getClass().getName());
                     }
                 } else {
                     Entity srcRef = (Entity) value;
                     if (!mergedSet.contains(srcRef)) {
-                        Entity managedRef = internalMerge(srcRef, mergedSet, false);
+                        Entity managedRef = internalMerge(srcRef, mergedSet, false, options);
                         setPropertyValue(dstEntity, property, managedRef, false);
                         if (getMetadataTools().isEmbedded(property)) {
                             EmbeddedPropertyChangeListener listener = new EmbeddedPropertyChangeListener(dstEntity);
@@ -359,9 +372,9 @@ public class DataContextImpl implements DataContext {
         }
     }
 
-    protected void mergeSystemState(Entity srcEntity, Entity dstEntity, boolean isRoot) {
+    protected void mergeSystemState(Entity srcEntity, Entity dstEntity, boolean isRoot, MergeOptions options) {
         if (dstEntity instanceof BaseGenericIdEntity) {
-            if (isRoot) {
+            if (isRoot || options.isFresh()) {
                 BaseEntityInternalAccess.copySystemState((BaseGenericIdEntity) srcEntity, (BaseGenericIdEntity) dstEntity);
             }
 
@@ -385,11 +398,11 @@ public class DataContextImpl implements DataContext {
     }
 
     protected void mergeList(List<Entity> list, Entity managedEntity, MetaProperty property, boolean replace,
-                             Set<Entity> mergedSet) {
+                             MergeOptions options, Set<Entity> mergedSet) {
         if (replace) {
             List<Entity> managedRefs = new ArrayList<>(list.size());
             for (Entity entity : list) {
-                Entity managedRef = internalMerge(entity, mergedSet, false);
+                Entity managedRef = internalMerge(entity, mergedSet, false, options);
                 managedRefs.add(managedRef);
             }
             List<Entity> dstList = createObservableList(managedRefs, managedEntity);
@@ -403,11 +416,11 @@ public class DataContextImpl implements DataContext {
             }
             if (dstList.size() == 0) {
                 for (Entity srcRef : list) {
-                    dstList.add(internalMerge(srcRef, mergedSet, false));
+                    dstList.add(internalMerge(srcRef, mergedSet, false, options));
                 }
             } else {
                 for (Entity srcRef : list) {
-                    Entity managedRef = internalMerge(srcRef, mergedSet, false);
+                    Entity managedRef = internalMerge(srcRef, mergedSet, false, options);
                     if (!dstList.contains(managedRef)) {
                         dstList.add(managedRef);
                     }
@@ -417,11 +430,11 @@ public class DataContextImpl implements DataContext {
     }
 
     protected void mergeSet(Set<Entity> set, Entity managedEntity, MetaProperty property, boolean replace,
-                            Set<Entity> mergedSet) {
+                            MergeOptions options, Set<Entity> mergedSet) {
         if (replace) {
             Set<Entity> managedRefs = new LinkedHashSet<>(set.size());
             for (Entity entity : set) {
-                Entity managedRef = internalMerge(entity, mergedSet, false);
+                Entity managedRef = internalMerge(entity, mergedSet, false, options);
                 managedRefs.add(managedRef);
             }
             Set<Entity> dstList = createObservableSet(managedRefs, managedEntity);
@@ -435,11 +448,11 @@ public class DataContextImpl implements DataContext {
             }
             if (dstSet.size() == 0) {
                 for (Entity srcRef : set) {
-                    dstSet.add(internalMerge(srcRef, mergedSet, false));
+                    dstSet.add(internalMerge(srcRef, mergedSet, false, options));
                 }
             } else {
                 for (Entity srcRef : set) {
-                    Entity managedRef = internalMerge(srcRef, mergedSet, false);
+                    Entity managedRef = internalMerge(srcRef, mergedSet, false, options);
                     dstSet.add(managedRef);
                 }
             }
