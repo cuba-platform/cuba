@@ -418,9 +418,14 @@ public class WebScreens implements Screens, WindowManager {
     }
 
     @Override
-    public void show(Screen screen) {
+    public OperationResult show(Screen screen) {
         checkNotNullArgument(screen);
         checkNotYetOpened(screen);
+
+        if (isMaxTabCountExceeded(screen)) {
+            showTooManyOpenTabsMessage();
+            return OperationResult.fail();
+        }
 
         StopWatch uiPermissionsWatch = createStopWatch(ScreenLifeCycle.UI_PERMISSIONS, screen.getId());
 
@@ -481,6 +486,8 @@ public class WebScreens implements Screens, WindowManager {
         events.publish(new ScreenOpenedEvent(screen));
 
         screenProfiler.initProfilerMarkerForWindow(screen.getId());
+
+        return OperationResult.success();
     }
 
     @Override
@@ -512,14 +519,8 @@ public class WebScreens implements Screens, WindowManager {
                     }
                 }
             } else {
-                int maxTabCount = webConfig.getMaxTabCount();
-                if (maxTabCount > 0
-                        && workArea.getOpenedTabCount() + 1 > maxTabCount) {
-                    ui.getNotifications()
-                            .create(NotificationType.WARNING)
-                            .withCaption(messages.formatMainMessage("tooManyOpenTabs.message", maxTabCount))
-                            .show();
-
+                if (isMaxTabCountExceeded(screen)) {
+                    showTooManyOpenTabsMessage();
                     return OperationResult.fail();
                 }
 
@@ -542,9 +543,7 @@ public class WebScreens implements Screens, WindowManager {
             }
         }
 
-        show(screen);
-
-        return OperationResult.success();
+        return show(screen);
     }
 
     protected void loadDataBeforeShow(Screen screen) {
@@ -574,6 +573,29 @@ public class WebScreens implements Screens, WindowManager {
         if (!uiComponent.isAttached()) {
             throw new IllegalStateException("Screen is not opened " + screen.getId());
         }
+    }
+
+    protected boolean isMaxTabCountExceeded(Screen screen) {
+        LaunchMode launchMode = screen.getWindow().getContext().getLaunchMode();
+
+        if (launchMode == OpenMode.NEW_TAB
+                || launchMode == OpenMode.NEW_WINDOW) {
+            WebAppWorkArea workArea = getConfiguredWorkArea();
+
+            if (workArea.getMode() == Mode.TABBED) {
+                int maxTabCount = webConfig.getMaxTabCount();
+                return maxTabCount > 0 && workArea.getOpenedTabCount() + 1 > maxTabCount;
+            }
+        }
+
+        return false;
+    }
+
+    protected void showTooManyOpenTabsMessage() {
+        ui.getNotifications()
+                .create(NotificationType.WARNING)
+                .withCaption(messages.formatMainMessage("tooManyOpenTabs.message", webConfig.getMaxTabCount()))
+                .show();
     }
 
     protected void applyDataLoadingSettings(Screen screen) {
