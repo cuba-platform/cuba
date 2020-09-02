@@ -17,17 +17,18 @@
 package com.haulmont.cuba.core.entity;
 
 import com.haulmont.chile.core.annotations.MetaProperty;
+import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.cuba.core.entity.annotation.EnableRestore;
-import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 
-import javax.persistence.*;
 import javax.persistence.Entity;
+import javax.persistence.*;
 
 @Entity(name = "sys$AppFolder")
 @Table(name = "SYS_APP_FOLDER")
 @PrimaryKeyJoinColumn(name = "FOLDER_ID", referencedColumnName = "ID")
 @DiscriminatorValue("A")
 @EnableRestore
+@NamePattern("%s(%s)|name,quantity")
 public class AppFolder extends AbstractSearchFolder {
 
     private static final long serialVersionUID = -3587493035203986325L;
@@ -84,8 +85,4 @@ public class AppFolder extends AbstractSearchFolder {
         }
     }
 
-    @Override
-    public String toString() {
-        return getName() + " (" + quantity + ")";
-    }
 }
