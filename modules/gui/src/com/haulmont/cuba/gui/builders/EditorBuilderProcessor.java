@@ -143,7 +143,9 @@ public class EditorBuilderProcessor {
                 if (fieldValueSource instanceof EntityValueSource) {
                     if (isCompositionProperty((EntityValueSource) fieldValueSource)) {
                         DataContext thisDataContext = UiControllerUtils.getScreenData(origin).getDataContext();
-                        UiControllerUtils.getScreenData(screen).getDataContext().setParent(thisDataContext);
+                        DataContext dataContext = UiControllerUtils.getScreenData(screen).getDataContext();
+                        checkDataContext(screen, dataContext);
+                        dataContext.setParent(thisDataContext);
                     }
                 }
             }
@@ -380,14 +382,17 @@ public class EditorBuilderProcessor {
         }
         if (dataContext != null) {
             DataContext childContext = UiControllerUtils.getScreenData(screen).getDataContext();
-            if (childContext == null) {
-                throw new DevelopmentException(
-                        String.format("No DataContext found in editor: '%s'", screen.getId()));
-            }
-
+            checkDataContext(screen, childContext);
             childContext.setParent(dataContext);
         }
         return dataContext;
+    }
+
+    protected void checkDataContext(Screen screen, @Nullable DataContext dataContext) {
+        if (dataContext == null) {
+            throw new DevelopmentException(
+                    String.format("No DataContext in screen '%s'. Composition editing is impossible.", screen.getId()));
+        }
     }
 
     protected boolean isCommitCloseAction(CloseAction closeAction) {
