@@ -92,8 +92,9 @@ public interface Screens {
      * Displays the given screen according to its {@link LaunchMode}.
      *
      * @param screen screen
+     * @return {@link OperationResult#success()} if screen is shown or otherwise {@link OperationResult#fail()}
      */
-    void show(Screen screen);
+    OperationResult show(Screen screen);
 
     /**
      * Displays the given screen taking into account already opened screens and multipleOpen option.
