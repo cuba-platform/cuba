@@ -29,10 +29,16 @@ public class ContainerTreeDataGridItems<E extends Entity>
             implements TreeDataGridItems<E> {
 
     private final String hierarchyProperty;
+    private final boolean showOrphans;
 
-    public ContainerTreeDataGridItems(CollectionContainer<E> container, String hierarchyProperty) {
+    public ContainerTreeDataGridItems(CollectionContainer<E> container, String hierarchyProperty, boolean showOrphans) {
         super(container);
         this.hierarchyProperty = hierarchyProperty;
+        this.showOrphans = showOrphans;
+    }
+
+    public ContainerTreeDataGridItems(CollectionContainer<E> container, String hierarchyProperty) {
+        this(container, hierarchyProperty, true);
     }
 
     @Override
@@ -47,7 +53,7 @@ public class ContainerTreeDataGridItems<E extends Entity>
             return container.getItems().stream()
                     .filter(it -> {
                         E parentItem = it.getValue(hierarchyProperty);
-                        return parentItem == null || (container.getItemOrNull(parentItem.getId()) == null);
+                        return parentItem == null || (showOrphans && container.getItemOrNull(parentItem.getId()) == null);
                     });
         } else {
             return container.getItems().stream()

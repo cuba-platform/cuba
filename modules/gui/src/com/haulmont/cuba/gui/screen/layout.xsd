@@ -2422,6 +2422,7 @@
 
                 <xs:attribute name="dataContainer" type="xs:string"/>
                 <xs:attribute name="hierarchyProperty" type="xs:string"/>
+                <xs:attribute name="showOrphans" type="xs:boolean"/>
                 <xs:attributeGroup ref="hasCaptionSource"/>
 
                 <xs:attribute name="multiselect" type="xs:boolean"/>
@@ -2629,6 +2630,7 @@
                 </xs:all>
 
                 <xs:attribute name="hierarchyProperty" type="xs:string"/>
+                <xs:attribute name="showOrphans" type="xs:boolean"/>
                 <xs:attribute name="stylename" type="tableStylename"/>
                 <xs:attribute name="metaClass" type="xs:string"/>
                 <xs:attributeGroup ref="isTableComponent"/>
@@ -2756,6 +2758,7 @@
             <xs:extension base="dataGridComponent">
                 <xs:attribute name="hierarchyProperty" type="xs:string"/>
                 <xs:attribute name="hierarchyColumn" type="xs:string"/>
+                <xs:attribute name="showOrphans" type="xs:boolean"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
