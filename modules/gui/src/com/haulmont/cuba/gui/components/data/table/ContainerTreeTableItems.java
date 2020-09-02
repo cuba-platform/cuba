@@ -28,10 +28,16 @@ public class ContainerTreeTableItems<E extends Entity>
             implements TreeTableItems<E> {
 
     private final String hierarchyProperty;
+    private final boolean showOrphans;
 
-    public ContainerTreeTableItems(CollectionContainer<E> container, String hierarchyProperty) {
+    public ContainerTreeTableItems(CollectionContainer<E> container, String hierarchyProperty, boolean showOrphans) {
         super(container);
         this.hierarchyProperty = hierarchyProperty;
+        this.showOrphans = showOrphans;
+    }
+
+    public ContainerTreeTableItems(CollectionContainer<E> container, String hierarchyProperty) {
+        this(container, hierarchyProperty, true);
     }
 
     @Override
@@ -48,7 +54,7 @@ public class ContainerTreeTableItems<E extends Entity>
             for (Object id : ids) {
                 Entity item = getItemNN(id);
                 Entity parentItem = item.getValue(hierarchyProperty);
-                if (parentItem == null || (container.getItemOrNull(parentItem.getId()) == null))
+                if (parentItem == null || (showOrphans && container.getItemOrNull(parentItem.getId()) == null))
                     result.add(item.getId());
             }
             return result;
@@ -100,7 +106,7 @@ public class ContainerTreeTableItems<E extends Entity>
 
         if (hierarchyProperty != null) {
             Entity parentItem = item.getValue(hierarchyProperty);
-            return (parentItem == null || (container.getItemOrNull(parentItem.getId()) == null));
+            return (parentItem == null || (showOrphans && container.getItemOrNull(parentItem.getId()) == null));
         } else {
             return true;
         }

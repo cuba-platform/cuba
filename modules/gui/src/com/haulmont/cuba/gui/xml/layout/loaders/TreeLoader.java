@@ -113,7 +113,11 @@ public class TreeLoader extends ActionsHolderLoader<Tree> {
                 throw new GuiDevelopmentException("Tree doesn't have 'hierarchyProperty' attribute of the 'treechildren' element",
                         context, "Tree ID", element.attributeValue("id"));
             }
-            resultComponent.setItems(new ContainerTreeItems(collectionContainer, hierarchyProperty));
+
+            String showOrphansAttr = element.attributeValue("showOrphans");
+            boolean showOrphans = showOrphansAttr == null || Boolean.parseBoolean(showOrphansAttr);
+
+            resultComponent.setItems(new ContainerTreeItems(collectionContainer, hierarchyProperty, showOrphans));
         } else if (itemsElem != null) {
             String datasource = itemsElem.attributeValue("datasource");
             if (!StringUtils.isBlank(datasource)) {
