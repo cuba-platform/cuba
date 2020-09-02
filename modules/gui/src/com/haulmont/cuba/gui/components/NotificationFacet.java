@@ -103,7 +103,7 @@ public interface NotificationFacet extends Facet {
      *
      * @param contentMode content mode
      */
-    @StudioProperty(type = PropertyType.ENUMERATION, defaultValue = "TEXT")
+    @StudioProperty(type = PropertyType.ENUMERATION, defaultValue = "TEXT", options = {"HTML", "TEXT"})
     void setContentMode(ContentMode contentMode);
 
     /**
