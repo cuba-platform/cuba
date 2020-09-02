@@ -2050,29 +2050,28 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
             }
         }
 
-        Element columnsElem = element.element("columns");
-        if (columnsElem != null) {
-            boolean refreshWasEnabled = component.disableContentBufferRefreshing();
+        Element columnsElem = getColumnsElement(element);
 
-            Collection<String> modelIds = new ArrayList<>();
-            for (Object column : component.getVisibleColumns()) {
-                modelIds.add(String.valueOf(column));
-            }
+        boolean refreshWasEnabled = component.disableContentBufferRefreshing();
 
-            Collection<String> loadedIds = new ArrayList<>();
-            for (Element colElem : columnsElem.elements("columns")) {
-                loadedIds.add(colElem.attributeValue("id"));
-            }
-
-            ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
-
-            if (clientConfig.getLoadObsoleteSettingsForTable()
-                    || CollectionUtils.isEqualCollection(modelIds, loadedIds)) {
-                applyColumnSettings(element);
-            }
-
-            component.enableContentBufferRefreshing(refreshWasEnabled);
+        Collection<String> modelIds = new ArrayList<>();
+        for (Object column : component.getVisibleColumns()) {
+            modelIds.add(String.valueOf(column));
         }
+
+        Collection<String> loadedIds = new ArrayList<>();
+        for (Element colElem : columnsElem.elements("columns")) {
+            loadedIds.add(colElem.attributeValue("id"));
+        }
+
+        ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
+
+        if (clientConfig.getLoadObsoleteSettingsForTable()
+                || CollectionUtils.isEqualCollection(modelIds, loadedIds)) {
+            applyColumnSettings(element);
+        }
+
+        component.enableContentBufferRefreshing(refreshWasEnabled);
     }
 
     @Override
@@ -2111,8 +2110,23 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
         }
     }
 
-    protected void applyColumnSettings(Element element) {
+    protected Element getColumnsElement(Element element) {
+        // If the `columns` element is missed in settings it means that columns
+        // should have default values. Sometimes presentation does not
+        // have `columns` element in settings. In this case, if we switch
+        // presentation to presentation without `columns`, so settings will not
+        // be applied, and columns will have values from the previous presentation.
+
         Element columnsElem = element.element("columns");
+        if (columnsElem == null) {
+            columnsElem = defaultSettings.getRootElement().element("columns");
+        }
+
+        return columnsElem;
+    }
+
+    protected void applyColumnSettings(Element element) {
+        Element columnsElem = getColumnsElement(element);
 
         Object[] oldColumns = component.getVisibleColumns();
         List<Object> newColumns = new ArrayList<>();
