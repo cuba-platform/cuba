@@ -994,7 +994,7 @@
     <xs:simpleType name="columnsMode">
         <xs:restriction>
             <xs:enumeration value="ONE_COLUMN"/>
-            <xs:enumeration value="TWO_COLUMN"/>
+            <xs:enumeration value="TWO_COLUMNS"/>
         </xs:restriction>
     </xs:simpleType>
 
