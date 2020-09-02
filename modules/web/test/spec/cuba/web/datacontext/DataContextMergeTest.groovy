@@ -23,6 +23,7 @@ import com.haulmont.cuba.core.global.EntityStates
 import com.haulmont.cuba.core.global.Metadata
 import com.haulmont.cuba.gui.model.DataComponents
 import com.haulmont.cuba.gui.model.DataContext
+import com.haulmont.cuba.gui.model.MergeOptions
 import com.haulmont.cuba.security.entity.User
 import com.haulmont.cuba.web.container.CubaTestContainer
 import com.haulmont.cuba.web.testmodel.datacontext.TestReadOnlyPropertyEntity
@@ -296,6 +297,38 @@ class DataContextMergeTest extends Specification {
 
         mergedOrder1.customer == null
         mergedOrder1.orderLines == null
+    }
+
+    def "merge fresh graph with null values"() throws Exception {
+
+        // order1
+        //   customer1
+        //     email = 'c1@test.com'
+
+        // order2
+        //   customer2
+        //     email = null
+
+        DataContext context = factory.createDataContext()
+
+        when:
+
+        Customer customer1 = new Customer(name: 'c1', email: 'c1@test.com')
+        Order order1 = new Order(number: '1', customer: customer1)
+
+        Customer customer2 = new Customer(name: 'c1', id: customer1.id)
+        Order order2 = new Order(number: '2', customer: customer2, id: order1.id)
+
+        def mergeOptions = new MergeOptions()
+        mergeOptions.setFresh(true)
+
+        def mergedOrder1 = context.merge(order1, mergeOptions)
+        def mergedOrder2 = context.merge(order2, mergeOptions)
+
+        then:
+
+        mergedOrder2.customer.is(mergedOrder1.customer)
+        mergedOrder2.customer.email == null
     }
 
     def "merge with existing - locals"() {

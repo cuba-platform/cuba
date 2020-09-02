@@ -70,7 +70,7 @@ public interface DataContext {
      * it and the existing instance is returned. Otherwise, a copy of the passed instance is registered in the context
      * and returned.
      * <p>
-     * If the given instance is new and the the context doesn't contain an instance with the same identifier, the context
+     * If the given instance is new and the context doesn't contain an instance with the same identifier, the context
      * will save the new instance on {@link #commit()}. Otherwise, even if some attributes of the merged instance are changed
      * as a result of copying the state of the passed instance, the merged instance will not be committed. Such modifications
      * are considered as a result of loading more fresh state from the database.
@@ -79,7 +79,15 @@ public interface DataContext {
      * The only case when you get the same instance is if the input was previously returned from the same context as a
      * result of {@link #find(Class, Object)} or {@code merge()}.
      *
+     * @param entity instance to merge
+     * @param options merge options
      * @return the instance which is tracked by the context
+     */
+    @CheckReturnValue
+    <T extends Entity> T merge(T entity, MergeOptions options);
+
+    /**
+     * Same as {@link #merge(Entity, MergeOptions)} with default options.
      */
     @CheckReturnValue
     <T extends Entity> T merge(T entity);
@@ -91,7 +99,17 @@ public interface DataContext {
      * Same as {@link #merge(Entity)} but for a collection of instances.
      *
      * @return set of instances tracked by the context
-     * @see #merge(Entity)
+     */
+    @CheckReturnValue
+    EntitySet merge(Collection<? extends Entity> entities, MergeOptions options);
+
+    /**
+     * Merge the given entities into the context. The whole object graph for each element of the collection with all
+     * references will be merged.
+     * <p>
+     * Same as {@link #merge(Entity, MergeOptions)} but for a collection of instances.
+     *
+     * @return set of instances tracked by the context
      */
     @CheckReturnValue
     EntitySet merge(Collection<? extends Entity> entities);
