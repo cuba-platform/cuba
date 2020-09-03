@@ -52,16 +52,19 @@ public class CollectionContainerImpl<E extends Entity>
 
     @Override
     public void setItem(@Nullable E item) {
+        E prevItem = this.item;
+
         if (item != null) {
             int idx = getItemIndex(item.getId());
             if (idx == -1) {
                 throw new IllegalArgumentException("CollectionContainer does not contain " + item);
             }
-            E existingItem = collection.get(idx);
-            super.setItem(existingItem);
+            this.item = collection.get(idx);
         } else {
-            super.setItem(null);
+            this.item = null;
         }
+
+        fireItemChanged(prevItem);
     }
 
     @Override

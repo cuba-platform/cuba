@@ -374,4 +374,29 @@ class CollectionContainerUsageTest extends WebSpec {
             assert event.value == '111'
         }
     }
+
+    def "PropertyChangedEvent is not lost after selecting another item"() {
+        Foo foo1 = new Foo(name: 'foo1')
+        Foo foo2 = new Foo(name: 'foo2')
+
+        def listener = Mock(Consumer)
+
+        container.items = [foo1, foo2]
+        container.addItemPropertyChangeListener(listener)
+
+        when:
+
+        container.setItem(foo1)
+        container.setItem(foo2)
+        foo1.name = 'foo11'
+
+        then:
+
+        1 * listener.accept(_) >> { List arguments ->
+            InstanceContainer.ItemPropertyChangeEvent event = arguments[0]
+            assert event.item == foo1
+            assert event.property == 'name'
+            assert event.value == 'foo11'
+        }
+    }
 }
