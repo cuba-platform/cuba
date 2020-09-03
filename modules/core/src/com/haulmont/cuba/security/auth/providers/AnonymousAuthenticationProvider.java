@@ -89,7 +89,7 @@ public class AnonymousAuthenticationProvider extends AbstractAuthenticationProvi
         if (securityScope == null || SecurityScope.DEFAULT_SCOPE_NAME.equals(securityScope)) {
             anonymousSessionId = globalConfig.getAnonymousSessionId();
         } else {
-            String value = AppContext.getProperty(String.format("cuba.%sAnonymousSessionId", securityScope));
+            String value = AppContext.getProperty(String.format("cuba.%s.anonymousSessionId", securityScope));
             anonymousSessionId = value == null ? null : UUID.fromString(value);
         }
         return anonymousSessionId;
