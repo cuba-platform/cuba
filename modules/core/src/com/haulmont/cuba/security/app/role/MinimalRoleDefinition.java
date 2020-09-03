@@ -19,8 +19,8 @@ package com.haulmont.cuba.security.app.role;
 import com.haulmont.cuba.core.app.ServerConfig;
 import com.haulmont.cuba.core.entity.KeyValueEntity;
 import com.haulmont.cuba.security.app.role.annotation.*;
-import com.haulmont.cuba.security.app.role.annotation.Role;
-import com.haulmont.cuba.security.entity.*;
+import com.haulmont.cuba.security.entity.EntityOp;
+import com.haulmont.cuba.security.entity.FilterEntity;
 import com.haulmont.cuba.security.role.EntityAttributePermissionsContainer;
 import com.haulmont.cuba.security.role.EntityPermissionsContainer;
 import com.haulmont.cuba.security.role.ScreenPermissionsContainer;
@@ -69,7 +69,9 @@ public class MinimalRoleDefinition extends AnnotatedRoleDefinition {
             "saveFilter",
             "saveSetInFolder",
             "inputDialog",
-            "thirdpartyLicenseWindow"
+            "thirdpartyLicenseWindow",
+            "list-editor-popup",
+            "date-interval-editor"
     })
     public ScreenPermissionsContainer screenPermissions() {
         return super.screenPermissions();
