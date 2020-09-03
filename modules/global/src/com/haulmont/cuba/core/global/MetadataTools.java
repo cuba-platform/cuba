@@ -141,15 +141,15 @@ public class MetadataTools {
                 }
             }
             return datatype.format(value, userSessionSource.getLocale());
-        } else if (range.isEnum()) {
-            return messages.getMessage((Enum) value);
-        } else if (value instanceof Instance) {
-            return getInstanceName((Instance) value);
         } else if (value instanceof Collection) {
             //noinspection unchecked
             return ((Collection<Object>) value).stream()
                     .map(this::format)
                     .collect(Collectors.joining(", "));
+        } else if (range.isEnum()) {
+            return messages.getMessage((Enum) value);
+        } else if (value instanceof Instance) {
+            return getInstanceName((Instance) value);
         } else {
             return value.toString();
         }
