@@ -112,7 +112,7 @@ public class CollectionLoaderImpl<E extends Entity> implements CollectionLoader<
         if (dataContext != null) {
             List<E> mergedList = new ArrayList<>(list.size());
             for (E entity : list) {
-                mergedList.add(dataContext.merge(entity));
+                mergedList.add(dataContext.merge(entity, new MergeOptions().setFresh(true)));
             }
             container.setItems(mergedList);
         } else {

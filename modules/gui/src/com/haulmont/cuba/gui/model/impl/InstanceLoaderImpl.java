@@ -22,10 +22,7 @@ import com.haulmont.bali.events.Subscription;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.global.queryconditions.Condition;
-import com.haulmont.cuba.gui.model.DataContext;
-import com.haulmont.cuba.gui.model.HasLoader;
-import com.haulmont.cuba.gui.model.InstanceContainer;
-import com.haulmont.cuba.gui.model.InstanceLoader;
+import com.haulmont.cuba.gui.model.*;
 import org.springframework.context.ApplicationContext;
 
 import javax.annotation.Nullable;
@@ -112,7 +109,7 @@ public class InstanceLoaderImpl<E extends Entity> implements InstanceLoader<E> {
         }
 
         if (dataContext != null) {
-            entity = dataContext.merge(entity);
+            entity = dataContext.merge(entity, new MergeOptions().setFresh(true));
         }
         container.setItem(entity);
 
