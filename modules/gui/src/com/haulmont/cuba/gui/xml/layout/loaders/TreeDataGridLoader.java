@@ -39,7 +39,11 @@ public class TreeDataGridLoader extends AbstractDataGridLoader<TreeDataGrid> {
             throw new GuiDevelopmentException("TreeDataGrid doesn't have 'hierarchyProperty' attribute",
                     context, "TreeDataGrid ID", element.attributeValue("id"));
         }
-        return new ContainerTreeDataGridItems(container, hierarchyProperty);
+
+        String showOrphansAttr = element.attributeValue("showOrphans");
+        boolean showOrphans = showOrphansAttr == null || Boolean.parseBoolean(showOrphansAttr);
+
+        return new ContainerTreeDataGridItems(container, hierarchyProperty, showOrphans);
     }
 
     @Override

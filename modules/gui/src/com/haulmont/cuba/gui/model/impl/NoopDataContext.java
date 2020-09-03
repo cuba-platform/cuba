@@ -24,6 +24,7 @@ import com.haulmont.cuba.core.global.CommitContext;
 import com.haulmont.cuba.core.global.EntitySet;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.gui.model.DataContext;
+import com.haulmont.cuba.gui.model.MergeOptions;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
@@ -60,7 +61,17 @@ public class NoopDataContext implements DataContext {
     }
 
     @Override
+    public <T extends Entity> T merge(T entity, MergeOptions options) {
+        return entity;
+    }
+
+    @Override
     public EntitySet merge(Collection<? extends Entity> entities) {
+        return EntitySet.of(entities);
+    }
+
+    @Override
+    public EntitySet merge(Collection<? extends Entity> entities, MergeOptions options) {
         return EntitySet.of(entities);
     }
 

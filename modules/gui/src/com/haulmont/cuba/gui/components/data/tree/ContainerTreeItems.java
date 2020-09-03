@@ -35,15 +35,21 @@ public class ContainerTreeItems<E extends Entity> implements EntityTreeItems<E>,
     protected final CollectionContainer<E> container;
 
     protected final String hierarchyProperty;
+    protected final boolean showOrphans;
 
     protected EventHub events = new EventHub();
 
-    public ContainerTreeItems(CollectionContainer<E> container, String hierarchyProperty) {
+    public ContainerTreeItems(CollectionContainer<E> container, String hierarchyProperty, boolean showOrphans) {
         this.container = container;
         this.hierarchyProperty = hierarchyProperty;
+        this.showOrphans = showOrphans;
         this.container.addItemChangeListener(this::containerItemChanged);
         this.container.addCollectionChangeListener(this::containerCollectionChanged);
         this.container.addItemPropertyChangeListener(this::containerItemPropertyChanged);
+    }
+
+    public ContainerTreeItems(CollectionContainer<E> container, String hierarchyProperty) {
+        this(container, hierarchyProperty, true);
     }
 
     protected void containerItemChanged(CollectionContainer.ItemChangeEvent<E> event) {
@@ -118,7 +124,7 @@ public class ContainerTreeItems<E extends Entity> implements EntityTreeItems<E>,
             return container.getItems().stream()
                     .filter(it -> {
                         E parentItem = it.getValue(hierarchyProperty);
-                        return parentItem == null || (container.getItemOrNull(parentItem.getId()) == null);
+                        return parentItem == null || (showOrphans && container.getItemOrNull(parentItem.getId()) == null);
                     });
         } else {
             return container.getItems().stream()

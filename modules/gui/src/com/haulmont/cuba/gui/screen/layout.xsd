@@ -994,7 +994,7 @@
     <xs:simpleType name="columnsMode">
         <xs:restriction>
             <xs:enumeration value="ONE_COLUMN"/>
-            <xs:enumeration value="TWO_COLUMN"/>
+            <xs:enumeration value="TWO_COLUMNS"/>
         </xs:restriction>
     </xs:simpleType>
 
@@ -2422,10 +2422,13 @@
 
                 <xs:attribute name="dataContainer" type="xs:string"/>
                 <xs:attribute name="hierarchyProperty" type="xs:string"/>
+                <xs:attribute name="showOrphans" type="xs:boolean"/>
                 <xs:attributeGroup ref="hasCaptionSource"/>
 
                 <xs:attribute name="multiselect" type="xs:boolean"/>
                 <xs:attribute name="selectionMode" type="treeSelectionMode"/>
+
+                <xs:attribute name="contentMode" type="contentMode"/>
 
                 <xs:attribute name="rowHeight" type="xs:double"/>
 
@@ -2627,6 +2630,7 @@
                 </xs:all>
 
                 <xs:attribute name="hierarchyProperty" type="xs:string"/>
+                <xs:attribute name="showOrphans" type="xs:boolean"/>
                 <xs:attribute name="stylename" type="tableStylename"/>
                 <xs:attribute name="metaClass" type="xs:string"/>
                 <xs:attributeGroup ref="isTableComponent"/>
@@ -2754,6 +2758,7 @@
             <xs:extension base="dataGridComponent">
                 <xs:attribute name="hierarchyProperty" type="xs:string"/>
                 <xs:attribute name="hierarchyColumn" type="xs:string"/>
+                <xs:attribute name="showOrphans" type="xs:boolean"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>

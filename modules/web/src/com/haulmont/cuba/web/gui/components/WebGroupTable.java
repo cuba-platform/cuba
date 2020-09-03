@@ -291,8 +291,13 @@ public class WebGroupTable<E extends Entity> extends WebAbstractTable<CubaGroupT
                             .warn("Ignored group property '{}'", id);
                 }
             }
-            groupBy(properties.toArray());
+            if (!properties.isEmpty()) {
+                groupBy(properties.toArray());
+                return;
+            }
         }
+
+        ungroup();
     }
 
     @Override

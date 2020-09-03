@@ -363,7 +363,8 @@ public class EntityInspectorEditor extends AbstractWindow {
                         continue;
                     }
 
-                    if (includeId && !isNew) {
+                    //Since there is no suitable component to edit enum collection field
+                    if (includeId && !isNew || Collection.class.isAssignableFrom(metaProperty.getJavaType())) {
                         isReadonly = true;
                     }
 
