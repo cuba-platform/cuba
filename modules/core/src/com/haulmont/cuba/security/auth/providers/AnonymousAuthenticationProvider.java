@@ -30,6 +30,7 @@ import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.security.sys.UserSessionManager;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.Ordered;
 import org.springframework.stereotype.Component;
 
@@ -89,7 +90,7 @@ public class AnonymousAuthenticationProvider extends AbstractAuthenticationProvi
         if (securityScope == null || SecurityScope.DEFAULT_SCOPE_NAME.equals(securityScope)) {
             anonymousSessionId = globalConfig.getAnonymousSessionId();
         } else {
-            String value = AppContext.getProperty(String.format("cuba.%s.anonymousSessionId", securityScope));
+            String value = AppContext.getProperty(String.format("cuba.%s.anonymousSessionId", securityScope.toLowerCase()));
             anonymousSessionId = value == null ? null : UUID.fromString(value);
         }
         return anonymousSessionId;
