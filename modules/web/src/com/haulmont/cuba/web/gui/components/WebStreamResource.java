@@ -51,11 +51,10 @@ public class WebStreamResource extends WebAbstractStreamSettingsResource impleme
     protected void createResource() {
         StringBuilder name = new StringBuilder();
 
-        if (StringUtils.isNotEmpty(fileName)) {
-            name.append(fileName)
-                    .append('-');
-        }
         name.append(UUID.randomUUID().toString());
+        if (StringUtils.isNotEmpty(fileName)) {
+            name.append('-').append(fileName);
+        }
 
         resource = new com.vaadin.server.StreamResource(() ->
                 streamSupplier.get(), name.toString());
