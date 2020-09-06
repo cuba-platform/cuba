@@ -180,8 +180,12 @@ public class WebScreens implements Screens, WindowManager {
 
     protected <T extends Screen> T createScreen(WindowInfo windowInfo, LaunchMode launchMode, ScreenOptions options) {
         if (windowInfo.getType() != WindowInfo.Type.SCREEN) {
-            throw new IllegalArgumentException(
-                    String.format("Unable to create screen %s with type %s", windowInfo.getId(), windowInfo.getType())
+            throw new DevelopmentException(
+                    String.format(
+                            "Unable to create screen %s with type %s. If the screen is defined as @UiController make sure it is not present in legacy screens.xml",
+                            windowInfo.getId(),
+                            windowInfo.getType()
+                    )
             );
         }
 
