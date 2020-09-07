@@ -99,12 +99,13 @@ public class ValueBinder {
                             String embeddedProperty = ((Nested) container).getProperty();
                             MetaClass masterMetaClass = ((Nested) container).getMaster().getEntityMetaClass();
                             permittedIfEmbedded = security.isEntityAttrUpdatePermitted(masterMetaClass, embeddedProperty);
-                            if (permittedIfEmbedded && metaPropertyPath.length() > 1) {
-                                for (MetaProperty property : metaPropertyPath.getMetaProperties()) {
-                                    if (security.isEntityAttrUpdatePermitted(property.getDomain(), property.getName())) {
-                                        permittedIfEmbedded = false;
-                                        break;
-                                    }
+                        }
+                        if (permittedIfEmbedded && metaPropertyPath.length() > 1) {
+                            for (MetaProperty property : metaPropertyPath.getMetaProperties()) {
+                                if (metadataTools.isEmbedded(property)
+                                        && !security.isEntityAttrUpdatePermitted(property.getDomain(), property.getName())) {
+                                    permittedIfEmbedded = false;
+                                    break;
                                 }
                             }
                         }

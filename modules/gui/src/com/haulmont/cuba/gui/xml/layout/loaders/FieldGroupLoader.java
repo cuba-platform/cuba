@@ -659,7 +659,7 @@ public class FieldGroupLoader extends AbstractComponentLoader<FieldGroup> {
                         && getSecurity().isEntityAttrPermitted(parentMetaClass, embeddedProperty.getName(), EntityAttrAccess.MODIFY);
                 if (permittedIfEmbedded && propertyPath.length() > 1) {
                     for (MetaProperty property : propertyPath.getMetaProperties()) {
-                        if (getSecurity().isEntityAttrUpdatePermitted(property.getDomain(), property.getName())) {
+                        if (!getSecurity().isEntityAttrUpdatePermitted(property.getDomain(), property.getName())) {
                             permittedIfEmbedded = false;
                             break;
                         }

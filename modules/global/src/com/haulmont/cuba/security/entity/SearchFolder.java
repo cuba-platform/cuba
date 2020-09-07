@@ -16,9 +16,9 @@
  */
 package com.haulmont.cuba.security.entity;
 
+import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.cuba.core.entity.AbstractSearchFolder;
 import com.haulmont.cuba.core.entity.annotation.EnableRestore;
-import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.UserSessionSource;
@@ -34,6 +34,7 @@ import javax.persistence.*;
 @PrimaryKeyJoinColumn(name = "FOLDER_ID", referencedColumnName = "ID")
 @DiscriminatorValue("S")
 @EnableRestore
+@NamePattern("%s|name")
 public class SearchFolder extends AbstractSearchFolder {
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -74,10 +75,6 @@ public class SearchFolder extends AbstractSearchFolder {
         this.presentation = presentation;
     }
 
-    @Override
-    public String toString() {
-        return getName();
-    }
 
     @Override
     public String getCaption() {

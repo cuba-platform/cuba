@@ -16,11 +16,12 @@
  */
 package com.haulmont.cuba.core.entity;
 
+import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.cuba.core.entity.annotation.EnableRestore;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 
-import javax.persistence.*;
 import javax.persistence.Entity;
+import javax.persistence.*;
 
 @Entity(name = "sys$Folder")
 @Table(name = "SYS_FOLDER")
@@ -29,6 +30,7 @@ import javax.persistence.Entity;
 @DiscriminatorValue("F")
 @SystemLevel
 @EnableRestore(false)
+@NamePattern("%s|name")
 public class Folder extends StandardEntity implements TenantEntity {
 
     private static final long serialVersionUID = -2038652558181851215L;
