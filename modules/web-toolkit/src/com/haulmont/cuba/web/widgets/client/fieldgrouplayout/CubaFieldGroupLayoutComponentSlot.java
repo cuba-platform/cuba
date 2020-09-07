@@ -24,6 +24,7 @@ import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.EventListener;
 import com.haulmont.cuba.web.widgets.client.caption.CaptionHolder;
 import com.haulmont.cuba.web.widgets.client.caption.CubaCaptionWidget;
+import com.haulmont.cuba.web.widgets.client.caption.CubaGridLayoutCaptionWidget;
 import com.haulmont.cuba.web.widgets.client.gridlayout.CubaGridLayoutSlot;
 import com.vaadin.client.BrowserInfo;
 import com.vaadin.client.ComponentConnector;
@@ -146,6 +147,14 @@ public class CubaFieldGroupLayoutComponentSlot extends CubaGridLayoutSlot
                 captionStyle.clearRight();
 
                 clearCaptionRight = true;
+
+                if (caption instanceof CubaGridLayoutCaptionWidget
+                        && ((CubaGridLayoutCaptionWidget) caption).hasInlineIcon()) {
+                    ((CubaGridLayoutCaptionWidget) caption).getIcon()
+                            .getElement()
+                            .getStyle()
+                            .setPaddingLeft(captionWidth, Style.Unit.PX);
+                }
             }
         }
 
