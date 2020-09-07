@@ -531,7 +531,7 @@ public class UserEditor extends AbstractEditor<User> {
         boolean isDsModified = rolesDs.isModified();
         Collection<UserRole> userRoles = new ArrayList<>(rolesDs.getItems());
         for (UserRole userRole : userRoles) {
-            if (userRole.getRole().isPredefined()) {
+            if (userRole.getRole() != null && userRole.getRole().isPredefined()) {
                 if (userRole.getRoleName() == null) {
                     userRole.setRoleName(userRole.getRole().getName());
                 }
