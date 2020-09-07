@@ -20,6 +20,7 @@ package com.haulmont.cuba.web.widgets.client.gridlayout;
 import com.google.gwt.user.client.ui.Widget;
 import com.haulmont.cuba.web.widgets.CubaGridLayout;
 import com.haulmont.cuba.web.widgets.client.caption.CubaCaptionWidget;
+import com.haulmont.cuba.web.widgets.client.caption.CubaGridLayoutCaptionWidget;
 import com.vaadin.client.*;
 import com.vaadin.client.ui.HasRequiredIndicator;
 import com.vaadin.client.ui.ShortcutActionHandler;
@@ -57,7 +58,7 @@ public class CubaGridLayoutConnector extends GridLayoutConnector implements Pain
             VCaption caption = layoutSlot.getCaption();
             if (caption == null) {
                 // use our own caption widget
-                caption = new CubaCaptionWidget(childConnector, getConnection());
+                caption = new CubaGridLayoutCaptionWidget(childConnector, getConnection());
 
                 setDefaultCaptionParameters((CubaCaptionWidget)caption);
 

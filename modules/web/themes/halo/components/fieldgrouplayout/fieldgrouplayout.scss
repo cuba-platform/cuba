@@ -39,7 +39,17 @@
     margin-right: $v-layout-spacing-horizontal/2;
     line-height: $v-unit-size;
     vertical-align: middle;
+  }
+
+  .#{$primary-stylename}-slot.inline > .v-caption:not(.v-caption-inline-icon) {
     overflow: hidden;
+
+    // replace margin-left with padding-left so that the padding value is taken into account when calculating
+    // the caption width
+    .v-icon + .v-captiontext {
+      margin-left: 0;
+      padding-left: ceil($v-unit-size/5);
+    }
   }
 
   .#{$primary-stylename}-slot > .v-checkbox {
