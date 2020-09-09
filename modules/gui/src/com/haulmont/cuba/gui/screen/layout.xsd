@@ -263,6 +263,21 @@
         </xs:restriction>
     </xs:simpleType>
 
+    <xs:simpleType name="notificationPositionEnum">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="DEFAULT"/>
+            <xs:enumeration value="TOP_RIGHT"/>
+            <xs:enumeration value="TOP_LEFT"/>
+            <xs:enumeration value="TOP_CENTER"/>
+            <xs:enumeration value="MIDDLE_RIGHT"/>
+            <xs:enumeration value="MIDDLE_LEFT"/>
+            <xs:enumeration value="MIDDLE_CENTER"/>
+            <xs:enumeration value="BOTTOM_RIGHT"/>
+            <xs:enumeration value="BOTTOM_LEFT"/>
+            <xs:enumeration value="BOTTOM_CENTER"/>
+        </xs:restriction>
+    </xs:simpleType>
+
     <xs:simpleType name="orientation">
         <xs:restriction base="xs:string">
             <xs:enumeration value="horizontal"/>
@@ -3540,7 +3555,7 @@
 
         <xs:attribute name="contentMode" type="notificationContentMode"/>
         <xs:attribute name="styleName" type="xs:string"/>
-        <xs:attribute name="position" type="align"/>
+        <xs:attribute name="position" type="notificationPositionEnum"/>
 
         <xs:attributeGroup ref="facetTriggerType"/>
 
