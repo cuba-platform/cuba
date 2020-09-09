@@ -23,7 +23,7 @@
                      caption="Test InputDialog"
                      message="InputDialog Facet test"
                      onAction="dialogAction"
-                     defaultActions="OK_CANCEL">
+                     dialogActions="OK_CANCEL">
             <parameters>
                 <booleanParameter id="booleanParam"
                                   caption="Boolean param"

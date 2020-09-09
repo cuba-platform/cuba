@@ -117,7 +117,7 @@ public interface OptionDialogFacet extends Facet, ActionsAwareDialogFacet<Option
      * Sets dialog width.
      * @param width width
      */
-    @StudioProperty
+    @StudioProperty(type = PropertyType.SIZE)
     void setWidth(String width);
 
     /**
@@ -134,7 +134,7 @@ public interface OptionDialogFacet extends Facet, ActionsAwareDialogFacet<Option
      * Sets dialog height.
      * @param height height
      */
-    @StudioProperty
+    @StudioProperty(type = PropertyType.SIZE)
     void setHeight(String height);
 
     /**
