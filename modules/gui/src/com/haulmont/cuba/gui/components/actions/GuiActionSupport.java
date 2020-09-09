@@ -28,6 +28,7 @@ import com.haulmont.cuba.gui.actions.picker.LookupAction;
 import com.haulmont.cuba.gui.actions.picker.OpenAction;
 import com.haulmont.cuba.gui.components.data.meta.EntityValueSource;
 import com.haulmont.cuba.gui.components.data.ValueSource;
+import com.haulmont.cuba.gui.components.data.value.DatasourceValueSource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.dynamicattributes.DynamicAttributesGuiTools;
 import com.haulmont.cuba.gui.screen.compatibility.LegacyFrame;
@@ -114,9 +115,7 @@ public class GuiActionSupport {
     }
 
     public void createActionById(PickerField<?> pickerField, String actionId) {
-        if (pickerField.getFrame() != null
-                && pickerField.getFrame().getFrameOwner() instanceof LegacyFrame) {
-
+        if (isInLegacyScreen(pickerField)) {
             // in legacy screens
             for (PickerField.ActionType actionType : PickerField.ActionType.values()) {
                 if (actionType.getId().equals(actionId.trim())) {
@@ -144,5 +143,11 @@ public class GuiActionSupport {
                     break;
             }
         }
+    }
+
+    protected boolean isInLegacyScreen(PickerField<?> pickerField) {
+        return pickerField.getFrame() != null
+                && pickerField.getFrame().getFrameOwner() instanceof LegacyFrame
+                || pickerField.getValueSource() instanceof DatasourceValueSource;
     }
 }
