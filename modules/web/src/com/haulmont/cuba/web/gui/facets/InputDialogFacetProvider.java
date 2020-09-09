@@ -150,7 +150,8 @@ public class InputDialogFacetProvider implements FacetProvider<InputDialogFacet>
 
     protected void loadDialogActions(InputDialogFacet facet, Element element,
                                      ComponentLoader.ComponentContext context) {
-        loadDefaultActions(facet, element);
+        loadDialogActions(facet, element, "dialogActions");
+        loadDialogActions(facet, element, "defaultActions"); // for backward compatibility
 
         Element actions = element.element("actions");
         if (actions != null) {
@@ -192,8 +193,8 @@ public class InputDialogFacetProvider implements FacetProvider<InputDialogFacet>
         return new DialogAction<>(id, caption, description, icon, primary);
     }
 
-    protected void loadDefaultActions(InputDialogFacet facet, Element element) {
-        String actions = element.attributeValue("defaultActions");
+    protected void loadDialogActions(InputDialogFacet facet, Element element, String attributeName) {
+        String actions = element.attributeValue(attributeName);
         if (isNotEmpty(actions)) {
             facet.setDialogActions(DialogActions.valueOf(actions));
         }
