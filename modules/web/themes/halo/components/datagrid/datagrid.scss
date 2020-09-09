@@ -58,6 +58,9 @@ $cuba-datagrid-aggregation-background-color: $cuba-aggregation-background-color-
   .#{$primary-stylename}-row  > .#{$primary-stylename}-cell:last-child,
   .#{$primary-stylename}-editor-cells > div:last-child {
     border-right: $v-grid-border;
+    // Compensate border width so that the last column does not
+    // break to a new line when shrunk to its minimum size.
+    margin-right: -$v-grid-border-size;
   }
 
   .#{$primary-stylename}-row-selected  > .#{$primary-stylename}-cell {
