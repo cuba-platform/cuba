@@ -18,6 +18,7 @@ package com.haulmont.cuba.gui.components;
 
 import com.haulmont.cuba.gui.icons.Icons;
 import com.haulmont.cuba.gui.meta.PropertyType;
+import com.haulmont.cuba.gui.meta.StudioPropertiesItem;
 import com.haulmont.cuba.gui.meta.StudioProperty;
 import com.haulmont.cuba.security.entity.ConstraintOperationType;
 
@@ -212,12 +213,12 @@ public interface Action {
      * Interface defining constraintOperationType and constraintCode options.
      */
     interface HasSecurityConstraint {
-        @StudioProperty
+        @StudioPropertiesItem
         void setConstraintOperationType(ConstraintOperationType constraintOperationType);
         ConstraintOperationType getConstraintOperationType();
 
         String getConstraintCode();
-        @StudioProperty
+        @StudioPropertiesItem
         void setConstraintCode(String constraintCode);
     }
 
