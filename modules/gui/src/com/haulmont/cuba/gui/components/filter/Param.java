@@ -131,7 +131,8 @@ public class Param {
     protected Configuration configuration;
     @Inject
     protected DataComponents dataComponents;
-
+    @Inject
+    protected PersistenceManagerClient persistenceManager;
     @Inject
     protected DatatypeRegistry datatypeRegistry;
 
@@ -939,6 +940,8 @@ public class Param {
         }
 
         dataLoader.setQuery(query);
+
+        dataLoader.setMaxResults(persistenceManager.getMaxFetchUI(metaClass.getName()));
 
         return dataLoader;
     }
