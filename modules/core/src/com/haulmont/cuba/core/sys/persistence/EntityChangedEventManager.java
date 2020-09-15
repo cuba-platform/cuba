@@ -107,6 +107,7 @@ public class EntityChangedEventManager {
     }
 
     public void beforeFlush(Collection<Entity> instances) {
+        log.trace("beforeFlush {}", instances);
         List<EntityChangedEventInfo> infoList = internalCollect(instances);
         AccumulatedInfoHolder holder = getAccumulatedInfoHolder();
         holder.accumulatedList = merge(holder.accumulatedList, infoList);
@@ -126,10 +127,12 @@ public class EntityChangedEventManager {
                 list1.add(info2);
             }
         }
+        log.trace("merged {}", list1);
         return list1;
     }
 
     public List<EntityChangedEventInfo> collect(Collection<Entity> entities) {
+        log.trace("collect {}", entities);
         AccumulatedInfoHolder holder = getAccumulatedInfoHolder();
         List<EntityChangedEventInfo> infoList = internalCollect(entities);
         return merge(holder.accumulatedList, infoList);
@@ -186,10 +189,12 @@ public class EntityChangedEventManager {
                 }
             }
         }
+        log.trace("collected {}", list);
         return list;
     }
 
     public void publish(Collection<EntityChangedEvent> events) {
+        log.trace("publish {}", events);
         for (EntityChangedEvent event : events) {
             eventPublisher.publish(event);
         }

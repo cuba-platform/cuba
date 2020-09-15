@@ -49,10 +49,10 @@ public class SavedEntitiesHolder extends ResourceHolderSupport {
 
             holder.setSynchronizedWithTransaction(true);
             TransactionSynchronizationManager.registerSynchronization(new Synchronization(holder, RESOURCE_KEY));
-            log.debug("Created {}", holder);
+            log.trace("Created {}", holder);
         }
 
-        log.debug("{} updates entities: {}", holder, saved);
+        log.trace("{} updates entities: {}", holder, saved);
         for (Entity entity : saved) {
             holder.entities.remove(entity);
             holder.entities.add(entity);
@@ -68,7 +68,7 @@ public class SavedEntitiesHolder extends ResourceHolderSupport {
     }
 
     private void release() {
-        log.debug("Released {}", this);
+        log.trace("Released {}", this);
     }
 
     @Override

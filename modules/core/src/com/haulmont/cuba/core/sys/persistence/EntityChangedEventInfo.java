@@ -62,4 +62,13 @@ public class EntityChangedEventInfo {
 
         changes.mergeWith(otherInfo.getChanges());
     }
+
+    @Override
+    public String toString() {
+        return "EntityChangedEventInfo{" +
+                "entity=" + entity +
+                ", type=" + type +
+                ", changes=" + changes +
+                '}';
+    }
 }
