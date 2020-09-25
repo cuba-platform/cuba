@@ -602,6 +602,7 @@ configure(guiModule) {
         compile(clientModule)
 
         compile(bom['org.apache.poi:poi'])
+        compile(bom['org.apache.poi:poi-ooxml'])
 
         testCompile(clientTestsModule)
     }

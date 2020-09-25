@@ -16,12 +16,10 @@
  */
 package com.haulmont.cuba.gui.export;
 
-import org.apache.poi.hssf.usermodel.HSSFFont;
-
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Calculates the width of a column, based on the values within it.
@@ -46,7 +44,7 @@ public class ExcelAutoColumnSizer {
 
     private short currentWidth = WIDTH_MIN;
 
-    private FontMetrics getFontMetrics(HSSFFont hf){
+    private FontMetrics getFontMetrics(org.apache.poi.ss.usermodel.Font hf){
         FontMetrics fm;
         Short pFont = hf.getIndex();
 
@@ -101,7 +99,7 @@ public class ExcelAutoColumnSizer {
         }
     }
 
-    public void notifyCellValue(String val, HSSFFont font) {
+    public void notifyCellValue(String val, org.apache.poi.ss.usermodel.Font font) {
         if (val == null || val.length() == 0) return;
         if (font == null) throw new IllegalArgumentException("font is null");
 
