@@ -18,26 +18,32 @@ package com.haulmont.cuba.gui.export;
 
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
-import com.haulmont.chile.core.datatypes.impl.EnumClass;
-import com.haulmont.chile.core.model.*;
+import com.haulmont.chile.core.model.Instance;
+import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.chile.core.model.Range;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
+import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.IdProxy;
 import com.haulmont.cuba.core.entity.annotation.IgnoreUserTimeZone;
 import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.data.*;
+import com.haulmont.cuba.gui.components.data.GroupTableItems;
+import com.haulmont.cuba.gui.components.data.TableItems;
+import com.haulmont.cuba.gui.components.data.TreeDataGridItems;
+import com.haulmont.cuba.gui.components.data.TreeTableItems;
 import com.haulmont.cuba.gui.components.data.meta.EntityDataGridItems;
 import com.haulmont.cuba.gui.components.data.meta.EntityTableItems;
 import com.haulmont.cuba.gui.data.GroupInfo;
+import com.haulmont.cuba.gui.export.helper.ExcelExportHelper;
+import com.haulmont.cuba.gui.export.helper.XlsExportHelper;
+import com.haulmont.cuba.gui.export.helper.XlsxExportHelper;
 import com.haulmont.cuba.gui.model.InstanceContainer;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.hssf.usermodel.*;
-import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.CellType;
-import org.apache.poi.ss.usermodel.DataFormat;
-import org.apache.poi.ss.usermodel.VerticalAlignment;
+import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.util.LocaleUtil;
 import org.dom4j.Element;
 
@@ -61,17 +67,17 @@ public class ExcelExporter {
 
     public static final int MAX_ROW_COUNT = 65535;
 
-    protected HSSFWorkbook wb;
+    protected Workbook wb;
 
-    protected HSSFFont boldFont;
-    protected HSSFFont stdFont;
-    protected HSSFSheet sheet;
+    protected Font boldFont;
+    protected Font stdFont;
+    protected Sheet sheet;
 
-    protected HSSFCellStyle timeFormatCellStyle;
-    protected HSSFCellStyle dateFormatCellStyle;
-    protected HSSFCellStyle dateTimeFormatCellStyle;
-    protected HSSFCellStyle integerFormatCellStyle;
-    protected HSSFCellStyle doubleFormatCellStyle;
+    protected CellStyle timeFormatCellStyle;
+    protected CellStyle dateFormatCellStyle;
+    protected CellStyle dateTimeFormatCellStyle;
+    protected CellStyle integerFormatCellStyle;
+    protected CellStyle doubleFormatCellStyle;
 
     protected ExcelAutoColumnSizer[] sizers;
 
@@ -86,6 +92,9 @@ public class ExcelExporter {
 
     protected boolean isRowNumberExceeded = false;
 
+    protected ExcelExportHelper excelExportHelper;
+    protected ExcelOptions excelOptions;
+
     public enum ExportMode {
         SELECTED_ROWS,
         ALL_ROWS
@@ -98,7 +107,23 @@ public class ExcelExporter {
 
         trueStr = messages.getMessage(ExcelExporter.class, "excelExporter.true");
         falseStr = messages.getMessage(ExcelExporter.class, "excelExporter.false");
+
+        ExcelExportFormat excelExportFormat = getDefaultExportFormatType();
+        initExcelConfig(excelExportFormat);
     }
+
+    public ExcelExporter(ExcelExportFormat excelExportFormat) {
+        messages = AppBeans.get(Messages.NAME);
+        userSessionSource = AppBeans.get(UserSessionSource.NAME);
+        metadataTools = AppBeans.get(MetadataTools.NAME);
+
+        trueStr = messages.getMessage(ExcelExporter.class, "excelExporter.true");
+        falseStr = messages.getMessage(ExcelExporter.class, "excelExporter.false");
+
+        ExcelExportFormat type = excelExportFormat == ExcelExportFormat.DEFAULT ? getDefaultExportFormatType() : excelExportFormat;
+        initExcelConfig(type);
+    }
+
 
     public void exportTable(Table table, @Nullable ExportDisplay display) {
         exportTable(table, table.getColumns(), display);
@@ -109,7 +134,7 @@ public class ExcelExporter {
     }
 
     protected void createWorkbookWithSheet() {
-        wb = new HSSFWorkbook();
+        wb = excelExportHelper.createWorkbook();
         sheet = wb.createSheet("Export");
     }
 
@@ -151,9 +176,9 @@ public class ExcelExporter {
         if (filterDescription != null) {
             for (r = 0; r < filterDescription.size(); r++) {
                 String line = filterDescription.get(r);
-                HSSFRow row = sheet.createRow(r);
+                Row row = sheet.createRow(r);
                 if (r == 0) {
-                    HSSFRichTextString richTextFilterName = new HSSFRichTextString(line);
+                    RichTextString richTextFilterName = excelExportHelper.createRichTextString(line);
                     richTextFilterName.applyFont(boldFont);
                     row.createCell(0).setCellValue(richTextFilterName);
                 } else {
@@ -162,7 +187,7 @@ public class ExcelExporter {
             }
             r++;
         }
-        HSSFRow row = sheet.createRow(r);
+        Row row = sheet.createRow(r);
         createAutoColumnSizers(columns.size());
 
         float maxHeight = sheet.getDefaultRowHeightInPoints();
@@ -184,8 +209,8 @@ public class ExcelExporter {
             Table.Column column = columns.get(c);
             String caption = column.getCaption();
 
-            HSSFCell cell = row.createCell(c);
-            HSSFRichTextString richTextString = new HSSFRichTextString(caption);
+            Cell cell = row.createCell(c);
+            RichTextString richTextString = excelExportHelper.createRichTextString(caption);
             richTextString.applyFont(boldFont);
             cell.setCellValue(richTextString);
 
@@ -258,7 +283,7 @@ public class ExcelExporter {
         }
 
         for (int c = 0; c < columns.size(); c++) {
-            sheet.setColumnWidth(c, sizers[c].getWidth() * COL_WIDTH_MAGIC);
+            sheet.setColumnWidth(c, sizers[c].getWidth() * excelOptions.getColWidthMagic());
         }
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -271,7 +296,7 @@ public class ExcelExporter {
             fileName = messages.getTools().getEntityCaption(((EntityTableItems) tableItems).getEntityMetaClass());
         }
 
-        display.show(new ByteArrayDataProvider(out.toByteArray()), fileName + ".xls", ExportFormat.XLS);
+        display.show(new ByteArrayDataProvider(out.toByteArray()), fileName + excelOptions.getExtension(), excelOptions.getExportFormat());
     }
 
     public void exportDataGrid(DataGrid dataGrid, @Nullable ExportDisplay display) {
@@ -307,9 +332,9 @@ public class ExcelExporter {
         if (filterDescription != null) {
             for (r = 0; r < filterDescription.size(); r++) {
                 String line = filterDescription.get(r);
-                HSSFRow row = sheet.createRow(r);
+                Row row = sheet.createRow(r);
                 if (r == 0) {
-                    HSSFRichTextString richTextFilterName = new HSSFRichTextString(line);
+                    RichTextString richTextFilterName = excelExportHelper.createRichTextString(line);
                     richTextFilterName.applyFont(boldFont);
                     row.createCell(0).setCellValue(richTextFilterName);
                 } else {
@@ -318,7 +343,7 @@ public class ExcelExporter {
             }
             r++;
         }
-        HSSFRow row = sheet.createRow(r);
+        Row row = sheet.createRow(r);
         createAutoColumnSizers(columns.size());
 
         float maxHeight = sheet.getDefaultRowHeightInPoints();
@@ -340,8 +365,8 @@ public class ExcelExporter {
             DataGrid.Column column = columns.get(c);
             String caption = column.getCaption();
 
-            HSSFCell cell = row.createCell(c);
-            HSSFRichTextString richTextString = new HSSFRichTextString(caption);
+            Cell cell = row.createCell(c);
+            RichTextString richTextString = excelExportHelper.createRichTextString(caption);
             richTextString.applyFont(boldFont);
             cell.setCellValue(richTextString);
 
@@ -392,7 +417,7 @@ public class ExcelExporter {
         }
 
         for (int c = 0; c < columns.size(); c++) {
-            sheet.setColumnWidth(c, sizers[c].getWidth() * COL_WIDTH_MAGIC);
+            sheet.setColumnWidth(c, sizers[c].getWidth() * excelOptions.getColWidthMagic());
         }
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -405,25 +430,25 @@ public class ExcelExporter {
             fileName = messages.getTools().getEntityCaption(dataGridSource.getEntityMetaClass());
         }
 
-        display.show(new ByteArrayDataProvider(out.toByteArray()), fileName + ".xls", ExportFormat.XLS);
+        display.show(new ByteArrayDataProvider(out.toByteArray()), fileName + excelOptions.getExtension(), excelOptions.getExportFormat());
     }
 
     protected void createFormats() {
         timeFormatCellStyle = wb.createCellStyle();
         String timeFormat = messages.getMainMessage("excelExporter.timeFormat");
-        timeFormatCellStyle.setDataFormat(HSSFDataFormat.getBuiltinFormat(timeFormat));
+        timeFormatCellStyle.setDataFormat(getBuiltinFormat(timeFormat));
 
         dateFormatCellStyle = wb.createCellStyle();
         String dateFormat = messages.getMainMessage("excelExporter.dateFormat");
-        dateFormatCellStyle.setDataFormat(HSSFDataFormat.getBuiltinFormat(dateFormat));
+        dateFormatCellStyle.setDataFormat(getBuiltinFormat(dateFormat));
 
         dateTimeFormatCellStyle = wb.createCellStyle();
         String dateTimeFormat = messages.getMainMessage("excelExporter.dateTimeFormat");
-        dateTimeFormatCellStyle.setDataFormat(HSSFDataFormat.getBuiltinFormat(dateTimeFormat));
+        dateTimeFormatCellStyle.setDataFormat(getBuiltinFormat(dateTimeFormat));
 
         integerFormatCellStyle = wb.createCellStyle();
         String integerFormat = messages.getMainMessage("excelExporter.integerFormat");
-        integerFormatCellStyle.setDataFormat(HSSFDataFormat.getBuiltinFormat(integerFormat));
+        integerFormatCellStyle.setDataFormat(getBuiltinFormat(integerFormat));
 
         DataFormat format = wb.createDataFormat();
         doubleFormatCellStyle = wb.createCellStyle();
@@ -454,7 +479,7 @@ public class ExcelExporter {
 
     protected int createAggregatableRow(Table table, List<Table.Column> columns, int rowNumber,
                                         int aggregatableRow) {
-        HSSFRow row = sheet.createRow(rowNumber);
+        Row row = sheet.createRow(rowNumber);
         Map<Object, Object> results = table.getAggregationResults();
 
         int i = 0;
@@ -464,7 +489,7 @@ public class ExcelExporter {
                 Object key = agr.getPropertyPath() != null ? agr.getPropertyPath() : column.getId();
                 Object aggregationResult = results.get(key);
                 if (aggregationResult != null) {
-                    HSSFCell cell = row.createCell(i);
+                    Cell cell = row.createCell(i);
                     formatValueCell(cell, aggregationResult, null, i, rowNumber, 0, null);
                 }
             }
@@ -477,7 +502,7 @@ public class ExcelExporter {
                                  GroupInfo groupInfo, int groupNumber) {
         GroupTableItems<Entity> groupTableSource = (GroupTableItems) table.getItems();
 
-        HSSFRow row = sheet.createRow(rowNumber);
+        Row row = sheet.createRow(rowNumber);
         Map<Object, Object> aggregations = table.isAggregatable()
                 ? table.getAggregationResults(groupInfo)
                 : Collections.emptyMap();
@@ -486,7 +511,7 @@ public class ExcelExporter {
         int initialGroupNumber = groupNumber;
         for (Table.Column column : columns) {
             if (i == initialGroupNumber) {
-                HSSFCell cell = row.createCell(i);
+                Cell cell = row.createCell(i);
                 Object val = groupInfo.getValue();
 
                 if (val == null) {
@@ -540,7 +565,7 @@ public class ExcelExporter {
                     Object key = agr.getPropertyPath() != null ? agr.getPropertyPath() : column.getId();
                     Object aggregationResult = aggregations.get(key);
                     if (aggregationResult != null) {
-                        HSSFCell cell = row.createCell(i);
+                        Cell cell = row.createCell(i);
                         formatValueCell(cell, aggregationResult, null, i, rowNumber, 0, null);
                     }
                 }
@@ -563,7 +588,7 @@ public class ExcelExporter {
         }
 
         if (checkIsRowNumberExceed(rowNumber)) {
-            sheet.groupRow(oldRowNumber + 1, MAX_ROW_COUNT);
+            sheet.groupRow(oldRowNumber + 1, excelOptions.getMaxRowCount());
         } else {
             sheet.groupRow(oldRowNumber + 1, rowNumber);
         }
@@ -576,11 +601,11 @@ public class ExcelExporter {
             return;
         }
 
-        if (rowNumber > MAX_ROW_COUNT) {
+        if (rowNumber > excelOptions.getMaxRowCount()) {
             return;
         }
 
-        HSSFRow row = sheet.createRow(rowNumber);
+        Row row = sheet.createRow(rowNumber);
         Entity instance = (Entity) table.getItems().getItem(itemId);
 
         int level = 0;
@@ -589,7 +614,7 @@ public class ExcelExporter {
         }
 
         for (int c = startColumn; c < columns.size(); c++) {
-            HSSFCell cell = row.createCell(c);
+            Cell cell = row.createCell(c);
 
             Table.Column column = columns.get(c);
             Object cellValue = null;
@@ -632,7 +657,7 @@ public class ExcelExporter {
             createDataGridRow(dataGrid, columns, startColumn, ++rowNumber, item.getId());
 
             Collection<Entity> children = treeDataGridItems.getChildren(item).collect(Collectors.toList());
-            for (Entity child: children) {
+            for (Entity child : children) {
                 rowNumber = createDataGridHierarchicalRow(dataGrid, treeDataGridItems, columns, startColumn, rowNumber, child);
             }
         }
@@ -645,7 +670,7 @@ public class ExcelExporter {
         if (startColumn >= columns.size()) {
             return;
         }
-        HSSFRow row = sheet.createRow(rowNumber);
+        Row row = sheet.createRow(rowNumber);
         Entity item = (Entity) dataGrid.getItems().getItem(itemId);
 
         int level = 0;
@@ -653,7 +678,7 @@ public class ExcelExporter {
             level = ((TreeDataGrid) dataGrid).getLevel(item);
         }
         for (int c = startColumn; c < columns.size(); c++) {
-            HSSFCell cell = row.createCell(c);
+            Cell cell = row.createCell(c);
 
             DataGrid.Column column = columns.get(c);
             Object cellValue = null;
@@ -700,7 +725,7 @@ public class ExcelExporter {
         return sb.toString();
     }
 
-    protected void formatValueCell(HSSFCell cell, @Nullable Object cellValue, @Nullable MetaPropertyPath metaPropertyPath,
+    protected void formatValueCell(Cell cell, @Nullable Object cellValue, @Nullable MetaPropertyPath metaPropertyPath,
                                    int sizersIndex, int notificationRequired, int level, @Nullable Integer groupChildCount) {
 
         if (cellValue == null) {
@@ -810,7 +835,7 @@ public class ExcelExporter {
                 str += createSpaceString(level);
             }
             str += ((Boolean) cellValue) ? trueStr : falseStr;
-            cell.setCellValue(new HSSFRichTextString(str));
+            cell.setCellValue(excelExportHelper.createRichTextString(str));
             if (sizers[sizersIndex].isNotificationRequired(notificationRequired)) {
                 sizers[sizersIndex].notifyCellValue(str, stdFont);
             }
@@ -827,13 +852,13 @@ public class ExcelExporter {
             String instanceName = metadataTools.getInstanceName(entityVal);
             String str = sizersIndex == 0 ? createSpaceString(level) + instanceName : instanceName;
             str = str + childCountValue;
-            cell.setCellValue(new HSSFRichTextString(str));
+            cell.setCellValue(excelExportHelper.createRichTextString(str));
             if (sizers[sizersIndex].isNotificationRequired(notificationRequired)) {
                 sizers[sizersIndex].notifyCellValue(str, stdFont);
             }
         } else if (cellValue instanceof Collection) {
             String str = "";
-            cell.setCellValue(new HSSFRichTextString(str));
+            cell.setCellValue(excelExportHelper.createRichTextString(str));
             if (sizers[sizersIndex].isNotificationRequired(notificationRequired)) {
                 sizers[sizersIndex].notifyCellValue(str, stdFont);
             }
@@ -841,7 +866,7 @@ public class ExcelExporter {
             String strValue = cellValue == null ? "" : cellValue.toString();
             String str = sizersIndex == 0 ? createSpaceString(level) + strValue : strValue;
             str = str + childCountValue;
-            cell.setCellValue(new HSSFRichTextString(str));
+            cell.setCellValue(excelExportHelper.createRichTextString(str));
             if (sizers[sizersIndex].isNotificationRequired(notificationRequired)) {
                 sizers[sizersIndex].notifyCellValue(str, stdFont);
             }
@@ -849,7 +874,7 @@ public class ExcelExporter {
     }
 
     protected boolean checkIsRowNumberExceed(int r) {
-        return isRowNumberExceeded = r >= MAX_ROW_COUNT;
+        return isRowNumberExceeded = excelExportHelper.isRowNumberExceed(r);
     }
 
     /**
@@ -881,5 +906,31 @@ public class ExcelExporter {
             }
         }
         return false;
+    }
+
+    protected short getBuiltinFormat(String format) {
+        return (short) BuiltinFormats.getBuiltinFormat(format);
+    }
+
+    private ExcelExportFormat getDefaultExportFormatType() {
+        String defaultFormat = AppBeans.get(Configuration.class).
+                getConfig(ClientConfig.class).
+                getDefaultExcelExportFormat();
+        return ExcelExportFormat.fromString(defaultFormat);
+    }
+
+    protected void initExcelConfig(ExcelExportFormat excelExportFormat) {
+        switch (excelExportFormat) {
+            case XLS:
+                excelExportHelper = new XlsExportHelper();
+                break;
+            case XLSX:
+                excelExportHelper = new XlsxExportHelper();
+                break;
+            default:
+                throw new IllegalStateException("Unknown export format " + excelExportFormat);
+        }
+
+        excelOptions = excelExportHelper.getExcelOptions();
     }
 }
