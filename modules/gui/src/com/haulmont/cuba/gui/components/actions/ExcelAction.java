@@ -25,6 +25,7 @@ import com.haulmont.cuba.gui.Notifications;
 import com.haulmont.cuba.gui.Notifications.NotificationType;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.DialogAction.Type;
+import com.haulmont.cuba.gui.export.ExcelExportFormat;
 import com.haulmont.cuba.gui.export.ExcelExporter;
 import com.haulmont.cuba.gui.export.ExportDisplay;
 import com.haulmont.cuba.gui.icons.CubaIcon;
@@ -67,6 +68,12 @@ public class ExcelAction extends BaseAction implements Action.HasBeforeActionPer
      * If true and table is aggregatable will export aggregation row to excel document.
      */
     protected boolean exportAggregation = true;
+
+    /**
+     * Excel format used for export: xls or xlsx.
+     * By default the value is taken from setting {@link com.haulmont.cuba.client.ClientConfig#getDefaultExcelExportFormat()}
+     */
+    protected ExcelExportFormat exportFormat = ExcelExportFormat.DEFAULT;
 
     /**
      * Creates an action with default id.
@@ -229,7 +236,7 @@ public class ExcelAction extends BaseAction implements Action.HasBeforeActionPer
      * Export via {@link ExcelExporter}.
      */
     protected void export(ExportMode exportMode) {
-        ExcelExporter exporter = new ExcelExporter();
+        ExcelExporter exporter = new ExcelExporter(exportFormat);
         exporter.setExportAggregation(exportAggregation);
 
         if (listComponent instanceof Table) {
@@ -271,5 +278,13 @@ public class ExcelAction extends BaseAction implements Action.HasBeforeActionPer
 
     public void setExportAggregation(boolean exportAggregation) {
         this.exportAggregation = exportAggregation;
+    }
+
+    public ExcelExportFormat getExportFormatType() {
+        return exportFormat;
+    }
+
+    public void setExportFormatType(ExcelExportFormat exportFormat) {
+        this.exportFormat = exportFormat;
     }
 }

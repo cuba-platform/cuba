@@ -16,12 +16,11 @@
  */
 package com.haulmont.cuba.gui.export;
 
-import org.apache.poi.hssf.usermodel.HSSFFont;
-
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
+import org.apache.poi.ss.usermodel.Font;
 
 /**
  * Calculates the width of a column, based on the values within it.
@@ -46,7 +45,7 @@ public class ExcelAutoColumnSizer {
 
     private short currentWidth = WIDTH_MIN;
 
-    private FontMetrics getFontMetrics(HSSFFont hf){
+    private FontMetrics getFontMetrics(Font hf){
         FontMetrics fm;
         Short pFont = hf.getIndex();
 
@@ -55,12 +54,12 @@ public class ExcelAutoColumnSizer {
             int style;
             if (hf.getBold() || hf.getItalic()) {
                 style = 0;
-                if (hf.getBold()) style ^= Font.BOLD;
-                if (hf.getItalic()) style ^= Font.ITALIC;
+                if (hf.getBold()) style ^= java.awt.Font.BOLD;
+                if (hf.getItalic()) style ^= java.awt.Font.ITALIC;
             } else {
-                style = Font.PLAIN;
+                style = java.awt.Font.PLAIN;
             }
-            Font f = new java.awt.Font(hf.getFontName(), style, hf.getFontHeightInPoints());
+            java.awt.Font f = new java.awt.Font(hf.getFontName(), style, hf.getFontHeightInPoints());
 
             if (graphics == null) {
                 BufferedImage i = new BufferedImage(1, 1, BufferedImage.TYPE_BYTE_GRAY);
@@ -101,7 +100,7 @@ public class ExcelAutoColumnSizer {
         }
     }
 
-    public void notifyCellValue(String val, HSSFFont font) {
+    public void notifyCellValue(String val, Font font) {
         if (val == null || val.length() == 0) return;
         if (font == null) throw new IllegalArgumentException("font is null");
 
