@@ -438,10 +438,10 @@ public interface ClientConfig extends Config {
     boolean getReloadUnfetchedAttributesFromLookupScreens();
 
     /**
-     * Excel format (xls or xlsx) that will be used by default for export
-     * @return xls or xlsx
+     * Excel format (XLS or XLSX) that will be used by default for export
+     * @return ExcelExportFormat.XLS or ExcelExportFormat.XLSX value
      */
     @Property("cuba.gui.defaultExcelExportFormat")
-    @Default("xlsx")
+    @Default("XLS")
     String getDefaultExcelExportFormat();
 }

@@ -16,41 +16,17 @@
 
 package com.haulmont.cuba.gui.export;
 
-import org.apache.commons.lang3.StringUtils;
-
-import javax.annotation.Nullable;
-
 public enum ExcelExportFormat {
     /**
      * XLS format for export
      */
-    XLS("xls"),
+    XLS,
     /**
      * XLSX format for export
      */
-    XLSX("xlsx"),
+    XLSX,
     /**
      * Export format should be taken from the setting {@link com.haulmont.cuba.client.ClientConfig#getDefaultExcelExportFormat()}
      */
-    DEFAULT("default");
-
-    protected final String format;
-
-    ExcelExportFormat(String format) {
-        this.format = format;
-    }
-
-    public String getFormat() {
-        return format;
-    }
-
-    @Nullable
-    public static ExcelExportFormat fromString(String format) {
-        for (ExcelExportFormat type : ExcelExportFormat.values()) {
-            if (StringUtils.equals(format, type.getFormat())) {
-                return type;
-            }
-        }
-        return null;
-    }
+    DEFAULT
 }
