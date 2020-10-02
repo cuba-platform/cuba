@@ -916,7 +916,7 @@ public class ExcelExporter {
         String defaultFormat = AppBeans.get(Configuration.class).
                 getConfig(ClientConfig.class).
                 getDefaultExcelExportFormat();
-        return ExcelExportFormat.fromString(defaultFormat);
+        return ExcelExportFormat.valueOf(defaultFormat);
     }
 
     protected void initExcelConfig(ExcelExportFormat excelExportFormat) {
