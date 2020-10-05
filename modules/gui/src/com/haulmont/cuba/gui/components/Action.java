@@ -255,6 +255,17 @@ public interface Action {
     }
 
     /**
+     * Indicates that the action is executable.
+     */
+    interface ExecutableAction extends Action {
+
+        /**
+         * Executes the {@link Action}
+         */
+        void execute();
+    }
+
+    /**
      * Used in dialogs to assign a special visual style for a button representing the action.
      */
     enum Status {

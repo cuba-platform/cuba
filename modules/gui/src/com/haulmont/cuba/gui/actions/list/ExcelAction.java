@@ -46,7 +46,7 @@ import java.util.stream.Collectors;
  */
 @StudioAction(category = "List Actions", description = "Exports a list of entities to XLS file")
 @ActionType(ExcelAction.ID)
-public class ExcelAction extends ListAction {
+public class ExcelAction extends ListAction implements Action.ExecutableAction {
 
     public static final String ID = "excel";
 
@@ -102,6 +102,7 @@ public class ExcelAction extends ListAction {
     /**
      * Executes the action.
      */
+    @Override
     public void execute() {
         if (target == null) {
             throw new IllegalStateException("ExcelAction target is not set");

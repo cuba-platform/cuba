@@ -56,7 +56,8 @@ import static com.haulmont.cuba.gui.screen.FrameOwner.WINDOW_COMMIT_AND_CLOSE_AC
  */
 @StudioAction(category = "List Actions", description = "Creates an entity instance using its editor screen")
 @ActionType(CreateAction.ID)
-public class CreateAction<E extends Entity> extends ListAction implements Action.DisabledWhenScreenReadOnly {
+public class CreateAction<E extends Entity> extends ListAction implements Action.DisabledWhenScreenReadOnly,
+        Action.ExecutableAction {
 
     public static final String ID = "create";
 
@@ -293,6 +294,7 @@ public class CreateAction<E extends Entity> extends ListAction implements Action
      * Executes the action.
      */
     @SuppressWarnings("unchecked")
+    @Override
     public void execute() {
         if (target == null) {
             throw new IllegalStateException("CreateAction target is not set");

@@ -23,6 +23,7 @@ import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.ScreenBuilders;
 import com.haulmont.cuba.gui.builders.EditorBuilder;
+import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.ActionType;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.data.meta.EntityDataUnit;
@@ -53,7 +54,7 @@ import static com.haulmont.cuba.gui.screen.FrameOwner.WINDOW_COMMIT_AND_CLOSE_AC
  */
 @StudioAction(category = "List Actions", description = "Opens an editor screen for an entity instance in read-only mode")
 @ActionType(ViewAction.ID)
-public class ViewAction<E extends Entity> extends SecuredListAction {
+public class ViewAction<E extends Entity> extends SecuredListAction implements Action.ExecutableAction {
 
     public static final String ID = "view";
 
@@ -258,6 +259,7 @@ public class ViewAction<E extends Entity> extends SecuredListAction {
      * Executes the action.
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
+    @Override
     public void execute() {
         if (target == null) {
             throw new IllegalStateException("ViewAction target is not set");

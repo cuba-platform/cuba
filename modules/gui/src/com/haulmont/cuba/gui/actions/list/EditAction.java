@@ -55,7 +55,8 @@ import static com.haulmont.cuba.gui.screen.FrameOwner.WINDOW_COMMIT_AND_CLOSE_AC
  */
 @StudioAction(category = "List Actions", description = "Edits an entity instance using its editor screen")
 @ActionType(EditAction.ID)
-public class EditAction<E extends Entity> extends SecuredListAction implements Action.AdjustWhenScreenReadOnly {
+public class EditAction<E extends Entity> extends SecuredListAction implements Action.AdjustWhenScreenReadOnly,
+        Action.ExecutableAction {
 
     public static final String ID = "edit";
 
@@ -304,6 +305,7 @@ public class EditAction<E extends Entity> extends SecuredListAction implements A
      * Executes the action.
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
+    @Override
     public void execute() {
         if (target == null) {
             throw new IllegalStateException("EditAction target is not set");
