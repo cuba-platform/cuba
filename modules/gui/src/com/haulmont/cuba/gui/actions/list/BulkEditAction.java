@@ -50,7 +50,7 @@ import static com.haulmont.cuba.gui.ComponentsHelper.getScreenContext;
  */
 @StudioAction(category = "List Actions", description = "Opens an editor for changing attribute values for several entity instances at once")
 @ActionType(BulkEditAction.ID)
-public class BulkEditAction extends SecuredListAction {
+public class BulkEditAction extends SecuredListAction implements Action.ExecutableAction {
 
     public static final String ID = "bulkEdit";
 
@@ -244,6 +244,7 @@ public class BulkEditAction extends SecuredListAction {
      * Executes the action.
      */
     @SuppressWarnings("unchecked")
+    @Override
     public void execute() {
         if (!(target.getItems() instanceof EntityDataUnit)) {
             throw new IllegalStateException("BulkEditAction target Items is null " +
