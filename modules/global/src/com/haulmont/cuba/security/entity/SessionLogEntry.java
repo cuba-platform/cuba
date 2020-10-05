@@ -35,7 +35,7 @@ public class SessionLogEntry extends StandardEntity implements TenantEntity {
     @Column(name = "SESSION_ID", nullable = false)
     protected UUID sessionId;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "SUBSTITUTED_USER_ID")
     protected User substitutedUser;
 

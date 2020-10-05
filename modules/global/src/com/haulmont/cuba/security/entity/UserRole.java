@@ -39,7 +39,7 @@ public class UserRole extends StandardEntity {
     @OnDeleteInverse(DeletePolicy.CASCADE)
     private User user;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ROLE_ID")
     @OnDeleteInverse(DeletePolicy.CASCADE)
     private Role role;
