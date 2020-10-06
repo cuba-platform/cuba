@@ -182,6 +182,14 @@ public interface TransactionalDataManager {
     void remove(Entity entity);
 
     /**
+     * Removes the entity instance from the data store.
+     * @param entity    entity instance
+     * @param softDeletion whether to use soft deletion for entities implementing {@link com.haulmont.cuba.core.entity.SoftDelete}
+     *                     (true by default)
+     */
+    void remove(Entity entity, boolean softDeletion);
+
+    /**
      * Removes the entity instance from the data store by its id.
      * @param entityId    entity id
      */
