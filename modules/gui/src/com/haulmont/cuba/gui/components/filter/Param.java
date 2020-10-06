@@ -550,7 +550,7 @@ public class Param {
         } else if (Boolean.class.isAssignableFrom(javaClass)) {
             component = createBooleanField(valueProperty);
         } else if (UUID.class.equals(javaClass)) {
-            component = createUuidField(valueProperty);
+            component = createUuidField(datatype, valueProperty);
         } else
             throw new UnsupportedOperationException("Unsupported param class: " + javaClass);
 
@@ -730,7 +730,7 @@ public class Param {
         return field;
     }
 
-    protected Component createUuidField(final ValueProperty valueProperty) {
+    protected Component createUuidField(final Datatype datatype, final ValueProperty valueProperty) {
         if (inExpr) {
             ListEditor listEditor = componentsFactory.createComponent(ListEditor.class);
             listEditor.setItemType(ListEditor.ItemType.UUID);
@@ -760,11 +760,7 @@ public class Param {
         });
 
         Object _value = _getValue(valueProperty);
-        if (_value instanceof String) {
-            field.setValue(_value);
-        } else {
-            field.setValue("");
-        }
+        field.setValue(datatype.format(_value));
         return field;
     }
 
