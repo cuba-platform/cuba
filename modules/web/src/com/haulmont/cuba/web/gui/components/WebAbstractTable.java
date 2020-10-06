@@ -2029,6 +2029,10 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
 
     @Override
     public void applySettings(Element element) {
+        applySettingsInternal(element, false);
+    }
+
+    protected void applySettingsInternal(Element element, boolean presentationSettings) {
         if (!isSettingsEnabled()) {
             return;
         }
@@ -2068,7 +2072,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
 
         if (clientConfig.getLoadObsoleteSettingsForTable()
                 || CollectionUtils.isEqualCollection(modelIds, loadedIds)) {
-            applyColumnSettings(element);
+            applyColumnSettings(element, presentationSettings);
         }
 
         component.enableContentBufferRefreshing(refreshWasEnabled);
@@ -2125,7 +2129,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
         return columnsElem;
     }
 
-    protected void applyColumnSettings(Element element) {
+    protected void applyColumnSettings(Element element, boolean presentationSettings) {
         Element columnsElem = getColumnsElement(element);
 
         Object[] oldColumns = component.getVisibleColumns();
@@ -2993,7 +2997,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
     protected void applyPresentation(Presentation p) {
         if (presentations != null) {
             Element settingsElement = presentations.getSettings(p);
-            applySettings(settingsElement);
+            applySettingsInternal(settingsElement, true);
             presentations.setCurrent(p);
             component.markAsDirty();
         }
