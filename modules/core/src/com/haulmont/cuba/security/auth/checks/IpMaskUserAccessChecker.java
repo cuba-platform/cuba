@@ -20,10 +20,10 @@ import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.security.auth.AbstractClientCredentials;
 import com.haulmont.cuba.security.auth.AuthenticationDetails;
 import com.haulmont.cuba.security.auth.Credentials;
+import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.IpMatcher;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserIpRestrictedException;
-import com.haulmont.cuba.security.global.UserSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.Ordered;
@@ -50,13 +50,16 @@ public class IpMaskUserAccessChecker extends AbstractUserAccessChecker implement
                     && clientCredentials.getIpAddress() != null) {
                 String ipAddress = clientCredentials.getIpAddress();
 
-                UserSession session = authenticationDetails.getSession();
-                if (session.getUser().getIpMask() != null) {
-                    IpMatcher ipMatcher = new IpMatcher(session.getUser().getIpMask());
+                User user = authenticationDetails.getSession().getUser();
+                if (user.getIpMask() != null) {
+                    IpMatcher ipMatcher = new IpMatcher(user.getIpMask());
                     if (!ipMatcher.match(ipAddress)) {
-                        log.info("IP address {} is not permitted for user {}", ipAddress, session.getUser());
+                        log.info("IP address {} is not permitted for user {}", ipAddress, user);
 
-                        throw new UserIpRestrictedException(messages.getMessage(MSG_PACK, "LoginException.invalidIP"));
+                        throw new UserIpRestrictedException(
+                                messages.getMessage(MSG_PACK,
+                                        "LoginException.invalidIP",
+                                        clientCredentials.getLocale()));
                     }
                 }
             }
