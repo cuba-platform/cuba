@@ -43,7 +43,7 @@ import java.util.regex.Pattern;
 
 public class ParamWrapper implements Component, HasValue<Object> {
 
-    public static final Pattern LIKE_PATTERN = Pattern.compile("\\slike\\s+" + ParametersHelper.QUERY_PARAMETERS_RE + "\\s*?(escape '(\\S+)')?",
+    public static final Pattern LIKE_PATTERN = Pattern.compile("\\slike" + ParametersHelper.QUERY_PARAMETERS_RE + "\\s*?(escape '(\\S+)')?",
             Pattern.CASE_INSENSITIVE);
 
     protected final AbstractCondition condition;
