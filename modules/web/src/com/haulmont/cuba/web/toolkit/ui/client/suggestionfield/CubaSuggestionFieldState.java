@@ -34,4 +34,6 @@ public class CubaSuggestionFieldState extends AbstractFieldState {
     public List<String> popupStylename = null;
 
     public String popupWidth = "auto";
+
+    public boolean selectFirstSuggestionOnShow = true;
 }

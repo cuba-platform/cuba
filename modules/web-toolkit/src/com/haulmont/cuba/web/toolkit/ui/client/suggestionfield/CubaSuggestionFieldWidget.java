@@ -58,7 +58,7 @@ public class CubaSuggestionFieldWidget extends Composite implements HasEnabled, 
     protected final SuggestionPopup suggestionsPopup;
     protected final SuggestionsContainer suggestionsContainer;
 
-    protected SuggestionTimer suggestionTimer = null;
+    protected SuggestionTimer suggestionTimer;
 
     public Consumer<String> searchExecutor;
     public Consumer<String> arrowDownActionHandler;
@@ -77,6 +77,8 @@ public class CubaSuggestionFieldWidget extends Composite implements HasEnabled, 
     protected String popupWidth;
 
     protected boolean focused = false;
+
+    protected boolean selectFirstSuggestionOnShow = true;
 
     public CubaSuggestionFieldWidget() {
         textField = GWT.create(VTextField.class);
@@ -139,7 +141,10 @@ public class CubaSuggestionFieldWidget extends Composite implements HasEnabled, 
 
                 suggestionsContainer.addItem(menuItem);
             }
-            suggestionsContainer.selectItem(0);
+
+            if (selectFirstSuggestionOnShow) {
+                suggestionsContainer.selectItem(0);
+            }
 
             suggestionsPopup.removeAutoHidePartner(getElement());
             suggestionsPopup.addAutoHidePartner(getElement());
@@ -164,6 +169,14 @@ public class CubaSuggestionFieldWidget extends Composite implements HasEnabled, 
             suggestionTimer.setQuery(query);
             suggestionTimer.schedule(asyncSearchDelayMs);
         }
+    }
+
+    public boolean isSelectFirstSuggestionOnShow() {
+        return selectFirstSuggestionOnShow;
+    }
+
+    public void setSelectFirstSuggestionOnShow(boolean selectFirstSuggestionOnShow) {
+        this.selectFirstSuggestionOnShow = selectFirstSuggestionOnShow;
     }
 
     protected void selectSuggestion() {
