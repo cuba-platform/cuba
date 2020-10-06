@@ -126,6 +126,15 @@ public class TransactionalDataManagerBean implements TransactionalDataManager {
     }
 
     @Override
+    public void remove(Entity entity, boolean softDeletion) {
+        CommitContext cc = new CommitContext();
+        cc.addInstanceToRemove(entity);
+        cc.setJoinTransaction(true);
+        cc.setSoftDeletion(softDeletion);
+        dataManager.commit(cc);
+    }
+
+    @Override
     public <T extends Entity> T create(Class<T> entityClass) {
         return metadata.create(entityClass);
     }

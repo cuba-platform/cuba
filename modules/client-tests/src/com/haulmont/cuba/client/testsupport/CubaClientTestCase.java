@@ -262,7 +262,7 @@ public class CubaClientTestCase {
 
                 AppBeans.get(EntityStates.NAME); result = entityStates; minTimes = 0;
                 AppBeans.get(EntityStates.class); result = entityStates; minTimes = 0;
-                AppBeans.get(EntityStates.NAME, BeanValidation.class); result = entityStates; minTimes = 0;
+                AppBeans.get(EntityStates.NAME, EntityStates.class); result = entityStates; minTimes = 0;
             }
         };
 
