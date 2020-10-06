@@ -94,6 +94,10 @@ public class CubaSuggestionFieldConnector extends AbstractFieldConnector {
             widget.setPopupWidth(getState().popupWidth);
         }
 
+        if (stateChangeEvent.hasPropertyChanged("selectFirstSuggestionOnShow")) {
+            widget.setSelectFirstSuggestionOnShow(getState().selectFirstSuggestionOnShow);
+        }
+
         widget.setReadonly(isReadOnly());
     }
 
