@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.bali.datastruct.Pair;
 import com.haulmont.bali.events.Subscription;
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.datatypes.Datatype;
@@ -304,13 +305,12 @@ public class WebDateField<V extends Comparable<V>>
 
         dateTimeFormat = dateFormat;
 
-        StringBuilder date = new StringBuilder(dateFormat);
-        StringBuilder time = new StringBuilder(dateFormat);
-        int timeStartPos = findTimeStartPos(dateFormat);
-        if (timeStartPos >= 0) {
-            time.delete(0, timeStartPos);
-            date.delete(timeStartPos, dateFormat.length());
+        StringBuilder date = new StringBuilder();
+        Pair<Integer, Integer> timePosition = findTimePosition(dateFormat);
+        if (timePosition.getFirst() >= 0 && timePosition.getSecond() >= 0) {
+            StringBuilder time = new StringBuilder(dateFormat.substring(timePosition.getFirst(), timePosition.getSecond() + 1));
             timeField.setTimeFormat(StringUtils.trimToEmpty(time.toString()));
+            date.append(StringUtils.trimToEmpty(dateFormat.replaceAll(time.toString(), "")));
         }
         dateField.setDateFormat(StringUtils.trimToEmpty(date.toString()));
 
@@ -361,7 +361,7 @@ public class WebDateField<V extends Comparable<V>>
                 && resolution.ordinal() < Resolution.DAY.ordinal();
         boolean timeFieldAllowedByDateFormat = resolution == null
                 && dateTimeFormat != null
-                && findTimeStartPos(dateTimeFormat) >= 0;
+                && findTimePosition(dateTimeFormat).getFirst() >= 0;
 
         if ((resolution == null && dateTimeFormat == null)
                 || timeFieldAllowedByResolution
@@ -373,17 +373,21 @@ public class WebDateField<V extends Comparable<V>>
         }
     }
 
-    protected int findTimeStartPos(String dateTimeFormat) {
-        List<Integer> positions = new ArrayList<>();
+    public Pair<Integer, Integer> findTimePosition(String dateTimeFormat) {
+        Set<Integer> positions = new HashSet<>();
 
         char[] signs = new char[]{'H', 'h', 'm', 's'};
         for (char sign : signs) {
-            int pos = dateTimeFormat.indexOf(sign);
-            if (pos > -1) {
-                positions.add(pos);
+            int firstPos = dateTimeFormat.indexOf(sign);
+            int lastPos = dateTimeFormat.lastIndexOf(sign);
+            if (firstPos > -1) {
+                positions.add(firstPos);
+            }
+            if (lastPos > -1) {
+                positions.add(lastPos);
             }
         }
-        return positions.isEmpty() ? -1 : Collections.min(positions);
+        return positions.isEmpty() ? new Pair<>(-1, -1) : new Pair<>(Collections.min(positions), Collections.max(positions));
     }
 
     @Override
@@ -750,4 +754,6 @@ public class WebDateField<V extends Comparable<V>>
     public TimeMode getTimeMode() {
         return fromVaadinTimeMode(timeField.getTimeMode());
     }
+
+
 }
