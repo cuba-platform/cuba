@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package spec.bugs.github
+package spec.cuba.gui.components
 
 import com.haulmont.bali.datastruct.Pair
 import com.haulmont.cuba.web.gui.components.WebDateField
 import spock.lang.Specification
 
-class platform_3019 extends Specification {
+class DateFieldDateTimePatternTest extends Specification {
     def "Unsupported field DayOfWeek in a search filter#3019"() {
         expect:
         new WebDateField().findTimePosition(pattern) == result
