@@ -32,9 +32,12 @@ import com.haulmont.cuba.core.entity.*;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.WindowManager.OpenType;
 import com.haulmont.cuba.gui.WindowParams;
+import com.haulmont.cuba.gui.actions.picker.LookupAction;
 import com.haulmont.cuba.gui.commonlookup.CommonLookupController;
+import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.HasValue;
 import com.haulmont.cuba.gui.components.PickerField;
+import com.haulmont.cuba.gui.components.actions.GuiActionSupport;
 import com.haulmont.cuba.gui.components.data.HasValueSource;
 import com.haulmont.cuba.gui.components.data.value.ContainerValueSource;
 import com.haulmont.cuba.gui.components.validation.*;
@@ -44,6 +47,8 @@ import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsBuilder;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import com.haulmont.cuba.gui.model.InstanceContainer;
+import com.haulmont.cuba.gui.screen.MapScreenOptions;
+import com.haulmont.cuba.gui.screen.OpenMode;
 import com.haulmont.cuba.gui.sys.ScreensHelper;
 import com.haulmont.cuba.security.entity.EntityOp;
 import org.apache.commons.lang3.BooleanUtils;
@@ -95,6 +100,9 @@ public class DynamicAttributesGuiTools {
 
     @Inject
     protected DynamicAttributesRecalculationTools recalculationTools;
+
+    @Inject
+    protected GuiActionSupport guiActionSupport;
 
     protected static final ThreadLocal<Boolean> recalculationInProgress = new ThreadLocal<>();
 
@@ -277,7 +285,11 @@ public class DynamicAttributesGuiTools {
             throw new IllegalArgumentException("Entity type is not specified in category attribute");
         }
         MetaClass metaClass = metadata.getClassNN(javaClass);
-        PickerField.LookupAction lookupAction = (PickerField.LookupAction) pickerField.getAction(PickerField.LookupAction.NAME);
+        Action lookupAction = pickerField.getAction(LookupAction.ID);
+        if (lookupAction == null) {
+            lookupAction = pickerField.getAction(PickerField.LookupAction.NAME);
+        }
+
         if (!Strings.isNullOrEmpty(categoryAttribute.getJoinClause())
                 || !Strings.isNullOrEmpty(categoryAttribute.getWhereClause())) {
             lookupAction = createLookupAction(pickerField, categoryAttribute.getJoinClause(), categoryAttribute.getWhereClause());
@@ -285,10 +297,42 @@ public class DynamicAttributesGuiTools {
         }
 
         if (lookupAction == null) {
-            lookupAction = pickerField.addLookupAction();
+            guiActionSupport.createActionById(pickerField, PickerField.LookupAction.NAME);
         }
 
         String screen = categoryAttribute.getScreen();
+        if (lookupAction instanceof LookupAction) {
+            initPickerField((LookupAction<?>) lookupAction, screen, metaClass, javaClass);
+        } else if (lookupAction instanceof PickerField.LookupAction) {
+            initLegacyPickerField((PickerField.LookupAction) lookupAction, screen, metaClass, javaClass);
+        }
+    }
+
+    protected void initPickerField(LookupAction<?> lookupAction,
+                                   @Nullable String screen,
+                                   MetaClass metaClass,
+                                   Class javaClass) {
+        if (StringUtils.isNotBlank(screen)) {
+            lookupAction.setScreenId(screen);
+        } else {
+            screen = windowConfig.getBrowseScreenId(metaClass);
+            Map<String, String> screensMap = screensHelper.getAvailableBrowserScreens(javaClass);
+            if (windowConfig.findWindowInfo(screen) != null && screensMap.containsValue(screen)) {
+                lookupAction.setScreenId(screen);
+                lookupAction.setOpenMode(OpenMode.THIS_TAB);
+            } else {
+                lookupAction.setScreenId(CommonLookupController.SCREEN_ID);
+                lookupAction.setScreenOptionsSupplier(() ->
+                        new MapScreenOptions(ParamsMap.of(CommonLookupController.CLASS_PARAMETER, metaClass)));
+                lookupAction.setOpenMode(OpenMode.DIALOG);
+            }
+        }
+    }
+
+    protected void initLegacyPickerField(PickerField.LookupAction lookupAction,
+                                         @Nullable String screen,
+                                         MetaClass metaClass,
+                                         Class javaClass) {
         if (StringUtils.isNotBlank(screen)) {
             lookupAction.setLookupScreen(screen);
         } else {
@@ -299,7 +343,8 @@ public class DynamicAttributesGuiTools {
                 lookupAction.setLookupScreenOpenType(OpenType.THIS_TAB);
             } else {
                 lookupAction.setLookupScreen(CommonLookupController.SCREEN_ID);
-                lookupAction.setLookupScreenParams(ParamsMap.of(CommonLookupController.CLASS_PARAMETER, metaClass));
+                lookupAction.setLookupScreenParams(
+                        ParamsMap.of(CommonLookupController.CLASS_PARAMETER, metaClass));
                 lookupAction.setLookupScreenOpenType(OpenType.DIALOG);
             }
         }
