@@ -281,7 +281,7 @@ configure(sharedLibModule) {
     dependencies {
         compile(bom['ch.qos.logback:logback-classic'])
         compile(bom['org.slf4j:log4j-over-slf4j'])
-        
+
         compileOnly(bom['javax.servlet:javax.servlet-api'])
 
         jdbc(bom['org.postgresql:postgresql'])
@@ -306,7 +306,10 @@ configure(globalModule) {
         compile(bom['org.apache.commons:commons-pool2'])
         compile(bom['org.apache.commons:commons-compress'])
 
-        compile(bom['org.dom4j:dom4j'])
+        compile(bom['org.dom4j:dom4j']) {
+            exclude group: 'xpp3', module: 'xpp3'
+            exclude group: 'pull-parser', module: 'pull-parser'
+        }
         compile(bom['xml-apis:xml-apis']) // simplify version management with core
         compile(bom['javax.activation:activation']) // simplify version management with core
         compile(bom['com.sun.mail:javax.mail'])
@@ -376,8 +379,8 @@ configure(globalModule) {
         outputs.file dstFile2
         doLast {
             dstDir.mkdirs()
-            dstFile1.write(srcFile1.readLines().findAll{ !it.contains('.entity.dummy.') }.join('\n'))
-            dstFile2.write(srcFile2.readLines().findAll{ !it.contains('.entity.dummy.') }.join('\n'))
+            dstFile1.write(srcFile1.readLines().findAll { !it.contains('.entity.dummy.') }.join('\n'))
+            dstFile2.write(srcFile2.readLines().findAll { !it.contains('.entity.dummy.') }.join('\n'))
         }
     }
 
@@ -433,7 +436,8 @@ configure(coreModule) {
         compile(bom['org.springframework:spring-tx'])
         compile(bom['org.springframework:spring-webmvc'])
 
-        compile(bom['org.apache.poi:poi']) // POI is actually not required by core, but remains here to simplify dependencies for reports project
+        compile(bom['org.apache.poi:poi'])
+        // POI is actually not required by core, but remains here to simplify dependencies for reports project
 
         compile(bom['org.jsoup:jsoup']) // simplify version management for fts
 
@@ -500,7 +504,7 @@ configure(coreModule) {
         showUi = !rootProject.hasProperty('headlessHsqlServer')
     }
 
-    task stopDb(description: 'Stops local HSQLDB server', type: CubaHsqlStop)  {
+    task stopDb(description: 'Stops local HSQLDB server', type: CubaHsqlStop) {
         dbPort = hsqlPort
         dbName = hsqlDbName
     }
@@ -814,7 +818,8 @@ configure(webModule) {
         doLast {
             project.copy {
                 from zipTree(configurations.themes.resolvedConfiguration.resolvedArtifacts.find { artifact ->
-                    artifact.name == 'vaadin-themes' }.getFile())
+                    artifact.name == 'vaadin-themes'
+                }.getFile())
                 into vaadinThemesDir
 
                 include 'VAADIN/themes/valo/**'
@@ -997,7 +1002,7 @@ configure(portalModule) {
 }
 
 task restart(dependsOn: ['stop', ':cuba-core:deploy', ':cuba-web:deploy', ':cuba-web-toolkit:deploy'],
-             description: 'Redeploys applications and restarts local Tomcat') {
+        description: 'Redeploys applications and restarts local Tomcat') {
     doLast {
         ant.waitfor(maxwait: 6, maxwaitunit: 'second', checkevery: 2, checkeveryunit: 'second') {
             not {
@@ -1071,7 +1076,7 @@ task aggregateJavadoc(type: Javadoc,
         group: 'Documentation') {
 
     destinationDir = file("$buildDir/docs/javadoc")
-    title = "${project.name.toUpperCase()} ${cubaVersion.replace('-SNAPSHOT','')} API"
+    title = "${project.name.toUpperCase()} ${cubaVersion.replace('-SNAPSHOT', '')} API"
 
     options.encoding = 'UTF-8'
     options.addStringOption("sourcepath", "")
