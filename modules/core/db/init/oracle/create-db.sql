@@ -33,7 +33,7 @@ create table SYS_ATTR_VALUE (
     STRING_ENTITY_VALUE varchar2(255 char),
     INT_ENTITY_VALUE integer,
     LONG_ENTITY_VALUE number,
-    CODE varchar2(100 char) not null,
+    CODE varchar2(255 char) not null,
     PARENT_ID varchar2(32),
     primary key(ID)
 )^
@@ -73,7 +73,7 @@ create table SYS_CATEGORY_ATTR (
     DELETED_BY varchar2(50 char),
     CATEGORY_ENTITY_TYPE varchar(4000),
     NAME varchar2(255 char),
-    CODE varchar2(100 char) not null,
+    CODE varchar2(255 char) not null,
     DESCRIPTION varchar2(1000 char),
     CATEGORY_ID varchar2(32) not null,
     ENTITY_CLASS varchar2(500 char),
@@ -502,7 +502,7 @@ create table SEC_LOGGED_ATTR (
     CREATE_TS timestamp,
     CREATED_BY varchar2(50 char),
     ENTITY_ID varchar2(32),
-    NAME varchar2(50 char),
+    NAME varchar2(255 char),
     primary key(ID)
 )^
 create unique index SEC_LOGGED_ATTR_UNIQ_NAME on SEC_LOGGED_ATTR(ENTITY_ID, NAME)^

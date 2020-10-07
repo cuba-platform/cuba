@@ -500,7 +500,7 @@ create table SEC_LOGGED_ATTR (
     CREATED_BY varchar(50),
     --
     ENTITY_ID varchar(32),
-    NAME varchar(50),
+    NAME varchar(255),
     --
     primary key (ID),
     constraint FK_SEC_LOGGED_ATTR_ENTITY foreign key (ENTITY_ID) references SEC_LOGGED_ENTITY(ID),
@@ -829,7 +829,7 @@ create table SYS_CATEGORY_ATTR (
     --
     CATEGORY_ENTITY_TYPE text,
     NAME varchar(255),
-    CODE varchar(100) not null,
+    CODE varchar(255) not null,
     DESCRIPTION varchar(1000),
     CATEGORY_ID varchar(32) not null,
     ENTITY_CLASS varchar(500),
@@ -895,7 +895,7 @@ create table SYS_ATTR_VALUE (
     STRING_ENTITY_VALUE varchar(190),
     INT_ENTITY_VALUE integer,
     LONG_ENTITY_VALUE bigint,
-    CODE varchar(100) not null,
+    CODE varchar(255) not null,
     PARENT_ID varchar(32),
     --
     primary key (ID),
