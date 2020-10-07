@@ -49,7 +49,7 @@ public class CategoryAttribute extends StandardEntity {
     private static final long serialVersionUID = -6959392628534815752L;
 
     public static final int NAME_FIELD_LENGTH = 255;
-    public static final int CODE_FIELD_LENGTH = 50;
+    public static final int CODE_FIELD_LENGTH = 255;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "CATEGORY_ID")
