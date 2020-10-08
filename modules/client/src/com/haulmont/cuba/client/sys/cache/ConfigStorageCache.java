@@ -28,12 +28,9 @@ import java.util.Map;
 
 
 @Primary
-@Component(ConfigStorageService.NAME)
+@Component(ConfigStorageCache.NAME)
 public class ConfigStorageCache implements ConfigStorageService {
-    /**
-     * Alias used for core {@code ConfigStorageService} on client layer
-     */
-    public static final String CORE_SERVICE_NAME = "cuba_CoreConfigStorageService";
+    public static final String NAME = "cuba_ConfigStorageCache";
 
     protected BeanLocator beanLocator;
 
@@ -59,7 +56,7 @@ public class ConfigStorageCache implements ConfigStorageService {
     }
 
     protected ConfigStorageService getService() {
-        return beanLocator.get(CORE_SERVICE_NAME);
+        return beanLocator.get(ConfigStorageService.NAME);
     }
 
     protected ClientCacheManager getClientCacheManager() {
