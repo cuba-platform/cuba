@@ -28,6 +28,7 @@ import com.haulmont.cuba.gui.Notifications;
 import com.haulmont.cuba.gui.Notifications.NotificationType;
 import com.haulmont.cuba.gui.ScreenBuilders;
 import com.haulmont.cuba.gui.builders.EditorBuilder;
+import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.ActionType;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.PickerField;
@@ -58,7 +59,8 @@ import static com.haulmont.cuba.gui.screen.FrameOwner.WINDOW_COMMIT_AND_CLOSE_AC
  */
 @StudioAction(category = "Picker Actions", description = "Opens an entity using the entity edit screen")
 @ActionType(OpenAction.ID)
-public class OpenAction<E extends Entity> extends BaseAction implements PickerField.PickerFieldAction, InitializingBean {
+public class OpenAction<E extends Entity> extends BaseAction implements PickerField.PickerFieldAction,
+        InitializingBean, Action.ExecutableAction {
 
     public static final String ID = "picker_open";
 
@@ -283,6 +285,7 @@ public class OpenAction<E extends Entity> extends BaseAction implements PickerFi
      * Executes the action.
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
+    @Override
     public void execute() {
         if (!checkFieldValue())
             return;

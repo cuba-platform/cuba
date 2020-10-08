@@ -18,6 +18,7 @@ package com.haulmont.cuba.gui.actions.list;
 
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.ActionType;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.actions.ListAction;
@@ -42,7 +43,7 @@ import javax.inject.Inject;
  */
 @StudioAction(category = "List Actions", description = "Reloads a list of entities from the database")
 @ActionType(RefreshAction.ID)
-public class RefreshAction extends ListAction {
+public class RefreshAction extends ListAction implements Action.ExecutableAction {
 
     public static final String ID = "refresh";
 
@@ -81,6 +82,7 @@ public class RefreshAction extends ListAction {
     /**
      * Executes the action.
      */
+    @Override
     public void execute() {
         if (target == null) {
             throw new IllegalStateException("RefreshAction target is not set");

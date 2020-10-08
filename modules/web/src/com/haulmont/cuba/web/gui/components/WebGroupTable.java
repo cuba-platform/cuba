@@ -270,8 +270,8 @@ public class WebGroupTable<E extends Entity> extends WebAbstractTable<CubaGroupT
     }
 
     @Override
-    public void applyColumnSettings(Element element) {
-        super.applyColumnSettings(element);
+    public void applyColumnSettings(Element element, boolean presentationSettings) {
+        super.applyColumnSettings(element, presentationSettings);
 
         Element groupPropertiesElement = element.element("groupProperties");
         if (groupPropertiesElement != null) {
@@ -291,13 +291,13 @@ public class WebGroupTable<E extends Entity> extends WebAbstractTable<CubaGroupT
                             .warn("Ignored group property '{}'", id);
                 }
             }
-            if (!properties.isEmpty()) {
-                groupBy(properties.toArray());
-                return;
-            }
-        }
 
-        ungroup();
+            groupBy(properties.toArray());
+        } else if (presentationSettings) {
+            // Ungroup only for presentation, otherwise, it might be
+            // a table with a declaratively defined grouping.
+            ungroup();
+        }
     }
 
     @Override

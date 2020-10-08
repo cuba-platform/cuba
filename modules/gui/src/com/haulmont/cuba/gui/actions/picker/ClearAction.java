@@ -21,6 +21,7 @@ import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.ActionType;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.PickerField;
@@ -45,7 +46,8 @@ import javax.inject.Inject;
  */
 @StudioAction(category = "Picker Actions", description = "Clears the picker field value")
 @ActionType(ClearAction.ID)
-public class ClearAction extends BaseAction implements PickerField.PickerFieldAction, InitializingBean {
+public class ClearAction extends BaseAction implements PickerField.PickerFieldAction, InitializingBean,
+        Action.ExecutableAction {
 
     public static final String ID = "picker_clear";
 
@@ -132,6 +134,7 @@ public class ClearAction extends BaseAction implements PickerField.PickerFieldAc
      * Executes the action.
      */
     @SuppressWarnings("unchecked")
+    @Override
     public void execute() {
         // remove entity if it is a composition
         Object value = pickerField.getValue();

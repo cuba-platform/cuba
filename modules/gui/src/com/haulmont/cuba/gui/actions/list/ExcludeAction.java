@@ -49,7 +49,8 @@ import java.util.function.Consumer;
  */
 @StudioAction(category = "List Actions", description = "Excludes entities from the list. The excluded entities are not deleted.")
 @ActionType(ExcludeAction.ID)
-public class ExcludeAction<E extends Entity> extends SecuredListAction implements Action.DisabledWhenScreenReadOnly {
+public class ExcludeAction<E extends Entity> extends SecuredListAction implements Action.DisabledWhenScreenReadOnly,
+        Action.ExecutableAction {
 
     public static final String ID = "exclude";
 
@@ -209,6 +210,7 @@ public class ExcludeAction<E extends Entity> extends SecuredListAction implement
      * Executes the action.
      */
     @SuppressWarnings("unchecked")
+    @Override
     public void execute() {
         if (target == null) {
             throw new IllegalStateException("ExcludeAction target is not set");

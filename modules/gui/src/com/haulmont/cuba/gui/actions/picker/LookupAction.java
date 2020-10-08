@@ -24,6 +24,7 @@ import com.haulmont.cuba.core.global.DevelopmentException;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.ScreenBuilders;
 import com.haulmont.cuba.gui.builders.LookupBuilder;
+import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.ActionType;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.PickerField;
@@ -56,7 +57,8 @@ import java.util.function.Supplier;
  */
 @StudioAction(category = "Picker Actions", description = "Sets an entity to the picker field using the entity lookup screen")
 @ActionType(LookupAction.ID)
-public class LookupAction<E extends Entity> extends BaseAction implements PickerField.PickerFieldAction, InitializingBean {
+public class LookupAction<E extends Entity> extends BaseAction implements PickerField.PickerFieldAction,
+        InitializingBean, Action.ExecutableAction {
 
     public static final String ID = "picker_lookup";
 
@@ -279,6 +281,7 @@ public class LookupAction<E extends Entity> extends BaseAction implements Picker
      * Executes the action.
      */
     @SuppressWarnings("unchecked")
+    @Override
     public void execute() {
         MetaClass metaClass = pickerField.getMetaClass();
         if (metaClass == null) {
