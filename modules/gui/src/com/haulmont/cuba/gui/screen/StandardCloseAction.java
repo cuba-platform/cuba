@@ -67,4 +67,18 @@ public class StandardCloseAction implements CloseAction, ChangeTrackerCloseActio
     public boolean isCheckForUnsavedChanges() {
         return checkForUnsavedChanges;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (!(obj instanceof StandardCloseAction)) return false;
+
+        StandardCloseAction action = (StandardCloseAction) obj;
+        return actionId.equals(action.getActionId());
+    }
+
+    @Override
+    public int hashCode() {
+        return actionId.hashCode();
+    }
 }
