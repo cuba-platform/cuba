@@ -44,7 +44,7 @@ public class ConfigCacheStrategy implements CachingStrategy {
     protected volatile Map<String, String> cachedProperties = null;
 
     @Inject
-    @Named(ConfigStorageCache.CORE_SERVICE_NAME)
+    @Named(ConfigStorageService.NAME)
     protected ConfigStorageService configStorageService;
 
     @Inject
