@@ -308,9 +308,9 @@ public class WebDateField<V extends Comparable<V>>
         String date = dateFormat;
         Pair<Integer, Integer> timePosition = findTimePosition(dateFormat);
         if (timePosition.getFirst() >= 0 && timePosition.getSecond() >= 0) {
-            StringBuilder time = new StringBuilder(dateFormat.substring(timePosition.getFirst(), timePosition.getSecond() + 1));
-            timeField.setTimeFormat(StringUtils.trimToEmpty(time.toString()));
-            date = StringUtils.trimToEmpty(dateFormat.replaceAll(time.toString(), ""));
+            String time = dateFormat.substring(timePosition.getFirst(), timePosition.getSecond() + 1);
+            timeField.setTimeFormat(StringUtils.trimToEmpty(time));
+            date = StringUtils.trimToEmpty(dateFormat.replaceAll(time, ""));
         }
         dateField.setDateFormat(StringUtils.trimToEmpty(date));
 
