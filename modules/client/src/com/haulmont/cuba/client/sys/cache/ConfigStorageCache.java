@@ -18,14 +18,19 @@ package com.haulmont.cuba.client.sys.cache;
 
 import com.haulmont.cuba.core.app.ConfigStorageService;
 import com.haulmont.cuba.core.config.AppPropertyEntity;
-import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.BeanLocator;
+import org.springframework.context.annotation.Primary;
+import org.springframework.stereotype.Component;
 
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
 
+
+@Primary
+@Component(ConfigStorageCache.NAME)
 public class ConfigStorageCache implements ConfigStorageService {
+    public static final String NAME = "cuba_ConfigStorageCache";
 
     protected BeanLocator beanLocator;
 

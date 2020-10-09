@@ -40,11 +40,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Standard action for exporting a list of entities to XLS file.
+ * Standard action for exporting a list of entities to XLS or XLSX file.
  * <p>
  * Should be defined for a list component ({@code Table}, {@code DataGrid}, etc.) in a screen XML descriptor.
  */
-@StudioAction(category = "List Actions", description = "Exports a list of entities to XLS file")
+@StudioAction(category = "List Actions", description = "Exports a list of entities to XLS or XLSX file")
 @ActionType(ExcelAction.ID)
 public class ExcelAction extends ListAction implements Action.ExecutableAction {
 

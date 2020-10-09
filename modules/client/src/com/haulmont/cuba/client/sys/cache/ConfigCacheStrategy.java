@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.locks.ReadWriteLock;
@@ -43,7 +44,9 @@ public class ConfigCacheStrategy implements CachingStrategy {
     protected volatile Map<String, String> cachedProperties = null;
 
     @Inject
+    @Named(ConfigStorageService.NAME)
     protected ConfigStorageService configStorageService;
+
     @Inject
     protected ClientCacheManager clientCacheManager;
     @Inject
