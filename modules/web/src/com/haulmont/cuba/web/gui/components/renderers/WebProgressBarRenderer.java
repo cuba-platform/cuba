@@ -32,4 +32,11 @@ public class WebProgressBarRenderer
     protected CubaProgressBarRenderer createImplementation() {
         return new CubaProgressBarRenderer();
     }
+
+    @Override
+    protected void copy(DataGrid.Renderer existingRenderer) {
+        if (existingRenderer instanceof WebProgressBarRenderer) {
+            setNullRepresentation(((WebProgressBarRenderer) existingRenderer).getNullRepresentation());
+        }
+    }
 }

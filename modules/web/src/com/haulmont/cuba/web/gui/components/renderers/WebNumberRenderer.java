@@ -85,6 +85,22 @@ public class WebNumberRenderer extends AbstractRenderer<Entity, Number> implemen
     }
 
     @Override
+    protected void copy(DataGrid.Renderer existingRenderer) {
+        if (existingRenderer instanceof WebNumberRenderer) {
+            setNullRepresentation(((WebNumberRenderer) existingRenderer).getNullRepresentation());
+            setLocale(((WebNumberRenderer) existingRenderer).getLocale());
+
+            if (((WebNumberRenderer) existingRenderer).getFormatString() != null) {
+                setFormatString(((WebNumberRenderer) existingRenderer).getFormatString());
+            }
+
+            if (((WebNumberRenderer) existingRenderer).getNumberFormat() != null) {
+                setNumberFormat(((WebNumberRenderer) existingRenderer).getNumberFormat());
+            }
+        }
+    }
+
+    @Override
     public String getNullRepresentation() {
         return super.getNullRepresentation();
     }

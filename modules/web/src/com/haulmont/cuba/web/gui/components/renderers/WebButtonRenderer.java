@@ -63,6 +63,14 @@ public class WebButtonRenderer<T extends Entity>
     }
 
     @Override
+    protected void copy(DataGrid.Renderer existingRenderer) {
+        if (existingRenderer instanceof WebButtonRenderer) {
+            setRendererClickListener(((WebButtonRenderer) existingRenderer).listener);
+            setNullRepresentation(((WebButtonRenderer) existingRenderer).getNullRepresentation());
+        }
+    }
+
+    @Override
     public String getNullRepresentation() {
         return super.getNullRepresentation();
     }

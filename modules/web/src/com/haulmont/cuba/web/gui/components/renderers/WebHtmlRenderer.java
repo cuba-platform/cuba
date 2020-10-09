@@ -56,6 +56,13 @@ public class WebHtmlRenderer extends AbstractRenderer<Entity, String> implements
     }
 
     @Override
+    protected void copy(DataGrid.Renderer existingRenderer) {
+        if (existingRenderer instanceof WebHtmlRenderer) {
+            setNullRepresentation(((WebHtmlRenderer) existingRenderer).getNullRepresentation());
+        }
+    }
+
+    @Override
     public String getNullRepresentation() {
         return super.getNullRepresentation();
     }

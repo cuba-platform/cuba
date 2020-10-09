@@ -2627,21 +2627,6 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
             throw new DevelopmentException("Unable to set ColumnGenerator for non-existing column: " + columnId);
         }
 
-        Class<? extends Renderer> rendererType = null;
-
-        Renderer renderer = column.getRenderer();
-        if (renderer != null) {
-            Class<?>[] rendererInterfaces = renderer.getClass().getInterfaces();
-
-            rendererType = (Class<? extends Renderer>) Arrays.stream(rendererInterfaces)
-                    .filter(Renderer.class::isAssignableFrom)
-                    .findFirst()
-                    .orElseThrow(() ->
-                            new DevelopmentException(
-                                    "Renderer should be specified explicitly for generated column: " + columnId));
-        }
-
-
         Column<E> generatedColumn = addGeneratedColumn(columnId, new ColumnGenerator<E, Object>() {
             @Override
             public Object getValue(ColumnGeneratorEvent<E> event) {
@@ -2654,11 +2639,7 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
             }
         });
 
-        if (renderer != null) {
-            generatedColumn.setRenderer(createRenderer(rendererType));
-        }
-
-        return column;
+        return generatedColumn;
     }
 
     @Override
@@ -2711,6 +2692,7 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
         return columnGenerators.get(columnId);
     }
 
+    @SuppressWarnings("unchecked")
     protected void copyColumnProperties(Column<E> column, Column<E> existingColumn) {
         column.setCaption(existingColumn.getCaption());
         column.setVisible(existingColumn.isVisible());
@@ -2734,6 +2716,22 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
         if (column.getPropertyPath() != null
                 && column.getPropertyPath().equals(existingColumn.getPropertyPath())) {
             column.setSortable(existingColumn.isSortable());
+        }
+
+        if (existingColumn.getRenderer() != null) {
+            Renderer existingRenderer = existingColumn.getRenderer();
+            Class<?>[] rendererInterfaces = existingRenderer.getClass().getInterfaces();
+
+            Class<? extends Renderer> rendererType = (Class<? extends Renderer>) Arrays.stream(rendererInterfaces)
+                    .filter(Renderer.class::isAssignableFrom)
+                    .findFirst()
+                    .orElseThrow(() ->
+                            new DevelopmentException(
+                                    "Renderer should be specified explicitly for generated column: " + column.getId()));
+
+            Renderer renderer = createRenderer(rendererType);
+            ((AbstractRenderer) renderer).copy(existingRenderer);
+            column.setRenderer(renderer);
         }
     }
 
@@ -3541,6 +3539,8 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
         }
 
         protected abstract com.vaadin.ui.renderers.Renderer<V> createImplementation();
+
+        protected abstract void copy(Renderer existingRenderer);
 
         public ValueProvider<?, V> getPresentationValueProvider() {
             // Some renderers need specific presentation ValueProvider to be set at the same time

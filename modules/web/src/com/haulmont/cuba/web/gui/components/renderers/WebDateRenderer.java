@@ -89,6 +89,22 @@ public class WebDateRenderer extends AbstractRenderer<Entity, Date> implements D
     }
 
     @Override
+    protected void copy(DataGrid.Renderer existingRenderer) {
+        if (existingRenderer instanceof WebDateRenderer) {
+            setLocale(((WebDateRenderer) existingRenderer).getLocale());
+            setNullRepresentation(((WebDateRenderer) existingRenderer).getNullRepresentation());
+
+            if (((WebDateRenderer) existingRenderer).getFormatString() != null) {
+                setFormatString(((WebDateRenderer) existingRenderer).getFormatString());
+            }
+
+            if (((WebDateRenderer) existingRenderer).getDateFormat() != null) {
+                setDateFormat(((WebDateRenderer) existingRenderer).getDateFormat());
+            }
+        }
+    }
+
+    @Override
     public String getNullRepresentation() {
         return super.getNullRepresentation();
     }

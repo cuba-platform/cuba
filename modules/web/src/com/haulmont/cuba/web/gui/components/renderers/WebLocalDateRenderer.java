@@ -88,6 +88,22 @@ public class WebLocalDateRenderer extends AbstractRenderer<Entity, LocalDate> im
     }
 
     @Override
+    protected void copy(DataGrid.Renderer existingRenderer) {
+        if (existingRenderer instanceof WebLocalDateRenderer) {
+            setNullRepresentation(((WebLocalDateRenderer) existingRenderer).getNullRepresentation());
+            setLocale(((WebLocalDateRenderer) existingRenderer).getLocale());
+
+            if (((WebLocalDateRenderer) existingRenderer).getFormatPattern() != null) {
+                setFormatPattern(((WebLocalDateRenderer) existingRenderer).getFormatPattern());
+            }
+
+            if (((WebLocalDateRenderer) existingRenderer).getFormatter() != null) {
+                setFormatter(((WebLocalDateRenderer) existingRenderer).getFormatter());
+            }
+        }
+    }
+
+    @Override
     public String getNullRepresentation() {
         return super.getNullRepresentation();
     }

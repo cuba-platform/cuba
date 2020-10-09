@@ -36,6 +36,13 @@ public class WebComponentRenderer<T extends Entity> extends AbstractRenderer<T, 
     }
 
     @Override
+    protected void copy(DataGrid.Renderer existingRenderer) {
+        if (existingRenderer instanceof WebComponentRenderer) {
+            setNullRepresentation(((WebComponentRenderer) existingRenderer).getNullRepresentation());
+        }
+    }
+
+    @Override
     public ValueProvider<Component, com.vaadin.ui.Component> getPresentationValueProvider() {
         return (ValueProvider<Component, com.vaadin.ui.Component>) value ->
                 value.unwrap(com.vaadin.ui.Component.class);
