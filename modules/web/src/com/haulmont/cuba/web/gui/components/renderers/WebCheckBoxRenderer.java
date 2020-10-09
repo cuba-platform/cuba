@@ -31,4 +31,11 @@ public class WebCheckBoxRenderer extends AbstractRenderer<Entity, Boolean> imple
     protected Renderer<Boolean> createImplementation() {
         return new CubaCheckBoxRenderer();
     }
+
+    @Override
+    protected void copy(DataGrid.Renderer existingRenderer) {
+        if (existingRenderer instanceof WebCheckBoxRenderer) {
+            setNullRepresentation(((WebCheckBoxRenderer) existingRenderer).getNullRepresentation());
+        }
+    }
 }

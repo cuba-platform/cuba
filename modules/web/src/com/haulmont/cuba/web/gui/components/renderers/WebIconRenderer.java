@@ -53,6 +53,13 @@ public class WebIconRenderer<T extends Entity>
     }
 
     @Override
+    protected void copy(DataGrid.Renderer existingRenderer) {
+        if (existingRenderer instanceof WebIconRenderer) {
+            setNullRepresentation(((WebIconRenderer<?>) existingRenderer).getNullRepresentation());
+        }
+    }
+
+    @Override
     public ValueProvider<Icons.Icon, Resource> getPresentationValueProvider() {
         return (ValueProvider<Icons.Icon, Resource>) icon -> {
             String iconName = icons.get(icon);

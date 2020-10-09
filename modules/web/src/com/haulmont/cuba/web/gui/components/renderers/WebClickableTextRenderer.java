@@ -57,6 +57,14 @@ public class WebClickableTextRenderer<T extends Entity>
     }
 
     @Override
+    protected void copy(DataGrid.Renderer existingRenderer) {
+        if (existingRenderer instanceof WebClickableTextRenderer) {
+            setRendererClickListener(((WebClickableTextRenderer) existingRenderer).listener);
+            setNullRepresentation(((WebClickableTextRenderer) existingRenderer).getNullRepresentation());
+        }
+    }
+
+    @Override
     public String getNullRepresentation() {
         return super.getNullRepresentation();
     }

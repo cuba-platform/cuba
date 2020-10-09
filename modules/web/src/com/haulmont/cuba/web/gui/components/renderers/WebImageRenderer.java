@@ -46,4 +46,12 @@ public class WebImageRenderer<T extends Entity>
             return new CubaImageRenderer<>();
         }
     }
+
+    @Override
+    protected void copy(DataGrid.Renderer existingRenderer) {
+        if (existingRenderer instanceof WebImageRenderer) {
+            setRendererClickListener(((WebImageRenderer) existingRenderer).listener);
+            setNullRepresentation(((WebImageRenderer) existingRenderer).getNullRepresentation());
+        }
+    }
 }
