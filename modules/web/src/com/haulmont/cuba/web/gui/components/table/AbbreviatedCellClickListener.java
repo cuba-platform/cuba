@@ -21,6 +21,8 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesTools;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.web.App;
@@ -37,10 +39,18 @@ public class AbbreviatedCellClickListener implements Table.CellClickListener {
 
     protected Table table;
     protected DynamicAttributesTools dynamicAttributesTools;
+    protected MetadataTools metadataTools;
 
     public AbbreviatedCellClickListener(Table table, DynamicAttributesTools dynamicAttributesTools) {
+        this(table, dynamicAttributesTools, AppBeans.get(MetadataTools.class));
+    }
+
+    public AbbreviatedCellClickListener(Table table,
+                                        DynamicAttributesTools dynamicAttributesTools,
+                                        MetadataTools metadataTools) {
         this.table = table;
         this.dynamicAttributesTools = dynamicAttributesTools;
+        this.metadataTools = metadataTools;
     }
 
     @SuppressWarnings("unchecked")
@@ -53,7 +63,7 @@ public class AbbreviatedCellClickListener implements Table.CellClickListener {
             metaProperty = dynamicAttributesTools.getMetaPropertyPath(item.getMetaClass(), columnId).getMetaProperty();
             value = dynamicAttributesTools.getDynamicAttributeValueAsString(metaProperty, item.getValueEx(columnId));
         } else {
-            value = item.getValueEx(columnId);
+            value = metadataTools.format(item.getValueEx(columnId));
         }
         if (column.getMaxTextLength() != null) {
             boolean isMultiLineCell = StringUtils.contains(value, "\n");

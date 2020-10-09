@@ -1374,8 +1374,10 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
                         setClickListener(propertyPath.toString(), new LinkCellClickListener(this, beanLocator));
                     } else {
                         if (column.getMaxTextLength() != null) {
-                            addGeneratedColumnInternal(propertyPath, new AbbreviatedColumnGenerator(column, dynamicAttributesTools));
-                            setClickListener(propertyPath.toString(), new AbbreviatedCellClickListener(this, dynamicAttributesTools));
+                            addGeneratedColumnInternal(propertyPath,
+                                    new AbbreviatedColumnGenerator(column, dynamicAttributesTools));
+                            setClickListener(propertyPath.toString(),
+                                    new AbbreviatedCellClickListener(this, dynamicAttributesTools, metadataTools));
                         }
                     }
                 }
