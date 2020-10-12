@@ -101,8 +101,6 @@ public class CubaTreeTable extends com.vaadin.v7.ui.TreeTable implements TreeTab
 
     protected Runnable emptyStateLinkClickHandler;
 
-    protected Object scrollToItemId;
-
     public CubaTreeTable() {
         registerRpc(new CubaTableServerRpc() {
             @Override
@@ -726,10 +724,6 @@ public class CubaTreeTable extends com.vaadin.v7.ui.TreeTable implements TreeTab
             }
             target.addAttribute("colcubaids", visibleColOrder.toArray());
         }
-
-        if (scrollToItemId != null && isLastId(scrollToItemId)) {
-            target.addAttribute("scrolltolast", true);
-        }
     }
 
     protected void paintAggregationRow(PaintTarget target, Map<Object, Object> aggregations) throws PaintException {
@@ -1236,9 +1230,19 @@ public class CubaTreeTable extends com.vaadin.v7.ui.TreeTable implements TreeTab
     }
 
     @Override
-    public void setCurrentPageFirstItemId(Object currentPageFirstItemId) {
-        super.setCurrentPageFirstItemId(currentPageFirstItemId);
+    protected int findItemIndex(Object currentPageFirstItemId) {
+        int index = 0;
+        Object id = firstItemId();
+        while (id != null && !id.equals(currentPageFirstItemId)) {
+            index++;
+            id = nextItemId(id);
+        }
 
-        scrollToItemId = currentPageFirstItemId;
+        return id != null ? index : -1;
+    }
+
+    @Override
+    protected int updateNewIndexOnLastPage(int newIndex, int indexOnLastPage) {
+        return indexOnLastPage >= 0 ? ++newIndex : newIndex;
     }
 }

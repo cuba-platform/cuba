@@ -1124,17 +1124,4 @@ public class CubaTreeTableWidget extends VTreeTable implements TableWidget {
     public boolean hasVerticalScrollbar() {
         return scrollBody.getOffsetHeight() > scrollBodyPanel.getOffsetHeight();
     }
-
-    @Override
-    protected boolean isScrollToLastItem() {
-        return isScrollToLastItemEnabled();
-    }
-
-    public boolean isScrollToLastItemEnabled() {
-        return _delegate.isScrollToLastItemEnabled();
-    }
-
-    public void setScrollToLastItemEnabled(boolean scrollToLastItemEnabled) {
-        _delegate.setScrollToLastItemEnabled(scrollToLastItemEnabled);
-    }
 }
