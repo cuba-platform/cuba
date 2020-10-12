@@ -22,8 +22,11 @@ import spock.lang.Specification
 
 class DateFieldDateTimePatternTest extends Specification {
     def "Unsupported field DayOfWeek in a search filter#3019"() {
+        setup:
+        WebDateField field = new WebDateField();
+
         expect:
-        new WebDateField().findTimePosition(pattern) == result
+        field.findTimePosition(pattern) == result
 
         where:
         pattern << ["yyyy-MM-dd HH:mm EE", "HH:mm EE yyyy-MM-dd", "yyyy-MM-dd ssmmHH EE", "yyyy-MM-dd HHmmss", "ss HH yyyy-MM-dd"]

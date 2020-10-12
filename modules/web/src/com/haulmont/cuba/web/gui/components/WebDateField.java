@@ -373,7 +373,7 @@ public class WebDateField<V extends Comparable<V>>
         }
     }
 
-    public Pair<Integer, Integer> findTimePosition(String dateTimeFormat) {
+    protected Pair<Integer, Integer> findTimePosition(String dateTimeFormat) {
         Set<Integer> positions = new HashSet<>();
 
         char[] signs = new char[]{'H', 'h', 'm', 's'};
