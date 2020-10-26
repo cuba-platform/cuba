@@ -41,7 +41,8 @@ import java.util.Set;
 /**
  * An action that adds a record to the set.
  */
-@StudioAction(category = "List Actions", description = "Adds the selected entity to a set")
+@StudioAction(category = "List Actions",
+        description = "Adds the selected entity to a record set to be displayed in the folders pane of the main screen")
 @ActionType(AddToSetAction.ID)
 public class AddToSetAction extends SecuredListAction {
 
