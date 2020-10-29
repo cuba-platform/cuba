@@ -21,6 +21,8 @@ import com.google.common.cache.CacheBuilder;
 import org.dom4j.Document;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Nullable;
+
 @Component("cuba_ScreenXmlDocumentCache")
 public class ScreenXmlDocumentCache {
     protected Cache<String, Document> cache;
@@ -37,6 +39,7 @@ public class ScreenXmlDocumentCache {
         cache.put(xml, document);
     }
 
+    @Nullable
     public Document get(String xml) {
         return cache.getIfPresent(xml);
     }

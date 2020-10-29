@@ -240,7 +240,9 @@ public class AnnotatedGroupDefinitionBuilder {
                 if (where == null) {
                     where = Strings.emptyToNull(constraint.where());
                 }
-                context.getConstraintsBuilder().withJpql(targetClass, where, Strings.emptyToNull(constraint.join()));
+                if (where != null) {
+                    context.getConstraintsBuilder().withJpql(targetClass, where, Strings.emptyToNull(constraint.join()));
+                }
             }
         }
     }
