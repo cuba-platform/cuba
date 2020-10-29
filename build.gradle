@@ -41,7 +41,7 @@ buildscript {
     }
     dependencies {
         classpath group: 'com.haulmont.gradle', name: 'cuba-plugin', version: cubaVersion
-        classpath group: 'com.github.spotbugs', name: 'spotbugs-gradle-plugin', version: '4.5.1'
+        classpath group: 'gradle.plugin.com.github.spotbugs.snom', name: 'spotbugs-gradle-plugin', version: '4.5.1'
 
         if (rootProject.hasProperty('dependencyUpdates')) {
             classpath "com.github.ben-manes:gradle-versions-plugin:0.25.0"
