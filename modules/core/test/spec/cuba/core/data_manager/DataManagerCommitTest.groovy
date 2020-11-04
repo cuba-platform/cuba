@@ -18,13 +18,7 @@ package spec.cuba.core.data_manager
 
 import com.haulmont.cuba.core.entity.KeyValueEntity
 import com.haulmont.cuba.core.entity.contracts.Id
-import com.haulmont.cuba.core.global.AppBeans
-import com.haulmont.cuba.core.global.CommitContext
-import com.haulmont.cuba.core.global.DataManager
-import com.haulmont.cuba.core.global.EntitySet
-import com.haulmont.cuba.core.global.EntityStates
-import com.haulmont.cuba.core.global.ViewBuilder
-import com.haulmont.cuba.core.global.View
+import com.haulmont.cuba.core.global.*
 import com.haulmont.cuba.testmodel.sales.Customer
 import com.haulmont.cuba.testmodel.sales.Order
 import com.haulmont.cuba.testmodel.sales.TestOrderChangedEventListener
@@ -35,7 +29,8 @@ import spock.lang.Specification
 
 class DataManagerCommitTest extends Specification {
 
-    @Shared @ClassRule
+    @Shared
+    @ClassRule
     public TestContainer cont = TestContainer.Common.INSTANCE
 
     private DataManager dataManager
@@ -189,6 +184,29 @@ class DataManagerCommitTest extends Specification {
 
         cleanup:
         orderChangedEventListener.enabled = false
+        cont.deleteRecord(order, customer)
+    }
+
+    def "commit entity with removed reference"() {
+        when:
+
+        dataManager.remove(dataManager.commit(customer))
+        def committedCustomer = dataManager.load(Customer).id(customer.id)
+                .softDeletion(false)
+                .optional().orElse(null)
+
+        def order = new Order(number: '1', customer: committedCustomer)
+
+        CommitContext commitContext = new CommitContext(order)
+        commitContext.setSoftDeletion(false)
+        EntitySet committedEntities = dataManager.commit(commitContext)
+
+        def committedOrder = committedEntities.get(Order, order.id)
+
+        then:
+        committedOrder.customer == customer
+
+        cleanup:
         cont.deleteRecord(order, customer)
     }
 
