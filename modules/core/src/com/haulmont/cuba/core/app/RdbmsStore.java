@@ -143,8 +143,8 @@ public class RdbmsStore implements DataStore {
 
             // If maxResults=1 and the query is not by ID we should not use getSingleResult() for backward compatibility
             boolean singleResult = !(context.getQuery() != null
-                        && context.getQuery().getMaxResults() == 1
-                        && context.getQuery().getQueryString() != null)
+                    && context.getQuery().getMaxResults() == 1
+                    && context.getQuery().getQueryString() != null)
                     && context.getId() != null;
 
             View view = createRestrictedView(context);
@@ -285,7 +285,7 @@ public class RdbmsStore implements DataStore {
         return pkProperty == null || pkProperty.getRange().isClass();
     }
 
-    protected  <E extends Entity> List<E> loadListBySingleIds(LoadContext<E> context, EntityManager em, View view) {
+    protected <E extends Entity> List<E> loadListBySingleIds(LoadContext<E> context, EntityManager em, View view) {
         LoadContext<?> contextCopy = context.copy();
         contextCopy.setIds(Collections.emptyList());
 
@@ -413,13 +413,16 @@ public class RdbmsStore implements DataStore {
         List<BaseGenericIdEntity> identityEntitiesToStoreDynamicAttributes = new ArrayList<>();
         List<CategoryAttributeValue> attributeValuesToRemove = new ArrayList<>();
 
+
+        EntityManager em = null;
+        boolean softDeletionBefore;
         SavedEntitiesHolder savedEntitiesHolder;
 
         try (Transaction tx = getSaveTransaction(storeName, context.isJoinTransaction())) {
-            EntityManager em = persistence.getEntityManager(storeName);
+            em = persistence.getEntityManager(storeName);
             checkPermissions(context);
 
-            boolean softDeletionBefore = em.isSoftDeletion();
+            softDeletionBefore = em.isSoftDeletion();
             em.setSoftDeletion(context.isSoftDeletion());
 
             List<BaseGenericIdEntity> entitiesToStoreDynamicAttributes = new ArrayList<>();
@@ -530,8 +533,6 @@ public class RdbmsStore implements DataStore {
                 }
             }
 
-            em.setSoftDeletion(softDeletionBefore);
-
             if (!context.isDiscardCommitted() && isAuthorizationRequired(context) && userSessionSource.getUserSession().getConstraints().exists()) {
                 security.calculateFilteredData(saved);
             }
@@ -558,13 +559,16 @@ public class RdbmsStore implements DataStore {
             }
 
             tx.commit();
+            if (em != null) {
+                em.setSoftDeletion(softDeletionBefore);
+            }
         }
 
         if (!attributeValuesToRemove.isEmpty()) {
             try (Transaction tx = getSaveTransaction(Stores.MAIN, context.isJoinTransaction())) {
-                EntityManager em = persistence.getEntityManager();
+                EntityManager entityManager = persistence.getEntityManager();
                 for (CategoryAttributeValue entity : attributeValuesToRemove) {
-                    em.remove(entity);
+                    entityManager.remove(entity);
                 }
                 tx.commit();
             }
@@ -1141,7 +1145,7 @@ public class RdbmsStore implements DataStore {
                     mergeDynamicAttributes((BaseGenericIdEntity) entityValue, (BaseGenericIdEntity) savedValue);
                 }
                 if (savedValue instanceof Collection && entityValue instanceof Collection) {
-                    for (Object savedItem: (Collection) savedValue) {
+                    for (Object savedItem : (Collection) savedValue) {
                         if (savedItem instanceof BaseGenericIdEntity
                                 && !entityHasDynamicAttributes((BaseGenericIdEntity) savedItem)) {
                             for (Object item : (Collection) entityValue) {
