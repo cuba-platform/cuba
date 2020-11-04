@@ -50,4 +50,11 @@ public interface TreeDataGridItems<T> extends DataGridItems.Sortable<T> {
      */
     @Nullable
     T getParent(T item);
+
+    /**
+     * Returns the property of entity which forms the hierarchy.
+     *
+     * @return hierarchy property name
+     */
+    String getHierarchyPropertyName();
 }

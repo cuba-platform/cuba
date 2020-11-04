@@ -51,6 +51,11 @@ public class EmptyTreeDataGridItems<E extends Entity> extends EmptyDataGridItems
     }
 
     @Override
+    public String getHierarchyPropertyName() {
+        return "";
+    }
+
+    @Override
     public void sort(Object[] propertyId, boolean[] ascending) {
         // do nothing
     }
