@@ -819,17 +819,11 @@ public class Param {
 
         field.addValueChangeListener(e -> {
             String strValue = e.getValue();
-            if (strValue == null) {
-                _setValue(null, valueProperty);
-            } else if (StringUtils.isNotBlank(strValue)) {
-                try {
-                    _setValue(UUID.fromString(strValue), valueProperty);
-                } catch (IllegalArgumentException ie) {
-                    beanLocator.get(WindowManagerProvider.class).get()
-                            .showNotification(messages.getMainMessage("filter.param.uuid.Err"), Frame.NotificationType.TRAY);
-                }
-            } else {
-                throw new IllegalStateException("Invalid value: " + strValue);
+            try {
+                _setValue(datatype.parse(strValue), valueProperty);
+            } catch (ParseException ie) {
+                beanLocator.get(WindowManagerProvider.class).get()
+                        .showNotification(messages.getMainMessage("filter.param.uuid.Err"), Frame.NotificationType.TRAY);
             }
         });
 
