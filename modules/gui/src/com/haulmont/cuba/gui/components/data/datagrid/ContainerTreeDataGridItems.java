@@ -78,4 +78,9 @@ public class ContainerTreeDataGridItems<E extends Entity>
         Preconditions.checkNotNullArgument(item);
         return item.getValue(hierarchyProperty);
     }
+
+    @Override
+    public String getHierarchyPropertyName() {
+        return hierarchyProperty;
+    }
 }
