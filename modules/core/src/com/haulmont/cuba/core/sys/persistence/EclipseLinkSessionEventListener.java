@@ -63,7 +63,14 @@ public class EclipseLinkSessionEventListener extends SessionEventAdapter {
     public void preLogin(SessionEvent event) {
 
         Session session = event.getSession();
+
+        boolean useJoinSubclasses = useJoinSubclasses();
+        boolean hasMultipleTableConstraintDependency = hasMultipleTableConstraintDependency();
+
         setPrintInnerJoinOnClause(session);
+        if (useJoinSubclasses) {
+            setJoinSubclasses(session);
+        }
 
         List<Pair<Class, String>> missingEnhancements = new ArrayList<>();
 
@@ -78,7 +85,6 @@ public class EclipseLinkSessionEventListener extends SessionEventAdapter {
         }
 
         Map<Class, ClassDescriptor> descriptorMap = session.getDescriptors();
-        boolean hasMultipleTableConstraintDependency = hasMultipleTableConstraintDependency();
         for (Map.Entry<Class, ClassDescriptor> entry : descriptorMap.entrySet()) {
             MetaClass metaClass = metadata.getSession().getClassNN(entry.getKey());
             ClassDescriptor desc = entry.getValue();
@@ -89,6 +95,10 @@ public class EclipseLinkSessionEventListener extends SessionEventAdapter {
 
             if (hasMultipleTableConstraintDependency) {
                 setMultipleTableConstraintDependency(metaClass, desc);
+            }
+
+            if (useJoinSubclasses) {
+                setJoinSubclasses(metaClass, desc);
             }
 
             if (Entity.class.isAssignableFrom(desc.getJavaClass())) {
@@ -197,6 +207,21 @@ public class EclipseLinkSessionEventListener extends SessionEventAdapter {
     private boolean hasMultipleTableConstraintDependency() {
         String value = AppContext.getProperty("cuba.hasMultipleTableConstraintDependency");
         return value == null || BooleanUtils.toBoolean(value);
+    }
+
+    private boolean useJoinSubclasses() {
+        String value = AppContext.getProperty("cuba.useJoinSubclasses");
+        return value != null && BooleanUtils.toBoolean(value);
+    }
+
+    private void setJoinSubclasses(MetaClass metaClass, ClassDescriptor desc) {
+        if (desc.hasInheritance()) {
+            desc.getInheritancePolicy().setShouldOuterJoinSubclasses(true);
+        }
+    }
+
+    private void setJoinSubclasses(Session session) {
+        session.getPlatform().setPrintInheritanceTableJoinsInFromClause(true);
     }
 
     private void setPrintInnerJoinOnClause(Session session) {
