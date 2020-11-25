@@ -92,14 +92,14 @@ public abstract class AbstractBeansMetadata {
                         addMethod(methods, methodInfo);
                     }
                 }
+            }
 
-                if (methods.isEmpty()) {
-                    for (Method method : bean.getClass().getMethods()) {
-                        if (!method.getDeclaringClass().equals(Object.class) && isMethodAvailable(method)) {
-                            List<MethodParameterInfo> methodParameters = getMethodParameters(method);
-                            MethodInfo methodInfo = new MethodInfo(method.getName(), methodParameters);
-                            addMethod(methods, methodInfo);
-                        }
+            if (methods.isEmpty()) {
+                for (Method method : bean.getClass().getMethods()) {
+                    if (!method.getDeclaringClass().equals(Object.class) && isMethodAvailable(method)) {
+                        List<MethodParameterInfo> methodParameters = getMethodParameters(method);
+                        MethodInfo methodInfo = new MethodInfo(method.getName(), methodParameters);
+                        addMethod(methods, methodInfo);
                     }
                 }
             }
