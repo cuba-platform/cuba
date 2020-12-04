@@ -58,7 +58,7 @@ import java.util.function.Consumer;
  *     docsTable.addAction(action);
  * }</pre>
  */
-public class BaseAction extends AbstractAction implements Action.SecuredAction {
+public class BaseAction extends AbstractAction implements Action.SecuredAction, Action.HasBeforeActionPerformedHandler {
 
     private boolean enabledByUiPermissions = true;
     private boolean visibleByUiPermissions = true;
@@ -67,6 +67,8 @@ public class BaseAction extends AbstractAction implements Action.SecuredAction {
     private boolean visibleExplicitly = true;
 
     private List<EnabledRule> enabledRules; // lazy initialized list
+
+    private BeforeActionPerformedHandler beforeActionPerformedHandler;
 
     public BaseAction(String id) {
         this(id, null);
@@ -205,6 +207,16 @@ public class BaseAction extends AbstractAction implements Action.SecuredAction {
         }
     }
 
+    @Override
+    public void setBeforeActionPerformedHandler(BeforeActionPerformedHandler beforeActionPerformedHandler) {
+        this.beforeActionPerformedHandler = beforeActionPerformedHandler;
+    }
+
+    @Override
+    public BeforeActionPerformedHandler getBeforeActionPerformedHandler() {
+        return beforeActionPerformedHandler;
+    }
+
     /**
      * Callback interface which is invoked by the action to determine its enabled state.
      *
@@ -218,6 +230,12 @@ public class BaseAction extends AbstractAction implements Action.SecuredAction {
     @Override
     public void actionPerform(Component component) {
         if (eventHub != null) {
+            if (beforeActionPerformedHandler != null) {
+                boolean b = beforeActionPerformedHandler.beforeActionPerformed();
+                if (!b) {
+                    return;
+                }
+            }
             ActionPerformedEvent event = new ActionPerformedEvent(this, component);
             eventHub.publish(ActionPerformedEvent.class, event);
         }
@@ -283,6 +301,17 @@ public class BaseAction extends AbstractAction implements Action.SecuredAction {
     public BaseAction withHandler(Consumer<ActionPerformedEvent> handler) {
         getEventHub().subscribe(ActionPerformedEvent.class, handler);
 
+        return this;
+    }
+
+    /**
+     * Set before action performed handler using fluent API method. Can be used instead of subclassing BaseAction class.
+     *
+     * @param handler before action performed handler
+     * @return current instance of action
+     */
+    public BaseAction WithBeforeActionPerformedHandler(BeforeActionPerformedHandler handler) {
+        this.beforeActionPerformedHandler = handler;
         return this;
     }
 
