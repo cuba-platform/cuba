@@ -96,6 +96,5 @@ The platform uses a number of forked third-party libraries. They can be found in
 * [vaadin](https://github.com/cuba-platform/vaadin)
 * [vaadin-dragdroplayouts](https://github.com/cuba-platform/vaadin-dragdroplayouts)
 * [vaadin-aceeditor](https://github.com/cuba-platform/vaadin-aceeditor)
-* [swingx-core](https://github.com/cuba-platform/swingx-core)
 
 All dependencies are also located in our artifacts repository, so you don't have to build them from sources in order to build and use the platform.
