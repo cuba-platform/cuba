@@ -102,6 +102,5 @@ gradlew deploy
 -   [vaadin](https://github.com/cuba-platform/vaadin)
 -   [vaadin-dragdroplayouts](https://github.com/cuba-platform/vaadin-dragdroplayouts)
 -   [vaadin-aceeditor](https://github.com/cuba-platform/vaadin-aceeditor)
--   [swingx-core](https://github.com/cuba-platform/swingx-core)
 
 我们的工件仓库也有这些所有的依赖库，所以如果项目中要使用 CUBA 平台的话，不需要构建这些依赖库。
