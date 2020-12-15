@@ -23,10 +23,7 @@ import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.Notifications;
 import com.haulmont.cuba.gui.components.Button;
 import com.haulmont.cuba.gui.components.TextField;
-import com.haulmont.cuba.gui.screen.Screen;
-import com.haulmont.cuba.gui.screen.Subscribe;
-import com.haulmont.cuba.gui.screen.UiController;
-import com.haulmont.cuba.gui.screen.UiDescriptor;
+import com.haulmont.cuba.gui.screen.*;
 import org.apache.commons.io.IOUtils;
 
 import javax.inject.Inject;
@@ -42,23 +39,20 @@ public class ResendMessage extends Screen {
     protected SendingMessage message;
 
     @Inject
-    protected EmailService emailService;
+    protected TextField<String> emailTextField;
+
     @Inject
     protected FileLoader fileLoader;
     @Inject
+    protected EmailService emailService;
+    @Inject
     protected Notifications notifications;
     @Inject
-    protected TextField<String> emailTextField;
-
-    @Subscribe
-    protected void onBeforeShow(BeforeShowEvent event) {
-        if (message != null) {
-            emailTextField.setValue(message.getAddress());
-        }
-    }
+    protected MessageBundle messageBundle;
 
     public void setMessage(SendingMessage message) {
         this.message = message;
+        emailTextField.setValue(message.getAddress());
     }
 
     @Subscribe("resendEmailBtn")
@@ -81,8 +75,8 @@ public class ResendMessage extends Screen {
                 throw new RuntimeException("Something went wrong during email resending", e);
             }
             notifications.create(Notifications.NotificationType.HUMANIZED)
-                    .withCaption("Sent!")
-                    .withDescription("Email was successfuly resent")
+                    .withCaption(messageBundle.getMessage("resendMessage.notification.caption"))
+                    .withDescription(messageBundle.getMessage("resendMessage.notification.description"))
                     .show();
             this.closeWithDefaultAction();
         }
