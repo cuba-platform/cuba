@@ -19,8 +19,10 @@
         messagesPack="com.haulmont.cuba.gui.app.core.sendingmessage"
         caption="msg://resendMessage.browser.caption">
 
+    <dialogMode width="AUTO" height="AUTO"/>
+
     <layout spacing="true">
         <textField id="emailTextField"/>
-        <button id="resendEmailBtn" caption="Resend Email"/>
+        <button id="resendEmailBtn" caption="msg://sendingMessage.resendEmail"/>
     </layout>
 </window>
