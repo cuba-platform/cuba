@@ -26,14 +26,11 @@ import com.haulmont.cuba.gui.Screens;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.dev.LayoutAnalyzerContextMenuProvider;
 import com.haulmont.cuba.gui.components.mainwindow.*;
+import com.haulmont.cuba.gui.config.WindowConfig;
+import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.events.UserRemovedEvent;
 import com.haulmont.cuba.gui.events.UserSubstitutionsChangedEvent;
-import com.haulmont.cuba.gui.screen.OpenMode;
-import com.haulmont.cuba.gui.screen.Screen;
-import com.haulmont.cuba.gui.screen.Subscribe;
-import com.haulmont.cuba.gui.screen.UiController;
-import com.haulmont.cuba.gui.screen.UiControllerUtils;
-import com.haulmont.cuba.gui.screen.UiDescriptor;
+import com.haulmont.cuba.gui.screen.*;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.WebConfig;
@@ -41,12 +38,16 @@ import com.haulmont.cuba.web.widgets.CubaCollapsibleMenuLayoutExtension;
 import com.haulmont.cuba.web.widgets.CubaCssActionsLayout;
 import com.vaadin.server.WebBrowser;
 import org.apache.commons.lang3.StringUtils;
+import org.dom4j.Element;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.annotation.Order;
 
 import javax.annotation.Nullable;
+import java.util.Collections;
+import java.util.Map;
 
 import static com.haulmont.cuba.gui.ComponentsHelper.setStyleName;
+import static com.haulmont.cuba.web.app.ui.core.settings.SettingsWindow.CHANGE_THEME_ENABLED_PARAM;
 
 /**
  * Base class for a controller of application Main screen.
@@ -266,10 +267,31 @@ public class MainScreen extends Screen implements Window.HasWorkArea, Window.Has
     }
 
     protected void openSettingsScreen() {
+        WindowInfo settingsInfo = getBeanLocator().get(WindowConfig.class)
+                .getWindowInfo("settings");
+
+        MapScreenOptions screenOptions = new MapScreenOptions(loadSettingsScreenParams(settingsInfo));
         UiControllerUtils.getScreenContext(this)
                 .getScreens()
-                .create("settings", OpenMode.NEW_TAB)
+                .create(settingsInfo.getId(), OpenMode.NEW_TAB, screenOptions)
                 .show();
+    }
+
+    protected Map<String, Object> loadSettingsScreenParams(WindowInfo info) {
+        Element descriptor = info.getDescriptor();
+        if (descriptor == null) {
+            return Collections.emptyMap();
+        }
+
+        for (Element element : descriptor.elements("param")) {
+            String name = element.attributeValue("name");
+            if (CHANGE_THEME_ENABLED_PARAM.equals(name)) {
+                String value = element.attributeValue("value");
+                return Collections.singletonMap(CHANGE_THEME_ENABLED_PARAM, Boolean.parseBoolean(value));
+            }
+        }
+
+        return Collections.emptyMap();
     }
 
     protected void setSideMenuCollapsed(boolean collapsed) {

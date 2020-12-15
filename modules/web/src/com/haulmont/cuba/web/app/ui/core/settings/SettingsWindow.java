@@ -57,6 +57,8 @@ public class SettingsWindow extends AbstractWindow {
 
     private static final Logger log = LoggerFactory.getLogger(SettingsWindow.class);
 
+    public static final String CHANGE_THEME_ENABLED_PARAM = "changeThemeEnabled";
+
     protected boolean changeThemeEnabled = true;
     protected String msgTabbed;
     protected String msgSingle;
@@ -118,7 +120,7 @@ public class SettingsWindow extends AbstractWindow {
 
     @Override
     public void init(Map<String, Object> params) {
-        Boolean changeThemeEnabledParam = (Boolean) params.get("changeThemeEnabled");
+        Boolean changeThemeEnabledParam = (Boolean) params.get(CHANGE_THEME_ENABLED_PARAM);
         if (changeThemeEnabledParam != null) {
             changeThemeEnabled = changeThemeEnabledParam;
         }
