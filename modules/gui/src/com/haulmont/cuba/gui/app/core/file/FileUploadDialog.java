@@ -26,6 +26,7 @@ import com.haulmont.cuba.gui.components.Window;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.Map;
 import java.util.UUID;
@@ -47,10 +48,18 @@ public class FileUploadDialog extends AbstractWindow {
 
     protected String fileName;
 
+    /**
+     * @return a file id or {@code null} if this dialog was closed without uploading a file
+     */
+    @Nullable
     public UUID getFileId() {
         return fileId;
     }
 
+    /**
+     * @return a file name or {@code null} if this dialog was closed without uploading a file
+     */
+    @Nullable
     public String getFileName() {
         return fileName;
     }
