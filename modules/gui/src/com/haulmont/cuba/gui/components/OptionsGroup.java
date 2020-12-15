@@ -21,6 +21,7 @@ package com.haulmont.cuba.gui.components;
  *
  * @param <V> value type: single type or {@code Collection<I>}
  * @param <I> item type
+ * @deprecated Use {@link CheckBoxGroup} or {@link RadioButtonGroup} instead
  */
 @Deprecated
 public interface OptionsGroup<V, I> extends OptionsField<V, I>, LookupComponent, Component.Focusable, HasOrientation {
