@@ -16,17 +16,16 @@
 
 package com.haulmont.cuba.web.app.main;
 
-import com.google.common.collect.ImmutableMap;
-import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.core.global.Events;
+import com.haulmont.cuba.core.global.FtsConfigHelper;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.Route;
 import com.haulmont.cuba.gui.ScreenTools;
 import com.haulmont.cuba.gui.Screens;
-import com.haulmont.cuba.gui.WindowParams;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.dev.LayoutAnalyzerContextMenuProvider;
 import com.haulmont.cuba.gui.components.mainwindow.*;
-import com.haulmont.cuba.gui.config.MenuItem;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.events.UserRemovedEvent;
@@ -44,7 +43,6 @@ import org.springframework.context.event.EventListener;
 import org.springframework.core.annotation.Order;
 
 import javax.annotation.Nullable;
-
 import java.util.Collections;
 import java.util.Map;
 
