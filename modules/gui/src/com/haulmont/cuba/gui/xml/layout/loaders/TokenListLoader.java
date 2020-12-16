@@ -50,6 +50,7 @@ public class TokenListLoader extends AbstractFieldLoader<TokenList> {
         loadVisible(resultComponent, element);
         loadEditable(resultComponent, element);
         loadEnable(resultComponent, element);
+        loadRequired(resultComponent, element);
 
         loadStyleName(resultComponent, element);
         loadCss(resultComponent, element);
