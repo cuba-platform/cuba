@@ -203,7 +203,7 @@ public class WebTokenList<V extends Entity>
         }
     }
 
-    protected boolean equalCollections(Collection<V> a, Collection<V> b) {
+    protected boolean equalCollections(@Nullable Collection<V> a, @Nullable Collection<V> b) {
         if (CollectionUtils.isEmpty(a)
                 && CollectionUtils.isEmpty(b)) {
             return true;
@@ -214,6 +214,7 @@ public class WebTokenList<V extends Entity>
             return false;
         }
 
+        //noinspection ConstantConditions
         return CollectionUtils.isEqualCollection(a, b);
     }
 
@@ -221,6 +222,11 @@ public class WebTokenList<V extends Entity>
     public void setFrame(Frame frame) {
         super.setFrame(frame);
         lookupPickerField.setFrame(frame);
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return super.isEmpty() || equalCollections(getValue(), getEmptyValue());
     }
 
     @Override
