@@ -97,6 +97,7 @@ import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 import static com.haulmont.cuba.gui.logging.UIPerformanceLogger.createStopWatch;
 import static com.haulmont.cuba.gui.screen.FrameOwner.WINDOW_CLOSE_ACTION;
 import static com.haulmont.cuba.gui.screen.UiControllerUtils.*;
+import static com.haulmont.cuba.web.widgets.CubaManagedTabSheet.Mode.*;
 import static org.apache.commons.lang3.reflect.ConstructorUtils.invokeConstructor;
 
 @ParametersAreNonnullByDefault
@@ -572,6 +573,15 @@ public class WebScreens implements Screens, WindowManager {
     }
 
     protected void checkOpened(Screen screen) {
+        // In case of 'managedMainTabSheetMode = UNLOAD_TABS',
+        // inactive screens are detached, so we need to skip this check
+        WebAppWorkArea workArea = getConfiguredWorkArea();
+        HasTabSheetBehaviour behaviour = workArea.getTabbedWindowContainer();
+        if (behaviour instanceof CubaManagedTabSheet
+                && ((CubaManagedTabSheet) behaviour).getMode() == UNLOAD_TABS) {
+            return;
+        }
+
         com.vaadin.ui.Component uiComponent = screen.getWindow()
                 .unwrapComposition(com.vaadin.ui.Component.class);
         if (!uiComponent.isAttached()) {
