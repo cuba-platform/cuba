@@ -32,6 +32,7 @@ import com.haulmont.cuba.gui.components.data.ValueSource;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.NestedDatasource;
+import com.haulmont.cuba.gui.data.impl.AbstractDatasource;
 import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -157,11 +158,15 @@ public class LegacyCollectionDsValueSource<V extends Entity> implements ValueSou
 
         datasource.mute();
 
+        boolean modified = false;
+
         MetaProperty inverseProperty = getInverseProperty();
         if (CollectionUtils.isNotEmpty(value)) {
             for (V v : value) {
                 if (CollectionUtils.isEmpty(oldValue) || !oldValue.contains(v)) {
                     v.setValue(inverseProperty.getName(), getMaster().getItem());
+                    ((AbstractDatasource) datasource).getItemsToUpdate().add(v);
+                    modified = true;
                 }
             }
         }
@@ -170,8 +175,14 @@ public class LegacyCollectionDsValueSource<V extends Entity> implements ValueSou
             for (V v : oldValue) {
                 if (CollectionUtils.isEmpty(value) || !value.contains(v)) {
                     v.setValue(inverseProperty.getName(), null);
+                    ((AbstractDatasource) datasource).getItemsToUpdate().add(v);
+                    modified = true;
                 }
             }
+        }
+
+        if (modified) {
+            ((AbstractDatasource) datasource).setModified(true);
         }
 
         datasource.unmute(CollectionDatasource.UnmuteEventsMode.FIRE_REFRESH_EVENT);
@@ -282,6 +293,7 @@ public class LegacyCollectionDsValueSource<V extends Entity> implements ValueSou
             } else {
                 masterCollection = new LinkedHashSet(newCollection);
             }
+
             getMaster().getItem().setValue(metaProperty.getName(), masterCollection);
         }
     }
