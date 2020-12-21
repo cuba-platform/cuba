@@ -23,8 +23,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Indicates whether to enable restoring of soft deleted entity instances. If no such annotation present for an entity,
- * or value() is false, restore is disabled.
+ * Indicates whether to enable restoring of soft deleted entity instances.
+ * If no such annotation present for an entity or value() is true, restore is enabled.
+ * If value() is false, restore is disabled.
  *
  * <p>Can be overridden in <code>*-metadata.xml</code> file.</p>
  *
