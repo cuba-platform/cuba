@@ -18,6 +18,8 @@ package com.haulmont.cuba.core.global;
 
 import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.cuba.core.config.Config;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -32,12 +34,17 @@ public class FtsConfigHelper {
     private static Method method;
 
     static {
+        Logger logger = LoggerFactory.getLogger("com.haulmont.cuba.core.global.FtsConfigHelper");
         try {
             //noinspection unchecked
             Class<? extends Config> ftsConfigClass = (Class<? extends Config>) ReflectionHelper.loadClass("com.haulmont.fts.global.FtsConfig");
             config = AppBeans.get(Configuration.class).getConfig(ftsConfigClass);
             method = config.getClass().getMethod("getEnabled");
-        } catch (ClassNotFoundException | NoSuchMethodException ignored) {
+        } catch (ClassNotFoundException | NoSuchMethodException e) {
+            logger.trace("Unable to find FtsConfig:", e);
+        } catch (Throwable e) {
+            logger.error("Error while initialize FtsConfigHelper:", e);
+            throw e;
         }
     }
 
