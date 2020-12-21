@@ -59,6 +59,7 @@ public class CubaTokenList<T extends Entity> extends CustomField<Collection<T>> 
     protected Map<CubaTokenListLabel, T> componentItems = new HashMap<>();
 
     protected Subscription addButtonSub;
+    protected Subscription clearBtnClickSubscription;
 
     public CubaTokenList(WebTokenList<T> owner) {
         this.owner = owner;
@@ -181,7 +182,11 @@ public class CubaTokenList<T extends Entity> extends CustomField<Collection<T>> 
 
         owner.clearButton.setVisible(owner.clearEnabled);
         owner.clearButton.setStyleName(CLEAR_BTN_STYLENAME);
-        owner.clearButton.addClickListener(e -> {
+
+        if (clearBtnClickSubscription != null) {
+            clearBtnClickSubscription.remove();
+        }
+        clearBtnClickSubscription = owner.clearButton.addClickListener(e -> {
             clearValue();
             owner.clearButton.focus();
         });
@@ -191,6 +196,8 @@ public class CubaTokenList<T extends Entity> extends CustomField<Collection<T>> 
     }
 
     protected void clearValue() {
+        Collection<T> oldValue = new HashSet<>(getValue());
+
         for (CubaTokenListLabel label : new ArrayList<>(itemComponents.values())) {
             T item = componentItems.get(label);
             if (item != null) {
@@ -204,18 +211,7 @@ public class CubaTokenList<T extends Entity> extends CustomField<Collection<T>> 
         }
 
         if (owner.itemChangeHandler == null) {
-            ValueSource<Collection<T>> valueSource = owner.getValueSource();
-            if (valueSource != null) {
-                Collection<T> vsv = owner.getValueSourceValue();
-
-                if (Set.class.isAssignableFrom(vsv.getClass())) {
-                    valueSource.setValue(new LinkedHashSet<>());
-                } else {
-                    valueSource.setValue(new ArrayList<>());
-                }
-            } else {
-                owner.setValue(new ArrayList<>());
-            }
+            fireValueChangeEvent(oldValue);
         }
     }
 
@@ -385,25 +381,15 @@ public class CubaTokenList<T extends Entity> extends CustomField<Collection<T>> 
     protected void doRemove(CubaTokenListLabel source) {
         T item = componentItems.get(source);
         if (item != null) {
+            Collection<T> oldValue = new HashSet<>(getValue());
+
             itemComponents.remove(item);
             componentItems.remove(source);
 
             if (owner.itemChangeHandler != null) {
                 owner.itemChangeHandler.removeItem(item);
             } else {
-                if (owner.getValueSource() != null) {
-                    Collection<T> value = owner.getValueSourceValue();
-
-                    value.remove(item);
-
-                    owner.getValueSource().setValue(value);
-                } else {
-                    Collection<T> value = new ArrayList<>(owner.getValue());
-
-                    value.remove(item);
-
-                    owner.setValue(value);
-                }
+                fireValueChangeEvent(oldValue);
             }
         }
     }
@@ -424,5 +410,10 @@ public class CubaTokenList<T extends Entity> extends CustomField<Collection<T>> 
                 label.setStyleName(styleName);
             }
         }
+    }
+
+    protected void fireValueChangeEvent(Collection<T> oldValue) {
+        ValueChangeEvent<Collection<T>> event = new ValueChangeEvent<>(this, oldValue, true);
+        fireEvent(event);
     }
 }
