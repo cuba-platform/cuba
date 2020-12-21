@@ -568,6 +568,7 @@ public abstract class AbstractDataGridLoader<T extends DataGrid> extends Actions
                     columnCaption = LocaleHelper.isLocalizedValueDefined(categoryAttribute.getLocaleNames()) ?
                             categoryAttribute.getLocaleName() :
                             StringUtils.capitalize(categoryAttribute.getName());
+                    column.setSortable(false);
                 } else {
                     MetaClass propertyMetaClass = getMetadataTools().getPropertyEnclosingMetaClass(column.getPropertyPath());
 
@@ -807,6 +808,8 @@ public abstract class AbstractDataGridLoader<T extends DataGrid> extends Actions
                 return obj.toString();
             });
         }
+
+        column.setSortable(false);
 
         if (attribute.getConfiguration().getColumnWidth() != null) {
             column.setWidth(attribute.getConfiguration().getColumnWidth());
