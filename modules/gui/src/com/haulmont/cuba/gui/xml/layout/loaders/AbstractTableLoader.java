@@ -370,6 +370,8 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
             });
         }
 
+        column.setSortable(false);
+
         //noinspection unchecked
         component.addColumn(column);
 
@@ -608,6 +610,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
                             categoryAttribute.getLocaleName() :
                             StringUtils.capitalize(categoryAttribute.getName());
                     column.setDescription(categoryAttribute.getLocaleDescription());
+                    column.setSortable(false);
                 } else {
                     MetaClass propertyMetaClass = getMetadataTools().getPropertyEnclosingMetaClass(mpp);
                     columnCaption = getMessageTools().getPropertyCaption(propertyMetaClass, propertyName);
