@@ -64,7 +64,7 @@ public class RolesDatasource extends CollectionDatasourceImpl<Role, UUID> {
         }
 
         if (params.get("locName") != null) {
-            stream = stream.filter(e -> StringUtils.containsIgnoreCase(e.getName(), (String) params.get("locName")));
+            stream = stream.filter(e -> StringUtils.containsIgnoreCase(e.getLocName(), (String) params.get("locName")));
         }
 
         if (params.get("description") != null) {
