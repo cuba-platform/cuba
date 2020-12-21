@@ -27,6 +27,7 @@ import com.haulmont.cuba.gui.UiComponents;
 import com.haulmont.cuba.gui.WindowParams;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.BaseAction;
+import com.haulmont.cuba.gui.components.data.ConversionException;
 import com.haulmont.cuba.gui.components.data.Options;
 import com.haulmont.cuba.gui.components.data.ValueSource;
 import com.haulmont.cuba.gui.components.data.meta.EntityOptions;
@@ -34,6 +35,8 @@ import com.haulmont.cuba.gui.components.data.meta.EntityValueSource;
 import com.haulmont.cuba.gui.components.data.value.ContainerValueSource;
 import com.haulmont.cuba.gui.components.data.value.LegacyCollectionDsValueSource;
 import com.haulmont.cuba.gui.config.WindowConfig;
+import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.data.NestedDatasource;
 import com.haulmont.cuba.gui.icons.CubaIcon;
 import com.haulmont.cuba.gui.icons.Icons;
 import com.haulmont.cuba.gui.model.InstanceContainer;
@@ -105,6 +108,8 @@ public class WebTokenList<V extends Entity>
 
     public WebTokenList() {
         component = new CubaTokenList<>(this);
+
+        attachValueChangeListener(component);
     }
 
     @Inject
@@ -172,7 +177,11 @@ public class WebTokenList<V extends Entity>
     }
 
     @Override
-    public void setValue(Collection<V> value) {
+    public void setValue(@Nullable Collection<V> value) {
+        setValue(value, false);
+    }
+
+    protected void setValue(@Nullable Collection<V> value, boolean userOriginated) {
         Collection<V> oldValue = getOldValue(value);
 
         oldValue = new ArrayList<>(oldValue != null
@@ -186,19 +195,19 @@ public class WebTokenList<V extends Entity>
 
         this.internalValue = value;
 
-        fireValueChange(oldValue, value);
+        fireValueChange(oldValue, value, userOriginated);
     }
 
-    protected Collection<V> getOldValue(Collection<V> newValue) {
+    protected Collection<V> getOldValue(@Nullable Collection<V> newValue) {
         return equalCollections(newValue, internalValue)
                 ? component.getValue()
                 : internalValue;
     }
 
-    protected void fireValueChange(Collection<V> oldValue, Collection<V> value) {
+    protected void fireValueChange(Collection<V> oldValue, Collection<V> value, boolean userOriginated) {
         if (!equalCollections(oldValue, value)) {
             ValueChangeEvent<Collection<V>> event =
-                    new ValueChangeEvent<>(this, oldValue, value, false);
+                    new ValueChangeEvent<>(this, oldValue, value, userOriginated);
             publish(ValueChangeEvent.class, event);
         }
     }
@@ -216,6 +225,11 @@ public class WebTokenList<V extends Entity>
 
         //noinspection ConstantConditions
         return CollectionUtils.isEqualCollection(a, b);
+    }
+
+    @Override
+    protected boolean fieldValueEquals(Collection<V> value, Collection<V> oldValue) {
+        return equalCollections(value, oldValue);
     }
 
     @Override
@@ -507,26 +521,23 @@ public class WebTokenList<V extends Entity>
             reloadedSelected.forEach(itemChangeHandler::addItem);
         } else {
             ValueSource<Collection<V>> valueSource = getValueSource();
+            Collection<V> newValue = getValue();
             if (valueSource != null) {
                 Collection<V> modelValue = refreshValueIfNeeded();
-
                 for (V newItem : reloadedSelected) {
                     if (!modelValue.contains(newItem)) {
                         modelValue.add(newItem);
                     }
                 }
-
-                valueSource.setValue(modelValue);
+                newValue = modelValue;
             } else {
-                Collection<V> value = getValue();
-                if (value == null) {
-                    value = new ArrayList<>();
+                if (newValue == null) {
+                    newValue = new ArrayList<>();
                 }
-
-                value.addAll(reloadedSelected);
-
-                setValue(value);
+                newValue.addAll(reloadedSelected);
             }
+
+            setValue(newValue, true);
         }
     }
 
@@ -827,6 +838,33 @@ public class WebTokenList<V extends Entity>
     @Override
     public Supplier<Screen> getLookupProvider() {
         return lookupProvider;
+    }
+
+    @Override
+    protected Collection<V> convertToModel(Collection<V> componentRawValue) throws ConversionException {
+        ValueSource<Collection<V>> valueSource = getValueSource();
+        if (valueSource != null) {
+            Class<?> modelCollectionType = null;
+
+            if (valueSource instanceof EntityValueSource) {
+                MetaPropertyPath mpp = ((EntityValueSource) valueSource).getMetaPropertyPath();
+                modelCollectionType = mpp.getMetaProperty().getJavaType();
+            } else if (valueSource instanceof LegacyCollectionDsValueSource) {
+                CollectionDatasource datasource = ((LegacyCollectionDsValueSource) valueSource).getDatasource();
+                if (datasource instanceof NestedDatasource) {
+                    MetaProperty property = ((NestedDatasource) datasource).getProperty().getInverse();
+                    modelCollectionType = property == null ? null : property.getJavaType();
+                }
+            }
+
+            if (modelCollectionType != null) {
+                if (Set.class.isAssignableFrom(modelCollectionType)) {
+                    return new LinkedHashSet<>(componentRawValue);
+                }
+            }
+        }
+
+        return new ArrayList<>(componentRawValue);
     }
 
     /**
