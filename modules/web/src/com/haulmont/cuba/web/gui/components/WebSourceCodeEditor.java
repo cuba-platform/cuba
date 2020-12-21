@@ -253,10 +253,16 @@ public class WebSourceCodeEditor extends WebV8AbstractField<CubaSourceCodeEditor
         public String applySuggestion(Suggestion suggestion, String text, int cursor) {
             String suggestionText = suggestion.getSuggestionText();
 
-            if (suggestion.getStartPosition() > 0)
-                return StringUtils.substring(text, 0, suggestion.getStartPosition()) + suggestionText
-                        + StringUtils.substring(text, cursor);
-            return suggestionText + StringUtils.substring(text, cursor);
+            int startPosition = suggestion.getStartPosition();
+            int endPosition = suggestion.getEndPosition();
+
+            int start = startPosition > -1 ? Math.min(startPosition, text.length()) : cursor;
+            int end = endPosition > -1 ? Math.min(endPosition, text.length()) : cursor;
+
+            String leftText = StringUtils.substring(text, 0, start);
+            String rightText = StringUtils.substring(text, end, text.length());
+
+            return leftText + suggestionText + rightText;
         }
     }
 }
