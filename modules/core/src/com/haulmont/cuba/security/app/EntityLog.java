@@ -39,6 +39,8 @@ import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.support.ResourceHolderSupport;
+import org.springframework.transaction.support.ResourceHolderSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
@@ -56,6 +58,7 @@ import java.util.stream.Stream;
 @Component(EntityLogAPI.NAME)
 public class EntityLog implements EntityLogAPI {
 
+    public static final String RESOURCE_HOLDER_KEY = EntityLogResourceHolder.class.getName();
     private static final Logger log = LoggerFactory.getLogger(EntityLog.class);
 
     @Inject
@@ -108,8 +111,8 @@ public class EntityLog implements EntityLogAPI {
 
     @Override
     public void flush(String storeName) {
-        EntityManagerContext context = persistence.getEntityManagerContext(storeName);
-        List<EntityLogItem> items = context.getAttribute(EntityLog.class.getName());
+        EntityLogResourceHolder holder = getEntityLogResourceHolder();
+        List<EntityLogItem> items = holder.getItems(storeName);
         if (items == null || items.isEmpty())
             return;
 
@@ -506,11 +509,11 @@ public class EntityLog implements EntityLogAPI {
     }
 
     protected void enqueueItem(EntityLogItem item, String storeName) {
-        EntityManagerContext context = persistence.getEntityManagerContext(storeName);
-        List<EntityLogItem> items = context.getAttribute(EntityLog.class.getName());
+        EntityLogResourceHolder holder = getEntityLogResourceHolder();
+        List<EntityLogItem> items = holder.getItems(storeName);
         if (items == null) {
             items = new ArrayList<>();
-            context.setAttribute(EntityLog.class.getName(), items);
+            holder.setItems(items, storeName);
         }
         items.add(item);
     }
@@ -904,5 +907,51 @@ public class EntityLog implements EntityLogAPI {
 
     protected void logError(Entity entity, Exception e) {
         log.warn("Unable to log entity {}, id={}", entity, entity.getId(), e);
+    }
+
+    protected EntityLogResourceHolder getEntityLogResourceHolder() {
+        EntityLogResourceHolder holder =
+                (EntityLogResourceHolder) TransactionSynchronizationManager.getResource(RESOURCE_HOLDER_KEY);
+        if (holder == null) {
+            holder = new EntityLogResourceHolder();
+            TransactionSynchronizationManager.bindResource(RESOURCE_HOLDER_KEY, holder);
+        }
+        if (TransactionSynchronizationManager.isSynchronizationActive() && !holder.isSynchronizedWithTransaction()) {
+            holder.setSynchronizedWithTransaction(true);
+            TransactionSynchronizationManager.registerSynchronization(
+                    new EntityLogResourceHolderSynchronization(holder, RESOURCE_HOLDER_KEY));
+        }
+        return holder;
+    }
+
+    public static class EntityLogResourceHolder extends ResourceHolderSupport {
+
+        protected Map<String, List<EntityLogItem>> itemsMap = new HashMap<>();
+
+        @Nullable
+        protected List<EntityLogItem> getItems(String storeName) {
+            return itemsMap.get(storeName);
+        }
+
+        protected void setItems(List<EntityLogItem> items, String storeName) {
+            itemsMap.put(storeName, items);
+        }
+
+        protected void clearItems() {
+            itemsMap.clear();
+        }
+    }
+
+    public static class EntityLogResourceHolderSynchronization
+            extends ResourceHolderSynchronization<EntityLogResourceHolder, String> {
+
+        public EntityLogResourceHolderSynchronization(EntityLogResourceHolder resourceHolder, String resourceKey) {
+            super(resourceHolder, resourceKey);
+        }
+
+        @Override
+        protected void cleanupResource(EntityLogResourceHolder resourceHolder, String resourceKey, boolean committed) {
+            resourceHolder.clearItems();
+        }
     }
 }
