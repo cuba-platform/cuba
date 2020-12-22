@@ -540,7 +540,12 @@ public class WebTokenList<V extends Entity>
                 if (newValue == null) {
                     newValue = new ArrayList<>();
                 }
-                newValue.addAll(reloadedSelected);
+
+                // Get rid of duplicates
+                Collection<V> itemsToAdd = new ArrayList<>(reloadedSelected);
+                itemsToAdd.removeAll(newValue);
+
+                newValue.addAll(itemsToAdd);
             }
 
             setValue(newValue, true);
