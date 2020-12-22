@@ -22,7 +22,6 @@ import com.google.common.base.Strings;
 import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.CubaClassPathXmlApplicationContext;
-import com.haulmont.cuba.core.sys.SingleAppResourcePatternResolver;
 import com.haulmont.cuba.web.sys.CubaApplicationServlet;
 import com.haulmont.cuba.web.sys.CubaDispatcherServlet;
 import com.haulmont.cuba.web.sys.CubaHttpFilter;
@@ -32,10 +31,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.web.servlet.DispatcherServlet;
 
-import javax.annotation.Nonnull;
 import javax.servlet.*;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -196,30 +193,12 @@ public class SingleAppWebContextLoader extends WebAppContextLoader {
 
     @Override
     protected ClassPathXmlApplicationContext createApplicationContext(String[] locations) {
-        return new CubaClassPathXmlApplicationContext(locations) {
-            /**
-             * Here we create resource resolver which scans only web jars which should be placed into /lib-web/ folder.
-             */
-            @Override
-            @Nonnull
-            protected ResourcePatternResolver getResourcePatternResolver() {
-                return new SingleAppResourcePatternResolver(this, "/lib-web/");
-            }
-        };
+        return new CubaClassPathXmlApplicationContext(locations);
     }
 
     @Override
     protected ClassPathXmlApplicationContext createApplicationContext(String[] locations, ServletContext servletContext) {
-        return new CubaClassPathXmlApplicationContext(locations, servletContext) {
-            /**
-             * Here we create resource resolver which scans only web jars which should be placed into /lib-web/ folder.
-             */
-            @Override
-            @Nonnull
-            protected ResourcePatternResolver getResourcePatternResolver() {
-                return new SingleAppResourcePatternResolver(this, "/lib-web/");
-            }
-        };
+        return new CubaClassPathXmlApplicationContext(locations, servletContext);
     }
 
     @Override

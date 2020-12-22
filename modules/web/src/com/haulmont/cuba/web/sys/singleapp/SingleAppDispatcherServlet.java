@@ -17,10 +17,8 @@
 package com.haulmont.cuba.web.sys.singleapp;
 
 import com.haulmont.cuba.core.sys.CubaXmlWebApplicationContext;
-import com.haulmont.cuba.core.sys.SingleAppResourcePatternResolver;
 import com.haulmont.cuba.web.sys.CubaDispatcherServlet;
 import org.springframework.context.ApplicationContext;
-import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.web.context.ConfigurableWebApplicationContext;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -43,12 +41,7 @@ public class SingleAppDispatcherServlet extends CubaDispatcherServlet {
                     String.format("Servlet with name '%s' will try to create custom WebApplicationContext context of class '%s', using parent context [%s]",
                             getServletName(), CubaXmlWebApplicationContext.class.getName(), parent));
         }
-        ConfigurableWebApplicationContext wac = new CubaXmlWebApplicationContext() {
-            @Override
-            protected ResourcePatternResolver getResourcePatternResolver() {
-                return new SingleAppResourcePatternResolver(this, libFolder);
-            }
-        };
+        ConfigurableWebApplicationContext wac = new CubaXmlWebApplicationContext();
 
         String contextConfigLocation = getContextConfigLocation();
         if (contextConfigLocation == null) {
