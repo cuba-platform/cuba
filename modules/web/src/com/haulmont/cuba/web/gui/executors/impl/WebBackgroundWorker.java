@@ -88,15 +88,29 @@ public class WebBackgroundWorker implements BackgroundWorker {
         }
 
         WebConfig webConfig = configuration.getConfig(WebConfig.class);
-        this.executorService = new ThreadPoolExecutor(
-                webConfig.getMinBackgroundThreadsCount(),
-                webConfig.getMaxActiveBackgroundTasksCount(),
-                10L, TimeUnit.MINUTES,
-                new LinkedBlockingQueue<>(),
-                new ThreadFactoryBuilder()
-                        .setNameFormat(THREAD_NAME_PREFIX + "%d")
-                        .build()
-        );
+
+        if (webConfig.getBackgroundThreadsCount() != null) {
+            this.executorService = new ThreadPoolExecutor(
+                    webConfig.getMinBackgroundThreadsCount(),
+                    webConfig.getMaxActiveBackgroundTasksCount(),
+                    10L, TimeUnit.MINUTES,
+                    new LinkedBlockingQueue<>(),
+                    new ThreadFactoryBuilder()
+                            .setNameFormat(THREAD_NAME_PREFIX + "%d")
+                            .build()
+            );
+            ((ThreadPoolExecutor)this.executorService).allowCoreThreadTimeOut(true);
+        } else {
+            this.executorService = new ThreadPoolExecutor(
+                    webConfig.getMinBackgroundThreadsCount(),
+                    webConfig.getMaxActiveBackgroundTasksCount(),
+                    10L, TimeUnit.MINUTES,
+                    new LinkedBlockingQueue<>(),
+                    new ThreadFactoryBuilder()
+                            .setNameFormat(THREAD_NAME_PREFIX + "%d")
+                            .build()
+            );
+        }
     }
 
     @PreDestroy
@@ -403,7 +417,7 @@ public class WebBackgroundWorker implements BackgroundWorker {
             return finalizer;
         }
 
-        public void setTaskHandler(TaskHandlerImpl<T,V> taskHandler) {
+        public void setTaskHandler(TaskHandlerImpl<T, V> taskHandler) {
             this.taskHandler = taskHandler;
         }
 

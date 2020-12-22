@@ -31,6 +31,7 @@ import com.haulmont.cuba.web.app.mainwindow.AppMainWindow;
 import com.haulmont.cuba.web.gui.*;
 import com.haulmont.cuba.web.sys.sanitizer.HtmlSanitizer;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 /**
@@ -210,17 +211,28 @@ public interface WebConfig extends Config {
     String getResourcesRoot();
 
     /**
+     * @return number of background task threads.
+     */
+    @Property("cuba.backgroundWorker.backgroundThreadsCount")
+    @Nullable
+    Integer getBackgroundThreadsCount();
+
+    /**
      * @return minimum number of background task threads.
+     * @deprecated use {@link WebConfig#getBackgroundThreadsCount()}
      */
     @Property("cuba.backgroundWorker.minBackgroundThreadsCount")
     @DefaultInteger(4)
+    @Deprecated
     Integer getMinBackgroundThreadsCount();
 
     /**
      * @return maximum number of active background tasks.
+     * @deprecated use {@link WebConfig#getBackgroundThreadsCount()}
      */
     @Property("cuba.backgroundWorker.maxActiveTasksCount")
     @DefaultInteger(100)
+    @Deprecated
     Integer getMaxActiveBackgroundTasksCount();
 
     @Property("cuba.backgroundWorker.maxClientLatencySeconds")
