@@ -20,16 +20,13 @@ package com.haulmont.cuba.core.sys.singleapp;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.AppContextLoader;
 import com.haulmont.cuba.core.sys.CubaCoreApplicationContext;
-import com.haulmont.cuba.core.sys.SingleAppResourcePatternResolver;
 import com.haulmont.cuba.core.sys.remoting.RemotingServlet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.springframework.core.io.support.ResourcePatternResolver;
 
-import javax.annotation.Nonnull;
 import javax.servlet.*;
 import java.io.IOException;
 import java.util.EnumSet;
@@ -81,30 +78,12 @@ public class SingleAppCoreContextLoader extends AppContextLoader {
 
     @Override
     protected ClassPathXmlApplicationContext createApplicationContext(String[] locations) {
-        return new CubaCoreApplicationContext(locations) {
-            /**
-             * Here we create resource resolver which scans only core jars which should be placed into /lib-core/ folder.
-             */
-            @Override
-            @Nonnull
-            protected ResourcePatternResolver getResourcePatternResolver() {
-                return new SingleAppResourcePatternResolver(this, "/lib-core/");
-            }
-        };
+        return new CubaCoreApplicationContext(locations);
     }
 
     @Override
     protected ClassPathXmlApplicationContext createApplicationContext(String[] locations, ServletContext servletContext) {
-        return new CubaCoreApplicationContext(locations, servletContext) {
-            /**
-             * Here we create resource resolver which scans only core jars which should be placed into /lib-core/ folder.
-             */
-            @Override
-            @Nonnull
-            protected ResourcePatternResolver getResourcePatternResolver() {
-                return new SingleAppResourcePatternResolver(this, "/lib-core/");
-            }
-        };
+        return new CubaCoreApplicationContext(locations, servletContext);
     }
 
     @Override
