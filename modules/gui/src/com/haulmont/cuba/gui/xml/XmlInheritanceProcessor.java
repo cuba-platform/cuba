@@ -243,11 +243,22 @@ public class XmlInheritanceProcessor {
             String clazz = extElem.attributeValue("class");
             String name = extElem.attributeValue("name");
             for (Element e : resultParentElem.elements()) {
-                if (name.equals(e.attributeValue("name"))
-                        && ((entity != null && entity.equals(e.attributeValue("entity")))
-                            || (clazz != null && clazz.equals(e.attributeValue("class")))))
-                {
-                    return e;
+                if (name != null) {
+                    if (name.equals(e.attributeValue("name"))
+                            && ((entity != null && entity.equals(e.attributeValue("entity")))
+                            || (clazz != null && clazz.equals(e.attributeValue("class"))))) {
+                        return e;
+                    }
+                }
+            }
+
+            Element extParentElem = extElem.getParent();
+            if (extParentElem != null && Objects.equals(resultParentElem.attributeValue("id"),
+                    extParentElem.attributeValue("id"))) {
+                for (Element e : resultParentElem.elements()) {
+                    if ("view".equals(e.getName())) {
+                        return e;
+                    }
                 }
             }
 
