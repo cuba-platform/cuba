@@ -589,14 +589,19 @@ public class WebTokenList<V extends Entity>
      * Sets master-entity reference to the value and remove master-entity reference
      * from options if they are not in nested container.
      *
-     * @param valueSourceValue value items
+     * @param value value items
      */
-    protected void updateMasterRefIfOptionsRefreshed(Collection<V> valueSourceValue) {
+    protected void updateMasterRefIfOptionsRefreshed(Collection<V> value) {
         if (!isRefreshOptionsEnabled()) {
             return;
         }
 
         if (!(getValueSource() instanceof ContainerValueSource)) {
+            return;
+        }
+
+        EntityOptions<V> options = (EntityOptions<V>) getOptions();
+        if (options == null) {
             return;
         }
 
@@ -610,14 +615,14 @@ public class WebTokenList<V extends Entity>
             return;
         }
 
-        EntityOptions<V> options = (EntityOptions<V>) getOptions();
-        if (options == null) {
-            return;
-        }
-
         List<V> optionItems = getOptions().getOptions().collect(Collectors.toList());
         for (V option : optionItems) {
-            if (valueSourceValue.contains(option)) {
+            // skip all options that did not load master-reference
+            if (!entityStates.isLoaded(option, inverseProperty.getName())) {
+                continue;
+            }
+
+            if (value.contains(option)) {
                 // reset master-entity reference
                 option.setValue(inverseProperty.getName(), masterEntity);
             } else {
@@ -631,11 +636,6 @@ public class WebTokenList<V extends Entity>
                     option.setValue(inverseProperty.getName(), null);
                 }
             }
-        }
-
-        // update master ref for value source
-        for (V value : valueSourceValue) {
-            value.setValue(inverseProperty.getName(), masterEntity);
         }
     }
 
