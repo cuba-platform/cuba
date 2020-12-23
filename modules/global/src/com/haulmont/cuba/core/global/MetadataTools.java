@@ -246,7 +246,7 @@ public class MetadataTools {
         String trimmedFormat = format.trim();
         String methodName = trimmedFormat.startsWith("#") ? trimmedFormat.substring(1) : null;
         String fieldsStr = StringUtils.substring(pattern, pos + 1);
-        String[] fields = INSTANCE_NAME_SPLIT_PATTERN.split(fieldsStr);
+        String[] fields = Arrays.stream(INSTANCE_NAME_SPLIT_PATTERN.split(fieldsStr)).map(String::trim).toArray(String[]::new);
         return new NamePatternRec(format, methodName, fields);
     }
 
