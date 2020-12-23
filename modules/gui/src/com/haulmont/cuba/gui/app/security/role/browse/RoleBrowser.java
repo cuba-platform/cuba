@@ -50,6 +50,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class RoleBrowser extends AbstractLookup {
 
@@ -287,9 +288,15 @@ public class RoleBrowser extends AbstractLookup {
                 .softDeletion(false)
                 .query("select p from sec$Permission p where p.deleteTs is not null")
                 .list();
+        List<UserRole> deletedUserRoles = dataManager.load(UserRole.class)
+                .softDeletion(false)
+                .query("select ur from sec$UserRole ur where ur.role.id in :deletedRoleIds")
+                .parameter("deletedRoleIds", deletedRoles.stream().map(Role::getId).collect(Collectors.toList()))
+                .list();
         List<Entity> entitiesToRemove = new ArrayList<>();
         entitiesToRemove.addAll(deletedRoles);
         entitiesToRemove.addAll(deletedPermissions);
+        entitiesToRemove.addAll(deletedUserRoles);
         CommitContext ctx = new CommitContext();
         ctx.setSoftDeletion(false);
         ctx.setRemoveInstances(entitiesToRemove);
