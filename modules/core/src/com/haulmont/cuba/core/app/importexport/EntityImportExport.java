@@ -701,7 +701,7 @@ public class EntityImportExport implements EntityImportExportAPI {
         if (result == null) {
             LoadContext<? extends Entity> ctx = LoadContext.create(entity.getClass())
                     .setSoftDeletion(false)
-                    .setView(new View(entity.getMetaClass().getJavaClass(), false))
+                    .setView(viewRepository.getView(entity.getMetaClass().getJavaClass(), View.MINIMAL))
                     .setId(entity.getId());
             result = dataManager.load(ctx);
             if (result == null) {

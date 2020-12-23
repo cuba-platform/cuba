@@ -16,13 +16,12 @@
 
 package spec.cuba.core.entity_log
 
-
 import com.haulmont.cuba.core.EntityManager
 import com.haulmont.cuba.core.PersistenceTools
-import com.haulmont.cuba.core.global.AppBeans
-import com.haulmont.cuba.core.global.DataManager
-import com.haulmont.cuba.core.global.MetadataTools
-import com.haulmont.cuba.core.global.View
+import com.haulmont.cuba.core.app.importexport.EntityImportExportAPI
+import com.haulmont.cuba.core.app.importexport.EntityImportViewBuilderAPI
+import com.haulmont.cuba.core.global.*
+import com.haulmont.cuba.security.entity.EntityLogItem
 import com.haulmont.cuba.security.entity.Group
 import com.haulmont.cuba.security.entity.User
 import com.haulmont.cuba.testmodel.entity_log.EntityLogA
@@ -34,6 +33,9 @@ class EntityLogTest extends AbstractEntityLogTest {
     private UUID user1Id, user2Id
     private UUID roleId
 
+    private EntityImportExportAPI entityImportExport
+    protected EntityImportViewBuilderAPI entityImportViewBuilderAPI
+    protected Metadata metadata
 
     void setup() {
         clearTables("SEC_LOGGED_ATTR", "SEC_LOGGED_ENTITY")
@@ -50,12 +52,15 @@ class EntityLogTest extends AbstractEntityLogTest {
         initEntityLogAPI()
         persistenceTools = AppBeans.get(PersistenceTools.class)
         metadataTools = AppBeans.get(MetadataTools.class)
+        entityImportExport = AppBeans.get(EntityImportExportAPI.class)
+        entityImportViewBuilderAPI = AppBeans.get(EntityImportViewBuilderAPI.class)
+        metadata = AppBeans.get(Metadata.class)
     }
 
 
     protected void initEntityLogConfiguration(EntityManager em) {
 
-        saveEntityLogAutoConfFor(em, 'sec$User', 'name', 'email')
+        saveEntityLogAutoConfFor(em, 'sec$User', 'name', 'email', 'group')
 
         saveEntityLogAutoConfFor(em, 'sec$Role', 'type')
 
@@ -240,6 +245,31 @@ class EntityLogTest extends AbstractEntityLogTest {
         def item = getLatestEntityLogItem('test_EntityLogA', aId)
 
         loggedValueMatches(item, 'entityLogB', "")
+    }
+
+    def "Entity import logged successfully"() {
+        when: "New entity with reference to existing one imported"
+        user1Id = UUID.randomUUID()
+        String json = "{\n" +
+                '  "_entityName": "sec$User",\n' +
+                '  "id": "' + user1Id + '",\n' +
+                '  "login": "testImport",\n' +
+                '  "group": {\n' +
+                '    "_entityName": "sec$Group",\n' +
+                '    "id": "' + findCompanyGroup().id + '"\n' +
+                '  },\n' +
+                '  "name": "test-import-name"\n' +
+                '}\n'
+        String jsonArray = "[$json]"
+
+        entityImportExport.importEntitiesFromJson(jsonArray,
+                entityImportViewBuilderAPI.buildFromJson(json, metadata.getClass('sec$User')))
+
+        then: "Reference entity loaded properly and isn't caused an unfetched attribute exception at entity log creation"
+
+        EntityLogItem logItem = getLatestEntityLogItem('sec$User', user1Id)
+        logItem.type == EntityLogItem.Type.CREATE
+        loggedValueMatches(logItem, 'group', 'Company')
     }
 
     protected def createAndSaveUser(EntityManager em, Map params) {
