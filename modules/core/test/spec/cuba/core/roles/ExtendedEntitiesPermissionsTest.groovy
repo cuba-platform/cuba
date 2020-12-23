@@ -43,11 +43,17 @@ class ExtendedEntitiesPermissionsTest extends Specification {
     UserSession userSession
     Metadata metadata
     Security security
+    RoleDefinition defaultRole
 
     def setup() {
         userSession = AppBeans.get(UserSessionSource).getUserSession()
+        defaultRole = userSession.joinedRole
         metadata = cont.metadata()
         security = AppBeans.get(Security)
+    }
+
+    def cleanup() {
+        userSession.joinedRole = defaultRole
     }
 
     def "RoleDefinition builder should use original MetaClass name as permission target"() {
@@ -55,8 +61,8 @@ class ExtendedEntitiesPermissionsTest extends Specification {
         when:
         RoleDefinition roleDefinition = BasicRoleDefinition.builder()
                 .withEntityPermission(ExtRoleTestEntity.class, EntityOp.CREATE, Access.ALLOW)
-                .withEntityAttributePermission(ExtRoleTestEntity.class, "name" , EntityAttrAccess.VIEW)
-                .withEntityAttributePermission(ExtRoleTestEntity.class, "newAttr" , EntityAttrAccess.VIEW)
+                .withEntityAttributePermission(ExtRoleTestEntity.class, "name", EntityAttrAccess.VIEW)
+                .withEntityAttributePermission(ExtRoleTestEntity.class, "newAttr", EntityAttrAccess.VIEW)
                 .build()
 
         then:

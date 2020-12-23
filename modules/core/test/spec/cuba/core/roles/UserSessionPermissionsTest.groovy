@@ -20,10 +20,10 @@ import com.haulmont.chile.core.model.MetaClass
 import com.haulmont.cuba.core.global.AppBeans
 import com.haulmont.cuba.core.global.Metadata
 import com.haulmont.cuba.core.global.UserSessionSource
-import com.haulmont.cuba.security.role.BasicRoleDefinition
 import com.haulmont.cuba.security.entity.EntityAttrAccess
 import com.haulmont.cuba.security.entity.User
 import com.haulmont.cuba.security.global.UserSession
+import com.haulmont.cuba.security.role.BasicRoleDefinition
 import com.haulmont.cuba.security.role.RoleDefinition
 import com.haulmont.cuba.testsupport.TestContainer
 import org.junit.ClassRule
@@ -38,10 +38,16 @@ class UserSessionPermissionsTest extends Specification {
 
     UserSession userSession
     Metadata metadata
+    RoleDefinition defaultRole
 
     def setup() {
         userSession = AppBeans.get(UserSessionSource).getUserSession()
+        defaultRole = userSession.joinedRole
         metadata = cont.metadata()
+    }
+
+    def cleanup() {
+        userSession.joinedRole = defaultRole
     }
 
     def "wildcard attribute permissions"() {
