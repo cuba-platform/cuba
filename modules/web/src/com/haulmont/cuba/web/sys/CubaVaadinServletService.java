@@ -17,6 +17,7 @@
 
 package com.haulmont.cuba.web.sys;
 
+import com.google.common.base.Strings;
 import com.google.common.hash.HashCode;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
@@ -294,7 +295,8 @@ public class CubaVaadinServletService extends VaadinServletService
             // redirect to base URL if we have unparsable path tail
             if (!Objects.equals("/", requestPath)) {
                 response.setStatus(HttpServletResponse.SC_MOVED_PERMANENTLY);
-                response.setHeader("Location", request.getContextPath());
+                String contextPath = request.getContextPath();
+                response.setHeader("Location", Strings.isNullOrEmpty(contextPath) ? "/" : contextPath);
 
                 return true;
             }
