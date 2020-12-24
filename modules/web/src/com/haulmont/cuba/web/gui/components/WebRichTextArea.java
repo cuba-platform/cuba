@@ -169,7 +169,11 @@ public class WebRichTextArea extends WebV8AbstractField<CubaRichTextArea, String
     @Nullable
     @Override
     protected String sanitize(@Nullable String html) {
-        String sanitizedValue = super.sanitize(html);
+        if (!isHtmlSanitizerEnabled() || component.isLastUserActionSanitized()) {
+            return html;
+        }
+
+        String sanitizedValue = getHtmlSanitizer().sanitize(html);
         return postSanitize(sanitizedValue);
     }
 
@@ -184,6 +188,6 @@ public class WebRichTextArea extends WebV8AbstractField<CubaRichTextArea, String
     protected String postSanitize(@Nullable String html) {
         return html != null
                 ? html.replaceAll(CLOSED_LINE_BREAK_TAG, LINE_BREAK_TAG)
-                : html;
+                : null;
     }
 }

@@ -53,4 +53,16 @@ public class CubaRichTextAreaConnector extends RichTextAreaConnector {
             getWidget().setTabIndex(getState().tabIndex);
         }
     }
+
+    @Override
+    public void sendValueChange() {
+        String widgetValue = getWidget().getSanitizedValue();
+        if (!hasStateChanged(widgetValue)) {
+            return;
+        }
+
+        getRpcProxy(CubaRichTextAreaServerRpc.class)
+                .setText(widgetValue, ((CubaRichTextToolbarWidget) getWidget().formatter).isLastUserActionSanitized());
+        getState().value = widgetValue;
+    }
 }
