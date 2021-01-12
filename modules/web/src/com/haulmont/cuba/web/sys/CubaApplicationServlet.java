@@ -371,7 +371,7 @@ public class CubaApplicationServlet extends VaadinServlet {
         if (isUberJar) {
             String resourcePath = resourceUrl.getPath();
             if ("jar".equals(resourceUrl.getProtocol())) {
-                if (resourcePath.contains("!/LIB-INF/app/VAADIN/")) {
+                if (resourcePath.contains("!/LIB-INF/app/VAADIN/") || resourcePath.contains("!/LIB-INF/app/WEB-INF/classes/VAADIN/")) {
                     return true;
                 }
             }
