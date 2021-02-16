@@ -111,7 +111,7 @@ public interface ScrollBoxLayout
      *
      * @return horizontal scrolling position in pixels
      */
-    public int getScrollLeft();
+    int getScrollLeft();
 
     /**
      * Sets scroll left offset.
@@ -121,7 +121,7 @@ public interface ScrollBoxLayout
      *
      * @param scrollLeft the xOffset
      */
-    public void setScrollLeft(int scrollLeft);
+    void setScrollLeft(int scrollLeft);
 
     /**
      * Gets scroll top offset.
@@ -131,7 +131,7 @@ public interface ScrollBoxLayout
      *
      * @return vertical scrolling position in pixels
      */
-    public int getScrollTop();
+    int getScrollTop();
 
     /**
      * Sets scroll top offset.
@@ -141,7 +141,7 @@ public interface ScrollBoxLayout
      *
      * @param scrollTop the yOffset
      */
-    public void setScrollTop(int scrollTop);
+    void setScrollTop(int scrollTop);
 
     enum ScrollBarPolicy {
         VERTICAL,
