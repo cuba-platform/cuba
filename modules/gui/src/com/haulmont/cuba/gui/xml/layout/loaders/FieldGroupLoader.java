@@ -694,7 +694,12 @@ public class FieldGroupLoader extends AbstractComponentLoader<FieldGroup> {
     }
 
     protected MetaClass getParentEntityMetaClass(FieldGroup resultComponent) {
-        return resultComponent.getDatasource().getMetaClass();
+        Datasource datasource = resultComponent.getDatasource();
+        if (datasource instanceof EmbeddedDatasource) {
+            return ((EmbeddedDatasource<?>) datasource).getMaster().getMetaClass();
+        } else {
+            return datasource.getMetaClass();
+        }
     }
 
     protected void loadEnable(FieldGroup resultComponent, FieldGroup.FieldConfig field) {
