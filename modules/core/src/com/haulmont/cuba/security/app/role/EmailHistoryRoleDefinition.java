@@ -16,6 +16,7 @@
 
 package com.haulmont.cuba.security.app.role;
 
+import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.entity.SendingMessage;
 import com.haulmont.cuba.security.app.role.annotation.EntityAccess;
 import com.haulmont.cuba.security.app.role.annotation.EntityAttributeAccess;
@@ -46,12 +47,14 @@ public class EmailHistoryRoleDefinition extends AnnotatedRoleDefinition {
 
     @Override
     @EntityAccess(entityClass = SendingMessage.class, operations = {EntityOp.READ})
+    @EntityAccess(entityClass = FileDescriptor.class, operations = {EntityOp.CREATE, EntityOp.READ})
     public EntityPermissionsContainer entityPermissions() {
         return super.entityPermissions();
     }
 
     @Override
     @EntityAttributeAccess(entityClass = SendingMessage.class, view = "*")
+    @EntityAttributeAccess(entityClass = FileDescriptor.class, modify = "*")
     public EntityAttributePermissionsContainer entityAttributePermissions() {
         return super.entityAttributePermissions();
     }
