@@ -110,10 +110,6 @@
                         pointcut="execution(@com.haulmont.cuba.security.global.TrustedClientOnly * *(..))"/>
         </aop:aspect>
 
-        <aop:aspect id="serviceAspect" ref="serviceInterceptor" order="1">
-            <aop:around method="aroundInvoke" pointcut="@within(org.springframework.stereotype.Service)"/>
-        </aop:aspect>
-
         <aop:aspect id="mbeanAspect" ref="mbeanInterceptor" order="1">
             <aop:around method="aroundInvoke"
                         pointcut="execution(* *..*MBean.*(..))"/>
