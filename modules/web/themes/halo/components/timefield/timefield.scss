@@ -22,6 +22,7 @@ $c-timefield-ampm-width: 62px !default;
 @mixin halo-cuba-timefield($primary-stylename: c-timefield) {
   .#{$primary-stylename}-layout {
     white-space: nowrap;
+    outline: 0;
   }
 
   .#{$primary-stylename} {
