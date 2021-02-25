@@ -35,6 +35,7 @@ import com.haulmont.cuba.gui.components.filter.FtsFilterHelper;
 import com.haulmont.cuba.gui.components.filter.condition.AbstractCondition;
 import com.haulmont.cuba.gui.components.filter.condition.GroupCondition;
 import com.haulmont.cuba.gui.components.mainwindow.FoldersPane;
+import com.haulmont.cuba.gui.data.GroupInfo;
 import com.haulmont.cuba.gui.presentations.Presentations;
 import com.haulmont.cuba.gui.screen.FrameOwner;
 import com.haulmont.cuba.gui.screen.Screen;
@@ -308,23 +309,28 @@ public class WebFilterHelper implements FilterHelper {
                     vTable.setItemDescriptionGenerator((source, itemId, propertyId) -> {
                         return tooltipsCache.computeIfAbsent(
                                 itemId,
-                                k -> ftsFilterHelper.buildTableTooltip(
-                                        metaClassesCache.computeIfAbsent(
-                                                itemId,
-                                                id -> {
-                                                    DataUnit dataUnit = listComponent.getItems();
-                                                    Entity<?> entity = null;
-                                                    if (dataUnit instanceof DatasourceDataUnit) { //legacy GUI
-                                                        entity = ((DatasourceDataUnit) dataUnit).getDatasource().getItem(id);
-                                                    } else if (dataUnit instanceof ContainerDataUnit) {
-                                                        entity = ((ContainerDataUnit) dataUnit).getContainer().getItem(id);
-                                                    }
-                                                    if (entity != null)
-                                                        return entity.getMetaClass().getName();
-                                                    return metaClass.getName();
-                                                }),
-                                        k,
-                                        searchTerm)
+                                k -> {
+                                    if(k instanceof GroupInfo) {
+                                        return "";
+                                    }
+                                    return ftsFilterHelper.buildTableTooltip(
+                                            metaClassesCache.computeIfAbsent(
+                                                    itemId,
+                                                    id -> {
+                                                        DataUnit dataUnit = listComponent.getItems();
+                                                        Entity<?> entity = null;
+                                                        if (dataUnit instanceof DatasourceDataUnit) { //legacy GUI
+                                                            entity = ((DatasourceDataUnit) dataUnit).getDatasource().getItem(id);
+                                                        } else if (dataUnit instanceof ContainerDataUnit) {
+                                                            entity = ((ContainerDataUnit) dataUnit).getContainer().getItem(id);
+                                                        }
+                                                        if (entity != null)
+                                                            return entity.getMetaClass().getName();
+                                                        return metaClass.getName();
+                                                    }),
+                                            k,
+                                            searchTerm);
+                                }
                         );
                     }));
         } else if (listComponent instanceof DataGrid) {
