@@ -3386,7 +3386,7 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
         // set changed values from editor to copied entity
         E copiedItem = metadataTools.deepCopy(item);
         for (Map.Entry<String, Object> property : properties.entrySet()) {
-            copiedItem.setValue(property.getKey(), property.getValue());
+            copiedItem.setValueEx(property.getKey(), property.getValue());
         }
 
         // validate copy
