@@ -21,6 +21,7 @@ import com.google.common.collect.Iterables;
 import com.haulmont.cuba.web.widgets.client.table.CubaTableClientRpc;
 import com.haulmont.cuba.web.widgets.client.table.CubaTableServerRpc;
 import com.haulmont.cuba.web.widgets.client.treetable.CubaTreeTableState;
+import com.haulmont.cuba.web.widgets.compatibility.CubaValueChangeEvent;
 import com.haulmont.cuba.web.widgets.data.AggregationContainer;
 import com.haulmont.cuba.web.widgets.data.TableSortableContainer;
 import com.haulmont.cuba.web.widgets.data.TreeTableContainer;
@@ -1244,5 +1245,13 @@ public class CubaTreeTable extends com.vaadin.v7.ui.TreeTable implements TreeTab
     @Override
     protected int updateNewIndexOnLastPage(int newIndex, int indexOnLastPage) {
         return indexOnLastPage >= 0 ? ++newIndex : newIndex;
+    }
+
+    @Override
+    protected void fireValueChange(boolean repaintIsNotNeeded) {
+        fireEvent(new CubaValueChangeEvent(this, repaintIsNotNeeded));
+        if (!repaintIsNotNeeded) {
+            markAsDirty();
+        }
     }
 }
