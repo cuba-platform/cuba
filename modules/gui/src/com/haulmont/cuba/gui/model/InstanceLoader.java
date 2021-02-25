@@ -23,6 +23,7 @@ import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.screen.InstallSubject;
 import com.haulmont.cuba.gui.screen.Subscribe;
 
+import javax.annotation.Nullable;
 import java.util.EventObject;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -46,6 +47,7 @@ public interface InstanceLoader<E extends Entity> extends DataLoader {
     /**
      * Returns id of the entity to load.
      */
+    @Nullable
     Object getEntityId();
 
     /**
