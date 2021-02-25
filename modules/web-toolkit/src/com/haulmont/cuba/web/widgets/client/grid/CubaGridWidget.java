@@ -402,7 +402,7 @@ public class CubaGridWidget extends Grid<JsonObject> {
             return () -> {
                 for (Column column : getColumns()) {
                     if (column.isHidden()) {
-                        column.setHidden(false);
+                        column.setHiddenInternal(false, true);
                     }
                 }
             };
@@ -418,7 +418,7 @@ public class CubaGridWidget extends Grid<JsonObject> {
             return () -> {
                 for (Column column : getColumns()) {
                     if (column.isHidable() && !column.isHidden()) {
-                        column.setHidden(true);
+                        column.setHiddenInternal(true, true);
                     }
                 }
             };
