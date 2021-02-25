@@ -23,6 +23,7 @@ import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.client.ui.MenuBar;
 import com.google.gwt.user.client.ui.MenuItem;
 import com.google.gwt.user.client.ui.Widget;
+import com.vaadin.client.ComputedStyle;
 import com.vaadin.client.WidgetUtil;
 import com.vaadin.client.renderers.Renderer;
 import com.vaadin.client.widget.escalator.EscalatorUpdater;
@@ -481,6 +482,19 @@ public class CubaGridWidget extends Grid<JsonObject> {
         protected boolean hasSelectionColumn() {
             return super.hasSelectionColumn()
                     && grid.getSelectionColumn().isPresent();
+        }
+    }
+
+    @Override
+    protected AutoColumnWidthsRecalculator createAutoColumnWidthsRecalculator() {
+        return new CubaAutoColumnWidthsRecalculator();
+    }
+
+    protected class CubaAutoColumnWidthsRecalculator extends AutoColumnWidthsRecalculator {
+
+        @Override
+        protected double getFreeSpace() {
+            return new ComputedStyle(getEscalator().getElement()).getWidthIncludingBorderPadding();
         }
     }
 }
