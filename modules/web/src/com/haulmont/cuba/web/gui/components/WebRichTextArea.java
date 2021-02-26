@@ -45,6 +45,7 @@ public class WebRichTextArea extends WebV8AbstractField<CubaRichTextArea, String
         component = createComponent();
 
         attachValueChangeListener(this.component);
+        setHtmlSanitizerEnabled(false);
     }
 
     protected CubaRichTextArea createComponent() {
