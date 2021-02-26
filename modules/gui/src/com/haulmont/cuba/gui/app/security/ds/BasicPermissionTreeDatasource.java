@@ -30,6 +30,9 @@ import java.util.*;
 
 public abstract class BasicPermissionTreeDatasource extends AbstractTreeDatasource<BasicPermissionTarget, String> {
 
+    protected static final String ROOT_PREFIX = "root:";
+    protected static final String CATEGORY_PREFIX = "category:";
+
     protected Tree<BasicPermissionTarget> permissionsTree;
     protected CollectionDatasource<Permission, UUID> permissionDs;
 
@@ -110,5 +113,13 @@ public abstract class BasicPermissionTreeDatasource extends AbstractTreeDatasour
 
     public void setPermissionDs(CollectionDatasource<Permission, UUID> permissionDs) {
         this.permissionDs = permissionDs;
+    }
+
+    protected boolean isRoot(BasicPermissionTarget target) {
+        return target.getId().startsWith(ROOT_PREFIX);
+    }
+
+    protected boolean isCategory(BasicPermissionTarget target) {
+        return target.getId().startsWith(CATEGORY_PREFIX);
     }
 }

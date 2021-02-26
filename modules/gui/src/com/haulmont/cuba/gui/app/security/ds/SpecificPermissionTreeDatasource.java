@@ -35,8 +35,6 @@ public class SpecificPermissionTreeDatasource extends BasicPermissionTreeDatasou
     protected UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.NAME);
     protected UserSessionSource uss = AppBeans.get(UserSessionSource.class);
 
-    protected static final String CATEGORY_PREFIX = "category:";
-
     @Override
     public Tree<BasicPermissionTarget> getPermissions() {
         Tree<BasicPermissionTarget> allPermissions = permissionConfig.getSpecific(userSessionSource.getLocale());
@@ -55,14 +53,11 @@ public class SpecificPermissionTreeDatasource extends BasicPermissionTreeDatasou
     private Node<BasicPermissionTarget> filterNode(UserSession session, Node<BasicPermissionTarget> rootNode) {
         Node<BasicPermissionTarget> filteredRootNode = new Node<>(rootNode.getData());
         rootNode.getChildren().stream()
-                .filter(child -> session.isSpecificPermitted(child.getData().getPermissionValue()) || isCategory(child.getData()))
+                .filter(child -> isCategory(child.getData())
+                        || session.isSpecificPermitted(child.getData().getPermissionValue()))
                 .map(child -> filterNode(session, child))
                 .filter(child -> child.getNumberOfChildren() > 0 || !isCategory(child.getData())) //filtering out empty categories
                 .forEach(filteredRootNode::addChild);
         return filteredRootNode;
-    }
-
-    private boolean isCategory(BasicPermissionTarget target) {
-        return target.getId().startsWith(CATEGORY_PREFIX);
     }
 }
