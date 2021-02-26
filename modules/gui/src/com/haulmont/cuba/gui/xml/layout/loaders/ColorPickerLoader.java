@@ -59,6 +59,8 @@ public class ColorPickerLoader extends AbstractFieldLoader<ColorPicker>{
         loadPopupCaption(resultComponent, element);
         loadSwatchesTabCaption(resultComponent, element);
         loadResponsive(resultComponent, element);
+
+        loadBuffered(resultComponent, element);
     }
 
     protected void loadRedSliderCaption(ColorPicker component, Element element) {

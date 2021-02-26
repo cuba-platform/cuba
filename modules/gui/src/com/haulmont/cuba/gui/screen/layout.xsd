@@ -1981,6 +1981,7 @@
                 <xs:attribute name="defaultCaptionEnabled" type="xs:boolean"/>
 
                 <xs:attributeGroup ref="hasTabIndex"/>
+                <xs:attributeGroup ref="hasBuffered"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
