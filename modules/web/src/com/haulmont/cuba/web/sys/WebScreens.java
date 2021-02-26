@@ -573,9 +573,12 @@ public class WebScreens implements Screens, WindowManager {
     }
 
     protected void checkOpened(Screen screen) {
+        WebAppWorkArea workArea = getConfiguredWorkAreaOrNull();
+        if (workArea == null) {
+            return;
+        }
         // In case of 'managedMainTabSheetMode = UNLOAD_TABS',
         // inactive screens are detached, so we need to skip this check
-        WebAppWorkArea workArea = getConfiguredWorkArea();
         HasTabSheetBehaviour behaviour = workArea.getTabbedWindowContainer();
         if (behaviour instanceof CubaManagedTabSheet
                 && ((CubaManagedTabSheet) behaviour).getMode() == UNLOAD_TABS) {
