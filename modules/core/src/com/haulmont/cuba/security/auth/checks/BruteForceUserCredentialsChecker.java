@@ -32,6 +32,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
+import java.util.Locale;
 
 /**
  * Checks if a user tries to brute-force password / remember me token.
@@ -57,17 +58,14 @@ public class BruteForceUserCredentialsChecker implements UserCredentialsChecker,
                         && bruteForceProtectionAPI.loginAttemptsLeft(clientCredentials.getUserIdentifier(),
                         clientCredentials.getIpAddress()) <= 0) {
 
-                    String message;
-                    if (clientCredentials.isOverrideLocale()) {
-                        message = messages.formatMessage(MSG_PACK,
-                                "LoginException.loginAttemptsNumberExceeded",
-                                clientCredentials.getLocale(),
-                                bruteForceProtectionAPI.getBruteForceBlockIntervalSec());
-                    } else {
-                        message = messages.formatMessage(MSG_PACK,
-                                "LoginException.loginAttemptsNumberExceeded",
-                                bruteForceProtectionAPI.getBruteForceBlockIntervalSec());
-                    }
+                    Locale locale = clientCredentials.getLocale() == null
+                            ? messages.getTools().getDefaultLocale()
+                            : clientCredentials.getLocale();
+
+                    String message = messages.formatMessage(MSG_PACK,
+                            "LoginException.loginAttemptsNumberExceeded",
+                            locale,
+                            bruteForceProtectionAPI.getBruteForceBlockIntervalSec());
 
                     throw new AccountLockedException(message);
                 }
