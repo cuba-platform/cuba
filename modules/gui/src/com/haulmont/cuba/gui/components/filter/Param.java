@@ -466,7 +466,8 @@ public class Param {
         //noinspection unchecked
         LoadContext<Entity> ctx = new LoadContext<>(javaClass)
                 .setView(View.BASE);
-        ctx.setQueryString(String.format("select e from %s e where e.id in :ids", metaClass.getName()))
+        String pkName = metadataTools.getPrimaryKeyName(metaClass);
+        ctx.setQueryString(String.format("select e from %s e where e.%s in :ids", metaClass.getName(), pkName))
                 .setParameter("ids", Arrays.asList(ids));
         return dataManager.loadList(ctx);
     }
