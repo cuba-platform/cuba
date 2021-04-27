@@ -91,8 +91,8 @@ public class WebBackgroundWorker implements BackgroundWorker {
 
         if (webConfig.getBackgroundThreadsCount() != null) {
             this.executorService = new ThreadPoolExecutor(
-                    webConfig.getMinBackgroundThreadsCount(),
-                    webConfig.getMaxActiveBackgroundTasksCount(),
+                    webConfig.getBackgroundThreadsCount(),
+                    webConfig.getBackgroundThreadsCount(),
                     10L, TimeUnit.MINUTES,
                     new LinkedBlockingQueue<>(),
                     new ThreadFactoryBuilder()
