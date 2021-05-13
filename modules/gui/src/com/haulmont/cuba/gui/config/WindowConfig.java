@@ -40,6 +40,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.core.annotation.MergedAnnotation;
+import org.springframework.core.annotation.MergedAnnotations;
+import org.springframework.core.annotation.RepeatableContainers;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.type.AnnotationMetadata;
@@ -160,22 +163,7 @@ public class WindowConfig {
 
         } else if (windowInfo.getControllerClassName() != null) {
             controllerClass = loadDefinedScreenClass(windowInfo.getControllerClassName());
-
-            UiDescriptor annotation = controllerClass.getAnnotation(UiDescriptor.class);
-            if (annotation == null) {
-                template = null;
-            } else {
-                String templatePath = UiDescriptorUtils.getInferredTemplate(annotation, controllerClass);
-                if (!templatePath.startsWith("/")) {
-                    String packageName = UiControllerUtils.getPackage(controllerClass);
-                    if (StringUtils.isNotEmpty(packageName)) {
-                        String relativePath = packageName.replace('.', '/');
-                        templatePath = "/" + relativePath + "/" + templatePath;
-                    }
-                }
-
-                template = templatePath;
-            }
+            template = extractTemplatePath(controllerClass);
         } else {
             throw new IllegalStateException("Neither screen class nor descriptor is set for WindowInfo " + windowInfo.getId());
         }
@@ -183,6 +171,31 @@ public class WindowConfig {
         WindowInfo.Type type = extractWindowInfoType(windowInfo, controllerClass);
 
         return new ResolvedWindowInfo(windowInfo, type, controllerClass, template);
+    }
+
+    protected String extractTemplatePath(Class<? extends FrameOwner> controllerClass) {
+        MergedAnnotation<UiDescriptor> annotation = MergedAnnotations.from(
+                controllerClass,
+                MergedAnnotations.SearchStrategy.TYPE_HIERARCHY,
+                RepeatableContainers.none()
+        ).get(UiDescriptor.class).withNonMergedAttributes();
+
+        Class annotatedClass = (Class<? extends FrameOwner>) annotation.getSource();
+
+        if (annotatedClass == null || !annotation.isPresent()) {
+            return null;
+        }
+
+        String templatePath = UiDescriptorUtils.getInferredTemplate(annotation.synthesize(), annotatedClass);
+        if (!templatePath.startsWith("/")) {
+            String packageName = UiControllerUtils.getPackage(controllerClass);
+            if (StringUtils.isNotEmpty(packageName)) {
+                String relativePath = packageName.replace('.', '/');
+                templatePath = "/" + relativePath + "/" + templatePath;
+            }
+        }
+
+        return templatePath;
     }
 
     protected MetadataReaderFactory getMetadataReaderFactory() {
