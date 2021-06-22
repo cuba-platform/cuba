@@ -22,6 +22,7 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.persistence.DbmsSpecificFactory;
+import org.slf4j.Logger;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
@@ -33,6 +34,7 @@ import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 @Component(SortJpqlGenerator.NAME)
 public class SortJpqlGenerator {
     public static final String NAME = "cuba_SortJpqlGenerator";
+    private static final Logger log = org.slf4j.LoggerFactory.getLogger(SortJpqlGenerator.class);
 
     @Inject
     protected Metadata metadata;
@@ -89,7 +91,7 @@ public class SortJpqlGenerator {
                 MetaClass pkMetaClass = idProperty.getRange().asClass();
                 for (MetaProperty metaProperty : pkMetaClass.getProperties()) {
                     if (metadataTools.isPersistent(metaProperty)) {
-                        MetaPropertyPath idPropertyPath = metaClass.getPropertyPath(String.format("%s.%s",pkName, metaProperty.getName()));
+                        MetaPropertyPath idPropertyPath = metaClass.getPropertyPath(String.format("%s.%s", pkName, metaProperty.getName()));
                         List<String> currentSortExpressions = getPropertySortExpressions(Objects.requireNonNull(idPropertyPath), asc);
                         if (currentSortExpressions.stream().noneMatch(sortExpressions::contains)) {
                             uniqueSortExpressions.addAll(currentSortExpressions);
@@ -192,6 +194,23 @@ public class SortJpqlGenerator {
         int index = valueProperties.indexOf(property);
         if (index >= 0 && index < selectedExpressions.size()) {
             return Collections.singletonList(selectedExpressions.get(index));
+        }
+
+        if (property != null) {
+            String[] properties = property.split("\\.");
+            if (properties.length > 2) {
+                log.info("The length of {} property path is greater than 2. Only direct property sorting is allowed.",
+                        property);
+                return Collections.emptyList();
+            }
+            for (String selectedExpression : selectedExpressions) {
+                //Checking equality between the JPQL query entity alias and the root of property path (one-level depth).
+                if (properties[0].equals(selectedExpression)) {
+                    return Collections.singletonList(property);
+                }
+            }
+            log.info("The root of the {} value property path does not match any of the selected expressions.",
+                    property);
         }
 
         return Collections.emptyList();
