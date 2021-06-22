@@ -16,13 +16,12 @@
 
 package spec.cuba.web.screenfacet.screens;
 
-import com.haulmont.cuba.gui.components.Action;
-import com.haulmont.cuba.gui.components.Button;
-import com.haulmont.cuba.gui.components.ScreenFacet;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.screen.Screen;
 import com.haulmont.cuba.gui.screen.Subscribe;
 import com.haulmont.cuba.gui.screen.UiController;
 import com.haulmont.cuba.gui.screen.UiDescriptor;
+import com.haulmont.cuba.web.testmodel.sales.ProductTag;
 
 import javax.inject.Inject;
 
@@ -39,6 +38,16 @@ public class ScreenFacetTestScreen extends Screen {
     public ScreenFacet<ScreenToOpenWithFacet> screenIdFacet;
     @Inject
     public ScreenFacet<ScreenToOpenWithFacet> screenClassFacet;
+
+    @Inject
+    public LookupScreenFacet<ProductTag, ProductTagBrowse> screenIdLookupScreen;
+    @Inject
+    public LookupScreenFacet<ProductTag, ProductTagBrowse> screenClassLookupScreen;
+
+    @Inject
+    public EditorScreenFacet<ProductTag, ProductTagEdit> screenIdEditScreen;
+    @Inject
+    public EditorScreenFacet<ProductTag, ProductTagEdit> screenClassEditScreen;
 
     public boolean afterShowListenerTriggered = false;
     public boolean afterCloseListenerTriggered = false;
