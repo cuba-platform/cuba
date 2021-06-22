@@ -113,8 +113,8 @@ public class WebSplitPanel extends WebAbstractComponent<AbstractSplitPanel> impl
     }
 
     protected void fireSplitPositionChangeListener(AbstractSplitPanel.SplitPositionChangeEvent event) {
-        SplitPositionChangeEvent cubaEvent = new SplitPositionChangeEvent(this, currentPosition,
-                event.getSplitPosition(), event.isUserOriginated());
+        SplitPositionChangeEvent cubaEvent = new SplitPositionChangeEvent(this,
+                event.getOldSplitPosition(), event.getSplitPosition(), event.isUserOriginated());
         publish(SplitPositionChangeEvent.class, cubaEvent);
 
         if (event.isUserOriginated()) {
