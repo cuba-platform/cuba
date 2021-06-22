@@ -40,6 +40,22 @@
         <screen id="screenClassFacet"
                 screenClass="spec.cuba.web.screenfacet.screens.ScreenToOpenWithFacet"
                 onButton="button"/>
+
+        <lookupScreen id="screenIdLookupScreen"
+                      entityClass="com.haulmont.cuba.web.testmodel.sales.ProductTag"
+                      screenId="test_ProductTag.facet_browse"/>
+
+        <lookupScreen id="screenClassLookupScreen"
+                      entityClass="com.haulmont.cuba.web.testmodel.sales.ProductTag"
+                      screenClass="spec.cuba.web.screenfacet.screens.ProductTagBrowse"/>
+
+        <editorScreen id="screenIdEditScreen"
+                      entityClass="com.haulmont.cuba.web.testmodel.sales.ProductTag"
+                      screenId="test_ProductTag.facet_edit"/>
+
+        <editorScreen id="screenClassEditScreen"
+                      entityClass="com.haulmont.cuba.web.testmodel.sales.ProductTag"
+                      screenClass="spec.cuba.web.screenfacet.screens.ProductTagEdit"/>
     </facets>
     <layout>
         <button id="button"/>

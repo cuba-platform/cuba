@@ -274,4 +274,84 @@ class ScreenFacetTest extends UiScreenSpec {
 
         thrown GuiDevelopmentException
     }
+
+    def "LookupScreenFacet by screen id"() {
+        def screens = vaadinUi.screens
+
+        def mainWindow = screens.create('mainWindow', OpenMode.ROOT)
+        screens.show(mainWindow)
+
+        def screenWithFacet = screens.create(ScreenFacetTestScreen)
+        screenWithFacet.show()
+
+        def screenFacet = screenWithFacet.screenIdLookupScreen
+
+        when: 'Facet shows a screen by screen id'
+
+        def screen = screenFacet.show()
+
+        then: 'Screen is correctly opened'
+
+        screens.openedScreens.activeScreens.contains(screen)
+    }
+
+    def "LookupScreenFacet by screen class"() {
+        def screens = vaadinUi.screens
+
+        def mainWindow = screens.create('mainWindow', OpenMode.ROOT)
+        screens.show(mainWindow)
+
+        def screenWithFacet = screens.create(ScreenFacetTestScreen)
+        screenWithFacet.show()
+
+        def screenFacet = screenWithFacet.screenClassLookupScreen
+
+        when: 'Facet shows a screen by screen id'
+
+        def screen = screenFacet.show()
+
+        then: 'Screen is correctly opened'
+
+        screens.openedScreens.activeScreens.contains(screen)
+    }
+
+    def "EditorScreenFacet by screen id"() {
+        def screens = vaadinUi.screens
+
+        def mainWindow = screens.create('mainWindow', OpenMode.ROOT)
+        screens.show(mainWindow)
+
+        def screenWithFacet = screens.create(ScreenFacetTestScreen)
+        screenWithFacet.show()
+
+        def screenFacet = screenWithFacet.screenIdEditScreen
+
+        when: 'Facet shows a screen by screen id'
+
+        def screen = screenFacet.show()
+
+        then: 'Screen is correctly opened'
+
+        screens.openedScreens.activeScreens.contains(screen)
+    }
+
+    def "EditorScreenFacet by screen class"() {
+        def screens = vaadinUi.screens
+
+        def mainWindow = screens.create('mainWindow', OpenMode.ROOT)
+        screens.show(mainWindow)
+
+        def screenWithFacet = screens.create(ScreenFacetTestScreen)
+        screenWithFacet.show()
+
+        def screenFacet = screenWithFacet.screenClassEditScreen
+
+        when: 'Facet shows a screen by screen id'
+
+        def screen = screenFacet.show()
+
+        then: 'Screen is correctly opened'
+
+        screens.openedScreens.activeScreens.contains(screen)
+    }
 }

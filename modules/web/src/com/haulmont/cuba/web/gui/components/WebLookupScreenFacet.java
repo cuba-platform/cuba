@@ -97,7 +97,6 @@ public class WebLookupScreenFacet<E extends Entity, S extends Screen & LookupScr
                 .withField(pickerField)
                 .withListComponent(listComponent)
                 .withContainer(container)
-                .withScreenId(screenId)
                 .withLaunchMode(launchMode)
                 .withOptions(getScreenOptions())
                 .withSelectValidator(selectValidator)
@@ -126,7 +125,9 @@ public class WebLookupScreenFacet<E extends Entity, S extends Screen & LookupScr
         }
 
         if (screenClass != null) {
-            builder.withScreenClass(screenClass);
+            builder = builder.withScreenClass(screenClass);
+        } else {
+            builder.withScreenId(screenId);
         }
 
         return builder;

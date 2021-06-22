@@ -129,7 +129,6 @@ public class WebEditorScreenFacet<E extends Entity, S extends Screen & EditorScr
                 .withField(pickerField)
                 .withContainer(container)
                 .withAddFirst(addFirst)
-                .withScreenId(screenId)
                 .withLaunchMode(launchMode)
                 .withOptions(getScreenOptions())
                 .withInitializer(initializer)
@@ -168,7 +167,9 @@ public class WebEditorScreenFacet<E extends Entity, S extends Screen & EditorScr
         }
 
         if (screenClass != null) {
-            builder.withScreenClass(screenClass);
+            builder = builder.withScreenClass(screenClass);
+        } else {
+            builder.withScreenId(screenId);
         }
 
         return builder;
