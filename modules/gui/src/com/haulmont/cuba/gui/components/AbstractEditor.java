@@ -260,7 +260,7 @@ public class AbstractEditor<T extends Entity> extends AbstractWindow
                 LockInfo lockInfo = lockService.lock(getMetaClassForLocking(ds).getName(), item.getId().toString());
                 if (lockInfo == null) {
                     justLocked = true;
-                    addAfterCloseListener(afterCloseEvent -> {
+                    addAfterDetachListener(afterCloseEvent -> {
                         releaseLock();
                     });
                 } else if (!(lockInfo instanceof LockNotSupported)) {
