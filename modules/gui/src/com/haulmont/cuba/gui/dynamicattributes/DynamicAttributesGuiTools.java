@@ -40,11 +40,13 @@ import com.haulmont.cuba.gui.components.PickerField;
 import com.haulmont.cuba.gui.components.actions.GuiActionSupport;
 import com.haulmont.cuba.gui.components.data.HasValueSource;
 import com.haulmont.cuba.gui.components.data.value.ContainerValueSource;
+import com.haulmont.cuba.gui.components.data.value.DatasourceValueSource;
 import com.haulmont.cuba.gui.components.validation.*;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsBuilder;
+import com.haulmont.cuba.gui.data.DynamicAttributesEntity;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import com.haulmont.cuba.gui.model.InstanceContainer;
 import com.haulmont.cuba.gui.screen.MapScreenOptions;
@@ -554,18 +556,29 @@ public class DynamicAttributesGuiTools {
                     recalculationInProgress.set(true);
 
                     com.haulmont.cuba.gui.components.Component component = valueChangeEvent.getComponent();
-                    if (component instanceof HasValueSource
-                            && ((HasValueSource) component).getValueSource() instanceof ContainerValueSource) {
-
-                        ContainerValueSource valueSource = (ContainerValueSource) ((HasValueSource) component).getValueSource();
-                        InstanceContainer container = valueSource.getContainer();
-
-                        if (container.getItem() instanceof BaseGenericIdEntity) {
-                            BaseGenericIdEntity entity = (BaseGenericIdEntity) container.getItem();
+                    if (component instanceof HasValueSource) {
+                        {
+                            BaseGenericIdEntity entity = null;
                             String attributeCode = DynamicAttributesUtils.encodeAttributeCode(attribute.getCode());
+                            if (((HasValueSource) component).getValueSource() instanceof ContainerValueSource) {
 
+                                ContainerValueSource valueSource = (ContainerValueSource) ((HasValueSource) component).getValueSource();
+                                InstanceContainer container = valueSource.getContainer();
+
+                                if (container.getItem() instanceof BaseGenericIdEntity) {
+                                    entity = (BaseGenericIdEntity) container.getItem();
+
+                                }
+                            } else if (((HasValueSource) component).getValueSource() instanceof DatasourceValueSource) {
+                                DatasourceValueSource valueSource = (DatasourceValueSource) ((HasValueSource) component).getValueSource();
+
+                                if (valueSource.getItem() instanceof BaseGenericIdEntity) {
+                                    entity = (BaseGenericIdEntity) valueSource.getItem();
+                                } else if (valueSource.getItem() instanceof DynamicAttributesEntity) {
+                                    entity = ((DynamicAttributesEntity) valueSource.getItem()).getMainItem();
+                                }
+                            }
                             entity.setValue(attributeCode, valueChangeEvent.getValue());
-
                             recalculationTools.recalculateDynamicAttributes(entity, attribute);
                         }
                     }
