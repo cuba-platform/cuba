@@ -17,6 +17,8 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.bali.events.Subscription;
+import com.haulmont.chile.core.datatypes.Datatype;
+import com.haulmont.chile.core.datatypes.DatatypeRegistry;
 import com.haulmont.cuba.core.entity.KeyValueEntity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.components.*;
@@ -60,6 +62,7 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
 
     protected Messages messages;
     protected BackgroundWorker backgroundWorker;
+    protected UserSessionSource userSessionSource;
 
     protected Adapter adapter;
 
@@ -84,6 +87,7 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
     protected Registration onFirstClickRegistration;
     protected Registration onLastClickRegistration;
     protected Function<DataLoadContext, Long> totalCountDelegate;
+    protected Datatype countDatatype;
 
     public WebRowsCount() {
         component = new CubaRowsCount();
@@ -114,6 +118,16 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
     @Inject
     public void setBackgroundWorker(BackgroundWorker backgroundWorker) {
         this.backgroundWorker = backgroundWorker;
+    }
+
+    @Inject
+    public void setDatatypeRegistry(DatatypeRegistry datatypeRegistry) {
+        countDatatype = datatypeRegistry.get(Integer.class);
+    }
+
+    @Inject
+    public void setUserSessionSource(UserSessionSource userSessionSource) {
+        this.userSessionSource = userSessionSource;
     }
 
     @Override
@@ -352,7 +366,7 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
     }
 
     protected void showRowsCountValue(int count) {
-        component.getCountButton().setCaption(String.valueOf(count)); // todo rework with datatype
+        component.getCountButton().setCaption(countDatatype.format(count, userSessionSource.getLocale()));
         component.getCountButton().addStyleName(PAGING_COUNT_NUMBER_STYLENAME);
         component.getCountButton().setEnabled(false);
     }
