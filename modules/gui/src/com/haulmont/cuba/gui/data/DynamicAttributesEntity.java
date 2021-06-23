@@ -64,6 +64,10 @@ public class DynamicAttributesEntity implements Entity {
         return "";
     }
 
+    public BaseGenericIdEntity getMainItem() {
+        return mainItem;
+    }
+
     @Override
     public void addPropertyChangeListener(PropertyChangeListener listener) {
         mainItem.addPropertyChangeListener(listener);
