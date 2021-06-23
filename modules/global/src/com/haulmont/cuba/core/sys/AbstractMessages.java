@@ -64,7 +64,7 @@ public abstract class AbstractMessages implements Messages {
     @Inject
     protected FormatStringsRegistry formatStringsRegistry;
 
-    protected Pattern enumSubclassPattern = Pattern.compile("\\$[1-9]");
+    protected Pattern enumSubclassPattern = Pattern.compile("\\$");
 
     protected GlobalConfig globalConfig;
 
@@ -204,6 +204,7 @@ public abstract class AbstractMessages implements Messages {
         if (i > -1)
             className = className.substring(i + 1);
         // If enum has inner subclasses, its class name ends with "$1", "$2", ... suffixes. Cut them off.
+        // NB: handling Kotlin case requires separating class name and constant name (caller) through simply "$".
         Matcher matcher = enumSubclassPattern.matcher(className);
         if (matcher.find()) {
             className = className.substring(0, matcher.start());
@@ -558,14 +559,14 @@ public abstract class AbstractMessages implements Messages {
     }
 
     protected String getLocaleSuffix(Locale locale) {
-        return (locale != null ? "_" +  LocaleResolver.localeToString(locale) : "");
+        return (locale != null ? "_" + LocaleResolver.localeToString(locale) : "");
     }
 
     protected String makeCacheKey(String pack, String key, @Nullable Locale locale, @Nullable Locale truncatedLocale) {
         if (truncatedLocale == null)
             return pack + "/default/" + key;
 
-        return pack + "/" + (locale == null ? "default" :  LocaleResolver.localeToString(locale)) + "/" + key;
+        return pack + "/" + (locale == null ? "default" : LocaleResolver.localeToString(locale)) + "/" + key;
     }
 
     protected String getPackName(Class c) {
