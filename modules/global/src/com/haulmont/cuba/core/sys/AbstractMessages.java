@@ -64,7 +64,7 @@ public abstract class AbstractMessages implements Messages {
     @Inject
     protected FormatStringsRegistry formatStringsRegistry;
 
-    protected Pattern enumSubclassPattern = Pattern.compile("\\$");
+//    protected Pattern enumSubclassPattern = Pattern.compile("\\$");
 
     protected GlobalConfig globalConfig;
 
@@ -198,21 +198,19 @@ public abstract class AbstractMessages implements Messages {
     @Override
     public String getMessage(Enum caller, Locale locale) {
         checkNotNullArgument(caller, "Enum parameter 'caller' is null");
-
-        String className = caller.getClass().getName();
-        int i = className.lastIndexOf('.');
+        String declaringClassName = caller.getDeclaringClass().getName();
+        int i = declaringClassName.lastIndexOf('.');
         if (i > -1)
-            className = className.substring(i + 1);
-        // If enum has inner subclasses, its class name ends with "$1", "$2", ... suffixes. Cut them off.
-        // NB: handling Kotlin case requires separating class name and constant name (caller) through simply "$".
-        Matcher matcher = enumSubclassPattern.matcher(className);
-        if (matcher.find()) {
-            className = className.substring(0, matcher.start());
-        }
+            declaringClassName = declaringClassName.substring(i + 1);
+//        // If enum has inner subclasses, its class name ends with "$1", "$2", ... suffixes. Cut them off.
+//        Matcher matcher = enumSubclassPattern.matcher(declaringClassName);
+//        if (matcher.find()) {
+//            declaringClassName = declaringClassName.substring(0, matcher.start());
+//        }
 
         return getMessage(
                 getPackName(caller.getClass()),
-                className + "." + caller.name(),
+                declaringClassName + "." + caller.name(),
                 locale
         );
     }
