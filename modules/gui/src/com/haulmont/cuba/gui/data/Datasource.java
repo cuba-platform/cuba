@@ -111,6 +111,7 @@ public interface Datasource<T extends Entity> {
     /**
      * @return current entity contained in the datasource
      */
+    @Nullable
     T getItem();
 
     /**
