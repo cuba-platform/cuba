@@ -22,6 +22,7 @@ import com.google.common.collect.Sets;
 import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.TypedQuery;
 import com.haulmont.cuba.core.app.ServerConfig;
 import com.haulmont.cuba.core.entity.Entity;
@@ -280,10 +281,16 @@ public class QueryImpl<T> implements TypedQuery<T> {
             if (parser.isCollectionOriginalEntitySelect()) {
                 throw new IllegalStateException(String.format("Collection attributes are not supported in select clause: %s", nestedEntityPath));
             }
+
             QueryTransformer transformer = queryTransformerFactory.transformer(result);
             transformer.replaceWithSelectEntityVariable("tempEntityAlias");
             transformer.addFirstSelectionSource(String.format("%s tempEntityAlias", nestedEntityName));
-            transformer.addWhereAsIs(String.format("tempEntityAlias.id = %s.id", nestedEntityPath));
+            MetaClass nestedMetaClass = metadata.getSession().getClass(nestedEntityName);
+            if (nestedMetaClass != null) {
+                addIdConditions(nestedMetaClass, nestedEntityPath, transformer);
+            } else {
+                log.info("MetaClass {} that is necessary for building JPQL query is not found", nestedMetaClass);
+            }
             transformer.addEntityInGroupBy("tempEntityAlias");
             result = transformer.getResult();
         }
@@ -301,6 +308,22 @@ public class QueryImpl<T> implements TypedQuery<T> {
             }
         }
         return result;
+    }
+
+    protected void addIdConditions(MetaClass nestedMetaClass, String nestedEntityPath, QueryTransformer transformer) {
+        List<MetaProperty> idProperties = nestedMetaClass.getProperties().stream().filter(e ->
+                e.getAnnotatedElement().isAnnotationPresent(javax.persistence.Id.class))
+                .collect(Collectors.toList());
+        if (idProperties.size() == 0) {
+            throw new DevelopmentException(String.format("Annotations of type javax.persistence.Id are not defined " +
+                    "in %s", nestedMetaClass.getJavaClass()));
+        } else {
+            for (MetaProperty idProperty : idProperties) {
+                String idPropertyName = idProperty.getName();
+                transformer.addWhereAsIs(
+                        String.format("tempEntityAlias.%s = %s.%s", idPropertyName, nestedEntityPath, idPropertyName));
+            }
+        }
     }
 
     protected String replaceParams(String query, QueryParser parser) {
