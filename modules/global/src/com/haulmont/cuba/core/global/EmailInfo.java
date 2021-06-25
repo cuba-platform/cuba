@@ -359,6 +359,11 @@ public class EmailInfo implements Serializable {
         return cc;
     }
 
+    /**
+     *  Result of this method call (i.e., setting addresses of the email CC field) is ignored during the message creation if
+     *  {@link com.haulmont.cuba.core.global.EmailInfo#isSendInOneMessage()} returns {@code false} (default behaviour),
+     *  because, in this case, the message is generated for each of the recipients separately.
+     */
     public void setCc(String cc) {
         this.cc = cc;
     }
@@ -367,6 +372,11 @@ public class EmailInfo implements Serializable {
         return bcc;
     }
 
+    /**
+     *  Result of this method call (i.e., setting addresses of the email BCC field) is ignored during the message creation
+     *  if {@link com.haulmont.cuba.core.global.EmailInfo#isSendInOneMessage()} returns {@code false} (default behaviour),
+     *  because, in this case, the message is generated for each of the recipients separately.
+     */
     public void setBcc(String bcc) {
         this.bcc = bcc;
     }
