@@ -113,6 +113,12 @@ public class EmailInfoBuilder {
         return cc;
     }
 
+    /**
+     *  Result of this method call (i.e., setting addresses of the email CC field) is ignored during the message creation if
+     *  {@link com.haulmont.cuba.core.global.EmailInfoBuilder#isSendInOneMessage()} returns {@code false} (default
+     *  behaviour), because, in this case, the message is generated for each of the recipients
+     *  separately.
+     */
     public EmailInfoBuilder setCc(String cc) {
         this.cc = cc;
         return this;
@@ -122,6 +128,12 @@ public class EmailInfoBuilder {
         return bcc;
     }
 
+    /**
+     *  Result of this method call (i.e., setting addresses of the email BCC field) is ignored during the message creation if
+     *  {@link com.haulmont.cuba.core.global.EmailInfoBuilder#isSendInOneMessage()} returns {@code false} (default
+     *  behaviour), because, in this case, the message is generated for each of the recipients
+     *  separately.
+     */
     public EmailInfoBuilder setBcc(String bcc) {
         this.bcc = bcc;
         return this;
