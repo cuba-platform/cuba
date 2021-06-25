@@ -204,6 +204,10 @@ public abstract class WebAbstractActionsHolderComponent<T extends com.vaadin.ui.
                 i++;
             }
 
+            if (visibleActionsIndex > actionButtons.size()) {
+                visibleActionsIndex = actionButtons.size();
+            }
+
             contextMenuPopup.addComponent(contextMenuButton, visibleActionsIndex);
             actionButtons.put(action, contextMenuButton);
         }
