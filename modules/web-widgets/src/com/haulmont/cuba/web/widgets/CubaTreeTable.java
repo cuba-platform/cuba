@@ -881,8 +881,10 @@ public class CubaTreeTable extends com.vaadin.v7.ui.TreeTable implements TreeTab
         updateAggregatableTooltips();
         updateHtmlCaptionColumns();
 
-        if (AggregationStyle.BOTTOM.equals(getAggregationStyle())) {
-            updateFooterAggregation();
+        if (isAggregatable() && isShowTotalAggregation()) {
+            if (AggregationStyle.BOTTOM.equals(getAggregationStyle())) {
+                updateFooterAggregation();
+            }
         }
 
         if (focusColumn != null) {
