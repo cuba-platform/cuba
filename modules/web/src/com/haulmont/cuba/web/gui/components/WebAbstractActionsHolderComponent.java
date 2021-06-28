@@ -204,6 +204,7 @@ public abstract class WebAbstractActionsHolderComponent<T extends com.vaadin.ui.
                 i++;
             }
 
+            //to avoid indexOutOfBoundsException in case of update caption of the action
             if (visibleActionsIndex > actionButtons.size()) {
                 visibleActionsIndex = actionButtons.size();
             }
