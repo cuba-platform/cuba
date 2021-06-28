@@ -256,19 +256,17 @@ public class AttributeSecuritySupport {
                     }
                 }
             }
+            SecurityState state = createSecurityState(entity);
             if (event.getReadonlyAttributes() != null) {
                 Set<String> attributes = event.getReadonlyAttributes();
-                SecurityState state = getOrCreateSecurityState(entity);
                 addReadonlyAttributes(state, attributes.toArray(new String[attributes.size()]));
             }
             if (event.getRequiredAttributes() != null) {
                 Set<String> attributes = event.getRequiredAttributes();
-                SecurityState state = getOrCreateSecurityState(entity);
                 addRequiredAttributes(state, attributes.toArray(new String[attributes.size()]));
             }
             if (event.getHiddenAttributes() != null) {
                 Set<String> attributes = event.getHiddenAttributes();
-                SecurityState state = getOrCreateSecurityState(entity);
                 addHiddenAttributes(state, attributes.toArray(new String[attributes.size()]));
             }
             if (handled) {

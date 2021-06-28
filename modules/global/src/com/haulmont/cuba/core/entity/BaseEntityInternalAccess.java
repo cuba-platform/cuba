@@ -212,6 +212,22 @@ public final class BaseEntityInternalAccess {
         }
     }
 
+    @SuppressWarnings("rawtypes")
+    public static SecurityState createSecurityState(Entity entity) {
+        Preconditions.checkNotNullArgument(entity, "Entity is null");
+        SecurityState securityState;
+        if (entity instanceof BaseGenericIdEntity) {
+            BaseGenericIdEntity baseGenericIdEntity = (BaseGenericIdEntity) entity;
+            securityState = baseGenericIdEntity.__securityState = new SecurityState();
+        } else if (entity instanceof EmbeddableEntity) {
+            EmbeddableEntity embeddableEntity = (EmbeddableEntity) entity;
+            securityState = embeddableEntity.__securityState = new SecurityState();
+        } else {
+            throw new IllegalArgumentException(String.format("Entity with type [%s] does not support security state", entity.getMetaClass().getName()));
+        }
+        return securityState;
+    }
+
     public static SecurityState getOrCreateSecurityState(Entity entity) {
         Preconditions.checkNotNullArgument(entity, "Entity is null");
         SecurityState securityState;

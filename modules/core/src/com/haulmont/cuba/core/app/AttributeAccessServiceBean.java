@@ -58,6 +58,9 @@ public class AttributeAccessServiceBean implements AttributeAccessService {
             Entity e;
             if (entityStates.isNew(entity)) {
                 e = entity;
+            } else if (entityStates.isDetached(entity)) {
+                EntityManager em = persistence.getEntityManager(storeName);
+                e = em.merge(em.find(entity.getClass(), entity.getId()));
             } else {
                 EntityManager em = persistence.getEntityManager(storeName);
                 e = em.merge(entity);
