@@ -64,8 +64,6 @@ public abstract class AbstractMessages implements Messages {
     @Inject
     protected FormatStringsRegistry formatStringsRegistry;
 
-    protected Pattern enumSubclassPattern = Pattern.compile("\\$[1-9]");
-
     protected GlobalConfig globalConfig;
 
     protected String confDir;
@@ -198,20 +196,14 @@ public abstract class AbstractMessages implements Messages {
     @Override
     public String getMessage(Enum caller, Locale locale) {
         checkNotNullArgument(caller, "Enum parameter 'caller' is null");
-
-        String className = caller.getClass().getName();
-        int i = className.lastIndexOf('.');
+        String declaringClassName = caller.getDeclaringClass().getName();
+        int i = declaringClassName.lastIndexOf('.');
         if (i > -1)
-            className = className.substring(i + 1);
-        // If enum has inner subclasses, its class name ends with "$1", "$2", ... suffixes. Cut them off.
-        Matcher matcher = enumSubclassPattern.matcher(className);
-        if (matcher.find()) {
-            className = className.substring(0, matcher.start());
-        }
+            declaringClassName = declaringClassName.substring(i + 1);
 
         return getMessage(
                 getPackName(caller.getClass()),
-                className + "." + caller.name(),
+                declaringClassName + "." + caller.name(),
                 locale
         );
     }
@@ -558,14 +550,14 @@ public abstract class AbstractMessages implements Messages {
     }
 
     protected String getLocaleSuffix(Locale locale) {
-        return (locale != null ? "_" +  LocaleResolver.localeToString(locale) : "");
+        return (locale != null ? "_" + LocaleResolver.localeToString(locale) : "");
     }
 
     protected String makeCacheKey(String pack, String key, @Nullable Locale locale, @Nullable Locale truncatedLocale) {
         if (truncatedLocale == null)
             return pack + "/default/" + key;
 
-        return pack + "/" + (locale == null ? "default" :  LocaleResolver.localeToString(locale)) + "/" + key;
+        return pack + "/" + (locale == null ? "default" : LocaleResolver.localeToString(locale)) + "/" + key;
     }
 
     protected String getPackName(Class c) {
