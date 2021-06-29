@@ -55,7 +55,10 @@ public class PropertyCondition extends AbstractCondition {
 
     public PropertyCondition(PropertyCondition condition) {
         super(condition);
-        this.operator = condition.operator;
+//        The line below seems like the duplicate of the same assignment from the parent
+//        constructor. Perhaps, it's worth deleting it.
+//        this.operator = condition.operator;   T
+        this.propertiesPath = condition.propertiesPath;
         this.join = condition.join;
     }
 
