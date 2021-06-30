@@ -98,6 +98,7 @@ public class UserSession implements Serializable {
         this(src.id, user, roles, locale, src.system);
         this.user = src.user;
         this.substitutedUser = this.user.equals(user) ? null : user;
+        this.timeZone = src.timeZone;
     }
 
     /**
