@@ -323,8 +323,7 @@ public class AccessConstraintsBuilder {
         @Override
         public boolean test(T o) {
             Security security = AppBeans.get(Security.class);
-            security.evaluateConstraintScript(o, groovyScript);
-            return false;
+            return (boolean) security.evaluateConstraintScript(o, groovyScript);
         }
     }
 }
