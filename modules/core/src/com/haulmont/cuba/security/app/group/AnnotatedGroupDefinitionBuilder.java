@@ -327,6 +327,8 @@ public class AnnotatedGroupDefinitionBuilder {
     }
 
     protected static class AnnotatedMethodPredicate implements ConstraintPredicate<Entity> {
+        private static final long serialVersionUID = -8460977382894140101L;
+
         private final String className;
         private final String methodName;
         private final String argClassName;
