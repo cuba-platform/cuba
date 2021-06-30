@@ -17,14 +17,17 @@
 
 package com.haulmont.cuba.web.gui.components.mainwindow;
 
+import com.google.common.base.Strings;
 import com.haulmont.cuba.core.global.BeanLocator;
 import com.haulmont.cuba.core.global.TimeZones;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.mainwindow.TimeZoneIndicator;
+import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.web.gui.components.WebAbstractComponent;
 import com.vaadin.ui.Label;
 import org.apache.commons.lang3.StringUtils;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.TimeZone;
 
@@ -44,12 +47,27 @@ public class WebTimeZoneIndicator extends WebAbstractComponent<Label> implements
 
         UserSessionSource uss = beanLocator.get(UserSessionSource.NAME);
         TimeZone timeZone = uss.getUserSession().getTimeZone();
+        if (timeZone == null) {
+            timeZone = getUserTimeZone(uss.getUserSession().getCurrentOrSubstitutedUser());
+        }
         TimeZones timeZones = beanLocator.get(TimeZones.NAME);
         component.setValue(timeZones.getDisplayNameShort(timeZone));
         if (timeZone == null) {
             // hidden by default if timeZone is null
             setVisible(false);
         }
+    }
+
+    @Nullable
+    private TimeZone getUserTimeZone(User user) {
+        if (Strings.isNullOrEmpty(user.getTimeZone())) {
+            if (user.getTimeZoneAuto()) {
+                return TimeZone.getDefault();
+            }
+        } else {
+            return TimeZone.getTimeZone(user.getTimeZone());
+        }
+        return null;
     }
 
     @Override
