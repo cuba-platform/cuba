@@ -352,9 +352,12 @@ public class AnnotatedGroupDefinitionBuilder {
         private AccessGroupDefinition getOwnerByClass(String className) {
             try {
                 Class<?> clazz = ReflectionHelper.loadClass(className);
-                return (AccessGroupDefinition) AppBeans.getAll(AccessGroupDefinition.class).values()
+                return AppBeans.getAll(AccessGroupDefinition.class).values()
                         .stream()
-                        .filter(g -> Objects.equals(clazz, g.getClass()));
+                        .filter(g -> Objects.equals(clazz, g.getClass()))
+                        .findFirst()
+                        .orElseThrow(
+                                () -> new RuntimeException(String.format("Unable to find access group definition by class: %s", this.className)));
             } catch (ClassNotFoundException e) {
                 throw new RuntimeException(String.format("Unable to find access group definition by class: %s", this.className), e);
             }
