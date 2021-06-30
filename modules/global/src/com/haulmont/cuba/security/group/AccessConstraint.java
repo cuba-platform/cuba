@@ -39,7 +39,7 @@ public interface AccessConstraint {
     /**
      * @return in-memory predicate, that returns true if entity is allowed by access constraint
      */
-    Predicate<? extends Entity> getPredicate();
+    ConstraintPredicate<? extends Entity> getPredicate();
 
     /**
      * @return if constraint works without database access

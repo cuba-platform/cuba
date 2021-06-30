@@ -30,7 +30,7 @@ public class BasicAccessConstraint implements AccessConstraint, Serializable {
     protected EntityOp operation;
     protected String code;
     protected boolean inMemory;
-    protected transient Predicate predicate;
+    protected ConstraintPredicate predicate;
 
     @Override
     public String getEntityType() {
@@ -43,7 +43,7 @@ public class BasicAccessConstraint implements AccessConstraint, Serializable {
     }
 
     @Override
-    public Predicate<? extends Entity> getPredicate() {
+    public ConstraintPredicate<? extends Entity> getPredicate() {
         return predicate;
     }
 
@@ -55,7 +55,7 @@ public class BasicAccessConstraint implements AccessConstraint, Serializable {
         this.operation = operation;
     }
 
-    public void setPredicate(Predicate predicate) {
+    public void setPredicate(ConstraintPredicate predicate) {
         this.predicate = predicate;
         this.inMemory = predicate != null;
     }

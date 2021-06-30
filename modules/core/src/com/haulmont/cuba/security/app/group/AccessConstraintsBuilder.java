@@ -19,9 +19,7 @@ package com.haulmont.cuba.security.app.group;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.PersistenceSecurity;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.ExtendedEntities;
-import com.haulmont.cuba.core.global.Metadata;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.group.*;
 import org.springframework.context.annotation.Scope;
@@ -133,7 +131,7 @@ public class AccessConstraintsBuilder {
      * @param predicate in-memory predicate, returns true if entity is allowed by access constraint
      * @return current instance of the builder
      */
-    public AccessConstraintsBuilder withInMemory(Class<? extends Entity> target, EntityOp operation, Predicate<? extends Entity> predicate) {
+    public AccessConstraintsBuilder withInMemory(Class<? extends Entity> target, EntityOp operation, ConstraintPredicate<? extends Entity> predicate) {
         MetaClass metaClass = extendedEntities.getOriginalOrThisMetaClass(metadata.getClassNN(target));
 
         BasicAccessConstraint constraint = new BasicAccessConstraint();
@@ -154,7 +152,7 @@ public class AccessConstraintsBuilder {
      * @param predicate  in-memory predicate, returns true if entity is allowed by access constraint
      * @return current instance of the builder
      */
-    public AccessConstraintsBuilder withInMemory(Class<? extends Entity> target, EnumSet<EntityOp> operations, Predicate<? extends Entity> predicate) {
+    public AccessConstraintsBuilder withInMemory(Class<? extends Entity> target, EnumSet<EntityOp> operations, ConstraintPredicate<? extends Entity> predicate) {
         MetaClass metaClass = extendedEntities.getOriginalOrThisMetaClass(metadata.getClassNN(target));
 
         for (EntityOp operation : operations) {
@@ -177,7 +175,7 @@ public class AccessConstraintsBuilder {
      * @param predicate      in-memory predicate, returns true if entity is allowed by access constraint
      * @return current instance of the builder
      */
-    public AccessConstraintsBuilder withCustomInMemory(Class<? extends Entity> target, String constraintCode, Predicate<? extends Entity> predicate) {
+    public AccessConstraintsBuilder withCustomInMemory(Class<? extends Entity> target, String constraintCode, ConstraintPredicate<? extends Entity> predicate) {
         MetaClass metaClass = extendedEntities.getOriginalOrThisMetaClass(metadata.getClassNN(target));
 
         BasicAccessConstraint constraint = new BasicAccessConstraint();
@@ -204,7 +202,7 @@ public class AccessConstraintsBuilder {
         BasicAccessConstraint constraint = new BasicAccessConstraint();
         constraint.setEntityType(metaClass.getName());
         constraint.setOperation(operation);
-        constraint.setPredicate((Predicate<? extends Entity>) o -> (boolean) security.evaluateConstraintScript(o, groovyScript));
+        constraint.setPredicate((ConstraintPredicate<? extends Entity>) o -> (boolean) security.evaluateConstraintScript(o, groovyScript));
 
         addConstraint(metaClass, constraint);
 
@@ -226,7 +224,7 @@ public class AccessConstraintsBuilder {
             BasicAccessConstraint constraint = new BasicAccessConstraint();
             constraint.setEntityType(metaClass.getName());
             constraint.setOperation(operation);
-            constraint.setPredicate((Predicate<? extends Entity>) o -> (boolean) security.evaluateConstraintScript(o, groovyScript));
+            constraint.setPredicate(new GroovyConstraintPredicate<>(groovyScript));
 
             addConstraint(metaClass, constraint);
         }
@@ -248,7 +246,7 @@ public class AccessConstraintsBuilder {
         BasicAccessConstraint constraint = new BasicAccessConstraint();
         constraint.setEntityType(metaClass.getName());
         constraint.setCode(constraintCode);
-        constraint.setPredicate((Predicate<? extends Entity>) o -> (boolean) security.evaluateConstraintScript(o, groovyScript));
+        constraint.setPredicate(new GroovyConstraintPredicate<>(groovyScript));
 
         addConstraint(metaClass, constraint);
 
@@ -312,6 +310,21 @@ public class AccessConstraintsBuilder {
             } else {
                 constraints.add(constraint);
             }
+        }
+    }
+
+    protected static class GroovyConstraintPredicate<T extends Entity> implements ConstraintPredicate<T> {
+        private final String groovyScript;
+
+        public GroovyConstraintPredicate(String groovyScript) {
+            this.groovyScript = groovyScript;
+        }
+
+        @Override
+        public boolean test(T o) {
+            Security security = AppBeans.get(Security.class);
+            security.evaluateConstraintScript(o, groovyScript);
+            return false;
         }
     }
 }
