@@ -44,7 +44,6 @@ import java.lang.reflect.Method;
 import java.text.ParseException;
 import java.util.*;
 import java.util.function.BiPredicate;
-import java.util.function.Predicate;
 
 @Component(AnnotatedGroupDefinitionBuilder.NAME)
 public class AnnotatedGroupDefinitionBuilder {
@@ -352,7 +351,10 @@ public class AnnotatedGroupDefinitionBuilder {
 
         private AccessGroupDefinition getOwnerByClass(String className) {
             try {
-                return (AccessGroupDefinition) AppBeans.get(ReflectionHelper.loadClass(className));
+                Class<?> clazz = ReflectionHelper.loadClass(className);
+                return (AccessGroupDefinition) AppBeans.getAll(AccessGroupDefinition.class).values()
+                        .stream()
+                        .filter(g -> Objects.equals(clazz, g.getClass()));
             } catch (ClassNotFoundException e) {
                 throw new RuntimeException(String.format("Unable to find access group definition by class: %s", this.className), e);
             }
