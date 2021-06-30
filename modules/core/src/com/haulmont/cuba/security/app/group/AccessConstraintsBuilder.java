@@ -44,9 +44,6 @@ public class AccessConstraintsBuilder {
     @Inject
     protected ExtendedEntities extendedEntities;
 
-    @Inject
-    protected PersistenceSecurity security;
-
     protected List<ConstraintsContainer> joinSets = new ArrayList<>();
     protected Map<String, List<AccessConstraint>> builderConstraints = new HashMap<>();
 
@@ -202,8 +199,7 @@ public class AccessConstraintsBuilder {
         BasicAccessConstraint constraint = new BasicAccessConstraint();
         constraint.setEntityType(metaClass.getName());
         constraint.setOperation(operation);
-        constraint.setPredicate((ConstraintPredicate<? extends Entity>) o -> (boolean) security.evaluateConstraintScript(o, groovyScript));
-
+        constraint.setPredicate(new GroovyConstraintPredicate<>(groovyScript));
         addConstraint(metaClass, constraint);
 
         return this;
@@ -310,20 +306,6 @@ public class AccessConstraintsBuilder {
             } else {
                 constraints.add(constraint);
             }
-        }
-    }
-
-    protected static class GroovyConstraintPredicate<T extends Entity> implements ConstraintPredicate<T> {
-        private final String groovyScript;
-
-        public GroovyConstraintPredicate(String groovyScript) {
-            this.groovyScript = groovyScript;
-        }
-
-        @Override
-        public boolean test(T o) {
-            Security security = AppBeans.get(Security.class);
-            return (boolean) security.evaluateConstraintScript(o, groovyScript);
         }
     }
 }

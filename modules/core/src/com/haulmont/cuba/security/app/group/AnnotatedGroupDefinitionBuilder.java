@@ -18,14 +18,13 @@ package com.haulmont.cuba.security.app.group;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableSet;
-import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.DatatypeRegistry;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.security.app.group.annotation.*;
 import com.haulmont.cuba.security.entity.EntityOp;
+import com.haulmont.cuba.security.group.AccessConstraintMethodPredicate;
 import com.haulmont.cuba.security.group.AccessGroupDefinition;
 import com.haulmont.cuba.security.group.ConstraintPredicate;
 import com.haulmont.cuba.security.group.ConstraintsContainer;
@@ -36,14 +35,11 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
-import java.lang.invoke.CallSite;
-import java.lang.invoke.LambdaMetafactory;
-import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodType;
 import java.lang.reflect.Method;
 import java.text.ParseException;
-import java.util.*;
-import java.util.function.BiPredicate;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 @Component(AnnotatedGroupDefinitionBuilder.NAME)
 public class AnnotatedGroupDefinitionBuilder {
@@ -294,95 +290,8 @@ public class AnnotatedGroupDefinitionBuilder {
     }
 
     protected ConstraintPredicate<Entity> createConstraintPredicate(ConstraintsAnnotationContext context) {
-        return new AnnotatedMethodPredicate(context.getOwnerClass().getName(),
+        return new AccessConstraintMethodPredicate(context.getOwnerClass().getName(),
                 context.getMethod().getName(),
                 context.getMethod().getParameterTypes()[0].getName());
-    }
-
-    protected static BiPredicate<AccessGroupDefinition, Entity> createBiPredicate(String className, String methodName, String argClassName) {
-        Class<?> clazz = ReflectionHelper.getClass(className);
-        Class<?> argumentClazz = ReflectionHelper.getClass(argClassName);
-
-        Method method = Arrays.stream(clazz.getMethods())
-                .filter(m -> Objects.equals(m.getName(), methodName))
-                .filter(m -> m.getParameterCount() == 1 && Objects.equals(m.getParameterTypes()[0], argumentClazz))
-                .findFirst()
-                .orElseThrow(() -> new RuntimeException(String.format("Unable to find corresponding in-memory predicate method %s#%s",
-                        className, methodName)));
-
-        try {
-            MethodHandles.Lookup caller = MethodHandles.lookup();
-            CallSite site = LambdaMetafactory.metafactory(caller,
-                    "test",
-                    MethodType.methodType(BiPredicate.class),
-                    MethodType.methodType(boolean.class, Object.class, Object.class),
-                    caller.findVirtual(clazz, method.getName(), MethodType.methodType(method.getReturnType(), argumentClazz)),
-                    MethodType.methodType(boolean.class, clazz, argumentClazz));
-            //noinspection unchecked
-            return (BiPredicate<AccessGroupDefinition, Entity>) site.getTarget().invoke();
-        } catch (Throwable e) {
-            throw new IllegalStateException(String.format("Can't create in-memory constraint predicate for method %s#%s", className, methodName), e);
-        }
-    }
-
-    protected static class AnnotatedMethodPredicate implements ConstraintPredicate<Entity> {
-        private static final long serialVersionUID = -8460977382894140101L;
-
-        private final String className;
-        private final String methodName;
-        private final String argClassName;
-        private final transient AccessGroupDefinition owner;
-        private final transient BiPredicate<AccessGroupDefinition, Entity> ownerPredicate;
-
-        public AnnotatedMethodPredicate(String className,
-                                        String methodName,
-                                        String argClassName) {
-            this.className = className;
-            this.methodName = methodName;
-            this.argClassName = argClassName;
-            this.ownerPredicate = createBiPredicate(className, methodName, argClassName);
-            this.owner = getOwnerByClass(className);
-        }
-
-        @Override
-        public boolean test(Entity t) {
-            return ownerPredicate.test(owner, t);
-        }
-
-        private AccessGroupDefinition getOwnerByClass(String className) {
-            try {
-                Class<?> clazz = ReflectionHelper.loadClass(className);
-                return AppBeans.getAll(AccessGroupDefinition.class).values()
-                        .stream()
-                        .filter(g -> Objects.equals(clazz, g.getClass()))
-                        .findFirst()
-                        .orElseThrow(
-                                () -> new RuntimeException(String.format("Unable to find access group definition by class: %s", this.className)));
-            } catch (ClassNotFoundException e) {
-                throw new RuntimeException(String.format("Unable to find access group definition by class: %s", this.className), e);
-            }
-        }
-
-        protected Object writeReplace() {
-            return new AnnotatedMethodInfo(className, methodName, argClassName);
-        }
-    }
-
-    protected static class AnnotatedMethodInfo implements Serializable {
-        private static final long serialVersionUID = -4645590132206253462L;
-
-        private final String className;
-        private final String methodName;
-        private final String argClassName;
-
-        public AnnotatedMethodInfo(String className, String methodName, String argClassName) {
-            this.className = className;
-            this.methodName = methodName;
-            this.argClassName = argClassName;
-        }
-
-        protected Object readResolve() {
-            return new AnnotatedMethodPredicate(className, methodName, argClassName);
-        }
     }
 }
