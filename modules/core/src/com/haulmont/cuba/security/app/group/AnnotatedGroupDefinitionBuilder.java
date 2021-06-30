@@ -24,7 +24,9 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.security.app.group.annotation.*;
 import com.haulmont.cuba.security.entity.EntityOp;
+import com.haulmont.cuba.security.group.AccessConstraintMethodPredicate;
 import com.haulmont.cuba.security.group.AccessGroupDefinition;
+import com.haulmont.cuba.security.group.ConstraintPredicate;
 import com.haulmont.cuba.security.group.ConstraintsContainer;
 import org.springframework.stereotype.Component;
 
@@ -33,14 +35,11 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
-import java.lang.invoke.*;
 import java.lang.reflect.Method;
 import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.BiPredicate;
-import java.util.function.Predicate;
 
 @Component(AnnotatedGroupDefinitionBuilder.NAME)
 public class AnnotatedGroupDefinitionBuilder {
@@ -95,24 +94,17 @@ public class AnnotatedGroupDefinitionBuilder {
 
     protected class ConstraintsAnnotationContext extends AnnotationContext {
         protected AccessConstraintsBuilder constraintsBuilder;
-        protected Map<Method, Predicate<Entity>> predicateCache;
 
         public ConstraintsAnnotationContext(Annotation annotation,
                                             Method method,
                                             AccessGroupDefinition owner,
-                                            AccessConstraintsBuilder constraintsBuilder,
-                                            Map<Method, Predicate<Entity>> predicateCache) {
+                                            AccessConstraintsBuilder constraintsBuilder) {
             super(annotation, method, owner);
             this.constraintsBuilder = constraintsBuilder;
-            this.predicateCache = predicateCache;
         }
 
         public AccessConstraintsBuilder getConstraintsBuilder() {
             return constraintsBuilder;
-        }
-
-        public Map<Method, Predicate<Entity>> getPredicateCache() {
-            return predicateCache;
         }
     }
 
@@ -157,7 +149,6 @@ public class AnnotatedGroupDefinitionBuilder {
         Class<? extends AccessGroupDefinition> clazz = group.getClass();
 
         AccessConstraintsBuilder constraintsBuilder = AccessConstraintsBuilder.create();
-        Map<Method, Predicate<Entity>> predicateCache = new HashMap<>();
 
         for (Method method : clazz.getDeclaredMethods()) {
             if (isConstraintMethod(method)) {
@@ -165,7 +156,7 @@ public class AnnotatedGroupDefinitionBuilder {
                     for (Annotation annotation : method.getAnnotationsByType(annotationType)) {
                         AnnotationProcessor<ConstraintsAnnotationContext> processor = findAnnotationProcessor(annotationType);
                         if (processor != null) {
-                            processor.processAnnotation(new ConstraintsAnnotationContext(annotation, method, group, constraintsBuilder, predicateCache));
+                            processor.processAnnotation(new ConstraintsAnnotationContext(annotation, method, group, constraintsBuilder));
                         }
                     }
                 }
@@ -298,24 +289,9 @@ public class AnnotatedGroupDefinitionBuilder {
                 String.format("Method [%s] must have only one parameter with Entity argument", method.getName()));
     }
 
-    protected Predicate<Entity> createConstraintPredicate(ConstraintsAnnotationContext context) {
-        return context.getPredicateCache().computeIfAbsent(context.getMethod(), method -> {
-            try {
-                Class argType = method.getParameterTypes()[0];
-                MethodHandles.Lookup caller = MethodHandles.lookup();
-                CallSite site = LambdaMetafactory.metafactory(caller,
-                        "test",
-                        MethodType.methodType(BiPredicate.class),
-                        MethodType.methodType(boolean.class, Object.class, Object.class),
-                        caller.findVirtual(context.getOwnerClass(), method.getName(), MethodType.methodType(method.getReturnType(), argType)),
-                        MethodType.methodType(boolean.class, context.getOwnerClass(), argType));
-                MethodHandle factory = site.getTarget();
-                //noinspection unchecked
-                BiPredicate<AccessGroupDefinition, Entity> result = (BiPredicate<AccessGroupDefinition, Entity>) factory.invoke();
-                return entity -> result.test(context.getOwner(), entity);
-            } catch (Throwable e) {
-                throw new IllegalStateException("Can't create in-memory constraint predicate", e);
-            }
-        });
+    protected ConstraintPredicate<Entity> createConstraintPredicate(ConstraintsAnnotationContext context) {
+        return new AccessConstraintMethodPredicate(context.getOwnerClass().getName(),
+                context.getMethod().getName(),
+                context.getMethod().getParameterTypes()[0].getName());
     }
 }

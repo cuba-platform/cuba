@@ -21,6 +21,7 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.group.AccessGroupDefinition;
 import com.haulmont.cuba.security.group.BasicAccessGroupDefinition;
+import com.haulmont.cuba.security.group.ConstraintPredicate;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -108,7 +109,7 @@ public class AccessGroupDefinitionBuilder {
      * @param predicate in-memory predicate, returns true if entity is allowed by access constraint
      * @return current instance of the builder
      */
-    public AccessGroupDefinitionBuilder withInMemoryConstraint(Class<? extends Entity> target, EntityOp operation, Predicate<? extends Entity> predicate) {
+    public AccessGroupDefinitionBuilder withInMemoryConstraint(Class<? extends Entity> target, EntityOp operation, ConstraintPredicate<? extends Entity> predicate) {
         return withConstraints(builder -> builder.withInMemory(target, operation, predicate));
     }
 
@@ -120,7 +121,7 @@ public class AccessGroupDefinitionBuilder {
      * @param predicate      in-memory predicate, returns true if entity is allowed by access constraint
      * @return current instance of the builder
      */
-    public AccessGroupDefinitionBuilder withCustomInMemoryConstraint(Class<? extends Entity> target, String constraintCode, Predicate<? extends Entity> predicate) {
+    public AccessGroupDefinitionBuilder withCustomInMemoryConstraint(Class<? extends Entity> target, String constraintCode, ConstraintPredicate<? extends Entity> predicate) {
         return withConstraints(builder -> builder.withCustomInMemory(target, constraintCode, predicate));
     }
 
