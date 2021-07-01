@@ -55,7 +55,7 @@ public class PropertyCondition extends AbstractCondition {
 
     public PropertyCondition(PropertyCondition condition) {
         super(condition);
-        this.operator = condition.operator;
+        this.propertiesPath = condition.propertiesPath;
         this.join = condition.join;
     }
 
