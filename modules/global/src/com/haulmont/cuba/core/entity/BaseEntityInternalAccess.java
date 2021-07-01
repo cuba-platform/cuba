@@ -212,6 +212,7 @@ public final class BaseEntityInternalAccess {
         }
     }
 
+    @SuppressWarnings("rawtypes")
     public static SecurityState getOrCreateSecurityState(Entity entity) {
         Preconditions.checkNotNullArgument(entity, "Entity is null");
         SecurityState securityState;

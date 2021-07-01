@@ -29,6 +29,7 @@ import com.haulmont.cuba.core.global.MetadataTools;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
+import javax.persistence.OptimisticLockException;
 
 @Service(AttributeAccessService.NAME)
 public class AttributeAccessServiceBean implements AttributeAccessService {
@@ -60,7 +61,11 @@ public class AttributeAccessServiceBean implements AttributeAccessService {
                 e = entity;
             } else {
                 EntityManager em = persistence.getEntityManager(storeName);
-                e = em.merge(entity);
+                try {
+                    e = em.merge(entity);
+                } catch (OptimisticLockException exception) {
+                    e = em.find(entity.getClass(), entity.getId());
+                }
             }
             support.setupAttributeAccess(e);
             state = BaseEntityInternalAccess.getSecurityState(e);
