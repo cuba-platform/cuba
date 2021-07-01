@@ -241,7 +241,7 @@ public class AttributeSecuritySupport {
         }
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked","rawtypes"})
     public <T extends Entity> void setupAttributeAccess(T entity) {
         if (entity instanceof BaseGenericIdEntity || entity instanceof EmbeddableEntity) {
             SetupAttributeAccessEvent<T> event = new SetupAttributeAccessEvent<>(entity);
@@ -256,21 +256,20 @@ public class AttributeSecuritySupport {
                     }
                 }
             }
-            if (event.getReadonlyAttributes() != null) {
-                Set<String> attributes = event.getReadonlyAttributes();
-                SecurityState state = getOrCreateSecurityState(entity);
-                addReadonlyAttributes(state, attributes.toArray(new String[attributes.size()]));
-            }
-            if (event.getRequiredAttributes() != null) {
-                Set<String> attributes = event.getRequiredAttributes();
-                SecurityState state = getOrCreateSecurityState(entity);
-                addRequiredAttributes(state, attributes.toArray(new String[attributes.size()]));
-            }
-            if (event.getHiddenAttributes() != null) {
-                Set<String> attributes = event.getHiddenAttributes();
-                SecurityState state = getOrCreateSecurityState(entity);
-                addHiddenAttributes(state, attributes.toArray(new String[attributes.size()]));
-            }
+            SecurityState state = getOrCreateSecurityState(entity);
+
+            Set<String> readonlyAttributes = event.getReadonlyAttributes() != null ?
+                    event.getReadonlyAttributes() : Collections.emptySet();
+            setReadonlyAttributes(state, readonlyAttributes.toArray(new String[0]));
+
+            Set<String> requiredAttributes = event.getRequiredAttributes() != null ?
+                    event.getRequiredAttributes() : Collections.emptySet();
+            setRequiredAttributes(state, requiredAttributes.toArray(new String[0]));
+
+            Set<String> hiddenAttributes = event.getHiddenAttributes() != null ?
+                    event.getHiddenAttributes() : Collections.emptySet();
+            setHiddenAttributes(state, hiddenAttributes.toArray(new String[0]));
+
             if (handled) {
                 securityTokenManager.writeSecurityToken(entity);
             }
