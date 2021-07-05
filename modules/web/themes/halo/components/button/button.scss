@@ -98,7 +98,7 @@ $cuba-link-button-caption-wrap: true !default;
   }
 
   @if $cuba-highlight-primary-action {
-    .#{$primary-stylename}.c-primary-action {
+    .#{$primary-stylename}.c-primary-action:not(.link) {
       @include valo-button-style($background-color: $v-focus-color, $unit-size: null);
     }
   }
