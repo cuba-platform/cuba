@@ -19,8 +19,8 @@ package com.haulmont.cuba.core.global;
 
 import com.haulmont.cuba.core.sys.jpql.DomainModel;
 import com.haulmont.cuba.core.sys.jpql.JpqlSyntaxException;
-import com.haulmont.cuba.core.sys.jpql.model.JpqlEntityModel;
 import com.haulmont.cuba.core.sys.jpql.model.EntityBuilder;
+import com.haulmont.cuba.core.sys.jpql.model.JpqlEntityModel;
 import com.haulmont.cuba.core.sys.jpql.transform.QueryTransformerAstBased;
 import org.junit.jupiter.api.Test;
 
@@ -261,6 +261,14 @@ public class QueryParserAstBasedTest {
 
         parser = new QueryParserAstBased(model, "select c from ref$Car c where c.model = (select a from ref$Other a where a.model is null)");
         assertFalse(parser.hasIsNullCondition("model"));
+    }
+
+    @Test
+    public void testNewKeyword() {
+        DomainModel model = prepareDomainModel();
+        QueryParserAstBased parser = new QueryParserAstBased(model,
+                "select r from sec$Role r where r.type = @enum(com.haulmont.cuba.security.entity.RoleType.NEW)");
+        parser.getEntityName();
     }
 
     @Test
