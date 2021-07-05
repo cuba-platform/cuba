@@ -257,7 +257,14 @@ public class ConditionDescriptorsTreeBuilder implements ConditionDescriptorsTree
                 filter.getDatasource().getQuery();
         QueryParser queryParser = queryTransformerFactory.parser(jpqlQuery);
         List<String> selectedExpressions = queryParser.getSelectedExpressionsList();
-        String selectedExpression = selectedExpressions.get(index);
+
+        String selectedExpression;
+        try {
+            selectedExpression = selectedExpressions.get(index);
+        } catch (IndexOutOfBoundsException e) {
+            throw new DevelopmentException("The number of KeyValueEntity properties required is greater than the number of " +
+                    "the selected expressions in the data loader query");
+        }
 
         String entityAliasForCondDescr;
         String propertiesPathForCondDescr;
