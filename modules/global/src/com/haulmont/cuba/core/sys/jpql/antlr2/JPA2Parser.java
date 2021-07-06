@@ -25948,4 +25948,14 @@ public class JPA2Parser extends Parser {
 	public static final BitSet FOLLOW_literal_in_synpred253_JPA24175 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_path_expression_in_synpred254_JPA24183 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_input_parameter_in_synpred255_JPA24191 = new BitSet(new long[]{0x0000000000000002L});
+
+	@Override
+	public void emitErrorMessage(String msg) {
+		//do nothing
+	}
+
+	@Override
+	protected Object recoverFromMismatchedToken(IntStream input, int ttype, BitSet follow) throws RecognitionException {
+		throw new MismatchedTokenException(ttype, input);
+	}
 }
