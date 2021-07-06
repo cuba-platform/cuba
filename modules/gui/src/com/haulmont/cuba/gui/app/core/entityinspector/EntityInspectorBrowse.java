@@ -466,6 +466,7 @@ public class EntityInspectorBrowse extends AbstractLookup {
                     EntityImportViewProperty property = entityImportView.getProperty(metaProperty.getName());
                     property.setReferenceImportBehaviour(ReferenceImportBehaviour.IGNORE_MISSING);
                     break;
+                default:
             }
         }
         return entityImportView;
