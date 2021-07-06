@@ -501,8 +501,7 @@ constructor_name
     : WORD ('.'  WORD)*;
 
 enum_literal
-    : WORD | 'SELECT' | 'FROM' | 'GROUP' | 'ORDER' | 'MAX' | 'MIN' | 'SUM' | 'AVG' | 'COUNT' | 'AS' | 'MEMBER' | 'CASE'
-              | 'OBJECT' | 'SET' | 'DESC' | 'ASC' | 'NEW';
+    : WORD;
 
 boolean_literal
     : 'true'
@@ -558,8 +557,11 @@ collection_valued_input_parameter
     : input_parameter;
 single_valued_input_parameter
     : input_parameter;
+enum_value_field
+    : WORD | 'SELECT' | 'FROM' | 'GROUP' | 'ORDER' | 'MAX' | 'MIN' | 'SUM' | 'AVG' | 'COUNT' | 'AS' | 'MEMBER' | 'CASE'
+    | 'OBJECT' | 'SET' | 'DESC' | 'ASC' | 'NEW' | date_part;
 enum_value_literal
-    : enum_literal ('.'  enum_literal)*;
+    : WORD ('.'  enum_value_field)*;
 
 // Lexical Rules
 //fix trim character
