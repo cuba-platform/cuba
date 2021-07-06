@@ -131,19 +131,10 @@ public class WebTimer extends WebAbstractFacet implements Timer {
     }
 
     private void addDetachListener(Frame owner) {
-        if (owner instanceof Window) {
-            Screen frameOwner = (Screen) owner.getFrameOwner();
-
-            UiControllerUtils.addAfterDetachListener(frameOwner,
-                    event -> detachTimerExtension()
-            );
-        } else if (owner instanceof Fragment) {
-            ScreenFragment fragment = ((Fragment) owner).getFrameOwner();
-
-            UiControllerUtils.addDetachListener(fragment,
-                    event -> detachTimerExtension()
-            );
-        }
+        Screen screen = UiControllerUtils.getScreen(owner.getFrameOwner());
+        UiControllerUtils.addAfterDetachListener(screen,
+                event -> detachTimerExtension()
+        );
     }
 
     protected void detachTimerExtension() {
