@@ -19,15 +19,15 @@ package com.haulmont.cuba.gui.app.core.entityinspector;
 
 import com.google.common.collect.Sets;
 import com.google.common.io.Files;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.Range;
 import com.haulmont.chile.core.model.Session;
 import com.haulmont.cuba.client.ClientConfig;
-import com.haulmont.cuba.core.app.importexport.EntityImportExportService;
-import com.haulmont.cuba.core.app.importexport.EntityImportView;
-import com.haulmont.cuba.core.app.importexport.ReferenceImportBehaviour;
+import com.haulmont.cuba.core.app.importexport.*;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.SoftDelete;
 import com.haulmont.cuba.core.global.*;
@@ -86,6 +86,8 @@ public class EntityInspectorBrowse extends AbstractLookup {
     protected MessageTools messageTools;
     @Inject
     protected Security security;
+    @Inject
+    protected EntityImportViewBuilder entityImportViewBuilder;
 
     @Inject
     protected BoxLayout lookupBox;
@@ -398,7 +400,7 @@ public class EntityInspectorBrowse extends AbstractLookup {
                 Collection<Entity> importedEntities;
                 if ("json".equals(Files.getFileExtension(fileName))) {
                     String content = new String(fileBytes, StandardCharsets.UTF_8);
-                    importedEntities = entityImportExportService.importEntitiesFromJSON(content, createEntityImportView(selectedMeta));
+                    importedEntities = entityImportExportService.importEntitiesFromJSON(content, createEntityImportView(content, selectedMeta));
                 } else {
                     importedEntities = entityImportExportService.importEntitiesFromZIP(fileBytes, createEntityImportView(selectedMeta));
                 }
@@ -407,8 +409,8 @@ public class EntityInspectorBrowse extends AbstractLookup {
                 showNotification(importedEntities.size() + " entities imported", NotificationType.HUMANIZED);
             } catch (Exception e) {
                 showNotification(getMessage("importFailed"),
-                                 formatMessage("importFailedMessage", fileName, nullToEmpty(e.getMessage())),
-                                 NotificationType.ERROR);
+                        formatMessage("importFailedMessage", fileName, nullToEmpty(e.getMessage())),
+                        NotificationType.ERROR);
                 log.error("Entities import error", e);
             }
             entitiesDs.refresh();
@@ -447,6 +449,26 @@ public class EntityInspectorBrowse extends AbstractLookup {
             }
         }
         return view;
+    }
+
+    protected EntityImportView createEntityImportView(String content, MetaClass metaClass) {
+        JsonElement rootElement = JsonParser.parseString(content);
+        EntityImportView entityImportView = entityImportViewBuilder.buildFromJson(
+                rootElement.isJsonArray() ? rootElement.getAsJsonArray().get(0).toString() : rootElement.toString(), metaClass);
+        for (MetaProperty metaProperty : metaClass.getProperties()) {
+            if (!metadata.getTools().isPersistent(metaProperty)) {
+                continue;
+            }
+
+            switch (metaProperty.getType()) {
+                case ASSOCIATION:
+                case COMPOSITION:
+                    EntityImportViewProperty property = entityImportView.getProperty(metaProperty.getName());
+                    property.setReferenceImportBehaviour(ReferenceImportBehaviour.IGNORE_MISSING);
+                    break;
+            }
+        }
+        return entityImportView;
     }
 
     protected EntityImportView createEntityImportView(MetaClass metaClass) {
