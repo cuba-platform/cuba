@@ -451,6 +451,28 @@ public class EntityInspectorBrowse extends AbstractLookup {
         return view;
     }
 
+    protected View createExportView(MetaClass meta) {
+        View view = new View(meta.getJavaClass(), false);
+        for (MetaProperty metaProperty : meta.getProperties()) {
+            switch (metaProperty.getType()) {
+                case DATATYPE:
+                case ENUM:
+                    view.addProperty(metaProperty.getName());
+                    break;
+                case ASSOCIATION:
+                case COMPOSITION:
+                    View minimal = metadata.getViewRepository()
+                            .getView(metaProperty.getRange().asClass(), View.MINIMAL);
+                    View propView = new View(minimal, metaProperty.getName() + "Ds", false);
+                    view.addProperty(metaProperty.getName(), propView);
+                    break;
+                default:
+                    throw new IllegalStateException("unknown property type");
+            }
+        }
+        return view;
+    }
+
     protected EntityImportView createEntityImportView(String content, MetaClass metaClass) {
         JsonElement rootElement = JsonParser.parseString(content);
         EntityImportView entityImportView = entityImportViewBuilder.buildFromJson(
@@ -464,6 +486,9 @@ public class EntityInspectorBrowse extends AbstractLookup {
                 case ASSOCIATION:
                 case COMPOSITION:
                     EntityImportViewProperty property = entityImportView.getProperty(metaProperty.getName());
+                    if (property == null) {
+                        continue;
+                    }
                     property.setReferenceImportBehaviour(ReferenceImportBehaviour.IGNORE_MISSING);
                     break;
             }
@@ -574,11 +599,11 @@ public class EntityInspectorBrowse extends AbstractLookup {
 
             try {
                 if (exportFormat == ZIP) {
-                    byte[] data = entityImportExportService.exportEntitiesToZIP(selected);
+                    byte[] data = entityImportExportService.exportEntitiesToZIP(selected, createExportView(selectedMeta));
                     String resourceName = selectedMeta.getJavaClass().getSimpleName() + ".zip";
                     exportDisplay.show(new ByteArrayDataProvider(data), resourceName, ZIP);
                 } else if (exportFormat == JSON) {
-                    byte[] data = entityImportExportService.exportEntitiesToJSON(selected)
+                    byte[] data = entityImportExportService.exportEntitiesToJSON(selected, createExportView(selectedMeta))
                             .getBytes(StandardCharsets.UTF_8);
                     String resourceName = selectedMeta.getJavaClass().getSimpleName() + ".json";
                     exportDisplay.show(new ByteArrayDataProvider(data), resourceName, JSON);
