@@ -17,6 +17,7 @@
 package com.haulmont.cuba.gui.app.core.sendingmessage.browse.resendmessage;
 
 import com.haulmont.cuba.core.app.EmailService;
+import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.entity.SendingAttachment;
 import com.haulmont.cuba.core.entity.SendingMessage;
 import com.haulmont.cuba.core.global.*;
@@ -49,6 +50,8 @@ public class ResendMessage extends Screen {
     protected Notifications notifications;
     @Inject
     protected MessageBundle messageBundle;
+    @Inject
+    protected DataManager dataManager;
 
     public void setMessage(SendingMessage message) {
         this.message = message;
@@ -107,8 +110,9 @@ public class ResendMessage extends Screen {
         EmailAttachment[] emailAttachments = new EmailAttachment[sendingAttachments.size()];
         for (int i = 0; i < sendingAttachments.size(); i++) {
             SendingAttachment sendingAttachment = sendingAttachments.get(i);
+            byte[] content = retrieveContent(sendingAttachment);
             EmailAttachment emailAttachment = new EmailAttachment(
-                    sendingAttachment.getContent(),
+                    content,
                     sendingAttachment.getName(),
                     sendingAttachment.getContentId(),
                     sendingAttachment.getDisposition(),
@@ -117,5 +121,23 @@ public class ResendMessage extends Screen {
             emailAttachments[i] = emailAttachment;
         }
         return emailAttachments;
+    }
+
+    protected byte[] retrieveContent(SendingAttachment sendingAttachment) {
+        byte[] content = sendingAttachment.getContent();
+        if (content != null) {
+            return content;
+        }
+
+        FileDescriptor contentFile = dataManager.load(FileDescriptor.class)
+                .query("select e.contentFile from sys$SendingAttachment e where e.id = :id")
+                .parameter("id", sendingAttachment.getId())
+                .one();
+        try (InputStream inputStream = fileLoader.openStream(contentFile)) {
+            content = IOUtils.toByteArray(inputStream);
+        } catch (FileStorageException | IOException e) {
+            throw new RuntimeException("Can't read content from message attachment", e);
+        }
+        return content;
     }
 }
