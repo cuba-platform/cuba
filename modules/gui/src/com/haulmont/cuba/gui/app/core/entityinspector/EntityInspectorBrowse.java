@@ -451,7 +451,7 @@ public class EntityInspectorBrowse extends AbstractLookup {
         return view;
     }
 
-    protected View createExportView(MetaClass meta) {
+    protected View createEntityExportView(MetaClass meta) {
         View view = new View(meta.getJavaClass(), false);
         for (MetaProperty metaProperty : meta.getProperties()) {
             switch (metaProperty.getType()) {
@@ -599,11 +599,11 @@ public class EntityInspectorBrowse extends AbstractLookup {
 
             try {
                 if (exportFormat == ZIP) {
-                    byte[] data = entityImportExportService.exportEntitiesToZIP(selected, createExportView(selectedMeta));
+                    byte[] data = entityImportExportService.exportEntitiesToZIP(selected, createEntityExportView(selectedMeta));
                     String resourceName = selectedMeta.getJavaClass().getSimpleName() + ".zip";
                     exportDisplay.show(new ByteArrayDataProvider(data), resourceName, ZIP);
                 } else if (exportFormat == JSON) {
-                    byte[] data = entityImportExportService.exportEntitiesToJSON(selected, createExportView(selectedMeta))
+                    byte[] data = entityImportExportService.exportEntitiesToJSON(selected, createEntityExportView(selectedMeta))
                             .getBytes(StandardCharsets.UTF_8);
                     String resourceName = selectedMeta.getJavaClass().getSimpleName() + ".json";
                     exportDisplay.show(new ByteArrayDataProvider(data), resourceName, JSON);
