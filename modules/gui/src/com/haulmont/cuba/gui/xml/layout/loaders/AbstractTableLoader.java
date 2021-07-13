@@ -121,6 +121,9 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
         loadEmptyStateMessage(resultComponent, element);
         loadEmptyStateLinkMessage(resultComponent, element);
 
+        loadMinHeight(resultComponent, element);
+        loadMinWidth(resultComponent, element);
+
         Element columnsElement = element.element("columns");
         Element rowsElement = element.element("rows");
 
@@ -857,6 +860,20 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
         String emptyStateLinkMessage = element.attributeValue("emptyStateLinkMessage");
         if (!Strings.isNullOrEmpty(emptyStateLinkMessage)) {
             table.setEmptyStateLinkMessage(loadResourceString(emptyStateLinkMessage));
+        }
+    }
+
+    protected void loadMinHeight(Table table, Element element) {
+        String minHeight = element.attributeValue("minHeight");
+        if (!Strings.isNullOrEmpty(minHeight)) {
+            table.setMinHeight(minHeight);
+        }
+    }
+
+    protected void loadMinWidth(Table table, Element element) {
+        String minWidth = element.attributeValue("minWidth");
+        if (!Strings.isNullOrEmpty(minWidth)) {
+            table.setMinWidth(minWidth);
         }
     }
 }

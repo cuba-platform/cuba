@@ -23,6 +23,7 @@ import com.vaadin.ui.Layout;
 import com.vaadin.util.ReflectTools;
 import com.vaadin.v7.data.Property;
 
+import javax.annotation.Nullable;
 import java.lang.reflect.Method;
 import java.util.EventObject;
 import java.util.Map;
@@ -260,6 +261,14 @@ public interface CubaEnhancedTable extends AggregationContainer {
     String getEmptyStateLinkMessage();
 
     void setEmptyStateLinkClickHandler(Runnable handler);
+
+    @Nullable
+    Float getMinHeight();
+    void setMinHeight(@Nullable String minHeight);
+
+    @Nullable
+    Float getMinWidth();
+    void setMinWidth(@Nullable String minWidth);
 
     interface CellValueFormatter {
         String getFormattedValue(Object rowId, Object colId, Property<?> property);

@@ -351,6 +351,36 @@ public interface Table<E extends Entity>
      */
     Consumer<EmptyStateClickEvent<E>> getEmptyStateLinkClickHandler();
 
+    /**
+     * @return {@code minHeight} CSS property value of the Table (not a composition) or {@code null} if not set
+     */
+    @Nullable
+    Float getMinHeight();
+
+    /**
+     * Sets {@code minHeight} CSS property value to the Table (not a composition). To set CSS properties to the
+     * composition use {@code css} attribute in the XML descriptor or
+     * {@link HtmlAttributes#applyCss(Component, String)}.
+     *
+     * @param minHeight property value
+     */
+    void setMinHeight(@Nullable String minHeight);
+
+    /**
+     * @return {@code minWidth} CSS property value of the Table (not a composition) or {@code null} if not set
+     */
+    @Nullable
+    Float getMinWidth();
+
+    /**
+     * Sets {@code minWidth} CSS property value to the Table (not a composition). To set CSS properties to the
+     * composition use {@code css} attribute in the XML descriptor or
+     * {@link HtmlAttributes#applyCss(Component, String)}.
+     *
+     * @param minWidth property value
+     */
+    void setMinWidth(@Nullable String minWidth);
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**

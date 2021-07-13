@@ -17,6 +17,7 @@
 package com.haulmont.cuba.web.widgets;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import com.google.common.collect.Iterables;
 import com.haulmont.cuba.web.widgets.client.table.CubaTableClientRpc;
 import com.haulmont.cuba.web.widgets.client.table.CubaTableServerRpc;
@@ -29,10 +30,7 @@ import com.haulmont.cuba.web.widgets.data.util.NullTreeTableContainer;
 import com.vaadin.event.Action;
 import com.vaadin.event.ActionManager;
 import com.vaadin.event.ShortcutListener;
-import com.vaadin.server.Page;
-import com.vaadin.server.PaintException;
-import com.vaadin.server.PaintTarget;
-import com.vaadin.server.Resource;
+import com.vaadin.server.*;
 import com.vaadin.shared.Registration;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Component;
@@ -48,6 +46,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -101,6 +100,8 @@ public class CubaTreeTable extends com.vaadin.v7.ui.TreeTable implements TreeTab
     protected Runnable beforeRefreshRowCacheHandler;
 
     protected Runnable emptyStateLinkClickHandler;
+
+    protected HtmlAttributesExtension htmlAttributesExtension;
 
     public CubaTreeTable() {
         registerRpc(new CubaTableServerRpc() {
@@ -1147,6 +1148,51 @@ public class CubaTreeTable extends com.vaadin.v7.ui.TreeTable implements TreeTab
     @Override
     public void setEmptyStateLinkClickHandler(Runnable handler) {
         this.emptyStateLinkClickHandler = handler;
+    }
+
+    @Nullable
+    @Override
+    public Float getMinHeight() {
+        String value = getCssProperty("minHeight");
+        return Strings.isNullOrEmpty(value) ? null : SizeWithUnit.parseStringSize(value).getSize();
+    }
+
+    @Override
+    public void setMinHeight(@Nullable String minHeight) {
+        setCssProperty("minHeight", minHeight);
+    }
+
+    @Nullable
+    @Override
+    public Float getMinWidth() {
+        String value = getCssProperty("minWidth");
+        return Strings.isNullOrEmpty(value) ? null : SizeWithUnit.parseStringSize(value).getSize();
+    }
+
+    @Override
+    public void setMinWidth(@Nullable String minWidth) {
+        setCssProperty("minWidth", minWidth);
+    }
+
+    @Nullable
+    protected String getCssProperty(String propertyName) {
+        if (htmlAttributesExtension != null) {
+            return htmlAttributesExtension.getCssProperty(propertyName);
+        }
+        return null;
+    }
+
+    protected void setCssProperty(String propertyName, @Nullable String value) {
+        if (Strings.isNullOrEmpty(value)) {
+            if (htmlAttributesExtension != null) {
+                htmlAttributesExtension.removeCssProperty(propertyName);
+            }
+        } else {
+            if (htmlAttributesExtension == null) {
+                htmlAttributesExtension = HtmlAttributesExtension.get(this);
+            }
+            htmlAttributesExtension.setCssProperty(propertyName, value);
+        }
     }
 
     public void expandAllHierarchical(List<Object> collapsedItemIds, List<Object> preOrder, List<Object> openItems) {

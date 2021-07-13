@@ -3182,6 +3182,28 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
         this.emptyStateClickEventHandler = handler;
     }
 
+    @Nullable
+    @Override
+    public Float getMinHeight() {
+        return component.getMinHeight();
+    }
+
+    @Override
+    public void setMinHeight(@Nullable String minHeight) {
+        component.setMinHeight(minHeight);
+    }
+
+    @Nullable
+    @Override
+    public Float getMinWidth() {
+        return component.getMinWidth();
+    }
+
+    @Override
+    public void setMinWidth(@Nullable String minWidth) {
+        component.setMinWidth(minWidth);
+    }
+
     @Override
     public Consumer<EmptyStateClickEvent<E>> getEmptyStateLinkClickHandler() {
         return emptyStateClickEventHandler;

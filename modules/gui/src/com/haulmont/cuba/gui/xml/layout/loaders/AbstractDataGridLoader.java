@@ -170,6 +170,8 @@ public abstract class AbstractDataGridLoader<T extends DataGrid> extends Actions
         loadEmptyStateLinkMessage(resultComponent, element);
         loadAggregatable(resultComponent, element);
         loadAggregationPosition(resultComponent, element);
+        loadMinHeight(resultComponent, element);
+        loadMinWidth(resultComponent, element);
 
         Element columnsElement = element.element("columns");
 
@@ -969,6 +971,20 @@ public abstract class AbstractDataGridLoader<T extends DataGrid> extends Actions
             } catch (Exception e) {
                 throw new RuntimeException("Unable to instantiate strategy for aggregation", e);
             }
+        }
+    }
+
+    protected void loadMinHeight(DataGrid component, Element element) {
+        String minHeight = element.attributeValue("minHeight");
+        if (!Strings.isNullOrEmpty(minHeight)) {
+            component.setMinHeight(minHeight);
+        }
+    }
+
+    protected void loadMinWidth(DataGrid component, Element element) {
+        String minWidth = element.attributeValue("minWidth");
+        if (!Strings.isNullOrEmpty(minWidth)) {
+            component.setMinWidth(minWidth);
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.haulmont.cuba.web.widgets;
 
+import com.google.common.base.Strings;
 import com.haulmont.cuba.web.widgets.client.grid.CubaGridServerRpc;
 import com.haulmont.cuba.web.widgets.client.grid.CubsGridClientRpc;
 import com.haulmont.cuba.web.widgets.client.treegrid.CubaTreeGridState;
@@ -9,12 +10,14 @@ import com.haulmont.cuba.web.widgets.grid.CubaEditorImpl;
 import com.haulmont.cuba.web.widgets.grid.CubaGridColumn;
 import com.vaadin.data.ValueProvider;
 import com.vaadin.data.provider.HierarchicalDataProvider;
+import com.vaadin.server.SizeWithUnit;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.TreeGrid;
 import com.vaadin.ui.components.grid.Editor;
 import com.vaadin.ui.components.grid.GridSelectionModel;
 import com.vaadin.ui.renderers.AbstractRenderer;
 
+import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.Consumer;
 
@@ -27,6 +30,8 @@ public class CubaTreeGrid<T> extends TreeGrid<T> implements CubaEnhancedGrid<T> 
     protected boolean aggregatable = false;
     protected AggregationPosition aggregationPosition = AggregationPosition.TOP;
     protected Collection<String> aggregationPropertyIds;
+
+    protected HtmlAttributesExtension htmlAttributesExtension;
 
     public CubaTreeGrid() {
         registerRpc((CubaGridServerRpc) () -> {
@@ -252,5 +257,50 @@ public class CubaTreeGrid<T> extends TreeGrid<T> implements CubaEnhancedGrid<T> 
     @Override
     public ContentMode getRowDescriptionContentMode() {
         return getState(false).rowDescriptionContentMode;
+    }
+
+    @Nullable
+    @Override
+    public Float getMinHeight() {
+        String value = getCssProperty("minHeight");
+        return Strings.isNullOrEmpty(value) ? null : SizeWithUnit.parseStringSize(value).getSize();
+    }
+
+    @Override
+    public void setMinHeight(@Nullable String minHeight) {
+        setCssProperty("minHeight", minHeight);
+    }
+
+    @Nullable
+    @Override
+    public Float getMinWidth() {
+        String value = getCssProperty("minWidth");
+        return Strings.isNullOrEmpty(value) ? null : SizeWithUnit.parseStringSize(value).getSize();
+    }
+
+    @Override
+    public void setMinWidth(@Nullable String minWidth) {
+        setCssProperty("minWidth", minWidth);
+    }
+
+    @Nullable
+    protected String getCssProperty(String propertyName) {
+        if (htmlAttributesExtension != null) {
+            return htmlAttributesExtension.getCssProperty(propertyName);
+        }
+        return null;
+    }
+
+    protected void setCssProperty(String propertyName, @Nullable String value) {
+        if (Strings.isNullOrEmpty(value)) {
+            if (htmlAttributesExtension != null) {
+                htmlAttributesExtension.removeCssProperty(propertyName);
+            }
+        } else {
+            if (htmlAttributesExtension == null) {
+                htmlAttributesExtension = HtmlAttributesExtension.get(this);
+            }
+            htmlAttributesExtension.setCssProperty(propertyName, value);
+        }
     }
 }
