@@ -1,6 +1,7 @@
 package com.haulmont.cuba.web.widgets;
 
 import com.haulmont.cuba.web.widgets.grid.CubaEditorField;
+import com.vaadin.server.Sizeable;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.components.grid.GridSelectionModel;
@@ -73,10 +74,16 @@ public interface CubaEnhancedGrid<T> {
     @Nullable
     Float getMinHeight();
 
+    @Nullable
+    Sizeable.Unit getMinHeightSizeUnit();
+
     void setMinHeight(@Nullable String minHeight);
 
     @Nullable
     Float getMinWidth();
+
+    @Nullable
+    Sizeable.Unit getMinWidthSizeUnit();
 
     void setMinWidth(@Nullable String minWidth);
 

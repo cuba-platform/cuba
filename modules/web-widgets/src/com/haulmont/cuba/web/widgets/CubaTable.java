@@ -1049,25 +1049,39 @@ public class CubaTable extends com.vaadin.v7.ui.Table implements TableSortableCo
     @Nullable
     @Override
     public Float getMinHeight() {
-        String value = getCssProperty("minHeight");
+        String value = getCssProperty("min-height");
         return Strings.isNullOrEmpty(value) ? null : SizeWithUnit.parseStringSize(value).getSize();
+    }
+
+    @Nullable
+    @Override
+    public Unit getMinHeightSizeUnit() {
+        String value = getCssProperty("min-height");
+        return Strings.isNullOrEmpty(value) ? null : SizeWithUnit.parseStringSize(value).getUnit();
     }
 
     @Override
     public void setMinHeight(@Nullable String minHeight) {
-        setCssProperty("minHeight", minHeight);
+        setCssProperty("min-height", minHeight);
     }
 
     @Nullable
     @Override
     public Float getMinWidth() {
-        String value = getCssProperty("minWidth");
+        String value = getCssProperty("min-width");
         return Strings.isNullOrEmpty(value) ? null : SizeWithUnit.parseStringSize(value).getSize();
+    }
+
+    @Nullable
+    @Override
+    public Unit getMinWidthSizeUnit() {
+        String value = getCssProperty("min-width");
+        return Strings.isNullOrEmpty(value) ? null : SizeWithUnit.parseStringSize(value).getUnit();
     }
 
     @Override
     public void setMinWidth(@Nullable String minWidth) {
-        setCssProperty("minWidth", minWidth);
+        setCssProperty("min-width", minWidth);
     }
 
     @Nullable

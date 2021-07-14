@@ -49,7 +49,7 @@ import static com.haulmont.cuba.gui.components.MouseEventDetails.MouseButton;
  */
 public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtonsPanel, Component.HasCaption,
         Component.HasIcon, HasContextHelp, HasRowsCount, HasSettings, HasDataLoadingSettings, HasHtmlCaption, HasHtmlDescription,
-        LookupComponent<E>, Component.Focusable, RowsCount.RowsCountTarget, HasSubParts, HasHtmlSanitizer {
+        LookupComponent<E>, Component.Focusable, RowsCount.RowsCountTarget, HasSubParts, HasHtmlSanitizer, HasMinSizes {
 
     String NAME = "dataGrid";
 
@@ -2653,36 +2653,6 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
      * @see #setEmptyStateLinkMessage(String)
      */
     void setEmptyStateLinkClickHandler(Consumer<EmptyStateClickEvent<E>> handler);
-
-    /**
-     * @return {@code minHeight} CSS property value of the Grid (not a composition) or {@code null} if not set
-     */
-    @Nullable
-    Float getMinHeight();
-
-    /**
-     * Sets {@code minHeight} CSS property value to the Grid (not a composition). To set CSS properties to the
-     * composition use {@code css} attribute in the XML descriptor or
-     * {@link HtmlAttributes#applyCss(Component, String)}.
-     *
-     * @param minHeight property value
-     */
-    void setMinHeight(@Nullable String minHeight);
-
-    /**
-     * @return {@code minWidth} CSS property value of the Grid (not a composition) or {@code null} if not set
-     */
-    @Nullable
-    Float getMinWidth();
-
-    /**
-     * Sets {@code minWidth} CSS property value to the Grid (not a composition). To set CSS properties to the
-     * composition use {@code css} attribute in the XML descriptor or
-     * {@link HtmlAttributes#applyCss(Component, String)}.
-     *
-     * @param minWidth property value
-     */
-    void setMinWidth(@Nullable String minWidth);
 
     /**
      * @return click handler for link message

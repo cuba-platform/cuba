@@ -1078,4 +1078,18 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
             component.setHtmlSanitizerEnabled(Boolean.parseBoolean(htmlSanitizerEnabled));
         }
     }
+
+    protected void loadMinHeight(HasMinSizes table, Element element) {
+        String minHeight = element.attributeValue("minHeight");
+        if (!Strings.isNullOrEmpty(minHeight)) {
+            table.setMinHeight(minHeight);
+        }
+    }
+
+    protected void loadMinWidth(HasMinSizes table, Element element) {
+        String minWidth = element.attributeValue("minWidth");
+        if (!Strings.isNullOrEmpty(minWidth)) {
+            table.setMinWidth(minWidth);
+        }
+    }
 }

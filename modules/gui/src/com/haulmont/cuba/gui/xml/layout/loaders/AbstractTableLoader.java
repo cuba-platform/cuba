@@ -862,18 +862,4 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
             table.setEmptyStateLinkMessage(loadResourceString(emptyStateLinkMessage));
         }
     }
-
-    protected void loadMinHeight(Table table, Element element) {
-        String minHeight = element.attributeValue("minHeight");
-        if (!Strings.isNullOrEmpty(minHeight)) {
-            table.setMinHeight(minHeight);
-        }
-    }
-
-    protected void loadMinWidth(Table table, Element element) {
-        String minWidth = element.attributeValue("minWidth");
-        if (!Strings.isNullOrEmpty(minWidth)) {
-            table.setMinWidth(minWidth);
-        }
-    }
 }

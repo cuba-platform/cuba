@@ -18,6 +18,7 @@ package com.haulmont.cuba.web.widgets;
 
 import com.haulmont.cuba.web.widgets.data.AggregationContainer;
 import com.vaadin.server.Resource;
+import com.vaadin.server.Sizeable;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Layout;
 import com.vaadin.util.ReflectTools;
@@ -264,10 +265,14 @@ public interface CubaEnhancedTable extends AggregationContainer {
 
     @Nullable
     Float getMinHeight();
+    @Nullable
+    Sizeable.Unit getMinHeightSizeUnit();
     void setMinHeight(@Nullable String minHeight);
 
     @Nullable
     Float getMinWidth();
+    @Nullable
+    Sizeable.Unit getMinWidthSizeUnit();
     void setMinWidth(@Nullable String minWidth);
 
     interface CellValueFormatter {
