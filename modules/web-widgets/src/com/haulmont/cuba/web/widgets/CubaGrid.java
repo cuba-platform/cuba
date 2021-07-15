@@ -247,58 +247,53 @@ public class CubaGrid<T> extends Grid<T> implements CubaEnhancedGrid<T> {
     @Nullable
     @Override
     public Float getMinHeight() {
-        String value = getCssProperty("min-height");
+        String value = getHtmlAttributesExtension().getCssProperty("min-height");
         return Strings.isNullOrEmpty(value) ? null : SizeWithUnit.parseStringSize(value).getSize();
     }
 
     @Nullable
     @Override
     public Unit getMinHeightSizeUnit() {
-        String value = getCssProperty("min-height");
+        String value = getHtmlAttributesExtension().getCssProperty("min-height");
         return Strings.isNullOrEmpty(value) ? null : SizeWithUnit.parseStringSize(value).getUnit();
     }
 
     @Override
     public void setMinHeight(@Nullable String minHeight) {
-        setCssProperty("min-height", minHeight);
+        if (Strings.isNullOrEmpty(minHeight)) {
+            getHtmlAttributesExtension().removeCssProperty("min-height");
+        } else {
+            getHtmlAttributesExtension().setCssProperty("min-height", minHeight);
+        }
     }
 
     @Nullable
     @Override
     public Float getMinWidth() {
-        String value = getCssProperty("min-width");
+        String value = getHtmlAttributesExtension().getCssProperty("min-width");
         return Strings.isNullOrEmpty(value) ? null : SizeWithUnit.parseStringSize(value).getSize();
     }
 
     @Nullable
     @Override
     public Unit getMinWidthSizeUnit() {
-        String value = getCssProperty("min-width");
+        String value = getHtmlAttributesExtension().getCssProperty("min-width");
         return Strings.isNullOrEmpty(value) ? null : SizeWithUnit.parseStringSize(value).getUnit();
     }
 
     @Override
     public void setMinWidth(@Nullable String minWidth) {
-        setCssProperty("min-width", minWidth);
+        if (Strings.isNullOrEmpty(minWidth)) {
+            getHtmlAttributesExtension().removeCssProperty("min-width");
+        } else {
+            getHtmlAttributesExtension().setCssProperty("min-width", minWidth);
+        }
     }
 
-    @Nullable
-    protected String getCssProperty(String propertyName) {
-        if (htmlAttributesExtension == null) {
-            return null;
-        }
-        return htmlAttributesExtension.getCssProperty(propertyName);
-    }
-
-    protected void setCssProperty(String propertyName, @Nullable String value) {
-        if (htmlAttributesExtension == null && Strings.isNullOrEmpty(value)) {
-            return;
-        }
-
+    protected HtmlAttributesExtension getHtmlAttributesExtension() {
         if (htmlAttributesExtension == null) {
             htmlAttributesExtension = HtmlAttributesExtension.get(this);
         }
-
-        htmlAttributesExtension.setCssProperty(propertyName, value);
+        return htmlAttributesExtension;
     }
 }
