@@ -22,7 +22,7 @@ import javax.annotation.Nullable;
  * Interface to be implemented by components that enable to configure
  * {@code minHeight} and {@code minWidth} CSS properties.
  */
-public interface HasMinSizes {
+public interface HasMinSize {
 
     /**
      * @return {@code min-height} CSS property value of the component or {@code null} if not set

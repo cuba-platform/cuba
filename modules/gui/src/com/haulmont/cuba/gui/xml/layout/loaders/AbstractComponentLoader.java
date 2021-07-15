@@ -1079,14 +1079,14 @@ public abstract class AbstractComponentLoader<T extends Component> implements Co
         }
     }
 
-    protected void loadMinHeight(HasMinSizes table, Element element) {
+    protected void loadMinHeight(HasMinSize table, Element element) {
         String minHeight = element.attributeValue("minHeight");
         if (!Strings.isNullOrEmpty(minHeight)) {
             table.setMinHeight(minHeight);
         }
     }
 
-    protected void loadMinWidth(HasMinSizes table, Element element) {
+    protected void loadMinWidth(HasMinSize table, Element element) {
         String minWidth = element.attributeValue("minWidth");
         if (!Strings.isNullOrEmpty(minWidth)) {
             table.setMinWidth(minWidth);

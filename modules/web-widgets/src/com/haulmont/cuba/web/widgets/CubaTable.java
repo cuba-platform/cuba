@@ -1086,23 +1086,22 @@ public class CubaTable extends com.vaadin.v7.ui.Table implements TableSortableCo
 
     @Nullable
     protected String getCssProperty(String propertyName) {
-        if (htmlAttributesExtension != null) {
-            return htmlAttributesExtension.getCssProperty(propertyName);
+        if (htmlAttributesExtension == null) {
+            return null;
         }
-        return null;
+        return htmlAttributesExtension.getCssProperty(propertyName);
     }
 
     protected void setCssProperty(String propertyName, @Nullable String value) {
-        if (Strings.isNullOrEmpty(value)) {
-            if (htmlAttributesExtension != null) {
-                htmlAttributesExtension.removeCssProperty(propertyName);
-            }
-        } else {
-            if (htmlAttributesExtension == null) {
-                htmlAttributesExtension = HtmlAttributesExtension.get(this);
-            }
-            htmlAttributesExtension.setCssProperty(propertyName, value);
+        if (htmlAttributesExtension == null && Strings.isNullOrEmpty(value)) {
+            return;
         }
+
+        if (htmlAttributesExtension == null) {
+            htmlAttributesExtension = HtmlAttributesExtension.get(this);
+        }
+
+        htmlAttributesExtension.setCssProperty(propertyName, value);
     }
 
     protected void updateColumnDescriptions() {

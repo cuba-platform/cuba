@@ -59,7 +59,7 @@ public interface Table<E extends Entity>
             HasButtonsPanel, HasPresentations, Component.HasCaption, HasContextHelp,
             Component.HasIcon, HasRowsCount, LookupComponent<E>, Component.Focusable,
             RowsCount.RowsCountTarget, HasSubParts, HasHtmlCaption, HasHtmlDescription,
-            HasHtmlSanitizer, HasMinSizes {
+            HasHtmlSanitizer, HasMinSize {
 
     enum ColumnAlignment {
         LEFT,
