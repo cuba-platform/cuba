@@ -2660,6 +2660,54 @@ public interface DataGrid<E extends Entity> extends ListComponent<E>, HasButtons
     Consumer<EmptyStateClickEvent<E>> getEmptyStateLinkClickHandler();
 
     /**
+     * @return {@code min-height} CSS property value of the Grid (not a composition) or {@code null} if not set
+     */
+    @Nullable
+    @Override
+    Float getMinHeight();
+
+    /**
+     * @return unit size of {@code min-height} CSS property value of the Grid (not a composition)
+     */
+    @Nullable
+    @Override
+    SizeUnit getMinHeightSizeUnit();
+
+    /**
+     * Sets {@code minHeight} CSS property value to the Grid (not a composition). To set CSS properties to the
+     * composition use {@code css} attribute in the XML descriptor or
+     * {@link HtmlAttributes#applyCss(Component, String)}.
+     *
+     * @param minHeight property value
+     */
+    @Override
+    void setMinHeight(@Nullable String minHeight);
+
+    /**
+     * @return {@code min-width} CSS property value of the Grid (not a composition) or {@code null} if not set
+     */
+    @Nullable
+    @Override
+    Float getMinWidth();
+
+    /**
+     * @return unit size of {@code min-width} CSS property value of the Grid (not a composition)
+     */
+    @Nullable
+    @Override
+    SizeUnit getMinWidthSizeUnit();
+
+    /**
+     * Sets {@code minWidth} CSS property value to the Grid (not a composition). To set CSS properties to the
+     * composition use {@code css} attribute in the XML descriptor or
+     * {@link HtmlAttributes#applyCss(Component, String)}.
+     *
+     * @param minWidth property value
+     */
+    @Override
+    void setMinWidth(@Nullable String minWidth);
+
+    /**
      * A column in the DataGrid.
      */
     interface Column<E extends Entity> extends HasFormatter, Serializable {
