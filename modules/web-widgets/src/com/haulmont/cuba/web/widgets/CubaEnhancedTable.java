@@ -18,11 +18,13 @@ package com.haulmont.cuba.web.widgets;
 
 import com.haulmont.cuba.web.widgets.data.AggregationContainer;
 import com.vaadin.server.Resource;
+import com.vaadin.server.Sizeable;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Layout;
 import com.vaadin.util.ReflectTools;
 import com.vaadin.v7.data.Property;
 
+import javax.annotation.Nullable;
 import java.lang.reflect.Method;
 import java.util.EventObject;
 import java.util.Map;
@@ -260,6 +262,18 @@ public interface CubaEnhancedTable extends AggregationContainer {
     String getEmptyStateLinkMessage();
 
     void setEmptyStateLinkClickHandler(Runnable handler);
+
+    @Nullable
+    Float getMinHeight();
+    @Nullable
+    Sizeable.Unit getMinHeightSizeUnit();
+    void setMinHeight(@Nullable String minHeight);
+
+    @Nullable
+    Float getMinWidth();
+    @Nullable
+    Sizeable.Unit getMinWidthSizeUnit();
+    void setMinWidth(@Nullable String minWidth);
 
     interface CellValueFormatter {
         String getFormattedValue(Object rowId, Object colId, Property<?> property);

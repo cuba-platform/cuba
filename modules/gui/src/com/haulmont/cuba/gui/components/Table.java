@@ -58,7 +58,8 @@ public interface Table<E extends Entity>
             ListComponent<E>, Component.Editable, HasSettings, HasDataLoadingSettings,
             HasButtonsPanel, HasPresentations, Component.HasCaption, HasContextHelp,
             Component.HasIcon, HasRowsCount, LookupComponent<E>, Component.Focusable,
-            RowsCount.RowsCountTarget, HasSubParts, HasHtmlCaption, HasHtmlDescription, HasHtmlSanitizer {
+            RowsCount.RowsCountTarget, HasSubParts, HasHtmlCaption, HasHtmlDescription,
+            HasHtmlSanitizer, HasMinSize {
 
     enum ColumnAlignment {
         LEFT,

@@ -170,6 +170,8 @@ public abstract class AbstractDataGridLoader<T extends DataGrid> extends Actions
         loadEmptyStateLinkMessage(resultComponent, element);
         loadAggregatable(resultComponent, element);
         loadAggregationPosition(resultComponent, element);
+        loadMinHeight(resultComponent, element);
+        loadMinWidth(resultComponent, element);
 
         Element columnsElement = element.element("columns");
 

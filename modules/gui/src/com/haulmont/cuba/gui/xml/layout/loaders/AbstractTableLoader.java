@@ -121,6 +121,9 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
         loadEmptyStateMessage(resultComponent, element);
         loadEmptyStateLinkMessage(resultComponent, element);
 
+        loadMinHeight(resultComponent, element);
+        loadMinWidth(resultComponent, element);
+
         Element columnsElement = element.element("columns");
         Element rowsElement = element.element("rows");
 
