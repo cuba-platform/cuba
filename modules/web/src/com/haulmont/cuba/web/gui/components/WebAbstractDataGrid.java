@@ -3182,6 +3182,52 @@ public abstract class WebAbstractDataGrid<C extends Grid<E> & CubaEnhancedGrid<E
         this.emptyStateClickEventHandler = handler;
     }
 
+    @Nullable
+    @Override
+    public Float getMinHeight() {
+        return component.getMinHeight();
+    }
+
+    @Nullable
+    @Override
+    public SizeUnit getMinHeightSizeUnit() {
+        return component.getMinHeightSizeUnit() != null
+                ? WebWrapperUtils.toSizeUnit(component.getMinHeightSizeUnit())
+                : null;
+    }
+
+    @Override
+    public void setMinHeight(@Nullable String minHeight) {
+        if (minHeight != null) {
+            // validate size unit
+            SizeWithUnit.parseStringSize(minHeight);
+        }
+        component.setMinHeight(minHeight);
+    }
+
+    @Nullable
+    @Override
+    public Float getMinWidth() {
+        return component.getMinWidth();
+    }
+
+    @Nullable
+    @Override
+    public SizeUnit getMinWidthSizeUnit() {
+        return component.getMinWidthSizeUnit() != null
+                ? WebWrapperUtils.toSizeUnit(component.getMinWidthSizeUnit())
+                : null;
+    }
+
+    @Override
+    public void setMinWidth(@Nullable String minWidth) {
+        if (minWidth != null) {
+            // validate size unit
+            SizeWithUnit.parseStringSize(minWidth);
+        }
+        component.setMinWidth(minWidth);
+    }
+
     @Override
     public Consumer<EmptyStateClickEvent<E>> getEmptyStateLinkClickHandler() {
         return emptyStateClickEventHandler;

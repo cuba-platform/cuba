@@ -16,6 +16,7 @@
 
 package com.haulmont.cuba.web.widgets;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Iterables;
 import com.haulmont.cuba.web.widgets.client.table.CubaTableClientRpc;
 import com.haulmont.cuba.web.widgets.client.table.CubaTableServerRpc;
@@ -26,10 +27,7 @@ import com.haulmont.cuba.web.widgets.data.TableSortableContainer;
 import com.vaadin.event.Action;
 import com.vaadin.event.ActionManager;
 import com.vaadin.event.ShortcutListener;
-import com.vaadin.server.Page;
-import com.vaadin.server.PaintException;
-import com.vaadin.server.PaintTarget;
-import com.vaadin.server.Resource;
+import com.vaadin.server.*;
 import com.vaadin.shared.Registration;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Component;
@@ -42,6 +40,7 @@ import com.vaadin.v7.ui.Field;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -94,6 +93,8 @@ public class CubaTable extends com.vaadin.v7.ui.Table implements TableSortableCo
     protected Runnable beforeRefreshRowCacheHandler;
 
     protected Runnable emptyStateLinkClickHandler;
+
+    protected HtmlAttributesExtension htmlAttributesExtension;
 
     public CubaTable() {
         registerRpc(new CubaTableServerRpc() {
@@ -1043,6 +1044,59 @@ public class CubaTable extends com.vaadin.v7.ui.Table implements TableSortableCo
     @Override
     public void setEmptyStateLinkClickHandler(Runnable handler) {
         this.emptyStateLinkClickHandler = handler;
+    }
+
+    @Nullable
+    @Override
+    public Float getMinHeight() {
+        String value = getHtmlAttributesExtension().getCssProperty("min-height");
+        return Strings.isNullOrEmpty(value) ? null : SizeWithUnit.parseStringSize(value).getSize();
+    }
+
+    @Nullable
+    @Override
+    public Unit getMinHeightSizeUnit() {
+        String value = getHtmlAttributesExtension().getCssProperty("min-height");
+        return Strings.isNullOrEmpty(value) ? null : SizeWithUnit.parseStringSize(value).getUnit();
+    }
+
+    @Override
+    public void setMinHeight(@Nullable String minHeight) {
+        if (Strings.isNullOrEmpty(minHeight)) {
+            getHtmlAttributesExtension().removeCssProperty("min-height");
+        } else {
+            getHtmlAttributesExtension().setCssProperty("min-height", minHeight);
+        }
+    }
+
+    @Nullable
+    @Override
+    public Float getMinWidth() {
+        String value = getHtmlAttributesExtension().getCssProperty("min-width");
+        return Strings.isNullOrEmpty(value) ? null : SizeWithUnit.parseStringSize(value).getSize();
+    }
+
+    @Nullable
+    @Override
+    public Unit getMinWidthSizeUnit() {
+        String value = getHtmlAttributesExtension().getCssProperty("min-width");
+        return Strings.isNullOrEmpty(value) ? null : SizeWithUnit.parseStringSize(value).getUnit();
+    }
+
+    @Override
+    public void setMinWidth(@Nullable String minWidth) {
+        if (Strings.isNullOrEmpty(minWidth)) {
+            getHtmlAttributesExtension().removeCssProperty("min-width");
+        } else {
+            getHtmlAttributesExtension().setCssProperty("min-width", minWidth);
+        }
+    }
+
+    protected HtmlAttributesExtension getHtmlAttributesExtension() {
+        if (htmlAttributesExtension == null) {
+            htmlAttributesExtension = HtmlAttributesExtension.get(this);
+        }
+        return htmlAttributesExtension;
     }
 
     protected void updateColumnDescriptions() {

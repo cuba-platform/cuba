@@ -1,10 +1,12 @@
 package com.haulmont.cuba.web.widgets;
 
 import com.haulmont.cuba.web.widgets.grid.CubaEditorField;
+import com.vaadin.server.Sizeable;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.components.grid.GridSelectionModel;
 
+import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -68,6 +70,22 @@ public interface CubaEnhancedGrid<T> {
     Collection<String> getAggregationPropertyIds();
 
     ContentMode getRowDescriptionContentMode();
+
+    @Nullable
+    Float getMinHeight();
+
+    @Nullable
+    Sizeable.Unit getMinHeightSizeUnit();
+
+    void setMinHeight(@Nullable String minHeight);
+
+    @Nullable
+    Float getMinWidth();
+
+    @Nullable
+    Sizeable.Unit getMinWidthSizeUnit();
+
+    void setMinWidth(@Nullable String minWidth);
 
     /**
      * Defines the position of aggregation row.
