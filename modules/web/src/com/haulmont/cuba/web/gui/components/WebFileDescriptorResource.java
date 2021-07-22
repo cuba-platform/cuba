@@ -93,7 +93,7 @@ public class WebFileDescriptorResource extends WebAbstractStreamSettingsResource
 
         return name.append(baseName)
                 .append('-')
-                .append(UUID.randomUUID().toString())
+                .append(fileDescriptor.getId().toString())
                 .append('.')
                 .append(extension)
                 .toString();
