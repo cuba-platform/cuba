@@ -651,16 +651,28 @@ public class CubaScrollTableWidget extends VScrollTable implements TableWidget {
                 Action firstAction = actions[0];
                 if (firstAction instanceof VisibleColumnAction
                         && collapsedColumns.contains(((VisibleColumnAction) firstAction).getColKey())) {
-                    firstAction.execute();
+                    execute((VisibleColumnAction) firstAction);
                 }
 
                 for (int i = 1; i < actions.length; i++) {
                     Action action = actions[i];
                     if (action instanceof VisibleColumnAction
                             && !collapsedColumns.contains(((VisibleColumnAction) action).getColKey())) {
-                        action.execute();
+                       execute((VisibleColumnAction) action);
                     }
                 }
+            }
+
+            protected void execute(VisibleColumnAction action) {
+                boolean previousValue = action.isImmediateColumnAdjustment();
+
+                // avoid immediately column adjustment
+                action.setImmediateColumnAdjustment(false);
+
+                action.execute();
+
+                // restore value
+                action.setImmediateColumnAdjustment(previousValue);
             }
 
             @Override

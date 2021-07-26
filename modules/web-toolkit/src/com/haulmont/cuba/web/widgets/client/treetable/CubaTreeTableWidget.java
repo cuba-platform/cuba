@@ -167,7 +167,6 @@ public class CubaTreeTableWidget extends VTreeTable implements TableWidget {
     }
 
 
-
     /**
      * Adds right padding for header and aggregation row (if visible) to compensate
      * table body vertical scroll bar.
@@ -569,17 +568,29 @@ public class CubaTreeTableWidget extends VTreeTable implements TableWidget {
 
                 Action firstAction = actions[0];
                 if (firstAction instanceof VisibleColumnAction
-                     && collapsedColumns.contains(((VisibleColumnAction) firstAction).getColKey())) {
-                        firstAction.execute();
+                        && collapsedColumns.contains(((VisibleColumnAction) firstAction).getColKey())) {
+                    execute((VisibleColumnAction) firstAction);
                 }
 
                 for (int i = 1; i < actions.length; i++) {
                     Action action = actions[i];
                     if (action instanceof VisibleColumnAction
-                    && !collapsedColumns.contains(((VisibleColumnAction) action).getColKey())) {
-                        action.execute();
+                            && !collapsedColumns.contains(((VisibleColumnAction) action).getColKey())) {
+                        execute((VisibleColumnAction) action);
                     }
                 }
+            }
+
+            protected void execute(VisibleColumnAction action) {
+                boolean previousValue = action.isImmediateColumnAdjustment();
+
+                // avoid immediately column adjustment
+                action.setImmediateColumnAdjustment(false);
+
+                action.execute();
+
+                // restore value
+                action.setImmediateColumnAdjustment(previousValue);
             }
 
             @Override
