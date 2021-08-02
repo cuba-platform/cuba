@@ -132,6 +132,7 @@ public abstract class AbstractCondition extends BaseUuidEntity {
         useUserTimeZone = Boolean.valueOf(element.attributeValue("useUserTimeZone"));
         entityParamWhere = element.attributeValue("paramWhere");
         entityParamView = element.attributeValue("paramView");
+        this.entityAlias = element.attributeValue("entityAlias");
         width = Strings.isNullOrEmpty(element.attributeValue("width")) ? 1 : Integer.parseInt(element.attributeValue("width"));
 
         resolveParam(element);
