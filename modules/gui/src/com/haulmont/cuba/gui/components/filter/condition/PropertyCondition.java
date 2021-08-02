@@ -78,7 +78,11 @@ public class PropertyCondition extends AbstractCondition {
             }
 
             String prop = matcher.group(1);
-            entityAlias = prop.substring(0, prop.indexOf('.'));
+
+            //if it hasn't been read in a superclass constructor from the XML attribute
+            if (Strings.isNullOrEmpty(entityAlias)) {
+                entityAlias = prop.substring(0, prop.indexOf('.'));
+            }
         } else {
             entityAlias = "{E}";
             param.setDateInterval(true);
