@@ -142,7 +142,12 @@ public class CollectionPropertyContainerImpl<E extends Entity>
             masterCollection.add(entity);
         } else {
             if (masterCollection instanceof List) {
-                ((List<E>) masterCollection).set(idx, entity);
+                int masterCollectionIdx = ((List<E>) masterCollection).indexOf(entity);
+                if (masterCollectionIdx >= 0) {
+                    ((List<E>) masterCollection).set(masterCollectionIdx, entity);
+                } else {
+                    ((List<E>) masterCollection).add(entity);
+                }
             } else {
                 masterCollection.remove(entity);
                 masterCollection.add(entity);
