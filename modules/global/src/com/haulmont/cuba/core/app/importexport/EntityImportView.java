@@ -152,7 +152,9 @@ public class EntityImportView implements Serializable {
         MetaClass metaClass = metadata.getClassNN(entityClass);
         MetadataTools metadataTools = metadata.getTools();
         metaClass.getProperties().stream()
-                .filter(property -> !property.getRange().isClass() && !metadataTools.isSystem(property))
+                .filter(property -> !property.getRange().isClass() &&
+                        !metadataTools.isSystem(property) &&
+                        metadataTools.isPersistent(property))
                 .forEach(metaProperty -> addLocalProperty(metaProperty.getName()));
         return this;
     }
