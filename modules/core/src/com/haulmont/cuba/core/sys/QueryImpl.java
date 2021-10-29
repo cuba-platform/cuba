@@ -32,10 +32,7 @@ import com.haulmont.cuba.core.entity.contracts.Ids;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.entitycache.QueryCacheManager;
 import com.haulmont.cuba.core.sys.entitycache.QueryKey;
-import com.haulmont.cuba.core.sys.persistence.DbmsFeatures;
-import com.haulmont.cuba.core.sys.persistence.DbmsSpecificFactory;
-import com.haulmont.cuba.core.sys.persistence.EntityChangedEventManager;
-import com.haulmont.cuba.core.sys.persistence.PersistenceImplSupport;
+import com.haulmont.cuba.core.sys.persistence.*;
 import org.eclipse.persistence.config.CascadePolicy;
 import org.eclipse.persistence.config.HintValues;
 import org.eclipse.persistence.config.QueryHints;
@@ -87,6 +84,8 @@ public class QueryImpl<T> implements TypedQuery<T> {
     protected ServerConfig serverConfig;
     @Inject
     protected QueryHintsProcessor hintsProcessor;
+    @Inject
+    protected List<AdditionalCriteriaProvider> additionalCriteriaProviders;
 
     protected javax.persistence.EntityManager emDelegate;
     protected JpaQuery query;
@@ -421,6 +420,20 @@ public class QueryImpl<T> implements TypedQuery<T> {
         }
     }
 
+    private void setupTLProperties() {
+        for (AdditionalCriteriaProvider acp : additionalCriteriaProviders) {
+            if (acp.getCriteriaParameters() != null) {
+                for (Map.Entry<String, Object> entry : acp.getCriteriaParameters().entrySet()) {
+                    CubaUtil.putProperty(entry.getKey(), entry.getValue());
+                }
+            }
+        }
+    }
+
+    private void clearTLProperties() {
+        CubaUtil.clearProperties();
+    }
+
     @Override
     public List<T> getResultList() {
         if (log.isDebugEnabled())
@@ -430,15 +443,23 @@ public class QueryImpl<T> implements TypedQuery<T> {
 
         JpaQuery<T> query = getQuery();
         preExecute(query);
-        @SuppressWarnings("unchecked")
-        List<T> resultList = (List<T>) getResultFromCache(query, false, obj -> {
-            ((List) obj).stream().filter(item -> item instanceof Entity).forEach(item -> {
-                for (View view : views) {
-                    entityFetcher.fetch((Entity) item, view);
-                }
+
+        try {
+            setupTLProperties();
+
+            @SuppressWarnings("unchecked")
+            List<T> resultList = (List<T>) getResultFromCache(query, false, obj -> {
+                ((List) obj).stream().filter(item -> item instanceof Entity).forEach(item -> {
+                    for (View view : views) {
+                        entityFetcher.fetch((Entity) item, view);
+                    }
+                });
             });
-        });
-        return resultList;
+
+            return resultList;
+        } finally {
+            clearTLProperties();
+        }
     }
 
     @Override
@@ -450,15 +471,20 @@ public class QueryImpl<T> implements TypedQuery<T> {
 
         JpaQuery<T> jpaQuery = getQuery();
         preExecute(jpaQuery);
-        @SuppressWarnings("unchecked")
-        T result = (T) getResultFromCache(jpaQuery, true, obj -> {
-            if (obj instanceof Entity) {
-                for (View view : views) {
-                    entityFetcher.fetch((Entity) obj, view);
+        try {
+            setupTLProperties();
+            @SuppressWarnings("unchecked")
+            T result = (T) getResultFromCache(jpaQuery, true, obj -> {
+                if (obj instanceof Entity) {
+                    for (View view : views) {
+                        entityFetcher.fetch((Entity) obj, view);
+                    }
                 }
-            }
-        });
-        return result;
+            });
+            return result;
+        } finally {
+            clearTLProperties();
+        }
     }
 
     @Override
@@ -470,6 +496,7 @@ public class QueryImpl<T> implements TypedQuery<T> {
         Integer saveMaxResults = maxResults;
         maxResults = 1;
         try {
+            setupTLProperties();
             JpaQuery<T> query = getQuery();
             preExecute(query);
             @SuppressWarnings("unchecked")
@@ -490,6 +517,7 @@ public class QueryImpl<T> implements TypedQuery<T> {
                 return resultList.get(0);
             }
         } finally {
+            clearTLProperties();
             maxResults = saveMaxResults;
         }
     }
