@@ -78,15 +78,16 @@ public class EntityManagerImpl implements EntityManager {
     @Inject
     private EntityChangedEventManager entityChangedEventManager;
 
+    @Inject
+    private List<AdditionalCriteriaProvider> additionalCriteriaProviders;
+
     protected EntityManagerImpl(javax.persistence.EntityManager jpaEntityManager) {
         this.delegate = jpaEntityManager;
     }
 
     @PostConstruct
     protected void init() {
-        Map<String, AdditionalCriteriaProvider> additionalCriteriaProviderMap = AppBeans.getAll(AdditionalCriteriaProvider.class);
-
-        for (AdditionalCriteriaProvider acp : additionalCriteriaProviderMap.values()) {
+        for (AdditionalCriteriaProvider acp : additionalCriteriaProviders) {
             if (acp.getCriteriaParameters() != null) {
                 for (Map.Entry<String, Object> entry : acp.getCriteriaParameters().entrySet()) {
                     this.delegate.setProperty(entry.getKey(), entry.getValue());
@@ -191,12 +192,16 @@ public class EntityManagerImpl implements EntityManager {
         log.debug("find {} by id={}", entityClass.getSimpleName(), realId);
         MetaClass metaClass = metadata.getExtendedEntities().getEffectiveMetaClass(entityClass);
         Class<T> javaClass = metaClass.getJavaClass();
-
-        T entity = delegate.find(javaClass, realId);
-        if (entity instanceof SoftDelete && ((SoftDelete) entity).isDeleted() && isSoftDeletion())
-            return null; // in case of entity cache
-        else
-            return entity;
+        try {
+            setupTLProperties();
+            T entity = delegate.find(javaClass, realId);
+            if (entity instanceof SoftDelete && ((SoftDelete) entity).isDeleted() && isSoftDeletion())
+                return null; // in case of entity cache
+            else
+                return entity;
+        } finally {
+            clearTLProperties();
+        }
     }
 
     @Nullable
@@ -498,5 +503,19 @@ public class EntityManagerImpl implements EntityManager {
 
     protected Object getRealId(Object id) {
         return id instanceof IdProxy ? ((IdProxy) id).getNN() : id;
+    }
+
+    private void setupTLProperties() {
+        for (AdditionalCriteriaProvider acp : additionalCriteriaProviders) {
+            if (acp.getCriteriaParameters() != null) {
+                for (Map.Entry<String, Object> entry : acp.getCriteriaParameters().entrySet()) {
+                    CubaUtil.putProperty(entry.getKey(), entry.getValue());
+                }
+            }
+        }
+    }
+
+    private void clearTLProperties() {
+        CubaUtil.clearProperties();
     }
 }
