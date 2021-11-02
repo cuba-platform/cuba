@@ -37,7 +37,6 @@ import java.io.Writer;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
-import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -77,17 +76,27 @@ public class CubaUidlWriter extends UidlWriter {
                 String resourcePath = getResourceActualPath(resourceUri, overridePath);
 
                 Class<?> registeredConnector = manager.getDependencies().get(resourcePath);
-                if (registeredConnector == null
-                        || Objects.equals(registeredConnector, connectorClass)) {
-                    if (resourcePath.endsWith(JAVASCRIPT_EXTENSION)) {
-                        String url = manager.registerDependency(resourcePath, connectorClass);
-                        dependencies.add(new Dependency(Dependency.Type.JAVASCRIPT, url));
+
+                if (resourcePath.endsWith(JAVASCRIPT_EXTENSION)) {
+                    String url = resourcePath;
+                    if (registeredConnector == null) {
+                        url = manager.registerDependency(resourcePath, connectorClass);
                     }
 
-                    if (resourcePath.endsWith(CSS_EXTENSION)) {
-                        String url = manager.registerDependency(resourcePath, connectorClass);
-                        dependencies.add(new Dependency(Dependency.Type.STYLESHEET, url));
+                    // Vaadin does not append duplicates dependencies to the head,
+                    // see com.vaadin.client.ResourceLoader#loadScript()
+                    dependencies.add(new Dependency(Dependency.Type.JAVASCRIPT, url));
+                }
+
+                if (resourcePath.endsWith(CSS_EXTENSION)) {
+                    String url = resourcePath;
+                    if (registeredConnector == null) {
+                        url = manager.registerDependency(resourcePath, connectorClass);
                     }
+
+                    // Vaadin does not append duplicates dependencies to the head,
+                    // see com.vaadin.client.ResourceLoader#loadStylesheet()
+                    dependencies.add(new Dependency(Dependency.Type.STYLESHEET, url));
                 }
             }
         }
