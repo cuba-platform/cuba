@@ -115,7 +115,7 @@ public abstract class AbstractCondition extends BaseUuidEntity {
         this.messagesPack = messagesPack;
         this.filterComponentName = filterComponentName;
         name = element.attributeValue("name");
-        text = StringEscapeUtils.unescapeXml(element.getText());
+        text = StringEscapeUtils.unescapeXml(element.getTextTrim());
         this.metaClass = metaClass;
         if (text == null)
             text = "";
