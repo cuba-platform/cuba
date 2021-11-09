@@ -1114,3 +1114,10 @@ task aggregateJavadoc(type: Javadoc,
         }
     }
 }
+
+allprojects {
+    tasks.withType(JavaCompile).configureEach {
+        options.fork = true
+    }
+
+}
