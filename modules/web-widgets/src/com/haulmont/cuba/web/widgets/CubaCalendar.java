@@ -18,12 +18,12 @@ package com.haulmont.cuba.web.widgets;
 
 import com.haulmont.cuba.web.widgets.client.calendar.CubaCalendarEventId;
 import com.haulmont.cuba.web.widgets.client.calendar.CubaCalendarServerRpc;
+import com.vaadin.event.SerializableEventListener;
 import com.vaadin.util.ReflectTools;
 import com.vaadin.v7.ui.Calendar;
 
 import java.lang.reflect.Method;
 import java.util.Date;
-import java.util.EventListener;
 import java.util.EventObject;
 
 public class CubaCalendar extends Calendar {
@@ -82,7 +82,7 @@ public class CubaCalendar extends Calendar {
         fireEvent(new CubaCalendarDayClickEvent(this, date));
     }
 
-    public interface DayClickHandler extends EventListener {
+    public interface DayClickHandler extends SerializableEventListener {
 
         Method method = ReflectTools.findMethod(
                 DayClickHandler.class, "onDayClick", CubaCalendarDayClickEvent.class);
