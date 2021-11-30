@@ -347,7 +347,7 @@ public class CubaVaadinServletService extends VaadinServletService
     }
 
     @Override
-    protected void lockSession(WrappedSession wrappedSession) {
+    protected Lock lockSession(WrappedSession wrappedSession) {
         Lock lock = getSessionLock(wrappedSession);
         if (lock == null) {
             /*
@@ -377,37 +377,7 @@ public class CubaVaadinServletService extends VaadinServletService
             lock.unlock();
             throw e;
         }
-    }
-
-    /**
-     * Associates the given lock with this service and the given wrapped
-     * session. This method should not be called more than once when the lock is
-     * initialized for the session.
-     *
-     * @param wrappedSession The wrapped session the lock is associated with
-     * @param lock           The lock object
-     * @see #getSessionLock(WrappedSession)
-     */
-    private void setSessionLock(WrappedSession wrappedSession, Lock lock) {
-        if (wrappedSession == null) {
-            throw new IllegalArgumentException(
-                    "Can't set a lock for a null session");
-        }
-        Object currentSessionLock = wrappedSession
-                .getAttribute(getLockAttributeName());
-        assert (currentSessionLock == null
-                || currentSessionLock == lock) : "Changing the lock for a session is not allowed";
-
-        wrappedSession.setAttribute(getLockAttributeName(), lock);
-    }
-
-    /**
-     * Returns the name used to store the lock in the HTTP session.
-     *
-     * @return The attribute name for the lock
-     */
-    private String getLockAttributeName() {
-        return getServiceName() + ".lock";
+        return lock;
     }
 
     /**
