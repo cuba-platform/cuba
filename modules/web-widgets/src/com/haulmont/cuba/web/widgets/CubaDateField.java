@@ -115,6 +115,12 @@ public class CubaDateField extends com.vaadin.ui.DateField implements Action.Con
     }
 
     @Override
+    protected boolean isValueInRange(LocalDate value) {
+        // Return true to avoid exception and set value
+        return true;
+    }
+
+    @Override
     protected Result<LocalDate> handleUnparsableDateString(String dateString) {
         if (Objects.equals(dateString, StringUtils.replaceChars(getState(false).dateMask, "#U", "__"))) {
             return Result.ok(null);
