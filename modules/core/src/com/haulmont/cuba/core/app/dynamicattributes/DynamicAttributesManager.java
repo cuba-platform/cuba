@@ -324,10 +324,12 @@ public class DynamicAttributesManager implements DynamicAttributesManagerAPI {
                     newCollectionValue.remove(value);
                 }
             }
+        } else {
+            categoryAttributeValue.setChildValues(new LinkedList<>());
         }
 
         //newCollectionValue now contains only the values that were added but not persisted yet
-        newCollectionValue.forEach(value -> {
+        for (Object value : newCollectionValue) {
             CategoryAttributeValue childCAV = metadata.create(CategoryAttributeValue.class);
             childCAV.setParent(categoryAttributeValue);
             childCAV.setValue(value);
@@ -337,7 +339,8 @@ public class DynamicAttributesManager implements DynamicAttributesManagerAPI {
             childCAV.setCode(categoryAttributeValue.getCode());
             childCAV.setCategoryAttribute(categoryAttributeValue.getCategoryAttribute());
             em.persist(childCAV);
-        });
+            categoryAttributeValue.getChildValues().add(childCAV);
+        }
     }
 
     protected void doFetchDynamicAttributes(MetaClass metaClass, Collection<BaseGenericIdEntity> entities) {
