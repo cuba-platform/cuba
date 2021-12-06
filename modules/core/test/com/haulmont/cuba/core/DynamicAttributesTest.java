@@ -19,7 +19,12 @@ package com.haulmont.cuba.core;
 import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.haulmont.bali.db.QueryRunner;
-import com.haulmont.cuba.core.app.dynamicattributes.*;
+import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesCacheService;
+import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesManagerAPI;
+import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesRecalculationTools;
+import com.haulmont.cuba.core.app.dynamicattributes.PropertyType;
+import com.haulmont.cuba.core.app.importexport.EntityImportExportAPI;
+import com.haulmont.cuba.core.app.importexport.EntityImportView;
 import com.haulmont.cuba.core.entity.Category;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.entity.CategoryAttributeConfiguration;
@@ -32,10 +37,13 @@ import com.haulmont.cuba.security.entity.UserRole;
 import com.haulmont.cuba.testmodel.primary_keys.CompositeKeyEntity;
 import com.haulmont.cuba.testmodel.primary_keys.EntityKey;
 import com.haulmont.cuba.testsupport.TestContainer;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -51,6 +59,7 @@ public class DynamicAttributesTest {
     protected DynamicAttributesManagerAPI dynamicAttributesManagerAPI;
     protected DynamicAttributesRecalculationTools recalculationTools;
     protected DynamicAttributesCacheService dynamicAttributesCacheService;
+    protected EntityImportExportAPI entityImportExport;
 
     protected Category userCategory, userRoleCategory, roleCategory, userCategoryWithLoop, userCategoryWithoutLoop;
     protected CategoryAttribute userAttribute, userRoleAttribute, roleAttribute, userGroupAttribute, userGroupCollectionAttribute, userIntCollectionAttribute;
@@ -69,6 +78,7 @@ public class DynamicAttributesTest {
         dynamicAttributesManagerAPI = AppBeans.get(DynamicAttributesManagerAPI.class);
         recalculationTools = AppBeans.get(DynamicAttributesRecalculationTools.class);
         dynamicAttributesCacheService = AppBeans.get(DynamicAttributesCacheService.NAME);
+        entityImportExport = AppBeans.get(EntityImportExportAPI.class);
 
         Gson gson = new Gson();
         CategoryAttributeConfiguration configuration;
@@ -584,5 +594,27 @@ public class DynamicAttributesTest {
 
         assertEquals("Test3", loadedUser.getValue("+recalcAttr4"));
         assertEquals("Test3Test", loadedUser.getValue("+recalcAttr5"));
+    }
+
+    @Test
+    public void testCollectionAttributesImport() {
+        User newUser = dataManager.create(User.class);
+        try {
+            newUser.setLogin("recentlyCreated");
+            dataManager.commit(newUser);
+            newUser = dataManager.load(LoadContext.create(User.class).setId(newUser.getId()).setLoadDynamicAttributes(true));
+            newUser.setValue("+userIntCollectionAttribute", Lists.newArrayList(1, 2));
+
+            entityImportExport.importEntities(Arrays.asList(newUser), new EntityImportView(User.class));
+
+            User reloadedWithCollection = dataManager.load(LoadContext.create(User.class).setId(newUser.getId()).setLoadDynamicAttributes(true));
+            Collection value = reloadedWithCollection.getValue("+userIntCollectionAttribute");
+
+            assertNotNull(value);
+            assertEquals(2, value.size(), "Collection attribute values has been duplicated during import");
+
+        } finally {
+            cont.deleteRecord(newUser);
+        }
     }
 }
