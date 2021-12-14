@@ -197,16 +197,13 @@ public abstract class WebAbstractActionsHolderComponent<T extends com.vaadin.ui.
             int visibleActionsIndex = 0;
             int i = 0;
             while (i < index && i < actionList.size()) {
-                if (StringUtils.isNotEmpty(actionList.get(i).getCaption())) {
+                Action componentAction = actionList.get(i);
+                if (StringUtils.isNotEmpty(componentAction.getCaption())
+                        && actionButtons.containsKey(componentAction)) {
                     visibleActionsIndex++;
                 }
 
                 i++;
-            }
-
-            //to avoid indexOutOfBoundsException in case of update caption of the action
-            if (visibleActionsIndex > actionButtons.size()) {
-                visibleActionsIndex = actionButtons.size();
             }
 
             contextMenuPopup.addComponent(contextMenuButton, visibleActionsIndex);
