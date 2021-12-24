@@ -32,17 +32,18 @@ public class QueryKey implements Serializable {
     protected final boolean softDeletion;
     protected final boolean singleResult;
     protected final Map<String, Object> namedParameters;
+    protected final Map<String, Object> additionalCriteriaParameters;
     protected final Object[] positionalParameters;
 
     protected final int hashCode;
     protected final transient UUID id;
 
-    public static QueryKey create(String queryString, boolean softDeletion, javax.persistence.Query jpaQuery) {
-        return new QueryKey(queryString, jpaQuery.getFirstResult(), jpaQuery.getMaxResults(), softDeletion, false, getNamedParameters(jpaQuery), getPositionalParameters(jpaQuery));
+    public static QueryKey create(String queryString, boolean softDeletion, javax.persistence.Query jpaQuery, Map<String, Object> additionalCriteriaParameters) {
+        return new QueryKey(queryString, jpaQuery.getFirstResult(), jpaQuery.getMaxResults(), softDeletion, false, getNamedParameters(jpaQuery), getPositionalParameters(jpaQuery), additionalCriteriaParameters);
     }
 
-    public static QueryKey create(String queryString, boolean softDeletion, boolean singleResult, javax.persistence.Query jpaQuery) {
-        return new QueryKey(queryString, jpaQuery.getFirstResult(), jpaQuery.getMaxResults(), softDeletion, singleResult, getNamedParameters(jpaQuery), getPositionalParameters(jpaQuery));
+    public static QueryKey create(String queryString, boolean softDeletion, boolean singleResult, javax.persistence.Query jpaQuery, Map<String, Object> additionalCriteriaParameters) {
+        return new QueryKey(queryString, jpaQuery.getFirstResult(), jpaQuery.getMaxResults(), softDeletion, singleResult, getNamedParameters(jpaQuery), getPositionalParameters(jpaQuery), additionalCriteriaParameters);
     }
 
     private static Map<String, Object> getNamedParameters(Query jpaQuery) {
@@ -87,7 +88,8 @@ public class QueryKey implements Serializable {
     protected QueryKey(String queryString, int firstRow, int maxRows,
                        boolean softDeletion, boolean singleResult,
                        Map<String, Object> namedParameters,
-                       Object[] positionalParameters) {
+                       Object[] positionalParameters,
+                       Map<String, Object> additionalCriteriaParameters) {
         this.id = UuidProvider.createUuid();
         this.queryString = queryString;
         this.firstRow = firstRow;
@@ -97,6 +99,7 @@ public class QueryKey implements Serializable {
         this.hashCode = generateHashCode();
         this.namedParameters = namedParameters;
         this.positionalParameters = positionalParameters;
+        this.additionalCriteriaParameters = additionalCriteriaParameters;
     }
 
     public UUID getId() {
@@ -112,6 +115,7 @@ public class QueryKey implements Serializable {
                 .add("softDeletion", softDeletion)
                 .add("positionalParameters", Arrays.deepToString(positionalParameters))
                 .add("namedParameters", namedParameters)
+                .add("additionalCriteriaParameters", additionalCriteriaParameters)
                 .toString();
     }
 
@@ -134,7 +138,9 @@ public class QueryKey implements Serializable {
     }
 
     protected boolean equalsParams(QueryKey queryKey) {
-        return Arrays.deepEquals(positionalParameters, queryKey.positionalParameters) && mapEquals(namedParameters, queryKey.namedParameters);
+        return Arrays.deepEquals(positionalParameters, queryKey.positionalParameters)
+                && mapEquals(namedParameters, queryKey.namedParameters)
+                && mapEquals(additionalCriteriaParameters, queryKey.additionalCriteriaParameters);
     }
 
 
@@ -154,6 +160,7 @@ public class QueryKey implements Serializable {
         result = 31 * result + (positionalParameters == null ? 0 : Arrays.deepHashCode(positionalParameters));
 
         result = 31 * result + (namedParameters == null ? 0 : generateMapHashCode(namedParameters));
+        result = 31 * result + (additionalCriteriaParameters == null ? 0 : generateMapHashCode(additionalCriteriaParameters));
         return result;
     }
 
