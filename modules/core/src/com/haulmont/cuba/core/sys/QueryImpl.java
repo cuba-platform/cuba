@@ -420,14 +420,20 @@ public class QueryImpl<T> implements TypedQuery<T> {
         }
     }
 
-    private void setupTLProperties() {
+    private Map<String, Object> getAdditionalCriteriaParameters() {
+        Map<String, Object> parameters = new HashMap<>();
         for (AdditionalCriteriaProvider acp : additionalCriteriaProviders) {
             if (acp.getCriteriaParameters() != null) {
                 for (Map.Entry<String, Object> entry : acp.getCriteriaParameters().entrySet()) {
-                    CubaUtil.putProperty(entry.getKey(), entry.getValue());
+                    parameters.put(entry.getKey(), entry.getValue());
                 }
             }
         }
+        return parameters;
+    }
+
+    private void setupTLProperties() {
+        CubaUtil.setProperties(getAdditionalCriteriaParameters());
     }
 
     private void clearTLProperties() {
@@ -790,7 +796,13 @@ public class QueryImpl<T> implements TypedQuery<T> {
             useQueryCache = parser.isEntitySelect(entityName);
             QueryKey queryKey = null;
             if (useQueryCache) {
-                queryKey = QueryKey.create(transformedQueryString, entityManager.isSoftDeletion(), singleResult, jpaQuery);
+                queryKey = QueryKey.create(
+                        transformedQueryString,
+                        entityManager.isSoftDeletion(),
+                        singleResult,
+                        jpaQuery,
+                        getAdditionalCriteriaParameters()
+                );
                 result = singleResult ? queryCacheMgr.getSingleResultFromCache(queryKey, views) :
                         queryCacheMgr.getResultListFromCache(queryKey, views);
                 if (result != null) {
