@@ -150,5 +150,8 @@
         <class>com.haulmont.cuba.testmodel.embeddedwithinheritance.Person</class>
         <class>com.haulmont.cuba.testmodel.embeddedwithinheritance.JuridicalPerson</class>
         <class>com.haulmont.cuba.testmodel.embeddedwithinheritance.VerificationInfo</class>
+
+        <class>com.haulmont.cuba.testmodel.entity_cache.ParentCachedEntity</class>
+        <class>com.haulmont.cuba.testmodel.entity_cache.ChildCachedEntity</class>
     </persistence-unit>
 </persistence>

@@ -26,11 +26,13 @@ import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.QueryImpl;
 import com.haulmont.cuba.security.entity.*;
+import com.haulmont.cuba.testmodel.entity_cache.ChildCachedEntity;
+import com.haulmont.cuba.testmodel.entity_cache.ParentCachedEntity;
 import com.haulmont.cuba.testmodel.entitycache_unfetched.CompositeOne;
 import com.haulmont.cuba.testmodel.entitycache_unfetched.CompositePropertyOne;
 import com.haulmont.cuba.testmodel.entitycache_unfetched.CompositePropertyTwo;
 import com.haulmont.cuba.testmodel.entitycache_unfetched.CompositeTwo;
-import com.haulmont.cuba.testmodel.fetchjoin.Product;
+import com.haulmont.cuba.testsupport.TestAdditionalCriteriaProvider;
 import com.haulmont.cuba.testsupport.TestAppender;
 import com.haulmont.cuba.testsupport.TestContainer;
 import com.haulmont.cuba.testsupport.TestNamePrinter;
@@ -54,7 +56,6 @@ import static org.junit.Assert.*;
 
 /**
  * Tests of EclipseLink shared cache.
- *
  */
 public class EntityCacheTestClass {
 
@@ -69,6 +70,8 @@ public class EntityCacheTestClass {
     private JpaCache cache;
 
     private final TestAppender appender;
+    private final TestAdditionalCriteriaProvider provider;
+
     private Group group;
     private User user;
     private User user2;
@@ -81,6 +84,9 @@ public class EntityCacheTestClass {
     private CompositeTwo compositeTwo;
     private CompositePropertyOne compositePropertyOne;
     private CompositePropertyTwo compositePropertyTwo;
+    private ParentCachedEntity cachedParent;
+    private ChildCachedEntity cachedChild;
+
     private Predicate<String> selectsOnly = s -> s.contains("> SELECT");
 
     public EntityCacheTestClass() {
@@ -89,6 +95,7 @@ public class EntityCacheTestClass {
         LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
         Logger logger = context.getLogger("eclipselink.sql");
         logger.addAppender(appender);
+        provider = AppBeans.get(TestAdditionalCriteriaProvider.class);
     }
 
     @BeforeEach
@@ -165,6 +172,17 @@ public class EntityCacheTestClass {
             compositePropertyTwo.setCompositeTwo(compositeTwo);
             cont.entityManager().persist(compositePropertyTwo);
 
+            cachedParent = cont.metadata().create(ParentCachedEntity.class);
+            cachedParent.setTitle("parent one");
+            cachedParent.setTestAdditional("ONE");
+            cont.entityManager().persist(cachedParent);
+
+            cachedChild = cont.metadata().create(ChildCachedEntity.class);
+            cachedChild.setSimpleProperty("simple value");
+            cachedChild.setTestAdditional("ONE");
+            cachedChild.setParent(cachedParent);
+            cont.entityManager().persist(cachedChild);
+
             tx.commit();
         }
         cache.clear();
@@ -179,6 +197,7 @@ public class EntityCacheTestClass {
         if (user1 != null)
             cont.deleteRecord(user1);
         cont.deleteRecord(group);
+        cont.deleteRecord(cachedChild, cachedParent);
     }
 
     @Test
@@ -906,6 +925,45 @@ public class EntityCacheTestClass {
 
         assertEquals(1, appender.filterMessages(selectsOnly).count()); // UserSubstitution only, User is cached
         assertTrue(appender.filterMessages(selectsOnly).noneMatch(s -> s.contains("JOIN SEC_USER"))); // User must not be joined because it is cached
+    }
+
+
+    @Test
+    public void testAdditionalParametersUsedDuringLazyLoading() {
+        try {
+
+            provider.setParam("ONE");
+
+            ParentCachedEntity parent;
+            try (Transaction tx = cont.persistence().createTransaction()) {
+                Query query = cont
+                        .entityManager()
+                        .createQuery("select p from test$ParentCachedEntity p where p.id = :id");
+
+                query.setParameter("id", cachedParent.getId());
+                parent = (ParentCachedEntity) query.getResultList().get(0);
+                javax.persistence.EntityManager em = cont.entityManager().getDelegate();
+                assertNotNull(parent);
+                List<ChildCachedEntity> children = parent.getChildren();
+                assertNotNull(children);
+
+                /* Next line checks that changes from eclipselink 2.7.3-19-cuba works:
+                 * DatabaseValueHolder passes additional criteria parameters using CubaUtil.
+                 * Entity in shared cache has no access to ClientSession with additional criteria parameters
+                 * so they has to be passed using another way.
+                 *
+                 * otherwise it will be exception:
+                 *   org.eclipse.persistence.exceptions.QueryException:
+                 *   Exception Description: No value was provided for the session property [testAdditional]
+                 */
+                assertEquals(1, children.size());
+
+                tx.commit();
+            }
+
+        } finally {
+            provider.setParam(null);
+        }
     }
 
     @Test

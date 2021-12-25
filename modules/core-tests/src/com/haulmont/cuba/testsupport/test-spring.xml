@@ -29,4 +29,6 @@
     <bean id="cuba_JpqlSortExpressionProvider" class="com.haulmont.cuba.testsupport.TestJpqlSortExpressionProvider"/>
     <bean id="cuba_DataSourceProvider" class="com.haulmont.cuba.testsupport.TestDataSourceProvider"/>
     <bean id="cuba_MessageTools" class="com.haulmont.cuba.testsupport.TestMessageTools"/>
+    <bean id="cuba_TestAdditionalCriteriaProvider"
+          class="com.haulmont.cuba.testsupport.TestAdditionalCriteriaProvider"/>
 </beans>

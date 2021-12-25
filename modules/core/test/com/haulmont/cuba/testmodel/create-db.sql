@@ -1371,7 +1371,7 @@ create table TEST_ROLE_TEST_ENTITY (
 )^
 
 ------------------------------------------------------------------------------------------------------------------------
-create table TEST_EMBEDDED_PERSON (
+create table TEST_EMBEDDED_PERSON(
     ID varchar(36) not null,
     VERSION integer not null,
     CREATE_TS timestamp,
@@ -1388,12 +1388,49 @@ create table TEST_EMBEDDED_PERSON (
     NAME varchar(255),
     --
     primary key (ID)
-)^
+) ^
 
-create table TEST_EMBEDDED_JURIDICAL_PERSON (
-    ID varchar(36) not null,
+create table TEST_EMBEDDED_JURIDICAL_PERSON
+(
+    ID         varchar(36) not null,
     --
     LEGAL_NAME varchar(255),
     --
     primary key (ID)
-)^
+) ^
+
+create table TEST_PARENT_CACHED_ENTITY
+(
+    ID              varchar(36) not null,
+    VERSION         integer     not null,
+    CREATE_TS       timestamp,
+    CREATED_BY      varchar(50),
+    UPDATE_TS       timestamp,
+    UPDATED_BY      varchar(50),
+    DELETE_TS       timestamp,
+    DELETED_BY      varchar(50),
+    --
+    TITLE           varchar(255),
+    TEST_ADDITIONAL varchar(255),
+    --
+    primary key (ID)
+) ^
+
+create table TEST_CHILD_CACHED_ENTITY
+(
+    ID              varchar(36) not null,
+    VERSION         integer     not null,
+    CREATE_TS       timestamp,
+    CREATED_BY      varchar(50),
+    UPDATE_TS       timestamp,
+    UPDATED_BY      varchar(50),
+    DELETE_TS       timestamp,
+    DELETED_BY      varchar(50),
+    --
+    SIMPLE_PROPERTY varchar(255),
+    TEST_ADDITIONAL varchar(255),
+    PARENT_ID       varchar(36),
+    --
+    primary key (ID),
+    constraint FK_TEST_PARENT_CACHED_ENTITY foreign key (PARENT_ID) references TEST_PARENT_CACHED_ENTITY (ID)
+) ^

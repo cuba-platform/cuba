@@ -31,6 +31,7 @@ import com.haulmont.cuba.core.jmx.QueryCacheSupportMBean;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.entitycache.QueryCache;
 import com.haulmont.cuba.security.entity.*;
+import com.haulmont.cuba.testsupport.TestAdditionalCriteriaProvider;
 import com.haulmont.cuba.testsupport.TestAppender;
 import com.haulmont.cuba.testsupport.TestContainer;
 import com.haulmont.cuba.testsupport.TestNamePrinter;
@@ -38,7 +39,10 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.jpa.EntityManagerFactoryDelegate;
 import org.eclipse.persistence.jpa.JpaCache;
 import org.eclipse.persistence.sessions.server.ServerSession;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.rules.TestRule;
 import org.slf4j.LoggerFactory;
@@ -66,6 +70,7 @@ public class QueryCacheTestClass {
 
     private JpaCache cache;
     private QueryCache queryCache;
+    private TestAdditionalCriteriaProvider testAdditionalCriteriaProvider;
 
     private final TestAppender appender;
     private Group group;
@@ -84,6 +89,7 @@ public class QueryCacheTestClass {
         LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
         Logger logger = context.getLogger("eclipselink.sql");
         logger.addAppender(appender);
+        testAdditionalCriteriaProvider = AppBeans.get(TestAdditionalCriteriaProvider.class);
     }
 
     @BeforeEach
@@ -745,7 +751,6 @@ public class QueryCacheTestClass {
     }
 
 
-
     @Test
     public void testListNamedParameter() {
         appender.clearMessages();
@@ -1118,6 +1123,31 @@ public class QueryCacheTestClass {
         assertEquals(0, appender.filterMessages(m -> m.contains("> SELECT")).count());
     }
 
+    @Test
+    public void testAdditionalCriteriaParametersInQueryKey() throws Exception {
+        try {
+            testAdditionalCriteriaProvider.setParam("ONE");
+
+            assertEquals(0, queryCache.size());
+
+            getSingleResultUserByLoginNamed(user, null);
+            assertEquals(1, queryCache.size());
+
+            getSingleResultUserByLoginNamed(user, null);
+            assertEquals(1, queryCache.size());//the same key for the same param
+
+            testAdditionalCriteriaProvider.setParam("TWO");
+
+            getSingleResultUserByLoginNamed(user, null);
+            assertEquals(2, queryCache.size());//another key for another param
+
+            getSingleResultUserByLoginNamed(user, null);
+            assertEquals(2, queryCache.size());//two keys for two different params
+
+        } finally {
+            testAdditionalCriteriaProvider.setParam(null);
+        }
+    }
 
     protected User getResultListUserByLoginNamed(User loadedUser, boolean checkView, Consumer<EntityManager> emBuilder, Consumer<Query> queryBuilder) throws Exception {
         User user;
