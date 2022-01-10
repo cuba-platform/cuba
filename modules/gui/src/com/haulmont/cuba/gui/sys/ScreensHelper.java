@@ -616,7 +616,7 @@ public class ScreensHelper {
 
         caption = window.attributeValue("caption");
         if (StringUtils.isNotEmpty(caption)) {
-            if (!caption.startsWith("msg://")) {
+            if (!caption.startsWith(MessageTools.MARK) && !caption.startsWith(MessageTools.MAIN_MARK)) {
                 cacheCaption(key, caption);
                 return caption;
             }
