@@ -19,6 +19,7 @@ package com.haulmont.cuba.web.widgets;
 import com.haulmont.cuba.web.widgets.client.fileupload.CubaFileUploadClientRpc;
 import com.haulmont.cuba.web.widgets.client.fileupload.CubaFileUploadServerRpc;
 import com.haulmont.cuba.web.widgets.client.fileupload.CubaFileUploadState;
+import com.vaadin.event.SerializableEventListener;
 import com.vaadin.server.*;
 import com.vaadin.server.communication.FileUploadHandler;
 import com.vaadin.ui.AbstractComponent;
@@ -758,7 +759,7 @@ public class CubaFileUpload extends AbstractComponent
     /**
      * Receives the events when the upload starts.
      */
-    public interface StartedListener extends Serializable {
+    public interface StartedListener extends SerializableEventListener {
 
         /**
          * Upload has started.
@@ -771,7 +772,7 @@ public class CubaFileUpload extends AbstractComponent
     /**
      * Receives the events when the uploads are ready.
      */
-    public interface FinishedListener extends Serializable {
+    public interface FinishedListener extends SerializableEventListener {
 
         /**
          * Upload has finished.
@@ -781,7 +782,7 @@ public class CubaFileUpload extends AbstractComponent
         void uploadFinished(FinishedEvent event);
     }
 
-    public interface QueueFinishedListener extends Serializable {
+    public interface QueueFinishedListener extends SerializableEventListener {
 
         /**
          * Upload has finished.
@@ -794,7 +795,7 @@ public class CubaFileUpload extends AbstractComponent
     /**
      * Receives events when the uploads are finished, but unsuccessful.
      */
-    public interface FailedListener extends Serializable {
+    public interface FailedListener extends SerializableEventListener {
 
         /**
          * Upload has finished unsuccessfully.
@@ -807,7 +808,7 @@ public class CubaFileUpload extends AbstractComponent
     /**
      * Receives events when the uploads are successfully finished.
      */
-    public interface SucceededListener extends Serializable {
+    public interface SucceededListener extends SerializableEventListener {
 
         /**
          * Upload successful.
@@ -820,7 +821,7 @@ public class CubaFileUpload extends AbstractComponent
     /**
      * Receives events when the file size is greater than {@link #getFileSizeLimit()}.
      */
-    public interface FileSizeLimitExceededListener extends Serializable {
+    public interface FileSizeLimitExceededListener extends SerializableEventListener {
 
         void fileSizeLimitExceeded(FileSizeLimitExceededEvent e);
     }
@@ -828,7 +829,7 @@ public class CubaFileUpload extends AbstractComponent
     /**
      * Receives events when the file extension is not included in {@link #getPermittedExtensions()}.
      */
-    public interface FileExtensionNotAllowedListener extends Serializable {
+    public interface FileExtensionNotAllowedListener extends SerializableEventListener {
 
         void fileExtensionNotAllowed(FileExtensionNotAllowedEvent e);
     }

@@ -58,6 +58,7 @@ import com.vaadin.data.provider.HierarchicalQuery;
 import com.vaadin.data.provider.TreeDataProvider;
 import com.vaadin.event.Action;
 import com.vaadin.event.ContextClickEvent;
+import com.vaadin.event.SerializableEventListener;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.server.SerializableFunction;
 import com.vaadin.shared.MouseEventDetails;
@@ -71,7 +72,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
-import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.function.Consumer;
@@ -1235,7 +1235,7 @@ public class CubaFoldersPane extends VerticalLayout {
         }
     }
 
-    public interface RefreshFoldersListener extends Serializable {
+    public interface RefreshFoldersListener extends SerializableEventListener {
 
         void refreshFolders(RefreshFoldersEvent event);
     }

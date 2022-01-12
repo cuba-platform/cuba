@@ -22,6 +22,7 @@ import com.haulmont.cuba.web.widgets.client.window.CubaWindowServerRpc;
 import com.haulmont.cuba.web.widgets.client.window.CubaWindowState;
 import com.vaadin.event.Action;
 import com.vaadin.event.ConnectorEvent;
+import com.vaadin.event.SerializableEventListener;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.server.KeyMapper;
 import com.vaadin.ui.Component;
@@ -118,7 +119,7 @@ public class CubaWindow extends Window {
         }
     }
 
-    public interface PreCloseListener {
+    public interface PreCloseListener extends SerializableEventListener {
         void beforeWindowClose(PreCloseEvent event);
     }
 

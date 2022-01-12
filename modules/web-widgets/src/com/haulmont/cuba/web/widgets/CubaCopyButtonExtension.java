@@ -18,6 +18,7 @@ package com.haulmont.cuba.web.widgets;
 
 import com.haulmont.cuba.web.widgets.client.button.CubaCopyButtonExtensionServerRpc;
 import com.haulmont.cuba.web.widgets.client.button.CubaCopyButtonExtensionState;
+import com.vaadin.event.SerializableEventListener;
 import com.vaadin.server.AbstractExtension;
 import com.vaadin.server.Page;
 import com.vaadin.server.WebBrowser;
@@ -25,7 +26,6 @@ import com.vaadin.shared.Registration;
 import com.vaadin.ui.Button;
 import com.vaadin.util.ReflectTools;
 
-import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.util.EventObject;
 import java.util.Objects;
@@ -90,7 +90,7 @@ public class CubaCopyButtonExtension extends AbstractExtension {
         }
     }
 
-    public interface CopyListener extends Serializable {
+    public interface CopyListener extends SerializableEventListener {
         void copied(CopyEvent event);
     }
 

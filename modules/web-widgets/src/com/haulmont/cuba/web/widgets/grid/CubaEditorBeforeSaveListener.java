@@ -16,6 +16,7 @@
 
 package com.haulmont.cuba.web.widgets.grid;
 
+import com.vaadin.event.SerializableEventListener;
 import com.vaadin.ui.Grid;
 
 /**
@@ -23,7 +24,7 @@ import com.vaadin.ui.Grid;
  *
  * @param <T> the bean type
  */
-public interface CubaEditorBeforeSaveListener<T> {
+public interface CubaEditorBeforeSaveListener<T> extends SerializableEventListener {
 
     void onEditorBeforeSave(CubaEditorBeforeSaveEvent<T> event);
 }

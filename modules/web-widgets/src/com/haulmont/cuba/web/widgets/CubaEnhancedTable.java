@@ -17,6 +17,7 @@
 package com.haulmont.cuba.web.widgets;
 
 import com.haulmont.cuba.web.widgets.data.AggregationContainer;
+import com.vaadin.event.SerializableEventListener;
 import com.vaadin.server.Resource;
 import com.vaadin.server.Sizeable;
 import com.vaadin.ui.Component;
@@ -157,7 +158,7 @@ public interface CubaEnhancedTable extends AggregationContainer {
      * Receives the events when the user clicks on a cell.
      */
     @FunctionalInterface
-    interface TableCellClickListener {
+    interface TableCellClickListener extends SerializableEventListener {
 
         Method clickMethod = ReflectTools.findMethod(
                 TableCellClickListener.class, "onClick", TableCellClickEvent.class);

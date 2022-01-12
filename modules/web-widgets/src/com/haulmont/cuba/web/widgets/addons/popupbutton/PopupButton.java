@@ -13,13 +13,13 @@
  */
 package com.haulmont.cuba.web.widgets.addons.popupbutton;
 
-import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.Iterator;
 
 import com.haulmont.cuba.web.widgets.client.addons.popupbutton.PopupButtonServerRpc;
 import com.haulmont.cuba.web.widgets.client.addons.popupbutton.PopupButtonState;
+import com.vaadin.event.SerializableEventListener;
 import com.vaadin.shared.Registration;
 import com.vaadin.ui.*;
 
@@ -262,7 +262,7 @@ public class PopupButton extends Button implements SingleComponentContainer {
      *
      */
     @FunctionalInterface
-    public interface PopupVisibilityListener extends Serializable {
+    public interface PopupVisibilityListener extends SerializableEventListener {
 
         Method popupVisibilityMethod = ReflectTools.findMethod(
                 PopupVisibilityListener.class, "popupVisibilityChange",
