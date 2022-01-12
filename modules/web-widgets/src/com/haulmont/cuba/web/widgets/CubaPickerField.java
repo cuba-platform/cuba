@@ -19,6 +19,7 @@ package com.haulmont.cuba.web.widgets;
 import com.vaadin.data.HasValue;
 import com.vaadin.data.ValueProvider;
 import com.vaadin.event.Action;
+import com.vaadin.event.SerializableEventListener;
 import com.vaadin.server.Page;
 import com.vaadin.server.Resource;
 import com.vaadin.server.WebBrowser;
@@ -349,7 +350,7 @@ public class CubaPickerField<T> extends com.vaadin.ui.CustomField<T> implements 
         this.textFieldValueProvider = textFieldValueProvider;
     }
 
-    public interface FieldValueChangeListener<V> {
+    public interface FieldValueChangeListener<V> extends SerializableEventListener {
         Method FIELD_VALUE_CHANGE_METHOD = ReflectTools
                 .findMethod(FieldValueChangeListener.class, "valueChange", FieldValueChangeEvent.class);
 

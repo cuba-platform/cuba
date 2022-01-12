@@ -20,6 +20,7 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.haulmont.cuba.web.widgets.client.addons.dragdroplayouts.ui.LayoutDragMode;
 import com.vaadin.event.Action;
+import com.vaadin.event.SerializableEventListener;
 import com.vaadin.event.dd.DropHandler;
 import com.vaadin.server.ErrorMessage;
 import com.vaadin.server.Resource;
@@ -351,7 +352,7 @@ public class CubaManagedTabSheet extends CubaTabSheetCssLayout
         }
     }
 
-    public interface SelectedTabChangeListener extends Serializable {
+    public interface SelectedTabChangeListener extends SerializableEventListener {
 
         void selectedTabChange(CubaManagedTabSheet.SelectedTabChangeEvent event);
     }
