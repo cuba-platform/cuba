@@ -191,7 +191,6 @@ public class CubaMainTabSheet extends DDTabSheet implements Action.Container, Ha
             openedComponents.push(c);
             super.setSelectedTab(c, userOriginated);
         }
-        super.setSelectedTab(c, userOriginated);
     }
 
     @Override
