@@ -461,9 +461,9 @@ public class EntityInspectorBrowse extends AbstractLookup {
                     break;
                 case ASSOCIATION:
                 case COMPOSITION:
-                    View minimal = metadata.getViewRepository()
-                            .getView(metaProperty.getRange().asClass(), View.MINIMAL);
-                    View propView = new View(minimal, metaProperty.getName() + "Ds", false);
+                    View local = metadata.getViewRepository()
+                            .getView(metaProperty.getRange().asClass(), View.LOCAL);
+                    View propView = new View(local, metaProperty.getName() + "Ds", true);
                     view.addProperty(metaProperty.getName(), propView);
                     break;
                 default:
