@@ -288,13 +288,17 @@ public class BasicRoleDefinition implements RoleDefinition, Serializable {
         }
 
         protected BasicRoleDefinitionBuilder withPermission(Permission permission) {
-            addPermission(permission.getType(), permission.getTarget(), permission.getValue());
+            if (permission.getValue() != null) {
+                addPermission(permission.getType(), permission.getTarget(), permission.getValue());
+            }
             return this;
         }
 
         public BasicRoleDefinitionBuilder withPermissions(Collection<Permission> permissions) {
             for (Permission permission : permissions) {
-                addPermission(permission.getType(), permission.getTarget(), permission.getValue());
+                if (permission.getValue() != null) {
+                    addPermission(permission.getType(), permission.getTarget(), permission.getValue());
+                }
             }
             return this;
         }
