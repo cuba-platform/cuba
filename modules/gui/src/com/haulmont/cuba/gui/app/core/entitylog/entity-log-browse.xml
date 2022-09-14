@@ -107,7 +107,8 @@
                           spacing="true"
                           height="100%"
                           width="100%">
-                        <filter applyTo="entityLogTable"
+                        <filter id="filter"
+                                applyTo="entityLogTable"
                                 collapsed="true"
                                 datasource="entityLogDs">
                             <properties include=".*"/>
