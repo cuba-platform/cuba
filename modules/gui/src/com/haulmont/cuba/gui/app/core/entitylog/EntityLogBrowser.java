@@ -22,6 +22,7 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.Range;
+import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.app.EntityLogService;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributes;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
@@ -32,6 +33,10 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.ReferenceToEntitySupport;
 import com.haulmont.cuba.core.global.TimeSource;
+import com.haulmont.cuba.core.global.filter.Condition;
+import com.haulmont.cuba.core.global.filter.DenyingClause;
+import com.haulmont.cuba.core.global.filter.LogicalCondition;
+import com.haulmont.cuba.core.global.filter.QueryFilter;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.WindowParams;
 import com.haulmont.cuba.gui.commonlookup.CommonLookupController;
@@ -133,6 +138,12 @@ public class EntityLogBrowser extends AbstractWindow {
 
     @Inject
     protected ThemeConstants themeConstants;
+
+    @Inject
+    protected Filter filter;
+
+    @Inject
+    protected ClientConfig clientConfig;
 
     protected TreeMap<String, String> entityMetaClassesMap;
 
@@ -424,6 +435,24 @@ public class EntityLogBrowser extends AbstractWindow {
         if (entityLogDs instanceof CollectionDatasource.SupportsPaging) {
             ((CollectionDatasource.SupportsPaging) entityLogDs).setFirstResult(0);
         }
+
+        //remove condition that disables refresh
+        if (Boolean.TRUE.equals(filter.getManualApplyRequired())
+                || clientConfig.getGenericFilterManualApplyRequired()) {
+            QueryFilter queryFilter = entityLogDs.getQueryFilter();
+            if (queryFilter.getRoot() instanceof LogicalCondition) {
+                DenyingClause denyingClause = null;
+                for (Condition condition : queryFilter.getRoot().getConditions()) {
+                    if (condition instanceof DenyingClause) {
+                        denyingClause = (DenyingClause) condition;
+                    }
+                }
+                if (denyingClause != null) {
+                    queryFilter.getRoot().getConditions().remove(denyingClause);
+                }
+            }
+        }
+
         entityLogDs.refresh(params);
     }
 
