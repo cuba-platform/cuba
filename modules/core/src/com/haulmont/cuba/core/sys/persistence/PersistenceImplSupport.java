@@ -407,7 +407,6 @@ public class PersistenceImplSupport implements ApplicationContextAware {
 
             if (!readOnly) {
                 traverseEntities(container, new OnSaveEntityVisitor(container.getStoreName()), false);
-                entityLog.flush(container.getStoreName());
             }
 
             Collection<Entity> instances = container.getAllInstances();
@@ -456,6 +455,9 @@ public class PersistenceImplSupport implements ApplicationContextAware {
                 }
 
                 publishEntityChangedEvents(collectedEvents);
+
+                entityLog.flush(container.getStoreName());
+                detachAll();
             } else {
                 detachAll();
             }
