@@ -1249,6 +1249,7 @@ create table TEST_ENTITY_LOG_A (
     DELETED_BY varchar(50),
     --
     NAME varchar(255),
+    DESCRIPTION varchar(255),
     ENTITY_LOG_B_ID varchar(36),
     --
     primary key (ID)

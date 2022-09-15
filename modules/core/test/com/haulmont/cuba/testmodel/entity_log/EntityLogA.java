@@ -28,6 +28,9 @@ public class EntityLogA extends StandardEntity {
     @Column(name = "NAME")
     protected String name;
 
+    @Column(name = "DESCRIPTION")
+    protected String description;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ENTITY_LOG_B_ID")
     protected EntityLogB entityLogB;
@@ -46,5 +49,13 @@ public class EntityLogA extends StandardEntity {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }
