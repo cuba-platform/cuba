@@ -122,6 +122,30 @@ public class ValueBinder {
             }
         }
 
+        if (valueSource instanceof LegacyCollectionDsValueSource) {
+            LegacyCollectionDsValueSource entityValueSource = (LegacyCollectionDsValueSource) valueSource;
+
+            MetaPropertyPath metaPropertyPath = entityValueSource.getMetaPropertyPath();
+
+            if (metaPropertyPath != null) {
+                if (component instanceof Field) {
+                    initRequired((Field) component, metaPropertyPath);
+
+                    initBeanValidator((Field<?>) component, metaPropertyPath);
+                }
+
+                if (component instanceof Component.Editable) {
+                    if (!security.isEntityAttrUpdatePermitted(metaPropertyPath)) {
+                        ((Component.Editable) component).setEditable(false);
+                    }
+                }
+
+                if (!security.isEntityAttrReadPermitted(metaPropertyPath)) {
+                    component.setVisible(false);
+                }
+            }
+        }
+
         binding.bind();
 
         return binding;

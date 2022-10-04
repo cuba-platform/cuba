@@ -298,6 +298,10 @@ public class LegacyCollectionDsValueSource<V extends Entity> implements ValueSou
         }
     }
 
+    public MetaPropertyPath getMetaPropertyPath() {
+        return metaPropertyPath;
+    }
+
     @Nullable
     protected MetaProperty getInverseProperty() {
         MetaPropertyPath mpp = getMaster().getMetaClass().getPropertyPath(metaPropertyPath.toPathString());
