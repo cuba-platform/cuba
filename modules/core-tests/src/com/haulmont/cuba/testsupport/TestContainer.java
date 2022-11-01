@@ -436,7 +436,7 @@ public class TestContainer extends ExternalResource implements BeforeAllCallback
         String configProperty = AppContext.getProperty(AbstractAppContextLoader.SPRING_CONTEXT_CONFIG);
 
         StringTokenizer tokenizer = new StringTokenizer(configProperty);
-        List<String> locations = tokenizer.getTokenList();
+        List<String> locations = new ArrayList<>(tokenizer.getTokenList());
         String springConfig = getSpringConfig();
         if (!Strings.isNullOrEmpty(springConfig) && !locations.contains(springConfig)) {
             locations.add(springConfig);
