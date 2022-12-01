@@ -64,7 +64,7 @@ public class AceEditorWidget extends FocusWidget implements
 		public void focusChanged(boolean focused);
 	}
 
-    protected LinkedList<TextChangeListener> changeListeners = new LinkedList<TextChangeListener>();
+    protected LinkedList<TextChangeListener> changeListeners = new LinkedList<>();
 	public void addTextChangeListener(TextChangeListener li) {
 		changeListeners.add(li);
 	}
@@ -72,7 +72,7 @@ public class AceEditorWidget extends FocusWidget implements
 		changeListeners.remove(li);
 	}
 
-    protected LinkedList<SelectionChangeListener> selChangeListeners = new LinkedList<SelectionChangeListener>();
+    protected LinkedList<SelectionChangeListener> selChangeListeners = new LinkedList<>();
 	public void addSelectionChangeListener(SelectionChangeListener li) {
 		selChangeListeners.add(li);
 	}
@@ -123,7 +123,7 @@ public class AceEditorWidget extends FocusWidget implements
     protected Set<RowAnnotation> rowAnnsInEditor = Collections.emptySet();
     protected Set<AnnotationInEditor> markerAnnsInEditor = Collections.emptySet();
 
-    protected Map<Integer, AceRange> invisibleMarkers = new HashMap<Integer, AceRange>();
+    protected Map<Integer, AceRange> invisibleMarkers = new HashMap<>();
     protected int latestInvisibleMarkerId = 0;
 
     protected boolean ignoreEditorEvents = false;
@@ -246,7 +246,7 @@ public class AceEditorWidget extends FocusWidget implements
 
 
     protected void adjustInvisibleMarkersOnTextChange(Adjuster adjuster) {
-		HashMap<Integer, AceRange> ims = new HashMap<Integer, AceRange>(invisibleMarkers.size());
+		HashMap<Integer, AceRange> ims = new HashMap<>(invisibleMarkers.size());
 		for (Entry<Integer, AceRange> e : invisibleMarkers.entrySet()) {
 			ims.put(e.getKey(), adjuster.adjust(e.getValue()));
 		}
@@ -315,7 +315,7 @@ public class AceEditorWidget extends FocusWidget implements
 			return;
 		}
 		
-		HashMap<String,MarkerInEditor> newMarkers = new HashMap<String,MarkerInEditor>();
+		HashMap<String,MarkerInEditor> newMarkers = new HashMap<>();
 		for (Entry<String, AceMarker> e : markers.entrySet()) {
 			String mId = e.getKey();
 			AceMarker m = e.getValue();
@@ -396,7 +396,7 @@ public class AceEditorWidget extends FocusWidget implements
 
 	protected Set<AnnotationInEditor> createAIEfromMA(
 			Set<MarkerAnnotation> anns) {
-		Set<AnnotationInEditor> adjusted = new HashSet<AnnotationInEditor>();
+		Set<AnnotationInEditor> adjusted = new HashSet<>();
 		for (MarkerAnnotation a : anns) {
 			int row = rowOfMarker(a.getMarkerId());
 			if (row!=-1) {
@@ -446,8 +446,8 @@ public class AceEditorWidget extends FocusWidget implements
 	protected void adjustMarkers(GwtAceChangeEvent e) {
 		Action act = e.getData().getAction();
 		GwtAceRange range = e.getData().getRange();
-		Set<MarkerInEditor> moved = new HashSet<MarkerInEditor>();
-		Set<MarkerInEditor> removed = new HashSet<MarkerInEditor>();
+		Set<MarkerInEditor> moved = new HashSet<>();
+		Set<MarkerInEditor> removed = new HashSet<>();
 		
 		if (act==Action.insertLines || act==Action.insertText) {
 			for (MarkerInEditor cm : markersInEditor.values()) {
@@ -508,7 +508,7 @@ public class AceEditorWidget extends FocusWidget implements
 	protected void adjustInvisibleMarkers(GwtAceChangeEvent event) {
 		Action act = event.getData().getAction();
 		GwtAceRange range = event.getData().getRange();
-		HashMap<Integer, AceRange> newMap = new HashMap<Integer, AceRange>();
+		HashMap<Integer, AceRange> newMap = new HashMap<>();
 		if (act==Action.insertLines || act==Action.insertText) {
 			for (Entry<Integer, AceRange> e : invisibleMarkers.entrySet()) {
 				AceRange newRange = moveMarkerOnInsert(e.getValue(), range);
@@ -766,7 +766,7 @@ public class AceEditorWidget extends FocusWidget implements
 	}
 
 	protected Map<String, AceMarker> getMarkers() {
-		HashMap<String, AceMarker> markers = new HashMap<String, AceMarker>();
+		HashMap<String, AceMarker> markers = new HashMap<>();
 		for (MarkerInEditor cm : markersInEditor.values()) {
 			markers.put(cm.marker.getMarkerId(), cm.marker);
 		}
@@ -850,7 +850,7 @@ public class AceEditorWidget extends FocusWidget implements
 		if (ms.isEmpty()) {
 			return null;
 		}
-		HashMap<String, AceMarker> newMarkers = new HashMap<String, AceMarker>();
+		HashMap<String, AceMarker> newMarkers = new HashMap<>();
 		Adjuster adjuster = new Adjuster(text1, text2);
 		boolean adjusted = false;
 		for (Entry<String, AceMarker> e : ms.entrySet()) {

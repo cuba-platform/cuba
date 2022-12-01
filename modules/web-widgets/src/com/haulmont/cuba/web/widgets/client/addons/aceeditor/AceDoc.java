@@ -137,7 +137,7 @@ public class AceDoc implements Serializable {
 	}
 
 	/* TODO private */ Map<String, TransportMarker> getTransportMarkers() {
-		HashMap<String, TransportMarker> ms = new HashMap<String, TransportMarker>(
+		HashMap<String, TransportMarker> ms = new HashMap<>(
 				markers.size());
 		for (Entry<String, AceMarker> e : markers.entrySet()) {
 			ms.put(e.getKey(), e.getValue().asTransport());
@@ -150,7 +150,7 @@ public class AceDoc implements Serializable {
 		if (rowAnnotations==null) {
 			return null;
 		}
-		HashSet<TransportRowAnnotation> anns = new HashSet<TransportRowAnnotation>(
+		HashSet<TransportRowAnnotation> anns = new HashSet<>(
 				rowAnnotations.size());
 		for (RowAnnotation ra : rowAnnotations) {
 			anns.add(ra.asTransport());
@@ -162,7 +162,7 @@ public class AceDoc implements Serializable {
 		if (markerAnnotations==null) {
 			return null;
 		}
-		HashSet<TransportMarkerAnnotation> anns = new HashSet<TransportMarkerAnnotation>(
+		HashSet<TransportMarkerAnnotation> anns = new HashSet<>(
 				markerAnnotations.size());
 		for (MarkerAnnotation ma : markerAnnotations) {
 			anns.add(ma.asTransport());
@@ -180,7 +180,7 @@ public class AceDoc implements Serializable {
 
 	private static Map<String, AceMarker> markersFromTransport(
 			Map<String, TransportMarker> markers, String text) {
-		HashMap<String, AceMarker> ms = new HashMap<String, AceMarker>();
+		HashMap<String, AceMarker> ms = new HashMap<>();
 		for (Entry<String, TransportMarker> e : markers.entrySet()) {
 			ms.put(e.getKey(), AceMarker.fromTransport(e.getValue()));
 		}
@@ -192,7 +192,7 @@ public class AceDoc implements Serializable {
 		if (markerAnnotations==null) {
 			return null;
 		}
-		HashSet<MarkerAnnotation> anns = new HashSet<MarkerAnnotation>(markerAnnotations.size());
+		HashSet<MarkerAnnotation> anns = new HashSet<>(markerAnnotations.size());
 		for (TransportMarkerAnnotation ta : markerAnnotations) {
 			anns.add(ta.fromTransport());
 		}
@@ -204,7 +204,7 @@ public class AceDoc implements Serializable {
 		if (rowAnnotations==null) {
 			return null;
 		}
-		HashSet<RowAnnotation> anns = new HashSet<RowAnnotation>(rowAnnotations.size());
+		HashSet<RowAnnotation> anns = new HashSet<>(rowAnnotations.size());
 		for (TransportRowAnnotation ta : rowAnnotations) {
 			anns.add(ta.fromTransport());
 		}
@@ -213,7 +213,7 @@ public class AceDoc implements Serializable {
 	
 	// TODO?
 	public AceDoc withMarkers(Set<AceMarker> newMarkers) {
-		HashMap<String, AceMarker> markers2 = new HashMap<String, AceMarker>(newMarkers.size());
+		HashMap<String, AceMarker> markers2 = new HashMap<>(newMarkers.size());
 		for (AceMarker m : newMarkers) {
 			markers2.put(m.getMarkerId(), m);
 		}
@@ -224,18 +224,18 @@ public class AceDoc implements Serializable {
 		return new AceDoc(text, newMarkers, rowAnnotations, markerAnnotations);
 	}
 	public AceDoc withAdditionalMarker(AceMarker marker) {
-		HashMap<String, AceMarker> markers2 = new HashMap<String, AceMarker>(markers);
+		HashMap<String, AceMarker> markers2 = new HashMap<>(markers);
 		markers2.put(marker.getMarkerId(), marker);
 		return new AceDoc(text, markers2, rowAnnotations, markerAnnotations);
 	}
 	public AceDoc withAdditionalMarkers(Map<String, AceMarker> addMarkers) {
-		HashMap<String, AceMarker> newMarkers = new HashMap<String, AceMarker>(markers);
+		HashMap<String, AceMarker> newMarkers = new HashMap<>(markers);
 		newMarkers.putAll(addMarkers);
 		return new AceDoc(text, newMarkers, rowAnnotations, markerAnnotations);
 	}
 
 	public AceDoc withoutMarker(String markerId) {
-		HashMap<String, AceMarker> markers2 = new HashMap<String, AceMarker>(markers);
+		HashMap<String, AceMarker> markers2 = new HashMap<>(markers);
 		markers2.remove(markerId);
 		return new AceDoc(text, markers2, rowAnnotations, markerAnnotations);
 	}
@@ -246,7 +246,7 @@ public class AceDoc implements Serializable {
 	}
 	
 	public AceDoc withoutMarkers(Set<String> without) {
-		Map<String, AceMarker> newMarkers = new HashMap<String, AceMarker>(markers);
+		Map<String, AceMarker> newMarkers = new HashMap<>(markers);
 		for (String m : without) {
 			newMarkers.remove(m);
 		}
@@ -262,13 +262,13 @@ public class AceDoc implements Serializable {
 	}
 
 	public AceDoc withAdditionalMarkerAnnotation(MarkerAnnotation mann) {
-		HashSet<MarkerAnnotation> manns = markerAnnotations==null?new HashSet<MarkerAnnotation>():new HashSet<MarkerAnnotation>(markerAnnotations);
+		HashSet<MarkerAnnotation> manns = markerAnnotations==null? new HashSet<>(): new HashSet<>(markerAnnotations);
 		manns.add(mann);
 		return new AceDoc(text, markers, rowAnnotations, manns);
 	}
 	
 	public AceDoc withAdditionalRowAnnotation(RowAnnotation rann) {
-		HashSet<RowAnnotation> ranns = rowAnnotations==null?new HashSet<RowAnnotation>():new HashSet<RowAnnotation>(rowAnnotations);
+		HashSet<RowAnnotation> ranns = rowAnnotations==null? new HashSet<>(): new HashSet<>(rowAnnotations);
 		ranns.add(rann);
 		return new AceDoc(text, markers, ranns, markerAnnotations);
 	}

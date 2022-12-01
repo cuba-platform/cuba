@@ -31,7 +31,7 @@ public class ScreenClientProfiler {
     protected String profilerMarker;
     protected long lastFlushTime = System.currentTimeMillis();
     protected FlushEventsListener flushEventsListener;
-    protected Map<String, ScreenProfilerClientEvent> events = new HashMap<String, ScreenProfilerClientEvent>();
+    protected Map<String, ScreenProfilerClientEvent> events = new HashMap<>();
     protected Timer timer = new Timer() {
         @Override
         public void run() {

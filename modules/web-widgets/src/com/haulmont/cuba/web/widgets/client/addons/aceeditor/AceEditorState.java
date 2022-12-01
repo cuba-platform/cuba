@@ -46,7 +46,7 @@ public class AceEditorState extends AbstractFieldState {
 
     public boolean highlightActiveLine = true;
 
-	public Map<String,String> config = new HashMap<String,String>();
+	public Map<String,String> config = new HashMap<>();
 	
 	public int diff_editCost = 4;
 	

@@ -46,7 +46,7 @@ public class SuggestPopup extends VOverlay implements KeyDownHandler,
     protected VOverlay descriptionPopup;
 
     protected List<TransportSuggestion> suggs;
-    protected List<TransportSuggestion> visibleSuggs = new LinkedList<TransportSuggestion>();
+    protected List<TransportSuggestion> visibleSuggs = new LinkedList<>();
 
     protected boolean showDescriptions = true;
 

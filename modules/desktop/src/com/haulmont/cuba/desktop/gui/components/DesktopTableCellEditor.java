@@ -60,11 +60,11 @@ public class DesktopTableCellEditor extends AbstractCellEditor implements TableC
     private Border border;
     private Class<? extends com.haulmont.cuba.gui.components.Component> componentClass;
 
-    private static final Set<Class> readOnlyComponentClasses = new HashSet<Class>(Arrays.asList(
+    private static final Set<Class> readOnlyComponentClasses = new HashSet<>(Arrays.asList(
             Label.class, Checkbox.class, Table.PlainTextCell.class
     ));
 
-    private static final Set<Class> inlineComponentClasses = new HashSet<Class>(Arrays.asList(
+    private static final Set<Class> inlineComponentClasses = new HashSet<>(Arrays.asList(
             Label.class, Checkbox.class, Table.PlainTextCell.class
     ));
 

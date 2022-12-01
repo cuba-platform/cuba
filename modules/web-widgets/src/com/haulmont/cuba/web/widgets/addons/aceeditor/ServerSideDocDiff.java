@@ -184,9 +184,9 @@ public class ServerSideDocDiff {
 
 	public static ServerSideDocDiff newMarkersAndAnnotations(
 			MarkerSetDiff msd, SetDiff<MarkerAnnotation,TransportMarkerAnnotation> mad) {
-		LinkedList<Patch> patches = new LinkedList<Patch>();
+		LinkedList<Patch> patches = new LinkedList<>();
 		SetDiff<RowAnnotation,TransportRowAnnotation> rowAnnDiff =
-				new SetDiff<RowAnnotation, TransportRowAnnotation>();
+                new SetDiff<>();
 		return new ServerSideDocDiff(patches, msd, rowAnnDiff, mad);
 	}
 	

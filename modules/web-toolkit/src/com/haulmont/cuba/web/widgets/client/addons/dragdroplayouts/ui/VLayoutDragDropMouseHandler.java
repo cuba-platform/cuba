@@ -69,9 +69,9 @@ public class VLayoutDragDropMouseHandler implements MouseDownHandler,
 
     private HandlerRegistration mouseDownHandlerReg;
 
-    private final List<HandlerRegistration> handlers = new LinkedList<HandlerRegistration>();
+    private final List<HandlerRegistration> handlers = new LinkedList<>();
 
-    private final List<DragStartListener> dragStartListeners = new ArrayList<DragStartListener>();
+    private final List<DragStartListener> dragStartListeners = new ArrayList<>();
 
     private Widget attachTarget;
 
