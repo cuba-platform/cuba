@@ -123,7 +123,7 @@ public class CubaTreeTableConnector extends TreeTableConnector {
         }
         if (stateChangeEvent.hasPropertyChanged("clickableColumnKeys")) {
             if (getState().clickableColumnKeys != null) {
-                getWidget()._delegate.clickableColumns = new HashSet<>(Arrays.asList(getState().clickableColumnKeys));
+                getWidget()._delegate.clickableColumns = new HashSet<String>(Arrays.asList(getState().clickableColumnKeys));
             } else {
                 getWidget()._delegate.clickableColumns = null;
             }

@@ -87,7 +87,7 @@ public class SuggestionExtension extends AbstractExtension {
     }
 
     protected List<TransportSuggestion> asTransport(List<Suggestion> suggs) {
-		LinkedList<TransportSuggestion> tl = new LinkedList<>();
+		LinkedList<TransportSuggestion> tl = new LinkedList<TransportSuggestion>();
 		int i = 0;
 		for (Suggestion s : suggs) {
 			tl.add(s.asTransport(i++));

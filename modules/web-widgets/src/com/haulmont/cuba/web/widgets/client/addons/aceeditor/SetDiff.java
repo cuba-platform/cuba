@@ -42,12 +42,12 @@ public class SetDiff<V extends TransportableAs<T>,T> {
 
 	public static class Differ<V extends TransportableAs<T>,T> {
 		public SetDiff<V,T> diff(Set<V> s1, Set<V> s2) {
-			Set<V> removed = new HashSet<>(s1);
+			Set<V> removed = new HashSet<V>(s1);
 			removed.removeAll(s2);
 			
-			Set<V> added = new HashSet<>(s2);
+			Set<V> added = new HashSet<V>(s2);
 			added.removeAll(s1);
-			return new SetDiff<>(added, removed);
+			return new SetDiff<V,T>(added, removed);
 		}
 		
 //		public SetDiff<V,T> fromTransport(TransportSetDiff<T> tsd) {
@@ -67,32 +67,32 @@ public class SetDiff<V extends TransportableAs<T>,T> {
 	
 	// XXX Unnecessary copy-pasting
 	public static SetDiff<RowAnnotation,TransportRowAnnotation> fromTransport(TransportSetDiffForRowAnnotations tsd) {
-		Set<RowAnnotation> added = new HashSet<>();
+		Set<RowAnnotation> added = new HashSet<RowAnnotation>();
 		for (TransportRowAnnotation t : tsd.added) {
 			added.add(t.fromTransport());
 		}
-		Set<RowAnnotation> removed = new HashSet<>();
+		Set<RowAnnotation> removed = new HashSet<RowAnnotation>();
 		for (TransportRowAnnotation t : tsd.removed) {
 			removed.add(t.fromTransport());
 		}
-		return new SetDiff<>(added, removed);
+		return new SetDiff<RowAnnotation,TransportRowAnnotation>(added, removed);
 	}
 	
 	// XXX Unnecessary copy-pasting
 	public static SetDiff<MarkerAnnotation,TransportMarkerAnnotation> fromTransport(TransportSetDiffForMarkerAnnotations tsd) {
-		Set<MarkerAnnotation> added = new HashSet<>();
+		Set<MarkerAnnotation> added = new HashSet<MarkerAnnotation>();
 		for (TransportMarkerAnnotation t : tsd.added) {
 			added.add(t.fromTransport());
 		}
-		Set<MarkerAnnotation> removed = new HashSet<>();
+		Set<MarkerAnnotation> removed = new HashSet<MarkerAnnotation>();
 		for (TransportMarkerAnnotation t : tsd.removed) {
 			removed.add(t.fromTransport());
 		}
-		return new SetDiff<>(added, removed);
+		return new SetDiff<MarkerAnnotation,TransportMarkerAnnotation>(added, removed);
 	}
 	
 	public Set<V> applyTo(Set<V> s1) {
-		Set<V> s2 = new HashSet<>(s1);
+		Set<V> s2 = new HashSet<V>(s1);
 		s2.removeAll(removed);
 		s2.addAll(added);
 		return s2;
@@ -112,11 +112,11 @@ public class SetDiff<V extends TransportableAs<T>,T> {
 	
 	// XXX Unnecessary copy-pasting
 	public TransportSetDiffForRowAnnotations asTransportRowAnnotations() {
-		HashSet<TransportRowAnnotation> ta = new HashSet<>();
+		HashSet<TransportRowAnnotation> ta = new HashSet<TransportRowAnnotation>();
 		for (V v : added) {
 			ta.add((TransportRowAnnotation) v.asTransport());
 		}
-		HashSet<TransportRowAnnotation> tr = new HashSet<>();
+		HashSet<TransportRowAnnotation> tr = new HashSet<TransportRowAnnotation>();
 		for (V v : removed) {
 			tr.add((TransportRowAnnotation) v.asTransport());
 		}
@@ -125,11 +125,11 @@ public class SetDiff<V extends TransportableAs<T>,T> {
 	
 	// XXX Unnecessary copy-pasting
 	public TransportSetDiffForMarkerAnnotations asTransportMarkerAnnotations() {
-		HashSet<TransportMarkerAnnotation> ta = new HashSet<>();
+		HashSet<TransportMarkerAnnotation> ta = new HashSet<TransportMarkerAnnotation>();
 		for (V v : added) {
 			ta.add((TransportMarkerAnnotation) v.asTransport());
 		}
-		HashSet<TransportMarkerAnnotation> tr = new HashSet<>();
+		HashSet<TransportMarkerAnnotation> tr = new HashSet<TransportMarkerAnnotation>();
 		for (V v : removed) {
 			tr.add((TransportMarkerAnnotation) v.asTransport());
 		}

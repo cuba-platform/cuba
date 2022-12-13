@@ -55,7 +55,7 @@ public class VPopupButton extends VButton {
 
     protected Widget popupPositionWidget;
 
-    private final Set<Element> activeChildren = new HashSet<>();
+    private final Set<Element> activeChildren = new HashSet<Element>();
 
     private AlignmentInfo direction;
 

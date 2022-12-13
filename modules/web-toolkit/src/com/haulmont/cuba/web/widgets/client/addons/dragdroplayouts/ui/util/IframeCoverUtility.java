@@ -37,7 +37,7 @@ public class IframeCoverUtility {
 
     public static final String SHIM_STYLENAME = "v-dragdrop-iframe-cover";
 
-    private static Map<Element, Element> iframeCoverMap = new HashMap<>();
+    private static Map<Element, Element> iframeCoverMap = new HashMap<Element, Element>();
 
     // The constant was extracted into a separate class SharedConstants
 //    public static final String SHIM_ATTRIBUTE = "shims";
@@ -120,7 +120,7 @@ public class IframeCoverUtility {
      * @return A set of elements with the iframe covers
      */
     private static Set<Element> addIframeCovers(Element rootElement) {
-        Set<Element> coveredIframes = new HashSet<>();
+        Set<Element> coveredIframes = new HashSet<Element>();
         NodeList<com.google.gwt.dom.client.Element> iframes = rootElement
                 .getElementsByTagName("iframe");
         for (int i = 0; i < iframes.getLength(); i++) {
@@ -146,7 +146,7 @@ public class IframeCoverUtility {
     }
 
     // The covered ifream covers
-    private Set<Element> coveredIframes = new HashSet<>();
+    private Set<Element> coveredIframes = new HashSet<Element>();
 
     /**
      * Enable IFrame covers for a element

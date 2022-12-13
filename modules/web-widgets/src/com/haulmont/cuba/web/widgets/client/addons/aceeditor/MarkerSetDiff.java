@@ -47,8 +47,8 @@ public class MarkerSetDiff implements Serializable {
 
 	public static MarkerSetDiff diff(Map<String, AceMarker> m1, Map<String, AceMarker> m2, String text2) {
 
-		Map<String, MarkerAddition> added = new HashMap<>();
-		Map<String, MarkerDiff> diffs = new HashMap<>();
+		Map<String, MarkerAddition> added = new HashMap<String, MarkerAddition>();
+		Map<String, MarkerDiff> diffs = new HashMap<String, MarkerDiff>();
 		for (Entry<String, AceMarker> e : m2.entrySet()) {
 			AceMarker c1 = m1.get(e.getKey());
 			if (c1 != null) {
@@ -61,7 +61,7 @@ public class MarkerSetDiff implements Serializable {
 			}
 		}
 
-		Set<String> removedIds = new HashSet<>(m1.keySet());
+		Set<String> removedIds = new HashSet<String>(m1.keySet());
 		removedIds.removeAll(m2.keySet());
 
 		return new MarkerSetDiff(added, diffs, removedIds);
@@ -96,7 +96,7 @@ public class MarkerSetDiff implements Serializable {
 //	}
 	
 	public Map<String, AceMarker> applyTo(Map<String, AceMarker> markers, String text2) {
-		Map<String, AceMarker> markers2 = new HashMap<>();
+		Map<String, AceMarker> markers2 = new HashMap<String, AceMarker>();
 		for (Entry<String, MarkerAddition> e : added.entrySet()) {
 			AceMarker adjusted = e.getValue().getAdjustedMarker(text2);
 			if (adjusted != null) {
@@ -146,7 +146,7 @@ public class MarkerSetDiff implements Serializable {
 	}
 
 	private Map<String, TransportMarkerAddition> getTransportAdded() {
-		HashMap<String, TransportMarkerAddition> ta = new HashMap<>();
+		HashMap<String, TransportMarkerAddition> ta = new HashMap<String, TransportMarkerAddition>();
 		for (Entry<String, MarkerAddition> e : added.entrySet()) {
 			ta.put(e.getKey(), e.getValue().asTransport());
 		}
@@ -154,7 +154,7 @@ public class MarkerSetDiff implements Serializable {
 	}
 
 	private Map<String, TransportMarkerDiff> getTransportMoved() {
-		HashMap<String, TransportMarkerDiff> ta = new HashMap<>();
+		HashMap<String, TransportMarkerDiff> ta = new HashMap<String, TransportMarkerDiff>();
 		for (Entry<String, MarkerDiff> e : moved.entrySet()) {
 			ta.put(e.getKey(), e.getValue().asTransport());
 		}
@@ -174,7 +174,7 @@ public class MarkerSetDiff implements Serializable {
 
 	private static Map<String, MarkerAddition> addedFromTransport(
 			Map<String, TransportMarkerAddition> added2) {
-		HashMap<String, MarkerAddition> added = new HashMap<>();
+		HashMap<String, MarkerAddition> added = new HashMap<String, MarkerAddition>();
 		for (Entry<String, TransportMarkerAddition> e : added2.entrySet()) {
 			added.put(e.getKey(), MarkerAddition.fromTransport(e.getValue()));
 		}
@@ -183,7 +183,7 @@ public class MarkerSetDiff implements Serializable {
 
 	private static Map<String, MarkerDiff> movedFromTransport(
 			Map<String, TransportMarkerDiff> mt) {
-		HashMap<String, MarkerDiff> moved = new HashMap<>();
+		HashMap<String, MarkerDiff> moved = new HashMap<String, MarkerDiff>();
 		for (Entry<String, TransportMarkerDiff> e : mt.entrySet()) {
 			moved.put(e.getKey(), MarkerDiff.fromTransport(e.getValue()));
 		}

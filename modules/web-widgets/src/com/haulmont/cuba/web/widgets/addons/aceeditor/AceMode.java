@@ -142,7 +142,7 @@ public enum AceMode {
 		return forFileEnding(filename.substring(lastDot + 1).toLowerCase());
 	}
 	
-	private static HashMap<String, AceMode> endingModeMap = new HashMap<>();
+	private static HashMap<String, AceMode> endingModeMap = new HashMap<String, AceMode>();
 	static {
 		// Only the file endings that != language name
 		endingModeMap.put("js", javascript);

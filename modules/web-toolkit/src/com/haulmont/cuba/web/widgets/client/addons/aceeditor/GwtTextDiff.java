@@ -41,7 +41,7 @@ public class GwtTextDiff{
 		
 		public List<Diff> getDiffs() {
 			JsArray<Diff> diffs = getDiffsJsArray();
-			LinkedList<Diff> dili = new LinkedList<>();
+			LinkedList<Diff> dili = new LinkedList<Diff>();
 			for (int i=0; i<diffs.length(); ++i) {
 				dili.add(diffs.get(i));
 			}
@@ -119,7 +119,7 @@ public class GwtTextDiff{
 	}
 
 	public List<Patch> getPatches() {
-		LinkedList<Patch> pali = new LinkedList<>();
+		LinkedList<Patch> pali = new LinkedList<Patch>();
 		for (int i=0; i<patches.length(); ++i) {
 			pali.add(patches.get(i));
 		}

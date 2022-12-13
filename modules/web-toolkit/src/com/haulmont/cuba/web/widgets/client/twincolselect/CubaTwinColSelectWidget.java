@@ -216,7 +216,7 @@ public class CubaTwinColSelectWidget extends VTwinColSelect {
     }
 
     private Set<String> moveAllItems(ListBox source, ListBox target) {
-        final Set<String> movedItems = new HashSet<>();
+        final Set<String> movedItems = new HashSet<String>();
         int size = source.getItemCount();
         for (int i = 0; i < size; i++) {
             movedItems.add(source.getValue(i));
