@@ -181,7 +181,7 @@ public class CleanupTools {
         return new DomainCombiner() {
 
             /** Flag to detected recursive calls */
-            private final ThreadLocal<Boolean> isExecuting = new ThreadLocal<Boolean>();
+            private final ThreadLocal<Boolean> isExecuting = new ThreadLocal<>();
 
             @Override
             public ProtectionDomain[] combine(ProtectionDomain[] currentDomains, ProtectionDomain[] assignedDomains) {
@@ -196,7 +196,7 @@ public class CleanupTools {
                     isExecuting.set(Boolean.TRUE); // Throw NestedProtectionDomainCombinerException on nested calls
 
                     // Keep all ProtectionDomain not involving the web app classloader
-                    final List<ProtectionDomain> output = new ArrayList<ProtectionDomain>();
+                    final List<ProtectionDomain> output = new ArrayList<>();
                     for (ProtectionDomain protectionDomain : currentDomains) {
                         if (protectionDomain.getClassLoader() == null ||
                                 !isClassLoaderOrChild(protectionDomain.getClassLoader())) {
@@ -368,7 +368,7 @@ public class CleanupTools {
         }
 
         Object obj = new Object();
-        WeakReference<Object> ref = new WeakReference<Object>(obj);
+        WeakReference<Object> ref = new WeakReference<>(obj);
         //noinspection UnusedAssignment
         obj = null;
         while (ref.get() != null) {

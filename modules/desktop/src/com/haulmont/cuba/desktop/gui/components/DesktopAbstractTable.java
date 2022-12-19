@@ -2714,7 +2714,7 @@ public abstract class DesktopAbstractTable<C extends JXTable, E extends Entity>
             setSize(new Dimension(cWidth, 1000));
             int prefH = getPreferredSize().height;
             while (rowColHeight.size() <= row) {
-                rowColHeight.add(new ArrayList<Integer>(column));
+                rowColHeight.add(new ArrayList<>(column));
             }
             List<Integer> colHeights = rowColHeight.get(row);
             while (colHeights.size() <= column) {
