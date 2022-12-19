@@ -72,7 +72,7 @@ public class DeletePolicyProcessor {
     }
 
     public void process() {
-        List<MetaProperty> properties = new ArrayList<MetaProperty>();
+        List<MetaProperty> properties = new ArrayList<>();
 
         fillProperties(properties, OnDeleteInverse.class.getName());
         if (!properties.isEmpty())
