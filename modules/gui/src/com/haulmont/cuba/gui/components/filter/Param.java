@@ -812,6 +812,7 @@ public class Param {
         if (inExpr) {
             ListEditor listEditor = uiComponents.create(ListEditor.class);
             listEditor.setItemType(ListEditor.ItemType.UUID);
+            listEditor.setDisplayValuesFieldEditable(true);
             initListEditor(listEditor, valueProperty);
             return listEditor;
         }
