@@ -926,7 +926,22 @@ public class Param {
 
         dataLoader.setView(entityView);
 
-        String query = String.format("select e from %s e", metaClass.getName());
+        String query = null;
+        Collection<MetaProperty> properties = metadata.getTools().getNamePatternProperties(metaClass);
+        if (!properties.isEmpty()) {
+            String orderBy = properties.stream()
+                    .filter(metaProperty -> metaProperty != null && metadataTools.isPersistent(metaProperty))
+                    .map(m -> "e." + m.getName())
+                    .collect(Collectors.joining(", "));
+            if (!orderBy.isEmpty()) {
+                query = String.format("select e from %s e order by %s", metaClass.getName(), orderBy);
+            } else {
+                query = String.format("select e from %s e", metaClass.getName());
+            }
+        } else {
+            query = String.format("select e from %s e", metaClass.getName());
+        }
+
         if (!Strings.isNullOrEmpty(entityWhere)) {
             QueryTransformer queryTransformer = QueryTransformerFactory.createTransformer(query);
             queryTransformer.addWhere(entityWhere);
