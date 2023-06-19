@@ -746,14 +746,14 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
                 if (component.getColumnGenerator(column.getId()) == null) {
                     if (propertyId.getRange().isClass()) {
                         if (StringUtils.isNotEmpty(isLink)) {
-                            setClickListener(propertyId.toString(), new LinkCellClickListener(this, beanLocator));
+                            setClickListener(propertyId.toString(), createCellClickListener());
                         }
                     } else if (propertyId.getRange().isDatatype()) {
                         if (StringUtils.isNotEmpty(isLink)) {
-                            setClickListener(propertyId.toString(), new LinkCellClickListener(this, beanLocator));
+                            setClickListener(propertyId.toString(), createCellClickListener());
                         } else {
                             if (column.getMaxTextLength() != null) {
-                                addGeneratedColumnInternal(propertyId, new AbbreviatedColumnGenerator(column, dynamicAttributesTools));
+                                addGeneratedColumnInternal(propertyId, createAbbreviatedColumnGenerator(column));
                             }
                         }
                     }
@@ -1367,22 +1367,32 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
 
                 if (propertyPath.getRange().isClass()) {
                     if (StringUtils.isNotEmpty(isLink)) {
-                        setClickListener(propertyPath.toString(), new LinkCellClickListener(this, beanLocator));
+                        setClickListener(propertyPath.toString(), createCellClickListener());
                     }
                 } else if (propertyPath.getRange().isDatatype()) {
                     if (StringUtils.isNotEmpty(isLink)) {
-                        setClickListener(propertyPath.toString(), new LinkCellClickListener(this, beanLocator));
+                        setClickListener(propertyPath.toString(), createCellClickListener());
                     } else {
                         if (column.getMaxTextLength() != null) {
-                            addGeneratedColumnInternal(propertyPath,
-                                    new AbbreviatedColumnGenerator(column, dynamicAttributesTools));
-                            setClickListener(propertyPath.toString(),
-                                    new AbbreviatedCellClickListener(this, dynamicAttributesTools, metadataTools));
+                            addGeneratedColumnInternal(propertyPath, createAbbreviatedColumnGenerator(column));
+                            setClickListener(propertyPath.toString(), createAbbreviatedCellClickListener());
                         }
                     }
                 }
             }
         }
+    }
+
+    protected LinkCellClickListener createCellClickListener() {
+        return new LinkCellClickListener(this, beanLocator);
+    }
+
+    protected AbbreviatedColumnGenerator createAbbreviatedColumnGenerator(Column column) {
+        return new AbbreviatedColumnGenerator(column, dynamicAttributesTools);
+    }
+
+    protected AbbreviatedCellClickListener createAbbreviatedCellClickListener() {
+        return new AbbreviatedCellClickListener(this, dynamicAttributesTools, metadataTools);
     }
 
     @Nullable
