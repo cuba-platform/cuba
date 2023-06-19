@@ -122,7 +122,11 @@ public class LinkCellClickListener implements Table.CellClickListener {
                 entity,
                 screenOpenType
         );
-        editor.addCloseListener(actionId -> {
+        editor.addCloseListener(createCloseListener(rowItem, columnId, editor));
+    }
+
+    protected Window.CloseListener createCloseListener(Entity rowItem, String columnId, AbstractEditor editor) {
+        return actionId -> {
             // move focus to component
             table.focus();
 
@@ -131,7 +135,7 @@ public class LinkCellClickListener implements Table.CellClickListener {
 
                 handleEditorCommit(editorItem, rowItem, columnId);
             }
-        });
+        };
     }
 
     protected void handleEditorCommit(Entity editorItem, Entity rowItem, String columnId) {
