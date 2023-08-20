@@ -52,7 +52,7 @@ public class DbUpdaterEngine implements DbUpdater {
 
     private static final String GROOVY_EXTENSION = "groovy";
     protected static final String UPGRADE_GROOVY_EXTENSION = "upgrade.groovy";
-
+    protected static final Pattern END_LINE_REGEX = Pattern.compile("\\r?\\n");
     protected static final Pattern RESTAPI_REGEX = Pattern.compile("^\\d+-restapi.*$");
 
     protected static final List<Pattern> EXCLUDED_ADDONS = ImmutableList.of(RESTAPI_REGEX);
@@ -361,8 +361,28 @@ public class DbUpdaterEngine implements DbUpdater {
         }
     }
 
+    protected String deleteComments(String sql) {
+        if (StringUtils.isEmpty(sql)) {
+            return sql;
+        }
+        StringBuilder stringBuilder = new StringBuilder();
+        String[] lines = END_LINE_REGEX.split(sql);
+        for (String line : lines) {
+            int commentStart = line.indexOf(SQL_COMMENT_PREFIX);
+            line = commentStart == -1 ? line.trim() : line.substring(0, commentStart).trim();
+            if (!StringUtils.isBlank(line)) {
+                stringBuilder.append(line)
+                        .append(System.lineSeparator());
+            }
+        }
+        return stringBuilder.toString();
+    }
+
     protected boolean isEmpty(String sql) {
-        String[] lines = sql.split("\\r?\\n");
+        if (StringUtils.isEmpty(sql)) {
+            return true;
+        }
+        String[] lines = END_LINE_REGEX.split(sql);
         for (String line : lines) {
             line = line.trim();
             if (!line.startsWith(SQL_COMMENT_PREFIX) && !StringUtils.isBlank(line)) {
@@ -379,6 +399,7 @@ public class DbUpdaterEngine implements DbUpdater {
         } catch (IOException e) {
             throw new RuntimeException(ERROR + "Error resolving SQL script " + file.name, e);
         }
+        script = deleteComments(script);
         ScriptSplitter splitter = new ScriptSplitter(SQL_DELIMITER);
         for (String sql : splitter.split(script)) {
             if (!isEmpty(sql)) {
