@@ -426,4 +426,22 @@
         <Class name="com.haulmont.cuba.web.gui.components.WebLookupScreenFacet"/>
     </Match>
 
+    <Match>
+        <Bug pattern="NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE"/>
+        <Class name="com.haulmont.cuba.gui.model.impl.ObservableList"/>
+        <Method name="sort"/>
+    </Match>
+
+    <Match>
+        <Bug pattern="NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE"/>
+        <Class name="com.haulmont.cuba.gui.xml.layout.loaders.AbstractComponentLoader"/>
+        <Method name="loadShortcutFromAlias"/>
+    </Match>
+
+    <Match>
+        <Bug pattern="NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE"/>
+        <Class name="com.haulmont.chile.core.model.utils.MethodsCache"/>
+        <Method name="&lt;init&gt;"/>
+    </Match>
+
 </FindBugsFilter>
