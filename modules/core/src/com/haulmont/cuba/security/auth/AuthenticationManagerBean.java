@@ -231,6 +231,17 @@ public class AuthenticationManagerBean implements AuthenticationManager {
         }
     }
 
+    @Override
+    public boolean isUserActive(User user) {
+        try (Transaction ignored = persistence.createTransaction()) {
+            User foundUser = persistence.getEntityManager().find(User.class, user.getId());
+            if (foundUser == null) {
+                throw new NoResultException("User not found");
+            }
+            return foundUser.getActive();
+        }
+    }
+
     protected AuthenticationDetails authenticateInternal(Credentials credentials) throws LoginException {
         AuthenticationDetails details = null;
 

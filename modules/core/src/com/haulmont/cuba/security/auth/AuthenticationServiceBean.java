@@ -156,6 +156,12 @@ public class AuthenticationServiceBean implements AuthenticationService {
         }
     }
 
+    @Override
+    public boolean isUserActive(User user) {
+        return authenticationManager.isUserActive(user);
+    }
+
+
     protected LoginException wrapInLoginException(Throwable throwable) {
         //noinspection ThrowableResultOfMethodCallIgnored
         Throwable rootCause = ExceptionUtils.getRootCause(throwable);
