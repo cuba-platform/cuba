@@ -21,12 +21,13 @@ import com.haulmont.cuba.core.config.Property;
 import com.haulmont.cuba.core.config.Source;
 import com.haulmont.cuba.core.config.SourceType;
 import com.haulmont.cuba.core.config.defaults.*;
+import com.haulmont.cuba.core.config.type.DataSizeTypeFactory;
 import com.haulmont.cuba.core.config.type.Factory;
 import com.haulmont.cuba.core.config.type.TokenizedStringListFactory;
 import com.haulmont.cuba.security.app.UserSessionsAPI;
-import com.haulmont.cuba.security.entity.Access;
 import com.haulmont.cuba.security.role.SecurityStorageMode;
 import com.haulmont.cuba.security.role.SecurityStorageModeFactory;
+import org.springframework.util.unit.DataSize;
 
 import java.util.List;
 
@@ -139,6 +140,14 @@ public interface ServerConfig extends Config {
     @Property("cuba.immutableFileStorage")
     @DefaultBoolean(true)
     boolean getImmutableFileStorage();
+
+    /**
+     * Maximum allowable file size in file storage.
+     */
+    @Property("cuba.fileStorageMaxFileSize")
+    @Factory(factory = DataSizeTypeFactory.class)
+    @Default("100MB")
+    DataSize getFileStorageMaxFileSize();
 
     /**
      * @return Scheduled tasks execution control.
