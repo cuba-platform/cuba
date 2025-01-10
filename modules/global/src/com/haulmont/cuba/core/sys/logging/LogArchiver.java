@@ -17,7 +17,6 @@
 
 package com.haulmont.cuba.core.sys.logging;
 
-import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 import org.apache.commons.io.FileUtils;
@@ -47,7 +46,7 @@ public class LogArchiver {
 
         byte[] content = getTailBytes(logFile);
 
-        ArchiveEntry archiveEntry = newTailArchive(logFile.getName(), content);
+        ZipArchiveEntry archiveEntry = newTailArchive(logFile.getName(), content);
         zipOutputStream.putArchiveEntry(archiveEntry);
         zipOutputStream.write(content);
 
@@ -66,7 +65,7 @@ public class LogArchiver {
         zipOutputStream.setMethod(ZipArchiveOutputStream.DEFLATED);
         zipOutputStream.setEncoding(ZIP_ENCODING);
 
-        ArchiveEntry archiveEntry = newArchive(logFile);
+        ZipArchiveEntry archiveEntry = newArchive(logFile);
         zipOutputStream.putArchiveEntry(archiveEntry);
 
         FileInputStream logFileInput = new FileInputStream(logFile);
@@ -111,7 +110,7 @@ public class LogArchiver {
         return buf;
     }
 
-    private static ArchiveEntry newTailArchive(String name, byte[] tail) {
+    private static ZipArchiveEntry newTailArchive(String name, byte[] tail) {
         ZipArchiveEntry zipEntry = new ZipArchiveEntry(name);
         zipEntry.setSize(tail.length);
         zipEntry.setCompressedSize(zipEntry.getSize());
@@ -121,7 +120,7 @@ public class LogArchiver {
         return zipEntry;
     }
 
-    private static ArchiveEntry newArchive(File file) throws IOException {
+    private static ZipArchiveEntry newArchive(File file) throws IOException {
         ZipArchiveEntry zipEntry = new ZipArchiveEntry(file.getName());
         zipEntry.setSize(file.length());
         zipEntry.setCompressedSize(zipEntry.getSize());
