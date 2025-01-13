@@ -544,6 +544,7 @@ configure(coreTestsModule) {
         compile(coreModule)
 
         compile(bom['org.apache.commons:commons-dbcp2'])
+        compile(bom['junit:junit'])
         compile(bom['org.junit.jupiter:junit-jupiter-api'])
         compile(bom['org.junit.jupiter:junit-jupiter-engine'])
         compile(bom['org.junit.vintage:junit-vintage-engine'])
@@ -581,6 +582,7 @@ configure(clientTestsModule) {
         compile(clientModule)
 
         compile(bom['org.jmockit:jmockit'])
+        compile(bom['junit:junit'])
         compile(bom['org.junit.jupiter:junit-jupiter-api'])
         compile(bom['org.junit.jupiter:junit-jupiter-engine'])
         compile(bom['org.junit.vintage:junit-vintage-engine'])
@@ -647,6 +649,8 @@ configure(webWidgetsModule) {
             exclude(group: 'com.vaadin', module: 'vaadin-sass-compiler')
         }
         compile(bom['com.vaadin:vaadin-push'])
+
+        compile(bom['org.jsoup:jsoup'])
 
         /* Vaadin addons */
         /* The following add-ons are embedded into Platform
@@ -862,7 +866,16 @@ configure(webToolkitModule) {
         compile(bom['com.vaadin:vaadin-compatibility-client'])
 
         // for code server only
-        compile('org.eclipse.jetty:jetty-server:9.2.27.v20190403')
+        compile(bom['org.eclipse.jetty:jetty-server'])
+        compile(bom['org.eclipse.jetty:jetty-webapp'])
+        compile(bom['org.eclipse.jetty.websocket:websocket-client'])
+        compile(bom['org.eclipse.jetty:jetty-servlets'])
+        compile(bom['org.eclipse.jetty:jetty-annotations'])
+        compile(bom['org.eclipse.jetty:apache-jsp'])
+        compile(bom['org.eclipse.jetty:jetty-client'])
+
+        compile(bom['net.sourceforge.htmlunit:htmlunit'])
+        compile(bom['com.ibm.icu:icu4j'])
 
         runtime(bom['javax.servlet:javax.servlet-api'])
     }
@@ -981,9 +994,15 @@ configure(portalModule) {
 
         compile(bom['org.json:json'])
 
-        compile(bom['org.thymeleaf:thymeleaf'])
-        compile(bom['org.thymeleaf:thymeleaf-spring5'])
-        compile(bom['org.thymeleaf.extras:thymeleaf-extras-springsecurity5'])
+        compile(bom['org.thymeleaf:thymeleaf']) {
+            exclude(group: 'org.slf4j', module: 'slf4j-api')
+        }
+        compile(bom['org.thymeleaf:thymeleaf-spring5']) {
+            exclude(group: 'org.slf4j', module: 'slf4j-api')
+        }
+        compile(bom['org.thymeleaf.extras:thymeleaf-extras-springsecurity5']) {
+            exclude(group: 'org.slf4j', module: 'slf4j-api')
+        }
 
         compileOnly(bom['javax.servlet:javax.servlet-api'])
 
