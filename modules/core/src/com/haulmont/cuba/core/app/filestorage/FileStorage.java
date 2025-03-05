@@ -116,11 +116,30 @@ public class FileStorage implements FileStorageAPI {
         final File file = new File(dir, getFileName(fileDescr));
         checkFileExists(file);
 
+        ServerConfig serverConfig = configuration.getConfig(ServerConfig.class);
+        long maxAllowedSize = serverConfig.getFileStorageMaxFileSize().toBytes();
         long size = 0;
         OutputStream os = null;
         try {
             os = FileUtils.openOutputStream(file);
-            size = IOUtils.copyLarge(inputStream, os);
+            size = IOUtils.copyLarge(inputStream, os, 0, maxAllowedSize);
+
+            if (size >= maxAllowedSize) {
+                if (inputStream.read() != IOUtils.EOF) {
+                    os.close();
+                    if (file.exists()) {
+                        if (!file.delete()) {
+                            log.warn("Failed to delete an incorrectly uploaded file '{}'. " +
+                                            "File was to large and has been rejected but already loaded part was not deleted.",
+                                    file.getAbsolutePath());
+                        }
+                    }
+                    throw new FileStorageException(FileStorageException.Type.IO_EXCEPTION,
+                            String.format("File is too large: '%s'. Max file size = %s MB is exceeded but there are unread bytes left.",
+                                    file.getAbsolutePath(),
+                                    serverConfig.getFileStorageMaxFileSize().toMegabytes()));
+                }
+            }
             os.flush();
             writeLog(file, false);
         } catch (IOException e) {
