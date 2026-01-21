@@ -16,6 +16,7 @@
  */
 package com.haulmont.cuba.gui.export;
 
+import com.google.common.base.Strings;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.Instance;
@@ -78,6 +79,7 @@ public class ExcelExporter {
     protected CellStyle dateTimeFormatCellStyle;
     protected CellStyle integerFormatCellStyle;
     protected CellStyle doubleFormatCellStyle;
+    protected CellStyle quotePrefixedCellStyle;
 
     protected ExcelAutoColumnSizer[] sizers;
 
@@ -454,6 +456,16 @@ public class ExcelExporter {
         doubleFormatCellStyle = wb.createCellStyle();
         String doubleFormat = messages.getMainMessage("excelExporter.doubleFormat");
         doubleFormatCellStyle.setDataFormat(format.getFormat(doubleFormat));
+
+        // to prevent code injection, e.g. '=cmd'
+        quotePrefixedCellStyle = createQuotePrefixedCellStyle();
+    }
+
+    protected CellStyle createQuotePrefixedCellStyle() {
+        CellStyle cellStyle = wb.createCellStyle();
+        cellStyle.setQuotePrefixed(true);
+
+        return cellStyle;
     }
 
     protected int createHierarhicalRow(TreeTable table, List<Table.Column> columns,
@@ -867,10 +879,23 @@ public class ExcelExporter {
             String str = sizersIndex == 0 ? createSpaceString(level) + strValue : strValue;
             str = str + childCountValue;
             cell.setCellValue(excelExportHelper.createRichTextString(str));
+
+            if (needsQuotePrefixedStyle(str)) {
+                cell.setCellStyle(quotePrefixedCellStyle);
+            }
+
             if (sizers[sizersIndex].isNotificationRequired(notificationRequired)) {
                 sizers[sizersIndex].notifyCellValue(str, stdFont);
             }
         }
+    }
+
+    protected boolean needsQuotePrefixedStyle(String value) {
+        String pattern = AppBeans.get(Configuration.class).
+                getConfig(ClientConfig.class).
+                getExcelExportQuotePrefixedPattern();
+
+        return !Strings.isNullOrEmpty(pattern) && value.matches(pattern);
     }
 
     protected boolean checkIsRowNumberExceed(int r) {

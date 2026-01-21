@@ -444,4 +444,13 @@ public interface ClientConfig extends Config {
     @Property("cuba.gui.defaultExcelExportFormat")
     @Default("XLS")
     String getDefaultExcelExportFormat();
+
+    /**
+     * Pattern to determine whether a cell value should be prefixed with a quote.
+     *
+     * @return the regular expression to which a cell value is to be matched
+     */
+    @Property("cuba.gui.excelExportQuotePrefixedPattern")
+    @Default("^[=+\\-@].*")
+    String getExcelExportQuotePrefixedPattern();
 }
