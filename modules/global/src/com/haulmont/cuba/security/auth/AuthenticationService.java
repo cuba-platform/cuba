@@ -73,4 +73,11 @@ public interface AuthenticationService {
      * @throws NoUserSessionException if session is absent or expired
      */
     void logout();
+
+    /**
+     * Check if user is active
+     * @param user user to check
+     * @return true if user is active
+     */
+    boolean isUserActive(User user);
 }

@@ -73,4 +73,11 @@ public interface AuthenticationManager {
      * @see AuthenticationService#logout()
      */
     void logout();
+
+    /**
+     * Checks if user is active
+     * @param user user to check
+     * @return true if user is active
+     */
+    boolean isUserActive(User user);
 }
