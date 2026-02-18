@@ -297,4 +297,21 @@ public class DbUpdaterEngineTest {
         scriptName = engine.getScriptName(script.getAbsolutePath());
         assertEquals("10-cuba/init/postgres/create-db.sql", scriptName);
     }
+
+    @Test
+    void deleteComments() {
+        String sql = "first;^\n" +
+                "second; -- comment^\n" +
+                "   -- third;";
+
+        DbUpdaterEngine engine = new DbUpdaterEngine();
+        sql = engine.deleteComments(sql);
+        assertEquals("first;^\nsecond;\n", sql);
+
+        sql = "first;^\n" +
+                "-- comment^\n" +
+                "second;";
+        sql = engine.deleteComments(sql);
+        assertEquals("first;^\nsecond;\n", sql);
+    }
 }
