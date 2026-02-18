@@ -20,7 +20,6 @@ import com.haulmont.cuba.core.global.TimeSource;
 
 import javax.validation.ClockProvider;
 import java.time.Clock;
-import java.time.ZonedDateTime;
 
 public class CubaValidationTimeProvider implements ClockProvider {
 
@@ -32,7 +31,6 @@ public class CubaValidationTimeProvider implements ClockProvider {
 
     @Override
     public Clock getClock() {
-        ZonedDateTime now = timeSource.now();
-        return Clock.fixed(now.toInstant(), now.getZone());
+        return Clock.systemDefaultZone();
     }
 }
