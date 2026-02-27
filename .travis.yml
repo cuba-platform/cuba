@@ -8,11 +8,11 @@ before_install:
   - ./gradlew --no-daemon startDb createTestDb
 
 install:
-  - ./gradlew --no-daemon assemble
+  - ./gradlew assemble
 
 script:
-  - ./gradlew --no-daemon test javadoc -Dlogback.configurationFile=com/haulmont/cuba/test-silent-logback.xml
-  - ./gradlew --no-daemon dependencyUpdates -PdependencyUpdates -Drevision=release
+  - ./gradlew test javadoc -Dlogback.configurationFile=com/haulmont/cuba/test-silent-logback.xml
+  - ./gradlew dependencyUpdates -PdependencyUpdates -Drevision=release
 
 cache:
   directories:
