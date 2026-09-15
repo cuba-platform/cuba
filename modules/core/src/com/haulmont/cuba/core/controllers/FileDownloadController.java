@@ -42,6 +42,12 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -153,17 +159,73 @@ public class FileDownloadController {
 
     protected boolean isPermittedDirectory(String filePath) {
         String directories = AppContext.getProperty("cuba.download.directories");
-        if (directories != null && filePath != null ) {
-            filePath = filePath.replace("\\", "/");
-            for (String d : directories.split(";")) {
-                d = d.replace("\\", "/");
-                if (!d.endsWith("/"))
-                    d = d + "/";
-                if (filePath.startsWith(d)) {
-                    return true;
-                }
+        if (directories == null || filePath == null) {
+            return false;
+        }
+        Path path;
+        try {
+            path = resolveActualPath(Paths.get(filePath));
+        } catch (IOException | InvalidPathException e) {
+            log.warn("Unable to resolve path '{}': {}", filePath, e.toString());
+            return false;
+        }
+        for (String d : directories.split(";")) {
+            if (d.isEmpty()) {
+                continue;
+            }
+            Path directory;
+            try {
+                directory = resolveActualPath(Paths.get(d));
+            } catch (IOException | InvalidPathException e) {
+                log.warn("Unable to resolve permitted directory '{}': {}", d, e.toString());
+                continue;
+            }
+            if (!path.equals(directory) && path.startsWith(directory)) {
+                return true;
             }
         }
         return false;
+    }
+
+    /**
+     * Resolves symbolic links, {@code .} and {@code ..} segments and returns the actual absolute path -
+     * the one the file system will access. Segments below a non-existent one are resolved lexically.
+     */
+    protected Path resolveActualPath(Path path) throws IOException {
+        Path absolutePath = path.toAbsolutePath();
+        Path resolvedPath = absolutePath.getRoot();
+        if (resolvedPath == null) {
+            resolvedPath = absolutePath.getFileSystem().getPath("");
+        }
+
+        List<Path> pathParts = new ArrayList<>();
+        for (Path pathPart : absolutePath) {
+            pathParts.add(pathPart);
+        }
+
+        for (int i = 0; i < pathParts.size(); i++) {
+            Path candidate = resolvedPath.resolve(pathParts.get(i).toString());
+
+            if (Files.exists(candidate)) {
+                resolvedPath = candidate.toRealPath();
+                continue;
+            }
+
+            if (Files.isSymbolicLink(candidate)) {
+                Path symbolicLinkTarget = Files.readSymbolicLink(candidate);
+                Path targetPath = symbolicLinkTarget.isAbsolute()
+                        ? symbolicLinkTarget
+                        : resolvedPath.resolve(symbolicLinkTarget);
+                resolvedPath = resolveActualPath(targetPath);
+                continue;
+            }
+
+            for (int j = i; j < pathParts.size(); j++) {
+                resolvedPath = resolvedPath.resolve(pathParts.get(j).toString());
+            }
+            return resolvedPath.normalize();
+        }
+
+        return resolvedPath.normalize();
     }
 }
