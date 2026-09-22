@@ -136,7 +136,7 @@ public class OperationResultWindow extends AbstractWindow {
                     String.format("jmx.%s-%s-%s.log",
                             beanName,
                             methodName,
-                            new SimpleDateFormat("HH:mm:ss").format(
+                            new SimpleDateFormat("HH_mm_ss").format(
                                     timeSource.currentTimestamp())));
         } else {
             showNotification(getMessage("operationResult.resultIsEmpty"), NotificationType.HUMANIZED);
